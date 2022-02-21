@@ -5,8 +5,8 @@ import {
   ProjectApplicationFormSidenavService
 } from '@project/project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {
-  ProjectPartnerReportPageStore
-} from '@project/project-application/report/project-partner-report-page-store.service';
+  PartnerReportDetailPageStore
+} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
 
 @Component({
   selector: 'jems-partner-report-detail-page',
@@ -17,7 +17,7 @@ import {
 export class PartnerReportDetailPageComponent {
 
   constructor(private activatedRoute: ActivatedRoute,
-              public projectPartnerReportPageStore: ProjectPartnerReportPageStore,
+              public pageStore: PartnerReportDetailPageStore,
               private router: RoutingService,
               private projectSidenavService: ProjectApplicationFormSidenavService) {
   }

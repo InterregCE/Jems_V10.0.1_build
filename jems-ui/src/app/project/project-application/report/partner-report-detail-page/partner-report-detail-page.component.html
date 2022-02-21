@@ -1,5 +1,5 @@
-<ng-container *ngIf="this.projectPartnerReportPageStore.partnerReportSummary$ | async as partnerReportSummary">
-    <jems-project-page-template *ngIf="this.projectPartnerReportPageStore.partnerReport$ | async as partnerReport"
+<ng-container *ngIf="pageStore.partnerSummary$ | async as partnerReportSummary">
+    <jems-project-page-template *ngIf="pageStore.partnerReport$ | async as partnerReport"
                                 [titleKey]="'project.application.partner.reports.title.number' | translate : {reportNumber: partnerReport?.reportNumber}"
                                 [subTitleText]="'common.label.project.partner.role.shortcut.' + partnerReport?.identification?.partnerRole | adaptTranslationKeyByCallType | async | translate : {partner: partnerReport?.identification?.partnerNumber + ' ' + partnerReportSummary.abbreviation}"
                                 [isVersionedData]="false">

@@ -1,9 +1,10 @@
-<jems-project-page-template *ngIf="this.data$ | async as data" [needsCard]="true"
+<jems-project-page-template *ngIf="data$ | async as data"
+                            [needsCard]="true"
                             titleKey="project.application.partner.reports.title"
                             [subTitleText]="'common.label.project.partner.role.shortcut.' + data.partner.role | adaptTranslationKeyByCallType | async | translate
             : {partner: getPartnerTranslationString(data.partner)}"
                             [isVersionedData]="false">
-    <ng-container *ngIf="this.projectPartnerReportPageStore.partnerReportLevel$ | async as level">
+    <ng-container *ngIf="pageStore.partnerReportLevel$ | async as level">
         <button [disabled]="level === 'VIEW'"
                 jemsText
                 mat-stroked-button class="mb-3"
@@ -17,11 +18,11 @@
                     [configuration]="tableConfiguration"
                     [rows]="partnerReports"
                     [totalElements]="partnerReports.length"
-                    [pageIndex]="pageIndex"
-                    (newPageIndex)="this.projectPartnerReportPageStore.newPageIndex$.next($event)"
-                    (newPageSize)="this.projectPartnerReportPageStore.newPageSize$.next($event)">
+                    [pageIndex]="pageStore.newPageIndex$ | async"
+                    (newPageIndex)="pageStore.newPageIndex$.next($event)"
+                    (newPageSize)="pageStore.newPageSize$.next($event)">
         </jems-table>
-        <p *ngIf="partnerReports.length === 0">{{'project.application.form.workpackage.list.empty' | translate}}</p>
+        <p *ngIf="!partnerReports?.length">{{'project.application.partner.reports.table.empty' | translate}}</p>
     </ng-container>
 
 
