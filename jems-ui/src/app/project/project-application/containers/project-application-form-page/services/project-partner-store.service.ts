@@ -28,7 +28,7 @@ import CallTypeEnum = ProjectCallSettingsDTO.CallTypeEnum;
 })
 export class ProjectPartnerStore {
   public static PARTNER_DETAIL_PATH = '/applicationFormPartner/';
-  public static PARTNER_REPORT_DETAIL_PATH = '/reporting/';
+
   isProjectEditable$: Observable<boolean>;
   projectCallType$: Observable<CallTypeEnum>;
   partner$: Observable<ProjectPartnerDetailDTO>;

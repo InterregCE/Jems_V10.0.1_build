@@ -117,7 +117,6 @@ import {PrivilegesPageComponent} from './project-application/privileges-page/pri
 import { ContractMonitoringComponent } from './project-application/contract-monitoring/contract-monitoring.component';
 import { LumpsumBudgetTableComponent } from './partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/lumpsum-budget-table/lumpsum-budget-table.component';
 import {PartnerReportComponent} from './project-application/report/partner-report.component';
-import {PartnerReportBreadcrumbResolver} from './project-application/report/service/partner-report-breadcrumb-resolver.service';
 import { ApplicationFormPrivilegesExpansionPanelComponent } from './project-application/privileges-page/application-form-privileges-expansion-panel/application-form-privileges-expansion-panel.component';
 import { PartnerTeamPrivilegesExpansionPanelComponent } from './project-application/privileges-page/partner-team-privileges-expansion-panel/partner-team-privileges-expansion-panel.component';
 import { SpfRecipientsTableComponent } from './project-application/components/project-application-form/project-application-form-project-relevance-and-context-detail/tables/spf-recipients-table/spf-recipients-table.component';
@@ -129,10 +128,7 @@ import {
 } from '@project/partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/small-project-fund-budget/small-project-fund-budget.component';
 
 import { PartnerReportDetailPageComponent } from './project-application/report/partner-report-detail-page/partner-report-detail-page.component';
-import { PartnerReportIdentificationTabComponent } from './project-application/report/partner-report-identification-tab/partner-report-identification-tab.component';
-import {
-  ReportBreadcrumbResolver
-} from '@project/project-application/containers/project-application-detail/services/report-breadcrumb.resolver';
+import { PartnerReportIdentificationTabComponent } from './project-application/report/partner-report-detail-page/partner-report-identification-tab/partner-report-identification-tab.component';
 
 @NgModule({
   declarations: [
@@ -269,9 +265,7 @@ import {
     ProjectBudgetPeriodPageStore,
     ProjectPartnerBudgetStore,
     ProjectPartnerCoFinancingStore,
-    ProjectPartnerStateAidsStore,
-    PartnerReportBreadcrumbResolver,
-    ReportBreadcrumbResolver
+    ProjectPartnerStateAidsStore
   ]
 })
 export class ProjectModule {
