@@ -60,15 +60,15 @@
             </jems-benefits-table>
         </ng-container>
 
-        <ng-container *ngIf="callType === 'SPF'">
+        <ng-container *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RELEVANCE_AND_CONTEXT.SPF_RECIPIENT_GROUP">
             <h4>{{'spf.project.application.form.relevance.field.4a' | translate}}</h4>
             <p>{{'spf.project.application.form.relevance.field.4a.intro' | translate}}</p>
-           <jems-spf-recipients-table jemsNoWidthLimit
-                                      [formGroup]="projectRelevanceForm"
-                                      [spfRecipients]="spfRecipients"
-                                      [editable]="editable"
-                                      (changed)="tableChanged()">
-           </jems-spf-recipients-table>
+            <jems-spf-recipients-table jemsNoWidthLimit
+                                       [formGroup]="projectRelevanceForm"
+                                       [spfRecipients]="spfRecipients"
+                                       [editable]="editable"
+                                       (changed)="tableChanged()">
+            </jems-spf-recipients-table>
         </ng-container>
 
         <ng-container
