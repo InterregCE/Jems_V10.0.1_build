@@ -11,5 +11,6 @@ export class ApplicationFormFieldNode {
   rootIndex: number;
   showStepToggle: boolean;
   showVisibilitySwitch: boolean;
-  isHiddenInSpf: boolean;
+  isHiddenInSpfCall: boolean;
+  isHiddenInStandardCall: boolean;
 }

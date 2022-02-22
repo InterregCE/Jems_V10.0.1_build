@@ -84,7 +84,7 @@ export class PartnerReportPageStore {
       );
   }
 
-  private partnerId():Observable<number | string | null> {
+  private partnerId(): Observable<number | string | null> {
     return this.routingService.routeParameterChanges(PartnerReportPageStore.PARTNER_REPORT_DETAIL_PATH, 'partnerId');
   }
 }

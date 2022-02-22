@@ -60,7 +60,7 @@ export class ApplicationFormConfigurationPageStore {
           if (callType === CallDetailDTO.TypeEnum.SPF) {
            return this.getSPFApplicationFormFieldNodeList(this.getApplicationFormFieldNodeList(callIsPublished,configs));
           }
-          return this.getApplicationFormFieldNodeList(callIsPublished, configs);
+          return this.getStandardApplicationFormFieldNodeList(this.getApplicationFormFieldNodeList(callIsPublished, configs));
         })
       );
   }
@@ -75,7 +75,7 @@ export class ApplicationFormConfigurationPageStore {
 
   private getSPFApplicationFormFieldNodeList(nodes: ApplicationFormFieldNode[]) {
     return nodes.filter(function removeSPFHiddenFields(node): boolean {
-        if (!node.isHiddenInSpf) {
+        if (!node.isHiddenInSpfCall) {
           if (node.children) {
             node.children = node.children.filter(removeSPFHiddenFields);
           }
@@ -85,6 +85,20 @@ export class ApplicationFormConfigurationPageStore {
       }
     );
   }
+
+
+  private getStandardApplicationFormFieldNodeList(nodes: ApplicationFormFieldNode[]) {
+    return nodes.filter(function removeStandardCallHiddenFields(node): boolean {
+      if (!node.isHiddenInStandardCall) {
+        if (node.children) {
+          node.children = node.children.filter(removeStandardCallHiddenFields);
+        }
+        return true;
+      }
+      return false;
+    });
+  }
+
 
   private addConfigurableParentNode(
     id: string,
@@ -96,30 +110,32 @@ export class ApplicationFormConfigurationPageStore {
     return {...this.addLeafNode(id, rootIndex, callPublished, configs), children};
   }
 
-  private static addParentNode(id: string, rootIndex: number, children: ApplicationFormFieldNode[], isHiddenInSpf = false): ApplicationFormFieldNode {
+  private static addParentNode(id: string, rootIndex: number, children: ApplicationFormFieldNode[], isHiddenInSpfCall = false, isHiddenInStandardCall = false): ApplicationFormFieldNode {
     return {
       id,
       rootIndex,
       children,
       showStepToggle: false,
       showVisibilitySwitch: false,
-      isHiddenInSpf
+      isHiddenInSpfCall,
+      isHiddenInStandardCall
     };
   }
 
-  private addSectionNodes(id: string, rootIndex: number, section: { [key: string]: string }, callPublished: boolean, configs: ApplicationFormFieldConfigurationDTO[], showStepToggle = true, showVisibilitySwitch = true, isHiddenInSpf = false): ApplicationFormFieldNode {
+  private addSectionNodes(id: string, rootIndex: number, section: { [key: string]: string }, callPublished: boolean, configs: ApplicationFormFieldConfigurationDTO[], showStepToggle = true, showVisibilitySwitch = true, isHiddenInSpfCall = false,  isHiddenInStandardCall = false): ApplicationFormFieldNode {
     return {
       id,
       rootIndex,
       children: this.addLeafNodes(section, rootIndex, callPublished, configs, showStepToggle, showVisibilitySwitch),
       showStepToggle: false,
       showVisibilitySwitch: false,
-      isHiddenInSpf
+      isHiddenInSpfCall,
+      isHiddenInStandardCall
     };
   }
 
   private addLeafNode(id: string, rootIndex: number, callPublished: boolean,
-                      configs: ApplicationFormFieldConfigurationDTO[], showStepToggle = true, showVisibilitySwitch = true, isHiddenInSpf = false): ApplicationFormFieldNode {
+                      configs: ApplicationFormFieldConfigurationDTO[], showStepToggle = true, showVisibilitySwitch = true, isHiddenInSpfCall = false,  isHiddenInStandardCall = false): ApplicationFormFieldNode {
     const config = configs?.find(conf => conf.id === id);
     return {
       id,
@@ -130,7 +146,8 @@ export class ApplicationFormConfigurationPageStore {
       rootIndex,
       showStepToggle,
       showVisibilitySwitch,
-      isHiddenInSpf
+      isHiddenInSpfCall,
+      isHiddenInStandardCall
     };
   }
 
@@ -174,6 +191,7 @@ export class ApplicationFormConfigurationPageStore {
           this.addLeafNode('application.config.project.organization.english.name',1,callPublished, configs),
           this.addLeafNode('application.config.project.organization.department',1,callPublished, configs),
           this.addLeafNode('application.config.project.partner.type',1,callPublished, configs),
+          this.addLeafNode('application.config.spf.beneficiary.type',1, callPublished, configs, true, true, false, true),
           this.addLeafNode('application.config.project.partner.sub.type',1,callPublished, configs),
           this.addLeafNode('application.config.project.partner.nace.group.level',1,callPublished, configs),
           this.addLeafNode('application.config.project.partner.other.identifier.number.and.description',1,callPublished, configs),
@@ -199,7 +217,7 @@ export class ApplicationFormConfigurationPageStore {
   private getSectionCFormFieldNodeList(callPublished: boolean, configs: ApplicationFormFieldConfigurationDTO[]): ApplicationFormFieldNode {
     return ApplicationFormConfigurationPageStore.addParentNode('application.config.project.section.c', 2, [
       this.addSectionNodes('application.config.project.section.c.1', 2, APPLICATION_FORM.SECTION_C.PROJECT_OVERALL_OBJECTIVE, callPublished, configs),
-      this.addSectionNodes('application.config.project.section.c.2', 2, APPLICATION_FORM.SECTION_C.PROJECT_RELEVANCE_AND_CONTEXT, callPublished, configs),
+      this.getProjectRelevanceAndContextSubSection(callPublished, configs),
       this.addSectionNodes('application.config.project.section.c.3', 2, APPLICATION_FORM.SECTION_C.PROJECT_PARTNERSHIP, callPublished, configs),
       ApplicationFormConfigurationPageStore.addParentNode('application.config.project.section.c.4', 2, [
         this.addSectionNodes('application.config.project.section.c.4.objectives', 2, APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OBJECTIVES, callPublished, configs),
@@ -225,6 +243,18 @@ export class ApplicationFormConfigurationPageStore {
     ]);
   }
 
+  private getProjectRelevanceAndContextSubSection(callPublished: boolean, configs: ApplicationFormFieldConfigurationDTO[]): ApplicationFormFieldNode{
+    return ApplicationFormConfigurationPageStore.addParentNode('application.config.project.section.c.2', 2,[
+      this.addLeafNode('application.config.project.territorial.challenges',2, callPublished, configs, true, true),
+      this.addLeafNode('application.config.project.how.are.challenges.and.opportunities.tackled',2, callPublished, configs, true, true),
+      this.addLeafNode('application.config.project.why.is.cooperation.needed',2, callPublished, configs, true, true),
+      this.addLeafNode('application.config.project.target.group',2, callPublished, configs, true, true),
+      this.addLeafNode('application.config.project.spf.recipient.group',2, callPublished, configs, true, true, false, true),
+      this.addLeafNode('application.config.project.strategy.contribution',2, callPublished, configs, true, true ),
+      this.addLeafNode('application.config.project.how.builds.project.on.available.knowledge',2, callPublished, configs, true, true),
+    ]);
+  }
+
   private getBudgetAndCoFinancingSubSection(callPublished: boolean, configs: ApplicationFormFieldConfigurationDTO[]): ApplicationFormFieldNode{
     return this.addConfigurableParentNode('application.config.project.partner.budget.and.co.financing', 1, callPublished, configs, [
       this.addLeafNode(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_BUDGET_PERIODS, 1, callPublished, configs, false),
@@ -242,9 +272,17 @@ export class ApplicationFormConfigurationPageStore {
         1, APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.INFRASTRUCTURE_AND_WORKS, callPublished, configs, false, true, true),
       this.addSectionNodes('application.config.project.section.b.budget.unit.costs',
         1, APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.UNIT_COSTS, callPublished, configs, false),
-      this.addSectionNodes('application.config.project.section.b.budget.spf.cost',
-        1, APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.SPF_COST, callPublished, configs, false)
+      this.getBudgetSpfCostsSubSection(callPublished, configs)
     ]);
+  }
+
+  private getBudgetSpfCostsSubSection(callPublished: boolean, configs: ApplicationFormFieldConfigurationDTO[]): ApplicationFormFieldNode {
+    return ApplicationFormConfigurationPageStore.addParentNode('application.config.project.section.b.budget.spf.cost', 1,[
+      this.addLeafNode('application.config.project.partner.budget.spf.description',1, callPublished, configs, false, true, false, true),
+      this.addLeafNode('application.config.project.partner.budget.spf.comments',1, callPublished, configs, false, true, false, true),
+      this.addLeafNode('application.config.project.partner.budget.spf.unit.type.and.number.of.units',1, callPublished, configs, false, true, false, true),
+      this.addLeafNode('application.config.project.partner.budget.spf.price.per.unit',1, callPublished, configs, false, true, false, true)
+    ], false, true);
   }
 
 }
