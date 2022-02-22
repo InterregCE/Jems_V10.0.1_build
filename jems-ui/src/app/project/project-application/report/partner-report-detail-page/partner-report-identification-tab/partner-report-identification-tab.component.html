@@ -5,7 +5,7 @@
     <div id="report-info">
         <div class="project-row">
             <span class="header p-1 pr-3">{{'project.detail.table.id.application' | translate}}</span>
-            <span class="p-1">{{projectStore.currentVersionOfProjectTitle$ | async}}</span>
+            <span class="p-1">{{partnerReport?.identification?.projectIdentifier}} - {{partnerReport?.identification?.projectAcronym}}</span>
         </div>
         <div class="project-row">
             <span class="header p-1 pr-3">{{'project.application.partner.report.id' | translate}}</span>
