@@ -64,8 +64,6 @@
     <ID>MaxLineLength:ApprovedApplicationWithConditionsStateTest.kt$ApprovedApplicationWithConditionsStateTest$every { projectWorkflowPersistence.updateProjectFundingDecision(PROJECT_ID, USER_ID, ApplicationStatus.APPROVED, any()) } returns ApplicationStatus.APPROVED</ID>
     <ID>MaxLineLength:ApprovedApplicationWithConditionsStateTest.kt$ApprovedApplicationWithConditionsStateTest$every { projectWorkflowPersistence.updateProjectFundingDecision(PROJECT_ID, USER_ID, ApplicationStatus.NOT_APPROVED, any()) } returns ApplicationStatus.NOT_APPROVED</ID>
     <ID>MaxLineLength:AssignUserToProjectTest.kt$AssignUserToProjectTest$every { userPersistence.findAllByIds(setOf(USER_ADMIN_ID, USER_PROGRAMME_ID, USER_MONITOR_ID_1, USER_MONITOR_ID_2, USER_APPLICANT_ID)) } returns listOf(admin, programmeUser, monitorUser_1, monitorUser_2, applicantUser)</ID>
-    <ID>MaxLineLength:AuditBuilder.kt$AuditBuilder$fun project(project: ProjectDetail)</ID>
-    <ID>MaxLineLength:AuditBuilder.kt$AuditBuilder$fun project(project: ProjectSummary)</ID>
     <ID>MaxLineLength:BudgetCostCalculatorTest.kt$BudgetCostCalculatorTest$fun</ID>
     <ID>MaxLineLength:CallDTOMapper.kt$CallDTOMapper$fun</ID>
     <ID>MaxLineLength:CallEntityMapper.kt$CallEntityMapper$abstract fun map(applicationFormFieldConfigurationEntities: MutableSet&lt;ApplicationFormFieldConfigurationEntity&gt;): MutableSet&lt;ApplicationFormFieldConfiguration&gt;</ID>
