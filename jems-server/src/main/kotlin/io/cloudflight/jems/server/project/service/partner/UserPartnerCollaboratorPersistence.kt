@@ -10,6 +10,8 @@ interface UserPartnerCollaboratorPersistence {
 
     fun findPartnersByUserAndProject(userId: Long, projectId: Long): Set<PartnerCollaborator>
 
+    fun findByProjectAndPartners(projectId: Long, partnerIds: Set<Long>): Set<PartnerCollaborator>
+
     fun findPartnerCollaboratorsByProjectId(projectId: Long): Set<PartnerCollaborator>
 
     fun findByUserIdAndPartnerId(userId: Long, partnerId: Long): Optional<PartnerCollaboratorLevel>

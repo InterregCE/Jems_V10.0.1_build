@@ -7,11 +7,13 @@ import io.cloudflight.jems.server.project.service.partner.UserPartnerCollaborato
 import io.cloudflight.jems.server.project.service.partner.get_partner_user_collaborator.GetPartnerUserCollaborators
 import io.cloudflight.jems.server.user.service.authorization.UserAuthorization
 import io.cloudflight.jems.server.user.service.model.assignment.PartnerCollaborator
+import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
-import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.verify
+import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 internal class GetPartnerUserCollaboratorsTest : UnitTest() {
@@ -20,9 +22,16 @@ internal class GetPartnerUserCollaboratorsTest : UnitTest() {
         private const val PROJECT_ID = 1L
         private const val PARTNER_ID = 2L
         private const val USER_ID = 3L
+
+        val partnerCollaborator = PartnerCollaborator(
+            userId = USER_ID,
+            partnerId = PARTNER_ID,
+            userEmail = "test",
+            level = PartnerCollaboratorLevel.EDIT
+        )
     }
 
-    @RelaxedMockK
+    @MockK
     lateinit var collaboratorPersistence: UserPartnerCollaboratorPersistence
 
     @MockK
@@ -34,33 +43,40 @@ internal class GetPartnerUserCollaboratorsTest : UnitTest() {
     @InjectMockKs
     lateinit var getCollaborators: GetPartnerUserCollaborators
 
+    @BeforeEach
+    fun reset() {
+        clearMocks(userAuthorization, collaboratorPersistence)
+    }
+
     @Test
     fun `get collaborators for users with MANAGE privilege`() {
         every { userAuthorization.hasManageProjectPrivilegesPermission(PROJECT_ID) } returns true
+        every { collaboratorPersistence.findPartnerCollaboratorsByProjectId(PROJECT_ID) } returns setOf(partnerCollaborator)
 
-        getCollaborators.getPartnerCollaborators(PROJECT_ID)
+        assertThat(getCollaborators.getPartnerCollaborators(PROJECT_ID))
+            .containsExactly(partnerCollaborator)
 
         verify(exactly = 1) {
+            userAuthorization.hasManageProjectPrivilegesPermission(PROJECT_ID)
             collaboratorPersistence.findPartnerCollaboratorsByProjectId(PROJECT_ID)
         }
     }
 
     @Test
     fun `get collaborators for users that only see their own teams`() {
-        val partnerCollaborator = PartnerCollaborator(
-            userId = USER_ID,
-            partnerId = PARTNER_ID,
-            userEmail = "test",
-            level = PartnerCollaboratorLevel.EDIT
-        )
         every { userAuthorization.hasManageProjectPrivilegesPermission(PROJECT_ID) } returns false
         every { securityService.getUserIdOrThrow() } returns USER_ID
         every { collaboratorPersistence.findPartnersByUserAndProject(USER_ID, PROJECT_ID) } returns setOf(partnerCollaborator)
+        every { collaboratorPersistence.findByProjectAndPartners(PROJECT_ID, setOf(PARTNER_ID)) } returns setOf(partnerCollaborator)
 
-        getCollaborators.getPartnerCollaborators(PROJECT_ID)
+        assertThat(getCollaborators.getPartnerCollaborators(PROJECT_ID))
+            .containsExactly(partnerCollaborator)
 
         verify(exactly = 1) {
-            collaboratorPersistence.findPartnerCollaboratorsByProjectId(PROJECT_ID)
+            userAuthorization.hasManageProjectPrivilegesPermission(PROJECT_ID)
+            securityService.getUserIdOrThrow()
+            collaboratorPersistence.findPartnersByUserAndProject(USER_ID, PROJECT_ID)
+            collaboratorPersistence.findByProjectAndPartners(PROJECT_ID, setOf(PARTNER_ID))
         }
     }
 
