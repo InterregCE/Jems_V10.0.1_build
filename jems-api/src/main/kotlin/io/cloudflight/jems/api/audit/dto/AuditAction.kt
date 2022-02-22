@@ -72,5 +72,8 @@ enum class AuditAction {
 
     //email
     MAIL_SENT,
-    MAIL_NOT_SENT
+    MAIL_NOT_SENT,
+
+    // report
+    PARTNER_REPORT_ADDED,
 }

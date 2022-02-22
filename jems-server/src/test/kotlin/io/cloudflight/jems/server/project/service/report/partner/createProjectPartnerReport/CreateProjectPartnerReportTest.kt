@@ -1,13 +1,16 @@
 package io.cloudflight.jems.server.project.service.report.partner.createProjectPartnerReport
 
+import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
-import io.cloudflight.jems.server.project.service.model.ProjectSummary
+import io.cloudflight.jems.server.project.service.model.ProjectFull
+import io.cloudflight.jems.server.project.service.model.ProjectStatus
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPartnerCoFinancingPersistence
@@ -19,15 +22,19 @@ import io.cloudflight.jems.server.project.service.report.ProjectReportPersistenc
 import io.cloudflight.jems.server.project.service.report.model.PartnerReportIdentificationCreate
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportCreate
 import io.cloudflight.jems.server.project.service.report.model.ReportStatus
+import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.slot
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
+import org.springframework.context.ApplicationEventPublisher
 import java.math.BigDecimal
 
 internal class CreateProjectPartnerReportTest : UnitTest() {
@@ -35,12 +42,18 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
     companion object {
         private const val PROJECT_ID = 426L
 
-        private fun projectSummary(status: ApplicationStatus) = ProjectSummary(
+        private fun projectSummary(status: ApplicationStatus) = ProjectFull(
             id = PROJECT_ID,
             customIdentifier = "XE.1_0001",
-            callName = "",
+            callSettings = mockk(),
             acronym = "project acronym",
-            status = status,
+            applicant = mockk(),
+            projectStatus = ProjectStatus(
+                status = status,
+                user = mockk(),
+                updated = mockk(),
+            ),
+            duration = null,
         )
 
         private fun partnerDetail(id: Long) = ProjectPartnerDetail(
@@ -110,17 +123,24 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
     lateinit var partnerCoFinancingPersistence: ProjectPartnerCoFinancingPersistence
     @MockK
     lateinit var reportPersistence: ProjectReportPersistence
+    @MockK
+    lateinit var auditPublisher: ApplicationEventPublisher
 
     @InjectMockKs
     lateinit var createReport: CreateProjectPartnerReport
+
+    @BeforeEach
+    fun reset() {
+        clearMocks(auditPublisher)
+    }
 
     @ParameterizedTest(name = "can create report when status {0}")
     @EnumSource(value = ApplicationStatus::class, names = ["CONTRACTED", "IN_MODIFICATION", "MODIFICATION_SUBMITTED", "MODIFICATION_REJECTED"])
     fun createReportFor(status: ApplicationStatus) {
         val partnerId = 66L
         every { projectPartnerPersistence.getProjectIdForPartnerId(partnerId) } returns PROJECT_ID
-        every { projectPersistence.getProjectSummary(PROJECT_ID) } returns projectSummary(status)
         every { versionPersistence.getLatestApprovedOrCurrent(PROJECT_ID) } returns "14.2.0"
+        every { projectPersistence.getProject(PROJECT_ID, "14.2.0") } returns projectSummary(status)
         every { reportPersistence.getCurrentLatestReportNumberForPartner(partnerId) } returns 7
         every { partnerCoFinancingPersistence.getCoFinancingAndContributions(partnerId, "14.2.0").finances } returns coFinancing
         every { projectPartnerPersistence.getById(partnerId, "14.2.0") } returns partnerDetail(partnerId)
@@ -128,9 +148,16 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
         val slotReport = slot<ProjectPartnerReportCreate>()
         every { reportPersistence.createPartnerReport(capture(slotReport)) } returns mockk()
 
+        val auditSlot = slot<AuditCandidateEvent>()
+        every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit
+
         createReport.createReportFor(partnerId)
 
         assertThat(slotReport.captured).isEqualTo(expectedCreationObject(partnerId))
+        assertThat(auditSlot.captured.auditCandidate.action).isEqualTo(AuditAction.PARTNER_REPORT_ADDED)
+        assertThat(auditSlot.captured.auditCandidate.description).isEqualTo(
+            "[XE.1_0001] [PP4] Partner report R.8 added"
+        )
     }
 
     @ParameterizedTest(name = "cannot create report when status {0}")
@@ -142,9 +169,11 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
     fun cannotCreateReportFor(status: ApplicationStatus) {
         val partnerId = 67L
         every { projectPartnerPersistence.getProjectIdForPartnerId(partnerId) } returns PROJECT_ID
-        every { projectPersistence.getProjectSummary(PROJECT_ID) } returns projectSummary(status)
+        every { versionPersistence.getLatestApprovedOrCurrent(PROJECT_ID) } returns "6.7.2"
+        every { projectPersistence.getProject(PROJECT_ID, "6.7.2") } returns projectSummary(status)
 
         assertThrows<ReportCanBeCreatedOnlyWhenContractedException> { createReport.createReportFor(partnerId) }
+        verify(exactly = 0) { auditPublisher.publishEvent(any()) }
     }
 
 }
