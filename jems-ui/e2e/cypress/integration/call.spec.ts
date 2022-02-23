@@ -1,12 +1,7 @@
-import user from '../fixtures/users.json';
 import faker from "@faker-js/faker";
+import user from '../fixtures/users.json';
 
 context('Call management tests', () => {
-
-  before(() => {
-    cy.loginByRequest(user.admin);
-    cy.createUser(user.programmeUser);
-  });
 
   beforeEach(() => {
     cy.viewport(1920, 1080);
@@ -15,9 +10,8 @@ context('Call management tests', () => {
 
   it('Call can be created', function () {
 
-    cy.visit('/');
+    cy.visit('app/call');
 
-    cy.get('div#navbarSupportedContent a').contains('Calls').click();
     cy.contains('Add new call').click();
 
     // Call identification
@@ -35,7 +29,7 @@ context('Call management tests', () => {
     cy.get('textarea').type('Automated call description');
 
     // Programme Priorities
-    const priority = 'Reaping the benefits of digitisation for citizens, companies, research organisations and public authorities';
+    const priority = 'Developing and enhancing research and innovation capacities and the uptake of advanced technologies';
     cy.get('jems-call-priority-tree').find('span').contains(priority).click();
 
     // Strategies
@@ -69,10 +63,8 @@ context('Call management tests', () => {
 
   it('Call can be opened, edited and published', function () {
 
-    cy.visit('/');
-    cy.get('div#navbarSupportedContent a').contains('Calls').click();
-
-    cy.get('div[title]').contains(this.callName).click();
+    cy.visit('/app/call/detail/' + this.callId, {failOnStatusCode: false});
+    cy.get('input[name="name"]').should('have.value', this.callName);
 
     // Budget settings
     cy.get('jems-side-nav span.title').contains('Budget Settings').click();
@@ -97,27 +89,28 @@ context('Call management tests', () => {
 
     // Lump Sums
     cy.intercept(/api\/call\/byId\/\d\/lumpSum/).as('lumpSum');
-    const lumpSum = 'DE Preparation Lump sum';
+    const lumpSum = 'Preparation Lump sum DE';
     cy.get('jems-call-lump-sums span').contains(lumpSum).parent().find('input[type="checkbox"]').check({force: true});
     cy.get('jems-call-lump-sums button').contains('Save changes').click();
     cy.wait('@lumpSum');
 
     // Unit Costs
     cy.intercept(/api\/call\/byId\/\d\/unitCost/).as('unitCost');
-    const unitCost = 'DE Unit cost MCC1';
+    const unitCost = 'Unit cost MCC1 DE';
     cy.get('jems-call-unit-costs span').contains(unitCost).parent().find('input[type="checkbox"]').check({force: true});
     cy.get('jems-call-unit-costs button').contains('Save changes').click();
     cy.wait('@unitCost');
 
     // Pre-submission check
-    cy.get('jems-side-nav span.title').contains('Pre-submission check settings').click();
+    cy.contains('Pre-submission check settings').click();
     cy.get('mat-select[formcontrolname="plugin"]').click();
-    cy.get('mat-option').contains('No-Check').click();
+    cy.contains('No-Check').click();
     cy.get('jems-pre-submission-check-settings-page button').contains('Save changes').click();
+    cy.get('jems-pre-submission-check-settings-page span').should('contain', 'Application form configuration was saved successfully');
 
     // Publish call
-    cy.intercept(/api\/call\/byId\/\d\/publish/).as('publish');
     cy.get('jems-side-nav span.title').contains('General call settings').click();
+    cy.intercept(/api\/call\/byId\/\d\/publish/).as('publish');
     cy.contains('Publish call').click();
     cy.get('jems-confirm-dialog button').contains('Confirm').click();
     cy.wait('@publish');

@@ -1,5 +1,5 @@
 {
-  "baseUrl": "http://localhost:8080",
+  "baseUrl": "http://localhost:4200",
   "projectId": "JEMS",
   "watchForFileChanges": false,
   "retries": {
@@ -9,5 +9,11 @@
   "env": {
     "authenticationUrl": "/api/auth/login",
     "defaultPassword": "<change-me>"
-  }
+  },
+  "testFiles": [
+    "login.spec.ts",
+    "programme.spec.ts",
+    "call.spec.ts",
+    "application.spec.ts"
+  ]
 }

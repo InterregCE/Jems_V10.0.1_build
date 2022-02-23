@@ -1,0 +1,87 @@
+[
+  {
+    "measure": "General de minimis",
+    "name": [
+      {
+        "language": "DE",
+        "translation": "General de minimis DE"
+      }
+    ],
+    "abbreviatedName": [
+      {
+        "language": "DE",
+        "translation": "General de minimis DE"
+      },
+      {
+        "language": "DE",
+        "translation": "General de minimis DE"
+      }
+    ],
+    "schemeNumber": "",
+    "maxIntensity": "",
+    "threshold": "200000",
+    "comments": [
+      {
+        "language": "DE",
+        "translation": "Per MS DE"
+      }
+    ]
+  },
+  {
+    "measure": "GBER Article 20",
+    "name": [
+      {
+        "language": "DE",
+        "translation": "Aid for costs incurred by undertakings participating in European Territorial Cooperation project DE"
+      }
+    ],
+    "abbreviatedName": [
+      {
+        "language": "DE",
+        "translation": "GBER Article 20 DE"
+      }
+    ],
+    "schemeNumber": "",
+    "maxIntensity": "80",
+    "threshold": "2000000",
+    "comments": []
+  },
+  {
+    "measure": "GBER Article 20a",
+    "name": [
+      {
+        "language": "DE",
+        "translation": "Limited amounts of aid to undertakings for participation in European Territorial Cooperation projects DE"
+      }
+    ],
+    "abbreviatedName": [
+      {
+        "language": "DE",
+        "translation": "GBER Article 20a DE"
+      }
+    ],
+    "schemeNumber": "12345",
+    "maxIntensity": "",
+    "threshold": "20000",
+    "comments": []
+  },
+  {
+    "measure": "Indirect Aid",
+    "name": [
+      {
+        "language": "DE",
+        "translation": "Indirect aid (other than GBER Article 20a) DE"
+      }
+    ],
+    "abbreviatedName": [
+      {
+        "language": "DE",
+        "translation": "Indirect Aid DE"
+      }
+    ],
+    "schemeNumber": "",
+    "maxIntensity": "",
+    "threshold": "",
+    "comments": []
+  }
+]
