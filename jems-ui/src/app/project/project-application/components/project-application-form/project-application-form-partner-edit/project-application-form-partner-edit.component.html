@@ -98,10 +98,12 @@
             </mat-select>
         </mat-form-field>
 
-        <mat-form-field *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.SPF_BENEFICIARY_TYPE">
-            <mat-label>{{'spf.beneficiary.type' | translate}}</mat-label>
-            <input [readonly]="true" name="spfBeneficiaryType" formControlName="spfBeneficiaryType" matInput>
-        </mat-form-field>
+        <ng-container *ngIf="data.isSpf">
+            <mat-form-field *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.TYPE">
+                <mat-label>{{'spf.beneficiary.type' | translate}}</mat-label>
+                <input [readonly]="true" name="spfBeneficiaryType" formControlName="spfBeneficiaryType" matInput>
+            </mat-form-field>
+        </ng-container>
 
         <mat-form-field *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.SUB_TYPE">
             <mat-label>{{'project.partner.subType' | translate}}</mat-label>
