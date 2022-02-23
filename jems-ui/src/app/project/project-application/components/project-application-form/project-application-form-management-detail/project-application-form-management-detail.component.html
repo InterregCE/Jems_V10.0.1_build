@@ -85,6 +85,7 @@
                         <jems-multi-language-form-field
                                 type="textarea"
                                 minRows="1"
+                                [disabled]="disabled('criteria_development')"
                                 [label]="'common.textarea.enter.text'"
                                 [formControlName]="'criteria_development'"
                                 [maxLength]="2000">
@@ -104,6 +105,7 @@
                         <jems-multi-language-form-field
                                 type="textarea"
                                 minRows="1"
+                                [disabled]="disabled('criteria_implementation')"
                                 [label]="'common.textarea.enter.text'"
                                 [formControlName]="'criteria_implementation'"
                                 [maxLength]="2000">
@@ -122,6 +124,7 @@
                         <jems-multi-language-form-field
                                 type="textarea"
                                 minRows="1"
+                                [disabled]="disabled('criteria_staffing')"
                                 [label]="'common.textarea.enter.text'"
                                 [formControlName]="'criteria_staffing'"
                                 [maxLength]="2000">
@@ -140,6 +143,7 @@
                         <jems-multi-language-form-field
                                 type="textarea"
                                 minRows="1"
+                                [disabled]="disabled('criteria_financing')"
                                 [label]="'common.textarea.enter.text'"
                                 [formControlName]="'criteria_financing'"
                                 [maxLength]="2000">
