@@ -15,7 +15,7 @@ context('Programme management tests', () => {
 
   it('Programme Basic data can be configured', () => {
 
-    cy.visit('/app/programme');
+    cy.visit('/app/programme', {failOnStatusCode: false});
 
     cy.contains('Edit').click();
 
@@ -39,7 +39,7 @@ context('Programme management tests', () => {
 
   it('Programme Languages can be configured', () => {
 
-    cy.visit('/app/programme/languages');
+    cy.visit('/app/programme/languages', {failOnStatusCode: false});
 
     cy.contains('Edit').click();
 
@@ -55,7 +55,7 @@ context('Programme management tests', () => {
 
   it('Programme NUTS can be downloaded', () => {
 
-    cy.visit('/app/programme/areas');
+    cy.visit('/app/programme/areas', {failOnStatusCode: false});
 
     cy.contains('Download').click();
     cy.get('jems-alert p', {timeout: 20000}).should('contain.text', 'Up to date NUTS dataset was successfully downloaded.');
@@ -69,7 +69,7 @@ context('Programme management tests', () => {
 
   it('Programme Funds can be configured', () => {
 
-    cy.visit('/app/programme/funds');
+    cy.visit('/app/programme/funds', {failOnStatusCode: false});
 
     cy.contains('Edit').click();
     cy.contains('ERDF').parent().then(el => {
@@ -94,7 +94,7 @@ context('Programme management tests', () => {
 
   it('Programme Priorities can be configured', () => {
 
-    cy.visit('/app/programme/priorities');
+    cy.visit('/app/programme/priorities', {failOnStatusCode: false});
 
     cy.contains('Add priority').click();
     cy.contains('button', 'EN').click();
@@ -143,7 +143,7 @@ context('Programme management tests', () => {
 
   it('Programme result indicators can be configured', () => {
 
-    cy.visit('/app/programme/indicators');
+    cy.visit('/app/programme/indicators', {failOnStatusCode: false});
 
     resultIndicators.forEach(indicator => {
       cy.contains('Create result indicator').click();
@@ -178,7 +178,7 @@ context('Programme management tests', () => {
 
   it('Programme output indicators can be configured', () => {
 
-    cy.visit('/app/programme/indicators');
+    cy.visit('/app/programme/indicators', {failOnStatusCode: false});
 
     outputIndicators.forEach(indicator => {
       cy.contains('Create output indicator').click();
@@ -205,7 +205,7 @@ context('Programme management tests', () => {
 
   it('Programme Strategies can be configured', () => {
 
-    cy.visit('/app/programme/strategies');
+    cy.visit('/app/programme/strategies', {failOnStatusCode: false});
 
     cy.contains('button', 'Edit').click();
 
@@ -223,7 +223,7 @@ context('Programme management tests', () => {
 
   it('Programme Legal status can be configured', () => {
 
-    cy.visit('/app/programme/legalStatus');
+    cy.visit('/app/programme/legalStatus', {failOnStatusCode: false});
 
     cy.contains('button', 'Edit').click();
 
@@ -243,7 +243,7 @@ context('Programme management tests', () => {
 
   it('Programme Lump Sums can be configured', () => {
 
-    cy.visit('/app/programme/costs');
+    cy.visit('/app/programme/costs', {failOnStatusCode: false});
 
     lumpSums.forEach(lumpSum => {
       cy.contains('button', 'Add Lump Sum').click();
@@ -280,7 +280,7 @@ context('Programme management tests', () => {
 
   it('Programme Unit Costs can be configured', () => {
 
-    cy.visit('/app/programme/costs');
+    cy.visit('/app/programme/costs', {failOnStatusCode: false});
 
     unitCosts.forEach(unitCost => {
       cy.contains('button', 'Add Unit Cost').click();
@@ -327,7 +327,7 @@ context('Programme management tests', () => {
 
   it('Programme State Aid can be configured', () => {
 
-    cy.visit('/app/programme/stateAid');
+    cy.visit('/app/programme/stateAid', {failOnStatusCode: false});
 
     cy.contains('button', 'Add State Aid').click();
 
