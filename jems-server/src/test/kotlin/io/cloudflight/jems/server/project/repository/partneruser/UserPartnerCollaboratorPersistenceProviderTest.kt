@@ -13,7 +13,7 @@ import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import java.util.*
+import java.util.Optional
 
 internal class UserPartnerCollaboratorPersistenceProviderTest : UnitTest() {
 
@@ -54,6 +54,12 @@ internal class UserPartnerCollaboratorPersistenceProviderTest : UnitTest() {
     }
 
     @Test
+    fun findAllByProjectAndPartners() {
+        persistence.findByProjectAndPartners(PROJECT_ID, setOf(USER_ID))
+        verify { collaboratorRepository.findAllByProjectAndPartners(PROJECT_ID, setOf(USER_ID)) }
+    }
+
+    @Test
     fun deleteByProjectId() {
         persistence.deleteByProjectId(PROJECT_ID)
         verify { collaboratorRepository.deleteAllByProjectId(PROJECT_ID) }
@@ -76,7 +82,7 @@ internal class UserPartnerCollaboratorPersistenceProviderTest : UnitTest() {
         every { collaboratorRepository.saveAll(capture(added)) } returnsArgument 0
 
         val usersToPersist = mapOf(
-            USER_ID to PartnerCollaboratorLevel.VIEW
+            USER_ID to VIEW
         )
 
         persistence.changeUsersAssignedToPartner(PROJECT_ID, PARTNER_ID, usersToPersist)

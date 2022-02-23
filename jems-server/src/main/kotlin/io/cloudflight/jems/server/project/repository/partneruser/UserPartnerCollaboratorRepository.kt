@@ -42,6 +42,19 @@ interface UserPartnerCollaboratorRepository : JpaRepository<UserPartnerCollabora
     """)
     fun findAllByIdUserIdAndProjectId(userId: Long, projectId: Long): Set<PartnerCollaborator>
 
+    @Query("""
+        SELECT new io.cloudflight.jems.server.user.service.model.assignment.PartnerCollaborator(
+            upc.id.userId,
+            upc.id.partnerId,
+            a.email,
+            upc.level)
+        FROM #{#entityName} AS upc
+        LEFT JOIN project_partner pp on pp.id = upc.id.partnerId
+        LEFT JOIN account a on a.id = upc.id.userId
+        WHERE pp.project.id = :projectId AND upc.id.partnerId IN :partnerIds
+        ORDER BY a.email
+    """)
+    fun findAllByProjectAndPartners(projectId: Long, partnerIds: Set<Long>): Set<PartnerCollaborator>
 
     @Query("""
         SELECT new io.cloudflight.jems.server.user.service.model.assignment.PartnerCollaborator(

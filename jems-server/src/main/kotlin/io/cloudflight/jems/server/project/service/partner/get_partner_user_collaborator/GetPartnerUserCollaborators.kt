@@ -23,9 +23,11 @@ class GetPartnerUserCollaborators(
         if (userAuthorization.hasManageProjectPrivilegesPermission(projectId)) {
             return partnerCollaboratorPersistence.findPartnerCollaboratorsByProjectId(projectId)
         }
-        return partnerCollaboratorPersistence.findPartnersByUserAndProject(
-            securityService.getUserIdOrThrow(), projectId
-        )
+        // find available partners for this user first, then all collaborators to it
+        val availablePartners = partnerCollaboratorPersistence
+            .findPartnersByUserAndProject(securityService.getUserIdOrThrow(), projectId)
+        return partnerCollaboratorPersistence
+            .findByProjectAndPartners(projectId, availablePartners.map { it.partnerId }.toSet())
     }
 
 }
