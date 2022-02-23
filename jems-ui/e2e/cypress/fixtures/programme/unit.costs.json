@@ -1,0 +1,155 @@
+[
+  {
+    "name": [
+      {
+        "language": "EN",
+        "translation": "Unit cost SC1 EN"
+      },
+      {
+        "language": "DE",
+        "translation": "Unit cost SC1 DE"
+      }
+    ],
+    "description": [
+      {
+        "language": "EN",
+        "translation": "Unit cost SC1 EN"
+      },
+      {
+        "language": "DE",
+        "translation": "Unit cost SC1 DE"
+      }
+    ],
+    "type": [
+      {
+        "language": "EN",
+        "translation": "SC type 1 EN"
+      },
+      {
+        "language": "DE",
+        "translation": "SC type 1 DE"
+      }
+    ],
+    "costPerUnit": "55,56",
+    "categoryType": "One cost category",
+    "categories": [
+      "Staff Costs"
+    ]
+  },
+  {
+    "name": [
+      {
+        "language": "EN",
+        "translation": "Unit cost SC2 EN"
+      },
+      {
+        "language": "DE",
+        "translation": "Unit cost SC2 DE"
+      }
+    ],
+    "description": [
+      {
+        "language": "EN",
+        "translation": "Unit cost SC2 EN"
+      },
+      {
+        "language": "DE",
+        "translation": "Unit cost SC2 DE"
+      }
+    ],
+    "type": [
+      {
+        "language": "EN",
+        "translation": "SC type 2 EN"
+      },
+      {
+        "language": "DE",
+        "translation": "SC type 2 DE"
+      }
+    ],
+    "costPerUnit": "555,56",
+    "categoryType": "One cost category",
+    "categories": [
+      "Staff Costs"
+    ]
+  },
+  {
+    "name": [
+      {
+        "language": "EN",
+        "translation": "Unit cost EQ1 EN"
+      },
+      {
+        "language": "DE",
+        "translation": "Unit cost EQ1 DE"
+      }
+    ],
+    "description": [
+      {
+        "language": "EN",
+        "translation": "Unit cost EQ1 EN"
+      },
+      {
+        "language": "DE",
+        "translation": "Unit cost EQ1 DE"
+      }
+    ],
+    "type": [
+      {
+        "language": "EN",
+        "translation": "SC type 1 EN"
+      },
+      {
+        "language": "DE",
+        "translation": "SC type 1 DE"
+      }
+    ],
+    "costPerUnit": "555,56",
+    "categoryType": "One cost category",
+    "categories": [
+      "Equipment"
+    ]
+  },
+  {
+    "name": [
+      {
+        "language": "EN",
+        "translation": "Unit cost MCC1 EN"
+      },
+      {
+        "language": "DE",
+        "translation": "Unit cost MCC1 DE"
+      }
+    ],
+    "description": [
+      {
+        "language": "EN",
+        "translation": "Unit cost MCC1 EN"
+      },
+      {
+        "language": "DE",
+        "translation": "Unit cost MCC1 DE"
+      }
+    ],
+    "type": [
+      {
+        "language": "EN",
+        "translation": "MCC type EN"
+      },
+      {
+        "language": "DE",
+        "translation": "MCC type DE"
+      }
+    ],
+    "costPerUnit": "55,56",
+    "categoryType": "Multiple cost categories",
+    "categories": [
+      "Staff Costs",
+      "Office and administration",
+      "Travel and accommodation",
+      "External expertise and services",
+      "Equipment",
+      "Infrastructure and works"
+    ]
+  }
+]

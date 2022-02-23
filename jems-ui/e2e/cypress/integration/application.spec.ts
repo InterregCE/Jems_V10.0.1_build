@@ -3,11 +3,6 @@ import faker from "@faker-js/faker";
 
 context('Project management tests', () => {
 
-  before(() => {
-    cy.loginByRequest(user.admin);
-    cy.createUser(user.applicantUser);
-  });
-
   beforeEach(() => {
     cy.viewport(1920, 1080);
     cy.loginByRequest(user.applicantUser);

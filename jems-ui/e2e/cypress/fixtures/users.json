@@ -6,7 +6,7 @@
     "email": "applicant.user@jems.eu",
     "name": "Applicant",
     "surname": "User",
-    "userRoleId": 1,
+    "userRoleId": 3,
     "userStatus": "ACTIVE"
   },
   "programmeUser": {
