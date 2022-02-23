@@ -10,7 +10,7 @@ context('Call management tests', () => {
 
   it('Call can be created', function () {
 
-    cy.visit('app/call');
+    cy.visit('app/call', {failOnStatusCode: false});
 
     cy.contains('Add new call').click();
 

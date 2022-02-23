@@ -25,8 +25,6 @@ import user from '../fixtures/users.json';
 before(() => {
   cy.loginByRequest(user.admin);
   cy.createUser(user.applicantUser);
-  cy.logoutByRequest();
-  cy.loginByRequest(user.admin);
   cy.createUser(user.programmeUser);
   cy.logoutByRequest();
 });

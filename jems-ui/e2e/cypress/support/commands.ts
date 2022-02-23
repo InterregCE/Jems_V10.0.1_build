@@ -73,15 +73,11 @@ Cypress.Commands.add('createUser', (user: User) => {
     } else if (response.status == 200) {
       cy.request({
         method: 'PUT',
-        url: `/api/user/changeMyPassword`,
-        headers: {
-          'Authorization': `basic ${btoa(`${user.email}:Jems@2020${user.email}`)}`
-        },
+        url: `/api/user/byId/${response.body.id}/password`,
         body: {
-          oldPassword: `Jems@2020${user.email}`,
-          password: Cypress.env('defaultPassword')
+          newPassword: Cypress.env('defaultPassword')
         }
-      })
+      });
     } else {
       throw new Error(`Request failed: (${response.status}) ${response.body.i18nMessage.i18nKey}`);
     }
