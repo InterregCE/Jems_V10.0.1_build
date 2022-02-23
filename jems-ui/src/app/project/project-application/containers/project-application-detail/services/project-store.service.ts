@@ -120,7 +120,6 @@ export class ProjectStore {
     this.projectPeriods$ = this.projectForm$.pipe(
       map(projectForm => projectForm.periods)
     );
-    this.projectCallType$ = this.projectCall$.pipe(map(call => call.callType));
   }
 
   updateProjectData(data: InputProjectData): Observable<ProjectDetailFormDTO> {

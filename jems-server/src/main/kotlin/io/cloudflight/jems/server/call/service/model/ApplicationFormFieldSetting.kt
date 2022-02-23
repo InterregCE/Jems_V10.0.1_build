@@ -57,11 +57,6 @@ enum class ApplicationFormFieldSetting(
         "application.config.project.partner.type",
         setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
     ),
-    SPF_BENEFICIARY_TYPE(
-        "application.config.spf.beneficiary.type",
-        setOf(FieldVisibilityStatus.NONE),
-        setOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
-    ),
     PARTNER_SUB_TYPE(
         "application.config.project.partner.sub.type",
         setOf(FieldVisibilityStatus.NONE, FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY)
@@ -686,7 +681,6 @@ enum class ApplicationFormFieldSetting(
 
          private fun getStandardCallExcludedFormFieldsSettings(): Set<String> =
             setOf(
-                SPF_BENEFICIARY_TYPE.id,
                 PROJECT_RECIPIENT_GROUP.id
             )
     }

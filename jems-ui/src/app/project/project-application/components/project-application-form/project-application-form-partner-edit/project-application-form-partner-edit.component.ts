@@ -47,6 +47,7 @@ export class ProjectApplicationFormPartnerEditComponent implements OnInit {
     partner: ProjectPartnerDetailDTO;
     partners: ProjectPartner[];
     projectCallType: CallTypeEnum;
+    isSpf: boolean;
   }>;
 
   partnerForm: FormGroup = this.formBuilder.group({
@@ -94,9 +95,10 @@ export class ProjectApplicationFormPartnerEditComponent implements OnInit {
         map(([partners, partner, callType]) => ({
           partners,
           partner,
-          projectCallType: callType
+          projectCallType: callType,
+          isSpf: callType === CallTypeEnum.SPF
         })),
-        tap((data: any) => this.resetForm(data.callType, data.partner))
+        tap((data: any) => this.resetForm(data.projectCallType, data.partner))
       );
   }
 

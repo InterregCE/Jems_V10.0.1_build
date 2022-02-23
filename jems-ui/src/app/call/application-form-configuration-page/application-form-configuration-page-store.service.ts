@@ -191,7 +191,6 @@ export class ApplicationFormConfigurationPageStore {
           this.addLeafNode('application.config.project.organization.english.name',1,callPublished, configs),
           this.addLeafNode('application.config.project.organization.department',1,callPublished, configs),
           this.addLeafNode('application.config.project.partner.type',1,callPublished, configs),
-          this.addLeafNode('application.config.spf.beneficiary.type',1, callPublished, configs, true, true, false, true),
           this.addLeafNode('application.config.project.partner.sub.type',1,callPublished, configs),
           this.addLeafNode('application.config.project.partner.nace.group.level',1,callPublished, configs),
           this.addLeafNode('application.config.project.partner.other.identifier.number.and.description',1,callPublished, configs),
