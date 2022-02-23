@@ -27,7 +27,6 @@ export const APPLICATION_FORM = {
       ENGLISH_NAME_OF_ORGANISATION: 'application.config.project.organization.english.name',
       DEPARTMENT_UNIT_DIVISION: 'application.config.project.organization.department',
       TYPE: 'application.config.project.partner.type',
-      SPF_BENEFICIARY_TYPE: 'application.config.spf.beneficiary.type',
       SUB_TYPE: 'application.config.project.partner.sub.type',
       NACE_GROUP_LEVEL: 'application.config.project.partner.nace.group.level',
       OTHER_IDENTIFIER_NUMBER_AND_DESCRIPTION: 'application.config.project.partner.other.identifier.number.and.description',
