@@ -63,7 +63,7 @@ class ProgrammeDataPersistenceProvider(
 
     @Transactional
     override fun updateExportMetaData(
-        pluginKey: String, fileName: String, contentType: String, startTime: ZonedDateTime?, endTime: ZonedDateTime
+        pluginKey: String, fileName: String?, contentType: String?, startTime: ZonedDateTime?, endTime: ZonedDateTime
     ) =
         getProgrammeDataExportMetadataOrThrow(pluginKey).apply {
             this.fileName = fileName

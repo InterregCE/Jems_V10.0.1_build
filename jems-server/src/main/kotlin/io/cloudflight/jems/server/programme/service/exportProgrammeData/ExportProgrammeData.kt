@@ -7,7 +7,7 @@ import io.cloudflight.jems.server.plugin.JemsPluginRegistry
 import io.cloudflight.jems.server.programme.authorization.CanExportProgrammeData
 import org.springframework.stereotype.Service
 
-const val EXPORT_TIMEOUT_IN_MINUTES = 15L
+const val EXPORT_TIMEOUT_IN_MINUTES = 60L
 
 @Service
 class ExportProgrammeData(

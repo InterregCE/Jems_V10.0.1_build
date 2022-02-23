@@ -60,7 +60,8 @@ internal class ProgrammeDataExportControllerTest : UnitTest() {
 
         assertThat(controller.list()).containsExactly(
             ProgrammeDataExportMetadataDTO(
-                PLUGIN_KEY, "fileName", EXPORT_LANGUAGE, INPUT_LANGUAGE, exportStartedAt, exportEndedAt
+                PLUGIN_KEY, "fileName", EXPORT_LANGUAGE, INPUT_LANGUAGE, exportStartedAt, exportEndedAt,
+                timedOut = false, readyToDownload = true, failed = false
             )
         )
     }

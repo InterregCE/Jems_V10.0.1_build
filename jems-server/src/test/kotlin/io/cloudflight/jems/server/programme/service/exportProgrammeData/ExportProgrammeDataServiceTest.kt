@@ -9,12 +9,14 @@ import io.cloudflight.jems.server.programme.service.INPUT_LANGUAGE_DATA
 import io.cloudflight.jems.server.programme.service.PLUGIN_KEY
 import io.cloudflight.jems.server.programme.service.exportMetaData
 import io.cloudflight.jems.server.programme.service.exportResult
+import io.cloudflight.jems.server.programme.service.model.ProgrammeDataExportMetadata
 import io.cloudflight.jems.server.programme.service.userrole.ProgrammeDataPersistence
 import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
+import io.mockk.slot
 import io.mockk.verify
 import io.mockk.verifyOrder
 import org.junit.jupiter.api.AfterEach
@@ -70,51 +72,56 @@ internal class ExportProgrammeDataServiceTest : UnitTest() {
 
 
         @Test
-        fun `should delete export file meta data if there is any problem in executing export on the plugin`() {
+        fun `should update end time of export file meta data if there is any problem in executing export on the plugin`() {
             val pluginMockk = mockk<ProgrammeDataExportPlugin>()
+            val endTimeSlot = slot<ZonedDateTime>()
 
             every { pluginMockk.getKey() } returns PLUGIN_KEY
             every { pluginMockk.export(EXPORT_LANGUAGE_DATA, INPUT_LANGUAGE_DATA) } throws RuntimeException()
-            every { programmeDataPersistence.deleteExportMetaData(PLUGIN_KEY) } returns Unit
+            every { programmeDataPersistence.updateExportMetaData(PLUGIN_KEY, null, null, null, capture(endTimeSlot)) } returns exportMetaData()
 
             exportProgrammeDataService.execute(pluginMockk, EXPORT_LANGUAGE, INPUT_LANGUAGE)
 
-            verifyOrder {
-                programmeDataPersistence.deleteExportMetaData(PLUGIN_KEY)
+            verify {
+                programmeDataPersistence.updateExportMetaData(PLUGIN_KEY, null, null, null, endTimeSlot.captured)
             }
         }
 
         @Test
-        fun `should delete export file meta data if there is any problem in saving file content`() {
+        fun `should update end time of export file meta data if there is any problem in saving file content`() {
             val pluginMockk = mockk<ProgrammeDataExportPlugin>()
             val exportEndedAt = ZonedDateTime.now()
             val exportResult = exportResult(exportEndedAt = exportEndedAt)
+            val endTimeSlot = slot<ZonedDateTime>()
 
             every { pluginMockk.export(EXPORT_LANGUAGE_DATA, INPUT_LANGUAGE_DATA) } returns exportResult
             every { pluginMockk.getKey() } returns PLUGIN_KEY
             every {
                 programmeDataPersistence.saveExportFile(PLUGIN_KEY, exportResult.content, true)
             } throws RuntimeException()
-            every { programmeDataPersistence.deleteExportMetaData(PLUGIN_KEY) } returns Unit
+            every { programmeDataPersistence.updateExportMetaData(PLUGIN_KEY, null, null, null, capture(endTimeSlot) ) } returns exportMetaData(
+                PLUGIN_KEY)
 
             exportProgrammeDataService.execute(pluginMockk, EXPORT_LANGUAGE, INPUT_LANGUAGE)
 
             verifyOrder {
                 programmeDataPersistence.saveExportFile(PLUGIN_KEY, exportResult.content, true)
-                programmeDataPersistence.deleteExportMetaData(PLUGIN_KEY)
+                programmeDataPersistence.updateExportMetaData(PLUGIN_KEY, null, null , null, capture(endTimeSlot))
             }
         }
 
         @Test
-        fun `should delete export file meta data if there is any problem in updating file metadata`() {
+        fun `should update end time of export file meta data if there is any problem in updating file metadata`() {
             val pluginMockk = mockk<ProgrammeDataExportPlugin>()
             val exportEndedAt = ZonedDateTime.now()
             val exportResult = exportResult(exportEndedAt = exportEndedAt)
+            val endTimeSlot = slot<ZonedDateTime>()
 
             every { pluginMockk.export(EXPORT_LANGUAGE_DATA, INPUT_LANGUAGE_DATA) } returns exportResult
             every { pluginMockk.getKey() } returns PLUGIN_KEY
             every { programmeDataPersistence.saveExportFile(PLUGIN_KEY, exportResult.content, true) } returns Unit
-            every { programmeDataPersistence.deleteExportMetaData(PLUGIN_KEY) } returns Unit
+            every { programmeDataPersistence.updateExportMetaData(PLUGIN_KEY, null, null, null, capture(endTimeSlot)) } returns exportMetaData(
+                PLUGIN_KEY)
             every {
                 programmeDataPersistence.updateExportMetaData(
                     PLUGIN_KEY, exportResult.fileName, exportResult.contentType,
@@ -126,7 +133,7 @@ internal class ExportProgrammeDataServiceTest : UnitTest() {
 
             verifyOrder {
                 programmeDataPersistence.saveExportFile(PLUGIN_KEY, exportResult.content, true)
-                programmeDataPersistence.deleteExportMetaData(PLUGIN_KEY)
+                programmeDataPersistence.updateExportMetaData(PLUGIN_KEY, null, null, null, endTimeSlot.captured)
             }
         }
     }

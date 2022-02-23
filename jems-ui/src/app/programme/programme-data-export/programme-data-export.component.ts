@@ -7,6 +7,8 @@ import {FormBuilder, FormGroup} from '@angular/forms';
 import {map, tap} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
+const REFRESH_INTERVAL_IN_MILLISECOND = 60000;
+
 @UntilDestroy()
 @Component({
   selector: 'jems-programme-data-export',
@@ -25,14 +27,19 @@ export class ProgrammeDataExportComponent implements OnDestroy {
     exportLanguages: string[];
     plugins: PluginInfoDTO[];
     programmeDataExportMetadata: ProgrammeDataExportMetadataDTO[];
-    isAnyExportRunning: boolean;
+    isExportDisabled: boolean;
   }>;
 
   constructor(private programmePageSidenavService: ProgrammePageSidenavService, private pageStore: ProgrammeDataExportStore, private formBuilder: FormBuilder) {
 
     this.refreshInterval = setInterval(() => {
       this.pageStore.refreshExportMetaData();
-    }, 30000);
+    }, REFRESH_INTERVAL_IN_MILLISECOND);
+
+    this.pageStore.programmeDataExportPlugins$.pipe(
+      tap(plugins => this.initForm(plugins)),
+      untilDestroyed(this)
+    ).subscribe();
 
     this.data$ = combineLatest([
       this.pageStore.inputLanguages$,
@@ -45,13 +52,12 @@ export class ProgrammeDataExportComponent implements OnDestroy {
         exportLanguages,
         plugins,
         programmeDataExportMetadata,
-        isAnyExportRunning: this.isAnyExportInProgress(programmeDataExportMetadata)
+        isExportDisabled: this.isExportDisabled(programmeDataExportMetadata)
       })),
-      tap((data) => this.resetForm(data.plugins))
     );
   }
 
-  resetForm(plugins: PluginInfoDTO[]): void {
+  initForm(plugins: PluginInfoDTO[]): void {
     this.exportForm = this.formBuilder.group({
       inputLanguage: [this.pageStore.fallBackLanguage],
       exportLanguage: [this.pageStore.fallBackLanguage],
@@ -60,27 +66,21 @@ export class ProgrammeDataExportComponent implements OnDestroy {
   }
 
   downloadData(pluginKey: string): void {
-    this.pageStore.download(pluginKey).subscribe();
+    this.pageStore.download(pluginKey).pipe(untilDestroyed(this)).subscribe();
   }
 
   exportData(pluginKey: string, exportLanguage: string, inputLanguage: string): void {
-    this.pageStore.exportData(pluginKey, exportLanguage, inputLanguage).pipe(
-      untilDestroyed(this)
-    ).subscribe();
+    this.pageStore.exportData(pluginKey, exportLanguage, inputLanguage).pipe(untilDestroyed(this)).subscribe();
   }
 
-  isExportInProgress(programmeDataExportMetadata: ProgrammeDataExportMetadataDTO): boolean {
-    return programmeDataExportMetadata.exportEndedAt === null;
-  }
-
-  isAnyExportInProgress(programmeDataExportMetadata: ProgrammeDataExportMetadataDTO[]): boolean {
-    let isExportRunning = false;
+  isExportDisabled(programmeDataExportMetadata: ProgrammeDataExportMetadataDTO[]): boolean {
+    let isAnyNotTimedOutExportInProgress = false;
     programmeDataExportMetadata.forEach((val) => {
-      if (this.isExportInProgress(val)) {
-        isExportRunning = true;
+      if (!val.readyToDownload && !val.failed && !val.timedOut) {
+        isAnyNotTimedOutExportInProgress = true;
       }
     });
-    return isExportRunning;
+    return isAnyNotTimedOutExportInProgress || !this.pluginKey || !this.exportLanguage || !this.inputLanguage;
   }
 
   get inputLanguage(): string {

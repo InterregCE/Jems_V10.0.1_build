@@ -67,9 +67,10 @@ fun List<ProjectLumpSumRow>.toProjectLumpSumHistoricalData() =
             programmeLumpSumId = groupedRows.value.first().programmeLumpSumId,
             period = groupedRows.value.first().endPeriod,
             lumpSumContributions = groupedRows.value
+                .filter { it.projectPartnerId != null }
                 .map {
                     ProjectPartnerLumpSum(
-                        partnerId = it.projectPartnerId,
+                        partnerId = it.projectPartnerId!!,
                         amount = it.amount
                     )
                 }.toList()
