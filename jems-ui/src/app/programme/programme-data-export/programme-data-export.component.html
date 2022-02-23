@@ -25,13 +25,13 @@
                     <span>{{exportedFileData.exportLanguage}}</span>
                     <span>{{exportedFileData.exportEndedAt | date:'dd/MM/yyyy hh:mm'}}</span>
                     <span class="justify-center">
-                        <button *ngIf="!isExportInProgress(exportedFileData)"
+                        <button *ngIf="exportedFileData.readyToDownload"
                                 (click)="downloadData(exportedFileData.pluginKey)" color="accent"
                                 mat-icon-button>
                             <mat-icon>download</mat-icon>
                         </button>
-
-                        <mat-spinner *ngIf="isExportInProgress(exportedFileData)" [strokeWidth]="2"
+                        <mat-icon color="warn" *ngIf="exportedFileData.failed">report_problem</mat-icon>
+                        <mat-spinner *ngIf="!exportedFileData.readyToDownload && !exportedFileData.failed" [strokeWidth]="2"
                                      [diameter]="24"></mat-spinner>
                     </span>
                 </div>
@@ -69,7 +69,7 @@
             </mat-form-field>
 
             <jems-pending-button jemsText
-                                 [disabled]="!pluginKey || !exportLanguage || !inputLanguage || data.isAnyExportRunning"
+                                 [disabled]="data.isExportDisabled"
                                  (click)="exportData(pluginKey, exportLanguage, inputLanguage)">
                 {{'programme.data.export.label.export.button' | translate}}
             </jems-pending-button>
