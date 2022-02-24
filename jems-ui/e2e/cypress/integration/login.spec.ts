@@ -1,6 +1,15 @@
 import faker from "@faker-js/faker";
+import user from '../fixtures/users.json';
 
 context('Login tests', () => {
+
+  before(() => {
+    cy.loginByRequest(user.admin);
+    cy.createUser(user.applicantUser);
+    cy.createUser(user.programmeUser);
+    cy.logoutByRequest();
+  });
+
   beforeEach(() => {
     cy.viewport(1920, 1080);
     cy.visit('/');
