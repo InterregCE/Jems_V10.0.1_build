@@ -1,4 +1,8 @@
 import user from '../fixtures/users.json';
+import basicData from '../fixtures/programme/basic.data.json';
+import languages from '../fixtures/programme/languages.json';
+import funds from '../fixtures/programme/funds.json';
+import priorities from '../fixtures/programme/priorities.json';
 import resultIndicators from '../fixtures/programme/result.indicators.json';
 import outputIndicators from '../fixtures/programme/output.indicators.json';
 import strategies from '../fixtures/programme/strategies.json';
@@ -19,17 +23,17 @@ context('Programme management tests', () => {
 
     cy.contains('Edit').click();
 
-    cy.get('input[name="cci"]').type('AUTO-PROGRAMME1');
-    cy.get('input[name="title"]').type('Profile#1');
-    cy.get('input[name="version"]').type('4');
-    cy.get('input[name="firstYear"]').type('2020');
-    cy.get('input[name="lastYear"]').type('2027');
-    cy.get('input[name="eligibleFrom"]').type('01/01/2020');
-    cy.get('input[name="eligibleUntil"]').type('12/31/2030');
-    cy.get('input[name="commissionDecisionNumber"]').type('AUTO-PROGRAMME2');
-    cy.get('input[name="commissionDecisionDate"]').type('12/01/2020');
-    cy.get('input[name="programmeAmendingDecisionNumber"]').type('AUTO-PROGRAMME3');
-    cy.get('input[name="programmeAmendingDecisionDate"]').type('12/01/2020');
+    cy.contains('div', 'CCI').find('input').type(basicData.cci);
+    cy.contains('div', 'Title').find('input').type(basicData.title);
+    cy.contains('div', 'Version').find('input').type(basicData.version);
+    cy.contains('div', 'First year').find('input').type(basicData.firstYear);
+    cy.contains('div', 'Last year').find('input').type(basicData.lastYear);
+    cy.contains('div', 'Eligible from').find('input').type(basicData.eligibleFrom);
+    cy.contains('div', 'Eligible until').find('input').type(basicData.eligibleUntil);
+    cy.contains('div', 'Commission decision number').find('input').type(basicData.commissionDecisionNumber);
+    cy.contains('div', 'Commission decision date').find('input').type(basicData.commissionDecisionDate);
+    cy.contains('div', 'Programme amending decision number').find('input').type(basicData.programmeAmendingDecisionNumber);
+    cy.contains('div', 'Programme amending decision entry').find('input').type(basicData.programmeAmendingDecisionDate);
 
     cy.contains('Save').click();
     cy.contains('Confirm').click();
@@ -43,9 +47,10 @@ context('Programme management tests', () => {
 
     cy.contains('Edit').click();
 
-    cy.get('tr td').contains('Deutsch').parent().then(el => {
-      cy.wrap(el).find('td').eq(0).find('input[type="checkbox"]').check({force: true});
-      cy.wrap(el).find('td').eq(1).find('input[type="checkbox"]').check({force: true});
+    languages.forEach(language => {
+      cy.contains('tr', language.language).then(el => {
+        cy.wrap(el).find('input').check({force: true});
+      });
     });
 
     cy.contains('Save changes').click();
@@ -72,20 +77,20 @@ context('Programme management tests', () => {
     cy.visit('/app/programme/funds', {failOnStatusCode: false});
 
     cy.contains('Edit').click();
-    cy.contains('ERDF').parent().then(el => {
-      cy.contains('button', 'EN').click();
-      cy.wrap(el).find('input[name="multipleFundsAllowed"]').check({force: true});
-      cy.contains('button', 'DE').click();
-      cy.wrap(el).find('input[placeholder="ERDF"]').type('ERDF DE');
-      cy.wrap(el).find('input[placeholder="Territorial cooperation Goal (Interreg)"]').type('Territorial cooperation Goal (Interreg) DE');
-    });
+    cy.contains('button', 'DE').click();
 
-    cy.contains('NEIGHBOURHOOD_CBC').parent().then(el => {
-      cy.contains('button', 'EN').click();
-      cy.wrap(el).find('input[name="multipleFundsAllowed"]').check({force: true});
-      cy.contains('button', 'DE').click();
-      cy.wrap(el).find('input[placeholder="Neighbourhood CBC"]').type('Neighbourhood CBC DE');
-      cy.wrap(el).find('input[placeholder="Interreg A, external cross-border cooperation"]').type('Interreg A, external cross-border cooperation DE');
+    funds.forEach(fund => {
+      cy.contains(fund.type).parent().then(el => {
+        cy.wrap(el).find('input[name="multipleFundsAllowed"]').check({force: true});
+
+        fund.abbreviation.forEach(abbreviation => {
+          cy.wrap(el).find('input:not([type="checkbox"])').eq(0).type(abbreviation.translation);
+        });
+
+        fund.description.forEach(description => {
+          cy.wrap(el).find('input:not([type="checkbox"])').eq(1).type(description.translation);
+        });
+      });
     });
 
     cy.contains('Save changes').click();
@@ -96,49 +101,33 @@ context('Programme management tests', () => {
 
     cy.visit('/app/programme/priorities', {failOnStatusCode: false});
 
-    cy.contains('Add priority').click();
-    cy.contains('button', 'EN').click();
-    cy.get('input[ng-reflect-name="code"]').type('PO1');
-    cy.get('input[ng-reflect-name="translation"]').type('PO1 Innovation EN');
-    cy.contains('button', 'DE').click();
-    cy.get('input[ng-reflect-name="translation"]').type('PO1 Innovation DE');
+    priorities.forEach(priority => {
 
-    const policyObjective1 = 'PO1 - A more competitive and smarter Europe';
-    cy.get('mat-select[ng-reflect-name="objective"]').click();
-    cy.contains(policyObjective1).click();
+      cy.contains('Add priority').click();
+      cy.contains('div', 'Priority code').find('input').type(priority.code);
 
-    const specificObjective1 = 'Developing and enhancing research and innovation capacities and the uptake of advanced technologies';
-    cy.contains('div[ng-reflect-name="specificObjectives"]', specificObjective1).then(el => {
-      cy.wrap(el).find('input[type="checkbox"]').check({force: true});
-      cy.wrap(el).find('input[ng-reflect-name="code"]').type('SO1.1');
+      priority.title.forEach(title => {
+        cy.contains('jems-multi-language-container', 'Priority title').then(el => {
+          cy.wrap(el).contains('button', title.language).click();
+          cy.wrap(el).find('input').type(title.translation);
+        });
+      });
+
+      cy.contains('div', 'Select policy objective').find('mat-select').click();
+      cy.contains(priority.objective).click();
+
+      priority.specificObjectives.forEach(specificObjective => {
+        cy.contains('div.ng-pristine', specificObjective.programmeObjectivePolicy).then(el => {
+          cy.wrap(el).find('input[type="checkbox"]').check({force: true});
+          cy.wrap(el).contains('div', 'Programme specific objective code').find('input').type(specificObjective.code);
+        });
+      });
+
+      cy.contains('Add priority').click();
+      cy.contains('Confirm').click();
+
+      cy.contains('jems-programme-priority-list-page div', priority.code).should('exist');
     });
-
-    cy.contains('Add priority').click();
-    cy.contains('Confirm').click();
-
-    cy.contains('jems-programme-priority-list-page div', specificObjective1).should('exist');
-
-    cy.contains('Add priority').click();
-    cy.contains('button', 'EN').click();
-    cy.get('input[ng-reflect-name="code"]').type('PO2');
-    cy.get('input[ng-reflect-name="translation"]').type('PO2 Environment EN');
-    cy.contains('button', 'DE').click();
-    cy.get('input[ng-reflect-name="translation"]').type('PO2 Environment DE');
-
-    cy.get('mat-select[ng-reflect-name="objective"]').click();
-    const policyObjective2 = 'PO2 - A greener, low-carbon transitioning towards a net zero carbon economy and resilient Europe';
-    cy.contains(policyObjective2).click();
-
-    const specificObjective2 = 'Promoting energy efficiency and reducing greenhouse gas emissions';
-    cy.contains('div[ng-reflect-name="specificObjectives"]', specificObjective2).then(el => {
-      cy.wrap(el).find('input[type="checkbox"]').check({force: true});
-      cy.wrap(el).find('input[ng-reflect-name="code"]').type('SO2.1');
-    });
-
-    cy.contains('Add priority').click();
-    cy.contains('Confirm').click();
-
-    cy.contains('jems-programme-priority-list-page div', specificObjective2).should('exist');
   });
 
   it('Programme result indicators can be configured', () => {
