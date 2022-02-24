@@ -129,9 +129,6 @@ class ProjectServiceTest : UnitTest() {
     @RelaxedMockK
     lateinit var generalValidator: GeneralValidatorService
 
-    @RelaxedMockK
-    lateinit var projectVersionPersistence: ProjectVersionPersistence
-
     @InjectMockKs
     lateinit var projectService: ProjectServiceImpl
 
@@ -207,20 +204,15 @@ class ProjectServiceTest : UnitTest() {
             call = dummyCall,
             acronym = "test acronym",
             applicant = account,
-            currentStatus = statusSubmitted,
+            currentStatus = ProjectStatusHistoryEntity(
+                id = 11,
+                status = ApplicationStatus.CONTRACTED,
+                user = account,
+                updated = TEST_DATE_TIME
+            ),
             firstSubmission = statusSubmitted,
         )
         every { projectRepository.findById(eq(1)) } returns Optional.of(projectToReturn)
-        every { projectVersionPersistence.getAllVersionsByProjectId(1) } returns listOf(
-            ProjectVersion(
-                version = "1.0",
-                projectId = 1,
-                createdAt = ZonedDateTime.now(),
-                user = account,
-                status = ApplicationStatus.CONTRACTED,
-                current = true,
-            )
-        )
 
         assertThrows<UpdateRestrictedFieldsWhenProjectContracted> {
             projectService.update(1, projectData.copy(specificObjective = SocialInfrastructure, duration = null))

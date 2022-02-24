@@ -47,11 +47,12 @@ export class ProjectUtil {
       || status === ProjectStatusDTO.StatusEnum.MODIFICATIONSUBMITTED;
   }
 
-  static isContractedOrAnyStatusAfterContracted(statusOrProject: ProjectDetailDTO | ProjectStatusDTO): boolean {
+  static isContractedOrAnyStatusAfterContracted(statusOrProject: ProjectDetailDTO | ProjectStatusDTO | ProjectStatusDTO.StatusEnum): boolean {
     const status = this.getStatus(statusOrProject);
     return status === ProjectStatusDTO.StatusEnum.CONTRACTED
       || status === ProjectStatusDTO.StatusEnum.INMODIFICATION
-      || status === ProjectStatusDTO.StatusEnum.MODIFICATIONSUBMITTED;
+      || status === ProjectStatusDTO.StatusEnum.MODIFICATIONSUBMITTED
+      || status === ProjectStatusDTO.StatusEnum.MODIFICATIONREJECTED;
   }
 
   private static getStatus(statusOrProject: ProjectDetailDTO | ProjectStatusDTO | ProjectStatusDTO.StatusEnum) {

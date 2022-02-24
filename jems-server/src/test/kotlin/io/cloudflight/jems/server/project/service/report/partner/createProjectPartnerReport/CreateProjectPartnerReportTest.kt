@@ -48,6 +48,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.context.ApplicationEventPublisher
 import java.math.BigDecimal
+import java.time.ZonedDateTime
 
 internal class CreateProjectPartnerReportTest : UnitTest() {
 
@@ -79,6 +80,7 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
             abbreviation = "abbr",
             role = ProjectPartnerRole.PARTNER,
             sortNumber = 4,
+            createdAt = ZonedDateTime.now(),
             nameInOriginalLanguage = "name in orig",
             nameInEnglish = "name in eng",
             partnerType = ProjectTargetGroup.SectoralAgency,

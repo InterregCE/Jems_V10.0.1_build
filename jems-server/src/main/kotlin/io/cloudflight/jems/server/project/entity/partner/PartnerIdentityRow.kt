@@ -6,6 +6,7 @@ import io.cloudflight.jems.server.project.service.partner.model.NaceGroupLevel
 import io.cloudflight.jems.server.project.service.partner.model.PartnerSubType
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVatRecovery
+import java.time.ZonedDateTime
 
 interface PartnerIdentityRow : TranslationView {
     val id: Long
@@ -14,6 +15,7 @@ interface PartnerIdentityRow : TranslationView {
     val abbreviation: String
     val role: ProjectPartnerRole
     val sortNumber: Int
+    val createdAt: ZonedDateTime
     val nameInOriginalLanguage: String?
     val nameInEnglish: String?
     val partnerType: ProjectTargetGroup?
