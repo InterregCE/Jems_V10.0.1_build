@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {PrivilegesPageStore} from '@project/project-application/privileges-page/privileges-page-store.service';
 import {FormService} from '@common/components/section/form/form.service';
 import {PartnerUserCollaboratorDTO, ProjectPartnerSummaryDTO} from '@cat/api';
@@ -17,7 +17,7 @@ import {Alert} from '@common/components/forms/alert';
   providers: [FormService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class PartnerTeamPrivilegesExpansionPanelComponent implements OnInit {
+export class PartnerTeamPrivilegesExpansionPanelComponent implements OnInit, OnChanges {
   @Input()
   partner: ProjectPartnerSummaryDTO;
   @Input()
@@ -49,6 +49,12 @@ export class PartnerTeamPrivilegesExpansionPanelComponent implements OnInit {
       this.addPartnerCollaborator();
     }
     this.formService.resetEditable();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.collaborators) {
+      this.resetPartnerForm(this.collaborators);
+    }
   }
 
   savePartnerCollaborators(partnerId: number): void {
