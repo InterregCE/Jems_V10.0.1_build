@@ -1,10 +1,12 @@
 package io.cloudflight.jems.server.programme.service.exportProgrammeData
 
+import ch.qos.logback.classic.Logger
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.plugin.contract.export.ProgrammeDataExportPlugin
 import io.cloudflight.jems.server.plugin.services.toDataModel
 import io.cloudflight.jems.server.programme.service.model.ProgrammeDataExportMetadata
 import io.cloudflight.jems.server.programme.service.userrole.ProgrammeDataPersistence
+import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -12,6 +14,10 @@ import java.time.ZonedDateTime
 
 @Service
 class ExportProgrammeDataService(private val programmeDataPersistence: ProgrammeDataPersistence) {
+
+    companion object {
+        private val logger: Logger = LoggerFactory.getLogger(ExportProgrammeDataService::class.java) as Logger
+    }
 
     @Async
     @Transactional
@@ -25,16 +31,19 @@ class ExportProgrammeDataService(private val programmeDataPersistence: Programme
                     )
                 }
             }
-        }.onFailure { programmeDataPersistence.deleteExportMetaData(plugin.getKey()) }
+        }.onFailure {
+            logger.warn("Failed to export programme data for '${plugin.getKey()}'", it)
+            programmeDataPersistence.updateExportMetaData(plugin.getKey(), null, null, null, ZonedDateTime.now())
+        }.getOrNull()
     }
 
     @Transactional
-    fun saveExportFileMetaData(pluginKey: String, exportLanguage: SystemLanguage, inputLanguage: SystemLanguage){
-            with(programmeDataPersistence.listExportMetadata()) {
-                throwIfAnyExportIsInProgress(this)
-                deleteMetadataIfAlreadyExist(this, pluginKey)
-            }
-            programmeDataPersistence.saveExportMetaData(pluginKey, exportLanguage, inputLanguage, ZonedDateTime.now())
+    fun saveExportFileMetaData(pluginKey: String, exportLanguage: SystemLanguage, inputLanguage: SystemLanguage) {
+        with(programmeDataPersistence.listExportMetadata()) {
+            throwIfAnyExportIsInProgress(this)
+            deleteMetadataIfAlreadyExist(this, pluginKey)
+        }
+        programmeDataPersistence.saveExportMetaData(pluginKey, exportLanguage, inputLanguage, ZonedDateTime.now())
     }
 
     private fun throwIfAnyExportIsInProgress(metadataList: List<ProgrammeDataExportMetadata>) {

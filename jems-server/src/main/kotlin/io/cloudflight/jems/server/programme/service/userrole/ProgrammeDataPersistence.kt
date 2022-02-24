@@ -17,7 +17,7 @@ interface ProgrammeDataPersistence {
         pluginKey: String, exportLanguage: SystemLanguage, inputLanguage: SystemLanguage, requestTime: ZonedDateTime
     ): ProgrammeDataExportMetadata
     fun updateExportMetaData(
-        pluginKey: String, fileName: String, contentType: String, startTime: ZonedDateTime?, endTime: ZonedDateTime
+        pluginKey: String, fileName: String?, contentType: String?, startTime: ZonedDateTime?, endTime: ZonedDateTime
     ): ProgrammeDataExportMetadata
     fun deleteExportMetaData(pluginKey: String)
     fun getExportMetaData(pluginKey: String): ProgrammeDataExportMetadata

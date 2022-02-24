@@ -10,4 +10,7 @@ data class ProgrammeDataExportMetadataDTO(
     var inputLanguage: SystemLanguage,
     var exportStartedAt: ZonedDateTime? = null,
     var exportEndedAt: ZonedDateTime? = null,
+    var timedOut: Boolean,
+    var failed: Boolean,
+    var readyToDownload: Boolean
 )
