@@ -19,12 +19,3 @@ import user from '../fixtures/users.json';
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
-
-
-// Predefined data
-before(() => {
-  cy.loginByRequest(user.admin);
-  cy.createUser(user.applicantUser);
-  cy.createUser(user.programmeUser);
-  cy.logoutByRequest();
-});
