@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
 import java.math.BigDecimal
 
 data class ProjectCoFinancingByFundOverview(
+    val fundId: Long,
     val fundType: ProgrammeFundType? = null,
     val fundAbbreviation: Set<InputTranslation>?,
     val fundingAmount: BigDecimal = BigDecimal.ZERO,

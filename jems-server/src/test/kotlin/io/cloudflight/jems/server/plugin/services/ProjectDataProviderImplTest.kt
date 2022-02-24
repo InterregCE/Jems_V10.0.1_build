@@ -763,6 +763,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                 coFinancingOverview = ProjectCoFinancingOverview(
                     fundOverviews = listOf(
                         ProjectCoFinancingByFundOverview(
+                            fundId = 230L,
                             fundType = ProgrammeFundTypeData.ERDF,
                             fundAbbreviation = emptySet(),
                             fundingAmount = BigDecimal.valueOf(6_52, 2),
