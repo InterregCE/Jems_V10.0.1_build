@@ -1,0 +1,32 @@
+[
+  {
+    "type":"ERDF",
+    "abbreviation":[
+      {
+        "translation":"ERDF DE",
+        "language":"DE"
+      }
+    ],
+    "description":[
+      {
+        "translation":"Territorial cooperation Goal (Interreg) DE",
+        "language":"DE"
+      }
+    ]
+  },
+  {
+    "type":"NEIGHBOURHOOD_CBC",
+    "abbreviation":[
+      {
+        "translation":"Neighbourhood CBC DE",
+        "language":"DE"
+      }
+    ],
+    "description":[
+      {
+        "translation":"Interreg A, external cross-border cooperation DE",
+        "language":"DE"
+      }
+    ]
+  }
+]

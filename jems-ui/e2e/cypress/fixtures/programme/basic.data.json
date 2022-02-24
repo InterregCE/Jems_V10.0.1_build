@@ -1,0 +1,13 @@
+{
+  "cci": "AUTO-PROGRAMME1",
+  "title": "Profile#1",
+  "version": "4",
+  "firstYear": "2020",
+  "lastYear": "2027",
+  "eligibleFrom": "01/01/2020",
+  "eligibleUntil": "12/31/2030",
+  "commissionDecisionNumber": "AUTO-PROGRAMME2",
+  "commissionDecisionDate": "12/01/2020",
+  "programmeAmendingDecisionNumber": "AUTO-PROGRAMME3",
+  "programmeAmendingDecisionDate": "12/01/2020"
+}
