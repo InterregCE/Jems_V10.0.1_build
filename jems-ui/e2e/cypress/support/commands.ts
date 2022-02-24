@@ -37,7 +37,9 @@ declare global {
   namespace Cypress {
     interface Chainable {
       loginByRequest(user: User): void
+
       logoutByRequest(): void
+
       createUser(user: User): boolean
     }
   }
@@ -65,22 +67,14 @@ Cypress.Commands.add('createUser', (user: User) => {
   cy.request({
     method: 'POST',
     url: 'api/user',
-    body: user,
-    failOnStatusCode: false
+    body: user
   }).then(response => {
-    if (response.status == 422) {
-      expect(response.body.details[0].i18nMessage.i18nKey).to.eq('use.case.create.user.email.already.in.use');
-    } else if (response.status == 200) {
-      cy.request({
-        method: 'PUT',
-        url: `/api/user/byId/${response.body.id}/password`,
-        body: {
-          newPassword: Cypress.env('defaultPassword')
-        }
-      });
-    } else {
-      throw new Error(`Request failed: (${response.status}) ${response.body.i18nMessage.i18nKey}`);
-    }
+    cy.request({
+      method: 'PUT',
+      url: `api/user/byId/${response.body.id}/password`,
+      headers: {'Content-Type': 'application/json'},
+      body: Cypress.env('defaultPassword')
+    });
   });
 });
 
