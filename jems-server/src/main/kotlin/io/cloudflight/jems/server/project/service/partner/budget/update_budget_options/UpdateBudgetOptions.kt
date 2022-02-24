@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.service.partner.budget.update_budget_
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectPartner
+import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
@@ -9,6 +10,8 @@ import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerB
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
 
 @Service
 class UpdateBudgetOptions(
@@ -53,14 +56,16 @@ class UpdateBudgetOptions(
     }
 
     private fun validateContractedChanges(inputOptions: ProjectPartnerBudgetOptions, partnerId: Long) {
-        if (!projectVersionPersistence.getAllVersionsByProjectId(partnerPersistence.getProjectIdForPartnerId(partnerId))
-                .any { it.status == ApplicationStatus.CONTRACTED })
+        val contracted = projectVersionPersistence
+            .getAllVersionsByProjectId(partnerPersistence.getProjectIdForPartnerId(partnerId))
+            .firstOrNull { it.status.isAlreadyContracted() } ?: return
+
+        val partnerCreatedAt = ZonedDateTime.of(partnerPersistence.getById(partnerId).createdAt.toLocalDateTime(), ZoneOffset.UTC)
+        if (partnerCreatedAt.isAfter(contracted.createdAt))
             return
 
-        if (optionsEnabledOrDisabled(persistence.getBudgetOptions(partnerId), inputOptions))
-            return
-
-        throw UpdateBudgetOptionsWhenProjectContracted()
+        if (!optionsEnabledOrDisabled(persistence.getBudgetOptions(partnerId), inputOptions))
+            throw UpdateBudgetOptionsWhenProjectContracted()
     }
 
     private fun optionsEnabledOrDisabled(

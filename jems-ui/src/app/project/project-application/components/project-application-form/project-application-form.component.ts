@@ -24,7 +24,7 @@ import {ProjectStore} from '../../containers/project-application-detail/services
 import {LanguageStore} from '@common/services/language-store.service';
 import { APPLICATION_FORM } from '@project/common/application-form-model';
 import {Alert} from '@common/components/forms/alert';
-import { ProjectVersionStore } from '@project/common/services/project-version-store.service';
+import {ProjectUtil} from '@project/common/project-util';
 
 @Component({
   selector: 'jems-project-application-form',
@@ -94,8 +94,7 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
               private formService: FormService,
               protected changeDetectorRef: ChangeDetectorRef,
               public projectStore: ProjectStore,
-              public languageStore: LanguageStore,
-              private projectVersionStore: ProjectVersionStore) {
+              public languageStore: LanguageStore) {
     super();
   }
 
@@ -122,9 +121,9 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
         this.applicationForm.controls.projectPeriodCount.disable();
       });
 
-    this.projectVersionStore.hasContractedVersion$
+    this.projectStore.currentVersionOfProjectStatus$
       .pipe(take(1))
-      .subscribe(hasContractedVersion => this.projectContracted = hasContractedVersion);
+      .subscribe(status => this.projectContracted = ProjectUtil.isContractedOrAnyStatusAfterContracted(status))
   }
 
   ngOnChanges(changes: SimpleChanges): void {
