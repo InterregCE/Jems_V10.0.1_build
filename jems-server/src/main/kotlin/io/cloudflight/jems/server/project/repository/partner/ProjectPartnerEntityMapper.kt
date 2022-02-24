@@ -112,7 +112,7 @@ fun ProjectPartnerEntity.copy(
     nameInOriginalLanguage = projectPartner?.nameInOriginalLanguage ?: nameInOriginalLanguage,
     nameInEnglish = projectPartner?.nameInEnglish ?: nameInEnglish,
     partnerType = projectPartner?.partnerType ?: partnerType,
-    partnerSubType = projectPartner?.partnerSubType,
+    partnerSubType = projectPartner?.partnerSubType ?: partnerSubType,
     nace = projectPartner?.nace ?: nace,
     otherIdentifierNumber = projectPartner?.otherIdentifierNumber ?: otherIdentifierNumber,
     pic = projectPartner?.pic ?: pic,
@@ -125,8 +125,10 @@ fun ProjectPartnerEntity.copy(
     motivation = newMotivation?.toEntity(id) ?: motivation,
     partnerContributions = newPartnerContributions?.toContributionEntity(id) ?: partnerContributions
 ).apply {
-    if(projectPartner!=null)
+    if(projectPartner != null) {
+        partnerSubType = projectPartner.partnerSubType
         translatedValues.addPartnerTranslations(this, projectPartner.department, projectPartner.otherIdentifierDescription)
+    }
 }
 
 fun Iterable<ProjectPartnerEntity>.toProjectPartner() = map { it.toProjectPartner() }

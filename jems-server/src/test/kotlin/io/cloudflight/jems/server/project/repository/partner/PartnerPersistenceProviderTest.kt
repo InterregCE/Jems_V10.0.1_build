@@ -7,7 +7,10 @@ import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.programme.repository.legalstatus.ProgrammeLegalStatusRepository
 import io.cloudflight.jems.server.programme.repository.stateaid.ProgrammeStateAidRepository
+import io.cloudflight.jems.server.project.entity.Contact
 import io.cloudflight.jems.server.project.entity.partner.PartnerIdentityRow
+import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerContactEntity
+import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerContactId
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.entity.partner.state_aid.ProjectPartnerStateAidEntity
 import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityRow
@@ -345,11 +348,78 @@ class PartnerPersistenceProviderTest {
 
         every { projectPartnerRepository.findById(1) } returns Optional.of(projectPartner)
         every { projectPartnerRepository.save(any()) } returns updatedProjectPartner
-        every { legalStatusRepo.findById(1) } returns Optional.of(legalStatusEntity)
 
         assertThat(persistence.updatePartnerContacts(1, setOf(projectPartnerContactUpdate)))
             .isEqualTo(updatedProjectPartner.toProjectPartnerDetail())
     }
+
+    @Test
+    fun `updatePartnerContacts leaving Partner data unchanged`() {
+        val projectPartnerContactUpdate = ProjectPartnerContactEntity(
+            ProjectPartnerContactId(1, ProjectContactType.ContactPerson),
+            Contact(
+                title = "test",
+                firstName = "test",
+                lastName = "test",
+                email = "test@ems.eu",
+                telephone = "test"
+            )
+        )
+        val projectPartner = getProjectPartner(PartnerSubType.MICRO_ENTERPRISE)
+        val updatedProjectPartner = getProjectPartner(PartnerSubType.MICRO_ENTERPRISE, setOf(projectPartnerContactUpdate))
+
+        every { projectPartnerRepository.findById(1) } returns Optional.of(projectPartner)
+        val slotEntity = slot<ProjectPartnerEntity>()
+        every { projectPartnerRepository.save(capture(slotEntity)) } returns updatedProjectPartner
+
+        assertThat(persistence.updatePartnerContacts(1, setOf(projectPartnerContactUpdate.toProjectPartnerContact())))
+            .isEqualTo(updatedProjectPartner.toProjectPartnerDetail())
+
+        assertThat(slotEntity.captured.partnerSubType).isEqualTo(updatedProjectPartner.partnerSubType)
+        assertThat(slotEntity.captured.contacts).isEqualTo(setOf(projectPartnerContactUpdate))
+    }
+
+    @Test
+    fun `updatePartner changing partnerSubType to empty`() {
+        val projectPartner = getProjectPartner(partnerSubType = PartnerSubType.MICRO_ENTERPRISE)
+        val updatedProjectPartner = getProjectPartner(partnerSubType = null)
+
+        every { projectPartnerRepository.findById(1) } returns Optional.of(projectPartner)
+        every { legalStatusRepo.getById(1) } returns legalStatusEntity
+        val slotEntity = slot<ProjectPartnerEntity>()
+        every { projectPartnerRepository.save(capture(slotEntity)) } returns updatedProjectPartner
+
+        assertThat(persistence.update(
+            projectPartner = ProjectPartner(
+                id = projectPartner.id,
+                abbreviation = projectPartner.abbreviation,
+                role = ProjectPartnerRole.PARTNER,
+                partnerType = ProjectTargetGroup.EducationTrainingCentreAndSchool,
+                partnerSubType = null,
+                legalStatusId = 1
+            ),
+            resortByRole = false
+        )).isEqualTo(updatedProjectPartner.toProjectPartnerDetail())
+
+        assertThat(slotEntity.captured.id).isEqualTo(projectPartner.id)
+        assertThat(slotEntity.captured.partnerSubType).isNull()
+    }
+
+    private fun getProjectPartner(
+        partnerSubType: PartnerSubType? = null,
+        contacts: Set<ProjectPartnerContactEntity>? = emptySet()
+    ): ProjectPartnerEntity =
+        ProjectPartnerEntity(
+            id = 1,
+            active = true,
+            project = project,
+            abbreviation = "updated",
+            role = ProjectPartnerRole.PARTNER,
+            legalStatus = ProgrammeLegalStatusEntity(id = 1),
+            partnerType = ProjectTargetGroup.EducationTrainingCentreAndSchool,
+            partnerSubType = partnerSubType,
+            contacts = contacts
+        )
 
     @Test
     fun updatePartnerContact_notExisting() {
