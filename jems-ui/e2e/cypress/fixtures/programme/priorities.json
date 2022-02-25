@@ -1,0 +1,42 @@
+[
+  {
+    "code":"PO1",
+    "title":[
+      {
+        "translation":"PO1 Innovation DE",
+        "language":"DE"
+      },
+      {
+        "translation":"PO1 Innovation EN",
+        "language":"EN"
+      }
+    ],
+    "objective":"PO1 - A more competitive and smarter Europe",
+    "specificObjectives":[
+      {
+        "code":"SO1.1",
+        "programmeObjectivePolicy":"Developing and enhancing research and innovation capacities and the uptake of advanced technologies"
+      }
+    ]
+  },
+  {
+    "code":"PO2",
+    "title":[
+      {
+        "translation":"PO2 Environment DE",
+        "language":"DE"
+      },
+      {
+        "translation":"PO2 Environment EN",
+        "language":"EN"
+      }
+    ],
+    "objective":"PO2 - A greener, low-carbon transitioning towards a net zero carbon economy and resilient Europe",
+    "specificObjectives":[
+      {
+        "code":"SO2.1",
+        "programmeObjectivePolicy":"Promoting energy efficiency and reducing greenhouse gas emissions"
+      }
+    ]
+  }
+]
