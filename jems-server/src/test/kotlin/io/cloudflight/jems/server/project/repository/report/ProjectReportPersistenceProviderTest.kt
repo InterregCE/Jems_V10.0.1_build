@@ -1,5 +1,7 @@
 package io.cloudflight.jems.server.project.repository.report
 
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
@@ -14,6 +16,14 @@ import io.cloudflight.jems.server.project.entity.report.PartnerReportIdentificat
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportCoFinancingEntity
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportCoFinancingIdEntity
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
+import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageActivityDeliverableEntity
+import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageActivityEntity
+import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageEntity
+import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageOutputEntity
+import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPartnerReportWorkPackageActivityDeliverableRepository
+import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPartnerReportWorkPackageActivityRepository
+import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPartnerReportWorkPackageOutputRepository
+import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPartnerReportWorkPackageRepository
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
@@ -22,8 +32,13 @@ import io.cloudflight.jems.server.project.service.report.model.PartnerReportIden
 import io.cloudflight.jems.server.project.service.report.model.PartnerReportIdentificationCreate
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportCreate
+import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSummary
 import io.cloudflight.jems.server.project.service.report.model.ReportStatus
+import io.cloudflight.jems.server.project.service.report.model.workPlan.create.CreateProjectPartnerReportWorkPackage
+import io.cloudflight.jems.server.project.service.report.model.workPlan.create.CreateProjectPartnerReportWorkPackageActivity
+import io.cloudflight.jems.server.project.service.report.model.workPlan.create.CreateProjectPartnerReportWorkPackageActivityDeliverable
+import io.cloudflight.jems.server.project.service.report.model.workPlan.create.CreateProjectPartnerReportWorkPackageOutput
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -42,6 +57,10 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
 
     companion object {
         private const val PARTNER_ID = 10L
+
+        private const val WORK_PACKAGE_ID = 9658L
+        private const val ACTIVITY_ID = 9942L
+        private const val DELIVERABLE_ID = 9225L
 
         private fun draftReportEntity(id: Long, createdAt: ZonedDateTime = ZonedDateTime.now()) = ProjectPartnerReportEntity(
             id = id,
@@ -63,6 +82,19 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
                 vatRecovery = ProjectPartnerVatRecovery.Yes,
             ),
             createdAt = createdAt,
+        )
+
+        private fun draftReportSubmissionEntity(id: Long, createdAt: ZonedDateTime = ZonedDateTime.now()) = ProjectPartnerReportSubmissionSummary(
+            id = id,
+            reportNumber = 1,
+            status = ReportStatus.Draft,
+            version = "3.0",
+            firstSubmission = null,
+            createdAt = createdAt,
+            projectIdentifier = "projectIdentifier",
+            projectAcronym = "projectAcronym",
+            partnerNumber = 4,
+            partnerRole = ProjectPartnerRole.PARTNER,
         )
 
         private val programmeFundEntity = ProgrammeFundEntity(
@@ -159,6 +191,32 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
                 partnerType = ProjectTargetGroup.SectoralAgency,
                 vatRecovery = ProjectPartnerVatRecovery.Yes,
                 coFinancing = coFinancing,
+            ),
+            workPackages = listOf(
+                CreateProjectPartnerReportWorkPackage(
+                    workPackageId = WORK_PACKAGE_ID,
+                    number = 4,
+                    activities = listOf(
+                        CreateProjectPartnerReportWorkPackageActivity(
+                            activityId = ACTIVITY_ID,
+                            number = 1,
+                            title = setOf(InputTranslation(SystemLanguage.EN, "4.1 activity title")),
+                            deliverables = listOf(
+                                CreateProjectPartnerReportWorkPackageActivityDeliverable(
+                                    deliverableId = DELIVERABLE_ID,
+                                    number = 1,
+                                    title = setOf(InputTranslation(SystemLanguage.EN, "4.1.1 title")),
+                                )
+                            ),
+                        )
+                    ),
+                    outputs = listOf(
+                        CreateProjectPartnerReportWorkPackageOutput(
+                            number = 7,
+                            title = setOf(InputTranslation(SystemLanguage.EN, "7 output title")),
+                        )
+                    ),
+                )
             )
         )
 
@@ -176,6 +234,18 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
     @MockK
     lateinit var programmeFundRepository: ProgrammeFundRepository
 
+    @MockK
+    lateinit var workPlanRepository: ProjectPartnerReportWorkPackageRepository
+
+    @MockK
+    lateinit var workPlanActivityRepository: ProjectPartnerReportWorkPackageActivityRepository
+
+    @MockK
+    lateinit var workPlanActivityDeliverableRepository: ProjectPartnerReportWorkPackageActivityDeliverableRepository
+
+    @MockK
+    lateinit var workPlanOutputRepository: ProjectPartnerReportWorkPackageOutputRepository
+
     @InjectMockKs
     lateinit var persistence: ProjectReportPersistenceProvider
 
@@ -188,6 +258,16 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
         every { partnerReportRepository.save(capture(reportSlot)) } returnsArgument 0
         every { programmeFundRepository.getById(programmeFundEntity.id) } returns programmeFundEntity
         every { partnerReportCoFinancingRepository.saveAll(capture(reportCoFinancingSlot)) } returnsArgument 0
+
+        // work plan
+        val wpSlot = slot<ProjectPartnerReportWorkPackageEntity>()
+        val wpActivitySlot = slot<ProjectPartnerReportWorkPackageActivityEntity>()
+        val wpActivityDeliverableSlot = slot<Iterable<ProjectPartnerReportWorkPackageActivityDeliverableEntity>>()
+        val wpOutputSlot = slot<Iterable<ProjectPartnerReportWorkPackageOutputEntity>>()
+        every { workPlanRepository.save(capture(wpSlot)) } returnsArgument 0
+        every { workPlanActivityRepository.save(capture(wpActivitySlot)) } returnsArgument 0
+        every { workPlanActivityDeliverableRepository.saveAll(capture(wpActivityDeliverableSlot)) } returnsArgument 0
+        every { workPlanOutputRepository.saveAll(capture(wpOutputSlot)) } returnsArgument 0
 
         val createdReport = persistence.createPartnerReport(reportToBeCreated.copy(
             identification = reportToBeCreated.identification.removeLegalStatusIf(withoutLegalStatus)
@@ -231,6 +311,40 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
             assertThat(programmeFund).isNull()
             assertThat(percentage).isEqualTo(TEN)
         }
+
+        // work plan
+        with(wpSlot.captured) {
+            assertThat(number).isEqualTo(4)
+            assertThat(workPackageId).isEqualTo(WORK_PACKAGE_ID)
+            assertThat(translatedValues).isEmpty()
+        }
+        with(wpActivitySlot.captured) {
+            assertThat(number).isEqualTo(1)
+            assertThat(activityId).isEqualTo(ACTIVITY_ID)
+            assertThat(translatedValues).hasSize(1)
+            assertThat(translatedValues.first().translationId.language).isEqualTo(SystemLanguage.EN)
+            assertThat(translatedValues.first().title).isEqualTo("4.1 activity title")
+            assertThat(translatedValues.first().description).isNull()
+        }
+        assertThat(wpActivityDeliverableSlot.captured).hasSize(1)
+        with(wpActivityDeliverableSlot.captured.first()) {
+            assertThat(number).isEqualTo(1)
+            assertThat(deliverableId).isEqualTo(DELIVERABLE_ID)
+            assertThat(contribution).isNull()
+            assertThat(evidence).isNull()
+            assertThat(translatedValues).hasSize(1)
+            assertThat(translatedValues.first().translationId.language).isEqualTo(SystemLanguage.EN)
+            assertThat(translatedValues.first().title).isEqualTo("4.1.1 title")
+        }
+        assertThat(wpOutputSlot.captured).hasSize(1)
+        with(wpOutputSlot.captured.first()) {
+            assertThat(number).isEqualTo(7)
+            assertThat(contribution).isNull()
+            assertThat(evidence).isNull()
+            assertThat(translatedValues).hasSize(1)
+            assertThat(translatedValues.first().translationId.language).isEqualTo(SystemLanguage.EN)
+            assertThat(translatedValues.first().title).isEqualTo("7 output title")
+        }
     }
 
     private fun PartnerReportIdentificationCreate.removeLegalStatusIf(needed: Boolean) =
@@ -239,13 +353,27 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
     @Test
     fun submitReportById() {
         val NOW = ZonedDateTime.now()
-        val report = draftReportEntity(id = 45L)
+        val YESTERDAY = ZonedDateTime.now().minusDays(1)
+
+        val report = draftReportEntity(id = 45L, YESTERDAY)
         every { partnerReportRepository.findByIdAndPartnerId(45L, 10L) } returns report
 
         val submittedReport = persistence.submitReportById(10L, 45L, NOW)
 
-        assertThat(submittedReport.status).isEqualTo(ReportStatus.Submitted)
-        assertThat(submittedReport.firstSubmission).isEqualTo(NOW)
+        assertThat(submittedReport).isEqualTo(
+            draftReportSubmissionEntity(id = 45L, YESTERDAY).copy(
+                status = ReportStatus.Submitted,
+                firstSubmission = NOW,
+            )
+        )
+    }
+
+    @Test
+    fun getPartnerReportStatusById() {
+        val report = draftReportEntity(id = 75L)
+        every { partnerReportRepository.findByIdAndPartnerId(75L, 20L) } returns report
+        assertThat(persistence.getPartnerReportStatusById(partnerId = 20L, reportId = 75L))
+            .isEqualTo(ReportStatus.Draft)
     }
 
     @Test

@@ -49,15 +49,7 @@ import java.time.ZonedDateTime
 class ProjectPartnerReportControllerTest {
 
     companion object {
-        private const val PROJECT_ID = 1L
         private val YESTERDAY = ZonedDateTime.now().minusDays(1)
-
-        private val projectSummary = ProjectPartnerSummary(
-            id = 1,
-            abbreviation = "abbr",
-            active = true,
-            role = ProjectPartnerRole.PARTNER
-        )
 
         private val reportSummary = ProjectPartnerReportSummary(
             id = 754,
@@ -154,9 +146,6 @@ class ProjectPartnerReportControllerTest {
     @MockK
     lateinit var getPartnerReport: GetProjectPartnerReportInteractor
 
-    @MockK
-    lateinit var getProjectPartnerReporting: GetProjectReportPartnerListInteractor
-
     @InjectMockKs
     private lateinit var controller: ProjectPartnerReportController
 
@@ -207,14 +196,5 @@ class ProjectPartnerReportControllerTest {
             status = ReportStatusDTO.Submitted,
             firstSubmission = thisMoment,
         ))
-    }
-
-    @Test
-    fun `should return list of project partners used in reporting`() {
-        val projectPartnerReports = listOf(projectSummary)
-        every { getProjectPartnerReporting.findAllByProjectId(PROJECT_ID, any()) } returns projectPartnerReports
-        assertThat(controller.getProjectPartnersForReporting(PROJECT_ID, Sort.unsorted()).get(0))
-            .usingRecursiveComparison()
-            .isEqualTo(projectPartnerReports.get(0))
     }
 }

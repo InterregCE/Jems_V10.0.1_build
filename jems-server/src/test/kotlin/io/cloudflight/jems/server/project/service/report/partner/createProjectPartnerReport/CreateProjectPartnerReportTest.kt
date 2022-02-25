@@ -1,6 +1,8 @@
 package io.cloudflight.jems.server.project.service.report.partner.createProjectPartnerReport
 
 import io.cloudflight.jems.api.audit.dto.AuditAction
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
@@ -21,7 +23,17 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVa
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.PartnerReportIdentificationCreate
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportCreate
+import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSummary
 import io.cloudflight.jems.server.project.service.report.model.ReportStatus
+import io.cloudflight.jems.server.project.service.report.model.workPlan.create.CreateProjectPartnerReportWorkPackage
+import io.cloudflight.jems.server.project.service.report.model.workPlan.create.CreateProjectPartnerReportWorkPackageActivity
+import io.cloudflight.jems.server.project.service.report.model.workPlan.create.CreateProjectPartnerReportWorkPackageActivityDeliverable
+import io.cloudflight.jems.server.project.service.report.model.workPlan.create.CreateProjectPartnerReportWorkPackageOutput
+import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
+import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
+import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityDeliverable
+import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackage
+import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutput
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -41,6 +53,10 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
 
     companion object {
         private const val PROJECT_ID = 426L
+
+        private const val WORK_PACKAGE_ID = 5658L
+        private const val ACTIVITY_ID = 5942L
+        private const val DELIVERABLE_ID = 5225L
 
         private fun projectSummary(status: ApplicationStatus) = ProjectFull(
             id = PROJECT_ID,
@@ -109,6 +125,61 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
                 partnerType = ProjectTargetGroup.SectoralAgency,
                 vatRecovery = ProjectPartnerVatRecovery.Yes,
                 coFinancing = coFinancing,
+            ),
+            workPackages = listOf(
+                CreateProjectPartnerReportWorkPackage(
+                    workPackageId = WORK_PACKAGE_ID,
+                    number = 2,
+                    activities = listOf(
+                        CreateProjectPartnerReportWorkPackageActivity(
+                            activityId = ACTIVITY_ID,
+                            number = 1,
+                            title = setOf(InputTranslation(SystemLanguage.EN, "4.1 activity title")),
+                            deliverables = listOf(
+                                CreateProjectPartnerReportWorkPackageActivityDeliverable(
+                                    deliverableId = DELIVERABLE_ID,
+                                    number = 1,
+                                    title = setOf(InputTranslation(SystemLanguage.EN, "4.1.1 deliverable title")),
+                                ),
+                            ),
+                        ),
+                    ),
+                    outputs = listOf(
+                        CreateProjectPartnerReportWorkPackageOutput(
+                            number = 7,
+                            title = setOf(InputTranslation(SystemLanguage.EN, "7 output title")),
+                        ),
+                    ),
+                ),
+            )
+        )
+
+        private val workPlan = listOf(
+            ProjectWorkPackage(
+                id = WORK_PACKAGE_ID,
+                workPackageNumber = 2,
+                activities = listOf(
+                    WorkPackageActivity(
+                        id = ACTIVITY_ID,
+                        workPackageId = WORK_PACKAGE_ID,
+                        activityNumber = 1,
+                        title = setOf(InputTranslation(SystemLanguage.EN, "4.1 activity title")),
+                        deliverables = listOf(
+                            WorkPackageActivityDeliverable(
+                                id = DELIVERABLE_ID,
+                                deliverableNumber = 1,
+                                title = setOf(InputTranslation(SystemLanguage.EN, "4.1.1 deliverable title")),
+                            ),
+                        )
+                    )
+                ),
+                outputs = listOf(
+                    WorkPackageOutput(
+                        workPackageId = WORK_PACKAGE_ID,
+                        outputNumber = 7,
+                        title = setOf(InputTranslation(SystemLanguage.EN, "7 output title")),
+                    )
+                ),
             )
         )
     }
@@ -121,6 +192,8 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
     lateinit var projectPartnerPersistence: PartnerPersistence
     @MockK
     lateinit var partnerCoFinancingPersistence: ProjectPartnerCoFinancingPersistence
+    @MockK
+    lateinit var projectWorkPackagePersistence: WorkPackagePersistence
     @MockK
     lateinit var reportPersistence: ProjectReportPersistence
     @MockK
@@ -144,9 +217,13 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
         every { reportPersistence.getCurrentLatestReportNumberForPartner(partnerId) } returns 7
         every { partnerCoFinancingPersistence.getCoFinancingAndContributions(partnerId, "14.2.0").finances } returns coFinancing
         every { projectPartnerPersistence.getById(partnerId, "14.2.0") } returns partnerDetail(partnerId)
+        // work plan
+        every { projectWorkPackagePersistence.getWorkPackagesWithOutputsAndActivitiesByProjectId(PROJECT_ID, "14.2.0") } returns workPlan
 
         val slotReport = slot<ProjectPartnerReportCreate>()
-        every { reportPersistence.createPartnerReport(capture(slotReport)) } returns mockk()
+        val createdReport = mockk<ProjectPartnerReportSummary>()
+        every { createdReport.id } returns 50L
+        every { reportPersistence.createPartnerReport(capture(slotReport)) } returns createdReport
 
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit
@@ -155,6 +232,10 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
 
         assertThat(slotReport.captured).isEqualTo(expectedCreationObject(partnerId))
         assertThat(auditSlot.captured.auditCandidate.action).isEqualTo(AuditAction.PARTNER_REPORT_ADDED)
+        assertThat(auditSlot.captured.auditCandidate.project?.id).isEqualTo(PROJECT_ID.toString())
+        assertThat(auditSlot.captured.auditCandidate.project?.customIdentifier).isEqualTo("XE.1_0001")
+        assertThat(auditSlot.captured.auditCandidate.project?.name).isEqualTo("project acronym")
+        assertThat(auditSlot.captured.auditCandidate.entityRelatedId).isEqualTo(50L)
         assertThat(auditSlot.captured.auditCandidate.description).isEqualTo(
             "[XE.1_0001] [PP4] Partner report R.8 added"
         )

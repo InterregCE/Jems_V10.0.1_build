@@ -13,7 +13,13 @@ import io.cloudflight.jems.server.project.service.report.model.PartnerReportIden
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportCreate
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSummary
 import io.cloudflight.jems.server.project.service.report.model.ReportStatus
+import io.cloudflight.jems.server.project.service.report.model.workPlan.create.CreateProjectPartnerReportWorkPackageActivity
+import io.cloudflight.jems.server.project.service.report.model.workPlan.create.CreateProjectPartnerReportWorkPackageActivityDeliverable
+import io.cloudflight.jems.server.project.service.report.model.workPlan.create.CreateProjectPartnerReportWorkPackage
+import io.cloudflight.jems.server.project.service.report.model.workPlan.create.CreateProjectPartnerReportWorkPackageOutput
 import io.cloudflight.jems.server.project.service.report.partnerReportCreated
+import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
+import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackage
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -24,6 +30,7 @@ class CreateProjectPartnerReport(
     private val projectPersistence: ProjectPersistence,
     private val projectPartnerPersistence: PartnerPersistence,
     private val partnerCoFinancingPersistence: ProjectPartnerCoFinancingPersistence,
+    private val projectWorkPackagePersistence: WorkPackagePersistence,
     private val reportPersistence: ProjectReportPersistence,
     private val auditPublisher: ApplicationEventPublisher
 ) : CreateProjectPartnerReportInteractor {
@@ -42,7 +49,7 @@ class CreateProjectPartnerReport(
         val report = generateReport(project = project, partnerId = partnerId, version = version)
 
         return reportPersistence.createPartnerReport(report).also {
-            auditPublisher.publishEvent(partnerReportCreated(this, project, report))
+            auditPublisher.publishEvent(partnerReportCreated(this, project, report, it.id))
         }
     }
 
@@ -62,7 +69,11 @@ class CreateProjectPartnerReport(
             it.toReportIdentification(project).apply {
                 coFinancing = partnerCoFinancingPersistence.getCoFinancingAndContributions(partnerId, version).finances
             }
-        }
+        },
+
+        workPackages = projectWorkPackagePersistence
+            .getWorkPackagesWithOutputsAndActivitiesByProjectId(projectId = project.id!!, version = version)
+            .toCreateEntity()
     )
 
     private fun getLatestReportNumberIncreasedByOne(partnerId: Long) =
@@ -81,5 +92,32 @@ class CreateProjectPartnerReport(
         vatRecovery = vatRecovery,
         coFinancing = emptyList(),
     )
+
+    private fun List<ProjectWorkPackage>.toCreateEntity() = map { wp ->
+        CreateProjectPartnerReportWorkPackage(
+            workPackageId = wp.id,
+            number = wp.workPackageNumber,
+            activities = wp.activities.map { a ->
+                CreateProjectPartnerReportWorkPackageActivity(
+                    activityId = a.id,
+                    number = a.activityNumber,
+                    title = a.title,
+                    deliverables = a.deliverables.map { d ->
+                        CreateProjectPartnerReportWorkPackageActivityDeliverable(
+                            deliverableId = d.id,
+                            number = d.deliverableNumber,
+                            title = d.title,
+                        )
+                    },
+                )
+            },
+             outputs = wp.outputs.map { o ->
+                 CreateProjectPartnerReportWorkPackageOutput(
+                     number = o.outputNumber,
+                     title = o.title,
+                 )
+             },
+        )
+    }
 
 }
