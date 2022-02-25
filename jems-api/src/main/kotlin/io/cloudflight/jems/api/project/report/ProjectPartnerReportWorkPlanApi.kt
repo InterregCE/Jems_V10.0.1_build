@@ -5,6 +5,7 @@ import io.cloudflight.jems.api.project.dto.report.partner.workPlan.UpdateProject
 import io.cloudflight.jems.api.project.report.ProjectPartnerReportApi.Companion.ENDPOINT_API_PROJECT_PARTNER_REPORT
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
+import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PutMapping
@@ -26,7 +27,7 @@ interface ProjectPartnerReportWorkPlanApi {
     ): List<ProjectPartnerReportWorkPackageDTO>
 
     @ApiOperation("Updates project partner report work packages")
-    @PutMapping(ENDPOINT_API_PROJECT_PARTNER_REPORT_WORK_PLAN)
+    @PutMapping(ENDPOINT_API_PROJECT_PARTNER_REPORT_WORK_PLAN, consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateWorkPlan(
         @PathVariable partnerId: Long,
         @PathVariable reportId: Long,
