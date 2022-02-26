@@ -11,7 +11,7 @@ import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectPeriodBudget
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
-import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerTotalBudget
+import io.cloudflight.jems.server.project.service.partner.model.PartnerTotalBudgetPerCostCategory
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -26,12 +26,12 @@ class PartnerBudgetPerPeriodCalculator(private val budgetCostsCalculator: Budget
         budgetPerPartner: List<ProjectPartnerBudget>,
         lumpSums: List<ProjectLumpSum>,
         projectPeriods: List<ProjectPeriod>,
-        partnerTotalBudget: Map<Long, ProjectPartnerTotalBudget>
+        partnersTotalBudgetPerCostCategory: Map<Long, PartnerTotalBudgetPerCostCategory>
     ): ProjectBudgetOverviewPerPartnerPerPeriod {
 
         val partnerBudgetPerPeriod = calculatePartnerBudgetPerPeriod(
             partners, budgetOptions, budgetPerPartner,
-            lumpSums, projectPeriods, partnerTotalBudget
+            lumpSums, projectPeriods, partnersTotalBudgetPerCostCategory
         )
         val totals = calculateTotals(partnerBudgetPerPeriod, projectPeriods)
 
@@ -45,7 +45,7 @@ class PartnerBudgetPerPeriodCalculator(private val budgetCostsCalculator: Budget
     private fun calculatePartnerBudgetPerPeriod(
         partners: List<ProjectPartnerSummary>, budgetOptions: List<ProjectPartnerBudgetOptions>,
         budgetPerPartner: List<ProjectPartnerBudget>, lumpSums: List<ProjectLumpSum>,
-        projectPeriods: List<ProjectPeriod>, partnerTotalBudget: Map<Long, ProjectPartnerTotalBudget>
+        projectPeriods: List<ProjectPeriod>, partnerTotalBudget: Map<Long, PartnerTotalBudgetPerCostCategory>
     ): List<ProjectPartnerBudgetPerPeriod> =
         partners.map { partner ->
             val partnerBudgetOptions = budgetOptions.firstOrNull { it.partnerId == partner.id }

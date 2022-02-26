@@ -163,7 +163,7 @@ class ProjectDataProviderImpl(
                 budgetPerPartner = projectBudgetPersistence.getBudgetPerPartner(partnerIds, projectId, version),
                 lumpSums = lumpSums,
                 projectPeriods = projectPersistence.getProjectPeriods(projectId, version),
-                partnerTotalBudget = projectBudgetPersistence.getBudgetTotalForPartners(partnerIds, projectId, version)
+                partnersTotalBudgetPerCostCategory = projectBudgetPersistence.getBudgetTotalForPartners(partnerIds, projectId, version)
             ).toProjectBudgetOverviewPerPartnerPerPeriod()
         )
 

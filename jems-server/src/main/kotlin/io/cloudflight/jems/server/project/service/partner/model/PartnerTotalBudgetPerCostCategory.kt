@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.project.service.partner.model
 
 import java.math.BigDecimal
 
-data class ProjectPartnerTotalBudget(
+data class PartnerTotalBudgetPerCostCategory(
     val partnerId: Long,
     val officeAndAdministrationOnStaffCostsFlatRate: Int? = null,
     val officeAndAdministrationOnDirectCostsFlatRate: Int? = null,

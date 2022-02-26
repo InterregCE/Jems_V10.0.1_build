@@ -15,7 +15,7 @@ import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerB
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
-import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerTotalBudget
+import io.cloudflight.jems.server.project.service.partner.model.PartnerTotalBudgetPerCostCategory
 import io.cloudflight.jems.server.toScaledBigDecimal
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -74,7 +74,7 @@ class GetPartnerBudgetPerPeriodInteractorTest : UnitTest() {
         val projectId = 1L
         val version = "1.0"
 
-        val partnerTotal1 = ProjectPartnerTotalBudget(
+        val partnerTotal1 = PartnerTotalBudgetPerCostCategory(
             partner1Id,
             null,
             null,
@@ -90,7 +90,7 @@ class GetPartnerBudgetPerPeriodInteractorTest : UnitTest() {
             BigDecimal.ZERO
         )
 
-        val partnerTotal2 = ProjectPartnerTotalBudget(
+        val partnerTotal2 = PartnerTotalBudgetPerCostCategory(
             partner2Id,
             null,
             null,
@@ -175,7 +175,7 @@ class GetPartnerBudgetPerPeriodInteractorTest : UnitTest() {
                     lumpSumEntry(partner2Id, 100.toBigDecimal())
                 ),
                 projectPeriods = projectPeriods(),
-                partnerTotalBudget = mapOf(Pair(partner1Id, partnerTotal1), Pair(partner2Id, partnerTotal2))
+                partnersTotalBudgetPerCostCategory = mapOf(Pair(partner1Id, partnerTotal1), Pair(partner2Id, partnerTotal2))
             )
         } returns expectedResult
 

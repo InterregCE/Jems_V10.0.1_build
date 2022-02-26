@@ -33,7 +33,7 @@ class GetPartnerBudgetPerPeriod(
                 budgetPerPartner = persistence.getBudgetPerPartner(partnerIds, projectId, version),
                 lumpSums = lumpSumPersistence.getLumpSums(projectId, version),
                 projectPeriods = projectPersistence.getProjectPeriods(projectId, version),
-                partnerTotalBudget = persistence.getBudgetTotalForPartners(partnerIds, projectId, version)
+                partnersTotalBudgetPerCostCategory = persistence.getBudgetTotalForPartners(partnerIds, projectId, version)
             )
         }
 }
