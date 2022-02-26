@@ -13,7 +13,7 @@ import io.cloudflight.jems.server.project.service.model.ProjectPeriodBudget
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
-import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerTotalBudget
+import io.cloudflight.jems.server.project.service.partner.model.PartnerTotalBudgetPerCostCategory
 import io.cloudflight.jems.server.toScaledBigDecimal
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -47,13 +47,13 @@ internal class PartnerBudgetPerPeriodCalculatorTest : UnitTest() {
         lumpSumContributions = listOf(ProjectPartnerLumpSum(partnerId, amount))
     )
 
-    val partnerTotal1 = ProjectPartnerTotalBudget(
+    val partnerTotal1 = PartnerTotalBudgetPerCostCategory(
         partner1Id, null, null, null, null, null,
         BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
         BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO
     )
 
-    val partnerTotal2 = ProjectPartnerTotalBudget(
+    val partnerTotal2 = PartnerTotalBudgetPerCostCategory(
         partner2Id, null, null, null, null, null,
         BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
         BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO
@@ -94,7 +94,7 @@ internal class PartnerBudgetPerPeriodCalculatorTest : UnitTest() {
                 budgetPerPartner = emptyList(),
                 lumpSums = emptyList(),
                 projectPeriods = emptyList(),
-                partnerTotalBudget = mapOf(Pair(partner1Id, partnerTotal1))
+                partnersTotalBudgetPerCostCategory = mapOf(Pair(partner1Id, partnerTotal1))
             )
         ).isEqualTo(
             ProjectBudgetOverviewPerPartnerPerPeriod(
@@ -174,7 +174,7 @@ internal class PartnerBudgetPerPeriodCalculatorTest : UnitTest() {
                     ProjectPeriod(number = 2, start = 7, end = 12),
                     ProjectPeriod(number = 3, start = 13, end = 15)
                 ),
-                partnerTotalBudget = mapOf(Pair(partner1Id, partnerTotal1))
+                partnersTotalBudgetPerCostCategory = mapOf(Pair(partner1Id, partnerTotal1))
             )
         ).isEqualTo(
                 ProjectBudgetOverviewPerPartnerPerPeriod(
@@ -299,7 +299,7 @@ internal class PartnerBudgetPerPeriodCalculatorTest : UnitTest() {
                 ProjectPeriod(number = 1, start = 1, end = 2),
                 ProjectPeriod(number = 2, start = 2, end = 2)
             ),
-            partnerTotalBudget = mapOf(Pair(partner1Id, partnerTotal1), Pair(partner2Id, partnerTotal2))
+            partnersTotalBudgetPerCostCategory = mapOf(Pair(partner1Id, partnerTotal1), Pair(partner2Id, partnerTotal2))
         )
 
         assertThat(result)

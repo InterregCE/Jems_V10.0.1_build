@@ -6,7 +6,7 @@ import io.cloudflight.jems.server.project.service.model.ProjectBudgetOverviewPer
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
-import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerTotalBudget
+import io.cloudflight.jems.server.project.service.partner.model.PartnerTotalBudgetPerCostCategory
 
 
 interface PartnerBudgetPerPeriodCalculatorService {
@@ -17,6 +17,6 @@ interface PartnerBudgetPerPeriodCalculatorService {
         budgetPerPartner: List<ProjectPartnerBudget>,
         lumpSums: List<ProjectLumpSum>,
         projectPeriods: List<ProjectPeriod>,
-        partnerTotalBudget: Map<Long, ProjectPartnerTotalBudget>
+        partnersTotalBudgetPerCostCategory: Map<Long, PartnerTotalBudgetPerCostCategory>
     ): ProjectBudgetOverviewPerPartnerPerPeriod
 }
