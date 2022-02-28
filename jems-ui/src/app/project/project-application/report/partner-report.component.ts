@@ -1,14 +1,16 @@
 import {AfterViewInit, ChangeDetectionStrategy, Component, TemplateRef, ViewChild} from '@angular/core';
-import {combineLatest, Observable} from 'rxjs';
+import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {ProjectPartnerReportSummaryDTO, ProjectPartnerSummaryDTO} from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
-import {distinctUntilChanged, filter, map, take, tap} from 'rxjs/operators';
+import {catchError, distinctUntilChanged, filter, finalize, map, take, tap} from 'rxjs/operators';
 import {ProjectApplicationFormSidenavService} from '../containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {RoutingService} from '@common/services/routing.service';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
+import {APIError} from '@common/models/APIError';
+import { Alert } from '@common/components/forms/alert';
 
 @Component({
   selector: 'jems-contract-monitoring',
@@ -24,6 +26,9 @@ export class PartnerReportComponent implements AfterViewInit {
 
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
   tableConfiguration: TableConfiguration;
+  actionPending = false;
+  error$ = new BehaviorSubject<APIError | null>(null);
+  Alert = Alert;
 
   data$: Observable<{
     partnerReports: ProjectPartnerReportSummaryDTO[];
@@ -95,14 +100,25 @@ export class PartnerReportComponent implements AfterViewInit {
   }
 
   createPartnerReport(): void {
+    this.actionPending = true;
     this.pageStore.createPartnerReport()
       .pipe(
         take(1),
         tap((report) => this.router.navigate([`../${report.id}/identification`], {relativeTo: this.activatedRoute, queryParamsHandling: 'merge'})),
+        catchError((error) => this.showErrorMessage(error.error)),
+        finalize(() => this.actionPending = false)
       ).subscribe();
   }
 
   private initializeTableConfiguration(partnerId: number): void {
     this.tableConfiguration.routerLink = `/app/project/detail/${this.projectId}/reporting/${partnerId}/reports/`;
+  }
+
+  private showErrorMessage(error: APIError): Observable<null> {
+    this.error$.next(error);
+    setTimeout(() => {
+      this.error$.next(null);
+    },         4000);
+    return of(null);
   }
 }

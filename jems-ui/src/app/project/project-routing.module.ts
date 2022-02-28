@@ -66,6 +66,7 @@ import {
   ReportPageBreadcrumbResolver
 } from '@project/project-application/report/report-page-breadcrumb-resolver.service';
 import { PartnerReportWorkPlanProgressTabComponent } from './project-application/report/partner-report-work-plan-progress-tab/partner-report-work-plan-progress-tab.component';
+import { PartnerReportSubmitTabComponent } from './project-application/report/partner-report-detail-page/partner-report-submit-tab/partner-report-submit-tab.component';
 
 export const routes: Routes = [
   {
@@ -121,6 +122,10 @@ export const routes: Routes = [
                       {
                         path: 'workplan',
                         component: PartnerReportWorkPlanProgressTabComponent,
+                      },
+                      {
+                        path: 'submission',
+                        component: PartnerReportSubmitTabComponent,
                       }
                     ],
                   }
