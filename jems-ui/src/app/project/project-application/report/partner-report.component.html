@@ -5,12 +5,21 @@
             : {partner: getPartnerTranslationString(data.partner)}"
                             [isVersionedData]="false">
     <ng-container *ngIf="pageStore.partnerReportLevel$ | async as level">
-        <button [disabled]="level === 'VIEW'"
+        <jems-pending-button [disabled]="level === 'VIEW'"
                 jemsText
-                mat-stroked-button class="mb-3"
-                (click)="createPartnerReport()">
+                class="mb-3"
+                (click)="createPartnerReport()"
+                [pending]="actionPending">
             + {{'project.application.partner.reports.add' | translate}}
-        </button>
+        </jems-pending-button>
+    </ng-container>
+
+    <ng-container>
+        <jems-alert *ngIf="error$ | async as error"
+                    [show]="!!error.i18nMessage?.i18nKey"
+                    [type]="Alert.ERROR">
+            <jems-api-error-content [error]="error"></jems-api-error-content>
+        </jems-alert>
     </ng-container>
 
     <ng-container *ngIf="data.partnerReports as partnerReports">

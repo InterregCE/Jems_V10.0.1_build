@@ -1,11 +1,11 @@
 import {Injectable} from '@angular/core';
 import {
   ProjectPartnerReportDTO,
-  ProjectPartnerReportService,
+  ProjectPartnerReportService, ProjectPartnerReportSummaryDTO,
   ProjectPartnerSummaryDTO
 } from '@cat/api';
-import {combineLatest, merge, Observable, of, Subject} from 'rxjs';
-import {catchError, shareReplay, switchMap, tap} from 'rxjs/operators';
+import {combineLatest, merge, Observable, of, ReplaySubject, Subject} from 'rxjs';
+import {catchError, shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
 import {RoutingService} from '@common/services/routing.service';
 import {Log} from '@common/utils/log';
 import {ProjectPaths} from '@project/common/project-util';
@@ -26,21 +26,28 @@ export class PartnerReportDetailPageStore {
   newPageIndex$ = new Subject<number>();
 
   private updatedReport$ = new Subject<ProjectPartnerReportDTO>();
+  private updatedReportStatus$ = new Subject<any>();
+  private isReportEditable$ = new ReplaySubject<boolean>(1);
 
   constructor(private routingService: RoutingService,
               private partnerReportPageStore: PartnerReportPageStore,
               private projectPartnerReportService: ProjectPartnerReportService,
-              private projectStore: ProjectStore,) {
+              private projectStore: ProjectStore) {
     this.partnerId$ = this.partnerReportPageStore.partnerId$;
     this.partnerSummary$ = this.partnerReportPageStore.partnerSummary$;
     this.partnerReport$ = this.partnerReport();
+  }
+
+  isReportEditable(): Observable<boolean> {
+    return this.isReportEditable$.asObservable();
   }
 
   private partnerReport(): Observable<ProjectPartnerReportDTO> {
     const initialReport$ = combineLatest([
       this.partnerId$,
       this.routingService.routeParameterChanges(PartnerReportDetailPageStore.REPORT_DETAIL_PATH, 'reportId'),
-      this.projectStore.projectId$
+      this.projectStore.projectId$,
+      this.updatedReportStatus$.pipe(startWith(null))
     ]).pipe(
       switchMap(([partnerId, reportId, projectId]) => !!partnerId && !!projectId && !!reportId
         ? this.projectPartnerReportService.getProjectPartnerReport(Number(partnerId), Number(reportId))
@@ -52,12 +59,22 @@ export class PartnerReportDetailPageStore {
           )
         : of({} as ProjectPartnerReportDTO)
       ),
-      tap(partner => Log.info('Fetched the partner report:', this, partner)),
+      tap(report => this.isReportEditable$.next(report.status === ProjectPartnerReportSummaryDTO.StatusEnum.Draft)),
+      tap(report => Log.info('Fetched the partner report:', this, report)),
     );
 
     return merge(initialReport$, this.updatedReport$)
       .pipe(
         shareReplay(1)
+      );
+  }
+
+  submitReport(partnerId: number, reportId: number): Observable<ProjectPartnerReportSummaryDTO> {
+    return this.projectPartnerReportService.submitProjectPartnerReport(partnerId, reportId)
+      .pipe(
+        tap(status => this.updatedReportStatus$.next()),
+        tap(status => this.isReportEditable$.next(status.status === ProjectPartnerReportSummaryDTO.StatusEnum.Draft)),
+        tap(status => Log.info('Changed status for report', reportId, status))
       );
   }
 }
