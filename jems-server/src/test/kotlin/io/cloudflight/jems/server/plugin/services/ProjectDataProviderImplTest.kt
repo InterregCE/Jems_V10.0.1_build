@@ -426,6 +426,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             role = ProjectPartnerRole.LEAD_PARTNER,
             nameInOriginalLanguage = "test",
             nameInEnglish = "test",
+            createdAt = ZonedDateTime.now(),
             partnerType = ProjectTargetGroup.BusinessSupportOrganisation,
             partnerSubType = PartnerSubType.LARGE_ENTERPRISE,
             nace = NaceGroupLevel.A,

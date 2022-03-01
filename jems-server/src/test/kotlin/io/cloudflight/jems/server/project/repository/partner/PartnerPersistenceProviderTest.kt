@@ -30,6 +30,7 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerCo
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerMotivation
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVatRecovery
+import io.cloudflight.jems.server.utils.partner.CREATED_AT
 import io.cloudflight.jems.server.utils.partner.PARTNER_ID
 import io.cloudflight.jems.server.utils.partner.PROJECT_ID
 import io.cloudflight.jems.server.utils.partner.ProjectPartnerTestUtil.Companion.project
@@ -155,6 +156,7 @@ class PartnerPersistenceProviderTest {
         every { mockPartnerIdentityRow.id } returns PARTNER_ID
         every { mockPartnerIdentityRow.active } returns true
         every { mockPartnerIdentityRow.projectId } returns PROJECT_ID
+        every { mockPartnerIdentityRow.createdAt } returns CREATED_AT
         every { mockPartnerIdentityRow.abbreviation } returns "partner"
         every { mockPartnerIdentityRow.role } returns ProjectPartnerRole.LEAD_PARTNER
         every { mockPartnerIdentityRow.sortNumber } returns 0

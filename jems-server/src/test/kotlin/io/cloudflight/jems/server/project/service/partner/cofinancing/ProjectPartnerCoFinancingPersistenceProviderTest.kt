@@ -40,6 +40,7 @@ import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 import java.sql.Timestamp
 import java.time.LocalDateTime
+import java.time.ZonedDateTime
 import java.util.Optional
 
 open class ProjectPartnerCoFinancingPersistenceProviderTest {
@@ -55,6 +56,7 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
         override val projectId: Long,
         override val abbreviation: String,
         override val role: ProjectPartnerRole,
+        override val createdAt: ZonedDateTime,
         override val sortNumber: Int,
         override val nameInOriginalLanguage: String?,
         override val nameInEnglish: String?,
@@ -228,6 +230,7 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
         active = true,
         projectId = 1,
         abbreviation = "previous partner",
+        createdAt = ZonedDateTime.now(),
         role = ProjectPartnerRole.LEAD_PARTNER,
         sortNumber = 1,
         nameInOriginalLanguage = "",

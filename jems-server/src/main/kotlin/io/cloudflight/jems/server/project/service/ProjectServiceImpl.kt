@@ -12,6 +12,7 @@ import io.cloudflight.jems.server.project.entity.ProjectPeriodId
 import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityEntity
 import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageOutputEntity
 import io.cloudflight.jems.server.project.repository.ProjectRepository
+import io.cloudflight.jems.server.project.repository.toProjectStatus
 import io.cloudflight.jems.server.project.repository.workpackage.WorkPackageRepository
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.get_project.GetProjectInteractor
@@ -25,7 +26,6 @@ class ProjectServiceImpl(
     private val projectRepo: ProjectRepository,
     private val workPackageRepository: WorkPackageRepository,
     private val getProjectInteractor: GetProjectInteractor,
-    private val projectVersionPersistence: ProjectVersionPersistence,
     private val generalValidator: GeneralValidatorService
 ) : ProjectService {
 
@@ -99,8 +99,7 @@ class ProjectServiceImpl(
         )
 
     private fun validateContractedChanges(inputProjectData: InputProjectData, project: ProjectEntity) {
-        if (!projectVersionPersistence.getAllVersionsByProjectId(project.id)
-                .any { it.status == ApplicationStatus.CONTRACTED })
+        if (!project.currentStatus.status.isAlreadyContracted())
             return
         if (inputProjectData.specificObjective != project.priorityPolicy?.programmeObjectivePolicy)
             throw UpdateRestrictedFieldsWhenProjectContracted()

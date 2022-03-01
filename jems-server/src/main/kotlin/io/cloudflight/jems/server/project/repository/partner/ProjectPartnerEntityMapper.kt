@@ -48,6 +48,8 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSt
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
 import java.math.BigDecimal
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
 
 fun ProjectPartner.toEntity(project: ProjectEntity, legalStatus: ProgrammeLegalStatusEntity) =
     ProjectPartnerEntity(
@@ -109,6 +111,7 @@ fun ProjectPartnerEntity.copy(
     abbreviation = projectPartner?.abbreviation ?: abbreviation,
     role = projectPartner?.role ?: role,
     sortNumber = sortNumber,
+    createdAt = createdAt,
     nameInOriginalLanguage = projectPartner?.nameInOriginalLanguage ?: nameInOriginalLanguage,
     nameInEnglish = projectPartner?.nameInEnglish ?: nameInEnglish,
     partnerType = projectPartner?.partnerType ?: partnerType,
@@ -152,6 +155,7 @@ fun ProjectPartnerEntity.toProjectPartnerDetail() = ProjectPartnerDetail(
     active = active,
     abbreviation = abbreviation,
     role = role,
+    createdAt = createdAt,
     sortNumber = sortNumber,
     nameInOriginalLanguage = nameInOriginalLanguage,
     nameInEnglish = nameInEnglish,
@@ -319,6 +323,7 @@ fun List<PartnerIdentityRow>.toProjectPartnerDetailHistoricalData(
         abbreviation = groupedRows.value.first().abbreviation,
         role = groupedRows.value.first().role,
         sortNumber = groupedRows.value.first().sortNumber,
+        createdAt = groupedRows.value.first().createdAt,
         nameInOriginalLanguage = groupedRows.value.first().nameInOriginalLanguage,
         nameInEnglish = groupedRows.value.first().nameInEnglish,
         department = extractField { it.department },
@@ -471,6 +476,7 @@ fun List<PartnerDetailRow>.toModel(): List<ProjectPartnerDetail> =
             abbreviation = groupedRows.value.first().abbreviation,
             role = groupedRows.value.first().role,
             sortNumber = groupedRows.value.first().sortNumber,
+            createdAt = groupedRows.value.first().createdAt,
             nameInOriginalLanguage = groupedRows.value.first().nameInOriginalLanguage,
             nameInEnglish = groupedRows.value.first().nameInEnglish,
             department = groupedRows.value.extractField { it.department },

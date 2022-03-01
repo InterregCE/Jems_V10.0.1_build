@@ -31,6 +31,7 @@ import {PartnerLumpSum} from '@project/model/lump-sums/partnerLumpSum';
 import {ProjectLumpSumsStore} from '@project/lump-sums/project-lump-sums-page/project-lump-sums-store.service';
 import {ProgrammeLumpSum} from '@project/model/lump-sums/programmeLumpSum';
 import {PartnerBudgetSpfTables} from '@project/model/budget/partner-budget-spf-tables';
+import {ProjectUtil} from '@project/common/project-util';
 
 @Injectable()
 export class ProjectPartnerDetailPageStore {
@@ -52,6 +53,7 @@ export class ProjectPartnerDetailPageStore {
   stateAid$: Observable<ProjectPartnerStateAidDTO>;
   partner$: Observable<ProjectPartnerDetailDTO>;
   allowedBudgetCategories$: Observable<AllowedBudgetCategories>;
+  canChangeContractedFlatRates$: Observable<boolean>;
 
   constructor(private projectStore: ProjectStore,
               private partnerStore: ProjectPartnerStore,
@@ -86,6 +88,7 @@ export class ProjectPartnerDetailPageStore {
     this.projectCallLumpSums$ = this.projectLumpSumsStore.projectCallLumpSums$;
     this.partnerLumpSums$ = this.partnerLumpSums();
     this.partnerTotalLumpSum$ = this.partnerTotalLumpSum();
+    this.canChangeContractedFlatRates$ = this.canChangeContractedFlatRates();
   }
 
   public static calculateOfficeAndAdministrationFlatRateTotal(
@@ -213,5 +216,18 @@ export class ProjectPartnerDetailPageStore {
         switchMap(([partner, version, projectId]) => this.projectLumpSumService.getProjectLumpSumsTotalForPartner(partner.id, projectId, version)),
         shareReplay(1)
       );
+  }
+
+  private canChangeContractedFlatRates(): Observable<boolean> {
+    return combineLatest([
+      this.partnerStore.partner$,
+      this.projectStore.currentVersionOfProjectStatus$,
+      this.projectVersionStore.versions$
+    ]).pipe(
+      map(([partner, status, versions]) => {
+        const contracted = versions.find(version => ProjectUtil.isContractedOrAnyStatusAfterContracted(version.status));
+        return !contracted|| partner.createdAt > contracted.createdAt;
+      }),
+    );
   }
 }

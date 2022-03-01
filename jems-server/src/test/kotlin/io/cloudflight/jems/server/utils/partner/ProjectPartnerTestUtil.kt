@@ -50,10 +50,12 @@ import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.user.service.model.UserSummary
 import io.cloudflight.jems.server.utils.partner.ProjectPartnerTestUtil.Companion.project
 import java.math.BigDecimal
+import java.time.ZoneId
 import java.time.ZonedDateTime
 
 const val PROJECT_ID = 1L
 const val PARTNER_ID = 2L
+val CREATED_AT: ZonedDateTime = ZonedDateTime.of(2020,1,10,10,10,10,10, ZoneId.systemDefault())
 
 fun projectSummary(status: ApplicationStatus = ApplicationStatus.DRAFT) = ProjectSummary(
     id = PROJECT_ID,
@@ -124,6 +126,7 @@ fun projectPartnerDetail(
         role = role,
         nameInOriginalLanguage = "test",
         nameInEnglish = "test",
+        createdAt = CREATED_AT,
         partnerType = ProjectTargetGroup.BusinessSupportOrganisation,
         partnerSubType = PartnerSubType.LARGE_ENTERPRISE,
         nace = NaceGroupLevel.A,
@@ -160,6 +163,7 @@ fun projectPartnerEntity(
     abbreviation = abbreviation,
     role = role,
     nameInOriginalLanguage = "test",
+    createdAt = CREATED_AT,
     nameInEnglish = "test",
     translatedValues = mutableSetOf(),
     partnerType = ProjectTargetGroup.BusinessSupportOrganisation,
@@ -199,6 +203,7 @@ fun partnerDetailRows(): List<PartnerDetailRow> =
                 override val active = true
                 override val role = ProjectPartnerRole.LEAD_PARTNER
                 override val sortNumber = 0
+                override val createdAt = CREATED_AT
                 override val nameInOriginalLanguage = "test"
                 override val nameInEnglish = "test"
                 override val partnerType = ProjectTargetGroup.BusinessSupportOrganisation

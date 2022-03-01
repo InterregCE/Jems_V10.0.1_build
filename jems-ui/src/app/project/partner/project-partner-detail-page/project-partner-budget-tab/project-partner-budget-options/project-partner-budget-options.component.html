@@ -3,7 +3,7 @@
               (save)="updateBudgetOptions(formToBudgetOptions(data.callFlatRateSettings))">
         <form jemsFormLayout *ngIf="data.isAnyOptionAvailable else noOptionIsAvailable" [formGroup]="budgetOptionForm">
             <h3>{{'project.partner.budget.options.header' | translate}}</h3>
-            <jems-alert [closable]="false" [show]="projectVersionStore.hasContractedVersion$ | async" [type]="Alert.INFO">
+            <jems-alert [closable]="false" [show]="(pageStore.canChangeContractedFlatRates$ | async) === false" [type]="Alert.INFO">
                 <span>{{'project.partner.budget.options.restrict.contracted' | translate}}</span>
             </jems-alert>
             <mat-list>

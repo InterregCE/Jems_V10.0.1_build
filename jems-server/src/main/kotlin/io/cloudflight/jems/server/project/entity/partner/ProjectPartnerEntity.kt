@@ -8,6 +8,7 @@ import io.cloudflight.jems.server.project.service.partner.model.NaceGroupLevel
 import io.cloudflight.jems.server.project.service.partner.model.PartnerSubType
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVatRecovery
+import java.time.ZonedDateTime
 import javax.persistence.CascadeType
 import javax.persistence.Entity
 import javax.persistence.EnumType
@@ -86,7 +87,10 @@ class ProjectPartnerEntity(
     val motivation: Set<ProjectPartnerMotivationEntity> = emptySet(),
 
     @OneToMany(mappedBy = "partnerId", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val partnerContributions: List<ProjectPartnerContributionEntity> = emptyList()
+    val partnerContributions: List<ProjectPartnerContributionEntity> = emptyList(),
+
+    @field:NotNull
+    val createdAt: ZonedDateTime = ZonedDateTime.now(),
 
     ) {
     override fun toString(): String {

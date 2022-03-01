@@ -3,12 +3,14 @@ package io.cloudflight.jems.api.project.dto.partner
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.ProjectPartnerMotivationDTO
 import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroupDTO
+import java.time.ZonedDateTime
 
 data class ProjectPartnerDetailDTO (
     val id: Long,
     val abbreviation: String,
     val active: Boolean,
     val role: ProjectPartnerRoleDTO,
+    val createdAt: ZonedDateTime,
     val sortNumber: Int? = null,
     val nameInOriginalLanguage: String?,
     val nameInEnglish: String?,
