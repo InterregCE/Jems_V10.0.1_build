@@ -1,17 +1,20 @@
 package io.cloudflight.jems.server.project.service.report.partner.createProjectPartnerReport
 
 import io.cloudflight.jems.api.audit.dto.AuditAction
-import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.EN
 import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroupDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
+import io.cloudflight.jems.server.project.service.ProjectDescriptionPersistence
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.ProjectFull
+import io.cloudflight.jems.server.project.service.model.ProjectRelevanceBenefit
 import io.cloudflight.jems.server.project.service.model.ProjectStatus
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
@@ -43,6 +46,7 @@ import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
@@ -136,12 +140,12 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
                         CreateProjectPartnerReportWorkPackageActivity(
                             activityId = ACTIVITY_ID,
                             number = 1,
-                            title = setOf(InputTranslation(SystemLanguage.EN, "4.1 activity title")),
+                            title = setOf(InputTranslation(EN, "4.1 activity title")),
                             deliverables = listOf(
                                 CreateProjectPartnerReportWorkPackageActivityDeliverable(
                                     deliverableId = DELIVERABLE_ID,
                                     number = 1,
-                                    title = setOf(InputTranslation(SystemLanguage.EN, "4.1.1 deliverable title")),
+                                    title = setOf(InputTranslation(EN, "4.1.1 deliverable title")),
                                 ),
                             ),
                         ),
@@ -149,11 +153,17 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
                     outputs = listOf(
                         CreateProjectPartnerReportWorkPackageOutput(
                             number = 7,
-                            title = setOf(InputTranslation(SystemLanguage.EN, "7 output title")),
+                            title = setOf(InputTranslation(EN, "7 output title")),
                         ),
                     ),
                 ),
-            )
+            ),
+            targetGroups = listOf(
+                ProjectRelevanceBenefit(
+                    group = ProjectTargetGroupDTO.EducationTrainingCentreAndSchool,
+                    specification = setOf(InputTranslation(EN, "EducationTrainingCentreAndSchool")),
+                ),
+            ),
         )
 
         private val workPlan = listOf(
@@ -165,12 +175,12 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
                         id = ACTIVITY_ID,
                         workPackageId = WORK_PACKAGE_ID,
                         activityNumber = 1,
-                        title = setOf(InputTranslation(SystemLanguage.EN, "4.1 activity title")),
+                        title = setOf(InputTranslation(EN, "4.1 activity title")),
                         deliverables = listOf(
                             WorkPackageActivityDeliverable(
                                 id = DELIVERABLE_ID,
                                 deliverableNumber = 1,
-                                title = setOf(InputTranslation(SystemLanguage.EN, "4.1.1 deliverable title")),
+                                title = setOf(InputTranslation(EN, "4.1.1 deliverable title")),
                             ),
                         )
                     )
@@ -179,10 +189,17 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
                     WorkPackageOutput(
                         workPackageId = WORK_PACKAGE_ID,
                         outputNumber = 7,
-                        title = setOf(InputTranslation(SystemLanguage.EN, "7 output title")),
+                        title = setOf(InputTranslation(EN, "7 output title")),
                     )
                 ),
             )
+        )
+
+        private val benefits = listOf(
+            ProjectRelevanceBenefit(
+                group = ProjectTargetGroupDTO.EducationTrainingCentreAndSchool,
+                specification = setOf(InputTranslation(language = EN, ProjectTargetGroupDTO.EducationTrainingCentreAndSchool.name))
+            ),
         )
     }
 
@@ -196,6 +213,8 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
     lateinit var partnerCoFinancingPersistence: ProjectPartnerCoFinancingPersistence
     @MockK
     lateinit var projectWorkPackagePersistence: WorkPackagePersistence
+    @MockK
+    lateinit var projectDescriptionPersistence: ProjectDescriptionPersistence
     @MockK
     lateinit var reportPersistence: ProjectReportPersistence
     @MockK
@@ -216,11 +235,14 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
         every { projectPartnerPersistence.getProjectIdForPartnerId(partnerId) } returns PROJECT_ID
         every { versionPersistence.getLatestApprovedOrCurrent(PROJECT_ID) } returns "14.2.0"
         every { projectPersistence.getProject(PROJECT_ID, "14.2.0") } returns projectSummary(status)
+        every { reportPersistence.countForPartner(partnerId) } returns 24
         every { reportPersistence.getCurrentLatestReportNumberForPartner(partnerId) } returns 7
         every { partnerCoFinancingPersistence.getCoFinancingAndContributions(partnerId, "14.2.0").finances } returns coFinancing
         every { projectPartnerPersistence.getById(partnerId, "14.2.0") } returns partnerDetail(partnerId)
         // work plan
         every { projectWorkPackagePersistence.getWorkPackagesWithOutputsAndActivitiesByProjectId(PROJECT_ID, "14.2.0") } returns workPlan
+        // identification
+        every { projectDescriptionPersistence.getBenefits(PROJECT_ID, "14.2.0") } returns benefits
 
         val slotReport = slot<ProjectPartnerReportCreate>()
         val createdReport = mockk<ProjectPartnerReportSummary>()
@@ -254,8 +276,21 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
         every { projectPartnerPersistence.getProjectIdForPartnerId(partnerId) } returns PROJECT_ID
         every { versionPersistence.getLatestApprovedOrCurrent(PROJECT_ID) } returns "6.7.2"
         every { projectPersistence.getProject(PROJECT_ID, "6.7.2") } returns projectSummary(status)
+        every { reportPersistence.countForPartner(partnerId) } returns 24
 
         assertThrows<ReportCanBeCreatedOnlyWhenContractedException> { createReport.createReportFor(partnerId) }
+        verify(exactly = 0) { auditPublisher.publishEvent(any()) }
+    }
+
+    @Test
+    fun `cannotCreateReport max amount reached`() {
+        val partnerId = 70L
+        every { projectPartnerPersistence.getProjectIdForPartnerId(partnerId) } returns PROJECT_ID
+        every { versionPersistence.getLatestApprovedOrCurrent(PROJECT_ID) } returns "6.7.2"
+        every { projectPersistence.getProject(PROJECT_ID, "6.7.2") } returns projectSummary(ApplicationStatus.CONTRACTED)
+        every { reportPersistence.countForPartner(partnerId) } returns 25
+
+        assertThrows<MaxAmountOfReportsReachedException> { createReport.createReportFor(partnerId) }
         verify(exactly = 0) { auditPublisher.publishEvent(any()) }
     }
 

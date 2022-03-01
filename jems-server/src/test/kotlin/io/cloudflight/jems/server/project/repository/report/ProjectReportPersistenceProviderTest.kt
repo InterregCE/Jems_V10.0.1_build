@@ -1,7 +1,9 @@
 package io.cloudflight.jems.server.project.repository.report
 
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.EN
 import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroupDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
@@ -16,14 +18,19 @@ import io.cloudflight.jems.server.project.entity.report.PartnerReportIdentificat
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportCoFinancingEntity
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportCoFinancingIdEntity
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
+import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportIdentificationEntity
+import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportIdentificationTargetGroupEntity
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageActivityDeliverableEntity
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageActivityEntity
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageEntity
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageOutputEntity
+import io.cloudflight.jems.server.project.repository.report.identification.ProjectPartnerReportIdentificationRepository
+import io.cloudflight.jems.server.project.repository.report.identification.ProjectPartnerReportIdentificationTargetGroupRepository
 import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPartnerReportWorkPackageActivityDeliverableRepository
 import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPartnerReportWorkPackageActivityRepository
 import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPartnerReportWorkPackageOutputRepository
 import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPartnerReportWorkPackageRepository
+import io.cloudflight.jems.server.project.service.model.ProjectRelevanceBenefit
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
@@ -32,6 +39,7 @@ import io.cloudflight.jems.server.project.service.report.model.PartnerReportIden
 import io.cloudflight.jems.server.project.service.report.model.PartnerReportIdentificationCreate
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportCreate
+import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportStatusAndVersion
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSummary
 import io.cloudflight.jems.server.project.service.report.model.ReportStatus
@@ -39,6 +47,7 @@ import io.cloudflight.jems.server.project.service.report.model.workPlan.create.C
 import io.cloudflight.jems.server.project.service.report.model.workPlan.create.CreateProjectPartnerReportWorkPackageActivity
 import io.cloudflight.jems.server.project.service.report.model.workPlan.create.CreateProjectPartnerReportWorkPackageActivityDeliverable
 import io.cloudflight.jems.server.project.service.report.model.workPlan.create.CreateProjectPartnerReportWorkPackageOutput
+import io.mockk.CapturingSlot
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -200,12 +209,12 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
                         CreateProjectPartnerReportWorkPackageActivity(
                             activityId = ACTIVITY_ID,
                             number = 1,
-                            title = setOf(InputTranslation(SystemLanguage.EN, "4.1 activity title")),
+                            title = setOf(InputTranslation(EN, "4.1 activity title")),
                             deliverables = listOf(
                                 CreateProjectPartnerReportWorkPackageActivityDeliverable(
                                     deliverableId = DELIVERABLE_ID,
                                     number = 1,
-                                    title = setOf(InputTranslation(SystemLanguage.EN, "4.1.1 title")),
+                                    title = setOf(InputTranslation(EN, "4.1.1 title")),
                                 )
                             ),
                         )
@@ -213,13 +222,26 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
                     outputs = listOf(
                         CreateProjectPartnerReportWorkPackageOutput(
                             number = 7,
-                            title = setOf(InputTranslation(SystemLanguage.EN, "7 output title")),
+                            title = setOf(InputTranslation(EN, "7 output title")),
                         )
                     ),
                 )
-            )
+            ),
+            targetGroups = listOf(
+                ProjectRelevanceBenefit(
+                    group = ProjectTargetGroupDTO.BusinessSupportOrganisation,
+                    specification = setOf(InputTranslation(EN, "first target group")),
+                ),
+                ProjectRelevanceBenefit(
+                    group = ProjectTargetGroupDTO.EducationTrainingCentreAndSchool,
+                    specification = emptySet(),
+                ),
+                ProjectRelevanceBenefit(
+                    group = ProjectTargetGroupDTO.CrossBorderLegalBody,
+                    specification = setOf(InputTranslation(EN, "third target group")),
+                ),
+            ),
         )
-
     }
 
     @MockK
@@ -246,6 +268,12 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
     @MockK
     lateinit var workPlanOutputRepository: ProjectPartnerReportWorkPackageOutputRepository
 
+    @MockK
+    lateinit var projectPartnerReportIdentificationRepository: ProjectPartnerReportIdentificationRepository
+
+    @MockK
+    lateinit var projectPartnerReportIdentificationTargetGroupRepository: ProjectPartnerReportIdentificationTargetGroupRepository
+
     @InjectMockKs
     lateinit var persistence: ProjectReportPersistenceProvider
 
@@ -268,6 +296,12 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
         every { workPlanActivityRepository.save(capture(wpActivitySlot)) } returnsArgument 0
         every { workPlanActivityDeliverableRepository.saveAll(capture(wpActivityDeliverableSlot)) } returnsArgument 0
         every { workPlanOutputRepository.saveAll(capture(wpOutputSlot)) } returnsArgument 0
+
+        // identification
+        val idSlot = slot<ProjectPartnerReportIdentificationEntity>()
+        val idTargetGroupsSlot = slot<Iterable<ProjectPartnerReportIdentificationTargetGroupEntity>>()
+        every { projectPartnerReportIdentificationRepository.save(capture(idSlot)) } returnsArgument 0
+        every { projectPartnerReportIdentificationTargetGroupRepository.saveAll(capture(idTargetGroupsSlot)) } returnsArgument 0
 
         val createdReport = persistence.createPartnerReport(reportToBeCreated.copy(
             identification = reportToBeCreated.identification.removeLegalStatusIf(withoutLegalStatus)
@@ -313,27 +347,40 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
         }
 
         // work plan
+        assertWorkPlan(wpSlot, wpActivitySlot, wpActivityDeliverableSlot, wpOutputSlot)
+        assertIdentification(idSlot, idTargetGroupsSlot)
+    }
+
+    private fun PartnerReportIdentificationCreate.removeLegalStatusIf(needed: Boolean) =
+        this.copy(legalStatusId = if (needed) null else this.legalStatusId)
+
+    private fun assertWorkPlan(
+        wpSlot: CapturingSlot<ProjectPartnerReportWorkPackageEntity>,
+        wpActivitySlot: CapturingSlot<ProjectPartnerReportWorkPackageActivityEntity>,
+        wpActivityDeliverableSlot: CapturingSlot<Iterable<ProjectPartnerReportWorkPackageActivityDeliverableEntity>>,
+        wpOutputSlot: CapturingSlot<Iterable<ProjectPartnerReportWorkPackageOutputEntity>>,
+    ) {
         with(wpSlot.captured) {
             assertThat(number).isEqualTo(4)
-            assertThat(workPackageId).isEqualTo(WORK_PACKAGE_ID)
+            assertThat(workPackageId).isEqualTo(io.cloudflight.jems.server.project.repository.report.ProjectReportPersistenceProviderTest.WORK_PACKAGE_ID)
             assertThat(translatedValues).isEmpty()
         }
         with(wpActivitySlot.captured) {
             assertThat(number).isEqualTo(1)
-            assertThat(activityId).isEqualTo(ACTIVITY_ID)
+            assertThat(activityId).isEqualTo(io.cloudflight.jems.server.project.repository.report.ProjectReportPersistenceProviderTest.ACTIVITY_ID)
             assertThat(translatedValues).hasSize(1)
-            assertThat(translatedValues.first().translationId.language).isEqualTo(SystemLanguage.EN)
+            assertThat(translatedValues.first().translationId.language).isEqualTo(io.cloudflight.jems.api.programme.dto.language.SystemLanguage.EN)
             assertThat(translatedValues.first().title).isEqualTo("4.1 activity title")
             assertThat(translatedValues.first().description).isNull()
         }
         assertThat(wpActivityDeliverableSlot.captured).hasSize(1)
         with(wpActivityDeliverableSlot.captured.first()) {
             assertThat(number).isEqualTo(1)
-            assertThat(deliverableId).isEqualTo(DELIVERABLE_ID)
+            assertThat(deliverableId).isEqualTo(io.cloudflight.jems.server.project.repository.report.ProjectReportPersistenceProviderTest.DELIVERABLE_ID)
             assertThat(contribution).isNull()
             assertThat(evidence).isNull()
             assertThat(translatedValues).hasSize(1)
-            assertThat(translatedValues.first().translationId.language).isEqualTo(SystemLanguage.EN)
+            assertThat(translatedValues.first().translationId.language).isEqualTo(io.cloudflight.jems.api.programme.dto.language.SystemLanguage.EN)
             assertThat(translatedValues.first().title).isEqualTo("4.1.1 title")
         }
         assertThat(wpOutputSlot.captured).hasSize(1)
@@ -342,13 +389,42 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
             assertThat(contribution).isNull()
             assertThat(evidence).isNull()
             assertThat(translatedValues).hasSize(1)
-            assertThat(translatedValues.first().translationId.language).isEqualTo(SystemLanguage.EN)
+            assertThat(translatedValues.first().translationId.language).isEqualTo(io.cloudflight.jems.api.programme.dto.language.SystemLanguage.EN)
             assertThat(translatedValues.first().title).isEqualTo("7 output title")
         }
     }
 
-    private fun PartnerReportIdentificationCreate.removeLegalStatusIf(needed: Boolean) =
-        this.copy(legalStatusId = if (needed) null else this.legalStatusId)
+    private fun assertIdentification(
+        idSlot: CapturingSlot<ProjectPartnerReportIdentificationEntity>,
+        idTargetGroupsSlot: CapturingSlot<Iterable<ProjectPartnerReportIdentificationTargetGroupEntity>>,
+    ) {
+        with(idSlot.captured) {
+            assertThat(startDate).isNull()
+            assertThat(endDate).isNull()
+            assertThat(periodNumber).isNull()
+            assertThat(translatedValues).isEmpty()
+        }
+        assertThat(idTargetGroupsSlot.captured).hasSize(3)
+        with(idTargetGroupsSlot.captured.first { it.sortNumber == 1}) {
+            assertThat(translatedValues).hasSize(1)
+            with(translatedValues.first()) {
+                assertThat(translationId.language).isEqualTo(io.cloudflight.jems.api.programme.dto.language.SystemLanguage.EN)
+                assertThat(specification).isEqualTo("first target group")
+                assertThat(description).isNull()
+            }
+        }
+        with(idTargetGroupsSlot.captured.first { it.sortNumber == 2}) {
+            assertThat(translatedValues).isEmpty()
+        }
+        with(idTargetGroupsSlot.captured.first { it.sortNumber == 3}) {
+            assertThat(translatedValues).hasSize(1)
+            with(translatedValues.first()) {
+                assertThat(translationId.language).isEqualTo(io.cloudflight.jems.api.programme.dto.language.SystemLanguage.EN)
+                assertThat(specification).isEqualTo("third target group")
+                assertThat(description).isNull()
+            }
+        }
+    }
 
     @Test
     fun submitReportById() {
@@ -372,8 +448,8 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
     fun getPartnerReportStatusById() {
         val report = draftReportEntity(id = 75L)
         every { partnerReportRepository.findByIdAndPartnerId(75L, 20L) } returns report
-        assertThat(persistence.getPartnerReportStatusById(partnerId = 20L, reportId = 75L))
-            .isEqualTo(ReportStatus.Draft)
+        assertThat(persistence.getPartnerReportStatusAndVersion(partnerId = 20L, reportId = 75L))
+            .isEqualTo(ProjectPartnerReportStatusAndVersion(ReportStatus.Draft, "3.0"))
     }
 
     @Test
@@ -402,5 +478,11 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
     fun getCurrentLatestReportNumberForPartner() {
         every { partnerReportRepository.getMaxNumberForPartner(PARTNER_ID) } returns 7
         assertThat(persistence.getCurrentLatestReportNumberForPartner(PARTNER_ID)).isEqualTo(7)
+    }
+
+    @Test
+    fun countForPartner() {
+        every { partnerReportRepository.countAllByPartnerId(PARTNER_ID) } returns 24
+        assertThat(persistence.countForPartner(PARTNER_ID)).isEqualTo(24)
     }
 }

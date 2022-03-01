@@ -491,4 +491,35 @@ internal class ProjectDescriptionPersistenceTest : UnitTest() {
 
         assertThat(persistence.updateProjectLongTermPlans(PROJECT_ID, projectLongTermPlans)).isEqualTo(projectLongTermPlans)
     }
+
+    @Test
+    fun `getBenefits - latest`() {
+        every { projectRelevanceRepository.findFirstByProjectId(PROJECT_ID) } returns dummyProjectRelevance()
+        assertThat(persistence.getBenefits(PROJECT_ID, null)).containsExactly(
+            ProjectRelevanceBenefit(
+                group = ProjectTargetGroupDTO.LocalPublicAuthority,
+                specification = setOf(InputTranslation(SystemLanguage.EN, "specification")),
+            ),
+        )
+    }
+
+    @Test
+    fun `getBenefits - old version`() {
+        val timestamp = Timestamp.valueOf(LocalDateTime.now())
+
+        val mockRow: ProjectRelevanceBenefitRow = mockk()
+        every { mockRow.projectId } returns PROJECT_ID
+        every { mockRow.targetGroup } returns ProjectTargetGroupDTO.LocalPublicAuthority
+        every { mockRow.language } returns SystemLanguage.EN
+        every { mockRow.specification } returns "specification"
+
+        every { projectRelevanceRepository.findBenefitsByProjectIdAsOfTimestamp(PROJECT_ID, timestamp) } returns listOf(mockRow)
+
+        assertThat(persistence.getBenefits(PROJECT_ID, null)).containsExactly(
+            ProjectRelevanceBenefit(
+                group = ProjectTargetGroupDTO.LocalPublicAuthority,
+                specification = setOf(InputTranslation(SystemLanguage.EN, "specification")),
+            ),
+        )
+    }
 }

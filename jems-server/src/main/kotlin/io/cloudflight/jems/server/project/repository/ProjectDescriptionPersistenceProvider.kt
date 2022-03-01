@@ -12,6 +12,7 @@ import io.cloudflight.jems.server.project.service.model.ProjectManagement
 import io.cloudflight.jems.server.project.service.model.ProjectOverallObjective
 import io.cloudflight.jems.server.project.service.model.ProjectPartnership
 import io.cloudflight.jems.server.project.service.model.ProjectRelevance
+import io.cloudflight.jems.server.project.service.model.ProjectRelevanceBenefit
 import io.cloudflight.jems.server.project.service.toEntity
 import io.cloudflight.jems.server.project.service.toProjectLongTermPlans
 import io.cloudflight.jems.server.project.service.toProjectManagement
@@ -113,4 +114,15 @@ class ProjectDescriptionPersistenceProvider(
     override fun updateProjectLongTermPlans(id: Long, projectLongTermPlans: ProjectLongTermPlans): ProjectLongTermPlans {
         return projectLongTermPlansRepository.save(projectLongTermPlans.toEntity(id)).toProjectLongTermPlans()
     }
+
+    @Transactional(readOnly = true)
+    override fun getBenefits(projectId: Long, version: String?): List<ProjectRelevanceBenefit>? =
+        projectVersionUtils.fetch(version, projectId,
+            currentVersionFetcher = {
+                projectRelevanceRepository.findFirstByProjectId(projectId)?.toProjectRelevance()?.projectBenefits
+            },
+            previousVersionFetcher = { timestamp ->
+                projectRelevanceRepository.findBenefitsByProjectIdAsOfTimestamp(projectId, timestamp).toRelevanceBenefits()
+            }
+        )
 }
