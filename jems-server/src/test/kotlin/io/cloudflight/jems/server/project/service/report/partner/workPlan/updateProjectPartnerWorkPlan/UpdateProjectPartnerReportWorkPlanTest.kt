@@ -5,6 +5,7 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
+import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportStatusAndVersion
 import io.cloudflight.jems.server.project.service.report.model.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.workPlan.ProjectPartnerReportWorkPackage
 import io.cloudflight.jems.server.project.service.report.model.workPlan.ProjectPartnerReportWorkPackageActivity
@@ -14,6 +15,7 @@ import io.cloudflight.jems.server.project.service.report.model.workPlan.update.U
 import io.cloudflight.jems.server.project.service.report.model.workPlan.update.UpdateProjectPartnerReportWorkPackageActivity
 import io.cloudflight.jems.server.project.service.report.model.workPlan.update.UpdateProjectPartnerReportWorkPackageActivityDeliverable
 import io.cloudflight.jems.server.project.service.report.model.workPlan.update.UpdateProjectPartnerReportWorkPackageOutput
+import io.cloudflight.jems.server.project.service.report.partner.workPlan.ProjectReportWorkPlanPersistence
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -148,6 +150,9 @@ internal class UpdateProjectPartnerReportWorkPlanTest : UnitTest() {
     @MockK
     lateinit var reportPersistence: ProjectReportPersistence
 
+    @MockK
+    lateinit var reportWpPersistence: ProjectReportWorkPlanPersistence
+
     @RelaxedMockK
     lateinit var generalValidator: GeneralValidatorService
 
@@ -157,61 +162,65 @@ internal class UpdateProjectPartnerReportWorkPlanTest : UnitTest() {
     @BeforeEach
     fun setup() {
         clearMocks(reportPersistence)
+        clearMocks(reportWpPersistence)
     }
 
     @Test
     fun update() {
-        every { reportPersistence.getPartnerReportStatusById(PARTNER_ID, reportId = 11L) } returns ReportStatus.Draft
-        every { reportPersistence.getPartnerReportWorkPlanById(PARTNER_ID, reportId = 11) } returnsMany listOf(
+        every { reportPersistence.getPartnerReportStatusAndVersion(PARTNER_ID, reportId = 11L) } returns
+            ProjectPartnerReportStatusAndVersion(ReportStatus.Draft, "4.12.0")
+        every { reportWpPersistence.getPartnerReportWorkPlanById(PARTNER_ID, reportId = 11) } returnsMany listOf(
             listOf(oldWorkPlan),
             listOf(newWorkPlan),
         )
-        every { reportPersistence.updatePartnerReportWorkPackage(any(), any()) } answers {}
-        every { reportPersistence.updatePartnerReportWorkPackageActivity(any(), any()) } answers {}
-        every { reportPersistence.updatePartnerReportWorkPackageDeliverable(any(), any(), any()) } answers {}
-        every { reportPersistence.updatePartnerReportWorkPackageOutput(any(), any(), any()) } answers {}
+        every { reportWpPersistence.updatePartnerReportWorkPackage(any(), any()) } answers {}
+        every { reportWpPersistence.updatePartnerReportWorkPackageActivity(any(), any()) } answers {}
+        every { reportWpPersistence.updatePartnerReportWorkPackageDeliverable(any(), any(), any()) } answers {}
+        every { reportWpPersistence.updatePartnerReportWorkPackageOutput(any(), any(), any()) } answers {}
 
         assertThat(updateWorkPlan.update(PARTNER_ID, reportId = 11L, listOf(updateWorkPlanModel)))
             .containsExactly(newWorkPlan)
 
-        verify(exactly = 1) { reportPersistence
+        verify(exactly = 1) { reportWpPersistence
             .updatePartnerReportWorkPackage(45L, setOf(InputTranslation(EN, "[45] description new"))) }
-        verify(exactly = 1) { reportPersistence
+        verify(exactly = 1) { reportWpPersistence
             .updatePartnerReportWorkPackageActivity(99L, setOf(InputTranslation(EN, "[99] progress new"))) }
-        verify(exactly = 1) { reportPersistence
+        verify(exactly = 1) { reportWpPersistence
             .updatePartnerReportWorkPackageDeliverable(87L, false, false) }
-        verify(exactly = 1) { reportPersistence
+        verify(exactly = 1) { reportWpPersistence
             .updatePartnerReportWorkPackageOutput(61L, null, true) }
 
-        verify(exactly = 2) { reportPersistence.getPartnerReportWorkPlanById(PARTNER_ID, reportId = 11L) }
+        verify(exactly = 2) { reportWpPersistence.getPartnerReportWorkPlanById(PARTNER_ID, reportId = 11L) }
     }
 
     @Test
     fun `update - no changes`() {
-        every { reportPersistence.getPartnerReportStatusById(PARTNER_ID, reportId = 12L) } returns ReportStatus.Draft
-        every { reportPersistence.getPartnerReportWorkPlanById(PARTNER_ID, reportId = 12) } returnsMany listOf(
+        every { reportPersistence.getPartnerReportStatusAndVersion(PARTNER_ID, reportId = 12L) } returns
+            ProjectPartnerReportStatusAndVersion(ReportStatus.Draft, "4.12.0")
+        every { reportWpPersistence.getPartnerReportWorkPlanById(PARTNER_ID, reportId = 12) } returnsMany listOf(
             listOf(oldWorkPlan),
             listOf(oldWorkPlan),
         )
-        every { reportPersistence.updatePartnerReportWorkPackage(any(), any()) } answers {}
-        every { reportPersistence.updatePartnerReportWorkPackageActivity(any(), any()) } answers {}
-        every { reportPersistence.updatePartnerReportWorkPackageDeliverable(any(), any(), any()) } answers {}
-        every { reportPersistence.updatePartnerReportWorkPackageOutput(any(), any(), any()) } answers {}
+        every { reportWpPersistence.updatePartnerReportWorkPackage(any(), any()) } answers {}
+        every { reportWpPersistence.updatePartnerReportWorkPackageActivity(any(), any()) } answers {}
+        every { reportWpPersistence.updatePartnerReportWorkPackageDeliverable(any(), any(), any()) } answers {}
+        every { reportWpPersistence.updatePartnerReportWorkPackageOutput(any(), any(), any()) } answers {}
 
         assertThat(updateWorkPlan.update(PARTNER_ID, reportId = 12L, listOf(updateWorkPlanModelNoChanges)))
             .containsExactly(oldWorkPlan)
 
-        verify(exactly = 0) { reportPersistence.updatePartnerReportWorkPackage(any(), any()) }
-        verify(exactly = 0) { reportPersistence.updatePartnerReportWorkPackageActivity(any(), any()) }
-        verify(exactly = 0) { reportPersistence.updatePartnerReportWorkPackageDeliverable(any(), any(), any()) }
-        verify(exactly = 0) { reportPersistence.updatePartnerReportWorkPackageOutput(any(), any(), any()) }
+        verify(exactly = 0) { reportWpPersistence.updatePartnerReportWorkPackage(any(), any()) }
+        verify(exactly = 0) { reportWpPersistence.updatePartnerReportWorkPackageActivity(any(), any()) }
+        verify(exactly = 0) { reportWpPersistence.updatePartnerReportWorkPackageDeliverable(any(), any(), any()) }
+        verify(exactly = 0) { reportWpPersistence.updatePartnerReportWorkPackageOutput(any(), any(), any()) }
 
-        verify(exactly = 2) { reportPersistence.getPartnerReportWorkPlanById(PARTNER_ID, reportId = 12L) }
+        verify(exactly = 2) { reportWpPersistence.getPartnerReportWorkPlanById(PARTNER_ID, reportId = 12L) }
     }
 
     @Test
     fun `update - wrong status`() {
-        every { reportPersistence.getPartnerReportStatusById(PARTNER_ID, reportId = 0L) } returns ReportStatus.Submitted
+        every { reportPersistence.getPartnerReportStatusAndVersion(PARTNER_ID, reportId = 0L) } returns
+            ProjectPartnerReportStatusAndVersion(ReportStatus.Submitted, "4.12.0")
         assertThrows<ReportAlreadyClosed> { updateWorkPlan.update(PARTNER_ID, reportId = 0L, emptyList()) }
     }
 }

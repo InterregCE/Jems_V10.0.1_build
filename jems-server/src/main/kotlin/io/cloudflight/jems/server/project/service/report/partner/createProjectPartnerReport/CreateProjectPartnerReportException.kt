@@ -13,7 +13,12 @@ class CreateProjectPartnerReportException(cause: Throwable) : ApplicationExcepti
     cause = cause
 )
 
-class ReportCanBeCreatedOnlyWhenContractedException : ApplicationUnprocessableException(
+class MaxAmountOfReportsReachedException : ApplicationUnprocessableException(
     code = "$CREATE_PROJECT_PARTNER_REPORT_ERROR_CODE_PREFIX-001",
+    i18nMessage = I18nMessage("$CREATE_PROJECT_PARTNER_REPORT_ERROR_KEY_PREFIX.max.allowed.amount.reached"),
+)
+
+class ReportCanBeCreatedOnlyWhenContractedException : ApplicationUnprocessableException(
+    code = "$CREATE_PROJECT_PARTNER_REPORT_ERROR_CODE_PREFIX-002",
     i18nMessage = I18nMessage("$CREATE_PROJECT_PARTNER_REPORT_ERROR_KEY_PREFIX.wrong.status"),
 )

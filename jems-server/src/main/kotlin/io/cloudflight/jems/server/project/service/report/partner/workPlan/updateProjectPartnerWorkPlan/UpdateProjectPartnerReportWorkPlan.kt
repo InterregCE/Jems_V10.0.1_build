@@ -13,12 +13,14 @@ import io.cloudflight.jems.server.project.service.report.model.workPlan.update.U
 import io.cloudflight.jems.server.project.service.report.model.workPlan.update.UpdateProjectPartnerReportWorkPackageActivity
 import io.cloudflight.jems.server.project.service.report.model.workPlan.update.UpdateProjectPartnerReportWorkPackageActivityDeliverable
 import io.cloudflight.jems.server.project.service.report.model.workPlan.update.UpdateProjectPartnerReportWorkPackageOutput
+import io.cloudflight.jems.server.project.service.report.partner.workPlan.ProjectReportWorkPlanPersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 class UpdateProjectPartnerReportWorkPlan(
     private val reportPersistence: ProjectReportPersistence,
+    private val reportWorkPlanPersistence: ProjectReportWorkPlanPersistence,
     private val generalValidator: GeneralValidatorService,
 ) : UpdateProjectPartnerReportWorkPlanInteractor {
 
@@ -30,17 +32,17 @@ class UpdateProjectPartnerReportWorkPlan(
         reportId: Long,
         workPlan: List<UpdateProjectPartnerReportWorkPackage>
     ): List<ProjectPartnerReportWorkPackage> {
-        validateReportNotClosed(status = reportPersistence.getPartnerReportStatusById(partnerId, reportId = reportId))
+        validateReportNotClosed(status = reportPersistence.getPartnerReportStatusAndVersion(partnerId, reportId = reportId).status)
         validateInputs(workPlan = workPlan)
 
-        val existingWpsById = reportPersistence.getPartnerReportWorkPlanById(partnerId = partnerId, reportId = reportId)
+        val existingWpsById = reportWorkPlanPersistence.getPartnerReportWorkPlanById(partnerId = partnerId, reportId = reportId)
             .associateBy { it.id }
 
         workPlan.associateBy { it.id }.forEach { (wpId, wpNew) ->
             val existingWp = existingWpsById.getByIdOrThrow(wpId)
 
             if (thereAreChanges(wpNew, existingWp)) // update WP (itself)
-                reportPersistence.updatePartnerReportWorkPackage(workPackageId = wpId, translations = wpNew.description)
+                reportWorkPlanPersistence.updatePartnerReportWorkPackage(workPackageId = wpId, translations = wpNew.description)
 
             updateNestedActivities( // update WP activities
                 activitiesWithNewData = wpNew.activities,
@@ -52,7 +54,7 @@ class UpdateProjectPartnerReportWorkPlan(
             )
         }
 
-        return reportPersistence.getPartnerReportWorkPlanById(partnerId = partnerId, reportId = reportId)
+        return reportWorkPlanPersistence.getPartnerReportWorkPlanById(partnerId = partnerId, reportId = reportId)
     }
 
     private fun validateReportNotClosed(status: ReportStatus) {
@@ -82,7 +84,7 @@ class UpdateProjectPartnerReportWorkPlan(
             val existingActivity = existingActivitiesById.getByIdOrThrow(activityId)
 
             if (thereAreChanges(activityNew, existingActivity))
-                reportPersistence.updatePartnerReportWorkPackageActivity(activityId = activityId, translations = activityNew.progress)
+                reportWorkPlanPersistence.updatePartnerReportWorkPackageActivity(activityId = activityId, translations = activityNew.progress)
 
             updateNestedDeliverables(
                 deliverablesWithNewData = activityNew.deliverables,
@@ -99,7 +101,7 @@ class UpdateProjectPartnerReportWorkPlan(
             val existingDeliverable = existingDeliverablesById.getByIdOrThrow(deliverableId)
 
             if (thereAreChanges(deliverableNew, existingDeliverable))
-                reportPersistence.updatePartnerReportWorkPackageDeliverable(
+                reportWorkPlanPersistence.updatePartnerReportWorkPackageDeliverable(
                     deliverableId = deliverableId,
                     contribution = deliverableNew.contribution,
                     evidence = deliverableNew.evidence,
@@ -115,7 +117,7 @@ class UpdateProjectPartnerReportWorkPlan(
             val existingOutput = existingOutputsById.getByIdOrThrow(outputId)
 
             if (thereAreChanges(outputNew, existingOutput))
-                reportPersistence.updatePartnerReportWorkPackageOutput(
+                reportWorkPlanPersistence.updatePartnerReportWorkPackageOutput(
                     outputId = outputId,
                     contribution = outputNew.contribution,
                     evidence = outputNew.evidence,

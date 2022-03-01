@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.controller.report
+package io.cloudflight.jems.server.project.controller.report.workPlan
 
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation

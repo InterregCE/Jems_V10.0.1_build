@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.service.report.partner.createProjectP
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanEditPartnerReport
+import io.cloudflight.jems.server.project.service.ProjectDescriptionPersistence
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.model.ProjectFull
@@ -31,9 +32,14 @@ class CreateProjectPartnerReport(
     private val projectPartnerPersistence: PartnerPersistence,
     private val partnerCoFinancingPersistence: ProjectPartnerCoFinancingPersistence,
     private val projectWorkPackagePersistence: WorkPackagePersistence,
+    private val projectDescriptionPersistence: ProjectDescriptionPersistence,
     private val reportPersistence: ProjectReportPersistence,
     private val auditPublisher: ApplicationEventPublisher
 ) : CreateProjectPartnerReportInteractor {
+
+    companion object {
+        private const val MAX_REPORTS = 25
+    }
 
     @CanEditPartnerReport
     @Transactional
@@ -44,6 +50,7 @@ class CreateProjectPartnerReport(
 
         val project = projectPersistence.getProject(projectId = projectId, version = version)
 
+        validateMaxAmountOfReports(currentAmount = reportPersistence.countForPartner(partnerId = partnerId))
         validateProjectIsContracted(project)
 
         val report = generateReport(project = project, partnerId = partnerId, version = version)
@@ -53,6 +60,11 @@ class CreateProjectPartnerReport(
         }
     }
 
+
+    private fun validateMaxAmountOfReports(currentAmount: Int) {
+        if (currentAmount >= MAX_REPORTS)
+            throw MaxAmountOfReportsReachedException()
+    }
 
     private fun validateProjectIsContracted(project: ProjectFull) {
         if (!project.projectStatus.status.isAlreadyContracted())
@@ -73,7 +85,10 @@ class CreateProjectPartnerReport(
 
         workPackages = projectWorkPackagePersistence
             .getWorkPackagesWithOutputsAndActivitiesByProjectId(projectId = project.id!!, version = version)
-            .toCreateEntity()
+            .toCreateEntity(),
+
+        targetGroups = projectDescriptionPersistence.getBenefits(projectId = project.id, version = version)
+            ?: emptyList(),
     )
 
     private fun getLatestReportNumberIncreasedByOne(partnerId: Long) =

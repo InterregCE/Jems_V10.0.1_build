@@ -1,8 +1,8 @@
 package io.cloudflight.jems.server.project.service.report.partner.workPlan.getProjectPartnerWorkPlan
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.workPlan.ProjectPartnerReportWorkPackage
+import io.cloudflight.jems.server.project.service.report.partner.workPlan.ProjectReportWorkPlanPersistence
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -17,7 +17,7 @@ internal class GetProjectPartnerReportWorkPlanTest : UnitTest() {
     }
 
     @MockK
-    lateinit var reportPersistence: ProjectReportPersistence
+    lateinit var reportWpPersistence: ProjectReportWorkPlanPersistence
 
     @InjectMockKs
     lateinit var getReportWorkPlan: GetProjectPartnerReportWorkPlan
@@ -25,7 +25,7 @@ internal class GetProjectPartnerReportWorkPlanTest : UnitTest() {
     @Test
     fun getForPartner() {
         val workPlan = mockk<ProjectPartnerReportWorkPackage>()
-        every { reportPersistence.getPartnerReportWorkPlanById(PARTNER_ID, reportId = 97L) } returns listOf(workPlan)
+        every { reportWpPersistence.getPartnerReportWorkPlanById(PARTNER_ID, reportId = 97L) } returns listOf(workPlan)
         assertThat(getReportWorkPlan.getForPartner(PARTNER_ID, reportId = 97L)).containsExactly(workPlan)
     }
 }
