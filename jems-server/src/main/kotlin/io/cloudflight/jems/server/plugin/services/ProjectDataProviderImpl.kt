@@ -21,6 +21,7 @@ import io.cloudflight.jems.server.project.service.associatedorganization.Associa
 import io.cloudflight.jems.server.project.service.budget.ProjectBudgetPersistence
 import io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_period.PartnerBudgetPerPeriodCalculator
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResult
+import io.cloudflight.jems.server.project.service.budget.model.PartnersAggregatedInfo
 import io.cloudflight.jems.server.project.service.cofinancing.get_project_cofinancing_overview.CoFinancingOverviewCalculator
 import io.cloudflight.jems.server.project.service.cofinancing.model.PartnerBudgetCoFinancing
 import io.cloudflight.jems.server.project.service.cofinancing.model.ProjectCoFinancingOverview
@@ -158,12 +159,13 @@ class ProjectDataProviderImpl(
                 ).toProjectPartnerBudgetPerFundData()
             },
             projectPartnerBudgetPerPeriodData = partnerBudgetPerPeriodCalculator.calculate(
-                partners = partnersSummary,
-                budgetOptions = partnersBudgetOptions,
-                budgetPerPartner = projectBudgetPersistence.getBudgetPerPartner(partnerIds, projectId, version),
+                PartnersAggregatedInfo(
+                    partnersSummary, partnersBudgetOptions,
+                    projectBudgetPersistence.getBudgetPerPartner(partnerIds, projectId, version),
+                    projectBudgetPersistence.getBudgetTotalForPartners(partnerIds, projectId, version)
+                ),
                 lumpSums = lumpSums,
                 projectPeriods = projectPersistence.getProjectPeriods(projectId, version),
-                partnersTotalBudgetPerCostCategory = projectBudgetPersistence.getBudgetTotalForPartners(partnerIds, projectId, version)
             ).toProjectBudgetOverviewPerPartnerPerPeriod()
         )
 
@@ -222,13 +224,19 @@ class ProjectDataProviderImpl(
         )
     }
 
-    private fun getCoFinancingOverview(partners: Set<ProjectPartnerData>, version: String?): ProjectCoFinancingOverview {
+    private fun getCoFinancingOverview(
+        partners: Set<ProjectPartnerData>,
+        version: String?
+    ): ProjectCoFinancingOverview {
         val partnersByIds = partners.associateBy { it.id!! }
-        val funds = if (partnersByIds.keys.isNotEmpty()) coFinancingPersistence.getAvailableFunds(partnersByIds.keys.first()) else emptySet()
+        val funds =
+            if (partnersByIds.keys.isNotEmpty()) coFinancingPersistence.getAvailableFunds(partnersByIds.keys.first()) else emptySet()
 
         return CoFinancingOverviewCalculator.calculateCoFinancingOverview(
             partnerIds = partnersByIds.keys,
-            getBudgetTotalCost = { partnerId -> partnersByIds[partnerId]?.budget?.projectBudgetCostsCalculationResult?.totalCosts ?: ZERO },
+            getBudgetTotalCost = { partnerId ->
+                partnersByIds[partnerId]?.budget?.projectBudgetCostsCalculationResult?.totalCosts ?: ZERO
+            },
             getCoFinancingAndContributions = { coFinancingPersistence.getCoFinancingAndContributions(it, version) },
             funds = funds,
         )

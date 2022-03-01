@@ -6,6 +6,8 @@ import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLu
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectForm
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
+import io.cloudflight.jems.server.project.service.lumpsum.model.CLOSURE_PERIOD_NUMBER
+import io.cloudflight.jems.server.project.service.lumpsum.model.PREPARATION_PERIOD_NUMBER
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
@@ -21,10 +23,6 @@ class UpdateProjectLumpSums(
 
     companion object {
         private const val MAX_ALLOWED_PROJECT_LUMP_SUMS = 50
-
-        // predefined periods
-        private const val PREPARATION_PERIOD = 0
-        private const val CLOSURE_PERIOD = 255
     }
 
     @Transactional
@@ -60,8 +58,8 @@ class UpdateProjectLumpSums(
 
     private fun validatePeriods(lumpSums: List<ProjectLumpSum>, projectPeriods: List<ProjectPeriod>) {
         val periodNumbers = projectPeriods.mapTo(HashSet()) { it.number }
-        periodNumbers.add(PREPARATION_PERIOD)
-        periodNumbers.add(CLOSURE_PERIOD)
+        periodNumbers.add(PREPARATION_PERIOD_NUMBER)
+        periodNumbers.add(CLOSURE_PERIOD_NUMBER)
         if (lumpSums.mapNotNullTo(HashSet()) { it.period }.any { !periodNumbers.contains(it) })
             throw I18nValidationException(i18nKey = "project.lumpSum.period.does.not.exist")
     }

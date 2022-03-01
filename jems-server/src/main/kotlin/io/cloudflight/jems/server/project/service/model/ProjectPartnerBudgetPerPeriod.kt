@@ -6,5 +6,6 @@ import java.math.BigDecimal
 data class ProjectPartnerBudgetPerPeriod(
     val partner: ProjectPartnerSummary,
     val periodBudgets: MutableList<ProjectPeriodBudget>,
-    val totalPartnerBudget: BigDecimal = BigDecimal.ZERO
+    val totalPartnerBudget: BigDecimal = BigDecimal.ZERO,
+    val totalPartnerBudgetDetail: BudgetCostsDetail
 )
