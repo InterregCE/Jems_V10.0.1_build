@@ -206,6 +206,7 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
              entity.partner_sub_type AS partnerSubType,
              entity.other_identifier_number AS otherIdentifierNumber,
              entity.vat_recovery AS vatRecovery,
+             entity.created_at AS createdAt,
              translation.*,
              translation.other_identifier_description AS otherIdentifierDescription
              FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
@@ -347,6 +348,7 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
              entity.legal_status_id as legalStatusId,
              entity.vat_recovery as vatRecovery,
              entity.other_identifier_number as otherIdentifierNumber,
+             entity.created_at as createdAt,
              translation.language,
              translation.department,
              translation.other_identifier_description as otherIdentifierDescription,

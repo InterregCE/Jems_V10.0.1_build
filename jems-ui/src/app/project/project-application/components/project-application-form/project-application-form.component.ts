@@ -123,7 +123,7 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
 
     this.projectStore.currentVersionOfProjectStatus$
       .pipe(take(1))
-      .subscribe(status => this.projectContracted = ProjectUtil.isContractedOrAnyStatusAfterContracted(status))
+      .subscribe(status => this.projectContracted = ProjectUtil.isContractedOrAnyStatusAfterContracted(status));
   }
 
   ngOnChanges(changes: SimpleChanges): void {

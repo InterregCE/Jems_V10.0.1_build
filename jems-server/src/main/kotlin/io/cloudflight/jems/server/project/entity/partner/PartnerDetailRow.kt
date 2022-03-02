@@ -9,7 +9,7 @@ import io.cloudflight.jems.server.project.service.partner.model.PartnerSubType
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAddressType
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVatRecovery
-import java.time.ZonedDateTime
+import java.sql.Timestamp
 
 interface PartnerDetailRow : TranslationView {
     val id: Long
@@ -18,7 +18,7 @@ interface PartnerDetailRow : TranslationView {
     val abbreviation: String
     val role: ProjectPartnerRole
     val sortNumber: Int
-    val createdAt: ZonedDateTime
+    val createdAt: Timestamp
     val nameInOriginalLanguage: String?
     val nameInEnglish: String?
     val partnerType: ProjectTargetGroup?

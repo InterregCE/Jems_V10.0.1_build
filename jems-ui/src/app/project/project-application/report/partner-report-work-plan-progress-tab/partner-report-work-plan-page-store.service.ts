@@ -21,7 +21,7 @@ import {
 export class PartnerReportWorkPlanPageStore {
 
   partnerId$: Observable<string | number | null>;
-  partnerWorkPackages$: Observable<ProjectPartnerReportWorkPackageDTO[]>
+  partnerWorkPackages$: Observable<ProjectPartnerReportWorkPackageDTO[]>;
 
   constructor(private routingService: RoutingService,
               private partnerReportPageStore: PartnerReportPageStore,

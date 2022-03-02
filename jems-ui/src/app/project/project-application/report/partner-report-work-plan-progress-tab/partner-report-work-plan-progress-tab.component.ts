@@ -67,7 +67,7 @@ export class PartnerReportWorkPlanProgressTabComponent {
     return this.workPackages.at(workPackageIndex).get(this.constants.ACTIVITIES.name) as FormArray;
   }
 
-  deliverables(workPackageIndex:number, activityIndex: number): FormArray {
+  deliverables(workPackageIndex: number, activityIndex: number): FormArray {
     return this.activities(workPackageIndex).at(activityIndex).get(this.constants.DELIVERABLES.name) as FormArray;
   }
 
@@ -84,8 +84,8 @@ export class PartnerReportWorkPlanProgressTabComponent {
     });
 
     workPackages.forEach((workPackage: ProjectPartnerReportWorkPackageDTO, index: number) => {
-      this.resetWorkPackage(workPackage, index)
-    })
+      this.resetWorkPackage(workPackage, index);
+    });
   }
 
   resetWorkPackage(workPackage: ProjectPartnerReportWorkPackageDTO, workPackageIndex: number): void {
@@ -119,7 +119,7 @@ export class PartnerReportWorkPlanProgressTabComponent {
     );
   }
 
-  private addDeliverable(workPackageIndex:number, activityIndex: number, existing?: ProjectPartnerReportWorkPackageActivityDeliverableDTO): void {
+  private addDeliverable(workPackageIndex: number, activityIndex: number, existing?: ProjectPartnerReportWorkPackageActivityDeliverableDTO): void {
     this.deliverables(workPackageIndex, activityIndex).push(this.formBuilder.group({
       id: existing?.id,
       title: this.formBuilder.control(existing?.title || []),

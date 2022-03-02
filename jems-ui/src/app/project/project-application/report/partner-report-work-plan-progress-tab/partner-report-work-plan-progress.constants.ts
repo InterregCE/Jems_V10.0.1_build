@@ -30,7 +30,7 @@ export class PartnerReportWorkplanConstants {
 
   public static ACTIVITY_TITLE: AppControl = {
     name: 'title'
-  }
+  };
 
   public static DELIVERABLE_TITLE: AppControl = {
     name: 'title',
