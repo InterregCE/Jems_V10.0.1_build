@@ -1,5 +1,7 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {ProjectOverviewTablesPageStore} from '@project/project-overview-tables-page/project-overview-tables-page-store.service';
+import {
+  ProjectOverviewTablesPageStore
+} from '@project/project-overview-tables-page/project-overview-tables-page-store.service';
 import {ProjectCoFinancingByFundOverviewDTO, ProjectCoFinancingOverviewDTO} from '@cat/api';
 import {Observable} from 'rxjs';
 import {MatTableDataSource} from '@angular/material/table';
@@ -35,11 +37,8 @@ export class ProjectBudgetOverviewComponent {
   }
 
   private getFundOverviews(overview: ProjectCoFinancingOverviewDTO): ProjectCoFinancingByFundOverviewDTO[] {
-    const euFunds = overview.fundOverviews
-      .filter(fund => fund.fundType !== ProjectCoFinancingByFundOverviewDTO.FundTypeEnum.OTHER);
-    euFunds.sort((fund1, fund2) => fund1.fundType === ProjectCoFinancingByFundOverviewDTO.FundTypeEnum.ERDF ? -1 : 1);
-    const otherFunds = overview.fundOverviews
-      .filter(fund => fund.fundType === ProjectCoFinancingByFundOverviewDTO.FundTypeEnum.OTHER);
+    const euFunds = this.getEuFunds(overview.fundOverviews);
+    const otherFunds = this.getOtherFunds(overview.fundOverviews);
     const totalEu = {
       label: 'project.application.form.overview.budget.table.total.eu',
       fundingAmount: overview.totalEuFundingAmount,
@@ -63,5 +62,24 @@ export class ProjectBudgetOverviewComponent {
       totalFundAndContribution: overview.totalFundAndContribution,
     };
     return [...euFunds, totalEu as any, ...otherFunds, total];
+  }
+
+  private getEuFunds(funds: ProjectCoFinancingByFundOverviewDTO[]):  ProjectCoFinancingByFundOverviewDTO[] {
+    return funds
+      .filter(fund => fund.fundType !== ProjectCoFinancingByFundOverviewDTO.FundTypeEnum.OTHER)
+      .sort((fund1, fund2) => this.euFundsComparator(fund1, fund2));
+  }
+
+  private getOtherFunds(funds: ProjectCoFinancingByFundOverviewDTO[]): ProjectCoFinancingByFundOverviewDTO[] {
+    return funds
+      .filter(fund => fund.fundType === ProjectCoFinancingByFundOverviewDTO.FundTypeEnum.OTHER)
+      .sort((fund1, fund2) => fund1.fundId - fund2.fundId);
+  }
+
+  private euFundsComparator(f1: ProjectCoFinancingByFundOverviewDTO, f2: ProjectCoFinancingByFundOverviewDTO): number {
+    if (f1.fundType === f2.fundType) {
+      return f1.fundId - f2.fundId;
+    }
+    return f1.fundType > f2.fundType ? 1 : -1;
   }
 }

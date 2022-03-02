@@ -79,6 +79,7 @@ class CoFinancingOverviewCalculator {
                 val totalFundAndContribution = listOf(fundingAmount, totalContribution).sumUp()
 
                 ProjectCoFinancingByFundOverview(
+                    fundId = it.id,
                     fundType = it.type,
                     fundAbbreviation = it.abbreviation,
                     fundingAmount = fundingAmount,
