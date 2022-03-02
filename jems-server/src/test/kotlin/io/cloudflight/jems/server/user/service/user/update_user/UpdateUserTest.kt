@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.user.service.user.update_user
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
+import io.cloudflight.jems.server.project.service.projectuser.UserProjectPersistence
 import io.cloudflight.jems.server.user.service.UserPersistence
 import io.cloudflight.jems.server.user.service.confirmation.UserConfirmationPersistence
 import io.cloudflight.jems.server.user.service.model.User
@@ -14,6 +15,7 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -52,6 +54,9 @@ internal class UpdateUserTest : UnitTest() {
 
     @RelaxedMockK
     lateinit var userConfirmationPersistence: UserConfirmationPersistence
+
+    @RelaxedMockK
+    lateinit var userProjectPersistence: UserProjectPersistence
 
     @InjectMockKs
     lateinit var updateUser: UpdateUser
@@ -99,6 +104,11 @@ internal class UpdateUserTest : UnitTest() {
 
         every { persistence.getById(USER_ID) } returns oldUser//.copy(email = "maintainer@interact.eu")
         every { persistence.emailExists("maintainer@interact.eu") } returns true
+        every { userProjectPersistence.unassignUserFromProjects(USER_ID) } returns Unit
+
+        verify(exactly = 1) {
+            userProjectPersistence.unassignUserFromProjects(USER_ID)
+        }
 
         assertThrows<UserEmailAlreadyTaken> { updateUser.updateUser(changeUser) }
     }
