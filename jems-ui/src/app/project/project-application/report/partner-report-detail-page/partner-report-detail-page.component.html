@@ -9,6 +9,11 @@
                (click)="routeTo('identification')">
                 <span jemsText maxWidth="230">{{'project.application.partner.report.tab.identification' | translate}}</span>
             </a>
+
+            <a [active]="activeTab('workplan')" mat-tab-link
+               (click)="routeTo('workplan')">
+                <span jemsText maxWidth="230">{{'project.application.partner.report.tab.workplan' | translate}}</span>
+            </a>
         </nav>
         <router-outlet></router-outlet>
     </jems-project-page-template>

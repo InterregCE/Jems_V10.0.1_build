@@ -129,6 +129,7 @@ import {
 
 import { PartnerReportDetailPageComponent } from './project-application/report/partner-report-detail-page/partner-report-detail-page.component';
 import { PartnerReportIdentificationTabComponent } from './project-application/report/partner-report-detail-page/partner-report-identification-tab/partner-report-identification-tab.component';
+import { PartnerReportWorkPlanProgressTabComponent } from './project-application/report/partner-report-work-plan-progress-tab/partner-report-work-plan-progress-tab.component';
 
 @NgModule({
   declarations: [
@@ -239,6 +240,7 @@ import { PartnerReportIdentificationTabComponent } from './project-application/r
     PartnerTeamPrivilegesExpansionPanelComponent,
     PartnerReportDetailPageComponent,
     PartnerReportIdentificationTabComponent,
+    PartnerReportWorkPlanProgressTabComponent,
     SpfRecipientsTableComponent
   ],
   imports: [
