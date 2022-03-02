@@ -37,8 +37,16 @@
             </a>
             <a [active]="activeTab('coFinancing')" mat-tab-link
                (click)="routeTo('coFinancing')">
-                <span jemsText maxWidth="230">{{'partner.tab.coFinancing' | translate}}</span>
+                <span jemsText maxWidth="230">{{'partner.tab.coFinancing' | adaptTranslationKeyByCallType | async | translate}}</span>
             </a>
+        </ng-container>
+        <ng-container *ngIf="partnerStore.isProjectCallTypeSpf$ | async">
+            <ng-container *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING">
+                <a [active]="activeTab('spfCoFinancing')" mat-tab-link
+                   (click)="routeTo('spfCoFinancing')">
+                    <span jemsText maxWidth="230">{{'partner.tab.coFinancing.spf' | translate}}</span>
+                </a>
+            </ng-container>
         </ng-container>
         <ng-container *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.STATE_AID">
             <a [active]="activeTab('stateAid')" mat-tab-link

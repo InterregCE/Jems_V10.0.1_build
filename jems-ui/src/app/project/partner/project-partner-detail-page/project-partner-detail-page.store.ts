@@ -32,6 +32,7 @@ import {ProjectLumpSumsStore} from '@project/lump-sums/project-lump-sums-page/pr
 import {ProgrammeLumpSum} from '@project/model/lump-sums/programmeLumpSum';
 import {PartnerBudgetSpfTables} from '@project/model/budget/partner-budget-spf-tables';
 import {ProjectUtil} from '@project/common/project-util';
+import {ProjectPartnerCoFinancingSpfStore} from './project-partner-co-financing-spf-tab/project-partner-co-financing-spf.store';
 
 @Injectable()
 export class ProjectPartnerDetailPageStore {
@@ -43,10 +44,12 @@ export class ProjectPartnerDetailPageStore {
   budgets$: Observable<PartnerBudgetTables>;
   spfBudgets$: Observable<PartnerBudgetSpfTables>;
   totalBudget$: Observable<number>;
+  totalSpfBudget$: Observable<number>;
   isProjectEditable$: Observable<boolean>;
   investmentSummaries$: Observable<InvestmentSummary[]>;
   unitCosts$: Observable<ProgrammeUnitCost[]>;
   financingAndContribution$: Observable<ProjectPartnerCoFinancingAndContributionOutputDTO>;
+  coFinancingSpf$: Observable<ProjectPartnerCoFinancingAndContributionOutputDTO>;
   callFunds$: Observable<Map<number, CallFundRateDTO>>;
   periods$: Observable<ProjectPeriodDTO[]>;
   multipleFundsAllowed$: Observable<boolean>;
@@ -66,6 +69,7 @@ export class ProjectPartnerDetailPageStore {
               private projectPartnerBudgetStore: ProjectPartnerBudgetStore,
               private projectLumpSumsStore: ProjectLumpSumsStore,
               private projectPartnerCoFinancingStore: ProjectPartnerCoFinancingStore,
+              private projectPartnerCoFinancingSpfStore: ProjectPartnerCoFinancingSpfStore,
               private projectPartnerStateAidsStore: ProjectPartnerStateAidsStore) {
     this.investmentSummaries$ = this.projectStore.investmentSummaries$;
     this.unitCosts$ = this.projectStore.projectCall$.pipe(
@@ -77,7 +81,9 @@ export class ProjectPartnerDetailPageStore {
     this.budgetOptions$ = this.projectPartnerBudgetStore.budgetOptions$;
     this.callFlatRatesSettings$ = this.callFlatRateSettings();
     this.totalBudget$ = this.projectPartnerBudgetStore.totalBudget$;
+    this.totalSpfBudget$ = this.projectPartnerBudgetStore.totalSpfBudget$;
     this.financingAndContribution$ = this.projectPartnerCoFinancingStore.financingAndContribution$;
+    this.coFinancingSpf$ = this.projectPartnerCoFinancingSpfStore.financingAndContribution$;
     this.callFunds$ = this.callFunds();
     this.isProjectEditable$ = this.projectStore.projectEditable$;
     this.periods$ = this.projectStore.projectPeriods$;
@@ -159,6 +165,10 @@ export class ProjectPartnerDetailPageStore {
 
   updateCoFinancingAndContributions(model: ProjectPartnerCoFinancingAndContributionInputDTO): Observable<any> {
     return this.projectPartnerCoFinancingStore.updateCoFinancingAndContributions(model);
+  }
+
+  updateCoFinancingSpf(model: ProjectPartnerCoFinancingAndContributionInputDTO): Observable<any> {
+    return this.projectPartnerCoFinancingSpfStore.updateCoFinancingAndContributions(model);
   }
 
   updateStateAid(partnerId: number, stateAid: ProjectPartnerStateAidDTO): Observable<ProjectPartnerStateAidDTO> {

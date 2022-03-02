@@ -8,7 +8,7 @@ import {ProjectPartnerDetailPageComponent} from './partner/project-partner-detai
 import {ProjectAcronymResolver} from './project-application/containers/project-application-detail/services/project-acronym.resolver';
 import {PermissionGuard} from '../security/permission.guard';
 import {ProjectApplyToCallComponent} from './project-application/containers/project-application-page/project-apply-to-call.component';
-import {ProjectApplicationPartnerIdentityComponent} from './project-application/containers/project-application-form-page/project-application-form-partner-section/project-application-partner-identity/project-application-partner-identity.component';
+import {ProjectApplicationPartnerIdentityComponent} from '@project/project-application/containers/project-application-form-page/project-application-form-partner-section/project-application-partner-identity/project-application-partner-identity.component';
 import {ProjectApplicationFormAssociatedOrgDetailComponent} from './project-application/containers/project-application-form-page/project-application-form-partner-section/project-application-form-associated-org-detail/project-application-form-associated-org-detail.component';
 import {ProjectApplicationFormIdentificationPageComponent} from './project-application/containers/project-application-form-page/project-application-form-identification-page/project-application-form-identification-page.component';
 import {ProjectApplicationFormPartnerSectionComponent} from './project-application/containers/project-application-form-page/project-application-form-partner-section/project-application-form-partner-section.component';
@@ -67,6 +67,7 @@ import {
 } from '@project/project-application/report/report-page-breadcrumb-resolver.service';
 import { PartnerReportWorkPlanProgressTabComponent } from './project-application/report/partner-report-work-plan-progress-tab/partner-report-work-plan-progress-tab.component';
 import { PartnerReportSubmitTabComponent } from './project-application/report/partner-report-detail-page/partner-report-submit-tab/partner-report-submit-tab.component';
+import {ProjectPartnerCoFinancingSpfTabComponent} from '@project/partner/project-partner-detail-page/project-partner-co-financing-spf-tab/project-partner-co-financing-spf-tab.component';
 
 export const routes: Routes = [
   {
@@ -259,6 +260,10 @@ export const routes: Routes = [
                   {
                     path: 'coFinancing',
                     component: ProjectPartnerCoFinancingTabComponent,
+                  },
+                  {
+                    path: 'spfCoFinancing',
+                    component: ProjectPartnerCoFinancingSpfTabComponent,
                   },
                   {
                     path: 'stateAid',

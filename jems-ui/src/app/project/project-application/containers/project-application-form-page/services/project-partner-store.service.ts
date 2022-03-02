@@ -31,6 +31,7 @@ export class ProjectPartnerStore {
 
   isProjectEditable$: Observable<boolean>;
   projectCallType$: Observable<CallTypeEnum>;
+  isProjectCallTypeSpf$: Observable<boolean>;
   partner$: Observable<ProjectPartnerDetailDTO>;
   partners$: Observable<ProjectPartner[]>;
   leadPartner$: Observable<ProjectPartnerDetailDTO | null>;
@@ -50,6 +51,7 @@ export class ProjectPartnerStore {
               private projectReportService: ProjectReportService) {
     this.isProjectEditable$ = this.projectStore.projectEditable$;
     this.projectCallType$ = this.projectStore.projectCallType$;
+    this.isProjectCallTypeSpf$ = this.projectCallType$.pipe(map(type => type === CallTypeEnum.SPF));
     this.partnerSummaries$ = this.partnerSummaries();
     this.latestPartnerSummaries$ = this.partnerSummariesFromVersion();
     this.partnerReportSummaries$ = this.partnerReportSummaries();

@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.service.partner.cofinancing.update_co
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionSpf
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.UpdateProjectPartnerCoFinancing
 import java.math.BigDecimal
 import org.springframework.http.HttpStatus
@@ -29,6 +30,14 @@ fun validateContribution(
     validateMandatoryPartnerContributionStatus(partnerContributions)
     validateMandatoryPartnerContributionAmount(partnerContributions)
     validatePartnerContributionStatusIsValid(partnerContributions)
+}
+
+fun validateContributionSpf(
+    partnerContributions: Collection<ProjectPartnerContributionSpf>
+) {
+    validateMandatoryPartnerContributionSpfName(partnerContributions)
+    validateMandatoryPartnerContributionSpfStatus(partnerContributions)
+    validateMandatoryPartnerContributionSpfAmount(partnerContributions)
 }
 
 //co financing block
@@ -92,6 +101,21 @@ private fun validateMandatoryPartnerContributionStatus(partnerContributions: Col
 }
 
 private fun validateMandatoryPartnerContributionAmount(partnerContributions: Collection<ProjectPartnerContribution>) {
+    if (!partnerContributions.all { it.amount != null && it.amount >= BigDecimal.ZERO })
+        invalid("project.partner.contribution.amount.is.mandatory")
+}
+
+private fun validateMandatoryPartnerContributionSpfName(partnerContributions: Collection<ProjectPartnerContributionSpf>) {
+    if (!partnerContributions.all { (!it.name.isNullOrBlank()) })
+        invalid("project.partner.contribution.name.is.mandatory")
+}
+
+private fun validateMandatoryPartnerContributionSpfStatus(partnerContributions: Collection<ProjectPartnerContributionSpf>) {
+    if (!partnerContributions.all { it.status != null })
+        invalid("project.partner.contribution.status.is.mandatory")
+}
+
+private fun validateMandatoryPartnerContributionSpfAmount(partnerContributions: Collection<ProjectPartnerContributionSpf>) {
     if (!partnerContributions.all { it.amount != null && it.amount >= BigDecimal.ZERO })
         invalid("project.partner.contribution.amount.is.mandatory")
 }
