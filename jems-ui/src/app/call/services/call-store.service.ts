@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {
   CallDetailDTO,
   CallService,
-  FlatRateSetupDTO,
+  FlatRateSetupDTO, PreSubmissionPluginsDTO,
   ProgrammeCostOptionService,
   ProgrammeLumpSumListDTO,
   ProgrammeUnitCostListDTO,
@@ -69,8 +69,8 @@ export class CallStore {
       );
   }
 
-  savePreSubmissionCheckSettings(pluginKey: string): Observable<CallDetailDTO> {
-    return this.callService.updatePreSubmissionCheckSettings(this.callId, pluginKey).pipe(
+  savePreSubmissionCheckSettings(pluginKeys: PreSubmissionPluginsDTO): Observable<CallDetailDTO> {
+    return this.callService.updatePreSubmissionCheckSettings(this.callId, pluginKeys).pipe(
       tap(saved => this.savedCall$.next(saved)),
       tap(saved => Log.info('Updated call pre-submission check settings:', this, saved))
     );

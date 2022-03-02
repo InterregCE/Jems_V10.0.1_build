@@ -73,7 +73,8 @@ internal class CallDataProviderImplTest : UnitTest() {
             lumpSums = listOf(),
             unitCosts = listOf(),
             applicationFormFieldConfigurations = applicationFormFieldConfigurations,
-            preSubmissionCheckPluginKey = null
+            preSubmissionCheckPluginKey = null,
+            firstStepPreSubmissionCheckPluginKey = null
         )
 
         private val programmeLanguages = listOf(

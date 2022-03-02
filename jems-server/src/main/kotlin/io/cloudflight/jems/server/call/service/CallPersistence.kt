@@ -8,6 +8,7 @@ import io.cloudflight.jems.server.call.service.model.CallApplicationFormFieldsCo
 import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.call.service.model.CallSummary
 import io.cloudflight.jems.server.call.service.model.IdNamePair
+import io.cloudflight.jems.server.call.service.model.PreSubmissionPlugins
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -43,5 +44,5 @@ interface CallPersistence {
 
     fun updateProjectCallStateAids(callId: Long, stateAids: Set<Long>): CallDetail
 
-    fun updateProjectCallPreSubmissionCheckPlugin(callId: Long, pluginKey:String?) : CallDetail
+    fun updateProjectCallPreSubmissionCheckPlugin(callId: Long, pluginKey: PreSubmissionPlugins) : CallDetail
 }

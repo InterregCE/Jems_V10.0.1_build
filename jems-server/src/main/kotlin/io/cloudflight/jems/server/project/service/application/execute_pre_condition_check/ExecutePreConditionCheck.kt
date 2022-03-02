@@ -27,11 +27,16 @@ class ExecutePreConditionCheck(
             if (isPluginEnabled(callSettings.preSubmissionCheckPluginKey))
                 projectPersistence.getProjectSummary(projectId).let { projectSummary ->
                     when {
-                        callSettings.endDateStep1 == null || projectSummary.status.isInStep2() ->
+                       projectSummary.status.isInStep1() ->
+                            jemsPluginRegistry.get(
+                                PreConditionCheckPlugin::class, key = callSettings.firstStepPreSubmissionCheckPluginKey
+                            ).check(projectId)
+
+                       projectSummary.status.isInStep2() ->
                             jemsPluginRegistry.get(
                                 PreConditionCheckPlugin::class, key = callSettings.preSubmissionCheckPluginKey
                             ).check(projectId)
-                        else -> throw PreConditionCheckCannotBeExecutedException()
+                    else -> throw PreConditionCheckCannotBeExecutedException()
                     }
                 }
             else PreConditionCheckResult(emptyList(), true)

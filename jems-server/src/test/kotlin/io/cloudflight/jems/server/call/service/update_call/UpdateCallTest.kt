@@ -79,7 +79,8 @@ class UpdateCallTest : UnitTest() {
                     FieldVisibilityStatus.STEP_TWO_ONLY
                 ), ApplicationFormFieldConfiguration("field.id", FieldVisibilityStatus.STEP_ONE_AND_TWO)
             ),
-            preSubmissionCheckPluginKey = null
+            preSubmissionCheckPluginKey = null,
+            firstStepPreSubmissionCheckPluginKey = null
         )
 
         private val callToUpdate = Call(

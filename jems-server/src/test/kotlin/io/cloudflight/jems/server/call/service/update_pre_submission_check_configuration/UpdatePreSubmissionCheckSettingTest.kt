@@ -4,6 +4,7 @@ import io.cloudflight.jems.plugin.contract.pre_condition_check.PreConditionCheck
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.callDetail
 import io.cloudflight.jems.server.call.service.CallPersistence
+import io.cloudflight.jems.server.call.service.model.PreSubmissionPlugins
 import io.cloudflight.jems.server.plugin.JemsPluginRegistry
 import io.cloudflight.jems.server.plugin.pre_submission_check.PreSubmissionCheckBlocked
 import io.mockk.every
@@ -28,14 +29,21 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
     @Test
     fun `should update pre-submission check plugin settings when there is no problem`(){
         every { jemsPluginRegistry.get(PreConditionCheckPlugin::class, pluginKey ) } returns PreSubmissionCheckBlocked()
-        every { persistence.updateProjectCallPreSubmissionCheckPlugin(1L, pluginKey) } returns callDetail(id = 1L, preSubmissionCheckPluginKey = pluginKey)
-        assertThat(updatePreSubmissionCheckSettings.update(1L, pluginKey)).isEqualTo(callDetail(id = 1L, preSubmissionCheckPluginKey = pluginKey))
+        every { persistence.updateProjectCallPreSubmissionCheckPlugin(1L, PreSubmissionPlugins(
+            pluginKey = pluginKey,
+            firstStepPluginKey = pluginKey
+        ))
+        } returns callDetail(id = 1L, preSubmissionCheckPluginKey = pluginKey, firstStepPreSubmissionCheckPluginKey = pluginKey)
+        assertThat(updatePreSubmissionCheckSettings.update(1L,
+            PreSubmissionPlugins(pluginKey = pluginKey,
+                firstStepPluginKey = pluginKey
+            ))).isEqualTo(callDetail(id = 1L, preSubmissionCheckPluginKey = pluginKey, firstStepPreSubmissionCheckPluginKey = pluginKey))
     }
 
     @Test
     fun `should throw Exception when plugin with provided key is not valid`(){
         val expectedException = RuntimeException("expected exception")
         every { jemsPluginRegistry.get(PreConditionCheckPlugin::class, pluginKey ) } throws expectedException
-        assertThrows<RuntimeException> {  (updatePreSubmissionCheckSettings.update(1L, pluginKey)) }
+        assertThrows<RuntimeException> {  (updatePreSubmissionCheckSettings.update(1L, PreSubmissionPlugins(pluginKey = pluginKey))) }
     }
 }

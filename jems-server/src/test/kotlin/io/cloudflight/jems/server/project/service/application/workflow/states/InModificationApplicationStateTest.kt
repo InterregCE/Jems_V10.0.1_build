@@ -46,7 +46,8 @@ class InModificationApplicationStateTest : UnitTest() {
             unitCosts = emptyList(),
             stateAids = emptyList(),
             applicationFormFieldConfigurations = mutableSetOf(),
-            preSubmissionCheckPluginKey = null
+            preSubmissionCheckPluginKey = null,
+            firstStepPreSubmissionCheckPluginKey = null
         )
 
 

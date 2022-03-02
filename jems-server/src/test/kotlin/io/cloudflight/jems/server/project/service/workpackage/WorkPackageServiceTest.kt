@@ -73,7 +73,8 @@ class WorkPackageServiceTest {
         translatedValues = mutableSetOf(),
         lengthOfPeriod = 1,
         allowedRealCosts = defaultAllowedRealCostsByCallType(CallType.STANDARD),
-        preSubmissionCheckPluginKey = null
+        preSubmissionCheckPluginKey = null,
+        firstStepPreSubmissionCheckPluginKey = null
     ).apply { translatedValues.add(CallTranslEntity(TranslationId(this, SystemLanguage.EN), "This is a dummy call")) }
 
     private val statusDraft = ProjectStatusHistoryEntity(

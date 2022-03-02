@@ -13,6 +13,7 @@ import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.call.service.model.CallFundRate
 import io.cloudflight.jems.server.call.service.model.CallSummary
 import io.cloudflight.jems.server.call.service.model.IdNamePair
+import io.cloudflight.jems.server.call.service.model.PreSubmissionPlugins
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.programme.repository.StrategyRepository
 import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeLumpSumRepository
@@ -275,9 +276,10 @@ class CallPersistenceProvider(
     }
 
     @Transactional
-    override fun updateProjectCallPreSubmissionCheckPlugin(callId: Long, pluginKey: String?) =
+    override fun updateProjectCallPreSubmissionCheckPlugin(callId: Long, pluginKeys: PreSubmissionPlugins) =
         callRepo.findById(callId).orElseThrow { CallNotFound() }
-        .apply { preSubmissionCheckPluginKey = pluginKey }.toDetailModel(
+        .apply { preSubmissionCheckPluginKey = pluginKeys.pluginKey
+                  firstStepPreSubmissionCheckPluginKey = pluginKeys.firstStepPluginKey  }.toDetailModel(
                 applicationFormFieldConfigurationRepository.findAllByCallId(callId),
                 projectCallStateAidRepo.findAllByIdCallId(callId)
             )

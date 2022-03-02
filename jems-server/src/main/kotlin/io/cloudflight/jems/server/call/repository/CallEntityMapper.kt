@@ -73,7 +73,8 @@ fun CallEntity.toDetailModel(
     lumpSums = lumpSums.toModel(),
     unitCosts = unitCosts.toModel(),
     applicationFormFieldConfigurations = applicationFormFieldConfigurationEntities.toModel(),
-    preSubmissionCheckPluginKey = preSubmissionCheckPluginKey
+    preSubmissionCheckPluginKey = preSubmissionCheckPluginKey,
+    firstStepPreSubmissionCheckPluginKey = firstStepPreSubmissionCheckPluginKey
 )
 
 private fun Set<ProgrammeSpecificObjectiveEntity>.groupSpecificObjectives() =
@@ -116,7 +117,8 @@ fun Call.toEntity(
     lumpSums = existingEntity?.lumpSums ?: mutableSetOf(),
     unitCosts = existingEntity?.unitCosts ?: mutableSetOf(),
     allowedRealCosts = existingEntity?.allowedRealCosts ?: getDefaultAllowedRealCosts(type),
-    preSubmissionCheckPluginKey = existingEntity?.preSubmissionCheckPluginKey
+    preSubmissionCheckPluginKey = existingEntity?.preSubmissionCheckPluginKey,
+    firstStepPreSubmissionCheckPluginKey = existingEntity?.firstStepPreSubmissionCheckPluginKey
 ).apply {
     translatedValues.addAll(description.combineDescriptionsToTranslations(this))
 }

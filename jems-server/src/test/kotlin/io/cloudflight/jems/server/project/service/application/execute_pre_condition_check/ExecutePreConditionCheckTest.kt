@@ -33,8 +33,11 @@ internal class ExecutePreConditionCheckTest : UnitTest() {
     private val pluginKey = "standard-pre-condition-check-plugin"
     private val projectInStepTwo = buildProjectSummary(status = ApplicationStatus.DRAFT)
     private val projectInStepOne = buildProjectSummary(status = ApplicationStatus.STEP1_DRAFT)
-    private val twoStepCallSetting = buildCallSetting(preSubmissionCheckPluginKey= pluginKey )
-    private val oneStepCallSetting = buildCallSetting(preSubmissionCheckPluginKey= pluginKey, endDateStep1 = null)
+    private val twoStepCallSetting = buildCallSetting(preSubmissionCheckPluginKey= pluginKey, firstStepPreSubmissionCheckPluginKey = pluginKey )
+    private val oneStepCallSetting = buildCallSetting(
+        preSubmissionCheckPluginKey= pluginKey,
+        firstStepPreSubmissionCheckPluginKey = pluginKey,
+        endDateStep1 = null)
 
     @MockK
     lateinit var jemsPluginRegistry: JemsPluginRegistry
@@ -75,7 +78,7 @@ internal class ExecutePreConditionCheckTest : UnitTest() {
     @Test
     fun `should execute pre condition check plugin for the project application when application belongs to a one-step call`() {
         every { projectPersistence.getProjectCallSettings(projectId) } returns oneStepCallSetting
-        every { projectPersistence.getProjectSummary(projectId) } returns projectInStepOne
+        every { projectPersistence.getProjectSummary(projectId) } returns projectInStepTwo
         every { pluginStatusRepository.findById(pluginKey) } returns Optional.of(
             PluginStatusEntity(pluginKey, true)
         )
@@ -90,19 +93,19 @@ internal class ExecutePreConditionCheckTest : UnitTest() {
     }
 
     @Test
-    fun `should throw exception when application belongs to two-step call and application is not in step two`() {
-        every { projectPersistence.getProjectSummary(projectId) } returns projectInStepOne
+    fun `should execute pre condition check plugin when application belongs to two-step call and application is not in step two`() {
         every { projectPersistence.getProjectCallSettings(projectId) } returns twoStepCallSetting
+        every { projectPersistence.getProjectSummary(projectId) } returns projectInStepOne
         every { pluginStatusRepository.findById(pluginKey) } returns Optional.of(
             PluginStatusEntity(pluginKey, true)
         )
+        val pluginExpectedResult = PreConditionCheckResult(listOf(), false)
         every {
-            jemsPluginRegistry.get(
-                PreConditionCheckPlugin::class, pluginKey
-            )
+            jemsPluginRegistry.get(PreConditionCheckPlugin::class, pluginKey)
         } returns preConditionCheckPlugin
-
-        assertThrows<PreConditionCheckCannotBeExecutedException> { executePreConditionCheck.execute(projectId) }
+        every { preConditionCheckPlugin.check(projectId) } returns pluginExpectedResult
+        val preConditionActualResult = executePreConditionCheck.execute(projectId)
+        assertThat(preConditionActualResult).isEqualTo(pluginExpectedResult)
     }
 
     @Test
@@ -125,13 +128,15 @@ internal class ExecutePreConditionCheckTest : UnitTest() {
         lumpSums: List<ProgrammeLumpSum> = emptyList(),
         unitCosts: List<ProgrammeUnitCost> = emptyList(),
         stateAids : List<ProgrammeStateAid> = emptyList(),
-        preSubmissionCheckPluginKey: String? = null
+        preSubmissionCheckPluginKey: String? = null,
+        firstStepPreSubmissionCheckPluginKey: String? = null
     ) =
         ProjectCallSettings(
             callId, callName, callType, startDate, endDate, endDateStep1,
             lengthOfPeriod, isAdditionalFundAllowed, flatRates, lumpSums, unitCosts, stateAids,
             applicationFormFieldConfigurations = mutableSetOf(),
-            preSubmissionCheckPluginKey = preSubmissionCheckPluginKey
+            preSubmissionCheckPluginKey = preSubmissionCheckPluginKey,
+            firstStepPreSubmissionCheckPluginKey = firstStepPreSubmissionCheckPluginKey
         )
 
     private fun buildProjectSummary(

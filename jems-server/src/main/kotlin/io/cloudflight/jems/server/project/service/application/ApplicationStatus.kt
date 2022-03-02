@@ -60,6 +60,8 @@ enum class ApplicationStatus {
             || this == IN_MODIFICATION
             || this == MODIFICATION_SUBMITTED
 
+    fun isInStep1() = !isInStep2()
+
     fun isEligible() = this == STEP1_ELIGIBLE || this == ELIGIBLE
 
 }

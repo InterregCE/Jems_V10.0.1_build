@@ -9,6 +9,7 @@ import io.cloudflight.jems.server.call.service.callCreated
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldSetting
 import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.call.service.model.Call
+import io.cloudflight.jems.server.call.service.model.PreSubmissionPlugins
 import io.cloudflight.jems.server.call.service.validator.CallValidator
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import org.springframework.context.ApplicationEventPublisher
@@ -39,7 +40,11 @@ class CreateCall(
             persistence.saveApplicationFormFieldConfigurations(it.id, ApplicationFormFieldSetting.getDefaultApplicationFormFieldConfigurations(it.type))
             // ToDo to be removed when implementing MP2-2210
             if (call.type == CallType.SPF) {
-                persistence.updateProjectCallPreSubmissionCheckPlugin(it.id, "jems-pre-condition-check-blocked")
+                persistence.updateProjectCallPreSubmissionCheckPlugin(it.id, PreSubmissionPlugins(
+                    pluginKey = "jems-pre-condition-check-blocked",
+                    firstStepPluginKey = null,
+                    callHasTwoSteps = call.endDateStep1 != null,
+                ))
             }
             auditPublisher.publishEvent(callCreated(this, it))
         }

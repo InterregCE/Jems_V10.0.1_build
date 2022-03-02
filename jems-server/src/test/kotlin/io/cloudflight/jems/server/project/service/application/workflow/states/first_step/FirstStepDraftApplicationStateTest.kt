@@ -51,7 +51,8 @@ class FirstStepDraftApplicationStateTest : UnitTest() {
             unitCosts = emptyList(),
             stateAids = emptyList(),
             applicationFormFieldConfigurations = mutableSetOf(),
-            preSubmissionCheckPluginKey = null
+            preSubmissionCheckPluginKey = null,
+            firstStepPreSubmissionCheckPluginKey = null
         )
 
         private val actionInfo = ApplicationActionInfo(

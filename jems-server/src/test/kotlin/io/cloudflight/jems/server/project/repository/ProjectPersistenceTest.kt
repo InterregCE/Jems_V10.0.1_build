@@ -359,7 +359,8 @@ internal class ProjectPersistenceTest : UnitTest() {
                     )
                 ),
                 applicationFormFieldConfigurations = applicationFormFieldConfigurationEntities.toModel(),
-                preSubmissionCheckPluginKey = null
+                preSubmissionCheckPluginKey = null,
+                firstStepPreSubmissionCheckPluginKey = null
             )
         )
     }

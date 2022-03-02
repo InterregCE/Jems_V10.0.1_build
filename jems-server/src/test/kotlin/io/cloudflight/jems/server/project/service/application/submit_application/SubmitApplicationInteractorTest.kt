@@ -195,13 +195,15 @@ class SubmitApplicationInteractorTest : UnitTest() {
         lumpSums: List<ProgrammeLumpSum> = emptyList(),
         unitCosts: List<ProgrammeUnitCost> = emptyList(),
         stateAids : List<ProgrammeStateAid> = emptyList(),
-        preSubmissionCheckPluginKey : String? = null
+        preSubmissionCheckPluginKey : String? = null,
+        firstStepPreSubmissionCheckPluginKey : String? = null
     ) =
         ProjectCallSettings(
             callId, callName, callType, startDate, endDate, endDateStep1,
             lengthOfPeriod, isAdditionalFundAllowed, flatRates, lumpSums, unitCosts, stateAids,
             applicationFormFieldConfigurations = mutableSetOf(),
-            preSubmissionCheckPluginKey = preSubmissionCheckPluginKey
+            preSubmissionCheckPluginKey = preSubmissionCheckPluginKey,
+            firstStepPreSubmissionCheckPluginKey = firstStepPreSubmissionCheckPluginKey
         )
 
     private fun buildProjectSummary(
