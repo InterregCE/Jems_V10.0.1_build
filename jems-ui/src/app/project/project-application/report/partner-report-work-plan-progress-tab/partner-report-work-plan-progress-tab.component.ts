@@ -20,6 +20,9 @@ import {
 import {
   PartnerReportWorkplanConstants
 } from '@project/project-application/report/partner-report-work-plan-progress-tab/partner-report-work-plan-progress.constants';
+import {
+  PartnerReportDetailPageStore
+} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
 
 @Component({
   selector: 'jems-partner-report-work-plan-progress-tab',
@@ -42,10 +45,11 @@ export class PartnerReportWorkPlanProgressTabComponent {
     })])
   });
 
-  constructor(private formBuilder: FormBuilder,
+  constructor(public partnerReportPageStore: PartnerReportPageStore,
+              private formBuilder: FormBuilder,
               private formService: FormService,
               private projectSidenavService: ProjectApplicationFormSidenavService,
-              public partnerReportPageStore: PartnerReportPageStore,
+              private partnerReportDetailPageStore: PartnerReportDetailPageStore,
               private workPackageService: WorkPackageService,
               private pageStore: PartnerReportWorkPlanPageStore) {
 
@@ -101,7 +105,7 @@ export class PartnerReportWorkPlanProgressTabComponent {
       this.addOutput(workPackageIndex, output);
     });
 
-    this.formService.init(this.workPlanForm);
+    this.formService.init(this.workPlanForm, this.partnerReportDetailPageStore.isReportEditable());
   }
 
   private addActivity(workPackageIndex: number, existing?: ProjectPartnerReportWorkPackageActivityDTO): void {
