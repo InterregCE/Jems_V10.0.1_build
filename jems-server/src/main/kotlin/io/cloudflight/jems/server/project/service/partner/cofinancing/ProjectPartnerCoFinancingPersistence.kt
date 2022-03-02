@@ -3,7 +3,9 @@ package io.cloudflight.jems.server.project.service.partner.cofinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContributionSpf
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionSpf
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.UpdateProjectPartnerCoFinancing
 
 interface ProjectPartnerCoFinancingPersistence {
@@ -26,5 +28,16 @@ interface ProjectPartnerCoFinancingPersistence {
         finances: List<UpdateProjectPartnerCoFinancing>,
         partnerContributions: List<ProjectPartnerContribution>
     ): ProjectPartnerCoFinancingAndContribution
+
+    fun getSpfCoFinancingAndContributions(
+        partnerId: Long,
+        version: String? = null
+    ): ProjectPartnerCoFinancingAndContributionSpf
+
+    fun updateSpfCoFinancingAndContribution(
+        partnerId: Long,
+        finances: List<UpdateProjectPartnerCoFinancing>,
+        partnerContributions: List<ProjectPartnerContributionSpf>
+    ): ProjectPartnerCoFinancingAndContributionSpf
 
 }

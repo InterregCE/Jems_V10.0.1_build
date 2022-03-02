@@ -1,14 +1,20 @@
 package io.cloudflight.jems.server.project.service.partner.cofinancing.update_cofinancing
 
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO.AutomaticPublic
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO.Private
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO.Public
 import io.cloudflight.jems.server.call.callFund
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
+import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
+import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
 import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPartnerCoFinancingPersistence
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContributionSpf
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionSpf
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.UpdateProjectPartnerCoFinancing
 import io.mockk.MockKAnnotations
 import io.mockk.every
@@ -406,6 +412,58 @@ internal class UpdateCoFinancingInteractorTest {
                 percentage = BigDecimal.valueOf(40.5)
             )
         )
+    }
+
+    @Test
+    fun `update financing SPF OK and contribution - missing amount`() {
+        every { persistence.getAvailableFunds(7) } returns setOf(callFund(fund.id))
+
+        val toSave = listOf(
+            ProjectPartnerContributionSpf(name = "name", amount = null, status = Public)
+        )
+
+        assertExceptionMsg(
+            executable = { updateInteractor.updateSpfCoFinancing(7, financingOk, toSave) },
+            expectedError = "project.partner.contribution.amount.is.mandatory"
+        )
+    }
+
+    @Test
+    fun updateSpfCoFinancing() {
+        every { persistence.getAvailableFunds(1) } returns setOf(callFund(fund.id))
+        val updateFinance1 = UpdateProjectPartnerCoFinancing(fundId = 1, percentage = BigDecimal.valueOf(40))
+        val updateFinance2 = UpdateProjectPartnerCoFinancing(fundId = null, percentage = BigDecimal.valueOf(60))
+        val finance1 = ProjectPartnerCoFinancing(
+            fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
+            fund = ProgrammeFund(id = 1, selected = true, ProgrammeFundType.ERDF),
+            percentage = BigDecimal.valueOf(40),
+        )
+        val finance2 = ProjectPartnerCoFinancing(
+            fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution,
+            fund = null,
+            percentage = BigDecimal.valueOf(60),
+        )
+        val partnerSpfContribution = ProjectPartnerContributionSpf(
+            name = "name",
+            amount = BigDecimal.valueOf(30),
+            status = Public
+        )
+
+        val slotFinances = slot<List<UpdateProjectPartnerCoFinancing>>()
+        val slotPartnerSpfContributions = slot<List<ProjectPartnerContributionSpf>>()
+        every {
+            persistence.updateSpfCoFinancingAndContribution(
+                1,
+                capture(slotFinances),
+                capture(slotPartnerSpfContributions)
+            )
+        } returns
+            ProjectPartnerCoFinancingAndContributionSpf(listOf(finance1, finance2), listOf(partnerSpfContribution))
+
+        updateInteractor.updateSpfCoFinancing(1, listOf(updateFinance1, updateFinance2), listOf(partnerSpfContribution))
+
+        assertThat(slotFinances.captured).containsExactlyInAnyOrder(updateFinance1, updateFinance2)
+        assertThat(slotPartnerSpfContributions.captured).containsExactly(partnerSpfContribution)
     }
 
     private fun assertExceptionMsg(executable: () -> Unit, expectedError: String, description: String? = null) {

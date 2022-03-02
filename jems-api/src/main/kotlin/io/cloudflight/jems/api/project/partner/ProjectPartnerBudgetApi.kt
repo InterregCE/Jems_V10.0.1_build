@@ -111,6 +111,13 @@ interface ProjectPartnerBudgetApi {
         @RequestParam(required = false) version: String? = null
     ): BigDecimal
 
+    @ApiOperation("Get project partner Budget: total SPF")
+    @GetMapping("$ENDPOINT_API_PROJECT_PARTNER_BUDGET/spf/total")
+    fun getSpfTotal(
+        @PathVariable partnerId: Long,
+        @RequestParam(required = false) version: String? = null
+    ): BigDecimal
+
     @ApiOperation("Get project partner Co-Financing")
     @GetMapping("$ENDPOINT_API_PROJECT_PARTNER_BUDGET/cofinancing")
     fun getProjectPartnerCoFinancing(
@@ -121,6 +128,20 @@ interface ProjectPartnerBudgetApi {
     @ApiOperation("Update project partner co-financing")
     @PutMapping("$ENDPOINT_API_PROJECT_PARTNER_BUDGET/cofinancing", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateProjectPartnerCoFinancing(
+        @PathVariable partnerId: Long,
+        @RequestBody partnerCoFinancing: ProjectPartnerCoFinancingAndContributionInputDTO
+    ): ProjectPartnerCoFinancingAndContributionOutputDTO
+
+    @ApiOperation("Get project partner Co-Financing SPF")
+    @GetMapping("$ENDPOINT_API_PROJECT_PARTNER_BUDGET/spf/cofinancing")
+    fun getProjectPartnerSpfCoFinancing(
+        @PathVariable partnerId: Long,
+        @RequestParam(required = false) version: String? = null
+    ): ProjectPartnerCoFinancingAndContributionOutputDTO
+
+    @ApiOperation("Update project partner co-financing SPF")
+    @PutMapping("$ENDPOINT_API_PROJECT_PARTNER_BUDGET/spf/cofinancing", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun updateProjectPartnerSpfCoFinancing(
         @PathVariable partnerId: Long,
         @RequestBody partnerCoFinancing: ProjectPartnerCoFinancingAndContributionInputDTO
     ): ProjectPartnerCoFinancingAndContributionOutputDTO

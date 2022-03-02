@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.controller.partner.budget
 
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory
 import io.cloudflight.jems.api.programme.dto.fund.ProgrammeFundDTO
+import io.cloudflight.jems.api.programme.dto.fund.ProgrammeFundTypeDTO
 import io.cloudflight.jems.api.project.dto.partner.budget.BudgetGeneralCostEntryDTO
 import io.cloudflight.jems.api.project.dto.partner.budget.BudgetPeriodDTO
 import io.cloudflight.jems.api.project.dto.partner.budget.BudgetSpfCostEntryDTO
@@ -20,6 +21,7 @@ import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCon
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO.Public
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
+import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
 import io.cloudflight.jems.server.project.service.partner.budget.get_budget_costs.GetBudgetCosts
 import io.cloudflight.jems.server.project.service.partner.budget.get_budget_options.GetBudgetOptionsInteractor
 import io.cloudflight.jems.server.project.service.partner.budget.get_budget_total_cost.GetBudgetTotalCost
@@ -34,7 +36,9 @@ import io.cloudflight.jems.server.project.service.partner.budget.update_budget_u
 import io.cloudflight.jems.server.project.service.partner.cofinancing.get_cofinancing.GetCoFinancingInteractor
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContributionSpf
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionSpf
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.UpdateProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.update_cofinancing.UpdateCoFinancing
 import io.cloudflight.jems.server.project.service.partner.model.BudgetCosts
@@ -144,6 +148,46 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
         ),
         partnerContributions = listOf(contribution3, contribution2, contribution1),
         partnerAbbreviation = "PartnerName"
+    )
+
+    private val coFinancingContributionSpf = ProjectPartnerCoFinancingAndContributionSpf(
+        finances = listOf(
+            ProjectPartnerCoFinancing(
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
+                percentage = BigDecimal.valueOf(20.5),
+                fund = ProgrammeFund(id = 10, selected = true, type = ProgrammeFundType.ERDF)
+            ),
+            ProjectPartnerCoFinancing(
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution,
+                percentage = BigDecimal.valueOf(30.5),
+                fund = ProgrammeFund(id = 2, selected = true, type = ProgrammeFundType.INTERREG_FUNDS)
+            )
+        ),
+        partnerContributions = listOf(
+            ProjectPartnerContributionSpf(
+                id = 1,
+                name = "name",
+                status = Public,
+                amount = BigDecimal.TEN
+            )
+        )
+    )
+    private val coFinancesSpf1 = ProjectPartnerCoFinancingOutputDTO(
+        fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
+        percentage = BigDecimal.valueOf(20.5),
+        fund = ProgrammeFundDTO(id = 10, selected = true, type = ProgrammeFundTypeDTO.ERDF)
+    )
+    private val coFinancesSpf2 = ProjectPartnerCoFinancingOutputDTO(
+        fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution,
+        percentage = BigDecimal.valueOf(30.5),
+        fund = ProgrammeFundDTO(id = 2, selected = true, type = ProgrammeFundTypeDTO.INTERREG_FUNDS)
+    )
+    private val partnerContributionSpf = ProjectPartnerContributionDTO(
+        id = 1,
+        name = "name",
+        status = Public,
+        partner = false,
+        amount = BigDecimal.TEN
     )
 
     @MockK
@@ -343,6 +387,13 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
     }
 
     @Test
+    fun getSpfTotal() {
+        val total = BigDecimal.ONE
+        every { getBudgetTotalCost.getBudgetTotalSpfCost(PARTNER_ID) } returns total
+        assertThat(controller.getSpfTotal(PARTNER_ID)).isEqualTo(total)
+    }
+
+    @Test
     fun getProjectPartnerCoFinancing() {
         every { getCoFinancing.getCoFinancing(PARTNER_ID, null) } returns modelMock
 
@@ -367,6 +418,35 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
                 name = "test abbr",
                 status = null,
                 partner = true,
+                amount = null
+            )
+        )
+    }
+
+    @Test
+    fun getProjectPartnerSpfCoFinancing() {
+        every { getCoFinancing.getSpfCoFinancing(PARTNER_ID, "v1") } returns coFinancingContributionSpf
+
+        val result = controller.getProjectPartnerSpfCoFinancing(PARTNER_ID, "v1")
+
+        assertThat(result.finances).containsExactly(coFinancesSpf1, coFinancesSpf2)
+        assertThat(result.partnerContributions).containsExactly(partnerContributionSpf)
+    }
+
+    @Test
+    fun `getProjectPartnerSpfCoFinancing - empty`() {
+        every { getCoFinancing.getSpfCoFinancing(PARTNER_ID, null) } returns ProjectPartnerCoFinancingAndContributionSpf(
+            finances = emptyList(),
+            partnerContributions = emptyList()
+        )
+        val result = controller.getProjectPartnerSpfCoFinancing(PARTNER_ID)
+        assertThat(result.finances).isEmpty()
+        assertThat(result.partnerContributions).containsExactly(
+            ProjectPartnerContributionDTO(
+                id = null,
+                name = null,
+                status = null,
+                partner = false,
                 amount = null
             )
         )
@@ -431,4 +511,64 @@ class ProjectPartnerBudgetControllerTest : UnitTest() {
             contribution1, contribution2, contribution3
         )
     }
+
+    @Test
+    fun updateProjectPartnerSpfCoFinancing() {
+        val partnerCoFinancing = ProjectPartnerCoFinancingAndContributionInputDTO(
+            finances = listOf(
+                ProjectPartnerCoFinancingInputDTO(
+                    fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
+                    fundId = 10,
+                    percentage = BigDecimal.valueOf(20.5)
+                ),
+                ProjectPartnerCoFinancingInputDTO(
+                    fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution,
+                    fundId = null,
+                    percentage = BigDecimal.valueOf(50.5)
+                )
+            ),
+            partnerContributions = listOf(
+                ProjectPartnerContributionDTO(
+                    id = 1,
+                    name = "name",
+                    status = Public,
+                    partner = false,
+                    amount = BigDecimal.TEN
+                )
+            )
+        )
+        val slotFinances = slot<List<UpdateProjectPartnerCoFinancing>>()
+        val slotPartnerContributions = slot<List<ProjectPartnerContributionSpf>>()
+        every {
+            updateCoFinancing.updateSpfCoFinancing(
+                PARTNER_ID,
+                capture(slotFinances),
+                capture(slotPartnerContributions)
+            )
+        } returns coFinancingContributionSpf
+
+        val result = controller.updateProjectPartnerSpfCoFinancing(PARTNER_ID, partnerCoFinancing)
+        assertThat(result.finances).containsExactly(coFinancesSpf1, coFinancesSpf2)
+        assertThat(result.partnerContributions).containsExactly(partnerContributionSpf)
+
+        assertThat(slotFinances.captured).containsExactlyInAnyOrder(
+            UpdateProjectPartnerCoFinancing(
+                fundId = 10,
+                percentage = BigDecimal.valueOf(20.5)
+            ),
+            UpdateProjectPartnerCoFinancing(
+                fundId = null,
+                percentage = BigDecimal.valueOf(50.5)
+            )
+        )
+        assertThat(slotPartnerContributions.captured).containsExactly(
+            ProjectPartnerContributionSpf(
+                id = 1,
+                name = "name",
+                status = Public,
+                amount = BigDecimal.TEN
+            )
+        )
+    }
+
 }

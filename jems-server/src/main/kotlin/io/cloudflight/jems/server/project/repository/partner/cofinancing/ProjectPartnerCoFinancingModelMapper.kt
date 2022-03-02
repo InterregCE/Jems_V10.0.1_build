@@ -13,13 +13,15 @@ import io.cloudflight.jems.server.project.entity.partner.cofinancing.PartnerFina
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.PerPartnerFinancingRow
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerCoFinancingEntity
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerCoFinancingFundId
+import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerCoFinancingSpfEntity
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerContributionEntity
+import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerContributionSpfEntity
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionSpf
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.UpdateProjectPartnerCoFinancing
 import java.util.TreeMap
-import kotlin.collections.HashSet
 
 // region Finances
 
@@ -33,6 +35,21 @@ fun List<UpdateProjectPartnerCoFinancing>.toCoFinancingEntity(partnerId: Long, a
     }
 
 fun ProjectPartnerCoFinancingEntity.toModel() = ProjectPartnerCoFinancing(
+    fundType = getFundType(),
+    fund = programmeFund?.toModel(),
+    percentage = percentage
+)
+
+fun List<UpdateProjectPartnerCoFinancing>.toSpfCoFinancingEntity(partnerId: Long, availableFunds: Map<Long, ProgrammeFundEntity>) =
+    mapIndexedTo(HashSet()) { index, coFinancing ->
+        ProjectPartnerCoFinancingSpfEntity(
+            coFinancingFundId = ProjectPartnerCoFinancingFundId(partnerId, orderNr = index + 1),
+            percentage = coFinancing.percentage!!,
+            programmeFund = if (coFinancing.fundId != null) availableFunds[coFinancing.fundId] else null
+        )
+    }
+
+fun ProjectPartnerCoFinancingSpfEntity.toModel() = ProjectPartnerCoFinancing(
     fundType = getFundType(),
     fund = programmeFund?.toModel(),
     percentage = percentage
@@ -74,6 +91,9 @@ fun Collection<PerPartnerFinancingRow>.toPerPartnerFinancing() = groupBy { it.pa
 
 fun Collection<ProjectPartnerCoFinancingEntity>.toCoFinancingModel() =
     sortedBy { it.coFinancingFundId.orderNr }.map { it.toModel() }
+
+fun Collection<ProjectPartnerCoFinancingSpfEntity>.toSpfCoFinancingModel() =
+    sortedBy { it.coFinancingFundId.orderNr }.map { it.toModel() }
 // endregion Finances
 
 
@@ -88,12 +108,29 @@ fun Collection<ProjectPartnerContribution>.toContributionEntity(partnerId: Long)
     )
 }
 
+fun List<ProjectPartnerContributionSpf>.toEntity(partnerId: Long) = map {
+    ProjectPartnerContributionSpfEntity(
+        id = it.id ?: 0,
+        partnerId = partnerId,
+        name = it.name,
+        status = it.status,
+        amount = it.amount!!
+    )
+}
+
 fun ProjectPartnerContributionEntity.toModel() = ProjectPartnerContribution(
     id = id,
     name = name,
     status = status,
     amount = amount,
     isPartner = name == null
+)
+
+fun ProjectPartnerContributionSpfEntity.toSpfModel() = ProjectPartnerContributionSpf(
+    id = id,
+    name = name,
+    status = status,
+    amount = amount
 )
 
 fun PartnerContributionRow.toModel() = ProjectPartnerContribution(
@@ -104,9 +141,20 @@ fun PartnerContributionRow.toModel() = ProjectPartnerContribution(
     isPartner = name == null
 )
 
+fun PartnerContributionRow.toSpfModel() = ProjectPartnerContributionSpf(
+    id = id,
+    name = name,
+    status = status,
+    amount = amount
+)
+
 fun Collection<ProjectPartnerContributionEntity>.toContributionModel() = map { it.toModel() }
 
+fun Collection<ProjectPartnerContributionSpfEntity>.toContributionSpfModel() = map { it.toSpfModel() }
+
 fun Collection<PartnerContributionRow>.toProjectPartnerContributionHistoricalData() = map { it.toModel() }
+
+fun Collection<PartnerContributionRow>.toProjectPartnerContributionSpfHistoricalData() = map { it.toSpfModel() }
 // endregion Contributions
 
 fun ProjectPartnerEntity.extractCoFinancingAndContribution(

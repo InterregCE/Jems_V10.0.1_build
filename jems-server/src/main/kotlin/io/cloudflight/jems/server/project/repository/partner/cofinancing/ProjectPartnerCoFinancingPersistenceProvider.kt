@@ -8,12 +8,16 @@ import io.cloudflight.jems.server.project.repository.ProjectNotFoundException
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.repository.budget.cofinancing.ProjectPartnerCoFinancingRepository
+import io.cloudflight.jems.server.project.repository.budget.cofinancing.ProjectPartnerContributionSpfRepository
+import io.cloudflight.jems.server.project.repository.budget.cofinancing.ProjectPartnerSpfCoFinancingRepository
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.repository.partner.copy
 import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPartnerCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContributionSpf
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionSpf
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.UpdateProjectPartnerCoFinancing
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -23,6 +27,8 @@ import java.sql.Timestamp
 class ProjectPartnerCoFinancingPersistenceProvider(
     private val projectPartnerRepository: ProjectPartnerRepository,
     private val projectPartnerCoFinancingRepository: ProjectPartnerCoFinancingRepository,
+    private val projectPartnerSpfCoFinancingRepository: ProjectPartnerSpfCoFinancingRepository,
+    private val projectPartnerContributionSpfRepository: ProjectPartnerContributionSpfRepository,
     private val projectVersionUtils: ProjectVersionUtils,
     private val projectRepository: ProjectRepository
 ) : ProjectPartnerCoFinancingPersistence {
@@ -109,6 +115,61 @@ class ProjectPartnerCoFinancingPersistenceProvider(
         )
     }
 
+    @Transactional(readOnly = true)
+    override fun getSpfCoFinancingAndContributions(
+        partnerId: Long,
+        version: String?
+    ): ProjectPartnerCoFinancingAndContributionSpf {
+        return projectVersionUtils.fetch(version,
+            projectId = projectVersionUtils.fetchProjectId(version, partnerId,
+                currentVersionOnlyFetcher = { projectPartnerRepository.getProjectIdForPartner(partnerId) },
+                historicVersionFetcher = { projectPartnerRepository.getProjectIdByPartnerIdInFullHistory(partnerId) }
+            ),
+            currentVersionFetcher = {
+                ProjectPartnerCoFinancingAndContributionSpf(
+                    finances = projectPartnerSpfCoFinancingRepository.findAllByCoFinancingFundIdPartnerId(partnerId)
+                        .toSpfCoFinancingModel(),
+                    partnerContributions = projectPartnerContributionSpfRepository.findAllByPartnerId(partnerId)
+                        .toContributionSpfModel()
+                )
+            },
+            previousVersionFetcher = { timestamp ->
+                getPartnerSpfCoFinancingAndContributions(partnerId, timestamp)
+            }
+        ) ?: ProjectPartnerCoFinancingAndContributionSpf(
+            finances = emptyList(),
+            partnerContributions = emptyList()
+        )
+    }
+
+    @Transactional
+    override fun updateSpfCoFinancingAndContribution(
+        partnerId: Long,
+        finances: List<UpdateProjectPartnerCoFinancing>,
+        partnerContributions: List<ProjectPartnerContributionSpf>
+    ): ProjectPartnerCoFinancingAndContributionSpf {
+        val partner = getPartnerOrThrow(partnerId)
+        val availableFundsGroupedById = partner.project.call.funds
+            .map { it.setupId.programmeFund }
+            .associateBy { it.id }
+
+        projectPartnerContributionSpfRepository.deleteByPartnerId(partnerId)
+        val contributions = projectPartnerContributionSpfRepository.saveAll(partnerContributions.toEntity(partnerId))
+
+        projectPartnerSpfCoFinancingRepository.deleteByCoFinancingFundIdPartnerId(partnerId)
+        val financesSaved = projectPartnerSpfCoFinancingRepository.saveAll(
+            finances.toSpfCoFinancingEntity(
+                partnerId,
+                availableFundsGroupedById
+            )
+        )
+
+        return ProjectPartnerCoFinancingAndContributionSpf(
+            finances = financesSaved.toSpfCoFinancingModel(),
+            partnerContributions = contributions.toContributionSpfModel()
+        )
+    }
+
     private fun getPartnerOrThrow(partnerId: Long): ProjectPartnerEntity =
         projectPartnerRepository.findById(partnerId).orElseThrow { ResourceNotFoundException("projectPartner") }
 
@@ -128,6 +189,21 @@ class ProjectPartnerCoFinancingPersistenceProvider(
             finances = finances,
             partnerContributions = partnerContributions,
             partnerAbbreviation = partnerAbbrev ?: ""
+        )
+    }
+
+    private fun getPartnerSpfCoFinancingAndContributions(
+        partnerId: Long,
+        timestamp: Timestamp,
+    ): ProjectPartnerCoFinancingAndContributionSpf {
+        val finances = projectPartnerSpfCoFinancingRepository.findPartnerFinancingByIdAsOfTimestamp(partnerId, timestamp)
+            .toProjectPartnerFinancingHistoricalData()
+        val partnerContributions =
+            projectPartnerContributionSpfRepository.findPartnerContributionSpfByIdAsOfTimestamp(partnerId, timestamp)
+                .toProjectPartnerContributionSpfHistoricalData()
+        return ProjectPartnerCoFinancingAndContributionSpf(
+            finances = finances,
+            partnerContributions = partnerContributions
         )
     }
 
