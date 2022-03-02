@@ -17,4 +17,5 @@ interface UserProjectRepository : JpaRepository<UserProjectEntity, UserProjectId
 
     fun deleteAllByIdIn(id: Collection<UserProjectId>)
 
+    fun deleteAllByIdUserId(id: Long)
 }
