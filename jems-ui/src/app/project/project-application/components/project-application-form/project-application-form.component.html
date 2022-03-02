@@ -87,7 +87,8 @@
 
         <ng-container *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_A.PROJECT_IDENTIFICATION.PRIORITY">
             <h4>{{'project.application.project.priority.title' | translate}}</h4>
-            <jems-alert [closable]="false" [show]="projectContracted" [type]="Alert.INFO">
+            <jems-alert *ngIf="projectStore.projectEditable$ | async"
+                        [closable]="false" [show]="projectContracted" [type]="Alert.INFO">
                 <span>{{'project.application.form.section.part.a.restrict.contracted' | translate}}</span>
             </jems-alert>
             <mat-form-field *ngIf="applicationForm.enabled && !projectContracted">
