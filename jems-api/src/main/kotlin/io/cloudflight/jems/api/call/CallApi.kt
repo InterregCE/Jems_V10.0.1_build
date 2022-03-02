@@ -5,6 +5,7 @@ import io.cloudflight.jems.api.call.dto.CallDTO
 import io.cloudflight.jems.api.call.dto.CallDetailDTO
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.call.dto.CallUpdateRequestDTO
+import io.cloudflight.jems.api.call.dto.PreSubmissionPluginsDTO
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateSetupDTO
 import io.cloudflight.jems.api.common.dto.IdNamePairDTO
 import io.swagger.annotations.Api
@@ -102,7 +103,7 @@ interface CallApi {
     @PutMapping("$ENDPOINT_API_CALL/byId/{callId}/preSubmissionCheck", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updatePreSubmissionCheckSettings(
         @PathVariable callId: Long,
-        @RequestBody pluginKey: String?
+        @RequestBody pluginKeys: PreSubmissionPluginsDTO
     ): CallDetailDTO
 
 }

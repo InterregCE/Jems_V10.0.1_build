@@ -48,7 +48,8 @@ internal class UpdateProjectLumpSumsTest : UnitTest() {
             unitCosts = listOf(),
             stateAids = emptyList(),
             applicationFormFieldConfigurations = mutableSetOf(),
-            preSubmissionCheckPluginKey = null
+            preSubmissionCheckPluginKey = null,
+            firstStepPreSubmissionCheckPluginKey = null
         )
 
         private val periods = listOf(

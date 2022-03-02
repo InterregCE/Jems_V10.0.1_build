@@ -107,5 +107,8 @@ class CallEntity(
     var allowedRealCosts: AllowedRealCostsEntity,
 
     @Column
-    var preSubmissionCheckPluginKey: String?
+    var preSubmissionCheckPluginKey: String?,
+
+    @Column
+    var firstStepPreSubmissionCheckPluginKey: String?
 )

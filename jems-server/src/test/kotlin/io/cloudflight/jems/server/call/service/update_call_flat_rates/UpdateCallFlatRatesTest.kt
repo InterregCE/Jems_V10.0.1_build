@@ -38,7 +38,8 @@ class UpdateCallFlatRatesTest {
             isAdditionalFundAllowed = true,
             lengthOfPeriod = 7,
             applicationFormFieldConfigurations = mutableSetOf(),
-            preSubmissionCheckPluginKey = null
+            preSubmissionCheckPluginKey = null,
+            firstStepPreSubmissionCheckPluginKey = null
         )
 
     }

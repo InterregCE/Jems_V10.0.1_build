@@ -55,7 +55,8 @@ class PublishCallTest : UnitTest() {
         strategies = sortedSetOf(ProgrammeStrategy.AtlanticStrategy),
         funds = sortedSetOf(callFundRate(1)),
         objectives = listOf(ProgrammePriority(code = "code", objective = ProgrammeObjective.ISO12)),
-        preSubmissionCheckPluginKey = null
+        preSubmissionCheckPluginKey = null,
+        firstStepPreSubmissionCheckPluginKey = null
     )
 
     @MockK
@@ -74,7 +75,10 @@ class PublishCallTest : UnitTest() {
 
     @Test
     fun publishCall() {
-        every { persistence.getCallById(id) } returns callDetail.copy(preSubmissionCheckPluginKey = "jems-pre-condition-check-off")
+        every { persistence.getCallById(id) } returns callDetail.copy(
+            preSubmissionCheckPluginKey = "jems-pre-condition-check-off",
+            firstStepPreSubmissionCheckPluginKey = "jems-pre-condition-check-off"
+        )
         every { persistence.publishCall(id) } returns publishedCall
         assertThat(publishCall.publishCall(id)).isEqualTo(publishedCall)
 

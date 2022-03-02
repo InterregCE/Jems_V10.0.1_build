@@ -22,7 +22,8 @@ data class ProjectCallSettings(
     val unitCosts: List<ProgrammeUnitCost>,
     val stateAids: List<ProgrammeStateAid>,
     var applicationFormFieldConfigurations: MutableSet<ApplicationFormFieldConfiguration>,
-    val preSubmissionCheckPluginKey: String?
+    val preSubmissionCheckPluginKey: String?,
+    val firstStepPreSubmissionCheckPluginKey: String?
 ) {
     fun isCallStep1Closed(): Boolean {
         return if (endDateStep1 == null) {

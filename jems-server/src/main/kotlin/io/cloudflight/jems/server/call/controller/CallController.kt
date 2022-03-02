@@ -6,6 +6,7 @@ import io.cloudflight.jems.api.call.dto.CallDTO
 import io.cloudflight.jems.api.call.dto.CallDetailDTO
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.call.dto.CallUpdateRequestDTO
+import io.cloudflight.jems.api.call.dto.PreSubmissionPluginsDTO
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateSetupDTO
 import io.cloudflight.jems.api.common.dto.IdNamePairDTO
 import io.cloudflight.jems.server.call.service.create_call.CreateCallInteractor
@@ -75,7 +76,7 @@ class CallController(
     override fun updateCallUnitCosts(callId: Long, unitCostIds: Set<Long>) =
         updateCallUnitCosts.updateUnitCosts(callId, unitCostIds).toDto()
 
-    override fun updatePreSubmissionCheckSettings(callId: Long, pluginKey: String?): CallDetailDTO =
-        updatePreSubmissionCheckSettings.update(callId, pluginKey).toDto()
+    override fun updatePreSubmissionCheckSettings(callId: Long, pluginKeys: PreSubmissionPluginsDTO): CallDetailDTO =
+        updatePreSubmissionCheckSettings.update(callId, pluginKeys.toModel()).toDto()
 
 }

@@ -29,5 +29,6 @@ data class CallDetailDTO(
     val lumpSums: List<ProgrammeLumpSumListDTO> = emptyList(),
     val unitCosts: List<ProgrammeUnitCostListDTO> = emptyList(),
     val applicationFormFieldConfigurations: MutableSet<ApplicationFormFieldConfigurationDTO>,
-    val preSubmissionCheckPluginKey: String?
+    val preSubmissionCheckPluginKey: String?,
+    val firstStepPreSubmissionCheckPluginKey: String?
 )

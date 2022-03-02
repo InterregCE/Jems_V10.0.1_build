@@ -69,7 +69,8 @@ internal class GetAssociatedOrganizationInteractorTest : UnitTest() {
         funds = mutableSetOf(),
         lengthOfPeriod = 1,
         allowedRealCosts = defaultAllowedRealCostsByCallType(CallType.STANDARD),
-        preSubmissionCheckPluginKey = null
+        preSubmissionCheckPluginKey = null,
+        firstStepPreSubmissionCheckPluginKey = null
     )
     private val projectStatus = ProjectStatusHistoryEntity(
         status = ApplicationStatus.APPROVED,

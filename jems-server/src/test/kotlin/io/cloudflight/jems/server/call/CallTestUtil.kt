@@ -105,7 +105,8 @@ fun createTestCallEntity(
         funds = funds,
         flatRates = flatRates,
         allowedRealCosts = allowedRealCosts,
-        preSubmissionCheckPluginKey = null
+        preSubmissionCheckPluginKey = null,
+        firstStepPreSubmissionCheckPluginKey = null
     ).apply {
         translatedValues.add(CallTranslEntity(TranslationId(this, SystemLanguage.EN), "This is a dummy call"))
         flatRates.add(
@@ -140,7 +141,8 @@ fun createCallDetailModel(
     unitCosts: List<ProgrammeUnitCost> = defaultUnitCosts,
     applicationFormFieldConfigurations: MutableSet<ApplicationFormFieldConfiguration> =
         applicationFormFieldConfigurationEntities(createTestCallEntity(id,  name = name)).toModel(),
-    preSubmissionCheckPluginKey: String? = null
+    preSubmissionCheckPluginKey: String? = null,
+    firstStepPreSubmissionCheckPluginKey: String? = null
 ): CallDetail {
     return CallDetail(
         id = id,
@@ -161,7 +163,8 @@ fun createCallDetailModel(
         lumpSums = lumpSums,
         unitCosts = unitCosts,
         applicationFormFieldConfigurations = applicationFormFieldConfigurations,
-        preSubmissionCheckPluginKey = preSubmissionCheckPluginKey
+        preSubmissionCheckPluginKey = preSubmissionCheckPluginKey,
+        firstStepPreSubmissionCheckPluginKey = firstStepPreSubmissionCheckPluginKey
     )
 }
 
@@ -231,7 +234,8 @@ fun callDetail(
     isAdditionalFundAllowed : Boolean = true,
     lengthOfPeriod : Int = 12,
     applicationFormFieldConfigurations : MutableSet<ApplicationFormFieldConfiguration> = mutableSetOf(),
-    preSubmissionCheckPluginKey: String? = null
+    preSubmissionCheckPluginKey: String? = null,
+    firstStepPreSubmissionCheckPluginKey: String? = null
 ) = CallDetail(
     id = id,
     name = name,
@@ -243,7 +247,8 @@ fun callDetail(
     isAdditionalFundAllowed = isAdditionalFundAllowed,
     lengthOfPeriod = lengthOfPeriod,
     applicationFormFieldConfigurations =  applicationFormFieldConfigurations,
-    preSubmissionCheckPluginKey = preSubmissionCheckPluginKey
+    preSubmissionCheckPluginKey = preSubmissionCheckPluginKey,
+    firstStepPreSubmissionCheckPluginKey = firstStepPreSubmissionCheckPluginKey
 )
 
 fun defaultAllowedRealCostsByCallType(callType: CallType) : AllowedRealCostsEntity {
