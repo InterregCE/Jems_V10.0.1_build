@@ -5,13 +5,14 @@
     <div jemsFormLayout>
         <h3>{{'programme.data.export.table.header' | translate}}</h3>
         <div jemsNoWidthLimit class="mb-4"
-             [jemsTableConfig]="[{minInRem: 25}, {minInRem: 20}, {minInRem:3}, {minInRem:3}, {minInRem: 15}, {minInRem: 3, maxInRem: 3}]">
+             [jemsTableConfig]="[{minInRem: 25}, {minInRem: 20}, {minInRem:3}, {minInRem:3}, {minInRem: 15}, {minInRem: 8}, {minInRem: 3, maxInRem: 3}]">
             <div>
                 <span>{{ 'programme.data.export.table.plugin.name' | translate}}</span>
                 <span>{{ 'programme.data.export.table.filename' | translate}}</span>
                 <span>{{ 'programme.data.export.label.input.language' | translate}}</span>
                 <span>{{ 'programme.data.export.label.export.language' | translate}}</span>
-                <span>{{ 'programme.data.export.table.date' | translate}}</span>
+                <span>{{ 'programme.data.export.table.request.time' | translate}}</span>
+                <span>{{ 'programme.data.export.table.exportation.time' | translate}}</span>
                 <span class="justify-center">{{ 'programme.data.export.table.download' | translate}}</span>
             </div>
 
@@ -19,11 +20,12 @@
 
             <ng-container *ngFor="let exportedFileData of data.programmeDataExportMetadata">
                 <div>
-                    <span>{{exportedFileData.pluginKey}}</span>
+                    <span>{{getPluginName(data.plugins, exportedFileData.pluginKey)}}</span>
                     <span>{{exportedFileData.fileName}}</span>
                     <span>{{exportedFileData.inputLanguage}}</span>
                     <span>{{exportedFileData.exportLanguage}}</span>
-                    <span>{{exportedFileData.exportEndedAt | date:'dd/MM/yyyy hh:mm'}}</span>
+                    <span>{{exportedFileData.requestTime | localeDate : 'L' : 'LT'}}</span>
+                    <span>{{exportedFileData.exportationTimeInSeconds | secondsToTimePipe | async}}</span>
                     <span class="justify-center">
                         <button *ngIf="exportedFileData.readyToDownload"
                                 (click)="downloadData(exportedFileData.pluginKey)" color="accent"

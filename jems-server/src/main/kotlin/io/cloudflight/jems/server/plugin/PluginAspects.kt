@@ -54,21 +54,11 @@ class PluginAspects(private val auditPublisher: ApplicationEventPublisher) {
     fun audit(joinPoint: ProceedingJoinPoint): Any? {
         val plugin = joinPoint.target as JemsPlugin
         auditPublisher.publishEvent(
-            pluginCalled(
-                plugin,
-                plugin.getName(),
-                plugin.getKey(),
-                joinPoint.signature.name
-            )
+            pluginCalled(plugin.getName(), plugin.getKey(), joinPoint.signature.name)
         )
         val result = joinPoint.proceed()
         auditPublisher.publishEvent(
-            pluginExecuted(
-                plugin,
-                plugin.getName(),
-                plugin.getKey(),
-                joinPoint.signature.name
-            )
+            pluginExecuted(plugin.getName(), plugin.getKey(), joinPoint.signature.name)
         )
         return result
     }

@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.programme.service.model
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.server.programme.service.exportProgrammeData.EXPORT_TIMEOUT_IN_MINUTES
 import java.time.ZonedDateTime
+import java.time.temporal.ChronoUnit
 
 data class ProgrammeDataExportMetadata(
     val pluginKey: String,
@@ -22,4 +23,7 @@ data class ProgrammeDataExportMetadata(
 
     fun isReadyToDownload() =
         exportEndedAt != null && fileName != null && contentType != null
+
+    fun getExportationTimeInSeconds() =
+        exportStartedAt?.until(exportEndedAt, ChronoUnit.SECONDS)
 }

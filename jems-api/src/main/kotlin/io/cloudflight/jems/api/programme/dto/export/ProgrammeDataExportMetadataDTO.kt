@@ -8,8 +8,8 @@ data class ProgrammeDataExportMetadataDTO(
     val fileName: String?,
     var exportLanguage: SystemLanguage,
     var inputLanguage: SystemLanguage,
-    var exportStartedAt: ZonedDateTime? = null,
-    var exportEndedAt: ZonedDateTime? = null,
+    var requestTime: ZonedDateTime? = null,
+    var exportationTimeInSeconds: Long? = null,
     var timedOut: Boolean,
     var failed: Boolean,
     var readyToDownload: Boolean
