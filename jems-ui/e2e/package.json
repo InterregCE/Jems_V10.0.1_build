@@ -7,6 +7,7 @@
   "scripts": {
     "run": "cypress run --browser chrome",
     "open": "cypress open",
+    "pretest": "wait-on $CYPRESS_BASE_URL -t 20000",
     "test": "cy2 run --parallel --record --key xxx --ci-build-id $CI_BUILD_ID"
   },
   "author": "Cloudflight GmbH",
@@ -14,6 +15,8 @@
   "devDependencies": {
     "@faker-js/faker": "^5.5.3",
     "cy2": "1.3.0",
-    "typescript": "^4.5.5"
+    "cypress": "^9.4.1",
+    "typescript": "^4.6.2",
+    "wait-on": "^6.0.1"
   }
 }
