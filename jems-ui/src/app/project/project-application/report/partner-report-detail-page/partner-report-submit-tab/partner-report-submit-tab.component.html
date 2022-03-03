@@ -6,7 +6,8 @@
     <div jemsNoWidthLimit>
         <jems-pending-button
                 [confirm]="{title: 'project.application.partner.report.submit.dialog.title', message: 'project.application.partner.report.submit.dialog.message'}"
-                [hidden]="(partnerReportDetailPageStore.isReportEditable() | async)  === false"
+                [disabled]="data.isView"
+                [hidden]="!data.isEditable"
                 [pending]="actionPending"
                 (clicked)="submitReport(data.projectId, data.partnerSummary.id, data.partnerReport.id)"
                 class="mr-2 mt-2">
