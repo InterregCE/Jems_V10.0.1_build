@@ -14,6 +14,7 @@ import {
   ProjectStore
 } from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {ProjectPartnerReportDTO, ProjectPartnerSummaryDTO} from '@cat/api';
+import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
 
 @Component({
   selector: 'jems-partner-report-submit-tab',
@@ -30,23 +31,30 @@ export class PartnerReportSubmitTabComponent {
   data$: Observable<{
     projectId: number,
     partnerSummary: ProjectPartnerSummaryDTO,
-    partnerReport: ProjectPartnerReportDTO
+    partnerReport: ProjectPartnerReportDTO,
+    isView: boolean,
+    isEditable: boolean
     }>;
 
   constructor(public pageStore: PartnerReportDetailPageStore,
               public projectStore: ProjectStore,
               public partnerReportDetailPageStore: PartnerReportDetailPageStore,
               private projectSidenavService: ProjectApplicationFormSidenavService,
+              private partnerReportStore: PartnerReportPageStore,
               private router: Router) {
     this.data$ = combineLatest([
       projectStore.projectId$,
       pageStore.partnerSummary$,
-      pageStore.partnerReport$
+      pageStore.partnerReport$,
+      partnerReportStore.partnerReportLevel$,
+      partnerReportDetailPageStore.isReportEditable()
     ]).pipe(
-      map(([projectId, partnerSummary, partnerReport]) => ({
+      map(([projectId, partnerSummary, partnerReport, level, isEditable]) => ({
         projectId,
         partnerSummary,
-        partnerReport
+        partnerReport,
+        isView: level === 'VIEW',
+        isEditable
       }))
     )
   }
