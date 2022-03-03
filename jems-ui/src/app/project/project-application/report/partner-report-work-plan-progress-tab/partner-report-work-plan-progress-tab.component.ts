@@ -5,7 +5,7 @@ import {
   ProjectApplicationFormSidenavService
 } from '@project/project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
-import {combineLatest, Observable} from 'rxjs';
+import {Observable} from 'rxjs';
 import {
   ProjectPartnerReportWorkPackageActivityDeliverableDTO,
   ProjectPartnerReportWorkPackageActivityDTO,
@@ -13,7 +13,7 @@ import {
   ProjectPartnerReportWorkPackageOutputDTO,
   WorkPackageService
 } from '@cat/api';
-import {catchError, map, take, tap} from 'rxjs/operators';
+import {catchError, take, tap} from 'rxjs/operators';
 import {
   PartnerReportWorkPlanPageStore
 } from '@project/project-application/report/partner-report-work-plan-progress-tab/partner-report-work-plan-page-store.service';
