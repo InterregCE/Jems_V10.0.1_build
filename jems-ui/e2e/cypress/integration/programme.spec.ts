@@ -124,7 +124,7 @@ context('Programme management tests', () => {
       });
 
       cy.contains('Add priority').click();
-      cy.contains('Confirm').click();
+      cy.contains('Confirm').should('be.visible').click();
 
       cy.contains('jems-programme-priority-list-page div', priority.code).should('exist');
     });
@@ -159,7 +159,7 @@ context('Programme management tests', () => {
       cy.contains('div', 'Comments').find('textarea').type(indicator.comment);
 
       cy.contains('Save').click();
-      cy.contains('Confirm').click();
+      cy.contains('Confirm').should('be.visible').click();
 
       cy.contains('jems-programme-result-indicators-list div', indicator.code).should('exist');
     });
@@ -186,7 +186,7 @@ context('Programme management tests', () => {
       cy.get('input[name="finalTarget"').type(indicator.finalTarget);
 
       cy.contains('Save').click();
-      cy.contains('Confirm').click();
+      cy.contains('Confirm').should('be.visible').click();
 
       cy.contains('jems-programme-output-indicators-list div', indicator.code).should('exist');
     });
@@ -205,7 +205,7 @@ context('Programme management tests', () => {
     });
 
     cy.contains('Save').click();
-    cy.contains('Confirm').click();
+    cy.contains('Confirm').should('be.visible').click();
 
     cy.get('jems-alert p').should('contain.text', 'Programme strategies successfully updated');
   });
