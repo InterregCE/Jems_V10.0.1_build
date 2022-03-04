@@ -36,4 +36,9 @@ class UserProjectPersistenceProvider(
         return getUserIdsForProject(projectId = projectId)
     }
 
+    @Transactional
+    override fun unassignUserFromProjects(
+        userId: Long
+    ) = userProjectRepository.deleteAllByIdUserId(userId)
+
 }

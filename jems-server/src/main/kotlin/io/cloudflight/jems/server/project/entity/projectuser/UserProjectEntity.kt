@@ -1,6 +1,5 @@
 package io.cloudflight.jems.server.project.entity.projectuser
 
-import io.cloudflight.jems.server.project.entity.projectuser.UserProjectId
 import javax.persistence.EmbeddedId
 import javax.persistence.Entity
 
