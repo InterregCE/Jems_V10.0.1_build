@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.authentication
 
 import io.cloudflight.jems.api.common.dto.APIErrorDTO
 import io.cloudflight.jems.api.common.dto.I18nMessage
+import io.cloudflight.jems.server.authentication.service.LoginBlockedException
 import io.cloudflight.jems.server.common.GlobalExceptionHandler
 import io.cloudflight.jems.server.common.exception.ApplicationAuthenticationException
 import org.springframework.core.Ordered
@@ -41,6 +42,14 @@ class AuthenticationExceptionHandler : GlobalExceptionHandler() {
             exception is BadCredentialsException || exception.cause is BadCredentialsException -> I18nMessage("authentication.bad.credentials")
             exception is LockedException || exception.cause is LockedException -> I18nMessage("authentication.account.locked")
             exception is DisabledException || exception.cause is DisabledException -> I18nMessage("authentication.account.disabled")
+            exception is LoginBlockedException || exception.cause is LoginBlockedException -> I18nMessage(
+                i18nKey = "authentication.account.login.blocked",
+                i18nArguments = mapOf(
+                    "email" to (exception as LoginBlockedException).email,
+                    "attempts" to exception.maxNumberOfLoginAttempts.toString(),
+                    "minutes" to exception.timeToUnblockLoginInMinutes.toString()
+                )
+            )
             else -> I18nMessage("authentication.failed")
         }
 

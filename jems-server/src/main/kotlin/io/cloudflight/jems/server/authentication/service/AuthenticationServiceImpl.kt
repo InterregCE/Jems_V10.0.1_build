@@ -1,8 +1,8 @@
 package io.cloudflight.jems.server.authentication.service
 
+import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.api.authentication.dto.LoginRequest
 import io.cloudflight.jems.api.authentication.dto.OutputCurrentUser
-import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.api.user.dto.UserRoleDTO
 import io.cloudflight.jems.server.audit.model.AuditUser
 import io.cloudflight.jems.server.audit.service.AuditCandidate
@@ -15,18 +15,24 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY
 import org.springframework.stereotype.Service
+import java.time.Duration
+import java.time.Instant
+import java.time.temporal.ChronoUnit
 import javax.servlet.http.HttpServletRequest
 
 
 @Service
 class AuthenticationServiceImpl(
     private val securityService: SecurityService,
+    private val loginAttemptService: LoginAttemptService,
     private val authenticationManager: AuthenticationManager,
-    private val auditService: AuditService,
+    private val auditService: AuditService
 ) : AuthenticationService {
 
     companion object {
         private val log = LoggerFactory.getLogger(AuthenticationServiceImpl::class.java)
+        const val MAX_ALLOWED_NUMBER_OF_LOGIN_ATTEMPTS = 10.toShort()
+        const val LOGIN_BLOCK_DURATION_IN_SECONDS = 5 * 60
     }
 
     override fun getCurrentUser(): OutputCurrentUser {
@@ -39,6 +45,10 @@ class AuthenticationServiceImpl(
 
     override fun login(req: HttpServletRequest, loginRequest: LoginRequest): OutputCurrentUser {
         log.info("Attempting login for email {}", loginRequest.email)
+
+        loginAttemptService.getFailedLoginAttempt(loginRequest.email)?.let { failedLoginAttempt ->
+            throwIfLoginIsBlocked(loginRequest.email, failedLoginAttempt.count, failedLoginAttempt.lastAttemptAt)
+        }
 
         SecurityContextHolder.getContext().authentication = authenticationManager.authenticate(
             UsernamePasswordAuthenticationToken(
@@ -77,4 +87,13 @@ class AuthenticationServiceImpl(
             action = AuditAction.USER_LOGGED_OUT,
             description = "user with email ${user.email} logged out"
         )
+
+    private fun throwIfLoginIsBlocked(email: String, failedLoginAttemptsCount: Short, lastAttempt: Instant) {
+        val passedSecondsFromLastAttempt = lastAttempt.until(Instant.now(), ChronoUnit.SECONDS)
+        if (failedLoginAttemptsCount >= MAX_ALLOWED_NUMBER_OF_LOGIN_ATTEMPTS && passedSecondsFromLastAttempt < LOGIN_BLOCK_DURATION_IN_SECONDS)
+            throw LoginBlockedException(
+                email, MAX_ALLOWED_NUMBER_OF_LOGIN_ATTEMPTS,
+                Duration.ofSeconds(LOGIN_BLOCK_DURATION_IN_SECONDS.minus(passedSecondsFromLastAttempt)).toMinutes()
+            )
+    }
 }

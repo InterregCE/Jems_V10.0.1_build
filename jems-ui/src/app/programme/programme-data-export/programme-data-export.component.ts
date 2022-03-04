@@ -83,8 +83,8 @@ export class ProgrammeDataExportComponent implements OnDestroy {
     return isAnyNotTimedOutExportInProgress || !this.pluginKey || !this.exportLanguage || !this.inputLanguage;
   }
 
-  getPluginName(plugins: PluginInfoDTO[],pluginKey: string) : string {
-    return plugins.find(it => it.key === pluginKey)?.name || pluginKey
+  getPluginName(plugins: PluginInfoDTO[],pluginKey: string): string {
+    return plugins.find(it => it.key === pluginKey)?.name || pluginKey;
   }
   get inputLanguage(): string {
     return this.exportForm.get('inputLanguage')?.value || this.pageStore.fallBackLanguage;
