@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectForm
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.budget.ProjectBudgetPersistence
+import io.cloudflight.jems.server.project.service.budget.model.PartnersAggregatedInfo
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
 import io.cloudflight.jems.server.project.service.model.ProjectBudgetOverviewPerPartnerPerPeriod
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
@@ -28,12 +29,13 @@ class GetPartnerBudgetPerPeriod(
         persistence.getPartnersForProjectId(projectId = projectId, version).let { partners ->
             val partnerIds = partners.mapNotNullTo(HashSet()) { it.id }
             calculatePartnerBudgetPerPeriod.calculate(
-                partners = partners,
-                budgetOptions = optionPersistence.getBudgetOptions(partnerIds, projectId, version),
-                budgetPerPartner = persistence.getBudgetPerPartner(partnerIds, projectId, version),
+                PartnersAggregatedInfo(
+                    partners, optionPersistence.getBudgetOptions(partnerIds, projectId, version),
+                    persistence.getBudgetPerPartner(partnerIds, projectId, version),
+                    persistence.getBudgetTotalForPartners(partnerIds, projectId, version)
+                ),
                 lumpSums = lumpSumPersistence.getLumpSums(projectId, version),
                 projectPeriods = projectPersistence.getProjectPeriods(projectId, version),
-                partnerTotalBudget = persistence.getBudgetTotalForPartners(partnerIds, projectId, version)
-            )
+                )
         }
 }

@@ -17,7 +17,7 @@ import io.cloudflight.jems.server.project.service.budget.ProjectBudgetPersistenc
 import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerBudget
 import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerCost
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
-import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerTotalBudget
+import io.cloudflight.jems.server.project.service.partner.model.PartnerTotalBudgetPerCostCategory
 import io.cloudflight.jems.server.project.service.unitcost.model.ProjectUnitCost
 import java.math.BigDecimal
 import org.springframework.data.domain.Sort
@@ -163,7 +163,7 @@ class ProjectBudgetPersistenceProvider(
         partnerIds: Set<Long>,
         projectId: Long,
         version: String?
-    ): Map<Long, ProjectPartnerTotalBudget> =
+    ): Map<Long, PartnerTotalBudgetPerCostCategory> =
         projectVersionUtils.fetch(version, projectId,
             currentVersionFetcher = {
                 projectPartnerRepository.getAllPartnerTotalBudgetData(partnerIds)

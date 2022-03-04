@@ -21,6 +21,7 @@ import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePrio
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammeSpecificObjective
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_period.GetPartnerBudgetPerPeriodInteractor
+import io.cloudflight.jems.server.project.service.model.BudgetCostsDetail
 import io.cloudflight.jems.server.project.service.model.ProjectPartnerBudgetPerPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectPeriodBudget
@@ -145,10 +146,11 @@ class GetPartnerFundsPerPeriodInteractorTest : UnitTest() {
             ProjectPartnerBudgetPerPeriod(
                 partner1,
                 mutableListOf(
-                    ProjectPeriodBudget(0, 0, 0, BigDecimal.ZERO, false),
-                    ProjectPeriodBudget(255, 0, 0, BigDecimal.ZERO, true)
+                    ProjectPeriodBudget(0, 0, 0, BigDecimal.ZERO, BudgetCostsDetail(), false),
+                    ProjectPeriodBudget(255, 0, 0, BigDecimal.ZERO, BudgetCostsDetail(),true)
                 ),
-                totalPartnerBudget = BigDecimal.ZERO
+                totalPartnerBudget = BigDecimal.ZERO,
+                totalPartnerBudgetDetail = BudgetCostsDetail()
             ),
         )
 
@@ -201,13 +203,14 @@ class GetPartnerFundsPerPeriodInteractorTest : UnitTest() {
             ProjectPartnerBudgetPerPeriod(
                 partner1,
                 mutableListOf(
-                    ProjectPeriodBudget(0, 0, 0, BigDecimal.ZERO, false),
-                    ProjectPeriodBudget(1, 1, 6, 206.23.toScaledBigDecimal(), false),
-                    ProjectPeriodBudget(2, 7, 12, 168.75.toScaledBigDecimal(), false),
-                    ProjectPeriodBudget(3, 13, 15, 187.52.toScaledBigDecimal(), false),
-                    ProjectPeriodBudget(255, 0, 0, BigDecimal.ZERO, true)
+                    ProjectPeriodBudget(0, 0, 0, BigDecimal.ZERO, BudgetCostsDetail(), false),
+                    ProjectPeriodBudget(1, 1, 6, 206.23.toScaledBigDecimal(), BudgetCostsDetail(), false),
+                    ProjectPeriodBudget(2, 7, 12, 168.75.toScaledBigDecimal(), BudgetCostsDetail(), false),
+                    ProjectPeriodBudget(3, 13, 15, 187.52.toScaledBigDecimal(), BudgetCostsDetail(), false),
+                    ProjectPeriodBudget(255, 0, 0, BigDecimal.ZERO, BudgetCostsDetail(), true)
                 ),
-                totalPartnerBudget = 562.5.toScaledBigDecimal()
+                totalPartnerBudget = 562.5.toScaledBigDecimal(),
+                totalPartnerBudgetDetail = BudgetCostsDetail()
             ),
         )
 
@@ -295,7 +298,8 @@ class GetPartnerFundsPerPeriodInteractorTest : UnitTest() {
                     555.59.toScaledBigDecimal(),
                     0.toScaledBigDecimal(),
                 ),
-                totalPartnerBudget = 56826.22.toBigDecimal()
+                totalPartnerBudget = 56826.22.toBigDecimal(),
+                totalPartnerBudgetDetail = BudgetCostsDetail()
             ),
             ProjectPartnerBudgetPerPeriod(
                 partner2,
@@ -312,7 +316,8 @@ class GetPartnerFundsPerPeriodInteractorTest : UnitTest() {
                     555.59.toScaledBigDecimal(),
                     0.toScaledBigDecimal(),
                 ),
-                totalPartnerBudget = 56826.22.toBigDecimal()
+                totalPartnerBudget = 56826.22.toBigDecimal(),
+                totalPartnerBudgetDetail = BudgetCostsDetail()
             )
         )
 
@@ -431,7 +436,8 @@ class GetPartnerFundsPerPeriodInteractorTest : UnitTest() {
                     555.59.toScaledBigDecimal(),
                     5555.56.toScaledBigDecimal(),
                 ),
-                totalPartnerBudget = 56826.22.toBigDecimal()
+                totalPartnerBudget = 56826.22.toBigDecimal(),
+                totalPartnerBudgetDetail = BudgetCostsDetail()
             ),
             ProjectPartnerBudgetPerPeriod(
                 partner2,
@@ -448,7 +454,8 @@ class GetPartnerFundsPerPeriodInteractorTest : UnitTest() {
                     555.59.toScaledBigDecimal(),
                     0.toScaledBigDecimal(),
                 ),
-                totalPartnerBudget = 56826.22.toBigDecimal()
+                totalPartnerBudget = 56826.22.toBigDecimal(),
+                totalPartnerBudgetDetail = BudgetCostsDetail()
             )
         )
 
@@ -565,77 +572,88 @@ class GetPartnerFundsPerPeriodInteractorTest : UnitTest() {
             periodStart = 0,
             periodEnd = 0,
             totalBudgetPerPeriod = preparation,
-            lastPeriod = false
+            lastPeriod = false,
+            budgetPerPeriodDetail = BudgetCostsDetail()
         ),
         ProjectPeriodBudget(
             periodNumber = 1,
             periodStart = 1,
             periodEnd = 2,
             totalBudgetPerPeriod = total1,
-            lastPeriod = false
+            lastPeriod = false,
+            budgetPerPeriodDetail = BudgetCostsDetail()
         ),
         ProjectPeriodBudget(
             periodNumber = 2,
             periodStart = 2,
             periodEnd = 3,
             totalBudgetPerPeriod = total2,
-            lastPeriod = false
+            lastPeriod = false,
+            budgetPerPeriodDetail = BudgetCostsDetail()
         ),
         ProjectPeriodBudget(
             periodNumber = 3,
             periodStart = 3,
             periodEnd = 4,
             totalBudgetPerPeriod = total3,
-            lastPeriod = false
+            lastPeriod = false,
+            budgetPerPeriodDetail = BudgetCostsDetail()
         ),
         ProjectPeriodBudget(
             periodNumber = 4,
             periodStart = 4,
             periodEnd = 5,
             totalBudgetPerPeriod = total4,
-            lastPeriod = false
+            lastPeriod = false,
+            budgetPerPeriodDetail = BudgetCostsDetail()
         ),
         ProjectPeriodBudget(
             periodNumber = 5,
             periodStart = 5,
             periodEnd = 6,
             totalBudgetPerPeriod = total5,
-            lastPeriod = false
+            lastPeriod = false,
+            budgetPerPeriodDetail = BudgetCostsDetail()
         ),
         ProjectPeriodBudget(
             periodNumber = 6,
             periodStart = 6,
             periodEnd = 7,
             totalBudgetPerPeriod = total6,
-            lastPeriod = false
+            lastPeriod = false,
+            budgetPerPeriodDetail = BudgetCostsDetail()
         ),
         ProjectPeriodBudget(
             periodNumber = 7,
             periodStart = 7,
             periodEnd = 8,
             totalBudgetPerPeriod = total7,
-            lastPeriod = false
+            lastPeriod = false,
+            budgetPerPeriodDetail = BudgetCostsDetail()
         ),
         ProjectPeriodBudget(
             periodNumber = 8,
             periodStart = 8,
             periodEnd = 9,
             totalBudgetPerPeriod = total8,
-            lastPeriod = false
+            lastPeriod = false,
+            budgetPerPeriodDetail = BudgetCostsDetail()
         ),
         ProjectPeriodBudget(
             periodNumber = 9,
             periodStart = 9,
             periodEnd = 9,
             totalBudgetPerPeriod = total9,
-            lastPeriod = false
+            lastPeriod = false,
+            budgetPerPeriodDetail = BudgetCostsDetail()
         ),
         ProjectPeriodBudget(
             periodNumber = 255,
             periodStart = 0,
             periodEnd = 0,
             totalBudgetPerPeriod = closure,
-            lastPeriod = true
+            lastPeriod = true,
+            budgetPerPeriodDetail = BudgetCostsDetail()
         )
     )
 }
