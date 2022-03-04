@@ -41,8 +41,8 @@ export class PartnerReportIdentificationTabComponent implements OnInit {
     startDate: [''],
     endDate: [''],
     period: [''],
-    summary: [''],
-    problemsAndDeviations: [''],
+    summary: [[]],
+    problemsAndDeviations: [[]],
     targetGroups: this.formBuilder.array([]),
   });
 
@@ -82,11 +82,11 @@ export class PartnerReportIdentificationTabComponent implements OnInit {
     this.form.reset();
     this.targetGroups.clear();
     this.form = this.formBuilder.group({
-      startDate: [''],
-      endDate: [''],
-      period: [''],
-      summary: [''],
-      problemsAndDeviations: [''],
+      startDate: [identification.startDate],
+      endDate: [identification.endDate],
+      period: [identification.period],
+      summary: [identification.summary],
+      problemsAndDeviations: [identification.problemsAndDeviations],
       targetGroups: this.formBuilder.array([]),
     });
 
@@ -108,8 +108,11 @@ export class PartnerReportIdentificationTabComponent implements OnInit {
   }
 
   saveIdentification(): void {
-    //TODO this gives 400 bad Request right now. Needs to be fixed before merging since the feature won't work withoout
-  this.pageStore.saveIdentification(this.form.value)
+    const data = {
+      ...this.form.value,
+      targetGroups: this.form.value.targetGroups?.map((tg: any) => tg.description),
+    };
+    this.pageStore.saveIdentification(data)
       .pipe(
         take(1),
         tap(() => this.formService.setSuccess('project.report.identification.saved')),
