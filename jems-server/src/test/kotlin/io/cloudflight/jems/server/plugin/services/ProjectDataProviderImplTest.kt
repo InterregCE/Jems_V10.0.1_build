@@ -1244,8 +1244,8 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                     ProjectPartnerBudgetPerPeriodData(
                         partner = ProjectPartnerSummaryData(projectPartner.id, projectPartner.active, projectPartner.abbreviation,ProjectPartnerRoleData.valueOf(projectPartner.role.name), projectPartner.sortNumber, projectPartner.addresses.first { it.type == ProjectPartnerAddressType.Organization }.country, projectPartner.addresses.first { it.type == ProjectPartnerAddressType.Organization }.nutsRegion2),
                         periodBudgets = mutableListOf(
-                            ProjectPeriodBudgetData(0, 0, 0, BigDecimal.ZERO, false),
-                            ProjectPeriodBudgetData(255, 0, 0, BigDecimal.ZERO, true)
+                            ProjectPeriodBudgetData(0, 0, 0, BigDecimal.ZERO, null, false),
+                            ProjectPeriodBudgetData(255, 0, 0, BigDecimal.ZERO, null,  true)
                         ),
                         totalPartnerBudget = BigDecimal.ZERO
                     )

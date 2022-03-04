@@ -7,7 +7,7 @@ import {FormBuilder, FormGroup} from '@angular/forms';
 import {map, tap} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
-const REFRESH_INTERVAL_IN_MILLISECOND = 60000;
+const REFRESH_INTERVAL_IN_MILLISECOND = 5000;
 
 @UntilDestroy()
 @Component({
@@ -83,6 +83,9 @@ export class ProgrammeDataExportComponent implements OnDestroy {
     return isAnyNotTimedOutExportInProgress || !this.pluginKey || !this.exportLanguage || !this.inputLanguage;
   }
 
+  getPluginName(plugins: PluginInfoDTO[],pluginKey: string) : string {
+    return plugins.find(it => it.key === pluginKey)?.name || pluginKey
+  }
   get inputLanguage(): string {
     return this.exportForm.get('inputLanguage')?.value || this.pageStore.fallBackLanguage;
   }

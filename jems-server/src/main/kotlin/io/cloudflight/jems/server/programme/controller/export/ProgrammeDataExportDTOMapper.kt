@@ -8,7 +8,7 @@ import org.mapstruct.factory.Mappers
 private val mapper = Mappers.getMapper(ProgrammeDataExportDTOMapper::class.java)
 
 fun List<ProgrammeDataExportMetadata>.toDTO() =
-    map { mapper.map(it) }
+    map { model -> mapper.map(model) }
 
 @Mapper
 interface ProgrammeDataExportDTOMapper {
