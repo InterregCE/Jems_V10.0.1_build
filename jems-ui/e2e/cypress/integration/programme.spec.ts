@@ -36,7 +36,7 @@ context('Programme management tests', () => {
     cy.contains('div', 'Programme amending decision entry').find('input').type(basicData.programmeAmendingDecisionDate);
 
     cy.contains('Save').click();
-    cy.contains('Confirm').click();
+    cy.contains('Confirm').should('be.visible').click();
 
     cy.get('jems-alert p').should('contain.text', 'Programme data was successfully saved.');
   });
@@ -261,7 +261,7 @@ context('Programme management tests', () => {
       });
 
       cy.contains('Save').click();
-      cy.contains('Confirm').click();
+      cy.contains('Confirm').should('be.visible').click();
       cy.contains('button', lumpSum.name[0].language).click();
       cy.contains('jems-programme-lump-sums-list div', lumpSum.name[0].translation).should('exist');
     });
@@ -308,7 +308,7 @@ context('Programme management tests', () => {
       }
 
       cy.contains('Save').click();
-      cy.contains('Confirm').click();
+      cy.contains('Confirm').should('be.visible').click();
       cy.contains('button', unitCost.name[0].language).click();
       cy.contains('jems-programme-unit-costs-list div', unitCost.name[0].translation).should('exist');
     });
