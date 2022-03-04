@@ -5,7 +5,7 @@
             : {partner: getPartnerTranslationString(data.partner)}"
                             [isVersionedData]="false">
     <ng-container *ngIf="pageStore.partnerReportLevel$ | async as level">
-        <jems-pending-button [disabled]="level === 'VIEW'"
+        <jems-pending-button [disabled]="level === 'VIEW'" *jemsHasPermission="PermissionsEnum.ProjectReportingEdit"
                 jemsText
                 class="mb-3"
                 (click)="createPartnerReport()"

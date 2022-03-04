@@ -1,10 +1,20 @@
 <div *ngIf="data$ | async as data" jemsFormLayout class="mt-2">
     <h3>{{'project.application.partner.report.submit.title' | translate }}</h3>
-    <p>{{'project.application.partner.report.submit.description.one' | translate}} : {{'common.label.project.partner.role.shortcut.' + data.partnerReport?.identification?.partnerRole | adaptTranslationKeyByCallType | async | translate : {partner: data.partnerReport?.identification?.partnerNumber + ' ' + data.partnerSummary.abbreviation} }} - {{'project.application.partner.reports.title.number' | translate : {reportNumber: data.partnerReport?.reportNumber} }}</p>
-    <p>{{'project.application.partner.report.submit.description.two' | translate}}</p>
+    <div *ngIf="data.userRole.permissions.includes(PermissionsEnum.ProjectReportingEdit) else reportViewPermission">
+        <div *ngIf="data.isEditable; else alreadySubmitted">
+            <p>{{'project.application.partner.report.submit.description.one' | translate}} : {{'common.label.project.partner.role.shortcut.' + data.partnerReport?.identification?.partnerRole | adaptTranslationKeyByCallType | async | translate : {partner: data.partnerReport?.identification?.partnerNumber + ' ' + data.partnerSummary.abbreviation} }} - {{'project.application.partner.reports.title.number' | translate : {reportNumber: data.partnerReport?.reportNumber} }}</p>
+            <p>{{'project.application.partner.report.submit.description.two' | translate}}</p>
+        </div>
+        <ng-template #alreadySubmitted>
+            {{'project.application.partner.report.submit.description.submitted' | translate}}
+        </ng-template>
+    </div>
+    <ng-template #reportViewPermission>
+        <p>{{'project.application.partner.report.submit.description.view.mode' | translate}}</p>
+    </ng-template>
 
     <div jemsNoWidthLimit>
-        <jems-pending-button
+        <jems-pending-button *jemsHasPermission="PermissionsEnum.ProjectReportingEdit"
                 [confirm]="{title: 'project.application.partner.report.submit.dialog.title', message: 'project.application.partner.report.submit.dialog.message'}"
                 [disabled]="data.isView"
                 [hidden]="!data.isEditable"
