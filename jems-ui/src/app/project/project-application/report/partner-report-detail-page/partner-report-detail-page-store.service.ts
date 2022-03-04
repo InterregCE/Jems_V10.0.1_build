@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {
   ProjectPartnerReportDTO, ProjectPartnerReportIdentificationDTO, ProjectPartnerReportIdentificationService,
   ProjectPartnerReportService, ProjectPartnerReportSummaryDTO,
-  ProjectPartnerSummaryDTO, UpdateProjectPartnerReportIdentificationDTO, UpdateProjectPartnerReportWorkPackageDTO
+  ProjectPartnerSummaryDTO, UpdateProjectPartnerReportIdentificationDTO, UserDTO, UserRoleService
 } from '@cat/api';
 import {combineLatest, merge, Observable, of, ReplaySubject, Subject} from 'rxjs';
 import {catchError, shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
@@ -13,6 +13,7 @@ import {
   ProjectStore
 } from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
+import {SecurityService} from '../../../../security/security.service';
 
 @Injectable({providedIn: 'root'})
 export class PartnerReportDetailPageStore {
@@ -21,6 +22,7 @@ export class PartnerReportDetailPageStore {
   partnerSummary$: Observable<ProjectPartnerSummaryDTO>;
   partnerReport$: Observable<ProjectPartnerReportDTO>;
   partnerId$: Observable<string | number | null>;
+  userDetails$: Observable<UserDTO | null>;
   partnerIdentification$: Observable<ProjectPartnerReportIdentificationDTO>;
 
   newPageSize$ = new Subject<number>();
@@ -35,11 +37,14 @@ export class PartnerReportDetailPageStore {
               private partnerReportPageStore: PartnerReportPageStore,
               private projectPartnerReportService: ProjectPartnerReportService,
               private projectStore: ProjectStore,
-              private reportIdentificationService: ProjectPartnerReportIdentificationService) {
+              private reportIdentificationService: ProjectPartnerReportIdentificationService,
+              private userRoleService: UserRoleService,
+              private securityService: SecurityService) {
     this.partnerId$ = this.partnerReportPageStore.partnerId$;
     this.partnerSummary$ = this.partnerReportPageStore.partnerSummary$;
     this.partnerReport$ = this.partnerReport();
     this.partnerIdentification$ = this.reportIdentification();
+    this.userDetails$ = this.securityService.currentUserDetails;
   }
 
   isReportEditable(): Observable<boolean> {
