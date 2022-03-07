@@ -6,12 +6,12 @@
             <div jemsNoWidthLimit *ngFor="let activity of activities.controls;let i=index">
                 <ng-container [formArrayName]="constants.ACTIVITIES.name">
                     <div jemsFormLayout [formGroupName]="i" class="activity-container">
-                        <div class="activity-header" jemsNoWidthLimit jemsMultiColumnRow justifyContent="space-between">
-                            <h4 jemsMultiColumnRow class="mb-0">
+                        <div class="activity-header" stretch="1" jemsNoWidthLimit jemsMultiColumnRow justifyContent="space-between">
+                            <h4 jemsMultiColumnRow stretch="1" class="mb-0 activity-header-inner">
                                 <span>{{('project.work.package.tab.activity' | translate) + ' ' + data.workPackageNumber + '.' + (i + 1) }}</span>
-                                <span jemsFormFieldWidth="full"
-                                      *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.ACTIVITIES.TITLE"
-                                      class="text-overflow-ellipsis">{{activity.get(constants.TITLE.name).value | translateByInputLanguage | async}}</span>
+                                <span *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.ACTIVITIES.TITLE">
+                                    {{activity.get(constants.TITLE.name).value | translateByInputLanguage | async}}
+                                </span>
                             </h4>
 
                             <button *ngIf="form.enabled"

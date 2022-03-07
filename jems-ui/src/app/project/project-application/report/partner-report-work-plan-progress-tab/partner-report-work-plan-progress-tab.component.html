@@ -36,7 +36,7 @@
                                 <div class="activity-header header-color" jemsNoWidthLimit jemsMultiColumnRow justifyContent="start">
                                         <span>{{ 'project.application.partner.report.workplan.activity.table.nr' | translate }}</span>
                                         <span class="justify-start" >{{ 'project.application.partner.report.workplan.activity.table.title' | translate }}</span>
-                                        <span class="justify-center" >{{ 'project.application.partner.report.workplan.activity.table.progress' | translate }}</span>
+                                        <span class="justify-start" >{{ 'project.application.partner.report.workplan.activity.table.progress' | translate }}</span>
                                 </div>
 
                                 <ng-container *ngFor="let activity of activitiesData; let activityIndex = index"
@@ -64,48 +64,48 @@
                                         </div>
                                     </jems-multi-language-container>
 
-                                    <jems-multi-language-container>
+                                    <jems-multi-language-container *ngIf="activity.deliverables.length > 0">
                                         <div  id="deliverables-table" jemsNoWidthLimit [jemsTableConfig]="[{minInRem:6}, {minInRem:20}, {minInRem:6}, {minInRem:6}]">
-                                        <div class="header-center" >
-                                            <span jemsText>{{ 'project.application.partner.report.workplan.deliverable.table.nr' | translate }}</span>
-                                            <span jemsText class="justify-center"
-                                                  >{{ 'project.application.partner.report.workplan.deliverable.table.title' | translate }}</span>
-                                            <span jemsText
-                                                  class="justify-center">{{ 'project.application.partner.report.workplan.output.table.contribution' | translate }}</span>
-                                            <span jemsText
-                                                  class="justify-center">{{ 'project.application.partner.report.workplan.output.table.evidence' | translate }}</span>
-                                        </div>
+                                            <div class="header-center" >
+                                                <span jemsText>{{ 'project.application.partner.report.workplan.deliverable.table.nr' | translate }}</span>
+                                                <span jemsText class="justify-start"
+                                                      >{{ 'project.application.partner.report.workplan.deliverable.table.title' | translate }}</span>
+                                                <span jemsText
+                                                      class="justify-center">{{ 'project.application.partner.report.workplan.output.table.contribution' | translate }}</span>
+                                                <span jemsText
+                                                      class="justify-center">{{ 'project.application.partner.report.workplan.output.table.evidence' | translate }}</span>
+                                            </div>
 
-                                        <ng-container [formGroupName]="activityIndex" >
-                                            <ng-container
-                                                    *ngFor="let deliverable of activity.deliverables; let deliverableIndex = index"
-                                                    [formArrayName]="constants.DELIVERABLES.name">
-                                                <div [formGroupName]="deliverableIndex">
-                                                    <span>{{ 'project.application.partner.report.workplan.deliverable.table.nr.entry' | translate: {workPackageNr: workPackage.number, activityNr: activity.number, deliverableNr: deliverable.number} }}</span>
+                                            <ng-container [formGroupName]="activityIndex" >
+                                                <ng-container
+                                                        *ngFor="let deliverable of activity.deliverables; let deliverableIndex = index"
+                                                        [formArrayName]="constants.DELIVERABLES.name">
+                                                    <div [formGroupName]="deliverableIndex">
+                                                        <span>{{ 'project.application.partner.report.workplan.deliverable.table.nr.entry' | translate: {workPackageNr: workPackage.number, activityNr: activity.number, deliverableNr: deliverable.number} }}</span>
 
-                                                    <span class="justify-end">
-                                                               <jems-multi-language-form-field
-                                                                       type="textarea"
-                                                                       [disabled]="true"
-                                                                       [formControlName]="constants.DELIVERABLE_TITLE.name">
-                                                               </jems-multi-language-form-field>
-                                                    </span>
+                                                        <span class="justify-end">
+                                                                   <jems-multi-language-form-field
+                                                                           type="textarea"
+                                                                           [disabled]="true"
+                                                                           [formControlName]="constants.DELIVERABLE_TITLE.name">
+                                                                   </jems-multi-language-form-field>
+                                                        </span>
 
-                                                    <span class="justify-center">
-                                                        <mat-checkbox
-                                                                [formControlName]="constants.DELIVERABLE_CONTRIBUTION.name">
-                                                        </mat-checkbox>
-                                                    </span>
+                                                        <span class="justify-center">
+                                                            <mat-checkbox
+                                                                    [formControlName]="constants.DELIVERABLE_CONTRIBUTION.name">
+                                                            </mat-checkbox>
+                                                        </span>
 
-                                                    <span class="justify-center">
-                                                        <mat-checkbox
-                                                                [formControlName]='constants.DELIVERABLE_EVIDENCE.name'>
-                                                        </mat-checkbox>
-                                                    </span>
-                                                </div>
+                                                        <span class="justify-center">
+                                                            <mat-checkbox
+                                                                    [formControlName]='constants.DELIVERABLE_EVIDENCE.name'>
+                                                            </mat-checkbox>
+                                                        </span>
+                                                    </div>
+                                                </ng-container>
                                             </ng-container>
-                                        </ng-container>
-                                    </div>
+                                        </div>
                                     </jems-multi-language-container>
                                 </ng-container>
                             </div>

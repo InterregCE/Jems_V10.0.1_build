@@ -7,6 +7,12 @@ import {
 import {
   PartnerReportDetailPageStore
 } from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
+import {ProjectPartnerReportWorkPackageDTO, ProjectWorkPackageDTO, WorkPackageService} from '@cat/api';
+import {combineLatest, Observable} from 'rxjs';
+import {map, tap} from 'rxjs/operators';
+import {
+  PartnerReportWorkPlanPageStore
+} from '@project/project-application/report/partner-report-work-plan-progress-tab/partner-report-work-plan-page-store.service';
 
 @Component({
   selector: 'jems-partner-report-detail-page',
@@ -16,10 +22,24 @@ import {
 })
 export class PartnerReportDetailPageComponent {
 
+  data$: Observable<{
+    workPackages: ProjectPartnerReportWorkPackageDTO[];
+  }>;
+
   constructor(private activatedRoute: ActivatedRoute,
               public pageStore: PartnerReportDetailPageStore,
               private router: RoutingService,
-              private projectSidenavService: ProjectApplicationFormSidenavService) {
+              private projectSidenavService: ProjectApplicationFormSidenavService,
+              private partnerReportWorkPlanPageStore: PartnerReportWorkPlanPageStore) {
+
+    this.data$ = combineLatest([
+      this.partnerReportWorkPlanPageStore.partnerWorkPackages$,
+    ])
+      .pipe(
+        map(([workPackages]) => ({
+          workPackages
+        })),
+      );
   }
 
   activeTab(route: string): boolean {
