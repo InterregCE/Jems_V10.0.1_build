@@ -29,11 +29,11 @@ export class PartnerReportSubmitTabComponent {
   error$ = new BehaviorSubject<APIError | null>(null);
 
   data$: Observable<{
-    projectId: number,
-    partnerSummary: ProjectPartnerSummaryDTO,
-    partnerReport: ProjectPartnerReportDTO,
-    isView: boolean,
-    isEditable: boolean
+    projectId: number;
+    partnerSummary: ProjectPartnerSummaryDTO;
+    partnerReport: ProjectPartnerReportDTO;
+    isView: boolean;
+    isEditable: boolean;
     }>;
 
   constructor(public pageStore: PartnerReportDetailPageStore,
@@ -56,7 +56,7 @@ export class PartnerReportSubmitTabComponent {
         isView: level === 'VIEW',
         isEditable
       }))
-    )
+    );
   }
 
   submitReport(projectId: number, partnerId: number, reportId: number): void {

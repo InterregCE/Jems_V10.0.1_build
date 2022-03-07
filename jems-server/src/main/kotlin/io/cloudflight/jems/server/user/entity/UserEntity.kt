@@ -11,6 +11,7 @@ import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
 import javax.validation.constraints.NotNull
+import java.io.Serializable
 
 @Entity(name = "account")
 class UserEntity(
@@ -41,4 +42,10 @@ class UserEntity(
     @field:NotNull
     var userStatus: UserStatus
 
-)
+) : Serializable {
+    companion object {
+        private const val serialVersionUID: Long = -2664483879421303925L
+    }
+}
+// hibernate needs this to be Serializable since it's email property
+// is used as primary key in FailedLoginAttemptEntity

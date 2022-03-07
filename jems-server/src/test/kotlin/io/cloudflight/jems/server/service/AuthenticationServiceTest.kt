@@ -7,8 +7,12 @@ import io.cloudflight.jems.server.audit.model.AuditUser
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
-import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.authentication.service.AuthenticationServiceImpl
+import io.cloudflight.jems.server.authentication.service.LoginAttemptService
+import io.cloudflight.jems.server.authentication.service.LoginBlockedException
+import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.utils.failedLoginAttemptEntity
+import io.cloudflight.jems.server.utils.loginEmail
 import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.model.UserRole
 import io.cloudflight.jems.server.user.service.model.UserStatus
@@ -21,14 +25,18 @@ import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.springframework.security.authentication.AuthenticationManager
 import java.util.Collections
 import javax.servlet.http.HttpServletRequest
 
-class AuthenticationServiceTest: UnitTest() {
+class AuthenticationServiceTest : UnitTest() {
 
     @RelaxedMockK
     lateinit var securityService: SecurityService
+
+    @RelaxedMockK
+    lateinit var loginAttemptService: LoginAttemptService
 
     @RelaxedMockK
     lateinit var authenticationManager: AuthenticationManager
@@ -104,5 +112,15 @@ class AuthenticationServiceTest: UnitTest() {
                 defaultForRegisteredUser = false
             )
         )
+    }
+
+    @Test
+    fun `should throw LoginBlockedException when there have been many failed login attempts recently`() {
+        every { loginAttemptService.getFailedLoginAttempt(loginEmail) } returns failedLoginAttemptEntity()
+
+        assertThrows<LoginBlockedException> {
+            authenticationService.login(req, LoginRequest(loginEmail, "password"))
+        }
+
     }
 }
