@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.repository.report
+package io.cloudflight.jems.server.project.repository.report.workPlan
 
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
@@ -15,14 +15,14 @@ import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerR
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageOutputEntity
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageOutputTranslEntity
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageTranslEntity
-import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPartnerReportWorkPackageActivityDeliverableRepository
-import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPartnerReportWorkPackageActivityRepository
-import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPartnerReportWorkPackageOutputRepository
-import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPartnerReportWorkPackageRepository
+import io.cloudflight.jems.server.project.repository.report.ProjectPartnerReportCoFinancingRepository
+import io.cloudflight.jems.server.project.repository.report.ProjectPartnerReportRepository
+import io.cloudflight.jems.server.project.repository.report.ProjectReportPersistenceProvider
 import io.cloudflight.jems.server.project.service.report.model.workPlan.ProjectPartnerReportWorkPackage
 import io.cloudflight.jems.server.project.service.report.model.workPlan.ProjectPartnerReportWorkPackageActivity
 import io.cloudflight.jems.server.project.service.report.model.workPlan.ProjectPartnerReportWorkPackageActivityDeliverable
 import io.cloudflight.jems.server.project.service.report.model.workPlan.ProjectPartnerReportWorkPackageOutput
+import io.cloudflight.jems.server.project.service.report.partner.workPlan.ProjectReportWorkPlanPersistence
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -139,15 +139,6 @@ class ProjectReportWorkPlanPersistenceProviderTest : UnitTest() {
     lateinit var partnerReportRepository: ProjectPartnerReportRepository
 
     @MockK
-    lateinit var partnerReportCoFinancingRepository: ProjectPartnerReportCoFinancingRepository
-
-    @MockK
-    lateinit var legalStatusRepository: ProgrammeLegalStatusRepository
-
-    @MockK
-    lateinit var programmeFundRepository: ProgrammeFundRepository
-
-    @MockK
     lateinit var workPlanRepository: ProjectPartnerReportWorkPackageRepository
 
     @MockK
@@ -160,7 +151,7 @@ class ProjectReportWorkPlanPersistenceProviderTest : UnitTest() {
     lateinit var workPlanOutputRepository: ProjectPartnerReportWorkPackageOutputRepository
 
     @InjectMockKs
-    lateinit var persistence: ProjectReportPersistenceProvider
+    lateinit var persistence: ProjectReportWorkPlanPersistenceProvider
 
     @Test
     fun getPartnerReportWorkPlanById() {

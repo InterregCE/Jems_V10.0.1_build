@@ -17,4 +17,6 @@ interface ProjectPartnerReportRepository : JpaRepository<ProjectPartnerReportEnt
     @Query("SELECT COALESCE(MAX(report.number), 0) FROM #{#entityName} report WHERE report.partnerId = :partnerId")
     fun getMaxNumberForPartner(partnerId: Long): Int
 
+    fun countAllByPartnerId(partnerId: Long): Int
+
 }

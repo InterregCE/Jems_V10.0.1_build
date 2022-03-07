@@ -4,7 +4,9 @@ import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
+import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.util.regex.Pattern
 
@@ -145,6 +147,18 @@ class GeneralValidatorDefaultImpl : GeneralValidatorService {
         end: ZonedDateTime?,
         startDateFieldName: String,
         endDateFieldName: String
+    ): Map<String, I18nMessage> = startDateBeforeEndDate(
+        start = start?.toInstant(),
+        end = end?.toInstant(),
+        startDateFieldName,
+        endDateFieldName,
+    )
+
+    private fun startDateBeforeEndDate(
+        start: Instant?,
+        end: Instant?,
+        startDateFieldName: String,
+        endDateFieldName: String
     ): Map<String, I18nMessage> =
         mutableMapOf<String, I18nMessage>().apply {
             if (start != null && end != null && end.isBefore(start)) {
@@ -158,6 +172,18 @@ class GeneralValidatorDefaultImpl : GeneralValidatorService {
                 )
             }
         }
+
+    override fun startDateBeforeEndDate(
+        start: LocalDate?,
+        end: LocalDate?,
+        startDateFieldName: String,
+        endDateFieldName: String
+    ): Map<String, I18nMessage> = startDateBeforeEndDate(
+        start = start?.atStartOfDay()?.toInstant(ZoneOffset.UTC),
+        end = end?.atStartOfDay()?.toInstant(ZoneOffset.UTC),
+        startDateFieldName,
+        endDateFieldName,
+    )
 
     override fun dateNotInFuture(date: LocalDate, fieldName: String): Map<String, I18nMessage> =
         mutableMapOf<String, I18nMessage>().apply {

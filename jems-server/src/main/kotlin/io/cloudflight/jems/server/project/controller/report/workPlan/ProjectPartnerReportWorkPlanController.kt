@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.controller.report
+package io.cloudflight.jems.server.project.controller.report.workPlan
 
 import io.cloudflight.jems.api.project.dto.report.partner.workPlan.ProjectPartnerReportWorkPackageDTO
 import io.cloudflight.jems.api.project.dto.report.partner.workPlan.UpdateProjectPartnerReportWorkPackageDTO
