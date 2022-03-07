@@ -207,7 +207,7 @@ export function getItems(workPackages: ProjectWorkPackageDTO[], results: Project
         start: getNestedStartDateFromPeriod(output.periodNumber),
         end: getNestedEndDateFromPeriod(output.periodNumber),
         type: 'range',
-        title: getIndicatorTooltip(output.targetValue, translateService),
+        title: getOutputIndicatorTooltip(output.targetValue, translateService),
         content: `O${wp.workPackageNumber}.${output.outputNumber}`,
         className: getColor(indexWp),
       });
@@ -238,7 +238,7 @@ export function getItems(workPackages: ProjectWorkPackageDTO[], results: Project
       start: getNestedStartDateFromPeriod(result.periodNumber),
       end: getNestedEndDateFromPeriod(result.periodNumber),
       type: 'range',
-      title: getIndicatorTooltip(result.targetValue, translateService),
+      title: getResultIndicatorTooltip(result.targetValue, translateService),
       content: `R.${result.resultNumber}`,
       data: {type: GroupType.Indicator},
       className: 'bg-blue',
@@ -248,14 +248,20 @@ export function getItems(workPackages: ProjectWorkPackageDTO[], results: Project
   return new DataSet(items);
 }
 
-function getIndicatorTooltip(targetValue: number, translateService: TranslateService): string {
+function getResultIndicatorTooltip(targetValue: number, translateService: TranslateService): string {
   return targetValue
-    ? `<span>${escapeHtml(getTargetValueTooltip(targetValue, translateService))}</span>`
+    ? `<span>${escapeHtml(
+      `${translateService.instant('project.results.result.target.value')}: ${NumberService.toLocale(targetValue)}`
+    )}</span>`
     : '';
 }
 
-function getTargetValueTooltip(value: number, translateService: TranslateService): string {
-  return `${translateService.instant('project.results.result.target.value')}: ${NumberService.toLocale(value)}`;
+function getOutputIndicatorTooltip(targetValue: number, translateService: TranslateService): string {
+  return targetValue
+    ? `<span>${escapeHtml(
+      `${translateService.instant('project.application.form.work.package.output.target.value')}: ${NumberService.toLocale(targetValue)}`
+    )}</span>`
+    : '';
 }
 
 export function sortNullLast(a: Indicator, b: Indicator): number {
