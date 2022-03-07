@@ -42,6 +42,7 @@ export class ProjectPartnerBudgetStore {
   spfBudgets$: Observable<PartnerBudgetSpfTables>;
   budgetOptions$: Observable<BudgetOptions>;
   totalBudget$: Observable<number>;
+  totalSpfBudget$: Observable<number>;
 
   updateBudgetOptionsEvent$ = new Subject();
   private updateBudgetEvent$ = new Subject();
@@ -53,6 +54,7 @@ export class ProjectPartnerBudgetStore {
     this.spfBudgets$ = this.spfBudgets();
     this.budgetOptions$ = this.budgetOptions();
     this.totalBudget$ = this.totalBudget();
+    this.totalSpfBudget$ = this.totalSpfBudget();
   }
 
   updateBudgetOptions(budgetOptions: BudgetOptions): Observable<any> {
@@ -184,6 +186,22 @@ export class ProjectPartnerBudgetStore {
       .pipe(
         switchMap(
           ([partner, version]) => partner?.id ? this.projectPartnerBudgetService.getTotal(partner.id, version) : of(0)
+        ),
+        map(total => NumberService.truncateNumber(total)),
+        shareReplay(1)
+      );
+  }
+
+  private totalSpfBudget(): Observable<number> {
+    return combineLatest([
+      this.partnerStore.partner$,
+      this.projectVersionStore.selectedVersionParam$,
+      this.updateBudgetOptionsEvent$.pipe(startWith(null)),
+      this.updateBudgetEvent$.pipe(startWith(null))
+    ])
+      .pipe(
+        switchMap(
+          ([partner, version]) => partner?.id ? this.projectPartnerBudgetService.getSpfTotal(partner.id, version) : of(0)
         ),
         map(total => NumberService.truncateNumber(total)),
         shareReplay(1)

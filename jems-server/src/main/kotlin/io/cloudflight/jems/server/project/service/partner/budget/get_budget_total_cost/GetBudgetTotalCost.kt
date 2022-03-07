@@ -17,6 +17,12 @@ class GetBudgetTotalCost(
 
     @Transactional(readOnly = true)
     @CanRetrieveProjectPartner
+    override fun getBudgetTotalSpfCost(partnerId: Long, version: String?): BigDecimal {
+        return budgetCostsPersistence.getBudgetSpfCostTotal(partnerId, version)
+    }
+
+    @Transactional(readOnly = true)
+    @CanRetrieveProjectPartner
     override fun getBudgetTotalCost(partnerId: Long, version: String?): BigDecimal {
 
         val budgetOptions = getBudgetOptions.getBudgetOptions(partnerId, version)

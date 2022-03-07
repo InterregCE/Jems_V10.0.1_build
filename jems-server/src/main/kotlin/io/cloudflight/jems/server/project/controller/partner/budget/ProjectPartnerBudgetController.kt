@@ -23,6 +23,7 @@ import io.cloudflight.jems.server.project.service.partner.budget.update_budget_t
 import io.cloudflight.jems.server.project.service.partner.budget.update_budget_unit_costs.UpdateBudgetUnitCostsInteractor
 import io.cloudflight.jems.server.project.service.partner.cofinancing.get_cofinancing.GetCoFinancingInteractor
 import io.cloudflight.jems.server.project.service.partner.cofinancing.toContributionModel
+import io.cloudflight.jems.server.project.service.partner.cofinancing.toContributionSpfModel
 import io.cloudflight.jems.server.project.service.partner.cofinancing.toDto
 import io.cloudflight.jems.server.project.service.partner.cofinancing.toFinancingModel
 import io.cloudflight.jems.server.project.service.partner.cofinancing.update_cofinancing.UpdateCoFinancingInteractor
@@ -102,6 +103,9 @@ class ProjectPartnerBudgetController(
     override fun getTotal(partnerId: Long, version: String?) =
         getBudgetTotalCost.getBudgetTotalCost(partnerId, version)
 
+    override fun getSpfTotal(partnerId: Long, version: String?) =
+        getBudgetTotalCost.getBudgetTotalSpfCost(partnerId, version)
+
     override fun getProjectPartnerCoFinancing(
         partnerId: Long,
         version: String?
@@ -116,6 +120,22 @@ class ProjectPartnerBudgetController(
             partnerId,
             partnerCoFinancing.finances.toFinancingModel(),
             partnerCoFinancing.partnerContributions.toContributionModel()
+        ).toDto()
+
+    override fun getProjectPartnerSpfCoFinancing(
+        partnerId: Long,
+        version: String?
+    ): ProjectPartnerCoFinancingAndContributionOutputDTO =
+        getCoFinancing.getSpfCoFinancing(partnerId, version).toDto()
+
+    override fun updateProjectPartnerSpfCoFinancing(
+        partnerId: Long,
+        partnerCoFinancing: ProjectPartnerCoFinancingAndContributionInputDTO
+    ) =
+        updateCoFinancing.updateSpfCoFinancing(
+            partnerId,
+            partnerCoFinancing.finances.toFinancingModel(),
+            partnerCoFinancing.partnerContributions.toContributionSpfModel()
         ).toDto()
 
 }

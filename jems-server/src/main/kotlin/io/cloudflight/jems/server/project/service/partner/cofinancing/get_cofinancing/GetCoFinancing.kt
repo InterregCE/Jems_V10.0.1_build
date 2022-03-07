@@ -6,6 +6,7 @@ import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectPartne
 import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPartnerCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContributionSpf
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -25,4 +26,11 @@ class GetCoFinancing(
     @ExceptionWrapper(GetCoFinancingException::class)
     override fun getCoFinancingForPartnerList(partnerIds: List<Long>, projectId: Long, version: String?): Map<Long, List<ProjectPartnerCoFinancing>>? =
         persistence.getCoFinancingAndContributionsForPartnerList(partnerIds, projectId, version)
+
+    @Transactional(readOnly = true)
+    @CanRetrieveProjectPartner
+    @ExceptionWrapper(GetCoFinancingException::class)
+    override fun getSpfCoFinancing(partnerId: Long, version: String?): ProjectPartnerCoFinancingAndContributionSpf =
+        persistence.getSpfCoFinancingAndContributions(partnerId, version)
+
 }

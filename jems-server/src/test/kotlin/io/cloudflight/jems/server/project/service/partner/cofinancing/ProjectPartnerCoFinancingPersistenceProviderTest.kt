@@ -18,6 +18,8 @@ import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.repository.budget.cofinancing.ProjectPartnerCoFinancingRepository
+import io.cloudflight.jems.server.project.repository.budget.cofinancing.ProjectPartnerContributionSpfRepository
+import io.cloudflight.jems.server.project.repository.budget.cofinancing.ProjectPartnerSpfCoFinancingRepository
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.repository.partner.cofinancing.ProjectPartnerCoFinancingPersistenceProvider
 import io.cloudflight.jems.server.project.repository.partner.cofinancing.toCoFinancingModel
@@ -260,6 +262,10 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
 
     @MockK
     lateinit var projectPartnerCoFinancingRepository: ProjectPartnerCoFinancingRepository
+    @MockK
+    lateinit var projectPartnerSpfCoFinancingRepository: ProjectPartnerSpfCoFinancingRepository
+    @MockK
+    lateinit var  projectPartnerContributionSpfRepository: ProjectPartnerContributionSpfRepository
 
     lateinit var projectVersionUtils: ProjectVersionUtils
     protected lateinit var persistence: ProjectPartnerCoFinancingPersistence
@@ -271,6 +277,8 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
         persistence = ProjectPartnerCoFinancingPersistenceProvider(
             projectPartnerRepository,
             projectPartnerCoFinancingRepository,
+            projectPartnerSpfCoFinancingRepository,
+            projectPartnerContributionSpfRepository,
             projectVersionUtils,
             projectRepository
         )
