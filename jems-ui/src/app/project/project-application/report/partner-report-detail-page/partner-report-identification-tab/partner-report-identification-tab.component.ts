@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {ProjectApplicationFormSidenavService} from '@project/project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {PartnerReportDetailPageStore} from '../partner-report-detail-page-store.service';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
@@ -23,7 +23,7 @@ import {
   providers: [FormService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class PartnerReportIdentificationTabComponent implements OnInit {
+export class PartnerReportIdentificationTabComponent {
   APPLICATION_FORM = APPLICATION_FORM;
 
   dateNameArgs = {
@@ -70,9 +70,6 @@ export class PartnerReportIdentificationTabComponent implements OnInit {
       tap((data) => this.resetForm(data.identification)),
     )
   }
-
-  ngOnInit(): void {
-    }
 
   get targetGroups(): FormArray {
     return this.form.get('targetGroups') as FormArray;
