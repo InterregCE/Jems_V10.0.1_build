@@ -126,32 +126,33 @@
             </jems-multi-language-container>
         </div>
 
-        <h3>{{'project.application.partner.report.sub.title.four' | translate}}</h3>
-        <p>{{'project.application.partner.report.sub.title.four.description' | translate}}</p>
+        <ng-container *ngIf="data.identification.targetGroups.length>0">
+            <h3>{{'project.application.partner.report.sub.title.four' | translate}}</h3>
+            <p>{{'project.application.partner.report.sub.title.four.description' | translate}}</p>
 
-        <jems-multi-language-container *ngIf="data.identification.targetGroups.length>0">
-            <div jemsNoWidthLimit formArrayName="targetGroups" [jemsTableConfig]="[{maxInRem: 25},{maxInRem: 25}]">
-                <div>
-                    <span class="mat-body-strong">{{ 'project.application.form.relevance.target.group' | translate }}</span>
-                    <span class="mat-body-strong">{{ 'project.application.partner.report.target.group.description' | translate }}</span>
-                </div>
-                <div *ngFor="let targetGroup of data.identification.targetGroups;let i=index">
-                    <ng-container >
-                        <ng-container [formGroupName]="i">
-                            <span>{{'project.application.form.relevance.target.group.' + targetGroup.type | translate}}</span>
-                            <div>
-                                <jems-multi-language-form-field
-                                        type="textarea"
-                                        formControlName="description"
-                                        maxLength="2000"
-                                        minRows="1">
-                                </jems-multi-language-form-field>
-                            </div>
+            <jems-multi-language-container jemsNoWidthLimit >
+                <div formArrayName="targetGroups" [jemsTableConfig]="[{maxInRem: 20},{}]">
+                    <div>
+                        <span class="mat-body-strong">{{ 'project.application.form.relevance.target.group' | translate }}</span>
+                        <span class="mat-body-strong">{{ 'project.application.partner.report.target.group.description' | translate }}</span>
+                    </div>
+                    <div *ngFor="let targetGroup of data.identification.targetGroups;let i=index">
+                        <ng-container >
+                            <ng-container [formGroupName]="i">
+                                <span>{{'project.application.form.relevance.target.group.' + targetGroup.type | translate}}</span>
+                                <div>
+                                    <jems-multi-language-form-field
+                                            type="textarea"
+                                            formControlName="description"
+                                            maxLength="2000"
+                                            minRows="1">
+                                    </jems-multi-language-form-field>
+                                </div>
+                            </ng-container>
                         </ng-container>
-                    </ng-container>
+                    </div>
                 </div>
-            </div>
-        </jems-multi-language-container>
-
+            </jems-multi-language-container>
+        </ng-container>
     </form>
 </jems-form>
