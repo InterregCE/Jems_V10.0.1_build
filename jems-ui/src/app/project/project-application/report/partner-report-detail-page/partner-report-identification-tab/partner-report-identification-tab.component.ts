@@ -91,17 +91,14 @@ export class PartnerReportIdentificationTabComponent {
       identification.targetGroups.forEach((targetGroup: ProjectPartnerReportIdentificationTargetGroupDTO, index: number) => {
         this.resetTargetGroup(targetGroup, index);
       });
-    } else {
-      this.formService.init(this.form, this.pageStore.isReportEditable());
     }
+    this.formService.init(this.form, this.pageStore.isReportEditable());
   }
 
   resetTargetGroup(targetGroup: ProjectPartnerReportIdentificationTargetGroupDTO, targetGroupIndex: number): void {
     this.targetGroups.push(this.formBuilder.group({
       description: this.formBuilder.control(targetGroup.description),
     }));
-
-    this.formService.init(this.form, this.pageStore.isReportEditable());
   }
 
   saveIdentification(): void {
