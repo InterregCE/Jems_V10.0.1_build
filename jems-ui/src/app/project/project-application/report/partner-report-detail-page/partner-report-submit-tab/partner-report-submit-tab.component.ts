@@ -13,8 +13,9 @@ import {Router} from '@angular/router';
 import {
   ProjectStore
 } from '@project/project-application/containers/project-application-detail/services/project-store.service';
-import {ProjectPartnerReportDTO, ProjectPartnerSummaryDTO} from '@cat/api';
+import {ProjectPartnerReportDTO, ProjectPartnerSummaryDTO, UserRoleDTO} from '@cat/api';
 import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @Component({
   selector: 'jems-partner-report-submit-tab',
@@ -23,17 +24,19 @@ import {PartnerReportPageStore} from '@project/project-application/report/partne
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PartnerReportSubmitTabComponent {
+  PermissionsEnum = PermissionsEnum;
   Alert = Alert;
   actionPending = false;
 
   error$ = new BehaviorSubject<APIError | null>(null);
 
   data$: Observable<{
-    projectId: number;
-    partnerSummary: ProjectPartnerSummaryDTO;
-    partnerReport: ProjectPartnerReportDTO;
-    isView: boolean;
-    isEditable: boolean;
+    projectId: number,
+    partnerSummary: ProjectPartnerSummaryDTO,
+    partnerReport: ProjectPartnerReportDTO,
+    isView: boolean,
+    isEditable: boolean,
+    userRole: UserRoleDTO | null
     }>;
 
   constructor(public pageStore: PartnerReportDetailPageStore,
@@ -47,14 +50,16 @@ export class PartnerReportSubmitTabComponent {
       pageStore.partnerSummary$,
       pageStore.partnerReport$,
       partnerReportStore.partnerReportLevel$,
-      partnerReportDetailPageStore.isReportEditable()
+      partnerReportDetailPageStore.isReportEditable(),
+      pageStore.userDetails$
     ]).pipe(
-      map(([projectId, partnerSummary, partnerReport, level, isEditable]) => ({
+            map(([projectId, partnerSummary, partnerReport, level, isEditable, userDetails]) => ({
         projectId,
         partnerSummary,
         partnerReport,
         isView: level === 'VIEW',
-        isEditable
+        isEditable,
+        userRole: userDetails?.userRole || null
       }))
     );
   }
