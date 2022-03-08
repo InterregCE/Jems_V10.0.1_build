@@ -12,9 +12,7 @@ import {
   ProjectPeriodDTO
 } from '@cat/api';
 import {catchError, map, take, tap} from 'rxjs/operators';
-import {
-  ProjectStore
-} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 
 @Component({
   selector: 'jems-partner-report-identification-tab',
@@ -32,9 +30,9 @@ export class PartnerReportIdentificationTabComponent {
   };
 
   data$: Observable<{
-    partnerReport: ProjectPartnerReportDTO,
-    periods: ProjectPeriodDTO[],
-    identification: ProjectPartnerReportIdentificationDTO
+    partnerReport: ProjectPartnerReportDTO;
+    periods: ProjectPeriodDTO[];
+    identification: ProjectPartnerReportIdentificationDTO;
   }>;
 
   form: FormGroup = this.formBuilder.group({
@@ -68,7 +66,7 @@ export class PartnerReportIdentificationTabComponent {
         identification
       })),
       tap((data) => this.resetForm(data.identification)),
-    )
+    );
   }
 
   get targetGroups(): FormArray {
