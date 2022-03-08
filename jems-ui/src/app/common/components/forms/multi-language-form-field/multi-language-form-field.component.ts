@@ -194,7 +194,7 @@ export class MultiLanguageFormFieldComponent implements OnInit, ControlValueAcce
           if (translation?.invalid) {
             return [language, INPUT_STATE.INVALID];
           }
-          return [language, translation?.value ? INPUT_STATE.VALID : INPUT_STATE.EMPTY];
+          return [language, translation?.value || this.disabled ? INPUT_STATE.VALID : INPUT_STATE.EMPTY];
         })
       ));
   }
