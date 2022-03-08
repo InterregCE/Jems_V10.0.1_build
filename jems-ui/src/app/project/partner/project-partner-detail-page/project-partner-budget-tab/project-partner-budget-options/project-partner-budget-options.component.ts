@@ -5,7 +5,7 @@ import {BudgetOptions} from '@project/model/budget/budget-options';
 import {FormService} from '@common/components/section/form/form.service';
 import {combineLatest, Observable} from 'rxjs';
 import {HttpErrorResponse} from '@angular/common/http';
-import {catchError, filter, map, startWith, tap} from 'rxjs/operators';
+import {catchError, map, startWith, tap} from 'rxjs/operators';
 import {FlatRateSetting} from '@project/model/flat-rate-setting';
 import {ProjectPartnerDetailPageStore} from '../../project-partner-detail-page.store';
 import {CallFlatRateSetting} from '@project/model/call-flat-rate-setting';

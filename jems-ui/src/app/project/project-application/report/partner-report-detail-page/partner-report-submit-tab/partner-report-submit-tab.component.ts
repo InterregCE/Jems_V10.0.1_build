@@ -1,18 +1,12 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {
-  PartnerReportDetailPageStore
-} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
-import {
-  ProjectApplicationFormSidenavService
-} from '@project/project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
-import { Alert } from '@common/components/forms/alert';
+import {PartnerReportDetailPageStore} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
+import {ProjectApplicationFormSidenavService} from '@project/project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
+import {Alert} from '@common/components/forms/alert';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {APIError} from '@common/models/APIError';
 import {catchError, finalize, map, tap} from 'rxjs/operators';
 import {Router} from '@angular/router';
-import {
-  ProjectStore
-} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {ProjectPartnerReportDTO, ProjectPartnerSummaryDTO, UserRoleDTO} from '@cat/api';
 import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
@@ -31,12 +25,12 @@ export class PartnerReportSubmitTabComponent {
   error$ = new BehaviorSubject<APIError | null>(null);
 
   data$: Observable<{
-    projectId: number,
-    partnerSummary: ProjectPartnerSummaryDTO,
-    partnerReport: ProjectPartnerReportDTO,
-    isView: boolean,
-    isEditable: boolean,
-    userRole: UserRoleDTO | null
+    projectId: number;
+    partnerSummary: ProjectPartnerSummaryDTO;
+    partnerReport: ProjectPartnerReportDTO;
+    isView: boolean;
+    isEditable: boolean;
+    userRole: UserRoleDTO | null;
     }>;
 
   constructor(public pageStore: PartnerReportDetailPageStore,

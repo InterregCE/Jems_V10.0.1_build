@@ -126,7 +126,7 @@ export class TranslationManagementPageComponent {
     return `${fileType}_${language.toLowerCase()}.properties`;
   }
 
-  getInProgressSubjectByFileType(fileType: FileTypeEnum): BehaviorSubject<Boolean> {
+  getInProgressSubjectByFileType(fileType: FileTypeEnum): BehaviorSubject<boolean> {
     return fileType === FileTypeEnum.Application ? this.isApplicationTranslationDownloadInProgress$ : this.isSystemTranslationDownloadInProgress$;
   }
 }

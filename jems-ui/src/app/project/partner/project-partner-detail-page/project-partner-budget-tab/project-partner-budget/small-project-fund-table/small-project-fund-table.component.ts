@@ -22,7 +22,6 @@ import {ProjectPartnerBudgetConstants} from '../project-partner-budget.constants
 import {Observable} from 'rxjs';
 import {map, startWith} from 'rxjs/operators';
 import {FormService} from '@common/components/section/form/form.service';
-import {StaffCostsBudgetTable} from '@project/model/budget/staff-costs-budget-table';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ProjectPeriodDTO} from '@cat/api';
 import {Alert} from '@common/components/forms/alert';

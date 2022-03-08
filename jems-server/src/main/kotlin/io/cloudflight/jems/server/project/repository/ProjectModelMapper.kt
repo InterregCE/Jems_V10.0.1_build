@@ -6,7 +6,6 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.call.entity.ApplicationFormFieldConfigurationEntity
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.call.entity.ProjectCallStateAidEntity
-import io.cloudflight.jems.server.call.repository.toDetailModel
 import io.cloudflight.jems.server.call.repository.toModel
 import io.cloudflight.jems.server.common.entity.extractField
 import io.cloudflight.jems.server.programme.entity.ProgrammePriorityEntity
