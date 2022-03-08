@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {FormService} from '@common/components/section/form/form.service';
 import {combineLatest} from 'rxjs';
 import {catchError, map, startWith, tap} from 'rxjs/operators';
@@ -6,15 +6,9 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {HttpErrorResponse} from '@angular/common/http';
 import {ProjectPeriodDTO} from '@cat/api';
-import {
-  ProjectPartnerBudgetConstants
-} from '@project/partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/project-partner-budget.constants';
-import {
-  ProjectPartnerBudgetTabService
-} from '@project/partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget-tab.service';
-import {
-  ProjectPartnerDetailPageStore
-} from '@project/partner/project-partner-detail-page/project-partner-detail-page.store';
+import {ProjectPartnerBudgetConstants} from '@project/partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/project-partner-budget.constants';
+import {ProjectPartnerBudgetTabService} from '@project/partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget-tab.service';
+import {ProjectPartnerDetailPageStore} from '@project/partner/project-partner-detail-page/project-partner-detail-page.store';
 import {PartnerBudgetSpfTables} from '@project/model/budget/partner-budget-spf-tables';
 import {SpfPartnerBudgetTable} from '@project/model/budget/spf-partner-budget-table';
 import {SpfPartnerBudgetTableEntry} from '@project/model/budget/spf-partner-budget-table-entry';

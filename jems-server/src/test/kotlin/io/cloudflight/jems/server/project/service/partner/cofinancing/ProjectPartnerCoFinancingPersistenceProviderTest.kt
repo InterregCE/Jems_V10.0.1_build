@@ -4,7 +4,11 @@ import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO
+import io.cloudflight.jems.server.call.entity.CallFundRateEntity
+import io.cloudflight.jems.server.call.entity.FundSetupId
+import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
+import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundTranslationEntity
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
@@ -32,6 +36,7 @@ import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionSpf
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.UpdateProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.model.NaceGroupLevel
 import io.cloudflight.jems.server.project.service.partner.model.PartnerSubType
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
@@ -40,6 +45,8 @@ import io.cloudflight.jems.server.utils.partner.ProjectPartnerTestUtil
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
+import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -252,6 +259,45 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
         department = ""
     )
 
+    private val mockPartner = mockk<ProjectPartnerEntity>()
+    private val callFundRate = CallFundRateEntity(
+        setupId = FundSetupId(
+            call = ProjectPartnerTestUtil.call,
+            programmeFund = ProgrammeFundEntity(
+                id = 1,
+                selected = true,
+                type = ProgrammeFundType.OTHER
+            )
+        ),
+        rate = BigDecimal.TEN,
+        isAdjustable = true
+    ).apply { this.setupId.programmeFund.translatedValues.add(
+        ProgrammeFundTranslationEntity(
+            translationId = TranslationId(this.setupId.programmeFund, SystemLanguage.EN),
+            abbreviation = "abbreviation",
+            description = "description"
+        ))
+    }
+    private val spfFinanceEntity = ProjectPartnerCoFinancingSpfEntity(
+        coFinancingFundId = ProjectPartnerCoFinancingFundId(partnerId, 1),
+        percentage = BigDecimal.valueOf(30.5),
+        programmeFund = callFundRate.setupId.programmeFund
+    )
+    private val spfContributionEntity = ProjectPartnerContributionSpfEntity(
+        id = 2,
+        partnerId = 1,
+        name = "name",
+        status = ProjectPartnerContributionStatusDTO.Public,
+        amount = BigDecimal.valueOf(20.5)
+    )
+    private val programmeFund = ProgrammeFund(
+        id = 1,
+        selected = true,
+        type = ProgrammeFundType.OTHER,
+        abbreviation = setOf(InputTranslation(SystemLanguage.EN, "abbreviation")),
+        description = setOf(InputTranslation(SystemLanguage.EN, "description"))
+    )
+
     @MockK
     lateinit var projectVersionRepo: ProjectVersionRepository
 
@@ -315,31 +361,19 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
                 timestamp
             )
         } returns previousContributionValues
-        assertThat(persistence.getCoFinancingAndContributions(1, version)).isEqualTo(previousValue)
+        assertThat(persistence.getCoFinancingAndContributions(partnerId, version)).isEqualTo(previousValue)
     }
 
     @Test
     fun `should return current version of SPF coFinancing`() {
-        val spfFinance = ProjectPartnerCoFinancingSpfEntity(
-            coFinancingFundId = ProjectPartnerCoFinancingFundId(1, 1),
-            percentage = BigDecimal.valueOf(30.5),
-            programmeFund = fund
-        )
-        val spfContribution = ProjectPartnerContributionSpfEntity(
-            id = 2,
-            partnerId = 1,
-            name = "name",
-            status = ProjectPartnerContributionStatusDTO.Public,
-            amount = BigDecimal.TEN
-        )
-        every { projectPartnerSpfCoFinancingRepository.findAllByCoFinancingFundIdPartnerId(partnerId) } returns mutableListOf(spfFinance)
-        every { projectPartnerContributionSpfRepository.findAllByPartnerId(partnerId) } returns mutableListOf(spfContribution)
+        every { projectPartnerSpfCoFinancingRepository.findAllByCoFinancingFundIdPartnerId(partnerId) } returns mutableListOf(spfFinanceEntity)
+        every { projectPartnerContributionSpfRepository.findAllByPartnerId(partnerId) } returns mutableListOf(spfContributionEntity)
 
-        val result = persistence.getSpfCoFinancingAndContributions(1, null)
+        val result = persistence.getSpfCoFinancingAndContributions(partnerId, null)
         assertThat(result.finances).containsExactly(
             ProjectPartnerCoFinancing(
                 fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
-                fund = ProgrammeFund(1, true, ProgrammeFundType.OTHER, emptySet(), emptySet()),
+                fund = programmeFund,
                 percentage =  BigDecimal.valueOf(30.5)
             )
         )
@@ -348,7 +382,7 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
                 id = 2,
                 name = "name",
                 status = ProjectPartnerContributionStatusDTO.Public,
-                amount = BigDecimal.TEN
+                amount = BigDecimal.valueOf(20.5)
             )
         )
     }
@@ -373,23 +407,18 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
             id = 2,
             name = "name",
             status = ProjectPartnerContributionStatusDTO.Public,
-            amount = BigDecimal.TEN
+            amount = BigDecimal.valueOf(20.5)
         )
         every { projectPartnerSpfCoFinancingRepository
             .findPartnerFinancingByIdAsOfTimestamp(partnerId, timestamp) } returns mutableListOf(previousSpfFinance)
         every { projectPartnerContributionSpfRepository
             .findPartnerContributionSpfByIdAsOfTimestamp(partnerId, timestamp) } returns mutableListOf(previousSpfContributionValue)
 
-        val result = persistence.getSpfCoFinancingAndContributions(1, version)
+        val result = persistence.getSpfCoFinancingAndContributions(partnerId, version)
         assertThat(result.finances).containsExactly(
             ProjectPartnerCoFinancing(
                 fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
-                fund = ProgrammeFund(
-                    id = 1,
-                    selected = true,
-                    type = ProgrammeFundType.OTHER,
-                    abbreviation = setOf(InputTranslation(SystemLanguage.EN, "abbreviation")),
-                    description = setOf(InputTranslation(SystemLanguage.EN, "description"))),
+                fund = programmeFund,
                 percentage =  BigDecimal.valueOf(30.5)
             )
         )
@@ -398,7 +427,46 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
                 id = 2,
                 name = "name",
                 status = ProjectPartnerContributionStatusDTO.Public,
-                amount = BigDecimal.TEN
+                amount = BigDecimal.valueOf(20.5)
+            )
+        )
+    }
+
+    @Test
+    fun `should update SPF coFinancing`() {
+        every { mockPartner.project.call.funds } returns mutableSetOf(callFundRate)
+        every { projectPartnerRepository
+            .findById(partnerId) } returns Optional.of(mockPartner)
+        val spfFinance = UpdateProjectPartnerCoFinancing(
+            fundId = 1,
+            percentage = BigDecimal.valueOf(30.5)
+        )
+        val spfContribution = ProjectPartnerContributionSpf(
+            name = "name",
+            status = ProjectPartnerContributionStatusDTO.Public,
+            amount = BigDecimal.valueOf(20.5)
+        )
+        every { projectPartnerContributionSpfRepository.deleteByPartnerId(partnerId) } returns Unit
+        every { projectPartnerContributionSpfRepository
+            .saveAll(listOf(spfContributionEntity.copy(id = 0))) } returns listOf(spfContributionEntity)
+        every { projectPartnerSpfCoFinancingRepository.deleteByCoFinancingFundIdPartnerId(partnerId) } returns Unit
+        val capturedEntity = slot<MutableSet<ProjectPartnerCoFinancingSpfEntity>>()
+        every { projectPartnerSpfCoFinancingRepository.saveAll(capture(capturedEntity)) } returns listOf(spfFinanceEntity)
+
+        val result = persistence.updateSpfCoFinancingAndContribution(partnerId, listOf(spfFinance), listOf(spfContribution))
+        assertThat(result.finances).containsExactly(
+            ProjectPartnerCoFinancing(
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
+                fund = programmeFund,
+                percentage =  BigDecimal.valueOf(30.5)
+            )
+        )
+        assertThat(result.partnerContributions).containsExactly(
+            ProjectPartnerContributionSpf(
+                id = 2,
+                name = "name",
+                status = ProjectPartnerContributionStatusDTO.Public,
+                amount = BigDecimal.valueOf(20.5)
             )
         )
     }

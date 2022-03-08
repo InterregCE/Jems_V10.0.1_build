@@ -49,7 +49,7 @@ export class PreSubmissionCheckSettingsPageComponent {
     );
   }
 
-  resetForm(pluginKey: String): void {
+  resetForm(pluginKey: string): void {
     this.pluginKey.setValue(pluginKey);
   }
 
