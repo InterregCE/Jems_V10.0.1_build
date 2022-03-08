@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.partner.cofinancing
 
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
@@ -13,7 +14,9 @@ import io.cloudflight.jems.server.project.entity.partner.cofinancing.PartnerCont
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.PartnerFinancingRow
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerCoFinancingEntity
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerCoFinancingFundId
+import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerCoFinancingSpfEntity
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerContributionEntity
+import io.cloudflight.jems.server.project.entity.partner.cofinancing.ProjectPartnerContributionSpfEntity
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
@@ -28,6 +31,7 @@ import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionSpf
 import io.cloudflight.jems.server.project.service.partner.model.NaceGroupLevel
 import io.cloudflight.jems.server.project.service.partner.model.PartnerSubType
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
@@ -312,5 +316,90 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
             )
         } returns previousContributionValues
         assertThat(persistence.getCoFinancingAndContributions(1, version)).isEqualTo(previousValue)
+    }
+
+    @Test
+    fun `should return current version of SPF coFinancing`() {
+        val spfFinance = ProjectPartnerCoFinancingSpfEntity(
+            coFinancingFundId = ProjectPartnerCoFinancingFundId(1, 1),
+            percentage = BigDecimal.valueOf(30.5),
+            programmeFund = fund
+        )
+        val spfContribution = ProjectPartnerContributionSpfEntity(
+            id = 2,
+            partnerId = 1,
+            name = "name",
+            status = ProjectPartnerContributionStatusDTO.Public,
+            amount = BigDecimal.TEN
+        )
+        every { projectPartnerSpfCoFinancingRepository.findAllByCoFinancingFundIdPartnerId(partnerId) } returns mutableListOf(spfFinance)
+        every { projectPartnerContributionSpfRepository.findAllByPartnerId(partnerId) } returns mutableListOf(spfContribution)
+
+        val result = persistence.getSpfCoFinancingAndContributions(1, null)
+        assertThat(result.finances).containsExactly(
+            ProjectPartnerCoFinancing(
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
+                fund = ProgrammeFund(1, true, ProgrammeFundType.OTHER, emptySet(), emptySet()),
+                percentage =  BigDecimal.valueOf(30.5)
+            )
+        )
+        assertThat(result.partnerContributions).containsExactly(
+            ProjectPartnerContributionSpf(
+                id = 2,
+                name = "name",
+                status = ProjectPartnerContributionStatusDTO.Public,
+                amount = BigDecimal.TEN
+            )
+        )
+    }
+
+    @Test
+    fun `should return previous version of SPF coFinancing`() {
+        every { projectPartnerRepository.getProjectIdByPartnerIdInFullHistory(partnerId) } returns projectId
+        every { projectPartnerRepository.findPartnerIdentityByIdAsOfTimestamp(partnerId, timestamp) } returns listOf(
+            previousProjectPartner
+        )
+        val previousSpfFinance = PreviousVersionOfCoFinancing(
+            orderNr = 1,
+            percentage = BigDecimal.valueOf(30.5),
+            language = SystemLanguage.EN,
+            abbreviation = "abbreviation",
+            description = "description",
+            fundId = 1,
+            fundType = "Other",
+            selected = true
+        )
+        val previousSpfContributionValue = PreviousVersionOfContribution(
+            id = 2,
+            name = "name",
+            status = ProjectPartnerContributionStatusDTO.Public,
+            amount = BigDecimal.TEN
+        )
+        every { projectPartnerSpfCoFinancingRepository
+            .findPartnerFinancingByIdAsOfTimestamp(partnerId, timestamp) } returns mutableListOf(previousSpfFinance)
+        every { projectPartnerContributionSpfRepository
+            .findPartnerContributionSpfByIdAsOfTimestamp(partnerId, timestamp) } returns mutableListOf(previousSpfContributionValue)
+
+        val result = persistence.getSpfCoFinancingAndContributions(1, version)
+        assertThat(result.finances).containsExactly(
+            ProjectPartnerCoFinancing(
+                fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
+                fund = ProgrammeFund(
+                    id = 1,
+                    selected = true,
+                    type = ProgrammeFundType.OTHER,
+                    abbreviation = setOf(InputTranslation(SystemLanguage.EN, "abbreviation")),
+                    description = setOf(InputTranslation(SystemLanguage.EN, "description"))),
+                percentage =  BigDecimal.valueOf(30.5)
+            )
+        )
+        assertThat(result.partnerContributions).containsExactly(
+            ProjectPartnerContributionSpf(
+                id = 2,
+                name = "name",
+                status = ProjectPartnerContributionStatusDTO.Public,
+                amount = BigDecimal.TEN
+            )
+        )
     }
 }
