@@ -7,9 +7,9 @@ import {
 import {
   PartnerReportDetailPageStore
 } from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
-import {ProjectPartnerReportWorkPackageDTO, ProjectWorkPackageDTO, WorkPackageService} from '@cat/api';
+import {ProjectPartnerReportWorkPackageDTO} from '@cat/api';
 import {combineLatest, Observable} from 'rxjs';
-import {map, tap} from 'rxjs/operators';
+import {map} from 'rxjs/operators';
 import {
   PartnerReportWorkPlanPageStore
 } from '@project/project-application/report/partner-report-work-plan-progress-tab/partner-report-work-plan-page-store.service';
