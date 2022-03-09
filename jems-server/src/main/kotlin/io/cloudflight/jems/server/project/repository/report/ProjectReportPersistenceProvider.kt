@@ -9,6 +9,8 @@ import io.cloudflight.jems.server.project.entity.report.expenditureCosts.Partner
 import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportIdentificationEntity
 import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportIdentificationTargetGroupEntity
 import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportIdentificationTargetGroupTranslEntity
+import io.cloudflight.jems.server.project.repository.report.contribution.ProjectPartnerReportContributionRepository
+import io.cloudflight.jems.server.project.repository.report.contribution.toEntity
 import io.cloudflight.jems.server.project.repository.report.expenditureCosts.PartnerReportExpenditureCostsRepository
 import io.cloudflight.jems.server.project.repository.report.expenditureCosts.toEntity
 import io.cloudflight.jems.server.project.repository.report.expenditureCosts.updateEntity
@@ -31,6 +33,7 @@ import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerRep
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSummary
 import io.cloudflight.jems.server.project.service.report.model.ReportStatus
+import io.cloudflight.jems.server.project.service.report.model.contribution.create.CreateProjectPartnerReportContribution
 import io.cloudflight.jems.server.project.service.report.model.workPlan.create.CreateProjectPartnerReportWorkPackage
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -50,6 +53,7 @@ class ProjectReportPersistenceProvider(
     private val workPlanOutputRepository: ProjectPartnerReportWorkPackageOutputRepository,
     private val identificationRepository: ProjectPartnerReportIdentificationRepository,
     private val identificationTargetGroupRepository: ProjectPartnerReportIdentificationTargetGroupRepository,
+    private val contributionRepository: ProjectPartnerReportContributionRepository,
     private val partnerReportExpenditureCostsRepository: PartnerReportExpenditureCostsRepository
 ) : ProjectReportPersistence {
 
@@ -59,6 +63,7 @@ class ProjectReportPersistenceProvider(
         persistCoFinancingToReport(report.identification.coFinancing, report = reportEntity)
         persistWorkPlanToReport(report.workPackages, report = reportEntity)
         persistTargetGroupsToReport(report.targetGroups, report = reportEntity)
+        persistContributionsToReport(report.contributions, report = reportEntity)
         return reportEntity.toModelSummary()
     }
 
@@ -134,6 +139,14 @@ class ProjectReportPersistenceProvider(
         )
     }
 
+    private fun persistContributionsToReport(
+        contributions: List<CreateProjectPartnerReportContribution>,
+        report: ProjectPartnerReportEntity,
+    ) =
+        contributionRepository.saveAll(
+            contributions.map { it.toEntity(report) }
+        )
+
     @Transactional
     override fun submitReportById(
         partnerId: Long,
@@ -165,6 +178,10 @@ class ProjectReportPersistenceProvider(
     override fun listPartnerReports(partnerId: Long, pageable: Pageable): Page<ProjectPartnerReportSummary> =
         partnerReportRepository.findAllByPartnerId(partnerId = partnerId, pageable = pageable)
             .map { it.toModelSummary() }
+
+    @Transactional(readOnly = true)
+    override fun listSubmittedPartnerReports(partnerId: Long): List<ProjectPartnerReportSummary> =
+        partnerReportRepository.findAllByPartnerIdAndStatus(partnerId, ReportStatus.Submitted).map { it.toModelSummary() }
 
     @Transactional(readOnly = true)
     override fun getCurrentLatestReportNumberForPartner(partnerId: Long): Int =
