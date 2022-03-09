@@ -8,6 +8,7 @@ import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerRep
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportStatusAndVersion
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSummary
+import io.cloudflight.jems.server.project.service.report.model.ReportStatus
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import java.time.ZonedDateTime
@@ -23,6 +24,8 @@ interface ProjectReportPersistence {
     fun getPartnerReportById(partnerId: Long, reportId: Long): ProjectPartnerReport
 
     fun listPartnerReports(partnerId: Long, pageable: Pageable): Page<ProjectPartnerReportSummary>
+
+    fun listSubmittedPartnerReports(partnerId: Long): List<ProjectPartnerReportSummary>
 
     fun getCurrentLatestReportNumberForPartner(partnerId: Long): Int
 
