@@ -51,16 +51,28 @@
             </span>
         </span>
     </div>
-    <div *ngIf="project?.lastResubmission" class="project-row">
-        <span class="header p-1 pr-3">{{'project.detail.table.submission.latest' | translate}}</span>
+    <div *ngIf="project?.firstSubmissionStep1" class="project-row">
+        <span class="header p-1 pr-3">{{'project.detail.table.step.one.submission.first' | translate}}</span>
         <span class="p-1">
-            {{'project.detail.overview.applicant' | translate : getSubmission(project?.lastResubmission)}}
+            {{'project.detail.overview.applicant' | translate : getSubmission(project?.firstSubmissionStep1)}}
         </span>
     </div>
     <div *ngIf="project?.firstSubmission" class="project-row">
         <span class="header p-1 pr-3">{{'project.detail.table.submission.first' | translate}}</span>
         <span class="p-1">
             {{'project.detail.overview.applicant' | translate : getSubmission(project?.firstSubmission)}}
+        </span>
+    </div>
+    <div *ngIf="project?.lastResubmission" class="project-row">
+        <span class="header p-1 pr-3">{{'project.detail.table.submission.latest' | translate}}</span>
+        <span class="p-1">
+            {{'project.detail.overview.applicant' | translate : getSubmission(project?.lastResubmission)}}
+        </span>
+    </div>
+    <div *ngIf="project?.contractedDecision" class="project-row">
+        <span class="header p-1 pr-3">{{'project.detail.table.contracted' | translate}}</span>
+        <span class="p-1">
+            {{'project.detail.overview.applicant' | translate : getSubmission(project?.contractedDecision)}}
         </span>
     </div>
 </div>

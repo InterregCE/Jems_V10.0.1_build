@@ -179,9 +179,10 @@ class ProjectDataProviderImpl(
             sectionA, sectionB, sectionC, sectionD, sectionE,
             lifecycleData = ProjectLifecycleData(
                 status = project.projectStatus.status.toDataModel(),
-                submissionDateStepOne = null, // todo should be set in MP2-2306
+                submissionDateStepOne = project.firstSubmissionStep1?.updated,
                 firstSubmissionDate = project.firstSubmission?.updated,
                 lastResubmissionDate = project.lastResubmission?.updated,
+                contractedDate = project.contractedDecision?.updated,
                 assessmentStep1 = project.assessmentStep1?.toDataModel(),
                 assessmentStep2 = project.assessmentStep2?.toDataModel()
             ),

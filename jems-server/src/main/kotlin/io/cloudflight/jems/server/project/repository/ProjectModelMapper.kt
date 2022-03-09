@@ -107,7 +107,9 @@ fun ProjectEntity.toModel(
     applicant = applicant.toUserSummary(),
     projectStatus = currentStatus.toProjectStatus(),
     firstSubmission = firstSubmission?.toProjectStatus(),
+    firstSubmissionStep1 = firstSubmissionStep1?.toProjectStatus(),
     lastResubmission = lastResubmission?.toProjectStatus(),
+    contractedDecision = contractedDecision?.toProjectStatus(),
     assessmentStep1 = assessmentStep1?.toModel(),
     assessmentStep2 = assessmentStep2?.toModel(),
     title = projectData?.translatedValues?.mapTo(HashSet()) {
@@ -204,7 +206,9 @@ fun List<ProjectRow>.toProjectEntryWithDetailData(
                 groupedRows.value.first().note
             ),
             firstSubmission = project.firstSubmission?.toProjectStatus(),
+            firstSubmissionStep1 = project.firstSubmissionStep1?.toProjectStatus(),
             lastResubmission = project.lastResubmission?.toProjectStatus(),
+            contractedDecision = project.contractedDecision?.toProjectStatus(),
             assessmentStep1 = assessmentStep1.toModel(),
             assessmentStep2 = assessmentStep2.toModel(),
         )
