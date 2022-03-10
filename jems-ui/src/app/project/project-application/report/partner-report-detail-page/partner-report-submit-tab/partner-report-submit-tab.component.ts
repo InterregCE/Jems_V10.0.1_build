@@ -28,7 +28,7 @@ export class PartnerReportSubmitTabComponent {
     projectId: number;
     partnerSummary: ProjectPartnerSummaryDTO;
     partnerReport: ProjectPartnerReportDTO;
-    isView: boolean;
+    level: string;
     isEditable: boolean;
     userRole: UserRoleDTO | null;
     }>;
@@ -36,8 +36,8 @@ export class PartnerReportSubmitTabComponent {
   constructor(public pageStore: PartnerReportDetailPageStore,
               public projectStore: ProjectStore,
               public partnerReportDetailPageStore: PartnerReportDetailPageStore,
+              public partnerReportStore: PartnerReportPageStore,
               private projectSidenavService: ProjectApplicationFormSidenavService,
-              private partnerReportStore: PartnerReportPageStore,
               private router: Router) {
     this.data$ = combineLatest([
       projectStore.projectId$,
@@ -51,7 +51,7 @@ export class PartnerReportSubmitTabComponent {
         projectId,
         partnerSummary,
         partnerReport,
-        isView: level === 'VIEW',
+        level,
         isEditable,
         userRole: userDetails?.userRole || null
       }))

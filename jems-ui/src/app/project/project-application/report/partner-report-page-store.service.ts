@@ -4,7 +4,7 @@ import {
   ProjectPartnerReportService,
   ProjectPartnerReportSummaryDTO,
   ProjectPartnerSummaryDTO,
-  ProjectPartnerUserCollaboratorService
+  ProjectPartnerUserCollaboratorService, UserRoleCreateDTO, UserRoleDTO
 } from '@cat/api';
 import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
 import {filter, map, shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
@@ -12,6 +12,7 @@ import {RoutingService} from '@common/services/routing.service';
 import {ProjectPartnerStore} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
 import {Log} from '@common/utils/log';
 import {Tables} from '@common/utils/tables';
+import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 
 @Injectable({providedIn: 'root'})
 export class PartnerReportPageStore {
@@ -44,6 +45,18 @@ export class PartnerReportPageStore {
         tap(() => this.refreshReports$.next()),
         tap(created => Log.info('Created partnerReport:', this, created)),
       );
+  }
+
+  checkUserPermissions(userRole: UserRoleDTO | null, level: string): boolean {
+    if (userRole)
+    {
+      return userRole.permissions.includes(PermissionsEnum.ProjectReportingEdit)
+        || userRole.permissions.includes(PermissionsEnum.ProjectReportingView)
+        || level === 'VIEW'
+        || level === 'EDIT';
+    }
+    return level === 'VIEW'
+      || level === 'EDIT';
   }
 
   private partnerReports(): Observable<ProjectPartnerReportSummaryDTO[]> {
