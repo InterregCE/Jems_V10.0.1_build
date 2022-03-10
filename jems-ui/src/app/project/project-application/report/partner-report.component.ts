@@ -12,6 +12,9 @@ import {PartnerReportPageStore} from '@project/project-application/report/partne
 import {APIError} from '@common/models/APIError';
 import { Alert } from '@common/components/forms/alert';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
+import {
+  PartnerReportDetailPageStore
+} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
 
 @Component({
   selector: 'jems-contract-monitoring',
@@ -35,19 +38,23 @@ export class PartnerReportComponent implements AfterViewInit {
   data$: Observable<{
     partnerReports: ProjectPartnerReportSummaryDTO[];
     partner: ProjectPartnerSummaryDTO;
+    userRole: UserRoleDTO | null;
   }>;
 
   constructor(public pageStore: PartnerReportPageStore,
               private activatedRoute: ActivatedRoute,
               private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
-              private router: RoutingService) {
+              private router: RoutingService,
+              private partnerReportDetail: PartnerReportDetailPageStore) {
     this.data$ = combineLatest([
       this.pageStore.partnerReports$,
       this.pageStore.partnerSummary$,
+      this.partnerReportDetail.userDetails$
     ]).pipe(
-      map(([partnerReports, partner]) => ({
+      map(([partnerReports, partner, userDetails]) => ({
         partnerReports,
         partner,
+        userRole: userDetails?.userRole || null
       }))
     );
   }
