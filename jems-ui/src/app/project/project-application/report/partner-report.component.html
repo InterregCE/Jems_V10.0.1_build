@@ -5,13 +5,15 @@
             : {partner: getPartnerTranslationString(data.partner)}"
                             [isVersionedData]="false">
     <ng-container *ngIf="pageStore.partnerReportLevel$ | async as level">
-        <jems-pending-button [disabled]="level === 'VIEW'" *jemsHasPermission="PermissionsEnum.ProjectReportingEdit"
-                jemsText
-                class="mb-3"
-                (click)="createPartnerReport()"
-                [pending]="actionPending">
-            + {{'project.application.partner.reports.add' | translate}}
-        </jems-pending-button>
+        <ng-container *ngIf="pageStore.checkUserPermissions(data.userRole, level)">
+            <jems-pending-button [hidden]="!data.userRole.permissions.includes(PermissionsEnum.ProjectReportingEdit) && level !== 'EDIT'"
+                                 jemsText
+                                 class="mb-3"
+                                 (click)="createPartnerReport()"
+                                 [pending]="actionPending">
+                + {{'project.application.partner.reports.add' | translate}}
+            </jems-pending-button>
+        </ng-container>
     </ng-container>
 
     <ng-container>
