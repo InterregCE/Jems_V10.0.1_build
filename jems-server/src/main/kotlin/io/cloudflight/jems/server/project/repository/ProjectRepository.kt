@@ -1,20 +1,72 @@
 package io.cloudflight.jems.server.project.repository
 
+import com.querydsl.core.BooleanBuilder
+import com.querydsl.core.types.ExpressionUtils
+import com.querydsl.core.types.Predicate
+import com.querydsl.core.types.dsl.DateTimePath
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectPeriodRow
 import io.cloudflight.jems.server.project.entity.ProjectRow
+import io.cloudflight.jems.server.project.entity.QProjectEntity
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.project.service.model.ProjectSearchRequest
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
+import org.springframework.data.querydsl.QuerydslPredicateExecutor
 import org.springframework.stereotype.Repository
 import java.sql.Timestamp
+import java.time.ZonedDateTime
 import java.util.Optional
 
 
 @Repository
-interface ProjectRepository : JpaRepository<ProjectEntity, Long> {
+interface ProjectRepository : JpaRepository<ProjectEntity, Long>, QuerydslPredicateExecutor<ProjectEntity> {
+
+    companion object {
+        private val project = QProjectEntity.projectEntity
+
+        private fun likeIdentifier(id: String?) =
+            if (id.isNullOrBlank()) null
+            else project.id.like("%${id}%").or(project.customIdentifier.like("%${id}%"))
+
+        private fun likeAcronym(acronym: String?) =
+            if (acronym.isNullOrBlank()) null
+            else project.acronym.likeIgnoreCase("%${acronym}%")
+
+        private fun isAfter(date: ZonedDateTime?, datePath: DateTimePath<ZonedDateTime>) =
+            if (date == null) null
+            else datePath.after(date)
+
+        private fun isBefore(date: ZonedDateTime?, datePath: DateTimePath<ZonedDateTime>) =
+            if (date == null) null
+            else datePath.before(date)
+
+        private fun hasAnySpecificObjective(objectives: Set<ProgrammeObjectivePolicy>?) =
+            if (objectives.isNullOrEmpty()) null else project.priorityPolicy.programmeObjectivePolicy.`in`(objectives)
+
+        private fun hasAnyStatus(statuses: Set<ApplicationStatus>?) =
+            if (statuses.isNullOrEmpty()) null else project.currentStatus.status.`in`(statuses)
+
+        private fun hasAnyCallId(callIds: Set<Long>?) =
+            if (callIds.isNullOrEmpty()) null else project.call.id.`in`(callIds)
+
+        fun buildSearchPredicate(searchRequest: ProjectSearchRequest?): Predicate =
+            ExpressionUtils.allOf(
+                likeIdentifier(searchRequest?.id),
+                likeAcronym(searchRequest?.acronym),
+                isAfter(searchRequest?.firstSubmissionFrom, project.firstSubmission.updated),
+                isBefore(searchRequest?.firstSubmissionTo, project.firstSubmission.updated),
+                isAfter(searchRequest?.lastSubmissionFrom, project.lastResubmission.updated),
+                isBefore(searchRequest?.lastSubmissionTo, project.lastResubmission.updated),
+                hasAnySpecificObjective(searchRequest?.objectives),
+                hasAnyStatus(searchRequest?.statuses),
+                hasAnyCallId(searchRequest?.calls)
+            ) ?: BooleanBuilder()
+    }
 
     @Query(
         """

@@ -7,6 +7,7 @@ import io.cloudflight.jems.api.project.dto.ProjectCallSettingsDTO
 import io.cloudflight.jems.api.project.dto.ProjectCreateDTO
 import io.cloudflight.jems.api.project.dto.ProjectDetailDTO
 import io.cloudflight.jems.api.project.dto.ProjectDetailFormDTO
+import io.cloudflight.jems.api.project.dto.ProjectSearchRequestDTO
 import io.cloudflight.jems.api.project.dto.ProjectVersionDTO
 import io.cloudflight.jems.api.project.dto.budget.ProjectPartnerBudgetDTO
 import io.cloudflight.jems.api.project.dto.cofinancing.ProjectCoFinancingOverviewDTO
@@ -42,8 +43,8 @@ class ProjectController(
     private val getProjectActivitiesInteractor: GetActivityInteractor
 ) : ProjectApi {
 
-    override fun getAllProjects(pageable: Pageable): Page<OutputProjectSimple> =
-        getProjectInteractor.getAllProjects(pageable).toDto()
+    override fun getAllProjects(pageable: Pageable, searchRequest: ProjectSearchRequestDTO?): Page<OutputProjectSimple> =
+        getProjectInteractor.getAllProjects(pageable, searchRequest?.toModel()).toDto()
 
     override fun getMyProjects(pageable: Pageable): Page<OutputProjectSimple> =
         getProjectInteractor.getMyProjects(pageable).toDto()

@@ -4,6 +4,7 @@ import io.cloudflight.jems.api.call.CallApi
 import io.cloudflight.jems.api.call.dto.AllowedRealCostsDTO
 import io.cloudflight.jems.api.call.dto.CallDTO
 import io.cloudflight.jems.api.call.dto.CallDetailDTO
+import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.call.dto.CallUpdateRequestDTO
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateSetupDTO
 import io.cloudflight.jems.api.common.dto.IdNamePairDTO
@@ -41,8 +42,8 @@ class CallController(
     override fun getCalls(pageable: Pageable): Page<CallDTO> =
         getCall.getCalls(pageable).toDto()
 
-    override fun listCalls(): List<IdNamePairDTO> =
-        listCalls.list().toDTO()
+    override fun listCalls(status: CallStatus?): List<IdNamePairDTO> =
+        listCalls.list(status).toDTO()
 
     override fun getPublishedCalls(pageable: Pageable): Page<CallDTO> =
         getCall.getPublishedCalls(pageable).toDto()

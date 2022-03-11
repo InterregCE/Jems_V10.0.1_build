@@ -320,7 +320,19 @@ internal class CallPersistenceProviderTest {
     fun `should return list of calls id,name pair`() {
         val callEntity = callEntity(CALL_ID)
         every { callRepo.findAll() } returns listOf(callEntity)
-        assertThat(persistence.listCalls()).containsExactly(IdNamePair(callEntity.id, callEntity.name))
+
+        assertThat(persistence.listCalls(null)).containsExactly(IdNamePair(callEntity.id, callEntity.name))
+
+        verify { callRepo.findAll() }
+    }
+
+    @Test
+    fun `should fetch the list of calls with the status`() {
+        every { callRepo.findAllByStatus(CallStatus.PUBLISHED) } returns listOf()
+
+        persistence.listCalls(CallStatus.PUBLISHED)
+
+        verify { callRepo.findAllByStatus(CallStatus.PUBLISHED) }
     }
 
     @Test

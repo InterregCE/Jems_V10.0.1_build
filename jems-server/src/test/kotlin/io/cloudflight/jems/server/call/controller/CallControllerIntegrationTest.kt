@@ -42,7 +42,7 @@ class CallControllerIntegrationTest(
 
     @BeforeEach
     fun importData() {
-        if (callApi.listCalls().isEmpty()) {
+        if (callApi.listCalls(null).isEmpty()) {
             callApi.createCall(
                 CallUpdateRequestDTO(
                     name = "Call 1",
@@ -61,7 +61,7 @@ class CallControllerIntegrationTest(
     // TODO solve performance issue (use Joins?)
     @ExpectSelect(5)   // call, form field configuration, stateAids, translations
     fun getCalls() {
-        val calls = callApi.listCalls()
+        val calls = callApi.listCalls(null)
         assertThat(calls).hasSize(1)
         assertThat(calls).containsExactly(IdNamePairDTO(1, "Call 1"))
     }

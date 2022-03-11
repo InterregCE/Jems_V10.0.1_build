@@ -1,7 +1,7 @@
 <mat-form-field jemsFormFieldWidth="xx-large" appearance="fill">
     <mat-label>{{label | translate}}</mat-label>
     <mat-chip-list #filterChip>
-        <mat-chip *ngFor="let value of values"
+        <mat-chip class="chip-option" *ngFor="let value of values"
                   [removable]="true"
                   [selectable]="false">
             {{options.get(value) || '' | translate}}
@@ -15,8 +15,9 @@
         <mat-autocomplete #auto="matAutocomplete"
                           (optionSelected)="addToFilters($event.option.value); filterInput.value = ''; filterInput.blur()">
             <mat-option *ngFor="let option of getNotSelectedOptions(filterInput.value)"
-                        [value]="option">
-                {{ options.get(option) || '' | translate}}
+                        [value]="option"
+                        [title]="options.get(option)">
+                {{options.get(option)}}
             </mat-option>
         </mat-autocomplete>
     </mat-chip-list>

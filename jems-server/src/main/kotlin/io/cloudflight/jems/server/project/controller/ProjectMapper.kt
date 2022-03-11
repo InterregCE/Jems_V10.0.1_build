@@ -16,11 +16,9 @@ import io.cloudflight.jems.api.project.dto.ProjectCallSettingsDTO
 import io.cloudflight.jems.api.project.dto.ProjectDetailDTO
 import io.cloudflight.jems.api.project.dto.ProjectDetailFormDTO
 import io.cloudflight.jems.api.project.dto.ProjectPeriodDTO
+import io.cloudflight.jems.api.project.dto.ProjectSearchRequestDTO
 import io.cloudflight.jems.api.project.dto.ProjectVersionDTO
 import io.cloudflight.jems.api.project.dto.budget.ProjectPartnerBudgetDTO
-import io.cloudflight.jems.api.project.dto.file.ProjectFileCategoryDTO
-import io.cloudflight.jems.api.project.dto.file.ProjectFileCategoryTypeDTO
-import io.cloudflight.jems.api.project.dto.file.ProjectFileMetadataDTO
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.api.project.dto.status.ProjectStatusDTO
 import io.cloudflight.jems.plugin.contract.models.common.I18nMessageData
@@ -39,13 +37,11 @@ import io.cloudflight.jems.server.programme.service.stateaid.model.ProgrammeStat
 import io.cloudflight.jems.server.project.service.application.ApplicationActionInfo
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.budget.model.PartnerBudget
-import io.cloudflight.jems.server.project.service.file.model.ProjectFileCategory
-import io.cloudflight.jems.server.project.service.file.model.ProjectFileCategoryType
-import io.cloudflight.jems.server.project.service.file.model.ProjectFileMetadata
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectDetail
 import io.cloudflight.jems.server.project.service.model.ProjectForm
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
+import io.cloudflight.jems.server.project.service.model.ProjectSearchRequest
 import io.cloudflight.jems.server.project.service.model.ProjectStatus
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.model.ProjectVersion
@@ -140,11 +136,7 @@ fun Page<ProjectSummary>.toDto() = map {
     )
 }
 
-fun ProjectFileCategoryTypeDTO.toModel() = projectMapper.map(this)
-fun ProjectFileCategoryDTO.toModel() = projectMapper.map(this)
-fun ProjectFileMetadata.toDTO() = projectMapper.map(this)
-fun Page<ProjectFileMetadata>.toDTO() = map { projectMapper.map(it) }
-
+fun ProjectSearchRequestDTO.toModel() = projectMapper.map(this)
 
 private val projectMapper = Mappers.getMapper(ProjectMapper::class.java)
 
@@ -177,20 +169,7 @@ abstract class ProjectMapper {
     @Mapping(source = "stateAids", target = "stateAids")
     abstract fun mapToStateAidsDTO(stateAids: List<ProgrammeStateAid>): List<ProgrammeStateAidDTO>
 
-    abstract fun map(fileCategoryTypDTO: ProjectFileCategoryTypeDTO): ProjectFileCategoryType
-    abstract fun map(fileCategoryDTO: ProjectFileCategoryDTO): ProjectFileCategory
-
-    fun map(fileMetadata: ProjectFileMetadata): ProjectFileMetadataDTO =
-        ProjectFileMetadataDTO(
-            fileMetadata.id,
-            fileMetadata.projectId,
-            fileMetadata.name,
-            fileMetadata.size,
-            fileMetadata.uploadedAt,
-            fileMetadata.uploadedBy.toDto(),
-            fileMetadata.description
-        )
-
+    abstract fun map(searchRequestDTO: ProjectSearchRequestDTO): ProjectSearchRequest
 
     fun map(projectCallFlatRateSet: Set<ProjectCallFlatRate>): FlatRateSetupDTO =
         projectCallFlatRateSet.toDto()

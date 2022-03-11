@@ -6,6 +6,7 @@ import io.cloudflight.jems.api.project.dto.InputProjectData
 import io.cloudflight.jems.api.project.dto.ProjectDetailDTO
 import io.cloudflight.jems.api.project.dto.OutputProjectSimple
 import io.cloudflight.jems.api.project.dto.ProjectDetailFormDTO
+import io.cloudflight.jems.api.project.dto.ProjectSearchRequestDTO
 import io.cloudflight.jems.api.project.dto.ProjectVersionDTO
 import io.cloudflight.jems.api.project.dto.budget.ProjectPartnerBudgetDTO
 import io.cloudflight.jems.api.project.dto.cofinancing.ProjectCoFinancingOverviewDTO
@@ -39,8 +40,8 @@ interface ProjectApi {
         ApiImplicitParam(paramType = "query", name = "size", dataType = "integer"),
         ApiImplicitParam(paramType = "query", name = "sort", dataType = "string")
     )
-    @GetMapping(ENDPOINT_API_PROJECT)
-    fun getAllProjects(pageable: Pageable): Page<OutputProjectSimple>
+    @PostMapping("$ENDPOINT_API_PROJECT/list", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun getAllProjects(pageable: Pageable, @RequestBody(required = false) searchRequest: ProjectSearchRequestDTO?): Page<OutputProjectSimple>
 
     @ApiOperation("Returns applications of current user")
     @ApiImplicitParams(
