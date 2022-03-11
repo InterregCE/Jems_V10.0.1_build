@@ -28,7 +28,7 @@ internal class GetUsersAssignedToProjectsTest : UnitTest() {
     @Test
     fun getUserIdsForProject() {
         every { userProjectPersistence.getUserIdsForProject(12L) } returns setOf(4L, 5L, 6L)
-        every { projectPersistence.getProjects(Pageable.unpaged()) } returns PageImpl(listOf(
+        every { projectPersistence.getProjects(Pageable.unpaged(), any()) } returns PageImpl(listOf(
             ProjectSummary(id = 12L, callName = "call name", customIdentifier = "project", acronym = "project acronym", status = ApplicationStatus.DRAFT),
         ))
         assertThat(getUsersAssigned.getProjectsWithAssignedUsers(Pageable.unpaged()).content).containsExactly(

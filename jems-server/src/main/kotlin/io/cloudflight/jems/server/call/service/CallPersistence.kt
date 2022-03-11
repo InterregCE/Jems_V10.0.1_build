@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.call.service
 
+import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.server.call.service.model.AllowedRealCosts
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.Call
@@ -14,7 +15,7 @@ import org.springframework.data.domain.Pageable
 interface CallPersistence {
 
     fun getCalls(pageable: Pageable): Page<CallSummary>
-    fun listCalls(): List<IdNamePair>
+    fun listCalls(status: CallStatus?): List<IdNamePair>
     fun getPublishedAndOpenCalls(pageable: Pageable): Page<CallSummary>
     fun getCallById(callId: Long): CallDetail
     fun getCallByProjectId(projectId: Long): CallDetail

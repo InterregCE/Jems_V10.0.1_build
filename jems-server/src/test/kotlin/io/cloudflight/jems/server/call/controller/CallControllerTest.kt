@@ -253,15 +253,15 @@ class CallControllerTest : UnitTest() {
     fun `list calls`() {
         val idNamePair = IdNamePair(id = ID, name = "name")
         val idNamePairDTO = IdNamePairDTO(id = ID, name = "name")
-        every { listCalls.list() } returns listOf(idNamePair)
-        assertThat(controller.listCalls()).containsExactly(idNamePairDTO)
+        every { listCalls.list(CallStatus.PUBLISHED) } returns listOf(idNamePair)
+        assertThat(controller.listCalls(CallStatus.PUBLISHED)).containsExactly(idNamePairDTO)
     }
 
     @Test
     fun `list calls fails on list exception`() {
         val exception = ListCallsException(Exception())
-        every { listCalls.list() } throws exception
-        assertThrows<ListCallsException> { controller.listCalls() }
+        every { listCalls.list(null) } throws exception
+        assertThrows<ListCallsException> { controller.listCalls(null) }
     }
 
     @Test
