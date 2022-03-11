@@ -1,4 +1,4 @@
-<mat-card *ngIf="data$ | async as data" jemsFormLayout class="mt-2">
+<mat-card *ngIf="data$ | async as data" jemsFormLayout>
     <h3>{{'project.application.partner.report.submit.title' | translate }}</h3>
     <div *ngIf="(data.userRole.permissions.includes(PermissionsEnum.ProjectReportingEdit) || data.level === 'EDIT') else reportViewPermission">
         <div *ngIf="data.isEditable; else alreadySubmitted">
