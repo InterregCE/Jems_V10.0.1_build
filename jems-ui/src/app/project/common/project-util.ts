@@ -47,6 +47,19 @@ export class ProjectUtil {
       || status === ProjectStatusDTO.StatusEnum.MODIFICATIONSUBMITTED;
   }
 
+  static isApprovedOrAnyAfterApprovedAndBeforeContracted(statusOrProject: ProjectDetailDTO | ProjectStatusDTO): boolean {
+    const status = this.getStatus(statusOrProject);
+    return status === ProjectStatusDTO.StatusEnum.APPROVED
+      || status === ProjectStatusDTO.StatusEnum.MODIFICATIONREJECTED
+      || status === ProjectStatusDTO.StatusEnum.MODIFICATIONPRECONTRACTING
+      || status === ProjectStatusDTO.StatusEnum.MODIFICATIONPRECONTRACTINGSUBMITTED;
+  }
+
+  static isAnyBeforeApproved(statusOrProject: ProjectDetailDTO | ProjectStatusDTO): boolean {
+    return !this.isApprovedOrAnyAfterApprovedAndBeforeContracted(statusOrProject)
+      && !this.isContractedOrAnyStatusAfterContracted(statusOrProject);
+  }
+
   static isContractedOrAnyStatusAfterContracted(statusOrProject: ProjectDetailDTO | ProjectStatusDTO | ProjectStatusDTO.StatusEnum): boolean {
     const status = this.getStatus(statusOrProject);
     return status === ProjectStatusDTO.StatusEnum.CONTRACTED
