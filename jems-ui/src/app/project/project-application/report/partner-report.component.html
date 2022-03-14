@@ -4,13 +4,19 @@
                             [subTitleText]="'common.label.project.partner.role.shortcut.' + data.partner.role | adaptTranslationKeyByCallType | async | translate
             : {partner: getPartnerTranslationString(data.partner)}"
                             [isVersionedData]="false">
+    <jems-alert [type]="Alert.WARNING"
+                [closable]="false"
+                [show]="!data.partner.active">
+        <div>{{'project.application.form.section.part.b.deactivated.partner.warning' | translate}}</div>
+    </jems-alert>
     <ng-container *ngIf="pageStore.partnerReportLevel$ | async as level">
         <ng-container *ngIf="pageStore.checkUserPermissions(data.userRole, level)">
-            <jems-pending-button [hidden]="!data.userRole.permissions.includes(PermissionsEnum.ProjectReportingEdit) && level !== 'EDIT'"
-                                 jemsText
-                                 class="mb-3"
-                                 (click)="createPartnerReport()"
-                                 [pending]="actionPending">
+            <jems-pending-button
+                    [hidden]="!data.userRole.permissions.includes(PermissionsEnum.ProjectReportingEdit) && level !== 'EDIT'"
+                    jemsText
+                    class="mb-3"
+                    (click)="createPartnerReport()"
+                    [pending]="actionPending">
                 + {{'project.application.partner.reports.add' | translate}}
             </jems-pending-button>
         </ng-container>
