@@ -1,6 +1,6 @@
 package io.cloudflight.jems.api.project.report
 
-import io.cloudflight.jems.api.project.dto.report.partner.PartnerReportExpenditureCostDTO
+import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportExpenditureCostDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import org.springframework.http.MediaType
@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 
-@Api("Partner Report Expenditure costs")
-interface PartnerReportExpenditureCostsApi {
+@Api("Project Partner Report Expenditure costs")
+interface ProjectPartnerReportExpenditureCostsApi {
 
     companion object {
         const val ENDPOINT_API_PARTNER_REPORT_EXPENDITURE_COSTS = "/api/project/report/expenditure/costs"
@@ -21,7 +21,7 @@ interface PartnerReportExpenditureCostsApi {
     fun getProjectPartnerReports(
         @PathVariable partnerId: Long,
         @PathVariable reportId: Long,
-    ): List<PartnerReportExpenditureCostDTO>
+    ): List<ProjectPartnerReportExpenditureCostDTO>
 
     @ApiOperation("Update partner report expenditure costs")
     @PutMapping(
@@ -31,6 +31,6 @@ interface PartnerReportExpenditureCostsApi {
     fun updatePartnerReportExpenditures(
         @PathVariable partnerId: Long,
         @PathVariable reportId: Long,
-        @RequestBody expenditureCosts: List<PartnerReportExpenditureCostDTO>
-    ): List<PartnerReportExpenditureCostDTO>
+        @RequestBody expenditureCosts: List<ProjectPartnerReportExpenditureCostDTO>
+    ): List<ProjectPartnerReportExpenditureCostDTO>
 }

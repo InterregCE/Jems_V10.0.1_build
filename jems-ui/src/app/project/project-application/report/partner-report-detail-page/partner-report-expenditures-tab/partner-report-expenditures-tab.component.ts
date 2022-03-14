@@ -14,7 +14,7 @@ import {
   PartnerReportExpendituresStore
 } from '@project/project-application/report/partner-report-detail-page/partner-report-expenditures-tab/partner-report-expenditures-store.service';
 import {MatSelectChange} from '@angular/material/select/select';
-import {PartnerReportExpenditureCostDTO} from '@cat/api';
+import {ProjectPartnerReportExpenditureCostDTO} from '@cat/api';
 import {BudgetCostCategoryEnum} from '@project/model/lump-sums/BudgetCostCategoryEnum';
 
 @UntilDestroy()
@@ -33,7 +33,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
   columnsToDisplay$: Observable<string[]>;
   withConfigs$: Observable<TableConfig[]>;
   data$: Observable<{
-    expendituresCosts: PartnerReportExpenditureCostDTO[];
+    expendituresCosts: ProjectPartnerReportExpenditureCostDTO[];
     costCategories: string[];
     investmentNumbers: string[];
     contractIDs: string[];
@@ -95,7 +95,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       == BudgetCostCategoryEnum.TRAVEL_AND_ACCOMMODATION_COSTS;
   }
 
-  resetForm(partnerReportExpenditures: PartnerReportExpenditureCostDTO[]): void {
+  resetForm(partnerReportExpenditures: ProjectPartnerReportExpenditureCostDTO[]): void {
     this.items.clear();
     partnerReportExpenditures.forEach(partnerReportExpenditure => {
       this.addResult(partnerReportExpenditure);
@@ -212,7 +212,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     return tableConfig;
   }
 
-  private addResult(reportExpenditureCost?: PartnerReportExpenditureCostDTO): void {
+  private addResult(reportExpenditureCost?: ProjectPartnerReportExpenditureCostDTO): void {
     this.items.push(this.formBuilder.group(
       {
         id: this.formBuilder.control(reportExpenditureCost?.id),
@@ -232,7 +232,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     );
   }
 
-  private formToReportExpenditures(): PartnerReportExpenditureCostDTO[] {
+  private formToReportExpenditures(): ProjectPartnerReportExpenditureCostDTO[] {
     return this.items.controls.map((formGroup: FormGroup) => ({
       costCategory: [formGroup.value?.costCategory, Validators.required],
       internalReferenceNumber: [formGroup.value?.internalReferenceNumber, Validators.maxLength(30)],

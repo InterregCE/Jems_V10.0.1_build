@@ -30,7 +30,6 @@ import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerRep
 import io.cloudflight.jems.server.project.service.report.model.ReportStatus
 import io.cloudflight.jems.server.project.service.report.partner.createProjectPartnerReport.CreateProjectPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.getProjectPartnerReport.GetProjectPartnerReportInteractor
-import io.cloudflight.jems.server.project.service.report.partner.partnerReportExpenditureCosts.PartnerReportExpenditureCostsInteractor
 import io.cloudflight.jems.server.project.service.report.partner.submitProjectPartnerReport.SubmitProjectPartnerReportInteractor
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -141,9 +140,6 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
 
     @MockK
     lateinit var getPartnerReport: GetProjectPartnerReportInteractor
-
-    @MockK
-    lateinit var partnerReportExpenditureCostsInteractor: PartnerReportExpenditureCostsInteractor
 
     @InjectMockKs
     private lateinit var controller: ProjectPartnerReportController
