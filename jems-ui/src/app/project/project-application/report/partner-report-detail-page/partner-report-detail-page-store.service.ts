@@ -5,7 +5,7 @@ import {
   ProjectPartnerSummaryDTO, UpdateProjectPartnerReportIdentificationDTO, UserDTO, UserRoleService
 } from '@cat/api';
 import {combineLatest, merge, Observable, of, ReplaySubject, Subject} from 'rxjs';
-import {catchError, shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
+import {catchError, filter, map, shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
 import {RoutingService} from '@common/services/routing.service';
 import {Log} from '@common/utils/log';
 import {ProjectPaths} from '@project/common/project-util';
@@ -22,6 +22,8 @@ export class PartnerReportDetailPageStore {
   partnerSummary$: Observable<ProjectPartnerSummaryDTO>;
   partnerReport$: Observable<ProjectPartnerReportDTO>;
   partnerId$: Observable<string | number | null>;
+  partnerReportId$: Observable<number>;
+  partnerReportLevel$: Observable<string>;
   userDetails$: Observable<UserDTO | null>;
   partnerIdentification$: Observable<ProjectPartnerReportIdentificationDTO>;
 
@@ -41,10 +43,16 @@ export class PartnerReportDetailPageStore {
               private userRoleService: UserRoleService,
               private securityService: SecurityService) {
     this.partnerId$ = this.partnerReportPageStore.partnerId$;
+    this.partnerReportLevel$ = this.partnerReportPageStore.partnerReportLevel$;
+    this.partnerReportId$ = this.partnerReportId();
     this.partnerSummary$ = this.partnerReportPageStore.partnerSummary$;
     this.partnerReport$ = this.partnerReport();
     this.partnerIdentification$ = this.reportIdentification();
     this.userDetails$ = this.securityService.currentUserDetails;
+  }
+
+  private partnerReportId(): Observable<any> {
+    return this.routingService.routeParameterChanges(PartnerReportDetailPageStore.REPORT_DETAIL_PATH, 'reportId');
   }
 
   isReportEditable(): Observable<boolean> {
@@ -54,7 +62,7 @@ export class PartnerReportDetailPageStore {
   private partnerReport(): Observable<ProjectPartnerReportDTO> {
     const initialReport$ = combineLatest([
       this.partnerId$,
-      this.routingService.routeParameterChanges(PartnerReportDetailPageStore.REPORT_DETAIL_PATH, 'reportId'),
+      this.partnerReportId$,
       this.projectStore.projectId$,
       this.updatedReportStatus$.pipe(startWith(null))
     ]).pipe(

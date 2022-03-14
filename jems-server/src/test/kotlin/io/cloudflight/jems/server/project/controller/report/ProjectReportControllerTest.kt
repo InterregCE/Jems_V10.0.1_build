@@ -1,19 +1,17 @@
 package io.cloudflight.jems.server.project.controller.report
 
-import io.cloudflight.jems.server.project.service.report.getProjectReportPartnerList.GetProjectReportPartnerListInteractor
+import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
+import io.cloudflight.jems.server.project.service.report.getProjectReportPartnerList.GetProjectReportPartnerListInteractor
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
-import io.mockk.junit5.MockKExtension
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.data.domain.Sort
 
-@ExtendWith(MockKExtension::class)
-class ProjectReportControllerTest {
+internal class ProjectReportControllerTest : UnitTest() {
 
     companion object {
         private const val PROJECT_ID = 1L

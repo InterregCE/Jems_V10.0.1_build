@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController
 class ProjectPartnerReportController(
     private val createPartnerReport: CreateProjectPartnerReportInteractor,
     private val submitPartnerReport: SubmitProjectPartnerReportInteractor,
-    private val getPartnerReport: GetProjectPartnerReportInteractor,
+    private val getPartnerReport: GetProjectPartnerReportInteractor
 ) : ProjectPartnerReportApi {
 
     override fun getProjectPartnerReports(

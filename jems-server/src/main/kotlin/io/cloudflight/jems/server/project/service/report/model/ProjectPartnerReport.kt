@@ -6,5 +6,5 @@ data class ProjectPartnerReport(
     val status: ReportStatus,
     val version: String,
 
-    val identification: PartnerReportIdentification,
+    val identification: PartnerReportIdentification
 )

@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.common.entity.extractField
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusTranslationEntity
 import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatus
+import org.apache.lucene.queries.function.valuesource.MultiFunction.description
 
 fun Iterable<ProgrammeLegalStatusEntity>.toModel() = map { it.toModel() }
 
@@ -13,6 +14,19 @@ fun ProgrammeLegalStatusEntity.toModel() = ProgrammeLegalStatus(
     description = translatedValues.extractField { it.description },
     type = type
 )
+
+fun ProgrammeLegalStatus.toEntity() = ProgrammeLegalStatusEntity(
+    id = id,
+    translatedValues = mutableSetOf(),
+    type = type
+).apply {
+    translatedValues.addAll(description.map { description ->
+        ProgrammeLegalStatusTranslationEntity(
+            translationId = TranslationId(this, language = description.language),
+            description = description.translation,
+        )
+    })
+}
 
 fun Collection<ProgrammeLegalStatus>.toEntity() = map { model ->
     ProgrammeLegalStatusEntity(

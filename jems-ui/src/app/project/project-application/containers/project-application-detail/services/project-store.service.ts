@@ -31,7 +31,9 @@ import {RoutingService} from '@common/services/routing.service';
 import {ProjectPaths, ProjectUtil} from '@project/common/project-util';
 import {SecurityService} from '../../../../../security/security.service';
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
-import {InvestmentSummary} from '@project/work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
+import {
+  InvestmentSummary
+} from '@project/work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
 import {AllowedBudgetCategories, AllowedBudgetCategory} from '@project/model/allowed-budget-category';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 import CallTypeEnum = ProjectCallSettingsDTO.CallTypeEnum;
@@ -329,10 +331,15 @@ export class ProjectStore {
       this.projectVersionStore.selectedVersionParam$,
       this.investmentChangeEvent$.pipe(startWith(null))])
       .pipe(
-        switchMap(([project, version]) => this.projectService.getProjectInvestmentSummaries(project.id, version)),
-        map((investmentSummeryDTOs: InvestmentSummaryDTO[]) => investmentSummeryDTOs.map(it => new InvestmentSummary(it.id, it.investmentNumber, it.workPackageNumber))),
+        switchMap(([project, selectedVersion]) => this.getProjectInvestmentSummaries(project, selectedVersion as string)),
+        map((investmentSummeryDTOs: InvestmentSummaryDTO[]) => investmentSummeryDTOs
+          .map(it => new InvestmentSummary(it.id, it.investmentNumber, it.workPackageNumber))),
         shareReplay(1)
       );
+  }
+
+  getProjectInvestmentSummaries(project: ProjectDetailDTO, version: string): Observable<InvestmentSummaryDTO[]> {
+    return this.projectService.getProjectInvestmentSummaries(project.id, version);
   }
 
   private investmentSummariesForFiles(): Observable<InvestmentSummary[]> {
@@ -363,7 +370,7 @@ export class ProjectStore {
       this.collaboratorLevel$,
     ])
       .pipe(
-        map(([project, currentUser, collaboratorLevel]) => project?.applicant?.id === currentUser?.id || collaboratorLevel === ProjectUserCollaboratorDTO.LevelEnum.EDIT  || collaboratorLevel === ProjectUserCollaboratorDTO.LevelEnum.MANAGE)
+        map(([project, currentUser, collaboratorLevel]) => project?.applicant?.id === currentUser?.id || collaboratorLevel === ProjectUserCollaboratorDTO.LevelEnum.EDIT || collaboratorLevel === ProjectUserCollaboratorDTO.LevelEnum.MANAGE)
       );
   }
 

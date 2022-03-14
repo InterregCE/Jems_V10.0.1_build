@@ -15,7 +15,7 @@ import {
 } from '@cat/api';
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 import {filter, map, share, shareReplay, startWith, switchMap, tap, withLatestFrom} from 'rxjs/operators';
-import {combineLatest, forkJoin, Observable, of, Subject} from 'rxjs';
+import {combineLatest, forkJoin, MonoTypeOperatorFunction, Observable, of, Subject} from 'rxjs';
 import {PartnerBudgetTables} from '@project/model/budget/partner-budget-tables';
 import {StaffCostsBudgetTable} from '@project/model/budget/staff-costs-budget-table';
 import {StaffCostsBudgetTableEntry} from '@project/model/budget/staff-costs-budget-table-entry';
@@ -36,7 +36,7 @@ import {SpfPartnerBudgetTableEntry} from '@project/model/budget/spf-partner-budg
 import {SpfPartnerBudgetTable} from '@project/model/budget/spf-partner-budget-table';
 import {PartnerBudgetSpfTables} from '@project/model/budget/partner-budget-spf-tables';
 
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class ProjectPartnerBudgetStore {
   budgets$: Observable<PartnerBudgetTables>;
   spfBudgets$: Observable<PartnerBudgetSpfTables>;
@@ -138,16 +138,15 @@ export class ProjectPartnerBudgetStore {
     ])
       .pipe(
         filter(([partner, version]) => !!partner.id),
-        switchMap(([partner, version]) => this.projectPartnerBudgetService.getBudgetOptions(partner.id, version)),
-        map((it: ProjectPartnerBudgetOptionsDto) => new BudgetOptions(
-          it.officeAndAdministrationOnStaffCostsFlatRate,
-          it.officeAndAdministrationOnDirectCostsFlatRate,
-          it.staffCostsFlatRate,
-          it.travelAndAccommodationOnStaffCostsFlatRate,
-          it.otherCostsOnStaffCostsFlatRate
-        )),
+        map(([partner, version]) => [partner.id, version]),
+        switchMap(([partnerId, version]) => this.getBudgetOptions(partnerId as number, version as string)),
+        map((it: ProjectPartnerBudgetOptionsDto) => BudgetOptions.fromDto(it)),
         shareReplay(1)
       );
+  }
+
+  getBudgetOptions(partnerId: number, version: string): Observable<any> {
+    return this.projectPartnerBudgetService.getBudgetOptions(partnerId, version);
   }
 
   private getBudgetsToSave(partner: ProjectPartnerDetailDTO, newBudgets: PartnerBudgetTables, options: BudgetOptions): { [key: string]: Observable<any> } {
@@ -172,8 +171,8 @@ export class ProjectPartnerBudgetStore {
 
   private getSpfBudgetsToSave(partner: ProjectPartnerDetailDTO, newBudgets: PartnerBudgetSpfTables, options: BudgetOptions): { [key: string]: Observable<any> } {
     return {
-        spf: this.projectPartnerBudgetService.updateBudgetSpfCosts(partner.id, this.toGeneralBudgetEntryDTOArray(newBudgets.spfCosts)),
-      };
+      spf: this.projectPartnerBudgetService.updateBudgetSpfCosts(partner.id, this.toGeneralBudgetEntryDTOArray(newBudgets.spfCosts)),
+    };
   }
 
   private totalBudget(): Observable<number> {

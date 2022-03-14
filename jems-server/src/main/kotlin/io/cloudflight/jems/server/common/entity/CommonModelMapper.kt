@@ -2,6 +2,8 @@ package io.cloudflight.jems.server.common.entity
 
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
+import java.time.Instant
+import java.time.LocalDate
 import java.time.ZoneId
 import java.time.ZonedDateTime
 
@@ -9,8 +11,16 @@ inline fun <T : TranslationEntity> Set<T>.extractField(extractFunction: (T) -> S
     map { InputTranslation(it.language(), extractFunction.invoke(it)) }
         .filterTo(HashSet()) { !it.translation.isNullOrBlank() }
 
-inline fun <T : TranslationView> List<T>.extractField(noinline languageExtractor: ((T) -> SystemLanguage?)? = null, extractFunction: (T) -> String?) =
-    filter { (if (languageExtractor != null) languageExtractor(it) else it.language) != null }.toHashSet().map { InputTranslation((if (languageExtractor != null) languageExtractor(it) else it.language)!!, extractFunction.invoke(it)) }
+inline fun <T : TranslationView> List<T>.extractField(
+    noinline languageExtractor: ((T) -> SystemLanguage?)? = null,
+    extractFunction: (T) -> String?
+) =
+    filter { (if (languageExtractor != null) languageExtractor(it) else it.language) != null }.toHashSet().map {
+        InputTranslation(
+            (if (languageExtractor != null) languageExtractor(it) else it.language)!!,
+            extractFunction.invoke(it)
+        )
+    }
         .filterTo(HashSet()) { !it.translation.isNullOrBlank() }
 
 fun <T : TranslationEntity> MutableSet<T>.resetTranslations(newTranslations: Set<T>, updater: (T, T) -> Unit) {
@@ -40,6 +50,9 @@ fun <T : TranslationEntity> MutableSet<T>.addTranslationEntities(
 fun Set<InputTranslation>.extractTranslation(language: SystemLanguage) =
     firstOrNull { it.language == language }?.translation ?: ""
 
+fun Instant.toLocalDate() = LocalDate.ofInstant(this, ZoneId.systemDefault())!!
+
+fun LocalDate.toInstant() = this.atStartOfDay(ZoneId.systemDefault()).toInstant()
 
 fun Int?.toYear(): ZonedDateTime? {
     if (this == null)

@@ -50,5 +50,4 @@ interface ProjectPartnerReportApi {
         @PathVariable partnerId: Long,
         @PathVariable reportId: Long,
     ): ProjectPartnerReportSummaryDTO
-
 }
