@@ -6,13 +6,14 @@ import java.math.BigDecimal
 data class ProjectPartnerContribution(
 
     // if updating
-    val id: Long? = null,
+    override val id: Long? = null,
 
-    val name: String? = null,
-    val status: ProjectPartnerContributionStatusDTO? = null,
-    val amount: BigDecimal? = null,
+    override val name: String? = null,
+    override val status: ProjectPartnerContributionStatusDTO? = null,
+    override val amount: BigDecimal? = null,
+
     val isPartner: Boolean
 
-) {
+): ProjectContribution {
     fun isNotPartner() = !isPartner
 }

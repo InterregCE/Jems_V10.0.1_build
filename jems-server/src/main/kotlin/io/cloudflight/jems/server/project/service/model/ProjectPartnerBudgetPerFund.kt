@@ -5,6 +5,7 @@ import java.math.BigDecimal
 
 data class ProjectPartnerBudgetPerFund(
     val partner: ProjectPartnerSummary? = null,
+    val costType: ProjectPartnerCostType? = null,
     val budgetPerFund: Set<PartnerBudgetPerFund> = emptySet(),
     val publicContribution: BigDecimal? = BigDecimal.ZERO,
     val autoPublicContribution: BigDecimal? = BigDecimal.ZERO,
