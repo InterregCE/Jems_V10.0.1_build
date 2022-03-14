@@ -10,7 +10,6 @@ import io.cloudflight.jems.server.project.entity.TranslationId
 import io.cloudflight.jems.server.project.service.model.ProjectDetail
 import io.cloudflight.jems.server.project.service.model.ProjectForm
 import io.cloudflight.jems.server.project.service.model.ProjectFull
-import io.cloudflight.jems.server.project.entity.projectuser.UserProjectCollaboratorEntity
 
 fun ProjectEntity.toApplicantAndStatus(
     collaboratorViewIds: Set<Long>,
@@ -60,7 +59,9 @@ fun ProjectFull.getProjectWithoutFormData() = ProjectDetail(
     programmePriority = programmePriority,
     projectStatus = projectStatus,
     firstSubmission = firstSubmission,
+    firstSubmissionStep1 = firstSubmissionStep1,
     lastResubmission = lastResubmission,
+    contractedDecision = contractedDecision,
     assessmentStep1 = assessmentStep1,
     assessmentStep2 = assessmentStep2,
 )

@@ -96,10 +96,12 @@ fun ProjectDetail.toDto() = ProjectDetailDTO(
     programmePriority = programmePriority,
     projectStatus = projectStatus.toDto(),
     firstSubmission = firstSubmission?.toDto(),
+    firstSubmissionStep1 = firstSubmissionStep1?.toDTO(),
     lastResubmission = lastResubmission?.toDto(),
     step2Active = projectStatus.status.isInStep2(),
     firstStepDecision = assessmentStep1?.toDto(),
     secondStepDecision = assessmentStep2?.toDto(),
+    contractedDecision = contractedDecision?.toDto()
 )
 
 fun ProjectForm.toDto() = ProjectDetailFormDTO(

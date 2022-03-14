@@ -38,10 +38,14 @@ class ProjectWorkflowPersistenceProvider(
         projectRepository.getById(projectId).apply {
             val newStatus = projectStatusHistoryRepository.save(
                 ProjectStatusHistoryEntity(
-                    project = this, status = status, user = userRepository.getById(userId)
+                        project = this, status = status, user = userRepository.getById(userId)
                 )
             )
-            firstSubmission = newStatus
+            if (this.currentStatus.status.isInStep2()) {
+                firstSubmission = newStatus
+            } else {
+                firstSubmissionStep1 = newStatus
+            }
             currentStatus = newStatus
         }.currentStatus.status
 
@@ -82,13 +86,17 @@ class ProjectWorkflowPersistenceProvider(
         actionInfo: ApplicationActionInfo?
     ) =
         projectRepository.getById(projectId).apply {
-            currentStatus = projectStatusHistoryRepository.save(
+            val newStatus = projectStatusHistoryRepository.save(
                 ProjectStatusHistoryEntity(
                     project = this, status = status, user = userRepository.getById(userId),
                     decisionDate = actionInfo?.date,
                     note = actionInfo?.note
                 )
             )
+            if (status == ApplicationStatus.CONTRACTED){
+                contractedDecision = newStatus
+            }
+            currentStatus = newStatus
         }.currentStatus.status
 
     @Transactional
