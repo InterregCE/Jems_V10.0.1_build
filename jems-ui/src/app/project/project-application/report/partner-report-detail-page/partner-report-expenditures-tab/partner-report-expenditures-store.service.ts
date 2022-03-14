@@ -2,8 +2,8 @@ import {Injectable} from '@angular/core';
 import {combineLatest, merge, Observable, of, Subject} from 'rxjs';
 import {
   InvestmentSummaryDTO,
-  PartnerReportExpenditureCostDTO,
-  PartnerReportExpenditureCostsService,
+  ProjectPartnerReportExpenditureCostDTO,
+  ProjectPartnerReportExpenditureCostsService,
   ProjectPartnerBudgetOptionsDto
 } from '@cat/api';
 
@@ -29,10 +29,10 @@ export class PartnerReportExpendituresStore {
   costCategories$: Observable<string[]>;
   contractIDs$: Observable<string[]>;
   investmentNumbers$: Observable<string[]>;
-  expendituresCosts$: Observable<PartnerReportExpenditureCostDTO[]>;
-  private expendituresUpdated$ = new Subject<PartnerReportExpenditureCostDTO[]>();
+  expendituresCosts$: Observable<ProjectPartnerReportExpenditureCostDTO[]>;
+  private expendituresUpdated$ = new Subject<ProjectPartnerReportExpenditureCostDTO[]>();
 
-  constructor(private partnerReportExpenditureCostsService: PartnerReportExpenditureCostsService,
+  constructor(private partnerReportExpenditureCostsService: ProjectPartnerReportExpenditureCostsService,
               private partnerReportDetailPageStore: PartnerReportDetailPageStore,
               private projectStore: ProjectStore,
               private projectPartnerBudgetStore: ProjectPartnerBudgetStore) {
@@ -43,7 +43,7 @@ export class PartnerReportExpendituresStore {
     this.investmentNumbers$ = this.investmentSummariesForReport();
   }
 
-  updateExpenditures(partnerExpenditures: PartnerReportExpenditureCostDTO[]): Observable<PartnerReportExpenditureCostDTO[]> {
+  updateExpenditures(partnerExpenditures: ProjectPartnerReportExpenditureCostDTO[]): Observable<ProjectPartnerReportExpenditureCostDTO[]> {
     return combineLatest([
       this.partnerReportDetailPageStore.partnerId$,
       this.partnerReportDetailPageStore.partnerReportId$
@@ -55,13 +55,13 @@ export class PartnerReportExpendituresStore {
     );
   }
 
-  private partnerReportExpenditureCosts(): Observable<PartnerReportExpenditureCostDTO[]> {
+  private partnerReportExpenditureCosts(): Observable<ProjectPartnerReportExpenditureCostDTO[]> {
     const initialExpenditureCosts$ = combineLatest([
       this.partnerReportDetailPageStore.partnerId$,
       this.partnerReportDetailPageStore.partnerReportId$
     ]).pipe(
       switchMap(([partnerId, reportId]) =>
-        this.partnerReportExpenditureCostsService.getProjectPartnerReports(partnerId as number, reportId as number)
+        this.partnerReportExpenditureCostsService.getProjectPartnerReports(partnerId as number, reportId )
       )
     );
 

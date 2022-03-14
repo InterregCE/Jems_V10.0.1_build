@@ -1,11 +1,11 @@
-package io.cloudflight.jems.server.project.entity.report.expenditureCosts
+package io.cloudflight.jems.server.project.entity.report.expenditure
 
 import io.cloudflight.jems.server.common.entity.TranslationEntity
 import io.cloudflight.jems.server.common.entity.TranslationId
 import javax.persistence.EmbeddedId
 import javax.persistence.Entity
 
-@Entity(name = "partner_report_expenditure_cost_transl")
+@Entity(name = "report_project_partner_expenditure_transl")
 class PartnerReportExpenditureCostTranslEntity(
 
     @EmbeddedId
