@@ -7,6 +7,5 @@ data class ProjectPartnerReportDTO(
     val reportNumber: Int,
     val status: ReportStatusDTO,
     val linkedFormVersion: String,
-
-    val identification: PartnerReportIdentificationDTO,
+    val identification: PartnerReportIdentificationDTO
 )

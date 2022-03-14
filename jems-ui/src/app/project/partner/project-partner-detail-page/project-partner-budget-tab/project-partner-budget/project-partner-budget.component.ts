@@ -12,15 +12,21 @@ import {StaffCostsBudgetTable} from '@project/model/budget/staff-costs-budget-ta
 import {StaffCostsBudgetTableEntry} from '@project/model/budget/staff-costs-budget-table-entry';
 import {PartnerBudgetTables} from '@project/model/budget/partner-budget-tables';
 import {GeneralBudgetTable} from '@project/model/budget/general-budget-table';
-import {TravelAndAccommodationCostsBudgetTable} from '@project/model/budget/travel-and-accommodation-costs-budget-table';
-import {TravelAndAccommodationCostsBudgetTableEntry} from '@project/model/budget/travel-and-accommodation-costs-budget-table-entry';
+import {
+  TravelAndAccommodationCostsBudgetTable
+} from '@project/model/budget/travel-and-accommodation-costs-budget-table';
+import {
+  TravelAndAccommodationCostsBudgetTableEntry
+} from '@project/model/budget/travel-and-accommodation-costs-budget-table-entry';
 import {ProjectPeriodDTO} from '@cat/api';
 import {UnitCostsBudgetTable} from '@project/model/budget/unit-costs-budget-table';
 import {UnitCostsBudgetTableEntry} from '@project/model/budget/unit-costs-budget-table-entry';
 import {ProjectPartnerBudgetTabService} from '../project-partner-budget-tab.service';
 import {BudgetCostCategoryEnum} from '@project/model/lump-sums/BudgetCostCategoryEnum';
 import {ProgrammeUnitCost} from '@project/model/programmeUnitCost';
-import {InvestmentSummary} from '@project/work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
+import {
+  InvestmentSummary
+} from '@project/work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
 import {AllowedBudgetCategories} from '@project/model/allowed-budget-category';
 
 @UntilDestroy()
@@ -64,7 +70,11 @@ export class ProjectPartnerBudgetComponent implements OnInit {
   private officeAndAdministrationFlatRateTotal$: Observable<number>;
   private travelAndAccommodationTotal$: Observable<number>;
 
-  constructor(private cdr: ChangeDetectorRef, private formService: FormService, private tabService: ProjectPartnerBudgetTabService, private formBuilder: FormBuilder, private pageStore: ProjectPartnerDetailPageStore) {
+  constructor(private cdr: ChangeDetectorRef,
+              private formService: FormService,
+              private tabService: ProjectPartnerBudgetTabService,
+              private formBuilder: FormBuilder,
+              private pageStore: ProjectPartnerDetailPageStore) {
   }
 
   get staff(): FormGroup {

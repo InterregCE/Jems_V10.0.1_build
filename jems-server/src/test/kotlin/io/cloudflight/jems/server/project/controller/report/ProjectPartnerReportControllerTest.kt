@@ -15,15 +15,14 @@ import io.cloudflight.jems.api.project.dto.report.ProjectPartnerReportSummaryDTO
 import io.cloudflight.jems.api.project.dto.report.ReportStatusDTO
 import io.cloudflight.jems.api.project.dto.report.partner.PartnerReportIdentificationCoFinancingDTO
 import io.cloudflight.jems.api.project.dto.report.partner.PartnerReportIdentificationDTO
+import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
 import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatus
 import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatusType
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
-import io.cloudflight.jems.server.project.service.report.getProjectReportPartnerList.GetProjectReportPartnerListInteractor
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
-import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVatRecovery
 import io.cloudflight.jems.server.project.service.report.model.PartnerReportIdentification
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReport
@@ -31,22 +30,19 @@ import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerRep
 import io.cloudflight.jems.server.project.service.report.model.ReportStatus
 import io.cloudflight.jems.server.project.service.report.partner.createProjectPartnerReport.CreateProjectPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.getProjectPartnerReport.GetProjectPartnerReportInteractor
+import io.cloudflight.jems.server.project.service.report.partner.partnerReportExpenditureCosts.PartnerReportExpenditureCostsInteractor
 import io.cloudflight.jems.server.project.service.report.partner.submitProjectPartnerReport.SubmitProjectPartnerReportInteractor
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
-import io.mockk.junit5.MockKExtension
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
-import org.springframework.data.domain.Sort
 import java.math.BigDecimal
 import java.time.ZonedDateTime
 
-@ExtendWith(MockKExtension::class)
-class ProjectPartnerReportControllerTest {
+internal class ProjectPartnerReportControllerTest : UnitTest() {
 
     companion object {
         private val YESTERDAY = ZonedDateTime.now().minusDays(1)
@@ -146,13 +142,21 @@ class ProjectPartnerReportControllerTest {
     @MockK
     lateinit var getPartnerReport: GetProjectPartnerReportInteractor
 
+    @MockK
+    lateinit var partnerReportExpenditureCostsInteractor: PartnerReportExpenditureCostsInteractor
+
     @InjectMockKs
     private lateinit var controller: ProjectPartnerReportController
 
     @Test
     fun getProjectPartnerReports() {
         every { getPartnerReport.findAll(14, Pageable.unpaged()) } returns PageImpl(listOf(reportSummary))
-        assertThat(controller.getProjectPartnerReports(14, Pageable.unpaged()).content).containsExactly(reportSummaryDTO)
+        assertThat(
+            controller.getProjectPartnerReports(
+                14,
+                Pageable.unpaged()
+            ).content
+        ).containsExactly(reportSummaryDTO)
     }
 
     @Test
@@ -170,13 +174,15 @@ class ProjectPartnerReportControllerTest {
                 vatRecovery = null,
             )
         )
-        assertThat(controller.getProjectPartnerReport(14, 240)).isEqualTo(reportDTO.copy(
-            identification = reportDTO.identification.copy(
-                legalStatus = null,
-                partnerType = null,
-                vatRecovery = null,
+        assertThat(controller.getProjectPartnerReport(14, 240)).isEqualTo(
+            reportDTO.copy(
+                identification = reportDTO.identification.copy(
+                    legalStatus = null,
+                    partnerType = null,
+                    vatRecovery = null,
+                )
             )
-        ))
+        )
     }
 
     @Test
@@ -192,9 +198,11 @@ class ProjectPartnerReportControllerTest {
             status = ReportStatus.Submitted,
             firstSubmission = thisMoment,
         )
-        assertThat(controller.submitProjectPartnerReport(18, 310)).isEqualTo(reportSummaryDTO.copy(
-            status = ReportStatusDTO.Submitted,
-            firstSubmission = thisMoment,
-        ))
+        assertThat(controller.submitProjectPartnerReport(18, 310)).isEqualTo(
+            reportSummaryDTO.copy(
+                status = ReportStatusDTO.Submitted,
+                firstSubmission = thisMoment,
+            )
+        )
     }
 }

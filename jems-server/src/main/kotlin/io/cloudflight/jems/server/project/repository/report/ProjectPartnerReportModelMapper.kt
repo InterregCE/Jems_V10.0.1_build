@@ -6,6 +6,7 @@ import io.cloudflight.jems.server.common.entity.extractField
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.programme.repository.fund.toModel
+import io.cloudflight.jems.server.programme.repository.legalstatus.toEntity
 import io.cloudflight.jems.server.programme.repository.legalstatus.toModel
 import io.cloudflight.jems.server.project.entity.report.PartnerReportIdentificationEntity
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportCoFinancingEntity
@@ -67,6 +68,20 @@ fun ProjectPartnerReportEntity.toModel(coFinancing: List<ProjectPartnerReportCoF
         vatRecovery = identification.vatRecovery,
         coFinancing = coFinancing.toModel(),
     )
+)
+
+
+fun PartnerReportIdentification.toEntity() = PartnerReportIdentificationEntity(
+    projectIdentifier = projectIdentifier,
+    projectAcronym = projectAcronym,
+    partnerNumber = partnerNumber,
+    partnerAbbreviation = partnerAbbreviation,
+    partnerRole = partnerRole,
+    nameInOriginalLanguage = nameInOriginalLanguage,
+    nameInEnglish = nameInEnglish,
+    legalStatus = legalStatus?.toEntity(),
+    partnerType = partnerType,
+    vatRecovery = vatRecovery
 )
 
 fun List<ProjectPartnerReportCoFinancingEntity>.toModel() = map {

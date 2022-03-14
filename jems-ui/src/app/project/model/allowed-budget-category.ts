@@ -16,6 +16,10 @@ export class AllowedBudgetCategory {
   unitCostsOnly(): boolean {
     return !this.realCostsEnabled && this.unitCostsEnabled;
   }
+
+  realCosts(): boolean {
+    return this.realCostsEnabled;
+  }
 }
 
 export class AllowedBudgetCategories {

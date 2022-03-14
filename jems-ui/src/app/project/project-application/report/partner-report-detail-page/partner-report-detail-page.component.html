@@ -7,7 +7,8 @@
             <nav mat-tab-nav-bar>
                 <a [active]="activeTab('identification')" mat-tab-link
                    (click)="routeTo('identification')">
-                    <span jemsText maxWidth="230">{{'project.application.partner.report.tab.identification' | translate}}</span>
+                    <span jemsText
+                      maxWidth="230">{{'project.application.partner.report.tab.identification' | translate}}</span>
                 </a>
 
                 <a *ngIf="data.workPackages.length > 0" [active]="activeTab('workplan')" mat-tab-link
@@ -15,6 +16,12 @@
                 >
                     <span jemsText maxWidth="230">{{'project.application.partner.report.tab.workplan' | translate}}</span>
                 </a>
+
+            <a [active]="activeTab('expenditures')" mat-tab-link
+               (click)="routeTo('expenditures')">
+                <span jemsText
+                      maxWidth="230">{{'project.application.partner.report.expenditures.title' | translate}}</span>
+            </a>
 
                 <a [active]="activeTab('submission')" mat-tab-link
                    (click)="routeTo('submission')">

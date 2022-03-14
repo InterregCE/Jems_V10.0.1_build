@@ -1,0 +1,10 @@
+:host {
+  ::ng-deep {
+    mat-form-field {
+      .mat-form-field-wrapper {
+        padding-top: 0.34375em !important;
+        margin-bottom: -0.8rem;
+      }
+    }
+  }
+}
