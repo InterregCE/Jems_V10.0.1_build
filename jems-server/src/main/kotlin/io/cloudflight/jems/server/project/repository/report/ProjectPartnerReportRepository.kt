@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.repository.report
 
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
+import io.cloudflight.jems.server.project.service.report.model.ReportStatus
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
@@ -11,6 +12,8 @@ import org.springframework.stereotype.Repository
 interface ProjectPartnerReportRepository : JpaRepository<ProjectPartnerReportEntity, Long> {
 
     fun findAllByPartnerId(partnerId: Long, pageable: Pageable): Page<ProjectPartnerReportEntity>
+
+    fun findAllByPartnerIdAndStatus(partnerId: Long, status: ReportStatus): List<ProjectPartnerReportEntity>
 
     fun findByIdAndPartnerId(id: Long, partnerId: Long): ProjectPartnerReportEntity
 
