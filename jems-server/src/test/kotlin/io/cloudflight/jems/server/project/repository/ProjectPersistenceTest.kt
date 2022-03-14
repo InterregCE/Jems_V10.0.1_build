@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.repository
 
+import com.querydsl.core.BooleanBuilder
 import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory
@@ -58,6 +59,7 @@ import io.cloudflight.jems.server.project.service.model.ProjectAssessment
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
+import io.cloudflight.jems.server.project.service.model.ProjectSearchRequest
 import io.cloudflight.jems.server.project.service.model.ProjectStatus
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssessmentEligibility
@@ -71,10 +73,12 @@ import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
+import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import java.math.BigDecimal
@@ -84,6 +88,7 @@ import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.util.Optional
+import com.querydsl.core.types.Predicate
 
 /**
  * tests implementation of ProjectPersistenceProvider including mappings and projectVersionUtils
@@ -610,9 +615,9 @@ internal class ProjectPersistenceTest : UnitTest() {
 
     @Test
     fun `getProjects - not owner`() {
-        every { projectRepository.findAll(Pageable.unpaged()) } returns PageImpl(listOf(dummyProject()))
+        every { projectRepository.findAll(BooleanBuilder(), Pageable.unpaged()) } returns PageImpl(listOf(dummyProject()))
 
-        val result = persistence.getProjects(Pageable.unpaged())
+        val result = persistence.getProjects(Pageable.unpaged(), null)
 
         assertThat(result.numberOfElements).isEqualTo(1)
         assertThat(result.elementAt(0)).isEqualTo(
@@ -673,6 +678,35 @@ internal class ProjectPersistenceTest : UnitTest() {
     fun `should return Unit when project exists`() {
         every { projectRepository.existsById(PROJECT_ID) } returns true
         assertThat(persistence.throwIfNotExists(PROJECT_ID)).isEqualTo(Unit)
+    }
+
+    @Test
+    fun `should filter by search request`() {
+        val predicate = slot<Predicate>()
+        every { projectRepository.findAll(capture(predicate), Pageable.unpaged()) } returns Page.empty()
+
+        persistence.getProjects(Pageable.unpaged(), ProjectSearchRequest(
+            id = "1",
+            acronym = "2",
+            firstSubmissionFrom = ZonedDateTime.parse("2021-05-01T10:00:00+02:00"),
+            firstSubmissionTo = ZonedDateTime.parse("2021-05-01T10:00:00+02:00"),
+            lastSubmissionFrom = ZonedDateTime.parse("2021-05-01T10:00:00+02:00"),
+            lastSubmissionTo = ZonedDateTime.parse("2021-05-01T10:00:00+02:00"),
+            objectives = setOf(ProgrammeObjectivePolicy.AdvancedTechnologies),
+            statuses = setOf(ApplicationStatus.DRAFT),
+            calls = setOf(CALL_ID),
+        ))
+
+        assertThat(predicate.captured.toString()).contains(
+            "(str(projectEntity.id) like %1% " +
+                "|| projectEntity.customIdentifier like %1%) " +
+                "&& lower(projectEntity.acronym) like %2% " +
+                "&& projectEntity.firstSubmission.updated > 2021-05-01T10:00+02:00 " +
+                "&& projectEntity.firstSubmission.updated < 2021-05-01T10:00+02:00 " +
+                "&& projectEntity.lastResubmission.updated > 2021-05-01T10:00+02:00 " +
+                "&& projectEntity.lastResubmission.updated < 2021-05-01T10:00+02:00 " +
+                "&& projectEntity.priorityPolicy.programmeObjectivePolicy = AdvancedTechnologies " +
+                "&& projectEntity.currentStatus.status = DRAFT && projectEntity.call.id = 12")
     }
 
 }

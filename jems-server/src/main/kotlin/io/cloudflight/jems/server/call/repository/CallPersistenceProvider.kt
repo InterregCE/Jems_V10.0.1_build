@@ -230,8 +230,11 @@ class CallPersistenceProvider(
         callRepo.existsByidAndStatus(callId, CallStatus.PUBLISHED)
 
     @Transactional(readOnly = true)
-    override fun listCalls(): List<IdNamePair> =
-        callRepo.findAll().toIdNamePair()
+    override fun listCalls(status: CallStatus?): List<IdNamePair> =
+        if (status != null)
+            callRepo.findAllByStatus(status).toIdNamePair()
+        else
+            callRepo.findAll().toIdNamePair()
 
     @Transactional(readOnly = true)
     override fun getApplicationFormFieldConfigurations(callId: Long): CallApplicationFormFieldsConfiguration {

@@ -10,6 +10,7 @@ import {map, tap} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {Observable} from 'rxjs';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
+import {TranslateService} from '@ngx-translate/core';
 
 @UntilDestroy()
 @Component({
@@ -80,11 +81,12 @@ export class UserPageComponent implements OnInit {
               private router: Router,
               private changeDetectorRef: ChangeDetectorRef,
               private formBuilder: FormBuilder,
-              private systemPageSidenavService: SystemPageSidenavService) {
+              private systemPageSidenavService: SystemPageSidenavService,
+              private translateService: TranslateService) {
     const userStatuses = new Map<UserSearchRequestDTO.UserStatusesEnum, string>([
-      [UserSearchRequestDTO.UserStatusesEnum.ACTIVE, 'user.status.ACTIVE'],
-      [UserSearchRequestDTO.UserStatusesEnum.INACTIVE, 'user.status.INACTIVE'],
-      [UserSearchRequestDTO.UserStatusesEnum.UNCONFIRMED, 'user.status.UNCONFIRMED']
+      [UserSearchRequestDTO.UserStatusesEnum.ACTIVE, this.translateService.instant('user.status.ACTIVE')],
+      [UserSearchRequestDTO.UserStatusesEnum.INACTIVE, this.translateService.instant('user.status.INACTIVE')],
+      [UserSearchRequestDTO.UserStatusesEnum.UNCONFIRMED, this.translateService.instant('user.status.UNCONFIRMED')]
     ]);
 
     this.data$ = this.userPageStore.roles$

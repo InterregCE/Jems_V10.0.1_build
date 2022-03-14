@@ -28,13 +28,13 @@ class ListCallsTest: UnitTest() {
 
     @Test
     fun `list calls`() {
-        every { persistence.listCalls() } returns listOf(call)
-        assertThat(listCalls.list()).containsExactly(call)
+        every { persistence.listCalls(null) } returns listOf(call)
+        assertThat(listCalls.list(null)).containsExactly(call)
     }
 
     @Test
     fun `list calls - none found`() {
-        every { persistence.listCalls() } returns emptyList()
-        assertThat(listCalls.list()).isEmpty()
+        every { persistence.listCalls(null) } returns emptyList()
+        assertThat(listCalls.list(null)).isEmpty()
     }
 }

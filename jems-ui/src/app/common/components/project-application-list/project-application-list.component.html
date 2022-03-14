@@ -1,12 +1,70 @@
+<ng-container *ngIf="!filterByOwner">
+    <jems-filter-template *ngIf="filterData$ | async as filterData"
+                          [formGroup]="filterForm"
+                          [isThereAnyActiveFilter]="isThereAnyActiveFilter()">
+        <div alignItems="start" jemsMultiColumnRow>
+            <jems-filter-text-input
+                    formControlName="id"
+                    label="project.table.column.name.id">
+            </jems-filter-text-input>
+
+            <jems-filter-text-input
+                    formControlName="acronym"
+                    label="project.table.column.name.acronym">
+            </jems-filter-text-input>
+
+            <jems-filter-autocomplete-input
+                    [options]="filterData.objectives"
+                    formControlName="objectives"
+                    label="project.table.column.name.objective">
+            </jems-filter-autocomplete-input>
+
+            <jems-filter-autocomplete-input
+                    [options]="filterData.statuses"
+                    formControlName="statuses"
+                    label="project.table.column.name.status">
+            </jems-filter-autocomplete-input>
+
+            <jems-filter-autocomplete-input
+                    [options]="filterData.calls"
+                    formControlName="calls"
+                    label="project.table.column.name.related">
+            </jems-filter-autocomplete-input>
+        </div>
+
+        <div jemsMultiColumnRow>
+            <jems-filter-date-input
+                    formControlName="firstSubmissionFrom"
+                    label="project.filter.submission.from">
+            </jems-filter-date-input>
+
+            <jems-filter-date-input
+                    formControlName="firstSubmissionTo"
+                    label="project.filter.submission.to">
+            </jems-filter-date-input>
+
+            <jems-filter-date-input
+                    formControlName="lastSubmissionFrom"
+                    label="project.filter.resubmission.from">
+            </jems-filter-date-input>
+
+            <jems-filter-date-input
+                    formControlName="lastSubmissionTo"
+                    label="project.filter.resubmission.to">
+            </jems-filter-date-input>
+        </div>
+    </jems-filter-template>
+</ng-container>
+
 <ng-container *ngIf="(filterByOwner ? listStore.pageFilteredByOwner$ : listStore.page$) | async as page">
     <p *ngIf="!page.content.length">{{'project.list.empty' | translate}}</p>
     <jems-table *ngIf="page.content.length"
-               [configuration]="tableConfiguration"
-               [rows]="page.content"
-               [totalElements]="page?.totalElements"
-               [pageIndex]="listStore.newPageIndex$ | async"
-               (newPageIndex)="listStore.newPageIndex$.next($event)"
-               (newPageSize)="listStore.newPageSize$.next($event)"
-               (sortRows)="listStore.newSort$.next($event)">
+                [configuration]="tableConfiguration"
+                [rows]="page.content"
+                [totalElements]="page?.totalElements"
+                [pageIndex]="listStore.newPageIndex$ | async"
+                (newPageIndex)="listStore.newPageIndex$.next($event)"
+                (newPageSize)="listStore.newPageSize$.next($event)"
+                (sortRows)="listStore.newSort$.next($event)">
     </jems-table>
 </ng-container>

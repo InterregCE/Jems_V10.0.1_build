@@ -205,8 +205,8 @@ class ProjectControllerTest {
 
     @Test
     fun getAllProjects() {
-        every { getProjectInteractor.getAllProjects(any()) } returns PageImpl(listOf(projectSummary))
-        assertThat(controller.getAllProjects(Pageable.unpaged()).content).containsExactly(outputProjectSimple)
+        every { getProjectInteractor.getAllProjects(any(), any()) } returns PageImpl(listOf(projectSummary))
+        assertThat(controller.getAllProjects(Pageable.unpaged(), null).content).containsExactly(outputProjectSimple)
     }
 
     @Test

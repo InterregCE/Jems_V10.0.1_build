@@ -1,7 +1,6 @@
 package io.cloudflight.jems.server.project.service.get_project
 
 import io.cloudflight.jems.server.authentication.service.SecurityService
-import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.authorization.CanRetrieveProject
 import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectForm
 import io.cloudflight.jems.server.project.authorization.CanRetrieveProjects
@@ -9,8 +8,10 @@ import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectsWithO
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.getOnlyFormRelatedData
 import io.cloudflight.jems.server.project.service.getProjectWithoutFormData
+import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectDetail
 import io.cloudflight.jems.server.project.service.model.ProjectForm
+import io.cloudflight.jems.server.project.service.model.ProjectSearchRequest
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.partner.UserPartnerCollaboratorPersistence
 import io.cloudflight.jems.server.project.service.projectuser.UserProjectCollaboratorPersistence
@@ -51,8 +52,8 @@ class GetProject(
         persistence.getProject(projectId, version).getOnlyFormRelatedData()
 
     @CanRetrieveProjects
-    override fun getAllProjects(pageable: Pageable): Page<ProjectSummary> =
-        persistence.getProjects(pageable)
+    override fun getAllProjects(pageable: Pageable, searchRequest: ProjectSearchRequest?): Page<ProjectSummary> =
+        persistence.getProjects(pageable, searchRequest)
 
     @CanRetrieveProjectsWithOwnership
     override fun getMyProjects(pageable: Pageable): Page<ProjectSummary> =

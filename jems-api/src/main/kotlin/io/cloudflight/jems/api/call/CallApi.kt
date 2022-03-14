@@ -3,6 +3,7 @@ package io.cloudflight.jems.api.call
 import io.cloudflight.jems.api.call.dto.AllowedRealCostsDTO
 import io.cloudflight.jems.api.call.dto.CallDTO
 import io.cloudflight.jems.api.call.dto.CallDetailDTO
+import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.call.dto.CallUpdateRequestDTO
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateSetupDTO
 import io.cloudflight.jems.api.common.dto.IdNamePairDTO
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestParam
 
 @Api("Call")
 interface CallApi {
@@ -37,7 +39,7 @@ interface CallApi {
 
     @ApiOperation("Returns all calls` id name pair")
     @GetMapping("$ENDPOINT_API_CALL/list")
-    fun listCalls(): List<IdNamePairDTO>
+    fun listCalls(@RequestParam(required = false) status: CallStatus?): List<IdNamePairDTO>
 
     @ApiOperation("Returns all published calls")
     @ApiImplicitParams(
