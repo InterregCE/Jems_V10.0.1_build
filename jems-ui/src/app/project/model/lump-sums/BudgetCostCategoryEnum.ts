@@ -13,7 +13,7 @@ export class BudgetCostCategoryEnumUtils {
     return categories.map(it => BudgetCostCategoryEnumUtils.toBudgetCostCategoryEnum(it)).filter(it => it !== null) as BudgetCostCategoryEnum [];
   }
 
-  private static toBudgetCostCategoryEnum(category: string): BudgetCostCategoryEnum | null {
+  public static toBudgetCostCategoryEnum(category: string): BudgetCostCategoryEnum | null {
     switch (category) {
       case 'StaffCosts':
         return BudgetCostCategoryEnum.STAFF_COSTS;

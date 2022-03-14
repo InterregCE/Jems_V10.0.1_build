@@ -1,5 +1,8 @@
 package io.cloudflight.jems.server.project.service.report
 
+import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
+import io.cloudflight.jems.server.project.entity.report.expenditureCosts.PartnerReportExpenditureCostEntity
+import io.cloudflight.jems.server.project.service.report.model.PartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportCreate
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportStatusAndVersion
@@ -22,6 +25,13 @@ interface ProjectReportPersistence {
     fun listPartnerReports(partnerId: Long, pageable: Pageable): Page<ProjectPartnerReportSummary>
 
     fun getCurrentLatestReportNumberForPartner(partnerId: Long): Int
+
+    fun updatePartnerReportExpenditureCosts(
+        partnerReportId: Long,
+        expenditureCosts: List<PartnerReportExpenditureCost>
+    ): ProjectPartnerReportEntity
+
+    fun getPartnerReportExpenditureCosts(partnerReportId: Long): List<PartnerReportExpenditureCostEntity>
 
     fun countForPartner(partnerId: Long): Int
 

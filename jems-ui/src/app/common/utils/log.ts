@@ -1,4 +1,6 @@
-import { isDevMode } from '@angular/core';
+import {isDevMode} from '@angular/core';
+import {Observable} from 'rxjs';
+import {tap} from 'rxjs/operators';
 
 export class Log {
 
@@ -44,4 +46,27 @@ export class Log {
     }
     return `${new Date().toLocaleTimeString()}: ${message}`;
   }
+
+  static debugOperator = (level: number, message: string) =>
+    (source: Observable<any>) => source
+      .pipe(
+        tap(val => {
+          if (level >= rxjsLoggingLevel) {
+            console.log(message + ': ', val);
+          }
+        })
+      );
 }
+
+export function setRxJsLoggingLevel(level: RxJsLoggingLevel) {
+  rxjsLoggingLevel = level;
+}
+
+export enum RxJsLoggingLevel {
+  TRACE,
+  DEBUG,
+  INFO,
+  ERROR
+}
+
+let rxjsLoggingLevel = RxJsLoggingLevel.INFO;

@@ -1,12 +1,18 @@
 package io.cloudflight.jems.server.project.repository.report
 
 import io.cloudflight.jems.server.common.entity.TranslationId
+import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
 import io.cloudflight.jems.server.programme.repository.legalstatus.ProgrammeLegalStatusRepository
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
+import io.cloudflight.jems.server.project.entity.report.expenditureCosts.PartnerReportExpenditureCostEntity
 import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportIdentificationEntity
 import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportIdentificationTargetGroupEntity
 import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportIdentificationTargetGroupTranslEntity
+import io.cloudflight.jems.server.project.repository.report.expenditureCosts.PartnerReportExpenditureCostsRepository
+import io.cloudflight.jems.server.project.repository.report.expenditureCosts.toEntity
+import io.cloudflight.jems.server.project.repository.report.expenditureCosts.updateEntity
+import io.cloudflight.jems.server.project.repository.report.expenditureCosts.updateTranslations
 import io.cloudflight.jems.server.project.repository.report.identification.ProjectPartnerReportIdentificationRepository
 import io.cloudflight.jems.server.project.repository.report.identification.ProjectPartnerReportIdentificationTargetGroupRepository
 import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPartnerReportWorkPackageActivityDeliverableRepository
@@ -18,6 +24,7 @@ import io.cloudflight.jems.server.project.service.model.ProjectRelevanceBenefit
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
+import io.cloudflight.jems.server.project.service.report.model.PartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportCreate
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportStatusAndVersion
@@ -43,6 +50,7 @@ class ProjectReportPersistenceProvider(
     private val workPlanOutputRepository: ProjectPartnerReportWorkPackageOutputRepository,
     private val identificationRepository: ProjectPartnerReportIdentificationRepository,
     private val identificationTargetGroupRepository: ProjectPartnerReportIdentificationTargetGroupRepository,
+    private val partnerReportExpenditureCostsRepository: PartnerReportExpenditureCostsRepository
 ) : ProjectReportPersistence {
 
     @Transactional
@@ -127,7 +135,11 @@ class ProjectReportPersistenceProvider(
     }
 
     @Transactional
-    override fun submitReportById(partnerId: Long, reportId: Long, submissionTime: ZonedDateTime): ProjectPartnerReportSubmissionSummary =
+    override fun submitReportById(
+        partnerId: Long,
+        reportId: Long,
+        submissionTime: ZonedDateTime
+    ): ProjectPartnerReportSubmissionSummary =
         partnerReportRepository.findByIdAndPartnerId(id = reportId, partnerId = partnerId)
             .apply {
                 status = ReportStatus.Submitted
@@ -135,7 +147,10 @@ class ProjectReportPersistenceProvider(
             }.toSubmissionSummary()
 
     @Transactional(readOnly = true)
-    override fun getPartnerReportStatusAndVersion(partnerId: Long, reportId: Long): ProjectPartnerReportStatusAndVersion =
+    override fun getPartnerReportStatusAndVersion(
+        partnerId: Long,
+        reportId: Long
+    ): ProjectPartnerReportStatusAndVersion =
         partnerReportRepository.findByIdAndPartnerId(id = reportId, partnerId = partnerId).let {
             ProjectPartnerReportStatusAndVersion(it.status, it.applicationFormVersion)
         }
@@ -148,11 +163,51 @@ class ProjectReportPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun listPartnerReports(partnerId: Long, pageable: Pageable): Page<ProjectPartnerReportSummary> =
-        partnerReportRepository.findAllByPartnerId(partnerId = partnerId, pageable = pageable).map { it.toModelSummary() }
+        partnerReportRepository.findAllByPartnerId(partnerId = partnerId, pageable = pageable)
+            .map { it.toModelSummary() }
 
     @Transactional(readOnly = true)
     override fun getCurrentLatestReportNumberForPartner(partnerId: Long): Int =
         partnerReportRepository.getMaxNumberForPartner(partnerId = partnerId)
+
+    @Transactional
+    override fun updatePartnerReportExpenditureCosts(
+        partnerReportId: Long,
+        expenditureCosts: List<PartnerReportExpenditureCost>
+    ): ProjectPartnerReportEntity {
+        val reportPartner = getReportPartnerOrThrow(partnerReportId).also {
+            updateExpenditureCosts(it, expenditureCosts.toSet())
+        }
+        return reportPartner
+    }
+
+    @Transactional(readOnly = true)
+    override fun getPartnerReportExpenditureCosts(partnerReportId: Long): List<PartnerReportExpenditureCostEntity> {
+        return partnerReportExpenditureCostsRepository.findAllByPartnerReportIdOrderById(partnerReportId)
+    }
+
+    private fun getReportPartnerOrThrow(partnerReportId: Long): ProjectPartnerReportEntity {
+        return partnerReportRepository.findById(partnerReportId)
+            .orElseThrow { ResourceNotFoundException("partnerReport") }
+    }
+
+    private fun updateExpenditureCosts(
+        partnerReport: ProjectPartnerReportEntity, expenditureCosts: Set<PartnerReportExpenditureCost>
+    ) {
+        val newExpenditureCosts = expenditureCosts.map {
+            if (it.id == null) {
+                it.toEntity(partnerReport)
+            } else {
+                partnerReport.expenditureCosts.first { expenditureCost -> expenditureCost.id == it.id }
+                    .apply {
+                        this.updateEntity(it)
+                        this.updateTranslations(it.comment, it.description)
+                    }
+            }
+        }
+        partnerReport.expenditureCosts.clear()
+        partnerReport.expenditureCosts.addAll(newExpenditureCosts)
+    }
 
     @Transactional(readOnly = true)
     override fun countForPartner(partnerId: Long): Int =
