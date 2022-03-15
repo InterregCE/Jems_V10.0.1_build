@@ -18,7 +18,6 @@ import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportCoFi
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportCoFinancingIdEntity
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.contribution.ProjectPartnerReportContributionEntity
-import io.cloudflight.jems.server.project.entity.report.expenditureCosts.PartnerReportExpenditureCostEntity
 import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportIdentificationEntity
 import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportIdentificationTargetGroupEntity
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageActivityDeliverableEntity
@@ -26,7 +25,6 @@ import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerR
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageEntity
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageOutputEntity
 import io.cloudflight.jems.server.project.repository.report.contribution.ProjectPartnerReportContributionRepository
-import io.cloudflight.jems.server.project.repository.report.expenditureCosts.PartnerReportExpenditureCostsRepository
 import io.cloudflight.jems.server.project.repository.report.identification.ProjectPartnerReportIdentificationRepository
 import io.cloudflight.jems.server.project.repository.report.identification.ProjectPartnerReportIdentificationTargetGroupRepository
 import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPartnerReportWorkPackageActivityDeliverableRepository
@@ -39,7 +37,6 @@ import io.cloudflight.jems.server.project.service.partner.cofinancing.model.Proj
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVatRecovery
-import io.cloudflight.jems.server.project.service.report.model.PartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.PartnerReportIdentification
 import io.cloudflight.jems.server.project.service.report.model.PartnerReportIdentificationCreate
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReport
@@ -64,21 +61,16 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
-import java.math.BigDecimal
 import java.math.BigDecimal.ONE
 import java.math.BigDecimal.TEN
 import java.math.BigDecimal.ZERO
-import java.time.LocalDate
-import java.time.ZoneId
 import java.time.ZonedDateTime
-import java.util.Optional
 import java.util.UUID
 
 class ProjectReportPersistenceProviderTest : UnitTest() {
 
     companion object {
         private const val PARTNER_ID = 10L
-        private const val REPORT_ID = 10L
 
         private const val WORK_PACKAGE_ID = 9658L
         private const val ACTIVITY_ID = 9942L
@@ -110,7 +102,6 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
                 vatRecovery = ProjectPartnerVatRecovery.Yes,
             ),
             createdAt = createdAt,
-            expenditureCosts = mutableSetOf(reportExpenditureCostEntity)
         )
 
         private fun draftReportSubmissionEntity(id: Long, createdAt: ZonedDateTime = ZonedDateTime.now()) = ProjectPartnerReportSubmissionSummary(
@@ -124,102 +115,6 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
             projectAcronym = "projectAcronym",
             partnerNumber = 4,
             partnerRole = ProjectPartnerRole.PARTNER,
-        )
-
-        private val reportExpenditureCost = PartnerReportExpenditureCost(
-            id = 754,
-            costCategory = "costCategory",
-            investmentNumber = "number-1",
-            contractId = "",
-            internalReferenceNumber = "internal-1",
-            invoiceNumber = "invoice-1",
-            invoiceDate = LocalDate.of(2022, 1, 1),
-            dateOfPayment = LocalDate.of(2022, 2, 1),
-            description = emptySet(),
-            comment = emptySet(),
-            totalValueInvoice = BigDecimal.valueOf(22),
-            vat = BigDecimal.valueOf(18.0),
-            declaredAmount = BigDecimal.valueOf(1.3)
-        )
-
-        private val updatedReportExpenditureCost = PartnerReportExpenditureCost(
-            id = 754,
-            costCategory = "costCategory-updated",
-            investmentNumber = "number-1-updated",
-            contractId = "",
-            internalReferenceNumber = "internal-1-updated",
-            invoiceNumber = "invoice-1-updated",
-            invoiceDate = LocalDate.of(2021, 1, 1),
-            dateOfPayment = LocalDate.of(2021, 2, 1),
-            description = emptySet(),
-            comment = emptySet(),
-            totalValueInvoice = BigDecimal.valueOf(21),
-            vat = BigDecimal.valueOf(18.2),
-            declaredAmount = BigDecimal.valueOf(1.2)
-        )
-
-        private val newReportExpenditureCost = PartnerReportExpenditureCost(
-            id = null,
-            costCategory = "costCategory-2",
-            investmentNumber = "number-2",
-            contractId = "",
-            internalReferenceNumber = "internal-2",
-            invoiceNumber = "invoice-2",
-            invoiceDate = LocalDate.of(2020, 1, 1),
-            dateOfPayment = LocalDate.of(2020, 2, 1),
-            description = emptySet(),
-            comment = emptySet(),
-            totalValueInvoice = BigDecimal.valueOf(21),
-            vat = BigDecimal.valueOf(10.0),
-            declaredAmount = BigDecimal.valueOf(1.5)
-        )
-
-        private val reportExpenditureCostEntity = PartnerReportExpenditureCostEntity(
-            id = 754,
-            costCategory = "costCategory",
-            investmentNumber = "number-1",
-            contractId = "",
-            internalReferenceNumber = "internal-1",
-            invoiceNumber = "invoice-1",
-            invoiceDate = LocalDate.of(2022, 1, 1).atStartOfDay(ZoneId.systemDefault()).toInstant(),
-            dateOfPayment = LocalDate.of(2022, 2, 1).atStartOfDay(ZoneId.systemDefault()).toInstant(),
-            translatedValues = mutableSetOf(),
-            totalValueInvoice = BigDecimal.valueOf(22),
-            vat = BigDecimal.valueOf(18.0),
-            declaredAmount = BigDecimal.valueOf(1.3),
-            partnerReport = null
-        )
-
-        private val updatedReportExpenditureCostEntity = PartnerReportExpenditureCostEntity(
-            id = 754,
-            costCategory = "costCategory-updated",
-            investmentNumber = "number-1-updated",
-            contractId = "",
-            internalReferenceNumber = "internal-1-updated",
-            invoiceNumber = "invoice-1-updated",
-            invoiceDate = LocalDate.of(2021, 1, 1).atStartOfDay(ZoneId.systemDefault()).toInstant(),
-            dateOfPayment = LocalDate.of(2021, 2, 1).atStartOfDay(ZoneId.systemDefault()).toInstant(),
-            translatedValues = mutableSetOf(),
-            totalValueInvoice = BigDecimal.valueOf(21),
-            vat = BigDecimal.valueOf(18.2),
-            declaredAmount = BigDecimal.valueOf(1.2),
-            partnerReport = null
-        )
-
-        private val newReportExpenditureCostEntity = PartnerReportExpenditureCostEntity(
-            id = 754,
-            costCategory = "costCategory-2",
-            investmentNumber = "number-2",
-            contractId = "",
-            internalReferenceNumber = "internal-2",
-            invoiceNumber = "invoice-2",
-            invoiceDate = LocalDate.of(2020, 1, 1).atStartOfDay(ZoneId.systemDefault()).toInstant(),
-            dateOfPayment = LocalDate.of(2020, 2, 1).atStartOfDay(ZoneId.systemDefault()).toInstant(),
-            translatedValues = mutableSetOf(),
-            totalValueInvoice = BigDecimal.valueOf(21),
-            vat = BigDecimal.valueOf(10.0),
-            declaredAmount = BigDecimal.valueOf(1.5),
-            partnerReport = null
         )
 
         private val programmeFundEntity = ProgrammeFundEntity(
@@ -261,7 +156,7 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
                 partnerType = ProjectTargetGroup.SectoralAgency,
                 vatRecovery = ProjectPartnerVatRecovery.Yes,
                 coFinancing = coFinancing,
-            ),
+            )
         )
 
         private fun draftReportSummary(id: Long, createdAt: ZonedDateTime) = ProjectPartnerReportSummary(
@@ -398,9 +293,6 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
 
     @MockK
     lateinit var projectPartnerReportIdentificationRepository: ProjectPartnerReportIdentificationRepository
-
-    @MockK
-    lateinit var partnerReportExpenditureCostsRepository: PartnerReportExpenditureCostsRepository
 
     @MockK
     lateinit var projectPartnerReportIdentificationTargetGroupRepository: ProjectPartnerReportIdentificationTargetGroupRepository
@@ -642,40 +534,6 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
     fun getCurrentLatestReportNumberForPartner() {
         every { partnerReportRepository.getMaxNumberForPartner(PARTNER_ID) } returns 7
         assertThat(persistence.getCurrentLatestReportNumberForPartner(PARTNER_ID)).isEqualTo(7)
-    }
-
-    @Test
-    fun updatePartnerReportExpenditureCosts() {
-        val report = Optional.of(reportEntity(id = 1L))
-        val updatedReport = report.get()
-        updatedReport.expenditureCosts = mutableSetOf(updatedReportExpenditureCostEntity)
-        every { partnerReportRepository.findById(REPORT_ID) } returns report
-        assertThat(persistence.updatePartnerReportExpenditureCosts(REPORT_ID, listOf(updatedReportExpenditureCost)))
-            .isEqualTo(updatedReport)
-    }
-
-    @Test
-    fun getPartnerReportExpenditureCosts() {
-        val expenditureCosts = mutableListOf(updatedReportExpenditureCostEntity)
-        every { partnerReportExpenditureCostsRepository.findAllByPartnerReportIdOrderById(PARTNER_ID) } returns expenditureCosts
-        assertThat(persistence.getPartnerReportExpenditureCosts(REPORT_ID))
-            .containsExactly(updatedReportExpenditureCostEntity)
-    }
-
-    @Test
-    fun updatePartnerReportExpenditureCostsWithNew() {
-        val report = Optional.of(reportEntity(id = 1L))
-        val updatedReport = report.get()
-        updatedReport.expenditureCosts =
-            mutableSetOf(updatedReportExpenditureCostEntity, newReportExpenditureCostEntity)
-        every { partnerReportRepository.findById(PARTNER_ID) } returns report
-        assertThat(
-            persistence.updatePartnerReportExpenditureCosts(
-                PARTNER_ID,
-                listOf(reportExpenditureCost, newReportExpenditureCost)
-            )
-        )
-            .isEqualTo(updatedReport)
     }
 
     @Test
