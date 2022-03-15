@@ -24,9 +24,7 @@ import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 import {RoutingService} from '@common/services/routing.service';
 import {FileManagementStore} from '@project/common/components/file-management/file-management-store';
-import {
-  ProjectPartnerStore
-} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
+import {ProjectPartnerStore} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
 import {ProjectPaths, ProjectUtil} from '@project/common/project-util';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import StatusEnum = ProjectStatusDTO.StatusEnum;
@@ -234,8 +232,7 @@ export class ProjectApplicationFormSidenavService {
       this.versionSelectTemplate$,
       this.canSeeProjectForm$,
       this.canSeeModificationSection$,
-      this.canSeePrivilegesSection$,
-      this.projectStore.currentVersionOfProjectStatus$
+      this.canSeePrivilegesSection$
     ])
       .pipe(
         debounceTime(50), // there's race condition with SidenavService.resetOnLeave
@@ -254,16 +251,14 @@ export class ProjectApplicationFormSidenavService {
                versionTemplate,
                canSeeProjectForm,
                canSeeModificationSection,
-               canSeePrivilegesSection,
-               currentVersionOfProjectStatus
+               canSeePrivilegesSection
              ]: any) => {
           this.sideNavService.setHeadlines(ProjectPaths.PROJECT_DETAIL_PATH, [
             this.getProjectOverviewHeadline(project.id),
-            ...canSeeReporting ? this.getReportingHeadline(reportSectionPartners, currentVersionOfProjectStatus) : [],
-            ...canSeeContracting ? this.getContractingHeadline(project.id, currentVersionOfProjectStatus) : [],
+            ...canSeeReporting ? this.getReportingHeadline(reportSectionPartners) : [],
+            ...canSeeContracting ? this.getContractingHeadline(project.id) : [],
             this.getApplicationFormHeadline(project.id, partners, packages, versionTemplate, canReadApplicationFiles,
-              canSeeAssessments, canSubmitApplication || canCheckApplication, canSeeProjectForm,
-              canSeeModificationSection, currentVersionOfProjectStatus),
+              canSeeAssessments, canSubmitApplication || canCheckApplication, canSeeProjectForm, canSeeModificationSection),
             ...canSeeProjectForm ? this.getExportHeadline(project.id) : [],
             ...canSeePrivilegesSection ? this.getProjectPrivilegesHeadline(project.id) : [],
           ]);
@@ -296,7 +291,7 @@ export class ProjectApplicationFormSidenavService {
     };
   }
 
-  private getContractingHeadline(projectId: number, currentVersion: ProjectStatusDTO): HeadlineRoute[] {
+  private getContractingHeadline(projectId: number): HeadlineRoute[] {
     return [{
       headline: {i18nKey: 'project.application.contracting.title'},
       bullets: [
@@ -306,19 +301,16 @@ export class ProjectApplicationFormSidenavService {
           scrollToTop: true,
           scrollRoute: ''
         }
-      ],
-      expanded: ProjectUtil.isApprovedOrAnyAfterApprovedAndBeforeContracted(currentVersion)
+      ]
     }];
   }
 
-  private getReportingHeadline(partners: HeadlineRoute[], currentVersion: ProjectStatusDTO):
-    HeadlineRoute[] {
+  private getReportingHeadline(partners: HeadlineRoute[]): HeadlineRoute[] {
     return [{
       headline: {i18nKey: 'project.application.reporting.title'},
       bullets: [
         ...this.getPartnerReportingSections(partners)
-      ],
-      expanded: ProjectUtil.isContractedOrAnyStatusAfterContracted(currentVersion)
+      ]
     }];
   }
 
@@ -331,10 +323,7 @@ export class ProjectApplicationFormSidenavService {
     ];
   }
 
-  private getApplicationFormHeadline(projectId: number, partners: HeadlineRoute[], packages: HeadlineRoute[],
-                                     versionTemplate: TemplateRef<any>, showApplicationAnnexes: boolean, showAssessment: boolean,
-                                     canCheckOrSubmitApplication: boolean, showProjectForm: boolean, canSeeModificationSection: boolean,
-                                     currentVersion: ProjectStatusDTO): HeadlineRoute {
+  private getApplicationFormHeadline(projectId: number, partners: HeadlineRoute[], packages: HeadlineRoute[], versionTemplate: TemplateRef<any>, showApplicationAnnexes: boolean, showAssessment: boolean, canCheckOrSubmitApplication: boolean, showProjectForm: boolean, canSeeModificationSection: boolean): HeadlineRoute {
     return {
       headline: {i18nKey: 'project.application.form.title'},
       bullets: [
@@ -343,8 +332,7 @@ export class ProjectApplicationFormSidenavService {
         ...canCheckOrSubmitApplication ? this.getCheckAndSubmitHeadline(projectId) : [],
         ...showAssessment ? this.getAssessmentAndDecisionHeadline(projectId) : [],
         ...canSeeModificationSection ? this.getModificationHeadline(projectId) : []
-      ],
-      expanded: ProjectUtil.isAnyBeforeApproved(currentVersion)
+      ]
     };
   }
 
