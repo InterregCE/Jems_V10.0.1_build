@@ -4,22 +4,20 @@ import {FormService} from '@common/components/section/form/form.service';
 import {
   ProjectApplicationFormSidenavService
 } from '@project/project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
-import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
 import {Observable} from 'rxjs';
 import {
   ProjectPartnerReportWorkPackageActivityDeliverableDTO,
   ProjectPartnerReportWorkPackageActivityDTO,
   ProjectPartnerReportWorkPackageDTO,
   ProjectPartnerReportWorkPackageOutputDTO,
-  WorkPackageService
 } from '@cat/api';
 import {catchError, take, tap} from 'rxjs/operators';
 import {
   PartnerReportWorkPlanPageStore
-} from '@project/project-application/report/partner-report-work-plan-progress-tab/partner-report-work-plan-page-store.service';
+} from '@project/project-application/report/partner-report-detail-page/partner-report-work-plan-progress-tab/partner-report-work-plan-page-store.service';
 import {
   PartnerReportWorkplanConstants
-} from '@project/project-application/report/partner-report-work-plan-progress-tab/partner-report-work-plan-progress.constants';
+} from '@project/project-application/report/partner-report-detail-page/partner-report-work-plan-progress-tab/partner-report-work-plan-progress.constants';
 import {
   PartnerReportDetailPageStore
 } from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
@@ -45,18 +43,17 @@ export class PartnerReportWorkPlanProgressTabComponent {
     })])
   });
 
-  constructor(public partnerReportPageStore: PartnerReportPageStore,
-              private formBuilder: FormBuilder,
+  constructor(private formBuilder: FormBuilder,
               private formService: FormService,
               private projectSidenavService: ProjectApplicationFormSidenavService,
               private partnerReportDetailPageStore: PartnerReportDetailPageStore,
-              private workPackageService: WorkPackageService,
               private pageStore: PartnerReportWorkPlanPageStore) {
 
     this.savedWorkPackages$ = this.pageStore.partnerWorkPackages$
       .pipe(
-        tap((workPackages) => this.resetForm(workPackages))
+        tap(workPackages => this.resetForm(workPackages))
       );
+    this.formService.init(this.workPlanForm, this.partnerReportDetailPageStore.reportEditable$);
   }
 
   get workPackages(): FormArray {
@@ -75,37 +72,30 @@ export class PartnerReportWorkPlanProgressTabComponent {
     return this.workPackages.at(workPackageIndex).get(this.constants.OUTPUTS.name) as FormArray;
   }
 
-
   resetForm(workPackages: ProjectPartnerReportWorkPackageDTO[]) {
-    this.workPlanForm.reset();
     this.workPackages.clear();
-    this.workPlanForm = this.formBuilder.group({
-      workPackages: this.formBuilder.array([])
-    });
-
-    workPackages.forEach((workPackage: ProjectPartnerReportWorkPackageDTO, index: number) => {
-      this.resetWorkPackage(workPackage, index);
-    });
+    workPackages.forEach((workPackage: ProjectPartnerReportWorkPackageDTO, index: number) =>
+      this.addWorkPackage(workPackage, index)
+    );
+    this.formService.resetEditable();
   }
 
-  resetWorkPackage(workPackage: ProjectPartnerReportWorkPackageDTO, workPackageIndex: number): void {
-    this.workPackages.push(  this.formBuilder.group({
-      id: this.formBuilder.control(workPackage.id),
-      description: this.formBuilder.control(workPackage.description, this.constants.WORK_PACKAGE_DESCRIPTION.validators),
-      activities: this.formBuilder.array([]),
-      outputs: this.formBuilder.array([]),
-    }));
+  addWorkPackage(workPackage: ProjectPartnerReportWorkPackageDTO, workPackageIndex: number): void {
+    this.workPackages.push(
+      this.formBuilder.group({
+        id: this.formBuilder.control(workPackage.id),
+        description: this.formBuilder.control(workPackage.description, this.constants.WORK_PACKAGE_DESCRIPTION.validators),
+        activities: this.formBuilder.array([]),
+        outputs: this.formBuilder.array([]),
+      })
+    );
 
     workPackage.activities.forEach((activity: ProjectPartnerReportWorkPackageActivityDTO, activityIndex: number) => {
       this.addActivity(workPackageIndex, activity);
-      activity.deliverables?.forEach((deliverable: ProjectPartnerReportWorkPackageActivityDeliverableDTO) => this.addDeliverable(workPackageIndex, activityIndex, deliverable));
+      activity.deliverables?.forEach(deliverable => this.addDeliverable(workPackageIndex, activityIndex, deliverable));
     });
 
-    workPackage.outputs.forEach((output: ProjectPartnerReportWorkPackageOutputDTO) => {
-      this.addOutput(workPackageIndex, output);
-    });
-
-    this.formService.init(this.workPlanForm, this.partnerReportDetailPageStore.isReportEditable());
+    workPackage.outputs.forEach(output => this.addOutput(workPackageIndex, output));
   }
 
   private addActivity(workPackageIndex: number, existing?: ProjectPartnerReportWorkPackageActivityDTO): void {

@@ -38,7 +38,6 @@ export class PartnerReportComponent implements AfterViewInit {
   data$: Observable<{
     partnerReports: ProjectPartnerReportSummaryDTO[];
     partner: ProjectPartnerSummaryDTO;
-    userRole: UserRoleDTO | null;
   }>;
 
   constructor(public pageStore: PartnerReportPageStore,
@@ -49,12 +48,10 @@ export class PartnerReportComponent implements AfterViewInit {
     this.data$ = combineLatest([
       this.pageStore.partnerReports$,
       this.pageStore.partnerSummary$,
-      this.partnerReportDetail.userDetails$
     ]).pipe(
-      map(([partnerReports, partner, userDetails]) => ({
+      map(([partnerReports, partner]) => ({
         partnerReports,
         partner,
-        userRole: userDetails?.userRole || null
       }))
     );
   }

@@ -9,26 +9,20 @@
                 [show]="!data.partner.active">
         <div>{{'project.application.form.section.part.b.deactivated.partner.warning' | translate}}</div>
     </jems-alert>
-    <ng-container *ngIf="pageStore.partnerReportLevel$ | async as level">
-        <ng-container *ngIf="pageStore.checkUserPermissions(data.userRole, level)">
-            <jems-pending-button
-                    [hidden]="!data.userRole.permissions.includes(PermissionsEnum.ProjectReportingEdit) && level !== 'EDIT'"
-                    jemsText
-                    class="mb-3"
-                    (click)="createPartnerReport()"
-                    [pending]="actionPending">
-                + {{'project.application.partner.reports.add' | translate}}
-            </jems-pending-button>
-        </ng-container>
+
+    <ng-container *ngIf="pageStore.userCanEditReports$ | async">
+        <jems-pending-button jemsText class="mb-3"
+                             (click)="createPartnerReport()"
+                             [pending]="actionPending">
+            + {{'project.application.partner.reports.add' | translate}}
+        </jems-pending-button>
     </ng-container>
 
-    <ng-container>
-        <jems-alert *ngIf="error$ | async as error"
-                    [show]="!!error.i18nMessage?.i18nKey"
-                    [type]="Alert.ERROR">
-            <jems-api-error-content [error]="error"></jems-api-error-content>
-        </jems-alert>
-    </ng-container>
+    <jems-alert *ngIf="error$ | async as error"
+                [show]="!!error.i18nMessage?.i18nKey"
+                [type]="Alert.ERROR">
+        <jems-api-error-content [error]="error"></jems-api-error-content>
+    </jems-alert>
 
     <ng-container *ngIf="data.partnerReports as partnerReports">
         <jems-table *ngIf="partnerReports.length > 0"

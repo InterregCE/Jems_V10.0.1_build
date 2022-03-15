@@ -4,7 +4,7 @@ import {
   ProjectPartnerReportService,
   ProjectPartnerReportSummaryDTO,
   ProjectPartnerSummaryDTO,
-  ProjectPartnerUserCollaboratorService, UserRoleCreateDTO, UserRoleDTO
+  ProjectPartnerUserCollaboratorService, UserRoleCreateDTO
 } from '@cat/api';
 import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
 import {filter, map, shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
@@ -13,6 +13,7 @@ import {ProjectPartnerStore} from '@project/project-application/containers/proje
 import {Log} from '@common/utils/log';
 import {Tables} from '@common/utils/tables';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
+import {PermissionService} from 'src/app/security/permissions/permission.service';
 
 @Injectable({providedIn: 'root'})
 export class PartnerReportPageStore {
@@ -22,6 +23,8 @@ export class PartnerReportPageStore {
   partnerSummary$: Observable<ProjectPartnerSummaryDTO>;
   partnerReportLevel$: Observable<string>;
   partnerId$: Observable<string | number | null>;
+  userCanViewReports$: Observable<boolean>;
+  userCanEditReports$: Observable<boolean>;
 
   newPageSize$ = new BehaviorSubject<number>(Tables.DEFAULT_INITIAL_PAGE_SIZE);
   newPageIndex$ = new BehaviorSubject<number>(Tables.DEFAULT_INITIAL_PAGE_INDEX);
@@ -31,11 +34,14 @@ export class PartnerReportPageStore {
   constructor(private routingService: RoutingService,
               private partnerProjectStore: ProjectPartnerStore,
               private projectPartnerReportService: ProjectPartnerReportService,
-              private projectPartnerUserCollaboratorService: ProjectPartnerUserCollaboratorService) {
+              private projectPartnerUserCollaboratorService: ProjectPartnerUserCollaboratorService,
+              private permissionService: PermissionService) {
     this.partnerId$ = this.partnerId();
     this.partnerReports$ = this.partnerReports();
     this.partnerSummary$ = this.partnerSummary();
     this.partnerReportLevel$ = this.partnerReportLevel();
+    this.userCanViewReports$ = this.userCanViewReports();
+    this.userCanEditReports$ = this.userCanEditReports();
   }
 
   createPartnerReport(): Observable<ProjectPartnerReportSummaryDTO> {
@@ -45,18 +51,6 @@ export class PartnerReportPageStore {
         tap(() => this.refreshReports$.next()),
         tap(created => Log.info('Created partnerReport:', this, created)),
       );
-  }
-
-  checkUserPermissions(userRole: UserRoleDTO | null, level: string): boolean {
-    if (userRole)
-    {
-      return userRole.permissions.includes(PermissionsEnum.ProjectReportingEdit)
-        || userRole.permissions.includes(PermissionsEnum.ProjectReportingView)
-        || level === 'VIEW'
-        || level === 'EDIT';
-    }
-    return level === 'VIEW'
-      || level === 'EDIT';
   }
 
   private partnerReports(): Observable<ProjectPartnerReportSummaryDTO[]> {
@@ -100,4 +94,26 @@ export class PartnerReportPageStore {
   private partnerId(): Observable<number | string | null> {
     return this.routingService.routeParameterChanges(PartnerReportPageStore.PARTNER_REPORT_DETAIL_PATH, 'partnerId');
   }
+
+  private userCanEditReports(): Observable<boolean> {
+    return combineLatest([
+      this.partnerReportLevel(),
+      this.permissionService.hasPermission(PermissionsEnum.ProjectReportingEdit)
+    ])
+      .pipe(
+        map(([level, canEdit]) => level === 'EDIT' || canEdit)
+      );
+  }
+
+  private userCanViewReports(): Observable<boolean> {
+    return combineLatest([
+      this.partnerReportLevel(),
+      this.userCanEditReports$,
+      this.permissionService.hasPermission(PermissionsEnum.ProjectReportingView)
+    ])
+      .pipe(
+        map(([level, canEdit, canView]) => level === 'VIEW' || canEdit || canView)
+      );
+  }
+
 }
