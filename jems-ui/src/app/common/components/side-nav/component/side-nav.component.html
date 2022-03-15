@@ -1,7 +1,7 @@
 <div class="menu">
     <div *ngFor="let data of headlines" class="level-1">
         <mat-expansion-panel class="mat-elevation-z0"
-                             [expanded]="data.bullets?.length"
+                             [expanded]="data.expanded"
                              [disabled]="!data.bullets?.length"
                              [class.link]="data.route"
                              (click)="sideNavService.navigate(data)"
