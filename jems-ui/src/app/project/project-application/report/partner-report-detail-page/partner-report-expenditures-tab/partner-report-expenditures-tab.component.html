@@ -1,11 +1,11 @@
 <div *ngIf="data$ | async as data">
-    <jems-form (save)="updateReportExpenditures()" (discard)="resetForm(data.expendituresCosts)">
+    <jems-form (save)="updateReportExpenditures()"
+               (discard)="resetForm(data.expendituresCosts)">
         <form jemsFormLayout [formGroup]="reportExpendituresForm">
             <h3>{{'project.application.partner.report.expenditures.title' | translate}}</h3>
             <div id="table-container" jemsNoWidthLimit>
                 <jems-multi-language-container>
-                    <mat-table #table
-                               jemsNoWidthLimit
+                    <mat-table jemsNoWidthLimit
                                id="expenditure-costs-table"
                                [jemsTableConfig]="data.withConfigs"
                                [dataSource]="tableData"
@@ -255,7 +255,8 @@
                         <ng-container matColumnDef="actions" stickyEnd>
                             <mat-header-cell *matHeaderCellDef></mat-header-cell>
                             <mat-cell *matCellDef="let control;let index=index" class="justify-end">
-                                <button (click)="removeItem(index)"
+                                <button *ngIf="reportExpendituresForm.enabled"
+                                        (click)="removeItem(index)"
                                         class="delete-button"
                                         color="accent" mat-icon-button
                                         matTooltip="{{'common.delete.entry.tooltip' | translate}}"
@@ -273,8 +274,8 @@
                     </mat-table>
                 </jems-multi-language-container>
             </div>
-            <button mat-stroked-button type="button"
-                    class="mt-2"
+            <button *ngIf="reportExpendituresForm.enabled"
+                    mat-stroked-button type="button" class="mt-2"
                     [disabled]="items.length >= constants.MAX_NUMBER_OF_ITEMS"
                     (click)="addNewItem()">
                 <mat-icon>add</mat-icon>

@@ -1,11 +1,10 @@
-import {ChangeDetectionStrategy, Component, OnInit, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {catchError, map, tap} from 'rxjs/operators';
 import {HttpErrorResponse} from '@angular/common/http';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {FormService} from '@common/components/section/form/form.service';
 import {combineLatest, Observable} from 'rxjs';
-import {MatTable} from '@angular/material/table';
 import {
   PartnerReportExpendituresTabConstants
 } from '@project/project-application/report/partner-report-detail-page/partner-report-expenditures-tab/partner-report-expenditures-tab.constants';
@@ -40,8 +39,6 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     columnsToDisplay: string[];
     withConfigs: TableConfig[];
   }>;
-
-  @ViewChild('table') table: MatTable<any>;
 
   constructor(public pageStore: PartnerReportExpendituresStore,
               private formBuilder: FormBuilder,
@@ -97,12 +94,10 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
 
   resetForm(partnerReportExpenditures: ProjectPartnerReportExpenditureCostDTO[]): void {
     this.items.clear();
-    partnerReportExpenditures.forEach(partnerReportExpenditure => {
-      this.addResult(partnerReportExpenditure);
-    });
+    partnerReportExpenditures.forEach(partnerReportExpenditure => this.addResult(partnerReportExpenditure));
     this.tableData = [...this.items.controls];
+    this.formService.resetEditable();
   }
-
 
   removeItem(index: number): void {
     this.items.removeAt(index);

@@ -129,7 +129,7 @@ import {
 
 import { PartnerReportDetailPageComponent } from './project-application/report/partner-report-detail-page/partner-report-detail-page.component';
 import { PartnerReportIdentificationTabComponent } from './project-application/report/partner-report-detail-page/partner-report-identification-tab/partner-report-identification-tab.component';
-import { PartnerReportWorkPlanProgressTabComponent } from './project-application/report/partner-report-work-plan-progress-tab/partner-report-work-plan-progress-tab.component';
+import { PartnerReportWorkPlanProgressTabComponent } from './project-application/report/partner-report-detail-page/partner-report-work-plan-progress-tab/partner-report-work-plan-progress-tab.component';
 import { PartnerReportSubmitTabComponent } from './project-application/report/partner-report-detail-page/partner-report-submit-tab/partner-report-submit-tab.component';
 import {ProjectPartnerCoFinancingSpfTabComponent} from '@project/partner/project-partner-detail-page/project-partner-co-financing-spf-tab/project-partner-co-financing-spf-tab.component';
 import {ProjectPartnerCoFinancingSpfStore} from '@project/partner/project-partner-detail-page/project-partner-co-financing-spf-tab/project-partner-co-financing-spf.store';

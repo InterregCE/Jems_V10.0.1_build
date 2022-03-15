@@ -38,7 +38,7 @@ export class PartnerReportExpendituresStore {
               private projectPartnerBudgetStore: ProjectPartnerBudgetStore) {
     this.expendituresCosts$ = this.partnerReportExpenditureCosts();
     this.costCategories$ = this.costCategories();
-    this.isEditable$ = this.isEditable();
+    this.isEditable$ = this.partnerReportDetailPageStore.reportEditable$;
     this.contractIDs$ = of([]);
     this.investmentNumbers$ = this.investmentSummariesForReport();
   }
@@ -81,11 +81,6 @@ export class PartnerReportExpendituresStore {
         map(([partnerId, allowedCategories, budgetOptions]) =>
           this.mapCategoryCosts(allowedCategories, budgetOptions))
       );
-  }
-
-  private isEditable(): Observable<boolean> {
-    return this.partnerReportDetailPageStore.partnerReportLevel$
-      .pipe(map(value => value === 'EDIT'));
   }
 
   private budgetOptionsForReport(): Observable<BudgetOptions> {
