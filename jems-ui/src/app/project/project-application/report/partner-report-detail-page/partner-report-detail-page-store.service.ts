@@ -2,10 +2,10 @@ import {Injectable} from '@angular/core';
 import {
   ProjectPartnerReportDTO, ProjectPartnerReportIdentificationDTO, ProjectPartnerReportIdentificationService,
   ProjectPartnerReportService, ProjectPartnerReportSummaryDTO,
-  ProjectPartnerSummaryDTO, UpdateProjectPartnerReportIdentificationDTO, UserDTO, UserRoleService
+  ProjectPartnerSummaryDTO, UpdateProjectPartnerReportIdentificationDTO
 } from '@cat/api';
 import {combineLatest, merge, Observable, of, ReplaySubject, Subject} from 'rxjs';
-import {catchError, filter, map, shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
+import {catchError, map, shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
 import {RoutingService} from '@common/services/routing.service';
 import {Log} from '@common/utils/log';
 import {ProjectPaths} from '@project/common/project-util';
@@ -13,7 +13,6 @@ import {
   ProjectStore
 } from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
-import {SecurityService} from '../../../../security/security.service';
 
 @Injectable({providedIn: 'root'})
 export class PartnerReportDetailPageStore {
@@ -24,39 +23,34 @@ export class PartnerReportDetailPageStore {
   partnerId$: Observable<string | number | null>;
   partnerReportId$: Observable<number>;
   partnerReportLevel$: Observable<string>;
-  userDetails$: Observable<UserDTO | null>;
   partnerIdentification$: Observable<ProjectPartnerReportIdentificationDTO>;
+  reportStatus$: Observable<ProjectPartnerReportSummaryDTO.StatusEnum>;
+  reportEditable$: Observable<boolean>;
 
   newPageSize$ = new Subject<number>();
   newPageIndex$ = new Subject<number>();
 
   private updatedReport$ = new Subject<ProjectPartnerReportDTO>();
   private updatedIdentification$ = new Subject<ProjectPartnerReportIdentificationDTO>();
-  private updatedReportStatus$ = new Subject<any>();
-  private isReportEditable$ = new ReplaySubject<boolean>(1);
+  private updatedReportStatus$ = new Subject<ProjectPartnerReportSummaryDTO.StatusEnum>();
 
   constructor(private routingService: RoutingService,
               private partnerReportPageStore: PartnerReportPageStore,
               private projectPartnerReportService: ProjectPartnerReportService,
               private projectStore: ProjectStore,
-              private reportIdentificationService: ProjectPartnerReportIdentificationService,
-              private userRoleService: UserRoleService,
-              private securityService: SecurityService) {
+              private reportIdentificationService: ProjectPartnerReportIdentificationService) {
     this.partnerId$ = this.partnerReportPageStore.partnerId$;
     this.partnerReportLevel$ = this.partnerReportPageStore.partnerReportLevel$;
     this.partnerReportId$ = this.partnerReportId();
     this.partnerSummary$ = this.partnerReportPageStore.partnerSummary$;
     this.partnerReport$ = this.partnerReport();
     this.partnerIdentification$ = this.reportIdentification();
-    this.userDetails$ = this.securityService.currentUserDetails;
+    this.reportStatus$ = this.reportStatus();
+    this.reportEditable$ = this.reportEditable();
   }
 
   private partnerReportId(): Observable<any> {
     return this.routingService.routeParameterChanges(PartnerReportDetailPageStore.REPORT_DETAIL_PATH, 'reportId');
-  }
-
-  isReportEditable(): Observable<boolean> {
-    return this.isReportEditable$.asObservable();
   }
 
   private partnerReport(): Observable<ProjectPartnerReportDTO> {
@@ -76,7 +70,6 @@ export class PartnerReportDetailPageStore {
           )
         : of({} as ProjectPartnerReportDTO)
       ),
-      tap(report => this.isReportEditable$.next(report.status === ProjectPartnerReportSummaryDTO.StatusEnum.Draft)),
       tap(report => Log.info('Fetched the partner report:', this, report)),
     );
 
@@ -89,8 +82,7 @@ export class PartnerReportDetailPageStore {
   submitReport(partnerId: number, reportId: number): Observable<ProjectPartnerReportSummaryDTO> {
     return this.projectPartnerReportService.submitProjectPartnerReport(partnerId, reportId)
       .pipe(
-        tap(status => this.updatedReportStatus$.next()),
-        tap(status => this.isReportEditable$.next(status.status === ProjectPartnerReportSummaryDTO.StatusEnum.Draft)),
+        tap(summary => this.updatedReportStatus$.next(summary.status)),
         tap(status => Log.info('Changed status for report', reportId, status))
       );
   }
@@ -99,8 +91,7 @@ export class PartnerReportDetailPageStore {
     const initialIdentification$ = combineLatest([
       this.partnerId$,
       this.routingService.routeParameterChanges(PartnerReportDetailPageStore.REPORT_DETAIL_PATH, 'reportId'),
-      this.projectStore.projectId$,
-      this.updatedReportStatus$.pipe(startWith(null))
+      this.projectStore.projectId$
     ]).pipe(
       switchMap(([partnerId, reportId, projectId]) => !!partnerId && !!projectId && !!reportId
         ? this.reportIdentificationService.getIdentification(Number(partnerId), Number(reportId))
@@ -131,5 +122,22 @@ export class PartnerReportDetailPageStore {
       tap(data => Log.info('Updated identification for report', this, data)),
       tap(data => this.updatedIdentification$.next(data)),
     );
+  }
+
+  private reportStatus(): Observable<ProjectPartnerReportSummaryDTO.StatusEnum> {
+    return merge(
+      this.partnerReport$.pipe(map(report => report.status)),
+      this.updatedReportStatus$,
+    );
+  }
+
+  private reportEditable(): Observable<boolean> {
+    return combineLatest([
+      this.partnerReportPageStore.userCanEditReports$,
+      this.reportStatus$
+    ])
+      .pipe(
+        map(([canEdit, status]) => canEdit && status === ProjectPartnerReportSummaryDTO.StatusEnum.Draft)
+      );
   }
 }

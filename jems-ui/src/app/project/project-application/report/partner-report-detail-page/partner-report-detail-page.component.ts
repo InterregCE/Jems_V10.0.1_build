@@ -12,7 +12,7 @@ import {combineLatest, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {
   PartnerReportWorkPlanPageStore
-} from '@project/project-application/report/partner-report-work-plan-progress-tab/partner-report-work-plan-page-store.service';
+} from '@project/project-application/report/partner-report-detail-page/partner-report-work-plan-progress-tab/partner-report-work-plan-page-store.service';
 
 @Component({
   selector: 'jems-partner-report-detail-page',

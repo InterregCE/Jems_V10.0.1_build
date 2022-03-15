@@ -7,9 +7,9 @@ import {APIError} from '@common/models/APIError';
 import {catchError, finalize, map, tap} from 'rxjs/operators';
 import {Router} from '@angular/router';
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
-import {ProjectPartnerReportDTO, ProjectPartnerSummaryDTO, UserRoleDTO} from '@cat/api';
-import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
+import {ProjectPartnerReportDTO, ProjectPartnerReportSummaryDTO, ProjectPartnerSummaryDTO, UserRoleDTO} from '@cat/api';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
+import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
 
 @Component({
   selector: 'jems-partner-report-submit-tab',
@@ -21,6 +21,7 @@ export class PartnerReportSubmitTabComponent {
   PermissionsEnum = PermissionsEnum;
   Alert = Alert;
   actionPending = false;
+  StatusEnum = ProjectPartnerReportSummaryDTO.StatusEnum;
 
   error$ = new BehaviorSubject<APIError | null>(null);
 
@@ -28,39 +29,35 @@ export class PartnerReportSubmitTabComponent {
     projectId: number;
     partnerSummary: ProjectPartnerSummaryDTO;
     partnerReport: ProjectPartnerReportDTO;
-    level: string;
-    isEditable: boolean;
-    userRole: UserRoleDTO | null;
-    }>;
+    reportStatus: ProjectPartnerReportSummaryDTO.StatusEnum;
+    userCanEditReport: boolean;
+  }>;
 
-  constructor(public pageStore: PartnerReportDetailPageStore,
+  constructor(public pageStore: PartnerReportPageStore,
               public projectStore: ProjectStore,
-              public partnerReportDetailPageStore: PartnerReportDetailPageStore,
-              public partnerReportStore: PartnerReportPageStore,
+              public detailPageStore: PartnerReportDetailPageStore,
               private projectSidenavService: ProjectApplicationFormSidenavService,
               private router: Router) {
     this.data$ = combineLatest([
       projectStore.projectId$,
       pageStore.partnerSummary$,
-      pageStore.partnerReport$,
-      partnerReportStore.partnerReportLevel$,
-      partnerReportDetailPageStore.isReportEditable(),
-      pageStore.userDetails$
+      detailPageStore.partnerReport$,
+      detailPageStore.reportStatus$,
+      pageStore.userCanEditReports$,
     ]).pipe(
-            map(([projectId, partnerSummary, partnerReport, level, isEditable, userDetails]) => ({
+      map(([projectId, partnerSummary, partnerReport, reportStatus, userCanEditReport]) => ({
         projectId,
         partnerSummary,
         partnerReport,
-        level,
-        isEditable,
-        userRole: userDetails?.userRole || null
+        reportStatus,
+        userCanEditReport,
       }))
     );
   }
 
   submitReport(projectId: number, partnerId: number, reportId: number): void {
     this.actionPending = true;
-    this.partnerReportDetailPageStore.submitReport(partnerId, reportId)
+    this.detailPageStore.submitReport(partnerId, reportId)
       .pipe(
         tap(() => this.redirectToReportOverview(projectId, partnerId, reportId)),
         catchError((error) => this.showErrorMessage(error.error)),

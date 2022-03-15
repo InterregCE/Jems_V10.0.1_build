@@ -1,6 +1,5 @@
 <ng-container *ngIf="savedWorkPackages$ | async as savedWorkPackages">
-    <jems-form *ngIf="this.partnerReportPageStore.partnerReports$ | async as partnerReport"
-               (discard)="resetForm(savedWorkPackages)"
+    <jems-form (discard)="resetForm(savedWorkPackages)"
                (save)="saveWorkPlan()">
 
         <h2 class="mb-5">{{'project.application.partner.report.sub.title.workplan' | translate}}</h2>

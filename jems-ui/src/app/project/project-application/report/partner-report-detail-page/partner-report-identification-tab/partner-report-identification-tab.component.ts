@@ -67,6 +67,8 @@ export class PartnerReportIdentificationTabComponent {
       })),
       tap((data) => this.resetForm(data.identification)),
     );
+
+    this.formService.init(this.form, this.pageStore.reportEditable$);
   }
 
   get targetGroups(): FormArray {
@@ -74,23 +76,15 @@ export class PartnerReportIdentificationTabComponent {
   }
 
   resetForm(identification: ProjectPartnerReportIdentificationDTO) {
-    this.form.reset();
+    this.form.patchValue(identification);
     this.targetGroups.clear();
-    this.form = this.formBuilder.group({
-      startDate: [identification.startDate],
-      endDate: [identification.endDate],
-      period: [identification.period],
-      summary: [identification.summary],
-      problemsAndDeviations: [identification.problemsAndDeviations],
-      targetGroups: this.formBuilder.array([]),
-    });
 
     if (identification.targetGroups) {
       identification.targetGroups.forEach((targetGroup: ProjectPartnerReportIdentificationTargetGroupDTO, index: number) => {
         this.resetTargetGroup(targetGroup, index);
       });
     }
-    this.formService.init(this.form, this.pageStore.isReportEditable());
+    this.formService.resetEditable();
   }
 
   resetTargetGroup(targetGroup: ProjectPartnerReportIdentificationTargetGroupDTO, targetGroupIndex: number): void {
