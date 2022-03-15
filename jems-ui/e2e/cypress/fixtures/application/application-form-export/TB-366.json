@@ -1,0 +1,30 @@
+{
+  "intro": [
+    {
+      "language": "DE",
+      "translation": "API generated application summary \n\r <html><br></></html>!@#$%^&*(){}>?üä#öšđćčž DE"
+    },
+    {
+      "language": "EN",
+      "translation": "API generated application summary \n\n <html><br></></html>!@#$%^&*(){}>?üä#öšđćčž EN"
+    }
+  ],
+  "eligibilityAssessment": {
+    "result": "PASSED",
+    "note": "API eligibility assessment"
+  },
+  "qualityAssessment": {
+    "result": "RECOMMENDED_FOR_FUNDING",
+    "note": "API quality assessment"
+  },
+  "eligibilityDecision": {
+    "note": "API eligibility decision",
+    "date": "2022-03-10",
+    "entryIntoForceDate": null
+  },
+  "fundingDecision": {
+    "note": "API quality decision",
+    "date": "2022-03-10",
+    "entryIntoForceDate": null
+  }
+}

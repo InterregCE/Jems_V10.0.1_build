@@ -14,8 +14,9 @@
 // ***********************************************************
 
 // Import commands.ts using ES2015 syntax:
-import './commands'
-import user from '../fixtures/users.json';
+import './commands';
+import './call.commands';
+import './application.commands';
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
