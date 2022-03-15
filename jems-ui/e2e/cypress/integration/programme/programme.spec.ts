@@ -1,14 +1,14 @@
-import user from '../fixtures/users.json';
-import basicData from '../fixtures/programme/basic.data.json';
-import languages from '../fixtures/programme/languages.json';
-import funds from '../fixtures/programme/funds.json';
-import priorities from '../fixtures/programme/priorities.json';
-import resultIndicators from '../fixtures/programme/result.indicators.json';
-import outputIndicators from '../fixtures/programme/output.indicators.json';
-import strategies from '../fixtures/programme/strategies.json';
-import lumpSums from '../fixtures/programme/lump.sums.json';
-import unitCosts from '../fixtures/programme/unit.costs.json';
-import stateAid from '../fixtures/programme/state.aid.json';
+import user from '../../fixtures/users.json';
+import basicData from '../../fixtures/programme/basic.data.json';
+import languages from '../../fixtures/programme/languages.json';
+import funds from '../../fixtures/programme/funds.json';
+import priorities from '../../fixtures/programme/priorities.json';
+import resultIndicators from '../../fixtures/programme/result.indicators.json';
+import outputIndicators from '../../fixtures/programme/output.indicators.json';
+import strategies from '../../fixtures/programme/strategies.json';
+import lumpSums from '../../fixtures/programme/lump.sums.json';
+import unitCosts from '../../fixtures/programme/unit.costs.json';
+import stateAid from '../../fixtures/programme/state.aid.json';
 
 context('Programme management tests', () => {
 
