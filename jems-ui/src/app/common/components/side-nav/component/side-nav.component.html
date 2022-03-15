@@ -14,7 +14,8 @@
                     </div>
                 </mat-panel-title>
             </mat-expansion-panel-header>
-            <div *ngFor="let subtitle of data.bullets" [class.versioned-section]="subtitle.versionedSection" class="level-2">
+            <div *ngFor="let subtitle of data.bullets" [class.versioned-section]="subtitle.versionedSection"
+                 class="level-2">
                 <ng-container *ngIf="subtitle.headlineTemplate"
                               [ngTemplateOutlet]="subtitle.headlineTemplate"></ng-container>
 
@@ -36,17 +37,21 @@
                     </mat-expansion-panel-header>
                     <ul class="level-3" *ngIf="subtitle.bullets?.length">
                         <li *ngFor="let section of subtitle.bullets">
+                            <div class="icon-container-level-3">
+                                <mat-icon *ngIf="section.icon">{{section.icon}}</mat-icon>
                                 <span [class.link]="section.route"
+                                      [class.icon]="section.icon"
                                       [class.route-active]="(currentUrl$ | async) | IsMenuActive : (section.baseRoute || section.route) : !section.baseRoute"
                                       (click)="sideNavService.navigate(section)">
                                     {{ section.headline.i18nKey | translate : section.headline.i18nArguments }}</span>
+                            </div>
                             <ul class="level-4" *ngIf="section.bullets?.length">
                                 <li *ngFor="let subsection of section.bullets"
                                     [class.link]="section.route"
                                     [class.route-active]="(currentUrl$ | async) | IsMenuActive : (subsection.baseRoute || subsection.route) : !subsection.baseRoute"
                                     (click)="$event.stopPropagation();sideNavService.navigate(subsection)">
 
-                                    <div class="icon-container">
+                                    <div class="icon-container-level-4">
                                         <mat-icon *ngIf="subsection.icon">{{subsection.icon}}</mat-icon>
                                         <span>{{ subsection.headline.i18nKey | translate : subsection.headline.i18nArguments }}</span>
                                     </div>
