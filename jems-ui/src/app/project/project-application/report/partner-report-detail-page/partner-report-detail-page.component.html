@@ -7,25 +7,37 @@
             <nav mat-tab-nav-bar>
                 <a [active]="activeTab('identification')" mat-tab-link
                    (click)="routeTo('identification')">
-                    <span jemsText
-                      maxWidth="230">{{'project.application.partner.report.tab.identification' | translate}}</span>
+                    <span jemsText maxWidth="230">
+                        {{'project.application.partner.report.tab.identification' | translate}}
+                    </span>
                 </a>
 
                 <a *ngIf="data.workPackages.length > 0" [active]="activeTab('workplan')" mat-tab-link
-                   (click)="routeTo('workplan')"
-                >
-                    <span jemsText maxWidth="230">{{'project.application.partner.report.tab.workplan' | translate}}</span>
+                   (click)="routeTo('workplan')">
+                    <span jemsText maxWidth="230">
+                        {{'project.application.partner.report.tab.workplan' | translate}}
+                    </span>
                 </a>
 
-            <a [active]="activeTab('expenditures')" mat-tab-link
-               (click)="routeTo('expenditures')">
-                <span jemsText
-                      maxWidth="230">{{'project.application.partner.report.expenditures.title' | translate}}</span>
-            </a>
+                <a [active]="activeTab('expenditures')" mat-tab-link
+                   (click)="routeTo('expenditures')">
+                    <span jemsText maxWidth="230">
+                        {{'project.application.partner.report.expenditures.title' | translate}}
+                    </span>
+                </a>
+
+                <a [active]="activeTab('contribution')" mat-tab-link
+                   (click)="routeTo('contribution')">
+                    <span jemsText maxWidth="230">
+                        {{'project.application.partner.report.contribution.tab.title' | translate}}
+                    </span>
+                </a>
 
                 <a [active]="activeTab('submission')" mat-tab-link
                    (click)="routeTo('submission')">
-                    <span jemsText maxWidth="230">{{'project.application.partner.report.tab.submission' | translate}}</span>
+                    <span jemsText maxWidth="230">
+                        {{'project.application.partner.report.tab.submission' | translate}}
+                    </span>
                 </a>
             </nav>
             <router-outlet></router-outlet>

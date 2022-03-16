@@ -136,12 +136,14 @@ class ProjectReportContributionPersistenceProviderTest : UnitTest() {
                 // not existing
                 UpdateProjectPartnerReportContributionExisting(-1L, BigDecimal.TEN),
                 // existing
-                UpdateProjectPartnerReportContributionExisting(81L, BigDecimal.ONE),
+                UpdateProjectPartnerReportContributionExisting(81L, BigDecimal.ONE, "source new", ProjectPartnerContributionStatus.Private),
             )
         )
 
         assertThat(contribution_80.currentlyReported).isEqualTo(BigDecimal.ZERO)
         assertThat(contribution_81.currentlyReported).isEqualTo(BigDecimal.ONE)
+        assertThat(contribution_81.sourceOfContribution).isEqualTo("source new")
+        assertThat(contribution_81.legalStatus).isEqualTo(ProjectPartnerContributionStatus.Private)
     }
 
     @Test

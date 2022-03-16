@@ -35,9 +35,11 @@ class ProjectReportContributionPersistenceProvider(
 
     @Transactional
     override fun updateExisting(toBeUpdated: Collection<UpdateProjectPartnerReportContributionExisting>) {
-        val toUpdateById = toBeUpdated.associateBy({ it.id }, { it.currentlyReported })
+        val toUpdateById = toBeUpdated.associateBy { it.id }
         reportContributionRepository.findAllById(toUpdateById.keys).forEach {
-            it.currentlyReported = toUpdateById[it.id] ?: it.currentlyReported
+            it.currentlyReported = toUpdateById[it.id]?.currentlyReported ?: it.currentlyReported
+            it.sourceOfContribution = toUpdateById[it.id]?.sourceOfContribution ?: it.sourceOfContribution
+            it.legalStatus = toUpdateById[it.id]?.legalStatus ?: it.legalStatus
         }
     }
 

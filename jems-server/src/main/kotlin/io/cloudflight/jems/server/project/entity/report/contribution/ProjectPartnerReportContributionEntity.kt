@@ -27,10 +27,10 @@ class ProjectPartnerReportContributionEntity(
     @field:NotNull
     val reportEntity: ProjectPartnerReportEntity,
 
-    val sourceOfContribution: String?,
+    var sourceOfContribution: String?,
 
     @Enumerated(EnumType.STRING)
-    val legalStatus: ProjectPartnerContributionStatus?,
+    var legalStatus: ProjectPartnerContributionStatus?,
 
     val idFromApplicationForm: Long?,
 

@@ -299,14 +299,16 @@ internal class UpdateProjectPartnerReportContributionTest : UnitTest() {
 
         val slotValue = mutableListOf<BigDecimal>()
         val slotValueName = mutableListOf<String>()
-        every { generalValidator.maxLength(any<String>(), any(), any()) } returns mapOf("" to I18nMessage(""))
+        val slotString = mutableListOf<String>()
+        val slotStringName = mutableListOf<String>()
+        every { generalValidator.maxLength(capture(slotString), any(), capture(slotStringName)) } returns mapOf("" to I18nMessage(""))
         every { generalValidator.numberBetween(capture(slotValue), any(), any(), capture(slotValueName)) } returns mapOf("" to I18nMessage(""))
 
         assertThrows<AppInputValidationException> {
             updateContribution.update(
                 PARTNER_ID, reportId = 10L, UpdateProjectPartnerReportContributionWrapper(
                     toBeUpdated = setOf(
-                        toUpdateModelFromAf.copy(currentlyReported = bigValue)
+                        toUpdateModelFromAf.copy(currentlyReported = bigValue, sourceOfContribution = getStringOfLength(256))
                     ),
                     toBeDeletedIds = emptySet(),
                     toBeCreated = listOf(
@@ -320,11 +322,12 @@ internal class UpdateProjectPartnerReportContributionTest : UnitTest() {
             )
         }
 
-        verify(exactly = 1) { generalValidator.maxLength(any<String>(), 255, "new.sourceOfContribution[0]") }
+        verify(exactly = 2) { generalValidator.maxLength(any<String>(), 255, any()) }
         verify(exactly = 2) { generalValidator.numberBetween(any(), BigDecimal.ZERO, MAX_NUMBER, any()) }
 
         assertThat(slotValue).containsExactly(minusValue, bigValue)
         assertThat(slotValueName).containsExactly("new.currentlyReported[0]", "currentlyReported[0]")
+        assertThat(slotStringName).containsExactly("new.sourceOfContribution[0]", "sourceOfContribution[0]")
     }
 
     @Test
