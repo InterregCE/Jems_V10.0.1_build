@@ -33,7 +33,7 @@ context('Application form exports', () => {
 
         cy.loginByRequest(user.applicantUser);
         cy.intercept(`api/project/${applicationId}/workPackage`).as('pageLoaded');
-        cy.visit(`app/project/detail/${applicationId}`);
+        cy.visit(`app/project/detail/${applicationId}`, {failOnStatusCode: false});
         cy.wait('@pageLoaded')
 
         cy.contains('Export').should('be.visible').click();
