@@ -33,11 +33,13 @@
 
     .link {
       &:hover {
+        flex-grow: 100;
         padding-left: 1rem;
         margin-left: -1rem;
       }
 
       &.route-active {
+        flex-grow: 100;
         padding-left: 1rem;
         margin-left: -1rem;
       }

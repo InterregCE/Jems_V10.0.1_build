@@ -106,15 +106,23 @@
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                                 <mat-form-field jemsFormFieldWidth="full">
-                                    <textarea #textarea
+                                    <textarea #internalReferenceNumber
                                               [formControlName]="constants.FORM_CONTROL_NAMES.internalReferenceNumber"
                                               matInput
                                               [cdkTextareaAutosize]
                                               [cdkAutosizeMinRows]="1">
                                      </textarea>
-                                    <mat-hint [jemsHintFor]="textarea">
-                                        <jems-text-hint [maxLength]="constants.MAX_LENGTH_INVOICE"></jems-text-hint>
+                                    <mat-hint [jemsHintFor]="internalReferenceNumber">
+                                        <jems-text-hint
+                                                [currentLength]="lengthOfForm(control, constants.FORM_CONTROL_NAMES.internalReferenceNumber)"
+                                                [maxLength]="constants.MAX_LENGTH_INVOICE"></jems-text-hint>
                                     </mat-hint>
+                                    <mat-error>
+                                        <jems-form-field-errors
+                                                [errors]="control.errors"
+                                                [messages]="constants.FORM_ERRORS.invoiceNumber">
+                                        </jems-form-field-errors>
+                                    </mat-error>
                                 </mat-form-field>
                             </mat-cell>
                             <mat-footer-cell *matFooterCellDef></mat-footer-cell>
@@ -133,8 +141,16 @@
                                               [cdkAutosizeMinRows]="1">
                                      </textarea>
                                     <mat-hint [jemsHintFor]="invoiceNumberTextarea">
-                                        <jems-text-hint [maxLength]="constants.MAX_LENGTH_INVOICE"></jems-text-hint>
+                                        <jems-text-hint
+                                                [currentLength]="lengthOfForm(control, constants.FORM_CONTROL_NAMES.invoiceNumber)"
+                                                [maxLength]="constants.MAX_LENGTH_INVOICE"></jems-text-hint>
                                     </mat-hint>
+                                    <mat-error>
+                                        <jems-form-field-errors
+                                                [errors]="control.errors"
+                                                [messages]="constants.FORM_ERRORS.invoiceNumber">
+                                        </jems-form-field-errors>
+                                    </mat-error>
                                 </mat-form-field>
                             </mat-cell>
                             <mat-footer-cell *matFooterCellDef></mat-footer-cell>
@@ -208,7 +224,7 @@
                             <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                         </ng-container>
                         <ng-container matColumnDef="totalValueInvoice">
-                            <mat-header-cell *matHeaderCellDef>
+                            <mat-header-cell class="end-flex-header-table" *matHeaderCellDef>
                                         <span jemsText
                                               maxLines="2">{{'project.application.partner.report.expenditures.tab.total.value.invoice' | translate}}</span>
                             </mat-header-cell>
@@ -223,7 +239,7 @@
                             <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                         </ng-container>
                         <ng-container matColumnDef="vat">
-                            <mat-header-cell *matHeaderCellDef>
+                            <mat-header-cell class="end-flex-header-table" *matHeaderCellDef>
                                         <span jemsText
                                               maxLines="2">{{'project.application.partner.report.expenditures.tab.vat' | translate}}</span>
                             </mat-header-cell>
@@ -238,7 +254,7 @@
                             <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                         </ng-container>
                         <ng-container matColumnDef="declaredAmount">
-                            <mat-header-cell *matHeaderCellDef>
+                            <mat-header-cell class="end-flex-header-table" *matHeaderCellDef>
                                         <span jemsText
                                               maxLines="2">{{'project.application.partner.report.expenditures.declared.amount' | translate}}</span>
                             </mat-header-cell>
