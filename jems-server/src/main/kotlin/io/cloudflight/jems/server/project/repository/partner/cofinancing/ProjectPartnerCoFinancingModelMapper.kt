@@ -118,9 +118,9 @@ fun List<ProjectPartnerContributionSpf>.toEntity(partnerId: Long) = map {
     )
 }
 
-fun ProjectPartnerContributionEntity.toModel() = ProjectPartnerContribution(
+fun ProjectPartnerContributionEntity.toModel(partnerAbbreviation: String) = ProjectPartnerContribution(
     id = id,
-    name = name,
+    name = if (name == null) partnerAbbreviation else name,
     status = status,
     amount = amount,
     isPartner = name == null
@@ -133,9 +133,9 @@ fun ProjectPartnerContributionSpfEntity.toSpfModel() = ProjectPartnerContributio
     amount = amount
 )
 
-fun PartnerContributionRow.toModel() = ProjectPartnerContribution(
+fun PartnerContributionRow.toModel(partnerAbbreviation: String) = ProjectPartnerContribution(
     id = id,
-    name = name,
+    name = if (name == null) partnerAbbreviation else name,
     status = status,
     amount = amount,
     isPartner = name == null
@@ -148,11 +148,13 @@ fun PartnerContributionRow.toSpfModel() = ProjectPartnerContributionSpf(
     amount = amount
 )
 
-fun Collection<ProjectPartnerContributionEntity>.toContributionModel() = map { it.toModel() }
+fun Collection<ProjectPartnerContributionEntity>.toContributionModel(partnerAbbreviation: String) =
+    map { it.toModel(partnerAbbreviation) }
 
 fun Collection<ProjectPartnerContributionSpfEntity>.toContributionSpfModel() = map { it.toSpfModel() }
 
-fun Collection<PartnerContributionRow>.toProjectPartnerContributionHistoricalData() = map { it.toModel() }
+fun Collection<PartnerContributionRow>.toProjectPartnerContributionHistoricalData(partnerAbbreviation: String) =
+    map { it.toModel(partnerAbbreviation) }
 
 fun Collection<PartnerContributionRow>.toProjectPartnerContributionSpfHistoricalData() = map { it.toSpfModel() }
 // endregion Contributions
@@ -162,6 +164,6 @@ fun ProjectPartnerEntity.extractCoFinancingAndContribution(
 ) =
     ProjectPartnerCoFinancingAndContribution(
         finances = finances.toCoFinancingModel(),
-        partnerContributions = partnerContributions.toContributionModel(),
+        partnerContributions = partnerContributions.toContributionModel(partnerAbbreviation = abbreviation),
         partnerAbbreviation = abbreviation
     )

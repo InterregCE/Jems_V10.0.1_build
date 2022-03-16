@@ -136,6 +136,9 @@ import {ProjectPartnerCoFinancingSpfStore} from '@project/partner/project-partne
 import {
   PartnerReportExpendituresTabComponent
 } from '@project/project-application/report/partner-report-detail-page/partner-report-expenditures-tab/partner-report-expenditures-tab.component';
+import {
+  PartnerReportContributionTabComponent
+} from '@project/project-application/report/partner-report-detail-page/partner-report-contribution-tab/partner-report-contribution-tab.component';
 
 @NgModule({
   declarations: [
@@ -250,7 +253,8 @@ import {
     PartnerReportWorkPlanProgressTabComponent,
     SpfRecipientsTableComponent,
     PartnerReportSubmitTabComponent,
-    PartnerReportExpendituresTabComponent
+    PartnerReportContributionTabComponent,
+    PartnerReportExpendituresTabComponent,
   ],
   imports: [
     SharedModule,

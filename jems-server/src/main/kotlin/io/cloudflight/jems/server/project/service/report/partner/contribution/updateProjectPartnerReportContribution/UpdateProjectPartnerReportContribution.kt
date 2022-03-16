@@ -71,6 +71,9 @@ class UpdateProjectPartnerReportContribution(
                 generalValidator.numberBetween(it.currentlyReported, MIN_NUMBER, MAX_NUMBER, "new.currentlyReported[$index]")
             }.toTypedArray(),
             *data.toBeUpdated.mapIndexed { index, it ->
+                generalValidator.maxLength(it.sourceOfContribution, 255, "sourceOfContribution[$index]")
+            }.toTypedArray(),
+            *data.toBeUpdated.mapIndexed { index, it ->
                 generalValidator.numberBetween(it.currentlyReported, MIN_NUMBER, MAX_NUMBER, "currentlyReported[$index]")
             }.toTypedArray(),
         )

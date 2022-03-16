@@ -15,6 +15,7 @@ export class TableConfigDirective implements AfterViewInit, AfterContentChecked 
   @Input('jemsTableConfig') tableConfig: TableConfig[] = [];
 
   private firstColLeftPaddingInRem = 1;
+  @Input('lastColRightPaddingInRem')
   private lastColRightPaddingInRem = 1;
   private colsRightPaddingInRem = 0.5;
   private colsLeftPaddingInRem = 0.5;

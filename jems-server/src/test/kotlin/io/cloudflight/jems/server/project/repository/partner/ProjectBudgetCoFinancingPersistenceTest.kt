@@ -188,7 +188,7 @@ class ProjectBudgetCoFinancingPersistenceTest {
             )
         )
         assertThat(result.partnerContributions).containsExactlyInAnyOrder(
-            ProjectPartnerContribution(id = 1, name = null, status = Public, amount = BigDecimal.TEN, isPartner = true),
+            ProjectPartnerContribution(id = 1, name = "test abbr", status = Public, amount = BigDecimal.TEN, isPartner = true),
             ProjectPartnerContribution(
                 id = 2,
                 name = "source01",
@@ -230,7 +230,7 @@ class ProjectBudgetCoFinancingPersistenceTest {
             partnerContributions = toBeSavedContributions
         )
 
-        assertThat(result.partnerAbbreviation).isEqualTo(dummyPartner.abbreviation)
+        assertThat(result.partnerAbbreviation).isEqualTo("test abbr")
         assertThat(result.finances).containsExactlyInAnyOrder(
             ProjectPartnerCoFinancing(
                 fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
@@ -244,7 +244,7 @@ class ProjectBudgetCoFinancingPersistenceTest {
             )
         )
         assertThat(result.partnerContributions).containsExactlyInAnyOrder(
-            ProjectPartnerContribution(id = 0, name = null, status = Public, amount = BigDecimal.TEN, isPartner = true),
+            ProjectPartnerContribution(id = 0, name = "test abbr", status = Public, amount = BigDecimal.TEN, isPartner = true),
             ProjectPartnerContribution(
                 id = 0,
                 name = "source",

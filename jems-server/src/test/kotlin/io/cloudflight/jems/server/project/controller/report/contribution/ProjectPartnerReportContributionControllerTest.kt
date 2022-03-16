@@ -87,19 +87,19 @@ class ProjectPartnerReportContributionControllerTest : UnitTest() {
     )
 
     private val expectedOverview = ProjectPartnerReportContributionOverviewDTO(
-        public = ProjectPartnerReportContributionRowDTO(
+        publicContribution = ProjectPartnerReportContributionRowDTO(
             amount = 20L.toBigDecimal(),
             previouslyReported = 5L.toBigDecimal(),
             currentlyReported = 4L.toBigDecimal(),
             totalReportedSoFar = 9L.toBigDecimal(),
         ),
-        automaticPublic = ProjectPartnerReportContributionRowDTO(
+        automaticPublicContribution = ProjectPartnerReportContributionRowDTO(
             amount = 100L.toBigDecimal(),
             previouslyReported = 40L.toBigDecimal(),
             currentlyReported = 30L.toBigDecimal(),
             totalReportedSoFar = 70L.toBigDecimal(),
         ),
-        private = ProjectPartnerReportContributionRowDTO(
+        privateContribution = ProjectPartnerReportContributionRowDTO(
             amount = 60L.toBigDecimal(),
             previouslyReported = 20L.toBigDecimal(),
             currentlyReported = 12L.toBigDecimal(),
