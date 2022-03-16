@@ -96,7 +96,8 @@ class ProjectServiceTest : UnitTest() {
         type = CallType.STANDARD,
         lengthOfPeriod = 1,
         allowedRealCosts = defaultAllowedRealCostsByCallType(CallType.STANDARD),
-        preSubmissionCheckPluginKey = null
+        preSubmissionCheckPluginKey = null,
+        firstStepPreSubmissionCheckPluginKey = null
     )
 
     private fun wp(id: Long, project: ProjectEntity) = WorkPackageEntity(id = id, project = project).apply {
@@ -236,7 +237,8 @@ class ProjectServiceTest : UnitTest() {
             type = CallType.STANDARD,
             lengthOfPeriod = 6,
             allowedRealCosts = defaultAllowedRealCostsByCallType(CallType.STANDARD),
-            preSubmissionCheckPluginKey = null
+            preSubmissionCheckPluginKey = null,
+            firstStepPreSubmissionCheckPluginKey = null
         )
         val projectData = InputProjectData(acronym = "acronym", duration = 13)
         val projectToReturn = ProjectEntity(
@@ -260,7 +262,8 @@ class ProjectServiceTest : UnitTest() {
             unitCosts = emptyList(),
             stateAids = emptyList(),
             applicationFormFieldConfigurations = mutableSetOf(),
-            preSubmissionCheckPluginKey = null
+            preSubmissionCheckPluginKey = null,
+            firstStepPreSubmissionCheckPluginKey = null
         )
         every { projectRepository.findById(eq(1)) } returns Optional.of(projectToReturn)
         val slot = slot<ProjectEntity>()

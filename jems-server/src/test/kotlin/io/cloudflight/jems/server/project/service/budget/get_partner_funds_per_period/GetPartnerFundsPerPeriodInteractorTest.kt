@@ -120,7 +120,8 @@ class GetPartnerFundsPerPeriodInteractorTest : UnitTest() {
             ProgrammeUnitCost(isOneCostCategory = true),
         ),
         applicationFormFieldConfigurations = mutableSetOf(),
-        preSubmissionCheckPluginKey = null
+        preSubmissionCheckPluginKey = null,
+        firstStepPreSubmissionCheckPluginKey = null
     )
 
     @MockK

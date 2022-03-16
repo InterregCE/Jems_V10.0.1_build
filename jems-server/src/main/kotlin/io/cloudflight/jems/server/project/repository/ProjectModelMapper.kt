@@ -91,7 +91,8 @@ fun CallEntity.toSettingsModel(
     unitCosts = unitCosts.toProgrammeUnitCost(),
     stateAids = stateAidEntities.toModel(),
     applicationFormFieldConfigurations = applicationFormFieldConfigurationEntities.toModel(),
-    preSubmissionCheckPluginKey = preSubmissionCheckPluginKey
+    preSubmissionCheckPluginKey = preSubmissionCheckPluginKey,
+    firstStepPreSubmissionCheckPluginKey = firstStepPreSubmissionCheckPluginKey
 )
 
 fun ProjectEntity.toModel(

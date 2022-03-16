@@ -59,7 +59,8 @@ internal class CreateProjectPartnerInteractorTest : UnitTest() {
                 stateAids = emptyList(),
                 isAdditionalFundAllowed = false,
                 applicationFormFieldConfigurations = mutableSetOf(),
-                preSubmissionCheckPluginKey = null
+                preSubmissionCheckPluginKey = null,
+                firstStepPreSubmissionCheckPluginKey = null
             )
     }
 

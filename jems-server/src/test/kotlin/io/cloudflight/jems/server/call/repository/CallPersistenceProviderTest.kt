@@ -33,6 +33,7 @@ import io.cloudflight.jems.server.call.service.model.Call
 import io.cloudflight.jems.server.call.service.model.CallSummary
 import io.cloudflight.jems.server.call.service.model.FieldVisibilityStatus
 import io.cloudflight.jems.server.call.service.model.IdNamePair
+import io.cloudflight.jems.server.call.service.model.PreSubmissionPlugins
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.programme.entity.ProgrammePriorityEntity
@@ -126,6 +127,7 @@ internal class CallPersistenceProviderTest {
             val call = createTestCallEntity(id, type = callType)
             fund = callFundRateEntity(call, FUND_ID)
             call.preSubmissionCheckPluginKey = PLUGIN_KEY
+            call.firstStepPreSubmissionCheckPluginKey = PLUGIN_KEY
             call.prioritySpecificObjectives.clear()
             call.prioritySpecificObjectives.addAll(specificObjectives)
             call.strategies.clear()
@@ -176,7 +178,8 @@ internal class CallPersistenceProviderTest {
             id = CALL_ID,
             name = "Test call name",
             funds = sortedSetOf(callFundRate(FUND_ID)),
-            preSubmissionCheckPluginKey = PLUGIN_KEY
+            preSubmissionCheckPluginKey = PLUGIN_KEY,
+            firstStepPreSubmissionCheckPluginKey = PLUGIN_KEY
         )
 
         private val expectedSPFCallDetail = createCallDetailModel(
@@ -407,14 +410,21 @@ internal class CallPersistenceProviderTest {
         every { callRepo.findById(CALL_ID) } returns Optional.of(callEntity)
         every { projectCallStateAidRepository.findAllByIdCallId(CALL_ID) } returns stateAidEntities(callEntity)
         every { applicationFormFieldConfigurationRepository.findAllByCallId(CALL_ID) } returns mutableSetOf(applicationFormConfigEntity)
-        assertThat(persistence.updateProjectCallPreSubmissionCheckPlugin(CALL_ID, PLUGIN_KEY)).isEqualTo(expectedStandardCallDetail)
+        assertThat(persistence.updateProjectCallPreSubmissionCheckPlugin(CALL_ID, PreSubmissionPlugins(
+            pluginKey = PLUGIN_KEY,
+            firstStepPluginKey = PLUGIN_KEY
+        ))).isEqualTo(expectedStandardCallDetail)
     }
 
 
     @Test
     fun `should throw CallNotFound while setting pre-submission check settings for the call and call does not exist`() {
         every { callRepo.findById(CALL_ID) } returns Optional.empty()
-        assertThrows<CallNotFound> { persistence.updateProjectCallPreSubmissionCheckPlugin(CALL_ID, PLUGIN_KEY)}
+        assertThrows<CallNotFound> { persistence.updateProjectCallPreSubmissionCheckPlugin(CALL_ID, PreSubmissionPlugins(
+            pluginKey = PLUGIN_KEY,
+            firstStepPluginKey = PLUGIN_KEY
+        ))
+        }
     }
 
     @Test

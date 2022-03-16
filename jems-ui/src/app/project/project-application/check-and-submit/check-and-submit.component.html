@@ -18,7 +18,7 @@
                 <ng-container *jemsHasPermission="PermissionsEnum.ProjectCheckApplicationForm; alternativeCondition data.isThisUserOwner">
                     <jems-pending-button
                             class="mr-2 mt-2"
-                            *ngIf="data.currentVersionOfProjectStatus === STATUS.DRAFT || ProjectUtil.isReturnedToApplicant(data.currentVersionOfProjectStatus)"
+                            *ngIf="data.currentVersionOfProjectStatus === STATUS.DRAFT || data.currentVersionOfProjectStatus === STATUS.STEP1DRAFT || ProjectUtil.isReturnedToApplicant(data.currentVersionOfProjectStatus)"
                             [pending]="preConditionCheckInProgress"
                             (clicked)="preConditionCheck(data.projectId)">
                         {{'project.detail.button.pre.condition.check' | translate}}

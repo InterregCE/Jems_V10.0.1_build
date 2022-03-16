@@ -283,7 +283,8 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             stateAids = emptyList(),
             isAdditionalFundAllowed = false,
             applicationFormFieldConfigurations = mutableSetOf(),
-            preSubmissionCheckPluginKey = null
+            preSubmissionCheckPluginKey = null,
+            firstStepPreSubmissionCheckPluginKey = null
         )
         private val legalStatuse = listOf(
             ProgrammeLegalStatus(

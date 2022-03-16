@@ -66,7 +66,8 @@ class UpdateApplicationFormFieldConfigurationsTest : UnitTest() {
         lumpSums = listOf(),
         unitCosts = listOf(),
         applicationFormFieldConfigurations = applicationFormFieldConfigStandard,
-        preSubmissionCheckPluginKey = null
+        preSubmissionCheckPluginKey = null,
+        firstStepPreSubmissionCheckPluginKey = null
     )
 
 

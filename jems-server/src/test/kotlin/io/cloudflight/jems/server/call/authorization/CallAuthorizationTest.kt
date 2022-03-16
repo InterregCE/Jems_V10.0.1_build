@@ -63,7 +63,8 @@ internal class CallAuthorizationTest {
             isAdditionalFundAllowed = false,
             lengthOfPeriod = 10,
             applicationFormFieldConfigurations = mutableSetOf(),
-            preSubmissionCheckPluginKey = null
+            preSubmissionCheckPluginKey = null,
+            firstStepPreSubmissionCheckPluginKey = null
         )
 
         assertTrue(

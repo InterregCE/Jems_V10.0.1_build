@@ -41,7 +41,8 @@ class CallFactory(
                 status = CallStatus.PUBLISHED,
                 lengthOfPeriod = 1,
                 allowedRealCosts = defaultAllowedRealCostsByCallType(CallType.STANDARD),
-                preSubmissionCheckPluginKey = null
+                preSubmissionCheckPluginKey = null,
+                firstStepPreSubmissionCheckPluginKey = null
             )
         )
     }

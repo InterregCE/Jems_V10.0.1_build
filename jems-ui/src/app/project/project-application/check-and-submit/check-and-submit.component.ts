@@ -100,6 +100,6 @@ export class CheckAndSubmitComponent {
 
   isSubmitDisabled(projectCallEndDate: Date, hasPreConditionCheckSucceed: boolean, projectStatus: ProjectStatusDTO.StatusEnum): boolean {
     const currentDate = moment(new Date());
-    return !(currentDate.isBefore(projectCallEndDate) && (hasPreConditionCheckSucceed || projectStatus === this.STATUS.STEP1DRAFT));
+    return !(currentDate.isBefore(projectCallEndDate) && hasPreConditionCheckSucceed);
   }
 }

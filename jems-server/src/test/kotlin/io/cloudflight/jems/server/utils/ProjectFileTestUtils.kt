@@ -96,7 +96,8 @@ val callEntity = CallEntity(
     funds = mutableSetOf(),
     lengthOfPeriod = 1,
     allowedRealCosts = defaultAllowedRealCostsByCallType(CallType.STANDARD),
-    preSubmissionCheckPluginKey = null
+    preSubmissionCheckPluginKey = null,
+    firstStepPreSubmissionCheckPluginKey = null
 )
 val projectStatusEntity = ProjectStatusHistoryEntity(
     status = ApplicationStatus.APPROVED,

@@ -220,7 +220,8 @@ internal class BudgetCostValidatorTest : UnitTest() {
             unitCosts = emptyList(),
             stateAids = emptyList(),
             applicationFormFieldConfigurations = mutableSetOf(),
-            preSubmissionCheckPluginKey = null
+            preSubmissionCheckPluginKey = null,
+            firstStepPreSubmissionCheckPluginKey = null
         )
     }
 }

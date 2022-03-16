@@ -58,7 +58,8 @@ class GetPartnerBudgetPerFundInteractorTest : UnitTest() {
         isAdditionalFundAllowed = true,
         lengthOfPeriod = null,
         applicationFormFieldConfigurations = mutableSetOf(),
-        preSubmissionCheckPluginKey = null
+        preSubmissionCheckPluginKey = null,
+        firstStepPreSubmissionCheckPluginKey = null
     )
 
     private val totalCostPartner1 = 80.toScaledBigDecimal()

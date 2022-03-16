@@ -45,7 +45,8 @@ val callSettings = ProjectCallSettings(
     unitCosts = emptyList(),
     stateAids = emptyList(),
     applicationFormFieldConfigurations = mutableSetOf(),
-    preSubmissionCheckPluginKey = null
+    preSubmissionCheckPluginKey = null,
+    firstStepPreSubmissionCheckPluginKey = null
 )
 
 fun projectWithId(id: Long, status: ApplicationStatus = ApplicationStatus.SUBMITTED) = ProjectFull(

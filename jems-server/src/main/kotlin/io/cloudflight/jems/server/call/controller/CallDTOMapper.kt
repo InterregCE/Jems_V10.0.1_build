@@ -6,6 +6,7 @@ import io.cloudflight.jems.api.call.dto.CallDetailDTO
 import io.cloudflight.jems.api.call.dto.CallFundRateDTO
 import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.api.call.dto.CallUpdateRequestDTO
+import io.cloudflight.jems.api.call.dto.PreSubmissionPluginsDTO
 import io.cloudflight.jems.api.call.dto.applicationFormConfiguration.ApplicationFormFieldConfigurationDTO
 import io.cloudflight.jems.api.call.dto.applicationFormConfiguration.StepSelectionOptionDTO
 import io.cloudflight.jems.api.call.dto.applicationFormConfiguration.UpdateApplicationFormFieldConfigurationRequestDTO
@@ -17,6 +18,7 @@ import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.call.service.model.CallFundRate
 import io.cloudflight.jems.server.call.service.model.CallSummary
 import io.cloudflight.jems.server.call.service.model.FieldVisibilityStatus
+import io.cloudflight.jems.server.call.service.model.PreSubmissionPlugins
 import io.cloudflight.jems.server.common.CommonDTOMapper
 import io.cloudflight.jems.server.programme.controller.costoption.toDto
 import io.cloudflight.jems.server.programme.controller.priority.toDto
@@ -55,7 +57,8 @@ fun CallDetail.toDto() = CallDetailDTO(
     lumpSums = lumpSums.toDto(),
     unitCosts = unitCosts.toDto(),
     applicationFormFieldConfigurations = applicationFormFieldConfigurations.toDto(type),
-    preSubmissionCheckPluginKey = preSubmissionCheckPluginKey
+    preSubmissionCheckPluginKey = preSubmissionCheckPluginKey,
+    firstStepPreSubmissionCheckPluginKey = firstStepPreSubmissionCheckPluginKey
 )
 
 fun CallUpdateRequestDTO.toModel() = Call(
@@ -72,6 +75,13 @@ fun CallUpdateRequestDTO.toModel() = Call(
     strategies = strategies,
     funds = funds.map { it.toModel() }.toMutableSet(),
     stateAidIds = stateAidIds,
+)
+
+fun PreSubmissionPluginsDTO.toDTO() = callDTOMapper.map(this)
+fun PreSubmissionPluginsDTO.toModel() = PreSubmissionPlugins(
+    pluginKey = pluginKey,
+    firstStepPluginKey = firstStepPluginKey,
+    callHasTwoSteps = callHasTwoSteps
 )
 
 fun CallApplicationFormFieldsConfiguration.toDto() =
@@ -95,6 +105,7 @@ fun AllowedRealCostsDTO.toModel() = callDTOMapper.map(this)
 fun CallFundRate.toDto() = callDTOMapper.map(this)
 fun CallFundRateDTO.toModel() = callDTOMapper.map(this)
 
+
 private val callDTOMapper = Mappers.getMapper(CallDTOMapper::class.java)
 
 @Mapper(uses = [CommonDTOMapper::class])
@@ -108,6 +119,9 @@ abstract class CallDTOMapper {
 
     abstract fun map(callFundRateDTO: CallFundRateDTO): CallFundRate
     abstract fun map(callFundRate: CallFundRate): CallFundRateDTO
+
+    abstract fun map(preSubmissionPluginsDTO: PreSubmissionPluginsDTO): PreSubmissionPlugins
+    abstract fun map(preSubmissionPlugins: PreSubmissionPlugins): PreSubmissionPluginsDTO
     fun mapUpdateRequest(updateApplicationFormFieldConfigurationDTOs: MutableSet<UpdateApplicationFormFieldConfigurationRequestDTO>): MutableSet<ApplicationFormFieldConfiguration> =
         updateApplicationFormFieldConfigurationDTOs.map {
             ApplicationFormFieldConfiguration(

@@ -376,7 +376,8 @@ class ProjectPartnerTestUtil {
             funds = mutableSetOf(),
             lengthOfPeriod = 1,
             allowedRealCosts = defaultAllowedRealCostsByCallType(CallType.STANDARD),
-            preSubmissionCheckPluginKey = null
+            preSubmissionCheckPluginKey = null,
+            firstStepPreSubmissionCheckPluginKey = null
         )
         val projectStatus = ProjectStatusHistoryEntity(
             status = ApplicationStatus.APPROVED,

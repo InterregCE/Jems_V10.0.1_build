@@ -31,7 +31,8 @@ data class CallDetail(
     val lumpSums: List<ProgrammeLumpSum> = emptyList(),
     val unitCosts: List<ProgrammeUnitCost> = emptyList(),
     val applicationFormFieldConfigurations: MutableSet<ApplicationFormFieldConfiguration>,
-    val preSubmissionCheckPluginKey: String?
+    val preSubmissionCheckPluginKey: String?,
+    val firstStepPreSubmissionCheckPluginKey: String?
 ) {
     fun isPublished() = status == CallStatus.PUBLISHED
 
