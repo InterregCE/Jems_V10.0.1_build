@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.partner.cofinancing
 
 import io.cloudflight.jems.api.project.dto.cofinancing.ProjectCoFinancingByFundOverviewDTO
+import io.cloudflight.jems.api.project.dto.cofinancing.ProjectCoFinancingCategoryOverviewDTO
 import io.cloudflight.jems.api.project.dto.cofinancing.ProjectCoFinancingOverviewDTO
 import io.cloudflight.jems.api.project.dto.cofinancing.ProjectPartnerBudgetCoFinancingDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingAndContributionOutputDTO
@@ -12,6 +13,7 @@ import io.cloudflight.jems.server.programme.controller.fund.toDto
 import io.cloudflight.jems.server.project.controller.partner.toDto
 import io.cloudflight.jems.server.project.service.cofinancing.model.PartnerBudgetCoFinancing
 import io.cloudflight.jems.server.project.service.cofinancing.model.ProjectCoFinancingByFundOverview
+import io.cloudflight.jems.server.project.service.cofinancing.model.ProjectCoFinancingCategoryOverview
 import io.cloudflight.jems.server.project.service.cofinancing.model.ProjectCoFinancingOverview
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
@@ -24,6 +26,9 @@ import org.mapstruct.factory.Mappers
 
 private val mapper = Mappers.getMapper(ProjectPartnerCoFinancingMapper::class.java)
 
+fun ProjectCoFinancingCategoryOverview.toDto() =
+    mapper.map(this)
+
 fun ProjectCoFinancingOverview.toDto() =
     mapper.map(this)
 
@@ -32,6 +37,7 @@ fun ProjectCoFinancingByFundOverview.toDto() =
 
 @Mapper(uses = [CommonDTOMapper::class])
 abstract class ProjectPartnerCoFinancingMapper {
+    abstract fun map(coFinancingCategoryOverview: ProjectCoFinancingCategoryOverview): ProjectCoFinancingCategoryOverviewDTO
     abstract fun map(coFinancingOverview: ProjectCoFinancingOverview): ProjectCoFinancingOverviewDTO
     abstract fun map(coFinancingByFundOverview: ProjectCoFinancingByFundOverview): ProjectCoFinancingByFundOverviewDTO
 }

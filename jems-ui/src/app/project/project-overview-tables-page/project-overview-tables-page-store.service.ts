@@ -1,6 +1,12 @@
 import {Injectable} from '@angular/core';
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
-import {IndicatorOverviewLineDTO, ProjectCoFinancingOverviewDTO, ProjectResultService, ProjectService} from '@cat/api';
+import {
+  IndicatorOverviewLineDTO,
+  ProjectCallSettingsDTO,
+  ProjectCoFinancingOverviewDTO,
+  ProjectResultService,
+  ProjectService
+} from '@cat/api';
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 import {combineLatest, Observable} from 'rxjs';
 import {map, switchMap, tap} from 'rxjs/operators';
@@ -12,6 +18,7 @@ export class ProjectOverviewTablesPageStore {
   indicatorOverviewLines$: Observable<IndicatorOverviewLineDTO[]>;
   projectCoFinancingOverview$: Observable<ProjectCoFinancingOverviewDTO>;
   callMultipleFundsAllowed$: Observable<boolean>;
+  isCallSpf$: Observable<boolean>;
 
   constructor(private projectStore: ProjectStore,
               private projectVersionStore: ProjectVersionStore,
@@ -20,6 +27,7 @@ export class ProjectOverviewTablesPageStore {
     this.indicatorOverviewLines$ = this.indicatorOverviewLines();
     this.projectCoFinancingOverview$ = this.projectCoFinancingOverview();
     this.callMultipleFundsAllowed$ = this.callMultipleFundsAllowed();
+    this.isCallSpf$ = this.isCallSpf();
   }
 
   private indicatorOverviewLines(): Observable<IndicatorOverviewLineDTO[]> {
@@ -49,6 +57,13 @@ export class ProjectOverviewTablesPageStore {
     return this.projectStore.projectCall$
       .pipe(
         map(call => call.multipleFundsAllowed)
+      );
+  }
+
+  private isCallSpf(): Observable<boolean> {
+    return this.projectStore.projectCall$
+      .pipe(
+        map(call => call.callType === ProjectCallSettingsDTO.CallTypeEnum.SPF)
       );
   }
 }

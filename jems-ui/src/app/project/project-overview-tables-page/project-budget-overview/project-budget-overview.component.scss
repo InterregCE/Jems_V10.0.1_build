@@ -8,7 +8,6 @@ table {
     font-weight: var(--body-strong-font-weight);
     border-top: 1px solid var(--table-border-color);
     border-bottom: 1px solid var(--table-border-color);
-    background-color: var(--table-backaground-color);
     min-height: 3rem;
   }
 
@@ -16,7 +15,7 @@ table {
     text-align: center;
   }
 
-  .mat-column-coFinancingRate, .mat-column-totalContribution {
+  .percentage-spacing {
     padding-right: .3rem;
   }
 
@@ -28,4 +27,20 @@ table {
   td.border-cell-left {
     border-left: .0625rem solid var(--table-border-color);
   }
+
+  .total-padding-on-extended-row {
+    padding-right: 0 !important;
+  }
+
+  td.border-cell-bottom {
+    border-bottom: .0625rem solid var(--table-border-color);
+  }
+
+  .header-cell {
+    color: var(--table-header-text-color);
+    font-size: var(--body-strong-font-size);
+    font-weight: var(--body-strong-font-weight);
+  }
+
+  border-right: .1rem solid var(--table-border-color) !important;
 }

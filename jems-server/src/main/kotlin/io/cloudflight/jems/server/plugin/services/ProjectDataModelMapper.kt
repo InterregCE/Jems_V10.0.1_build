@@ -100,7 +100,7 @@ import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLu
 import io.cloudflight.jems.server.programme.service.stateaid.model.ProgrammeStateAid
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResult
-import io.cloudflight.jems.server.project.service.cofinancing.model.ProjectCoFinancingOverview
+import io.cloudflight.jems.server.project.service.cofinancing.model.ProjectCoFinancingCategoryOverview
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectPartnerLumpSum
 import io.cloudflight.jems.server.project.service.model.Address
@@ -161,7 +161,7 @@ import org.mapstruct.Mappings
 import org.mapstruct.factory.Mappers
 
 fun ProjectFull.toDataModel(
-    tableA3data: ProjectCoFinancingOverview,
+    tableA3data: ProjectCoFinancingCategoryOverview,
     tableA4data: ProjectResultIndicatorOverview
 ) = pluginDataMapper.map(this, tableA3data, tableA4data)
 
@@ -336,7 +336,9 @@ abstract class PluginDataMapper {
         Mapping(target = "coFinancingOverview", source = "tableA3data"),
         Mapping(target = "resultIndicatorOverview", source = "tableA4data")
     )
-    abstract fun map(projectFull: ProjectFull, tableA3data: ProjectCoFinancingOverview, tableA4data: ProjectResultIndicatorOverview): ProjectDataSectionA
+    abstract fun map(projectFull: ProjectFull,
+                     tableA3data: ProjectCoFinancingCategoryOverview,
+                     tableA4data: ProjectResultIndicatorOverview): ProjectDataSectionA
     abstract fun map(projectHorizontalPrinciples: ProjectHorizontalPrinciples): ProjectHorizontalPrinciplesData
     abstract fun map(programmeStateAidMeasure: ProgrammeStateAidMeasure): ProgrammeStateAidMeasureData
     abstract fun map(workPackageActivitySummary: WorkPackageActivitySummary): WorkPackageActivitySummaryData

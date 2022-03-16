@@ -82,6 +82,6 @@ export class PreSubmissionCheckSettingsPageComponent {
   }
 
   get pluginKeys(): FormGroup {
-    return this.form as FormGroup;
+    return this.form ;
   }
 }

@@ -24,7 +24,7 @@ import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalcul
 import io.cloudflight.jems.server.project.service.budget.model.PartnersAggregatedInfo
 import io.cloudflight.jems.server.project.service.cofinancing.get_project_cofinancing_overview.CoFinancingOverviewCalculator
 import io.cloudflight.jems.server.project.service.cofinancing.model.PartnerBudgetCoFinancing
-import io.cloudflight.jems.server.project.service.cofinancing.model.ProjectCoFinancingOverview
+import io.cloudflight.jems.server.project.service.cofinancing.model.ProjectCoFinancingCategoryOverview
 import io.cloudflight.jems.server.project.service.common.BudgetCostsCalculatorService
 import io.cloudflight.jems.server.project.service.common.PartnerBudgetPerFundCalculatorService
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
@@ -228,7 +228,7 @@ class ProjectDataProviderImpl(
     private fun getCoFinancingOverview(
         partners: Set<ProjectPartnerData>,
         version: String?
-    ): ProjectCoFinancingOverview {
+    ): ProjectCoFinancingCategoryOverview {
         val partnersByIds = partners.associateBy { it.id!! }
         val funds =
             if (partnersByIds.keys.isNotEmpty()) coFinancingPersistence.getAvailableFunds(partnersByIds.keys.first()) else emptySet()
