@@ -25,6 +25,9 @@ export class PartnerReportExpendituresTabConstants {
   public static FORM_ERRORS = {
     costCategory: {
       required: 'project.application.partner.report.expenditures.cost.category.required.error'
+    },
+    invoiceNumber: {
+      maxlength: 'common.error.field.max.length'
     }
   };
 }

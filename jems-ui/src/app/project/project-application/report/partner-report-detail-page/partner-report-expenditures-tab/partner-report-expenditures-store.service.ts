@@ -61,7 +61,7 @@ export class PartnerReportExpendituresStore {
       this.partnerReportDetailPageStore.partnerReportId$
     ]).pipe(
       switchMap(([partnerId, reportId]) =>
-        this.partnerReportExpenditureCostsService.getProjectPartnerReports(partnerId as number, reportId )
+        this.partnerReportExpenditureCostsService.getProjectPartnerReports(partnerId as number, reportId)
       )
     );
 
@@ -123,8 +123,8 @@ export class PartnerReportExpendituresStore {
           }
           break;
         case BudgetCostCategoryEnum.TRAVEL_AND_ACCOMMODATION_COSTS:
-          if (value.realCostsEnabled && (budgetOptions.travelAndAccommodationOnStaffCostsFlatRate == null
-            || budgetOptions.otherCostsOnStaffCostsFlatRate == null)) {
+          if (value.realCostsEnabled && budgetOptions.travelAndAccommodationOnStaffCostsFlatRate == null
+            && budgetOptions.otherCostsOnStaffCostsFlatRate == null) {
             costCategories.push(key);
           }
           break;

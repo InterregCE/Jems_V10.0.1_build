@@ -78,6 +78,18 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     }
   }
 
+  disableOnReset(control: FormGroup): void {
+    if (this.isStaffCostsSelectedForCostCategoryRow(control) ||
+      this.isTravelAndAccommodationSelectedForCostCategoryRow(control)) {
+      control.get('investmentNumber')?.disable();
+    }
+    if (this.isStaffCostsSelectedForCostCategoryRow(control)) {
+      control.get('vat')?.disable();
+      control.get('contractID')?.disable();
+      control.get('invoiceNumber')?.disable();
+    }
+  }
+
   onInvestmentNumberChange(change: MatSelectChange, control: FormGroup): void {
     control.patchValue({investmentNumber: change.value});
   }
@@ -97,6 +109,8 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     partnerReportExpenditures.forEach(partnerReportExpenditure => this.addResult(partnerReportExpenditure));
     this.tableData = [...this.items.controls];
     this.formService.resetEditable();
+    this.items.controls.forEach((formGroup: FormGroup) => (
+      this.disableOnReset(formGroup)));
   }
 
   removeItem(index: number): void {
@@ -131,6 +145,10 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       catchError((error: HttpErrorResponse) => this.formService.setError(error)),
       untilDestroyed(this)
     ).subscribe();
+  }
+
+  lengthOfForm(formGroup: FormGroup, formControlName: string): number {
+    return formGroup.get(formControlName)?.value?.length;
   }
 
   private initForm(): void {
@@ -186,7 +204,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
 
   private getTableConfig(investmentNumbers: string[]): TableConfig[] {
     const tableConfig = [
-      {minInRem: 2},
+      {minInRem: 1},
       {minInRem: 11},
       {minInRem: 6},
       {minInRem: 8},
@@ -195,10 +213,10 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       {minInRem: 8},
       {minInRem: 12},
       {minInRem: 12},
-      {minInRem: 6},
-      {minInRem: 6},
-      {minInRem: 6},
-      {minInRem: 5}
+      {minInRem: 7},
+      {minInRem: 7},
+      {minInRem: 7},
+      {minInRem: 3}
     ];
 
     if (investmentNumbers.length > 0) {
@@ -214,8 +232,10 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
         costCategory: this.formBuilder.control(reportExpenditureCost?.costCategory),
         investmentNumber: this.formBuilder.control(reportExpenditureCost?.investmentNumber),
         contractID: this.formBuilder.control(reportExpenditureCost?.contractId),
-        internalReferenceNumber: this.formBuilder.control(reportExpenditureCost?.internalReferenceNumber),
-        invoiceNumber: this.formBuilder.control(reportExpenditureCost?.invoiceNumber),
+        internalReferenceNumber: this.formBuilder.control(reportExpenditureCost?.internalReferenceNumber,
+          Validators.maxLength(30)),
+        invoiceNumber: this.formBuilder.control(reportExpenditureCost?.invoiceNumber,
+          Validators.maxLength(30)),
         invoiceDate: this.formBuilder.control(reportExpenditureCost?.invoiceDate),
         dateOfPayment: this.formBuilder.control(reportExpenditureCost?.dateOfPayment),
         description: this.formBuilder.control(reportExpenditureCost?.description),
@@ -230,9 +250,9 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
   private formToReportExpenditures(): ProjectPartnerReportExpenditureCostDTO[] {
     return this.items.controls.map((formGroup: FormGroup) => ({
       costCategory: [formGroup.value?.costCategory, Validators.required],
-      internalReferenceNumber: [formGroup.value?.internalReferenceNumber, Validators.maxLength(30)],
-      invoiceNumber: [formGroup.value?.invoiceNumber, Validators.maxLength(30)],
-      ...formGroup.value
+      internalReferenceNumber: [formGroup.getRawValue()?.internalReferenceNumber, Validators.maxLength(30)],
+      invoiceNumber: [formGroup.getRawValue()?.invoiceNumber, Validators.maxLength(30)],
+      ...formGroup.getRawValue()
     }));
   }
 
