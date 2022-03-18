@@ -20,8 +20,9 @@ context('Application form exports', () => {
 
   it('TB-366 Export application form using two sets of input and export language', function () {
     application.identification.intro = testData.intro;
+    application.identification.acronym = testData.acronym;
+    application.details.acronym = testData.acronym;
     cy.createFullApplication(application, user.applicantUser.email).then(applicationId => {
-      application.id = applicationId;
       cy.runPreSubmissionCheck(applicationId);
       cy.submitProjectApplication(applicationId);
 
@@ -34,18 +35,41 @@ context('Application form exports', () => {
       cy.loginByRequest(user.applicantUser);
       cy.visit(`app/project/detail/${applicationId}`, {failOnStatusCode: false});
 
+      cy.intercept(`api/project/${applicationId}/workPackage`).as('pageLoaded');
       cy.contains('Export').should('be.visible').click();
+      cy.wait('@pageLoaded');
+
       cy.contains('div', 'Input language').find('mat-select').click();
       cy.contains('mat-option', 'Deutsch').click();
 
-      cy.intercept(`api/project/${applicationId}/export/application?*`).as('downloadRequest');
+      cy.intercept(`api/project/${applicationId}/export/application?exportLanguage=EN&inputLanguage=DE`).as('downloadRequest');
       cy.contains('button', 'Export').click();
       cy.wait('@downloadRequest').then(result => {
         const regex = /filename="(.*\.pdf)"/;
-        const fileNameMatch = regex.exec(result.response.headers['content-disposition'].toString());
-        cy.readFile('./cypress/downloads/' + fileNameMatch[1]).then(file => {
-          const assertionMessage = 'Downloaded file should contain application title';
-          expect(file.includes(application.identification.acronym), assertionMessage).to.be.true;
+        const fileName = regex.exec(result.response.headers['content-disposition'].toString())[1];
+        expect(fileName).to.contain('tb-366_en_de_2022');
+        cy.wait(2000); // TODO needed because of cypress issue, github-20683
+        cy.readFile('./cypress/downloads/' + fileName, null).parsePDF().then(file => {
+          const assertionMessage = 'Verify downloaded pdf file';
+          expect(file.text.includes(testData.exportedApplicationDataDE), assertionMessage).to.be.true;
+        });
+      });
+
+      cy.contains('div', 'Export language').find('mat-select').click();
+      cy.contains('mat-option', 'Deutsch').click();
+      cy.contains('div', 'Input language').find('mat-select').click();
+      cy.contains('mat-option', 'English').click();
+
+      cy.intercept(`api/project/${applicationId}/export/application?exportLanguage=DE&inputLanguage=EN`).as('downloadRequest');
+      cy.contains('button', 'Export').click();
+      cy.wait('@downloadRequest').then(result => {
+        const regex = /filename="(.*\.pdf)"/;
+        const fileName = regex.exec(result.response.headers['content-disposition'].toString())[1];
+        expect(fileName).to.contain('tb-366_de_en_2022');
+        cy.wait(2000); // TODO needed because of cypress issue, github-20683
+        cy.readFile('./cypress/downloads/' + fileName, null).parsePDF().then(file => {
+          const assertionMessage = 'Verify downloaded pdf file';
+          expect(file.text.includes(testData.exportedApplicationDataEN), assertionMessage).to.be.true;
         });
       });
     });
