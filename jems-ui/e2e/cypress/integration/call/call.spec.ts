@@ -103,7 +103,7 @@ context('Call management tests', () => {
 
     // Pre-submission check
     cy.contains('Pre-submission check settings').click();
-    cy.get('mat-select[formcontrolname="plugin"]').click();
+    cy.get('mat-select[formcontrolname="pluginKey"]').click();
     cy.contains('No-Check').click();
     cy.get('jems-pre-submission-check-settings-page button').contains('Save changes').click();
     cy.get('jems-pre-submission-check-settings-page span').should('contain', 'Application form configuration was saved successfully');
