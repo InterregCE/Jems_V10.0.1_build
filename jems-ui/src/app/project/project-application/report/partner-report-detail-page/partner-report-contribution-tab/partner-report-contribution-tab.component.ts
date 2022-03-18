@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {AbstractControl, FormArray, FormBuilder, FormGroup} from '@angular/forms';
+import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {FormService} from '@common/components/section/form/form.service';
 import {
   ProjectApplicationFormSidenavService
@@ -11,17 +11,16 @@ import {combineLatest, Observable} from 'rxjs';
 import {
   ProjectPartnerContributionDTO,
   ProjectPartnerReportContributionDTO,
-  ProjectPartnerReportContributionWrapperDTO,
-  UpdateProjectPartnerReportContributionCustomDTO,
-  UpdateProjectPartnerReportContributionDTO,
+  ProjectPartnerReportContributionWrapperDTO
 } from '@cat/api';
-import {catchError, debounceTime, distinctUntilChanged, map, tap} from 'rxjs/operators';
+import {catchError, map, tap} from 'rxjs/operators';
 import {
   PartnerReportContributionStore
 } from '@project/project-application/report/partner-report-detail-page/partner-report-contribution-tab/partner-report-contribution-store.service';
 import {TableConfig} from '@common/directives/table-config/TableConfig';
 import {HttpErrorResponse} from '@angular/common/http';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {NumberService} from '@common/services/number.service';
 
 @UntilDestroy()
 @Component({
@@ -34,9 +33,21 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 export class PartnerReportContributionTabComponent {
 
   PartnerContributionStatus = ProjectPartnerContributionDTO.StatusEnum;
+  MAX_VALUE = 999_999_999.99;
 
   savedContribution$: Observable<ProjectPartnerReportContributionWrapperDTO>;
   toBeDeletedIds: number[] = [];
+  columns: string[] = [];
+  widths: TableConfig[] = [
+    {},
+    {},
+    {maxInRem: 8, minInRem: 8},
+    {maxInRem: 8, minInRem: 8},
+    {maxInRem: 9, minInRem: 9},
+    {maxInRem: 8, minInRem: 8},
+    {maxInRem: 3, minInRem: 3},
+  ];
+  tableData: AbstractControl[] = [];
 
   contributionForm: FormGroup = this.formBuilder.group({
     contributions: this.formBuilder.array([]),
@@ -68,18 +79,6 @@ export class PartnerReportContributionTabComponent {
     }),
   });
 
-  columns: string[] = [];
-  widths: TableConfig[] = [
-    {},
-    {},
-    {maxInRem: 8, minInRem: 8},
-    {maxInRem: 8, minInRem: 8},
-    {maxInRem: 9, minInRem: 9},
-    {maxInRem: 8, minInRem: 8},
-    {maxInRem: 3, minInRem: 3},
-  ];
-  tableData: AbstractControl[] = [];
-
   constructor(
     private formBuilder: FormBuilder,
     private formService: FormService,
@@ -92,7 +91,7 @@ export class PartnerReportContributionTabComponent {
       this.partnerReportDetailPageStore.reportEditable$,
     ]).pipe(
       tap(([contribution]) => this.resetForm(contribution)),
-      tap(([, editable]) => this.generateColumns(editable)),
+      tap(([,editable]) => this.generateColumns(editable)),
       map(([contribution]) => contribution),
     );
     this.formService.init(this.contributionForm, this.partnerReportDetailPageStore.reportEditable$);
@@ -102,24 +101,21 @@ export class PartnerReportContributionTabComponent {
     this.contributions.clear();
     this.toBeDeletedIds = [];
 
-    contribution.contributions.forEach((contrib: ProjectPartnerReportContributionDTO, index: number) => {
-        this.addContribution(contrib);
-    });
+    contribution.contributions.forEach(contrib => this.addContribution(contrib));
     this.overview.patchValue(contribution.overview);
     this.formService.resetEditable();
   }
 
   saveForm() {
-    const toBeUpdated: UpdateProjectPartnerReportContributionDTO[] = this.getContributionsToUpdate(this.contributions)
-    const toBeAdded: UpdateProjectPartnerReportContributionCustomDTO[] = this.getContributionsToAdd(this.contributions)
-
-    this.pageStore.saveContribution(toBeUpdated, this.toBeDeletedIds, toBeAdded).pipe(
+    this.pageStore.saveContribution({
+      toBeUpdated: this.contributions.controls.filter(contribution => contribution.value.id).map(contribution => contribution.value),
+      toBeDeletedIds: this.toBeDeletedIds,
+      toBeCreated: this.contributions.controls.filter(contribution => !contribution.value.id).map(contribution => contribution.value),
+    }).pipe(
+      tap(() => this.formService.setSuccess('project.application.partner.report.contribution.save.success')),
       catchError((error: HttpErrorResponse) => this.formService.setError(error)),
       untilDestroyed(this)
-    ).subscribe(contribution => {
-      this.resetForm(contribution);
-      this.formService.setSuccess('project.application.partner.report.contribution.save.success');
-    });
+    ).subscribe();
   }
 
   get contributions(): FormArray {
@@ -133,8 +129,8 @@ export class PartnerReportContributionTabComponent {
   addContribution(contrib: ProjectPartnerReportContributionDTO | null = null) {
     const item = this.formBuilder.group({
       id: this.formBuilder.control(contrib?.id),
-      sourceOfContribution: this.formBuilder.control(contrib?.sourceOfContribution),
-      legalStatus: this.formBuilder.control(contrib?.legalStatus),
+      sourceOfContribution: this.formBuilder.control(contrib?.sourceOfContribution, Validators.required),
+      legalStatus: this.formBuilder.control(contrib?.legalStatus, Validators.required),
       createdInThisReport: this.formBuilder.control(contrib ? contrib.createdInThisReport : true),
       amount: this.formBuilder.control(contrib?.numbers.amount || 0),
       previouslyReported: this.formBuilder.control(contrib?.numbers.previouslyReported || 0),
@@ -144,6 +140,7 @@ export class PartnerReportContributionTabComponent {
 
     this.contributions.push(item);
     this.tableData = [...this.contributions.controls];
+    this.formService.setDirty(true);
   }
 
   removeContribution(index: number) {
@@ -153,34 +150,53 @@ export class PartnerReportContributionTabComponent {
       this.toBeDeletedIds.push(id);
     }
     this.tableData = [...this.contributions.controls];
+    this.formService.setDirty(true);
+    this.totalsChanged();
+  }
+
+  totalsChanged(): void {
+    const currentlyPublic = this.getTotalsForStatus(ProjectPartnerContributionDTO.StatusEnum.Public);
+    const publicContribution = this.overview.get('publicContribution');
+    publicContribution?.get('currentlyReported')?.patchValue(currentlyPublic);
+    publicContribution?.get('totalReportedSoFar')?.patchValue(
+      NumberService.sum([currentlyPublic, publicContribution?.get('previouslyReported')?.value || 0])
+    );
+
+    const currentlyAutomatic = this.getTotalsForStatus(ProjectPartnerContributionDTO.StatusEnum.AutomaticPublic);
+    const automaticContribution = this.overview.get('automaticPublicContribution');
+    automaticContribution?.get('currentlyReported')?.patchValue(currentlyAutomatic);
+    automaticContribution?.get('totalReportedSoFar')?.patchValue(
+      NumberService.sum([currentlyAutomatic, automaticContribution?.get('previouslyReported')?.value || 0])
+    );
+
+    const currentlyPrivate = this.getTotalsForStatus(ProjectPartnerContributionDTO.StatusEnum.Private);
+    const privateContribution = this.overview.get('privateContribution');
+    privateContribution?.get('currentlyReported')?.patchValue(currentlyPrivate);
+    privateContribution?.get('totalReportedSoFar')?.patchValue(
+      NumberService.sum([currentlyPrivate, privateContribution?.get('previouslyReported')?.value || 0])
+    );
+
+    this.overview.get('total')?.get('currentlyReported')?.patchValue(
+      NumberService.sum([currentlyPublic, currentlyAutomatic, currentlyPrivate])
+    );
+    this.overview.get('total')?.get('totalReportedSoFar')?.patchValue(NumberService.sum([
+      (publicContribution?.get('totalReportedSoFar')?.value || 0),
+      (automaticContribution?.get('totalReportedSoFar')?.value || 0),
+       (privateContribution?.get('totalReportedSoFar')?.value || 0)
+    ]));
+  }
+
+  private getTotalsForStatus(status: ProjectPartnerContributionDTO.StatusEnum): number {
+    return NumberService.sum(this.contributions.controls
+      .filter(contribution => contribution.get('legalStatus')?.value === status)
+      .map(contribution => contribution.get('currentlyReported')?.value || 0)
+    );
   }
 
   private generateColumns(isEditable: boolean) {
-    this.columns = ['sourceOfContribution', 'legalStatus', 'amount', 'previouslyReported', 'currentlyReported', 'totalReportedSoFar']
+    this.columns = ['sourceOfContribution', 'legalStatus', 'amount', 'previouslyReported', 'currentlyReported', 'totalReportedSoFar'];
     if (isEditable) {
       this.columns.push('delete');
     }
   }
-
-  private getContributionsToUpdate(contributions: FormArray): UpdateProjectPartnerReportContributionDTO[] {
-    return contributions.controls
-      .filter(contribution => contribution.value.id)
-      .map(contribution => ({
-        id: contribution.value.id,
-        currentlyReported: contribution.value.currentlyReported,
-        sourceOfContribution: contribution.value.sourceOfContribution,
-        legalStatus: contribution.value.legalStatus,
-      }));
-  }
-
-  private getContributionsToAdd(contributions: FormArray): UpdateProjectPartnerReportContributionCustomDTO[] {
-    return contributions.controls
-      .filter(contribution => !contribution.value.id)
-      .map(contribution => ({
-        currentlyReported: contribution.value.currentlyReported,
-        sourceOfContribution: contribution.value.sourceOfContribution,
-        legalStatus: contribution.value.legalStatus,
-      }));
-  }
-
 }
