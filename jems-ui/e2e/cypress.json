@@ -3,7 +3,7 @@
   "projectId": "JEMS",
   "watchForFileChanges": false,
   "retries": {
-    "runMode": 0,
+    "runMode": 1,
     "openMode": 0
   },
   "env": {
@@ -15,6 +15,7 @@
     "programme/programme.spec.ts",
     "call/call.spec.ts",
     "application/application.spec.ts",
-    "application/application-form-exports/exports.spec.ts"
+    "application/application-form-exports/exports.spec.ts",
+    "application/rounding/rounding.spec.ts"
   ]
 }

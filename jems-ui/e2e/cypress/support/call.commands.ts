@@ -1,4 +1,5 @@
 import {CallUpdateRequestDTO} from '../../../build/swagger-code-jems-api/model/callUpdateRequestDTO'
+import {PreSubmissionPluginsDTO} from '../../../build/swagger-code-jems-api/model/preSubmissionPluginsDTO'
 import {FlatRateSetupDTO} from '../../../build/swagger-code-jems-api/model/flatRateSetupDTO'
 import {
   UpdateApplicationFormFieldConfigurationRequestDTO
@@ -16,12 +17,12 @@ declare global {
       unitCosts: number[]
     },
     applicationFormConfiguration: UpdateApplicationFormFieldConfigurationRequestDTO[],
-    preSubmissionCheckSettings: string
+    preSubmissionCheckSettings: PreSubmissionPluginsDTO
   }
 
   namespace Cypress {
     interface Chainable {
-      createCall(call: Call);
+      createCall(call);
 
       publishCall(callId: number);
     }
@@ -89,7 +90,7 @@ function setCallApplicationFormConfiguration(callId: number, applicationFormConf
   });
 }
 
-function setCallPreSubmissionCheckSettings(callId: number, preSubmissionCheckSettings: string) {
+function setCallPreSubmissionCheckSettings(callId: number, preSubmissionCheckSettings: PreSubmissionPluginsDTO) {
   cy.request({
     method: 'PUT',
     url: `api/call/byId/${callId}/preSubmissionCheck`,
