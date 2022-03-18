@@ -6,6 +6,6 @@ import java.math.BigDecimal
 data class PartnerBudgetPerFund(
     val fund: ProgrammeFund? = null,
     val percentage: BigDecimal,
-    val percentageOfTotal: BigDecimal? = BigDecimal.ZERO,
+    var percentageOfTotal: BigDecimal? = BigDecimal.ZERO,
     val value: BigDecimal,
 )
