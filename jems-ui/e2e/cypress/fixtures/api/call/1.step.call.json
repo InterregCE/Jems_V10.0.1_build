@@ -93,7 +93,10 @@
       1
     ]
   },
-  "preSubmissionCheckSettings": "standard-pre-condition-check-plugin",
+  "preSubmissionCheckSettings": {
+    "pluginKey": "standard-pre-condition-check-plugin",
+    "callHasTwoSteps": false
+  },
   "applicationFormConfiguration": [
     {
       "id": "application.config.project.partner.secondary-address.street",

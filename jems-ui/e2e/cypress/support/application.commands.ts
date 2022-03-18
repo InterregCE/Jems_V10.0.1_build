@@ -5,20 +5,6 @@ import {InputWorkPackageCreate} from '../../../build/swagger-code-jems-api/model
 import {WorkPackageInvestmentDTO} from '../../../build/swagger-code-jems-api/model/workPackageInvestmentDTO'
 import {WorkPackageActivityDTO} from '../../../build/swagger-code-jems-api/model/workPackageActivityDTO'
 import {WorkPackageOutputDTO} from '../../../build/swagger-code-jems-api/model/workPackageOutputDTO'
-import {ProjectPartnerDTO} from '../../../build/swagger-code-jems-api/model/projectPartnerDTO'
-import {ProjectPartnerAddressDTO} from '../../../build/swagger-code-jems-api/model/projectPartnerAddressDTO'
-import {ProjectContactDTO} from '../../../build/swagger-code-jems-api/model/projectContactDTO'
-import {ProjectPartnerMotivationDTO} from '../../../build/swagger-code-jems-api/model/projectPartnerMotivationDTO'
-import {ProjectPartnerStateAidDTO} from '../../../build/swagger-code-jems-api/model/projectPartnerStateAidDTO'
-import {
-  ProjectPartnerCoFinancingAndContributionInputDTO
-} from '../../../build/swagger-code-jems-api/model/projectPartnerCoFinancingAndContributionInputDTO'
-import {ProjectPartnerBudgetOptionsDto} from '../../../build/swagger-code-jems-api/model/projectPartnerBudgetOptionsDto'
-import {BudgetGeneralCostEntryDTO} from '../../../build/swagger-code-jems-api/model/budgetGeneralCostEntryDTO'
-import {BudgetUnitCostEntryDTO} from '../../../build/swagger-code-jems-api/model/budgetUnitCostEntryDTO'
-import {
-  BudgetTravelAndAccommodationCostEntryDTO
-} from '../../../build/swagger-code-jems-api/model/budgetTravelAndAccommodationCostEntryDTO'
 import {ProjectResultDTO} from '../../../build/swagger-code-jems-api/model/projectResultDTO'
 import {InputProjectManagement} from '../../../build/swagger-code-jems-api/model/inputProjectManagement'
 import {InputProjectLongTermPlans} from '../../../build/swagger-code-jems-api/model/inputProjectLongTermPlans'
@@ -28,27 +14,17 @@ import {
 import {ProjectAssessmentQualityDTO} from '../../../build/swagger-code-jems-api/model/projectAssessmentQualityDTO'
 import {ApplicationActionInfoDTO} from '../../../build/swagger-code-jems-api/model/applicationActionInfoDTO'
 import {InputTranslation} from '../../../build/swagger-code-jems-api/model/inputTranslation'
-import faker from "@faker-js/faker";
-import user from '../fixtures/users.json';
+import faker from '@faker-js/faker';
+import {createPartners} from './partner.commands';
 
 declare global {
 
   interface Application {
     id: number,
     details: ProjectCreateDTO,
-    identification: InputProjectData,
-    partners: ProjectPartner[],
-    description: ProjectDescription
-  }
-
-  interface ProjectPartner {
-    details: ProjectPartnerDTO,
-    address: ProjectPartnerAddressDTO[],
-    contact: ProjectContactDTO[],
-    motivation: ProjectPartnerMotivationDTO,
-    budget: PartnerBudget,
-    cofinancing: ProjectPartnerCoFinancingAndContributionInputDTO,
-    stateAid: ProjectPartnerStateAidDTO
+    identification?: InputProjectData,
+    partners?: ProjectPartner[],
+    description?: ProjectDescription
   }
 
   interface ProjectDescription {
@@ -61,15 +37,6 @@ declare global {
     longTermPlans: InputProjectLongTermPlans
   }
 
-  interface PartnerBudget {
-    options: ProjectPartnerBudgetOptionsDto,
-    external: BudgetGeneralCostEntryDTO[],
-    equipment: BudgetGeneralCostEntryDTO[],
-    infrastructure: BudgetGeneralCostEntryDTO[],
-    unitcosts?: BudgetUnitCostEntryDTO[],
-    travel: BudgetTravelAndAccommodationCostEntryDTO[]
-  }
-
   interface WorkPackage {
     details: InputWorkPackageCreate,
     investment: WorkPackageInvestmentDTO,
@@ -79,34 +46,36 @@ declare global {
 
   namespace Cypress {
     interface Chainable {
-      createFullApplication(application: Application);
+      createFullApplication(application, userEmail: string);
+
+      createApplication(application, userEmail: string);
 
       runPreSubmissionCheck(applicationId: number);
 
       submitProjectApplication(applicationId: number);
 
-      enterEligibilityAssessment(applicationId: number, assessment: ProjectAssessmentEligibilityDTO);
+      enterEligibilityAssessment(applicationId: number, assessment);
 
-      enterQualityAssessment(applicationId: number, assessment: ProjectAssessmentQualityDTO);
+      enterQualityAssessment(applicationId: number, assessment);
 
-      enterEligibilityDecision(applicationId: number, decision: ApplicationActionInfoDTO);
+      enterEligibilityDecision(applicationId: number, decision);
 
-      enterFundingDecision(applicationId: number, decision: ApplicationActionInfoDTO);
+      enterFundingDecision(applicationId: number, decision);
     }
   }
 }
 
-Cypress.Commands.add('createFullApplication', (application: Application) => {
-  // randomize name
-  application.identification.acronym = `${faker.hacker.adjective()} ${faker.hacker.noun()}`;
-  application.details.acronym = application.identification.acronym;
-  cy.request({
-    method: 'POST',
-    url: 'api/project',
-    auth: {'user': user.applicantUser.email, 'pass': Cypress.env('defaultPassword')},
-    body: application.details
-  }).then(function (response) {
+Cypress.Commands.add('createApplication', (application: Application, userEmail: string) => {
+  createApplication(application.details, userEmail).then(function (response) {
     application.id = response.body.id;
+    cy.wrap(application.id).as('applicationId');
+  });
+});
+
+Cypress.Commands.add('createFullApplication', (application: Application, userEmail: string) => {
+  createApplication(application.details, userEmail).then(function (response) {
+    application.id = response.body.id;
+    application.identification.acronym = `${faker.hacker.adjective()} ${faker.hacker.noun()}`;
     updateIdentification(application.id, application.identification);
 
     // C - project description
@@ -170,93 +139,21 @@ Cypress.Commands.add('enterFundingDecision', (applicationId: number, decision: A
   });
 });
 
+function createApplication(applicationDetails: ProjectCreateDTO, userEmail: string) {
+  applicationDetails.acronym = `${faker.hacker.adjective()} ${faker.hacker.noun()}`;
+  return cy.request({
+    method: 'POST',
+    url: 'api/project',
+    auth: {'user': userEmail, 'pass': Cypress.env('defaultPassword')},
+    body: applicationDetails
+  })
+}
 
 function updateIdentification(applicationId: number, projectIdentification: InputProjectData) {
   cy.request({
     method: 'PUT',
     url: `api/project/${applicationId}`,
     body: projectIdentification
-  });
-}
-
-function createPartners(applicationId: number, partners: ProjectPartner[]) {
-  partners.forEach(function (partner) {
-    cy.request({
-      method: 'POST',
-      url: `api/project/partner/toProjectId/${applicationId}`,
-      body: partner.details
-    }).then(function (response) {
-      cy.wrap(response.body.id).as('partnerId');
-      // Address tab
-      cy.request({
-        method: 'PUT',
-        url: `api/project/partner/${response.body.id}/address`,
-        body: partner.address
-      });
-      // Contact tab
-      cy.request({
-        method: 'PUT',
-        url: `api/project/partner/${response.body.id}/contact`,
-        body: partner.contact
-      });
-      // Motivation tab
-      cy.request({
-        method: 'PUT',
-        url: `api/project/partner/${response.body.id}/motivation`,
-        body: partner.motivation
-      });
-      // Budget tab - options
-      cy.request({
-        method: 'PUT',
-        url: `api/project/partner/${response.body.id}/budget/options`,
-        body: partner.budget.options
-      });
-      // Budget tab - costs
-      partner.budget.external[0].investmentId = this.investmentId;
-      cy.request({
-        method: 'PUT',
-        url: `api/project/partner/${response.body.id}/budget/external`,
-        body: partner.budget.external
-      });
-      partner.budget.equipment[0].investmentId = this.investmentId;
-      cy.request({
-        method: 'PUT',
-        url: `api/project/partner/${response.body.id}/budget/equipment`,
-        body: partner.budget.equipment
-      });
-      partner.budget.infrastructure[0].investmentId = this.investmentId;
-      cy.request({
-        method: 'PUT',
-        url: `api/project/partner/${response.body.id}/budget/infrastructure`,
-        body: partner.budget.infrastructure
-      });
-      if (partner.budget.unitcosts) {
-        cy.request({
-          method: 'PUT',
-          url: `api/project/partner/${response.body.id}/budget/unitcosts`,
-          body: partner.budget.unitcosts
-        });
-      }
-      cy.request({
-        method: 'PUT',
-        url: `api/project/partner/${response.body.id}/budget/travel`,
-        body: partner.budget.travel
-      });
-      // Co-financing tab
-      cy.request({
-        method: 'PUT',
-        url: `api/project/partner/${response.body.id}/budget/cofinancing`,
-        body: partner.cofinancing
-      });
-      // State Aid tab
-      // TODO uncomment when create activity request is fixed
-      //partner.stateAid.activities[0].activityId = this.activityId;
-      cy.request({
-        method: 'PUT',
-        url: `api/project/partner/${response.body.id}/stateAid`,
-        body: partner.stateAid
-      });
-    });
   });
 }
 
