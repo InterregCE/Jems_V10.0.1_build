@@ -1,14 +1,11 @@
 import {Injectable} from '@angular/core';
 import {
-  ProjectPartnerContributionDTO,
   ProjectPartnerReportContributionService,
   ProjectPartnerReportContributionWrapperDTO,
   ProjectPartnerReportService,
-  UpdateProjectPartnerReportContributionCustomDTO,
   UpdateProjectPartnerReportContributionDataDTO,
-  UpdateProjectPartnerReportContributionDTO,
 } from '@cat/api';
-import {combineLatest, Observable} from 'rxjs';
+import {combineLatest, merge, Observable, Subject} from 'rxjs';
 import {map, switchMap, tap} from 'rxjs/operators';
 import {RoutingService} from '@common/services/routing.service';
 import {Log} from '@common/utils/log';
@@ -26,6 +23,8 @@ export class PartnerReportContributionStore {
   partnerId$: Observable<number>;
   partnerContribution$: Observable<ProjectPartnerReportContributionWrapperDTO>;
 
+  private savedContribution$ = new Subject<ProjectPartnerReportContributionWrapperDTO>();
+
   constructor(
     private routingService: RoutingService,
     private partnerReportPageStore: PartnerReportPageStore,
@@ -38,7 +37,7 @@ export class PartnerReportContributionStore {
   }
 
   public getContribution(): Observable<ProjectPartnerReportContributionWrapperDTO> {
-    return combineLatest([
+    const initialContribution$ = combineLatest([
       this.partnerId$,
       this.routingService
         .routeParameterChanges(PartnerReportDetailPageStore.REPORT_DETAIL_PATH, 'reportId')
@@ -49,13 +48,11 @@ export class PartnerReportContributionStore {
       ),
       tap(data => Log.info('Fetched contribution for partner report', this, data)),
     );
+
+    return merge(initialContribution$, this.savedContribution$);
   }
 
-  public saveContribution(
-    toBeUpdated: UpdateProjectPartnerReportContributionDTO[],
-    toBeDeletedIds: number[],
-    toBeCreated: UpdateProjectPartnerReportContributionCustomDTO[],
-  ): Observable<ProjectPartnerReportContributionWrapperDTO> {
+  public saveContribution(contribution: UpdateProjectPartnerReportContributionDataDTO): Observable<ProjectPartnerReportContributionWrapperDTO> {
     return combineLatest([
       this.partnerId$,
       this.routingService
@@ -63,12 +60,8 @@ export class PartnerReportContributionStore {
         .pipe(map(reportId => Number(reportId))),
     ]).pipe(
       switchMap(([partnerId, reportId]) =>
-        this.projectPartnerReportContributionService.updateContribution(
-          partnerId, reportId, {
-            toBeUpdated: toBeUpdated,
-            toBeDeletedIds: toBeDeletedIds,
-            toBeCreated: toBeCreated,
-          } as UpdateProjectPartnerReportContributionDataDTO)),
+        this.projectPartnerReportContributionService.updateContribution(partnerId, reportId, contribution)),
+      tap(saved => this.savedContribution$.next(saved)),
       tap(data => Log.info('Updated contribution for partner report', this, data))
     );
   }
