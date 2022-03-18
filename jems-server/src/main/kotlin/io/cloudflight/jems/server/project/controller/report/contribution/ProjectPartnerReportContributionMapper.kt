@@ -7,6 +7,8 @@ import io.cloudflight.jems.server.project.service.report.model.contribution.Proj
 import io.cloudflight.jems.server.project.service.report.model.contribution.ProjectPartnerReportContributionOverview
 import io.cloudflight.jems.server.project.service.report.model.contribution.update.UpdateProjectPartnerReportContributionWrapper
 import org.mapstruct.Mapper
+import org.mapstruct.Mapping
+import org.mapstruct.Mappings
 import org.mapstruct.factory.Mappers
 
 private val mapper = Mappers.getMapper(ProjectPartnerReportIdentificationMapper::class.java)
@@ -23,6 +25,11 @@ fun UpdateProjectPartnerReportContributionDataDTO.toModel() =
 @Mapper
 interface ProjectPartnerReportIdentificationMapper {
     fun map(model: ProjectPartnerReportContribution): ProjectPartnerReportContributionDTO
+    @Mappings(
+        Mapping(source = "public", target = "publicContribution"),
+        Mapping(source = "automaticPublic", target = "automaticPublicContribution"),
+        Mapping(source = "private", target = "privateContribution"),
+    )
     fun map(model: ProjectPartnerReportContributionOverview): ProjectPartnerReportContributionOverviewDTO
     fun map(dto: UpdateProjectPartnerReportContributionDataDTO): UpdateProjectPartnerReportContributionWrapper
 }

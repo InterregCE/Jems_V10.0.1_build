@@ -110,7 +110,7 @@ class ProjectPartnerCoFinancingPersistenceProvider(
 
         return ProjectPartnerCoFinancingAndContribution(
             finances = financesSaved.toCoFinancingModel(),
-            partnerContributions = updatedPartner.partnerContributions.toContributionModel(),
+            partnerContributions = updatedPartner.partnerContributions.toContributionModel(updatedPartner.abbreviation),
             partnerAbbreviation = updatedPartner.abbreviation
         )
     }
@@ -179,16 +179,16 @@ class ProjectPartnerCoFinancingPersistenceProvider(
     ): ProjectPartnerCoFinancingAndContribution {
         val finances = projectPartnerCoFinancingRepository.findPartnerFinancingByIdAsOfTimestamp(partnerId, timestamp)
             .toProjectPartnerFinancingHistoricalData()
-        val partnerContributions =
-            projectPartnerRepository.findPartnerContributionByIdAsOfTimestamp(partnerId, timestamp)
-                .toProjectPartnerContributionHistoricalData()
         val partnerAbbrev =
             projectPartnerRepository.findPartnerIdentityByIdAsOfTimestamp(partnerId, timestamp)
-                .firstOrNull()?.abbreviation
+                .firstOrNull()?.abbreviation ?: ""
+        val partnerContributions =
+            projectPartnerRepository.findPartnerContributionByIdAsOfTimestamp(partnerId, timestamp)
+                .toProjectPartnerContributionHistoricalData(partnerAbbrev)
         return ProjectPartnerCoFinancingAndContribution(
             finances = finances,
             partnerContributions = partnerContributions,
-            partnerAbbreviation = partnerAbbrev ?: ""
+            partnerAbbreviation = partnerAbbrev
         )
     }
 

@@ -1,0 +1,175 @@
+<ng-container *ngIf="savedContribution$ | async as savedContribution">
+    <jems-form (save)="saveForm()"
+               (discard)="resetForm(savedContribution)">
+        <form jemsFormLayout [formGroup]="contributionForm">
+            <h3 class="mb5">{{'project.application.partner.report.contribution.tab.subtitle' | translate}}</h3>
+            <mat-table jemsNoWidthLimit
+                       id="expenditure-costs-table"
+                       [dataSource]="tableData"
+                       [jemsTableConfig]="widths"
+                       [formArrayName]="'contributions'">
+
+                <ng-container matColumnDef="sourceOfContribution">
+                    <mat-header-cell *matHeaderCellDef>
+                        <span jemsText maxLines="2" class="respect-line-break">{{'project.application.partner.report.contribution.source.of.contribution' | translate}}</span>
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let control; let i = index" [formGroupName]="i">
+                        <mat-form-field *ngIf="control.value.createdInThisReport" class="mt-2">
+                            <mat-label>{{'project.partner.coFinancing.contribution.source.name' | translate}}</mat-label>
+                            <input name="sourceOfContribution" [formControlName]="'sourceOfContribution'" matInput>
+                            <mat-error>
+                                <jems-form-field-errors
+                                        [errors]="control?.get('sourceOfContribution')?.errors">
+                                </jems-form-field-errors>
+                            </mat-error>
+                        </mat-form-field>
+                        <mat-form-field *ngIf="!control.value.createdInThisReport">
+                            <input disabled name="sourceOfContribution" matInput [value]="control.value.sourceOfContribution">
+                        </mat-form-field>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="legalStatus">
+                    <mat-header-cell *matHeaderCellDef>
+                        <span jemsText maxLines="2">{{'project.application.partner.report.contribution.legal.status' | translate}}</span>
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let control; let i = index" [formGroupName]="i">
+
+                        <mat-form-field *ngIf="control.value.createdInThisReport">
+                            <mat-select formControlName="legalStatus"
+                                        placeholder="{{'project.application.partner.report.contribution.legal.status' | translate}}"
+                                        (selectionChange)="totalsChanged()">
+                                <mat-option
+                                        [value]="PartnerContributionStatus.Public">{{PartnerContributionStatus.Public}}</mat-option>
+                                <mat-option
+                                        [value]="PartnerContributionStatus.Private">{{PartnerContributionStatus.Private}}</mat-option>
+                                <mat-option
+                                        [value]="PartnerContributionStatus.AutomaticPublic">{{PartnerContributionStatus.AutomaticPublic}}</mat-option>
+                            </mat-select>
+                            <mat-error>
+                                <jems-form-field-errors
+                                        [errors]="control?.get('legalStatus')?.errors">
+                                </jems-form-field-errors>
+                            </mat-error>
+                        </mat-form-field>
+
+                        <mat-form-field *ngIf="!control.value.createdInThisReport">
+                            <input disabled name="legalStatus" matInput [value]="control.value.legalStatus">
+                        </mat-form-field>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="amount">
+                    <mat-header-cell *matHeaderCellDef class="end-flex-header-table">
+                        <span jemsText maxLines="2">{{'project.application.partner.report.contribution.amount' | translate}}</span>
+                    </mat-header-cell>
+
+                    <mat-cell *matCellDef="let control; let i = index" [formGroupName]="i" class="justify-end">
+                        <span>{{control.value.amount | asMoney}}</span>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="previouslyReported">
+                    <mat-header-cell *matHeaderCellDef class="end-flex-header-table">
+                        <span jemsText maxLines="2">{{'project.application.partner.report.contribution.previously.reported' | translate}}</span>
+                    </mat-header-cell>
+
+                    <mat-cell *matCellDef="let control; let i = index" [formGroupName]="i" class="justify-end">
+                        <span>{{control.value.previouslyReported | asMoney}}</span>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="currentlyReported">
+                    <mat-header-cell *matHeaderCellDef class="end-flex-header-table">
+                        <span jemsText maxLines="2">{{'project.application.partner.report.contribution.current.report' | translate}}</span>
+                    </mat-header-cell>
+
+                    <mat-cell *matCellDef="let control; let i = index" [formGroupName]="i">
+                        <mat-form-field jemsFormFieldWidth="full">
+                            <input currencyMask type="decimal"
+                                   [options]="{align: 'right', max: MAX_VALUE}"
+                                   name="currentlyReported"
+                                   [formControlName]="'currentlyReported'" matInput
+                                   (ngModelChange)="totalsChanged()">
+                        </mat-form-field>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="totalReportedSoFar">
+                    <mat-header-cell *matHeaderCellDef class="end-flex-header-table">
+                        <span jemsText maxLines="2">{{'project.application.partner.report.contribution.total' | translate}}</span>
+                    </mat-header-cell>
+
+                    <mat-cell *matCellDef="let control; let i = index" [formGroupName]="i" class="justify-end">
+                        <span>{{control.value.previouslyReported + control.value.currentlyReported | asMoney }}</span>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="delete" stickyEnd>
+                    <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                    <mat-cell *matCellDef="let control; let i = index" [formGroupName]="i">
+                        <button mat-icon-button color="accent"
+                                type="button"
+                                *ngIf="control.value.createdInThisReport"
+                                matTooltip="{{'common.delete.entry.tooltip' | translate}}"
+                                (click)="removeContribution(i)">
+                            <mat-icon>delete</mat-icon>
+                        </button>
+                    </mat-cell>
+                </ng-container>
+
+                <mat-header-row *matHeaderRowDef="columns"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: columns"></mat-row>
+
+            </mat-table>
+
+            <button *ngIf="contributionForm.enabled"
+                    jemsText mat-stroked-button
+                    color="primary"
+                    (click)="addContribution(null)">
+                <mat-icon>add</mat-icon>
+            </button>
+
+            <div [jemsTableConfig]="widths"
+                 jemsNoWidthLimit>
+                <div class="hidden"></div>
+                <div>
+                    <span>{{ 'project.partner.coFinancing.contribution.sub.total.public.contribution' | translate }}</span>
+                    <div></div>
+                    <div class="text-right"><span class="ml-4">{{overview.value.publicContribution.amount | asMoney}}</span></div>
+                    <div class="text-right">{{overview.value.publicContribution.previouslyReported | asMoney}}</div>
+                    <div class="text-right">{{overview.value.publicContribution.currentlyReported | asMoney}}</div>
+                    <div class="text-right">{{overview.value.publicContribution.totalReportedSoFar | asMoney}}</div>
+                    <div *ngIf="columns.includes('delete')"></div>
+                </div>
+                <div>
+                    <div>{{ 'project.partner.coFinancing.contribution.sub.total.automatic.public.contribution' | translate }}</div>
+                    <div></div>
+                    <div class="text-right">{{overview.value.automaticPublicContribution.amount | asMoney}}</div>
+                    <div class="text-right">{{overview.value.automaticPublicContribution.previouslyReported | asMoney}}</div>
+                    <div class="text-right">{{overview.value.automaticPublicContribution.currentlyReported | asMoney}}</div>
+                    <div class="text-right">{{overview.value.automaticPublicContribution.totalReportedSoFar | asMoney}}</div>
+                    <div *ngIf="columns.includes('delete')"></div>
+                </div>
+                <div>
+                    <div>{{ 'project.partner.coFinancing.contribution.sub.total.private.contribution' | translate }}</div>
+                    <div></div>
+                    <div class="text-right">{{overview.value.privateContribution.amount | asMoney}}</div>
+                    <div class="text-right">{{overview.value.privateContribution.previouslyReported | asMoney}}</div>
+                    <div class="text-right">{{overview.value.privateContribution.currentlyReported | asMoney}}</div>
+                    <div class="text-right">{{overview.value.privateContribution.totalReportedSoFar | asMoney}}</div>
+                    <div *ngIf="columns.includes('delete')"></div>
+                </div>
+                <div>
+                    <div>{{ 'project.partner.coFinancing.contribution.total' | translate }}</div>
+                    <div></div>
+                    <div class="text-right">{{overview.value.total.amount | asMoney}}</div>
+                    <div class="text-right">{{overview.value.total.previouslyReported | asMoney}}</div>
+                    <div class="text-right">{{overview.value.total.currentlyReported | asMoney}}</div>
+                    <div class="text-right">{{overview.value.total.totalReportedSoFar | asMoney}}</div>
+                    <div *ngIf="columns.includes('delete')"></div>
+                </div>
+            </div>
+        </form>
+    </jems-form>
+</ng-container>

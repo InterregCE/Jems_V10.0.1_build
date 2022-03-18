@@ -71,6 +71,9 @@ import {
 import { PartnerReportWorkPlanProgressTabComponent } from './project-application/report/partner-report-detail-page/partner-report-work-plan-progress-tab/partner-report-work-plan-progress-tab.component';
 import { PartnerReportSubmitTabComponent } from './project-application/report/partner-report-detail-page/partner-report-submit-tab/partner-report-submit-tab.component';
 import {ProjectPartnerCoFinancingSpfTabComponent} from '@project/partner/project-partner-detail-page/project-partner-co-financing-spf-tab/project-partner-co-financing-spf-tab.component';
+import {
+  PartnerReportContributionTabComponent
+} from '@project/project-application/report/partner-report-detail-page/partner-report-contribution-tab/partner-report-contribution-tab.component';
 
 export const routes: Routes = [
   {
@@ -130,6 +133,10 @@ export const routes: Routes = [
                       {
                         path: 'expenditures',
                         component: PartnerReportExpendituresTabComponent
+                      },
+                      {
+                        path: 'contribution',
+                        component: PartnerReportContributionTabComponent,
                       },
                       {
                         path: 'submission',

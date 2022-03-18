@@ -104,19 +104,6 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
 
     private val fund = ProgrammeFundEntity(id = 1, selected = true)
 
-    private val previousFinances = setOf(
-        ProjectPartnerCoFinancingEntity(
-            coFinancingFundId = ProjectPartnerCoFinancingFundId(1, 1),
-            percentage = BigDecimal.valueOf(15.5),
-            programmeFund = null
-        ),
-        ProjectPartnerCoFinancingEntity(
-            coFinancingFundId = ProjectPartnerCoFinancingFundId(1, 2),
-            percentage = BigDecimal.valueOf(25.5),
-            programmeFund = null
-        )
-    )
-
     private val currentFinances = mutableListOf(
         ProjectPartnerCoFinancingEntity(
             coFinancingFundId = ProjectPartnerCoFinancingFundId(1, 1),
@@ -166,8 +153,8 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
 
     private val currentValue = ProjectPartnerCoFinancingAndContribution(
         finances = currentFinances.toCoFinancingModel(),
-        partnerContributions = currentContributions.toContributionModel(),
-        partnerAbbreviation = "partner"
+        partnerContributions = currentContributions.toContributionModel("no this cannot be done like this but ok :D"),
+        partnerAbbreviation = "no this cannot be done like this but ok :D"
     )
 
     private val previousValue = ProjectPartnerCoFinancingAndContribution(
@@ -182,14 +169,14 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
                 percentage = BigDecimal.valueOf(25.5),
             ),
         ),
-        partnerContributions = previousContributions.toContributionModel(),
-        partnerAbbreviation = "previous partner"
+        partnerContributions = previousContributions.toContributionModel("no this is not testing mapper, but ok"),
+        partnerAbbreviation = "no this is not testing mapper, but ok"
     )
 
     private val projectPartner = ProjectPartnerEntity(
         id = 1,
         project = ProjectPartnerTestUtil.project,
-        abbreviation = "partner",
+        abbreviation = "no this cannot be done like this but ok :D",
         role = ProjectPartnerRole.LEAD_PARTNER,
         partnerType = ProjectTargetGroup.BusinessSupportOrganisation,
         legalStatus = ProgrammeLegalStatusEntity(id = 1),
@@ -241,7 +228,7 @@ open class ProjectPartnerCoFinancingPersistenceProviderTest {
         id = 1,
         active = true,
         projectId = 1,
-        abbreviation = "previous partner",
+        abbreviation = "no this is not testing mapper, but ok",
         createdAt = Timestamp.valueOf(LocalDateTime.now()),
         role = ProjectPartnerRole.LEAD_PARTNER,
         sortNumber = 1,
