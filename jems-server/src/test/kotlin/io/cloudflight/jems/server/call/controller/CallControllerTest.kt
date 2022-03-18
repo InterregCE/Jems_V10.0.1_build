@@ -332,12 +332,22 @@ class CallControllerTest : UnitTest() {
     fun `update call's pre-submission check settings`() {
         val pluginKey = slot<PreSubmissionPlugins>()
         every { updatePreSubmissionCheckSettings.update(40L, capture(pluginKey)) } returns callDetail
-        controller.updatePreSubmissionCheckSettings(40L, PreSubmissionPluginsDTO(
-            pluginKey = PLUGIN_KEY,
-            firstStepPluginKey = PLUGIN_KEY,
-            callHasTwoSteps = false
-        ))
-        assertThat(pluginKey.captured).isEqualTo(callDetail.preSubmissionCheckPluginKey?.let { PreSubmissionPlugins(pluginKey= it, firstStepPluginKey = it) })
+
+        assertThat(
+            controller.updatePreSubmissionCheckSettings(
+                40L, PreSubmissionPluginsDTO(
+                    pluginKey = PLUGIN_KEY,
+                    firstStepPluginKey = PLUGIN_KEY,
+                )
+            )
+        ).isEqualTo(callDetailDto)
+
+        assertThat(pluginKey.captured).isEqualTo(
+            PreSubmissionPlugins(
+                pluginKey = PLUGIN_KEY,
+                firstStepPluginKey = PLUGIN_KEY,
+            )
+        )
     }
 
 }
