@@ -11,6 +11,8 @@
 
 // This function is called when a project is opened or re-opened (e.g. due to
 // the project's config changing)
+import fs from 'fs';
+import pdf from 'pdf-parse';
 
 /**
  * @type {Cypress.PluginConfig}
@@ -18,4 +20,11 @@
 export default (on, config) => {
   // `on` is used to hook into various events Cypress emits
   // `config` is the resolved Cypress config
+  on('task', {
+    parsePDF(subject) {
+      return pdf(subject).catch(function(error) {
+        console.log(error);
+      });
+    },
+  });
 }

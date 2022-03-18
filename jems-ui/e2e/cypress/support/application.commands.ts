@@ -75,7 +75,6 @@ Cypress.Commands.add('createApplication', (application: Application, userEmail: 
 Cypress.Commands.add('createFullApplication', (application: Application, userEmail: string) => {
   createApplication(application.details, userEmail).then(function (response) {
     application.id = response.body.id;
-    application.identification.acronym = `${faker.hacker.adjective()} ${faker.hacker.noun()}`;
     updateIdentification(application.id, application.identification);
 
     // C - project description
@@ -140,7 +139,9 @@ Cypress.Commands.add('enterFundingDecision', (applicationId: number, decision: A
 });
 
 function createApplication(applicationDetails: ProjectCreateDTO, userEmail: string) {
-  applicationDetails.acronym = `${faker.hacker.adjective()} ${faker.hacker.noun()}`;
+  if (applicationDetails.acronym === 'randomize') {
+    applicationDetails.acronym = `${faker.hacker.adjective()} ${faker.hacker.noun()}`;
+  }
   return cy.request({
     method: 'POST',
     url: 'api/project',

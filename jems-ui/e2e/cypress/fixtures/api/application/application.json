@@ -1,11 +1,11 @@
 {
   "id": null,
   "details": {
-    "acronym": "api-application",
+    "acronym": "randomize",
     "projectCallId": null
   },
   "identification": {
-    "acronym": "api-application",
+    "acronym": "randomize",
     "title": [
       {
         "language": "DE",
@@ -504,7 +504,7 @@
             "language": "DE"
           },
           {
-            "translation": "API generated partner state aid justification 1 EN",
+            "translation": "API generated partner state aid criterium 1 justification 1 EN",
             "language": "EN"
           }
         ],
@@ -515,7 +515,7 @@
             "language": "DE"
           },
           {
-            "translation": "API generated partner state aid justification 2 EN",
+            "translation": "API generated partner state aid criterium 1 justification 2 EN",
             "language": "EN"
           }
         ],
