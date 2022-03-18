@@ -43,7 +43,6 @@ class CreateCall(
                 persistence.updateProjectCallPreSubmissionCheckPlugin(it.id, PreSubmissionPlugins(
                     pluginKey = "jems-pre-condition-check-blocked",
                     firstStepPluginKey = null,
-                    callHasTwoSteps = call.endDateStep1 != null,
                 ))
             }
             auditPublisher.publishEvent(callCreated(this, it))
