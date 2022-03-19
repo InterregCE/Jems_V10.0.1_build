@@ -1,9 +1,8 @@
 import {Injectable} from '@angular/core';
 import {
   ProjectBudgetOverviewPerPartnerPerPeriodDTO,
-  ProjectBudgetService,
+  ProjectBudgetService, ProjectFundsPerPeriodDTO,
   ProjectFundsService,
-  ProjectPartnerFundsPerPeriodDTO
 } from '@cat/api';
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
@@ -18,7 +17,7 @@ import {ProjectPartnerCoFinancingStore} from '@project/partner/project-partner-d
 @Injectable()
 export class ProjectBudgetPeriodPageStore {
 
-  projectBudgetFundsPerPeriod$: Observable<ProjectPartnerFundsPerPeriodDTO[]>;
+  projectBudgetFundsPerPeriod$: Observable<ProjectFundsPerPeriodDTO>;
   projectBudgetOverviewPerPartnerPerPeriods$ = new Observable<ProjectBudgetOverviewPerPartnerPerPeriodDTO>();
 
   projectTitle$ = this.projectStore.projectTitle$;
@@ -36,7 +35,7 @@ export class ProjectBudgetPeriodPageStore {
     this.projectBudgetOverviewPerPartnerPerPeriods$ = this.projectPartnersBudgetPerPeriods();
   }
 
-  private projectBudgetFundsPerPeriod(): Observable<ProjectPartnerFundsPerPeriodDTO[]> {
+  private projectBudgetFundsPerPeriod(): Observable<ProjectFundsPerPeriodDTO> {
     return combineLatest([
       this.projectStore.projectId$,
       this.projectVersionStore.selectedVersionParam$,
@@ -46,7 +45,7 @@ export class ProjectBudgetPeriodPageStore {
       this.projectLumpSumsPageStore.projectLumpSums$,
       this.projectPartnerCoFinancingStore.financingAndContribution$.pipe(startWith(null))
     ]).pipe(
-      switchMap(([projectId, selectedVersion]: any) => this.projectFundsService.getProjectPartnerFundsPerPeriod(projectId, selectedVersion))
+      switchMap(([projectId, selectedVersion]: any) => this.projectFundsService.getProjectBudgetFundsPerPeriod(projectId, selectedVersion))
     );
   }
 
