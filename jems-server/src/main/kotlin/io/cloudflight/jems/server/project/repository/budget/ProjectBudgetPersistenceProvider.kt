@@ -13,9 +13,11 @@ import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toPr
 import io.cloudflight.jems.server.project.repository.partner.toProjectPartner
 import io.cloudflight.jems.server.project.repository.partner.toProjectPartnerBudgetPerPeriod
 import io.cloudflight.jems.server.project.repository.partner.toProjectPartnerHistoricalData
+import io.cloudflight.jems.server.project.repository.partner.toProjectPartnerSpfBudgetPerPeriod
 import io.cloudflight.jems.server.project.service.budget.ProjectBudgetPersistence
 import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerBudget
 import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerCost
+import io.cloudflight.jems.server.project.service.budget.model.ProjectSpfBudgetPerPeriod
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import io.cloudflight.jems.server.project.service.partner.model.PartnerTotalBudgetPerCostCategory
 import io.cloudflight.jems.server.project.service.unitcost.model.ProjectUnitCost
@@ -192,5 +194,18 @@ class ProjectBudgetPersistenceProvider(
                     .toProjectUnitCostsGrouped()
             }
         ) ?: emptyList()
+
+    @Transactional(readOnly = true)
+    override fun getBudgetForSpfBeneficiary(partnerId: Long, projectId: Long, version: String?): List<ProjectSpfBudgetPerPeriod> =
+        projectVersionUtils.fetch(
+            version, projectId,
+            currentVersionFetcher = {
+                projectPartnerRepository.getSpfBudgetByBeneficiaryId(partnerId)
+                    .toProjectPartnerSpfBudgetPerPeriod()
+            },
+            previousVersionFetcher = { timestamp ->
+                projectPartnerRepository.getSpfBudgetByBeneficiaryIdAsOfTimestamp(partnerId, timestamp)
+                    .toProjectPartnerSpfBudgetPerPeriod()
+            }) ?: emptyList()
 
 }

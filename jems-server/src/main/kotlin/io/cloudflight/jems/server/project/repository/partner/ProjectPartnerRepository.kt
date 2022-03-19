@@ -8,6 +8,7 @@ import io.cloudflight.jems.server.project.entity.partner.PartnerMotivationRow
 import io.cloudflight.jems.server.project.entity.partner.PartnerSimpleRow
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetPerPeriodRow
+import io.cloudflight.jems.server.project.entity.partner.budget.spf.ProjectSpfBeneficiaryBudgetPerPeriodRow
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.PartnerContributionRow
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerTotalBudgetEntry
@@ -507,4 +508,32 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
         nativeQuery = true
     )
     fun getAllPartnerTotalBudgetDataAsOfTimestamp(partnerIds: Set<Long>, timestamp: Timestamp): List<ProjectPartnerTotalBudgetEntry>
+
+
+    @Query(
+        """
+        SELECT spfCosts.partner_id as partnerId, spfCostsPeriod.period_number as periodNumber,
+            sum(spfCostsPeriod.amount) as spfCostPerPeriod
+        FROM project_partner_budget_spfcost_period AS spfCostsPeriod
+                 LEFT JOIN project_partner_budget_spfcost AS spfCosts ON spfCosts.id = spfCostsPeriod.budget_id
+        WHERE partner_id = :partnerId
+        GROUP BY partner_id, period_number
+    """,
+        nativeQuery = true
+    )
+    fun getSpfBudgetByBeneficiaryId(partnerId: Long): List<ProjectSpfBeneficiaryBudgetPerPeriodRow>
+
+
+    @Query(
+        """
+        SELECT spfCosts.partner_id as partnerId, spfCostsPeriod.period_number as periodNumber,
+            sum(spfCostsPeriod.amount) as spfCostPerPeriod
+        FROM project_partner_budget_spfcost_period FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS spfCostsPeriod
+                 LEFT JOIN project_partner_budget_spfcost FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS spfCosts ON spfCosts.id = spfCostsPeriod.budget_id
+        WHERE partner_id = :partnerId
+        GROUP BY partner_id, period_number
+    """,
+        nativeQuery = true
+    )
+    fun getSpfBudgetByBeneficiaryIdAsOfTimestamp(partnerId: Long, timestamp: Timestamp):  List<ProjectSpfBeneficiaryBudgetPerPeriodRow>
 }

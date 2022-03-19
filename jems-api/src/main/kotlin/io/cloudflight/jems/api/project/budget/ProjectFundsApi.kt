@@ -1,6 +1,6 @@
 package io.cloudflight.jems.api.project.budget
 
-import io.cloudflight.jems.api.project.dto.budget.ProjectPartnerFundsPerPeriodDTO
+import io.cloudflight.jems.api.project.dto.budget.ProjectFundsPerPeriodDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import org.springframework.web.bind.annotation.GetMapping
@@ -14,10 +14,10 @@ interface ProjectFundsApi {
         private const val ENDPOINT_API_PROJECT_FUNDS = "/api/project/{projectId}/funds"
     }
 
-    @ApiOperation("Get project partner funds per period")
+    @ApiOperation("Get project budget funds per period")
     @GetMapping("$ENDPOINT_API_PROJECT_FUNDS/perPeriod")
-    fun getProjectPartnerFundsPerPeriod(
+    fun getProjectBudgetFundsPerPeriod(
         @PathVariable projectId: Long,
         @RequestParam(required = false) version: String? = null
-    ): List<ProjectPartnerFundsPerPeriodDTO>
+    ): ProjectFundsPerPeriodDTO
 }
