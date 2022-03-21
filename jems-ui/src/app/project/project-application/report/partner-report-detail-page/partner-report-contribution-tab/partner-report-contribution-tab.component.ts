@@ -127,11 +127,13 @@ export class PartnerReportContributionTabComponent {
   }
 
   addContribution(contrib: ProjectPartnerReportContributionDTO | null = null) {
+    const createdInThisReport = contrib ? contrib.createdInThisReport : true;
+
     const item = this.formBuilder.group({
       id: this.formBuilder.control(contrib?.id),
-      sourceOfContribution: this.formBuilder.control(contrib?.sourceOfContribution, Validators.required),
-      legalStatus: this.formBuilder.control(contrib?.legalStatus, Validators.required),
-      createdInThisReport: this.formBuilder.control(contrib ? contrib.createdInThisReport : true),
+      sourceOfContribution: this.formBuilder.control(contrib?.sourceOfContribution, createdInThisReport ? Validators.required : []),
+      legalStatus: this.formBuilder.control(contrib?.legalStatus, createdInThisReport ? Validators.required : []),
+      createdInThisReport: this.formBuilder.control(createdInThisReport),
       amount: this.formBuilder.control(contrib?.numbers.amount || 0),
       previouslyReported: this.formBuilder.control(contrib?.numbers.previouslyReported || 0),
       currentlyReported: this.formBuilder.control(contrib?.numbers.currentlyReported || 0),
