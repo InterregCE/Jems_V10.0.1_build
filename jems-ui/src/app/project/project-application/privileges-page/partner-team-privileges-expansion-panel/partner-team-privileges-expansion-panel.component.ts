@@ -1,4 +1,12 @@
-import {ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  Input,
+  OnChanges,
+  OnInit,
+  SimpleChanges
+} from '@angular/core';
 import {PrivilegesPageStore} from '@project/project-application/privileges-page/privileges-page-store.service';
 import {FormService} from '@common/components/section/form/form.service';
 import {PartnerUserCollaboratorDTO, ProjectPartnerSummaryDTO} from '@cat/api';
@@ -39,7 +47,8 @@ export class PartnerTeamPrivilegesExpansionPanelComponent implements OnInit, OnC
               public formService: FormService,
               private projectSidenavService: ProjectApplicationFormSidenavService,
               private formBuilder: FormBuilder,
-              private translateService: TranslateService) {
+              private translateService: TranslateService,
+              private changeDetectorRef: ChangeDetectorRef) {
   }
 
   ngOnInit(): void {
@@ -61,7 +70,6 @@ export class PartnerTeamPrivilegesExpansionPanelComponent implements OnInit, OnC
     this.pageStore.saveProjectPartnerCollaborators(partnerId, this.partnerCollaborators.value)
       .pipe(
         tap(() => this.formService.setSuccess('project.application.form.section.privileges.saved')),
-        catchError(error => this.formService.setError(error)),
         catchError(error => {
           const apiError = error.error as APIError;
           if (apiError?.formErrors) {
@@ -71,11 +79,10 @@ export class PartnerTeamPrivilegesExpansionPanelComponent implements OnInit, OnC
               control?.setErrors({error: this.translateService.instant(apiError.formErrors[field].i18nKey)});
               control?.markAsDirty();
             });
+            this.changeDetectorRef.detectChanges();
           }
           return of(null);
-        })
-
-      ).subscribe();
+        })).subscribe();
   }
   resetPartnerForm(partnerCollaborators: PartnerUserCollaboratorDTO[]): void {
     this.partnerCollaborators.clear();

@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Input, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
 import {FormArray, FormBuilder, ValidatorFn, Validators} from '@angular/forms';
 import {ProjectUserCollaboratorDTO} from '@cat/api';
 import {of} from 'rxjs';
@@ -52,7 +52,8 @@ export class ApplicationFormPrivilegesExpansionPanelComponent implements OnInit 
               public formService: FormService,
               private projectSidenavService: ProjectApplicationFormSidenavService,
               private formBuilder: FormBuilder,
-              private translateService: TranslateService) {
+              private translateService: TranslateService,
+              private changeDetectorRef: ChangeDetectorRef) {
   }
 
   ngOnInit(): void {
@@ -67,7 +68,6 @@ export class ApplicationFormPrivilegesExpansionPanelComponent implements OnInit 
     this.pageStore.saveProjectCollaborators(this.projectCollaborators.value)
       .pipe(
         tap(() => this.formService.setSuccess('project.application.form.section.privileges.saved')),
-        catchError(error => this.formService.setError(error)),
         catchError(error => {
           const apiError = error.error as APIError;
           if (apiError?.formErrors) {
@@ -77,6 +77,7 @@ export class ApplicationFormPrivilegesExpansionPanelComponent implements OnInit 
               control?.setErrors({error: this.translateService.instant(apiError.formErrors[field].i18nKey)});
               control?.markAsDirty();
             });
+            this.changeDetectorRef.detectChanges();
           }
           return of(null);
         })
