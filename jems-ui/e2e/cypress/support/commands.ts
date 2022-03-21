@@ -36,11 +36,13 @@ declare global {
 
   namespace Cypress {
     interface Chainable {
-      loginByRequest(user: User): void
+      loginByRequest(user: User): void;
 
-      logoutByRequest(): void
+      logoutByRequest(): void;
 
-      createUser(user: User): boolean
+      createUser(user: User): boolean;
+
+      parsePDF();
     }
   }
 }
@@ -54,6 +56,10 @@ Cypress.Commands.add('loginByRequest', (user: User) => {
       password: Cypress.env('defaultPassword')
     }
   });
+});
+
+Cypress.Commands.add('parsePDF', {prevSubject: true}, (subject) => {
+  cy.task('parsePDF', subject);
 });
 
 Cypress.Commands.add('logoutByRequest', () => {
