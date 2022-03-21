@@ -123,6 +123,7 @@
                                         <mat-option
                                                 [value]="partnerContributionStatus.Private">{{partnerContributionStatus.Private}}</mat-option>
                                         <mat-option
+                                                *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_ADD_NEW_CONTRIBUTION_ORIGIN"
                                                 [value]="partnerContributionStatus.AutomaticPublic">{{partnerContributionStatus.AutomaticPublic}}</mat-option>
                                     </mat-select>
                                     <mat-error>
