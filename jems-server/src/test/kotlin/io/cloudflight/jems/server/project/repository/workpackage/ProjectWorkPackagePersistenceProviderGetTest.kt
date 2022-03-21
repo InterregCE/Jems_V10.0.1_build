@@ -270,7 +270,6 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
         val workPackageWithOutputs = WorkPackageEntity(
             id = WORK_PACKAGE_ID,
             project = project,
-            outputs = mutableListOf(output2, output1),
         )
     }
 
@@ -338,7 +337,6 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
             listOf(
                 workPackageWithActivities.also {
                     it.activities.clear()
-                    it.outputs.clear()
                 },
                 emptyWP
             )
@@ -578,16 +576,9 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
     }
 
     @Test
-    fun `getWorkPackageOutputs - not-existing work package`() {
-        every { repository.findById(eq(-1)) } returns Optional.empty()
-        val ex = assertThrows<ResourceNotFoundException> { persistence.getWorkPackageOutputsForWorkPackage(-1, 1L) }
-        assertThat(ex.entity).isEqualTo("workPackage")
-    }
-
-    @Test
     fun `getWorkPackageOutputs are correctly mapped and sorted`() {
-        every { repository.findById(eq(1)) } returns Optional.of(workPackageWithOutputs)
-        assertThat(persistence.getWorkPackageOutputsForWorkPackage(1, 1L)).containsExactly(
+        every { repositoryOutput.findAllByOutputIdWorkPackageIdOrderByOutputIdOutputNumber(20L) } returns listOf(output2, output1)
+        assertThat(persistence.getWorkPackageOutputsForWorkPackage(20L, 1L)).containsExactly(
             output1_model, output2_model
         )
     }

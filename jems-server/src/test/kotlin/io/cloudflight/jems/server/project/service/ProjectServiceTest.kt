@@ -3,8 +3,10 @@ package io.cloudflight.jems.server.project.service
 import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.AdvancedTechnologies
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.Healthcare
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.IndustrialTransition
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.SocialInfrastructure
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
 import io.cloudflight.jems.api.project.dto.InputProjectData
@@ -23,16 +25,18 @@ import io.cloudflight.jems.server.project.entity.ProjectPeriodId
 import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
 import io.cloudflight.jems.server.project.entity.ProjectTransl
 import io.cloudflight.jems.server.project.entity.TranslationId
+import io.cloudflight.jems.server.project.entity.result.ProjectResultEntity
+import io.cloudflight.jems.server.project.entity.result.ProjectResultId
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
 import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityEntity
 import io.cloudflight.jems.server.project.entity.workpackage.activity.deliverable.WorkPackageActivityDeliverableEntity
+import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageOutputEntity
+import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageOutputId
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.workpackage.WorkPackageRepository
+import io.cloudflight.jems.server.project.repository.workpackage.output.WorkPackageOutputRepository
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
-import io.cloudflight.jems.server.project.service.get_project.GetProjectInteractor
-import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
-import io.cloudflight.jems.server.project.service.model.ProjectForm
-import io.cloudflight.jems.server.project.service.model.ProjectVersion
+import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import io.cloudflight.jems.server.user.service.model.UserStatus
@@ -41,6 +45,7 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.mockk
 import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -50,7 +55,7 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
-import java.util.*
+import java.util.Optional
 
 class ProjectServiceTest : UnitTest() {
 
@@ -100,22 +105,65 @@ class ProjectServiceTest : UnitTest() {
         firstStepPreSubmissionCheckPluginKey = null
     )
 
-    private fun wp(id: Long, project: ProjectEntity) = WorkPackageEntity(id = id, project = project).apply {
-        activities.add(
-            WorkPackageActivityEntity(
-                workPackage = this,
-                activityNumber = 1,
-                startPeriod = 10,
-                endPeriod = 12,
-            ).apply {
-                deliverables.add(
-                    WorkPackageActivityDeliverableEntity(
-                        deliverableNumber = 1,
-                        startPeriod = 11,
-                    )
+    private fun wpWithActivity(id: Long, project: ProjectEntity, activityStartPeriod: Int, activityEndPeriod: Int, deliverablePeriod: Int) =
+        WorkPackageEntity(id = id, project = project)
+            .apply {
+                activities.add(
+                    WorkPackageActivityEntity(
+                        workPackage = this,
+                        activityNumber = 1,
+                        startPeriod = activityStartPeriod,
+                        endPeriod = activityEndPeriod,
+                    ).apply {
+                        deliverables.add(
+                            WorkPackageActivityDeliverableEntity(
+                                deliverableNumber = 1,
+                                startPeriod = deliverablePeriod,
+                            )
+                        )
+                    }
                 )
             }
+
+    private fun callWithDurationAndSos(lengthOfPeriod: Int, sos: Iterable<ProgrammeObjectivePolicy>) = CallEntity(
+        id = 5,
+        creator = account,
+        name = "call",
+        prioritySpecificObjectives = sos.map { ProgrammeSpecificObjectiveEntity(it, "$it code") }.toMutableSet(),
+        strategies = mutableSetOf(ProgrammeStrategyEntity(ProgrammeStrategy.MediterraneanSeaBasin, true)),
+        isAdditionalFundAllowed = false,
+        funds = mutableSetOf(),
+        startDate = ZonedDateTime.now(),
+        endDateStep1 = null,
+        endDate = ZonedDateTime.now(),
+        status = CallStatus.PUBLISHED,
+        type = CallType.STANDARD,
+        lengthOfPeriod = lengthOfPeriod,
+        allowedRealCosts = defaultAllowedRealCostsByCallType(CallType.STANDARD),
+        preSubmissionCheckPluginKey = null,
+        firstStepPreSubmissionCheckPluginKey = null
+    )
+
+    private fun project(call: CallEntity, status: ProjectStatusHistoryEntity, acronym: String, resultPeriodNumber: Int) = ProjectEntity(
+        id = 10,
+        call = call,
+        acronym = acronym,
+        applicant = account,
+        currentStatus = status,
+        results = setOf(ProjectResultEntity(ProjectResultId(10, 1), periodNumber = resultPeriodNumber))
+    )
+
+    private fun mockLatestProjectFormRetrieval(projectId: Long) {
+        val resultProject = ProjectFull(
+            id = projectId,
+            customIdentifier = "",
+            callSettings = mockk(),
+            acronym = "",
+            applicant = mockk(),
+            projectStatus = mockk(),
+            duration = 13,
         )
+        every { persistence.getProject(projectId) } returns resultProject
     }
 
     @RelaxedMockK
@@ -125,7 +173,10 @@ class ProjectServiceTest : UnitTest() {
     lateinit var workPackageRepository: WorkPackageRepository
 
     @MockK
-    lateinit var getProjectInteractor: GetProjectInteractor
+    lateinit var workPackageOutputRepository: WorkPackageOutputRepository
+
+    @MockK
+    lateinit var persistence: ProjectPersistence
 
     @RelaxedMockK
     lateinit var generalValidator: GeneralValidatorService
@@ -136,6 +187,7 @@ class ProjectServiceTest : UnitTest() {
     @BeforeEach
     fun reset() {
         clearMocks(workPackageRepository)
+        clearMocks(persistence)
     }
 
     private val projectData = InputProjectData(
@@ -154,10 +206,11 @@ class ProjectServiceTest : UnitTest() {
     }
 
     @Test
-    fun projectUpdate_successful() {
+    fun `projectUpdate successful - no change in period nor specific objective`() {
         val projectToReturn = ProjectEntity(
             id = 1,
             call = dummyCall,
+            priorityPolicy = ProgrammeSpecificObjectiveEntity(Healthcare, "H", mockk()),
             acronym = "test acronym",
             applicant = account,
             currentStatus = statusSubmitted,
@@ -166,6 +219,7 @@ class ProjectServiceTest : UnitTest() {
         every { projectRepository.findById(eq(1)) } returns Optional.of(projectToReturn)
         val slot = slot<ProjectEntity>()
         every { projectRepository.save(capture(slot)) } returnsArgument 0
+        mockLatestProjectFormRetrieval(projectId = 1L)
 
         projectService.update(1, projectData.copy(specificObjective = Healthcare, duration = null))
 
@@ -185,6 +239,7 @@ class ProjectServiceTest : UnitTest() {
         val projectToReturn = ProjectEntity(
             id = 1,
             call = dummyCall,
+            priorityPolicy = ProgrammeSpecificObjectiveEntity(SocialInfrastructure, "SI", mockk()),
             acronym = "test acronym",
             applicant = account,
             currentStatus = statusSubmitted,
@@ -221,75 +276,41 @@ class ProjectServiceTest : UnitTest() {
     }
 
     @Test
-    fun `projectUpdate with periods successful`() {
-        val callWithDuration = CallEntity(
-            id = 5,
-            creator = account,
-            name = "call",
-            prioritySpecificObjectives = mutableSetOf(ProgrammeSpecificObjectiveEntity(Healthcare, "HAB")),
-            strategies = mutableSetOf(ProgrammeStrategyEntity(ProgrammeStrategy.MediterraneanSeaBasin, true)),
-            isAdditionalFundAllowed = false,
-            funds = mutableSetOf(),
-            startDate = ZonedDateTime.now(),
-            endDateStep1 = null,
-            endDate = ZonedDateTime.now(),
-            status = CallStatus.PUBLISHED,
-            type = CallType.STANDARD,
-            lengthOfPeriod = 6,
-            allowedRealCosts = defaultAllowedRealCostsByCallType(CallType.STANDARD),
-            preSubmissionCheckPluginKey = null,
-            firstStepPreSubmissionCheckPluginKey = null
-        )
-        val projectData = InputProjectData(acronym = "acronym", duration = 13)
-        val projectToReturn = ProjectEntity(
-            id = 1,
-            call = callWithDuration,
-            acronym = "acronym",
-            applicant = account,
-            currentStatus = statusDraft,
-        )
-        val callSettings = ProjectCallSettings(
-            callId = 2,
-            callName = "callName",
-            callType = CallType.STANDARD,
-            startDate = ZonedDateTime.now(),
-            endDate = ZonedDateTime.now(),
-            endDateStep1 = null,
-            lengthOfPeriod = 6,
-            isAdditionalFundAllowed = false,
-            flatRates = emptySet(),
-            lumpSums = emptyList(),
-            unitCosts = emptyList(),
-            stateAids = emptyList(),
-            applicationFormFieldConfigurations = mutableSetOf(),
-            preSubmissionCheckPluginKey = null,
-            firstStepPreSubmissionCheckPluginKey = null
-        )
-        every { projectRepository.findById(eq(1)) } returns Optional.of(projectToReturn)
+    fun `projectUpdate with periods change and specific objective change`() {
+        val call = callWithDurationAndSos(lengthOfPeriod = 6, sos = setOf(Healthcare, IndustrialTransition))
+        val project = project(call, statusDraft, "old acronym", resultPeriodNumber = 14)
+        val workPackage = wpWithActivity(id = 500L, project, activityStartPeriod = 3, activityEndPeriod = 12, deliverablePeriod = 16)
+
+        val toBeChanged = InputProjectData(acronym = "new acronym", duration = 13, specificObjective = IndustrialTransition)
+
+        every { projectRepository.findById(eq(10L)) } returns Optional.of(project)
+        every { workPackageRepository.findAllByProjectId(project.id) } returns listOf(workPackage)
+        val output = WorkPackageOutputEntity(WorkPackageOutputId(500, 1), periodNumber = 18, programmeOutputIndicatorEntity = mockk())
+        every { workPackageOutputRepository.findAllByOutputIdWorkPackageIdIn(setOf(500L)) } returns listOf(output)
+
         val slot = slot<ProjectEntity>()
         every { projectRepository.save(capture(slot)) } returnsArgument 0
-        every { getProjectInteractor.getProjectForm(1L) } returns ProjectForm(
-            id = 4L,
-            customIdentifier = "CUST-04",
-            callSettings = callSettings,
-            acronym = "acronym",
-            duration = 12
-        )
-        val workPackage = wp(500L, projectToReturn)
-        every { workPackageRepository.findAllByProjectId(1) } returns listOf(workPackage)
 
-        projectService.update(1, projectData)
+        mockLatestProjectFormRetrieval(projectId = 10L)
 
-        assertThat(slot.captured.projectData).isEqualTo(ProjectData(duration = projectData.duration))
-        assertThat(slot.captured.acronym).isEqualTo(projectData.acronym)
+        projectService.update(10L, toBeChanged)
+
+        assertThat(workPackage.activities.first().startPeriod).isEqualTo(3)
+        assertThat(workPackage.activities.first().endPeriod).isNull()
+        assertThat(workPackage.activities.first().deliverables.first().startPeriod).isNull()
+        assertThat(output.periodNumber).isNull()
+        assertThat(project.results.first().periodNumber).isNull()
+
+        assertThat(project.results.first().programmeResultIndicatorEntity).isNull()
+        assertThat(output.programmeOutputIndicatorEntity).isNull()
+
+        // additional
+        assertThat(slot.captured.projectData).isEqualTo(ProjectData(duration = 13))
+        assertThat(slot.captured.acronym).isEqualTo("new acronym")
         assertThat(slot.captured.periods).containsExactly(
-            ProjectPeriodEntity(ProjectPeriodId(1, 1), 1, 6),
-            ProjectPeriodEntity(ProjectPeriodId(1, 2), 7, 12),
-            ProjectPeriodEntity(ProjectPeriodId(1, 3), 13, 13),
+            ProjectPeriodEntity(ProjectPeriodId(10, 1), 1, 6),
+            ProjectPeriodEntity(ProjectPeriodId(10, 2), 7, 12),
+            ProjectPeriodEntity(ProjectPeriodId(10, 3), 13, 13),
         )
-
-        assertThat(workPackage.activities.all { it.startPeriod == null }).isTrue
-        assertThat(workPackage.activities.all { it.endPeriod == null }).isTrue
-        assertThat(workPackage.activities.first().deliverables.all { it.startPeriod == null }).isTrue
     }
 }

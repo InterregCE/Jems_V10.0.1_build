@@ -15,7 +15,7 @@ interface WorkPackageOutputRepository: PagingAndSortingRepository<WorkPackageOut
     @EntityGraph(value = "WorkPackageOutputEntity.full")
     fun findAllByOutputIdWorkPackageIdIn(workPackageIds: Collection<Long>): Iterable<WorkPackageOutputEntity>
 
-    fun findAllByOutputIdWorkPackageId(workPackageId: Long): Iterable<WorkPackageOutputEntity>
+    fun findAllByOutputIdWorkPackageIdOrderByOutputIdOutputNumber(workPackageId: Long): Iterable<WorkPackageOutputEntity>
 
     @Query(
         value ="""
