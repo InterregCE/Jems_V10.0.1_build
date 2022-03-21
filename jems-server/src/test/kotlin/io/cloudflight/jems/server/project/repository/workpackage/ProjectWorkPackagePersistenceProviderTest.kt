@@ -329,7 +329,7 @@ class ProjectWorkPackagePersistenceProviderTest : UnitTest() {
     fun updateWorkPackageOutputs() {
         val slot = slot<List<WorkPackageOutputEntity>>()
         every { repository.existsById(WORK_PACKAGE_ID) } returns true
-        every { repositoryOutput.findAllByOutputIdWorkPackageId(WORK_PACKAGE_ID) } returns mutableListOf()
+        every { repositoryOutput.findAllByOutputIdWorkPackageIdOrderByOutputIdOutputNumber(WORK_PACKAGE_ID) } returns mutableListOf()
         every { repositoryOutput.deleteAll(any()) } returns Unit
         every { repositoryOutput.saveAll(capture(slot)) } returnsArgument 0
 
