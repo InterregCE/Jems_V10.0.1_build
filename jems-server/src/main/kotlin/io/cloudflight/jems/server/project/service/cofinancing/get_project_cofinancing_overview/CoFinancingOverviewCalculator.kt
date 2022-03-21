@@ -4,9 +4,9 @@ import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCon
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
 import io.cloudflight.jems.server.project.service.cofinancing.model.ProjectCoFinancingByFundOverview
-import io.cloudflight.jems.server.project.service.cofinancing.model.ProjectCoFinancingOverview
-import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
-import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
+import io.cloudflight.jems.server.project.service.cofinancing.model.ProjectCoFinancingCategoryOverview
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectCoFinancingAndContribution
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectContribution
 import java.math.BigDecimal
 import java.math.RoundingMode
 
@@ -16,11 +16,11 @@ class CoFinancingOverviewCalculator {
         fun calculateCoFinancingOverview(
             partnerIds: Set<Long>,
             getBudgetTotalCost: (Long) -> BigDecimal,
-            getCoFinancingAndContributions: (Long) -> ProjectPartnerCoFinancingAndContribution,
+            getCoFinancingAndContributions: (Long) -> ProjectCoFinancingAndContribution,
             funds: Set<ProgrammeFund>,
-        ): ProjectCoFinancingOverview {
+        ): ProjectCoFinancingCategoryOverview {
             if (partnerIds.isEmpty()) {
-                return ProjectCoFinancingOverview()
+                return ProjectCoFinancingCategoryOverview()
             }
             val partnerTotals = partnerIds.associateWith { getBudgetTotalCost.invoke(it) }
             val partnerCoFinancing = partnerIds.associateWith { getCoFinancingAndContributions.invoke(it) }
@@ -33,7 +33,7 @@ class CoFinancingOverviewCalculator {
             val totalFundingAmount = fundOverviews.map { it.fundingAmount }.sumUp()
             val totalFundAndContribution = partnerTotals.values.sumUp()
 
-            return ProjectCoFinancingOverview(
+            return ProjectCoFinancingCategoryOverview(
                 fundOverviews = fundOverviews,
                 totalFundingAmount = fundOverviews.map { it.fundingAmount }.sumUp(),
                 totalEuFundingAmount = totalEuFundingAmount,
@@ -54,10 +54,9 @@ class CoFinancingOverviewCalculator {
             )
         }
 
-
         private fun getFundOverviews(
             funds: Set<ProgrammeFund>,
-            partnerCoFinancing: Map<Long, ProjectPartnerCoFinancingAndContribution>,
+            partnerCoFinancing: Map<Long, ProjectCoFinancingAndContribution>,
             partnerTotals: Map<Long, BigDecimal>
         ): List<ProjectCoFinancingByFundOverview> {
             return funds.map {
@@ -66,7 +65,7 @@ class CoFinancingOverviewCalculator {
                 val fundingAmount = entriesByFund
                     .map { entry ->
                         val percentage = entry.value.finances.find { finance -> finance.fund?.id == it.id }!!.percentage
-                        divide(percentage.multiply(partnerTotals[entry.key]), BigDecimal(100))
+                        partnerTotals[entry.key]?.divide(BigDecimal(100))?.multiply(percentage)?.setScale(2, RoundingMode.DOWN) ?: BigDecimal.ZERO
                     }
                     .sumUp()
 
@@ -95,7 +94,7 @@ class CoFinancingOverviewCalculator {
         }
 
         private fun getContributionTotal(
-            contributions: List<ProjectPartnerContribution>,
+            contributions: List<ProjectContribution>,
             status: ProjectPartnerContributionStatusDTO
         ): BigDecimal = contributions
             .filter { contribution -> contribution.amount != null && contribution.status == status }

@@ -65,7 +65,7 @@ export class BudgetPagePerPartnerComponent {
         ...this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_ADD_NEW_CONTRIBUTION_ORIGIN)
           ? [{minInRem: 5}] : [],
         {minInRem: 4}, {minInRem: 4}, {minInRem: 5}
-      ]))
+      ]));
   }
 
   getBudgetAmountForFund(fund: ProgrammeFundDTO, budgets: ProjectPartnerBudgetModel[]): number {

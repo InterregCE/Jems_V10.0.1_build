@@ -3,10 +3,11 @@ import {
   ProjectOverviewTablesPageStore
 } from '@project/project-overview-tables-page/project-overview-tables-page-store.service';
 import {ProjectCoFinancingByFundOverviewDTO, ProjectCoFinancingOverviewDTO} from '@cat/api';
-import {Observable} from 'rxjs';
+import {combineLatest, Observable} from 'rxjs';
 import {MatTableDataSource} from '@angular/material/table';
-import {tap} from 'rxjs/operators';
+import {map, tap} from 'rxjs/operators';
 import {Alert} from '@common/components/forms/alert';
+import {NumberService} from '@common/services/number.service';
 
 @Component({
   selector: 'jems-project-budget-overview',
@@ -25,43 +26,100 @@ export class ProjectBudgetOverviewComponent {
   allColumns = [...this.displayedColumns, 'total'];
 
   dataSource: MatTableDataSource<ProjectCoFinancingByFundOverviewDTO>;
-  projectCoFinancingOverview$: Observable<ProjectCoFinancingOverviewDTO>;
+  projectCoFinancingOverview$: Observable<{
+    overview: ProjectCoFinancingOverviewDTO;
+    isCallSpf: boolean;
+  }>;
   multipleFundsAllowed$: Observable<boolean>;
 
   constructor(private pageStore: ProjectOverviewTablesPageStore) {
-    this.projectCoFinancingOverview$ = pageStore.projectCoFinancingOverview$
+    this.projectCoFinancingOverview$ = combineLatest([
+      this.pageStore.projectCoFinancingOverview$,
+      this.pageStore.isCallSpf$
+    ])
       .pipe(
-        tap(overview => this.dataSource = new MatTableDataSource(this.getFundOverviews(overview)))
+        map(([overview, isCallSpf]) => ({
+          overview,
+          isCallSpf
+        })),
+        tap(data => this.dataSource = new MatTableDataSource(this.getFundOverviews(data.overview, data.isCallSpf)))
       );
     this.multipleFundsAllowed$ = this.pageStore.callMultipleFundsAllowed$;
   }
 
-  private getFundOverviews(overview: ProjectCoFinancingOverviewDTO): ProjectCoFinancingByFundOverviewDTO[] {
-    const euFunds = this.getEuFunds(overview.fundOverviews);
-    const otherFunds = this.getOtherFunds(overview.fundOverviews);
-    const totalEu = {
+  private getFundOverviews(overview: ProjectCoFinancingOverviewDTO, isCallSpf: boolean): ProjectCoFinancingByFundOverviewDTO[] {
+    const datasource = [];
+    const euFundsForSpf = this.getEuFunds(overview.projectSpfCoFinancing.fundOverviews);
+    const otherFundsForSpf = this.getOtherFunds(overview.projectSpfCoFinancing.fundOverviews);
+    const totalEuForSpf = {
       label: 'project.application.form.overview.budget.table.total.eu',
-      fundingAmount: overview.totalEuFundingAmount,
-      coFinancingRate: overview.averageEuFinancingRate,
-      autoPublicContribution: overview.totalEuAutoPublicContribution,
-      otherPublicContribution: overview.totalEuOtherPublicContribution,
-      totalPublicContribution: overview.totalEuPublicContribution,
-      privateContribution: overview.totalEuPrivateContribution,
-      totalContribution: overview.totalEuContribution,
-      totalFundAndContribution: overview.totalEuFundAndContribution,
+      fundingAmount: overview.projectSpfCoFinancing.totalEuFundingAmount,
+      coFinancingRate: overview.projectSpfCoFinancing.averageEuFinancingRate,
+      autoPublicContribution: overview.projectSpfCoFinancing.totalEuAutoPublicContribution,
+      otherPublicContribution: overview.projectSpfCoFinancing.totalEuOtherPublicContribution,
+      totalPublicContribution: overview.projectSpfCoFinancing.totalEuPublicContribution,
+      privateContribution: overview.projectSpfCoFinancing.totalEuPrivateContribution,
+      totalContribution: overview.projectSpfCoFinancing.totalEuContribution,
+      totalFundAndContribution: overview.projectSpfCoFinancing.totalEuFundAndContribution,
     };
+
+    const totalSpfBudget = {
+      label: 'project.application.form.overview.budget.table.total.spf',
+      fundingAmount: overview.projectSpfCoFinancing.totalFundingAmount,
+      coFinancingRate: overview.projectSpfCoFinancing.averageCoFinancingRate,
+      autoPublicContribution: overview.projectSpfCoFinancing.totalAutoPublicContribution,
+      otherPublicContribution: overview.projectSpfCoFinancing.totalOtherPublicContribution,
+      totalPublicContribution: overview.projectSpfCoFinancing.totalPublicContribution,
+      privateContribution: overview.projectSpfCoFinancing.totalPrivateContribution,
+      totalContribution: overview.projectSpfCoFinancing.totalContribution,
+      totalFundAndContribution: overview.projectSpfCoFinancing.totalFundAndContribution,
+    };
+
+    if (isCallSpf) {
+      datasource.push({label:'project.application.form.overview.budget.table.spf.cofinacing', extended: true}, ...euFundsForSpf, totalEuForSpf as any, ...otherFundsForSpf, totalSpfBudget, {label:'project.application.form.overview.budget.table.cofinacing', extended: true});
+    }
+
+    const euFundsForManagement = this.getEuFunds(overview.projectManagementCoFinancing.fundOverviews);
+    const otherFundsForManagement = this.getOtherFunds(overview.projectManagementCoFinancing.fundOverviews);
+
+    const totalEuForManagement = {
+      label: 'project.application.form.overview.budget.table.total.eu',
+      fundingAmount: overview.projectManagementCoFinancing.totalEuFundingAmount,
+      coFinancingRate: overview.projectManagementCoFinancing.averageEuFinancingRate,
+      autoPublicContribution: overview.projectManagementCoFinancing.totalEuAutoPublicContribution,
+      otherPublicContribution: overview.projectManagementCoFinancing.totalEuOtherPublicContribution,
+      totalPublicContribution: overview.projectManagementCoFinancing.totalEuPublicContribution,
+      privateContribution: overview.projectManagementCoFinancing.totalEuPrivateContribution,
+      totalContribution: overview.projectManagementCoFinancing.totalEuContribution,
+      totalFundAndContribution: overview.projectManagementCoFinancing.totalEuFundAndContribution,
+    };
+
+    const totalManagementBudget = {
+      label: 'project.application.form.overview.budget.table.total.management',
+      fundingAmount: overview.projectManagementCoFinancing.totalFundingAmount,
+      coFinancingRate: overview.projectManagementCoFinancing.averageCoFinancingRate,
+      autoPublicContribution: overview.projectManagementCoFinancing.totalAutoPublicContribution,
+      otherPublicContribution: overview.projectManagementCoFinancing.totalOtherPublicContribution,
+      totalPublicContribution: overview.projectManagementCoFinancing.totalPublicContribution,
+      privateContribution: overview.projectManagementCoFinancing.totalPrivateContribution,
+      totalContribution: overview.projectManagementCoFinancing.totalContribution,
+      totalFundAndContribution: overview.projectManagementCoFinancing.totalFundAndContribution,
+    };
+
     const total = {
       label: 'project.application.form.overview.budget.table.total',
-      fundingAmount: overview.totalFundingAmount,
-      coFinancingRate: overview.averageCoFinancingRate,
-      autoPublicContribution: overview.totalAutoPublicContribution,
-      otherPublicContribution: overview.totalOtherPublicContribution,
-      totalPublicContribution: overview.totalPublicContribution,
-      privateContribution: overview.totalPrivateContribution,
-      totalContribution: overview.totalContribution,
-      totalFundAndContribution: overview.totalFundAndContribution,
+      fundingAmount: totalSpfBudget.fundingAmount + totalManagementBudget.fundingAmount,
+      coFinancingRate: NumberService.truncateNumber(NumberService.divide(NumberService.product([totalSpfBudget.fundingAmount + totalManagementBudget.fundingAmount, 100]), totalSpfBudget.totalFundAndContribution + totalManagementBudget.totalFundAndContribution), 2),
+      autoPublicContribution: totalSpfBudget.autoPublicContribution + totalManagementBudget.autoPublicContribution,
+      otherPublicContribution: totalSpfBudget.otherPublicContribution + totalManagementBudget.otherPublicContribution,
+      totalPublicContribution: totalSpfBudget.totalPublicContribution + totalManagementBudget.totalPublicContribution,
+      privateContribution: totalSpfBudget.privateContribution + totalManagementBudget.privateContribution,
+      totalContribution: totalSpfBudget.totalContribution + totalManagementBudget.totalContribution,
+      totalFundAndContribution: totalSpfBudget.totalFundAndContribution + totalManagementBudget.totalFundAndContribution,
     };
-    return [...euFunds, totalEu as any, ...otherFunds, total];
+
+    datasource.push(...euFundsForManagement, totalEuForManagement as any, ...otherFundsForManagement, totalManagementBudget, total);
+    return datasource;
   }
 
   private getEuFunds(funds: ProjectCoFinancingByFundOverviewDTO[]):  ProjectCoFinancingByFundOverviewDTO[] {
