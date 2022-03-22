@@ -28,22 +28,20 @@
     <ID>EmptyKtFile:ProjectPartnerBudgetMapper.kt$.ProjectPartnerBudgetMapper.kt</ID>
     <ID>FunctionOnlyReturningConstant:MockedMethodSignature.kt$MockedMethodSignature$@ExceptionWrapper(SampleWrapperException::class) fun methodWithAspectWhichReturnsNormally(): String</ID>
     <ID>FunctionOnlyReturningConstant:ProgrammeSetupAuthorization.kt$ProgrammeSetupAuthorization$ fun canReadProgrammeSetup()</ID>
+    <ID>LargeClass:GetBudgetFundsPerPeriodInteractorTest.kt$GetBudgetFundsPerPeriodInteractorTest : UnitTest</ID>
     <ID>LargeClass:ProjectDataProviderImplTest.kt$ProjectDataProviderImplTest : UnitTest</ID>
     <ID>LongParameterList:BudgetCostsCalculator.kt$BudgetCostsCalculator$( officeAndAdministrationOnStaffCostsFlatRate: Int?, officeAndAdministrationOnDirectCostsFlatRate: Int?, finalStaffCosts: BigDecimal, finalTravelCosts: BigDecimal, externalCosts: BigDecimal, equipmentCosts: BigDecimal, infrastructureCosts: BigDecimal )</ID>
     <ID>LongParameterList:BudgetCostsCalculator.kt$BudgetCostsCalculator$( staffCostsFlatRate: Int, travelAndAccommodationOnStaffCostsFlatRate: Int?, externalCosts: BigDecimal, equipmentCosts: BigDecimal, infrastructureCosts: BigDecimal, travelCosts: BigDecimal )</ID>
     <ID>LongParameterList:BudgetCostsCalculator.kt$BudgetCostsCalculator$( unitCosts: BigDecimal, lumpSumsCosts: BigDecimal, externalCosts: BigDecimal, equipmentCosts: BigDecimal, infrastructureCosts: BigDecimal, finalTravelCosts: BigDecimal, finalStaffCosts: BigDecimal, finalOfficeAndAdministrationCosts: BigDecimal, finalOtherCosts: BigDecimal )</ID>
     <ID>LongParameterList:BudgetCostsCalculatorService.kt$BudgetCostsCalculatorService$( budgetOptions: ProjectPartnerBudgetOptions?, unitCosts: BigDecimal, lumpSumsCosts: BigDecimal, externalCosts: BigDecimal, equipmentCosts: BigDecimal, infrastructureCosts: BigDecimal, travelCosts: BigDecimal, staffCosts: BigDecimal )</ID>
-    <ID>LongParameterList:GetPartnerFundsPerPeriodInteractorTest.kt$GetPartnerFundsPerPeriodInteractorTest$( preparation: BigDecimal, total1: BigDecimal, total2: BigDecimal, total3: BigDecimal, total4: BigDecimal, total5: BigDecimal, total6: BigDecimal, total7: BigDecimal, total8: BigDecimal, total9: BigDecimal, closure: BigDecimal, )</ID>
+    <ID>LongParameterList:GetBudgetFundsPerPeriodInteractorTest.kt$GetBudgetFundsPerPeriodInteractorTest$( preparation: BigDecimal, total1: BigDecimal, total2: BigDecimal, total3: BigDecimal, total4: BigDecimal, total5: BigDecimal, total6: BigDecimal, total7: BigDecimal, total8: BigDecimal, total9: BigDecimal, closure: BigDecimal, )</ID>
     <ID>LongParameterList:GetProjectBudget.kt$GetProjectBudget$( partner: ProjectPartnerSummary, unitCosts: BigDecimal, lumpSumCosts: BigDecimal, externalCosts: BigDecimal, equipmentCosts: BigDecimal, infrastructureCosts: BigDecimal )</ID>
-    <ID>LongParameterList:PartnerBudgetPerPeriodCalculator.kt$PartnerBudgetPerPeriodCalculator$( partners: List&lt;ProjectPartnerSummary&gt;, budgetOptions: List&lt;ProjectPartnerBudgetOptions&gt;, budgetPerPartner: List&lt;ProjectPartnerBudget&gt;, lumpSums: List&lt;ProjectLumpSum&gt;, projectPeriods: List&lt;ProjectPeriod&gt;, partnerTotalBudget: Map&lt;Long, ProjectPartnerTotalBudget&gt; )</ID>
-    <ID>LongParameterList:PartnerBudgetPerPeriodCalculatorService.kt$PartnerBudgetPerPeriodCalculatorService$( partners: List&lt;ProjectPartnerSummary&gt;, budgetOptions: List&lt;ProjectPartnerBudgetOptions&gt;, budgetPerPartner: List&lt;ProjectPartnerBudget&gt;, lumpSums: List&lt;ProjectLumpSum&gt;, projectPeriods: List&lt;ProjectPeriod&gt;, partnerTotalBudget: Map&lt;Long, ProjectPartnerTotalBudget&gt; )</ID>
     <ID>LongParameterList:ProjectDescriptionMapper.kt$( projectId: Long, projectCoordination: Set&lt;InputTranslation&gt;, projectQualityAssurance: Set&lt;InputTranslation&gt;, projectCommunication: Set&lt;InputTranslation&gt;, projectFinancialManagement: Set&lt;InputTranslation&gt;, projectJointDevelopmentDescription: Set&lt;InputTranslation&gt;, projectJointImplementationDescription: Set&lt;InputTranslation&gt;, projectJointStaffingDescription: Set&lt;InputTranslation&gt;, projectJointFinancingDescription: Set&lt;InputTranslation&gt;, sustainableDevelopmentDescription: Set&lt;InputTranslation&gt;, equalOpportunitiesDescription: Set&lt;InputTranslation&gt;, sexualEqualityDescription: Set&lt;InputTranslation&gt;, )</ID>
     <ID>LongParameterList:ProjectModelMapper.kt$( project: ProjectEntity, periods: List&lt;ProjectPeriod&gt;, assessmentStep1: ProjectAssessmentEntity, assessmentStep2: ProjectAssessmentEntity, stateAidEntities: MutableSet&lt;ProjectCallStateAidEntity&gt;, applicationFormFieldConfigurationEntities: MutableSet&lt;ApplicationFormFieldConfigurationEntity&gt;, priority: ProgrammePriorityEntity? )</ID>
     <ID>MatchingDeclarationName:AllowRealCostsEntity.kt$AllowedRealCostsEntity : Serializable</ID>
     <ID>MatchingDeclarationName:CustomFeignClientsConfiguration.kt$CustomFeignClientConfiguration : FeignClientsConfiguration</ID>
     <ID>MatchingDeclarationName:DeleteProjecPartnerInteractorTest.kt$DeleteProjectPartnerInteractorTest : UnitTest</ID>
     <ID>MatchingDeclarationName:GetBudgetTotalCostsInteractor.kt$GetBudgetTotalCostInteractor</ID>
-    <ID>MatchingDeclarationName:UpdatePreSubmissionCheckSettingTest.kt$UpdatePreSubmissionCheckSettingsTest : UnitTest</ID>
     <ID>MatchingDeclarationName:UpdateProjectpartnerInteractorTest.kt$UpdateProjectPartnerInteractorTest : UnitTest</ID>
     <ID>MaxLineLength:AddWorkPackageInvestmentTestWorkPackageInvestmentBase.kt$AddWorkPackageInvestmentTestWorkPackageInvestmentBase$fun</ID>
     <ID>MaxLineLength:ApplicationState.kt$ApplicationState$protected</ID>
@@ -67,19 +65,16 @@
     <ID>MaxLineLength:BudgetCostCalculatorTest.kt$BudgetCostCalculatorTest$fun</ID>
     <ID>MaxLineLength:CallDTOMapper.kt$CallDTOMapper$fun</ID>
     <ID>MaxLineLength:CallEntityMapper.kt$CallEntityMapper$abstract fun map(applicationFormFieldConfigurationEntities: MutableSet&lt;ApplicationFormFieldConfigurationEntity&gt;): MutableSet&lt;ApplicationFormFieldConfiguration&gt;</ID>
-    <ID>MaxLineLength:CommonModelMapper.kt$filter { (if (languageExtractor != null) languageExtractor(it) else it.language) != null }.toHashSet().map { InputTranslation((if (languageExtractor != null) languageExtractor(it) else it.language)!!, extractFunction.invoke(it)) }</ID>
     <ID>MaxLineLength:CreateOutputIndicator.kt$CreateOutputIndicator$resultIndicatorPersistence.getResultIndicator(outputIndicator.resultIndicatorId).programmeObjectivePolicy != outputIndicator.programmeObjectivePolicy</ID>
     <ID>MaxLineLength:CreateOutputIndicatorTest.kt$CreateOutputIndicatorTest$fun</ID>
     <ID>MaxLineLength:ExceptionWrapperAspectTest.kt$ExceptionWrapperAspectTest$fun</ID>
     <ID>MaxLineLength:GetBudgetTotalCostTest.kt$GetBudgetTotalCostTest$fun</ID>
-    <ID>MaxLineLength:GetPartnerFundsPerPeriod.kt$GetPartnerFundsPerPeriod$val periodFundsWithoutLastPeriod = projectPeriods.filter{ period -&gt; period.number != lastPeriodNumber }.map { getTotalFundPerPeriodForPartners(it.number, fund, partnersBudgetPerPeriod, partnersCoFinancing) }.toMutableList()</ID>
     <ID>MaxLineLength:GetProjectPartner.kt$GetProjectPartner$return PageImpl(partnerBudgets.map { ProjectBudgetPartnerSummary(partnerSummary = ProjectPartnerSummary(it.partner.id, it.partner.abbreviation, it.partner.active, it.partner.role, it.partner.sortNumber, it.partner.country, it.partner.region), totalBudget = it.totalCosts) }, page, partnerBudgets.size.toLong())</ID>
     <ID>MaxLineLength:InModificationApplicationStateTest.kt$InModificationApplicationStateTest$every { projectPersistence.getProjectCallSettings(InModificationApplicationStateTest.PROJECT_ID) } returns InModificationApplicationStateTest.projectCallSettings</ID>
     <ID>MaxLineLength:MinioStorageTest.kt$MinioStorageTest$fun</ID>
     <ID>MaxLineLength:NotApprovedApplicationState.kt$NotApprovedApplicationState$ApplicationStatus.APPROVED_WITH_CONDITIONS</ID>
     <ID>MaxLineLength:OutputIndicatorControllerTest.kt$OutputIndicatorControllerTest$fun</ID>
     <ID>MaxLineLength:OutputIndicatorRepository.kt$OutputIndicatorRepository$fun findAllByProgrammePriorityPolicyEntityProgrammeObjectivePolicyOrderById(programmeObjectivePolicy: ProgrammeObjectivePolicy): Iterable&lt;OutputIndicatorEntity&gt;</ID>
-    <ID>MaxLineLength:PartnerBudgetPerFundCalculator.kt$PartnerBudgetPerFundCalculator$if</ID>
     <ID>MaxLineLength:PartnerBudgetPerFundCalculatorTest.kt$PartnerBudgetPerFundCalculatorTest$ProjectPartnerContribution(id = 1L, name = "con1", status = ProjectPartnerContributionStatusDTO.Public, amount = BigDecimal(600), isPartner = true)</ID>
     <ID>MaxLineLength:PartnerBudgetPerFundCalculatorTest.kt$PartnerBudgetPerFundCalculatorTest$ProjectPartnerContribution(id = 2L, name = "con2", status = ProjectPartnerContributionStatusDTO.Public, amount = BigDecimal(3), isPartner = true)</ID>
     <ID>MaxLineLength:PartnerBudgetPerFundCalculatorTest.kt$PartnerBudgetPerFundCalculatorTest$ProjectPartnerContribution(id = 3L, name = "con3", status = ProjectPartnerContributionStatusDTO.Private, amount = BigDecimal(580), isPartner = true)</ID>
@@ -99,9 +94,7 @@
     <ID>MaxLineLength:ProjectAuthorization.kt$CanRetrieveProjectForm$@PreAuthorize("@projectAuthorization.hasPermission('ProjectFormRetrieve', #projectId) || @projectAuthorization.isUserViewCollaboratorForProjectOrThrow(#projectId)")</ID>
     <ID>MaxLineLength:ProjectAuthorization.kt$CanRetrieveProjectVersion$@PreAuthorize("@projectAuthorization.hasPermission('ProjectRetrieve') || @projectAuthorization.hasPermission('ProjectFormRetrieve', #projectId) || @projectAuthorization.isUserViewCollaboratorForProjectOrThrow(#projectId)")</ID>
     <ID>MaxLineLength:ProjectAuthorizationTest.kt$ProjectAuthorizationTest$val user = LocalCurrentUser(userApplicant.copy(assignedProjects = setOf(PROJECT_ID)), "hash_pass", applicantUser.authorities union setOf(SimpleGrantedAuthority(ProjectFormUpdate.name)))</ID>
-    <ID>MaxLineLength:ProjectDataProviderImplTest.kt$ProjectDataProviderImplTest$partner = ProjectPartnerSummary(projectPartner.id, projectPartner.abbreviation, projectPartner.active, projectPartner.role, projectPartner.sortNumber, projectPartner.addresses.first{it.type == ProjectPartnerAddressType.Organization}.country, projectPartner.addresses.first{it.type == ProjectPartnerAddressType.Organization}.nutsRegion2)</ID>
     <ID>MaxLineLength:ProjectDataProviderImplTest.kt$ProjectDataProviderImplTest$partner = ProjectPartnerSummaryData(projectPartner.id, projectPartner.active, projectPartner.abbreviation,ProjectPartnerRoleData.valueOf(projectPartner.role.name), projectPartner.sortNumber, projectPartner.addresses.first { it.type == ProjectPartnerAddressType.Organization }.country, projectPartner.addresses.first { it.type == ProjectPartnerAddressType.Organization }.nutsRegion2)</ID>
-    <ID>MaxLineLength:ProjectDataProviderImplTest.kt$ProjectDataProviderImplTest$val budgetCostsCalculationResult = BudgetCostsCalculationResult(staffCosts = BigDecimal.TEN, totalCosts = BigDecimal.TEN, travelCosts = BigDecimal.ZERO, officeAndAdministrationCosts = BigDecimal.ZERO, otherCosts = BigDecimal.ZERO)</ID>
     <ID>MaxLineLength:ProjectDescriptionControllerTest.kt$ProjectDescriptionControllerTest$every { updateProjectDescriptionInteractor.updateOverallObjective(1L, projectDescription.projectOverallObjective!!) } returns projectDescription.projectOverallObjective!!</ID>
     <ID>MaxLineLength:ProjectDescriptionControllerTest.kt$ProjectDescriptionControllerTest$every { updateProjectDescriptionInteractor.updatePartnership(1L, projectDescription.projectPartnership!!) } returns projectDescription.projectPartnership!!</ID>
     <ID>MaxLineLength:ProjectDescriptionControllerTest.kt$ProjectDescriptionControllerTest$every { updateProjectDescriptionInteractor.updateProjectLongTermPlans(1L, projectDescription.projectLongTermPlans!!) } returns projectDescription.projectLongTermPlans!!</ID>
@@ -295,6 +288,8 @@
     <ID>PackageNaming:GetAuditInteractor.kt$package io.cloudflight.jems.server.audit.service.get_audit</ID>
     <ID>PackageNaming:GetBudgetCosts.kt$package io.cloudflight.jems.server.project.service.partner.budget.get_budget_costs</ID>
     <ID>PackageNaming:GetBudgetCostsInteractor.kt$package io.cloudflight.jems.server.project.service.partner.budget.get_budget_costs</ID>
+    <ID>PackageNaming:GetBudgetFundsPerPeriod.kt$package io.cloudflight.jems.server.project.service.budget.get_budget_funds_per_period</ID>
+    <ID>PackageNaming:GetBudgetFundsPerPeriodInteractor.kt$package io.cloudflight.jems.server.project.service.budget.get_budget_funds_per_period</ID>
     <ID>PackageNaming:GetBudgetOptions.kt$package io.cloudflight.jems.server.project.service.partner.budget.get_budget_options</ID>
     <ID>PackageNaming:GetBudgetOptionsInteractor.kt$package io.cloudflight.jems.server.project.service.partner.budget.get_budget_options</ID>
     <ID>PackageNaming:GetBudgetTotalCost.kt$package io.cloudflight.jems.server.project.service.partner.budget.get_budget_total_cost</ID>
@@ -333,9 +328,7 @@
     <ID>PackageNaming:GetPartnerBudgetPerPeriod.kt$package io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_period</ID>
     <ID>PackageNaming:GetPartnerBudgetPerPeriodExceptions.kt$package io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_period</ID>
     <ID>PackageNaming:GetPartnerBudgetPerPeriodInteractor.kt$package io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_period</ID>
-    <ID>PackageNaming:GetPartnerFundsPerPeriod.kt$package io.cloudflight.jems.server.project.service.budget.get_partner_funds_per_period</ID>
-    <ID>PackageNaming:GetPartnerFundsPerPeriodException.kt$package io.cloudflight.jems.server.project.service.budget.get_partner_funds_per_period</ID>
-    <ID>PackageNaming:GetPartnerFundsPerPeriodInteractor.kt$package io.cloudflight.jems.server.project.service.budget.get_partner_funds_per_period</ID>
+    <ID>PackageNaming:GetPartnerFundsPerPeriodException.kt$package io.cloudflight.jems.server.project.service.budget.get_budget_funds_per_period</ID>
     <ID>PackageNaming:GetPartnerUserCollaborators.kt$package io.cloudflight.jems.server.project.service.partner.get_partner_user_collaborator</ID>
     <ID>PackageNaming:GetPartnerUserCollaboratorsException.kt$package io.cloudflight.jems.server.project.service.partner.get_partner_user_collaborator</ID>
     <ID>PackageNaming:GetPartnerUserCollaboratorsInteractor.kt$package io.cloudflight.jems.server.project.service.partner.get_partner_user_collaborator</ID>
@@ -439,6 +432,8 @@
     <ID>PackageNaming:PreSubmissionCheckOff.kt$package io.cloudflight.jems.server.plugin.pre_submission_check</ID>
     <ID>PackageNaming:ProjectAssociatedOrganizationMapper.kt$package io.cloudflight.jems.server.project.repository.partner.associated_organization</ID>
     <ID>PackageNaming:ProjectAssociatedOrganizationRepository.kt$package io.cloudflight.jems.server.project.repository.partner.associated_organization</ID>
+    <ID>PackageNaming:ProjectFundBudgetPerPeriod.kt$package io.cloudflight.jems.server.project.service.model.project_funds_per_period</ID>
+    <ID>PackageNaming:ProjectFundsPerPeriod.kt$package io.cloudflight.jems.server.project.service.model.project_funds_per_period</ID>
     <ID>PackageNaming:ProjectPartnerBudgetStaffCostEntity.kt$package io.cloudflight.jems.server.project.entity.partner.budget.staff_cost</ID>
     <ID>PackageNaming:ProjectPartnerBudgetStaffCostPeriodEntity.kt$package io.cloudflight.jems.server.project.entity.partner.budget.staff_cost</ID>
     <ID>PackageNaming:ProjectPartnerBudgetStaffCostRow.kt$package io.cloudflight.jems.server.project.entity.partner.budget.staff_cost</ID>
@@ -446,7 +441,6 @@
     <ID>PackageNaming:ProjectPartnerBudgetUnitCostEntity.kt$package io.cloudflight.jems.server.project.entity.partner.budget.unit_cost</ID>
     <ID>PackageNaming:ProjectPartnerBudgetUnitCostPeriodEntity.kt$package io.cloudflight.jems.server.project.entity.partner.budget.unit_cost</ID>
     <ID>PackageNaming:ProjectPartnerBudgetUnitCostRow.kt$package io.cloudflight.jems.server.project.entity.partner.budget.unit_cost</ID>
-    <ID>PackageNaming:ProjectPartnerFundsPerPeriod.kt$package io.cloudflight.jems.server.project.service.model.project_funds_per_period</ID>
     <ID>PackageNaming:ProjectPartnerStateAidActivityEntity.kt$package io.cloudflight.jems.server.project.entity.partner.state_aid</ID>
     <ID>PackageNaming:ProjectPartnerStateAidActivityId.kt$package io.cloudflight.jems.server.project.entity.partner.state_aid</ID>
     <ID>PackageNaming:ProjectPartnerStateAidEntity.kt$package io.cloudflight.jems.server.project.entity.partner.state_aid</ID>
@@ -615,8 +609,7 @@
     <ID>PackageNaming:UserRegisteredEventListeners.kt$package io.cloudflight.jems.server.user.service.user.register_user</ID>
     <ID>PackageNaming:UserUpdatedEventListeners.kt$package io.cloudflight.jems.server.user.service.user.update_user</ID>
     <ID>ProtectedMemberInFinalClass:Authorization.kt$Authorization$protected fun isActiveUserIdEqualToOneOf(userIds: Set&lt;Long&gt;): Boolean</ID>
-    <ID>ReturnCount:GetPartnerFundsPerPeriod.kt$GetPartnerFundsPerPeriod$private fun getTotalFundPerPeriodForPartner( partnerBudgetPerPeriod: ProjectPeriodBudget?, partnerCoFinancing: List&lt;ProjectPartnerCoFinancing&gt;?, fund: ProgrammeFund ) : BigDecimal</ID>
-    <ID>ReturnCount:PartnerBudgetPerFundCalculator.kt$PartnerBudgetPerFundCalculator$private fun getPartnerContribution( partnerContributions: Collection&lt;ProjectPartnerContribution&gt;?, status: ProjectPartnerContributionStatusDTO? ): BigDecimal</ID>
+    <ID>ReturnCount:GetBudgetFundsPerPeriod.kt$GetBudgetFundsPerPeriod$private fun getTotalFundPerPeriodForPartner( partnerBudgetPerPeriod: ProjectPeriodBudget?, partnerCoFinancing: List&lt;ProjectPartnerCoFinancing&gt;?, fund: ProgrammeFund ): BigDecimal</ID>
     <ID>ReturnCount:ProjectDescriptionMapper.kt$fun getMappedStrategy(strategy: ProgrammeStrategy?): ProgrammeStrategy?</ID>
     <ID>ReturnCount:UserRoleAuditFactory.kt$private fun getAuditPermissionState(node: UserRolePermissionNode, permissions: Set&lt;UserRolePermission&gt;): String</ID>
     <ID>SerialVersionUIDInSerializableClass:AllowRealCostsEntity.kt$AllowedRealCostsEntity : Serializable</ID>
@@ -670,7 +663,6 @@
     <ID>TooManyFunctions:ProjectDataModelMapper.kt$io.cloudflight.jems.server.plugin.services.ProjectDataModelMapper.kt</ID>
     <ID>TooManyFunctions:ProjectDescriptionMapper.kt$io.cloudflight.jems.server.project.controller.ProjectDescriptionMapper.kt</ID>
     <ID>TooManyFunctions:ProjectDescriptionMapper.kt$io.cloudflight.jems.server.project.service.ProjectDescriptionMapper.kt</ID>
-    <ID>TooManyFunctions:ProjectMapper.kt$ProjectMapper</ID>
     <ID>TooManyFunctions:ProjectPartnerBudgetMapper.kt$io.cloudflight.jems.server.project.controller.partner.budget.ProjectPartnerBudgetMapper.kt</ID>
     <ID>TooManyFunctions:ProjectPartnerEntityMapper.kt$io.cloudflight.jems.server.project.repository.partner.ProjectPartnerEntityMapper.kt</ID>
     <ID>TooManyFunctions:ProjectPartnerRepository.kt$ProjectPartnerRepository : JpaRepository</ID>
@@ -691,7 +683,6 @@
     <ID>UnusedPrivateMember:CreateProjectTest.kt$CreateProjectTest.Companion$private fun projectVersion(status: ApplicationStatus): ProjectVersion</ID>
     <ID>UnusedPrivateMember:ProgrammeSetupAuthorizationTest.kt$ProgrammeSetupAuthorizationTest$private fun provideAllUsers(): Stream&lt;Arguments&gt;</ID>
     <ID>UnusedPrivateMember:ProjectBudgetControllerTest.kt$ProjectBudgetControllerTest$@MockK private lateinit var getPartnerBudgetPerFundInteractor: GetPartnerBudgetPerFundInteractor</ID>
-    <ID>UnusedPrivateMember:ProjectPartnerCoFinancingPersistenceProviderTest.kt$ProjectPartnerCoFinancingPersistenceProviderTest$private val previousFinances = setOf( ProjectPartnerCoFinancingEntity( coFinancingFundId = ProjectPartnerCoFinancingFundId(1, 1), percentage = BigDecimal.valueOf(15.5), programmeFund = null ), ProjectPartnerCoFinancingEntity( coFinancingFundId = ProjectPartnerCoFinancingFundId(1, 2), percentage = BigDecimal.valueOf(25.5), programmeFund = null ) )</ID>
     <ID>UnusedPrivateMember:ProjectPartnerFactory.kt$ProjectPartnerFactory$author: UserEntity</ID>
     <ID>UnusedPrivateMember:ProjectWorkPackageAuthorization.kt$ProjectWorkPackageAuthorization$version: String? = null</ID>
     <ID>UnusedPrivateMember:ProjectWorkPackageAuthorizationTest.kt$ProjectWorkPackageAuthorizationTest.Companion$private const val INVESTMENT_ID = 7L</ID>

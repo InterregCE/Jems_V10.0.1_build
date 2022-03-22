@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.service.budget.get_partner_funds_per_period
+package io.cloudflight.jems.server.project.service.budget.get_budget_funds_per_period
 
 import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.server.common.exception.ApplicationException

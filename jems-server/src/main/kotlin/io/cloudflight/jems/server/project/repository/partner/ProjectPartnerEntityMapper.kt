@@ -27,6 +27,7 @@ import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerMotivatio
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerMotivationTranslEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerTranslEntity
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetPerPeriodRow
+import io.cloudflight.jems.server.project.entity.partner.budget.spf.ProjectSpfBeneficiaryBudgetPerPeriodRow
 import io.cloudflight.jems.server.project.entity.partner.state_aid.PartnerStateAidRow
 import io.cloudflight.jems.server.project.entity.partner.state_aid.ProjectPartnerStateAidActivityEntity
 import io.cloudflight.jems.server.project.entity.partner.state_aid.ProjectPartnerStateAidActivityId
@@ -36,8 +37,8 @@ import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackag
 import io.cloudflight.jems.server.project.repository.partner.cofinancing.toContributionEntity
 import io.cloudflight.jems.server.project.repository.workpackage.activity.toSummaryModel
 import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerBudget
+import io.cloudflight.jems.server.project.service.budget.model.ProjectSpfBudgetPerPeriod
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
-import io.cloudflight.jems.server.project.service.partner.cofinancing.model.UpdateProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAddress
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAddressType
@@ -522,3 +523,10 @@ fun List<PartnerDetailRow>.toModel(): List<ProjectPartnerDetail> =
         )
 
     }
+
+fun List<ProjectSpfBeneficiaryBudgetPerPeriodRow>.toProjectPartnerSpfBudgetPerPeriod() = map { it.toModel() }.toList()
+
+fun ProjectSpfBeneficiaryBudgetPerPeriodRow.toModel() = ProjectSpfBudgetPerPeriod(
+    periodNumber = periodNumber ?: 0,
+    spfCostPerPeriod = spfCostPerPeriod ?: BigDecimal.ZERO
+)

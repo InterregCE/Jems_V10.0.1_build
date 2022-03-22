@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.service.budget
 
 import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerBudget
 import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerCost
+import io.cloudflight.jems.server.project.service.budget.model.ProjectSpfBudgetPerPeriod
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import io.cloudflight.jems.server.project.service.partner.model.PartnerTotalBudgetPerCostCategory
 import io.cloudflight.jems.server.project.service.unitcost.model.ProjectUnitCost
@@ -24,4 +25,6 @@ interface ProjectBudgetPersistence {
     fun getBudgetTotalForPartners(partnerIds: Set<Long>, projectId: Long, version: String? = null): Map<Long, PartnerTotalBudgetPerCostCategory>
 
     fun getProjectUnitCosts(projectId: Long, version: String? = null): List<ProjectUnitCost>
+
+    fun getBudgetForSpfBeneficiary(partnerId: Long, projectId:Long, version: String?): List<ProjectSpfBudgetPerPeriod>
 }
