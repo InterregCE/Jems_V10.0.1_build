@@ -5,13 +5,13 @@ import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import java.time.ZonedDateTime
 
 data class ProjectSearchRequestDTO(
-    val id: String?,
-    val acronym: String?,
-    val firstSubmissionFrom: ZonedDateTime?,
-    val firstSubmissionTo: ZonedDateTime?,
-    val lastSubmissionFrom: ZonedDateTime?,
-    val lastSubmissionTo: ZonedDateTime?,
-    val objectives: Set<ProgrammeObjectivePolicy>?,
-    val statuses: Set<ApplicationStatusDTO>?,
-    val calls: Set<Long>?
+    val id: String? = null,
+    val acronym: String? = null,
+    val firstSubmissionFrom: ZonedDateTime? = null,
+    val firstSubmissionTo: ZonedDateTime? = null,
+    val lastSubmissionFrom: ZonedDateTime? = null,
+    val lastSubmissionTo: ZonedDateTime? = null,
+    val objectives: Set<ProgrammeObjectivePolicy>? = null,
+    val statuses: Set<ApplicationStatusDTO>? = null,
+    val calls: Set<Long>? = null,
 )
