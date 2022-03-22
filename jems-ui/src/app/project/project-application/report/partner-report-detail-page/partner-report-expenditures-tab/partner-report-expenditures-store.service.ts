@@ -4,7 +4,7 @@ import {
   InvestmentSummaryDTO,
   ProjectPartnerReportExpenditureCostDTO,
   ProjectPartnerReportExpenditureCostsService,
-  ProjectPartnerBudgetOptionsDto
+  ProjectPartnerBudgetOptionsDto, IdNamePairDTO
 } from '@cat/api';
 
 import {
@@ -21,13 +21,16 @@ import {
   InvestmentSummary
 } from '@project/work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
 import {ProjectPartnerBudgetStore} from '@project/budget/services/project-partner-budget.store';
+import {
+  PartnerReportProcurementsPageStore
+} from '@project/project-application/report/partner-report-detail-page/partner-report-procurements-tab/partner-report-procurement-page-store.service';
 
 @Injectable({providedIn: 'root'})
 export class PartnerReportExpendituresStore {
 
   isEditable$: Observable<boolean>;
   costCategories$: Observable<string[]>;
-  contractIDs$: Observable<string[]>;
+  contractIDs$: Observable<IdNamePairDTO[]>;
   investmentNumbers$: Observable<string[]>;
   expendituresCosts$: Observable<ProjectPartnerReportExpenditureCostDTO[]>;
   private expendituresUpdated$ = new Subject<ProjectPartnerReportExpenditureCostDTO[]>();
@@ -35,11 +38,12 @@ export class PartnerReportExpendituresStore {
   constructor(private partnerReportExpenditureCostsService: ProjectPartnerReportExpenditureCostsService,
               private partnerReportDetailPageStore: PartnerReportDetailPageStore,
               private projectStore: ProjectStore,
-              private projectPartnerBudgetStore: ProjectPartnerBudgetStore) {
+              private projectPartnerBudgetStore: ProjectPartnerBudgetStore,
+              private reportProcurementPageStore: PartnerReportProcurementsPageStore) {
     this.expendituresCosts$ = this.partnerReportExpenditureCosts();
     this.costCategories$ = this.costCategories();
     this.isEditable$ = this.partnerReportDetailPageStore.reportEditable$;
-    this.contractIDs$ = of([]);
+    this.contractIDs$ = this.reportProcurementPageStore.getProcurementList();
     this.investmentNumbers$ = this.investmentSummariesForReport();
   }
 

@@ -9,7 +9,7 @@ export class PartnerReportExpendituresTabConstants {
     rowId: 'rowId',
     costCategory: 'costCategory',
     investmentNumber: 'investmentNumber',
-    contractID: 'contractID',
+    contractId: 'contractId',
     internalReferenceNumber: 'internalReferenceNumber',
     invoiceNumber: 'invoiceNumber',
     invoiceDate: 'invoiceDate',
