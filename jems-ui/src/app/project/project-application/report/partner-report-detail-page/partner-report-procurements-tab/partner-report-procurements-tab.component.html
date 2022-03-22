@@ -1,0 +1,224 @@
+<div *ngIf="data$ | async as data">
+    <jems-form (save)="updateReportProcurements()"
+               (discard)="resetForm(data.savedProcurements)">
+        <form jemsFormLayout [formGroup]="reportProcurementsForm">
+            <h3>{{'project.application.partner.report.procurements.title' | translate}}</h3>
+
+            <jems-pending-button *ngIf="data.isReportEditable" jemsText class="mb-3 mt-3"
+                                 [disabled]="procurements.length >= constants.MAX_NUMBER_OF_ITEMS"
+                                 (click)="addNewProcurement()">
+                + {{'project.application.partner.report.procurements.add' | translate}}
+            </jems-pending-button>
+
+            <div *ngIf="tableData.length else noProcurementsMessage;" class="table-container" jemsNoWidthLimit>
+                <jems-multi-language-container>
+                    <table #procurementsTable
+                        mat-table
+                        [dataSource]="tableData"
+                        multiTemplateDataRows
+                        class="mat-elevation-z8 procurement-table"
+                        [formArrayName]="constants.PROCUREMENTS.name">
+
+                        <caption></caption>
+                        <ng-container matColumnDef="createdIn">
+                            <th mat-header-cell *matHeaderCellDef scope="col">
+                                {{'project.application.partner.report.procurements.table.created' | translate}}
+                            </th>
+                            <td mat-cell *matCellDef="let control;">
+                                <span>R.{{control.value.reportNumber}}</span>
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="contractID">
+                            <th  class="text-field-column" mat-header-cell *matHeaderCellDef scope="col">
+                                {{'project.application.partner.report.procurements.table.contract.id' | translate}}
+                            </th>
+                            <td class="text-field-column" mat-cell *matCellDef="let control; let i = dataIndex;" [formGroupName]="i">
+                                <mat-form-field [class.mat-form-field-disabled]="!isProcurementEditable(control)">
+                                    <textarea #contractId [formControlName]="constants.CONTRACT_ID.name"
+                                              matInput
+                                              [readonly]="!isProcurementEditable(control)"
+                                              [cdkTextareaAutosize]
+                                              [cdkAutosizeMinRows]="1"
+                                              [required]="true">
+                                     </textarea>
+                                    <mat-hint [jemsHintFor]="contractId">
+                                        <jems-text-hint
+                                                [currentLength]="lengthOfForm(control, constants.CONTRACT_ID.name)"
+                                                [maxLength]="constants.CONTRACT_ID.maxLength"></jems-text-hint>
+                                    </mat-hint>
+                                    <mat-error>
+                                        <jems-form-field-errors
+                                                [errors]="control.errors">
+                                        </jems-form-field-errors>
+                                    </mat-error>
+                                </mat-form-field>
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="contractType">
+                            <th class="text-field-column" mat-header-cell *matHeaderCellDef scope="col">
+                                {{'project.application.partner.report.procurements.table.contract.type' | translate}}
+                            </th>
+                            <td class="text-field-column" mat-cell *matCellDef="let control; let i = dataIndex;" [formGroupName]="i">
+
+                                <jems-multi-language-form-field
+                                        type="input"
+                                        minRows="1"
+                                        [required]="true"
+                                        [attr.disabled]="!isProcurementEditable(control)"
+                                        [disabled]="!isProcurementEditable(control)"
+                                        [formControlName]="constants.CONTRACT_TYPE.name"
+                                        [maxLength]="constants.CONTRACT_TYPE.maxLength"
+                                        jemsFormFieldWidth="full">
+                                </jems-multi-language-form-field>
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="contractAmount">
+                            <th class="text-field-column" mat-header-cell *matHeaderCellDef scope="col">
+                                {{'project.application.partner.report.procurements.table.contract.amount' | translate}}
+                            </th>
+                            <td class="text-field-column" mat-cell *matCellDef="let control; let i = dataIndex;" [formGroupName]="i">
+                                <mat-form-field [class.mat-form-field-disabled]="!isProcurementEditable(control)">
+                                    <input [formControlName]="constants.CONTRACT_AMOUNT.name"
+                                           [required]="true"
+                                           [readonly]="!isProcurementEditable(control)"
+                                           [options]="{min: constants.MIN_VALUE, align: 'right'}"
+                                           currencyMask matInput
+                                           type="decimal">
+                                </mat-form-field>
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="currency">
+                            <th class="text-field-column" mat-header-cell *matHeaderCellDef scope="col">
+                                {{'project.application.partner.report.procurements.table.currency' | translate}}
+                            </th>
+                            <td class="text-field-column" mat-cell *matCellDef="let control; let i = dataIndex;" [formGroupName]="i">
+
+                                <mat-select class="placeholder-required" [formControlName]="constants.CURRENCY.name"
+                                            [attr.disabled]="!isProcurementEditable(control)"
+                                            required
+                                            placeholder="{{'call.detail.first.step.pre.submission.check.config.placeholder' | translate}}">
+                                    <mat-option [value]="'EUR'">EUR</mat-option>
+                                    <mat-option [value]="'RON'">RON</mat-option>
+                                </mat-select>
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="supplierName">
+                            <th class="text-field-column" mat-header-cell *matHeaderCellDef scope="col">
+                                {{'project.application.partner.report.procurements.table.supplier' | translate}}
+                            </th>
+                            <td class="text-field-column" mat-cell *matCellDef="let control; let i = dataIndex;" [formGroupName]="i">
+                                <mat-form-field [class.mat-form-field-disabled]="!isProcurementEditable(control)">
+                                    <textarea #supplierName
+                                              [formControlName]="constants.SUPPLIER_NAME.name"
+                                              [readonly]="!isProcurementEditable(control)"
+                                              matInput
+                                              [cdkTextareaAutosize]
+                                              [cdkAutosizeMinRows]="1"
+                                              [required]="true">
+                                     </textarea>
+                                    <mat-hint [jemsHintFor]="supplierName">
+                                        <jems-text-hint
+                                                [currentLength]="lengthOfForm(control, constants.SUPPLIER_NAME.name)"
+                                                [maxLength]="constants.SUPPLIER_NAME.maxLength"></jems-text-hint>
+                                    </mat-hint>
+                                    <mat-error>
+                                        <jems-form-field-errors
+                                                [errors]="control.errors">
+                                        </jems-form-field-errors>
+                                    </mat-error>
+                                </mat-form-field>
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="deleteProcurement" >
+                            <th mat-header-cell *matHeaderCellDef scope="col"></th>
+                            <td mat-cell *matCellDef="let control; let i = dataIndex;" [formGroupName]="i" >
+                                <button *ngIf="isProcurementEditable(control)" type="button" mat-icon-button color="accent"
+                                        (click)="removeItem(i)">
+                                    <mat-icon>delete</mat-icon>
+                                </button>
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="expandProcurement">
+                            <th mat-header-cell *matHeaderCellDef scope="col"></th>
+                            <td mat-cell *matCellDef="let element; let i = dataIndex;" [formGroupName]="i">
+                                <button
+                                    type="button" mat-icon-button
+                                    (click)="expandedElement = expandedElement === element ? null : element">
+                                    <mat-icon *ngIf="element !== expandedElement; else expandedIcon">expand_more</mat-icon>
+                                    <ng-template #expandedIcon><mat-icon >expand_less</mat-icon></ng-template>
+                                </button>
+                            </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="commentPreview">
+                            <th mat-header-cell *matHeaderCellDef scope="col">
+                                {{'project.application.partner.report.procurements.table.comment' | translate}}
+                            </th>
+                            <td mat-cell *matCellDef="let control; let i = dataIndex;" [formGroupName]="i">
+                                <jems-multi-language-form-field
+                                        [attr.disabled]="true"
+                                        [disabled]="true"
+                                        type="input"
+                                        minRows="1"
+                                        [formControlName]="constants.COMMENT_PREVIEW.name"
+                                        [maxLength]="constants.COMMENT_PREVIEW.maxLength"
+                                        [matTooltip]="control.value.comment | translateByInputLanguage | async">
+                                </jems-multi-language-form-field>
+                            </td>
+                        </ng-container>
+
+                        <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
+                        <ng-container matColumnDef="expandedDetail">
+                            <td
+                                mat-cell
+                                *matCellDef="let control; let i = dataIndex;"
+                                [formGroupName]="i"
+                                [attr.colspan]="columnsToDisplay.length">
+
+                                <div class="extended-row-container" [@detailExpand]="control === expandedElement ? 'expanded' : 'collapsed'">
+                                        <div class="extension-content">
+
+                                            <jems-multi-language-form-field
+                                                    [label]="'project.application.partner.report.procurements.table.comment'"
+                                                    type="textarea"
+                                                    minRows="1"
+                                                    [attr.disabled]="!isProcurementEditable(control)"
+                                                    [disabled]="!isProcurementEditable(control)"
+                                                    [formControlName]="constants.COMMENT.name"
+                                                    [maxLength]="constants.COMMENT.maxLength"
+                                                    jemsFormFieldWidth="full"
+                                                    (keydown)="updateCommentPreview(i)">
+                                            </jems-multi-language-form-field>
+                                        </div>
+                                </div>
+                            </td>
+                        </ng-container>
+
+                        <tr mat-header-row *matHeaderRowDef="columnsToDisplay" ></tr>
+                        <tr #normalRows mat-row *matRowDef="let element; columns: columnsToDisplay; let i = dataIndex; "
+                            class="element-row"
+                            [class.expanded-row]="expandedElement === element"
+                            [class.colored-row]="i%2 !== 0"
+                            [class.normal-row]="i%2 === 0"></tr>
+                        <tr [class.normal-row]="i%2 === 0" #extendedRows
+                            [class.colored-row]="i%2 !== 0"
+                            mat-row *matRowDef="let row; let i = dataIndex; columns: ['expandedDetail']" class="detail-row"></tr>
+                    </table>
+                </jems-multi-language-container>
+            </div>
+
+            <ng-template #noProcurementsMessage>
+                <div>{{'project.procurements.tab.no.data' | translate}}</div>
+            </ng-template>
+
+        </form>
+    </jems-form>
+</div>
+
