@@ -8,6 +8,8 @@ import {MatTableDataSource} from '@angular/material/table';
 import {map, tap} from 'rxjs/operators';
 import {Alert} from '@common/components/forms/alert';
 import {NumberService} from '@common/services/number.service';
+import { APPLICATION_FORM } from '@project/common/application-form-model';
+import {FormVisibilityStatusService} from '@project/common/services/form-visibility-status.service';
 
 @Component({
   selector: 'jems-project-budget-overview',
@@ -16,12 +18,9 @@ import {NumberService} from '@common/services/number.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectBudgetOverviewComponent {
+  APPLICATION_FORM = APPLICATION_FORM;
   Alert = Alert;
-  displayedColumns = [
-    'fundingSource', 'fundingAmount', 'coFinancingRate',
-    'autoPublicContribution', 'otherPublicContribution', 'totalPublicContribution',
-    'privateContribution', 'totalContribution'
-  ];
+  displayedColumns : string[] = this.buildDisplayColumns();
   headerColumns = ['programmeFunding', 'contribution', 'total'];
   allColumns = [...this.displayedColumns, 'total'];
 
@@ -32,7 +31,7 @@ export class ProjectBudgetOverviewComponent {
   }>;
   multipleFundsAllowed$: Observable<boolean>;
 
-  constructor(private pageStore: ProjectOverviewTablesPageStore) {
+  constructor(private pageStore: ProjectOverviewTablesPageStore, private formVisibilityStatusService: FormVisibilityStatusService) {
     this.projectCoFinancingOverview$ = combineLatest([
       this.pageStore.projectCoFinancingOverview$,
       this.pageStore.isCallSpf$
@@ -42,9 +41,26 @@ export class ProjectBudgetOverviewComponent {
           overview,
           isCallSpf
         })),
-        tap(data => this.dataSource = new MatTableDataSource(this.getFundOverviews(data.overview, data.isCallSpf)))
+        tap(data => this.dataSource = new MatTableDataSource(this.getFundOverviews(data.overview, data.isCallSpf))),
       );
     this.multipleFundsAllowed$ = this.pageStore.callMultipleFundsAllowed$;
+  }
+
+  private buildDisplayColumns(): string[] {
+    return [
+      'fundingSource',
+      'fundingAmount',
+      'coFinancingRate',
+      ...this.isAutomaticPublicContributionAllowed() ? ['autoPublicContribution'] : [],
+      'otherPublicContribution',
+      'totalPublicContribution',
+      'privateContribution',
+      'totalContribution'
+    ]
+  }
+
+  isAutomaticPublicContributionAllowed(): boolean {
+    return this.formVisibilityStatusService.isVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_ADD_NEW_CONTRIBUTION_ORIGIN)
   }
 
   private getFundOverviews(overview: ProjectCoFinancingOverviewDTO, isCallSpf: boolean): ProjectCoFinancingByFundOverviewDTO[] {
@@ -76,7 +92,7 @@ export class ProjectBudgetOverviewComponent {
     };
 
     if (isCallSpf) {
-      datasource.push({label:'project.application.form.overview.budget.table.spf.cofinacing', extended: true}, ...euFundsForSpf, totalEuForSpf as any, ...otherFundsForSpf, totalSpfBudget, {label:'project.application.form.overview.budget.table.cofinacing', extended: true});
+      datasource.push({label:'project.application.form.overview.budget.table.spf.cofinacing', extended: true, allowedAutoContribution: this.isAutomaticPublicContributionAllowed()}, ...euFundsForSpf, totalEuForSpf as any, ...otherFundsForSpf, totalSpfBudget, {label:'project.application.form.overview.budget.table.cofinacing', extended: true, allowedAutoContribution: this.isAutomaticPublicContributionAllowed()});
     }
 
     const euFundsForManagement = this.getEuFunds(overview.projectManagementCoFinancing.fundOverviews);
@@ -118,7 +134,13 @@ export class ProjectBudgetOverviewComponent {
       totalFundAndContribution: totalSpfBudget.totalFundAndContribution + totalManagementBudget.totalFundAndContribution,
     };
 
-    datasource.push(...euFundsForManagement, totalEuForManagement as any, ...otherFundsForManagement, totalManagementBudget, total);
+    datasource.push(...euFundsForManagement, totalEuForManagement as any, ...otherFundsForManagement);
+
+    if (isCallSpf) {
+      datasource.push(totalManagementBudget);
+    }
+
+    datasource.push(total);
     return datasource;
   }
 
