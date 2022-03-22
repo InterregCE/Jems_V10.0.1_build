@@ -3,16 +3,22 @@ package io.cloudflight.jems.server.project.service.report.partner.expenditure.up
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.authorization.CanEditPartnerReport
+import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.ReportStatus
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectReportExpenditurePersistence
+import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectReportProcurementPersistence
+import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import org.springframework.stereotype.Service
 
 @Service
 class UpdateProjectPartnerReportExpenditure(
     private val reportPersistence: ProjectReportPersistence,
     private val reportExpenditurePersistence: ProjectReportExpenditurePersistence,
+    private val reportProcurementPersistence: ProjectReportProcurementPersistence,
+    private val workPackagePersistence: WorkPackagePersistence,
+    private val partnerPersistence: PartnerPersistence,
     private val generalValidator: GeneralValidatorService
 ) : UpdateProjectPartnerReportExpenditureInteractor {
 
@@ -28,8 +34,18 @@ class UpdateProjectPartnerReportExpenditure(
         expenditureCosts: List<ProjectPartnerReportExpenditureCost>
     ): List<ProjectPartnerReportExpenditureCost> {
         validateInputs(expenditureCosts = expenditureCosts)
+
+        val statusAndVersion = reportPersistence.getPartnerReportStatusAndVersion(partnerId, reportId = reportId)
         validateReportNotClosed(
-            status = reportPersistence.getPartnerReportStatusAndVersion(partnerId, reportId = reportId).status
+            status = statusAndVersion.status
+        )
+        validateLinkedProcurements(
+            expenditureCosts = expenditureCosts,
+            allowedProcurementIds = getAvailableProcurements(partnerId, reportId = reportId).mapTo(HashSet()) { it.id },
+            allowedInvestmentIds = workPackagePersistence.getProjectInvestmentSummaries(
+                projectId = partnerPersistence.getProjectIdForPartnerId(partnerId, statusAndVersion.version),
+                version = statusAndVersion.version,
+            ).mapTo(HashSet()) { it.id },
         )
 
         return reportExpenditurePersistence.updatePartnerReportExpenditureCosts(
@@ -63,4 +79,20 @@ class UpdateProjectPartnerReportExpenditure(
             }.toTypedArray(),
         )
     }
+
+    private fun validateLinkedProcurements(
+        expenditureCosts: List<ProjectPartnerReportExpenditureCost>,
+        allowedProcurementIds: Set<Long>,
+        allowedInvestmentIds: Set<Long>,
+    ) {
+        expenditureCosts.forEach {
+            it.contractId = if (it.contractId in allowedProcurementIds) it.contractId else null
+            it.investmentId = if (it.investmentId in allowedInvestmentIds) it.investmentId else null
+        }
+    }
+
+    private fun getAvailableProcurements(partnerId: Long, reportId: Long) =
+        reportProcurementPersistence.getProcurementsForReportIds(
+            reportIds = reportPersistence.getReportIdsBefore(partnerId = partnerId, beforeReportId = reportId).plus(reportId),
+        )
 }

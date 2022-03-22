@@ -17,12 +17,13 @@ import java.time.LocalDate
 internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
 
     private val PARTNER_ID = 11L
+    private val CONTRACT_ID = 17L
 
     private val reportExpenditureCost = ProjectPartnerReportExpenditureCost(
         id = 754,
         costCategory = "costCategory",
-        investmentNumber = "number-1",
-        contractId = "",
+        investmentId = 10L,
+        contractId = CONTRACT_ID,
         internalReferenceNumber = "internal-1",
         invoiceNumber = "invoice-1",
         invoiceDate = LocalDate.of(2022, 1, 1),
@@ -37,8 +38,8 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
     private val reportExpenditureCostDto = ProjectPartnerReportExpenditureCostDTO(
         id = 754,
         costCategory = "costCategory",
-        investmentNumber = "number-1",
-        contractId = "",
+        investmentId = 10L,
+        contractId = CONTRACT_ID,
         internalReferenceNumber = "internal-1",
         invoiceNumber = "invoice-1",
         invoiceDate = LocalDate.of(2022, 1, 1),

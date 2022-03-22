@@ -13,21 +13,19 @@ import org.springframework.web.bind.annotation.RequestBody
 interface ProjectPartnerReportExpenditureCostsApi {
 
     companion object {
-        const val ENDPOINT_API_PARTNER_REPORT_EXPENDITURE_COSTS = "/api/project/report/expenditure/costs"
+        const val ENDPOINT_API_PARTNER_REPORT_EXPENDITURE_COSTS =
+            "${ProjectPartnerReportApi.ENDPOINT_API_PROJECT_PARTNER_REPORT}/expenditure/byPartnerId/{partnerId}/byReportId/{reportId}"
     }
 
     @ApiOperation("Returns all expenditure costs by partner id and report id")
-    @GetMapping("$ENDPOINT_API_PARTNER_REPORT_EXPENDITURE_COSTS/{partnerId}/{reportId}")
+    @GetMapping(ENDPOINT_API_PARTNER_REPORT_EXPENDITURE_COSTS)
     fun getProjectPartnerReports(
         @PathVariable partnerId: Long,
         @PathVariable reportId: Long,
     ): List<ProjectPartnerReportExpenditureCostDTO>
 
     @ApiOperation("Update partner report expenditure costs")
-    @PutMapping(
-        "$ENDPOINT_API_PARTNER_REPORT_EXPENDITURE_COSTS/update/{partnerId}/{reportId}",
-        consumes = [MediaType.APPLICATION_JSON_VALUE]
-    )
+    @PutMapping(ENDPOINT_API_PARTNER_REPORT_EXPENDITURE_COSTS, consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updatePartnerReportExpenditures(
         @PathVariable partnerId: Long,
         @PathVariable reportId: Long,

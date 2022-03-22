@@ -11,7 +11,7 @@ import org.mapstruct.Mapping
 import org.mapstruct.Mappings
 import org.mapstruct.factory.Mappers
 
-private val mapper = Mappers.getMapper(ProjectPartnerReportIdentificationMapper::class.java)
+private val mapper = Mappers.getMapper(ProjectPartnerReportContributionMapper::class.java)
 
 fun ProjectPartnerReportContribution.toDto() =
     mapper.map(this)
@@ -23,7 +23,7 @@ fun UpdateProjectPartnerReportContributionDataDTO.toModel() =
     mapper.map(this)
 
 @Mapper
-interface ProjectPartnerReportIdentificationMapper {
+interface ProjectPartnerReportContributionMapper {
     fun map(model: ProjectPartnerReportContribution): ProjectPartnerReportContributionDTO
     @Mappings(
         Mapping(source = "public", target = "publicContribution"),

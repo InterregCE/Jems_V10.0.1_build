@@ -24,6 +24,8 @@ interface ProjectReportPersistence {
 
     fun listSubmittedPartnerReports(partnerId: Long): List<ProjectPartnerReportSummary>
 
+    fun getReportIdsBefore(partnerId: Long, beforeReportId: Long): Set<Long>
+
     fun getCurrentLatestReportNumberForPartner(partnerId: Long): Int
 
     fun countForPartner(partnerId: Long): Int

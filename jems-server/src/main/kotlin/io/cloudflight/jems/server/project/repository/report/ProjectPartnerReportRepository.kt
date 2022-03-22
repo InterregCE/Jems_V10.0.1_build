@@ -22,4 +22,7 @@ interface ProjectPartnerReportRepository : JpaRepository<ProjectPartnerReportEnt
 
     fun countAllByPartnerId(partnerId: Long): Int
 
+    @Query("SELECT report.id FROM #{#entityName} report WHERE report.partnerId = :partnerId AND report.id < :reportId")
+    fun getReportIdsForPartnerBefore(partnerId: Long, reportId: Long): Set<Long>
+
 }
