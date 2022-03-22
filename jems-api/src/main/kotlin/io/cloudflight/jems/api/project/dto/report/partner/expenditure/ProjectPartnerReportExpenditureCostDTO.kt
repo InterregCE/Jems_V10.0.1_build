@@ -7,8 +7,8 @@ import java.time.LocalDate
 data class ProjectPartnerReportExpenditureCostDTO(
     val id: Long?,
     val costCategory: String,
-    val investmentNumber: String?,
-    val contractId: String?,
+    val investmentId: Long?,
+    val contractId: Long?,
     val internalReferenceNumber: String?,
     val invoiceNumber: String?,
     val invoiceDate: LocalDate?,

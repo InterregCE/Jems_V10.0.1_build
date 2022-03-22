@@ -25,6 +25,8 @@ class ProjectReportExpenditurePersistenceProviderTest : UnitTest() {
 
     companion object {
         private const val PARTNER_ID = 380L
+        private const val PROCUREMENT_ID = 18L
+        private const val INVESTMENT_ID = 28L
 
         private const val EXPENDITURE_TO_UPDATE = 40L
         private const val EXPENDITURE_TO_DELETE = 41L
@@ -37,8 +39,8 @@ class ProjectReportExpenditurePersistenceProviderTest : UnitTest() {
             id = id,
             partnerReport = report,
             costCategory = "cc",
-            investmentNumber = "in",
-            contractId = "cid",
+            investmentId = INVESTMENT_ID,
+            procurementId = PROCUREMENT_ID,
             internalReferenceNumber = "irn",
             invoiceNumber = "invoice",
             invoiceDate = YESTERDAY,
@@ -60,8 +62,8 @@ class ProjectReportExpenditurePersistenceProviderTest : UnitTest() {
         private fun dummyExpectedExpenditure(id: Long) = ProjectPartnerReportExpenditureCost(
             id = id,
             costCategory = "cc",
-            investmentNumber = "in",
-            contractId = "cid",
+            investmentId = INVESTMENT_ID,
+            contractId = PROCUREMENT_ID,
             internalReferenceNumber = "irn",
             invoiceNumber = "invoice",
             invoiceDate = YESTERDAY,
@@ -76,8 +78,8 @@ class ProjectReportExpenditurePersistenceProviderTest : UnitTest() {
         private fun dummyExpectedExpenditureNew(id: Long) = ProjectPartnerReportExpenditureCost(
             id = id,
             costCategory = "cc NEW",
-            investmentNumber = "in NEW",
-            contractId = "cid NEW",
+            investmentId = INVESTMENT_ID + 10,
+            contractId = PROCUREMENT_ID + 10,
             internalReferenceNumber = "irn NEW",
             invoiceNumber = "invoice NEW",
             invoiceDate = YESTERDAY.minusDays(1),
@@ -121,7 +123,7 @@ class ProjectReportExpenditurePersistenceProviderTest : UnitTest() {
     fun updatePartnerReportExpenditureCosts() {
         val report = mockk<ProjectPartnerReportEntity>()
         every { reportRepository.findByIdAndPartnerId(id = 58L, PARTNER_ID) } returns report
-        every { reportExpenditureRepository.findExistingCollaborationIdsFor(report) } returns
+        every { reportExpenditureRepository.findExistingExpenditureIdsFor(report) } returns
             setOf(EXPENDITURE_TO_UPDATE, EXPENDITURE_TO_DELETE, EXPENDITURE_TO_STAY)
 
         val slotDeletedIds = slot<Set<Long>>()
@@ -146,8 +148,8 @@ class ProjectReportExpenditurePersistenceProviderTest : UnitTest() {
 
         with(slotSavedEntities.captured.first { it.id == EXPENDITURE_TO_UPDATE }) {
             assertThat(costCategory).isEqualTo("cc NEW")
-            assertThat(investmentNumber).isEqualTo("in NEW")
-            assertThat(contractId).isEqualTo("cid NEW")
+            assertThat(investmentId).isEqualTo(INVESTMENT_ID + 10)
+            assertThat(procurementId).isEqualTo(PROCUREMENT_ID + 10)
             assertThat(internalReferenceNumber).isEqualTo("irn NEW")
             assertThat(invoiceNumber).isEqualTo("invoice NEW")
             assertThat(invoiceDate).isEqualTo(YESTERDAY.minusDays(1))
@@ -160,8 +162,8 @@ class ProjectReportExpenditurePersistenceProviderTest : UnitTest() {
         }
         with(slotSavedEntities.captured.first { it.id == EXPENDITURE_TO_STAY }) {
             assertThat(costCategory).isEqualTo("cc")
-            assertThat(investmentNumber).isEqualTo("in")
-            assertThat(contractId).isEqualTo("cid")
+            assertThat(investmentId).isEqualTo(INVESTMENT_ID)
+            assertThat(procurementId).isEqualTo(PROCUREMENT_ID)
             assertThat(internalReferenceNumber).isEqualTo("irn")
             assertThat(invoiceNumber).isEqualTo("invoice")
             assertThat(invoiceDate).isEqualTo(YESTERDAY)

@@ -15,6 +15,6 @@ interface ProjectPartnerReportExpenditureRepository : JpaRepository<PartnerRepor
     ): MutableList<PartnerReportExpenditureCostEntity>
 
     @Query("SELECT e.id FROM #{#entityName} e where e.partnerReport=:reportEntity")
-    fun findExistingCollaborationIdsFor(reportEntity: ProjectPartnerReportEntity): Set<Long>
+    fun findExistingExpenditureIdsFor(reportEntity: ProjectPartnerReportEntity): Set<Long>
 
 }

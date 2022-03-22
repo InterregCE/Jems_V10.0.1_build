@@ -29,8 +29,8 @@ class PartnerReportExpenditureCostEntity(
     @field:NotNull
     var costCategory: String,
 
-    var investmentNumber: String?,
-    var contractId: String?,
+    var investmentId: Long?,
+    var procurementId: Long?,
     var internalReferenceNumber: String?,
     var invoiceNumber: String?,
     var invoiceDate: LocalDate?,

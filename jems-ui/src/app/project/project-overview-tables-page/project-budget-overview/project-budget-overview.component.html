@@ -39,7 +39,7 @@
                 </ng-container>
 
                 <ng-container matColumnDef="coFinancingRate">
-                    <th *matHeaderCellDef mat-header-cell class="percentage-spacing">
+                    <th *matHeaderCellDef mat-header-cell class="percentage-spacing" scope="col">
                         <span jemsText maxLines="2">{{'project.application.form.overview.budget.table.cofinancing.rate' | translate}}</span>
                     </th>
                     <td *matCellDef="let element" [class.total]="!!element.label" [class.percentage-spacing]="!element.extended" mat-cell>
@@ -95,7 +95,7 @@
                 </ng-container>
 
                 <ng-container matColumnDef="totalContribution">
-                    <th *matHeaderCellDef mat-header-cell class="percentage-spacing">
+                    <th *matHeaderCellDef mat-header-cell class="percentage-spacing" scope="col">
                         <span jemsText maxLines="2">{{'project.application.form.overview.budget.table.total.contribution' | translate}}</span>
                     </th>
                     <td *matCellDef="let element" [class.total]="!!element.label" [class.percentage-spacing]="!element.extended" mat-cell>

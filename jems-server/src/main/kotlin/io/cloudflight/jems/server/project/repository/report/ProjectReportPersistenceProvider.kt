@@ -176,6 +176,10 @@ class ProjectReportPersistenceProvider(
         partnerReportRepository.findAllByPartnerIdAndStatus(partnerId, ReportStatus.Submitted).map { it.toModelSummary() }
 
     @Transactional(readOnly = true)
+    override fun getReportIdsBefore(partnerId: Long, beforeReportId: Long): Set<Long> =
+        partnerReportRepository.getReportIdsForPartnerBefore(partnerId = partnerId, reportId = beforeReportId)
+
+    @Transactional(readOnly = true)
     override fun getCurrentLatestReportNumberForPartner(partnerId: Long): Int =
         partnerReportRepository.getMaxNumberForPartner(partnerId = partnerId)
 
