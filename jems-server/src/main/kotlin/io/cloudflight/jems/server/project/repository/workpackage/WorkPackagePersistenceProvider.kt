@@ -157,7 +157,7 @@ class WorkPackagePersistenceProvider(
             workPackageId = workPackageId,
             resolveProgrammeIndicatorEntity = { getIndicatorOrThrow(it) }
         )
-        val currentOutputs = workPackageOutputRepository.findAllByOutputIdWorkPackageId(workPackageId)
+        val currentOutputs = workPackageOutputRepository.findAllByOutputIdWorkPackageIdOrderByOutputIdOutputNumber(workPackageId)
 
         workPackageOutputRepository.deleteAll(currentOutputs.filter {
             !outputsToBeSaved.map { it.outputId }.contains(it.outputId)
@@ -174,7 +174,7 @@ class WorkPackagePersistenceProvider(
     ): List<WorkPackageOutput> {
         return projectVersionUtils.fetch(version, projectId,
             currentVersionFetcher = {
-                getWorkPackageOrThrow(workPackageId).outputs.toModel()
+                workPackageOutputRepository.findAllByOutputIdWorkPackageIdOrderByOutputIdOutputNumber(workPackageId).toModel()
             },
             previousVersionFetcher = { timestamp ->
                 workPackageRepository.findOutputsByWorkPackageIdAsOfTimestamp(workPackageId, timestamp)

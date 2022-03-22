@@ -1965,27 +1965,25 @@
 							}
 						}
 					],
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
 					"request": {
 						"auth": {
 							"type": "noauth"
 						},
-						"method": "GET",
+						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "urlencoded",
 							"urlencoded": []
 						},
 						"url": {
-							"raw": "{{url}}/api/project?sort=id,desc",
+							"raw": "{{url}}/api/project/list?sort=id,desc",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
-								"project"
+								"project",
+								"list"
 							],
 							"query": [
 								{
@@ -2049,27 +2047,25 @@
 							}
 						}
 					],
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
 					"request": {
 						"auth": {
 							"type": "noauth"
 						},
-						"method": "GET",
+						"method": "POST",
 						"header": [],
 						"body": {
 							"mode": "urlencoded",
 							"urlencoded": []
 						},
 						"url": {
-							"raw": "{{url}}/api/project?sort=id,desc",
+							"raw": "{{url}}/api/project/list?sort=id,desc",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
-								"project"
+								"project",
+								"list"
 							],
 							"query": [
 								{

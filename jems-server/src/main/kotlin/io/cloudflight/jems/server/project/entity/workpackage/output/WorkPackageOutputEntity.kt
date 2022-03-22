@@ -34,7 +34,7 @@ class WorkPackageOutputEntity(
 
     @ManyToOne
     @JoinColumn(name = "indicator_output_id")
-    val programmeOutputIndicatorEntity: OutputIndicatorEntity? = null,
+    var programmeOutputIndicatorEntity: OutputIndicatorEntity? = null,
 
     @Column
     val targetValue: BigDecimal? = null,
