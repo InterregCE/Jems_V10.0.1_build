@@ -18,7 +18,7 @@
                         [class.total]="!!element.label && !element.extended"
                         [class.border-cell-bottom]="element.extended"
                         [class.header-cell]="element.extended"
-                        [attr.colspan]="element.extended ? 9 : 1"
+                        [attr.colspan]="element.extended ? (element.allowedAutoContribution ? 9 : 8) : 1"
                         mat-cell>
                         <ng-container *ngIf="element.label">{{element.label | translate}}</ng-container>
                         <ng-container *ngIf="element.fundAbbreviation && !element.extended">
@@ -50,7 +50,7 @@
                     </td>
                 </ng-container>
 
-                <ng-container matColumnDef="autoPublicContribution">
+                <ng-container *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_ADD_NEW_CONTRIBUTION_ORIGIN" matColumnDef="autoPublicContribution">
                     <th *matHeaderCellDef class="border-cell-left" mat-header-cell>
                         <span jemsText maxLines="2">{{'project.application.form.overview.budget.table.auto.public' | translate}}</span>
                     </th>
@@ -112,20 +112,20 @@
                 </ng-container>
 
                 <ng-container matColumnDef="contribution">
-                    <th *matHeaderCellDef [attr.colspan]="5" class="border-cell-left" mat-header-cell>
+                    <th *matHeaderCellDef [attr.colspan]="isAutomaticPublicContributionAllowed() ? 5 : 4" class="border-cell-left" mat-header-cell>
                         <span jemsText maxLines="2">{{'project.application.form.overview.budget.table.contribution' | translate}}</span>
                     </th>
                 </ng-container>
 
                 <ng-container matColumnDef="total">
                     <th *matHeaderCellDef [attr.rowspan]="2" class="border-cell-left" mat-header-cell>
-                        <span jemsText maxLines="2">{{'project.application.form.overview.budget.table.total' | translate}}</span>
+                        <span jemsText maxLines="2">{{'project.application.form.overview.budget.table.total.header' | translate}}</span>
                     </th>
                     <td *matCellDef="let element" [class.total]="!!element.label" [class.border-cell-left]="!element.extended" [class.total-padding-on-extended-row]="element.extended" mat-cell>
                         <ng-container *ngIf="!element.extended">
                             {{element.totalFundAndContribution | asMoney}}
                         </ng-container>
-                    </td>
+                    </td>   
                 </ng-container>
 
                 <tr *matHeaderRowDef="headerColumns" mat-header-row></tr>
