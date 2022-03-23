@@ -11,8 +11,9 @@
 
 // This function is called when a project is opened or re-opened (e.g. due to
 // the project's config changing)
-import fs from 'fs';
 import pdf from 'pdf-parse';
+import { parse as parseCSV } from 'csv-parse';
+import { finished } from 'stream/promises';
 
 /**
  * @type {Cypress.PluginConfig}
@@ -25,6 +26,19 @@ export default (on, config) => {
       return pdf(subject).catch(function(error) {
         console.log(error);
       });
+    },
+  });
+
+  on('task', {
+    async parseCSV(subject) {
+      let result = [];
+      let some = parseCSV(subject, {relax_column_count: true},function(error, records) {
+        if (error) console.log(error);
+        result = records;
+      });
+
+      await finished(some);
+      return result;
     },
   });
 }
