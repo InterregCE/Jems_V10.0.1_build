@@ -15,6 +15,7 @@
 
 // Import commands.ts using ES2015 syntax:
 import './commands';
+import './login.commands'
 import './call.commands';
 import './application.commands';
 

@@ -26,61 +26,49 @@
 
 declare global {
 
-  interface User {
-    email: string,
-    name?: string,
-    surname?: string,
-    userRoleId?: number,
-    userStatus?: string
-  }
-
   namespace Cypress {
     interface Chainable {
-      loginByRequest(user: User): void;
-
-      logoutByRequest(): void;
-
-      createUser(user: User): boolean;
-
       parsePDF();
+
+      parseCSV();
+
+      clickToDownload(requestToIntercept: string, fileExtension: string);
     }
   }
 }
-
-Cypress.Commands.add('loginByRequest', (user: User) => {
-  cy.request({
-    method: 'POST',
-    url: Cypress.env('authenticationUrl'),
-    body: {
-      email: user.email,
-      password: Cypress.env('defaultPassword')
-    }
-  });
-});
 
 Cypress.Commands.add('parsePDF', {prevSubject: true}, (subject) => {
   cy.task('parsePDF', subject);
 });
 
-Cypress.Commands.add('logoutByRequest', () => {
-  cy.request({
-    method: 'POST',
-    url: 'api/auth/logout'
-  });
+Cypress.Commands.add('parseCSV', {prevSubject: true}, (subject) => {
+  cy.task('parseCSV', subject);
 });
 
-Cypress.Commands.add('createUser', (user: User) => {
-  cy.request({
-    method: 'POST',
-    url: 'api/user',
-    body: user
-  }).then(response => {
-    cy.request({
-      method: 'PUT',
-      url: `api/user/byId/${response.body.id}/password`,
-      headers: {'Content-Type': 'application/json'},
-      body: Cypress.env('defaultPassword')
-    });
+Cypress.Commands.add('clickToDownload', {prevSubject: true}, (subject, requestToIntercept, fileExtension) => {
+  cy.intercept(requestToIntercept).as('downloadRequest');
+  cy.wrap(subject).click();
+  cy.wait('@downloadRequest').then(result => {
+    const regex = new RegExp(`filename="(.*\.${fileExtension})"`);
+    const fileNameMatch = regex.exec(result.response.headers['content-disposition'].toString());
+    if (!fileNameMatch) {
+      throw new Error(`Downloaded file does not have ${fileExtension} extension`);
+    }
+    const fileName = fileNameMatch[1];
+    cy.wait(2000); // TODO needed because of cypress issue, github-20683
+    if (fileExtension === 'pdf') {
+      cy.readFile('./cypress/downloads/' + fileName, null).parsePDF().then(file => {
+        file.fileName = fileName;
+        cy.wrap(file);
+      });
+    } else if (fileExtension === 'csv') {
+      cy.readFile('./cypress/downloads/' + fileName).parseCSV().then(content => {
+        const file = {fileName: fileName, content: content};
+        cy.wrap(file);
+      });
+    } else {
+      throw new Error('No implementation for: ' + fileExtension);
+    }
   });
 });
 
