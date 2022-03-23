@@ -61,6 +61,10 @@ declare global {
       enterEligibilityDecision(applicationId: number, decision);
 
       enterFundingDecision(applicationId: number, decision);
+
+      startModification(applicationId: number);
+
+      approveModification(applicationId: number, approve);
     }
   }
 }
@@ -135,6 +139,21 @@ Cypress.Commands.add('enterFundingDecision', (applicationId: number, decision: A
     method: 'PUT',
     url: `api/project/${applicationId}/approve`,
     body: decision
+  });
+});
+
+Cypress.Commands.add('startModification', (applicationId: number) => {
+  cy.request({
+    method: 'PUT',
+    url: `api/project/${applicationId}/start-modification`,
+  });
+});
+
+Cypress.Commands.add('approveModification', (applicationId: number, approve: ApplicationActionInfoDTO) => {
+  cy.request({
+    method: 'PUT',
+    url: `api/project/${applicationId}/approve modification`,
+    body: approve
   });
 });
 
