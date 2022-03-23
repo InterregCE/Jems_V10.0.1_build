@@ -35,9 +35,11 @@ context('Rounding', () => {
             cy.wrap(cofinancingSection).children().eq(3).children('div').eq(1).should('contain', testData.partnerTotalEligibleBudget);
           });
 
-          cy.get('mat-select[ng-reflect-placeholder="Legal status"]').click();
-          cy.contains('mat-option', testData.contributionStatus).click();
-          cy.get('input[ng-reflect-name="amount"]').type(testData.contributionAmount);
+          cy.contains('div.jems-table-config', 'Source of contribution').then(partnerContributionSection => {
+            cy.wrap(partnerContributionSection).find('mat-select').click();
+            cy.contains('mat-option', testData.contributionStatus).click();
+            cy.wrap(partnerContributionSection).find('input').type(testData.contributionAmount);
+          });
 
           cy.contains('button', 'Save changes').click();
 
@@ -60,6 +62,23 @@ context('Rounding', () => {
             cy.wrap(partnerBreakdown).children().eq(5).should('contain', testData.fundPercentage);
             cy.wrap(partnerBreakdown).children().eq(8).should('contain', testData.roundedUpAmount);
             cy.wrap(partnerBreakdown).children().eq(10).should('contain', testData.partnerTotalEligibleBudget);
+          });
+
+          // verify PDF export
+          cy.visit(`app/project/detail/${applicationId}/export`, {failOnStatusCode: false});
+          cy.contains('button', 'Export').clickToDownload('**/export/application?*', 'pdf').then(fileContent => {
+            const assertionMessage = 'Verify downloaded pdf file';
+            expect(fileContent.text.includes(testData.pdfExportContent), assertionMessage).to.be.true;
+          });
+
+          // verify CSV export
+          cy.contains('button', 'Partners budget').click();
+          cy.contains('button', 'Export').clickToDownload('**/export/budget?*', 'csv').then(file => {
+
+            cy.wrap(testData.csvExportContent).parseCSV().then(expectedFile => {
+              const assertionMessage = 'Verify downloaded csv file';
+              expect(file.content.slice(1), assertionMessage).to.deep.equal(expectedFile);
+            });
           });
         });
       });
