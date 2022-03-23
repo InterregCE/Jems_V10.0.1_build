@@ -445,10 +445,12 @@ export class ProjectApplicationFormSidenavService {
           headline: {i18nKey: 'project.application.form.section.part.c.subsection.five'},
           route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormResults`,
         }] : [],
-      {
+      ...this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN) ||
+      this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_C.PROJECT_RESULT) ?
+        [{
         headline: {i18nKey: 'project.application.form.section.part.c.subsection.six'},
         route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationTimePlan`,
-      },
+      }] : [],
       ...this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_C.PROJECT_MANAGEMENT) ?
         [{
           headline: {i18nKey: 'project.application.form.section.part.c.subsection.seven'},
