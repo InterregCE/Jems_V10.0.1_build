@@ -26,5 +26,5 @@ interface ProjectBudgetPersistence {
 
     fun getProjectUnitCosts(projectId: Long, version: String? = null): List<ProjectUnitCost>
 
-    fun getBudgetForSpfBeneficiary(partnerId: Long, projectId:Long, version: String?): List<ProjectSpfBudgetPerPeriod>
+    fun getSpfBudgetPerPeriod(partnerId: Long, projectId:Long, version: String?): List<ProjectSpfBudgetPerPeriod>
 }

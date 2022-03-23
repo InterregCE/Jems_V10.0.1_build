@@ -196,7 +196,7 @@ class ProjectBudgetPersistenceProvider(
         ) ?: emptyList()
 
     @Transactional(readOnly = true)
-    override fun getBudgetForSpfBeneficiary(partnerId: Long, projectId: Long, version: String?): List<ProjectSpfBudgetPerPeriod> =
+    override fun getSpfBudgetPerPeriod(partnerId: Long, projectId: Long, version: String?): List<ProjectSpfBudgetPerPeriod> =
         projectVersionUtils.fetch(
             version, projectId,
             currentVersionFetcher = {
