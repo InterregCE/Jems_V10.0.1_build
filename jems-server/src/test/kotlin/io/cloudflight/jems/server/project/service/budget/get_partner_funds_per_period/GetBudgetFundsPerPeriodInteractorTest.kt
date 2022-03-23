@@ -31,6 +31,7 @@ import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectPeriodBudget
 import io.cloudflight.jems.server.project.service.model.project_funds_per_period.ProjectFundBudgetPerPeriod
 import io.cloudflight.jems.server.project.service.model.project_funds_per_period.ProjectPeriodFund
+import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetCostsPersistence
 import io.cloudflight.jems.server.project.service.partner.cofinancing.get_cofinancing.GetCoFinancingInteractor
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContributionSpf
@@ -197,6 +198,9 @@ class GetBudgetFundsPerPeriodInteractorTest : UnitTest() {
 
     @MockK
     lateinit var projectBudgetPersistence: ProjectBudgetPersistence
+
+    @MockK
+    lateinit var  budgetCostsPersistence: ProjectPartnerBudgetCostsPersistence
 
     @InjectMockKs
     private lateinit var getPartnerFundsPerPeriod: GetBudgetFundsPerPeriod
@@ -631,6 +635,7 @@ class GetBudgetFundsPerPeriodInteractorTest : UnitTest() {
     @Test
     fun `getSpfBudgetForFundsPerPeriod`() {
         val projectId = 1L
+        val totalSpfBudget = 3500.toBigDecimal()
         val spfBudgetPerPeriods =  mutableListOf(
             ProjectSpfBudgetPerPeriod(
                 periodNumber = 1,
@@ -692,10 +697,9 @@ class GetBudgetFundsPerPeriodInteractorTest : UnitTest() {
         every { getPartnerBudgetPerPeriod.getPartnerBudgetPerPeriod(projectId).partnersBudgetPerPeriod } returns partnerBudgetPerPeriod
         every { getCoFinancing.getCoFinancingForPartnerList(listOf(spfBeneficiaryId), projectId) } returns partnerCoFinancing
 
-        every { projectBudgetPersistence.getBudgetForSpfBeneficiary(spfBeneficiaryId, projectId, null) } returns spfBudgetPerPeriods
+        every { budgetCostsPersistence.getBudgetSpfCostTotal(spfBeneficiaryId, null) } returns totalSpfBudget
+        every { projectBudgetPersistence.getSpfBudgetPerPeriod(spfBeneficiaryId, projectId, null) } returns spfBudgetPerPeriods
         every { getCoFinancing.getSpfCoFinancing(spfBeneficiaryId, null) } returns spfCoFinancing
-
-
 
         Assertions.assertThat(getPartnerFundsPerPeriod.getBudgetFundsPerPeriod(projectId).spfFundsPerPeriod)
             .contains(
@@ -716,7 +720,7 @@ class GetBudgetFundsPerPeriodInteractorTest : UnitTest() {
                     periodFunds = mutableListOf(
                         ProjectPeriodFund(0, BigDecimal.ZERO),
                         ProjectPeriodFund(1,BigDecimal.ZERO),
-                        ProjectPeriodFund(2, BigDecimal.ZERO),
+                        ProjectPeriodFund(2, BigDecimal.ZERO.setScale(2)),
                         ProjectPeriodFund(255, BigDecimal.ZERO)
                     ),
                     totalFundBudget = BigDecimal.ZERO.setScale(2)
@@ -727,13 +731,119 @@ class GetBudgetFundsPerPeriodInteractorTest : UnitTest() {
                     periodFunds = mutableListOf(
                         ProjectPeriodFund(0, BigDecimal.ZERO),
                         ProjectPeriodFund(1,BigDecimal.ZERO),
-                        ProjectPeriodFund(2, BigDecimal.ZERO),
+                        ProjectPeriodFund(2, BigDecimal.ZERO.setScale(2)),
                         ProjectPeriodFund(255, BigDecimal.ZERO)
                     ),
                     totalFundBudget = BigDecimal.ZERO.setScale(2)
                 )
             )
+    }
 
+    @Test
+    fun `getSpfBudgetForFundsPerPeriod - all budget is set to last period`() {
+        val projectId = 1L
+        val totalSpfBudget = 3500.toBigDecimal()
+        val spfBudgetPerPeriods =  mutableListOf(
+            ProjectSpfBudgetPerPeriod(
+                periodNumber = 1,
+                spfCostPerPeriod = 0.00.toBigDecimal()
+            ),
+            ProjectSpfBudgetPerPeriod(
+                periodNumber = 2,
+                spfCostPerPeriod = 0.00.toBigDecimal()
+            )
+        )
+        val spfCoFinancing = ProjectPartnerCoFinancingAndContributionSpf(
+            finances = listOf(
+                ProjectPartnerCoFinancing(
+                    ProjectPartnerCoFinancingFundTypeDTO.MainFund,
+                    ProgrammeFund(id = fundIdFirst, selected = true),
+                    percentage = 80.00.toBigDecimal()
+                )),
+            partnerContributions = listOf(
+                ProjectPartnerContributionSpf(
+                    spfBeneficiaryId,
+                    "ONE",
+                    amount = BigDecimal(200)
+                )
+            )
+        )
+
+        val partnerBudgetPerPeriod = listOf(
+            ProjectPartnerBudgetPerPeriod(
+                spfBeneficiary,
+                mutableListOf(),
+                totalPartnerBudget = BigDecimal.ZERO,
+                totalPartnerBudgetDetail = BudgetCostsDetail()
+
+            ),
+            ProjectPartnerBudgetPerPeriod(
+                spfBeneficiary,
+                mutableListOf(),
+                totalPartnerBudget = BigDecimal.ZERO,
+                totalPartnerBudgetDetail = BudgetCostsDetail()
+            )
+        )
+
+        val projectPartnerCoFinancing = listOf(
+            ProjectPartnerCoFinancing(
+                ProjectPartnerCoFinancingFundTypeDTO.MainFund,
+                ProgrammeFund(id = fundIdFirst, selected = true),
+                BigDecimal.valueOf(80)
+            )
+        )
+
+        val partnerCoFinancing = mapOf(Pair(spfBeneficiaryId, projectPartnerCoFinancing))
+
+        every { projectBudgetPersistence.getPartnersForProjectId(projectId)} returns listOf(spfBeneficiary)
+        every { callPersistence.getCallByProjectId(projectId) } returns spfCallDetail
+        every { projectPersistence.getProjectPeriods(projectId) } returns listOf(
+            ProjectPeriod(number = 1, start = 1, end = 2),
+            ProjectPeriod(number = 2, start = 2, end = 2),
+        )
+        every { getPartnerBudgetPerPeriod.getPartnerBudgetPerPeriod(projectId).partnersBudgetPerPeriod } returns partnerBudgetPerPeriod
+        every { getCoFinancing.getCoFinancingForPartnerList(listOf(spfBeneficiaryId), projectId) } returns partnerCoFinancing
+
+        every { budgetCostsPersistence.getBudgetSpfCostTotal(spfBeneficiaryId, null) } returns totalSpfBudget
+        every { projectBudgetPersistence.getSpfBudgetPerPeriod(spfBeneficiaryId, projectId, null) } returns spfBudgetPerPeriods
+        every { getCoFinancing.getSpfCoFinancing(spfBeneficiaryId, null) } returns spfCoFinancing
+
+        Assertions.assertThat(getPartnerFundsPerPeriod.getBudgetFundsPerPeriod(projectId).spfFundsPerPeriod)
+            .contains(
+                ProjectFundBudgetPerPeriod(
+                    fund = firstFund,
+                    costType = ProjectPartnerCostType.Spf,
+                    periodFunds = mutableListOf(
+                        ProjectPeriodFund(0, BigDecimal.ZERO),
+                        ProjectPeriodFund(1, BigDecimal.ZERO.setScale(2)),
+                        ProjectPeriodFund(2, BigDecimal(2800).setScale(2)),
+                        ProjectPeriodFund(255, BigDecimal.ZERO)
+                    ),
+                    totalFundBudget = BigDecimal(2800).setScale(2)
+                ),
+                ProjectFundBudgetPerPeriod(
+                    fund = secondFund,
+                    costType = ProjectPartnerCostType.Spf,
+                    periodFunds = mutableListOf(
+                        ProjectPeriodFund(0, BigDecimal.ZERO),
+                        ProjectPeriodFund(1,BigDecimal.ZERO),
+                        ProjectPeriodFund(2, BigDecimal.ZERO.setScale(2)),
+                        ProjectPeriodFund(255, BigDecimal.ZERO)
+                    ),
+                    totalFundBudget = BigDecimal.ZERO.setScale(2)
+                ),
+                ProjectFundBudgetPerPeriod(
+                    fund = thirdFund,
+                    costType = ProjectPartnerCostType.Spf,
+                    periodFunds = mutableListOf(
+                        ProjectPeriodFund(0, BigDecimal.ZERO),
+                        ProjectPeriodFund(1,BigDecimal.ZERO),
+                        ProjectPeriodFund(2, BigDecimal.ZERO.setScale(2)),
+                        ProjectPeriodFund(255, BigDecimal.ZERO)
+                    ),
+                    totalFundBudget = BigDecimal.ZERO.setScale(2)
+                )
+            )
     }
 
     private fun getProjectPeriods(
