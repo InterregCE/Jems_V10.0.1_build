@@ -14,8 +14,6 @@
     "login.spec.ts",
     "programme/programme.spec.ts",
     "call/call.spec.ts",
-    "application/application.spec.ts",
-    "application/application-form-exports/exports.spec.ts",
-    "application/rounding/rounding.spec.ts"
+    "application/**"
   ]
 }
