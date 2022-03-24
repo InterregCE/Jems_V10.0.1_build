@@ -20,7 +20,7 @@ import {FormVisibilityStatusService} from '@project/common/services/form-visibil
 export class ProjectBudgetOverviewComponent {
   APPLICATION_FORM = APPLICATION_FORM;
   Alert = Alert;
-  displayedColumns : string[] = this.buildDisplayColumns();
+  displayedColumns: string[] = this.buildDisplayColumns();
   headerColumns = ['programmeFunding', 'contribution', 'total'];
   allColumns = [...this.displayedColumns, 'total'];
 
@@ -56,11 +56,11 @@ export class ProjectBudgetOverviewComponent {
       'totalPublicContribution',
       'privateContribution',
       'totalContribution'
-    ]
+    ];
   }
 
   isAutomaticPublicContributionAllowed(): boolean {
-    return this.formVisibilityStatusService.isVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_ADD_NEW_CONTRIBUTION_ORIGIN)
+    return this.formVisibilityStatusService.isVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_ADD_NEW_CONTRIBUTION_ORIGIN);
   }
 
   private getFundOverviews(overview: ProjectCoFinancingOverviewDTO, isCallSpf: boolean): ProjectCoFinancingByFundOverviewDTO[] {
