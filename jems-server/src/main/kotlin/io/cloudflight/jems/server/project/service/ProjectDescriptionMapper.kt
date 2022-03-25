@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.service
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.common.entity.extractField
+import io.cloudflight.jems.server.project.controller.toModel
 import io.cloudflight.jems.server.project.entity.TranslationId
 import io.cloudflight.jems.server.project.entity.description.ProjectCooperationCriteriaEntity
 import io.cloudflight.jems.server.project.entity.description.ProjectHorizontalPrinciplesEntity
@@ -119,7 +120,7 @@ fun List<ProjectRelevanceBenefitRow>.toRelevanceBenefits() =
 fun List<ProjectRelevanceSpfRecipientRow>.toRelevanceSpfRecipients() =
     this.groupBy { it.id }.map { groupedRows ->
         ProjectRelevanceSpfRecipient(
-            recipientGroup = groupedRows.value.first().recipientGroup,
+            recipientGroup = groupedRows.value.first().recipientGroup.toModel(),
             specification = groupedRows.value.extractField { it.specification }
         )
     }

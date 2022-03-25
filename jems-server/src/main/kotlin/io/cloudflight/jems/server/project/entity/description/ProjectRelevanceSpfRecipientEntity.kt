@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.entity.description
 
-import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroupDTO
+import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
 import java.util.UUID
 import javax.persistence.CascadeType
 import javax.persistence.Column
@@ -28,7 +28,7 @@ class ProjectRelevanceSpfRecipientEntity(
 
     @Enumerated(EnumType.STRING)
     @field:NotNull
-    val recipientGroup: ProjectTargetGroupDTO,
+    val recipientGroup: ProjectTargetGroup,
 
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.sourceEntity")
     val translatedValues: MutableSet<ProjectRelevanceSpfRecipientTransl> = mutableSetOf()

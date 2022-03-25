@@ -14,6 +14,7 @@ import io.cloudflight.jems.api.project.dto.description.InputProjectRelevanceSyne
 import io.cloudflight.jems.api.project.dto.description.OutputProjectDescription
 import io.cloudflight.jems.api.project.dto.description.OutputProjectLongTermPlans
 import io.cloudflight.jems.api.project.dto.description.OutputProjectManagement
+import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroupDTO
 import io.cloudflight.jems.server.project.service.model.ProjectCooperationCriteria
 import io.cloudflight.jems.server.project.service.model.ProjectDescription
 import io.cloudflight.jems.server.project.service.model.ProjectHorizontalPrinciples
@@ -26,6 +27,7 @@ import io.cloudflight.jems.server.project.service.model.ProjectRelevanceBenefit
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceSpfRecipient
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceStrategy
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceSynergy
+import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
 
 // map for get (model) to DTOs for API
 
@@ -46,8 +48,11 @@ fun ProjectRelevanceBenefit.toProjectBenefit() = InputProjectRelevanceBenefit(
     group = group,
     specification = specification
 )
+fun ProjectTargetGroup.toDto() =
+    ProjectTargetGroupDTO.valueOf(this.name)
+
 fun ProjectRelevanceSpfRecipient.toProjectSpfRecipient() = ProjectRelevanceSpfRecipientDTO(
-    recipientGroup = recipientGroup,
+    recipientGroup = recipientGroup.toDto(),
     specification = specification
 )
 fun ProjectRelevanceStrategy.toProjectStrategy() = InputProjectRelevanceStrategy(
@@ -122,8 +127,12 @@ fun InputProjectRelevanceBenefit.toProjectBenefit() = ProjectRelevanceBenefit(
     group = group,
     specification = specification
 )
+
+fun ProjectTargetGroupDTO.toModel() =
+    ProjectTargetGroup.valueOf(this.name)
+
 fun ProjectRelevanceSpfRecipientDTO.toProjectSpfRecipient() = ProjectRelevanceSpfRecipient(
-    recipientGroup = recipientGroup,
+    recipientGroup = recipientGroup.toModel(),
     specification = specification
 )
 fun InputProjectRelevanceStrategy.toProjectStrategy() = ProjectRelevanceStrategy(
