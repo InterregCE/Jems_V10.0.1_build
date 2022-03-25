@@ -63,9 +63,11 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budg
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.PartnerBudgetData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.ProjectPartnerBudgetOptionsData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.ProjectPartnerCoFinancingAndContributionData
+import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.ProjectPartnerCoFinancingAndContributionSpfData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.ProjectPartnerCoFinancingData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.ProjectPartnerCoFinancingFundTypeData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.ProjectPartnerContributionData
+import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.ProjectPartnerContributionSpfData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.ProjectPartnerContributionStatusData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.ProjectPartnerSummaryData
 import io.cloudflight.jems.plugin.contract.models.project.sectionC.ProjectDataSectionC
@@ -128,7 +130,9 @@ import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssess
 import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssessmentQuality
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContributionSpf
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionSpf
 import io.cloudflight.jems.server.project.service.partner.model.BudgetCosts
 import io.cloudflight.jems.server.project.service.partner.model.BudgetGeneralCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetPeriod
@@ -235,6 +239,7 @@ fun List<IndicatorOverviewLine>.toIndicatorOverviewLines() = map {
 fun ProjectPartnerBudgetOptions.toDataModel() = pluginDataMapper.map(this)
 
 fun ProjectPartnerCoFinancingAndContribution.toDataModel() = pluginDataMapper.map(this)
+fun ProjectPartnerCoFinancingAndContributionSpf.toDataModel() = pluginDataMapper.map(this)
 
 fun BudgetCosts.toDataModel() = pluginDataMapper.map(this)
 fun BudgetCostsCalculationResult.toDataModel() = pluginDataMapper.map(this)
@@ -318,6 +323,8 @@ abstract class PluginDataMapper {
     abstract fun map(projectPartnerCoFinancingFundTypeDTO: ProjectPartnerCoFinancingFundTypeDTO): ProjectPartnerCoFinancingFundTypeData
     abstract fun map(projectPartnerCoFinancing: ProjectPartnerCoFinancing): ProjectPartnerCoFinancingData
     abstract fun map(projectPartnerCoFinancingAndContribution: ProjectPartnerCoFinancingAndContribution): ProjectPartnerCoFinancingAndContributionData
+    abstract fun map(projectPartnerCoFinancingAndContributionSpf: ProjectPartnerCoFinancingAndContributionSpf): ProjectPartnerCoFinancingAndContributionSpfData
+    abstract fun map(projectPartnerContributionSpf: ProjectPartnerContributionSpf) : ProjectPartnerContributionSpfData
     abstract fun map(projectPartnerBudgetOptions: ProjectPartnerBudgetOptions): ProjectPartnerBudgetOptionsData
     abstract fun map(address: Address): WorkPackageInvestmentAddressData
     abstract fun map(workPackageInvestment: WorkPackageInvestment): WorkPackageInvestmentData

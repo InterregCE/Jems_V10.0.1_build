@@ -52,6 +52,7 @@ import io.cloudflight.jems.server.project.service.model.ProjectRelevanceBenefit
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceSpfRecipient
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceStrategy
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceSynergy
+import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -112,7 +113,7 @@ internal class ProjectDescriptionPersistenceTest : UnitTest() {
                 ProjectRelevanceSpfRecipientEntity(
                     id = projectSpfRecipientUuid,
                     sortNumber = 1,
-                    recipientGroup = ProjectTargetGroupDTO.Egtc,
+                    recipientGroup = ProjectTargetGroup.Egtc,
                 ).apply {
                     translatedValues.addAll(
                         combineTranslatedValuesSpfRecipient(
@@ -211,7 +212,7 @@ internal class ProjectDescriptionPersistenceTest : UnitTest() {
                 )),
                 projectSpfRecipients = listOf(
                     ProjectRelevanceSpfRecipient(
-                        recipientGroup = ProjectTargetGroupDTO.Egtc,
+                        recipientGroup = ProjectTargetGroup.Egtc,
                         specification = setOf(InputTranslation(SystemLanguage.EN, "specification"))
                     )),
                 projectStrategies = listOf(ProjectRelevanceStrategy(

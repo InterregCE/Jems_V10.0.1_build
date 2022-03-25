@@ -32,6 +32,7 @@ import io.cloudflight.jems.server.project.service.model.ProjectRelevanceBenefit
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceSpfRecipient
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceStrategy
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceSynergy
+import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
 import io.cloudflight.jems.server.project.service.update_project_description.UpdateProjectDescriptionInteractor
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -60,7 +61,7 @@ class ProjectDescriptionControllerTest {
                 ),
                 projectSpfRecipients = listOf(
                     ProjectRelevanceSpfRecipient(
-                        recipientGroup = ProjectTargetGroupDTO.Egtc,
+                        recipientGroup = ProjectTargetGroup.Egtc,
                         specification = setOf(InputTranslation(SystemLanguage.EN, "specification"))
                     )
                 ),

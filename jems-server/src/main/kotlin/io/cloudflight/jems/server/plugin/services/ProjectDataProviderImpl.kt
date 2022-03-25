@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.plugin.services
 
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.plugin.contract.models.project.ProjectData
 import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ProjectLifecycleData
 import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA4.ProjectResultIndicatorOverview
@@ -33,6 +34,7 @@ import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerB
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
 import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPartnerCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContributionSpf
 import io.cloudflight.jems.server.project.service.partner.model.BudgetCosts
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import io.cloudflight.jems.server.project.service.result.ProjectResultPersistence
@@ -42,6 +44,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal.ZERO
+import java.math.BigDecimal.valueOf
 
 @Service
 class ProjectDataProviderImpl(
@@ -79,6 +82,7 @@ class ProjectDataProviderImpl(
     @Transactional(readOnly = true)
     override fun getProjectDataForProjectId(projectId: Long, version: String?): ProjectData {
         val project = projectPersistence.getProject(projectId, version)
+        val isSpfCall = project.callSettings.callType == CallType.SPF
         val legalStatuses = programmeLegalStatusPersistence.getMax20Statuses()
         val lumpSums = projectLumpSumPersistence.getLumpSums(projectId, version)
 
@@ -89,12 +93,25 @@ class ProjectDataProviderImpl(
 
         val budgetCoFinancingAndContributions: MutableMap<Long, ProjectPartnerCoFinancingAndContribution> =
             mutableMapOf()
+        val budgetSPFCoFinancingAndContributions: MutableMap<Long, ProjectPartnerCoFinancingAndContributionSpf> =
+            mutableMapOf()
 
         val partnersData = partners.map { partner ->
             val budgetOptions = partnersBudgetOptions.firstOrNull() { it.partnerId == partner.id }
             val coFinancing = coFinancingPersistence.getCoFinancingAndContributions(partner.id, version).also {
                 budgetCoFinancingAndContributions[partner.id] = it
             }.toDataModel()
+
+            val spfCoFinancing =
+                if (isSpfCall)
+                    coFinancingPersistence.getSpfCoFinancingAndContributions(partner.id, version).also {
+                        budgetSPFCoFinancingAndContributions[partner.id] = it
+                    }.toDataModel()
+                else null
+            val spfTotalBudget =
+                if (isSpfCall)
+                    getBudgetCostsPersistence.getBudgetSpfCostTotal(partner.id, version)
+                else valueOf(0, 2)
 
             val budgetCosts = BudgetCosts(
                 staffCosts = getBudgetCostsPersistence.getBudgetStaffCosts(partner.id, version),
@@ -117,7 +134,9 @@ class ProjectDataProviderImpl(
                 coFinancing,
                 budgetCosts,
                 budgetCalculationResult.totalCosts,
-                budgetCalculationResult
+                budgetCalculationResult,
+                spfCoFinancing,
+                spfTotalBudget
             )
             val stateAid = partnerPersistence.getPartnerStateAid(partnerId = partner.id, version)
 
