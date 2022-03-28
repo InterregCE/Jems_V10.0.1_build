@@ -14,7 +14,7 @@
         <div *ngIf="applicationForm?.controls?.nameOfTheLeadPartner?.value">
             <mat-form-field *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.ORIGINAL_NAME_OF_ORGANISATION"
                             jemsFormFieldWidth="half">
-                <mat-label>{{'project.application.form.field.project.nameOfTheLeadPartner' | translate}}</mat-label>
+                <mat-label>{{'project.application.form.field.project.nameOfTheLeadPartner' | adaptTranslationKeyByCallType | async | translate}}</mat-label>
                 <input formControlName="nameOfTheLeadPartner" matInput name="nameOfTheLeadPartner">
             </mat-form-field>
         </div>
@@ -22,7 +22,7 @@
         <div *ngIf="applicationForm?.controls?.nameOfTheLeadPartnerInEnglish?.value">
             <mat-form-field *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.ENGLISH_NAME_OF_ORGANISATION"
                             jemsFormFieldWidth="half">
-                <mat-label>{{'project.application.form.field.project.nameOfTheLeadPartnerInEnglish' | translate}}</mat-label>
+                <mat-label>{{'project.application.form.field.project.nameOfTheLeadPartnerInEnglish' | adaptTranslationKeyByCallType | async | translate}}</mat-label>
                 <input formControlName="nameOfTheLeadPartnerInEnglish" matInput name="nameOfTheLeadPartnerInEnglish">
             </mat-form-field>
         </div>

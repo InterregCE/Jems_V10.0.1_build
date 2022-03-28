@@ -6,6 +6,7 @@ import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.plugin.contract.models.call.CallDetailData
 import io.cloudflight.jems.plugin.contract.models.call.CallStatusData
+import io.cloudflight.jems.plugin.contract.models.call.CallTypeData
 import io.cloudflight.jems.plugin.contract.models.call.flatrate.FlatRateSetupData
 import io.cloudflight.jems.plugin.contract.models.common.InputTranslationData
 import io.cloudflight.jems.plugin.contract.models.common.SystemLanguageData
@@ -107,7 +108,8 @@ internal class CallDataProviderImplTest : UnitTest() {
                 lumpSums = listOf(),
                 unitCosts = listOf(),
                 applicationFormFieldConfigurations = applicationFormFieldConfigurations.toDataModel(),
-                inputLanguages = setOf(SystemLanguageData.EN, SystemLanguageData.DE)
+                inputLanguages = setOf(SystemLanguageData.EN, SystemLanguageData.DE),
+                type = CallTypeData.STANDARD
             )
         )
     }
@@ -135,7 +137,8 @@ internal class CallDataProviderImplTest : UnitTest() {
                 lumpSums = listOf(),
                 unitCosts = listOf(),
                 applicationFormFieldConfigurations = applicationFormFieldConfigurations.toDataModel(),
-                inputLanguages = setOf(SystemLanguageData.EN, SystemLanguageData.DE)
+                inputLanguages = setOf(SystemLanguageData.EN, SystemLanguageData.DE),
+                type = CallTypeData.STANDARD
             )
         )
     }

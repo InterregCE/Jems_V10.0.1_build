@@ -358,12 +358,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                         specification = setOf(InputTranslation(SystemLanguage.EN, "specification"))
                     )
                 ),
-                projectSpfRecipients = listOf(
-                    ProjectRelevanceSpfRecipient(
-                        recipientGroup = ProjectTargetGroupDTO.Egtc,
-                        specification = setOf(InputTranslation(SystemLanguage.EN, "specification"))
-                    )
-                ),
+                projectSpfRecipients = emptyList(),
                 projectStrategies = listOf(
                     ProjectRelevanceStrategy(
                         strategy = ProgrammeStrategy.AtlanticStrategy,
