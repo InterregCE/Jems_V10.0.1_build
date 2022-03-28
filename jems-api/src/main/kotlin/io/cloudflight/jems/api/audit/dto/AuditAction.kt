@@ -6,6 +6,9 @@ enum class AuditAction {
     CALL_CONFIGURATION_CHANGED,
     CALL_PUBLISHED,
 
+    // package CURRENCY
+    CURRENCY_IMPORT,
+
     // package NUTS
     NUTS_DATASET_DOWNLOAD,
 
