@@ -4,9 +4,8 @@ import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.entity.TranslationId
-import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
-import io.cloudflight.jems.server.programme.repository.legalstatus.ProgrammeLegalStatusRepository
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
+import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageActivityDeliverableEntity
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageActivityDeliverableTranslEntity
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageActivityEntity
@@ -15,26 +14,39 @@ import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerR
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageOutputEntity
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageOutputTranslEntity
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageTranslEntity
-import io.cloudflight.jems.server.project.repository.report.ProjectPartnerReportCoFinancingRepository
 import io.cloudflight.jems.server.project.repository.report.ProjectPartnerReportRepository
-import io.cloudflight.jems.server.project.repository.report.ProjectReportPersistenceProvider
+import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
 import io.cloudflight.jems.server.project.service.report.model.workPlan.ProjectPartnerReportWorkPackage
 import io.cloudflight.jems.server.project.service.report.model.workPlan.ProjectPartnerReportWorkPackageActivity
 import io.cloudflight.jems.server.project.service.report.model.workPlan.ProjectPartnerReportWorkPackageActivityDeliverable
 import io.cloudflight.jems.server.project.service.report.model.workPlan.ProjectPartnerReportWorkPackageOutput
-import io.cloudflight.jems.server.project.service.report.partner.workPlan.ProjectReportWorkPlanPersistence
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import java.time.ZonedDateTime
 import java.util.Optional
 
 class ProjectReportWorkPlanPersistenceProviderTest : UnitTest() {
 
     companion object {
         private const val PARTNER_ID = 362L
+
+        private val dummyAttachment = ReportProjectFileEntity(
+            id = 970L,
+            projectId = 4L,
+            partnerId = PARTNER_ID,
+            path = "",
+            minioBucket = "",
+            minioLocation = "",
+            name = "some_file.txt",
+            type = mockk(),
+            size = 1475,
+            user = mockk(),
+            uploaded = ZonedDateTime.now(),
+        )
 
         private fun wp(id: Long, report: ProjectPartnerReportEntity) = ProjectPartnerReportWorkPackageEntity(
             id = id,
@@ -56,7 +68,8 @@ class ProjectReportWorkPlanPersistenceProviderTest : UnitTest() {
             workPackageEntity = wp,
             number = id.toInt(),
             activityId = null,
-            translatedValues = mutableSetOf()
+            attachment = dummyAttachment,
+            translatedValues = mutableSetOf(),
         ).apply {
             translatedValues.add(
                 ProjectPartnerReportWorkPackageActivityTranslEntity(
@@ -74,6 +87,7 @@ class ProjectReportWorkPlanPersistenceProviderTest : UnitTest() {
             deliverableId = null,
             contribution = true,
             evidence = false,
+            attachment = null,
             translatedValues = mutableSetOf()
         ).apply {
             translatedValues.add(
@@ -90,6 +104,7 @@ class ProjectReportWorkPlanPersistenceProviderTest : UnitTest() {
             number = id.toInt(),
             contribution = false,
             evidence = null,
+            attachment = dummyAttachment,
             translatedValues = mutableSetOf()
         ).apply {
             translatedValues.add(
@@ -118,7 +133,13 @@ class ProjectReportWorkPlanPersistenceProviderTest : UnitTest() {
                                 title = setOf(InputTranslation(SystemLanguage.EN, "[$deliverableId] title")),
                                 contribution = true,
                                 evidence = false,
+                                attachment = null,
                             )
+                        ),
+                        attachment = ProjectReportFileMetadata(
+                            dummyAttachment.id,
+                            dummyAttachment.name,
+                            dummyAttachment.uploaded,
                         ),
                     )
                 ),
@@ -129,6 +150,11 @@ class ProjectReportWorkPlanPersistenceProviderTest : UnitTest() {
                         title = setOf(InputTranslation(SystemLanguage.EN, "[$outputId] title")),
                         contribution = false,
                         evidence = null,
+                        attachment = ProjectReportFileMetadata(
+                            dummyAttachment.id,
+                            dummyAttachment.name,
+                            dummyAttachment.uploaded,
+                        ),
                     )
                 )
             )
@@ -174,6 +200,29 @@ class ProjectReportWorkPlanPersistenceProviderTest : UnitTest() {
 
         assertThat(persistence.getPartnerReportWorkPlanById(partnerId = PARTNER_ID, reportId = 14L))
             .containsExactly(expectedWorkPlan(wpId = 15L, activityId = 18L, deliverableId = 27L, outputId = 35L))
+    }
+
+    @Test
+    fun existsByActivityId() {
+        val reportId = 200L
+        every { workPlanActivityRepository.existsByActivityId(15L, reportId = reportId, PARTNER_ID) } returns true
+        assertThat(persistence.existsByActivityId(PARTNER_ID, reportId = reportId, activityId = 15L)).isTrue
+    }
+
+    @Test
+    fun existsByDeliverableId() {
+        val reportId = 201L
+        every { workPlanActivityDeliverableRepository
+            .existsByDeliverableId(deliverableId = 150L, 15L, reportId, PARTNER_ID)
+        } returns true
+        assertThat(persistence.existsByDeliverableId(PARTNER_ID, reportId = reportId, activityId = 15L, deliverableId = 150L)).isTrue
+    }
+
+    @Test
+    fun existsByOutputId() {
+        val reportId = 202L
+        every { workPlanOutputRepository.existsByOutputId(17L, reportId = reportId, PARTNER_ID) } returns false
+        assertThat(persistence.existsByOutputId(PARTNER_ID, reportId = reportId, outputId = 17L)).isFalse
     }
 
     @Test

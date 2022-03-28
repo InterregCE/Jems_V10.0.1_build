@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.entity.report.workPlan
 
+import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
 import javax.persistence.CascadeType
 import javax.persistence.Entity
 import javax.persistence.FetchType
@@ -40,6 +41,10 @@ class ProjectPartnerReportWorkPackageOutputEntity(
     var contribution: Boolean?,
 
     var evidence: Boolean?,
+
+    @ManyToOne
+    @JoinColumn(name = "file_id")
+    var attachment: ReportProjectFileEntity?,
 
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.sourceEntity")
     val translatedValues: MutableSet<ProjectPartnerReportWorkPackageOutputTranslEntity> = mutableSetOf()

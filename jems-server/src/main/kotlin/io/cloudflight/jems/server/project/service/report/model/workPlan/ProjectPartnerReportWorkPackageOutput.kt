@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.model.workPlan
 
 import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
 
 data class ProjectPartnerReportWorkPackageOutput(
     val id: Long,
@@ -9,4 +10,5 @@ data class ProjectPartnerReportWorkPackageOutput(
 
     val contribution: Boolean?,
     val evidence: Boolean?,
+    val attachment: ProjectReportFileMetadata?,
 )

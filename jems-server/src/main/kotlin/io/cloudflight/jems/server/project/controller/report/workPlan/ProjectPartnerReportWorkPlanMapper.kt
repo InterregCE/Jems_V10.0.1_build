@@ -8,6 +8,7 @@ import io.cloudflight.jems.api.project.dto.report.partner.workPlan.UpdateProject
 import io.cloudflight.jems.api.project.dto.report.partner.workPlan.UpdateProjectPartnerReportWorkPackageActivityDeliverableDTO
 import io.cloudflight.jems.api.project.dto.report.partner.workPlan.UpdateProjectPartnerReportWorkPackageDTO
 import io.cloudflight.jems.api.project.dto.report.partner.workPlan.UpdateProjectPartnerReportWorkPackageOutputDTO
+import io.cloudflight.jems.server.project.controller.report.toDto
 import io.cloudflight.jems.server.project.service.report.model.workPlan.ProjectPartnerReportWorkPackage
 import io.cloudflight.jems.server.project.service.report.model.workPlan.ProjectPartnerReportWorkPackageActivity
 import io.cloudflight.jems.server.project.service.report.model.workPlan.ProjectPartnerReportWorkPackageActivityDeliverable
@@ -34,6 +35,7 @@ fun List<ProjectPartnerReportWorkPackageActivity>.toActivitiesDto() = map {
         title = it.title,
         progress = it.progress,
         deliverables = it.deliverables.toDeliverablesDto(),
+        attachment = it.attachment?.toDto(),
     )
 }
 
@@ -44,6 +46,7 @@ fun List<ProjectPartnerReportWorkPackageActivityDeliverable>.toDeliverablesDto()
         title = it.title,
         contribution = it.contribution,
         evidence = it.evidence,
+        attachment = it.attachment?.toDto(),
     )
 }
 
@@ -54,6 +57,7 @@ fun List<ProjectPartnerReportWorkPackageOutput>.toOutputsDto() = map {
         title = it.title,
         contribution = it.contribution,
         evidence = it.evidence,
+        attachment = it.attachment?.toDto(),
     )
 }
 
