@@ -32,7 +32,7 @@ class ProjectReportExpenditurePersistenceProvider(
         val reportEntity = reportRepository.findByIdAndPartnerId(partnerId = partnerId, id = reportId)
 
         val toNotBeDeletedIds = expenditureCosts.mapNotNullTo(HashSet()) { it.id }
-        val existingIds = reportExpenditureRepository.findExistingCollaborationIdsFor(reportEntity)
+        val existingIds = reportExpenditureRepository.findExistingExpenditureIdsFor(reportEntity)
 
         reportExpenditureRepository.deleteAllById(existingIds.minus(toNotBeDeletedIds))
         return reportExpenditureRepository.saveAll(expenditureCosts.toEntities(reportEntity)).toModel()

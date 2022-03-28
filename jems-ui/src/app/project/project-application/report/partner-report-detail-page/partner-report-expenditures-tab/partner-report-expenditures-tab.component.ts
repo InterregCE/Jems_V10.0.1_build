@@ -230,7 +230,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       {
         id: this.formBuilder.control(reportExpenditureCost?.id),
         costCategory: this.formBuilder.control(reportExpenditureCost?.costCategory),
-        investmentNumber: this.formBuilder.control(reportExpenditureCost?.investmentNumber),
+        investmentNumber: this.formBuilder.control(reportExpenditureCost?.investmentId),
         contractID: this.formBuilder.control(reportExpenditureCost?.contractId),
         internalReferenceNumber: this.formBuilder.control(reportExpenditureCost?.internalReferenceNumber,
           Validators.maxLength(30)),

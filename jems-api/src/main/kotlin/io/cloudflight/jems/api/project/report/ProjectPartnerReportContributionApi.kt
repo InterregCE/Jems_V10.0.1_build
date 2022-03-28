@@ -26,7 +26,7 @@ interface ProjectPartnerReportContributionApi {
         @PathVariable reportId: Long,
     ): ProjectPartnerReportContributionWrapperDTO
 
-    @ApiOperation("Updates project partner report work packages")
+    @ApiOperation("Updates project partner report contributions")
     @PutMapping(ENDPOINT_API_PROJECT_PARTNER_REPORT_CONTRIBUTION, consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateContribution(
         @PathVariable partnerId: Long,
