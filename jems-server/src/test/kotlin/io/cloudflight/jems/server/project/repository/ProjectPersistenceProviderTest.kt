@@ -85,15 +85,15 @@ import java.math.BigDecimal
 import java.sql.Timestamp
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.util.Optional
 import com.querydsl.core.types.Predicate
+import java.time.ZoneId
 
 /**
  * tests implementation of ProjectPersistenceProvider including mappings and projectVersionUtils
  */
-internal class ProjectPersistenceTest : UnitTest() {
+internal class ProjectPersistenceProviderTest : UnitTest() {
 
     companion object {
         private const val PROJECT_ID = 1L
@@ -585,8 +585,10 @@ internal class ProjectPersistenceTest : UnitTest() {
                     applicant = project.applicant.toUserSummary(),
                     projectStatus = ProjectStatus(
                         mockRow.statusId, mockRow.status,
-                    UserSummary(mockRow.userId, mockRow.email, mockRow.name, mockRow.surname, UserRoleSummary(mockRow.roleId, mockRow.roleName), mockRow.userStatus),
-                        ZonedDateTime.of(mockRow.updated.toLocalDateTime(), ZoneOffset.UTC), mockRow.decisionDate, mockRow.entryIntoForceDate, mockRow.note
+                    UserSummary(mockRow.userId, mockRow.email, mockRow.name, mockRow.surname,
+                        UserRoleSummary(mockRow.roleId, mockRow.roleName), mockRow.userStatus),
+                        ZonedDateTime.of(mockRow.updated.toLocalDateTime(), ZoneId.systemDefault()),
+                        mockRow.decisionDate, mockRow.entryIntoForceDate, mockRow.note
                     ),
                     firstSubmission = project.firstSubmission?.toProjectStatus(),
                     lastResubmission = project.lastResubmission?.toProjectStatus(),
