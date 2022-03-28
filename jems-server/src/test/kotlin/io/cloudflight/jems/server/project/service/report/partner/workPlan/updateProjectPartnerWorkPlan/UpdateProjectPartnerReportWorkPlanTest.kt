@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportStatusAndVersion
 import io.cloudflight.jems.server.project.service.report.model.ReportStatus
+import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
 import io.cloudflight.jems.server.project.service.report.model.workPlan.ProjectPartnerReportWorkPackage
 import io.cloudflight.jems.server.project.service.report.model.workPlan.ProjectPartnerReportWorkPackageActivity
 import io.cloudflight.jems.server.project.service.report.model.workPlan.ProjectPartnerReportWorkPackageActivityDeliverable
@@ -26,11 +27,14 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import java.time.ZonedDateTime
 
 internal class UpdateProjectPartnerReportWorkPlanTest : UnitTest() {
 
     companion object {
         private const val PARTNER_ID = 489L
+
+        private val dummyFile = ProjectReportFileMetadata(750L, "cat_gif.gif", ZonedDateTime.now())
 
         private val oldWorkPlan = ProjectPartnerReportWorkPackage(
             id = 45L,
@@ -49,8 +53,10 @@ internal class UpdateProjectPartnerReportWorkPlanTest : UnitTest() {
                             title = setOf(InputTranslation(EN, "[87] title")),
                             contribution = true,
                             evidence = false,
+                            attachment = dummyFile,
                         )
                     ),
+                    attachment = dummyFile,
                 )
             ),
             outputs = listOf(
@@ -60,6 +66,7 @@ internal class UpdateProjectPartnerReportWorkPlanTest : UnitTest() {
                     title = setOf(InputTranslation(EN, "[61] title")),
                     contribution = false,
                     evidence = null,
+                    attachment = dummyFile,
                 )
             )
         )
@@ -81,8 +88,10 @@ internal class UpdateProjectPartnerReportWorkPlanTest : UnitTest() {
                             title = setOf(InputTranslation(EN, "[87] title")),
                             contribution = false,
                             evidence = false,
+                            attachment = dummyFile,
                         )
                     ),
+                    attachment = dummyFile,
                 )
             ),
             outputs = listOf(
@@ -92,6 +101,7 @@ internal class UpdateProjectPartnerReportWorkPlanTest : UnitTest() {
                     title = setOf(InputTranslation(EN, "[61] title")),
                     contribution = null,
                     evidence = true,
+                    attachment = dummyFile,
                 )
             )
         )

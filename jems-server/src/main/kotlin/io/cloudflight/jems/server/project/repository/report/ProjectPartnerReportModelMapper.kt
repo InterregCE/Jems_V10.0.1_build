@@ -12,6 +12,7 @@ import io.cloudflight.jems.server.project.entity.report.PartnerReportIdentificat
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportCoFinancingEntity
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportCoFinancingIdEntity
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
+import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageActivityDeliverableEntity
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageActivityEntity
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageEntity
@@ -22,6 +23,7 @@ import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerRep
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportCreate
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSummary
+import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
 import io.cloudflight.jems.server.project.service.report.model.workPlan.ProjectPartnerReportWorkPackage
 import io.cloudflight.jems.server.project.service.report.model.workPlan.ProjectPartnerReportWorkPackageActivity
 import io.cloudflight.jems.server.project.service.report.model.workPlan.ProjectPartnerReportWorkPackageActivityDeliverable
@@ -151,6 +153,7 @@ fun List<ProjectPartnerReportWorkPackageActivityEntity>.toActivitiesModel(
         number = it.number,
         title = it.translatedValues.extractField { it.title },
         progress = it.translatedValues.extractField { it.description },
+        attachment = it.attachment?.toModel(),
         deliverables = retrieveDeliverables.invoke(it).toDeliverablesModel(),
     )
 }
@@ -162,6 +165,7 @@ fun List<ProjectPartnerReportWorkPackageActivityDeliverableEntity>.toDeliverable
         title = it.translatedValues.extractField { it.title },
         contribution = it.contribution,
         evidence = it.evidence,
+        attachment = it.attachment?.toModel(),
     )
 }
 
@@ -172,5 +176,12 @@ fun List<ProjectPartnerReportWorkPackageOutputEntity>.toOutputsModel() = map {
         title = it.translatedValues.extractField { it.title },
         contribution = it.contribution,
         evidence = it.evidence,
+        attachment = it.attachment?.toModel(),
     )
 }
+
+fun ReportProjectFileEntity.toModel() = ProjectReportFileMetadata(
+    id = id,
+    name = name,
+    uploaded = uploaded,
+)

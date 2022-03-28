@@ -1,5 +1,6 @@
 package io.cloudflight.jems.api.project.report
 
+import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadataDTO
 import io.cloudflight.jems.api.project.dto.report.partner.workPlan.ProjectPartnerReportWorkPackageDTO
 import io.cloudflight.jems.api.project.dto.report.partner.workPlan.UpdateProjectPartnerReportWorkPackageDTO
 import io.cloudflight.jems.api.project.report.ProjectPartnerReportApi.Companion.ENDPOINT_API_PROJECT_PARTNER_REPORT
@@ -8,8 +9,11 @@ import io.swagger.annotations.ApiOperation
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestPart
+import org.springframework.web.multipart.MultipartFile
 
 @Api("Project Partner Report Work Plan")
 interface ProjectPartnerReportWorkPlanApi {
@@ -33,5 +37,36 @@ interface ProjectPartnerReportWorkPlanApi {
         @PathVariable reportId: Long,
         @RequestBody workPackages: List<UpdateProjectPartnerReportWorkPackageDTO>
     ): List<ProjectPartnerReportWorkPackageDTO>
+
+    @ApiOperation("Upload file to activity")
+    @PostMapping("$ENDPOINT_API_PROJECT_PARTNER_REPORT_WORK_PLAN/byActivityId/{activityId}/file", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    fun uploadFileToActivity(
+        @PathVariable partnerId: Long,
+        @PathVariable reportId: Long,
+        @PathVariable activityId: Long,
+        @RequestPart("file") file: MultipartFile
+    ): ProjectReportFileMetadataDTO
+
+    @ApiOperation("Upload file to deliverable")
+    @PostMapping(
+        "$ENDPOINT_API_PROJECT_PARTNER_REPORT_WORK_PLAN/byActivityId/{activityId}/byDeliverableId/{deliverableId}/file",
+        consumes = [MediaType.MULTIPART_FORM_DATA_VALUE]
+    )
+    fun uploadFileToDeliverable(
+        @PathVariable partnerId: Long,
+        @PathVariable reportId: Long,
+        @PathVariable activityId: Long,
+        @PathVariable deliverableId: Long,
+        @RequestPart("file") file: MultipartFile
+    ): ProjectReportFileMetadataDTO
+
+    @ApiOperation("Upload file to output")
+    @PostMapping("$ENDPOINT_API_PROJECT_PARTNER_REPORT_WORK_PLAN/byOutputId/{outputId}/file", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    fun uploadFileToOutput(
+        @PathVariable partnerId: Long,
+        @PathVariable reportId: Long,
+        @PathVariable outputId: Long,
+        @RequestPart("file") file: MultipartFile
+    ): ProjectReportFileMetadataDTO
 
 }

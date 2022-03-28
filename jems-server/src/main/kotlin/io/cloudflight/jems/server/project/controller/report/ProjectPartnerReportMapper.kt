@@ -8,11 +8,15 @@ import io.cloudflight.jems.api.project.dto.report.ProjectPartnerReportSummaryDTO
 import io.cloudflight.jems.api.project.dto.report.ReportStatusDTO
 import io.cloudflight.jems.api.project.dto.report.partner.PartnerReportIdentificationCoFinancingDTO
 import io.cloudflight.jems.api.project.dto.report.partner.PartnerReportIdentificationDTO
+import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadataDTO
 import io.cloudflight.jems.server.programme.controller.fund.toDto
 import io.cloudflight.jems.server.programme.controller.legalstatus.toDto
 import io.cloudflight.jems.server.project.service.report.model.PartnerReportIdentification
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSummary
+import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
+import org.mapstruct.Mapper
+import org.mapstruct.factory.Mappers
 import org.springframework.data.domain.Page
 
 fun ProjectPartnerReportSummary.toDto() = ProjectPartnerReportSummaryDTO(
@@ -53,3 +57,12 @@ fun PartnerReportIdentification.toDto() = PartnerReportIdentificationDTO(
         )
     }
 )
+
+private val mapper = Mappers.getMapper(ProjectPartnerReportMapper::class.java)
+
+fun ProjectReportFileMetadata.toDto() = mapper.map(this)
+
+@Mapper
+interface ProjectPartnerReportMapper {
+    fun map(model: ProjectReportFileMetadata): ProjectReportFileMetadataDTO
+}

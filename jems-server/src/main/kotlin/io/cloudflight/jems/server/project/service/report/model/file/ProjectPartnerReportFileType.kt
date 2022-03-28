@@ -1,0 +1,35 @@
+package io.cloudflight.jems.server.project.service.report.model.file
+
+enum class ProjectPartnerReportFileType(
+    private val parent: ProjectPartnerReportFileType?,
+    private val needsId: Boolean,
+) {
+    Project(null, true),
+      Report(Project, false),
+        PartnerReport(Report, true),
+
+          WorkPlan(PartnerReport, false),
+            Activity(WorkPlan, true),
+              Deliverable(Activity, true),
+            Output(WorkPlan, true),
+
+          Expenditure(PartnerReport, true),
+          Procurement(PartnerReport, true),
+          Contribution(PartnerReport, true);
+
+    fun generatePath(vararg ids: Long): String {
+        if (this.parent == null)
+            return if (this.needsId) "$name/${ids.last().toFixedLength()}/" else "$name/"
+
+        return if (this.needsId)
+            parent.generatePath(*ids.dropLast(1).toLongArray()) +
+                "${this.name}/" +
+                "${ids.last().toFixedLength()}/"
+        else
+            parent.generatePath(*ids) +
+                "${this.name}/"
+    }
+
+    private fun Long.toFixedLength() = this.toString().padStart(6, '0')
+
+}
