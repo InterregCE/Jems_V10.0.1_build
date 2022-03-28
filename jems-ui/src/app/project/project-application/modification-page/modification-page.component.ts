@@ -3,13 +3,17 @@ import {ProjectDetailDTO, ProjectStatusDTO, ProjectVersionDTO, UserRoleDTO} from
 import {FileCategoryTypeEnum} from '@project/common/components/file-management/file-category-type';
 import {CategoryInfo} from '@project/common/components/category-tree/categoryModels';
 import {combineLatest, Observable} from 'rxjs';
-import {map, take, tap} from 'rxjs/operators';
+import {filter, map, switchMap, take, tap} from 'rxjs/operators';
 import {ModificationPageStore} from '@project/project-application/modification-page/modification-page-store.service';
 import {RoutingService} from '@common/services/routing.service';
 import {ActivatedRoute} from '@angular/router';
-import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {
+  ProjectStore
+} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 import {Alert} from '@common/components/forms/alert';
+import {Forms} from '@common/utils/forms';
+import {MatDialog} from '@angular/material/dialog';
 
 @Component({
   selector: 'jems-modification-page',
@@ -42,7 +46,8 @@ export class ModificationPageComponent {
               private routingService: RoutingService,
               private activatedRoute: ActivatedRoute,
               private projectVersionStore: ProjectVersionStore,
-              private changeDetectorRef: ChangeDetectorRef) {
+              private changeDetectorRef: ChangeDetectorRef,
+              private dialog: MatDialog) {
     this.data$ = combineLatest([
       this.projectStore.currentVersionOfProject$,
       this.pageStore.currentVersionOfProjectTitle$,
@@ -64,11 +69,19 @@ export class ModificationPageComponent {
   }
 
   startModification(): void {
-    this.pageStore.startModification()
-      .pipe(
-        take(1),
-        tap(() => this.showSuccessMessage()))
-      .subscribe();
+    Forms.confirm(
+      this.dialog,
+      {
+        title: 'application.action.open.modification.confirmation.dialog',
+        warnMessage: 'application.action.open.modification.confirmation.dialog.warning'
+      }
+    ).pipe(
+      take(1),
+      filter(yes => !!yes),
+      take(1),
+      switchMap(() => this.pageStore.startModification()),
+      tap(() => this.showSuccessMessage())
+    ).subscribe();
   }
 
   handBackToApplicant(): void {
