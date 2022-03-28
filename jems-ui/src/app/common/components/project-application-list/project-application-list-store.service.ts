@@ -1,12 +1,14 @@
 import {Injectable} from '@angular/core';
 import {
-  CallService, IdNamePairDTO,
+  CallService,
+  IdNamePairDTO,
   PageOutputProjectSimple,
-  ProgrammePriorityService, ProgrammeSpecificObjectiveDTO,
+  ProgrammePriorityService,
+  ProgrammeSpecificObjectiveDTO,
   ProjectSearchRequestDTO,
   ProjectService
 } from '@cat/api';
-import {BehaviorSubject, combineLatest, Observable, of, Subject} from 'rxjs';
+import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
 import {MatSort} from '@angular/material/sort';
 import {map, startWith, switchMap, tap} from 'rxjs/operators';
 import {Tables} from '../../utils/tables';
@@ -41,14 +43,12 @@ export class ProjectApplicationListStore {
       this.newPageSize$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_SIZE)),
       this.newSort$.pipe(
         startWith(Tables.DEFAULT_INITIAL_SORT),
-        map(sort => sort?.direction ? sort : Tables.DEFAULT_INITIAL_SORT),
-        map(sort => `${sort.active},${sort.direction}`)
+        map(sort => sort?.direction ? sort : Tables.DEFAULT_INITIAL_SORT)
       )
     ])
       .pipe(
-        switchMap(([filter, pageIndex, pageSize, sort]) => filterByOwner
-          ? this.projectService.getMyProjects(pageIndex, pageSize, sort)
-          : this.projectService.getAllProjects(filter, pageIndex, pageSize, sort)
+        switchMap(([filter, pageIndex, pageSize, sort]) => filterByOwner ? this.projectService.getMyProjects(pageIndex, pageSize, `${sort.active},${sort.direction}`)
+          : this.projectService.getAllProjects(`${sort.direction}` , `${sort.active}`, filter, pageIndex, pageSize)
         ),
         tap(page => Log.info('Fetched the projects:', this, page.content)),
       );
