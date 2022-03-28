@@ -10,6 +10,10 @@ import org.springframework.stereotype.Component
 @Component
 class PreSubmissionCheckOff : PreConditionCheckPlugin {
 
+    companion object{
+        const val KEY = "jems-pre-condition-check-off"
+    }
+
     override fun check(projectId: Long): PreConditionCheckResult =
         PreConditionCheckResult(listOf(
             PreConditionCheckMessage(I18nMessageData("jems.pre.condition.check.off.info"), MessageType.INFO, emptyList())
@@ -25,5 +29,5 @@ class PreSubmissionCheckOff : PreConditionCheckPlugin {
         ""
 
     override fun getKey(): String  =
-        "jems-pre-condition-check-off"
+        KEY
 }

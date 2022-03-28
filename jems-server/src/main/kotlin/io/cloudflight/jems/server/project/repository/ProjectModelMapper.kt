@@ -42,6 +42,7 @@ import io.cloudflight.jems.server.user.repository.user.toUserSummary
 import io.cloudflight.jems.server.user.service.model.UserRoleSummary
 import io.cloudflight.jems.server.user.service.model.UserSummary
 import org.springframework.data.domain.Page
+import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 
@@ -201,7 +202,7 @@ fun List<ProjectRow>.toProjectEntryWithDetailData(
                     ),
                     groupedRows.value.first().userStatus
                 ),
-                ZonedDateTime.of(groupedRows.value.first().updated.toLocalDateTime(), ZoneOffset.UTC),
+                ZonedDateTime.of(groupedRows.value.first().updated.toLocalDateTime(), ZoneId.systemDefault()),
                 groupedRows.value.first().decisionDate,
                 groupedRows.value.first().entryIntoForceDate,
                 groupedRows.value.first().note
