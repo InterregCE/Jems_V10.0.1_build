@@ -17,7 +17,7 @@ context('Programme management tests', () => {
     cy.loginByRequest(user.programmeUser);
   });
 
-  it('Programme Basic data can be configured', () => {
+  it('TB-387 Programme Basic data can be configured', () => {
 
     cy.visit('/app/programme', {failOnStatusCode: false});
 

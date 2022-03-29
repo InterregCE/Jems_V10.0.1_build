@@ -15,7 +15,7 @@ context('Login tests', () => {
     cy.visit('/');
   });
 
-  it('Admin can login and logout', () => {
+  it('TB-397 Admin can login and logout', () => {
     cy.fixture('users.json').then((user) => {
 
       cy.intercept('api/project/mine?*').as('applicationList');
@@ -35,7 +35,7 @@ context('Login tests', () => {
     })
   });
 
-  it('Unknown user cannot login', () => {
+  it('TB-398 Unknown users or users with incorrect password cannot login', () => {
 
     cy.get('#email').type('random_unknown_username');
     cy.get('#password').type('random_unknown_password');
@@ -43,9 +43,17 @@ context('Login tests', () => {
     cy.get('button').contains('Login').click();
 
     cy.get('jems-alert').should('be.visible').and('contain', 'Email or password incorrect.');
+    cy.get('jems-alert').contains('span', '×').click();
+
+    cy.get('#email').type(user.admin.email);
+    cy.get('#password').type('random_unknown_password');
+
+    cy.get('button').contains('Login').click();
+
+    cy.get('jems-alert').should('be.visible').and('contain', 'Email or password incorrect.');
   });
 
-  it('Applicant can register', () => {
+  it('TB-399 Applicant can register', () => {
 
     cy.get('a').contains('Create a new account').click();
     const id = faker.random.alphaNumeric(5);

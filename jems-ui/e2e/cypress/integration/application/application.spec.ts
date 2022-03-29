@@ -8,7 +8,7 @@ context('Project management tests', () => {
     cy.loginByRequest(user.applicantUser);
   });
 
-  it('Applicant can apply for a call', function () {
+  it('TB-390 Applicant can apply for a call', function () {
     cy.visit('/');
 
     cy.get('jems-call-list').should('exist');
