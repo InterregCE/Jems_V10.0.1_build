@@ -13,7 +13,7 @@ import {
   PartnerReportExpendituresStore
 } from '@project/project-application/report/partner-report-detail-page/partner-report-expenditures-tab/partner-report-expenditures-store.service';
 import {MatSelectChange} from '@angular/material/select/select';
-import {ProjectPartnerReportExpenditureCostDTO} from '@cat/api';
+import {IdNamePairDTO, ProjectPartnerReportExpenditureCostDTO} from '@cat/api';
 import {BudgetCostCategoryEnum} from '@project/model/lump-sums/BudgetCostCategoryEnum';
 
 @UntilDestroy()
@@ -35,7 +35,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     expendituresCosts: ProjectPartnerReportExpenditureCostDTO[];
     costCategories: string[];
     investmentNumbers: string[];
-    contractIDs: string[];
+    contractIDs: IdNamePairDTO[];
     columnsToDisplay: string[];
     withConfigs: TableConfig[];
   }>;
@@ -65,15 +65,15 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       control.get('investmentNumber')?.enable();
     }
     if (this.isStaffCostsSelectedForCostCategoryRow(control)) {
-      control.patchValue({contractID: ''});
+      control.patchValue({contractId: ''});
       control.patchValue({invoiceNumber: ''});
       control.patchValue({vat: ''});
       control.get('vat')?.disable();
-      control.get('contractID')?.disable();
+      control.get('contractId')?.disable();
       control.get('invoiceNumber')?.disable();
     } else {
       control.get('vat')?.enable();
-      control.get('contractID')?.enable();
+      control.get('contractId')?.enable();
       control.get('invoiceNumber')?.enable();
     }
   }
@@ -85,7 +85,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     }
     if (this.isStaffCostsSelectedForCostCategoryRow(control)) {
       control.get('vat')?.disable();
-      control.get('contractID')?.disable();
+      control.get('contractId')?.disable();
       control.get('invoiceNumber')?.disable();
     }
   }
@@ -124,7 +124,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       id: null,
       costCategory: ['', Validators.required],
       investmentNumber: '',
-      contractID: '',
+      contractId: '',
       internalReferenceNumber: ['', Validators.maxLength(30)],
       invoiceNumber: ['', Validators.maxLength(30)],
       invoiceDate: '',
@@ -137,6 +137,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     });
     this.items.push(item);
     this.tableData = [...this.items.controls];
+    this.formService.setDirty(true);
   }
 
   updateReportExpenditures(): void {
@@ -184,7 +185,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     const columnsToDisplay = [
       'costItemID',
       'costCategory',
-      'contractID',
+      'contractId',
       'internalReferenceNumber',
       'invoiceNumber',
       'invoiceDate',
@@ -231,7 +232,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
         id: this.formBuilder.control(reportExpenditureCost?.id),
         costCategory: this.formBuilder.control(reportExpenditureCost?.costCategory),
         investmentNumber: this.formBuilder.control(reportExpenditureCost?.investmentId),
-        contractID: this.formBuilder.control(reportExpenditureCost?.contractId),
+        contractId: this.formBuilder.control(reportExpenditureCost?.contractId),
         internalReferenceNumber: this.formBuilder.control(reportExpenditureCost?.internalReferenceNumber,
           Validators.maxLength(30)),
         invoiceNumber: this.formBuilder.control(reportExpenditureCost?.invoiceNumber,

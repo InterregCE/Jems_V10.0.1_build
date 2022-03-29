@@ -76,7 +76,7 @@
                             </mat-cell>
                             <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                         </ng-container>
-                        <ng-container matColumnDef="contractID">
+                        <ng-container matColumnDef="contractId">
                             <mat-header-cell *matHeaderCellDef>
                                         <span jemsText
                                               maxLines="1">{{'project.application.partner.report.expenditures.tab.contract.ID' | translate}}</span>
@@ -84,15 +84,15 @@
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                                 <mat-form-field jemsFormFieldWidth="full">
                                     <mat-select
-                                        #contractID
-                                        [formControlName]="constants.FORM_CONTROL_NAMES.contractID"
-                                        [matTooltip]="contractID.triggerValue"
+                                        #contractId
+                                        [formControlName]="constants.FORM_CONTROL_NAMES.contractId"
+                                        [matTooltip]="contractId.triggerValue"
                                         [placeholder]="'common.not.applicable.option' | translate">
                                         <mat-option
                                                 [value]="null">{{'common.not.applicable.option' | translate}}</mat-option>
                                         <mat-option *ngFor="let contractID of data.contractIDs"
-                                                    [value]="contractID">
-                                            {{ contractID }}
+                                                    [value]="contractID.id">
+                                            {{ contractID.name }}
                                         </mat-option>
                                     </mat-select>
                                 </mat-form-field>
