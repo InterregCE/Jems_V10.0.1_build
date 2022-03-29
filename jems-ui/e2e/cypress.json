@@ -2,6 +2,7 @@
   "baseUrl": "http://localhost:4200",
   "projectId": "JEMS",
   "watchForFileChanges": false,
+  "chromeWebSecurity": false,
   "retries": {
     "runMode": 1,
     "openMode": 0

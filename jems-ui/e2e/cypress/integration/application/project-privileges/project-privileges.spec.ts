@@ -14,13 +14,12 @@ context('Project privileges tests', () => {
 
     cy.contains('Assignment').click();
     cy.get('.mat-paginator-range-label').then(paginatorRange => {
-      const numberOfPages = +paginatorRange.text().match(/\d - \d+ of (\d+)/)[1];
+      const numberOfPages = +paginatorRange.text().match(/\d - (\d+) of \d+/)[1];
 
       cy.get(`mat-chip:contains('${testData.privilegedUser.email}')`).should(chipElements => {
         expect(chipElements).to.have.length(numberOfPages);
         expect(chipElements).not.to.have.class('mat-chip-selected-user');
       });
-
     });
   });
 })
