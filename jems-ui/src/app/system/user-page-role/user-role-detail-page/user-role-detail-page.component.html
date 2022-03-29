@@ -56,7 +56,7 @@
                                     <div class="controls-wrapper">
                                         <div>
                                             <mat-button-toggle-group
-                                                    [disabled]="node.disabled || !data.isUpdateAllowed"
+                                                    [disabled]="node.disabled || !data.isUpdateAllowed || !roleHasProjectCreate"
                                                     *ngIf="node.mode === PermissionMode.HIDDEN_VIEW_EDIT || node.mode === PermissionMode.HIDDEN_VIEW || node.mode === PermissionMode.VIEW_EDIT"
                                                     class="small-toggle-group" [ngClass]="node.mode === PermissionMode.VIEW_EDIT ? 'view-edit-toggle' : ''">
                                                 <mat-button-toggle
