@@ -8,7 +8,7 @@ context('Call management tests', () => {
     cy.loginByRequest(user.programmeUser);
   });
 
-  it('Call can be created', function () {
+  it('TB-388 Create a new 1-step call', function () {
 
     cy.visit('app/call', {failOnStatusCode: false});
 
@@ -61,7 +61,7 @@ context('Call management tests', () => {
   });
 
 
-  it('Call can be opened, edited and published', function () {
+  it('TB-389 Edit and publish 1-step call', function () {
 
     cy.visit('/app/call/detail/' + this.callId, {failOnStatusCode: false});
     cy.get('input[name="name"]').should('have.value', this.callName);

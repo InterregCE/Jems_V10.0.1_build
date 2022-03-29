@@ -21,3 +21,32 @@ import './application.commands';
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
+
+// update test case execution results in Jira
+Cypress.on('test:after:run', function (test) {
+  if (Cypress.env('executionKey')) {
+    const match = /TB-\d+/.exec(test.title);
+    if (match) {
+      const testKey = match[0];
+      const testCaseExecutionDetails = {
+        "result": {
+          "statusName": "Blocked"
+        }
+      }
+      if (test.state === 'failed')
+        testCaseExecutionDetails.result.statusName = "Fail";
+      else if (test.state === 'passed')
+        testCaseExecutionDetails.result.statusName = "Pass";
+
+      const requestDetails = {
+        method: 'PUT',
+        headers: {
+          'Authorization': 'Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIxNjU5MzU3In0.OxRpcFzbw1-HGeUZJ3Cl22RUtGHwwTKquy8R1Z9s-SgP6tGSiUtv2d2Wbr0PUWXp',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(testCaseExecutionDetails)
+      };
+      fetch(`https://rtm-api.hexygen.com/api/v2/test-case-execution/${Cypress.env('executionKey')}-${testKey}`, requestDetails);
+    }
+  }
+});
