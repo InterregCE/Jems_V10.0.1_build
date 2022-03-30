@@ -12,4 +12,6 @@ interface CurrentUser {
     fun hasPermission(permission: UserRolePermission): Boolean {
         return getAuthorities().stream().anyMatch { r -> r.authority.equals(permission.name, ignoreCase = true) }
     }
+    fun hasAccessToProject(projectId: Long): Boolean =
+        this.hasPermission(UserRolePermission.ProjectRetrieve) || user.assignedProjects.contains(projectId)
 }

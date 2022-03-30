@@ -5,13 +5,11 @@
         subTitleKey="project.application.form.section.part.c">
     <h3>{{'project.application.form.section.part.c.subsection.four' | translate}}</h3>
 
-    <ng-container *ngxPermissionsExcept="Permission.PROGRAMME_USER">
-        <button jemsText *ngIf="projectEditable$ | async"
-                mat-stroked-button class="mb-3"
-                (click)="createWorkPackage()">
-            + {{'project.application.form.add.workpackage' | translate}}
-        </button>
-    </ng-container>
+    <button jemsText *ngIf="projectEditable$ | async"
+            mat-stroked-button class="mb-3"
+            (click)="createWorkPackage()">
+        + {{'project.application.form.add.workpackage' | translate}}
+    </button>
 
     <p class="spaced-elements" *ngIf="!data.workPackages.length">
         {{'project.application.form.workpackage.list.empty' | translate}}
