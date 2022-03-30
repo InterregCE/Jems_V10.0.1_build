@@ -93,10 +93,11 @@ export class PrivilegesPageStore {
       allPartnerCollaborators$,
       this.savedPartnerProjectCollaborators$.pipe(startWith([])),
       this.projectStore.collaboratorLevel$,
+      this.permissionService.permissionsChanged()
     ])
       .pipe(
-        map(([partners, allCollaborators, savedCollaborators, level]) =>
-          this.getPartnerTeams(partners, allCollaborators, savedCollaborators, level)
+        map(([partners, allCollaborators, savedCollaborators, level, permissions]) =>
+          this.getPartnerTeams(partners, allCollaborators, savedCollaborators, level, permissions)
         ),
       );
   }
@@ -104,13 +105,16 @@ export class PrivilegesPageStore {
   private getPartnerTeams(partners: ProjectPartnerSummaryDTO[],
                           allCollaborators: PartnerUserCollaboratorDTO[],
                           savedCollaborators: [number, PartnerUserCollaboratorDTO[]] | any,
-                          level: ProjectUserCollaboratorDTO.LevelEnum): Map<ProjectPartnerSummaryDTO, PartnerUserCollaboratorDTO[]> {
+                          level: ProjectUserCollaboratorDTO.LevelEnum,
+                          permissions: string[]
+                          ): Map<ProjectPartnerSummaryDTO, PartnerUserCollaboratorDTO[]> {
     const teams = new Map<ProjectPartnerSummaryDTO, PartnerUserCollaboratorDTO[]>();
     partners.forEach(partner => {
       const collaborators = savedCollaborators.length && savedCollaborators[0] === partner.id
         ? savedCollaborators[1]
         : allCollaborators.filter(partnerCollaborator => partnerCollaborator.partnerId === partner.id);
-      teams.set(partner, collaborators.length || level === ProjectUserCollaboratorDTO.LevelEnum.MANAGE
+      teams.set(partner, (collaborators.length || level === ProjectUserCollaboratorDTO.LevelEnum.MANAGE || permissions.includes(PermissionsEnum.ProjectMonitorCollaboratorsUpdate)
+      || permissions.includes(PermissionsEnum.ProjectMonitorCollaboratorsRetrieve))
         ? collaborators : null as any);
     });
     return teams;

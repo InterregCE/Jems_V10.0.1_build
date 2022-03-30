@@ -59,18 +59,4 @@ internal class GetMyCollaboratorLevelTest : UnitTest() {
         every { partnerCollaboratorPersistence.findUserIdsByProjectId(projectId) } returns setOf(16L)
         assertThat(getCollaborators.getMyCollaboratorLevel(projectId)).isEqualTo(ProjectCollaboratorLevel.VIEW)
     }
-
-    @Test
-    fun `partner monitoring user has manage project level`() {
-        val projectId = 1L
-        every { securityService.currentUser } returns monitorUser
-        assertThat(getCollaborators.getMyCollaboratorLevel(projectId)).isEqualTo(ProjectCollaboratorLevel.MANAGE)
-    }
-
-    @Test
-    fun `partner monitoring user with view permission has view project level`() {
-        val projectId = 1L
-        every { securityService.currentUser } returns monitorRestrictedUser
-        assertThat(getCollaborators.getMyCollaboratorLevel(projectId)).isEqualTo(ProjectCollaboratorLevel.VIEW)
-    }
 }

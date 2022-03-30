@@ -9,7 +9,6 @@ import io.cloudflight.jems.server.project.entity.partneruser.PartnerCollaborator
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.UserPartnerCollaboratorPersistence
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
-import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectRetrieve
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectReportingEdit
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectReportingView
 import org.springframework.stereotype.Service
@@ -39,11 +38,10 @@ class GetMyPartnerCollaboratorLevel(
 
     private fun CurrentUser.getHighestReportingLevelFromPermission(projectId: Long): PartnerCollaboratorLevel? =
         when (true) {
-            this.hasPermission(ProjectRetrieve),
-            this.hasPermission(ProjectReportingEdit) && user.assignedProjects.contains(projectId) ->
+            this.hasPermission(ProjectReportingEdit) && this.hasAccessToProject(projectId) ->
                 ProjectReportingEdit.getCorrespondingCollaboratorLevel()
 
-            this.hasPermission(ProjectReportingView) && user.assignedProjects.contains(projectId) ->
+            this.hasPermission(ProjectReportingView) && this.hasAccessToProject(projectId) ->
                 ProjectReportingView.getCorrespondingCollaboratorLevel()
 
             else -> null
@@ -61,5 +59,4 @@ class GetMyPartnerCollaboratorLevel(
             ProjectReportingView -> VIEW
             else -> null
         }
-
 }

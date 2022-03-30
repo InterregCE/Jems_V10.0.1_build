@@ -65,9 +65,9 @@ internal class GetMyPartnerCollaboratorLevelTest : UnitTest() {
 
     @Test
     fun `get my level EDIT - Role with EDIT and assigned project and Collaborator empty`() {
-        every { securityService.currentUser?.hasPermission(UserRolePermission.ProjectReportingEdit) } returns true
-        every { securityService.currentUser?.user?.assignedProjects } returns setOf(360L)
         every { partnerPersistence.getProjectIdForPartnerId(60L) } returns 360L
+        every { securityService.currentUser?.hasPermission(UserRolePermission.ProjectReportingEdit) } returns true
+        every { securityService.currentUser?.hasAccessToProject(360L) } returns true
         every { partnerCollaboratorPersistence.findByUserIdAndPartnerId(17L, 60L) } returns Optional.empty()
 
         assertThat(getMyPartnerCollaboratorLevel.getMyPartnerCollaboratorLevel(60L))
@@ -84,9 +84,9 @@ internal class GetMyPartnerCollaboratorLevelTest : UnitTest() {
 
     @Test
     fun `get my level VIEW - Role with VIEW and assigned project and Collaborator empty`() {
-        every { securityService.currentUser?.hasPermission(UserRolePermission.ProjectReportingView) } returns true
-        every { securityService.currentUser?.user?.assignedProjects } returns setOf(400L)
         every { partnerPersistence.getProjectIdForPartnerId(100L) } returns 400L
+        every { securityService.currentUser?.hasPermission(UserRolePermission.ProjectReportingView) } returns true
+        every { securityService.currentUser?.hasAccessToProject(400L) } returns true
         every { partnerCollaboratorPersistence.findByUserIdAndPartnerId(17L, 100L) } returns Optional.empty()
 
         assertThat(getMyPartnerCollaboratorLevel.getMyPartnerCollaboratorLevel(100L))
