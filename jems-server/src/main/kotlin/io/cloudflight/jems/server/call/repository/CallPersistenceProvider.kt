@@ -74,7 +74,7 @@ class CallPersistenceProvider(
 
         adjustTimeToLastNanoSec(call)
 
-        val created = callRepo.save(
+        val created = callRepo.saveAndFlush(
             call.toEntity(
                 user = userRepo.getById(userId),
                 retrieveSpecificObjective = { programmeSpecificObjectiveRepo.getById(it) },

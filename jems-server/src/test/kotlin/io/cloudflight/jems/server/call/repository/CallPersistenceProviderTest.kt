@@ -528,7 +528,7 @@ internal class CallPersistenceProviderTest {
             expectedResultEntity
         )
         val slotCall = slot<CallEntity>()
-        every { callRepo.save(capture(slotCall)) } returnsArgument 0
+        every { callRepo.saveAndFlush(capture(slotCall)) } returnsArgument 0
 
         persistence.createCall(callUpdate, expectedResultEntity.creator.id)
         with(slotCall.captured) {
@@ -584,7 +584,7 @@ internal class CallPersistenceProviderTest {
             expectedResultEntity
         )
         val slotCall = slot<CallEntity>()
-        every { callRepo.save(capture(slotCall)) } returnsArgument 0
+        every { callRepo.saveAndFlush(capture(slotCall)) } returnsArgument 0
 
         persistence.createCall(spfCallUpdate, expectedResultEntity.creator.id)
         with(slotCall.captured) {
