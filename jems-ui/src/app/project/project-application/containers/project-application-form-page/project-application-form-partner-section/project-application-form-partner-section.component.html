@@ -4,14 +4,12 @@
         subTitleKey="project.application.form.section.part.b">
 
     <h3>{{'project.application.form.section.part.b.partners' | translate}}</h3>
-    <ng-container *ngxPermissionsExcept="Permission.PROGRAMME_USER">
-        <button *ngIf="(projectStore.projectEditable$ | async) === true"
-                [disabled]="isAddPartnerDisabled() | async"
-                mat-stroked-button color="primary"
-                [routerLink]="'/app/project/detail/' + projectId + '/applicationFormPartner/create'">
-            + {{'project.application.form.partner.add' | translate}}
-        </button>
-    </ng-container>
+    <button *ngIf="(projectStore.projectEditable$ | async) === true"
+            [disabled]="isAddPartnerDisabled() | async"
+            mat-stroked-button color="primary"
+            [routerLink]="'/app/project/detail/' + projectId + '/applicationFormPartner/create'">
+        + {{'project.application.form.partner.add' | translate}}
+    </button>
 
     <jems-project-application-form-partner-list
             *ngIf="partnerPage$ | async as partnerPage"
