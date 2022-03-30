@@ -71,7 +71,7 @@ export class ProjectApplyToCallComponent {
       .pipe(
         take(1),
         tap(saved => Log.info('Created project application:', this, saved)),
-        tap(() => this.router.navigate(['app', 'dashboard'])),
+        tap((data) => this.router.navigate(['app/project/detail', data.id, 'applicationFormIdentification'])),
         catchError((error: HttpErrorResponse) => {
           this.saveError$.next(error.error);
           throw error;
