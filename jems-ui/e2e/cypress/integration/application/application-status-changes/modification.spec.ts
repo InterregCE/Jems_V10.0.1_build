@@ -30,6 +30,8 @@ context('Application modification approved', () => {
       cy.enterFundingDecision(applicationId, testData.fundingDecision);
       cy.visit(`app/project/detail/${applicationId}/modification`, {failOnStatusCode: false});
       cy.contains('Open new modification').click();
+      cy.get('jems-confirm-dialog').should('be.visible');
+      cy.get('jems-confirm-dialog').find('.mat-dialog-actions').contains('Confirm').click();
 
       cy.loginByRequest(user.applicantUser);
       cy.visit(`app/project/detail/${applicationId}`, {failOnStatusCode: false});
