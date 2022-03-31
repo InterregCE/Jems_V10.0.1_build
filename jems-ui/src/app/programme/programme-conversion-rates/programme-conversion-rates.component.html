@@ -1,0 +1,40 @@
+<jems-main-page-template [needsCard]="true"
+                         titleKey="programme.data.page.title"
+                         subTitleKey="programme.tab.conversion.rates">
+
+    <div jemsFormLayout *ngIf="currencies$ | async as currencies">
+        <h3>{{'programme.conversion.rates.header' | translate}}</h3>
+
+        <div>
+            <p *ngIf="currencies && currencies[0]">
+                {{
+                'programme.conversion.rates.downloaded.label' | translate : {
+                    month: currencies[0].month,
+                    year: currencies[0].year
+                }
+                }}
+            </p>
+            <p *ngIf="!currencies">
+                {{'programme.conversion.rates.not.downloaded.label' | translate }}
+            </p>
+        </div>
+
+        <button mat-stroked-button type="submit"
+                *jemsHasPermission="PermissionsEnum.ProgrammeSetupUpdate"
+                (click)="onSubmit()">
+            {{'programme.conversion.rates.download.button' | translate}}
+        </button>
+        <jems-alert *ngIf="this.store.success$ | async as success"
+                    [show]="true"
+                    [type]="Alert.SUCCESS">
+            <p>{{'programme.conversion.rates.download.success' | translate}}</p>
+        </jems-alert>
+        <jems-alert *ngIf="this.store.error$ | async as error"
+                    [show]="!!error.i18nMessage?.i18nKey"
+                    [type]="Alert.ERROR">
+            <jems-api-error-content [error]="error"></jems-api-error-content>
+        </jems-alert>
+
+    </div>
+
+</jems-main-page-template>

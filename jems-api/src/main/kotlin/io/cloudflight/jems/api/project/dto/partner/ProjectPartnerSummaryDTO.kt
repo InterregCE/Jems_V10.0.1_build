@@ -8,4 +8,5 @@ data class ProjectPartnerSummaryDTO (
     val sortNumber: Int? = null,
     val country: String? = null,
     val region: String? = null,
+    val currencyCode: String? = null
 )

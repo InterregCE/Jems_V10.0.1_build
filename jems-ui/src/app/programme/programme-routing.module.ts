@@ -21,6 +21,7 @@ import {UserRoleDTO} from '@cat/api';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import { ProgrammeChecklistListPageComponent } from './programme-checklist-list-page/programme-checklist-list-page.component';
 import {ProgrammeChecklistDetailPageComponent} from './programme-checklist-list-page/programme-checklist-detail-page/programme-checklist-detail-page.component';
+import { ProgrammeConversionRatesComponent } from './programme-conversion-rates/programme-conversion-rates.component';
 
 export const routes: Routes = [
   {
@@ -74,6 +75,11 @@ export const routes: Routes = [
             path: 'areas',
             component: ProgrammeAreaComponent,
             data: {breadcrumb: 'programme.breadcrumb.areas'},
+          },
+          {
+            path: 'conversionRates',
+            component: ProgrammeConversionRatesComponent,
+            data: {breadcrumb: 'programme.breadcrumb.conversion.rates'},
           },
           {
             path: 'languages',

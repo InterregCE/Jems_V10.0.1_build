@@ -1,7 +1,6 @@
 package io.cloudflight.jems.server.currency.service.getCurrency
 
 import io.cloudflight.jems.api.currency.CurrencyDTO
-import io.cloudflight.jems.api.currency.NutsCurrency
 import io.cloudflight.jems.server.currency.repository.CurrencyPersistence
 import io.cloudflight.jems.server.currency.service.toDto
 import io.cloudflight.jems.server.currency.service.toDtoList
@@ -32,10 +31,9 @@ class GetCurrency(
         val loadYear = year ?: currentDate.year
         val loadMonth = month ?: currentDate.month.value
 
-        // todo: add CurrencyNuts repo and use here to find correct CurrencyCode..
-        val targetCurrency = NutsCurrency.values().find{ it.name == country }
+        val targetCurrency = persistence.getCurrencyForCountry(country)
         if (targetCurrency != null) {
-            return persistence.getByIdCodeAndIdYearAndIdMonth(targetCurrency.currency, loadYear, loadMonth).toDto()
+            return persistence.getByIdCodeAndIdYearAndIdMonth(targetCurrency, loadYear, loadMonth).toDto()
         }
 
         return null

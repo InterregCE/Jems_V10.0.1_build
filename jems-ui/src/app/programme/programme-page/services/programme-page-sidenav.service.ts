@@ -65,6 +65,10 @@ export class ProgrammePageSidenavService {
               route: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/areas`,
             },
             {
+              headline: {i18nKey: 'programme.tab.conversion.rates'},
+              route: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/conversionRates`,
+            },
+            {
               headline: {i18nKey: 'programme.tab.funds'},
               route: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/funds`,
             },

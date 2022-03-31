@@ -6,7 +6,8 @@ import org.springframework.transaction.annotation.Transactional
 
 @Repository
 class CurrencyPersistenceProvider(
-    private val currencyRepository: CurrencyRepository
+    private val currencyRepository: CurrencyRepository,
+    private val currencyNutsRepository: CurrencyNutsRepository
 ) : CurrencyPersistence {
 
     @Transactional(readOnly = true)
@@ -24,4 +25,8 @@ class CurrencyPersistenceProvider(
         return currencyRepository.saveAll(currencies.toEntities()).toModelList()
     }
 
+    @Transactional(readOnly = true)
+    override fun getCurrencyForCountry(country: String): String? {
+        return currencyNutsRepository.getByIdNutsId(country)?.id?.currencyCode
+    }
 }
