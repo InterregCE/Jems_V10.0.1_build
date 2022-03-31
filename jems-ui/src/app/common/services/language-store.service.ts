@@ -9,6 +9,7 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import LanguageEnum = InputTranslation.LanguageEnum;
 
 export const DEFAULT_FALLBACK_LANGUAGE = LanguageEnum.EN;
+const CLIENT_SELECTED_LANGUAGE = 'selected-language';
 
 @UntilDestroy()
 @Injectable({providedIn: 'root'})
@@ -18,11 +19,13 @@ export class LanguageStore {
   systemLanguages$: Observable<string[]>;
   fallbackLanguage$: Observable<string>;
   currentSystemLanguage$: Observable<string>;
-
+  private readonly userAgentLanguage = navigator.language.substr(0, 2 ).toUpperCase();
+  private defaultLanguage = localStorage.getItem(CLIENT_SELECTED_LANGUAGE) || this.userAgentLanguage || DEFAULT_FALLBACK_LANGUAGE;
   private inputLanguagesSubject = new BehaviorSubject<string[]>([]);
   private systemLanguagesSubject = new BehaviorSubject<string[]>([]);
-  private fallbackLanguageSubject = new BehaviorSubject<string>(DEFAULT_FALLBACK_LANGUAGE);
-  private currentSystemLanguageSubject = new BehaviorSubject<string>(DEFAULT_FALLBACK_LANGUAGE);
+  private fallbackLanguageSubject = new BehaviorSubject<string>(this.defaultLanguage);
+  private currentSystemLanguageSubject = new BehaviorSubject<string>(this.defaultLanguage);
+
 
   constructor(private userProfileService: UserProfileService,
               private translate: TranslateService,
@@ -31,10 +34,19 @@ export class LanguageStore {
     this.systemLanguages$ = this.systemLanguagesSubject.asObservable();
     this.currentSystemLanguage$ = this.currentSystemLanguageSubject.asObservable();
     this.fallbackLanguage$ = this.fallbackLanguageSubject.asObservable();
-
     this.securityService.currentUser.pipe(
       mergeMap(user => user ? this.userProfileService.getUserProfile().pipe(map(profile => profile?.language)) : this.fallbackLanguage$),
       tap(language => this.setSystemLanguage(language)),
+      untilDestroyed(this)
+    ).subscribe();
+
+    this.systemLanguages$.pipe(
+      filter(systemLanguages => !!systemLanguages.length),
+      map(systemLanguages => {
+        const languageIsAvailable = systemLanguages.includes(this.userAgentLanguage);
+        return this.saveSelectedLanguageToLocalStorage( languageIsAvailable ? this.userAgentLanguage : DEFAULT_FALLBACK_LANGUAGE);
+      }),
+      tap(storedLanguage => storedLanguage ? this.defaultLanguage = storedLanguage : ''),
       untilDestroyed(this)
     ).subscribe();
   }
@@ -57,12 +69,13 @@ export class LanguageStore {
   setLanguages(systemLanguages: string[], inputLanguages: string[], fallbackLanguage: string | undefined): void {
     this.systemLanguagesSubject.next(systemLanguages);
     this.inputLanguagesSubject.next(inputLanguages);
-    this.fallbackLanguageSubject.next(fallbackLanguage || DEFAULT_FALLBACK_LANGUAGE.valueOf());
+
+    this.fallbackLanguageSubject.next(this.defaultLanguage || fallbackLanguage || DEFAULT_FALLBACK_LANGUAGE);
     if (!this.isSystemLanguageExist(this.currentSystemLanguageSubject.getValue())) {
       this.currentSystemLanguageSubject.next(this.determineSystemLanguage(systemLanguages, this.fallbackLanguageSubject.getValue()));
     }
     this.translate.addLangs(systemLanguages);
-    this.translate.setDefaultLang(fallbackLanguage || DEFAULT_FALLBACK_LANGUAGE);
+    this.translate.setDefaultLang(this.defaultLanguage || fallbackLanguage || DEFAULT_FALLBACK_LANGUAGE);
   }
 
   isInputLanguageExist(language: string): boolean {
@@ -87,10 +100,12 @@ export class LanguageStore {
 
   private setSystemLanguage(newLanguage: string): void {
     of(newLanguage).pipe(
-      withLatestFrom(this.fallbackLanguage$.pipe(startWith(DEFAULT_FALLBACK_LANGUAGE))),
+      withLatestFrom(this.fallbackLanguage$.pipe(startWith(this.defaultLanguage))),
       map(([newLang, fallbackLanguage]) => newLang || fallbackLanguage),
       tap(language => this.translate.use(language)),
       tap(language => this.currentSystemLanguageSubject.next(language)),
+      tap(language => this.updateSelectedLanguageToLocalStorage(language)),
+      tap(storedLanguage => storedLanguage !== '' ? this.defaultLanguage = storedLanguage : ''),
       untilDestroyed(this)
     ).subscribe();
   }
@@ -99,7 +114,27 @@ export class LanguageStore {
     if (!!systemLanguages.find((lang: string) => lang === fallbackLanguage)) {
       return fallbackLanguage;
     } else {
-      return systemLanguages.length > 0 ? systemLanguages[0] : DEFAULT_FALLBACK_LANGUAGE;
+      return systemLanguages.length > 0 ? systemLanguages[0] : this.defaultLanguage;
     }
+  }
+
+  private saveSelectedLanguageToLocalStorage(language: string): string {
+    const storedLanguage = localStorage.getItem(CLIENT_SELECTED_LANGUAGE);
+    if (!storedLanguage) {
+      localStorage.setItem(CLIENT_SELECTED_LANGUAGE, language);
+      this.fallbackLanguageSubject.next(language);
+      return language;
+    }
+    return storedLanguage;
+  }
+
+  private updateSelectedLanguageToLocalStorage(newLanguage: string): string {
+    const storedLanguage = localStorage.getItem(CLIENT_SELECTED_LANGUAGE);
+    if (storedLanguage !== null && storedLanguage != newLanguage){
+      localStorage.setItem(CLIENT_SELECTED_LANGUAGE, newLanguage);
+      this.fallbackLanguageSubject.next(newLanguage);
+      return newLanguage;
+    }
+    return storedLanguage ? storedLanguage : '';
   }
 }
