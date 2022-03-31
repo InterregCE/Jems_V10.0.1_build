@@ -142,6 +142,9 @@ import {
 import {
   PartnerReportProcurementsTabComponent
 } from '@project/project-application/report/partner-report-detail-page/partner-report-procurements-tab/partner-report-procurements-tab.component';
+import {
+  PartnerActionsCellComponent
+} from '@project/project-application/report/partner-report-detail-page/partner-report-actions/partner-actions-cell.component';
 
 @NgModule({
   declarations: [
@@ -259,6 +262,7 @@ import {
     PartnerReportProcurementsTabComponent,
     PartnerReportContributionTabComponent,
     PartnerReportExpendituresTabComponent,
+    PartnerActionsCellComponent
   ],
   imports: [
     SharedModule,
