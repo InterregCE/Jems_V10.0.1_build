@@ -4,16 +4,15 @@
         <form jemsFormLayout [formGroup]="reportProcurementsForm">
             <h3>{{'project.application.partner.report.procurements.title' | translate}}</h3>
 
-            <jems-pending-button *ngIf="data.isReportEditable" jemsText class="mb-3 mt-3"
+            <button mat-raised-button *ngIf="data.isReportEditable" jemsText class="mb-3 mt-3 mat-primary"
                                  [disabled]="procurements.length >= constants.MAX_NUMBER_OF_ITEMS"
                                  (click)="addNewProcurement()">
                 + {{'project.application.partner.report.procurements.add' | translate}}
-            </jems-pending-button>
+            </button>
 
             <div *ngIf="tableData.length else noProcurementsMessage;" class="table-container" jemsNoWidthLimit>
                 <jems-multi-language-container>
-                    <table #procurementsTable
-                        mat-table
+                    <table mat-table jemsNoWidthLimit
                         [dataSource]="tableData"
                         multiTemplateDataRows
                         class="mat-elevation-z8 procurement-table"
@@ -39,18 +38,19 @@
                                               matInput
                                               [readonly]="!isProcurementEditable(control)"
                                               [cdkTextareaAutosize]
-                                              [cdkAutosizeMinRows]="1"
-                                              [required]="true">
+                                              [cdkAutosizeMinRows]="1">
                                      </textarea>
-                                    <mat-hint [jemsHintFor]="contractId">
+                                    <mat-hint *ngIf="isProcurementEditable(control)" [jemsHintFor]="contractId">
                                         <jems-text-hint
                                                 [currentLength]="lengthOfForm(control, constants.CONTRACT_ID.name)"
                                                 [maxLength]="constants.CONTRACT_ID.maxLength"></jems-text-hint>
                                     </mat-hint>
                                     <mat-error>
-                                        <jems-form-field-errors
-                                                [errors]="control.errors">
-                                        </jems-form-field-errors>
+                                        <mat-error>
+                                            <jems-form-field-errors
+                                                    [errors]="control?.get('contractId')?.errors">
+                                            </jems-form-field-errors>
+                                        </mat-error>
                                     </mat-error>
                                 </mat-form-field>
                             </td>
@@ -61,11 +61,9 @@
                                 {{'project.application.partner.report.procurements.table.contract.type' | translate}}
                             </th>
                             <td class="text-field-column" mat-cell *matCellDef="let control; let i = dataIndex;" [formGroupName]="i">
-
                                 <jems-multi-language-form-field
-                                        type="input"
+                                        type="textarea"
                                         minRows="1"
-                                        [required]="true"
                                         [attr.disabled]="!isProcurementEditable(control)"
                                         [disabled]="!isProcurementEditable(control)"
                                         [formControlName]="constants.CONTRACT_TYPE.name"
@@ -82,7 +80,6 @@
                             <td class="text-field-column" mat-cell *matCellDef="let control; let i = dataIndex;" [formGroupName]="i">
                                 <mat-form-field [class.mat-form-field-disabled]="!isProcurementEditable(control)">
                                     <input [formControlName]="constants.CONTRACT_AMOUNT.name"
-                                           [required]="true"
                                            [readonly]="!isProcurementEditable(control)"
                                            [options]="{min: constants.MIN_VALUE, align: 'right'}"
                                            currencyMask matInput
@@ -96,13 +93,9 @@
                                 {{'project.application.partner.report.procurements.table.currency' | translate}}
                             </th>
                             <td class="text-field-column" mat-cell *matCellDef="let control; let i = dataIndex;" [formGroupName]="i">
-
                                 <mat-select class="placeholder-required" [formControlName]="constants.CURRENCY.name"
-                                            [attr.disabled]="!isProcurementEditable(control)"
-                                            required
+                                            [attr.disabled]="true"
                                             placeholder="{{'call.detail.first.step.pre.submission.check.config.placeholder' | translate}}">
-                                    <mat-option [value]="'EUR'">EUR</mat-option>
-                                    <mat-option [value]="'RON'">RON</mat-option>
                                 </mat-select>
                             </td>
                         </ng-container>
@@ -118,17 +111,16 @@
                                               [readonly]="!isProcurementEditable(control)"
                                               matInput
                                               [cdkTextareaAutosize]
-                                              [cdkAutosizeMinRows]="1"
-                                              [required]="true">
+                                              [cdkAutosizeMinRows]="1">
                                      </textarea>
-                                    <mat-hint [jemsHintFor]="supplierName">
+                                    <mat-hint *ngIf="isProcurementEditable(control)" [jemsHintFor]="supplierName">
                                         <jems-text-hint
                                                 [currentLength]="lengthOfForm(control, constants.SUPPLIER_NAME.name)"
                                                 [maxLength]="constants.SUPPLIER_NAME.maxLength"></jems-text-hint>
                                     </mat-hint>
                                     <mat-error>
                                         <jems-form-field-errors
-                                                [errors]="control.errors">
+                                                [errors]="control?.get('supplierName')?.errors">
                                         </jems-form-field-errors>
                                     </mat-error>
                                 </mat-form-field>

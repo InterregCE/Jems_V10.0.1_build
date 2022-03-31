@@ -18,12 +18,11 @@ export class PartnerReportProcurementsTabConstants {
   public static CONTRACT_TYPE: AppControl = {
     name: 'contractType',
     maxLength: 30,
-    validators: [Validators.maxLength(30), Validators.required]
+    validators: [Validators.maxLength(30)]
   };
 
   public static CONTRACT_AMOUNT: AppControl = {
     name: 'contractAmount',
-    validators: [Validators.required]
   };
 
   public static CURRENCY: AppControl = {
@@ -33,7 +32,7 @@ export class PartnerReportProcurementsTabConstants {
   public static SUPPLIER_NAME: AppControl = {
     name: 'supplierName',
     maxLength: 30,
-    validators: [Validators.maxLength(30), Validators.required]
+    validators: [Validators.maxLength(30)]
   };
 
   public static COMMENT: AppControl = {

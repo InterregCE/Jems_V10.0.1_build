@@ -24,7 +24,10 @@ class MaxAmountOfProcurementsReachedException(maxAmount: Int) : ApplicationUnpro
 
 class ContractIdsAreNotUnique(notUniqueIds: Set<String>) : ApplicationUnprocessableException(
     code = "$UDPATE_PROJECT_PARTNER_REPORT_PROCUREMENT_ERROR_CODE_PREFIX-002",
-    i18nMessage = I18nMessage("$UPDATE_PROJECT_PARTNER_REPORT_PROCUREMENT_ERROR_KEY_PREFIX.contractId.needs.to.be.unique"),
+    i18nMessage = I18nMessage(
+        "$UPDATE_PROJECT_PARTNER_REPORT_PROCUREMENT_ERROR_KEY_PREFIX.contractId.needs.to.be.unique",
+        mapOf("contractId" to notUniqueIds.joinToString(", "))
+    ),
     formErrors = notUniqueIds.associateBy({ it }, { I18nMessage(i18nKey = "not.unique") }),
     message = "duplicates: $notUniqueIds",
 )
