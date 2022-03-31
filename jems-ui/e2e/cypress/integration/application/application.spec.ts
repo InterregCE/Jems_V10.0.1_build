@@ -24,6 +24,6 @@ context('Project management tests', () => {
 
     cy.contains('Create project application').click();
 
-    cy.get('jems-project-application-list').find('mat-cell').contains(`Automation Project ${random}`)
+    cy.get('jems-project-page-template').find('h1').contains(`Automation Project ${random}`)
   });
 })
