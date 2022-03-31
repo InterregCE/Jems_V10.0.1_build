@@ -32,6 +32,10 @@ export class PartnerReportWorkplanConstants {
     name: 'title'
   };
 
+  public static ACTIVITY_FILE: AppControl = {
+    name: 'fileMetadata'
+  };
+
   public static DELIVERABLE_TITLE: AppControl = {
     name: 'title',
   };
@@ -44,6 +48,10 @@ export class PartnerReportWorkplanConstants {
     name: 'evidence',
   };
 
+  public static DELIVERABLE_FILE: AppControl = {
+    name: 'fileMetadata',
+  };
+
   public static OUTPUT_TITLE: AppControl = {
     name: 'title',
   };
@@ -54,6 +62,10 @@ export class PartnerReportWorkplanConstants {
 
   public static OUTPUT_EVIDENCE: AppControl = {
     name: 'evidence',
+  };
+
+  public static OUTPUT_FILE: AppControl = {
+    name: 'fileMetadata',
   };
 
 }
