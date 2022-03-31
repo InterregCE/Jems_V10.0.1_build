@@ -9,4 +9,6 @@ interface CurrencyPersistence {
     fun getByIdCodeAndIdYearAndIdMonth(code: String, year: Int, month: Int): CurrencyConversion
 
     fun saveAll(currencies: List<CurrencyConversion>): List<CurrencyConversion>
+
+    fun getCurrencyForCountry(country: String): String?
 }

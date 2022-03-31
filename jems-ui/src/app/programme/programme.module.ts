@@ -44,6 +44,10 @@ import {ProgrammeChecklistListPageComponent} from './programme-checklist-list-pa
 import {ProgrammeChecklistDetailPageComponent } from './programme-checklist-list-page/programme-checklist-detail-page/programme-checklist-detail-page.component';
 import {ProgrammeChecklistHeadlineComponent} from './programme-checklist-list-page/programme-checklist-detail-page/components/programme-checklist-headline/programme-checklist-headline.component';
 import {ProgrammeChecklistOptionsToggleComponent} from './programme-checklist-list-page/programme-checklist-detail-page/components/programme-checklist-options-toggle/programme-checklist-options-toggle.component';
+import { ProgrammeBasicDataComponent } from './programme-basic-data/programme-basic-data.component';
+import { ProgrammeDataExportComponent } from './programme-data-export/programme-data-export.component';
+import { ProgrammeConversionRatesComponent } from './programme-conversion-rates/programme-conversion-rates.component';
+import {ProgrammeConversionRateStore} from './programme-conversion-rates/programme-conversion-rate-store.service';
 
 @NgModule({
   declarations: [
@@ -85,12 +89,15 @@ import {ProgrammeChecklistOptionsToggleComponent} from './programme-checklist-li
     ProgrammeChecklistDetailPageComponent,
     ProgrammeChecklistHeadlineComponent,
     ProgrammeChecklistOptionsToggleComponent
+    ProgrammeDataExportComponent,
+    ProgrammeConversionRatesComponent
   ],
   providers: [
     IndicatorsStore,
     LumpSumsStore,
     UnitCostStore,
     ProgrammeEditableStateStore,
+    ProgrammeConversionRateStore,
     ProgrammePageSidenavService
   ],
   imports: [
