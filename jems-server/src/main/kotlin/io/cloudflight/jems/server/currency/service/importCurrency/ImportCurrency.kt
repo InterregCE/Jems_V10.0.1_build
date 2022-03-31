@@ -11,6 +11,9 @@ import io.cloudflight.jems.server.currency.service.toModelList
 import io.cloudflight.jems.server.programme.authorization.CanUpdateProgrammeSetup
 import org.slf4j.LoggerFactory
 import org.springframework.boot.web.client.RestTemplateBuilder
+import org.springframework.retry.annotation.Backoff
+import org.springframework.retry.annotation.Retryable
+import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.client.RestTemplate
@@ -28,6 +31,7 @@ class ImportCurrency(
 
         const val EC_EUROPA_CONVERSION_URL = "https://ec.europa.eu/budg/inforeuro/api/public/monthly-rates"
         const val EC_EUROPA_APPENDER_URL = "&lang=en"
+        const val RETRY_IN_1_HOURS = 60 * 60 * 1000L
     }
 
     val restTemplate: RestTemplate = restTemplateBuilder.build()
@@ -51,6 +55,13 @@ class ImportCurrency(
         auditService.logEvent(currencyImportEnded(currencies))
 
         return currencies
+    }
+
+    @Transactional
+    @Scheduled(cron = "@monthly")
+    @Retryable(maxAttempts = 24 , backoff = Backoff(RETRY_IN_1_HOURS))
+    fun importCurrencyRatesMonthly() {
+        importCurrencyRates(null, null)
     }
 
     private fun extractCurrencyRates(url: String): ArrayList<EuroExchangeRate> {
