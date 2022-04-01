@@ -73,7 +73,7 @@ export class ApplicationFormPrivilegesExpansionPanelComponent implements OnInit 
           if (apiError?.formErrors) {
             Object.keys(apiError.formErrors).forEach(field => {
               const control = this.projectCollaborators.controls
-                .find(collaborator => collaborator.get('userEmail')?.value === field)?.get('userEmail');
+                .find(collaborator => collaborator.get('userEmail')?.value.toLowerCase() === field.toLowerCase())?.get('userEmail');
               control?.setErrors({error: this.translateService.instant(apiError.formErrors[field].i18nKey)});
               control?.markAsDirty();
             });
