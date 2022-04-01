@@ -29,15 +29,22 @@ import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerRep
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSummary
 import io.cloudflight.jems.server.project.service.report.model.ReportStatus
 import io.cloudflight.jems.server.project.service.report.partner.createProjectPartnerReport.CreateProjectPartnerReportInteractor
+import io.cloudflight.jems.server.project.service.report.partner.file.deleteProjectPartnerReportFile.DeleteProjectPartnerReportFileInteractor
+import io.cloudflight.jems.server.project.service.report.partner.file.downloadProjectPartnerReportFile.DownloadProjectPartnerReportFileInteractor
 import io.cloudflight.jems.server.project.service.report.partner.getProjectPartnerReport.GetProjectPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.submitProjectPartnerReport.SubmitProjectPartnerReportInteractor
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.springframework.core.io.ByteArrayResource
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
+import org.springframework.http.HttpHeaders
+import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import java.math.BigDecimal
 import java.time.ZonedDateTime
 
@@ -141,6 +148,12 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
     @MockK
     lateinit var getPartnerReport: GetProjectPartnerReportInteractor
 
+    @MockK
+    lateinit var downloadPartnerReportFile: DownloadProjectPartnerReportFileInteractor
+
+    @MockK
+    lateinit var deletePartnerReportFile: DeleteProjectPartnerReportFileInteractor
+
     @InjectMockKs
     private lateinit var controller: ProjectPartnerReportController
 
@@ -200,5 +213,27 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
                 firstSubmission = thisMoment,
             )
         )
+    }
+
+    @Test
+    fun downloadAttachment() {
+        val fileContentArray = ByteArray(5)
+        every { downloadPartnerReportFile.download(partnerId = 20L, fileId = 350L) } returns Pair("fileName.txt", fileContentArray)
+
+        assertThat(controller.downloadAttachment(partnerId = 20L, fileId = 350L))
+            .isEqualTo(
+                ResponseEntity.ok()
+                    .contentLength(5)
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"fileName.txt\"")
+                    .body(ByteArrayResource(fileContentArray))
+            )
+    }
+
+    @Test
+    fun deleteAttachment() {
+        every { deletePartnerReportFile.delete(partnerId = 24L, fileId = 300L) } answers { }
+        controller.deleteAttachment(partnerId = 24L, fileId = 300L)
+        verify(exactly = 1) { deletePartnerReportFile.delete(partnerId = 24L, fileId = 300L) }
     }
 }

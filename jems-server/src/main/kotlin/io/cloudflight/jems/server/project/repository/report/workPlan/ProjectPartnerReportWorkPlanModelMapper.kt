@@ -26,6 +26,7 @@ fun CreateProjectPartnerReportWorkPackageActivity.toEntity(wp: ProjectPartnerRep
         workPackageEntity = wp,
         number = number,
         activityId = activityId,
+        attachment = null,
         translatedValues = mutableSetOf(),
     ).apply {
         translatedValues.addAll(
@@ -47,6 +48,7 @@ fun List<CreateProjectPartnerReportWorkPackageOutput>.toEntity(wp: ProjectPartne
             number = it.number,
             contribution = null,
             evidence = null,
+            attachment = null,
             translatedValues = mutableSetOf(),
         ).apply {
             translatedValues.addAll(
@@ -70,6 +72,7 @@ fun List<CreateProjectPartnerReportWorkPackageActivityDeliverable>.toEntity(
         deliverableId = it.deliverableId,
         contribution = null,
         evidence = null,
+        attachment = null,
         translatedValues = mutableSetOf(),
     ).apply {
         translatedValues.addAll(
