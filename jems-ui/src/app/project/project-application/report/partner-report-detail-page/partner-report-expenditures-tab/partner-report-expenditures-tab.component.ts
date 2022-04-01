@@ -15,6 +15,9 @@ import {
 import {MatSelectChange} from '@angular/material/select/select';
 import {IdNamePairDTO, ProjectPartnerReportExpenditureCostDTO} from '@cat/api';
 import {BudgetCostCategoryEnum} from '@project/model/lump-sums/BudgetCostCategoryEnum';
+import {
+  InvestmentSummary
+} from '@project/work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
 
 @UntilDestroy()
 @Component({
@@ -34,7 +37,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
   data$: Observable<{
     expendituresCosts: ProjectPartnerReportExpenditureCostDTO[];
     costCategories: string[];
-    investmentNumbers: string[];
+    investmentsSummary: InvestmentSummary[];
     contractIDs: IdNamePairDTO[];
     columnsToDisplay: string[];
     withConfigs: TableConfig[];
@@ -47,11 +50,11 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
 
   ngOnInit(): void {
     this.initForm();
-    this.columnsToDisplay$ = this.pageStore.investmentNumbers$.pipe(
-      map((investmentNumbers: string[]) => this.getColumnsToDisplay(investmentNumbers))
+    this.columnsToDisplay$ = this.pageStore.investmentsSummary$.pipe(
+      map((investments: InvestmentSummary[]) => this.getColumnsToDisplay(investments))
     );
-    this.withConfigs$ = this.pageStore.investmentNumbers$.pipe(map((investmentNumbers: string[]) =>
-      this.getTableConfig(investmentNumbers)));
+    this.withConfigs$ = this.pageStore.investmentsSummary$.pipe(map((investments: InvestmentSummary[]) =>
+      this.getTableConfig(investments)));
     this.dataAsObservable();
   }
 
@@ -59,10 +62,10 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     control.patchValue({costCategory: change.value});
     if (this.isStaffCostsSelectedForCostCategoryRow(control) ||
       this.isTravelAndAccommodationSelectedForCostCategoryRow(control)) {
-      control.patchValue({investmentNumber: ''});
-      control.get('investmentNumber')?.disable();
+      control.patchValue({investmentId: ''});
+      control.get('investmentId')?.disable();
     } else {
-      control.get('investmentNumber')?.enable();
+      control.get('investmentId')?.enable();
     }
     if (this.isStaffCostsSelectedForCostCategoryRow(control)) {
       control.patchValue({contractId: ''});
@@ -81,7 +84,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
   disableOnReset(control: FormGroup): void {
     if (this.isStaffCostsSelectedForCostCategoryRow(control) ||
       this.isTravelAndAccommodationSelectedForCostCategoryRow(control)) {
-      control.get('investmentNumber')?.disable();
+      control.get('investmentId')?.disable();
     }
     if (this.isStaffCostsSelectedForCostCategoryRow(control)) {
       control.get('vat')?.disable();
@@ -91,7 +94,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
   }
 
   onInvestmentNumberChange(change: MatSelectChange, control: FormGroup): void {
-    control.patchValue({investmentNumber: change.value});
+    control.patchValue({investmentId: change.value});
   }
 
   isStaffCostsSelectedForCostCategoryRow(control: FormGroup): boolean {
@@ -123,7 +126,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     const item = this.formBuilder.group({
       id: null,
       costCategory: ['', Validators.required],
-      investmentNumber: '',
+      investmentId: '',
       contractId: '',
       internalReferenceNumber: ['', Validators.maxLength(30)],
       invoiceNumber: ['', Validators.maxLength(30)],
@@ -163,15 +166,15 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     this.data$ = combineLatest([
       this.pageStore.expendituresCosts$,
       this.pageStore.costCategories$,
-      this.pageStore.investmentNumbers$,
+      this.pageStore.investmentsSummary$,
       this.pageStore.contractIDs$,
       this.columnsToDisplay$,
       this.withConfigs$,
     ]).pipe(
-      map(([expendituresCosts, costCategories, investmentNumbers, contractIDs, columnsToDisplay, withConfigs]) => ({
+      map(([expendituresCosts, costCategories, investmentsSummary, contractIDs, columnsToDisplay, withConfigs]) => ({
           expendituresCosts,
           costCategories,
-          investmentNumbers,
+          investmentsSummary,
           contractIDs,
           columnsToDisplay,
           withConfigs
@@ -181,7 +184,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     );
   }
 
-  private getColumnsToDisplay(investmentNumbers: string[]): string[] {
+  private getColumnsToDisplay(investments: InvestmentSummary[]): string[] {
     const columnsToDisplay = [
       'costItemID',
       'costCategory',
@@ -197,13 +200,13 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       'declaredAmount',
       'actions'
     ];
-    if (investmentNumbers.length > 0) {
-      columnsToDisplay.splice(2, 0, 'investmentNumber');
+    if (investments.length > 0) {
+      columnsToDisplay.splice(2, 0, 'investmentId');
     }
     return columnsToDisplay;
   }
 
-  private getTableConfig(investmentNumbers: string[]): TableConfig[] {
+  private getTableConfig(investments: InvestmentSummary[]): TableConfig[] {
     const tableConfig = [
       {minInRem: 1},
       {minInRem: 11},
@@ -220,7 +223,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       {minInRem: 3}
     ];
 
-    if (investmentNumbers.length > 0) {
+    if (investments.length > 0) {
       tableConfig.splice(2, 0, {minInRem: 6});
     }
     return tableConfig;
@@ -231,7 +234,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       {
         id: this.formBuilder.control(reportExpenditureCost?.id),
         costCategory: this.formBuilder.control(reportExpenditureCost?.costCategory),
-        investmentNumber: this.formBuilder.control(reportExpenditureCost?.investmentId),
+        investmentId: this.formBuilder.control(reportExpenditureCost?.investmentId),
         contractId: this.formBuilder.control(reportExpenditureCost?.contractId),
         internalReferenceNumber: this.formBuilder.control(reportExpenditureCost?.internalReferenceNumber,
           Validators.maxLength(30)),
