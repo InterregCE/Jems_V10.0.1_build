@@ -4,7 +4,7 @@ import io.cloudflight.jems.api.project.dto.report.partner.workPlan.ProjectPartne
 import io.cloudflight.jems.api.project.dto.report.partner.workPlan.UpdateProjectPartnerReportWorkPackageDTO
 import io.cloudflight.jems.api.project.report.ProjectPartnerReportWorkPlanApi
 import io.cloudflight.jems.server.project.controller.report.toDto
-import io.cloudflight.jems.server.project.service.file.model.ProjectFile
+import io.cloudflight.jems.server.project.controller.report.toProjectFile
 import io.cloudflight.jems.server.project.service.report.partner.workPlan.getProjectPartnerWorkPlan.GetProjectPartnerReportWorkPlanInteractor
 import io.cloudflight.jems.server.project.service.report.partner.workPlan.updateProjectPartnerWorkPlan.UpdateProjectPartnerReportWorkPlanInteractor
 import io.cloudflight.jems.server.project.service.report.partner.workPlan.uploadFileToProjectPartnerReport.UploadFileToProjectPartnerReportWorkPlanInteractor
@@ -43,7 +43,5 @@ class ProjectPartnerReportWorkPlanController(
     override fun uploadFileToOutput(partnerId: Long, reportId: Long, workPackageId: Long, outputId: Long, file: MultipartFile) =
         uploadFileToPartnerReportWorkPlan.uploadToOutput(partnerId, reportId, workPackageId, outputId, file.toProjectFile())
             .toDto()
-
-    private fun MultipartFile.toProjectFile() = ProjectFile(inputStream, originalFilename ?: name, size)
 
 }

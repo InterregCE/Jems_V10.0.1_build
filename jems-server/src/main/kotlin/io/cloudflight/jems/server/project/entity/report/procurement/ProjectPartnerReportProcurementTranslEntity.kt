@@ -9,6 +9,6 @@ import javax.persistence.Entity
 class ProjectPartnerReportProcurementTranslEntity(
     @EmbeddedId
     override val translationId: TranslationId<ProjectPartnerReportProcurementEntity>,
-    val comment: String?,
-    val contractType: String?,
+    var comment: String?,
+    var contractType: String?,
 ) : TranslationEntity()

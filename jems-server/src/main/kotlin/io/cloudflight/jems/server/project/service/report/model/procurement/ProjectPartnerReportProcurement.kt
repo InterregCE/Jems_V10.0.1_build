@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.model.procurement
 
 import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
 import java.math.BigDecimal
 
 data class ProjectPartnerReportProcurement(
@@ -13,4 +14,5 @@ data class ProjectPartnerReportProcurement(
     val contractAmount: BigDecimal,
     val supplierName: String,
     val comment: Set<InputTranslation>,
+    val attachment: ProjectReportFileMetadata?,
 )

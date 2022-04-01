@@ -7,6 +7,8 @@ interface ProjectReportProcurementPersistence {
 
     fun getProcurementIdsForReport(partnerId: Long, reportId: Long): Set<Long>
 
+    fun existsByProcurementId(partnerId: Long, reportId: Long, procurementId: Long): Boolean
+
     fun getProcurementsForReportIds(reportIds: Set<Long>): List<ProjectPartnerReportProcurement>
 
     fun getProcurementContractIdsForReportIds(reportIds: Set<Long>): Set<String>

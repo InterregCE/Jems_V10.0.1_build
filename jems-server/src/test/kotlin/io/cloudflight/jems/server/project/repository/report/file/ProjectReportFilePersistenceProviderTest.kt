@@ -3,9 +3,11 @@ package io.cloudflight.jems.server.project.repository.report.file
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.minio.MinioStorage
 import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
+import io.cloudflight.jems.server.project.entity.report.procurement.ProjectPartnerReportProcurementEntity
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageActivityDeliverableEntity
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageActivityEntity
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageOutputEntity
+import io.cloudflight.jems.server.project.repository.report.procurement.ProjectPartnerReportProcurementRepository
 import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPartnerReportWorkPackageActivityDeliverableRepository
 import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPartnerReportWorkPackageActivityRepository
 import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPartnerReportWorkPackageOutputRepository
@@ -23,6 +25,7 @@ import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.math.BigDecimal.ONE
 import java.time.ZonedDateTime
 import java.util.*
 
@@ -76,6 +79,15 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
             attachment = attachment,
         )
 
+        private fun procurement(id: Long, attachment: ReportProjectFileEntity?) = ProjectPartnerReportProcurementEntity(
+            id = id,
+            reportEntity = mockk(),
+            contractId = "contractId",
+            contractAmount = ONE,
+            supplierName = "supplierName",
+            attachment = attachment,
+        )
+
         private fun fileCreate(name: String = "new_file.txt", type: ProjectPartnerReportFileType) = ProjectReportFileCreate(
             projectId = 6666L,
             partnerId = PARTNER_ID,
@@ -103,6 +115,9 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
 
     @MockK
     lateinit var workPlanOutputRepository: ProjectPartnerReportWorkPackageOutputRepository
+
+    @MockK
+    lateinit var procurementRepository: ProjectPartnerReportProcurementRepository
 
     @MockK
     lateinit var userRepository: UserRepository
@@ -201,6 +216,26 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
 
         assertFile(filePathMinio.captured, fileEntity.captured)
         assertThat(fileEntity.captured.type).isEqualTo(ProjectPartnerReportFileType.Deliverable)
+    }
+
+    @Test
+    fun updatePartnerReportProcurementAttachment() {
+        val filePathMinio = slot<String>()
+        val fileEntity = slot<ReportProjectFileEntity>()
+
+        val oldFile = mockk<ReportProjectFileEntity>()
+
+        val procurement = procurement(id = 90L, attachment = oldFile)
+        every { procurementRepository.findById(40L) } returns Optional.of(procurement)
+
+        val fileCreate = fileCreate(type = ProjectPartnerReportFileType.Procurement)
+        mockFileDeletionAndSaving(oldFile, filePathMinio, fileEntity)
+
+        assertThat(persistence.updatePartnerReportProcurementAttachment(40L, file = fileCreate).name)
+            .isEqualTo("new_file.txt")
+
+        assertFile(filePathMinio.captured, fileEntity.captured)
+        assertThat(fileEntity.captured.type).isEqualTo(ProjectPartnerReportFileType.Procurement)
     }
 
     @Test

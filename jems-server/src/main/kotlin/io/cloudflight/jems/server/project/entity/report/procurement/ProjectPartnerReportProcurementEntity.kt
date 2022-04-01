@@ -1,11 +1,10 @@
 package io.cloudflight.jems.server.project.entity.report.procurement
 
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
-import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportIdentificationTranslEntity
+import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
 import java.math.BigDecimal
 import javax.persistence.CascadeType
 import javax.persistence.Entity
-import javax.persistence.FetchType
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
@@ -27,13 +26,17 @@ class ProjectPartnerReportProcurementEntity(
     val reportEntity: ProjectPartnerReportEntity,
 
     @field:NotNull
-    val contractId: String,
+    var contractId: String,
 
     @field:NotNull
-    val contractAmount: BigDecimal,
+    var contractAmount: BigDecimal,
 
     @field:NotNull
-    val supplierName: String,
+    var supplierName: String,
+
+    @ManyToOne
+    @JoinColumn(name = "file_id")
+    var attachment: ReportProjectFileEntity?,
 
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.sourceEntity")
     val translatedValues: MutableSet<ProjectPartnerReportProcurementTranslEntity> = mutableSetOf(),

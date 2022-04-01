@@ -11,6 +11,7 @@ import io.cloudflight.jems.api.project.dto.report.partner.PartnerReportIdentific
 import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadataDTO
 import io.cloudflight.jems.server.programme.controller.fund.toDto
 import io.cloudflight.jems.server.programme.controller.legalstatus.toDto
+import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.report.model.PartnerReportIdentification
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSummary
@@ -18,6 +19,7 @@ import io.cloudflight.jems.server.project.service.report.model.file.ProjectRepor
 import org.mapstruct.Mapper
 import org.mapstruct.factory.Mappers
 import org.springframework.data.domain.Page
+import org.springframework.web.multipart.MultipartFile
 
 fun ProjectPartnerReportSummary.toDto() = ProjectPartnerReportSummaryDTO(
     id = id,
@@ -57,6 +59,8 @@ fun PartnerReportIdentification.toDto() = PartnerReportIdentificationDTO(
         )
     }
 )
+
+fun MultipartFile.toProjectFile() = ProjectFile(inputStream, originalFilename ?: name, size)
 
 private val mapper = Mappers.getMapper(ProjectPartnerReportMapper::class.java)
 
