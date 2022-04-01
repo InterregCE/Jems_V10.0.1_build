@@ -8,6 +8,7 @@ import io.cloudflight.jems.server.common.entity.extractTranslation
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.procurement.ProjectPartnerReportProcurementEntity
 import io.cloudflight.jems.server.project.entity.report.procurement.ProjectPartnerReportProcurementTranslEntity
+import io.cloudflight.jems.server.project.repository.report.toModel
 import io.cloudflight.jems.server.project.service.report.model.procurement.ProjectPartnerReportProcurement
 import io.cloudflight.jems.server.project.service.report.model.procurement.ProjectPartnerReportProcurementUpdate
 
@@ -21,21 +22,22 @@ fun List<ProjectPartnerReportProcurementEntity>.toModel() = map {
         contractAmount = it.contractAmount,
         supplierName = it.supplierName,
         comment = it.translatedValues.extractField { translated -> translated.comment },
+        attachment = it.attachment?.toModel(),
     )
 }
 
-fun List<ProjectPartnerReportProcurementUpdate>.toEntity(report: ProjectPartnerReportEntity) = map {
+fun ProjectPartnerReportProcurementUpdate.toEntity(report: ProjectPartnerReportEntity) =
     ProjectPartnerReportProcurementEntity(
-        id = it.id,
+        id = id,
         reportEntity = report,
-        contractId = it.contractId,
-        contractAmount = it.contractAmount,
-        supplierName = it.supplierName,
+        contractId = contractId,
+        contractAmount = contractAmount,
+        supplierName = supplierName,
+        attachment = null,
         translatedValues = mutableSetOf(),
     ).apply {
-        translatedValues.addTranslation(this, it.contractType, it.comment)
+        translatedValues.addTranslation(this, contractType, comment)
     }
-}
 
 fun MutableSet<ProjectPartnerReportProcurementTranslEntity>.addTranslation(
     sourceEntity: ProjectPartnerReportProcurementEntity,

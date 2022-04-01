@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.repository.report.file
 
 import io.cloudflight.jems.server.common.minio.MinioStorage
 import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
+import io.cloudflight.jems.server.project.repository.report.procurement.ProjectPartnerReportProcurementRepository
 import io.cloudflight.jems.server.project.repository.report.toModel
 import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPartnerReportWorkPackageActivityDeliverableRepository
 import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPartnerReportWorkPackageActivityRepository
@@ -21,6 +22,7 @@ class ProjectReportFilePersistenceProvider(
     private val workPlanActivityRepository: ProjectPartnerReportWorkPackageActivityRepository,
     private val workPlanActivityDeliverableRepository: ProjectPartnerReportWorkPackageActivityDeliverableRepository,
     private val workPlanOutputRepository: ProjectPartnerReportWorkPackageOutputRepository,
+    private val procurementRepository: ProjectPartnerReportProcurementRepository,
     private val userRepository: UserRepository,
 ) : ProjectReportFilePersistence {
 
@@ -76,6 +78,17 @@ class ProjectReportFilePersistenceProvider(
         output.attachment.deleteIfPresent()
 
         return persistFileAndUpdateLink(file = file) { output.attachment = it }
+    }
+
+    @Transactional
+    override fun updatePartnerReportProcurementAttachment(
+        procurementId: Long,
+        file: ProjectReportFileCreate
+    ): ProjectReportFileMetadata {
+        val procurement = procurementRepository.findById(procurementId).get()
+        procurement.attachment.deleteIfPresent()
+
+        return persistFileAndUpdateLink(file = file) { procurement.attachment = it }
     }
 
     private fun persistFileAndUpdateLink(file: ProjectReportFileCreate, additionalStep: (ReportProjectFileEntity) -> Unit): ProjectReportFileMetadata {
