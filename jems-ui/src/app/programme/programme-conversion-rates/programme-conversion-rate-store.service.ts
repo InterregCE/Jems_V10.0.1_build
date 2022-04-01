@@ -24,7 +24,7 @@ export class ProgrammeConversionRateStore {
   }
 
   getCurrencies(): Observable<CurrencyDTO[]> {
-  let latestConversionMetadata = this.downloadConversionRates$
+  const latestConversionMetadata = this.downloadConversionRates$
       .pipe(
         mergeMap(() => this.currencyService.fetchCurrencyRates()),
         tap(() => this.downloadSuccess$.next(true)),
@@ -36,7 +36,7 @@ export class ProgrammeConversionRateStore {
         tap(metadata => Log.info('Download latest currencies and conversions', this, metadata))
       );
 
-  let initialConversionMetadata = this.currencyService.getCurrencyRates()
+  const initialConversionMetadata = this.currencyService.getCurrencyRates()
       .pipe(
         tap(metadata => Log.info('Fetched initial currencies and conversions', this, metadata))
       );

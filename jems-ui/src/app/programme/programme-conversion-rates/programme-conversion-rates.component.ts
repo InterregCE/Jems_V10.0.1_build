@@ -16,11 +16,11 @@ export class ProgrammeConversionRatesComponent {
   PermissionsEnum = PermissionsEnum;
   Alert = Alert;
 
-  currencies$: Observable<CurrencyDTO[]>
+  currencies$: Observable<CurrencyDTO[]>;
 
   constructor(public store: ProgrammeConversionRateStore,
               private programmePageSidenavService: ProgrammePageSidenavService) {
-    this.currencies$ = this.store.currencies$
+    this.currencies$ = this.store.currencies$;
   }
 
   onSubmit(): void {
