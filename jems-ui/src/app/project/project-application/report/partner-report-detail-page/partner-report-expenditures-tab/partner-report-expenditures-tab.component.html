@@ -52,7 +52,7 @@
                             </mat-cell>
                             <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                         </ng-container>
-                        <ng-container *ngIf="data.investmentNumbers.length > 0" matColumnDef="investmentNumber">
+                        <ng-container *ngIf="data.investmentsSummary.length > 0" matColumnDef="investmentId">
                             <mat-header-cell *matHeaderCellDef>
                                         <span jemsText
                                               maxLines="1">{{'project.application.partner.report.expenditures.tab.investment.number' | translate}}</span>
@@ -62,14 +62,14 @@
                                     <mat-select
                                         #investmentNumber
                                         (selectionChange)="onInvestmentNumberChange($event, control)"
-                                        [formControlName]="constants.FORM_CONTROL_NAMES.investmentNumber"
+                                        [formControlName]="constants.FORM_CONTROL_NAMES.investmentId"
                                         [matTooltip]="investmentNumber.triggerValue"
                                         [placeholder]="'common.not.applicable.option' | translate">
                                         <mat-option
                                                 [value]="null">{{'common.not.applicable.option' | translate}}</mat-option>
-                                        <mat-option *ngFor="let investmentNumber of data.investmentNumbers"
-                                                    [value]="investmentNumber">
-                                            {{ investmentNumber }}
+                                        <mat-option *ngFor="let investment of data.investmentsSummary"
+                                                    [value]="investment.id">
+                                            {{investment.toString()}}
                                         </mat-option>
                                     </mat-select>
                                 </mat-form-field>
