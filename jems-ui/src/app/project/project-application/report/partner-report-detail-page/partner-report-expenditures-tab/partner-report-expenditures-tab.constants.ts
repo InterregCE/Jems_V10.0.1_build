@@ -8,7 +8,7 @@ export class PartnerReportExpendituresTabConstants {
   public static FORM_CONTROL_NAMES = {
     rowId: 'rowId',
     costCategory: 'costCategory',
-    investmentNumber: 'investmentNumber',
+    investmentId: 'investmentId',
     contractId: 'contractId',
     internalReferenceNumber: 'internalReferenceNumber',
     invoiceNumber: 'invoiceNumber',

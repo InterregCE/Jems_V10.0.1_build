@@ -31,7 +31,7 @@ export class PartnerReportExpendituresStore {
   isEditable$: Observable<boolean>;
   costCategories$: Observable<string[]>;
   contractIDs$: Observable<IdNamePairDTO[]>;
-  investmentNumbers$: Observable<string[]>;
+  investmentsSummary$: Observable<InvestmentSummary[]>;
   expendituresCosts$: Observable<ProjectPartnerReportExpenditureCostDTO[]>;
   private expendituresUpdated$ = new Subject<ProjectPartnerReportExpenditureCostDTO[]>();
 
@@ -44,7 +44,7 @@ export class PartnerReportExpendituresStore {
     this.costCategories$ = this.costCategories();
     this.isEditable$ = this.partnerReportDetailPageStore.reportEditable$;
     this.contractIDs$ = this.reportProcurementPageStore.getProcurementList();
-    this.investmentNumbers$ = this.investmentSummariesForReport();
+    this.investmentsSummary$ = this.investmentSummariesForReport();
   }
 
   updateExpenditures(partnerExpenditures: ProjectPartnerReportExpenditureCostDTO[]): Observable<ProjectPartnerReportExpenditureCostDTO[]> {
@@ -100,7 +100,7 @@ export class PartnerReportExpendituresStore {
       );
   }
 
-  private investmentSummariesForReport(): Observable<string[]> {
+  private investmentSummariesForReport(): Observable<InvestmentSummary[]> {
     return combineLatest([
       this.projectStore.project$,
       this.projectStore.investmentChangeEvent$.pipe(startWith(null)),
@@ -108,10 +108,9 @@ export class PartnerReportExpendituresStore {
       .pipe(
         switchMap(([project, changeEvent, partnerReport]) =>
           this.projectStore.getProjectInvestmentSummaries(project, partnerReport.linkedFormVersion)),
-        map((investmentSummeryDTOs: InvestmentSummaryDTO[]) => investmentSummeryDTOs
+        map((investmentSummaryDTOs: InvestmentSummaryDTO[]) => investmentSummaryDTOs
           .map(it => new InvestmentSummary(it.id, it.investmentNumber, it.workPackageNumber))),
-        map((investmentSummaries: InvestmentSummary[]) => investmentSummaries
-          .map(it => it.workPackageNumber + '.' + it.investmentNumber)),
+        map((investmentSummaries: InvestmentSummary[]) => investmentSummaries),
         shareReplay(1)
       );
   }
