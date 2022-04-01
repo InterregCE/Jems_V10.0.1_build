@@ -47,11 +47,11 @@
                     </jems-pending-button>
                 </ng-container>
 
-                <jems-alert [closable]="false" [show]="isCallEnded(data.projectCallEndDate)" [type]="Alert.INFO">
+                <jems-alert [closable]="false" [show]="isCallEnded(data.projectCallEndDate) && ProjectUtil.isDraft(data.currentVersionOfProjectStatus)" [type]="Alert.INFO">
                     <span>{{'project.application.check.and.submit.call.ended' | translate}}</span>
                 </jems-alert>
 
-                <jems-alert [closable]="false" [show]="!data.hasPreConditionCheckSucceed" [type]="Alert.INFO">
+                <jems-alert [closable]="false" [show]="!data.hasPreConditionCheckSucceed && !isCallEnded(data.projectCallEndDate)" [type]="Alert.INFO">
                     <span>{{'project.application.check.and.submit.pre.condition.failed' | translate}}</span>
                 </jems-alert>
 
