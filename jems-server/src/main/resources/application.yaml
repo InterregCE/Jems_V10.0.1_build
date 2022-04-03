@@ -2,6 +2,12 @@ api:
   base-path: /api
 
 spring:
+  jpa:
+    properties:
+      hibernate:
+        types:
+          print:
+            banner: false
   flyway:
     out-of-order: true
   messages:

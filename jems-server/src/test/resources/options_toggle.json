@@ -1,0 +1,7 @@
+{
+  "type": "OPTIONS_TOGGLE",
+  "question": "What option do you choose",
+  "firstOption": "yes",
+  "secondOption": "no",
+  "thirdOption": "maybe"
+}
