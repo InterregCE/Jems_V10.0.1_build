@@ -221,7 +221,6 @@ Cypress.Commands.add('approveModification', (applicationId: number, approvalInfo
     body: approvalInfo
   });
   if (userEmail) {
-    // cy.logoutByRequest();
     cy.get('@currentUser').then((currentUser: any) => {
       loginByRequest(currentUser.name);
     });
@@ -256,6 +255,9 @@ function createApplication(applicationDetails: ProjectCreateDTO, userEmail: stri
 }
 
 function updateIdentification(applicationId: number, projectIdentification: InputProjectData) {
+  if (projectIdentification.acronym === 'randomize') {
+    projectIdentification.acronym = `${faker.hacker.adjective()} ${faker.hacker.noun()}`;
+  }
   cy.request({
     method: 'PUT',
     url: `api/project/${applicationId}`,
