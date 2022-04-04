@@ -17,15 +17,6 @@
     <ID>ComplexMethod:CallDetail.kt$CallDetail$fun getDiff(old: CallDetail? = null): Map&lt;String, Pair&lt;Any?, Any?&gt;&gt;</ID>
     <ID>ComplexMethod:ProjectDataModelMapper.kt$PluginDataMapper$fun map(programmeStrategy: ProgrammeStrategy): ProgrammeStrategyData</ID>
     <ID>ComplexMethod:ProjectPartnerEntityMapper.kt$fun ProjectPartnerEntity.copy( projectPartner: ProjectPartner? = null, legalStatusRef: ProgrammeLegalStatusEntity? = null, newAddresses: Set&lt;ProjectPartnerAddress&gt;? = null, newContacts: Set&lt;ProjectPartnerContact&gt;? = null, newMotivation: ProjectPartnerMotivation? = null, newPartnerContributions: List&lt;ProjectPartnerContribution&gt;? = null, ): ProjectPartnerEntity</ID>
-    <ID>EmptyClassBlock:ExceptionWrapper.kt$ExceptionWrapper${ }</ID>
-    <ID>EmptyClassBlock:UserProjectPersistenceProviderTest.kt$UserProjectPersistenceProviderTest.Companion${ }</ID>
-    <ID>EmptyDefaultConstructor:CreateLumpSumException.kt$IdHasToBeNull$()</ID>
-    <ID>EmptyDefaultConstructor:CreateLumpSumException.kt$MaxAllowedLumpSumsReached$()</ID>
-    <ID>EmptyDefaultConstructor:SpringConfigProperties.kt$SpringConfigProperties$()</ID>
-    <ID>EmptyDefaultConstructor:UpdateAllowedRealCostsExceptions.kt$CallNotEditableException$()</ID>
-    <ID>EmptyDefaultConstructor:UpdateCallUnitCostsExceptions.kt$UnitCostsRemovedAfterCallPublished$()</ID>
-    <ID>EmptyKtFile:ProjectFileAuthorizationTest.kt$.ProjectFileAuthorizationTest.kt</ID>
-    <ID>EmptyKtFile:ProjectPartnerBudgetMapper.kt$.ProjectPartnerBudgetMapper.kt</ID>
     <ID>FunctionOnlyReturningConstant:MockedMethodSignature.kt$MockedMethodSignature$@ExceptionWrapper(SampleWrapperException::class) fun methodWithAspectWhichReturnsNormally(): String</ID>
     <ID>FunctionOnlyReturningConstant:ProgrammeSetupAuthorization.kt$ProgrammeSetupAuthorization$ fun canReadProgrammeSetup()</ID>
     <ID>LargeClass:GetBudgetFundsPerPeriodInteractorTest.kt$GetBudgetFundsPerPeriodInteractorTest : UnitTest</ID>
@@ -38,32 +29,17 @@
     <ID>LongParameterList:GetProjectBudget.kt$GetProjectBudget$( partner: ProjectPartnerSummary, unitCosts: BigDecimal, lumpSumCosts: BigDecimal, externalCosts: BigDecimal, equipmentCosts: BigDecimal, infrastructureCosts: BigDecimal )</ID>
     <ID>LongParameterList:ProjectDescriptionMapper.kt$( projectId: Long, projectCoordination: Set&lt;InputTranslation&gt;, projectQualityAssurance: Set&lt;InputTranslation&gt;, projectCommunication: Set&lt;InputTranslation&gt;, projectFinancialManagement: Set&lt;InputTranslation&gt;, projectJointDevelopmentDescription: Set&lt;InputTranslation&gt;, projectJointImplementationDescription: Set&lt;InputTranslation&gt;, projectJointStaffingDescription: Set&lt;InputTranslation&gt;, projectJointFinancingDescription: Set&lt;InputTranslation&gt;, sustainableDevelopmentDescription: Set&lt;InputTranslation&gt;, equalOpportunitiesDescription: Set&lt;InputTranslation&gt;, sexualEqualityDescription: Set&lt;InputTranslation&gt;, )</ID>
     <ID>LongParameterList:ProjectModelMapper.kt$( project: ProjectEntity, periods: List&lt;ProjectPeriod&gt;, assessmentStep1: ProjectAssessmentEntity, assessmentStep2: ProjectAssessmentEntity, stateAidEntities: MutableSet&lt;ProjectCallStateAidEntity&gt;, applicationFormFieldConfigurationEntities: MutableSet&lt;ApplicationFormFieldConfigurationEntity&gt;, priority: ProgrammePriorityEntity? )</ID>
+    <ID>LongParameterList:UploadFileToProjectPartnerReportWorkPlanInteractor.kt$UploadFileToProjectPartnerReportWorkPlanInteractor$( partnerId: Long, reportId: Long, workPackageId: Long, activityId: Long, deliverableId: Long, file: ProjectFile, )</ID>
     <ID>MatchingDeclarationName:AllowRealCostsEntity.kt$AllowedRealCostsEntity : Serializable</ID>
     <ID>MatchingDeclarationName:CustomFeignClientsConfiguration.kt$CustomFeignClientConfiguration : FeignClientsConfiguration</ID>
     <ID>MatchingDeclarationName:DeleteProjecPartnerInteractorTest.kt$DeleteProjectPartnerInteractorTest : UnitTest</ID>
     <ID>MatchingDeclarationName:GetBudgetTotalCostsInteractor.kt$GetBudgetTotalCostInteractor</ID>
     <ID>MatchingDeclarationName:UpdateProjectpartnerInteractorTest.kt$UpdateProjectPartnerInteractorTest : UnitTest</ID>
     <ID>MaxLineLength:AddWorkPackageInvestmentTestWorkPackageInvestmentBase.kt$AddWorkPackageInvestmentTestWorkPackageInvestmentBase$fun</ID>
-    <ID>MaxLineLength:ApplicationState.kt$ApplicationState$protected</ID>
-    <ID>MaxLineLength:ApplicationStateFactory.kt$ApplicationStateFactory$APPROVED_WITH_CONDITIONS -&gt; ApprovedApplicationWithConditionsState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence)</ID>
-    <ID>MaxLineLength:ApplicationStateFactory.kt$ApplicationStateFactory$CONDITIONS_SUBMITTED -&gt; ConditionsSubmittedApplicationState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence, projectAuthorization)</ID>
-    <ID>MaxLineLength:ApplicationStateFactory.kt$ApplicationStateFactory$ELIGIBLE -&gt; EligibleApplicationState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence, projectAssessmentPersistence)</ID>
-    <ID>MaxLineLength:ApplicationStateFactory.kt$ApplicationStateFactory$MODIFICATION_PRECONTRACTING -&gt; ModificationPreContractingApplicationState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence)</ID>
-    <ID>MaxLineLength:ApplicationStateFactory.kt$ApplicationStateFactory$MODIFICATION_PRECONTRACTING_SUBMITTED -&gt; ModificationPreContractingSubmittedApplicationState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence, projectAuthorization)</ID>
-    <ID>MaxLineLength:ApplicationStateFactory.kt$ApplicationStateFactory$MODIFICATION_REJECTED -&gt; ModificationRejectedApplicationState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence)</ID>
-    <ID>MaxLineLength:ApplicationStateFactory.kt$ApplicationStateFactory$MODIFICATION_SUBMITTED -&gt;ModificationSubmittedApplicationState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence, projectAuthorization)</ID>
-    <ID>MaxLineLength:ApplicationStateFactory.kt$ApplicationStateFactory$RETURNED_TO_APPLICANT -&gt; ReturnedToApplicantApplicationState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence)</ID>
-    <ID>MaxLineLength:ApplicationStateFactory.kt$ApplicationStateFactory$RETURNED_TO_APPLICANT_FOR_CONDITIONS -&gt; ReturnedToApplicantForConditionsApplicationState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence)</ID>
-    <ID>MaxLineLength:ApplicationStateFactory.kt$ApplicationStateFactory$STEP1_APPROVED_WITH_CONDITIONS -&gt; FirstStepApprovedApplicationWithConditionsState(projectSummary,projectWorkflowPersistence, auditPublisher,securityService, projectPersistence)</ID>
-    <ID>MaxLineLength:ApplicationStateFactory.kt$ApplicationStateFactory$STEP1_ELIGIBLE -&gt; FirstStepEligibleApplicationState(projectSummary,projectWorkflowPersistence, auditPublisher,securityService, projectPersistence, projectAssessmentPersistence)</ID>
-    <ID>MaxLineLength:ApplicationStateFactory.kt$ApplicationStateFactory$STEP1_INELIGIBLE -&gt; FirstStepIneligibleApplicationState(projectSummary,projectWorkflowPersistence, auditPublisher,securityService, projectPersistence)</ID>
-    <ID>MaxLineLength:ApplicationStateFactory.kt$ApplicationStateFactory$STEP1_NOT_APPROVED -&gt; FirstStepNotApprovedApplicationState(projectSummary,projectWorkflowPersistence, auditPublisher,securityService, projectPersistence)</ID>
-    <ID>MaxLineLength:ApprovedApplicationState.kt$ApprovedApplicationState$ApplicationStatus.APPROVED_WITH_CONDITIONS</ID>
     <ID>MaxLineLength:ApprovedApplicationWithConditionsStateTest.kt$ApprovedApplicationWithConditionsStateTest$every { projectWorkflowPersistence.updateProjectFundingDecision(PROJECT_ID, USER_ID, ApplicationStatus.APPROVED, any()) } returns ApplicationStatus.APPROVED</ID>
     <ID>MaxLineLength:ApprovedApplicationWithConditionsStateTest.kt$ApprovedApplicationWithConditionsStateTest$every { projectWorkflowPersistence.updateProjectFundingDecision(PROJECT_ID, USER_ID, ApplicationStatus.NOT_APPROVED, any()) } returns ApplicationStatus.NOT_APPROVED</ID>
     <ID>MaxLineLength:AssignUserToProjectTest.kt$AssignUserToProjectTest$every { userPersistence.findAllByIds(setOf(USER_ADMIN_ID, USER_PROGRAMME_ID, USER_MONITOR_ID_1, USER_MONITOR_ID_2, USER_APPLICANT_ID)) } returns listOf(admin, programmeUser, monitorUser_1, monitorUser_2, applicantUser)</ID>
     <ID>MaxLineLength:BudgetCostCalculatorTest.kt$BudgetCostCalculatorTest$fun</ID>
-    <ID>MaxLineLength:CallDTOMapper.kt$CallDTOMapper$fun</ID>
     <ID>MaxLineLength:CallEntityMapper.kt$CallEntityMapper$abstract fun map(applicationFormFieldConfigurationEntities: MutableSet&lt;ApplicationFormFieldConfigurationEntity&gt;): MutableSet&lt;ApplicationFormFieldConfiguration&gt;</ID>
     <ID>MaxLineLength:CreateOutputIndicator.kt$CreateOutputIndicator$resultIndicatorPersistence.getResultIndicator(outputIndicator.resultIndicatorId).programmeObjectivePolicy != outputIndicator.programmeObjectivePolicy</ID>
     <ID>MaxLineLength:CreateOutputIndicatorTest.kt$CreateOutputIndicatorTest$fun</ID>
@@ -108,6 +84,7 @@
     <ID>MaxLineLength:ProjectPartnerBaseBudgetRepository.kt$ProjectPartnerBaseBudgetRepository$@Query("SELECT new io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetView(e.baseProperties.partnerId, SUM(e.baseProperties.rowSum)) FROM #{#entityName} e WHERE e.baseProperties.partnerId IN :ids GROUP BY e.baseProperties.partnerId")</ID>
     <ID>MaxLineLength:ProjectPartnerBudgetCostsPersistenceProviderTestBase.kt$ProjectPartnerBudgetCostsPersistenceProviderTestBase$protected</ID>
     <ID>MaxLineLength:ProjectPartnerLumpSumRepository.kt$ProjectPartnerLumpSumRepository$@Query("SELECT new io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumPerPartnerSumEntity(e.id.projectPartner, SUM(e.amount)) FROM #{#entityName} e WHERE e.id.projectPartner.id IN :ids GROUP BY e.id.projectPartner")</ID>
+    <ID>MaxLineLength:ProjectPartnerReportWorkPlanControllerTest.kt$ProjectPartnerReportWorkPlanControllerTest$assertThat(controller.uploadFileToActivity(PARTNER_ID, REPORT_ID, WP_ID, 45L, dummyMultipartFile(originalName = "file_name.ext"))).isEqualTo(dummyFileDto)</ID>
     <ID>MaxLineLength:ProjectPartnerRepository.kt$ProjectPartnerRepository$ LEFT JOIN #{#entityName}_motivation_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS motivationTransl ON entity.id = motivationTransl.partner_id</ID>
     <ID>MaxLineLength:ProjectPartnerRepository.kt$ProjectPartnerRepository$ LEFT JOIN #{#entityName}_motivation_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS motivationTranslation ON entity.id = motivationTranslation.partner_id</ID>
     <ID>MaxLineLength:ProjectPartnerRepository.kt$ProjectPartnerRepository$ LEFT JOIN project_partner_budget_equipment FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS equipmentCosts ON equipmentCosts.id = equipmentCostsPeriod.budget_id</ID>
@@ -116,7 +93,6 @@
     <ID>MaxLineLength:ProjectPartnerRepository.kt$ProjectPartnerRepository$ LEFT JOIN project_partner_budget_staff_cost FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS staffCosts ON staffCosts.id = staffCostsPeriod.budget_id</ID>
     <ID>MaxLineLength:ProjectPartnerRepository.kt$ProjectPartnerRepository$ LEFT JOIN project_partner_budget_travel FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS travelCosts ON travelCosts.id = travelCostsPeriod.budget_id</ID>
     <ID>MaxLineLength:ProjectPartnerRepository.kt$ProjectPartnerRepository$ LEFT JOIN project_partner_budget_unit_cost FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS unitCosts ON unitCosts.id = unitCostsPeriod.budget_id</ID>
-    <ID>MaxLineLength:ProjectPersistenceTest.kt$ProjectPersistenceTest$UserSummary(mockRow.userId, mockRow.email, mockRow.name, mockRow.surname, UserRoleSummary(mockRow.roleId, mockRow.roleName), mockRow.userStatus)</ID>
     <ID>MaxLineLength:ProjectRepository.kt$ProjectRepository$ LEFT JOIN programme_priority_specific_objective AS programmePrioObj ON entity.programme_priority_policy_objective_policy = programmePrioObj.programme_objective_policy_code</ID>
     <ID>MaxLineLength:ProjectResultModelMapper.kt$programmeResultMeasurementUnit = groupedRows.value.extractField({ it.programmeResultIndicatorLanguage }) { it.programmeResultIndicatorMeasurementUnit }</ID>
     <ID>MaxLineLength:ProjectResultRepository.kt$ProjectResultRepository$ LEFT JOIN #{#entityName}_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS projectResultTransl ON entity.project_id = projectResultTransl.project_id AND entity.result_number = projectResultTransl.result_number</ID>
@@ -145,6 +121,7 @@
     <ID>MaxLineLength:UpdateBudgetTravelAndAccommodationCostsInteractor.kt$UpdateBudgetTravelAndAccommodationCostsInteractor$fun updateBudgetTravelAndAccommodationCosts(partnerId: Long, travelCosts: List&lt;BudgetTravelAndAccommodationCostEntry&gt;): List&lt;BudgetTravelAndAccommodationCostEntry&gt;</ID>
     <ID>MaxLineLength:UpdateCallLumpSumsTest.kt$UpdateCallLumpSumsTest$every { persistence.updateProjectCallLumpSum(ID, setOf(2, 3)) } returns call.copy(lumpSums = listOf(ProgrammeLumpSum(id = 2, splittingAllowed = true), ProgrammeLumpSum(id = 3, splittingAllowed = true)))</ID>
     <ID>MaxLineLength:UpdateOutputIndicatorTest.kt$UpdateOutputIndicatorTest$fun</ID>
+    <ID>MaxLineLength:UploadFileToProjectPartnerReportWorkPlanTest.kt$UploadFileToProjectPartnerReportWorkPlanTest$assertThat(path).isEqualTo("Project/000450/Report/Partner/000478/PartnerReport/000462/WorkPlan/WorkPackage/000481/Activity/000010/Deliverable/000012/")</ID>
     <ID>MaxLineLength:UploadProjectFile.kt$UploadProjectFile$if</ID>
     <ID>MaxLineLength:UploadTranslationFileTest.kt$UploadTranslationFileTest$fun</ID>
     <ID>MaxLineLength:UserAuthorization.kt$UserAuthorization$(hasPermission(ProjectCreatorCollaboratorsRetrieve) &amp;&amp; isActiveUserIdEqualToOneOf(projectPersistence.getApplicantAndStatusById(projectId).getUserIdsWithViewLevel()))</ID>

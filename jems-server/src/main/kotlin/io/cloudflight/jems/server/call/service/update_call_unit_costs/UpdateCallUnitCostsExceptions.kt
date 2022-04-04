@@ -19,7 +19,7 @@ class UnitCostNotFound : ApplicationNotFoundException(
     i18nMessage = I18nMessage("$UPDATE_CALL_UNIT_COSTS_ERROR_KEY_PREFIX.unitCost.not.found"),
 )
 
-class UnitCostsRemovedAfterCallPublished() : ApplicationBadRequestException(
+class UnitCostsRemovedAfterCallPublished : ApplicationBadRequestException(
     code = "$UPDATE_CALL_UNIT_COSTS_ERROR_CODE_PREFIX-002",
     i18nMessage = I18nMessage("$UPDATE_CALL_UNIT_COSTS_ERROR_KEY_PREFIX.removing.or.updating.existing.unitCosts.is.forbidden"),
 )

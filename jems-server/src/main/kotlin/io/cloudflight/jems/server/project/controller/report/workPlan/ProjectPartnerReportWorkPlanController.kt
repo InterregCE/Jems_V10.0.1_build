@@ -32,16 +32,16 @@ class ProjectPartnerReportWorkPlanController(
             workPlan = workPackages.toModel(),
         ).toDto()
 
-    override fun uploadFileToActivity(partnerId: Long, reportId: Long, activityId: Long, file: MultipartFile) =
-        uploadFileToPartnerReportWorkPlan.uploadToActivity(partnerId, reportId, activityId, file.toProjectFile())
+    override fun uploadFileToActivity(partnerId: Long, reportId: Long, workPackageId: Long, activityId: Long, file: MultipartFile) =
+        uploadFileToPartnerReportWorkPlan.uploadToActivity(partnerId, reportId, workPackageId, activityId, file.toProjectFile())
             .toDto()
 
-    override fun uploadFileToDeliverable(partnerId: Long, reportId: Long, activityId: Long, deliverableId: Long, file: MultipartFile) =
-        uploadFileToPartnerReportWorkPlan.uploadToDeliverable(partnerId, reportId, activityId, deliverableId, file.toProjectFile())
+    override fun uploadFileToDeliverable(partnerId: Long, reportId: Long, workPackageId: Long, activityId: Long, deliverableId: Long, file: MultipartFile) =
+        uploadFileToPartnerReportWorkPlan.uploadToDeliverable(partnerId, reportId, workPackageId, activityId, deliverableId, file.toProjectFile())
             .toDto()
 
-    override fun uploadFileToOutput(partnerId: Long, reportId: Long, outputId: Long, file: MultipartFile) =
-        uploadFileToPartnerReportWorkPlan.uploadToOutput(partnerId, reportId, outputId, file.toProjectFile())
+    override fun uploadFileToOutput(partnerId: Long, reportId: Long, workPackageId: Long, outputId: Long, file: MultipartFile) =
+        uploadFileToPartnerReportWorkPlan.uploadToOutput(partnerId, reportId, workPackageId, outputId, file.toProjectFile())
             .toDto()
 
     private fun MultipartFile.toProjectFile() = ProjectFile(inputStream, originalFilename ?: name, size)

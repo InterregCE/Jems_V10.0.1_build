@@ -20,9 +20,10 @@ interface ProjectPartnerReportWorkPackageActivityDeliverableRepository :
         SELECT CASE WHEN COUNT(e) >= 1 THEN TRUE ELSE FALSE END FROM #{#entityName} e
             WHERE e.id = :deliverableId
                 AND e.activityEntity.id = :activityId
+                AND e.activityEntity.workPackageEntity.id = :workPackageId
                 AND e.activityEntity.workPackageEntity.reportEntity.id = :reportId
                 AND e.activityEntity.workPackageEntity.reportEntity.partnerId = :partnerId
     """)
-    fun existsByDeliverableId(deliverableId: Long, activityId: Long, reportId: Long, partnerId: Long): Boolean
+    fun existsByDeliverableId(deliverableId: Long, activityId: Long, workPackageId: Long, reportId: Long, partnerId: Long): Boolean
 
 }

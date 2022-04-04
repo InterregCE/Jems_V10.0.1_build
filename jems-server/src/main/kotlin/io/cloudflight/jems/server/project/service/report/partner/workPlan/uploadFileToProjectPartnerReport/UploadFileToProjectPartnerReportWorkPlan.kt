@@ -27,15 +27,16 @@ class UploadFileToProjectPartnerReportWorkPlan(
     override fun uploadToActivity(
         partnerId: Long,
         reportId: Long,
+        workPackageId: Long,
         activityId: Long,
         file: ProjectFile,
     ): ProjectReportFileMetadata {
-        if (!reportWorkPlanPersistence.existsByActivityId(partnerId, reportId = reportId, activityId = activityId))
+        if (!reportWorkPlanPersistence.existsByActivityId(partnerId, reportId = reportId, workPackageId, activityId = activityId))
             throw ActivityNotFoundException(activityId = activityId)
 
         with(ProjectPartnerReportFileType.Activity) {
             val projectId = partnerPersistence.getProjectIdForPartnerId(partnerId)
-            val location = generatePath(projectId, partnerId, reportId, activityId)
+            val location = generatePath(projectId, partnerId, reportId, workPackageId, activityId)
 
             return reportFilePersistence.updatePartnerReportActivityAttachment(
                 activityId = activityId,
@@ -50,6 +51,7 @@ class UploadFileToProjectPartnerReportWorkPlan(
     override fun uploadToDeliverable(
         partnerId: Long,
         reportId: Long,
+        workPackageId: Long,
         activityId: Long,
         deliverableId: Long,
         file: ProjectFile,
@@ -57,6 +59,7 @@ class UploadFileToProjectPartnerReportWorkPlan(
         if (!reportWorkPlanPersistence.existsByDeliverableId(
                 partnerId,
                 reportId = reportId,
+                workPackageId = workPackageId,
                 activityId = activityId,
                 deliverableId = deliverableId,
             ))
@@ -64,7 +67,7 @@ class UploadFileToProjectPartnerReportWorkPlan(
 
         with(ProjectPartnerReportFileType.Deliverable) {
             val projectId = partnerPersistence.getProjectIdForPartnerId(partnerId)
-            val location = generatePath(projectId, partnerId, reportId, activityId, deliverableId)
+            val location = generatePath(projectId, partnerId, reportId, workPackageId, activityId, deliverableId)
 
             return reportFilePersistence.updatePartnerReportDeliverableAttachment(
                 deliverableId = deliverableId,
@@ -79,15 +82,16 @@ class UploadFileToProjectPartnerReportWorkPlan(
     override fun uploadToOutput(
         partnerId: Long,
         reportId: Long,
+        workPackageId: Long,
         outputId: Long,
         file: ProjectFile,
     ): ProjectReportFileMetadata {
-        if (!reportWorkPlanPersistence.existsByOutputId(partnerId, reportId = reportId, outputId = outputId))
+        if (!reportWorkPlanPersistence.existsByOutputId(partnerId, reportId = reportId, workPackageId, outputId = outputId))
             throw OutputNotFoundException(outputId = outputId)
 
         with(ProjectPartnerReportFileType.Output) {
             val projectId = partnerPersistence.getProjectIdForPartnerId(partnerId)
-            val location = generatePath(projectId, partnerId, reportId, outputId)
+            val location = generatePath(projectId, partnerId, reportId, workPackageId, outputId)
 
             return reportFilePersistence.updatePartnerReportOutputAttachment(
                 outputId = outputId,

@@ -8,6 +8,7 @@ interface UploadFileToProjectPartnerReportWorkPlanInteractor {
     fun uploadToActivity(
         partnerId: Long,
         reportId: Long,
+        workPackageId: Long,
         activityId: Long,
         file: ProjectFile,
     ): ProjectReportFileMetadata
@@ -15,6 +16,7 @@ interface UploadFileToProjectPartnerReportWorkPlanInteractor {
     fun uploadToDeliverable(
         partnerId: Long,
         reportId: Long,
+        workPackageId: Long,
         activityId: Long,
         deliverableId: Long,
         file: ProjectFile,
@@ -23,6 +25,7 @@ interface UploadFileToProjectPartnerReportWorkPlanInteractor {
     fun uploadToOutput(
         partnerId: Long,
         reportId: Long,
+        workPackageId: Long,
         outputId: Long,
         file: ProjectFile,
     ): ProjectReportFileMetadata

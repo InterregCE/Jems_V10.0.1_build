@@ -14,9 +14,6 @@ import org.junit.jupiter.api.Test
 
 internal class UserProjectPersistenceProviderTest : UnitTest() {
 
-    companion object {
-    }
-
     @MockK
     lateinit var userProjectRepository: UserProjectRepository
 

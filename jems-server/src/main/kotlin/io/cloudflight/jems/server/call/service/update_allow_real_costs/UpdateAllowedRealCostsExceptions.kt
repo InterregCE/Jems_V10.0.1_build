@@ -13,7 +13,7 @@ class UpdateAllowedRealCostsExceptions(cause: Throwable) : ApplicationException(
     cause = cause
 )
 
-class CallNotEditableException() : ApplicationUnprocessableException(
+class CallNotEditableException : ApplicationUnprocessableException(
     code = "$UPDATE_CALL_ALLOWED_REAL_COSTS_ERROR_CODE_PREFIX-001",
     i18nMessage = I18nMessage("$UPDATE_CALL_ALLOWED_REAL_COSTS_ERROR_KEY_PREFIX.not.editable")
 )
