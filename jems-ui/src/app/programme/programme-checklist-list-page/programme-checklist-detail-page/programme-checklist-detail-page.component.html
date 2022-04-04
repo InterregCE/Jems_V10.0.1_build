@@ -79,7 +79,7 @@
             </div>
         </form>
         <button *ngIf="components.controls.length < 100"
-                jemsText mat-raised-button class="mt-3"
+                jemsText mat-stroked-button class="mt-3"
                 (click)="addComponent(); formService.setDirty(true)">
             + {{'programme.checklists.detail.component.add' | translate}}
         </button>
