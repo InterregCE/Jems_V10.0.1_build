@@ -17,4 +17,6 @@ interface ProjectPartnerReportContributionRepository :
         reportIds: Set<Long>,
     ): List<ProjectPartnerReportContributionEntity>
 
+    fun existsByReportEntityPartnerIdAndReportEntityIdAndId(partnerId: Long, reportId: Long, contribId: Long): Boolean
+
 }

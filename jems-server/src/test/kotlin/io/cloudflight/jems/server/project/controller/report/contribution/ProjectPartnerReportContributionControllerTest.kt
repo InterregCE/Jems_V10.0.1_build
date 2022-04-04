@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.controller.report.contribution
 
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO
+import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadataDTO
 import io.cloudflight.jems.api.project.dto.report.partner.contribution.ProjectPartnerReportContributionDTO
 import io.cloudflight.jems.api.project.dto.report.partner.contribution.ProjectPartnerReportContributionOverviewDTO
 import io.cloudflight.jems.api.project.dto.report.partner.contribution.ProjectPartnerReportContributionRowDTO
@@ -8,6 +9,11 @@ import io.cloudflight.jems.api.project.dto.report.partner.contribution.UpdatePro
 import io.cloudflight.jems.api.project.dto.report.partner.contribution.UpdateProjectPartnerReportContributionDTO
 import io.cloudflight.jems.api.project.dto.report.partner.contribution.UpdateProjectPartnerReportContributionDataDTO
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.project.controller.report.dummyFile
+import io.cloudflight.jems.server.project.controller.report.dummyFileDto
+import io.cloudflight.jems.server.project.controller.report.dummyFileExpected
+import io.cloudflight.jems.server.project.controller.report.dummyMultipartFile
+import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
 import io.cloudflight.jems.server.project.service.report.model.contribution.ProjectPartnerReportContribution
 import io.cloudflight.jems.server.project.service.report.model.contribution.ProjectPartnerReportContributionData
@@ -16,8 +22,10 @@ import io.cloudflight.jems.server.project.service.report.model.contribution.Proj
 import io.cloudflight.jems.server.project.service.report.model.contribution.update.UpdateProjectPartnerReportContributionExisting
 import io.cloudflight.jems.server.project.service.report.model.contribution.update.UpdateProjectPartnerReportContributionCustom
 import io.cloudflight.jems.server.project.service.report.model.contribution.update.UpdateProjectPartnerReportContributionWrapper
+import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
 import io.cloudflight.jems.server.project.service.report.partner.contribution.getProjectPartnerReportContribution.GetProjectPartnerReportContributionInteractor
 import io.cloudflight.jems.server.project.service.report.partner.contribution.updateProjectPartnerReportContribution.UpdateProjectPartnerReportContributionInteractor
+import io.cloudflight.jems.server.project.service.report.partner.contribution.uploadFileToProjectPartnerReportContribution.UploadFileToProjectPartnerReportContributionInteractor
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -25,11 +33,13 @@ import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
+import java.time.ZonedDateTime
 
 class ProjectPartnerReportContributionControllerTest : UnitTest() {
 
     private val PARTNER_ID = 447L
     private val REPORT_ID = 466L
+    private val UPLOADED = ZonedDateTime.now().minusWeeks(1)
 
     private fun Long.toBigDecimal() = BigDecimal.valueOf(this)
 
@@ -44,6 +54,7 @@ class ProjectPartnerReportContributionControllerTest : UnitTest() {
             currentlyReported = BigDecimal.ONE,
             totalReportedSoFar = BigDecimal.ONE,
         ),
+        attachment = ProjectReportFileMetadata(510L, "file.txt", UPLOADED),
     )
 
     private val dummyOverview = ProjectPartnerReportContributionOverview(
@@ -84,6 +95,7 @@ class ProjectPartnerReportContributionControllerTest : UnitTest() {
             currentlyReported = BigDecimal.ONE,
             totalReportedSoFar = BigDecimal.ONE,
         ),
+        attachment = ProjectReportFileMetadataDTO(510L, "file.txt", UPLOADED),
     )
 
     private val expectedOverview = ProjectPartnerReportContributionOverviewDTO(
@@ -118,6 +130,9 @@ class ProjectPartnerReportContributionControllerTest : UnitTest() {
 
     @MockK
     lateinit var updateContribution: UpdateProjectPartnerReportContributionInteractor
+
+    @MockK
+    lateinit var uploadFileToContribution: UploadFileToProjectPartnerReportContributionInteractor
 
     @InjectMockKs
     private lateinit var controller: ProjectPartnerReportContributionController
@@ -181,4 +196,13 @@ class ProjectPartnerReportContributionControllerTest : UnitTest() {
             )
         }
     }
+
+    @Test
+    fun uploadFileToContribution() {
+        val slotFile = slot<ProjectFile>()
+        every { uploadFileToContribution.uploadToContribution(PARTNER_ID, reportId = 35L, 70L, capture(slotFile)) } returns dummyFile
+        assertThat(controller.uploadFileToContribution(PARTNER_ID, 35L, 70L, dummyMultipartFile())).isEqualTo(dummyFileDto)
+        assertThat(slotFile.captured).isEqualTo(dummyFileExpected)
+    }
+
 }

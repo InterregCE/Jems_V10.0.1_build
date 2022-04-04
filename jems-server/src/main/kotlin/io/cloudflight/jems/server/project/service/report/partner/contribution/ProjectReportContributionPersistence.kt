@@ -8,6 +8,8 @@ interface ProjectReportContributionPersistence {
 
     fun getPartnerReportContribution(partnerId: Long, reportId: Long): List<ProjectPartnerReportEntityContribution>
 
+    fun existsByContributionId(partnerId: Long, reportId: Long, contributionId: Long): Boolean
+
     fun getAllContributionsForReportIds(reportIds: Set<Long>): List<ProjectPartnerReportEntityContribution>
 
     fun deleteByIds(ids: Set<Long>)

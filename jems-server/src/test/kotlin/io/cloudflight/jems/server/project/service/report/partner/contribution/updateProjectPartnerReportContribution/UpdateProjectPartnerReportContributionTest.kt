@@ -14,7 +14,9 @@ import io.cloudflight.jems.server.project.service.report.model.contribution.upda
 import io.cloudflight.jems.server.project.service.report.model.contribution.update.UpdateProjectPartnerReportContributionExisting
 import io.cloudflight.jems.server.project.service.report.model.contribution.update.UpdateProjectPartnerReportContributionWrapper
 import io.cloudflight.jems.server.project.service.report.model.contribution.withoutCalculations.ProjectPartnerReportEntityContribution
+import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
 import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectReportContributionPersistence
+import io.cloudflight.jems.server.project.service.report.partner.procurement.updateProjectPartnerReportProcurement.UpdateProjectPartnerReportProcurementTest
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -27,6 +29,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.math.BigDecimal
+import java.time.ZonedDateTime
 import java.util.UUID
 
 internal class UpdateProjectPartnerReportContributionTest : UnitTest() {
@@ -44,6 +47,10 @@ internal class UpdateProjectPartnerReportContributionTest : UnitTest() {
 
         private val MAX_NUMBER = BigDecimal.valueOf(999_999_999_99, 2)
 
+        private val UPLOADED = ZonedDateTime.now()
+
+        private fun file(id: Long) = ProjectReportFileMetadata(id, "file_$id.xlsx", UPLOADED)
+
         private val oldContribution = ProjectPartnerReportEntityContribution(
             id = 45L,
             sourceOfContribution = "source public 1",
@@ -54,6 +61,7 @@ internal class UpdateProjectPartnerReportContributionTest : UnitTest() {
             amount = 5L.toBigDecimal(),
             previouslyReported = 2L.toBigDecimal(),
             currentlyReported = OLD_VALUE,
+            attachment = file(45L),
         )
 
         private val toBeDeletedUnsuccessfully = ProjectPartnerReportEntityContribution(
@@ -66,6 +74,7 @@ internal class UpdateProjectPartnerReportContributionTest : UnitTest() {
             amount = 15L.toBigDecimal(),
             previouslyReported = 3L.toBigDecimal(),
             currentlyReported = 3L.toBigDecimal(),
+            attachment = file(46L),
         )
 
         private val toBeDeleted = ProjectPartnerReportEntityContribution(
@@ -78,6 +87,7 @@ internal class UpdateProjectPartnerReportContributionTest : UnitTest() {
             amount = 100L.toBigDecimal(),
             previouslyReported = 0L.toBigDecimal(),
             currentlyReported = 0L.toBigDecimal(),
+            attachment = file(47L),
         )
 
         private val oldContributionFromThisReport = ProjectPartnerReportEntityContribution(
@@ -90,6 +100,7 @@ internal class UpdateProjectPartnerReportContributionTest : UnitTest() {
             amount = BigDecimal.ZERO,
             previouslyReported = BigDecimal.ZERO,
             currentlyReported = BigDecimal.ZERO,
+            attachment = file(48L),
         )
 
         private val newContribution = ProjectPartnerReportEntityContribution(
@@ -102,6 +113,7 @@ internal class UpdateProjectPartnerReportContributionTest : UnitTest() {
             amount = 5L.toBigDecimal(),
             previouslyReported = 2L.toBigDecimal(),
             currentlyReported = NEW_VALUE,
+            attachment = file(45L),
         )
 
         private val createdContribution = ProjectPartnerReportEntityContribution(
@@ -114,6 +126,7 @@ internal class UpdateProjectPartnerReportContributionTest : UnitTest() {
             amount = BigDecimal.ZERO,
             previouslyReported = BigDecimal.ZERO,
             currentlyReported = 75L.toBigDecimal(),
+            attachment = file(0L),
         )
 
         private val oldContributionFromThisReportUpdated = ProjectPartnerReportEntityContribution(
@@ -126,6 +139,7 @@ internal class UpdateProjectPartnerReportContributionTest : UnitTest() {
             amount = BigDecimal.ZERO,
             previouslyReported = BigDecimal.ZERO,
             currentlyReported = BigDecimal.ONE,
+            attachment = file(48L),
         )
 
         private val expectedContribution1 = ProjectPartnerReportContribution(
@@ -139,6 +153,7 @@ internal class UpdateProjectPartnerReportContributionTest : UnitTest() {
                 currentlyReported = NEW_VALUE,
                 totalReportedSoFar = 6L.toBigDecimal(),
             ),
+            attachment = file(45L),
         )
 
         private val expectedContribution2 = ProjectPartnerReportContribution(
@@ -152,6 +167,7 @@ internal class UpdateProjectPartnerReportContributionTest : UnitTest() {
                 currentlyReported = 3L.toBigDecimal(),
                 totalReportedSoFar = 6L.toBigDecimal(),
             ),
+            attachment = file(46L),
         )
 
         private val expectedContribution3 = ProjectPartnerReportContribution(
@@ -165,6 +181,7 @@ internal class UpdateProjectPartnerReportContributionTest : UnitTest() {
                 currentlyReported = 75L.toBigDecimal(),
                 totalReportedSoFar = 75L.toBigDecimal(),
             ),
+            attachment = file(0L),
         )
 
         private val expectedContribution4 = ProjectPartnerReportContribution(
@@ -178,6 +195,7 @@ internal class UpdateProjectPartnerReportContributionTest : UnitTest() {
                 currentlyReported = BigDecimal.ONE,
                 totalReportedSoFar = BigDecimal.ONE,
             ),
+            attachment = file(48L),
         )
 
         private val expectedOverview = ProjectPartnerReportContributionOverview(
