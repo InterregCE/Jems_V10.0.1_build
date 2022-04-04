@@ -1,4 +1,4 @@
-import faker from "@faker-js/faker";
+import faker from '@faker-js/faker';
 import user from '../../fixtures/users.json';
 
 context('Call management tests', () => {
@@ -70,7 +70,6 @@ context('Call management tests', () => {
     cy.get('jems-side-nav span.title').contains('Budget Settings').click();
 
     // Flat Rates
-    cy.intercept(/api\/call\/byId\/\d\/flatRate/).as('flatRate');
     const flatRate1 = 'Staff cost flat rate based on direct cost';
     cy.get('jems-call-flat-rates span').contains(flatRate1).parent().then(el => {
       cy.wrap(el).find('input[type="checkbox"]').check({force: true});
@@ -85,21 +84,19 @@ context('Call management tests', () => {
     });
 
     cy.get('jems-call-flat-rates button').contains('Save changes').click();
-    cy.wait('@flatRate');
+    cy.contains('mat-card-footer', 'Flat rates updated successfully').should('be.visible');
 
     // Lump Sums
-    cy.intercept(/api\/call\/byId\/\d\/lumpSum/).as('lumpSum');
     const lumpSum = 'Preparation Lump sum DE';
     cy.get('jems-call-lump-sums span').contains(lumpSum).parent().find('input[type="checkbox"]').check({force: true});
     cy.get('jems-call-lump-sums button').contains('Save changes').click();
-    cy.wait('@lumpSum');
+    cy.contains('mat-card-footer', 'Lump sums updated successfully').should('be.visible');
 
     // Unit Costs
-    cy.intercept(/api\/call\/byId\/\d\/unitCost/).as('unitCost');
     const unitCost = 'Unit cost MCC1 DE';
     cy.get('jems-call-unit-costs span').contains(unitCost).parent().find('input[type="checkbox"]').check({force: true});
     cy.get('jems-call-unit-costs button').contains('Save changes').click();
-    cy.wait('@unitCost');
+    cy.contains('mat-card-footer', 'Unit costs updated successfully').should('be.visible');
 
     // Pre-submission check
     cy.contains('Pre-submission check settings').click();
@@ -110,10 +107,8 @@ context('Call management tests', () => {
 
     // Publish call
     cy.get('jems-side-nav span.title').contains('General call settings').click();
-    cy.intercept(/api\/call\/byId\/\d\/publish/).as('publish');
     cy.contains('Publish call').click();
     cy.get('jems-confirm-dialog button').contains('Confirm').click();
-    cy.wait('@publish');
 
     cy.get('div.success-wrapper span').should('contain', `Successfully published Call ${this.callName}`);
   });

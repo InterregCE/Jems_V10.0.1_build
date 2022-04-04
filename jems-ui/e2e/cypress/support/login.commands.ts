@@ -14,7 +14,7 @@ declare global {
 
       logoutByRequest(): void;
 
-      createUser(user: User): boolean;
+      createUser(user: User, userEmail?: string): boolean;
     }
   }
 }
@@ -32,7 +32,9 @@ Cypress.Commands.add('logoutByRequest', () => {
   });
 });
 
-Cypress.Commands.add('createUser', (user: User) => {
+Cypress.Commands.add('createUser', (user: User, userEmail?: string) => {
+  if (userEmail)
+    loginByRequest(userEmail);
   cy.request({
     method: 'POST',
     url: 'api/user',
@@ -45,6 +47,11 @@ Cypress.Commands.add('createUser', (user: User) => {
       body: Cypress.env('defaultPassword')
     });
   });
+  if (userEmail) {
+    cy.get('@currentUser').then((currentUser: any) => {
+      loginByRequest(currentUser.name);
+    });
+  }
 });
 
 export function loginByRequest(userEmail: string) {

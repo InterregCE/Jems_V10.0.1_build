@@ -1,5 +1,5 @@
 import user from '../../fixtures/users.json';
-import faker from "@faker-js/faker";
+import faker from '@faker-js/faker';
 
 context('Project management tests', () => {
 
