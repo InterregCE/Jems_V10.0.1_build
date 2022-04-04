@@ -74,5 +74,11 @@ export class ProgrammeChecklistOptionsToggleComponent implements ControlValueAcc
   validate(control: AbstractControl): ValidationErrors | null {
     return this.form.valid ? null : {invalid: true};
   }
+
+  setDisabledState?(isDisabled: boolean): void {
+    if (isDisabled) {
+      this.form.disable({emitEvent: false});
+    }
+  }
 }
 
