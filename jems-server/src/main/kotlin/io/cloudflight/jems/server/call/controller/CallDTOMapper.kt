@@ -121,7 +121,9 @@ abstract class CallDTOMapper {
 
     abstract fun map(preSubmissionPluginsDTO: PreSubmissionPluginsDTO): PreSubmissionPlugins
     abstract fun map(preSubmissionPlugins: PreSubmissionPlugins): PreSubmissionPluginsDTO
-    fun mapUpdateRequest(updateApplicationFormFieldConfigurationDTOs: MutableSet<UpdateApplicationFormFieldConfigurationRequestDTO>): MutableSet<ApplicationFormFieldConfiguration> =
+    fun mapUpdateRequest(
+        updateApplicationFormFieldConfigurationDTOs: MutableSet<UpdateApplicationFormFieldConfigurationRequestDTO>,
+    ): MutableSet<ApplicationFormFieldConfiguration> =
         updateApplicationFormFieldConfigurationDTOs.map {
             ApplicationFormFieldConfiguration(
                 it.id,
@@ -129,7 +131,7 @@ abstract class CallDTOMapper {
             )
         }.toMutableSet()
 
-    fun map(applicationFormFieldConfiguration: ApplicationFormFieldConfiguration, callType: CallType): ApplicationFormFieldConfigurationDTO =
+    fun map(applicationFormFieldConfiguration: ApplicationFormFieldConfiguration, callType: CallType) =
         ApplicationFormFieldConfigurationDTO(
             applicationFormFieldConfiguration.id,
             visible = applicationFormFieldConfiguration.visibilityStatus != FieldVisibilityStatus.NONE,
@@ -140,7 +142,9 @@ abstract class CallDTOMapper {
                 .containsAll(listOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY))
         )
 
-    fun map(callApplicationFormFieldsConfiguration: CallApplicationFormFieldsConfiguration): MutableSet<ApplicationFormFieldConfigurationDTO> {
+    fun map(
+        callApplicationFormFieldsConfiguration: CallApplicationFormFieldsConfiguration,
+    ): MutableSet<ApplicationFormFieldConfigurationDTO> {
         val callType = callApplicationFormFieldsConfiguration.callType
         return callApplicationFormFieldsConfiguration.applicationFormFieldConfigurations.map { applicationFormFieldConfiguration ->
             this.map(applicationFormFieldConfiguration, callType)

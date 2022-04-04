@@ -205,24 +205,27 @@ class ProjectReportWorkPlanPersistenceProviderTest : UnitTest() {
     @Test
     fun existsByActivityId() {
         val reportId = 200L
-        every { workPlanActivityRepository.existsByActivityId(15L, reportId = reportId, PARTNER_ID) } returns true
-        assertThat(persistence.existsByActivityId(PARTNER_ID, reportId = reportId, activityId = 15L)).isTrue
+        val wpId = 220L
+        every { workPlanActivityRepository.existsByActivityId(15L, wpId, reportId = reportId, PARTNER_ID) } returns true
+        assertThat(persistence.existsByActivityId(PARTNER_ID, reportId = reportId, wpId, activityId = 15L)).isTrue
     }
 
     @Test
     fun existsByDeliverableId() {
         val reportId = 201L
+        val wpId = 221L
         every { workPlanActivityDeliverableRepository
-            .existsByDeliverableId(deliverableId = 150L, 15L, reportId, PARTNER_ID)
+            .existsByDeliverableId(deliverableId = 150L, 15L, wpId, reportId, PARTNER_ID)
         } returns true
-        assertThat(persistence.existsByDeliverableId(PARTNER_ID, reportId = reportId, activityId = 15L, deliverableId = 150L)).isTrue
+        assertThat(persistence.existsByDeliverableId(PARTNER_ID, reportId = reportId, wpId, activityId = 15L, deliverableId = 150L)).isTrue
     }
 
     @Test
     fun existsByOutputId() {
         val reportId = 202L
-        every { workPlanOutputRepository.existsByOutputId(17L, reportId = reportId, PARTNER_ID) } returns false
-        assertThat(persistence.existsByOutputId(PARTNER_ID, reportId = reportId, outputId = 17L)).isFalse
+        val wpId = 222L
+        every { workPlanOutputRepository.existsByOutputId(17L, wpId,  reportId = reportId, PARTNER_ID) } returns false
+        assertThat(persistence.existsByOutputId(PARTNER_ID, reportId = reportId, wpId, outputId = 17L)).isFalse
     }
 
     @Test

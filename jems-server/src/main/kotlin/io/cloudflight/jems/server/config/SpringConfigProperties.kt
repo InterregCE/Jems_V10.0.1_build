@@ -6,7 +6,7 @@ import org.springframework.util.unit.DataSize
 
 @Configuration
 @ConfigurationProperties(prefix = "spring.servlet.multipart")
-class SpringConfigProperties() {
+class SpringConfigProperties {
     var maxFileSize = DataSize.ofMegabytes(100)
 }
 

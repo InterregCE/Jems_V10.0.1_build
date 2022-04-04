@@ -39,32 +39,41 @@ interface ProjectPartnerReportWorkPlanApi {
     ): List<ProjectPartnerReportWorkPackageDTO>
 
     @ApiOperation("Upload file to activity")
-    @PostMapping("$ENDPOINT_API_PROJECT_PARTNER_REPORT_WORK_PLAN/byActivityId/{activityId}/file", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    @PostMapping(
+        "$ENDPOINT_API_PROJECT_PARTNER_REPORT_WORK_PLAN/byWpId/{workPackageId}/byActivityId/{activityId}/file",
+        consumes = [MediaType.MULTIPART_FORM_DATA_VALUE]
+    )
     fun uploadFileToActivity(
         @PathVariable partnerId: Long,
         @PathVariable reportId: Long,
+        @PathVariable workPackageId: Long,
         @PathVariable activityId: Long,
         @RequestPart("file") file: MultipartFile
     ): ProjectReportFileMetadataDTO
 
     @ApiOperation("Upload file to deliverable")
     @PostMapping(
-        "$ENDPOINT_API_PROJECT_PARTNER_REPORT_WORK_PLAN/byActivityId/{activityId}/byDeliverableId/{deliverableId}/file",
+        "$ENDPOINT_API_PROJECT_PARTNER_REPORT_WORK_PLAN/byWpId/{workPackageId}/byActivityId/{activityId}/byDeliverableId/{deliverableId}/file",
         consumes = [MediaType.MULTIPART_FORM_DATA_VALUE]
     )
     fun uploadFileToDeliverable(
         @PathVariable partnerId: Long,
         @PathVariable reportId: Long,
+        @PathVariable workPackageId: Long,
         @PathVariable activityId: Long,
         @PathVariable deliverableId: Long,
         @RequestPart("file") file: MultipartFile
     ): ProjectReportFileMetadataDTO
 
     @ApiOperation("Upload file to output")
-    @PostMapping("$ENDPOINT_API_PROJECT_PARTNER_REPORT_WORK_PLAN/byOutputId/{outputId}/file", consumes = [MediaType.MULTIPART_FORM_DATA_VALUE])
+    @PostMapping(
+        "$ENDPOINT_API_PROJECT_PARTNER_REPORT_WORK_PLAN/byWpId/{workPackageId}/byOutputId/{outputId}/file",
+        consumes = [MediaType.MULTIPART_FORM_DATA_VALUE]
+    )
     fun uploadFileToOutput(
         @PathVariable partnerId: Long,
         @PathVariable reportId: Long,
+        @PathVariable workPackageId: Long,
         @PathVariable outputId: Long,
         @RequestPart("file") file: MultipartFile
     ): ProjectReportFileMetadataDTO

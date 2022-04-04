@@ -45,17 +45,20 @@ class ProjectReportWorkPlanPersistenceProvider(
     }
 
     @Transactional(readOnly = true)
-    override fun existsByActivityId(partnerId: Long, reportId: Long, activityId: Long) =
-        workPlanActivityRepository.existsByActivityId(activityId = activityId, reportId = reportId, partnerId = partnerId)
+    override fun existsByActivityId(partnerId: Long, reportId: Long, workPackageId: Long, activityId: Long) =
+        workPlanActivityRepository.existsByActivityId(activityId = activityId,
+            workPackageId = workPackageId, reportId = reportId, partnerId = partnerId)
 
     @Transactional(readOnly = true)
-    override fun existsByDeliverableId(partnerId: Long, reportId: Long, activityId: Long, deliverableId: Long) =
+    override fun existsByDeliverableId(partnerId: Long, reportId: Long, workPackageId: Long, activityId: Long, deliverableId: Long) =
         workPlanActivityDeliverableRepository
-            .existsByDeliverableId(deliverableId = deliverableId, activityId = activityId, reportId = reportId, partnerId)
+            .existsByDeliverableId(deliverableId = deliverableId, activityId = activityId,
+                workPackageId = workPackageId, reportId = reportId, partnerId = partnerId)
 
     @Transactional(readOnly = true)
-    override fun existsByOutputId(partnerId: Long, reportId: Long, outputId: Long) =
-        workPlanOutputRepository.existsByOutputId(outputId = outputId, reportId = reportId,partnerId = partnerId)
+    override fun existsByOutputId(partnerId: Long, reportId: Long, workPackageId: Long, outputId: Long) =
+        workPlanOutputRepository.existsByOutputId(outputId = outputId,
+            workPackageId = workPackageId, reportId = reportId, partnerId = partnerId)
 
     @Transactional
     override fun updatePartnerReportWorkPackage(workPackageId: Long, translations: Set<InputTranslation>) {

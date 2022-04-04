@@ -19,9 +19,10 @@ interface ProjectPartnerReportWorkPackageOutputRepository :
     @Query("""
         SELECT CASE WHEN COUNT(e) >= 1 THEN TRUE ELSE FALSE END FROM #{#entityName} e
             WHERE e.id = :outputId
+                AND e.workPackageEntity.id = :workPackageId
                 AND e.workPackageEntity.reportEntity.id = :reportId
                 AND e.workPackageEntity.reportEntity.partnerId = :partnerId
     """)
-    fun existsByOutputId(outputId: Long, reportId: Long, partnerId: Long): Boolean
+    fun existsByOutputId(outputId: Long, workPackageId: Long, reportId: Long, partnerId: Long): Boolean
 
 }

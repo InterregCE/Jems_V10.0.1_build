@@ -24,6 +24,7 @@ import org.junit.jupiter.api.assertThrows
 private const val PROJECT_ID = 450L
 private const val PARTNER_ID = 478L
 private const val REPORT_ID = 462L
+private const val WP_ID = 481L
 private const val USER_ID = 435L
 
 private const val FILE_SIZE = 100L
@@ -54,82 +55,82 @@ internal class UploadFileToProjectPartnerReportWorkPlanTest : UnitTest() {
 
     @Test
     fun uploadToActivity() {
-        every { reportWorkPlanPersistence.existsByActivityId(PARTNER_ID, REPORT_ID, activityId = 10L) } returns true
+        every { reportWorkPlanPersistence.existsByActivityId(PARTNER_ID, REPORT_ID, WP_ID, activityId = 10L) } returns true
 
         val newFile = slot<ProjectReportFileCreate>()
         val mockedResult = mockk<ProjectReportFileMetadata>()
         every { reportFilePersistence.updatePartnerReportActivityAttachment(10L, capture(newFile)) } returns mockedResult
 
         assertThat(
-            interactor.uploadToActivity(PARTNER_ID, REPORT_ID, 10L, getDummyFile("new_file.pdf"))
+            interactor.uploadToActivity(PARTNER_ID, REPORT_ID, WP_ID, 10L, getDummyFile("new_file.pdf"))
         ).isEqualTo(mockedResult)
 
         assertBasicFileAttributes(newFile)
         with(newFile.captured) {
-            assertThat(path).isEqualTo("Project/000478/Report/PartnerReport/000462/WorkPlan/Activity/000010/")
+            assertThat(path).isEqualTo("Project/000450/Report/Partner/000478/PartnerReport/000462/WorkPlan/WorkPackage/000481/Activity/000010/")
             assertThat(type).isEqualTo(ProjectPartnerReportFileType.Activity)
         }
     }
 
     @Test
     fun `uploadToActivity - not existing`() {
-        every { reportWorkPlanPersistence.existsByActivityId(PARTNER_ID, REPORT_ID, activityId = -1L) } returns false
+        every { reportWorkPlanPersistence.existsByActivityId(PARTNER_ID, REPORT_ID, WP_ID, activityId = -1L) } returns false
         assertThrows<ActivityNotFoundException> {
-            interactor.uploadToActivity(PARTNER_ID, REPORT_ID, -1L, mockk())
+            interactor.uploadToActivity(PARTNER_ID, REPORT_ID, WP_ID, -1L, mockk())
         }
     }
 
     @Test
     fun uploadToDeliverable() {
-        every { reportWorkPlanPersistence.existsByDeliverableId(PARTNER_ID, REPORT_ID, activityId = 10L, deliverableId = 12L) } returns true
+        every { reportWorkPlanPersistence.existsByDeliverableId(PARTNER_ID, REPORT_ID, WP_ID, activityId = 10L, deliverableId = 12L) } returns true
 
         val newFile = slot<ProjectReportFileCreate>()
         val mockedResult = mockk<ProjectReportFileMetadata>()
         every { reportFilePersistence.updatePartnerReportDeliverableAttachment(12L, capture(newFile)) } returns mockedResult
 
         assertThat(
-            interactor.uploadToDeliverable(PARTNER_ID, REPORT_ID, 10L, 12L, getDummyFile("new_file.pdf"))
+            interactor.uploadToDeliverable(PARTNER_ID, REPORT_ID, WP_ID, 10L, 12L, getDummyFile("new_file.pdf"))
         ).isEqualTo(mockedResult)
 
         assertBasicFileAttributes(newFile)
         with(newFile.captured) {
-            assertThat(path).isEqualTo("Project/000478/Report/PartnerReport/000462/WorkPlan/Activity/000010/Deliverable/000012/")
+            assertThat(path).isEqualTo("Project/000450/Report/Partner/000478/PartnerReport/000462/WorkPlan/WorkPackage/000481/Activity/000010/Deliverable/000012/")
             assertThat(type).isEqualTo(ProjectPartnerReportFileType.Deliverable)
         }
     }
 
     @Test
     fun `uploadToDeliverable - not existing`() {
-        every { reportWorkPlanPersistence.existsByDeliverableId(PARTNER_ID, REPORT_ID, activityId = -1L, deliverableId = -1L) } returns false
+        every { reportWorkPlanPersistence.existsByDeliverableId(PARTNER_ID, REPORT_ID, WP_ID, activityId = -1L, deliverableId = -1L) } returns false
         assertThrows<DeliverableNotFoundException> {
-            interactor.uploadToDeliverable(PARTNER_ID, REPORT_ID, -1L, -1L, mockk())
+            interactor.uploadToDeliverable(PARTNER_ID, REPORT_ID, WP_ID, -1L, -1L, mockk())
         }
     }
 
     @Test
     fun uploadToOutput() {
-        every { reportWorkPlanPersistence.existsByOutputId(PARTNER_ID, REPORT_ID, outputId = 15L) } returns true
+        every { reportWorkPlanPersistence.existsByOutputId(PARTNER_ID, REPORT_ID, WP_ID, outputId = 15L) } returns true
 
         val newFile = slot<ProjectReportFileCreate>()
         val mockedResult = mockk<ProjectReportFileMetadata>()
         every { reportFilePersistence.updatePartnerReportOutputAttachment(15L, capture(newFile)) } returns mockedResult
 
         assertThat(
-            interactor.uploadToOutput(PARTNER_ID, REPORT_ID, 15L, getDummyFile("new_file.pdf"))
+            interactor.uploadToOutput(PARTNER_ID, REPORT_ID, WP_ID, 15L, getDummyFile("new_file.pdf"))
         ).isEqualTo(mockedResult)
 
         assertBasicFileAttributes(newFile)
         with(newFile.captured) {
-            assertThat(path).isEqualTo("Project/000478/Report/PartnerReport/000462/WorkPlan/Output/000015/")
+            assertThat(path).isEqualTo("Project/000450/Report/Partner/000478/PartnerReport/000462/WorkPlan/WorkPackage/000481/Output/000015/")
             assertThat(type).isEqualTo(ProjectPartnerReportFileType.Output)
         }
     }
 
     @Test
     fun `uploadToOutput - not existing`() {
-        every { reportWorkPlanPersistence.existsByOutputId(PARTNER_ID, REPORT_ID, outputId = -1L) } returns false
+        every { reportWorkPlanPersistence.existsByOutputId(PARTNER_ID, REPORT_ID, WP_ID, outputId = -1L) } returns false
         assertThrows<OutputNotFoundException> {
-            interactor.uploadToOutput(PARTNER_ID, REPORT_ID, -1L, mockk())
+            interactor.uploadToOutput(PARTNER_ID, REPORT_ID, WP_ID, -1L, mockk())
         }
     }
 
