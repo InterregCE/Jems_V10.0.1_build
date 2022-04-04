@@ -42,6 +42,7 @@ class ProjectPartnerReportWorkPlanControllerTest {
     companion object {
         private const val PARTNER_ID = 447L
         private const val REPORT_ID = 466L
+        private const val WP_ID = 420L
 
         private val UPLOADED = ZonedDateTime.now()
 
@@ -231,24 +232,24 @@ class ProjectPartnerReportWorkPlanControllerTest {
     @Test
     fun uploadFileToActivity() {
         val slotFile = slot<ProjectFile>()
-        every { uploadFileToPartnerReportWorkPlan.uploadToActivity(PARTNER_ID, REPORT_ID, 45L, capture(slotFile)) } returns dummyFile
-        assertThat(controller.uploadFileToActivity(PARTNER_ID, REPORT_ID, 45L, dummyMultipartFile(originalName = "file_name.ext"))).isEqualTo(dummyFileDto)
+        every { uploadFileToPartnerReportWorkPlan.uploadToActivity(PARTNER_ID, REPORT_ID, WP_ID, 45L, capture(slotFile)) } returns dummyFile
+        assertThat(controller.uploadFileToActivity(PARTNER_ID, REPORT_ID, WP_ID,  45L, dummyMultipartFile(originalName = "file_name.ext"))).isEqualTo(dummyFileDto)
         assertThat(slotFile.captured).isEqualTo(dummyFileExpected)
     }
 
     @Test
     fun uploadFileToDeliverable() {
         val slotFile = slot<ProjectFile>()
-        every { uploadFileToPartnerReportWorkPlan.uploadToDeliverable(PARTNER_ID, REPORT_ID, 30L, 32L, capture(slotFile)) } returns dummyFile
-        assertThat(controller.uploadFileToDeliverable(PARTNER_ID, REPORT_ID, 30L, 32L, dummyMultipartFile())).isEqualTo(dummyFileDto)
+        every { uploadFileToPartnerReportWorkPlan.uploadToDeliverable(PARTNER_ID, REPORT_ID, WP_ID, 30L, 32L, capture(slotFile)) } returns dummyFile
+        assertThat(controller.uploadFileToDeliverable(PARTNER_ID, REPORT_ID, WP_ID, 30L, 32L, dummyMultipartFile())).isEqualTo(dummyFileDto)
         assertThat(slotFile.captured).isEqualTo(dummyFileExpected)
     }
 
     @Test
     fun uploadFileToOutput() {
         val slotFile = slot<ProjectFile>()
-        every { uploadFileToPartnerReportWorkPlan.uploadToOutput(PARTNER_ID, REPORT_ID, 75L, capture(slotFile)) } returns dummyFile
-        assertThat(controller.uploadFileToOutput(PARTNER_ID, REPORT_ID, 75L, dummyMultipartFile())).isEqualTo(dummyFileDto)
+        every { uploadFileToPartnerReportWorkPlan.uploadToOutput(PARTNER_ID, REPORT_ID, WP_ID,  75L, capture(slotFile)) } returns dummyFile
+        assertThat(controller.uploadFileToOutput(PARTNER_ID, REPORT_ID, WP_ID, 75L, dummyMultipartFile())).isEqualTo(dummyFileDto)
         assertThat(slotFile.captured).isEqualTo(dummyFileExpected)
     }
 

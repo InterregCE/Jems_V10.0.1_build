@@ -172,7 +172,10 @@ abstract class ApplicationState(
             }
         }
 
-    protected fun throwIfQualityAssessmentIsMissing(projectAssessmentPersistence : ProjectAssessmentPersistence, projectId: Long, projectStatus: ApplicationStatus) {
+    protected fun throwIfQualityAssessmentIsMissing(
+        projectAssessmentPersistence : ProjectAssessmentPersistence,
+        projectId: Long, projectStatus: ApplicationStatus,
+    ) {
         if (!projectAssessmentPersistence.qualityForStepExists(projectId, if (projectStatus.isInStep2()) 2 else 1))
             throw QualityAssessmentMissing()
     }

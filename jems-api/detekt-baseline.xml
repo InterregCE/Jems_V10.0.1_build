@@ -2,9 +2,6 @@
 <SmellBaseline>
   <ManuallySuppressedIssues></ManuallySuppressedIssues>
   <CurrentIssues>
-    <ID>PackageNaming:ApplicationFormConfigurationDTO.kt$package io.cloudflight.jems.api.call.dto.applicationFormConfiguration</ID>
-    <ID>PackageNaming:ApplicationFormFieldConfigurationDTO.kt$package io.cloudflight.jems.api.call.dto.applicationFormConfiguration</ID>
-    <ID>PackageNaming:StepSelectionOptionDTO.kt$package io.cloudflight.jems.api.call.dto.applicationFormConfiguration</ID>
-    <ID>PackageNaming:UpdateApplicationFormFieldConfigurationRequestDTO.kt$package io.cloudflight.jems.api.call.dto.applicationFormConfiguration</ID>
+    <ID>LongParameterList:ProjectPartnerReportWorkPlanApi.kt$ProjectPartnerReportWorkPlanApi$( @PathVariable partnerId: Long, @PathVariable reportId: Long, @PathVariable workPackageId: Long, @PathVariable activityId: Long, @PathVariable deliverableId: Long, @RequestPart("file") file: MultipartFile )</ID>
   </CurrentIssues>
 </SmellBaseline>

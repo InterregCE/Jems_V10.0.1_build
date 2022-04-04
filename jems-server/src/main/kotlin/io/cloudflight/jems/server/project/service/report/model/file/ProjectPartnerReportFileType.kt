@@ -6,16 +6,18 @@ enum class ProjectPartnerReportFileType(
 ) {
     Project(null, true),
       Report(Project, false),
-        PartnerReport(Report, true),
+        Partner(Report, true),
+          PartnerReport(Partner, true),
 
-          WorkPlan(PartnerReport, false),
-            Activity(WorkPlan, true),
-              Deliverable(Activity, true),
-            Output(WorkPlan, true),
+            WorkPlan(PartnerReport, false),
+              WorkPackage(WorkPlan, true),
+                Activity(WorkPackage, true),
+                  Deliverable(Activity, true),
+                Output(WorkPackage, true),
 
-          Expenditure(PartnerReport, true),
-          Procurement(PartnerReport, true),
-          Contribution(PartnerReport, true);
+            Expenditure(PartnerReport, true),
+            Procurement(PartnerReport, true),
+            Contribution(PartnerReport, true);
 
     fun generatePath(vararg ids: Long): String {
         if (this.parent == null)
