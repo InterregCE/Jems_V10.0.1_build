@@ -1,5 +1,4 @@
-ARG cypress_version=9.4.1
-FROM cypress/included:$cypress_version
+FROM cypress/included:9.4.1
 
 WORKDIR e2e
 

@@ -23,6 +23,7 @@
 //
 // -- This will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+import faker from "@faker-js/faker";
 
 declare global {
 
@@ -46,17 +47,18 @@ Cypress.Commands.add('parseCSV', {prevSubject: true}, (subject) => {
 });
 
 Cypress.Commands.add('clickToDownload', {prevSubject: true}, (subject, requestToIntercept, fileExtension) => {
-  cy.intercept(requestToIntercept).as('downloadRequest');
+  const randomizeDownload = `downloadRequest ${faker.random.alphaNumeric(5)}`;
+  cy.intercept(requestToIntercept).as(randomizeDownload);
   cy.wrap(subject).click();
-  cy.wait('@downloadRequest').then(result => {
+  cy.wait(`@${randomizeDownload}`).then(result => {
     const regex = new RegExp(`filename="(.*\.${fileExtension})"`);
     const fileNameMatch = regex.exec(result.response.headers['content-disposition'].toString());
     if (!fileNameMatch) {
       throw new Error(`Downloaded file does not have ${fileExtension} extension`);
     }
     const fileName = fileNameMatch[1];
-    cy.wait(2000); // TODO needed because of cypress issue, github-20683
     if (fileExtension === 'pdf') {
+      cy.wait(2000);
       cy.readFile('./cypress/downloads/' + fileName, null).parsePDF().then(file => {
         file.fileName = fileName;
         cy.wrap(file);

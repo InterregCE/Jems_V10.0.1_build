@@ -5,7 +5,7 @@ context('Project management tests', () => {
 
   beforeEach(() => {
     cy.viewport(1920, 1080);
-    cy.loginByRequest(user.applicantUser);
+    cy.loginByRequest(user.applicantUser.email);
   });
 
   it('TB-390 Applicant can apply for a call', function () {

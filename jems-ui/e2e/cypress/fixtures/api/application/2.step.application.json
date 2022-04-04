@@ -1,0 +1,1292 @@
+{
+  "id": null,
+  "details": {
+    "acronym": "randomize",
+    "projectCallId": null
+  },
+  "firstStep": {
+    "identification": {
+      "acronym": "randomize",
+      "duration": 12,
+      "specificObjective": "AdvancedTechnologies"
+    },
+    "partners": [
+      {
+        "details": {
+          "abbreviation": "Lead Partner v1",
+          "role": "LEAD_PARTNER",
+          "legalStatusId": 1
+        }
+      }
+    ]
+  },
+  "secondStep": {
+    "identification": {
+      "acronym": "randomize",
+      "title": [
+        {
+          "language": "DE",
+          "translation": "API generated application title DE"
+        },
+        {
+          "language": "EN",
+          "translation": "API generated application title EN"
+        }
+      ],
+      "duration": 24,
+      "specificObjective": "AdvancedTechnologies",
+      "intro": [
+        {
+          "language": "DE",
+          "translation": "API generated application summary DE"
+        },
+        {
+          "language": "EN",
+          "translation": "API generated application summary EN"
+        }
+      ]
+    },
+    "partners": [
+      {
+        "details": {
+          "id": null,
+          "abbreviation": "Lead Partner v2",
+          "role": "LEAD_PARTNER",
+          "nameInOriginalLanguage": "Lead Partner in original language",
+          "nameInEnglish": "Lead Partner in english",
+          "department": [
+            {
+              "translation": "API generated department / unit / division DE",
+              "language": "DE"
+            },
+            {
+              "translation": "API generated department / unit / division EN",
+              "language": "EN"
+            }
+          ],
+          "partnerType": "LocalPublicAuthority",
+          "partnerSubType": "MICRO_ENTERPRISE",
+          "nace": "A_03_22",
+          "otherIdentifierNumber": "654321",
+          "otherIdentifierDescription": [
+            {
+              "translation": "API generated other identifier description DE",
+              "language": "DE"
+            },
+            {
+              "translation": "API generated other identifier description EN",
+              "language": "EN"
+            }
+          ],
+          "pic": "123456789",
+          "legalStatusId": 2,
+          "vat": "123456",
+          "vatRecovery": "Yes"
+        },
+        "address": [
+          {
+            "type": "Organization",
+            "country": "Österreich (AT)",
+            "nutsRegion2": "Wien (AT13)",
+            "nutsRegion3": "Wien (AT130)",
+            "street": "Partnerstreet",
+            "houseNumber": "2",
+            "postalCode": "1020",
+            "city": "Partner city",
+            "homepage": "partner@test.com"
+          },
+          {
+            "type": "Department",
+            "country": "Österreich (AT)",
+            "nutsRegion2": "Oberösterreich (AT31)",
+            "nutsRegion3": "Linz-Wels (AT312)",
+            "street": "Departmentstreet",
+            "houseNumber": "5",
+            "postalCode": "4020",
+            "city": "Department city",
+            "homepage": ""
+          }
+        ],
+        "contact": [
+          {
+            "type": "LegalRepresentative",
+            "title": "Mr",
+            "firstName": "Legal",
+            "lastName": "Representative",
+            "email": "",
+            "telephone": ""
+          },
+          {
+            "type": "ContactPerson",
+            "title": "Ms",
+            "firstName": "Contact",
+            "lastName": "Person",
+            "email": "contact@person.com",
+            "telephone": "+1234567890"
+          }
+        ],
+        "motivation": {
+          "organizationRelevance": [
+            {
+              "translation": "API generated partner motivation DE",
+              "language": "DE"
+            },
+            {
+              "translation": "API generated partner motivation EN",
+              "language": "EN"
+            }
+          ],
+          "organizationRole": [
+            {
+              "translation": "API generated partner role DE",
+              "language": "DE"
+            },
+            {
+              "translation": "API generated partner role EN",
+              "language": "EN"
+            }
+          ],
+          "organizationExperience": [
+            {
+              "translation": "API generated partner experience DE",
+              "language": "DE"
+            },
+            {
+              "translation": "API generated partner experience EN",
+              "language": "EN"
+            }
+          ]
+        },
+        "budget": {
+          "options": {
+            "officeAndAdministrationOnStaffCostsFlatRate": 10,
+            "officeAndAdministrationOnDirectCostsFlatRate": null,
+            "staffCostsFlatRate": 20,
+            "travelAndAccommodationOnStaffCostsFlatRate": null,
+            "otherCostsOnStaffCostsFlatRate": null
+          },
+          "external": [
+            {
+              "id": null,
+              "description": [
+                {
+                  "translation": "API generated travel and accommodation cost description DE",
+                  "language": "DE"
+                },
+                {
+                  "translation": "API generated travel and accommodation cost description EN",
+                  "language": "EN"
+                }
+              ],
+              "comments": [
+                {
+                  "translation": "API generated travel and accommodation cost comments DE",
+                  "language": "DE"
+                },
+                {
+                  "translation": "API generated travel and accommodation cost comments EN",
+                  "language": "EN"
+                }
+              ],
+              "awardProcedures": [
+                {
+                  "translation": "API generated travel and accommodation cost award procedures DE",
+                  "language": "DE"
+                },
+                {
+                  "translation": "API generated travel and accommodation cost award procedures EN",
+                  "language": "EN"
+                }
+              ],
+              "investmentId": null,
+              "unitType": [
+                {
+                  "translation": "API generated travel and accommodation cost unit type DE",
+                  "language": "DE"
+                },
+                {
+                  "translation": "API generated travel and accommodation cost unit type EN",
+                  "language": "EN"
+                }
+              ],
+              "numberOfUnits": 1,
+              "pricePerUnit": 100,
+              "rowSum": 100,
+              "budgetPeriods": [
+                {
+                  "amount": 50,
+                  "number": 1
+                },
+                {
+                  "amount": 0,
+                  "number": 2
+                },
+                {
+                  "amount": 0,
+                  "number": 3
+                },
+                {
+                  "amount": 0,
+                  "number": 4
+                },
+                {
+                  "amount": 0,
+                  "number": 5
+                },
+                {
+                  "amount": 0,
+                  "number": 6
+                },
+                {
+                  "amount": 0,
+                  "number": 7
+                },
+                {
+                  "amount": 50,
+                  "number": 8
+                }
+              ],
+              "unitCostId": null
+            }
+          ],
+          "equipment": [
+            {
+              "id": null,
+              "description": [
+                {
+                  "translation": "API generated equipment cost description DE",
+                  "language": "DE"
+                },
+                {
+                  "translation": "API generated equipment cost description EN",
+                  "language": "EN"
+                }
+              ],
+              "comments": [
+                {
+                  "translation": "API generated equipment cost comments DE",
+                  "language": "DE"
+                },
+                {
+                  "translation": "API generated equipment cost comments EN",
+                  "language": "EN"
+                }
+              ],
+              "unitType": [
+                {
+                  "translation": "API generated equipment cost unit type DE",
+                  "language": "DE"
+                },
+                {
+                  "translation": "API generated equipment cost unit type EN",
+                  "language": "EN"
+                }
+              ],
+              "awardProcedures": [
+                {
+                  "translation": "API generated equipment cost award procedures DE",
+                  "language": "DE"
+                },
+                {
+                  "translation": "API generated equipment cost award procedures EN",
+                  "language": "EN"
+                }
+              ],
+              "investmentId": null,
+              "numberOfUnits": 5,
+              "pricePerUnit": 150.66,
+              "rowSum": 753.3,
+              "budgetPeriods": [
+                {
+                  "amount": 10.3,
+                  "number": 1
+                },
+                {
+                  "amount": 50,
+                  "number": 2
+                },
+                {
+                  "amount": 400,
+                  "number": 3
+                },
+                {
+                  "amount": 100,
+                  "number": 4
+                },
+                {
+                  "amount": 0,
+                  "number": 5
+                },
+                {
+                  "amount": 0,
+                  "number": 6
+                },
+                {
+                  "amount": 0,
+                  "number": 7
+                },
+                {
+                  "amount": 193,
+                  "number": 8
+                }
+              ],
+              "unitCostId": null
+            }
+          ],
+          "infrastructure": [
+            {
+              "id": null,
+              "description": [
+                {
+                  "translation": "API generated infrastructure and works cost description DE",
+                  "language": "DE"
+                },
+                {
+                  "translation": "API generated infrastructure and works cost description EN",
+                  "language": "EN"
+                }
+              ],
+              "comments": [
+                {
+                  "translation": "API generated infrastructure and works cost comments DE",
+                  "language": "DE"
+                },
+                {
+                  "translation": "API generated infrastructure and works cost comments EN",
+                  "language": "EN"
+                }
+              ],
+              "unitType": [
+                {
+                  "translation": "API generated infrastructure and works cost unit type DE",
+                  "language": "DE"
+                },
+                {
+                  "translation": "API generated infrastructure and works cost unit type EN",
+                  "language": "EN"
+                }
+              ],
+              "awardProcedures": [
+                {
+                  "translation": "API generated infrastructure and works cost award procedures DE",
+                  "language": "DE"
+                },
+                {
+                  "translation": "API generated infrastructure and works cost award procedures EN",
+                  "language": "EN"
+                }
+              ],
+              "investmentId": null,
+              "numberOfUnits": 5.5,
+              "pricePerUnit": 1000.33,
+              "rowSum": 5501.81,
+              "budgetPeriods": [
+                {
+                  "amount": 0,
+                  "number": 1
+                },
+                {
+                  "amount": 0,
+                  "number": 2
+                },
+                {
+                  "amount": 0,
+                  "number": 3
+                },
+                {
+                  "amount": 0,
+                  "number": 4
+                },
+                {
+                  "amount": 0,
+                  "number": 5
+                },
+                {
+                  "amount": 0,
+                  "number": 6
+                },
+                {
+                  "amount": 0,
+                  "number": 7
+                },
+                {
+                  "amount": 5501.81,
+                  "number": 8
+                }
+              ],
+              "unitCostId": null
+            }
+          ],
+          "travel": [
+            {
+              "id": null,
+              "description": [
+                {
+                  "translation": "API generated travel and accommodation cost description DE",
+                  "language": "DE"
+                },
+                {
+                  "translation": "API generated travel and accommodation cost description EN",
+                  "language": "EN"
+                }
+              ],
+              "comments": [
+                {
+                  "translation": "API generated travel and accommodation cost comments DE",
+                  "language": "DE"
+                },
+                {
+                  "translation": "API generated travel and accommodation cost comments EN",
+                  "language": "EN"
+                }
+              ],
+              "unitType": [
+                {
+                  "translation": "API generated travel and accommodation cost unit type DE",
+                  "language": "DE"
+                },
+                {
+                  "translation": "API generated travel and accommodation cost unit type EN",
+                  "language": "EN"
+                }
+              ],
+              "numberOfUnits": 1,
+              "pricePerUnit": 100,
+              "rowSum": 100,
+              "budgetPeriods": [
+                {
+                  "amount": 50,
+                  "number": 1
+                },
+                {
+                  "amount": 0,
+                  "number": 2
+                },
+                {
+                  "amount": 0,
+                  "number": 3
+                },
+                {
+                  "amount": 0,
+                  "number": 4
+                },
+                {
+                  "amount": 0,
+                  "number": 5
+                },
+                {
+                  "amount": 0,
+                  "number": 6
+                },
+                {
+                  "amount": 0,
+                  "number": 7
+                },
+                {
+                  "amount": 50,
+                  "number": 8
+                }
+              ],
+              "unitCostId": null
+            }
+          ]
+        },
+        "cofinancing": {
+          "finances": [
+            {
+              "fundId": 1,
+              "fundType": "MainFund",
+              "percentage": 60
+            },
+            {
+              "percentage": 40,
+              "fundType": "PartnerContribution"
+            }
+          ],
+          "partnerContributions": [
+            {
+              "id": null,
+              "name": "Lead Partner",
+              "status": "Public",
+              "amount": 3150.1,
+              "partner": true
+            }
+          ]
+        },
+        "stateAid": {
+          "answer1": true,
+          "justification1": [
+            {
+              "translation": "API generated partner state aid criterium 1 justification 1 DE",
+              "language": "DE"
+            },
+            {
+              "translation": "API generated partner state aid criterium 1 justification 1 EN",
+              "language": "EN"
+            }
+          ],
+          "answer2": false,
+          "justification2": [
+            {
+              "translation": "API generated partner state aid criterium 1 justification 2 DE",
+              "language": "DE"
+            },
+            {
+              "translation": "API generated partner state aid criterium 1 justification 2 EN",
+              "language": "EN"
+            }
+          ],
+          "answer3": false,
+          "justification3": [
+            {
+              "translation": "API generated partner state aid criterium 2 justification 1 DE",
+              "language": "DE"
+            },
+            {
+              "translation": "API generated partner state aid criterium 2 justification 1 EN",
+              "language": "EN"
+            }
+          ],
+          "answer4": true,
+          "justification4": [
+            {
+              "translation": "API generated partner state aid criterium 2 justification 2 DE",
+              "language": "DE"
+            },
+            {
+              "translation": "API generated partner state aid criterium 2 justification 2 EN",
+              "language": "EN"
+            }
+          ],
+          "activities": [
+            {
+              "activityId": 1,
+              "workPackageNumber": 1,
+              "activityNumber": 1
+            }
+          ],
+          "stateAidScheme": {
+            "id": 1,
+            "measure": "GENERAL_DE_MINIMIS",
+            "name": [
+              {
+                "language": "DE",
+                "translation": "General de minimis DE"
+              },
+              {
+                "language": "EN",
+                "translation": "General de minimis"
+              }
+            ],
+            "abbreviatedName": [
+              {
+                "language": "DE",
+                "translation": "General de minimis DE"
+              },
+              {
+                "language": "EN",
+                "translation": "General de minimis"
+              }
+            ],
+            "schemeNumber": "",
+            "maxIntensity": null,
+            "threshold": 200000,
+            "comments": [
+              {
+                "language": "DE",
+                "translation": "Per MS DE"
+              },
+              {
+                "language": "EN",
+                "translation": "per MS"
+              }
+            ]
+          }
+        },
+        "associatedOrganization": {
+          "nameInOriginalLanguage": "API generated associated organization",
+          "nameInEnglish": "API generated associated organization name in english",
+          "address": {
+            "country": "Egypt (EG)",
+            "nutsRegion2": "Alexandria (EG01)",
+            "nutsRegion3": "Alexandria (EG010)",
+            "street": "Egyptstreet",
+            "houseNumber": "13",
+            "postalCode": "109099",
+            "city": "Cairo"
+          },
+          "contacts": [
+            {
+              "type": "LegalRepresentative",
+              "title": "Mr",
+              "firstName": "Legal",
+              "lastName": "Representative"
+            },
+            {
+              "type": "ContactPerson",
+              "title": "Ms",
+              "firstName": "Contact",
+              "lastName": "Persona",
+              "email": "contact@jems.eu",
+              "telephone": "+1234567890"
+            }
+          ],
+          "roleDescription": [
+            {
+              "translation": "API generated associated organization role DE",
+              "language": "DE"
+            },
+            {
+              "translation": "API generated associated organization role EN",
+              "language": "EN"
+            }
+          ]
+        }
+      }
+    ],
+    "description": {
+      "overallObjective": [
+        {
+          "translation": "API generated application overall objective DE",
+          "language": "DE"
+        },
+        {
+          "translation": "API generated application overall objective EN",
+          "language": "EN"
+        }
+      ],
+      "relevanceAndContext": {
+        "territorialChallenge": [
+          {
+            "translation": "API generated application territorial challenge DE",
+            "language": "DE"
+          },
+          {
+            "translation": "API generated application territorial challenge EN",
+            "language": "EN"
+          }
+        ],
+        "commonChallenge": [
+          {
+            "translation": "API generated application common challenge DE",
+            "language": "DE"
+          },
+          {
+            "translation": "API generated application common challenge EN",
+            "language": "EN"
+          }
+        ],
+        "transnationalCooperation": [
+          {
+            "translation": "API generated application transitional cooperation DE",
+            "language": "DE"
+          },
+          {
+            "translation": "API generated application transitional cooperation EN",
+            "language": "EN"
+          }
+        ],
+        "projectBenefits": [
+          {
+            "group": "LocalPublicAuthority",
+            "specification": [
+              {
+                "translation": "API generated application benefits DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated application benefits EN",
+                "language": "EN"
+              }
+            ]
+          }
+        ],
+        "projectStrategies": [
+          {
+            "strategy": "EUStrategyAdriaticIonianRegion",
+            "specification": [
+              {
+                "translation": "API generated application strategy contribution DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated application strategy contribution EN",
+                "language": "EN"
+              }
+            ]
+          }
+        ],
+        "projectSynergies": [
+          {
+            "specification": [
+              {
+                "translation": "API generated application initiative DE ",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated application initiative EN",
+                "language": "EN"
+              }
+            ],
+            "synergy": [
+              {
+                "translation": "API generated application synergy DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated application synergy EN",
+                "language": "EN"
+              }
+            ]
+          }
+        ],
+        "availableKnowledge": [
+          {
+            "translation": "API generated application available knowledge DE",
+            "language": "DE"
+          },
+          {
+            "translation": "API generated application available knowledge EN",
+            "language": "EN"
+          }
+        ],
+        "projectSpfRecipients": null
+      },
+      "partnership": [
+        {
+          "translation": "API generated project partnership DE",
+          "language": "DE"
+        },
+        {
+          "translation": "API generated project partnership EN",
+          "language": "EN"
+        }
+      ],
+      "workPlan": [
+        {
+          "details": {
+            "name": [
+              {
+                "language": "EN",
+                "translation": "API generated project work package title EN"
+              },
+              {
+                "language": "DE",
+                "translation": "API generated project work package title DE"
+              }
+            ],
+            "objectiveAndAudience": [
+              {
+                "language": "DE",
+                "translation": "API generated project objective and audience DE"
+              },
+              {
+                "language": "EN",
+                "translation": "API generated project objective and audience EN"
+              }
+            ],
+            "specificObjective": [
+              {
+                "language": "EN",
+                "translation": "API generated specific objective EN"
+              },
+              {
+                "language": "DE",
+                "translation": "API generated specific objective DE"
+              }
+            ]
+          },
+          "investment": {
+            "id": null,
+            "investmentNumber": null,
+            "title": [
+              {
+                "translation": "API generated investment title DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated investment title EN",
+                "language": "EN"
+              }
+            ],
+            "expectedDeliveryPeriod": 1,
+            "justificationExplanation": [
+              {
+                "translation": "API generated investment justification DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated investment justification EN",
+                "language": "EN"
+              }
+            ],
+            "justificationTransactionalRelevance": [
+              {
+                "translation": "API generated investment transnational relevance DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated investment transnational relevance EN",
+                "language": "EN"
+              }
+            ],
+            "justificationBenefits": [
+              {
+                "translation": "API generated investment benefits DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated investment benefits EN",
+                "language": "EN"
+              }
+            ],
+            "justificationPilot": [
+              {
+                "translation": "API generated investment pilot clarification DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated investment pilot clarification EN",
+                "language": "EN"
+              }
+            ],
+            "address": {
+              "country": "Deutschland (DE)",
+              "region2": "Stuttgart (DE11)",
+              "region3": "Stuttgart, Stadtkreis (DE111)",
+              "street": "Investmentstreet",
+              "houseNumber": "1",
+              "postalCode": "1010",
+              "city": "Investment city"
+            },
+            "risk": [
+              {
+                "translation": "API generated investment risk DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated investment risk EN",
+                "language": "EN"
+              }
+            ],
+            "documentation": [
+              {
+                "translation": "API generated investment technical requirements DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated investment technical requirements EN",
+                "language": "EN"
+              }
+            ],
+            "documentationExpectedImpacts": [
+              {
+                "translation": "API generated investment climate change assessment DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated investment climate change assessment EN",
+                "language": "EN"
+              }
+            ],
+            "ownershipSiteLocation": [
+              {
+                "translation": "API generated investment ownership DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated investment ownership EN",
+                "language": "EN"
+              }
+            ],
+            "ownershipMaintenance": [
+              {
+                "translation": "API generated investment maintenance DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated investment maintenance EN",
+                "language": "EN"
+              }
+            ],
+            "ownershipRetain": [
+              {
+                "translation": "API generated investment ownership retainment DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated investment ownership retainment EN",
+                "language": "EN"
+              }
+            ]
+          },
+          "activities": [
+            {
+              "id": null,
+              "workPackageId": null,
+              "activityNumber": null,
+              "title": [
+                {
+                  "translation": "API generated activity 1 title DE",
+                  "language": "DE"
+                },
+                {
+                  "translation": "API generated activity 1 title EN",
+                  "language": "EN"
+                }
+              ],
+              "description": [
+                {
+                  "translation": "API generated activity translation DE",
+                  "language": "DE"
+                },
+                {
+                  "translation": "API generated activity translation EN",
+                  "language": "EN"
+                }
+              ],
+              "startPeriod": 1,
+              "endPeriod": 4,
+              "deliverables": [
+                {
+                  "title": [
+                    {
+                      "translation": "API generated activity deliverable title DE",
+                      "language": "DE"
+                    },
+                    {
+                      "translation": "API generated activity deliverable title EN",
+                      "language": "EN"
+                    }
+                  ],
+                  "description": [
+                    {
+                      "translation": "API generated activity deliverable description DE",
+                      "language": "DE"
+                    },
+                    {
+                      "translation": "API generated activity deliverable description EN",
+                      "language": "EN"
+                    }
+                  ],
+                  "period": 2,
+                  "deliverableId": null,
+                  "activityId": null,
+                  "deliverableNumber": null
+                }
+              ],
+              "partnerIds": []
+            },
+            {
+              "title": [
+                {
+                  "translation": "API generated activity 2 title DE",
+                  "language": "DE"
+                },
+                {
+                  "translation": "API generated activity 2 title EN",
+                  "language": "EN"
+                }
+              ],
+              "description": [
+                {
+                  "translation": "API generated activity translation DE",
+                  "language": "DE"
+                },
+                {
+                  "translation": "API generated activity translation EN",
+                  "language": "EN"
+                }
+              ],
+              "startPeriod": 5,
+              "endPeriod": 8,
+              "deliverables": [
+                {
+                  "title": [
+                    {
+                      "translation": "API generated activity deliverable title DE",
+                      "language": "DE"
+                    },
+                    {
+                      "translation": "API generated activity deliverable title EN",
+                      "language": "EN"
+                    }
+                  ],
+                  "description": [
+                    {
+                      "translation": "API generated activity deliverable description DE",
+                      "language": "DE"
+                    },
+                    {
+                      "translation": "API generated activity deliverable description EN",
+                      "language": "EN"
+                    }
+                  ],
+                  "period": 3,
+                  "deliverableId": null,
+                  "activityId": null,
+                  "deliverableNumber": null
+                }
+              ],
+              "partnerIds": []
+            }
+          ],
+          "outputs": [
+            {
+              "workPackageId": null,
+              "outputNumber": 0,
+              "programmeOutputIndicatorId": 1,
+              "programmeOutputIndicatorIdentifier": null,
+              "title": [
+                {
+                  "translation": "API generated output 1 title DE",
+                  "language": "DE"
+                },
+                {
+                  "translation": "API generated output 1 title EN",
+                  "language": "EN"
+                }
+              ],
+              "targetValue": 3,
+              "periodNumber": 3,
+              "description": [
+                {
+                  "translation": "API generated output 1 description DE",
+                  "language": "DE"
+                },
+                {
+                  "translation": "API generated output 1 description EN",
+                  "language": "EN"
+                }
+              ]
+            },
+            {
+              "workPackageId": null,
+              "outputNumber": 1,
+              "programmeOutputIndicatorId": 1,
+              "programmeOutputIndicatorIdentifier": null,
+              "title": [
+                {
+                  "translation": "API generated output 2 title DE",
+                  "language": "DE"
+                },
+                {
+                  "translation": "API generated output 2 title EN",
+                  "language": "EN"
+                }
+              ],
+              "targetValue": 5,
+              "periodNumber": 4,
+              "description": [
+                {
+                  "translation": "API generated output 2 description DE",
+                  "language": "DE"
+                },
+                {
+                  "translation": "API generated output 2 description EN",
+                  "language": "EN"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "results": [
+        {
+          "programmeResultIndicatorId": 1,
+          "programmeResultIndicatorIdentifier": null,
+          "resultNumber": 0,
+          "targetValue": 13,
+          "baseline": 0,
+          "baselineMaxValue": 0,
+          "periodNumber": 8,
+          "description": [
+            {
+              "translation": "API generated project result description DE",
+              "language": "DE"
+            },
+            {
+              "translation": "API generated project result description EN",
+              "language": "EN"
+            }
+          ]
+        }
+      ],
+      "management": {
+        "projectCoordination": [
+          {
+            "translation": "API generated project coordination DE",
+            "language": "DE"
+          },
+          {
+            "translation": "API generated project coordination EN",
+            "language": "EN"
+          }
+        ],
+        "projectQualityAssurance": [
+          {
+            "translation": "API generated project quality DE",
+            "language": "DE"
+          },
+          {
+            "translation": "API generated project quality EN",
+            "language": "EN"
+          }
+        ],
+        "projectCommunication": [
+          {
+            "translation": "API generated project communication DE",
+            "language": "DE"
+          },
+          {
+            "translation": "API generated project communication EN",
+            "language": "EN"
+          }
+        ],
+        "projectFinancialManagement": [
+          {
+            "translation": "API generated project financial forecast DE",
+            "language": "DE"
+          },
+          {
+            "translation": "API generated project financial forecast EN",
+            "language": "EN"
+          }
+        ],
+        "projectCooperationCriteria": {
+          "projectJointDevelopment": true,
+          "projectJointImplementation": true,
+          "projectJointStaffing": true,
+          "projectJointFinancing": true
+        },
+        "projectJointDevelopmentDescription": [
+          {
+            "translation": "API generated project joint development DE",
+            "language": "DE"
+          },
+          {
+            "translation": "API generated project joint development EN",
+            "language": "EN"
+          }
+        ],
+        "projectJointImplementationDescription": [
+          {
+            "translation": "API generated project joint implementation DE",
+            "language": "DE"
+          },
+          {
+            "translation": "API generated project joint implementation EN",
+            "language": "EN"
+          }
+        ],
+        "projectJointStaffingDescription": [
+          {
+            "translation": "API generated project joint staffing DE",
+            "language": "DE"
+          },
+          {
+            "translation": "API generated project joint staffing EN",
+            "language": "EN"
+          }
+        ],
+        "projectJointFinancingDescription": [
+          {
+            "translation": "API generated project joint financing DE",
+            "language": "DE"
+          },
+          {
+            "translation": "API generated project joint financing EN",
+            "language": "EN"
+          }
+        ],
+        "projectHorizontalPrinciples": {
+          "sustainableDevelopmentCriteriaEffect": "NegativeEffects",
+          "equalOpportunitiesEffect": "Neutral",
+          "sexualEqualityEffect": "PositiveEffects"
+        },
+        "sustainableDevelopmentDescription": [
+          {
+            "translation": "API generated project sustainable development DE",
+            "language": "DE"
+          },
+          {
+            "translation": "API generated project sustainable development EN",
+            "language": "EN"
+          }
+        ],
+        "equalOpportunitiesDescription": [
+          {
+            "translation": "API generated project equal opportunities DE",
+            "language": "DE"
+          },
+          {
+            "translation": "API generated project equal opportunities EN",
+            "language": "EN"
+          }
+        ],
+        "sexualEqualityDescription": [
+          {
+            "translation": "API generated project equality DE",
+            "language": "DE"
+          },
+          {
+            "translation": "API generated project equality EN",
+            "language": "EN"
+          }
+        ]
+      },
+      "longTermPlans": {
+        "projectOwnership": [
+          {
+            "translation": "API generated project ownership DE",
+            "language": "DE"
+          },
+          {
+            "translation": "API generated project ownership EN",
+            "language": "EN"
+          }
+        ],
+        "projectDurability": [
+          {
+            "translation": "API generated project durability DE",
+            "language": "DE"
+          },
+          {
+            "translation": "API generated project durability EN",
+            "language": "EN"
+          }
+        ],
+        "projectTransferability": [
+          {
+            "translation": "API generated project transferability DE",
+            "language": "DE"
+          },
+          {
+            "translation": "API generated project transferability EN",
+            "language": "EN"
+          }
+        ]
+      }
+    }
+  },
+  "assessments": {
+    "eligibilityAssessment": {
+      "result": "PASSED",
+      "note": "API eligibility assessment"
+    },
+    "qualityAssessment": {
+      "result": "RECOMMENDED_FOR_FUNDING",
+      "note": "API quality assessment"
+    },
+    "eligibilityDecision": {
+      "note": "API eligibility decision",
+      "date": "2022-03-10",
+      "entryIntoForceDate": null
+    },
+    "fundingDecision": {
+      "note": "API quality decision",
+      "date": "2022-03-10",
+      "entryIntoForceDate": null
+    }
+  }
+}

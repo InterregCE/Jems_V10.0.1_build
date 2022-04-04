@@ -4,7 +4,7 @@ import user from '../fixtures/users.json';
 context('Login tests', () => {
 
   before(() => {
-    cy.loginByRequest(user.admin);
+    cy.loginByRequest(user.admin.email);
     cy.createUser(user.applicantUser);
     cy.createUser(user.programmeUser);
     cy.logoutByRequest();

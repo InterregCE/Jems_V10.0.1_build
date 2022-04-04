@@ -6,7 +6,7 @@ context('Rounding', () => {
 
   beforeEach(() => {
     cy.viewport(1920, 1080);
-    cy.loginByRequest(user.applicantUser);
+    cy.loginByRequest(user.applicantUser.email);
   });
 
   it('TB-383 Rounding values in partner co-financing', function () {
