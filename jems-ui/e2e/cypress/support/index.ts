@@ -41,7 +41,7 @@ Cypress.on('test:after:run', function (test) {
       const requestDetails = {
         method: 'PUT',
         headers: {
-          'Authorization': 'Bearer eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIxNjU5MzU3In0.OxRpcFzbw1-HGeUZJ3Cl22RUtGHwwTKquy8R1Z9s-SgP6tGSiUtv2d2Wbr0PUWXp',
+          'Authorization': `Bearer ${Cypress.env('jiraApiToken')}`,
           'Content-Type': 'application/json'
         },
         body: JSON.stringify(testCaseExecutionDetails)

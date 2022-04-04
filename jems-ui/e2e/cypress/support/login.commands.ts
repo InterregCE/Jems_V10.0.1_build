@@ -10,7 +10,7 @@ declare global {
 
   namespace Cypress {
     interface Chainable {
-      loginByRequest(user: User): void;
+      loginByRequest(userEmail: string);
 
       logoutByRequest(): void;
 
@@ -19,14 +19,9 @@ declare global {
   }
 }
 
-Cypress.Commands.add('loginByRequest', (user: User) => {
-  cy.request({
-    method: 'POST',
-    url: Cypress.env('authenticationUrl'),
-    body: {
-      email: user.email,
-      password: Cypress.env('defaultPassword')
-    }
+Cypress.Commands.add('loginByRequest', (userEmail: string) => {
+  loginByRequest(userEmail).then(response => {
+    cy.wrap(response.body).as('currentUser');
   });
 });
 
@@ -51,5 +46,16 @@ Cypress.Commands.add('createUser', (user: User) => {
     });
   });
 });
+
+export function loginByRequest(userEmail: string) {
+  return cy.request({
+    method: 'POST',
+    url: Cypress.env('authenticationUrl'),
+    body: {
+      email: userEmail,
+      password: Cypress.env('defaultPassword')
+    }
+  });
+}
 
 export {}

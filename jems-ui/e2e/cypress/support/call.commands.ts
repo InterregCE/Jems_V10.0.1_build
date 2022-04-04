@@ -32,9 +32,11 @@ declare global {
 Cypress.Commands.add('createCall', (call: Call) => {
   // randomize name
   call.generalCallSettings.name = `${faker.hacker.adjective()} ${faker.hacker.noun()}`;
-  // set relative dates
-  call.generalCallSettings.startDateTime = faker.date.recent();
-  call.generalCallSettings.endDateTime = faker.date.soon(2);
+  // set relative dates if not set
+  if (!call.generalCallSettings.startDateTime)
+    call.generalCallSettings.startDateTime = faker.date.recent();
+  if (!call.generalCallSettings.endDateTime)
+    call.generalCallSettings.endDateTime = faker.date.soon(2);
   cy.request({
     method: 'POST',
     url: 'api/call',

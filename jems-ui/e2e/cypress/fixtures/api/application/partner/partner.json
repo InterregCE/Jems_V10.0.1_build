@@ -1,0 +1,301 @@
+{
+  "details": {
+    "id": null,
+    "abbreviation": "Project Partner",
+    "role": "PARTNER",
+    "nameInOriginalLanguage": "Project Partner in original language",
+    "nameInEnglish": "Project Partner in english",
+    "department": [
+      {
+        "translation": "API generated department / unit / division DE",
+        "language": "DE"
+      },
+      {
+        "translation": "API generated department / unit / division EN",
+        "language": "EN"
+      }
+    ],
+    "partnerType": "NationalPublicAuthority",
+    "partnerSubType": "LARGE_ENTERPRISE",
+    "nace": "C_10_82",
+    "otherIdentifierNumber": "666666",
+    "otherIdentifierDescription": [
+      {
+        "translation": "API generated other identifier description DE",
+        "language": "DE"
+      },
+      {
+        "translation": "API generated other identifier description EN",
+        "language": "EN"
+      }
+    ],
+    "pic": "111111111",
+    "legalStatusId": 3,
+    "vat": "444444",
+    "vatRecovery": "Partly"
+  },
+  "address": [
+    {
+      "type": "Organization",
+      "country": "France (FR)",
+      "nutsRegion2": "Rhône-Alpes (FRK2)",
+      "nutsRegion3": "Savoie (FRK27)",
+      "street": "Partnerstreet",
+      "houseNumber": "2",
+      "postalCode": "1020",
+      "city": "Partner city",
+      "homepage": "partner@test.com"
+    },
+    {
+      "type": "Department",
+      "country": "España (ES)",
+      "nutsRegion2": "Castilla y León (ES41)",
+      "nutsRegion3": "León (ES413)",
+      "street": "Departmentstreet",
+      "houseNumber": "5",
+      "postalCode": "4020",
+      "city": "Department city",
+      "homepage": ""
+    }
+  ],
+  "contact": [
+    {
+      "type": "LegalRepresentative",
+      "title": "Ts",
+      "firstName": "FirstName",
+      "lastName": "LastName",
+      "email": "",
+      "telephone": ""
+    },
+    {
+      "type": "ContactPerson",
+      "title": "Er",
+      "firstName": "Name",
+      "lastName": "Surname",
+      "email": "name@surname.com",
+      "telephone": "+0987654321"
+    }
+  ],
+  "motivation": {
+    "organizationRelevance": [
+      {
+        "translation": "API generated partner motivation DE",
+        "language": "DE"
+      },
+      {
+        "translation": "API generated partner motivation EN",
+        "language": "EN"
+      }
+    ],
+    "organizationRole": [
+      {
+        "translation": "API generated partner role DE",
+        "language": "DE"
+      },
+      {
+        "translation": "API generated partner role EN",
+        "language": "EN"
+      }
+    ],
+    "organizationExperience": [
+      {
+        "translation": "API generated partner experience DE",
+        "language": "DE"
+      },
+      {
+        "translation": "API generated partner experience EN",
+        "language": "EN"
+      }
+    ]
+  },
+  "budget": {
+    "options": {
+      "officeAndAdministrationOnStaffCostsFlatRate": null,
+      "officeAndAdministrationOnDirectCostsFlatRate": null,
+      "staffCostsFlatRate": null,
+      "travelAndAccommodationOnStaffCostsFlatRate": null,
+      "otherCostsOnStaffCostsFlatRate": 40
+    },
+    "staff": [
+      {
+        "id": null,
+        "description": [],
+        "unitType": [
+          {
+            "language": "EN",
+            "translation": "SC type 1 EN"
+          },
+          {
+            "language": "DE",
+            "translation": "SC type 1 DE"
+          }
+        ],
+        "unitCostId": 1,
+        "comments": [
+          {
+            "translation": "API generated staff cost comment DE",
+            "language": "DE"
+          },
+          {
+            "translation": "API generated staff cost comment EN",
+            "language": "EN"
+          }
+        ],
+        "numberOfUnits": 13,
+        "pricePerUnit": 55.56,
+        "rowSum": 722.28,
+        "budgetPeriods": [
+          {
+            "amount": 100,
+            "number": 1
+          },
+          {
+            "amount": 100,
+            "number": 2
+          },
+          {
+            "amount": 100,
+            "number": 3
+          },
+          {
+            "amount": 100,
+            "number": 4
+          },
+          {
+            "amount": 100,
+            "number": 5
+          },
+          {
+            "amount": 100,
+            "number": 6
+          },
+          {
+            "amount": 100,
+            "number": 7
+          },
+          {
+            "amount": 22.28,
+            "number": 8
+          }
+        ]
+      }
+    ]
+  },
+  "cofinancing": {
+    "finances": [
+      {
+        "fundId": 1,
+        "fundType": "MainFund",
+        "percentage": 60
+      },
+      {
+        "fundId": 3,
+        "fundType": "MainFund",
+        "percentage": 30
+      },
+      {
+        "percentage": 10,
+        "fundType": "PartnerContribution"
+      }
+    ],
+    "partnerContributions": [
+      {
+        "id": null,
+        "name": "Project Partner",
+        "status": "Private",
+        "amount": 51.13,
+        "partner": true
+      },
+      {
+        "id": null,
+        "name": "Additional source",
+        "status": "Public",
+        "amount": 50,
+        "partner": false
+      }
+    ]
+  },
+  "stateAid": {
+    "answer1": false,
+    "justification1": [
+      {
+        "translation": "API generated partner state aid criterium 1 justification 1 DE",
+        "language": "DE"
+      },
+      {
+        "translation": "API generated partner state aid criterium 1 justification 1 EN",
+        "language": "EN"
+      }
+    ],
+    "answer2": false,
+    "justification2": [
+      {
+        "translation": "API generated partner state aid criterium 1 justification 2 DE",
+        "language": "DE"
+      },
+      {
+        "translation": "API generated partner state aid criterium 1 justification 2 EN",
+        "language": "EN"
+      }
+    ],
+    "answer3": false,
+    "justification3": [
+      {
+        "translation": "API generated partner state aid criterium 2 justification 1 DE",
+        "language": "DE"
+      },
+      {
+        "translation": "API generated partner state aid criterium 2 justification 1 EN",
+        "language": "EN"
+      }
+    ],
+    "answer4": false,
+    "justification4": [
+      {
+        "translation": "API generated partner state aid criterium 2 justification 2 DE",
+        "language": "DE"
+      },
+      {
+        "translation": "API generated partner state aid criterium 2 justification 2 EN",
+        "language": "EN"
+      }
+    ],
+    "stateAidScheme": {
+      "id": 1,
+      "measure": "GENERAL_DE_MINIMIS",
+      "name": [
+        {
+          "language": "DE",
+          "translation": "General de minimis DE"
+        },
+        {
+          "language": "EN",
+          "translation": "General de minimis"
+        }
+      ],
+      "abbreviatedName": [
+        {
+          "language": "DE",
+          "translation": "General de minimis DE"
+        },
+        {
+          "language": "EN",
+          "translation": "General de minimis"
+        }
+      ],
+      "schemeNumber": "",
+      "maxIntensity": null,
+      "threshold": 200000,
+      "comments": [
+        {
+          "language": "DE",
+          "translation": "Per MS DE"
+        },
+        {
+          "language": "EN",
+          "translation": "per MS"
+        }
+      ]
+    }
+  }
+}
