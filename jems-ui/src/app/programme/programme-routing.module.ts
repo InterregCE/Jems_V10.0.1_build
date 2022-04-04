@@ -19,6 +19,8 @@ import {ProgrammeDataExportComponent} from './programme-data-export/programme-da
 import {PermissionGuard} from '../security/permission.guard';
 import {UserRoleDTO} from '@cat/api';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
+import { ProgrammeChecklistListPageComponent } from './programme-checklist-list-page/programme-checklist-list-page.component';
+import {ProgrammeChecklistDetailPageComponent} from './programme-checklist-list-page/programme-checklist-detail-page/programme-checklist-detail-page.component';
 
 export const routes: Routes = [
   {
@@ -203,6 +205,28 @@ export const routes: Routes = [
           breadcrumb: 'programme.breadcrumb.data.export',
           permissionsOnly: [PermissionsEnum.ProgrammeDataExportRetrieve],
         },
+      },
+      {
+        path: 'checklists',
+        data: {
+          breadcrumb: 'programme.checklists.title',
+        },
+        children: [
+          {
+            path: '',
+            component: ProgrammeChecklistListPageComponent,
+          },
+          {
+            path: 'create',
+            component: ProgrammeChecklistDetailPageComponent,
+            data: {breadcrumb: 'programme.checklists.detail.title'},
+          },
+          {
+            path: ':checklistId',
+            data: {breadcrumb: 'programme.checklists.detail.title'},
+            component: ProgrammeChecklistDetailPageComponent,
+          }
+        ]
       }
     ]
   }

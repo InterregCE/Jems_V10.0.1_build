@@ -1,0 +1,87 @@
+<jems-main-page-template *ngIf="checklist$ | async as checklist"
+                         subTitleKey="programme.checklists.title"
+                         titleKey="{{'programme.checklists.detail.title'}}">
+    <jems-form (save)="save()"
+               (discard)="discard(checklist)">
+        <form jemsFormLayout [formGroup]="form">
+            <h3>{{'programme.checklists.detail.identity' | translate}}</h3>
+            <div jemsMultiColumnRow stretch>
+                <mat-form-field>
+                    <mat-label>{{'programme.checklists.detail.type' | translate}}</mat-label>
+                    <mat-select formControlName="type" required>
+                        <mat-option *ngFor="let type of checklistTypes"
+                                    [value]="type">
+                            <mat-label>{{'programme.checklists.type.' + type | translate}}</mat-label>
+                        </mat-option>
+                    </mat-select>
+                    <mat-error>
+                        <jems-form-field-errors [errors]="form?.controls?.type?.errors"></jems-form-field-errors>
+                    </mat-error>
+                </mat-form-field>
+
+                <mat-form-field>
+                    <mat-label>{{'programme.checklists.detail.name' | translate}}</mat-label>
+                    <input formControlName="name" matInput required>
+                    <mat-error>
+                        <jems-form-field-errors [errors]="form?.controls?.name?.errors"></jems-form-field-errors>
+                    </mat-error>
+                </mat-form-field>
+            </div>
+
+            <h3>{{'programme.checklists.detail.form' | translate}}</h3>
+            <div *ngIf="components?.controls?.length" formArrayName="components" jemsNoWidthLimit
+                 [jemsTableConfig]="[{maxInRem:3},{maxInRem:15},{},{maxInRem:3}]">
+                <div>
+                    <span>{{'programme.checklists.detail.reorder' | translate}}</span>
+                    <span>{{'programme.checklists.detail.type' | translate}}</span>
+                    <span>{{'programme.checklists.detail.options' | translate}}</span>
+                    <span>{{'common.delete.entry' | translate}}</span>
+                </div>
+                <div *ngFor="let component of components.controls; let i=index" [formGroupName]="i">
+                    <div class="move-buttons">
+                        <mat-icon *ngIf="i > 0" class="move-button"
+                                  (click)="move(-1, i)">expand_less</mat-icon>
+                        <mat-icon *ngIf="i < components.controls.length - 1" class="move-button"
+                                  (click)="move(1, i)">expand_more</mat-icon>
+                    </div>
+                    <div class="top-cell">
+                        <mat-form-field>
+                            <mat-label>{{'programme.checklists.component.type' | translate}}</mat-label>
+                            <mat-select formControlName="type" required
+                                        (selectionChange)="componentTypeChanged()">
+                                <mat-option *ngFor="let type of componentTypes"
+                                            [value]="type">
+                                    <mat-label>{{'programme.checklists.component.type.' + type.toLowerCase() | translate}}</mat-label>
+                                </mat-option>
+                            </mat-select>
+                            <mat-error>
+                                <jems-form-field-errors [errors]="component.get('type')?.errors"></jems-form-field-errors>
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+                    <div [ngSwitch]="component.get('type').value" class="mt-2">
+                        <jems-programme-checklist-headline *ngSwitchCase="COMPONENT_TYPE.HEADLINE"
+                                                           formControlName="metadata" class="w-100">
+                        </jems-programme-checklist-headline>
+                        <jems-programme-checklist-options-toggle *ngSwitchCase="COMPONENT_TYPE.OPTIONSTOGGLE"
+                                                                 formControlName="metadata" class="w-100">
+                        </jems-programme-checklist-options-toggle>
+                        <div *ngSwitchDefault></div>
+                    </div>
+                    <div class="top-cell justify-end">
+                        <button mat-icon-button color="accent"
+                                (click)="components.removeAt(i); formService.setDirty(true)"
+                                matTooltip="{{'common.delete.entry.tooltip' | translate}}">
+                            <mat-icon>delete</mat-icon>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <button *ngIf="components.controls.length < 100"
+                jemsText mat-raised-button class="mt-3"
+                (click)="addComponent(); formService.setDirty(true)">
+            + {{'programme.checklists.detail.component.add' | translate}}
+        </button>
+    </jems-form>
+</jems-main-page-template>

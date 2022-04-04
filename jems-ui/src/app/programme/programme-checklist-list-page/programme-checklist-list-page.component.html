@@ -1,0 +1,25 @@
+<jems-main-page-template [needsCard]="true"
+                         *ngIf="checklists$ | async as checklists"
+                         titleKey="programme.data.page.title"
+                         subTitleKey="programme.checklists.title">
+    <h3 class="mb-5">{{'programme.checklists.table.title' | translate}}</h3>
+
+    <button *ngIf="checklists.length < 100"
+            jemsText mat-raised-button color="primary" class="mb-3"
+            [routerLink]="'/app/programme/checklists/create'">
+        + {{'programme.checklists.create' | translate}}
+    </button>
+
+    <jems-table *ngIf="checklists?.length"
+                [configuration]="tableConfiguration"
+                [rows]="checklists">
+    </jems-table>
+</jems-main-page-template>
+
+<ng-template #deleteCell let-checklist>
+    <button mat-icon-button color="accent"
+            (click)="delete(checklist.id);$event.stopPropagation();"
+            matTooltip="{{'common.delete.entry.tooltip' | translate}}">
+        <mat-icon>delete</mat-icon>
+    </button>
+</ng-template>
