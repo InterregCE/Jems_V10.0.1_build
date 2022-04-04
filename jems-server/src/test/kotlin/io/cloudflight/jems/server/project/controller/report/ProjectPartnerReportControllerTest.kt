@@ -91,6 +91,8 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
                 ),
                 partnerType = ProjectTargetGroup.Egtc,
                 vatRecovery = ProjectPartnerVatRecovery.Yes,
+                country = "Österreich (AT)",
+                currency = "EUR",
                 coFinancing = listOf(
                     ProjectPartnerCoFinancing(
                         fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
@@ -125,6 +127,8 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
                 ),
                 partnerType = ProjectTargetGroupDTO.Egtc,
                 vatRecovery = ProjectPartnerVatRecoveryDTO.Yes,
+                country = "Österreich (AT)",
+                currency = "EUR",
                 coFinancing = listOf(
                     PartnerReportIdentificationCoFinancingDTO(
                         fund = ProgrammeFundDTO(

@@ -29,12 +29,4 @@ interface CurrencyApi {
         @RequestParam(required = false) month: Optional<Int>
     ): List<CurrencyDTO>
 
-    @ApiOperation("Get a specific currency rate for date and Nut region")
-    @GetMapping("$ENDPOINT_API_CURRENCY/{country}/conversion")
-    fun getCurrencyRateForNutsRegion(
-        @PathVariable country: String,
-        @RequestParam(required = false) year: Optional<Int>,
-        @RequestParam(required = false) month: Optional<Int>
-    ): CurrencyDTO?
-
 }

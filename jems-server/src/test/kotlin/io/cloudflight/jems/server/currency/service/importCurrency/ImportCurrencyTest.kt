@@ -5,7 +5,7 @@ import io.cloudflight.jems.api.currency.CurrencyDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
-import io.cloudflight.jems.server.currency.entity.EuroExchangeRate
+import io.cloudflight.jems.server.currency.service.model.EuroExchangeRate
 import io.cloudflight.jems.server.currency.repository.CurrencyPersistence
 import io.cloudflight.jems.server.currency.service.model.CurrencyConversion
 import io.mockk.MockKAnnotations
@@ -100,6 +100,55 @@ class ImportCurrencyTest : UnitTest() {
         assertThat(eventImportEnd.captured.action).isEqualTo(AuditAction.CURRENCY_IMPORT)
         assertThat(eventImportEnd.captured.description)
             .isEqualTo("'2' exchange rates have been successfully imported for ${year}, ${month}.")
+    }
+
+    @Test
+    fun `importCurrencyRates current - Error`() {
+        val url = "https://ec.europa.eu/budg/inforeuro/api/public/monthly-rates?year=2020&month=1&lang=en"
+        every { restTemplate.getForObject(url, Array<EuroExchangeRate>::class.java) } returns emptyArray()
+        every { persistence.saveAll(any()) } returns emptyList()
+
+        assertThat(importCurrency.importCurrencyRates(2020, 1)).isEmpty()
+
+        val eventImportStart = slot<AuditCandidate>()
+        val eventImportEnd = slot<AuditCandidate>()
+        verifyOrder {
+            auditService.logEvent(capture(eventImportStart))
+            auditService.logEvent(capture(eventImportEnd))
+        }
+        assertThat(eventImportStart.captured.action).isEqualTo(AuditAction.CURRENCY_IMPORT)
+        assertThat(eventImportStart.captured.description)
+            .isEqualTo("There was an attempt to import Currency conversions. Import is starting...")
+        assertThat(eventImportEnd.captured.action).isEqualTo(AuditAction.CURRENCY_IMPORT)
+        assertThat(eventImportEnd.captured.description)
+            .isEqualTo("Exchange rates failed to be imported.")
+    }
+
+    @Test
+    fun `importCurrencyRates current - specific date`() {
+        val oYear = 2021
+        val oMonth = 11
+        val url = "https://ec.europa.eu/budg/inforeuro/api/public/monthly-rates?year=$oYear&month=$oMonth&lang=en"
+        every {
+            restTemplate.getForObject(url, Array<EuroExchangeRate>::class.java)
+        } returns arrayOf(exEur)
+        every { persistence.saveAll(any()) } returns listOf(modelEur.copy(year = oYear, month = oMonth))
+
+        assertThat(importCurrency.importCurrencyRates(oYear, oMonth))
+            .contains(currencyEur.copy(year = oYear, month = oMonth))
+
+        val eventImportStart = slot<AuditCandidate>()
+        val eventImportEnd = slot<AuditCandidate>()
+        verifyOrder {
+            auditService.logEvent(capture(eventImportStart))
+            auditService.logEvent(capture(eventImportEnd))
+        }
+        assertThat(eventImportStart.captured.action).isEqualTo(AuditAction.CURRENCY_IMPORT)
+        assertThat(eventImportStart.captured.description)
+            .isEqualTo("There was an attempt to import Currency conversions. Import is starting...")
+        assertThat(eventImportEnd.captured.action).isEqualTo(AuditAction.CURRENCY_IMPORT)
+        assertThat(eventImportEnd.captured.description)
+            .isEqualTo("'1' exchange rates have been successfully imported for ${oYear}, ${oMonth}.")
     }
 
     @Test

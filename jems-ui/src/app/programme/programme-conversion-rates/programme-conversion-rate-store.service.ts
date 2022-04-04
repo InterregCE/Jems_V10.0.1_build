@@ -29,6 +29,7 @@ export class ProgrammeConversionRateStore {
         mergeMap(() => this.currencyService.fetchCurrencyRates()),
         tap(() => this.downloadSuccess$.next(true)),
         tap(() => this.downloadError$.next(null)),
+        tap(() => setTimeout(() => this.downloadSuccess$.next(false), 4000)),
         catchError((error: HttpErrorResponse) => {
           this.downloadError$.next(error.error);
           throw error;

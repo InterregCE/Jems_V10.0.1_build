@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.currency.entity
+package io.cloudflight.jems.server.currency.service.model
 
 data class EuroExchangeRate (
     val country: String,

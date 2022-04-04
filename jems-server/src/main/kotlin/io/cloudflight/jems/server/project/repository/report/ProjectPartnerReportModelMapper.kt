@@ -69,6 +69,8 @@ fun ProjectPartnerReportEntity.toModel(coFinancing: List<ProjectPartnerReportCoF
         partnerType = identification.partnerType,
         vatRecovery = identification.vatRecovery,
         coFinancing = coFinancing.toModel(),
+        country = identification.country,
+        currency = identification.currency
     )
 )
 
@@ -83,7 +85,9 @@ fun PartnerReportIdentification.toEntity() = PartnerReportIdentificationEntity(
     nameInEnglish = nameInEnglish,
     legalStatus = legalStatus?.toEntity(),
     partnerType = partnerType,
-    vatRecovery = vatRecovery
+    vatRecovery = vatRecovery,
+    country = country,
+    currency = currency
 )
 
 fun List<ProjectPartnerReportCoFinancingEntity>.toModel() = map {
@@ -94,7 +98,9 @@ fun List<ProjectPartnerReportCoFinancingEntity>.toModel() = map {
     )
 }
 
-fun ProjectPartnerReportCreate.toEntity(legalStatus: ProgrammeLegalStatusEntity?) = ProjectPartnerReportEntity(
+fun ProjectPartnerReportCreate.toEntity(
+    legalStatus: ProgrammeLegalStatusEntity?
+) = ProjectPartnerReportEntity(
     partnerId = partnerId,
     number = reportNumber,
     status = status,
@@ -112,6 +118,8 @@ fun ProjectPartnerReportCreate.toEntity(legalStatus: ProgrammeLegalStatusEntity?
         legalStatus = legalStatus,
         partnerType = identification.partnerType,
         vatRecovery = identification.vatRecovery,
+        country = identification.country,
+        currency = identification.currency
     ),
 )
 

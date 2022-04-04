@@ -33,7 +33,7 @@ class GetCurrency(
 
         val targetCurrency = persistence.getCurrencyForCountry(country)
         if (targetCurrency != null) {
-            return persistence.getByIdCodeAndIdYearAndIdMonth(targetCurrency, loadYear, loadMonth).toDto()
+            return persistence.getConversionForCodeAndMonth(targetCurrency, loadYear, loadMonth).toDto()
         }
 
         return null

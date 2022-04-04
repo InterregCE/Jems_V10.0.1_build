@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.currency.service.importCurrency
 
 import io.cloudflight.jems.api.currency.CurrencyDTO
 import io.cloudflight.jems.server.audit.service.AuditService
-import io.cloudflight.jems.server.currency.entity.EuroExchangeRate
+import io.cloudflight.jems.server.currency.service.model.EuroExchangeRate
 import io.cloudflight.jems.server.currency.repository.CurrencyPersistence
 import io.cloudflight.jems.server.currency.service.currencyImportEnded
 import io.cloudflight.jems.server.currency.service.currencyImportRequest
@@ -31,7 +31,7 @@ class ImportCurrency(
 
         const val EC_EUROPA_CONVERSION_URL = "https://ec.europa.eu/budg/inforeuro/api/public/monthly-rates"
         const val EC_EUROPA_APPENDER_URL = "&lang=en"
-        const val RETRY_IN_1_HOURS = 60 * 60 * 1000L
+        const val RETRY_PERIOD = 60 * 60 * 1000L
     }
 
     val restTemplate: RestTemplate = restTemplateBuilder.build()
@@ -59,7 +59,7 @@ class ImportCurrency(
 
     @Transactional
     @Scheduled(cron = "@monthly")
-    @Retryable(maxAttempts = 24 , backoff = Backoff(RETRY_IN_1_HOURS))
+    @Retryable(maxAttempts = 24 , backoff = Backoff(RETRY_PERIOD))
     fun importCurrencyRatesMonthly() {
         importCurrencyRates(null, null)
     }

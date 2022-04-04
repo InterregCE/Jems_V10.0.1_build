@@ -3,7 +3,7 @@
                          subTitleKey="programme.tab.conversion.rates">
 
     <div jemsFormLayout *ngIf="currencies$ | async as currencies">
-        <h3>{{'programme.conversion.rates.header' | translate}}</h3>
+        <h3>{{'programme.conversion.rates.subheader' | translate}}</h3>
 
         <div>
             <p *ngIf="currencies && currencies[0]">

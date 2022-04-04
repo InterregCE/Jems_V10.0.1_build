@@ -46,7 +46,7 @@ class ProjectReportPersistenceProvider(
     private val workPlanOutputRepository: ProjectPartnerReportWorkPackageOutputRepository,
     private val identificationRepository: ProjectPartnerReportIdentificationRepository,
     private val identificationTargetGroupRepository: ProjectPartnerReportIdentificationTargetGroupRepository,
-    private val contributionRepository: ProjectPartnerReportContributionRepository,
+    private val contributionRepository: ProjectPartnerReportContributionRepository
 ) : ProjectReportPersistence {
 
     @Transactional

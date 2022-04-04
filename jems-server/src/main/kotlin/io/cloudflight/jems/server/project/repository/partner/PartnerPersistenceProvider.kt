@@ -1,7 +1,6 @@
 package io.cloudflight.jems.server.project.repository.partner
 
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.currency.repository.CurrencyNutsRepository
 import io.cloudflight.jems.server.programme.repository.legalstatus.ProgrammeLegalStatusRepository
 import io.cloudflight.jems.server.programme.repository.stateaid.ProgrammeStateAidRepository
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
@@ -39,8 +38,7 @@ class PartnerPersistenceProvider(
     private val projectPartnerStateAidRepository: ProjectPartnerStateAidRepository,
     private val projectAssociatedOrganizationService: ProjectAssociatedOrganizationService,
     private val workPackageActivityRepository: WorkPackageActivityRepository,
-    private val programmeStateAidRepository: ProgrammeStateAidRepository,
-    private val currencyNutsRepository: CurrencyNutsRepository
+    private val programmeStateAidRepository: ProgrammeStateAidRepository
 ) : PartnerPersistence {
 
     @Transactional(readOnly = true)
@@ -95,7 +93,7 @@ class PartnerPersistenceProvider(
                 projectPartnerRepository.findTop30ByProjectIdSortBySortNumberAsOfTimestamp(projectId, timestamp)
                     .map { it.toProjectPartnerDTOHistoricalData() }
             }
-        )?.map { it.apply { currencyCode = currencyNutsRepository.getByIdNutsId(getCountryCodeForCountry(country))?.id?.currencyCode} } ?: emptyList()
+        ) ?: emptyList()
     }
 
     // used for authorization
@@ -286,13 +284,5 @@ class PartnerPersistenceProvider(
         return projectPartnerRepository.getProjectIdByPartnerIdInFullHistory(partnerId)
             ?: throw ResourceNotFoundException("projectPartner")
     }
-
-    private fun getCountryCodeForCountry(country: String?): String {
-        if (!country.isNullOrEmpty()) {
-            return country.substringAfter('(').substringBefore(')')
-        }
-        return ""
-    }
-
 
 }

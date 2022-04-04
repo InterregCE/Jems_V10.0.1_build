@@ -21,12 +21,4 @@ class CurrencyController(
         return importCurrencyInteractor.importCurrencyRates(year.orElse(null), month.orElse(null))
     }
 
-    override fun getCurrencyRateForNutsRegion(
-        country: String,
-        year: Optional<Int>,
-        month: Optional<Int>
-    ): CurrencyDTO? {
-        return getCurrencyInteractor.getCurrencyRateForNutsRegion(country, year.orElse(null), month.orElse(null))
-    }
-
 }

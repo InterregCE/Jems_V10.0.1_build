@@ -52,6 +52,8 @@ fun PartnerReportIdentification.toDto() = PartnerReportIdentificationDTO(
     legalStatus = legalStatus?.toDto(),
     partnerType = partnerType?.let { ProjectTargetGroupDTO.valueOf(it.name) },
     vatRecovery = vatRecovery?.let { ProjectPartnerVatRecoveryDTO.valueOf(it.name) },
+    country = country,
+    currency = currency,
     coFinancing = coFinancing.filter { it.fund != null }.map {
         PartnerReportIdentificationCoFinancingDTO(
             fund = it.fund!!.toDto(),

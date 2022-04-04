@@ -100,6 +100,8 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
                 legalStatus = legalStatusEntity,
                 partnerType = ProjectTargetGroup.SectoralAgency,
                 vatRecovery = ProjectPartnerVatRecovery.Yes,
+                country = "Österreich (AT)",
+                currency = "EUR",
             ),
             createdAt = createdAt,
         )
@@ -155,6 +157,8 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
                 legalStatus = legalStatus,
                 partnerType = ProjectTargetGroup.SectoralAgency,
                 vatRecovery = ProjectPartnerVatRecovery.Yes,
+                country = "Österreich (AT)",
+                currency = "EUR",
                 coFinancing = coFinancing,
             )
         )
@@ -210,6 +214,8 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
                 legalStatusId = legalStatus.id,
                 partnerType = ProjectTargetGroup.SectoralAgency,
                 vatRecovery = ProjectPartnerVatRecovery.Yes,
+                country = "Österreich (AT)",
+                currency = "EUR",
                 coFinancing = coFinancing,
             ),
             workPackages = listOf(
@@ -362,6 +368,8 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
             else
                 assertThat(legalStatus!!.equals(legalStatusEntity)).isTrue
             assertThat(partnerType).isEqualTo(ProjectTargetGroup.SectoralAgency)
+            assertThat(country).isEqualTo("Österreich (AT)")
+            assertThat(currency).isEqualTo("EUR")
             assertThat(vatRecovery).isEqualTo(ProjectPartnerVatRecovery.Yes)
         }
 
