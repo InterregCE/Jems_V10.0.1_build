@@ -1981,7 +1981,7 @@
 							}
 						},
 						"url": {
-							"raw": "{{url}}/api/project/list?sort=id,desc",
+							"raw": "{{url}}/api/project/list",
 							"host": [
 								"{{url}}"
 							],
@@ -1989,12 +1989,6 @@
 								"api",
 								"project",
 								"list"
-							],
-							"query": [
-								{
-									"key": "sort",
-									"value": "id,desc"
-								}
 							]
 						}
 					},

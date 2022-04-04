@@ -48,7 +48,7 @@ export class ProjectApplicationListStore {
     ])
       .pipe(
         switchMap(([filter, pageIndex, pageSize, sort]) => filterByOwner ? this.projectService.getMyProjects(pageIndex, pageSize, `${sort.active},${sort.direction}`)
-          : this.projectService.getAllProjects(`${sort.direction}` , `${sort.active}`, filter, pageIndex, pageSize)
+          : this.projectService.getAllProjects(filter, pageIndex, pageSize, `${sort.direction}`, `${sort.active}`)
         ),
         tap(page => Log.info('Fetched the projects:', this, page.content)),
       );
