@@ -4,7 +4,6 @@ import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.EN
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.currency.repository.CurrencyNutsRepository
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.programme.repository.legalstatus.ProgrammeLegalStatusRepository
 import io.cloudflight.jems.server.programme.repository.stateaid.ProgrammeStateAidRepository
@@ -96,9 +95,6 @@ class PartnerPersistenceProviderTest {
     lateinit var projectVersionRepo: ProjectVersionRepository
 
     @MockK
-    lateinit var currencyNutsRepository: CurrencyNutsRepository
-
-    @MockK
     lateinit var partner: ProjectPartnerEntity
 
     lateinit var persistence: PartnerPersistenceProvider
@@ -115,8 +111,7 @@ class PartnerPersistenceProviderTest {
             projectPartnerStateAidRepository,
             projectAssociatedOrganizationService,
             workPackageActivityRepository,
-            programmeStateAidRepository,
-            currencyNutsRepository
+            programmeStateAidRepository
         )
         //for all delete tests
         every { projectAssociatedOrganizationService.refreshSortNumbers(any()) } answers {}

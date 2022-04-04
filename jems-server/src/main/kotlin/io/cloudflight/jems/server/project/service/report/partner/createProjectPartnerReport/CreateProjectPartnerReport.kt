@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.partner.createProjectPartnerReport
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
+import io.cloudflight.jems.server.currency.repository.CurrencyPersistence
 import io.cloudflight.jems.server.project.authorization.CanEditPartnerReport
 import io.cloudflight.jems.server.project.service.ProjectDescriptionPersistence
 import io.cloudflight.jems.server.project.service.ProjectPersistence
@@ -10,6 +11,7 @@ import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPartnerCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAddressType
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.PartnerReportIdentificationCreate
@@ -18,9 +20,9 @@ import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerRep
 import io.cloudflight.jems.server.project.service.report.model.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.contribution.create.CreateProjectPartnerReportContribution
 import io.cloudflight.jems.server.project.service.report.model.contribution.withoutCalculations.ProjectPartnerReportEntityContribution
+import io.cloudflight.jems.server.project.service.report.model.workPlan.create.CreateProjectPartnerReportWorkPackage
 import io.cloudflight.jems.server.project.service.report.model.workPlan.create.CreateProjectPartnerReportWorkPackageActivity
 import io.cloudflight.jems.server.project.service.report.model.workPlan.create.CreateProjectPartnerReportWorkPackageActivityDeliverable
-import io.cloudflight.jems.server.project.service.report.model.workPlan.create.CreateProjectPartnerReportWorkPackage
 import io.cloudflight.jems.server.project.service.report.model.workPlan.create.CreateProjectPartnerReportWorkPackageOutput
 import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectReportContributionPersistence
 import io.cloudflight.jems.server.project.service.report.partnerReportCreated
@@ -31,7 +33,6 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
 import java.util.UUID
-import kotlin.collections.HashSet
 
 @Service
 class CreateProjectPartnerReport(
@@ -43,6 +44,7 @@ class CreateProjectPartnerReport(
     private val projectDescriptionPersistence: ProjectDescriptionPersistence,
     private val reportPersistence: ProjectReportPersistence,
     private val reportContributionPersistence: ProjectReportContributionPersistence,
+    private val currencyPersistence: CurrencyPersistence,
     private val auditPublisher: ApplicationEventPublisher
 ) : CreateProjectPartnerReportInteractor {
 
@@ -91,6 +93,7 @@ class CreateProjectPartnerReport(
             identification = projectPartnerPersistence.getById(partnerId, version).let {
                 it.toReportIdentification(project).apply {
                     this.coFinancing = coFinancing.finances
+                    this.currency = getCurrencyCodeForCountry(country)
                 }
             },
 
@@ -108,6 +111,17 @@ class CreateProjectPartnerReport(
         )
     }
 
+    private fun getCurrencyCodeForCountry(country: String?): String? {
+        return currencyPersistence.getCurrencyForCountry(getCountryCodeForCountry(country))
+    }
+
+    private fun getCountryCodeForCountry(country: String?): String {
+        if (!country.isNullOrEmpty()) {
+            return country.substringAfter('(').substringBefore(')')
+        }
+        return ""
+    }
+
     private fun getLatestReportNumberIncreasedByOne(partnerId: Long) =
         reportPersistence.getCurrentLatestReportNumberForPartner(partnerId).plus(1)
 
@@ -122,7 +136,8 @@ class CreateProjectPartnerReport(
         legalStatusId = legalStatusId,
         partnerType = partnerType,
         vatRecovery = vatRecovery,
-        coFinancing = emptyList(),
+        country = addresses.firstOrNull { it.type == ProjectPartnerAddressType.Organization }?.country,
+        coFinancing = emptyList()
     )
 
     private fun List<ProjectWorkPackage>.toCreateEntity() = map { wp ->

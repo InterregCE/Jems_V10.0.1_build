@@ -7,10 +7,10 @@ import javax.persistence.Entity
 import javax.validation.constraints.NotNull
 
 @Entity(name = "currency_rate")
-data class CurrencyRate (
+class CurrencyRateEntity (
 
     @EmbeddedId
-    val id: CurrencyRateId,
+    val id: CurrencyRateIdEntity,
 
     @field:NotNull
     val name: String,

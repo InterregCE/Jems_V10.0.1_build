@@ -10,6 +10,7 @@ import {ProgrammePageSidenavService} from '../programme-page/services/programme-
   selector: 'jems-programme-conversion-rates',
   templateUrl: './programme-conversion-rates.component.html',
   styleUrls: ['./programme-conversion-rates.component.scss'],
+  providers: [ProgrammeConversionRateStore],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProgrammeConversionRatesComponent {

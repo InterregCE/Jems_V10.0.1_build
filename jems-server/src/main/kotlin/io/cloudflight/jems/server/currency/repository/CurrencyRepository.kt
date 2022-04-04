@@ -1,15 +1,15 @@
 package io.cloudflight.jems.server.currency.repository
 
-import io.cloudflight.jems.server.currency.entity.CurrencyRate
-import io.cloudflight.jems.server.currency.entity.CurrencyRateId
+import io.cloudflight.jems.server.currency.entity.CurrencyRateEntity
+import io.cloudflight.jems.server.currency.entity.CurrencyRateIdEntity
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface CurrencyRepository : JpaRepository<CurrencyRate, CurrencyRateId> {
+interface CurrencyRepository : JpaRepository<CurrencyRateEntity, CurrencyRateIdEntity> {
 
-    fun findAllByIdYearAndIdMonth(year: Int, month: Int): List<CurrencyRate>
+    fun findAllByIdYearAndIdMonth(year: Int, month: Int): List<CurrencyRateEntity>
 
-    fun getByIdCodeAndIdYearAndIdMonth(code: String, year: Int, month: Int): CurrencyRate
+    fun getByIdCodeAndIdYearAndIdMonthOrderByIdCode(code: String, year: Int, month: Int): CurrencyRateEntity
 
 }

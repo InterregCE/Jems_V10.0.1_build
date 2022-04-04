@@ -16,5 +16,7 @@ data class PartnerReportIdentificationDTO(
     val legalStatus: ProgrammeLegalStatusDTO?,
     val partnerType: ProjectTargetGroupDTO?,
     val vatRecovery: ProjectPartnerVatRecoveryDTO?,
+    val country: String?,
+    val currency: String?,
     val coFinancing: List<PartnerReportIdentificationCoFinancingDTO>,
 )

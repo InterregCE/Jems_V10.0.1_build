@@ -8,6 +8,7 @@ import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoF
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
+import io.cloudflight.jems.server.currency.repository.CurrencyPersistence
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
 import io.cloudflight.jems.server.project.service.ProjectDescriptionPersistence
@@ -24,6 +25,8 @@ import io.cloudflight.jems.server.project.service.partner.cofinancing.model.Proj
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAddress
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAddressType
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVatRecovery
@@ -105,6 +108,9 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
             pic = "123456789",
             legalStatusId = 697854L,
             vat = "",
+            addresses = listOf(
+                ProjectPartnerAddress(type = ProjectPartnerAddressType.Organization, country = "Österreich (AT)")
+            ),
             vatRecovery = ProjectPartnerVatRecovery.Yes,
         )
 
@@ -151,7 +157,9 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
                 legalStatusId = 697854L,
                 partnerType = ProjectTargetGroup.SectoralAgency,
                 vatRecovery = ProjectPartnerVatRecovery.Yes,
-                coFinancing = coFinancing,
+                country = "Österreich (AT)",
+                currency = "EUR",
+                coFinancing = coFinancing
             ),
             workPackages = listOf(
                 CreateProjectPartnerReportWorkPackage(
@@ -289,6 +297,8 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
     @MockK
     lateinit var projectPartnerPersistence: PartnerPersistence
     @MockK
+    lateinit var currencyPersistence: CurrencyPersistence
+    @MockK
     lateinit var partnerCoFinancingPersistence: ProjectPartnerCoFinancingPersistence
     @MockK
     lateinit var projectWorkPackagePersistence: WorkPackagePersistence
@@ -313,6 +323,7 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
     @EnumSource(value = ApplicationStatus::class, names = ["CONTRACTED", "IN_MODIFICATION", "MODIFICATION_SUBMITTED", "MODIFICATION_REJECTED"])
     fun createReportFor(status: ApplicationStatus) {
         val partnerId = 66L
+        val detail = partnerDetail(partnerId)
         every { projectPartnerPersistence.getProjectIdForPartnerId(partnerId) } returns PROJECT_ID
         every { versionPersistence.getLatestApprovedOrCurrent(PROJECT_ID) } returns "14.2.0"
         every { projectPersistence.getProject(PROJECT_ID, "14.2.0") } returns projectSummary(status)
@@ -320,7 +331,8 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
         every { reportPersistence.getCurrentLatestReportNumberForPartner(partnerId) } returns 7
         every { partnerCoFinancingPersistence.getCoFinancingAndContributions(partnerId, "14.2.0") } returns
             ProjectPartnerCoFinancingAndContribution(coFinancing, contributions, "")
-        every { projectPartnerPersistence.getById(partnerId, "14.2.0") } returns partnerDetail(partnerId)
+        every { projectPartnerPersistence.getById(partnerId, "14.2.0") } returns detail
+        every { currencyPersistence.getCurrencyForCountry("AT") } returns "EUR"
         // work plan
         every { projectWorkPackagePersistence.getWorkPackagesWithOutputsAndActivitiesByProjectId(PROJECT_ID, "14.2.0") } returns workPlan
         // identification

@@ -45,6 +45,10 @@ class PartnerReportIdentificationEntity(
     @Enumerated(EnumType.STRING)
     var vatRecovery: ProjectPartnerVatRecovery? = null,
 
+    val country: String?,
+
+    val currency: String?
+
 ) : Serializable {
     companion object {
         const val serialVersionUID = 1L

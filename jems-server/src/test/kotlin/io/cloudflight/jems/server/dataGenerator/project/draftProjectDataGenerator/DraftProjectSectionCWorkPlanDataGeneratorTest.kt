@@ -65,7 +65,7 @@ class DraftProjectSectionCWorkPlanDataGeneratorTest(@LocalServerPort private val
 
     @Test
     @Order(4)
-    @ExpectSelect(15)
+    @ExpectSelect(13)
     @ExpectInsert(20)
     @ExpectUpdate(2)
     @ExpectDelete(1)

@@ -16,8 +16,8 @@ class CurrencyPersistenceProvider(
     }
 
     @Transactional(readOnly = true)
-    override fun getByIdCodeAndIdYearAndIdMonth(code: String, year: Int, month: Int): CurrencyConversion {
-        return currencyRepository.getByIdCodeAndIdYearAndIdMonth(code, year, month).toModel()
+    override fun getConversionForCodeAndMonth(code: String, year: Int, month: Int): CurrencyConversion {
+        return currencyRepository.getByIdCodeAndIdYearAndIdMonthOrderByIdCode(code, year, month).toModel()
     }
 
     @Transactional

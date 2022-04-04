@@ -1,9 +1,7 @@
 package io.cloudflight.jems.server.currency.service
 
 import io.cloudflight.jems.api.currency.CurrencyDTO
-import io.cloudflight.jems.server.currency.entity.CurrencyRate
-import io.cloudflight.jems.server.currency.entity.CurrencyRateId
-import io.cloudflight.jems.server.currency.entity.EuroExchangeRate
+import io.cloudflight.jems.server.currency.service.model.EuroExchangeRate
 import io.cloudflight.jems.server.currency.service.model.CurrencyConversion
 import java.math.BigDecimal
 

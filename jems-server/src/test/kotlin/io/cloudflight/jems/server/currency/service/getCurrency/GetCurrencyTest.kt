@@ -2,8 +2,8 @@ package io.cloudflight.jems.server.currency.service.getCurrency
 
 import io.cloudflight.jems.api.currency.CurrencyDTO
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.currency.entity.CurrencyNuts
-import io.cloudflight.jems.server.currency.entity.CurrencyNutsId
+import io.cloudflight.jems.server.currency.entity.CurrencyNutsEntity
+import io.cloudflight.jems.server.currency.entity.CurrencyNutsIdEntity
 import io.cloudflight.jems.server.currency.repository.CurrencyPersistence
 import io.cloudflight.jems.server.currency.service.model.CurrencyConversion
 import io.mockk.every
@@ -18,7 +18,7 @@ class GetCurrencyTest : UnitTest() {
     companion object {
         const val year = 2022
         const val month = 1
-        private val currencyNuts = CurrencyNuts(CurrencyNutsId("EUR", "AT"))
+        private val currencyNuts = CurrencyNutsEntity(CurrencyNutsIdEntity("EUR", "AT"))
 
         private val currencyEur = CurrencyDTO("EUR", 2022, 1, "Euro", BigDecimal.ONE)
         private val currencyUsd = CurrencyDTO("USD", 2022, 1, "US Dollar", BigDecimal(1.23))
@@ -45,7 +45,7 @@ class GetCurrencyTest : UnitTest() {
         val countryCode = currencyNuts.id.nutsId
         val currencyCode = currencyNuts.id.currencyCode
         every { persistence.getCurrencyForCountry(countryCode) } returns currencyCode
-        every { persistence.getByIdCodeAndIdYearAndIdMonth(currencyCode, year, month) } returns modelEur
+        every { persistence.getConversionForCodeAndMonth(currencyCode, year, month) } returns modelEur
 
         assertThat(getCurrency.getCurrencyRateForNutsRegion(countryCode, year, month)).isEqualTo(currencyEur)
     }

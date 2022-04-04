@@ -12,14 +12,13 @@ fun currencyImportRequest(): AuditCandidate {
 }
 
 fun currencyImportEnded(currencies: List<CurrencyDTO>): AuditCandidate {
-    val year = currencies.firstOrNull()?.year
-    val month = currencies.firstOrNull()?.month
-    if (year == null || month == null) {
-        return AuditBuilder(AuditAction.CURRENCY_IMPORT)
-            .description("'${currencies.size}' exchange rates failed to be imported for ${year}, ${month}.")
-            .build()
+    val message = if (currencies.isEmpty()) {
+        "Exchange rates failed to be imported."
+    } else {
+        "'${currencies.size}' exchange rates have been successfully imported for" +
+            " ${currencies.first().year}, ${currencies.first().month}."
     }
     return AuditBuilder(AuditAction.CURRENCY_IMPORT)
-        .description("'${currencies.size}' exchange rates have been successfully imported for ${year}, ${month}.")
+        .description(message)
         .build()
 }

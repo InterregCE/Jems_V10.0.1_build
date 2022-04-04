@@ -1,11 +1,13 @@
 package io.cloudflight.jems.server.currency.entity
 
+import java.io.Serializable
 import javax.persistence.EmbeddedId
 import javax.persistence.Entity
 
 @Entity(name = "currency_nuts")
-data class CurrencyNuts (
+class CurrencyNutsEntity (
 
     @EmbeddedId
-    val id: CurrencyNutsId
+    val id: CurrencyNutsIdEntity
+
 )
