@@ -1,13 +1,12 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  EventEmitter,
-  forwardRef,
-  Output
-} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, forwardRef, Output} from '@angular/core';
 import {ProjectReportFileMetadataDTO} from '@cat/api';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {Forms} from '@common/utils/forms';
+import {filter, take, tap} from 'rxjs/operators';
+import {MatDialog} from '@angular/material/dialog';
+import {AcceptedFileTypesConstants} from '@project/common/components/file-management/accepted-file-types.constants';
+import {DatePipe} from '@angular/common';
+import {CustomTranslatePipe} from '@common/pipe/custom-translate-pipe';
 
 @Component({
   selector: 'jems-partner-actions-cell',
@@ -23,9 +22,7 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
   ]
 })
 export class PartnerActionsCellComponent implements ControlValueAccessor {
-
-  acceptedFilesTypes = ['.csv', '.dat', '.db', '.dbf', '.log', '.mdb', '.xml', '.email', '.eml', '.emlx', '.msg', '.oft', '.ost', '.pst', '.vcf', '.bmp', '.gif', '.jpeg', '.jpg', '.png', '.psd', '.svg', '.tif', '.tiff', '.htm', '.html', '.key', '.odp', '.pps', '.ppt', '.ppt', '.pptx', '.ods', '.xls', '.xlsm', '.xlsx', '.doc', '.docx', '.odt', '.pdf', '.rtf', '.tex', '.txt', '.wpd', '.mov', '.avi', '.mp4', '.zip', '.rar', '.ace', '.7z', '.url'];
-
+  acceptedFilesTypes = AcceptedFileTypesConstants.acceptedFilesTypes;
   fileMetadata: ProjectReportFileMetadataDTO;
 
   @Output()
@@ -35,7 +32,10 @@ export class PartnerActionsCellComponent implements ControlValueAccessor {
   @Output()
   delete = new EventEmitter<number>();
 
-  constructor(private changeDetectorRef: ChangeDetectorRef) {
+  constructor(private changeDetectorRef: ChangeDetectorRef,
+              private dialog: MatDialog,
+              private datePipe: DatePipe,
+              private translatePipe: CustomTranslatePipe) {
   }
 
   onChange = (value: any) => {
@@ -53,5 +53,43 @@ export class PartnerActionsCellComponent implements ControlValueAccessor {
   writeValue(obj: ProjectReportFileMetadataDTO): void {
     this.fileMetadata = obj;
     this.changeDetectorRef.detectChanges();
+  }
+
+  getTooltipText(): String {
+    return this.fileMetadata.name + '\n' +
+      this.translatePipe.transform('use.case.update.project.partner.report.workplan.download.file.tooltip.upload.date') +
+      ' ' +
+      this.datePipe.transform(this.fileMetadata.uploaded, 'MM/dd/yyyy');
+  }
+
+  uploadFile(event: Event) {
+    if(this.fileMetadata?.name) {
+      Forms.confirm(this.dialog, {
+        title:this.fileMetadata.name,
+        message: {
+          i18nKey: 'use.case.update.project.partner.report.workplan.upload.override.file',
+          i18nArguments: {fileName: this.fileMetadata.name}
+        }
+      }).pipe(
+        take(1),
+        filter(yes => yes),
+        tap(() => this.upload.emit(event))
+      ).subscribe();
+    } else {
+      this.upload.emit(event)
+    }
+  }
+
+  deleteFile(id: number) {
+    if(this.fileMetadata?.name) {
+      Forms.confirm(this.dialog, {
+        title: this.fileMetadata.name,
+        message: {i18nKey: 'file.dialog.message', i18nArguments: {name: this.fileMetadata.name}}
+      }).pipe(
+        take(1),
+        filter(yes => yes),
+        tap(() => this.delete.emit(id))
+      ).subscribe();
+    }
   }
 }

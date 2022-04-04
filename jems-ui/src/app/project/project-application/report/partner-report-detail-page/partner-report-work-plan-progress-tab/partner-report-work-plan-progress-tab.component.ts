@@ -115,11 +115,11 @@ export class PartnerReportWorkPlanProgressTabComponent {
   }
 
   onUploadDeliverable(target: any, activityId: number, deliverableId: number,  activityIndex: number,
-                      workPackageIndex: number, deliverableIndex: number): void {
+                      workPackageIndex: number, deliverableIndex: number, workPackageId: number): void {
     if (!target) {
       return;
     }
-    this.pageStore.uploadDeliverableFile(target?.files[0], activityId, deliverableId)
+    this.pageStore.uploadDeliverableFile(target?.files[0], activityId, deliverableId, workPackageId)
       .pipe(take(1))
       .subscribe(value => {
         this.deliverableFileMetadata(workPackageIndex, activityIndex, deliverableIndex)?.patchValue(value);
@@ -133,11 +133,11 @@ export class PartnerReportWorkPlanProgressTabComponent {
         ?.patchValue(null));
   }
 
-  onUploadActivity(target: any, activityId: number, activityIndex: number, workPackageIndex: number): void {
+  onUploadActivity(target: any, activityId: number, activityIndex: number, workPackageIndex: number, workPackageId: number): void {
     if (!target) {
       return;
     }
-    this.pageStore.uploadActivityFile(target?.files[0], activityId)
+    this.pageStore.uploadActivityFile(target?.files[0], activityId, workPackageId)
       .pipe(take(1))
       .subscribe(value => {
         this.activityFileMetadata(workPackageIndex, activityIndex)?.patchValue(value);
@@ -150,11 +150,11 @@ export class PartnerReportWorkPlanProgressTabComponent {
       .subscribe(value => this.activityFileMetadata(workPackageIndex, activityIndex)?.patchValue(null));
   }
 
-  onUploadOutput(target: any, outputId: number, outputIndex: number, workPackageIndex: number): void {
+  onUploadOutput(target: any, outputId: number, outputIndex: number, workPackageIndex: number, workPackageId: number): void {
     if (!target) {
       return;
     }
-    this.pageStore.uploadOutputFile(target?.files[0], outputId)
+    this.pageStore.uploadOutputFile(target?.files[0], outputId, workPackageId)
       .pipe(take(1))
       .subscribe(value => {
         this.outputFileMetadata(workPackageIndex, outputIndex)?.patchValue(value);

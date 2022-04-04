@@ -6,4 +6,11 @@ button {
   display: flex;
 }
 
+::ng-deep .tooltip  {
+   word-break: break-all !important;
+   white-space: pre-line !important;
+}
 
+.file-name-chip :hover{
+  cursor: pointer;
+}

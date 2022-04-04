@@ -48,36 +48,36 @@ export class PartnerReportWorkPlanPageStore {
     );
   }
 
-  uploadActivityFile(file: File, activityId: number): Observable<ProjectReportFileMetadataDTO> {
+  uploadActivityFile(file: File, activityId: number, workPackageId: number): Observable<ProjectReportFileMetadataDTO> {
     return  combineLatest([
       this.partnerId$,
       this.partnerReportPageStore.partnerReportId$,
     ]).pipe(
       take(1),
       switchMap(([partnerId, reportId]) => this.projectPartnerReportWorkPlanService.uploadFileToActivityForm(
-          file, activityId, partnerId as number, reportId)
+          file, activityId, partnerId as number, reportId, workPackageId)
       ));
   }
 
-  uploadDeliverableFile(file: File, activityId: number, deliverableId: number): Observable<ProjectReportFileMetadataDTO> {
+  uploadDeliverableFile(file: File, activityId: number, deliverableId: number, workPackageId: number): Observable<ProjectReportFileMetadataDTO> {
     return  combineLatest([
       this.partnerId$,
       this.partnerReportPageStore.partnerReportId$,
     ]).pipe(
       take(1),
       switchMap(([partnerId, reportId]) => this.projectPartnerReportWorkPlanService.uploadFileToDeliverableForm(
-        file, activityId, deliverableId, partnerId as number, reportId)
+        file, activityId, deliverableId, partnerId as number, reportId, workPackageId)
       ));
   }
 
-  uploadOutputFile(file: File, outputId: number): Observable<ProjectReportFileMetadataDTO> {
+  uploadOutputFile(file: File, outputId: number, workPackageId: number): Observable<ProjectReportFileMetadataDTO> {
     return  combineLatest([
       this.partnerId$,
       this.partnerReportPageStore.partnerReportId$,
     ]).pipe(
       take(1),
       switchMap(([partnerId, reportId]) => this.projectPartnerReportWorkPlanService.uploadFileToOutputForm(
-        file, outputId, partnerId as number, reportId)
+        file, outputId, partnerId as number, reportId, workPackageId)
       ));
   }
 }
