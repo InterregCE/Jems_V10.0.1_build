@@ -28,7 +28,7 @@
                 <ng-container *jemsHasPermission="PermissionsEnum.ProjectSubmission; alternativeCondition data.userIsProjectOwnerOrEditCollaborator">
                     <jems-pending-button
                             class="mr-2 mt-2"
-                            *ngIf="ProjectUtil.isDraft(data.currentVersionOfProjectStatus)"
+                            *ngIf="ProjectUtil.isDraft(data.currentVersionOfProjectStatus) || ProjectUtil.isStep1Draft(data.currentVersionOfProjectStatus)"
                             [confirm]="{title: 'project.detail.submit.dialog.title', message: 'project.detail.submit.dialog.message'}"
                             [disabled]="isSubmitDisabled(data.projectCallEndDate, data.hasPreConditionCheckSucceed, data.currentVersionOfProjectStatus)"
                             [pending]="actionPending"
@@ -47,11 +47,11 @@
                     </jems-pending-button>
                 </ng-container>
 
-                <jems-alert [closable]="false" [show]="isCallEnded(data.projectCallEndDate) && ProjectUtil.isDraft(data.currentVersionOfProjectStatus)" [type]="Alert.INFO">
+                <jems-alert [closable]="false" [show]="showCallEndedMessage(data.projectCallEndDateStep1, data.projectCallEndDate, data.currentVersionOfProjectStatus)" [type]="Alert.INFO">
                     <span>{{'project.application.check.and.submit.call.ended' | translate}}</span>
                 </jems-alert>
 
-                <jems-alert [closable]="false" [show]="!data.hasPreConditionCheckSucceed && !isCallEnded(data.projectCallEndDate)" [type]="Alert.INFO">
+                <jems-alert [closable]="false" [show]="showPreSubmissionCheckMessage(data.isCall2Step, data.hasPreConditionCheckSucceed, data.projectCallEndDateStep1, data.projectCallEndDate, data.currentVersionOfProjectStatus)" [type]="Alert.INFO">
                     <span>{{'project.application.check.and.submit.pre.condition.failed' | translate}}</span>
                 </jems-alert>
 

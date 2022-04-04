@@ -46,7 +46,7 @@
                [routerLink]="[CALL_PATH, project?.callSettings?.callId]">
                 {{project?.callSettings?.callName}}
             </a>
-            <span [class.expiration]="ProjectUtil.isDraft(project)">
+            <span [class.expiration]="ProjectUtil.isDraft(project) || ProjectUtil.isStep1Draft(project)">
                 {{'project.detail.overview.call.expiration' | translate : getCallInfo()}}
             </span>
         </span>

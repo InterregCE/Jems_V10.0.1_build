@@ -56,7 +56,7 @@ export class ProjectApplicationInformationComponent {
   }
 
   hasDraftStatusColor(): boolean {
-    return ProjectUtil.isDraft(this.project) || ProjectUtil.isReturnedToApplicant(this.project);
+    return ProjectUtil.isDraft(this.project) || ProjectUtil.isStep1Draft(this.project) || ProjectUtil.isReturnedToApplicant(this.project);
   }
 
   hasSubmittedStatusColor(): boolean {
