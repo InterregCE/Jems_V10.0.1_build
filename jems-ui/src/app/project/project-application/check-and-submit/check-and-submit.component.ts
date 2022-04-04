@@ -31,6 +31,8 @@ export class CheckAndSubmitComponent {
     currentVersionOfProjectTitle: string;
     projectId: number;
     projectCallEndDate: Date;
+    projectCallEndDateStep1: Date;
+    isCall2Step: boolean;
     isThisUserOwner: boolean;
     userIsProjectOwnerOrEditCollaborator: boolean;
     hasPreConditionCheckSucceed: boolean;
@@ -59,6 +61,8 @@ export class CheckAndSubmitComponent {
         currentVersionOfProjectStatus: currentVersionOfProject.projectStatus.status,
         projectId: currentVersionOfProject.id,
         projectCallEndDate: currentVersionOfProject.callSettings?.endDate,
+        projectCallEndDateStep1: currentVersionOfProject.callSettings?.endDateStep1,
+        isCall2Step: currentVersionOfProject.callSettings?.endDateStep1 !== null,
         isThisUserOwner,
         userIsProjectOwnerOrEditCollaborator,
         hasPreConditionCheckSucceed: preConditionCheckResults?.submissionAllowed || false,
@@ -106,5 +110,20 @@ export class CheckAndSubmitComponent {
   isSubmitDisabled(projectCallEndDate: Date, hasPreConditionCheckSucceed: boolean, projectStatus: ProjectStatusDTO.StatusEnum): boolean {
     const currentDate = moment(new Date());
     return !(currentDate.isBefore(projectCallEndDate) && hasPreConditionCheckSucceed);
+  }
+
+  showCallEndedMessage(endCallStep1: Date, endCall: Date, callStatus: ProjectStatusDTO): boolean {
+    return (this.isCallEnded(endCallStep1) && ProjectUtil.isStep1Draft(callStatus))
+        || (this.isCallEnded(endCall) && ProjectUtil.isDraft(callStatus));
+  }
+
+  showPreSubmissionCheckMessage(isCall2Step: boolean, checkSucceed: boolean, endCallStep1: Date, endCall: Date, callStatus: ProjectStatusDTO): boolean {
+    if (isCall2Step){
+      return !checkSucceed && (
+        (!this.isCallEnded(endCallStep1) && ProjectUtil.isStep1Draft(callStatus))
+        || (!this.isCallEnded(endCall) && ProjectUtil.isDraft(callStatus))
+      );
+    }
+    return !checkSucceed && !this.isCallEnded(endCall);
   }
 }
