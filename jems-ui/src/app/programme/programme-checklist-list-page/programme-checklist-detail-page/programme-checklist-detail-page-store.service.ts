@@ -4,18 +4,22 @@ import {RoutingService} from '@common/services/routing.service';
 import {Log} from '@common/utils/log';
 import {Observable, of, Subject} from 'rxjs';
 import {switchMap, take, tap} from 'rxjs/operators';
+import {ProgrammeEditableStateStore} from '../../programme-page/services/programme-editable-state-store.service';
 
 @Injectable()
 export class ProgrammeChecklistDetailPageStore {
   static readonly CHECKLIST_DETAIL_PATH = '/app/programme/checklists/';
 
   checklist$: Observable<ProgrammeChecklistDetailDTO>;
+  canEditProgramme$: Observable<boolean>;
 
   private savedChecklist$ = new Subject<ProgrammeChecklistDetailDTO>();
 
   constructor(private programmeChecklistService: ProgrammeChecklistService,
-              private routingService: RoutingService) {
+              private routingService: RoutingService,
+              private programmeEditableStateStore: ProgrammeEditableStateStore) {
     this.checklist$ = this.checklist();
+    this.canEditProgramme$ = this.programmeEditableStateStore.hasEditPermission$;
   }
 
   private checklist(): Observable<ProgrammeChecklistDetailDTO> {

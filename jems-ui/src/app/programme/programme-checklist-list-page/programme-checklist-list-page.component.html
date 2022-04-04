@@ -4,7 +4,7 @@
                          subTitleKey="programme.checklists.title">
     <h3 class="mb-5">{{'programme.checklists.table.title' | translate}}</h3>
 
-    <button *ngIf="checklists.length < 100"
+    <button *ngIf="(pageStore.canEditProgramme$ | async) === true && checklists.length < 100"
             jemsText mat-raised-button color="primary" class="mb-3"
             [routerLink]="'/app/programme/checklists/create'">
         + {{'programme.checklists.create' | translate}}

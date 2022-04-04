@@ -8,6 +8,8 @@ import {catchError, tap} from 'rxjs/operators';
 import {FormService} from '@common/components/section/form/form.service';
 import {RoutingService} from '@common/services/routing.service';
 import {ActivatedRoute} from '@angular/router';
+import {ColumnWidth} from '@common/components/table/model/column-width';
+import {TableConfig} from '@common/directives/table-config/TableConfig';
 
 @Component({
   selector: 'jems-programme-checklist-detail-page',
@@ -30,7 +32,7 @@ export class ProgrammeChecklistDetailPageComponent  {
   });
 
   constructor(private programmePageSidenavService: ProgrammePageSidenavService,
-              private pageStore: ProgrammeChecklistDetailPageStore,
+              public pageStore: ProgrammeChecklistDetailPageStore,
               private formBuilder: FormBuilder,
               public formService: FormService,
               private routingService: RoutingService,
@@ -40,7 +42,7 @@ export class ProgrammeChecklistDetailPageComponent  {
         tap(checklist => this.resetForm(checklist)),
         tap(checklist => this.formService.setCreation(!checklist?.id))
       );
-    this.formService.init(this.form);
+    this.formService.init(this.form, this.pageStore.canEditProgramme$);
   }
 
   save(): void {
@@ -84,6 +86,10 @@ export class ProgrammeChecklistDetailPageComponent  {
     setTimeout(() => this.form.updateValueAndValidity(), 100);
   }
 
+  getTableConfig(): TableConfig[] {
+    return [...this.form.enabled ? [{maxInRem:3}] : [],{maxInRem:15},{},{maxInRem:3}];
+  }
+
   get components(): FormArray {
     return this.form.get('components') as FormArray;
   }
@@ -100,5 +106,7 @@ export class ProgrammeChecklistDetailPageComponent  {
     this.form.patchValue(checklist);
     this.components.clear();
     checklist?.components?.forEach(component => this.addComponent(component));
+    this.formService.resetEditable();
   }
+
 }
