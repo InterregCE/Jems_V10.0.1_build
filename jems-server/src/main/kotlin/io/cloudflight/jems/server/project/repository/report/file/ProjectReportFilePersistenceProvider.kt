@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.repository.report.file
 import io.cloudflight.jems.server.common.minio.MinioStorage
 import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
 import io.cloudflight.jems.server.project.repository.report.procurement.ProjectPartnerReportProcurementRepository
+import io.cloudflight.jems.server.project.repository.report.contribution.ProjectPartnerReportContributionRepository
 import io.cloudflight.jems.server.project.repository.report.toModel
 import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPartnerReportWorkPackageActivityDeliverableRepository
 import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPartnerReportWorkPackageActivityRepository
@@ -23,6 +24,7 @@ class ProjectReportFilePersistenceProvider(
     private val workPlanActivityDeliverableRepository: ProjectPartnerReportWorkPackageActivityDeliverableRepository,
     private val workPlanOutputRepository: ProjectPartnerReportWorkPackageOutputRepository,
     private val procurementRepository: ProjectPartnerReportProcurementRepository,
+    private val contributionRepository: ProjectPartnerReportContributionRepository,
     private val userRepository: UserRepository,
 ) : ProjectReportFilePersistence {
 
@@ -89,6 +91,17 @@ class ProjectReportFilePersistenceProvider(
         procurement.attachment.deleteIfPresent()
 
         return persistFileAndUpdateLink(file = file) { procurement.attachment = it }
+    }
+
+    @Transactional
+    override fun updatePartnerReportContributionAttachment(
+        contributionId: Long,
+        file: ProjectReportFileCreate
+    ): ProjectReportFileMetadata {
+        val contribution = contributionRepository.findById(contributionId).get()
+        contribution.attachment.deleteIfPresent()
+
+        return persistFileAndUpdateLink(file = file) { contribution.attachment = it }
     }
 
     private fun persistFileAndUpdateLink(file: ProjectReportFileCreate, additionalStep: (ReportProjectFileEntity) -> Unit): ProjectReportFileMetadata {

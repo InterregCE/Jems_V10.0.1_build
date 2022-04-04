@@ -8,6 +8,10 @@ import io.cloudflight.jems.api.project.dto.report.partner.procurement.ProjectPar
 import io.cloudflight.jems.api.project.dto.report.partner.procurement.UpdateProjectPartnerReportProcurementDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.service.model.IdNamePair
+import io.cloudflight.jems.server.project.controller.report.dummyFile
+import io.cloudflight.jems.server.project.controller.report.dummyFileDto
+import io.cloudflight.jems.server.project.controller.report.dummyFileExpected
+import io.cloudflight.jems.server.project.controller.report.dummyMultipartFile
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
 import io.cloudflight.jems.server.project.service.report.model.procurement.ProjectPartnerReportProcurement
@@ -80,20 +84,6 @@ class ProjectPartnerReportProcurementControllerTest : UnitTest() {
             comment = setOf(InputTranslation(SystemLanguage.EN, "comment EN")),
         )
 
-        private val stream = ByteArray(5).inputStream()
-
-        private val dummyFile = ProjectReportFileMetadata(id = 90L, "file_name.ext", uploaded = UPLOADED)
-        private val dummyFileDto = ProjectReportFileMetadataDTO(id = 90L, "file_name.ext", uploaded = UPLOADED)
-        private val dummyFileExpected = ProjectFile(stream, "file_name.ext", 50L)
-        private fun dummyMultipartFile(name: String = "file_name.ext", originalName: String? = null): MultipartFile {
-            val file = mockk<MultipartFile>()
-            every { file.inputStream } returns stream
-            every { file.originalFilename } returns originalName
-            every { file.name } returns name
-            every { file.size } returns 50L
-            return file
-        }
-
     }
 
     @MockK
@@ -138,7 +128,7 @@ class ProjectPartnerReportProcurementControllerTest : UnitTest() {
     }
 
     @Test
-    fun uploadFileToOutput() {
+    fun uploadFileToProcurement() {
         val slotFile = slot<ProjectFile>()
         every { uploadFileToProcurement.uploadToProcurement(PARTNER_ID, reportId = 35L, 75L, capture(slotFile)) } returns dummyFile
         assertThat(controller.uploadFileToProcurement(PARTNER_ID, 35L, 75L, dummyMultipartFile())).isEqualTo(dummyFileDto)

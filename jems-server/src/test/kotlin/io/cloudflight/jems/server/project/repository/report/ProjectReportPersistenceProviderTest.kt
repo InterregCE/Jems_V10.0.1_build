@@ -476,6 +476,7 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
             assertThat(amount).isEqualTo(ONE)
             assertThat(previouslyReported).isEqualTo(ONE)
             assertThat(currentlyReported).isEqualTo(ZERO)
+            assertThat(attachment).isNull()
         }
     }
 
