@@ -42,8 +42,8 @@ interface ProjectApi {
     fun getAllProjects(
         @RequestParam(required = false) page: Int?,
         @RequestParam(required = false) size: Int?,
-        @RequestParam sortProperty: String,
-        @RequestParam sortDirection: String,
+        @RequestParam(required = false, defaultValue = "id") sortProperty: String,
+        @RequestParam(required = false, defaultValue = "desc") sortDirection: String,
         @RequestBody(required = false) searchRequest: ProjectSearchRequestDTO?
     ): Page<OutputProjectSimple>
 
