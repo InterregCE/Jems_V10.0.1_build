@@ -8,7 +8,12 @@ export class ProjectUtil {
 
   static isDraft(statusOrProject: ProjectDetailDTO | ProjectStatusDTO): boolean {
     const status = this.getStatus(statusOrProject);
-    return status === ProjectStatusDTO.StatusEnum.STEP1DRAFT || status === ProjectStatusDTO.StatusEnum.DRAFT;
+    return status === ProjectStatusDTO.StatusEnum.DRAFT;
+  }
+
+  static isStep1Draft(statusOrProject: ProjectDetailDTO | ProjectStatusDTO): boolean {
+    const status = this.getStatus(statusOrProject);
+    return status === ProjectStatusDTO.StatusEnum.STEP1DRAFT;
   }
 
   static isReturnedToApplicant(statusOrProject: ProjectDetailDTO | ProjectStatusDTO): boolean {
@@ -20,7 +25,7 @@ export class ProjectUtil {
   }
 
   static isOpenForModifications(statusOrProject: ProjectDetailDTO | ProjectStatusDTO): boolean {
-    return ProjectUtil.isDraft(statusOrProject) || ProjectUtil.isReturnedToApplicant(statusOrProject);
+    return ProjectUtil.isDraft(statusOrProject) || ProjectUtil.isStep1Draft(statusOrProject) || ProjectUtil.isReturnedToApplicant(statusOrProject);
   }
 
   static isInModifiableStatusAfterApproved(statusOrProject: ProjectDetailDTO | ProjectStatusDTO): boolean {
