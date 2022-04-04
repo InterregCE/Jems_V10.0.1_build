@@ -8,7 +8,7 @@ context('Project privileges tests', () => {
   });
 
   it('TB-379 Automatically assign users to projects', function () {
-    cy.loginByRequest(user.admin);
+    cy.loginByRequest(user.admin.email);
     cy.createUser(testData.privilegedUser);
     cy.visit('app/project', {failOnStatusCode: false});
 

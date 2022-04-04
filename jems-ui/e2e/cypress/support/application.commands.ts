@@ -16,6 +16,8 @@ import {ApplicationActionInfoDTO} from '../../../build/swagger-code-jems-api/mod
 import {InputTranslation} from '../../../build/swagger-code-jems-api/model/inputTranslation'
 import faker from '@faker-js/faker';
 import {createPartners} from './partner.commands';
+import user from '../fixtures/users.json';
+import {loginByRequest} from './login.commands';
 
 declare global {
 
@@ -24,7 +26,8 @@ declare global {
     details: ProjectCreateDTO,
     identification?: InputProjectData,
     partners?: ProjectPartner[],
-    description?: ProjectDescription
+    description?: ProjectDescription,
+    assessments: {}
   }
 
   interface ProjectDescription {
@@ -50,6 +53,22 @@ declare global {
 
       createApplication(application, userEmail: string);
 
+      updateProjectIdentification(applicationId: number, identification);
+
+      updateProjectOverallObjective(applicationId: number, overallObjective);
+
+      updateProjectRelevanceAndContext(applicationId: number, relevanceAndContext);
+
+      updateProjectPartnership(applicationId: number, partnership);
+
+      createProjectWorkPlan(applicationId: number, workPlan);
+
+      createProjectResults(applicationId: number, results);
+
+      updateProjectManagement(applicationId: number, management);
+
+      updateProjectLongTermPlans(applicationId: number, longTermPlans);
+
       runPreSubmissionCheck(applicationId: number);
 
       submitProjectApplication(applicationId: number);
@@ -62,9 +81,15 @@ declare global {
 
       enterFundingDecision(applicationId: number, decision);
 
-      startModification(applicationId: number);
+      approveApplication(applicationId: number, assessment);
 
-      approveModification(applicationId: number, approve);
+      startSecondStep(applicationId: number);
+
+      startModification(applicationId: number, userEmail?: string);
+
+      approveModification(applicationId: number, approvalInfo, userEmail?: string);
+
+      rejectModification(applicationId: number, rejectionInfo, userEmail?: string);
     }
   }
 }
@@ -76,7 +101,7 @@ Cypress.Commands.add('createApplication', (application: Application, userEmail: 
   });
 });
 
-Cypress.Commands.add('createFullApplication', (application: Application, userEmail: string) => {
+Cypress.Commands.add('createFullApplication', function (application: Application, userEmail: string) {
   createApplication(application.details, userEmail).then(function (response) {
     application.id = response.body.id;
     updateIdentification(application.id, application.identification);
@@ -92,69 +117,130 @@ Cypress.Commands.add('createFullApplication', (application: Application, userEma
 
     // B - project partners
     createPartners(application.id, application.partners);
+
+    approveApplication(application.id, application.assessments);
     cy.wrap(application.id).as('applicationId');
   });
 });
 
+Cypress.Commands.add('approveApplication', (applicationId: number, assessment: InputProjectData) => {
+  approveApplication(applicationId, assessment);
+});
+
+/* A - Project identification */
+
+Cypress.Commands.add('updateProjectIdentification', (applicationId: number, identification: InputProjectData) => {
+  updateIdentification(applicationId, identification);
+});
+
+/* C - Project description */
+
+Cypress.Commands.add('updateProjectOverallObjective', (applicationId: number, overallObjective: InputTranslation[]) => {
+  updateOverallObjective(applicationId, overallObjective);
+});
+
+Cypress.Commands.add('updateProjectRelevanceAndContext', (applicationId: number, relevanceAndContext: InputProjectRelevance) => {
+  updateRelevanceAndContext(applicationId, relevanceAndContext);
+});
+
+Cypress.Commands.add('updateProjectPartnership', (applicationId: number, partnership: InputTranslation[]) => {
+  updatePartnership(applicationId, partnership);
+});
+
+Cypress.Commands.add('createProjectWorkPlan', (applicationId: number, workPlan: WorkPackage[]) => {
+  createWorkPlan(applicationId, workPlan);
+});
+
+Cypress.Commands.add('createProjectResults', (applicationId: number, projectResults: ProjectResultDTO[]) => {
+  createResults(applicationId, projectResults);
+});
+
+Cypress.Commands.add('updateProjectManagement', (applicationId: number, management: InputProjectManagement) => {
+  updateManagement(applicationId, management);
+});
+
+Cypress.Commands.add('updateProjectLongTermPlans', (applicationId: number, longTermPlans: InputProjectLongTermPlans) => {
+  updateLongTermPlans(applicationId, longTermPlans);
+});
+
 Cypress.Commands.add('runPreSubmissionCheck', (applicationId: number) => {
-  cy.request({
-    method: 'GET',
-    url: `api/project/${applicationId}/preCheck`
-  });
+  runPreSubmissionCheck(applicationId);
 });
 
 Cypress.Commands.add('submitProjectApplication', (applicationId: number) => {
-  cy.request({
-    method: 'PUT',
-    url: `api/project/${applicationId}/submit`
-  });
+  submitProjectApplication(applicationId);
 });
 
 Cypress.Commands.add('enterEligibilityAssessment', (applicationId: number, assessment: ProjectAssessmentEligibilityDTO) => {
-  cy.request({
-    method: 'POST',
-    url: `api/project/${applicationId}/assessment/eligibility`,
-    body: assessment
-  });
+  enterEligibilityAssessment(applicationId, assessment);
 });
 
 Cypress.Commands.add('enterQualityAssessment', (applicationId: number, assessment: ProjectAssessmentQualityDTO) => {
-  cy.request({
-    method: 'POST',
-    url: `api/project/${applicationId}/assessment/quality`,
-    body: assessment
-  });
+  enterQualityAssessment(applicationId, assessment);
 });
 
 Cypress.Commands.add('enterEligibilityDecision', (applicationId: number, decision: ApplicationActionInfoDTO) => {
-  cy.request({
-    method: 'PUT',
-    url: `api/project/${applicationId}/set-as-eligible`,
-    body: decision
-  });
+  enterEligibilityDecision(applicationId, decision);
 });
 
 Cypress.Commands.add('enterFundingDecision', (applicationId: number, decision: ApplicationActionInfoDTO) => {
+  enterFundingDecision(applicationId, decision);
+});
+
+Cypress.Commands.add('startSecondStep', (applicationId: number) => {
+  loginByRequest(user.programmeUser.email);
   cy.request({
     method: 'PUT',
-    url: `api/project/${applicationId}/approve`,
-    body: decision
+    url: `api/project/${applicationId}/start-second-step`
+  });
+  cy.get('@currentUser').then((currentUser: any) => {
+    loginByRequest(currentUser.name);
   });
 });
 
-Cypress.Commands.add('startModification', (applicationId: number) => {
+Cypress.Commands.add('startModification', (applicationId: number, userEmail?: string) => {
+  if (userEmail)
+    loginByRequest(userEmail);
   cy.request({
     method: 'PUT',
     url: `api/project/${applicationId}/start-modification`,
   });
+  if (userEmail) {
+    cy.get('@currentUser').then((currentUser: any) => {
+      loginByRequest(currentUser.name);
+    });
+  }
 });
 
-Cypress.Commands.add('approveModification', (applicationId: number, approve: ApplicationActionInfoDTO) => {
+Cypress.Commands.add('approveModification', (applicationId: number, approvalInfo: ApplicationActionInfoDTO, userEmail?: string) => {
+  if (userEmail)
+    loginByRequest(userEmail);
   cy.request({
     method: 'PUT',
     url: `api/project/${applicationId}/approve modification`,
-    body: approve
+    body: approvalInfo
   });
+  if (userEmail) {
+    // cy.logoutByRequest();
+    cy.get('@currentUser').then((currentUser: any) => {
+      loginByRequest(currentUser.name);
+    });
+  }
+});
+
+Cypress.Commands.add('rejectModification', (applicationId: number, rejectionInfo: ApplicationActionInfoDTO, userEmail?: string) => {
+  if (userEmail)
+    loginByRequest(userEmail);
+  cy.request({
+    method: 'PUT',
+    url: `api/project/${applicationId}/reject`,
+    body: rejectionInfo
+  });
+  if (userEmail) {
+    cy.get('@currentUser').then((currentUser: any) => {
+      loginByRequest(currentUser.name);
+    });
+  }
 });
 
 function createApplication(applicationDetails: ProjectCreateDTO, userEmail: string) {
@@ -221,7 +307,7 @@ function createWorkPlan(applicationId: number, workPlan: WorkPackage[]) {
         body: workPackage.activities
       }).then(response => {
         // TODO request does not return proper id
-        cy.wrap(response.body.id).as('activityId');
+        cy.wrap(response.body[0].id).as('activityId');
       });
       cy.request({
         method: 'PUT',
@@ -253,6 +339,65 @@ function updateLongTermPlans(applicationId: number, longTermPlans: InputProjectL
     method: 'PUT',
     url: `api/project/${applicationId}/description/c8`,
     body: longTermPlans
+  });
+}
+
+function runPreSubmissionCheck(applicationId: number) {
+  cy.request({
+    method: 'GET',
+    url: `api/project/${applicationId}/preCheck`
+  });
+}
+
+function submitProjectApplication(applicationId: number) {
+  cy.request({
+    method: 'PUT',
+    url: `api/project/${applicationId}/submit`
+  });
+}
+
+function enterEligibilityAssessment(applicationId: number, assessment) {
+  cy.request({
+    method: 'POST',
+    url: `api/project/${applicationId}/assessment/eligibility`,
+    body: assessment
+  });
+}
+
+function enterQualityAssessment(applicationId: number, assessment) {
+  cy.request({
+    method: 'POST',
+    url: `api/project/${applicationId}/assessment/quality`,
+    body: assessment
+  });
+}
+
+function enterEligibilityDecision(applicationId, decision) {
+  cy.request({
+    method: 'PUT',
+    url: `api/project/${applicationId}/set-as-eligible`,
+    body: decision
+  });
+}
+
+function enterFundingDecision(applicationId, decision) {
+  cy.request({
+    method: 'PUT',
+    url: `api/project/${applicationId}/approve`,
+    body: decision
+  });
+}
+
+function approveApplication(applicationId: number, assessments) {
+  runPreSubmissionCheck(applicationId);
+  submitProjectApplication(applicationId);
+  loginByRequest(user.programmeUser.email);
+  enterEligibilityAssessment(applicationId, assessments.eligibilityAssessment);
+  enterQualityAssessment(applicationId, assessments.qualityAssessment);
+  enterEligibilityDecision(applicationId, assessments.eligibilityDecision);
+  enterFundingDecision(applicationId, assessments.fundingDecision);
+  cy.get('@currentUser').then((currentUser: any) => {
+    loginByRequest(currentUser.name);
   });
 }
 

@@ -5,7 +5,7 @@ context('Call management tests', () => {
 
   beforeEach(() => {
     cy.viewport(1920, 1080);
-    cy.loginByRequest(user.programmeUser);
+    cy.loginByRequest(user.programmeUser.email);
   });
 
   it('TB-388 Create a new 1-step call', function () {
