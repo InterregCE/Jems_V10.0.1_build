@@ -113,17 +113,21 @@ export class CheckAndSubmitComponent {
   }
 
   showCallEndedMessage(endCallStep1: Date, endCall: Date, callStatus: ProjectStatusDTO): boolean {
-    return (this.isCallEnded(endCallStep1) && ProjectUtil.isStep1Draft(callStatus))
-        || (this.isCallEnded(endCall) && ProjectUtil.isDraft(callStatus));
+    const callClosedStep1 = this.isCallEnded(endCallStep1) && ProjectUtil.isStep1Draft(callStatus);
+    const callClosed = this.isCallEnded(endCall) && ProjectUtil.isDraft(callStatus);
+
+    return callClosedStep1 || callClosed;
   }
 
   showPreSubmissionCheckMessage(isCall2Step: boolean, checkSucceed: boolean, endCallStep1: Date, endCall: Date, callStatus: ProjectStatusDTO): boolean {
+    const checkFailed = !checkSucceed;
+    const submissionOpenStep1 = !this.isCallEnded(endCallStep1) && ProjectUtil.isStep1Draft(callStatus);
+    const submissionOpen = !this.isCallEnded(endCall) && ProjectUtil.isDraft(callStatus);
+    const projectCanBeSubmittedAfterCallEnded = ProjectUtil.isReturnedToApplicant(callStatus);
+
     if (isCall2Step){
-      return !checkSucceed && (
-        (!this.isCallEnded(endCallStep1) && ProjectUtil.isStep1Draft(callStatus))
-        || (!this.isCallEnded(endCall) && ProjectUtil.isDraft(callStatus))
-      );
+      return checkFailed && (submissionOpenStep1 || submissionOpen || projectCanBeSubmittedAfterCallEnded);
     }
-    return !checkSucceed && !this.isCallEnded(endCall);
+    return checkFailed && (submissionOpen || projectCanBeSubmittedAfterCallEnded);
   }
 }
