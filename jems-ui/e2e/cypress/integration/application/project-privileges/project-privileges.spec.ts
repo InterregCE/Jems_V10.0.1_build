@@ -71,4 +71,23 @@ context('Project privileges tests', () => {
       });
     });
   });
+
+  it('TB-364 Restrict management of project specific privileges', () => {
+    cy.fixture('application/project-privileges/TB-364.json').then(testData => {
+      cy.loginByRequest(user.admin.email);
+      testData.programmeRole.name = `programmeRole_${faker.random.alphaNumeric(5)}`;
+      cy.createRole(testData.programmeRole).then(roleId => {
+        testData.programmeUser.userRoleId = roleId;
+        testData.programmeUser.email = faker.internet.email();
+        cy.createUser(testData.programmeUser);
+        cy.loginByRequest(testData.programmeUser.email);
+
+        cy.visit('app/project/detail/1');
+        cy.contains('Project privileges').should('not.exist');
+
+        cy.visit('app/project/detail/1/privileges');
+        cy.get('jems-application-form-privileges-expansion-panel').should('not.exist');
+      });
+    });
+  });
 })
