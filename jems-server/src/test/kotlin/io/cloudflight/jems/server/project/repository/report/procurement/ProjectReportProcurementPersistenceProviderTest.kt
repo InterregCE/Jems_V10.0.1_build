@@ -5,9 +5,11 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
+import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
 import io.cloudflight.jems.server.project.entity.report.procurement.ProjectPartnerReportProcurementEntity
 import io.cloudflight.jems.server.project.entity.report.procurement.ProjectPartnerReportProcurementTranslEntity
 import io.cloudflight.jems.server.project.repository.report.ProjectPartnerReportRepository
+import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
 import io.cloudflight.jems.server.project.service.report.model.procurement.ProjectPartnerReportProcurement
 import io.cloudflight.jems.server.project.service.report.model.procurement.ProjectPartnerReportProcurementUpdate
 import io.mockk.clearMocks
@@ -20,6 +22,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
+import java.time.ZonedDateTime
 
 class ProjectReportProcurementPersistenceProviderTest : UnitTest() {
 
@@ -29,8 +32,22 @@ class ProjectReportProcurementPersistenceProviderTest : UnitTest() {
         private const val ID_TO_STAY = 50L
         private const val ID_TO_DELETE = 51L
         private const val ID_TO_UPDATE = 52L
-        private const val ID_TO_ADD_1 = 0L
-        private const val ID_TO_ADD_2 = 0L
+        private const val ID_TO_ADD_1 = -1L
+        private const val ID_TO_ADD_2 = -2L
+
+        private val dummyAttachment = ReportProjectFileEntity(
+            id = 970L,
+            projectId = 4L,
+            partnerId = PARTNER_ID,
+            path = "",
+            minioBucket = "",
+            minioLocation = "",
+            name = "some_file.txt",
+            type = mockk(),
+            size = 1475,
+            user = mockk(),
+            uploaded = ZonedDateTime.now(),
+        )
 
         private fun dummyEntity(reportEntity: ProjectPartnerReportEntity) = ProjectPartnerReportProcurementEntity(
             id = 14L,
@@ -38,6 +55,7 @@ class ProjectReportProcurementPersistenceProviderTest : UnitTest() {
             contractId = "contractId",
             contractAmount = BigDecimal.TEN,
             supplierName = "supplierName",
+            attachment = dummyAttachment,
         ).apply {
             translatedValues.add(
                 ProjectPartnerReportProcurementTranslEntity(
@@ -58,6 +76,7 @@ class ProjectReportProcurementPersistenceProviderTest : UnitTest() {
             contractAmount = BigDecimal.TEN,
             supplierName = "supplierName",
             comment = setOf(InputTranslation(SystemLanguage.EN, "comment EN")),
+            attachment = ProjectReportFileMetadata(dummyAttachment.id, dummyAttachment.name, dummyAttachment.uploaded),
         )
 
         private fun updateDto(id: Long) = ProjectPartnerReportProcurementUpdate(
@@ -68,6 +87,24 @@ class ProjectReportProcurementPersistenceProviderTest : UnitTest() {
             supplierName = "supplierName NEW",
             comment = setOf(InputTranslation(SystemLanguage.EN, "comment EN NEW")),
         )
+
+        private fun entity(id: Long, reportEntity: ProjectPartnerReportEntity) = ProjectPartnerReportProcurementEntity(
+            id = id,
+            reportEntity = reportEntity,
+            contractId = "contractId",
+            contractAmount = BigDecimal.TEN,
+            supplierName = "supplierName",
+            attachment = dummyAttachment,
+        ).apply {
+            translatedValues.add(
+                ProjectPartnerReportProcurementTranslEntity(
+                    TranslationId(this, SystemLanguage.EN),
+                    comment = "comment EN",
+                    contractType = "contractType EN",
+                )
+            )
+        }
+
     }
 
     @MockK
@@ -90,6 +127,12 @@ class ProjectReportProcurementPersistenceProviderTest : UnitTest() {
         every { reportProcurementRepository.findProcurementIdsForReport(PARTNER_ID, reportId = 18L) } returns setOf(24L)
         assertThat(persistence.getProcurementIdsForReport(PARTNER_ID, reportId = 18L))
             .containsExactly(24L)
+    }
+
+    @Test
+    fun existsByProcurementId() {
+        every { reportProcurementRepository.existsByReportEntityPartnerIdAndReportEntityIdAndId(PARTNER_ID, reportId = 18L, 45L) } returns false
+        assertThat(persistence.existsByProcurementId(PARTNER_ID, reportId = 18L, 45L)).isFalse
     }
 
     @Test
@@ -122,13 +165,17 @@ class ProjectReportProcurementPersistenceProviderTest : UnitTest() {
         val reportId = 30L
         val report = mockk<ProjectPartnerReportEntity>()
         every { reportRepository.findByIdAndPartnerId(partnerId = PARTNER_ID, id = reportId) } returns report
-        every { reportProcurementRepository.findProcurementIdsForReport(PARTNER_ID, reportId = reportId) } returns
-            setOf(ID_TO_STAY, ID_TO_DELETE, ID_TO_UPDATE)
+        val entityToStay = entity(ID_TO_STAY, report)
+        val entityToDelete = entity(ID_TO_DELETE, report)
+        val entityToUpdate = entity(ID_TO_UPDATE, report)
+        every { reportProcurementRepository.findByReportEntityOrderByIdDesc(report) } returns mutableListOf(
+            entityToStay, entityToDelete, entityToUpdate
+        )
 
         val slotDelete = slot<Iterable<Long>>()
         every { reportProcurementRepository.deleteAllById(capture(slotDelete)) } answers { }
-        val slotSave = slot<Iterable<ProjectPartnerReportProcurementEntity>>()
-        every { reportProcurementRepository.saveAll(capture(slotSave)) } returnsArgument 0
+        val slotSave = mutableListOf<ProjectPartnerReportProcurementEntity>()
+        every { reportProcurementRepository.save(capture(slotSave)) } returnsArgument 0
 
         persistence.updatePartnerReportProcurement(PARTNER_ID, reportId = reportId, listOf(
             updateDto(id = ID_TO_STAY),
@@ -138,11 +185,11 @@ class ProjectReportProcurementPersistenceProviderTest : UnitTest() {
         ))
 
         assertThat(slotDelete.captured).containsExactly(ID_TO_DELETE)
-        assertThat(slotSave.captured.map { it.id }).containsExactly(
+        assertThat(slotSave.map { it.id }).containsExactly(
             // order is important, because not-yet-existing elements will get ID based on insertion order
-            ID_TO_ADD_2, ID_TO_ADD_1, ID_TO_UPDATE, ID_TO_STAY,
+            ID_TO_ADD_2, ID_TO_ADD_1,
         )
-        slotSave.captured.forEach {
+        slotSave.plus(listOf(entityToStay, entityToUpdate)).forEach {
             assertThat(it.reportEntity).isEqualTo(report)
             assertThat(it.contractId).isEqualTo("contractId NEW")
             assertThat(it.contractAmount).isEqualByComparingTo(BigDecimal.ONE)

@@ -7,7 +7,6 @@ import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.file.ProjectReportFilePersistence
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileCreate
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
 import io.cloudflight.jems.server.project.service.report.partner.workPlan.ProjectReportWorkPlanPersistence
 import org.springframework.stereotype.Service
@@ -40,7 +39,7 @@ class UploadFileToProjectPartnerReportWorkPlan(
 
             return reportFilePersistence.updatePartnerReportActivityAttachment(
                 activityId = activityId,
-                file = file.getFileMetadata(projectId, partnerId, location, type = this),
+                file = file.getFileMetadata(projectId, partnerId, location, type = this, securityService.getUserIdOrThrow()),
             )
         }
     }
@@ -71,7 +70,7 @@ class UploadFileToProjectPartnerReportWorkPlan(
 
             return reportFilePersistence.updatePartnerReportDeliverableAttachment(
                 deliverableId = deliverableId,
-                file = file.getFileMetadata(projectId, partnerId, location, type = this),
+                file = file.getFileMetadata(projectId, partnerId, location, type = this, securityService.getUserIdOrThrow()),
             )
         }
     }
@@ -95,25 +94,9 @@ class UploadFileToProjectPartnerReportWorkPlan(
 
             return reportFilePersistence.updatePartnerReportOutputAttachment(
                 outputId = outputId,
-                file = file.getFileMetadata(projectId, partnerId, location, type = this),
+                file = file.getFileMetadata(projectId, partnerId, location, type = this, securityService.getUserIdOrThrow()),
             )
         }
     }
-
-    private fun ProjectFile.getFileMetadata(
-        projectId: Long,
-        partnerId: Long,
-        location: String,
-        type: ProjectPartnerReportFileType,
-    ) = ProjectReportFileCreate(
-        projectId = projectId,
-        partnerId = partnerId,
-        name = name,
-        path = location,
-        type = type,
-        size = size,
-        content = stream,
-        userId = securityService.getUserIdOrThrow(),
-    )
 
 }

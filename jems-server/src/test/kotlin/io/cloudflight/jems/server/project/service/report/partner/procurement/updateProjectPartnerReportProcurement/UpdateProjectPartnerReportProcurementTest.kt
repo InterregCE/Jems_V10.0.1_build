@@ -5,6 +5,7 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
+import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
 import io.cloudflight.jems.server.project.service.report.model.procurement.ProjectPartnerReportProcurement
 import io.cloudflight.jems.server.project.service.report.model.procurement.ProjectPartnerReportProcurementUpdate
 import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectReportProcurementPersistence
@@ -18,6 +19,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.math.BigDecimal
+import java.time.ZonedDateTime
 
 internal class UpdateProjectPartnerReportProcurementTest : UnitTest() {
 
@@ -25,6 +27,7 @@ internal class UpdateProjectPartnerReportProcurementTest : UnitTest() {
         private const val PARTNER_ID = 5922L
 
         private const val EXISTING_CONTRACT_ID = "already existing"
+        private val UPLOADED = ZonedDateTime.now()
 
         private fun procurement(id: Long, reportId: Long) = ProjectPartnerReportProcurement(
             id = id,
@@ -36,6 +39,7 @@ internal class UpdateProjectPartnerReportProcurementTest : UnitTest() {
             contractAmount = BigDecimal.TEN,
             supplierName = "supplierName",
             comment = setOf(InputTranslation(SystemLanguage.EN, "comment EN")),
+            attachment = ProjectReportFileMetadata(47L, "file.xlsx", UPLOADED),
         )
 
         private fun procurementUpdate(id: Long) = ProjectPartnerReportProcurementUpdate(
@@ -57,6 +61,7 @@ internal class UpdateProjectPartnerReportProcurementTest : UnitTest() {
             contractAmount = BigDecimal.ONE,
             supplierName = "supplierName NEW",
             comment = setOf(InputTranslation(SystemLanguage.EN, "comment EN NEW")),
+            attachment = null,
         )
 
     }

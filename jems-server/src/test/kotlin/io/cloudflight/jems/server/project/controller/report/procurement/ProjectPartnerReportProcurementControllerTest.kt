@@ -3,26 +3,34 @@ package io.cloudflight.jems.server.project.controller.report.procurement
 import io.cloudflight.jems.api.common.dto.IdNamePairDTO
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadataDTO
 import io.cloudflight.jems.api.project.dto.report.partner.procurement.ProjectPartnerReportProcurementDTO
 import io.cloudflight.jems.api.project.dto.report.partner.procurement.UpdateProjectPartnerReportProcurementDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.service.model.IdNamePair
+import io.cloudflight.jems.server.project.service.file.model.ProjectFile
+import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
 import io.cloudflight.jems.server.project.service.report.model.procurement.ProjectPartnerReportProcurement
 import io.cloudflight.jems.server.project.service.report.model.procurement.ProjectPartnerReportProcurementUpdate
 import io.cloudflight.jems.server.project.service.report.partner.procurement.getProjectPartnerReportProcurement.GetProjectPartnerReportProcurementInteractor
 import io.cloudflight.jems.server.project.service.report.partner.procurement.updateProjectPartnerReportProcurement.UpdateProjectPartnerReportProcurementInteractor
+import io.cloudflight.jems.server.project.service.report.partner.procurement.uploadFileToProjectPartnerReportProcurement.UploadFileToProjectPartnerReportProcurement
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.springframework.web.multipart.MultipartFile
 import java.math.BigDecimal
+import java.time.ZonedDateTime
 
 class ProjectPartnerReportProcurementControllerTest : UnitTest() {
 
     companion object {
         private const val PARTNER_ID = 800L
+        private val UPLOADED = ZonedDateTime.now().minusWeeks(1)
 
         private fun dummyProcurement(reportId: Long) = ProjectPartnerReportProcurement(
             id = 265,
@@ -34,6 +42,7 @@ class ProjectPartnerReportProcurementControllerTest : UnitTest() {
             contractAmount = BigDecimal.TEN,
             supplierName = "supplierName",
             comment = setOf(InputTranslation(SystemLanguage.EN, "comment EN")),
+            attachment = ProjectReportFileMetadata(500L, "file.txt", UPLOADED),
         )
 
         private fun expectedProcurement(reportId: Long) = ProjectPartnerReportProcurementDTO(
@@ -46,6 +55,7 @@ class ProjectPartnerReportProcurementControllerTest : UnitTest() {
             contractAmount = BigDecimal.TEN,
             supplierName = "supplierName",
             comment = setOf(InputTranslation(SystemLanguage.EN, "comment EN")),
+            attachment = ProjectReportFileMetadataDTO(500L, "file.txt", UPLOADED),
         )
 
         private val dummyUpdateProcurement = UpdateProjectPartnerReportProcurementDTO(
@@ -66,6 +76,20 @@ class ProjectPartnerReportProcurementControllerTest : UnitTest() {
             comment = setOf(InputTranslation(SystemLanguage.EN, "comment EN")),
         )
 
+        private val stream = ByteArray(5).inputStream()
+
+        private val dummyFile = ProjectReportFileMetadata(id = 90L, "file_name.ext", uploaded = UPLOADED)
+        private val dummyFileDto = ProjectReportFileMetadataDTO(id = 90L, "file_name.ext", uploaded = UPLOADED)
+        private val dummyFileExpected = ProjectFile(stream, "file_name.ext", 50L)
+        private fun dummyMultipartFile(name: String = "file_name.ext", originalName: String? = null): MultipartFile {
+            val file = mockk<MultipartFile>()
+            every { file.inputStream } returns stream
+            every { file.originalFilename } returns originalName
+            every { file.name } returns name
+            every { file.size } returns 50L
+            return file
+        }
+
     }
 
     @MockK
@@ -73,6 +97,9 @@ class ProjectPartnerReportProcurementControllerTest : UnitTest() {
 
     @MockK
     lateinit var updateProcurement: UpdateProjectPartnerReportProcurementInteractor
+
+    @MockK
+    lateinit var uploadFileToProcurement: UploadFileToProjectPartnerReportProcurement
 
     @InjectMockKs
     private lateinit var controller: ProjectPartnerReportProcurementController
@@ -104,6 +131,14 @@ class ProjectPartnerReportProcurementControllerTest : UnitTest() {
 
         assertThat(slot.captured).hasSize(1)
         assertThat(slot.captured.first()).isEqualTo(expectedUpdateProcurement)
+    }
+
+    @Test
+    fun uploadFileToOutput() {
+        val slotFile = slot<ProjectFile>()
+        every { uploadFileToProcurement.uploadToProcurement(PARTNER_ID, reportId = 35L, 75L, capture(slotFile)) } returns dummyFile
+        assertThat(controller.uploadFileToProcurement(PARTNER_ID, 35L, 75L, dummyMultipartFile())).isEqualTo(dummyFileDto)
+        assertThat(slotFile.captured).isEqualTo(dummyFileExpected)
     }
 
 }

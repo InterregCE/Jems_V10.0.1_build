@@ -5,6 +5,7 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.service.model.IdNamePair
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
+import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
 import io.cloudflight.jems.server.project.service.report.model.procurement.ProjectPartnerReportProcurement
 import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectReportProcurementPersistence
 import io.mockk.every
@@ -13,6 +14,7 @@ import io.mockk.impl.annotations.MockK
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
+import java.time.ZonedDateTime
 
 internal class GetProjectPartnerReportProcurementTest : UnitTest() {
 
@@ -29,6 +31,7 @@ internal class GetProjectPartnerReportProcurementTest : UnitTest() {
             contractAmount = BigDecimal.TEN,
             supplierName = "supplierName",
             comment = setOf(InputTranslation(SystemLanguage.EN, "comment EN")),
+            attachment = null,
         )
         private val procurementFrom54 = ProjectPartnerReportProcurement(
             id = 101L,
@@ -40,6 +43,7 @@ internal class GetProjectPartnerReportProcurementTest : UnitTest() {
             contractAmount = BigDecimal.TEN,
             supplierName = "supplierName",
             comment = setOf(InputTranslation(SystemLanguage.EN, "comment EN")),
+            attachment = ProjectReportFileMetadata(45L, "file.txt", ZonedDateTime.now()),
         )
     }
 
