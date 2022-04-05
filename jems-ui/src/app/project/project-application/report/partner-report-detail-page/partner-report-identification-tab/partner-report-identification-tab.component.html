@@ -49,6 +49,14 @@
                 <li *ngFor="let cofinancing of data.partnerReport.identification?.coFinancing" class="p-1">{{(cofinancing?.fund.abbreviation | translateBySystemLanguage | async) + ' ' + (cofinancing?.percentage | asMoney) + '%' }}</li>
             </ul>
         </div>
+        <div class="project-row">
+            <span class="header p-1 pr-3">{{'project.application.partner.report.partner.country' | translate}}</span>
+            <span class="p-1">{{data.partnerReport.identification?.country}}</span>
+        </div>
+        <div class="project-row">
+            <span class="header p-1 pr-3">{{'project.application.partner.report.local.currency' | translate}}</span>
+            <span class="p-1">{{ data.partnerReport.identification?.currency ? data.partnerReport.identification.currency : ('project.application.partner.report.local.currency.not.found' | translate)}}</span>
+        </div>
     </div>
 
     <form [formGroup]="form" jemsFormLayout>

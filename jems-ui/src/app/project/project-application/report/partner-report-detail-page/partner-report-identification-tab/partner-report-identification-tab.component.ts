@@ -8,7 +8,7 @@ import {combineLatest, Observable} from 'rxjs';
 import {
   ProjectPartnerReportDTO,
   ProjectPartnerReportIdentificationDTO,
-  ProjectPartnerReportIdentificationTargetGroupDTO,
+  ProjectPartnerReportIdentificationTargetGroupDTO, ProjectPartnerSummaryDTO,
   ProjectPeriodDTO
 } from '@cat/api';
 import {catchError, map, take, tap} from 'rxjs/operators';
@@ -33,6 +33,7 @@ export class PartnerReportIdentificationTabComponent {
     partnerReport: ProjectPartnerReportDTO;
     periods: ProjectPeriodDTO[];
     identification: ProjectPartnerReportIdentificationDTO;
+    partnerSummary: ProjectPartnerSummaryDTO;
   }>;
 
   form: FormGroup = this.formBuilder.group({
@@ -58,12 +59,14 @@ export class PartnerReportIdentificationTabComponent {
     this.data$ = combineLatest([
       pageStore.partnerReport$,
       projectStore.projectForm$,
-      pageStore.partnerIdentification$
+      pageStore.partnerIdentification$,
+      pageStore.partnerSummary$
     ]).pipe(
-      map(([partnerReport, projectForm, identification]) => ({
+      map(([partnerReport, projectForm, identification, partnerSummary]) => ({
         partnerReport,
         periods: projectForm.periods,
-        identification
+        identification,
+        partnerSummary
       })),
       tap((data) => this.resetForm(data.identification)),
     );

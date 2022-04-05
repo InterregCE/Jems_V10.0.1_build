@@ -1,3 +1,7 @@
 naming:
   PackageNaming:
     packagePattern: '[a-z]+(\.[a-z][A-Za-z0-9]*)*'
+
+style:
+  SerialVersionUIDInSerializableClass:
+    active: false

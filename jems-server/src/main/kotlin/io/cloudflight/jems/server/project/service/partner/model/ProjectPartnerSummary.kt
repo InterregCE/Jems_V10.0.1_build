@@ -8,4 +8,5 @@ data class ProjectPartnerSummary(
     val sortNumber: Int? = null,
     val country: String? = null,
     val region: String? = null,
+    var currencyCode: String? = null
 )

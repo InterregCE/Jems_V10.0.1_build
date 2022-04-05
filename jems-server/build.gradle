@@ -33,6 +33,7 @@ dependencies {
     kapt('com.querydsl:querydsl-apt::jpa')
     implementation('org.springframework.boot:spring-boot-starter-validation')
     implementation 'org.springframework.boot:spring-boot-starter-aop'
+    implementation 'org.springframework.retry:spring-retry'
 
     implementation('com.fasterxml.jackson.datatype:jackson-datatype-jsr310')
     implementation('org.mariadb.jdbc:mariadb-java-client')

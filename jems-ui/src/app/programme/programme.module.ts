@@ -38,12 +38,15 @@ import {ProgrammeEditableStateStore} from './programme-page/services/programme-e
 import {TranslationManagementPageComponent} from './translation-management-page/translation-management-page.component';
 import {ProgrammeStateAidComponent} from './programme-page/containers/programme-state-aid/programme-state-aid.component';
 import {ProgrammeStateAidListComponent} from './programme-page/components/programme-state-aid-list/programme-state-aid-list.component';
+import {ProgrammeChecklistListPageComponent} from './programme-checklist-list-page/programme-checklist-list-page.component';
+import {ProgrammeChecklistDetailPageComponent} from './programme-checklist-list-page/programme-checklist-detail-page/programme-checklist-detail-page.component';
+import {ProgrammeChecklistHeadlineComponent}
+  from './programme-checklist-list-page/programme-checklist-detail-page/components/programme-checklist-headline/programme-checklist-headline.component';
+import {ProgrammeChecklistOptionsToggleComponent}
+  from './programme-checklist-list-page/programme-checklist-detail-page/components/programme-checklist-options-toggle/programme-checklist-options-toggle.component';
 import {ProgrammeBasicDataComponent} from './programme-basic-data/programme-basic-data.component';
 import {ProgrammeDataExportComponent} from './programme-data-export/programme-data-export.component';
-import {ProgrammeChecklistListPageComponent} from './programme-checklist-list-page/programme-checklist-list-page.component';
-import {ProgrammeChecklistDetailPageComponent } from './programme-checklist-list-page/programme-checklist-detail-page/programme-checklist-detail-page.component';
-import {ProgrammeChecklistHeadlineComponent} from './programme-checklist-list-page/programme-checklist-detail-page/components/programme-checklist-headline/programme-checklist-headline.component';
-import {ProgrammeChecklistOptionsToggleComponent} from './programme-checklist-list-page/programme-checklist-detail-page/components/programme-checklist-options-toggle/programme-checklist-options-toggle.component';
+import {ProgrammeConversionRatesComponent} from './programme-conversion-rates/programme-conversion-rates.component';
 
 @NgModule({
   declarations: [
@@ -84,7 +87,9 @@ import {ProgrammeChecklistOptionsToggleComponent} from './programme-checklist-li
     ProgrammeChecklistListPageComponent,
     ProgrammeChecklistDetailPageComponent,
     ProgrammeChecklistHeadlineComponent,
-    ProgrammeChecklistOptionsToggleComponent
+    ProgrammeChecklistOptionsToggleComponent,
+    ProgrammeDataExportComponent,
+    ProgrammeConversionRatesComponent
   ],
   providers: [
     IndicatorsStore,

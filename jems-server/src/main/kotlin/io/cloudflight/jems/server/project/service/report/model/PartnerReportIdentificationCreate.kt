@@ -16,5 +16,7 @@ data class PartnerReportIdentificationCreate(
     val legalStatusId: Long?,
     val partnerType: ProjectTargetGroup?,
     val vatRecovery: ProjectPartnerVatRecovery?,
-    var coFinancing: List<ProjectPartnerCoFinancing>,
+    val country: String?,
+    var currency: String? = null,
+    var coFinancing: List<ProjectPartnerCoFinancing>
 )
