@@ -4,32 +4,32 @@
     <div jemsFormLayout>
         <ng-container *ngIf="lumpSumsDataSource$ | async as lumpSumsDataSource">
             <h3>{{'lump.sums.table.title' | translate}}</h3>
+            <button mat-stroked-button class="mt-1"
+                    *jemsHasPermission="PermissionsEnum.ProgrammeSetupUpdate"
+                    [routerLink]="'/app/programme/costs/lumpSum/create'">
+                <mat-icon>add</mat-icon>&nbsp;{{ 'programme.lumpSum.add' | translate }}
+            </button>
             <jems-programme-lump-sums-list
                     jemsFormLayout
                     jemsNoWidthLimit
                     [lumpSum]="lumpSum$ | async"
                     [dataSource]="lumpSumsDataSource">
             </jems-programme-lump-sums-list>
-            <button mat-stroked-button
-                    *jemsHasPermission="PermissionsEnum.ProgrammeSetupUpdate"
-                    [routerLink]="'/app/programme/costs/lumpSum/create'">
-                <mat-icon>add</mat-icon>&nbsp;{{ 'programme.lumpSum.add' | translate }}
-            </button>
         </ng-container>
 
         <ng-container *ngIf="unitCostDataSource$ | async as unitCostDataSource">
             <h3>{{'unit.cost.table.title' | translate}}</h3>
+            <button mat-stroked-button class="mt-1"
+                    *jemsHasPermission="PermissionsEnum.ProgrammeSetupUpdate"
+                    [routerLink]="'/app/programme/costs/unitCost/create'">
+                <mat-icon>add</mat-icon>&nbsp;{{ 'programme.unitCost.add' | translate }}
+            </button>
             <jems-programme-unit-costs-list
                     jemsFormLayout
                     jemsNoWidthLimit
                     [unitCost]="unitCost$ | async"
                     [dataSource]="unitCostDataSource">
             </jems-programme-unit-costs-list>
-            <button mat-stroked-button
-                    *jemsHasPermission="PermissionsEnum.ProgrammeSetupUpdate"
-                    [routerLink]="'/app/programme/costs/unitCost/create'">
-                <mat-icon>add</mat-icon>&nbsp;{{ 'programme.unitCost.add' | translate }}
-            </button>
         </ng-container>
     </div>
 </jems-main-page-template>
