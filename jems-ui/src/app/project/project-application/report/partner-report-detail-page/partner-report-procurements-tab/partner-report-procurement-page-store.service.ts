@@ -4,10 +4,11 @@ import {
   ProjectPartnerReportProcurementDTO,
   ProjectPartnerReportProcurementService,
   ProjectPartnerReportService,
+  ProjectReportFileMetadataDTO,
   UpdateProjectPartnerReportProcurementDTO
 } from '@cat/api';
-import {combineLatest, merge, Observable, Subject} from 'rxjs';
-import {switchMap, tap} from 'rxjs/operators';
+import {BehaviorSubject, combineLatest, merge, Observable, Subject} from 'rxjs';
+import {map, switchMap, take, tap} from 'rxjs/operators';
 import {RoutingService} from '@common/services/routing.service';
 import {Log} from '@common/utils/log';
 import {
@@ -24,6 +25,7 @@ export class PartnerReportProcurementsPageStore {
   partnerId$: Observable<string | number | null>;
   procurements$: Observable<ProjectPartnerReportProcurementDTO[]>;
 
+  refreshProcurements$ = new BehaviorSubject<void>(undefined);
   private savedProcurements$ = new Subject<ProjectPartnerReportProcurementDTO[]>();
 
   constructor(private routingService: RoutingService,
@@ -38,9 +40,10 @@ export class PartnerReportProcurementsPageStore {
   public getProcurements(): Observable<ProjectPartnerReportProcurementDTO[]> {
     const initialProcurements$ = combineLatest([
       this.partnerId$,
+      this.refreshProcurements$,
       this.routingService.routeParameterChanges(PartnerReportDetailPageStore.REPORT_DETAIL_PATH, 'reportId'),
     ]).pipe(
-      switchMap(([partnerId, reportId]) => this.projectPartnerProcurementService.getProcurement(Number(partnerId), Number(reportId))),
+      switchMap(([partnerId, _, reportId]) => this.projectPartnerProcurementService.getProcurement(Number(partnerId), Number(reportId))),
       tap(data => Log.info('Fetched project procurements for report', this, data))
     );
 
@@ -69,4 +72,18 @@ export class PartnerReportProcurementsPageStore {
       tap(data => Log.info('Fetched project procurements list for report expeditures', this, data))
     );
   }
+
+  uploadFile(file: File, procurementId: number): Observable<ProjectReportFileMetadataDTO> {
+    return combineLatest([
+      this.partnerId$.pipe(map(id => Number(id))),
+      this.routingService.routeParameterChanges(PartnerReportDetailPageStore.REPORT_DETAIL_PATH, 'reportId')
+        .pipe(map(id => Number(id))),
+    ]).pipe(
+      take(1),
+      switchMap(([partnerId, reportId]) => this.projectPartnerProcurementService
+        .uploadFileToProcurementForm(file, partnerId, procurementId, reportId)
+      ),
+    );
+  }
+
 }

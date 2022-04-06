@@ -2,16 +2,19 @@
        type="file" [accept]="acceptedFilesTypes">
 <button *ngIf="isReportEditable" (click)="selectFile.click()" class="justify-start"
         mat-icon-button color="primary"
-        matTooltip="{{'file.table.action.upload.tooltip' | translate}}">
-    <mat-icon>upload</mat-icon>
+        matTooltip="{{ (fileMetadata?.name ? 'file.table.action.upload.overwrite.tooltip' : 'file.table.action.upload.tooltip') | translate}}">
+    <mat-icon fontSet="material-icons-outlined" class="mb-2">file_upload</mat-icon>
 </button>
 <mat-chip-list *ngIf="fileMetadata?.name" class="file-name-chip">
-    <mat-chip  (click)="download.emit(fileMetadata.id)" (removed)="deleteFile(fileMetadata.id)"
-              [matTooltip]="getTooltipText()" matTooltipClass="tooltip">
-        <span jemsText [displayTooltip]="false" [minWidth]="'200'" [maxWidth]="350" [maxLines]="1">{{fileMetadata?.name}}</span>
-        <button matChipRemove *ngIf="isReportEditable"
-                matTooltip="{{'file.table.action.delete.tooltip' | translate}}">
-            <mat-icon>cancel</mat-icon>
-        </button>
+    <mat-chip (click)="download.emit(fileMetadata.id)" (removed)="deleteFile(fileMetadata.id)">
+        <mat-icon fontSet="material-icons-outlined" class="mr-1">insert_drive_file</mat-icon>
+        <span jemsText [matTooltip]="getTooltipText()" matTooltipClass="tooltip" [displayTooltip]="false"
+              [minWidth]="'200'" [maxWidth]="350" [maxLines]="1">{{fileMetadata?.name}}</span>
+
+        <mat-icon matChipTrailingIcon fontSet="material-icons-outlined"
+                  matTooltip="{{ 'file.table.action.download.tooltip' | translate }}">file_download</mat-icon>
+
+        <mat-icon matChipRemove *ngIf="isReportEditable"
+                  matTooltip="{{ 'file.table.action.delete.tooltip' | translate }}">cancel</mat-icon>
     </mat-chip>
 </mat-chip-list>

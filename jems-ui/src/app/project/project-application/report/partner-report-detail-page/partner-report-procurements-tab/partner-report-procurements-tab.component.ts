@@ -1,5 +1,5 @@
-import {ChangeDetectionStrategy, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
-import {AbstractControl, FormArray, FormBuilder, FormGroup} from '@angular/forms';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup} from '@angular/forms';
 import {catchError, map, take, tap} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {FormService} from '@common/components/section/form/form.service';
@@ -16,6 +16,9 @@ import {
   PartnerReportDetailPageStore
 } from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
 import {RoutingService} from '@common/services/routing.service';
+import {
+  PartnerFileManagementStore
+} from '@project/project-application/report/partner-report-detail-page/partner-file-management-store';
 
 @UntilDestroy()
 @Component({
@@ -36,7 +39,7 @@ import {RoutingService} from '@common/services/routing.service';
 
 export class PartnerReportProcurementsTabComponent {
 
-  columnsToDisplay = ['createdIn', 'contractID', 'contractType', 'contractAmount', 'currency', 'supplierName', 'commentPreview', 'deleteProcurement', 'expandProcurement'];
+  columnsToDisplay = ['createdIn', 'contractID', 'contractType', 'contractAmount', 'currency', 'supplierName', 'commentPreview', 'downloadAttachment', 'deleteProcurement', 'expandProcurement'];
   expandedElement: ProjectPartnerReportProcurementDTO | null;
 
   reportProcurementsForm: FormGroup;
@@ -52,12 +55,14 @@ export class PartnerReportProcurementsTabComponent {
     isReportEditable: boolean;
   }>;
 
-  constructor(public pageStore: PartnerReportProcurementsPageStore,
-              private formBuilder: FormBuilder,
-              private formService: FormService,
-              private routingService: RoutingService,
-              private reportDetailPageStore: PartnerReportDetailPageStore) {
-
+  constructor(
+    public pageStore: PartnerReportProcurementsPageStore,
+    private formBuilder: FormBuilder,
+    private formService: FormService,
+    private routingService: RoutingService,
+    private reportDetailPageStore: PartnerReportDetailPageStore,
+    private partnerFileManagementStore: PartnerFileManagementStore,
+  ) {
     this.reportProcurementsForm = this.formBuilder.group({
       procurements: this.formBuilder.array([])
     });
@@ -80,11 +85,19 @@ export class PartnerReportProcurementsTabComponent {
     return this.reportProcurementsForm.get(this.constants.PROCUREMENTS.name) as FormArray;
   }
 
+  fileMetadata(index: number): FormControl {
+    return this.procurements.at(index).get(this.constants.ATTACHMENT.name) as FormControl;
+  }
+
   resetForm(procurements: ProjectPartnerReportProcurementDTO[]): void {
     this.procurements.clear();
     procurements.forEach((procurement) => this.addNewProcurement(procurement));
     this.tableData = [...this.procurements.controls];
     this.formService.resetEditable();
+  }
+
+  refreshProcurements(): void {
+    this.pageStore.refreshProcurements$.next(undefined);
   }
 
   removeItem(index: number): void {
@@ -106,6 +119,7 @@ export class PartnerReportProcurementsTabComponent {
         supplierName: this.formBuilder.control(procurement?.supplierName || '', this.constants.SUPPLIER_NAME.validators),
         comment: this.formBuilder.control(procurement?.comment || [], this.constants.COMMENT.validators),
         commentPreview: this.formBuilder.control(procurement?.comment || [], this.constants.COMMENT.validators),
+        attachment: this.formBuilder.control(procurement?.attachment, []),
       });
       this.procurements.insert(0, item);
     }
@@ -142,7 +156,25 @@ export class PartnerReportProcurementsTabComponent {
     }, 1);
   }
 
+  onUploadFile(target: any, procurementId: number, index: number): void {
+    if (!target || procurementId === 0) {
+      return;
+    }
+    this.pageStore.uploadFile(target?.files[0], procurementId)
+      .pipe(take(1))
+      .subscribe(value => this.fileMetadata(index)?.patchValue(value));
+  }
+
+  onDeleteFile(fileId: number, index: number): void {
+    this.partnerFileManagementStore.deleteFile(fileId)
+      .pipe(take(1))
+      .subscribe(_ => this.fileMetadata(index)?.patchValue(null));
+  }
+
+  onDownloadFile(fileId: number): void {
+    this.partnerFileManagementStore.downloadFile(fileId)
+      .pipe(take(1))
+      .subscribe();
+  }
+
 }
-
-
-
