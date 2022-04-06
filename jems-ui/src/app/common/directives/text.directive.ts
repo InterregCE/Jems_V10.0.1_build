@@ -13,6 +13,8 @@ export class TextDirective implements OnInit {
   minWidth: string;
   @Input()
   maxLines: number;
+  @Input()
+  displayTooltip = true;
 
   constructor(private el: ElementRef) {
   }
@@ -40,20 +42,22 @@ export class TextDirective implements OnInit {
   }
 
   private setTitle(): void {
-    if (this.maxLines && this.el.nativeElement.scrollHeight <= this.el.nativeElement.clientHeight) {
-      // multi-line text does not overflow
-      this.el.nativeElement.title = this.title;
-      return;
-    }
-    if (!this.maxLines && this.el.nativeElement.offsetWidth >= this.el.nativeElement.scrollWidth) {
-      // text does not overflow
-      this.el.nativeElement.title = this.title;
-      return;
-    }
-    if (this.title) {
-      this.el.nativeElement.title = `${this.title}\n${this.el.nativeElement.innerText}`;
-    } else {
-      this.el.nativeElement.title = this.el.nativeElement.innerText;
+    if (this.displayTooltip) {
+      if (this.maxLines && this.el.nativeElement.scrollHeight <= this.el.nativeElement.clientHeight) {
+        // multi-line text does not overflow
+        this.el.nativeElement.title = this.title;
+        return;
+      }
+      if (!this.maxLines && this.el.nativeElement.offsetWidth >= this.el.nativeElement.scrollWidth) {
+        // text does not overflow
+        this.el.nativeElement.title = this.title;
+        return;
+      }
+      if (this.title) {
+        this.el.nativeElement.title = `${this.title}\n${this.el.nativeElement.innerText}`;
+      } else {
+        this.el.nativeElement.title = this.el.nativeElement.innerText;
+      }
     }
   }
 }

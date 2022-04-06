@@ -1,0 +1,16 @@
+button {
+  font-size: 1.25rem;
+}
+
+:host {
+  display: flex;
+}
+
+::ng-deep .tooltip  {
+   word-break: break-all !important;
+   white-space: pre-line !important;
+}
+
+.file-name-chip :hover{
+  cursor: pointer;
+}

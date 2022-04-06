@@ -1,0 +1,17 @@
+<input hidden #selectFile (change)="uploadFile($event?.target)" onclick="this.value=null;"
+       type="file" [accept]="acceptedFilesTypes">
+<button (click)="selectFile.click()" class="justify-start"
+        mat-icon-button color="primary"
+        matTooltip="{{'file.table.action.upload.tooltip' | translate}}">
+    <mat-icon>upload</mat-icon>
+</button>
+<mat-chip-list *ngIf="fileMetadata?.name" class="file-name-chip">
+    <mat-chip  (click)="download.emit(fileMetadata.id)" (removed)="deleteFile(fileMetadata.id)"
+              [matTooltip]="getTooltipText()" matTooltipClass="tooltip">
+        <span jemsText [displayTooltip]="false" [minWidth]="'200'" [maxWidth]="350" [maxLines]="1">{{fileMetadata?.name}}</span>
+        <button matChipRemove
+                matTooltip="{{'file.table.action.delete.tooltip' | translate}}">
+            <mat-icon>cancel</mat-icon>
+        </button>
+    </mat-chip>
+</mat-chip-list>

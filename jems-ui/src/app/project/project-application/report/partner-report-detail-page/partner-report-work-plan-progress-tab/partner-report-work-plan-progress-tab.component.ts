@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {FormArray, FormBuilder, FormGroup} from '@angular/forms';
+import {FormArray, FormBuilder, FormControl, FormGroup} from '@angular/forms';
 import {FormService} from '@common/components/section/form/form.service';
 import {
   ProjectApplicationFormSidenavService
@@ -9,7 +9,7 @@ import {
   ProjectPartnerReportWorkPackageActivityDeliverableDTO,
   ProjectPartnerReportWorkPackageActivityDTO,
   ProjectPartnerReportWorkPackageDTO,
-  ProjectPartnerReportWorkPackageOutputDTO,
+  ProjectPartnerReportWorkPackageOutputDTO, WorkPackageActivityDTO,
 } from '@cat/api';
 import {catchError, take, tap} from 'rxjs/operators';
 import {
@@ -21,6 +21,9 @@ import {
 import {
   PartnerReportDetailPageStore
 } from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
+import {
+  PartnerFileManagementStore
+} from '@project/project-application/report/partner-report-detail-page/partner-file-management-store';
 
 @Component({
   selector: 'jems-partner-report-work-plan-progress-tab',
@@ -47,7 +50,8 @@ export class PartnerReportWorkPlanProgressTabComponent {
               private formService: FormService,
               private projectSidenavService: ProjectApplicationFormSidenavService,
               private partnerReportDetailPageStore: PartnerReportDetailPageStore,
-              private pageStore: PartnerReportWorkPlanPageStore) {
+              private pageStore: PartnerReportWorkPlanPageStore,
+              private partnerFileManagementStore: PartnerFileManagementStore) {
 
     this.savedWorkPackages$ = this.pageStore.partnerWorkPackages$
       .pipe(
@@ -70,6 +74,18 @@ export class PartnerReportWorkPlanProgressTabComponent {
 
   outputs(workPackageIndex: number): FormArray {
     return this.workPackages.at(workPackageIndex).get(this.constants.OUTPUTS.name) as FormArray;
+  }
+
+  activityFileMetadata(workPackageIndex: number, activityIndex: number): FormControl {
+    return this.activities(workPackageIndex).at(activityIndex).get(this.constants.ACTIVITY_FILE.name) as FormControl;
+  }
+
+  outputFileMetadata(workPackageIndex: number, outputIndex: number): FormControl {
+    return this.outputs(workPackageIndex).at(outputIndex).get(this.constants.OUTPUT_FILE.name) as FormControl;
+  }
+
+  deliverableFileMetadata(workPackageIndex: number, activityIndex: number, deliverableIndex: number): FormControl {
+    return this.deliverables(workPackageIndex, activityIndex).at(deliverableIndex).get(this.constants.DELIVERABLE_FILE.name) as FormControl;
   }
 
   resetForm(workPackages: ProjectPartnerReportWorkPackageDTO[]) {
@@ -98,6 +114,65 @@ export class PartnerReportWorkPlanProgressTabComponent {
     workPackage.outputs.forEach(output => this.addOutput(workPackageIndex, output));
   }
 
+  onUploadDeliverable(target: any, activityId: number, deliverableId: number,  activityIndex: number,
+                      workPackageIndex: number, deliverableIndex: number, workPackageId: number): void {
+    if (!target) {
+      return;
+    }
+    this.pageStore.uploadDeliverableFile(target?.files[0], activityId, deliverableId, workPackageId)
+      .pipe(take(1))
+      .subscribe(value => {
+        this.deliverableFileMetadata(workPackageIndex, activityIndex, deliverableIndex)?.patchValue(value);
+      })
+  }
+
+  onDeleteDeliverable(fileId: number, activityIndex: number, workPackageIndex: number, deliverableIndex: number): void {
+    this.partnerFileManagementStore.deleteFile(fileId)
+      .pipe(take(1))
+      .subscribe(value => this.deliverableFileMetadata(workPackageIndex, activityIndex, deliverableIndex)
+        ?.patchValue(null));
+  }
+
+  onUploadActivity(target: any, activityId: number, activityIndex: number, workPackageIndex: number, workPackageId: number): void {
+    if (!target) {
+      return;
+    }
+    this.pageStore.uploadActivityFile(target?.files[0], activityId, workPackageId)
+      .pipe(take(1))
+      .subscribe(value => {
+        this.activityFileMetadata(workPackageIndex, activityIndex)?.patchValue(value);
+      })
+  }
+
+  onDeleteActivity(fileId: number, activityIndex: number, workPackageIndex: number): void {
+    this.partnerFileManagementStore.deleteFile(fileId)
+      .pipe(take(1))
+      .subscribe(value => this.activityFileMetadata(workPackageIndex, activityIndex)?.patchValue(null));
+  }
+
+  onUploadOutput(target: any, outputId: number, outputIndex: number, workPackageIndex: number, workPackageId: number): void {
+    if (!target) {
+      return;
+    }
+    this.pageStore.uploadOutputFile(target?.files[0], outputId, workPackageId)
+      .pipe(take(1))
+      .subscribe(value => {
+        this.outputFileMetadata(workPackageIndex, outputIndex)?.patchValue(value);
+      })
+  }
+
+  onDeleteOutput(fileId: number, outputIndex: number, workPackageIndex: number): void {
+    this.partnerFileManagementStore.deleteFile(fileId)
+      .pipe(take(1))
+      .subscribe(value => this.outputFileMetadata(workPackageIndex, outputIndex)?.patchValue(null));
+  }
+
+  onDownloadFile(fileId: number): void {
+    this.partnerFileManagementStore.downloadFile(fileId)
+      .pipe(take(1))
+      .subscribe();
+  }
+
   private addActivity(workPackageIndex: number, existing?: ProjectPartnerReportWorkPackageActivityDTO): void {
     this.activities(workPackageIndex).push(this.formBuilder.group(
       {
@@ -105,6 +180,7 @@ export class PartnerReportWorkPlanProgressTabComponent {
         title: this.formBuilder.control(existing?.title || []),
         progress: this.formBuilder.control(existing?.progress || [], this.constants.ACTIVITY_PROGRESS.validators),
         deliverables: this.formBuilder.array([]),
+        fileMetadata: this.formBuilder.control(existing?.attachment || '')
       })
     );
   }
@@ -115,6 +191,7 @@ export class PartnerReportWorkPlanProgressTabComponent {
       title: this.formBuilder.control(existing?.title || []),
       contribution: this.formBuilder.control(existing?.contribution || false),
       evidence: this.formBuilder.control(existing?.evidence || false),
+      fileMetadata: this.formBuilder.control(existing?.attachment || '')
     }));
   }
 
@@ -124,6 +201,7 @@ export class PartnerReportWorkPlanProgressTabComponent {
       title: this.formBuilder.control(existing?.title || []),
       contribution: this.formBuilder.control(existing?.contribution || false),
       evidence: this.formBuilder.control(existing?.evidence || false),
+      fileMetadata: this.formBuilder.control(existing?.attachment || '')
     }));
   }
 
