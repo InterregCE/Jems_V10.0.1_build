@@ -69,6 +69,7 @@
                                             </span>
 
                                             <jems-partner-actions-cell class="attachments-element" [formControlName]="constants.ACTIVITY_FILE.name"
+                                                                       [isReportEditable]="isReportEditable$ | async"
                                                                        (upload)="onUploadActivity($event, activity.id, activityIndex, workPackageIndex, workPackage.id)"
                                                                        (download)="onDownloadFile($event)"
                                                                        (delete)="onDeleteActivity($event, activityIndex, workPackageIndex)">
@@ -130,6 +131,7 @@
                                                         <span class="justify-start attachments-element-deliverable" >
                                                             <jems-partner-actions-cell
                                                                     [formControlName]="constants.DELIVERABLE_FILE.name"
+                                                                    [isReportEditable]="isReportEditable$ | async"
                                                                     (upload)="onUploadDeliverable($event, activity.id, deliverable.id,
                                                                                         activityIndex, workPackageIndex, deliverableIndex, workPackage.id)"
                                                                     (download)="onDownloadFile($event)"
@@ -200,6 +202,7 @@
                                         <span class="justify-start">
                                             <jems-partner-actions-cell
                                                     [formControlName]="constants.OUTPUT_FILE.name"
+                                                    [isReportEditable]="isReportEditable$ | async"
                                                     (upload)="onUploadOutput($event, output.id, outputIndex, workPackageIndex, workPackage.id)"
                                                     (download)="onDownloadFile($event)"
                                                     (delete)="onDeleteOutput($event, outputIndex, workPackageIndex)">

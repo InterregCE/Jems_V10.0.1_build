@@ -1,4 +1,12 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, EventEmitter, forwardRef, Output} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  EventEmitter,
+  forwardRef,
+  Input,
+  Output
+} from '@angular/core';
 import {ProjectReportFileMetadataDTO} from '@cat/api';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {Forms} from '@common/utils/forms';
@@ -25,6 +33,8 @@ export class PartnerActionsCellComponent implements ControlValueAccessor {
   acceptedFilesTypes = AcceptedFileTypesConstants.acceptedFilesTypes;
   fileMetadata: ProjectReportFileMetadataDTO;
 
+  @Input()
+  isReportEditable: boolean = true;
   @Output()
   upload = new EventEmitter<any>();
   @Output()

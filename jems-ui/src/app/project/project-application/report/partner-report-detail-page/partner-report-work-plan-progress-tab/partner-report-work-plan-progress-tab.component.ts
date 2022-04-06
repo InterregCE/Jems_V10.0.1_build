@@ -36,6 +36,7 @@ export class PartnerReportWorkPlanProgressTabComponent {
 
   constants = PartnerReportWorkplanConstants;
   savedWorkPackages$: Observable<ProjectPartnerReportWorkPackageDTO[]>;
+  isReportEditable$ : Observable<boolean>;
 
   workPlanForm: FormGroup = this.formBuilder.group({
     workPackages: this.formBuilder.array([ this.formBuilder.group({
@@ -57,6 +58,7 @@ export class PartnerReportWorkPlanProgressTabComponent {
       .pipe(
         tap(workPackages => this.resetForm(workPackages))
       );
+    this.isReportEditable$ = this.partnerReportDetailPageStore.reportEditable$;
     this.formService.init(this.workPlanForm, this.partnerReportDetailPageStore.reportEditable$);
   }
 
