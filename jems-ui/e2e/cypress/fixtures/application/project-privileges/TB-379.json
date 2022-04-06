@@ -1,6 +1,5 @@
 {
   "privilegedUser": {
-    "email": "priviledged.user@jems.eu",
     "name": "Privileged",
     "surname": "User",
     "userRoleId": 2,
