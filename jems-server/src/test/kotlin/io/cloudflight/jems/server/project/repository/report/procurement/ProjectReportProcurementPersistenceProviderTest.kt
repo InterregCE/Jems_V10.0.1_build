@@ -4,11 +4,13 @@ import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.entity.TranslationId
+import io.cloudflight.jems.server.common.minio.MinioStorage
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
 import io.cloudflight.jems.server.project.entity.report.procurement.ProjectPartnerReportProcurementEntity
 import io.cloudflight.jems.server.project.entity.report.procurement.ProjectPartnerReportProcurementTranslEntity
 import io.cloudflight.jems.server.project.repository.report.ProjectPartnerReportRepository
+import io.cloudflight.jems.server.project.repository.report.file.ProjectReportFileRepository
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
 import io.cloudflight.jems.server.project.service.report.model.procurement.ProjectPartnerReportProcurement
 import io.cloudflight.jems.server.project.service.report.model.procurement.ProjectPartnerReportProcurementUpdate
@@ -40,7 +42,7 @@ class ProjectReportProcurementPersistenceProviderTest : UnitTest() {
             projectId = 4L,
             partnerId = PARTNER_ID,
             path = "",
-            minioBucket = "",
+            minioBucket = "minioBucket",
             minioLocation = "",
             name = "some_file.txt",
             type = mockk(),
@@ -113,6 +115,12 @@ class ProjectReportProcurementPersistenceProviderTest : UnitTest() {
     @MockK
     lateinit var reportProcurementRepository: ProjectPartnerReportProcurementRepository
 
+    @MockK
+    lateinit var reportFileRepository: ProjectReportFileRepository
+
+    @MockK
+    lateinit var minioStorage: MinioStorage
+
     @InjectMockKs
     lateinit var persistence: ProjectReportProcurementPersistenceProvider
 
@@ -172,8 +180,10 @@ class ProjectReportProcurementPersistenceProviderTest : UnitTest() {
             entityToStay, entityToDelete, entityToUpdate
         )
 
-        val slotDelete = slot<Iterable<Long>>()
-        every { reportProcurementRepository.deleteAllById(capture(slotDelete)) } answers { }
+        every { minioStorage.deleteFile(dummyAttachment.minioBucket, dummyAttachment.minioLocation) } answers { }
+        every { reportFileRepository.delete(dummyAttachment) } answers { }
+        val slotDelete = slot<Iterable<ProjectPartnerReportProcurementEntity>>()
+        every { reportProcurementRepository.deleteAll(capture(slotDelete)) } answers { }
         val slotSave = mutableListOf<ProjectPartnerReportProcurementEntity>()
         every { reportProcurementRepository.save(capture(slotSave)) } returnsArgument 0
 
@@ -184,7 +194,7 @@ class ProjectReportProcurementPersistenceProviderTest : UnitTest() {
             updateDto(id = ID_TO_ADD_2),
         ))
 
-        assertThat(slotDelete.captured).containsExactly(ID_TO_DELETE)
+        assertThat(slotDelete.captured).containsExactly(entityToDelete)
         assertThat(slotSave.map { it.id }).containsExactly(
             // order is important, because not-yet-existing elements will get ID based on insertion order
             ID_TO_ADD_2, ID_TO_ADD_1,

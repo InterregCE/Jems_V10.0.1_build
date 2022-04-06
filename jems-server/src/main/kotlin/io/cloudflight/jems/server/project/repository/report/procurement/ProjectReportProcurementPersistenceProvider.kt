@@ -2,9 +2,11 @@ package io.cloudflight.jems.server.project.repository.report.procurement
 
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.server.common.entity.TranslationId
+import io.cloudflight.jems.server.common.minio.MinioStorage
 import io.cloudflight.jems.server.project.entity.report.procurement.ProjectPartnerReportProcurementEntity
 import io.cloudflight.jems.server.project.entity.report.procurement.ProjectPartnerReportProcurementTranslEntity
 import io.cloudflight.jems.server.project.repository.report.ProjectPartnerReportRepository
+import io.cloudflight.jems.server.project.repository.report.file.ProjectReportFileRepository
 import io.cloudflight.jems.server.project.service.report.model.procurement.ProjectPartnerReportProcurementUpdate
 import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectReportProcurementPersistence
 import org.springframework.stereotype.Repository
@@ -14,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional
 class ProjectReportProcurementPersistenceProvider(
     private val reportRepository: ProjectPartnerReportRepository,
     private val reportProcurementRepository: ProjectPartnerReportProcurementRepository,
+    private val reportFileRepository: ProjectReportFileRepository,
+    private val minioStorage: MinioStorage,
 ) : ProjectReportProcurementPersistence {
 
     @Transactional(readOnly = true)
@@ -48,7 +52,9 @@ class ProjectReportProcurementPersistenceProvider(
         val existingById = reportProcurementRepository.findByReportEntityOrderByIdDesc(report).associateBy { it.id }
         val toStayIds = procurementNew.filter { it.id > 0 }.mapTo(HashSet()) { it.id }
 
-        reportProcurementRepository.deleteAllById(existingById.keys.minus(toStayIds))
+        reportProcurementRepository.deleteAll(
+            existingById.minus(toStayIds).values.deleteAttachments()
+        )
         procurementNew.asReversed().forEach { newData ->
             existingById[newData.id].let { existing ->
                 when {
@@ -85,6 +91,14 @@ class ProjectReportProcurementPersistenceProvider(
                 )
             )
         }
+    }
+
+    private fun Collection<ProjectPartnerReportProcurementEntity>.deleteAttachments() = map {
+        it.attachment?.let { file ->
+            minioStorage.deleteFile(bucket = file.minioBucket, filePath = file.minioLocation)
+            reportFileRepository.delete(file)
+        }
+        it
     }
 
 }
