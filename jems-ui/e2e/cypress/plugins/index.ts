@@ -75,7 +75,7 @@ export default async (on, config) => {
       }
 
       return response.json();
-    }).then(response => {
+    }).then((response: any) => {
       config.env.executionKey = response.testKey;
     });
   }
