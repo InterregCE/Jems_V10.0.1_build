@@ -12,6 +12,7 @@ context('Project privileges tests', () => {
   it('TB-379 Automatically assign users to projects', () => {
     cy.fixture('application/project-privileges/TB-379.json').then(testData => {
       cy.loginByRequest(user.admin.email);
+      testData.privilegedUser.email = faker.internet.email();
       cy.createUser(testData.privilegedUser);
       cy.visit('app/project', {failOnStatusCode: false});
 
@@ -42,7 +43,7 @@ context('Project privileges tests', () => {
         cy.visit(`app/project/detail/${applicationId}/privileges`, {failOnStatusCode: false});
         cy.get('jems-application-form-privileges-expansion-panel').then(applicationFormUsers => {
           cy.wrap(applicationFormUsers).contains('+').click();
-          cy.wrap(applicationFormUsers).find('input[ng-reflect-name="userEmail"]').last().type(testData.projectCollaborator.email);
+          cy.wrap(applicationFormUsers).find('input[formcontrolname="userEmail"]').last().type(testData.projectCollaborator.email);
           cy.wrap(applicationFormUsers).contains('Save changes').click();
 
           cy.get('div.jems-alert-success').should('contain', 'Project collaborators were saved successfully');
@@ -82,10 +83,10 @@ context('Project privileges tests', () => {
         cy.createUser(testData.programmeUser);
         cy.loginByRequest(testData.programmeUser.email);
 
-        cy.visit('app/project/detail/1');
+        cy.visit('app/project/detail/1', {failOnStatusCode: false});
         cy.contains('Project privileges').should('not.exist');
 
-        cy.visit('app/project/detail/1/privileges');
+        cy.visit('app/project/detail/1/privileges', {failOnStatusCode: false});
         cy.get('jems-application-form-privileges-expansion-panel').should('not.exist');
       });
     });
