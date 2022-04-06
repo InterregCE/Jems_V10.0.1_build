@@ -2,6 +2,11 @@
                         subTitleKey="programme.priority.add.title">
     <div jemsFormLayout>
         <h3>{{'programme.priority.list.header' | translate}}</h3>
+        <button jemsText mat-stroked-button class="mt-2 mb-2"
+                *jemsHasPermission="PermissionsEnum.ProgrammeSetupUpdate"
+                routerLink="/app/programme/priorities/create">
+            <mat-icon>add</mat-icon>&nbsp;{{'programme.priority.button.add' | translate}}
+        </button>
         <ng-container *ngIf="prioritiesPageStore.priorities$ | async as priorities">
             <jems-table
                     jemsNoWidthLimit
@@ -11,11 +16,6 @@
                     [totalElements]="priorities.length">
             </jems-table>
         </ng-container>
-        <button jemsText mat-stroked-button
-                *jemsHasPermission="PermissionsEnum.ProgrammeSetupUpdate"
-                routerLink="/app/programme/priorities/create">
-            <mat-icon>add</mat-icon>&nbsp;{{'programme.priority.button.add' | translate}}
-        </button>
     </div>
     <ng-template #specificObjective let-priority>
         <div>
