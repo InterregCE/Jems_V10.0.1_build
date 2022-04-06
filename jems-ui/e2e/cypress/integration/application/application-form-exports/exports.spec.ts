@@ -4,7 +4,7 @@ import call2step from '../../../fixtures/api/call/2.step.call.json';
 import application from '../../../fixtures/api/application/application.json';
 import application2step from '../../../fixtures/api/application/2.step.application.json';
 import partner from '../../../fixtures/api/application/partner/partner.json';
-import faker from "@faker-js/faker";
+import faker from '@faker-js/faker';
 
 context('Application form exports', () => {
   beforeEach(() => {
@@ -48,7 +48,7 @@ context('Application form exports', () => {
     });
   });
 
-  it.only('TB-367 Export application form in version other than the current', () => {
+  it('TB-367 Export application form in version other than the current', () => {
     cy.fixture('application/application-form-export/TB-367.json').then(testData => {
       call2step.generalCallSettings.startDateTime = faker.date.recent();
       call2step.generalCallSettings.endDateTimeStep1 = faker.date.soon(1);

@@ -18,6 +18,7 @@ import './commands';
 import './login.commands'
 import './call.commands';
 import './application.commands';
+import './system.commands';
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')

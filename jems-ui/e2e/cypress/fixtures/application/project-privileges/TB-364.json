@@ -1,0 +1,51 @@
+{
+  "programmeRole": {
+    "name": "randomize",
+    "permissions": [
+      "ProjectReportingEdit",
+      "ProjectReportingView",
+      "ProjectSetToContracted",
+      "ProjectContractingView",
+      "ProjectFormUpdate",
+      "ProjectFormRetrieve",
+      "ProjectFileApplicationUpdate",
+      "ProjectFileApplicationRetrieve",
+      "ProjectSubmission",
+      "ProjectCheckApplicationForm",
+      "ProjectAssessmentQualityEnter",
+      "ProjectAssessmentEligibilityEnter",
+      "ProjectStatusDecideEligible",
+      "ProjectStatusDecideIneligible",
+      "ProjectStatusDecideApproved",
+      "ProjectStatusDecideApprovedWithConditions",
+      "ProjectStatusDecideNotApproved",
+      "ProjectAssessmentView",
+      "ProjectStatusDecisionRevert",
+      "ProjectStatusReturnToApplicant",
+      "ProjectStartStepTwo",
+      "ProjectFileAssessmentUpdate",
+      "ProjectFileAssessmentRetrieve",
+      "ProjectStatusDecideModificationApproved",
+      "ProjectStatusDecideModificationNotApproved",
+      "ProjectModificationView",
+      "ProjectOpenModification",
+      "ProjectModificationFileAssessmentUpdate",
+      "ProjectModificationFileAssessmentRetrieve",
+      "ProjectsWithOwnershipRetrieve",
+      "CallPublishedRetrieve",
+      "ProjectRetrieveEditUserAssignments",
+      "ProjectRetrieve",
+      "CallUpdate",
+      "CallRetrieve",
+      "ProgrammeSetupUpdate",
+      "ProgrammeSetupRetrieve",
+      "ProgrammeDataExportRetrieve",
+      "AuditRetrieve"
+    ]
+  },
+  "programmeUser": {
+    "name": "Programme",
+    "surname": "User",
+    "userStatus": "ACTIVE"
+  }
+}

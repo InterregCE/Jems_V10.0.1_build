@@ -1,4 +1,4 @@
-import faker from "@faker-js/faker";
+import faker from '@faker-js/faker';
 import user from '../fixtures/users.json';
 
 context('Login tests', () => {

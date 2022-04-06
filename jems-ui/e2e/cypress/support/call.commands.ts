@@ -5,7 +5,7 @@ import {
   UpdateApplicationFormFieldConfigurationRequestDTO
 } from '../../../build/swagger-code-jems-api/model/updateApplicationFormFieldConfigurationRequestDTO'
 import user from '../fixtures/users.json';
-import faker from "@faker-js/faker";
+import faker from '@faker-js/faker';
 
 declare global {
 

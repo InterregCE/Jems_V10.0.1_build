@@ -20,7 +20,7 @@ context('Application modification approved', () => {
 
   it('TB-359 Approve modification', function () {
     cy.createFullApplication(application, user.applicantUser.email).then(applicationId => {
-      cy.approveApplication(applicationId, application.assessments);
+      cy.loginByRequest(user.programmeUser.email);
       cy.visit(`app/project/detail/${applicationId}/modification`, {failOnStatusCode: false});
       cy.contains('Open new modification').click();
       cy.get('jems-confirm-dialog').should('be.visible');
