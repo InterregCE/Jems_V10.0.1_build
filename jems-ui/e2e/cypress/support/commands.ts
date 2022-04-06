@@ -58,7 +58,6 @@ Cypress.Commands.add('clickToDownload', {prevSubject: true}, (subject, requestTo
     }
     const fileName = fileNameMatch[1];
     if (fileExtension === 'pdf') {
-      cy.wait(2000);
       cy.readFile('./cypress/downloads/' + fileName, null).parsePDF().then(file => {
         file.fileName = fileName;
         cy.wrap(file);
