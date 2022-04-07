@@ -8,15 +8,16 @@ context('Call management tests', () => {
     cy.loginByRequest(user.programmeUser.email);
   });
 
-  it('TB-388 Create a new 1-step call', function () {
+  it('TB-388 Create a new 1-step call', () => {
 
     cy.visit('app/call', {failOnStatusCode: false});
 
     cy.contains('Add new call').click();
 
     // Call identification
-    this.callName = `Automated call ${faker.random.uuid()}`;
-    cy.get('input[name="name"]').type(this.callName);
+    const callName = `Automated call ${faker.datatype.uuid()}`;
+    cy.wrap(callName).as('callName');
+    cy.get('input[name="name"]').type(callName);
 
     cy.get('button[aria-label="Open Calendar"]').eq(0).click();
     cy.get('mat-icon').contains('done').click();
@@ -51,19 +52,16 @@ context('Call management tests', () => {
     // Strategies
     cy.get('jems-call-state-aids').contains('General de minimis').click();
 
-    cy.intercept('api/call').as('callCreation');
     cy.get('jems-pending-button').contains('Create').click();
-    cy.wait('@callCreation').then(res => {
-      cy.wrap(res.response.body.id).as('callId');
-    });
-
-    cy.get('input[name="name"]').should('have.value', this.callName);
+    cy.get('input[name="name"]').should('have.value', callName);
   });
 
 
-  it('TB-389 Edit and publish 1-step call', function () {
+  it('TB-389 Edit and publish 1-step call', {scrollBehavior: 'nearest'}, function () {
 
-    cy.visit('/app/call/detail/' + this.callId, {failOnStatusCode: false});
+    cy.visit('/app/call', {failOnStatusCode: false});
+    cy.contains(this.callName).click();
+
     cy.get('input[name="name"]').should('have.value', this.callName);
 
     // Budget settings

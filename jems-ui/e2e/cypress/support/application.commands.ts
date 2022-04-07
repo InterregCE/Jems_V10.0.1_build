@@ -49,9 +49,9 @@ declare global {
 
   namespace Cypress {
     interface Chainable {
-      createFullApplication(application, userEmail: string);
+      createFullApplication(application, approvingUserEmail?: string);
 
-      createApplication(application, userEmail: string);
+      createApplication(application);
 
       updateProjectIdentification(applicationId: number, identification);
 
@@ -81,7 +81,7 @@ declare global {
 
       enterFundingDecision(applicationId: number, decision);
 
-      approveApplication(applicationId: number, assessment);
+      approveApplication(applicationId: number, assessment, approvingUserEmail?: string);
 
       startSecondStep(applicationId: number);
 
@@ -94,15 +94,15 @@ declare global {
   }
 }
 
-Cypress.Commands.add('createApplication', (application: Application, userEmail: string) => {
-  createApplication(application.details, userEmail).then(function (response) {
+Cypress.Commands.add('createApplication', (application: Application) => {
+  createApplication(application.details).then(function (response) {
     application.id = response.body.id;
     cy.wrap(application.id).as('applicationId');
   });
 });
 
-Cypress.Commands.add('createFullApplication', function (application: Application, userEmail: string) {
-  createApplication(application.details, userEmail).then(function (response) {
+Cypress.Commands.add('createFullApplication', function (application: Application, approvingUserEmail?: string) {
+  createApplication(application.details).then(function (response) {
     application.id = response.body.id;
     updateIdentification(application.id, application.identification);
 
@@ -118,13 +118,15 @@ Cypress.Commands.add('createFullApplication', function (application: Application
     // B - project partners
     createPartners(application.id, application.partners);
 
-    approveApplication(application.id, application.assessments);
+    runPreSubmissionCheck(application.id);
+    submitProjectApplication(application.id);
+    approveApplication(application.id, application.assessments, approvingUserEmail);
     cy.wrap(application.id).as('applicationId');
   });
 });
 
-Cypress.Commands.add('approveApplication', (applicationId: number, assessment: InputProjectData) => {
-  approveApplication(applicationId, assessment);
+Cypress.Commands.add('approveApplication', (applicationId: number, assessment: InputProjectData, approvingUserEmail?: string) => {
+  approveApplication(applicationId, assessment, approvingUserEmail);
 });
 
 /* A - Project identification */
@@ -242,14 +244,14 @@ Cypress.Commands.add('rejectModification', (applicationId: number, rejectionInfo
   }
 });
 
-function createApplication(applicationDetails: ProjectCreateDTO, userEmail: string) {
+function createApplication(applicationDetails: ProjectCreateDTO) {
   if (applicationDetails.acronym === 'randomize') {
     applicationDetails.acronym = `${faker.hacker.adjective()} ${faker.hacker.noun()}`;
   }
   return cy.request({
     method: 'POST',
     url: 'api/project',
-    auth: {'user': userEmail, 'pass': Cypress.env('defaultPassword')},
+    // auth: {'user': userEmail, 'pass': Cypress.env('defaultPassword')},
     body: applicationDetails
   })
 }
@@ -390,17 +392,18 @@ function enterFundingDecision(applicationId, decision) {
   });
 }
 
-function approveApplication(applicationId: number, assessments) {
-  runPreSubmissionCheck(applicationId);
-  submitProjectApplication(applicationId);
-  loginByRequest(user.programmeUser.email);
+function approveApplication(applicationId: number, assessments, approvingUserEmail?: string) {
+  if (approvingUserEmail)
+    loginByRequest(approvingUserEmail);
   enterEligibilityAssessment(applicationId, assessments.eligibilityAssessment);
   enterQualityAssessment(applicationId, assessments.qualityAssessment);
   enterEligibilityDecision(applicationId, assessments.eligibilityDecision);
   enterFundingDecision(applicationId, assessments.fundingDecision);
-  cy.get('@currentUser').then((currentUser: any) => {
-    loginByRequest(currentUser.name);
-  });
+  if (approvingUserEmail) {
+    cy.get('@currentUser').then((currentUser: any) => {
+      loginByRequest(currentUser.name);
+    });
+  }
 }
 
 export {}
