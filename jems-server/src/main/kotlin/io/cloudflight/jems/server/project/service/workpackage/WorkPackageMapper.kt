@@ -90,7 +90,7 @@ fun List<WorkPackageRow>.toOutputWorkPackageHistoricalData() =
             objectiveAndAudience = groupedRows.value.extractField { it.objectiveAndAudience },
             number = groupedRows.value.first().number,
         )
-    }.first()
+    }.firstOrNull()
 
 fun List<WorkPackageRow>.toOutputWorkPackageSimpleHistoricalData() =
     this.groupBy { it.id }.map { groupedRows ->

@@ -341,7 +341,7 @@ fun List<PartnerIdentityRow>.toProjectPartnerDetailHistoricalData(
         contacts = contacts,
         motivation = motivation
     )
-}.first()
+}.firstOrNull()
 
 fun PartnerSimpleRow.toProjectPartnerHistoricalData() = ProjectPartnerSummary(
     id = id,
