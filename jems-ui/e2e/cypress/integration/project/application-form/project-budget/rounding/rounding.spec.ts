@@ -1,6 +1,6 @@
-import user from '../../../fixtures/users.json';
-import call from '../../../fixtures/api/call/1.step.call.json';
-import testData from '../../../fixtures/application/rounding/TB-383.json';
+import user from '../../../../../fixtures/users.json';
+import call from '../../../../../fixtures/api/call/1.step.call.json';
+import testData from '../../../../../fixtures/project/application-form/project-budget/rounding/TB-383.json';
 
 context('Rounding', () => {
 
@@ -11,12 +11,12 @@ context('Rounding', () => {
 
   it('TB-383 Rounding values in partner co-financing', function () {
     call.generalCallSettings.additionalFundAllowed = false;
-    cy.createCall(call).then(callId => {
+    cy.createCall(call, user.programmeUser.email).then(callId => {
       call.generalCallSettings.id = callId;
       testData.application.details.projectCallId = callId;
-      cy.publishCall(callId);
+      cy.publishCall(callId, user.programmeUser.email);
 
-      cy.createApplication(testData.application, user.applicantUser.email).then(applicationId => {
+      cy.createApplication(testData.application).then(applicationId => {
         const projectPartner = testData.application.partners[0];
         cy.createPartner(applicationId, projectPartner.details).then(partnerId => {
           cy.addPartnerTravelCosts(partnerId, projectPartner.budget.travel);

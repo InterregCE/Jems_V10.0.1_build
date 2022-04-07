@@ -1,4 +1,4 @@
-import user from '../../fixtures/users.json';
+import user from '../../../fixtures/users.json';
 import faker from '@faker-js/faker';
 
 context('Project management tests', () => {
@@ -8,7 +8,7 @@ context('Project management tests', () => {
     cy.loginByRequest(user.applicantUser.email);
   });
 
-  it('TB-390 Applicant can apply for a call', function () {
+  it('TB-390 Applicant can apply for a call', () => {
     cy.visit('/');
 
     cy.get('jems-call-list').should('exist');
@@ -16,7 +16,7 @@ context('Project management tests', () => {
 
     cy.intercept(/api\/call\/byId\/\d/).as('apply');
     cy.contains('Apply').click();
-    cy.wait('@apply')
+    cy.wait('@apply');
     cy.contains('Apply').click();
 
     const random = faker.random.alpha(5);
@@ -24,6 +24,6 @@ context('Project management tests', () => {
 
     cy.contains('Create project application').click();
 
-    cy.get('jems-project-page-template').find('h1').contains(`Automation Project ${random}`)
+    cy.get('jems-project-page-template').find('h1').contains(`Automation Project ${random}`);
   });
 })

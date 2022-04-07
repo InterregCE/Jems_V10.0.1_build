@@ -13,15 +13,14 @@ context('Application form exports', () => {
   });
 
   it('TB-366 Export application form using two sets of input and export language', function () {
-    cy.fixture('application/application-form-export/TB-366.json').then(testData => {
-      cy.createCall(call).then(callId => {
-        // call.generalCallSettings.id = callId;
+    cy.fixture('project/exports/TB-366.json').then(testData => {
+      cy.createCall(call, user.programmeUser.email).then(callId => {
         application.details.projectCallId = callId;
-        cy.publishCall(callId);
+        cy.publishCall(callId, user.programmeUser.email);
         application.identification.intro = testData.intro;
         application.identification.acronym = testData.acronym;
         application.details.acronym = testData.acronym;
-        cy.createFullApplication(application, user.applicantUser.email).then(applicationId => {
+        cy.createFullApplication(application, user.programmeUser.email).then(applicationId => {
           cy.visit(`app/project/detail/${applicationId}/export`, {failOnStatusCode: false});
 
           cy.contains('div', 'Input language').find('mat-select').click();
@@ -49,25 +48,29 @@ context('Application form exports', () => {
   });
 
   it('TB-367 Export application form in version other than the current', () => {
-    cy.fixture('application/application-form-export/TB-367.json').then(testData => {
+    cy.fixture('project/exports/TB-367.json').then(testData => {
       call2step.generalCallSettings.startDateTime = faker.date.recent();
       call2step.generalCallSettings.endDateTimeStep1 = faker.date.soon(1);
       call2step.generalCallSettings.endDateTime = faker.date.soon(1, call2step.generalCallSettings.endDateTimeStep1);
-      cy.createCall(call2step).then(callId => {
-        cy.publishCall(callId);
+      cy.createCall(call2step, user.programmeUser.email).then(callId => {
+        cy.publishCall(callId, user.programmeUser.email);
         application2step.details.projectCallId = callId;
         application2step.firstStep.identification.acronym = testData.acronym;
         application2step.details.acronym = testData.acronym;
-        cy.createApplication(application2step, user.applicantUser.email).then(applicationId => {
+        cy.createApplication(application2step).then(applicationId => {
 
           // 1st step version
           cy.updateProjectIdentification(applicationId, application2step.firstStep.identification);
           cy.createPartner(applicationId, application2step.firstStep.partners[0].details).then(partnerId => {
+            cy.runPreSubmissionCheck(applicationId);
+            cy.submitProjectApplication(applicationId);
 
+            cy.loginByRequest(user.programmeUser.email);
             cy.approveApplication(applicationId, application2step.assessments);
             cy.startSecondStep(applicationId);
 
             // 2nd step version
+            cy.loginByRequest(user.applicantUser.email);
             application2step.secondStep.identification.acronym = testData.acronym + ' v2';
             const updatedPartner = application2step.secondStep.partners[0];
             cy.updateProjectIdentification(applicationId, application2step.secondStep.identification);
@@ -88,7 +91,10 @@ context('Application form exports', () => {
             cy.updatePartnerCofinancing(partnerId, updatedPartner.cofinancing);
             cy.updatePartnerStateAid(partnerId, updatedPartner.stateAid);
             cy.createAssociatedOrganization(applicationId, partnerId, updatedPartner.associatedOrganization);
-            cy.approveApplication(applicationId, application2step.assessments);
+            cy.runPreSubmissionCheck(applicationId);
+            cy.submitProjectApplication(applicationId);
+
+            cy.approveApplication(applicationId, application2step.assessments, user.programmeUser.email);
 
             // modification (approved - current) version
             cy.startModification(applicationId, user.programmeUser.email);
