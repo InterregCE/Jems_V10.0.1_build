@@ -41,7 +41,7 @@ context('Programme management tests', () => {
     cy.get('jems-alert p').should('contain.text', 'Programme data was successfully saved.');
   });
 
-  it('Programme Languages can be configured', () => {
+  it('TB-525 Programme Languages can be configured', () => {
 
     cy.visit('/app/programme/languages', {failOnStatusCode: false});
 
@@ -58,7 +58,7 @@ context('Programme management tests', () => {
     cy.get('jems-alert p').should('contain.text', 'Programme data was successfully saved.');
   });
 
-  it('Programme NUTS can be downloaded', () => {
+  it('TB-523 Programme NUTS can be downloaded and areas selected', () => {
 
     cy.visit('/app/programme/areas', {failOnStatusCode: false});
 
@@ -66,13 +66,13 @@ context('Programme management tests', () => {
     cy.get('jems-alert p', {timeout: 20000}).should('contain.text', 'Up to date NUTS dataset was successfully downloaded.');
 
     cy.contains('DE Deutschland').click();
-    cy.contains('RU Russian Federation').click();
+    cy.contains('AT Österreich').click();
 
     cy.contains('Save changes').click();
     cy.get('jems-alert p').should('contain.text', 'Programme regions saved successfully');
   });
 
-  it('Programme Funds can be configured', () => {
+  it('TB-524 Programme Funds can be configured', () => {
 
     cy.visit('/app/programme/funds', {failOnStatusCode: false});
 
@@ -97,7 +97,7 @@ context('Programme management tests', () => {
     cy.get('jems-alert p').should('contain.text', 'Programme funds saved successfully.');
   });
 
-  it('Programme Priorities can be configured', () => {
+  it('TB-526 Programme Priorities can be configured', () => {
 
     cy.visit('/app/programme/priorities', {failOnStatusCode: false});
 
@@ -130,7 +130,7 @@ context('Programme management tests', () => {
     });
   });
 
-  it('Programme result indicators can be configured', () => {
+  it('TB-527 Programme result indicators can be configured', () => {
 
     cy.visit('/app/programme/indicators', {failOnStatusCode: false});
 
@@ -165,7 +165,7 @@ context('Programme management tests', () => {
     });
   });
 
-  it('Programme output indicators can be configured', () => {
+  it('TB-528 Programme output indicators can be configured', () => {
 
     cy.visit('/app/programme/indicators', {failOnStatusCode: false});
 
@@ -192,7 +192,7 @@ context('Programme management tests', () => {
     });
   });
 
-  it('Programme Strategies can be configured', () => {
+  it('TB-529 Programme Strategies can be configured', () => {
 
     cy.visit('/app/programme/strategies', {failOnStatusCode: false});
 
@@ -210,7 +210,7 @@ context('Programme management tests', () => {
     cy.get('jems-alert p').should('contain.text', 'Programme strategies successfully updated');
   });
 
-  it('Programme Legal status can be configured', () => {
+  it('TB-530 Programme Legal status can be configured', () => {
 
     cy.visit('/app/programme/legalStatus', {failOnStatusCode: false});
 
@@ -230,7 +230,7 @@ context('Programme management tests', () => {
     cy.get('jems-alert p').should('contain.text', 'Legal status saved successfully');
   });
 
-  it('Programme Lump Sums can be configured', () => {
+  it('TB-531 Programme Lump Sums can be configured', () => {
 
     cy.visit('/app/programme/costs', {failOnStatusCode: false});
 
@@ -267,7 +267,7 @@ context('Programme management tests', () => {
     });
   });
 
-  it('Programme Unit Costs can be configured', () => {
+  it('TB-532 Programme Unit Costs can be configured', () => {
 
     cy.visit('/app/programme/costs', {failOnStatusCode: false});
 
@@ -314,7 +314,7 @@ context('Programme management tests', () => {
     });
   });
 
-  it('Programme State Aid can be configured', () => {
+  it('TB-533 Programme State Aid can be configured', () => {
 
     cy.visit('/app/programme/stateAid', {failOnStatusCode: false});
 
