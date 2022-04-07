@@ -33,8 +33,6 @@ import {tap} from 'rxjs/operators';
   ]
 })
 export class ProgrammeChecklistHeadlineComponent implements ControlValueAccessor, Validator {
-
-
   metadata: HeadlineMetadataDTO;
   form: FormGroup;
 
