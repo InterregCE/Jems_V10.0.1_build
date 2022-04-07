@@ -1,11 +1,20 @@
 <div [formGroup]="form">
-    <jems-expandable-textarea
-            jemsFormFieldWidth="full"
-            label="programme.checklists.component.options.toggle.question"
-            [control]="form.controls.question "
-            [errors]="form.controls.question.errors"
-            characterLimit="1000">
-    </jems-expandable-textarea>
+    <mat-form-field jemsFormFieldWidth="full">
+        <mat-label>{{'programme.checklists.component.options.toggle.question' | translate}}</mat-label>
+        <textarea formControlName="question" matInput
+                  #autosize="cdkTextareaAutosize"
+                  [cdkTextareaAutosize]
+                  [cdkAutosizeMinRows]="3"
+                  [cdkAutosizeMaxRows]="5"
+                  #question>
+        </textarea>
+        <mat-hint [jemsHintFor]="question">
+            <jems-text-hint [currentLength]="question.value.length" [maxLength]="1000"></jems-text-hint>
+        </mat-hint>
+        <mat-error>
+            <jems-form-field-errors [errors]="form.get('question')?.errors"></jems-form-field-errors>
+        </mat-error>
+    </mat-form-field>
     <div jemsMultiColumnRow stretch>
         <mat-form-field>
             <mat-label>{{'programme.checklists.component.options.toggle.o1' | translate}}</mat-label>

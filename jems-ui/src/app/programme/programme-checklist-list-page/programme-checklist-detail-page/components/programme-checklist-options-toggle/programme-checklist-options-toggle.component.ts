@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, forwardRef} from '@angular/core';
+import {ChangeDetectionStrategy, Component, forwardRef, NgZone, ViewChild} from '@angular/core';
 import {OptionsToggleMetadataDTO, ProgrammeChecklistComponentDTO} from '@cat/api';
 import {
   AbstractControl,
@@ -10,8 +10,9 @@ import {
   Validator,
   Validators
 } from '@angular/forms';
-import {tap} from 'rxjs/operators';
+import {take, tap} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {CdkTextareaAutosize} from '@angular/cdk/text-field';
 
 @UntilDestroy()
 @Component({
@@ -37,7 +38,15 @@ export class ProgrammeChecklistOptionsToggleComponent implements ControlValueAcc
   metadata: OptionsToggleMetadataDTO;
   form: FormGroup;
 
-  constructor(private formBuilder: FormBuilder) { }
+  @ViewChild('autosize', {static: false}) autosize: CdkTextareaAutosize;
+
+  constructor(private formBuilder: FormBuilder,
+              private zone: NgZone) {
+    this.zone.onStable.pipe(
+      take(1),
+      tap(() => this.autosize.resizeToFitContent(true))
+    ).subscribe();
+  }
 
   onChange = (value: any) => {
     // Intentionally left blank
