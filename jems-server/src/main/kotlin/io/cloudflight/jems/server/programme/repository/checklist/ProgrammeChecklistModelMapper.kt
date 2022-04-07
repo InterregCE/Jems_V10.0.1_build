@@ -40,7 +40,7 @@ fun ProgrammeChecklistDetail.toEntity(): ProgrammeChecklistEntity =
         this.assignComponents()
     }
 
-private fun ProgrammeChecklistComponentEntity.toModel(): ProgrammeChecklistComponent =
+fun ProgrammeChecklistComponentEntity.toModel(): ProgrammeChecklistComponent =
     ProgrammeChecklistComponent(
         id = id,
         type = type,
@@ -48,13 +48,13 @@ private fun ProgrammeChecklistComponentEntity.toModel(): ProgrammeChecklistCompo
         metadata = toModelMetadata()
     )
 
-private fun ProgrammeChecklistComponentEntity.toModelMetadata(): ProgrammeChecklistMetadata =
+fun ProgrammeChecklistComponentEntity.toModelMetadata(): ProgrammeChecklistMetadata =
     when (this.type) {
         ProgrammeChecklistComponentType.HEADLINE -> this.metadata.toHeadline()
         ProgrammeChecklistComponentType.OPTIONS_TOGGLE -> this.metadata.toOptionsToggle()
     }
 
-private fun ProgrammeChecklistComponent.toEntity(): ProgrammeChecklistComponentEntity =
+fun ProgrammeChecklistComponent.toEntity(): ProgrammeChecklistComponentEntity =
     ProgrammeChecklistComponentEntity(
         id = id ?: 0L,
         type = type,

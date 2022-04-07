@@ -19,7 +19,7 @@ internal class GetChecklistTest : UnitTest() {
 
     private val checklist = ProgrammeChecklist(
         id = CHECKLIST_ID,
-        type = ProgrammeChecklistType.ELIGIBILITY,
+        type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
         name = "name",
         lastModificationDate = ZonedDateTime.of(2020, 1, 10, 10, 10, 10, 10, ZoneId.systemDefault())
     )

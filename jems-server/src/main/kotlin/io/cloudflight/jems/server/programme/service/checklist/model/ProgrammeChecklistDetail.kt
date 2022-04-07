@@ -4,7 +4,7 @@ import java.time.ZonedDateTime
 
 class ProgrammeChecklistDetail(
     id: Long?,
-    type: ProgrammeChecklistType = ProgrammeChecklistType.ELIGIBILITY,
+    type: ProgrammeChecklistType = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
     name: String?,
     lastModificationDate: ZonedDateTime?,
     val components: List<ProgrammeChecklistComponent>? = emptyList()
