@@ -2,8 +2,8 @@ import {Injectable} from '@angular/core';
 import {ProgrammeChecklistDetailDTO, ProgrammeChecklistDTO, ProgrammeChecklistService} from '@cat/api';
 import {RoutingService} from '@common/services/routing.service';
 import {Log} from '@common/utils/log';
-import {Observable, of, Subject} from 'rxjs';
-import {switchMap, take, tap} from 'rxjs/operators';
+import {merge, Observable, of, Subject} from 'rxjs';
+import {shareReplay, switchMap, take, tap} from 'rxjs/operators';
 import {ProgrammeEditableStateStore} from '../../programme-page/services/programme-editable-state-store.service';
 
 @Injectable()
@@ -23,13 +23,18 @@ export class ProgrammeChecklistDetailPageStore {
   }
 
   private checklist(): Observable<ProgrammeChecklistDetailDTO> {
-    return this.checkListId()
+    const initialChecklist$ =  this.checkListId()
       .pipe(
         switchMap(checklistId => checklistId
           ? this.programmeChecklistService.getProgrammeChecklistDetail(checklistId as number)
           : of({} as ProgrammeChecklistDetailDTO)
         ),
-        tap(checklist => Log.debug('Checklist', checklist))
+        tap(checklist => Log.info('Fetched checklist', this, checklist))
+      );
+
+    return merge(initialChecklist$, this.savedChecklist$)
+      .pipe(
+        shareReplay(1)
       );
   }
 

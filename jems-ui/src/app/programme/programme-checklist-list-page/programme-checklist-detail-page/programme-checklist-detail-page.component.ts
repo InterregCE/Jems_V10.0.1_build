@@ -1,6 +1,4 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import { ProgrammeChecklistDetailPageStore } from './programme-checklist-detail-page-store.service';
-import {ProgrammePageSidenavService} from '../../programme-page/services/programme-page-sidenav.service';
 import {ProgrammeChecklistComponentDTO, ProgrammeChecklistDetailDTO} from '@cat/api';
 import {FormArray, FormBuilder, Validators} from '@angular/forms';
 import {Observable} from 'rxjs';
@@ -8,8 +6,9 @@ import {catchError, tap} from 'rxjs/operators';
 import {FormService} from '@common/components/section/form/form.service';
 import {RoutingService} from '@common/services/routing.service';
 import {ActivatedRoute} from '@angular/router';
-import {ColumnWidth} from '@common/components/table/model/column-width';
 import {TableConfig} from '@common/directives/table-config/TableConfig';
+import {ProgrammeChecklistDetailPageStore} from './programme-checklist-detail-page-store.service';
+import {ProgrammePageSidenavService} from '../../programme-page/services/programme-page-sidenav.service';
 
 @Component({
   selector: 'jems-programme-checklist-detail-page',
@@ -77,7 +76,7 @@ export class ProgrammeChecklistDetailPageComponent  {
 
   move(shift: number, componentIndex: number): void {
     const controls = this.components.controls;
-    [ controls[componentIndex], controls[componentIndex + shift] ] = [ controls[componentIndex + shift], controls[componentIndex] ];
+    [controls[componentIndex], controls[componentIndex + shift]] = [controls[componentIndex + shift], controls[componentIndex]];
     this.formService.setDirty(true);
   }
 
@@ -87,7 +86,7 @@ export class ProgrammeChecklistDetailPageComponent  {
   }
 
   getTableConfig(): TableConfig[] {
-    return [...this.form.enabled ? [{maxInRem:3}] : [],{maxInRem:15},{},{maxInRem:3}];
+    return [...this.form.enabled ? [{maxInRem: 3}] : [], {maxInRem: 15}, {}, {maxInRem: 3}];
   }
 
   get components(): FormArray {
@@ -95,11 +94,11 @@ export class ProgrammeChecklistDetailPageComponent  {
   }
 
   get checklistTypes(): ProgrammeChecklistDetailDTO.TypeEnum[] {
-    return Object.values(this.CHECKLIST_TYPE) ;
+    return Object.values(this.CHECKLIST_TYPE);
   }
 
   get componentTypes(): ProgrammeChecklistComponentDTO.TypeEnum[] {
-    return Object.values(this.COMPONENT_TYPE) ;
+    return Object.values(this.COMPONENT_TYPE);
   }
 
   private resetForm(checklist: ProgrammeChecklistDetailDTO) {
@@ -108,5 +107,4 @@ export class ProgrammeChecklistDetailPageComponent  {
     checklist?.components?.forEach(component => this.addComponent(component));
     this.formService.resetEditable();
   }
-
 }
