@@ -61,6 +61,10 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budg
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.BudgetTravelAndAccommodationCostEntryData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.BudgetUnitCostEntryData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.PartnerBudgetData
+import io.cloudflight.jems.plugin.contract.models.programme.fund.ProgrammeFundTypeData
+import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA3.ProjectCoFinancingCategoryOverviewData
+import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA3.ProjectCoFinancingOverviewData
+import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA3.ProjectCoFinancingByFundOverviewData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.ProjectPartnerBudgetOptionsData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.ProjectPartnerCoFinancingAndContributionData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.ProjectPartnerCoFinancingAndContributionSpfData
@@ -99,10 +103,13 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionE.lumpsum.Proje
 import io.cloudflight.jems.plugin.contract.models.project.sectionE.lumpsum.ProjectPartnerLumpSumData
 import io.cloudflight.jems.plugin.contract.models.project.versions.ProjectVersionData
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
+import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
 import io.cloudflight.jems.server.programme.service.stateaid.model.ProgrammeStateAid
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResult
+import io.cloudflight.jems.server.project.service.cofinancing.model.ProjectCoFinancingByFundOverview
 import io.cloudflight.jems.server.project.service.cofinancing.model.ProjectCoFinancingCategoryOverview
+import io.cloudflight.jems.server.project.service.cofinancing.model.ProjectCoFinancingOverview
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectPartnerLumpSum
 import io.cloudflight.jems.server.project.service.model.Address
@@ -165,7 +172,7 @@ import org.mapstruct.Mappings
 import org.mapstruct.factory.Mappers
 
 fun ProjectFull.toDataModel(
-    tableA3data: ProjectCoFinancingCategoryOverview,
+    tableA3data: ProjectCoFinancingOverview,
     tableA4data: ProjectResultIndicatorOverview
 ) = pluginDataMapper.map(this, tableA3data, tableA4data)
 
@@ -278,6 +285,26 @@ fun ApplicationStatus.toDataModel() =
 fun ProjectAssessment.toDataModel() =
     pluginDataMapper.map(this)
 
+fun ProgrammeFundType.toDataModel() =
+    ProgrammeFundTypeData.valueOf(this.name)
+
+fun List<ProjectCoFinancingByFundOverview>.projectCoFinancingByFundOverviewListToDataList() =
+    map {
+        ProjectCoFinancingByFundOverviewData(
+            fundId= it.fundId,
+            fundType= it.fundType?.toDataModel(),
+            fundAbbreviation= it.fundAbbreviation.toDataModel(),
+            fundingAmount= it.fundingAmount,
+            coFinancingRate= it.coFinancingRate,
+            autoPublicContribution= it.autoPublicContribution,
+            otherPublicContribution= it.otherPublicContribution,
+            totalPublicContribution= it.totalPublicContribution,
+            privateContribution= it.privateContribution,
+            totalContribution= it.totalContribution,
+            totalFundAndContribution= it.totalFundAndContribution
+        )
+    }.toList()
+
 private val pluginDataMapper = Mappers.getMapper(PluginDataMapper::class.java)
 
 @Mapper
@@ -338,13 +365,13 @@ abstract class PluginDataMapper {
     abstract fun map(outputProgrammePrioritySimple: OutputProgrammePrioritySimple): ProgrammePriorityDataSimple
     abstract fun map(programmeObjectivePolicy: ProgrammeObjectivePolicy): ProgrammeObjectivePolicyData
     abstract fun map(outputProgrammePriorityPolicySimpleDTO: OutputProgrammePriorityPolicySimpleDTO): ProgrammeSpecificObjectiveData
-
+    abstract fun map(coFinancingOverview: ProjectCoFinancingOverview): ProjectCoFinancingOverviewData
     @Mappings(
         Mapping(target = "coFinancingOverview", source = "tableA3data"),
         Mapping(target = "resultIndicatorOverview", source = "tableA4data")
     )
     abstract fun map(projectFull: ProjectFull,
-                     tableA3data: ProjectCoFinancingCategoryOverview,
+                     tableA3data: ProjectCoFinancingOverview,
                      tableA4data: ProjectResultIndicatorOverview): ProjectDataSectionA
     abstract fun map(projectHorizontalPrinciples: ProjectHorizontalPrinciples): ProjectHorizontalPrinciplesData
     abstract fun map(programmeStateAidMeasure: ProgrammeStateAidMeasure): ProgrammeStateAidMeasureData
@@ -459,4 +486,28 @@ abstract class PluginDataMapper {
         }
         return programmeStrategyData
     }
+
+
+    fun map(coFinancingCategoryOverview: ProjectCoFinancingCategoryOverview): ProjectCoFinancingCategoryOverviewData =
+        ProjectCoFinancingCategoryOverviewData(
+            fundOverviews = coFinancingCategoryOverview.fundOverviews.projectCoFinancingByFundOverviewListToDataList(),
+            totalFundingAmount = coFinancingCategoryOverview.totalFundingAmount,
+            totalEuFundingAmount = coFinancingCategoryOverview.totalEuFundingAmount,
+            averageCoFinancingRate = coFinancingCategoryOverview.averageCoFinancingRate,
+            averageEuFinancingRate = coFinancingCategoryOverview.averageEuFinancingRate,
+            totalAutoPublicContribution = coFinancingCategoryOverview.totalAutoPublicContribution,
+            totalEuAutoPublicContribution = coFinancingCategoryOverview.totalEuAutoPublicContribution,
+            totalOtherPublicContribution = coFinancingCategoryOverview.totalOtherPublicContribution,
+            totalEuOtherPublicContribution = coFinancingCategoryOverview.totalEuOtherPublicContribution,
+            totalPublicContribution = coFinancingCategoryOverview.totalPublicContribution,
+            totalEuPublicContribution = coFinancingCategoryOverview.totalEuPublicContribution,
+            totalPrivateContribution = coFinancingCategoryOverview.totalPrivateContribution,
+            totalEuPrivateContribution = coFinancingCategoryOverview.totalEuPrivateContribution,
+            totalContribution = coFinancingCategoryOverview.totalContribution,
+            totalEuContribution = coFinancingCategoryOverview.totalEuContribution,
+            totalFundAndContribution = coFinancingCategoryOverview.totalFundAndContribution,
+            totalEuFundAndContribution = coFinancingCategoryOverview.totalEuFundAndContribution
+        )
+
+
 }
