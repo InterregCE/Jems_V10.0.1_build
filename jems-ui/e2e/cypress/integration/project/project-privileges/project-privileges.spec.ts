@@ -10,7 +10,7 @@ context('Project privileges tests', () => {
   });
 
   it('TB-379 Automatically assign users to projects', () => {
-    cy.fixture('application/project-privileges/TB-379.json').then(testData => {
+    cy.fixture('project/project-privileges/TB-379.json').then(testData => {
       cy.loginByRequest(user.admin.email);
       testData.privilegedUser.email = faker.internet.email();
       cy.createUser(testData.privilegedUser);
@@ -29,13 +29,14 @@ context('Project privileges tests', () => {
   });
 
   it('TB-363 Add/remove user privileges to/from project', () => {
-    cy.fixture('application/project-privileges/TB-363.json').then(testData => {
-      cy.loginByRequest(user.applicantUser.email);
+    cy.fixture('project/project-privileges/TB-363.json').then(testData => {
+      cy.loginByRequest(user.programmeUser.email);
       cy.createCall(call).then(callId => {
         application.details.projectCallId = callId;
         cy.publishCall(callId);
       });
-      cy.createFullApplication(application, user.applicantUser.email).then(applicationId => {
+      cy.loginByRequest(user.applicantUser.email);
+      cy.createFullApplication(application, user.programmeUser.email).then(applicationId => {
         testData.projectCollaborator.email = faker.internet.email();
         cy.createUser(testData.projectCollaborator, user.admin.email);
 
@@ -74,7 +75,7 @@ context('Project privileges tests', () => {
   });
 
   it('TB-364 Restrict management of project specific privileges', () => {
-    cy.fixture('application/project-privileges/TB-364.json').then(testData => {
+    cy.fixture('project/project-privileges/TB-364.json').then(testData => {
       cy.loginByRequest(user.admin.email);
       testData.programmeRole.name = `programmeRole_${faker.random.alphaNumeric(5)}`;
       cy.createRole(testData.programmeRole).then(roleId => {

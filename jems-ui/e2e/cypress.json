@@ -12,9 +12,9 @@
     "defaultPassword": "<change-me>"
   },
   "testFiles": [
-    "login.spec.ts",
-    "programme/programme.spec.ts",
-    "call/call.spec.ts",
-    "application/**"
+    "login/**",
+    "programme/**",
+    "call/**",
+    "project/**"
   ]
 }
