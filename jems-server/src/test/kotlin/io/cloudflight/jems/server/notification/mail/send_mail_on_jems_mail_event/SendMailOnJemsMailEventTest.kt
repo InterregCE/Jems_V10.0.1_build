@@ -18,6 +18,7 @@ import io.mockk.slot
 import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.springframework.boot.actuate.info.InfoEndpoint
 import org.springframework.transaction.support.TransactionSynchronizationManager
 
 open class SendMailOnJemsMailEventTest : UnitTest() {
@@ -27,6 +28,9 @@ open class SendMailOnJemsMailEventTest : UnitTest() {
 
     @MockK
     lateinit var programmeDataPersistence: ProgrammeDataPersistence
+
+    @MockK
+    lateinit var infoEndpoint: InfoEndpoint
 
     @MockK
     lateinit var mailBodyGenerator: MailBodyGeneratorService
@@ -53,11 +57,13 @@ open class SendMailOnJemsMailEventTest : UnitTest() {
         val mailEvent = JemsMailEvent("emailTemplateFileName", info)
         val mailNotification = MailNotification(0, info.subject, "body", info.recipients, info.messageType)
         val programmeName = "programmeName"
+        val helpdeskUrl = "https://helpdesk.com"
         val callback = slot<(MailNotification) -> Any?>()
 
         every { programmeDataPersistence.getProgrammeName() } returns programmeName
+        every { infoEndpoint.info() } returns mapOf("helpdesk-url" to helpdeskUrl)
         every {
-            mailBodyGenerator.generateBodyText(mailEvent, setOf(Variable("programmeName", programmeName)))
+            mailBodyGenerator.generateBodyText(mailEvent, setOf(Variable("programmeName", programmeName), Variable("helpdeskLink", helpdeskUrl)))
         } returns "body"
         every { persistence.deleteIfExist(mailNotification.id) } returns Unit
         every { persistence.save(mailNotification) } returns mailNotification

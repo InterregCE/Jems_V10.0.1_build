@@ -1,0 +1,27 @@
+<div class="background-visual background-floating-stars"></div>
+<div class="double-card-container">
+    <mat-card class="programme-card">
+        <mat-card-content>
+            <div class="authentication-logo px-3">
+                <img *ngIf="largeLogo$ | async as logo; else defaultLogo" class="logo"
+                     src="data:image/png;base64,{{logo.value}}" alt="" width="">
+                <ng-template #defaultLogo>
+                    <img class="logo" src="assets/logos/InterregProgrammeLogo_200.png" alt="">
+                </ng-template>
+            </div>
+        </mat-card-content>
+        <mat-card-content>
+            <div>
+                <h1>{{'user.login.programme.headline' | translate}}</h1>
+                <p>{{'user.login.programme.introduction' | translate}}</p>
+            </div>
+        </mat-card-content>
+    </mat-card>
+    <mat-card class="form-card">
+        <mat-card-content>
+            <div class="px-3">
+                <ng-content></ng-content>
+            </div>
+        </mat-card-content>
+    </mat-card>
+</div>
