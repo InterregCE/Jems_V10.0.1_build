@@ -33,6 +33,7 @@ export class ProgrammeChecklistListPageStore {
       .pipe(
         startWith(null),
         switchMap(() => this.checklistService.getProgrammeChecklists()),
+        tap(checklists => checklists.sort((a, b) => a.lastModificationDate > b.lastModificationDate ? -1 : 1)),
         tap(checklists => Log.info('Fetched checklists', this, checklists)),
       );
   }

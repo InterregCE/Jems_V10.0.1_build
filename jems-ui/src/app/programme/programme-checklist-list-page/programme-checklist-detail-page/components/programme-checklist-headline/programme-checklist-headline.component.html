@@ -1,7 +1,10 @@
 <div [formGroup]="form">
     <mat-form-field class="w-100">
         <mat-label>{{'programme.checklists.component.headline.name' | translate}}</mat-label>
-        <input formControlName="value" matInput required>
+        <input #value formControlName="value" matInput required>
+        <mat-hint [jemsHintFor]="value" [hide]="form.controls?.value?.errors !== null">
+            <jems-text-hint [currentLength]="value?.value?.length" [maxLength]="200"></jems-text-hint>
+        </mat-hint>
         <mat-error>
             <jems-form-field-errors [errors]="form?.controls?.value?.errors"></jems-form-field-errors>
         </mat-error>

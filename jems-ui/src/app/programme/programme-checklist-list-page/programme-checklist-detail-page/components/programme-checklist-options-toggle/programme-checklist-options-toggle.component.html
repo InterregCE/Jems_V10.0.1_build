@@ -1,5 +1,6 @@
 <div [formGroup]="form">
-    <jems-expandable-textarea class="w-100"
+    <jems-expandable-textarea
+            jemsFormFieldWidth="full"
             label="programme.checklists.component.options.toggle.question"
             [control]="form.controls.question "
             [errors]="form.controls.question.errors"
@@ -8,7 +9,10 @@
     <div jemsMultiColumnRow stretch>
         <mat-form-field>
             <mat-label>{{'programme.checklists.component.options.toggle.o1' | translate}}</mat-label>
-            <input formControlName="firstOption" matInput required>
+            <input #firstOption formControlName="firstOption" matInput required>
+            <mat-hint [jemsHintFor]="firstOption" [hide]="form.controls?.firstOption?.errors !== null">
+                <jems-text-hint [currentLength]="firstOption?.value?.length" [maxLength]="100"></jems-text-hint>
+            </mat-hint>
             <mat-error>
                 <jems-form-field-errors [errors]="form.get('firstOption')?.errors"></jems-form-field-errors>
             </mat-error>
@@ -16,7 +20,10 @@
 
         <mat-form-field>
             <mat-label>{{'programme.checklists.component.options.toggle.o2' | translate}}</mat-label>
-            <input formControlName="secondOption" matInput required>
+            <input #secondOption formControlName="secondOption" matInput required>
+            <mat-hint [jemsHintFor]="secondOption" [hide]="form.controls?.secondOption?.errors !== null">
+                <jems-text-hint [currentLength]="secondOption?.value?.length" [maxLength]="100"></jems-text-hint>
+            </mat-hint>
             <mat-error>
                 <jems-form-field-errors [errors]="form.get('secondOption')?.errors"></jems-form-field-errors>
             </mat-error>
@@ -24,7 +31,10 @@
 
         <mat-form-field>
             <mat-label>{{'programme.checklists.component.options.toggle.o3' | translate}}</mat-label>
-            <input formControlName="thirdOption" matInput>
+            <input #thirdOption formControlName="thirdOption" matInput>
+            <mat-hint [jemsHintFor]="thirdOption" [hide]="form.controls?.thirdOption?.errors !== null">
+                <jems-text-hint [currentLength]="thirdOption?.value?.length" [maxLength]="100"></jems-text-hint>
+            </mat-hint>
             <mat-error>
                 <jems-form-field-errors [errors]="form.get('thirdOption')?.errors"></jems-form-field-errors>
             </mat-error>
