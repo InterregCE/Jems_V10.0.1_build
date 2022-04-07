@@ -55,6 +55,7 @@ import {FilterDateInputComponent} from '@common/components/filter/filter-date-in
 import {TextDirective} from '@common/directives/text.directive';
 import {AdaptTranslationKeyByCallTypePipe} from '@common/pipe/adapt-translation-by-call-type.pipe';
 import {SecondsToTimePipePipe} from '@common/pipe/seconds-to-time-pipe.pipe';
+import {ChecklistAnswersComponent} from '@common/components/checklist/checklist-answers/checklist-answers.component';
 
 const modules = [
   CommonModule,
@@ -116,7 +117,8 @@ const declarations = [
   FilterDateInputComponent,
   FilterListInputComponent,
   FilterAutocompleteInputComponent,
-  SecondsToTimePipePipe
+  SecondsToTimePipePipe,
+  ChecklistAnswersComponent
 ];
 
 const providers = [
