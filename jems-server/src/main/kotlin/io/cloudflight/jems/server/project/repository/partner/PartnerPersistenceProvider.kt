@@ -246,7 +246,7 @@ class PartnerPersistenceProvider(
     private fun getPartnerHistoricalDetail(
         partnerId: Long,
         timestamp: Timestamp,
-    ): ProjectPartnerDetail {
+    ): ProjectPartnerDetail? {
         val addresses = projectPartnerRepository.findPartnerAddressesByIdAsOfTimestamp(partnerId, timestamp)
             .toProjectPartnerAddressHistoricalData()
         val contacts = projectPartnerRepository.findPartnerContactsByIdAsOfTimestamp(partnerId, timestamp)
