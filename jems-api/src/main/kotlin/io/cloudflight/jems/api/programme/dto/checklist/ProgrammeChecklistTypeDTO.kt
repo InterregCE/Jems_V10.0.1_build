@@ -1,5 +1,5 @@
 package io.cloudflight.jems.api.programme.dto.checklist
 
 enum class ProgrammeChecklistTypeDTO {
-    ELIGIBILITY
+    APPLICATION_FORM_ASSESSMENT
 }

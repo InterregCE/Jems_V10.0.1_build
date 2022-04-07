@@ -37,13 +37,13 @@ class ProgrammeChecklistControllerTest : UnitTest() {
     private val ID = 1L
     private val checklist = ProgrammeChecklist(
         id = ID,
-        type = ProgrammeChecklistType.ELIGIBILITY,
+        type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
         name = "test",
         lastModificationDate = ZonedDateTime.of(2020, 1, 10, 10, 10, 10, 10, ZoneId.systemDefault()),
     )
     private val checklistDTO = ProgrammeChecklistDTO(
         id = ID,
-        type = ProgrammeChecklistTypeDTO.ELIGIBILITY,
+        type = ProgrammeChecklistTypeDTO.APPLICATION_FORM_ASSESSMENT,
         name = "test",
         lastModificationDate = ZonedDateTime.of(2020, 1, 10, 10, 10, 10, 10, ZoneId.systemDefault()),
     )
@@ -71,7 +71,7 @@ class ProgrammeChecklistControllerTest : UnitTest() {
 
     private val checklistDetail = ProgrammeChecklistDetail(
         id = ID,
-        type = ProgrammeChecklistType.ELIGIBILITY,
+        type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
         name = "test",
         lastModificationDate = ZonedDateTime.of(2020, 1, 10, 10, 10, 10, 10, ZoneId.systemDefault()),
         components = components
@@ -98,7 +98,7 @@ class ProgrammeChecklistControllerTest : UnitTest() {
 
     private val checklistDetailDTO = ProgrammeChecklistDetailDTO(
         id = ID,
-        type = ProgrammeChecklistTypeDTO.ELIGIBILITY,
+        type = ProgrammeChecklistTypeDTO.APPLICATION_FORM_ASSESSMENT,
         name = "test",
         lastModificationDate = ZonedDateTime.of(2020, 1, 10, 10, 10, 10, 10, ZoneId.systemDefault()),
         components = componentsDTO

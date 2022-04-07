@@ -4,7 +4,7 @@ import java.time.ZonedDateTime
 
 open class ProgrammeChecklistDTO(
     val id: Long? = null,
-    val type: ProgrammeChecklistTypeDTO = ProgrammeChecklistTypeDTO.ELIGIBILITY,
+    val type: ProgrammeChecklistTypeDTO = ProgrammeChecklistTypeDTO.APPLICATION_FORM_ASSESSMENT,
     val name: String?,
     val lastModificationDate: ZonedDateTime?
 )
