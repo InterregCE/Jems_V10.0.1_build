@@ -2,6 +2,7 @@ package io.cloudflight.jems.api.authentication
 
 import io.cloudflight.jems.api.authentication.dto.LoginRequest
 import io.cloudflight.jems.api.authentication.dto.OutputCurrentUser
+import io.cloudflight.jems.api.authentication.dto.ResetPasswordByTokenRequestDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import org.springframework.http.HttpStatus
@@ -32,4 +33,12 @@ interface AuthenticationApi {
     @PostMapping("$ENDPOINT_API_AUTH/logout")
     @ResponseStatus(value = HttpStatus.OK)
     fun logout(req: HttpServletRequest)
+
+    @ApiOperation("send password reset link to email address")
+    @PostMapping("$ENDPOINT_API_AUTH/password/resetLink",  consumes = [MediaType.TEXT_PLAIN_VALUE])
+    fun sendPasswordResetLinkToEmail(@RequestBody email: String)
+
+    @ApiOperation("reset password")
+    @PostMapping("$ENDPOINT_API_AUTH/password/reset",  consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun resetPassword(@RequestBody resetPasswordByTokenRequest: ResetPasswordByTokenRequestDTO)
 }

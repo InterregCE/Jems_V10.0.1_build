@@ -18,16 +18,6 @@ fun CurrencyRateEntity.toModel() = CurrencyConversion(
     conversionRate = conversionRate
 )
 
-fun ArrayList<EuroExchangeRate>.toCurrencyConversions(year: Int, month: Int) = map {
-    CurrencyConversion(
-        code = it.isoA3Code,
-        year = year,
-        month = month,
-        name = it.currency,
-        conversionRate = BigDecimal(it.value)
-    )
-}
-
 fun List<CurrencyConversion>.toEntities() = map {
     CurrencyRateEntity(
         id = CurrencyRateIdEntity(it.code, it.year, it.month),

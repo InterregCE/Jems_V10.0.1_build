@@ -34,7 +34,7 @@ export class PartnerActionsCellComponent implements ControlValueAccessor {
   fileMetadata: ProjectReportFileMetadataDTO;
 
   @Input()
-  isReportEditable: boolean = true;
+  isReportEditable = true;
   @Output()
   upload = new EventEmitter<any>();
   @Output()
@@ -86,7 +86,7 @@ export class PartnerActionsCellComponent implements ControlValueAccessor {
         tap(() => this.upload.emit(event))
       ).subscribe();
     } else {
-      this.upload.emit(event)
+      this.upload.emit(event);
     }
   }
 
