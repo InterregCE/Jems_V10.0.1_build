@@ -3,12 +3,13 @@ import {
   AuthenticationService,
   LoginRequest,
   OutputCurrentUser,
+  ResetPasswordByTokenRequestDTO,
   UserDTO,
   UserService
 } from '@cat/api';
 import {Observable, of, ReplaySubject} from 'rxjs';
-import {catchError, mergeMap, map, shareReplay, take, tap} from 'rxjs/operators';
-import {Log} from '../common/utils/log';
+import {catchError, map, mergeMap, shareReplay, take, tap} from 'rxjs/operators';
+import {Log} from '@common/utils/log';
 
 @Injectable({providedIn: 'root'})
 export class SecurityService {
@@ -48,6 +49,14 @@ export class SecurityService {
         tap(user => Log.info('User logged in', this, user)),
         tap((user: OutputCurrentUser) => this.myCurrentUser.next(user)),
       );
+  }
+
+  requestPasswordResetLink(email: string): Observable<void> {
+    return this.authenticationService.sendPasswordResetLinkToEmail(email);
+  }
+
+  resetPasswordByToken(token: string, password: string): Observable<void> {
+    return this.authenticationService.resetPassword({token, password} as ResetPasswordByTokenRequestDTO);
   }
 
   private reloadCurrentUser(): Observable<OutputCurrentUser> {

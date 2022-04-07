@@ -36,7 +36,7 @@ export class PartnerReportWorkPlanProgressTabComponent {
 
   constants = PartnerReportWorkplanConstants;
   savedWorkPackages$: Observable<ProjectPartnerReportWorkPackageDTO[]>;
-  isReportEditable$ : Observable<boolean>;
+  isReportEditable$: Observable<boolean>;
 
   workPlanForm: FormGroup = this.formBuilder.group({
     workPackages: this.formBuilder.array([ this.formBuilder.group({
@@ -125,7 +125,7 @@ export class PartnerReportWorkPlanProgressTabComponent {
       .pipe(take(1))
       .subscribe(value => {
         this.deliverableFileMetadata(workPackageIndex, activityIndex, deliverableIndex)?.patchValue(value);
-      })
+      });
   }
 
   onDeleteDeliverable(fileId: number, activityIndex: number, workPackageIndex: number, deliverableIndex: number): void {
@@ -143,7 +143,7 @@ export class PartnerReportWorkPlanProgressTabComponent {
       .pipe(take(1))
       .subscribe(value => {
         this.activityFileMetadata(workPackageIndex, activityIndex)?.patchValue(value);
-      })
+      });
   }
 
   onDeleteActivity(fileId: number, activityIndex: number, workPackageIndex: number): void {
@@ -160,7 +160,7 @@ export class PartnerReportWorkPlanProgressTabComponent {
       .pipe(take(1))
       .subscribe(value => {
         this.outputFileMetadata(workPackageIndex, outputIndex)?.patchValue(value);
-      })
+      });
   }
 
   onDeleteOutput(fileId: number, outputIndex: number, workPackageIndex: number): void {

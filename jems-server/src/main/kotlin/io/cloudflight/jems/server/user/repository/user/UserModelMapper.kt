@@ -2,66 +2,71 @@ package io.cloudflight.jems.server.user.repository.user
 
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
-import io.cloudflight.jems.server.user.repository.userrole.toModel
 import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.model.UserChange
+import io.cloudflight.jems.server.user.service.model.UserRole
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import io.cloudflight.jems.server.user.service.model.UserRoleSummary
 import io.cloudflight.jems.server.user.service.model.UserSummary
 import io.cloudflight.jems.server.user.service.model.UserWithPassword
+import org.mapstruct.Mapper
+import org.mapstruct.Mapping
+import org.mapstruct.Mappings
+import org.mapstruct.factory.Mappers
 import org.springframework.data.domain.Page
 
-fun UserEntity.toModel(permissions: Set<UserRolePermission>) = User(
-    id = id,
-    email = email,
-    name = name,
-    surname = surname,
-    userRole = userRole.toModel(permissions, null),
-    userStatus = userStatus
-)
+private val mapper = Mappers.getMapper(UserModelMapper::class.java)
 
-fun UserEntity.toModelWithPassword(permissions: Set<UserRolePermission>) = UserWithPassword(
-    id = id,
-    email = email,
-    name = name,
-    surname = surname,
-    userRole = userRole.toModel(permissions, null),
-    encodedPassword = password,
-    userStatus = userStatus
-)
+fun UserEntity.toModel(permissions: Set<UserRolePermission>) =
+    mapper.mapToUser(this, userRole.toModel(permissions), emptySet())
 
-fun Page<UserEntity>.toModel() = map {
-    UserSummary(
-        id = it.id,
-        email = it.email,
-        name = it.name,
-        surname = it.surname,
-        userRole = it.userRole.toModel(null),
-        userStatus = it.userStatus
+fun UserEntity.toModelWithPassword(permissions: Set<UserRolePermission>) =
+    mapper.mapToUserWithPassword(this, userRole.toModel(permissions), emptySet())
+
+fun UserRoleEntity.toModel(permissions: Set<UserRolePermission>) =
+    mapper.map(this, permissions)
+
+fun Page<UserEntity>.toModel() =
+    map { mapper.map(it) }
+
+fun UserChange.toEntity(passwordEncoded: String, role: UserRoleEntity) =
+    mapper.map(this, passwordEncoded, role)
+
+fun UserEntity.toUserSummary() =
+    mapper.map(this)
+
+fun UserWithPassword.toUserSummary() =
+    mapper.map(this)
+
+@Mapper
+interface UserModelMapper {
+    @Mapping(target = "isDefault", constant = "false")
+    fun map(userRole: UserRole): UserRoleSummary
+    @Mapping(target = "isDefault", constant = "false")
+    fun mapToSummary(userRoleEntity: UserRoleEntity): UserRoleSummary
+    fun map(userWithPassword: UserWithPassword): UserSummary
+    fun map(userEntity: UserEntity): UserSummary
+    @Mappings(
+        Mapping(target = "id", source = "userEntity.id" ),
+        Mapping(target = "name", source = "userEntity.name" ),
+        Mapping(target = "encodedPassword", source = "userEntity.password" ),
+        Mapping(target = "userRole", source = "userRole" ),
+        Mapping(target = "assignedProjects", source = "assignedProjects" )
     )
+    fun mapToUserWithPassword(userEntity: UserEntity, userRole: UserRole, assignedProjects: Set<Long>): UserWithPassword
+    @Mappings(
+        Mapping(target = "id", source = "userEntity.id" ),
+        Mapping(target = "name", source = "userEntity.name" ),
+        Mapping(target = "userRole", source = "userRole" ),
+        Mapping(target = "assignedProjects", source = "assignedProjects" )
+    )
+    fun mapToUser(userEntity: UserEntity, userRole: UserRole, assignedProjects: Set<Long>): User
+    @Mappings(
+        Mapping(target = "id", source = "userChange.id" ),
+        Mapping(target = "name", source = "userChange.name" )
+    )
+    fun map(userChange: UserChange, password: String, userRole: UserRoleEntity): UserEntity
+
+    @Mapping(target = "isDefault", constant = "false")
+    fun map(userRoleEntity: UserRoleEntity, permissions: Set<UserRolePermission>): UserRole
 }
-
-fun UserChange.toEntity(passwordEncoded: String, role: UserRoleEntity) = UserEntity(
-    id = id,
-    email = email,
-    name = name,
-    surname = surname,
-    userRole = role,
-    password = passwordEncoded,
-    userStatus = userStatus
-)
-
-fun UserEntity.toUserSummary() = UserSummary(
-    id = this.id,
-    email = this.email,
-    name = this.name,
-    surname = this.surname,
-    userRole = this.userRole.toUserRoleSummary(),
-    userStatus = this.userStatus
-)
-
-fun UserRoleEntity.toUserRoleSummary() = UserRoleSummary(
-    id = id,
-    name = name,
-    isDefault = false
-)

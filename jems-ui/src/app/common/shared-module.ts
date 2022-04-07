@@ -56,6 +56,9 @@ import {TextDirective} from '@common/directives/text.directive';
 import {AdaptTranslationKeyByCallTypePipe} from '@common/pipe/adapt-translation-by-call-type.pipe';
 import {SecondsToTimePipePipe} from '@common/pipe/seconds-to-time-pipe.pipe';
 import {ChecklistAnswersComponent} from '@common/components/checklist/checklist-answers/checklist-answers.component';
+import {
+  PublicPageTemplateComponent
+} from '@common/components/page-templates/public-page-template/public-page-template.component';
 
 const modules = [
   CommonModule,
@@ -118,7 +121,8 @@ const declarations = [
   FilterListInputComponent,
   FilterAutocompleteInputComponent,
   SecondsToTimePipePipe,
-  ChecklistAnswersComponent
+  ChecklistAnswersComponent,
+  PublicPageTemplateComponent
 ];
 
 const providers = [

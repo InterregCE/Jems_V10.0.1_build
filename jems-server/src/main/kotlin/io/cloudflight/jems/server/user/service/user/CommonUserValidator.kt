@@ -5,8 +5,8 @@ import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.common.validator.PASSWORD_REGEX
 import io.cloudflight.jems.server.user.service.model.UserChange
 
-private const val PASSWORD_FIELD_NAME = "password"
-private const val PASSWORD_ERROR_KEY = "user.password.constraints.not.satisfied"
+const val PASSWORD_FIELD_NAME = "password"
+const val PASSWORD_ERROR_KEY = "user.password.constraints.not.satisfied"
 
 fun validateUserCommon(generalValidator: GeneralValidatorService, user: UserChange) {
     generalValidator.throwIfAnyIsInvalid(

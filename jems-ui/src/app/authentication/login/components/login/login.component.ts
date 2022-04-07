@@ -24,6 +24,7 @@ export class LoginComponent extends AbstractFormComponent {
   });
 
   registerLink = '/no-auth/register';
+  forgotPasswordLink = '/no-auth/forgotPassword';
 
   largeLogo$ = this.resourceStore.largeLogo$;
 
