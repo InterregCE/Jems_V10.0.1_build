@@ -24,7 +24,7 @@
                             <mat-label>{{'programme.checklists.detail.name' | translate}}</mat-label>
                             <input #name formControlName="name" matInput required>
                             <mat-hint [jemsHintFor]="name" [hide]="form.controls?.name?.errors !== null">
-                                <jems-text-hint [currentLength]="name?.value?.length" [maxLength]="200"></jems-text-hint>
+                                <jems-text-hint [currentLength]="name?.value?.length" [maxLength]="100"></jems-text-hint>
                             </mat-hint>
                             <mat-error>
                                 <jems-form-field-errors [errors]="form?.controls?.name?.errors"></jems-form-field-errors>
