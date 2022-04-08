@@ -8,9 +8,12 @@ import io.cloudflight.jems.server.project.service.report.ProjectReportPersistenc
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.ReportStatus
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectReportExpenditurePersistence
+import io.cloudflight.jems.server.project.service.report.partner.expenditure.clearConversions
+import io.cloudflight.jems.server.project.service.report.partner.expenditure.filterInvalidCurrencies
 import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectReportProcurementPersistence
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import org.springframework.stereotype.Service
+import java.math.BigDecimal
 
 @Service
 class UpdateProjectPartnerReportExpenditure(
@@ -23,6 +26,9 @@ class UpdateProjectPartnerReportExpenditure(
 ) : UpdateProjectPartnerReportExpenditureInteractor {
 
     companion object {
+        private val MAX_NUMBER = BigDecimal.valueOf(999_999_999_99, 2)
+        private val MIN_NUMBER = BigDecimal.ZERO
+
         private const val MAX_AMOUNT = 150
     }
 
@@ -31,33 +37,39 @@ class UpdateProjectPartnerReportExpenditure(
     override fun updatePartnerReportExpenditureCosts(
         partnerId: Long,
         reportId: Long,
-        expenditureCosts: List<ProjectPartnerReportExpenditureCost>
+        expenditureCosts: List<ProjectPartnerReportExpenditureCost>,
     ): List<ProjectPartnerReportExpenditureCost> {
         validateInputs(expenditureCosts = expenditureCosts)
 
-        val statusAndVersion = reportPersistence.getPartnerReportStatusAndVersion(partnerId, reportId = reportId)
-        validateReportNotClosed(
-            status = statusAndVersion.status
-        )
+        val report = reportPersistence.getPartnerReportById(partnerId, reportId = reportId)
+        validateReportNotClosed(status = report.status)
+        validateCurrencies(expenditureCosts, defaultCurrency = report.identification.currency)
+
         validateLinkedProcurements(
             expenditureCosts = expenditureCosts,
-            allowedProcurementIds = getAvailableProcurements(partnerId, reportId = reportId).mapTo(HashSet()) { it.id },
+            allowedProcurementIds = getAvailableProcurements(partnerId, reportId = report.id).mapTo(HashSet()) { it.id },
             allowedInvestmentIds = workPackagePersistence.getProjectInvestmentSummaries(
-                projectId = partnerPersistence.getProjectIdForPartnerId(partnerId, statusAndVersion.version),
-                version = statusAndVersion.version,
+                projectId = partnerPersistence.getProjectIdForPartnerId(partnerId, report.version),
+                version = report.version,
             ).mapTo(HashSet()) { it.id },
         )
 
         return reportExpenditurePersistence.updatePartnerReportExpenditureCosts(
             partnerId = partnerId,
-            reportId = reportId,
-            expenditureCosts = expenditureCosts,
+            reportId = report.id,
+            expenditureCosts = expenditureCosts.clearConversions(),
         )
     }
 
     private fun validateReportNotClosed(status: ReportStatus) {
         if (status.isClosed())
             throw ReportAlreadyClosed()
+    }
+
+    private fun validateCurrencies(expenditureCosts: List<ProjectPartnerReportExpenditureCost>, defaultCurrency: String?) {
+        val invalidCurrencies = expenditureCosts.filterInvalidCurrencies(defaultCurrency) { it.currencyCode }
+        if (invalidCurrencies.isNotEmpty())
+            throw PartnerWithDefaultEurCannotSelectOtherCurrency(invalidCurrencies)
     }
 
     private fun validateInputs(expenditureCosts: List<ProjectPartnerReportExpenditureCost>) {
@@ -77,6 +89,10 @@ class UpdateProjectPartnerReportExpenditure(
             *expenditureCosts.mapIndexed { index, it ->
                 generalValidator.maxLength(it.invoiceNumber, 30, "invoiceNumber[$index]")
             }.toTypedArray(),
+            *expenditureCosts.mapIndexed { index, it ->
+                generalValidator.numberBetween(it.declaredAmount, MAX_NUMBER, MIN_NUMBER, "declaredAmount[$index]")
+            }.toTypedArray(),
+            generalValidator.onlyValidCurrencies(expenditureCosts.mapTo(HashSet()) { it.currencyCode }, "currencyCode"),
         )
     }
 

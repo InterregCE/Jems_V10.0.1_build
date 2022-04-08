@@ -128,6 +128,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       costCategory: ['', Validators.required],
       investmentId: '',
       contractId: '',
+      currencyCode: 'EUR',
       internalReferenceNumber: ['', Validators.maxLength(30)],
       invoiceNumber: ['', Validators.maxLength(30)],
       invoiceDate: '',
@@ -246,7 +247,8 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
         comment: this.formBuilder.control(reportExpenditureCost?.comment),
         totalValueInvoice: this.formBuilder.control(reportExpenditureCost?.totalValueInvoice),
         vat: this.formBuilder.control(reportExpenditureCost?.vat),
-        declaredAmount: this.formBuilder.control(reportExpenditureCost?.declaredAmount)
+        declaredAmount: this.formBuilder.control(reportExpenditureCost?.declaredAmount),
+        currencyCode: this.formBuilder.control(reportExpenditureCost?.currencyCode || 'EUR'),
       })
     );
   }

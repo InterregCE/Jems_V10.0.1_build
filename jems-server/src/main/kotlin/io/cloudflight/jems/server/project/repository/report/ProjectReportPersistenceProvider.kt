@@ -180,6 +180,10 @@ class ProjectReportPersistenceProvider(
         partnerReportRepository.getReportIdsForPartnerBefore(partnerId = partnerId, reportId = beforeReportId)
 
     @Transactional(readOnly = true)
+    override fun exists(partnerId: Long, reportId: Long) =
+        partnerReportRepository.existsByPartnerIdAndId(partnerId = partnerId, id = reportId)
+
+    @Transactional(readOnly = true)
     override fun getCurrentLatestReportNumberForPartner(partnerId: Long): Int =
         partnerReportRepository.getMaxNumberForPartner(partnerId = partnerId)
 

@@ -22,6 +22,9 @@ fun List<PartnerReportExpenditureCostEntity>.toModel() = map {
         totalValueInvoice = it.totalValueInvoice,
         vat = it.vat,
         declaredAmount = it.declaredAmount,
+        currencyCode = it.currencyCode,
+        currencyConversionRate = it.currencyConversionRate,
+        declaredAmountAfterSubmission = it.declaredAmountAfterSubmission,
         comment = it.translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.comment) },
         description = it.translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.description) }
     )
@@ -41,6 +44,9 @@ fun List<ProjectPartnerReportExpenditureCost>.toEntities(reportEntity: ProjectPa
         totalValueInvoice = it.totalValueInvoice,
         vat = it.vat,
         declaredAmount = it.declaredAmount,
+        currencyCode = it.currencyCode,
+        currencyConversionRate = it.currencyConversionRate,
+        declaredAmountAfterSubmission = it.declaredAmountAfterSubmission,
         translatedValues = mutableSetOf(),
     ).apply {
         translatedValues.addTranslation(this, it.comment, it.description)

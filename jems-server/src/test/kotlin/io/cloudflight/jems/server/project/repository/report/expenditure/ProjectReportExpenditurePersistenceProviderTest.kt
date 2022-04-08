@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.repository.report.expenditure
 
+import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
@@ -38,7 +39,7 @@ class ProjectReportExpenditurePersistenceProviderTest : UnitTest() {
         private fun dummyExpenditure(id: Long, report: ProjectPartnerReportEntity) = PartnerReportExpenditureCostEntity(
             id = id,
             partnerReport = report,
-            costCategory = "cc",
+            costCategory = BudgetCategory.InfrastructureCosts,
             investmentId = INVESTMENT_ID,
             procurementId = PROCUREMENT_ID,
             internalReferenceNumber = "irn",
@@ -48,6 +49,9 @@ class ProjectReportExpenditurePersistenceProviderTest : UnitTest() {
             totalValueInvoice = BigDecimal.ONE,
             vat = BigDecimal.ZERO,
             declaredAmount = BigDecimal.TEN,
+            currencyCode = "HUF",
+            currencyConversionRate = BigDecimal.valueOf(368),
+            declaredAmountAfterSubmission = BigDecimal.valueOf(3680),
             translatedValues = mutableSetOf(),
         ).apply {
             translatedValues.add(
@@ -61,7 +65,7 @@ class ProjectReportExpenditurePersistenceProviderTest : UnitTest() {
 
         private fun dummyExpectedExpenditure(id: Long) = ProjectPartnerReportExpenditureCost(
             id = id,
-            costCategory = "cc",
+            costCategory = BudgetCategory.InfrastructureCosts,
             investmentId = INVESTMENT_ID,
             contractId = PROCUREMENT_ID,
             internalReferenceNumber = "irn",
@@ -73,11 +77,14 @@ class ProjectReportExpenditurePersistenceProviderTest : UnitTest() {
             totalValueInvoice = BigDecimal.ONE,
             vat = BigDecimal.ZERO,
             declaredAmount = BigDecimal.TEN,
+            currencyCode = "HUF",
+            currencyConversionRate = BigDecimal.valueOf(368),
+            declaredAmountAfterSubmission = BigDecimal.valueOf(3680),
         )
 
         private fun dummyExpectedExpenditureNew(id: Long) = ProjectPartnerReportExpenditureCost(
             id = id,
-            costCategory = "cc NEW",
+            costCategory = BudgetCategory.EquipmentCosts,
             investmentId = INVESTMENT_ID + 10,
             contractId = PROCUREMENT_ID + 10,
             internalReferenceNumber = "irn NEW",
@@ -89,6 +96,9 @@ class ProjectReportExpenditurePersistenceProviderTest : UnitTest() {
             totalValueInvoice = BigDecimal.ZERO,
             vat = BigDecimal.TEN,
             declaredAmount = BigDecimal.ONE,
+            currencyCode = "HUF",
+            currencyConversionRate = BigDecimal.valueOf(368),
+            declaredAmountAfterSubmission = BigDecimal.valueOf(3680),
         )
     }
 
@@ -147,7 +157,7 @@ class ProjectReportExpenditurePersistenceProviderTest : UnitTest() {
         assertThat(slotSavedEntities.captured).hasSize(2)
 
         with(slotSavedEntities.captured.first { it.id == EXPENDITURE_TO_UPDATE }) {
-            assertThat(costCategory).isEqualTo("cc NEW")
+            assertThat(costCategory).isEqualTo(BudgetCategory.EquipmentCosts)
             assertThat(investmentId).isEqualTo(INVESTMENT_ID + 10)
             assertThat(procurementId).isEqualTo(PROCUREMENT_ID + 10)
             assertThat(internalReferenceNumber).isEqualTo("irn NEW")
@@ -161,7 +171,7 @@ class ProjectReportExpenditurePersistenceProviderTest : UnitTest() {
             assertThat(declaredAmount).isEqualByComparingTo(BigDecimal.ONE)
         }
         with(slotSavedEntities.captured.first { it.id == EXPENDITURE_TO_STAY }) {
-            assertThat(costCategory).isEqualTo("cc")
+            assertThat(costCategory).isEqualTo(BudgetCategory.InfrastructureCosts)
             assertThat(investmentId).isEqualTo(INVESTMENT_ID)
             assertThat(procurementId).isEqualTo(PROCUREMENT_ID)
             assertThat(internalReferenceNumber).isEqualTo("irn")

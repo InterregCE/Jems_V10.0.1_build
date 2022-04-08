@@ -56,5 +56,7 @@ interface GeneralValidatorService {
 
     fun notEqualTo(item: String?, compareTo: String, fieldName: String): Map<String, I18nMessage>
 
+    fun onlyValidCurrencies(currencyCodes: Set<String>, fieldName: String): Map<String, I18nMessage>
+
     fun throwIfAnyIsInvalid(vararg validationResult: Map<String, I18nMessage>)
 }

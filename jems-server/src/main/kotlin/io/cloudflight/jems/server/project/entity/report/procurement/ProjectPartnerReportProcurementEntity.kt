@@ -32,6 +32,9 @@ class ProjectPartnerReportProcurementEntity(
     var contractAmount: BigDecimal,
 
     @field:NotNull
+    var currencyCode: String,
+
+    @field:NotNull
     var supplierName: String,
 
     @ManyToOne

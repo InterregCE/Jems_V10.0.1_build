@@ -20,13 +20,17 @@ class GetProjectPartnerReportProcurement(
     @Transactional(readOnly = true)
     @ExceptionWrapper(GetProjectPartnerReportProcurementException::class)
     override fun getProcurement(partnerId: Long, reportId: Long) =
-        getProcurementList(partnerId = partnerId, reportId = reportId).fillThisReportFlag(currentReportId = reportId)
+        if (reportPersistence.exists(partnerId = partnerId, reportId = reportId))
+            getProcurementList(partnerId = partnerId, reportId = reportId).fillThisReportFlag(currentReportId = reportId)
+        else throw PartnerReportNotFound()
 
     @CanViewPartnerReport
     @Transactional(readOnly = true)
     @ExceptionWrapper(GetProjectPartnerReportProcurementsForSelectorException::class)
     override fun getProcurementsForSelector(partnerId: Long, reportId: Long): List<IdNamePair> =
-        getProcurementList(partnerId = partnerId, reportId = reportId).map { IdNamePair(it.id, it.contractId) }
+        if (reportPersistence.exists(partnerId = partnerId, reportId = reportId))
+            getProcurementList(partnerId = partnerId, reportId = reportId).map { IdNamePair(it.id, it.contractId) }
+        else throw PartnerReportNotFoundForSelector()
 
     private fun getProcurementList(partnerId: Long, reportId: Long): List<ProjectPartnerReportProcurement> {
         val previousReportIds = reportPersistence.getReportIdsBefore(partnerId = partnerId, beforeReportId = reportId)

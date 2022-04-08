@@ -17,3 +17,11 @@ class ReportAlreadyClosed : ApplicationUnprocessableException(
     code = "$SUBMIT_PROJECT_PARTNER_REPORT_ERROR_CODE_PREFIX-001",
     i18nMessage = I18nMessage("$SUBMIT_PROJECT_PARTNER_REPORT_ERROR_KEY_PREFIX.report.already.closed"),
 )
+
+class CurrencyRatesMissing(missingRates: Set<String>) : ApplicationUnprocessableException(
+    code = "$SUBMIT_PROJECT_PARTNER_REPORT_ERROR_CODE_PREFIX-002",
+    i18nMessage = I18nMessage(
+        "$SUBMIT_PROJECT_PARTNER_REPORT_ERROR_KEY_PREFIX.currency.rates.not.available.for.this.month",
+        i18nArguments = mapOf("currencyCode" to missingRates.joinToString(", ")),
+    ),
+)

@@ -365,6 +365,27 @@ internal class GeneralValidatorDefaultImplTest : UnitTest() {
         }
 
     @Test
+    fun `should return correct validation result when currency is not valid`() {
+        assertThat(generalValidator.onlyValidCurrencies(setOf("AAA", "AAB", "AAC"), "inputName")["inputName"])
+            .isEqualTo(
+                I18nMessage(
+                    i18nKey = "common.error.currency.code.invalid",
+                    i18nArguments = mapOf(
+                        "AAA" to "invalid.currency.code",
+                        "AAB" to "invalid.currency.code",
+                        "AAC" to "invalid.currency.code",
+                        "currencyCodes" to "AAA, AAB, AAC",
+                    ),
+                )
+            )
+    }
+
+    @Test
+    fun `should return correct validation result when currency is valid`() {
+        assertThat(generalValidator.onlyValidCurrencies(setOf("EUR", "PLN", "HUF"), "inputName")).isEmpty()
+    }
+
+    @Test
     fun `should throw AppInputValidationException when there is at least one validation error`() {
         val input = "input text"
         val validInput = "12"

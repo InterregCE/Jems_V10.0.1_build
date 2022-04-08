@@ -12,6 +12,7 @@ data class ProjectPartnerReportProcurementDTO(
     val contractId: String,
     val contractType: Set<InputTranslation>,
     val contractAmount: BigDecimal,
+    val currencyCode: String?,
     val supplierName: String,
     val comment: Set<InputTranslation>,
     val attachment: ProjectReportFileMetadataDTO?,
