@@ -9,7 +9,7 @@ import {
   ProjectPartnerReportWorkPackageActivityDeliverableDTO,
   ProjectPartnerReportWorkPackageActivityDTO,
   ProjectPartnerReportWorkPackageDTO,
-  ProjectPartnerReportWorkPackageOutputDTO, WorkPackageActivityDTO,
+  ProjectPartnerReportWorkPackageOutputDTO,
 } from '@cat/api';
 import {catchError, take, tap} from 'rxjs/operators';
 import {

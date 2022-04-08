@@ -46,4 +46,9 @@ export class PartnerReportProcurementsTabConstants {
     maxLength: 2000,
     validators: [Validators.maxLength(2000)]
   };
+
+  public static ATTACHMENT: AppControl = {
+    name: 'attachment',
+  };
+
 }
