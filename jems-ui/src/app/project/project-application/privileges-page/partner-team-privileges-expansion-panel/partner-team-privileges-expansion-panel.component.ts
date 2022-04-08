@@ -75,7 +75,7 @@ export class PartnerTeamPrivilegesExpansionPanelComponent implements OnInit, OnC
           if (apiError?.formErrors) {
             Object.keys(apiError.formErrors).forEach(field => {
               const control = this.partnerCollaborators.controls
-                .find(collaborator => collaborator.get('userEmail')?.value === field)?.get('userEmail');
+                .find(collaborator => collaborator.get('userEmail')?.value.toLowerCase() === field)?.get('userEmail');
               control?.setErrors({error: this.translateService.instant(apiError.formErrors[field].i18nKey)});
               control?.markAsDirty();
             });
