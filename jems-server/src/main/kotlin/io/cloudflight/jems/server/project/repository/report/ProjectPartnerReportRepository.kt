@@ -13,6 +13,8 @@ interface ProjectPartnerReportRepository : JpaRepository<ProjectPartnerReportEnt
 
     fun findAllByPartnerId(partnerId: Long, pageable: Pageable): Page<ProjectPartnerReportEntity>
 
+    fun existsByPartnerIdAndId(partnerId: Long, id: Long): Boolean
+
     fun findAllByPartnerIdAndStatus(partnerId: Long, status: ReportStatus): List<ProjectPartnerReportEntity>
 
     fun findByIdAndPartnerId(id: Long, partnerId: Long): ProjectPartnerReportEntity

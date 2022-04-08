@@ -26,7 +26,7 @@ export class PartnerReportProcurementsTabConstants {
   };
 
   public static CURRENCY: AppControl = {
-    name: 'currency'
+    name: 'currencyCode',
   };
 
   public static SUPPLIER_NAME: AppControl = {

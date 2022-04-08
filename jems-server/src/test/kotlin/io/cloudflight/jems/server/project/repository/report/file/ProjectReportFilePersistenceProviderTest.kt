@@ -25,6 +25,7 @@ import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import java.math.BigDecimal
 import java.math.BigDecimal.ONE
 import java.time.ZonedDateTime
 import java.util.*
@@ -84,6 +85,7 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
             reportEntity = mockk(),
             contractId = "contractId",
             contractAmount = ONE,
+            currencyCode = "HRK",
             supplierName = "supplierName",
             attachment = attachment,
         )

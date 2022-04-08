@@ -6,11 +6,13 @@ import io.cloudflight.jems.server.project.authorization.CanEditPartnerReport
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.procurement.ProjectPartnerReportProcurement
 import io.cloudflight.jems.server.project.service.report.model.procurement.ProjectPartnerReportProcurementUpdate
+import io.cloudflight.jems.server.project.service.report.partner.expenditure.filterInvalidCurrencies
 import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectReportProcurementPersistence
 import io.cloudflight.jems.server.project.service.report.partner.procurement.fillThisReportFlag
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
+import kotlin.collections.HashSet
 
 @Service
 class UpdateProjectPartnerReportProcurement(
@@ -36,7 +38,10 @@ class UpdateProjectPartnerReportProcurement(
     ): List<ProjectPartnerReportProcurement> {
         validateInputFields(data = procurementNew)
 
-        val previousReportIds = reportPersistence.getReportIdsBefore(partnerId = partnerId, beforeReportId = reportId)
+        val report = reportPersistence.getPartnerReportById(partnerId = partnerId, reportId = reportId)
+        val previousReportIds = reportPersistence.getReportIdsBefore(partnerId = partnerId, beforeReportId = report.id)
+        validateAllowedCurrenciesIfEur(procurementNew, partnerCurrency = report.identification.currency)
+
         val previousProcurementsAmount = reportProcurementPersistence.countProcurementsForReportIds(previousReportIds)
 
         validateMaxAmountOfProcurements(dataNew = procurementNew, oldAmount = previousProcurementsAmount)
@@ -78,7 +83,14 @@ class UpdateProjectPartnerReportProcurement(
             *data.mapIndexed { index, it ->
                 generalValidator.numberBetween(it.contractAmount, MIN_NUMBER, MAX_NUMBER, "contractAmount[$index]")
             }.toTypedArray(),
+            generalValidator.onlyValidCurrencies(currencyCodes = data.mapTo(HashSet()) { it.currencyCode }, "currencyCode"),
         )
+    }
+
+    private fun validateAllowedCurrenciesIfEur(data: List<ProjectPartnerReportProcurementUpdate>, partnerCurrency: String?) {
+        val invalidCurrencies = data.filterInvalidCurrencies(partnerCurrency) { it.currencyCode }
+        if (invalidCurrencies.isNotEmpty())
+            throw InvalidCurrency(invalid = invalidCurrencies)
     }
 
     private fun validateMaxAmountOfProcurements(dataNew: List<ProjectPartnerReportProcurementUpdate>, oldAmount: Long) {

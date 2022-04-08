@@ -40,6 +40,7 @@ class ProjectPartnerReportProcurementControllerTest : UnitTest() {
             contractId = "contractId",
             contractType = setOf(InputTranslation(SystemLanguage.EN, "contractType EN")),
             contractAmount = BigDecimal.TEN,
+            currencyCode = "PLN",
             supplierName = "supplierName",
             comment = setOf(InputTranslation(SystemLanguage.EN, "comment EN")),
             attachment = ProjectReportFileMetadata(500L, "file.txt", UPLOADED),
@@ -53,6 +54,7 @@ class ProjectPartnerReportProcurementControllerTest : UnitTest() {
             contractId = "contractId",
             contractType = setOf(InputTranslation(SystemLanguage.EN, "contractType EN")),
             contractAmount = BigDecimal.TEN,
+            currencyCode = "PLN",
             supplierName = "supplierName",
             comment = setOf(InputTranslation(SystemLanguage.EN, "comment EN")),
             attachment = ProjectReportFileMetadataDTO(500L, "file.txt", UPLOADED),
@@ -63,6 +65,7 @@ class ProjectPartnerReportProcurementControllerTest : UnitTest() {
             contractId = "contractId",
             contractType = setOf(InputTranslation(SystemLanguage.EN, "contractType EN")),
             contractAmount = BigDecimal.TEN,
+            currencyCode = "PLN",
             supplierName = "supplierName",
             comment = setOf(InputTranslation(SystemLanguage.EN, "comment EN")),
         )
@@ -72,6 +75,7 @@ class ProjectPartnerReportProcurementControllerTest : UnitTest() {
             contractId = "contractId",
             contractType = setOf(InputTranslation(SystemLanguage.EN, "contractType EN")),
             contractAmount = BigDecimal.TEN,
+            currencyCode = "PLN",
             supplierName = "supplierName",
             comment = setOf(InputTranslation(SystemLanguage.EN, "comment EN")),
         )

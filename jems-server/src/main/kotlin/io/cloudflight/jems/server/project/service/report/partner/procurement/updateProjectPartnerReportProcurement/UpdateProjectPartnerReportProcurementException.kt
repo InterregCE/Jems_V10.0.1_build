@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.service.report.partner.procurement.up
 
 import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.server.common.exception.ApplicationException
+import io.cloudflight.jems.server.common.exception.ApplicationNotFoundException
 import io.cloudflight.jems.server.common.exception.ApplicationUnprocessableException
 
 private const val UDPATE_PROJECT_PARTNER_REPORT_PROCUREMENT_ERROR_CODE_PREFIX = "S-UPPRP"
@@ -30,4 +31,14 @@ class ContractIdsAreNotUnique(notUniqueIds: Set<String>) : ApplicationUnprocessa
     ),
     formErrors = notUniqueIds.associateBy({ it }, { I18nMessage(i18nKey = "not.unique") }),
     message = "duplicates: $notUniqueIds",
+)
+
+class InvalidCurrency(invalid: Set<String>) : ApplicationNotFoundException(
+    code = "$UDPATE_PROJECT_PARTNER_REPORT_PROCUREMENT_ERROR_CODE_PREFIX-003",
+    i18nMessage = I18nMessage(
+        i18nKey = "$UPDATE_PROJECT_PARTNER_REPORT_PROCUREMENT_ERROR_KEY_PREFIX.invalid.currency",
+        i18nArguments = mapOf(
+            "invalid" to invalid.joinToString(", "),
+        ),
+    ),
 )

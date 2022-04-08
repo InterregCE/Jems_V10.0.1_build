@@ -115,7 +115,7 @@ export class PartnerReportProcurementsTabComponent {
         contractId: this.formBuilder.control(procurement?.contractId || '', this.constants.CONTRACT_ID.validators),
         contractType: this.formBuilder.control(procurement?.contractType || [], this.constants.CONTRACT_TYPE.validators),
         contractAmount: this.formBuilder.control(procurement?.contractAmount || 0),
-        currency: this.formBuilder.control(''),
+        currencyCode: this.formBuilder.control('EUR'),
         supplierName: this.formBuilder.control(procurement?.supplierName || '', this.constants.SUPPLIER_NAME.validators),
         comment: this.formBuilder.control(procurement?.comment || [], this.constants.COMMENT.validators),
         commentPreview: this.formBuilder.control(procurement?.comment || [], this.constants.COMMENT.validators),

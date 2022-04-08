@@ -6,7 +6,7 @@ import java.time.LocalDate
 
 data class ProjectPartnerReportExpenditureCostDTO(
     val id: Long?,
-    val costCategory: String,
+    val costCategory: BudgetCategoryDTO,
     val investmentId: Long?,
     val contractId: Long?,
     val internalReferenceNumber: String?,
@@ -17,5 +17,8 @@ data class ProjectPartnerReportExpenditureCostDTO(
     val comment: Set<InputTranslation> = emptySet(),
     val totalValueInvoice: BigDecimal? = null,
     val vat: BigDecimal? = null,
-    val declaredAmount: BigDecimal? = null
+    val declaredAmount: BigDecimal = BigDecimal.ZERO,
+    val currencyCode: String,
+    val currencyConversionRate: BigDecimal?,
+    val declaredAmountAfterSubmission: BigDecimal?,
 )

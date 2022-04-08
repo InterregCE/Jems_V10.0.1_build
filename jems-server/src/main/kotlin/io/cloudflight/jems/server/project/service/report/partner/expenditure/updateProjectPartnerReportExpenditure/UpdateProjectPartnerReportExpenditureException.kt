@@ -23,3 +23,11 @@ class ReportAlreadyClosed : ApplicationUnprocessableException(
     code = "$UPDATE_PROJECT_PARTNER_REPORT_EC_ERROR_CODE_PREFIX-002",
     i18nMessage = I18nMessage(i18nKey = "$UPDATE_PROJECT_PARTNER_REPORT_EC_ERROR_KEY_PREFIX.report.already.closed"),
 )
+
+class PartnerWithDefaultEurCannotSelectOtherCurrency(otherUsedCurrencies: Set<String>) : ApplicationUnprocessableException(
+    code = "$UPDATE_PROJECT_PARTNER_REPORT_EC_ERROR_CODE_PREFIX-003",
+    i18nMessage = I18nMessage(
+        i18nKey = "$UPDATE_PROJECT_PARTNER_REPORT_EC_ERROR_KEY_PREFIX.only.eur.allowed",
+        i18nArguments = mapOf("currencyCodes" to otherUsedCurrencies.joinToString(", "))
+    ),
+)

@@ -8,11 +8,14 @@ import io.cloudflight.jems.server.project.service.report.ProjectReportPersistenc
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
 import io.cloudflight.jems.server.project.service.report.model.procurement.ProjectPartnerReportProcurement
 import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectReportProcurementPersistence
+import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import java.math.BigDecimal
 import java.time.ZonedDateTime
 
@@ -29,6 +32,7 @@ internal class GetProjectPartnerReportProcurementTest : UnitTest() {
             contractId = "contractId 100",
             contractType = setOf(InputTranslation(SystemLanguage.EN, "contractType EN")),
             contractAmount = BigDecimal.TEN,
+            currencyCode = "GBP",
             supplierName = "supplierName",
             comment = setOf(InputTranslation(SystemLanguage.EN, "comment EN")),
             attachment = null,
@@ -41,10 +45,16 @@ internal class GetProjectPartnerReportProcurementTest : UnitTest() {
             contractId = "contractId 101",
             contractType = setOf(InputTranslation(SystemLanguage.EN, "contractType EN")),
             contractAmount = BigDecimal.TEN,
+            currencyCode = "GBP",
             supplierName = "supplierName",
             comment = setOf(InputTranslation(SystemLanguage.EN, "comment EN")),
             attachment = ProjectReportFileMetadata(45L, "file.txt", ZonedDateTime.now()),
         )
+
+    }
+
+    private fun mockExists(reportId: Long, exists: Boolean) {
+        every { reportPersistence.exists(PARTNER_ID, reportId) } returns exists
     }
 
     @MockK
@@ -55,6 +65,13 @@ internal class GetProjectPartnerReportProcurementTest : UnitTest() {
 
     @InjectMockKs
     lateinit var interactor: GetProjectPartnerReportProcurement
+
+    @BeforeEach
+    fun reset() {
+        clearMocks(reportPersistence)
+        mockExists(54L, true)
+        mockExists(-1L, false)
+    }
 
     @Test
     fun getProcurement() {
@@ -70,6 +87,11 @@ internal class GetProjectPartnerReportProcurementTest : UnitTest() {
     }
 
     @Test
+    fun `getProcurement - not existing`() {
+        assertThrows<PartnerReportNotFound> { interactor.getProcurement(PARTNER_ID, reportId = -1L) }
+    }
+
+    @Test
     fun getProcurementsForSelector() {
         every { reportPersistence.getReportIdsBefore(PARTNER_ID, beforeReportId = 54) } returns setOf(53L)
         every { reportProcurementPersistence.getProcurementsForReportIds(setOf(53L, 54L)) } returns
@@ -80,6 +102,11 @@ internal class GetProjectPartnerReportProcurementTest : UnitTest() {
                 IdNamePair(101L, "contractId 101"),
                 IdNamePair(100L, "contractId 100"),
             )
+    }
+
+    @Test
+    fun `getProcurementsForSelector - not existing`() {
+        assertThrows<PartnerReportNotFoundForSelector> { interactor.getProcurementsForSelector(PARTNER_ID, reportId = -1L) }
     }
 
 }

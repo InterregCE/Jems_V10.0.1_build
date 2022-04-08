@@ -96,6 +96,8 @@
                                 <mat-select class="placeholder-required" [formControlName]="constants.CURRENCY.name"
                                             [attr.disabled]="true"
                                             placeholder="{{'call.detail.first.step.pre.submission.check.config.placeholder' | translate}}">
+                                    <mat-option [value]="null">N/A</mat-option>
+                                    <mat-option [value]="'EUR'">EUR</mat-option>
                                 </mat-select>
                             </td>
                         </ng-container>

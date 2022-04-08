@@ -68,6 +68,7 @@ class ProjectReportProcurementPersistenceProvider(
     private fun ProjectPartnerReportProcurementEntity.updateWith(newData: ProjectPartnerReportProcurementUpdate) {
         contractId = newData.contractId
         contractAmount = newData.contractAmount
+        currencyCode = newData.currencyCode
         supplierName = newData.supplierName
 
         // update translations

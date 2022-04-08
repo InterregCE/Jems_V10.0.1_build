@@ -56,6 +56,7 @@ class ProjectReportProcurementPersistenceProviderTest : UnitTest() {
             reportEntity = reportEntity,
             contractId = "contractId",
             contractAmount = BigDecimal.TEN,
+            currencyCode = "GBP",
             supplierName = "supplierName",
             attachment = dummyAttachment,
         ).apply {
@@ -76,6 +77,7 @@ class ProjectReportProcurementPersistenceProviderTest : UnitTest() {
             contractId = "contractId",
             contractType = setOf(InputTranslation(SystemLanguage.EN, "contractType EN")),
             contractAmount = BigDecimal.TEN,
+            currencyCode = "GBP",
             supplierName = "supplierName",
             comment = setOf(InputTranslation(SystemLanguage.EN, "comment EN")),
             attachment = ProjectReportFileMetadata(dummyAttachment.id, dummyAttachment.name, dummyAttachment.uploaded),
@@ -86,6 +88,7 @@ class ProjectReportProcurementPersistenceProviderTest : UnitTest() {
             contractId = "contractId NEW",
             contractType = setOf(InputTranslation(SystemLanguage.EN, "contractType EN NEW")),
             contractAmount = BigDecimal.ONE,
+            currencyCode = "CZK",
             supplierName = "supplierName NEW",
             comment = setOf(InputTranslation(SystemLanguage.EN, "comment EN NEW")),
         )
@@ -95,6 +98,7 @@ class ProjectReportProcurementPersistenceProviderTest : UnitTest() {
             reportEntity = reportEntity,
             contractId = "contractId",
             contractAmount = BigDecimal.TEN,
+            currencyCode = "GBP",
             supplierName = "supplierName",
             attachment = dummyAttachment,
         ).apply {
@@ -203,6 +207,7 @@ class ProjectReportProcurementPersistenceProviderTest : UnitTest() {
             assertThat(it.reportEntity).isEqualTo(report)
             assertThat(it.contractId).isEqualTo("contractId NEW")
             assertThat(it.contractAmount).isEqualByComparingTo(BigDecimal.ONE)
+            assertThat(it.currencyCode).isEqualTo("CZK")
             assertThat(it.supplierName).isEqualTo("supplierName NEW")
             assertThat(it.translatedValues.first().comment).isEqualTo("comment EN NEW")
             assertThat(it.translatedValues.first().contractType).isEqualTo("contractType EN NEW")

@@ -539,6 +539,12 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
     }
 
     @Test
+    fun exists() {
+        every { partnerReportRepository.existsByPartnerIdAndId(PARTNER_ID, 25L) } returns false
+        assertThat(persistence.exists(PARTNER_ID, 25L)).isFalse
+    }
+
+    @Test
     fun getCurrentLatestReportNumberForPartner() {
         every { partnerReportRepository.getMaxNumberForPartner(PARTNER_ID) } returns 7
         assertThat(persistence.getCurrentLatestReportNumberForPartner(PARTNER_ID)).isEqualTo(7)
