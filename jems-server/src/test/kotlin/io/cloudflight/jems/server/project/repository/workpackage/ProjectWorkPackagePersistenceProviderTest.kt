@@ -298,6 +298,8 @@ class ProjectWorkPackagePersistenceProviderTest : UnitTest() {
             )
         )
 
+        every { repositoryActivity.saveAll(wp.activities) } returns wp.activities
+
         val activities = persistence.updateWorkPackageActivities(WORK_PACKAGE_ID, toBeSaved)
 
         assertThat(activities).containsExactly(

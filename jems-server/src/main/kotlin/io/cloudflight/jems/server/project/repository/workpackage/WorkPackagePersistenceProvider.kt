@@ -291,9 +291,9 @@ class WorkPackagePersistenceProvider(
         workPackageActivities: List<WorkPackageActivity>
     ): List<WorkPackageActivity> {
         val workPackage = getWorkPackageOrThrow(workPackageId)
-        return workPackage.also {
+        return workPackageActivityRepository.saveAll(workPackage.also {
             it.updateActivities(workPackageActivities.toIndexedEntity(workPackage = workPackage))
-        }.activities.toModel()
+        }.activities).toModel()
     }
 
 
