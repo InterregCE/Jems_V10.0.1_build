@@ -110,6 +110,14 @@ To exchange the current default Logos used by Jems Minio has to be used directly
 `jems-logo-file-bucket` has to be added. The following files are currently used:
 - InterregProgrammeLogo_200.png
 
+#### Email Setup
+To have Jems use email templates, upload the intended Html templates to the Minio bucket `email-templates`.
+For the Mailserver setup see the 'Startup parameters' below `app.notification.mail.enabled` which should be true.
+The following templates are currently being used:
+- password-reset-link.html
+- password-reset-success.html
+- user-registration-confirmation.html
+
 ### API testing
 For testing the API, the module [jems-rest-test](jems-rest-test) was introduced.
 The generated documentation of the API can be found on the successful started Jems server [7].
