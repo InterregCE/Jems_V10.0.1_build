@@ -1,12 +1,18 @@
-<div *ngIf="checklist" jemsFormLayout>
-    <ng-container *ngFor="let component of checklist.components">
-        <div [ngSwitch]="component.type" class="mt-3">
-            <h4 *ngSwitchCase="COMPONENT_TYPE.HEADLINE">
-                <span>{{ getHeadline(component).value }}</span>
-            </h4>
-            <div *ngSwitchCase="COMPONENT_TYPE.OPTIONSTOGGLE" jemsMultiColumnRow stretch>
-                <span jemsText>{{ getOptionsToggle(component).question }}</span>
-                <span class="box">
+<jems-form>
+    <jems-alert [type]="Alert.WARNING"
+                [closable]="false"
+                [show]="dirty">
+        <div>{{'programme.checklists.tab.preview.warn' | translate}}</div>
+    </jems-alert>
+    <div *ngIf="checklist" jemsFormLayout>
+        <ng-container *ngFor="let component of checklist.components">
+            <div [ngSwitch]="component.type" class="mt-3">
+                <h4 *ngSwitchCase="COMPONENT_TYPE.HEADLINE">
+                    <span>{{ getHeadline(component).value }}</span>
+                </h4>
+                <div *ngSwitchCase="COMPONENT_TYPE.OPTIONSTOGGLE" jemsMultiColumnRow stretch>
+                    <span jemsText>{{ getOptionsToggle(component).question }}</span>
+                    <span class="box">
                     <mat-button-toggle-group>
                         <mat-button-toggle>
                             <span jemsText maxWidth="70">{{ getOptionsToggle(component).firstOption }}</span>
@@ -19,8 +25,9 @@
                         </mat-button-toggle>
                     </mat-button-toggle-group>
                 </span>
+                </div>
+                <div *ngSwitchDefault></div>
             </div>
-            <div *ngSwitchDefault></div>
-        </div>
-    </ng-container>
-</div>
+        </ng-container>
+    </div>
+</jems-form>
