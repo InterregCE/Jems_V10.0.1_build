@@ -1,7 +1,7 @@
 <div [formGroup]="form">
     <mat-form-field jemsFormFieldWidth="full">
         <mat-label>{{'programme.checklists.component.options.toggle.question' | translate}}</mat-label>
-        <textarea formControlName="question" matInput
+        <textarea formControlName="question" matInput required
                   #autosize="cdkTextareaAutosize"
                   [cdkTextareaAutosize]
                   [cdkAutosizeMinRows]="3"

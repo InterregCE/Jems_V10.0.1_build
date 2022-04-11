@@ -37,7 +37,7 @@
                          [jemsTableConfig]="getTableConfig()">
                         <div>
                             <span *ngIf="form.enabled">{{'programme.checklists.detail.reorder' | translate}}</span>
-                            <span>{{'programme.checklists.detail.type' | translate}}</span>
+                            <span>{{'programme.checklists.component.type' | translate}}</span>
                             <span>{{'programme.checklists.detail.options' | translate}}</span>
                             <span *ngIf="form.enabled">{{'common.delete.entry' | translate}}</span>
                         </div>
@@ -90,7 +90,9 @@
             </jems-form>
         </mat-tab>
         <mat-tab label="{{'programme.checklists.tab.preview' | translate}}">
-            <jems-checklist-answers [checklist]="checklist"></jems-checklist-answers>
+            <jems-checklist-answers [checklist]="checklist"
+                                    [dirty]="formService.dirty$ | async">
+            </jems-checklist-answers>
         </mat-tab>
     </mat-tab-group>
 </jems-main-page-template>
