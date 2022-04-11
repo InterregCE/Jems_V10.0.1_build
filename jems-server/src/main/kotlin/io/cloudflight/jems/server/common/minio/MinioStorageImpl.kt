@@ -10,6 +10,7 @@ import io.minio.MakeBucketArgs
 import io.minio.MinioClient
 import io.minio.PutObjectArgs
 import io.minio.RemoveObjectArgs
+import io.minio.errors.ErrorResponseException
 import io.minio.messages.Item
 import org.apache.commons.io.IOUtils
 import org.slf4j.LoggerFactory
@@ -57,9 +58,18 @@ class MinioStorageImpl(
     }
 
     override fun getFile(bucket: String, filePath: String): ByteArray {
-        return IOUtils.toByteArray(
-            minioClient.getObject(GetObjectArgs.builder().bucket(bucket).`object`(filePath).build())
-        )
+        val objectResponse =
+            try {
+                minioClient.getObject(GetObjectArgs.builder().bucket(bucket).`object`(filePath).build())
+            } catch (exception: ErrorResponseException) {
+                if (exception.errorResponse().code().equals("NoSuchKey")) {
+                    logger.error("Template '$filePath' not found in Minio bucket '$bucket'!")
+                } else if (exception.errorResponse().code().equals("NoSuchBucket")) {
+                    logger.error("Bucket '$bucket' not found in Minio!")
+                }
+                throw exception
+            }
+        return IOUtils.toByteArray(objectResponse)
     }
 
     override fun deleteFile(bucket: String, filePath: String) {

@@ -24,7 +24,8 @@ fun passwordResetByTokenAuditEvent(changedUser: UserWithPassword): JemsAuditEven
         auditCandidate = AuditBuilder(AuditAction.PASSWORD_CHANGED)
             .entityRelatedId(changedUser.id)
             .description("Password of user ${changedUser.getUser().auditString()} has been changed by reset link")
-            .build()
+            .build(),
+        auditUser = changedUser.toAuditUser()
     )
 
 fun User.auditString() = "'$name $surname' ($email)"
@@ -32,4 +33,9 @@ fun User.auditString() = "'$name $surname' ($email)"
 fun User.toAuditUser() = AuditUser(
     id = id,
     email = email,
+)
+
+fun UserWithPassword.toAuditUser() = AuditUser(
+    id = id,
+    email = email
 )
