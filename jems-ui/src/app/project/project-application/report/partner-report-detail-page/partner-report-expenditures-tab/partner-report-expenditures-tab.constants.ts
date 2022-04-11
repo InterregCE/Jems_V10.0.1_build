@@ -20,6 +20,9 @@ export class PartnerReportExpendituresTabConstants {
     vat: 'vat',
     declaredAmount: 'declaredAmount',
     items: 'items',
+    currencyCode: 'currencyCode',
+    currencyConversionRate: 'currencyConversionRate',
+    declaredAmountInEur: 'declaredAmountInEur'
   };
 
   public static FORM_ERRORS = {

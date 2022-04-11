@@ -1,9 +1,10 @@
 import {Injectable} from '@angular/core';
 import {combineLatest, merge, Observable, Subject} from 'rxjs';
 import {
+  CurrencyDTO,
   IdNamePairDTO,
   InvestmentSummaryDTO,
-  ProjectPartnerBudgetOptionsDto,
+  ProjectPartnerBudgetOptionsDto, ProjectPartnerReportDTO,
   ProjectPartnerReportExpenditureCostDTO,
   ProjectPartnerReportExpenditureCostsService
 } from '@cat/api';
@@ -19,6 +20,7 @@ import {ProjectPartnerBudgetStore} from '@project/budget/services/project-partne
 import {
   PartnerReportProcurementsPageStore
 } from '@project/project-application/report/partner-report-detail-page/partner-report-procurements-tab/partner-report-procurement-page-store.service';
+import {CurrencyStore} from '@common/services/currency.store';
 
 @Injectable({providedIn: 'root'})
 export class PartnerReportExpendituresStore {
@@ -28,18 +30,23 @@ export class PartnerReportExpendituresStore {
   contractIDs$: Observable<IdNamePairDTO[]>;
   investmentsSummary$: Observable<InvestmentSummary[]>;
   expendituresCosts$: Observable<ProjectPartnerReportExpenditureCostDTO[]>;
+  currencies$: Observable<CurrencyDTO[]>;
+  currentReport$: Observable<ProjectPartnerReportDTO>;
   private expendituresUpdated$ = new Subject<ProjectPartnerReportExpenditureCostDTO[]>();
 
   constructor(private partnerReportExpenditureCostsService: ProjectPartnerReportExpenditureCostsService,
               private partnerReportDetailPageStore: PartnerReportDetailPageStore,
               private projectStore: ProjectStore,
               private projectPartnerBudgetStore: ProjectPartnerBudgetStore,
-              private reportProcurementPageStore: PartnerReportProcurementsPageStore) {
+              private reportProcurementPageStore: PartnerReportProcurementsPageStore,
+              private currencyStore: CurrencyStore) {
     this.expendituresCosts$ = this.partnerReportExpenditureCosts();
     this.costCategories$ = this.costCategories();
     this.isEditable$ = this.partnerReportDetailPageStore.reportEditable$;
     this.contractIDs$ = this.reportProcurementPageStore.getProcurementList();
     this.investmentsSummary$ = this.investmentSummariesForReport();
+    this.currencies$ = this.currencyStore.currencies$;
+    this.currentReport$ = this.partnerReportDetailPageStore.partnerReport$;
   }
 
   updateExpenditures(partnerExpenditures: ProjectPartnerReportExpenditureCostDTO[]): Observable<ProjectPartnerReportExpenditureCostDTO[]> {
