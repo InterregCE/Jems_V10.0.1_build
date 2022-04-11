@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {InputTranslation, InputUserProfile, UserProfileService} from '@cat/api';
-import {catchError, filter, map, mergeMap, startWith, tap, withLatestFrom} from 'rxjs/operators';
+import {catchError, filter, map, mergeMap, startWith, switchMap, take, tap, withLatestFrom} from 'rxjs/operators';
 import {TranslateService} from '@ngx-translate/core';
 import {SecurityService} from '../../security/security.service';
 import {BehaviorSubject, Observable, of} from 'rxjs';
@@ -35,7 +35,16 @@ export class LanguageStore {
     this.currentSystemLanguage$ = this.currentSystemLanguageSubject.asObservable();
     this.fallbackLanguage$ = this.fallbackLanguageSubject.asObservable();
     this.securityService.currentUser.pipe(
-      mergeMap(user => user ? this.userProfileService.getUserProfile().pipe(map(profile => profile?.language)) : this.fallbackLanguage$),
+      switchMap(user => user ? this.userProfileService.getUserProfile() : of(null)),
+      map(profile => {
+          if (profile?.language) {
+            return profile?.language;
+          } else {
+            this.updateUserProfileLanguage(this.defaultLanguage);
+            return this.defaultLanguage;
+          }
+        }
+      ),
       tap(language => this.setSystemLanguage(language)),
       untilDestroyed(this)
     ).subscribe();
@@ -52,9 +61,14 @@ export class LanguageStore {
   }
 
   setSystemLanguageAndUpdateProfile(newLanguage: string): void {
+    this.updateUserProfileLanguage(newLanguage);
     this.setSystemLanguage(newLanguage);
+  }
+
+  updateUserProfileLanguage(newLanguage: string) {
     this.securityService.currentUser
       .pipe(
+        take(1),
         filter(user => !!user),
         mergeMap(() => this.userProfileService.updateUserProfile({language: newLanguage} as InputUserProfile)),
         tap(profile => Log.info('Updated user profile', this, profile)),
@@ -130,7 +144,7 @@ export class LanguageStore {
 
   private updateSelectedLanguageToLocalStorage(newLanguage: string): string {
     const storedLanguage = localStorage.getItem(CLIENT_SELECTED_LANGUAGE);
-    if (storedLanguage !== null && storedLanguage != newLanguage){
+    if (storedLanguage !== null && storedLanguage !== newLanguage){
       localStorage.setItem(CLIENT_SELECTED_LANGUAGE, newLanguage);
       this.fallbackLanguageSubject.next(newLanguage);
       return newLanguage;
