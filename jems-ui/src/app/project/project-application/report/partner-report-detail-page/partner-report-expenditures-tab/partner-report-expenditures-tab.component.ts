@@ -13,11 +13,13 @@ import {
   PartnerReportExpendituresStore
 } from '@project/project-application/report/partner-report-detail-page/partner-report-expenditures-tab/partner-report-expenditures-store.service';
 import {MatSelectChange} from '@angular/material/select/select';
-import {IdNamePairDTO, ProjectPartnerReportExpenditureCostDTO} from '@cat/api';
+import {CurrencyDTO, IdNamePairDTO, ProjectPartnerReportDTO, ProjectPartnerReportExpenditureCostDTO} from '@cat/api';
 import {BudgetCostCategoryEnum} from '@project/model/lump-sums/BudgetCostCategoryEnum';
 import {
   InvestmentSummary
 } from '@project/work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
+import {CurrencyCodesEnum} from '@common/services/currency.store';
+import {NumberService} from '@common/services/number.service';
 
 @UntilDestroy()
 @Component({
@@ -28,12 +30,14 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PartnerReportExpendituresTabComponent implements OnInit {
-
+  CurrencyCodesEnum = CurrencyCodesEnum;
   reportExpendituresForm: FormGroup;
   tableData: AbstractControl[] = [];
   constants = PartnerReportExpendituresTabConstants;
   columnsToDisplay$: Observable<string[]>;
   withConfigs$: Observable<TableConfig[]>;
+  currencies: CurrencyDTO[];
+  currentReport: ProjectPartnerReportDTO;
   data$: Observable<{
     expendituresCosts: ProjectPartnerReportExpenditureCostDTO[];
     costCategories: string[];
@@ -45,14 +49,16 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
 
   constructor(public pageStore: PartnerReportExpendituresStore,
               private formBuilder: FormBuilder,
-              private formService: FormService) {
-  }
+              private formService: FormService) {}
 
   ngOnInit(): void {
     this.initForm();
     this.columnsToDisplay$ = this.pageStore.investmentsSummary$.pipe(
       map((investments: InvestmentSummary[]) => this.getColumnsToDisplay(investments))
     );
+    this.pageStore.currentReport$.pipe(untilDestroyed(this)).subscribe(report=> this.currentReport = report);
+    this.pageStore.currencies$.pipe(untilDestroyed(this)).subscribe(currencies=> this.currencies = currencies);
+
     this.withConfigs$ = this.pageStore.investmentsSummary$.pipe(map((investments: InvestmentSummary[]) =>
       this.getTableConfig(investments)));
     this.dataAsObservable();
@@ -109,7 +115,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
 
   resetForm(partnerReportExpenditures: ProjectPartnerReportExpenditureCostDTO[]): void {
     this.items.clear();
-    partnerReportExpenditures.forEach(partnerReportExpenditure => this.addResult(partnerReportExpenditure));
+    partnerReportExpenditures.forEach(partnerReportExpenditure => this.addExpenditure(partnerReportExpenditure));
     this.tableData = [...this.items.controls];
     this.formService.resetEditable();
     this.items.controls.forEach((formGroup: FormGroup) => (
@@ -128,7 +134,6 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       costCategory: ['', Validators.required],
       investmentId: '',
       contractId: '',
-      currencyCode: 'EUR',
       internalReferenceNumber: ['', Validators.maxLength(30)],
       invoiceNumber: ['', Validators.maxLength(30)],
       invoiceDate: '',
@@ -137,7 +142,10 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       comment: [[]],
       totalValueInvoice: '',
       vat: '',
-      declaredAmount: ''
+      declaredAmount: '',
+      currencyCode: this.currentReport.identification?.currency ,
+      currencyConversionRate: this.getConversionRateByCode(this.currentReport.identification?.currency),
+      declaredAmountInEur: ''
     });
     this.items.push(item);
     this.tableData = [...this.items.controls];
@@ -199,6 +207,9 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       'totalValueInvoice',
       'vat',
       'declaredAmount',
+      'currencyCode',
+      'currencyConversionRate',
+      'declaredAmountInEur',
       'actions'
     ];
     if (investments.length > 0) {
@@ -221,7 +232,10 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       {minInRem: 8},
       {minInRem: 7},
       {minInRem: 7},
-      {minInRem: 3}
+      {minInRem: 5},
+      {minInRem: 7},
+      {minInRem: 10},
+      {minInRem: 5},
     ];
 
     if (investments.length > 0) {
@@ -230,7 +244,8 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     return tableConfig;
   }
 
-  private addResult(reportExpenditureCost?: ProjectPartnerReportExpenditureCostDTO): void {
+  private addExpenditure(reportExpenditureCost?: ProjectPartnerReportExpenditureCostDTO): void {
+    const conversionRate = this.getConversionRateByCode(reportExpenditureCost?.currencyCode || '', reportExpenditureCost);
     this.items.push(this.formBuilder.group(
       {
         id: this.formBuilder.control(reportExpenditureCost?.id),
@@ -248,7 +263,9 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
         totalValueInvoice: this.formBuilder.control(reportExpenditureCost?.totalValueInvoice),
         vat: this.formBuilder.control(reportExpenditureCost?.vat),
         declaredAmount: this.formBuilder.control(reportExpenditureCost?.declaredAmount),
-        currencyCode: this.formBuilder.control(reportExpenditureCost?.currencyCode || 'EUR'),
+        currencyCode: this.formBuilder.control(reportExpenditureCost?.currencyCode),
+        currencyConversionRate: this.formBuilder.control(conversionRate),
+        declaredAmountInEur: this.formBuilder.control(this.getAmountInEur(conversionRate, reportExpenditureCost?.declaredAmount || 0)),
       })
     );
   }
@@ -264,5 +281,31 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
 
   get items(): FormArray {
     return this.reportExpendituresForm.get(this.constants.FORM_CONTROL_NAMES.items) as FormArray;
+  }
+
+  updateConversionRate(expenditureIndex: number, newValue: MatSelectChange) {
+    const declaredAmountInLocalCurrency = this.items.at(expenditureIndex).get('declaredAmount')?.value;
+    const newConversionRate =  this.getConversionRateByCode(newValue.value);
+
+    this.items.at(expenditureIndex).get('currencyConversionRate')?.setValue(newConversionRate);
+    this.items.at(expenditureIndex).get('declaredAmountInEur')?.setValue(this.getAmountInEur(newConversionRate, declaredAmountInLocalCurrency));
+  }
+
+  getConversionRateByCode(currencyCode: string, reportExpenditureCost?: ProjectPartnerReportExpenditureCostDTO): number {
+    if(this.currentReport.status === ProjectPartnerReportDTO.StatusEnum.Submitted && reportExpenditureCost) {
+      return NumberService.roundNumber(reportExpenditureCost.currencyConversionRate);
+    }
+    return NumberService.roundNumber(this.currencies.find((currency) => currency.code === currencyCode)?.conversionRate || 0);
+  }
+
+  getAmountInEur(conversionRate: number, amountInLocalCurrency: number): number {
+    return conversionRate && amountInLocalCurrency ? NumberService.roundNumber(NumberService.divide(amountInLocalCurrency, conversionRate)) : 0;
+  }
+
+  updateAmountInEur(expenditureIndex: number, declaredAmount: number) {
+    const newConversionRate =  this.getConversionRateByCode(this.items.at(expenditureIndex).get('currencyCode')?.value);
+    const declaredAmountInEur = declaredAmount && newConversionRate ?  NumberService.roundNumber(NumberService.divide(declaredAmount, newConversionRate)) : 0;
+
+    this.items.at(expenditureIndex).get('declaredAmountInEur')?.setValue(NumberService.roundNumber(declaredAmountInEur));
   }
 }
