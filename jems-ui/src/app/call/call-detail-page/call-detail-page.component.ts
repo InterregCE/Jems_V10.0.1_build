@@ -131,9 +131,22 @@ export class CallDetailPageComponent {
     call.strategies = strategies.filter(strategy => strategy.active).map(strategy => strategy.strategy);
     call.funds = call.funds.filter((fund: any) => !!fund.selected);
     call.stateAidIds = stateAids.filter(stateAid => stateAid.selected).map(stateAid => stateAid.id);
+
+    let startDate = new Date(call.startDateTime);
+    startDate.setSeconds(0, 0);
+    call.startDateTime = startDate;
+
+    let endDate = new Date(call.endDateTime);
+    endDate.setSeconds(0, 0);
+    call.endDateTime = endDate;
+
     if (!this.callForm.controls.is2Step.value) {
       call.endDateTimeStep1 = null;
       call.is2Step = null;
+    } else {
+      let endDateStep1 = new Date(call.endDateTimeStep1);
+      endDateStep1.setSeconds(0, 0);
+      call.endDateTimeStep1 = endDateStep1;
     }
 
     if (!this.callId) {
@@ -319,3 +332,4 @@ export class CallDetailPageComponent {
     return strategies.filter(strategy => strategy.active).length;
   }
 }
+
