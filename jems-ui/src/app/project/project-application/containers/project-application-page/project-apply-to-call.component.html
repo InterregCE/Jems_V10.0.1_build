@@ -21,7 +21,7 @@
             <div class="project-row">
                 <span class="header p-1 pr-3"></span>
                 <span class="p-1">
-                <a (click)="navigateToCallDetails()">{{'project.detail.new.call.info.details.link' | translate}}</a>
+                <a [routerLink]="['/app', 'call', 'detail', callId]">{{'project.detail.new.call.info.details.link' | translate}}</a>
             </span>
             </div>
         </div>
@@ -41,12 +41,9 @@
         </mat-form-field>
 
         <div jemsMultiColumnRow>
-            <button jemsText *ngxPermissionsOnly="Permission.APPLICANT_USER"
-                    mat-stroked-button
-                    type="button"
-                    (click)="onCancel()">
+            <a jemsText mat-stroked-button routerLink="/app/call">
                 {{'project.detail.new.button.cancel' | translate}}
-            </button>
+            </a>
             <button jemsText mat-raised-button
                     color="primary"
                     type="submit"
