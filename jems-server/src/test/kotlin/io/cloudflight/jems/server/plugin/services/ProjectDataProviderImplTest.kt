@@ -35,8 +35,9 @@ import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ProjectLifec
 import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ProjectStatusData
 import io.cloudflight.jems.plugin.contract.models.project.sectionA.ProjectDataSectionA
 import io.cloudflight.jems.plugin.contract.models.project.sectionA.ProjectPeriodData
-import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA3.ProjectCoFinancingByFundOverview
-import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA3.ProjectCoFinancingOverview
+import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA3.ProjectCoFinancingByFundOverviewData
+import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA3.ProjectCoFinancingCategoryOverviewData
+import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA3.ProjectCoFinancingOverviewData
 import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA4.IndicatorOverviewLine
 import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA4.ProjectResultIndicatorOverview
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.ProjectDataSectionB
@@ -136,7 +137,6 @@ import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectPeriodBudget
 import io.cloudflight.jems.server.project.service.model.ProjectRelevance
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceBenefit
-import io.cloudflight.jems.server.project.service.model.ProjectRelevanceSpfRecipient
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceStrategy
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceSynergy
 import io.cloudflight.jems.server.project.service.model.ProjectStatus
@@ -835,40 +835,43 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                 duration = project.duration,
                 specificObjective = project.specificObjective?.toDataModel(),
                 programmePriority = project.programmePriority?.toDataModel(),
-                coFinancingOverview = ProjectCoFinancingOverview(
-                    fundOverviews = listOf(
-                        ProjectCoFinancingByFundOverview(
-                            fundId = 230L,
-                            fundType = ProgrammeFundTypeData.ERDF,
-                            fundAbbreviation = emptySet(),
-                            fundingAmount = BigDecimal.valueOf(6_52, 2),
-                            coFinancingRate = BigDecimal.valueOf(100_00, 2),
-                            autoPublicContribution = BigDecimal.ZERO,
-                            otherPublicContribution = BigDecimal.ZERO,
-                            totalPublicContribution = BigDecimal.ZERO,
-                            privateContribution = BigDecimal.ZERO,
-                            totalContribution = BigDecimal.ZERO,
-                            totalFundAndContribution = BigDecimal.valueOf(6_52, 2),
-                        )
+                coFinancingOverview = ProjectCoFinancingOverviewData(
+                    projectManagementCoFinancing = ProjectCoFinancingCategoryOverviewData(
+                        fundOverviews = listOf(
+                            ProjectCoFinancingByFundOverviewData(
+                                fundId = 230L,
+                                fundType = ProgrammeFundTypeData.ERDF,
+                                fundAbbreviation = emptySet(),
+                                fundingAmount = BigDecimal.valueOf(6_52, 2),
+                                coFinancingRate = BigDecimal.valueOf(100_00, 2),
+                                autoPublicContribution = BigDecimal.ZERO,
+                                otherPublicContribution = BigDecimal.ZERO,
+                                totalPublicContribution = BigDecimal.ZERO,
+                                privateContribution = BigDecimal.ZERO,
+                                totalContribution = BigDecimal.ZERO,
+                                totalFundAndContribution = BigDecimal.valueOf(6_52, 2),
+                            )
+                        ),
+                        totalFundingAmount = BigDecimal.valueOf(6_52, 2),
+                        totalEuFundingAmount = BigDecimal.valueOf(6_52, 2),
+                        averageCoFinancingRate = BigDecimal.valueOf(65_20, 2),
+                        averageEuFinancingRate = BigDecimal.valueOf(100_00, 2),
+
+                        totalAutoPublicContribution = BigDecimal.ZERO,
+                        totalEuAutoPublicContribution = BigDecimal.ZERO,
+                        totalOtherPublicContribution = BigDecimal.ZERO,
+                        totalEuOtherPublicContribution = BigDecimal.ZERO,
+                        totalPublicContribution = BigDecimal.ZERO,
+                        totalEuPublicContribution = BigDecimal.ZERO,
+                        totalPrivateContribution = BigDecimal.ZERO,
+                        totalEuPrivateContribution = BigDecimal.ZERO,
+                        totalContribution = BigDecimal.ZERO,
+                        totalEuContribution = BigDecimal.ZERO,
+
+                        totalFundAndContribution = BigDecimal.TEN,
+                        totalEuFundAndContribution = BigDecimal.valueOf(6_52, 2),
                     ),
-                    totalFundingAmount = BigDecimal.valueOf(6_52, 2),
-                    totalEuFundingAmount = BigDecimal.valueOf(6_52, 2),
-                    averageCoFinancingRate = BigDecimal.valueOf(65_20, 2),
-                    averageEuFinancingRate = BigDecimal.valueOf(100_00, 2),
-
-                    totalAutoPublicContribution = BigDecimal.ZERO,
-                    totalEuAutoPublicContribution = BigDecimal.ZERO,
-                    totalOtherPublicContribution = BigDecimal.ZERO,
-                    totalEuOtherPublicContribution = BigDecimal.ZERO,
-                    totalPublicContribution = BigDecimal.ZERO,
-                    totalEuPublicContribution = BigDecimal.ZERO,
-                    totalPrivateContribution = BigDecimal.ZERO,
-                    totalEuPrivateContribution = BigDecimal.ZERO,
-                    totalContribution = BigDecimal.ZERO,
-                    totalEuContribution = BigDecimal.ZERO,
-
-                    totalFundAndContribution = BigDecimal.TEN,
-                    totalEuFundAndContribution = BigDecimal.valueOf(6_52, 2),
+                    projectSpfCoFinancing = ProjectCoFinancingCategoryOverviewData()
                 ),
                 resultIndicatorOverview = ProjectResultIndicatorOverview(
                     indicatorLines = listOf(
@@ -1508,26 +1511,29 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                 duration = null,
                 specificObjective = null,
                 programmePriority = null,
-                coFinancingOverview = ProjectCoFinancingOverview(
-                    fundOverviews = emptyList(),
-                    totalFundingAmount = BigDecimal.ZERO,
-                    totalEuFundingAmount = BigDecimal.ZERO,
-                    averageCoFinancingRate = BigDecimal.ZERO,
-                    averageEuFinancingRate = BigDecimal.ZERO,
+                coFinancingOverview = ProjectCoFinancingOverviewData(
+                    projectManagementCoFinancing = ProjectCoFinancingCategoryOverviewData(
+                        fundOverviews = emptyList(),
+                        totalFundingAmount = BigDecimal.ZERO,
+                        totalEuFundingAmount = BigDecimal.ZERO,
+                        averageCoFinancingRate = BigDecimal.ZERO,
+                        averageEuFinancingRate = BigDecimal.ZERO,
 
-                    totalAutoPublicContribution = BigDecimal.ZERO,
-                    totalEuAutoPublicContribution = BigDecimal.ZERO,
-                    totalOtherPublicContribution = BigDecimal.ZERO,
-                    totalEuOtherPublicContribution = BigDecimal.ZERO,
-                    totalPublicContribution = BigDecimal.ZERO,
-                    totalEuPublicContribution = BigDecimal.ZERO,
-                    totalPrivateContribution = BigDecimal.ZERO,
-                    totalEuPrivateContribution = BigDecimal.ZERO,
-                    totalContribution = BigDecimal.ZERO,
-                    totalEuContribution = BigDecimal.ZERO,
+                        totalAutoPublicContribution = BigDecimal.ZERO,
+                        totalEuAutoPublicContribution = BigDecimal.ZERO,
+                        totalOtherPublicContribution = BigDecimal.ZERO,
+                        totalEuOtherPublicContribution = BigDecimal.ZERO,
+                        totalPublicContribution = BigDecimal.ZERO,
+                        totalEuPublicContribution = BigDecimal.ZERO,
+                        totalPrivateContribution = BigDecimal.ZERO,
+                        totalEuPrivateContribution = BigDecimal.ZERO,
+                        totalContribution = BigDecimal.ZERO,
+                        totalEuContribution = BigDecimal.ZERO,
 
-                    totalFundAndContribution = BigDecimal.ZERO,
-                    totalEuFundAndContribution = BigDecimal.ZERO,
+                        totalFundAndContribution = BigDecimal.ZERO,
+                        totalEuFundAndContribution = BigDecimal.ZERO,
+                    ),
+                    projectSpfCoFinancing = ProjectCoFinancingCategoryOverviewData()
                 ),
                 resultIndicatorOverview = ProjectResultIndicatorOverview(emptyList())
             )
