@@ -204,6 +204,11 @@ export class Permission {
               editPermissions: [PermissionsEnum.ProjectFileAssessmentUpdate],
               editTooltip: 'permission.inspect.annexes'
             },
+            {
+              name: 'permission.create.and.edit.assessments',
+              mode: PermissionMode.TOGGLE_EDIT,
+              editPermissions: [PermissionsEnum.ProjectAssessmentChecklistUpdate],
+            },
           ],
         },
         {
