@@ -6,12 +6,14 @@ import {
   ProgrammeChecklistDetailDTO
 } from '@cat/api';
 import {Alert} from '@common/components/forms/alert';
+import {FormService} from '@common/components/section/form/form.service';
 
 @Component({
   selector: 'jems-checklist-answers',
   templateUrl: './checklist-answers.component.html',
   styleUrls: ['./checklist-answers.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [FormService]
 })
 export class ChecklistAnswersComponent {
   COMPONENT_TYPE = ProgrammeChecklistComponentDTO.TypeEnum;
