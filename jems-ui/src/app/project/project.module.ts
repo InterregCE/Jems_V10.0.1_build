@@ -145,6 +145,9 @@ import {
 import {
   PartnerActionsCellComponent
 } from '@project/project-application/report/partner-report-detail-page/partner-report-actions/partner-actions-cell.component';
+import {
+  ProjectApplicationFormVisibilityService
+} from '@project/project-application/containers/project-application-form-page/services/project-application-form-visibility.service';
 
 @NgModule({
   declarations: [
