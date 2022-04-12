@@ -77,6 +77,7 @@ import {
 import {
   PartnerReportProcurementsTabComponent
 } from '@project/project-application/report/partner-report-detail-page/partner-report-procurements-tab/partner-report-procurements-tab.component';
+import {APPLICATION_FORM} from '@project/common/application-form-model';
 
 export const routes: Routes = [
   {
@@ -232,7 +233,10 @@ export const routes: Routes = [
           },
           {
             path: 'applicationFormOverviewTables',
-            data: {breadcrumb: 'project.breadcrumb.applicationForm.overview.tables'},
+            data: {
+              breadcrumb: 'project.breadcrumb.applicationForm.overview.tables',
+              visibleOnly: [APPLICATION_FORM.SECTION_A.PROJECT_OVERVIEW_TABLES]
+            },
             component: ProjectOverviewTablesPageComponent,
           },
           {
@@ -296,7 +300,10 @@ export const routes: Routes = [
           },
           {
             path: 'applicationFormAssociatedOrganization',
-            data: {breadcrumb: 'project.breadcrumb.applicationForm.associated.org'},
+            data: {
+              breadcrumb: 'project.breadcrumb.applicationForm.associated.org',
+              visibleOnly: [APPLICATION_FORM.SECTION_B.PARTNER_ASSOCIATED_ORGANIZATIONS]
+            },
             children: [
               {
                 path: '',
@@ -317,21 +324,33 @@ export const routes: Routes = [
           {
             path: 'applicationFormOverallObjective',
             component: ProjectApplicationFormOverallObjectiveSectionComponent,
-            data: {breadcrumb: 'project.breadcrumb.applicationForm.overallObjective'},
+            data: {
+              breadcrumb: 'project.breadcrumb.applicationForm.overallObjective',
+              visibleOnly: [APPLICATION_FORM.SECTION_C.PROJECT_OVERALL_OBJECTIVE]
+            },
           },
           {
             path: 'applicationFormRelevanceAndContext',
             component: ProjectApplicationFormProjectRelevanceAndContextSectionComponent,
-            data: {breadcrumb: 'project.breadcrumb.applicationForm.relevanceAndContext'},
+            data: {
+              breadcrumb: 'project.breadcrumb.applicationForm.relevanceAndContext',
+              visibleOnly: [APPLICATION_FORM.SECTION_C.PROJECT_RELEVANCE_AND_CONTEXT]
+            },
           },
           {
             path: 'applicationFormPartnership',
             component: ProjectApplicationFormProjectPartnershipSectionComponent,
-            data: {breadcrumb: 'project.breadcrumb.applicationForm.partnership'},
+            data: {
+              breadcrumb: 'project.breadcrumb.applicationForm.partnership',
+              visibleOnly: [APPLICATION_FORM.SECTION_C.PROJECT_PARTNERSHIP]
+            },
           },
           {
             path: 'applicationFormWorkPackage',
-            data: {breadcrumb: 'project.breadcrumb.applicationForm.workPackage'},
+            data: {
+              breadcrumb: 'project.breadcrumb.applicationForm.workPackage',
+              visibleOnly: [APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN]
+            },
             children: [
               {
                 path: '',
@@ -393,41 +412,74 @@ export const routes: Routes = [
           {
             path: 'applicationFormResults',
             component: ProjectResultsPageComponent,
-            data: {breadcrumb: 'project.breadcrumb.applicationForm.results'},
+            data: {
+              breadcrumb: 'project.breadcrumb.applicationForm.results',
+              visibleOnly: [APPLICATION_FORM.SECTION_C.PROJECT_RESULT]
+            },
           },
           {
             path: 'applicationTimePlan',
             component: ProjectTimeplanPageComponent,
-            data: {breadcrumb: 'project.breadcrumb.applicationForm.timePlan'},
+            data: {
+              breadcrumb: 'project.breadcrumb.applicationForm.timePlan',
+              visibleOnly: [
+                APPLICATION_FORM.SECTION_C.PROJECT_RESULT,
+                APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN
+              ]
+            },
           },
           {
             path: 'applicationFormFuturePlans',
             component: ProjectApplicationFormFuturePlansSectionComponent,
-            data: {breadcrumb: 'project.breadcrumb.applicationForm.futurePlans'},
+            data: {
+              breadcrumb: 'project.breadcrumb.applicationForm.futurePlans',
+              visibleOnly: [APPLICATION_FORM.SECTION_C.PROJECT_LONG_TERM_PLANS]
+            },
           },
           {
             path: 'applicationFormManagement',
             component: ProjectApplicationFormManagementSectionComponent,
-            data: {breadcrumb: 'project.breadcrumb.applicationForm.management'},
+            data: {
+              breadcrumb: 'project.breadcrumb.applicationForm.management',
+              visibleOnly: [APPLICATION_FORM.SECTION_C.PROJECT_MANAGEMENT]
+            },
           },
           {
             path: 'applicationFormBudgetPerPartner',
-            data: {breadcrumb: 'project.breadcrumb.applicationForm.budgetPerPartner'},
+            data: {
+              breadcrumb: 'project.breadcrumb.applicationForm.budgetPerPartner',
+              visibleOnly: [APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING]
+            },
             component: BudgetPagePerPartnerComponent,
           },
           {
             path: 'applicationFormBudget',
-            data: {breadcrumb: 'project.breadcrumb.applicationForm.budget'},
+            data: {
+              breadcrumb: 'project.breadcrumb.applicationForm.budget',
+              visibleOnly: [
+                APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING,
+                APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_BUDGET_PERIODS
+              ]
+            },
             component: BudgetPageComponent,
           },
           {
             path: 'applicationFormBudgetPerPeriod',
-            data: {breadcrumb: 'project.breadcrumb.applicationForm.budget'},
+            data: {
+              breadcrumb: 'project.breadcrumb.applicationForm.budget',
+              visibleOnly: [
+                APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING,
+                APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_BUDGET_PERIODS
+              ]
+            },
             component: BudgetPerPeriodPageComponent,
           },
           {
             path: 'applicationFormLumpSums',
-            data: {breadcrumb: 'project.breadcrumb.applicationForm.lump.sums'},
+            data: {
+              breadcrumb: 'project.breadcrumb.applicationForm.lump.sums',
+              visibleOnly: [APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING]
+            },
             component: ProjectLumpSumsPageComponent,
           },
           {
