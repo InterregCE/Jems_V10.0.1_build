@@ -1,5 +1,7 @@
 package io.cloudflight.jems.server.project.controller.report.expenditureCosts
 
+import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory
+import io.cloudflight.jems.api.project.dto.report.partner.expenditure.BudgetCategoryDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportExpenditureCostDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportExpenditureCost
@@ -21,7 +23,7 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
 
     private val reportExpenditureCost = ProjectPartnerReportExpenditureCost(
         id = 754,
-        costCategory = "costCategory",
+        costCategory = BudgetCategory.ExternalCosts,
         investmentId = 10L,
         contractId = CONTRACT_ID,
         internalReferenceNumber = "internal-1",
@@ -32,12 +34,15 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
         comment = emptySet(),
         totalValueInvoice = BigDecimal.valueOf(22),
         vat = BigDecimal.valueOf(18.0),
-        declaredAmount = BigDecimal.valueOf(1.3)
+        declaredAmount = BigDecimal.valueOf(31.2),
+        currencyCode = "CZK",
+        currencyConversionRate = BigDecimal.valueOf(24),
+        declaredAmountAfterSubmission = BigDecimal.valueOf(1.3),
     )
 
     private val reportExpenditureCostDto = ProjectPartnerReportExpenditureCostDTO(
         id = 754,
-        costCategory = "costCategory",
+        costCategory = BudgetCategoryDTO.ExternalCosts,
         investmentId = 10L,
         contractId = CONTRACT_ID,
         internalReferenceNumber = "internal-1",
@@ -48,7 +53,10 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
         comment = emptySet(),
         totalValueInvoice = BigDecimal.valueOf(22),
         vat = BigDecimal.valueOf(18.0),
-        declaredAmount = BigDecimal.valueOf(1.3)
+        declaredAmount = BigDecimal.valueOf(31.2),
+        currencyCode = "CZK",
+        currencyConversionRate = BigDecimal.valueOf(24),
+        declaredAmountAfterSubmission = BigDecimal.valueOf(1.3),
     )
 
 

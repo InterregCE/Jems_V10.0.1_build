@@ -50,7 +50,7 @@ export class PartnerReportProcurementsPageStore {
     return merge(initialProcurements$, this.savedProcurements$);
   }
 
-  public saveProcurements(procurements: UpdateProjectPartnerReportProcurementDTO[]): Observable<UpdateProjectPartnerReportProcurementDTO[]> {
+  public saveProcurements(procurements: UpdateProjectPartnerReportProcurementDTO[]): Observable<ProjectPartnerReportProcurementDTO[]> {
     return combineLatest([
       this.partnerId$,
       this.routingService.routeParameterChanges(PartnerReportDetailPageStore.REPORT_DETAIL_PATH, 'reportId'),

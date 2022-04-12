@@ -111,16 +111,12 @@ class CreateProjectPartnerReport(
         )
     }
 
-    private fun getCurrencyCodeForCountry(country: String?): String? {
-        return currencyPersistence.getCurrencyForCountry(getCountryCodeForCountry(country))
-    }
+    private fun getCurrencyCodeForCountry(country: String?) =
+        country?.let { getCountryCodeForCountry(it) }
+            ?.let { currencyPersistence.getCurrencyForCountry(it) }
 
-    private fun getCountryCodeForCountry(country: String?): String {
-        if (!country.isNullOrEmpty()) {
-            return country.substringAfter('(').substringBefore(')')
-        }
-        return ""
-    }
+    private fun getCountryCodeForCountry(country: String) =
+        country.substringAfter('(').substringBefore(')')
 
     private fun getLatestReportNumberIncreasedByOne(partnerId: Long) =
         reportPersistence.getCurrentLatestReportNumberForPartner(partnerId).plus(1)
