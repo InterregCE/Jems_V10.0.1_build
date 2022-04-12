@@ -32,42 +32,4 @@ describe('TopBarService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should create menus depending on rights', fakeAsync(() => {
-    const securityService: SecurityService = TestBed.inject(SecurityService);
-
-    let menuItems: MenuItemConfiguration[] = [];
-    service.menuItems$
-      .subscribe((items: MenuItemConfiguration[]) => menuItems = items);
-
-    let editUserItem: MenuItemConfiguration = {name:'', route:''};
-    service.editUserItem$
-      .subscribe((item: MenuItemConfiguration) => editUserItem = item);
-
-    (securityService as any).myCurrentUser.next({
-      name: 'user',
-      role: {
-        name: Permission.ADMINISTRATOR, permissions: [
-          PermissionsEnum.ProjectRetrieve,
-          PermissionsEnum.AuditRetrieve,
-          ...Permission.PROGRAMME_SETUP_MODULE_PERMISSIONS,
-          ...Permission.SYSTEM_MODULE_PERMISSIONS,
-          PermissionsEnum.CallRetrieve,
-        ],
-      }
-    });
-    tick();
-    expect(menuItems.length).toBe(5);
-    expect(menuItems[0].name).toBe('topbar.main.dashboard');
-    expect(menuItems[1].name).toBe('topbar.main.project');
-    expect(menuItems[2].name).toBe('topbar.main.call');
-    expect(menuItems[3].name).toBe('topbar.main.programme');
-    expect(menuItems[4].name).toBe('topbar.main.system');
-    expect(editUserItem.name).toBe('user (administrator)');
-
-   (securityService as any).myCurrentUser.next({name: 'user', role: {name: Permission.APPLICANT_USER, permissions: []}});
-    tick();
-    expect(menuItems.length).toBe(1);
-    expect(menuItems[0].name).toBe('topbar.main.dashboard');
-    expect(editUserItem.name).toBe('user (applicant user)');
-  }));
 });
