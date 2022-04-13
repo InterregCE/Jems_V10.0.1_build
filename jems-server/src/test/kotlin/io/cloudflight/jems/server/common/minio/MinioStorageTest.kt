@@ -15,6 +15,7 @@ import io.minio.RemoveObjectArgs
 import io.minio.Result
 import io.minio.errors.ErrorResponseException
 import io.minio.messages.Contents
+import io.minio.messages.ErrorResponse
 import io.minio.messages.Item
 import io.mockk.MockKAnnotations
 import io.mockk.every
@@ -234,6 +235,52 @@ class MinioStorageTest {
                 RemoveObjectArgs.builder().bucket(sourceBucketName).`object`(sourceObjectName).build()
             )
         }
+    }
+
+    @Test
+    fun `get file - not found gets logged`() {
+        val logger: Logger = LoggerFactory.getLogger(MinioStorageImpl::class.java) as Logger
+        val listAppender = ListAppender<ILoggingEvent>()
+        listAppender.start()
+        logger.addAppender(listAppender)
+
+        val bucket = "bucket"
+        val file = "path"
+        val errResponse = ErrorResponse("NoSuchKey", "The specified key does not exist.", bucket, "", file, "", "")
+        val exBucketNotFound = ErrorResponseException(errResponse, null, "")
+        every {
+            minioClient.getObject(
+                GetObjectArgs.builder().bucket(bucket).`object`(file).build()
+            )
+        } throws exBucketNotFound
+
+        assertThrows<ErrorResponseException> { (minioStorage.getFile(bucket, file)) }
+        assertLinesMatch(
+            listOf("Template '$file' not found in Minio bucket '$bucket'!"),
+            listAppender.list.map { it.formattedMessage })
+    }
+
+    @Test
+    fun `get file - bucket not found is logged`() {
+        val logger: Logger = LoggerFactory.getLogger(MinioStorageImpl::class.java) as Logger
+        val listAppender = ListAppender<ILoggingEvent>()
+        listAppender.start()
+        logger.addAppender(listAppender)
+
+        val bucket = "bucket"
+        val file = "path"
+        val errResponse = ErrorResponse("NoSuchBucket", "Bucket does not exist.", bucket, "", file, "", "")
+        val exBucketNotFound = ErrorResponseException(errResponse, null, "")
+        every {
+            minioClient.getObject(
+                GetObjectArgs.builder().bucket(bucket).`object`(file).build()
+            )
+        } throws exBucketNotFound
+
+        assertThrows<ErrorResponseException> { (minioStorage.getFile(bucket, file)) }
+        assertLinesMatch(
+            listOf("Bucket '$bucket' not found in Minio!"),
+            listAppender.list.map { it.formattedMessage })
     }
 
     private fun bucketExistsArgs(bucket: String) =

@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 import {Alert} from '@common/components/forms/alert';
 
 @Component({
@@ -18,5 +18,8 @@ export class AlertComponent {
 
   @Input()
   type: Alert;
+
+  @Output()
+  closed = new EventEmitter<void>();
 
 }
