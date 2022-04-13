@@ -4,7 +4,7 @@ import {SecurityService} from '../../security/security.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {Alert} from '@common/components/forms/alert';
 import {catchError, finalize, tap} from 'rxjs/operators';
-import {Subject} from 'rxjs';
+import {BehaviorSubject, Subject} from 'rxjs';
 import {APIError} from '@common/models/APIError';
 
 @UntilDestroy()
@@ -19,7 +19,7 @@ export class ForgotPasswordPageComponent {
   Alert = Alert;
   requestedEmail: string;
   requestError$ = new Subject<APIError | null>();
-  requestSuccess$ = new Subject<boolean>();
+  requestSuccess$ = new BehaviorSubject<boolean>(false);
 
   loginLink = '/no-auth/login';
   loading = false;
@@ -42,6 +42,7 @@ export class ForgotPasswordPageComponent {
         catchError(error => {
           this.requestSuccess$.next(false);
           this.requestError$.next(error.error);
+          this.form.get('email')?.setErrors({});
           throw error.error;
         }),
         finalize(() => {

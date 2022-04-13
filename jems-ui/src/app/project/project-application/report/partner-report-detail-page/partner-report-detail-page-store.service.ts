@@ -1,17 +1,19 @@
 import {Injectable} from '@angular/core';
 import {
-  ProjectPartnerReportDTO, ProjectPartnerReportIdentificationDTO, ProjectPartnerReportIdentificationService,
-  ProjectPartnerReportService, ProjectPartnerReportSummaryDTO,
-  ProjectPartnerSummaryDTO, UpdateProjectPartnerReportIdentificationDTO
+  ProjectPartnerReportDTO,
+  ProjectPartnerReportIdentificationDTO,
+  ProjectPartnerReportIdentificationService,
+  ProjectPartnerReportService,
+  ProjectPartnerReportSummaryDTO,
+  ProjectPartnerSummaryDTO,
+  UpdateProjectPartnerReportIdentificationDTO
 } from '@cat/api';
-import {combineLatest, merge, Observable, of, ReplaySubject, Subject} from 'rxjs';
+import {combineLatest, merge, Observable, of, Subject} from 'rxjs';
 import {catchError, map, shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
 import {RoutingService} from '@common/services/routing.service';
 import {Log} from '@common/utils/log';
 import {ProjectPaths} from '@project/common/project-util';
-import {
-  ProjectStore
-} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
 
 @Injectable({providedIn: 'root'})

@@ -65,11 +65,11 @@ export class PartnerActionsCellComponent implements ControlValueAccessor {
     this.changeDetectorRef.detectChanges();
   }
 
-  getTooltipText(): String {
-    return this.fileMetadata.name + '\n' +
-      this.translatePipe.transform('use.case.update.project.partner.report.workplan.download.file.tooltip.upload.date') +
-      ' ' +
-      this.datePipe.transform(this.fileMetadata.uploaded, 'MM/dd/yyyy');
+  getTooltipText(): string {
+    return `${this.fileMetadata.name}
+${this.translatePipe
+      .transform('use.case.update.project.partner.report.workplan.download.file.tooltip.upload.date')} ${this.datePipe
+      .transform(this.fileMetadata.uploaded, 'MM/dd/yyyy')}`;
   }
 
   uploadFile(event: Event) {

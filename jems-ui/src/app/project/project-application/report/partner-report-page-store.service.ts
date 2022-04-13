@@ -4,7 +4,8 @@ import {
   ProjectPartnerReportService,
   ProjectPartnerReportSummaryDTO,
   ProjectPartnerSummaryDTO,
-  ProjectPartnerUserCollaboratorService, UserRoleCreateDTO
+  ProjectPartnerUserCollaboratorService,
+  UserRoleCreateDTO
 } from '@cat/api';
 import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
 import {filter, map, shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
@@ -12,8 +13,8 @@ import {RoutingService} from '@common/services/routing.service';
 import {ProjectPartnerStore} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
 import {Log} from '@common/utils/log';
 import {Tables} from '@common/utils/tables';
-import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 import {PermissionService} from 'src/app/security/permissions/permission.service';
+import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 
 @Injectable({providedIn: 'root'})
 export class PartnerReportPageStore {

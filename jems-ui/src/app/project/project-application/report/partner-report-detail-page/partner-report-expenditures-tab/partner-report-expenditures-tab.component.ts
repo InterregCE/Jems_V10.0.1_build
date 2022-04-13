@@ -99,12 +99,12 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
 
   isStaffCostsSelectedForCostCategoryRow(control: FormGroup): boolean {
     return (control?.get(this.constants.FORM_CONTROL_NAMES.costCategory) as FormControl)?.value
-      == BudgetCostCategoryEnum.STAFF_COSTS;
+      === BudgetCostCategoryEnum.STAFF_COSTS;
   }
 
   isTravelAndAccommodationSelectedForCostCategoryRow(control: FormGroup): boolean {
     return (control?.get(this.constants.FORM_CONTROL_NAMES.costCategory) as FormControl)?.value
-      == BudgetCostCategoryEnum.TRAVEL_AND_ACCOMMODATION_COSTS;
+      === BudgetCostCategoryEnum.TRAVEL_AND_ACCOMMODATION_COSTS;
   }
 
   resetForm(partnerReportExpenditures: ProjectPartnerReportExpenditureCostDTO[]): void {
