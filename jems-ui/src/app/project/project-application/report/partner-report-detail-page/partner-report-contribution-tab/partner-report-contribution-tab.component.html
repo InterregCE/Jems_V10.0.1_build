@@ -105,15 +105,34 @@
                     </mat-cell>
                 </ng-container>
 
+                <ng-container matColumnDef="attachment">
+                    <mat-header-cell *matHeaderCellDef>{{ 'project.application.partner.report.attachments' | translate }}</mat-header-cell>
+                    <mat-cell *matCellDef="let control; let i = index" [formGroupName]="i">
+                        <jems-partner-actions-cell
+                                class="pl-2"
+                                *ngIf="control.get('id').value !== 0"
+                                [formControlName]="'attachment'"
+                                [isReportEditable]="partnerReportDetailPageStore.reportEditable$ | async"
+                                (upload)="onUploadFile($event, control.get('id').value, i)"
+                                (download)="onDownloadFile($event)"
+                                (delete)="onDeleteFile($event, i)">
+                        </jems-partner-actions-cell>
+                    </mat-cell>
+                </ng-container>
+
                 <ng-container matColumnDef="delete" stickyEnd>
                     <mat-header-cell *matHeaderCellDef></mat-header-cell>
                     <mat-cell *matCellDef="let control; let i = index" [formGroupName]="i">
                         <button mat-icon-button color="accent"
                                 type="button"
                                 *ngIf="control.value.createdInThisReport"
+                                [disabled]="!!control.get('attachment').value"
                                 matTooltip="{{'common.delete.entry.tooltip' | translate}}"
                                 (click)="removeContribution(i)">
-                            <mat-icon>delete</mat-icon>
+                            <mat-icon
+                                    matTooltip="{{ (attachment(i).value ? 'project.application.partner.report.attachment.delete.file.first' : null) | translate }}">
+                                {{ attachment(i).value ? 'delete_forever' : 'delete'}}
+                            </mat-icon>
                         </button>
                     </mat-cell>
                 </ng-container>
@@ -140,6 +159,7 @@
                     <div class="text-right">{{overview.value.publicContribution.previouslyReported | asMoney}}</div>
                     <div class="text-right">{{overview.value.publicContribution.currentlyReported | asMoney}}</div>
                     <div class="text-right">{{overview.value.publicContribution.totalReportedSoFar | asMoney}}</div>
+                    <div></div>
                     <div *ngIf="columns.includes('delete')"></div>
                 </div>
                 <div>
@@ -149,6 +169,7 @@
                     <div class="text-right">{{overview.value.automaticPublicContribution.previouslyReported | asMoney}}</div>
                     <div class="text-right">{{overview.value.automaticPublicContribution.currentlyReported | asMoney}}</div>
                     <div class="text-right">{{overview.value.automaticPublicContribution.totalReportedSoFar | asMoney}}</div>
+                    <div></div>
                     <div *ngIf="columns.includes('delete')"></div>
                 </div>
                 <div>
@@ -158,6 +179,7 @@
                     <div class="text-right">{{overview.value.privateContribution.previouslyReported | asMoney}}</div>
                     <div class="text-right">{{overview.value.privateContribution.currentlyReported | asMoney}}</div>
                     <div class="text-right">{{overview.value.privateContribution.totalReportedSoFar | asMoney}}</div>
+                    <div></div>
                     <div *ngIf="columns.includes('delete')"></div>
                 </div>
                 <div>
@@ -167,6 +189,7 @@
                     <div class="text-right">{{overview.value.total.previouslyReported | asMoney}}</div>
                     <div class="text-right">{{overview.value.total.currentlyReported | asMoney}}</div>
                     <div class="text-right">{{overview.value.total.totalReportedSoFar | asMoney}}</div>
+                    <div></div>
                     <div *ngIf="columns.includes('delete')"></div>
                 </div>
             </div>

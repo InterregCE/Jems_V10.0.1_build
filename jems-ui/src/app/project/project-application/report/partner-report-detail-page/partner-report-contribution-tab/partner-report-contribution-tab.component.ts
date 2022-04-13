@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {FormService} from '@common/components/section/form/form.service';
 import {
   ProjectApplicationFormSidenavService
@@ -13,7 +13,7 @@ import {
   ProjectPartnerReportContributionDTO,
   ProjectPartnerReportContributionWrapperDTO
 } from '@cat/api';
-import {catchError, map, tap} from 'rxjs/operators';
+import {catchError, map, take, tap} from 'rxjs/operators';
 import {
   PartnerReportContributionStore
 } from '@project/project-application/report/partner-report-detail-page/partner-report-contribution-tab/partner-report-contribution-store.service';
@@ -21,6 +21,9 @@ import {TableConfig} from '@common/directives/table-config/TableConfig';
 import {HttpErrorResponse} from '@angular/common/http';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {NumberService} from '@common/services/number.service';
+import {
+  PartnerFileManagementStore
+} from '@project/project-application/report/partner-report-detail-page/partner-file-management-store';
 
 @UntilDestroy()
 @Component({
@@ -45,6 +48,7 @@ export class PartnerReportContributionTabComponent {
     {maxInRem: 8, minInRem: 8},
     {maxInRem: 9, minInRem: 9},
     {maxInRem: 8, minInRem: 8},
+    {maxInRem: 15, minInRem: 15},
     {maxInRem: 3, minInRem: 3},
   ];
   tableData: AbstractControl[] = [];
@@ -83,8 +87,9 @@ export class PartnerReportContributionTabComponent {
     private formBuilder: FormBuilder,
     private formService: FormService,
     private projectSidenavService: ProjectApplicationFormSidenavService,
-    private partnerReportDetailPageStore: PartnerReportDetailPageStore,
+    public partnerReportDetailPageStore: PartnerReportDetailPageStore,
     private pageStore: PartnerReportContributionStore,
+    private partnerFileManagementStore: PartnerFileManagementStore,
   ) {
     this.savedContribution$ = combineLatest([
       this.pageStore.partnerContribution$,
@@ -130,7 +135,7 @@ export class PartnerReportContributionTabComponent {
     const createdInThisReport = contrib ? contrib.createdInThisReport : true;
 
     const item = this.formBuilder.group({
-      id: this.formBuilder.control(contrib?.id),
+      id: this.formBuilder.control(contrib?.id || 0),
       sourceOfContribution: this.formBuilder.control(contrib?.sourceOfContribution, createdInThisReport ? Validators.required : []),
       legalStatus: this.formBuilder.control(contrib?.legalStatus, createdInThisReport ? Validators.required : []),
       createdInThisReport: this.formBuilder.control(createdInThisReport),
@@ -138,6 +143,7 @@ export class PartnerReportContributionTabComponent {
       previouslyReported: this.formBuilder.control(contrib?.numbers.previouslyReported || 0),
       currentlyReported: this.formBuilder.control(contrib?.numbers.currentlyReported || 0),
       totalReportedSoFar: this.formBuilder.control(contrib?.numbers.totalReportedSoFar || 0),
+      attachment: this.formBuilder.control(contrib?.attachment || null),
     });
 
     this.contributions.push(item);
@@ -188,6 +194,28 @@ export class PartnerReportContributionTabComponent {
     ]));
   }
 
+  attachment(index: number): FormControl {
+    return this.contributions.at(index).get('attachment') as FormControl;
+  }
+
+  onUploadFile(target: any, procurementId: number, index: number): void {
+    if (target && procurementId !== 0) {
+      this.pageStore.uploadFile(target?.files[0], procurementId)
+        .pipe(take(1))
+        .subscribe(value => this.attachment(index)?.patchValue(value));
+    }
+  }
+
+  onDeleteFile(fileId: number, index: number): void {
+    this.partnerFileManagementStore.deleteFile(fileId)
+      .pipe(take(1))
+      .subscribe(_ => this.attachment(index)?.patchValue(null));
+  }
+
+  onDownloadFile(fileId: number): void {
+    this.partnerFileManagementStore.downloadFile(fileId).pipe(take(1)).subscribe();
+  }
+
   private getTotalsForStatus(status: ProjectPartnerContributionDTO.StatusEnum): number {
     return NumberService.sum(this.contributions.controls
       .filter(contribution => contribution.get('legalStatus')?.value === status)
@@ -196,9 +224,10 @@ export class PartnerReportContributionTabComponent {
   }
 
   private generateColumns(isEditable: boolean) {
-    this.columns = ['sourceOfContribution', 'legalStatus', 'amount', 'previouslyReported', 'currentlyReported', 'totalReportedSoFar'];
+    this.columns = ['sourceOfContribution', 'legalStatus', 'amount', 'previouslyReported', 'currentlyReported', 'totalReportedSoFar', 'attachment'];
     if (isEditable) {
       this.columns.push('delete');
     }
   }
+
 }

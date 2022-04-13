@@ -2,15 +2,18 @@ package io.cloudflight.jems.server.project.repository.report.file
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.minio.MinioStorage
+import io.cloudflight.jems.server.project.entity.report.contribution.ProjectPartnerReportContributionEntity
 import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
 import io.cloudflight.jems.server.project.entity.report.procurement.ProjectPartnerReportProcurementEntity
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageActivityDeliverableEntity
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageActivityEntity
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageOutputEntity
+import io.cloudflight.jems.server.project.repository.report.contribution.ProjectPartnerReportContributionRepository
 import io.cloudflight.jems.server.project.repository.report.procurement.ProjectPartnerReportProcurementRepository
 import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPartnerReportWorkPackageActivityDeliverableRepository
 import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPartnerReportWorkPackageActivityRepository
 import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPartnerReportWorkPackageOutputRepository
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileCreate
 import io.cloudflight.jems.server.user.repository.user.UserRepository
@@ -90,6 +93,20 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
             attachment = attachment,
         )
 
+        private fun contribution(id: Long, attachment: ReportProjectFileEntity?) = ProjectPartnerReportContributionEntity(
+            id = id,
+            reportEntity = mockk(),
+            sourceOfContribution = "source text",
+            legalStatus = ProjectPartnerContributionStatus.Public,
+            idFromApplicationForm = 200L,
+            historyIdentifier = UUID.randomUUID(),
+            createdInThisReport = true,
+            amount = ONE,
+            previouslyReported = ONE,
+            currentlyReported = ONE,
+            attachment = attachment,
+        )
+
         private fun fileCreate(name: String = "new_file.txt", type: ProjectPartnerReportFileType) = ProjectReportFileCreate(
             projectId = 6666L,
             partnerId = PARTNER_ID,
@@ -120,6 +137,9 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
 
     @MockK
     lateinit var procurementRepository: ProjectPartnerReportProcurementRepository
+
+    @MockK
+    lateinit var contributionRepository: ProjectPartnerReportContributionRepository
 
     @MockK
     lateinit var userRepository: UserRepository
@@ -238,6 +258,26 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
 
         assertFile(filePathMinio.captured, fileEntity.captured)
         assertThat(fileEntity.captured.type).isEqualTo(ProjectPartnerReportFileType.Procurement)
+    }
+
+    @Test
+    fun updatePartnerReportContributionAttachment() {
+        val filePathMinio = slot<String>()
+        val fileEntity = slot<ReportProjectFileEntity>()
+
+        val oldFile = mockk<ReportProjectFileEntity>()
+
+        val contribution = contribution(id = 88L, attachment = oldFile)
+        every { contributionRepository.findById(50L) } returns Optional.of(contribution)
+
+        val fileCreate = fileCreate(type = ProjectPartnerReportFileType.Contribution)
+        mockFileDeletionAndSaving(oldFile, filePathMinio, fileEntity)
+
+        assertThat(persistence.updatePartnerReportContributionAttachment(50L, file = fileCreate).name)
+            .isEqualTo("new_file.txt")
+
+        assertFile(filePathMinio.captured, fileEntity.captured)
+        assertThat(fileEntity.captured.type).isEqualTo(ProjectPartnerReportFileType.Contribution)
     }
 
     @Test

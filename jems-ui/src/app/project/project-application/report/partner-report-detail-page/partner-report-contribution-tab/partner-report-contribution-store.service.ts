@@ -2,11 +2,11 @@ import {Injectable} from '@angular/core';
 import {
   ProjectPartnerReportContributionService,
   ProjectPartnerReportContributionWrapperDTO,
-  ProjectPartnerReportService,
+  ProjectPartnerReportService, ProjectReportFileMetadataDTO,
   UpdateProjectPartnerReportContributionDataDTO,
 } from '@cat/api';
 import {combineLatest, merge, Observable, Subject} from 'rxjs';
-import {map, switchMap, tap} from 'rxjs/operators';
+import {map, switchMap, take, tap} from 'rxjs/operators';
 import {RoutingService} from '@common/services/routing.service';
 import {Log} from '@common/utils/log';
 import {
@@ -65,4 +65,18 @@ export class PartnerReportContributionStore {
       tap(data => Log.info('Updated contribution for partner report', this, data))
     );
   }
+
+  uploadFile(file: File, contributionId: number): Observable<ProjectReportFileMetadataDTO> {
+    return combineLatest([
+      this.partnerId$.pipe(map(id => Number(id))),
+      this.routingService.routeParameterChanges(PartnerReportDetailPageStore.REPORT_DETAIL_PATH, 'reportId')
+        .pipe(map(id => Number(id))),
+    ]).pipe(
+      take(1),
+      switchMap(([partnerId, reportId]) => this.projectPartnerReportContributionService
+        .uploadFileToContributionForm(file, contributionId, partnerId, reportId)
+      ),
+    );
+  }
+
 }

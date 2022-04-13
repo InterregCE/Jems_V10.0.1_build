@@ -103,18 +103,39 @@ internal class GetProjectPartnerReportExpenditureTest : UnitTest() {
             .containsExactly(filledInExpenditure(10L))
     }
 
+    @Test
+    fun `getContribution and fill in, but empty rates`() {
+        val report = mockk<ProjectPartnerReport>()
+        every { report.status } returns ReportStatus.Draft
+        every { reportPersistence.getPartnerReportById(PARTNER_ID, 76L) } returns report
+
+        every { reportExpenditurePersistence.getPartnerReportExpenditureCosts(PARTNER_ID, reportId = 76L) } returns
+            // those should be removed, if persisted by accident
+            listOf(expenditure(10L)
+                .copy(currencyConversionRate = BigDecimal.ONE, declaredAmountAfterSubmission = BigDecimal.TEN)
+            )
+
+        every { currencyPersistence.findAllByIdYearAndIdMonth(year = YEAR, month = MONTH) } returns emptyList()
+
+        assertThat(getReportContribution.getExpenditureCosts(PARTNER_ID, reportId = 76L))
+            .containsExactly(filledInExpenditure(10L).copy(
+                currencyConversionRate = null,
+                declaredAmountAfterSubmission = null,
+            ))
+    }
+
     @ParameterizedTest(name = "getContribution and NOT fill in currencies (status {0})")
     @EnumSource(value = ReportStatus::class, names = ["Draft"], mode = EnumSource.Mode.EXCLUDE)
     fun `getContribution and NOT fill in`(status: ReportStatus) {
         val report = mockk<ProjectPartnerReport>()
         every { report.status } returns status
-        every { reportPersistence.getPartnerReportById(PARTNER_ID, 74L) } returns report
+        every { reportPersistence.getPartnerReportById(PARTNER_ID, 78L) } returns report
 
         val notFilledInExpenditure = expenditure(15L)
-        every { reportExpenditurePersistence.getPartnerReportExpenditureCosts(PARTNER_ID, reportId = 74L) } returns
+        every { reportExpenditurePersistence.getPartnerReportExpenditureCosts(PARTNER_ID, reportId = 78L) } returns
             listOf(notFilledInExpenditure)
 
-        assertThat(getReportContribution.getExpenditureCosts(PARTNER_ID, reportId = 74L))
+        assertThat(getReportContribution.getExpenditureCosts(PARTNER_ID, reportId = 78L))
             .containsExactly(notFilledInExpenditure)
 
         verify(exactly = 0) { currencyPersistence.getConversionForCodeAndMonth(any(), any(), any()) }

@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.entity.report.contribution
 
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
+import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
 import java.math.BigDecimal
 import java.util.UUID
@@ -48,4 +49,9 @@ class ProjectPartnerReportContributionEntity(
 
     @field:NotNull
     var currentlyReported: BigDecimal,
+
+    @ManyToOne
+    @JoinColumn(name = "file_id")
+    var attachment: ReportProjectFileEntity?,
+
 )

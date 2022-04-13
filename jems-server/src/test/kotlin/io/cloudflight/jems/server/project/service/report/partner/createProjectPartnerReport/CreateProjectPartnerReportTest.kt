@@ -37,6 +37,7 @@ import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerRep
 import io.cloudflight.jems.server.project.service.report.model.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.contribution.create.CreateProjectPartnerReportContribution
 import io.cloudflight.jems.server.project.service.report.model.contribution.withoutCalculations.ProjectPartnerReportEntityContribution
+import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
 import io.cloudflight.jems.server.project.service.report.model.workPlan.create.CreateProjectPartnerReportWorkPackage
 import io.cloudflight.jems.server.project.service.report.model.workPlan.create.CreateProjectPartnerReportWorkPackageActivity
 import io.cloudflight.jems.server.project.service.report.model.workPlan.create.CreateProjectPartnerReportWorkPackageActivityDeliverable
@@ -239,6 +240,7 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
                 amount = BigDecimal.ZERO, // should be ignored
                 previouslyReported = BigDecimal.ZERO,
                 currentlyReported = BigDecimal.ONE,
+                attachment = ProjectReportFileMetadata(780L, "this_is_ignored", mockk()),
             ),
             ProjectPartnerReportEntityContribution(
                 id = 2L,
@@ -250,6 +252,7 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
                 amount = BigDecimal.ZERO,
                 previouslyReported = BigDecimal.ZERO,
                 currentlyReported = BigDecimal.ONE,
+                attachment = null,
             ),
         )
 

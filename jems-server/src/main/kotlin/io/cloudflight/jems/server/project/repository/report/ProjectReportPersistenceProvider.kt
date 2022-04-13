@@ -136,7 +136,7 @@ class ProjectReportPersistenceProvider(
         report: ProjectPartnerReportEntity,
     ) =
         contributionRepository.saveAll(
-            contributions.map { it.toEntity(report) }
+            contributions.map { it.toEntity(report, attachment = null) }
         )
 
     @Transactional
