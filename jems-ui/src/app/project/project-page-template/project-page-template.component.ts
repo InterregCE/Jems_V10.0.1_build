@@ -8,16 +8,12 @@ import {ProjectPageTemplateStore} from './project-page-template-store.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import ProjectStatusEnum = ProjectUserDTO.ProjectStatusEnum;
-import {
-  ProjectApplicationFormVisibilityService
-} from '@project/project-application/containers/project-application-form-page/services/project-application-form-visibility.service';
 
 @UntilDestroy()
 @Component({
   selector: 'jems-project-page-template',
   templateUrl: './project-page-template.component.html',
   styleUrls: ['./project-page-template.component.scss'],
-  providers: [ProjectApplicationFormVisibilityService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectPageTemplateComponent implements AfterViewInit {
@@ -57,8 +53,7 @@ export class ProjectPageTemplateComponent implements AfterViewInit {
   }>;
 
   constructor(public projectSidenavService: ProjectApplicationFormSidenavService,
-              public pageStore: ProjectPageTemplateStore,
-              private projectApplicationFormVisibilityService: ProjectApplicationFormVisibilityService) {
+              public pageStore: ProjectPageTemplateStore) {
     this.versionWarnData$ = combineLatest([
       this.pageStore.selectedVersion$,
       this.pageStore.currentVersion$,
