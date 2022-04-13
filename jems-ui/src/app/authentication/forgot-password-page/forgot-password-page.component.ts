@@ -4,7 +4,7 @@ import {SecurityService} from '../../security/security.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {Alert} from '@common/components/forms/alert';
 import {catchError, finalize, tap} from 'rxjs/operators';
-import {Observable, Subject} from 'rxjs';
+import {Subject} from 'rxjs';
 import {APIError} from '@common/models/APIError';
 
 @UntilDestroy()
@@ -17,9 +17,7 @@ import {APIError} from '@common/models/APIError';
 export class ForgotPasswordPageComponent {
 
   Alert = Alert;
-
-  error$: Observable<APIError | null>;
-  success$: Observable<any>;
+  requestedEmail: string;
   requestError$ = new Subject<APIError | null>();
   requestSuccess$ = new Subject<boolean>();
 
@@ -30,14 +28,12 @@ export class ForgotPasswordPageComponent {
     email: ['', [Validators.email, Validators.required]]
   });
 
-  constructor(private readonly formBuilder: FormBuilder, private securityService: SecurityService) {
-    this.success$ = this.requestSuccess$.asObservable();
-    this.error$ = this.requestError$.asObservable();
-  }
+  constructor(private readonly formBuilder: FormBuilder, private securityService: SecurityService) { }
 
   requestPasswordResetLink() {
+    this.requestedEmail = this.form.get('email')?.value;
     this.loading = true;
-    this.securityService.requestPasswordResetLink(this.email)
+    this.securityService.requestPasswordResetLink(this.requestedEmail)
       .pipe(
         tap(() => {
           this.requestSuccess$.next(true);
@@ -56,7 +52,4 @@ export class ForgotPasswordPageComponent {
       .subscribe();
   }
 
-  get email(): string {
-    return this.form.get('email')?.value as string;
-  }
 }
