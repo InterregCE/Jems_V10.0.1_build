@@ -40,14 +40,6 @@ export class ProjectApplyToCallComponent {
               protected projectService: ProjectService) {
   }
 
-  onCancel(): void {
-    this.router.navigate(['/app/call']);
-  }
-
-  navigateToCallDetails(): void {
-    this.router.navigate(['app/call/detail/' + this.callId]);
-  }
-
   getFormattedTimeLeft(dateToFormat: Date): { [key: string]: string | number } {
     const endDate = moment(dateToFormat);
     const now = moment(new Date());

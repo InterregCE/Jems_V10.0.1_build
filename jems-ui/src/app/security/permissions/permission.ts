@@ -3,9 +3,6 @@ import {UserRoleCreateDTO} from '@cat/api';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 
 export class Permission {
-  public static readonly ADMINISTRATOR = 'administrator';
-  public static readonly PROGRAMME_USER = 'programme user';
-  public static readonly APPLICANT_USER = 'applicant user';
   public static readonly PROJECT_APPLICATION_FORM_TITLE_NAME = 'project.application.form.title';
 
   public static readonly SYSTEM_MODULE_PERMISSIONS = [
@@ -206,6 +203,11 @@ export class Permission {
               viewPermissions: [PermissionsEnum.ProjectFileAssessmentRetrieve],
               editPermissions: [PermissionsEnum.ProjectFileAssessmentUpdate],
               editTooltip: 'permission.inspect.annexes'
+            },
+            {
+              name: 'permission.create.and.edit.assessments',
+              mode: PermissionMode.TOGGLE_EDIT,
+              editPermissions: [PermissionsEnum.ProjectAssessmentChecklistUpdate],
             },
           ],
         },
