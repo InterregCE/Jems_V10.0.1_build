@@ -2,10 +2,11 @@ import {Injectable} from '@angular/core';
 import {
   ProjectPartnerReportService,
   ProjectPartnerReportWorkPackageDTO,
-  ProjectPartnerReportWorkPlanService, ProjectReportFileMetadataDTO,
+  ProjectPartnerReportWorkPlanService,
+  ProjectReportFileMetadataDTO,
   UpdateProjectPartnerReportWorkPackageDTO
 } from '@cat/api';
-import {combineLatest, Observable, of} from 'rxjs';
+import {combineLatest, Observable} from 'rxjs';
 import {switchMap, take, tap} from 'rxjs/operators';
 import {RoutingService} from '@common/services/routing.service';
 import {Log} from '@common/utils/log';
