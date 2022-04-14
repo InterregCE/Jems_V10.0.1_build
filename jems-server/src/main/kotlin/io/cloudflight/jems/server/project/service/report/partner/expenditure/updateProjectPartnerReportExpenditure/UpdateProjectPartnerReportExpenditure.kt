@@ -90,7 +90,7 @@ class UpdateProjectPartnerReportExpenditure(
                 generalValidator.maxLength(it.invoiceNumber, 30, "invoiceNumber[$index]")
             }.toTypedArray(),
             *expenditureCosts.mapIndexed { index, it ->
-                generalValidator.numberBetween(it.declaredAmount, MAX_NUMBER, MIN_NUMBER, "declaredAmount[$index]")
+                generalValidator.numberBetween(it.declaredAmount, MIN_NUMBER, MAX_NUMBER, "declaredAmount[$index]")
             }.toTypedArray(),
             generalValidator.onlyValidCurrencies(expenditureCosts.mapTo(HashSet()) { it.currencyCode }, "currencyCode"),
         )
