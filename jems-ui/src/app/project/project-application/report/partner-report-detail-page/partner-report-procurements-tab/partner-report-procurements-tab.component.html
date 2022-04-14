@@ -88,17 +88,19 @@
                             </td>
                         </ng-container>
 
-                        <ng-container matColumnDef="currency">
+                        <ng-container matColumnDef="currencyCode">
                             <th class="text-field-column" mat-header-cell *matHeaderCellDef scope="col">
                                 {{'project.application.partner.report.procurements.table.currency' | translate}}
                             </th>
                             <td class="text-field-column" mat-cell *matCellDef="let control; let i = dataIndex;" [formGroupName]="i">
-                                <mat-select class="placeholder-required" [formControlName]="constants.CURRENCY.name"
-                                            [attr.disabled]="true"
-                                            placeholder="{{'call.detail.first.step.pre.submission.check.config.placeholder' | translate}}">
-                                    <mat-option [value]="null">N/A</mat-option>
-                                    <mat-option [value]="'EUR'">EUR</mat-option>
-                                </mat-select>
+                                <mat-form-field jemsFormFieldWidth="full">
+                                    <mat-select class="width-3" [formControlName]="constants.CURRENCY.name"
+                                                [disabled]="!isProcurementEditable(control) || data.currentReport.identification.currency === CurrencyCodesEnum.EUR"
+                                                [required]="true"
+                                                placeholder="{{'project.application.partner.report.expenditures.currency.placeholder' | translate}}">
+                                        <mat-option *ngFor="let currency of data.currencies" [value]="currency.code">{{currency.code}}</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
                             </td>
                         </ng-container>
 

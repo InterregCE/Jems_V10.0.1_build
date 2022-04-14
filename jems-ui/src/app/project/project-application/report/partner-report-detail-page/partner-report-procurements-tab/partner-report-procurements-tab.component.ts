@@ -4,7 +4,7 @@ import {catchError, map, take, tap} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {FormService} from '@common/components/section/form/form.service';
 import {combineLatest, Observable} from 'rxjs';
-import {ProjectPartnerReportDTO, ProjectPartnerReportProcurementDTO} from '@cat/api';
+import {CurrencyDTO, ProjectPartnerReportDTO, ProjectPartnerReportProcurementDTO} from '@cat/api';
 import {
   PartnerReportProcurementsTabConstants
 } from '@project/project-application/report/partner-report-detail-page/partner-report-procurements-tab/partner-report-procurements-tab.constants';
@@ -19,6 +19,7 @@ import {RoutingService} from '@common/services/routing.service';
 import {
   PartnerFileManagementStore
 } from '@project/project-application/report/partner-report-detail-page/partner-file-management-store';
+import {CurrencyCodesEnum, CurrencyStore} from '@common/services/currency.store';
 
 @UntilDestroy()
 @Component({
@@ -39,13 +40,12 @@ import {
 
 export class PartnerReportProcurementsTabComponent {
 
-  columnsToDisplay = ['createdIn', 'contractID', 'contractType', 'contractAmount', 'currency', 'supplierName', 'commentPreview', 'downloadAttachment', 'deleteProcurement', 'expandProcurement'];
+  columnsToDisplay = ['createdIn', 'contractID', 'contractType', 'contractAmount', 'currencyCode', 'supplierName', 'commentPreview', 'downloadAttachment', 'deleteProcurement', 'expandProcurement'];
   expandedElement: ProjectPartnerReportProcurementDTO | null;
-
+  CurrencyCodesEnum = CurrencyCodesEnum;
   reportProcurementsForm: FormGroup;
   currentReportNumber: number;
   isReportEditable: boolean;
-
   tableData: AbstractControl[] = [];
   constants = PartnerReportProcurementsTabConstants;
 
@@ -53,6 +53,7 @@ export class PartnerReportProcurementsTabComponent {
     savedProcurements: ProjectPartnerReportProcurementDTO[];
     currentReport: ProjectPartnerReportDTO;
     isReportEditable: boolean;
+    currencies: CurrencyDTO[];
   }>;
 
   constructor(
@@ -62,6 +63,7 @@ export class PartnerReportProcurementsTabComponent {
     private routingService: RoutingService,
     private reportDetailPageStore: PartnerReportDetailPageStore,
     private partnerFileManagementStore: PartnerFileManagementStore,
+    private currencyStore: CurrencyStore
   ) {
     this.reportProcurementsForm = this.formBuilder.group({
       procurements: this.formBuilder.array([])
@@ -70,10 +72,19 @@ export class PartnerReportProcurementsTabComponent {
     this.data$ = combineLatest([
       this.pageStore.procurements$,
       this.reportDetailPageStore.partnerReport$,
-      this.reportDetailPageStore.reportEditable$
+      this.reportDetailPageStore.reportEditable$,
+      this.currencyStore.currencies$,
+      this.reportDetailPageStore.partnerReport$
     ]).pipe(
-      map(([savedProcurements, currentReport, isReportEditable]) => ({savedProcurements, currentReport, isReportEditable})),
-      tap(data => this.resetForm(data.savedProcurements.reverse())),
+      map(([savedProcurements, currentReport, isReportEditable, currencies, partnerReport]) => ({
+          savedProcurements,
+          currentReport,
+          isReportEditable,
+          currencies,
+          partnerReport
+        })
+      ),
+      tap(data => this.resetForm(data.savedProcurements.reverse(), data.partnerReport)),
       tap(data => this.currentReportNumber = data.currentReport.reportNumber),
       tap(data => this.isReportEditable = data.isReportEditable)
     );
@@ -89,9 +100,9 @@ export class PartnerReportProcurementsTabComponent {
     return this.procurements.at(index).get(this.constants.ATTACHMENT.name) as FormControl;
   }
 
-  resetForm(procurements: ProjectPartnerReportProcurementDTO[]): void {
+  resetForm(procurements: ProjectPartnerReportProcurementDTO[], currentReport?: ProjectPartnerReportDTO): void {
     this.procurements.clear();
-    procurements.forEach((procurement) => this.addNewProcurement(procurement));
+    procurements.forEach((procurement) => this.addNewProcurement(procurement, currentReport));
     this.tableData = [...this.procurements.controls];
     this.formService.resetEditable();
   }
@@ -106,7 +117,7 @@ export class PartnerReportProcurementsTabComponent {
     this.formService.setDirty(true);
   }
 
-  addNewProcurement(procurement?: ProjectPartnerReportProcurementDTO): void {
+  addNewProcurement(procurement?: ProjectPartnerReportProcurementDTO, currentReport?: ProjectPartnerReportDTO): void {
     if (this.procurements.length <= this.constants.MAX_NUMBER_OF_ITEMS) {
       const item = this.formBuilder.group({
         id: procurement?.id || 0,
@@ -115,7 +126,7 @@ export class PartnerReportProcurementsTabComponent {
         contractId: this.formBuilder.control(procurement?.contractId || '', this.constants.CONTRACT_ID.validators),
         contractType: this.formBuilder.control(procurement?.contractType || [], this.constants.CONTRACT_TYPE.validators),
         contractAmount: this.formBuilder.control(procurement?.contractAmount || 0),
-        currencyCode: this.formBuilder.control('EUR'),
+        currencyCode: this.formBuilder.control(procurement ? procurement.currencyCode : currentReport?.identification?.currency),
         supplierName: this.formBuilder.control(procurement?.supplierName || '', this.constants.SUPPLIER_NAME.validators),
         comment: this.formBuilder.control(procurement?.comment || [], this.constants.COMMENT.validators),
         commentPreview: this.formBuilder.control(procurement?.comment || [], this.constants.COMMENT.validators),
@@ -176,5 +187,4 @@ export class PartnerReportProcurementsTabComponent {
       .pipe(take(1))
       .subscribe();
   }
-
 }

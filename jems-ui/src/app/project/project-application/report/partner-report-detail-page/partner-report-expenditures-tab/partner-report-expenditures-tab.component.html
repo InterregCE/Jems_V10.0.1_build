@@ -3,6 +3,8 @@
                (discard)="resetForm(data.expendituresCosts)">
         <form jemsFormLayout [formGroup]="reportExpendituresForm">
             <h3>{{'project.application.partner.report.expenditures.title' | translate}}</h3>
+
+            <span> {{'project.application.partner.report.expenditures.currencies.info.message' | translate}}</span>
             <div id="table-container" jemsNoWidthLimit>
                 <jems-multi-language-container>
                     <mat-table jemsNoWidthLimit
@@ -262,12 +264,69 @@
                                 <mat-form-field jemsFormFieldWidth="full">
                                     <input [formControlName]="constants.FORM_CONTROL_NAMES.declaredAmount"
                                            [options]="{min: constants.MIN_VALUE, max: constants.MAX_VALUE, align: 'right'}"
+                                           (keyup)="updateAmountInEur(i, control.value.declaredAmount)"
                                            currencyMask matInput
                                            type="decimal">
                                 </mat-form-field>
                             </mat-cell>
                             <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                         </ng-container>
+
+                        <ng-container matColumnDef="currencyCode">
+                            <mat-header-cell class="end-flex-header-table" *matHeaderCellDef>
+                                        <span jemsText
+                                              maxLines="1">{{'project.application.partner.report.expenditures.currency' | translate}}</span>
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                                <mat-form-field jemsFormFieldWidth="full">
+                                    <mat-select class="placeholder-required"
+                                                [disabled]="currentReport.identification.currency === CurrencyCodesEnum.EUR"
+                                                [formControlName]="constants.FORM_CONTROL_NAMES.currencyCode"
+                                                [required]="true"
+                                                placeholder="{{'project.application.partner.report.expenditures.currency.placeholder' | translate}}"
+                                                (selectionChange)="updateConversionRate(i, $event)">
+                                        <mat-option *ngFor="let currency of currencies" [value]="currency.code">{{currency.code}}</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </mat-cell>
+                            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                        </ng-container>
+
+
+                        <ng-container matColumnDef="currencyConversionRate">
+                            <mat-header-cell class="end-flex-header-table" *matHeaderCellDef>
+                                        <span jemsText
+                                              maxLines="1">{{'project.application.partner.report.expenditures.conversion.rate' | translate}}</span>
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                                <mat-form-field jemsFormFieldWidth="full" [class.mat-form-field-disabled]="true">
+                                    <input [formControlName]="constants.FORM_CONTROL_NAMES.currencyConversionRate"
+                                           [options]="{align: 'right'}"
+                                           [readonly]="true"
+                                           currencyMask matInput
+                                           type="decimal">
+                                </mat-form-field>
+                            </mat-cell>
+                            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                        </ng-container>
+
+                        <ng-container matColumnDef="declaredAmountInEur">
+                            <mat-header-cell class="end-flex-header-table" *matHeaderCellDef>
+                                        <span jemsText
+                                              maxLines="1">{{'project.application.partner.report.expenditures.declared.amount.eur' | translate}}</span>
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                                <mat-form-field jemsFormFieldWidth="full" [class.mat-form-field-disabled]="true">
+                                    <input [formControlName]="constants.FORM_CONTROL_NAMES.declaredAmountInEur"
+                                           [readonly]="true"
+                                           [options]="{align: 'right'}"
+                                           currencyMask matInput
+                                           type="decimal">
+                                </mat-form-field>
+                            </mat-cell>
+                            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                        </ng-container>
+
                         <ng-container matColumnDef="actions" stickyEnd>
                             <mat-header-cell *matHeaderCellDef></mat-header-cell>
                             <mat-cell *matCellDef="let control;let index=index" class="justify-end">
