@@ -265,7 +265,6 @@ function createApplication(applicationDetails: ProjectCreateDTO) {
   return cy.request({
     method: 'POST',
     url: 'api/project',
-    // auth: {'user': userEmail, 'pass': Cypress.env('defaultPassword')},
     body: applicationDetails
   })
 }
@@ -312,13 +311,15 @@ function createWorkPlan(applicationId: number, workPlan: WorkPackage[]) {
       url: `api/project/${applicationId}/workPackage`,
       body: workPackage.details
     }).then(result => {
-      cy.request({
-        method: 'POST',
-        url: `api/project/${applicationId}/workPackage/${result.body.id}/investment`,
-        body: workPackage.investment
-      }).then(response => {
-        cy.wrap(response.body).as('investmentId');
-      });
+      if (workPackage.investment) {
+        cy.request({
+          method: 'POST',
+          url: `api/project/${applicationId}/workPackage/${result.body.id}/investment`,
+          body: workPackage.investment
+        }).then(response => {
+          cy.wrap(response.body).as('investmentId');
+        });
+      }
       cy.request({
         method: 'PUT',
         url: `api/project/${applicationId}/workPackage/${result.body.id}/activity`,

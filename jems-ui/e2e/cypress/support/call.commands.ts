@@ -24,40 +24,21 @@ declare global {
     interface Chainable {
       createCall(call, creatingUserEmail?: string);
 
+      create2StepCall(call, creatingUserEmail?: string);
+
       publishCall(callId: number, publishingUserEmail?: string);
     }
   }
 }
 
 Cypress.Commands.add('createCall', (call: Call, creatingUserEmail?: string) => {
-  // randomize name
-  call.generalCallSettings.name = `${faker.hacker.adjective()} ${faker.hacker.noun()}`;
-  // set relative dates if not set
-  if (!call.generalCallSettings.startDateTime)
-    call.generalCallSettings.startDateTime = faker.date.recent();
-  if (!call.generalCallSettings.endDateTime)
-    call.generalCallSettings.endDateTime = faker.date.soon(2);
-  if (creatingUserEmail)
-    loginByRequest(creatingUserEmail);
-  cy.request({
-    method: 'POST',
-    url: 'api/call',
-    // auth: {'user': user.programmeUser.email, 'pass': Cypress.env('defaultPassword')},
-    body: call.generalCallSettings
-  }).then(function (response) {
-    const callId = response.body.id;
-    setCallFlatRates(callId, call.budgetSettings.flatRates);
-    setCallLumpSums(callId, call.budgetSettings.lumpSums);
-    setCallUnitCosts(callId, call.budgetSettings.unitCosts);
-    setCallApplicationFormConfiguration(callId, call.applicationFormConfiguration);
-    setCallPreSubmissionCheckSettings(callId, call.preSubmissionCheckSettings);
-    if (creatingUserEmail) {
-      cy.get('@currentUser').then((currentUser: any) => {
-        loginByRequest(currentUser.name);
-      });
-    }
-    cy.wrap(callId);
-  });
+  createCall(call, creatingUserEmail);
+});
+
+Cypress.Commands.add('create2StepCall', (call: Call, creatingUserEmail?: string) => {
+  call.generalCallSettings.endDateTimeStep1 = faker.date.soon(1);
+  call.generalCallSettings.endDateTime = faker.date.soon(1, call.generalCallSettings.endDateTimeStep1);
+  createCall(call, creatingUserEmail);
 });
 
 Cypress.Commands.add('publishCall', (callId: number, publishingUserEmail?: string) => {
@@ -73,6 +54,37 @@ Cypress.Commands.add('publishCall', (callId: number, publishingUserEmail?: strin
     });
   }
 });
+
+function createCall(call: Call, creatingUserEmail?: string) {
+  // randomize name
+  if (call.generalCallSettings.name === 'randomize')
+    call.generalCallSettings.name = `${faker.hacker.adjective()} ${faker.hacker.noun()}`;
+  // set relative dates if not set
+  if (!call.generalCallSettings.startDateTime)
+    call.generalCallSettings.startDateTime = faker.date.recent();
+  if (!call.generalCallSettings.endDateTime)
+    call.generalCallSettings.endDateTime = faker.date.soon(2);
+  if (creatingUserEmail)
+    loginByRequest(creatingUserEmail);
+  cy.request({
+    method: 'POST',
+    url: 'api/call',
+    body: call.generalCallSettings
+  }).then(function (response) {
+    const callId = response.body.id;
+    setCallFlatRates(callId, call.budgetSettings.flatRates);
+    setCallLumpSums(callId, call.budgetSettings.lumpSums);
+    setCallUnitCosts(callId, call.budgetSettings.unitCosts);
+    setCallApplicationFormConfiguration(callId, call.applicationFormConfiguration);
+    setCallPreSubmissionCheckSettings(callId, call.preSubmissionCheckSettings);
+    if (creatingUserEmail) {
+      cy.get('@currentUser').then((currentUser: any) => {
+        loginByRequest(currentUser.name);
+      });
+    }
+    cy.wrap(callId);
+  });
+}
 
 function setCallFlatRates(callId: number, flatRates: FlatRateSetupDTO) {
   cy.request({

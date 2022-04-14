@@ -4,7 +4,6 @@ import call2step from '../../../fixtures/api/call/2.step.call.json';
 import application from '../../../fixtures/api/application/application.json';
 import application2step from '../../../fixtures/api/application/2.step.application.json';
 import partner from '../../../fixtures/api/application/partner/partner.json';
-import faker from '@faker-js/faker';
 
 context('Application form exports', () => {
   beforeEach(() => {
@@ -49,10 +48,7 @@ context('Application form exports', () => {
 
   it('TB-367 Export application form in version other than the current', () => {
     cy.fixture('project/exports/TB-367.json').then(testData => {
-      call2step.generalCallSettings.startDateTime = faker.date.recent();
-      call2step.generalCallSettings.endDateTimeStep1 = faker.date.soon(1);
-      call2step.generalCallSettings.endDateTime = faker.date.soon(1, call2step.generalCallSettings.endDateTimeStep1);
-      cy.createCall(call2step, user.programmeUser.email).then(callId => {
+      cy.create2StepCall(call2step, user.programmeUser.email).then(callId => {
         cy.publishCall(callId, user.programmeUser.email);
         application2step.details.projectCallId = callId;
         application2step.firstStep.identification.acronym = testData.acronym;
@@ -151,6 +147,73 @@ context('Application form exports', () => {
             cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/application?*version=4.0`, 'pdf').then(file => {
               const assertionMessage = 'Verify downloaded pdf file for rejected version';
               expect(file.text.includes(testData.rejectedModificationExportData), assertionMessage).to.be.true;
+            });
+          });
+        });
+      });
+    });
+  });
+
+  it('TB-373 Export application form in different steps', () => {
+    cy.fixture('project/exports/TB-373.json').then(testData => {
+      call2step.applicationFormConfiguration = testData.call.applicationFormConfiguration;
+      call2step.generalCallSettings.name = 'randomize';
+      cy.create2StepCall(call2step, user.programmeUser.email).then(callId => {
+        cy.publishCall(callId, user.programmeUser.email);
+        application2step.details.projectCallId = callId;
+        application2step.firstStep.identification.acronym = testData.application.acronym;
+        application2step.details.acronym = testData.application.acronym;
+        cy.createApplication(application2step).then(applicationId => {
+
+          // 1st step version
+          cy.updateProjectIdentification(applicationId, application2step.firstStep.identification);
+          cy.createPartner(applicationId, application2step.firstStep.partners[0].details).then(partnerId => {
+            cy.runPreSubmissionCheck(applicationId);
+            cy.submitProjectApplication(applicationId);
+
+            cy.loginByRequest(user.programmeUser.email);
+            cy.approveApplication(applicationId, application2step.assessments);
+            cy.startSecondStep(applicationId);
+
+            // 2nd step version
+            cy.loginByRequest(user.applicantUser.email);
+            const updatedPartner = testData.application.partners[0];
+            application2step.secondStep.identification.acronym = testData.application.acronym + ' v2';
+            cy.updateProjectIdentification(applicationId, application2step.secondStep.identification);
+            cy.createProjectWorkPlan(applicationId, testData.application.description.workPlan);
+            cy.updateProjectRelevanceAndContext(applicationId, application2step.secondStep.description.relevanceAndContext);
+            cy.updateProjectPartnership(applicationId, application2step.secondStep.description.partnership);
+            cy.createProjectResults(applicationId, testData.application.description.results);
+            cy.updateProjectManagement(applicationId, application2step.secondStep.description.management);
+            cy.updateProjectLongTermPlans(applicationId, application2step.secondStep.description.longTermPlans);
+            cy.updatePartner(partnerId, updatedPartner.details);
+            cy.updatePartnerAddress(partnerId, updatedPartner.address);
+            cy.updatePartnerContact(partnerId, updatedPartner.contact);
+            cy.updatePartnerBudget(partnerId, updatedPartner.budget);
+            cy.updatePartnerCofinancing(partnerId, updatedPartner.cofinancing);
+            cy.runPreSubmissionCheck(applicationId);
+            cy.submitProjectApplication(applicationId);
+
+            cy.approveApplication(applicationId, application2step.assessments, user.programmeUser.email);
+            cy.visit(`app/project/detail/${applicationId}/export`, {failOnStatusCode: false});
+
+            // export current step 2 (approved) version
+            cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/application?*`, 'pdf').then(file => {
+              cy.fixture('project/exports/TB-373-exports-v2.txt').then(fileContent => {
+                const assertionMessage = 'Verify downloaded pdf file for step 2 version';
+                expect(file.text.includes(fileContent), assertionMessage).to.be.true;
+              });
+            });
+
+            // export step 1 version
+            cy.get('div#export-config').contains('div', 'Project version').find('mat-select').click();
+            cy.contains('mat-option', 'V. 1.0').click();
+
+            cy.contains('div#export-config button', 'Export').clickToDownload(`api/project/${applicationId}/export/application?*version=1.0`, 'pdf').then(file => {
+              cy.fixture('project/exports/TB-373-exports-v1.txt').then(fileContent => {
+                const assertionMessage = 'Verify downloaded pdf file for step 1 version';
+                expect(file.text.includes(fileContent), assertionMessage).to.be.true;
+              });
             });
           });
         });
