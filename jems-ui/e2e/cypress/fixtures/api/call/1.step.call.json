@@ -6,7 +6,7 @@
     "startDateTime": null,
     "endDateTimeStep1": null,
     "endDateTime": null,
-    "additionalFundAllowed": true,
+    "additionalFundAllowed": false,
     "lengthOfPeriod": 3,
     "description": [
       {
@@ -69,28 +69,37 @@
       }
     ],
     "stateAidIds": [
-      1
+      1,3
     ]
   },
   "budgetSettings": {
     "flatRates": {
       "staffCostFlatRateSetup": {
         "rate": 20,
-        "adjustable": false
+        "adjustable": true
       },
       "officeAndAdministrationOnStaffCostsFlatRateSetup": {
         "rate": 15,
         "adjustable": true
       },
-      "officeAndAdministrationOnDirectCostsFlatRateSetup": null,
-      "travelAndAccommodationOnStaffCostsFlatRateSetup": null,
-      "otherCostsOnStaffCostsFlatRateSetup": null
+      "officeAndAdministrationOnDirectCostsFlatRateSetup": {
+        "rate": 25,
+        "adjustable": true
+      },
+      "travelAndAccommodationOnStaffCostsFlatRateSetup": {
+        "rate": 15,
+        "adjustable": true
+      },
+      "otherCostsOnStaffCostsFlatRateSetup": {
+        "rate": 40,
+        "adjustable": true
+      }
     },
     "lumpSums": [
       1
     ],
     "unitCosts": [
-      1
+      1,3,4
     ]
   },
   "preSubmissionCheckSettings": {

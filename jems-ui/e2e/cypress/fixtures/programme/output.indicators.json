@@ -22,5 +22,12 @@
     "resultIndicator": "RI3",
     "milestone": 0,
     "finalTarget": "9999999,99"
+  },
+  {
+    "identifier": "OI4",
+    "code": "RCO04",
+    "programmeObjectivePolicy": "SO2.1 - Promoting energy efficiency and reducing greenhouse gas emissions",
+    "milestone": 2,
+    "finalTarget": "50000,99"
   }
 ]

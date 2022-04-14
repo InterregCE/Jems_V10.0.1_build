@@ -491,7 +491,7 @@
             "id": null,
             "name": "Lead Partner",
             "status": "Public",
-            "amount": 3150.1,
+            "amount": 25372.32,
             "partner": true
           }
         ]
@@ -1264,6 +1264,18 @@
       ]
     }
   },
+  "lumpSums": [
+    {
+      "programmeLumpSumId": 1,
+      "period": 0,
+      "lumpSumContributions": [
+        {
+          "partnerId": null,
+          "amount": 55555.56
+        }
+      ]
+    }
+  ],
   "assessments": {
     "eligibilityAssessment": {
       "result": "PASSED",

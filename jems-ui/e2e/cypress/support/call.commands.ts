@@ -61,7 +61,6 @@ Cypress.Commands.add('createCall', (call: Call, creatingUserEmail?: string) => {
 });
 
 Cypress.Commands.add('publishCall', (callId: number, publishingUserEmail?: string) => {
-  console.log(callId);
   if (publishingUserEmail)
     loginByRequest(publishingUserEmail);
   cy.request({
