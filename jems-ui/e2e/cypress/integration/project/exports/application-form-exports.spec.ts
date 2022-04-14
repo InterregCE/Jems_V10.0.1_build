@@ -12,7 +12,7 @@ context('Application form exports', () => {
     cy.loginByRequest(user.applicantUser.email);
   });
 
-  it('TB-366 Export application form using two sets of input and export language', function () {
+  it('TB-366 Export application form using two sets of input and export language', () => {
     cy.fixture('project/exports/TB-366.json').then(testData => {
       cy.createCall(call, user.programmeUser.email).then(callId => {
         application.details.projectCallId = callId;

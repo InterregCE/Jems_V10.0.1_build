@@ -71,7 +71,7 @@ declare global {
 
 Cypress.Commands.add('createPartner', (applicationId: number, partner: ProjectPartnerDTO) => {
   createPartner(applicationId, partner).then(response => {
-    cy.wrap(response.body.id).as('partnerId');
+    cy.wrap(response.body.id).as(partner.abbreviation);
   });
 });
 
@@ -138,7 +138,7 @@ export function createPartner(applicationId: number, partner: ProjectPartnerDTO)
 export function createPartners(applicationId: number, partners: ProjectPartner[]) {
   partners.forEach(partner => {
     createPartner(applicationId, partner.details).then(response => {
-      cy.wrap(response.body.id).as('partnerId');
+      cy.wrap(response.body.id).as(partner.details.abbreviation);
       updateAddress(response.body.id, partner.address);
       updateContact(response.body.id, partner.contact);
       updateMotivation(response.body.id, partner.motivation);

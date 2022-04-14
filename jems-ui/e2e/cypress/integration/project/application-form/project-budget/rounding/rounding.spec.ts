@@ -9,7 +9,7 @@ context('Rounding', () => {
     cy.loginByRequest(user.applicantUser.email);
   });
 
-  it('TB-383 Rounding values in partner co-financing', function () {
+  it('TB-383 Rounding values in partner co-financing', () => {
     call.generalCallSettings.additionalFundAllowed = false;
     cy.createCall(call, user.programmeUser.email).then(callId => {
       call.generalCallSettings.id = callId;
@@ -17,6 +17,7 @@ context('Rounding', () => {
       cy.publishCall(callId, user.programmeUser.email);
 
       cy.createApplication(testData.application).then(applicationId => {
+        cy.updateProjectIdentification(applicationId, testData.application.identification);
         const projectPartner = testData.application.partners[0];
         cy.createPartner(applicationId, projectPartner.details).then(partnerId => {
           cy.addPartnerTravelCosts(partnerId, projectPartner.budget.travel);
@@ -47,11 +48,18 @@ context('Rounding', () => {
           cy.visit(`app/project/detail/${applicationId}/applicationFormOverviewTables`, {failOnStatusCode: false});
           cy.get('jems-alert').should('be.visible');
 
-          cy.get('table tbody tr').eq(1).then(budgetBreakdown => {
+          cy.contains('tr', 'Neighbourhood CBC').then(budgetBreakdown => {
             cy.wrap(budgetBreakdown).children().eq(1).should('contain', testData.roundedDownAmount);
             cy.wrap(budgetBreakdown).children().eq(2).should('contain', testData.fundPercentage);
             cy.wrap(budgetBreakdown).children().eq(6).should('contain', testData.roundedUpAmount);
             cy.wrap(budgetBreakdown).children().eq(8).should('contain', testData.partnerTotalEligibleBudget);
+          });
+
+          cy.contains('tr', 'Total project budget').then(totalBudgetBreakdown => {
+            cy.wrap(totalBudgetBreakdown).children().eq(1).should('contain', testData.roundedDownAmount);
+            cy.wrap(totalBudgetBreakdown).children().eq(2).should('contain', testData.fundPercentage);
+            cy.wrap(totalBudgetBreakdown).children().eq(6).should('contain', testData.roundedUpAmount);
+            cy.wrap(totalBudgetBreakdown).children().eq(8).should('contain', testData.partnerTotalEligibleBudget);
           });
 
           // verify D.1 section
