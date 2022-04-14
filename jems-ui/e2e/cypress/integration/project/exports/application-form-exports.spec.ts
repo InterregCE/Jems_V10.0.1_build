@@ -108,8 +108,7 @@ context('Application form exports', () => {
             // modification (rejected - non-current) version
             cy.startModification(applicationId, user.programmeUser.email);
             cy.updateProjectIdentification(applicationId, testData.rejectedModificationData.identification);
-            cy.get('@partnerId').then((partnerId: any) => {
-              // deactivate the last created partner
+            cy.get(`@${partner.details.abbreviation}`).then((partnerId: any) => {
               cy.deactivatePartner(partnerId);
             });
             const thirdPartner = JSON.parse(JSON.stringify(partner));
