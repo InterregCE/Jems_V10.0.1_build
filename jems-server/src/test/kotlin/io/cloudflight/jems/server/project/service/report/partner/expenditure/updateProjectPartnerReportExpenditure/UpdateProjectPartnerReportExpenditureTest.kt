@@ -104,9 +104,11 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
     fun `update - successfully - with existing procurement, existing investment, and currency not EUR`() {
         val slotString = mutableListOf<String>()
         val slotTranslations = mutableListOf<Set<InputTranslation>>()
+        val slotBigDecimal = mutableListOf<BigDecimal>()
         val slotCurrencies = slot<Set<String>>()
         every { generalValidator.maxLength(capture(slotString), any(), any()) } returns emptyMap()
         every { generalValidator.maxLength(capture(slotTranslations), any(), any()) } returns emptyMap()
+        every { generalValidator.numberBetween(capture(slotBigDecimal), BigDecimal.ZERO, any(), any()) } returns emptyMap()
         every { generalValidator.onlyValidCurrencies(capture(slotCurrencies), any()) } returns emptyMap()
 
         every { reportPersistence.getPartnerReportById(partnerId = PARTNER_ID, 84L) } returns
@@ -142,6 +144,7 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
 
         assertThat(slotString).containsExactlyInAnyOrder("invoice", "irn")
         assertThat(slotTranslations.map { it.first().translation }).containsExactlyInAnyOrder("comment EN", "desc EN")
+        assertThat(slotBigDecimal).containsExactly(BigDecimal.TEN)
         assertThat(slotCurrencies.captured).containsExactly("GBP")
     }
 
