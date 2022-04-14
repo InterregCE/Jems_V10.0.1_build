@@ -797,8 +797,6 @@
             ]
           },
           "investment": {
-            "id": null,
-            "investmentNumber": null,
             "title": [
               {
                 "translation": "API generated investment title DE",
@@ -922,9 +920,6 @@
           },
           "activities": [
             {
-              "id": null,
-              "workPackageId": null,
-              "activityNumber": null,
               "title": [
                 {
                   "translation": "API generated activity 1 title DE",
@@ -1033,10 +1028,7 @@
           ],
           "outputs": [
             {
-              "workPackageId": null,
-              "outputNumber": 0,
               "programmeOutputIndicatorId": 1,
-              "programmeOutputIndicatorIdentifier": null,
               "title": [
                 {
                   "translation": "API generated output 1 title DE",
@@ -1061,10 +1053,7 @@
               ]
             },
             {
-              "workPackageId": null,
-              "outputNumber": 1,
               "programmeOutputIndicatorId": 1,
-              "programmeOutputIndicatorIdentifier": null,
               "title": [
                 {
                   "translation": "API generated output 2 title DE",
@@ -1094,7 +1083,6 @@
       "results": [
         {
           "programmeResultIndicatorId": 1,
-          "programmeResultIndicatorIdentifier": null,
           "resultNumber": 0,
           "targetValue": 13,
           "baseline": 0,

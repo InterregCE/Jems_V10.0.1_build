@@ -1,0 +1,1207 @@
+{
+  "call": {
+    "applicationFormConfiguration": [
+      {
+        "id": "application.config.project.partner.representative.title",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.main-address.housenumber",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.contact.last.name",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.contact.first.name",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.contact.title",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.contact.telephone",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.output.target.value",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.budget.travel.and.accommodation.comments",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.work.package.title",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.quality.measures",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.main-address.street",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.secondary-address.country.and.nuts",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.motivation.organization.relevance",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.communication.objectives.and.target.audience",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.budget.infrastructure.and.works.unit.type.and.number.of.units",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.financial.management.and.reporting",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.budget.travel.and.accommodation.price.per.unit",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.recoverVat",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.transferability",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.overall.objective",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.budget.staff.cost.comment",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.priority",
+        "visible": true,
+        "availableInStep": "STEP_ONE_AND_TWO",
+        "visibilityLocked": true,
+        "stepSelectionLocked": true
+      },
+      {
+        "id": "application.config.project.partner.main-address.homepage",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.organization.original.name",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.lump.sums.description",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.investment.city",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.output.programme.output.indicator.and.measurement.unit",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.budget.equipment.investment",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.budget.external.expertise.award.procedure",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.horizontal.principles",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.budget.external.expertise.comments",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.budget.travel.and.accommodation.description",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.state.aid.criteria.self.check",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.budget.infrastructure.and.works.investment",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.secondary-address.street",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.budget.equipment.award.procedure",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.budget.infrastructure.and.works.description",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.how.builds.project.on.available.knowledge",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.result.baseline",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.associated.organizations",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.why.is.cooperation.needed",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partnership",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.result.description",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.activities.deliverables",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.investment.expected.delivery.period",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.investment.why.is.investment.needed",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.budget.equipment.description",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.title",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.budget.external.expertise.unit.type.and.number.of.units",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.organization.english.name",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.result.target.value",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.motivation.organization.role",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.investment.documentation.expected.impacts",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.state.aid.relevant.activities",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.investment.house.number",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.budget.infrastructure.and.works.price.per.unit",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.budget.equipment.comments",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.section.a.4",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": true
+      },
+      {
+        "id": "application.config.project.partner.vat",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.investment.maintenance",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.pic",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.sub.type",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.output.title",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.investment.postal.code",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.budget.staff.cost.staff.function",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.coordination",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.budget.unit.costs.programme.unit.costs",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.main-address.country.and.nuts",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.duration",
+        "visible": true,
+        "availableInStep": "STEP_ONE_AND_TWO",
+        "visibilityLocked": true,
+        "stepSelectionLocked": true
+      },
+      {
+        "id": "application.config.project.result.indicator.and.measurement.unit",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.secondary-address.city",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.summary",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.role",
+        "visible": true,
+        "availableInStep": "STEP_ONE_AND_TWO",
+        "visibilityLocked": true,
+        "stepSelectionLocked": true
+      },
+      {
+        "id": "application.config.project.investment.country",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.budget.external.expertise.price.per.unit",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.activities.state.aid.partners.involved",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.budget.staff.cost.unit.type.and.number.of.units",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.secondary-address.housenumber",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.section.a.3",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": true
+      },
+      {
+        "id": "application.config.project.activities.title",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.budget.unit.costs.price.per.unit",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.investment.who.owns.the.investment.site",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.budget.travel.and.accommodation.unit.type.and.number.of.units",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.output.delivery.period",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.nace.group.level",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.durability",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.organization.department",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.partner.state.aid.scheme",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.cooperation.criteria",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.co.financing.add.new.contribution.origin",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.objective",
+        "visible": true,
+        "availableInStep": "STEP_ONE_AND_TWO",
+        "visibilityLocked": true,
+        "stepSelectionLocked": true
+      },
+      {
+        "id": "application.config.project.partner.legal.status",
+        "visible": true,
+        "availableInStep": "STEP_ONE_AND_TWO",
+        "visibilityLocked": true,
+        "stepSelectionLocked": true
+      },
+      {
+        "id": "application.config.project.partner.budget.equipment.price.per.unit",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.budget.spf.description",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": true
+      },
+      {
+        "id": "application.config.project.acronym",
+        "visible": true,
+        "availableInStep": "STEP_ONE_AND_TWO",
+        "visibilityLocked": true,
+        "stepSelectionLocked": true
+      },
+      {
+        "id": "application.config.project.partner.budget.unit.costs.description",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.budget.unit.costs.unit.type.and.number.of.units",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.budget.infrastructure.and.works.comments",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.communication.approach",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.investment.documentation",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.investment.risk",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.activities.description",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.budget.spf.unit.type.and.number.of.units",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": true
+      },
+      {
+        "id": "application.config.project.how.are.challenges.and.opportunities.tackled",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.main-address.postalcode",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.name",
+        "visible": true,
+        "availableInStep": "STEP_ONE_AND_TWO",
+        "visibilityLocked": true,
+        "stepSelectionLocked": true
+      },
+      {
+        "id": "application.config.project.partner.budget.spf.comments",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": true
+      },
+      {
+        "id": "application.config.project.partner.representative.last.name",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.main-address.city",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.budget.spf.price.per.unit",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": true
+      },
+      {
+        "id": "application.config.project.partner.contact.email",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.budget.external.expertise.description",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.project.or.initiative",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.other.identifier.number.and.description",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.territorial.challenges",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.investment.who.is.benefiting",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.budget.infrastructure.and.works.award.procedure",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.secondary-address.postalcode",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.result.delivery.period",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.ownership",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.specific.objective",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.output.description",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.motivation.organization.experience",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.investment.title",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.strategy.contribution",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.type",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.investment.cross.border.transnational.relevance.of.investment",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.activities.start.period",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.representative.first.name",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.investment.pilot.clarification",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.budget.external.expertise.investment",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.budget.staff.cost.price.per.unit",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.synergies",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.id",
+        "visible": true,
+        "availableInStep": "STEP_ONE_AND_TWO",
+        "visibilityLocked": true,
+        "stepSelectionLocked": true
+      },
+      {
+        "id": "application.config.project.target.group",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.investment.street",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.activities.end.period",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.budget.periods",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.investment.ownership.after.end.of.project",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.budget.and.co.financing",
+        "visible": true,
+        "availableInStep": "STEP_TWO_ONLY",
+        "visibilityLocked": true,
+        "stepSelectionLocked": false
+      },
+      {
+        "id": "application.config.project.partner.budget.equipment.unit.type.and.number.of.units",
+        "visible": false,
+        "availableInStep": "NONE",
+        "visibilityLocked": false,
+        "stepSelectionLocked": false
+      }
+    ]
+  },
+  "application": {
+    "acronym": "tb-373",
+    "partners": [
+      {
+        "details": {
+          "abbreviation": "First Partner",
+          "role": "LEAD_PARTNER",
+          "nameInOriginalLanguage": "Name in org language",
+          "nameInEnglish": "Name in english",
+          "department": [
+            {
+              "translation": "Department DE",
+              "language": "DE"
+            },
+            {
+              "translation": "Department EN",
+              "language": "EN"
+            }
+          ],
+          "partnerType": "RegionalPublicAuthority",
+          "legalStatusId": 2,
+          "vat": "123334454556"
+        },
+        "address": [
+          {
+            "type": "Organization",
+            "country": "Åland Islands (AX)",
+            "nutsRegion2": "Åland Islands (AX00)",
+            "nutsRegion3": "Åland Islands (AX000)",
+            "street": "Street",
+            "houseNumber": "99",
+            "postalCode": "9090",
+            "city": "Island city",
+            "homepage": "city@city.com"
+          },
+          {
+            "type": "Department",
+            "country": "Åland Islands (AX)",
+            "nutsRegion2": "Åland Islands (AX00)",
+            "nutsRegion3": "Åland Islands (AX000)",
+            "street": "Secondstreet",
+            "houseNumber": "88",
+            "postalCode": "8080",
+            "city": "City",
+            "homepage": ""
+          }
+        ],
+        "contact": [
+          {
+            "type": "LegalRepresentative",
+            "title": "Mr",
+            "firstName": "Legal",
+            "lastName": "Rep"
+          },
+          {
+            "type": "ContactPerson",
+            "title": "Ms",
+            "firstName": "Contact",
+            "lastName": "Person",
+            "email": "contact@address.com",
+            "telephone": "+009988776655"
+          }
+        ],
+        "budget": {
+          "options": {
+            "officeAndAdministrationOnStaffCostsFlatRate": 15,
+            "officeAndAdministrationOnDirectCostsFlatRate": null,
+            "staffCostsFlatRate": null,
+            "travelAndAccommodationOnStaffCostsFlatRate": null,
+            "otherCostsOnStaffCostsFlatRate": null
+          },
+          "staff": [
+            {
+              "unitType": [
+                {
+                  "language": "DE",
+                  "translation": "SC type 2 DE"
+                },
+                {
+                  "language": "EN",
+                  "translation": "SC type 2 EN"
+                }
+              ],
+              "unitCostId": 2,
+              "numberOfUnits": 1,
+              "pricePerUnit": 555.56,
+              "rowSum": 555.56
+            }
+          ]
+        },
+        "cofinancing": {
+          "finances": [
+            {
+              "fundId": 1,
+              "fundType": "MainFund",
+              "percentage": 60
+            },
+            {
+              "percentage": 40,
+              "fundType": "PartnerContribution"
+            }
+          ],
+          "partnerContributions": [
+            {
+              "status": "Public",
+              "amount": 255.56,
+              "partner": true
+            }
+          ]
+        }
+      }
+    ],
+    "description": {
+      "workPlan": [
+        {
+          "details": {
+            "objectiveAndAudience": [
+              {
+                "language": "DE",
+                "translation": "API generated project objective and audience DE"
+              },
+              {
+                "language": "EN",
+                "translation": "API generated project objective and audience EN"
+              }
+            ],
+            "specificObjective": [
+              {
+                "language": "EN",
+                "translation": "API generated specific objective EN"
+              },
+              {
+                "language": "DE",
+                "translation": "API generated specific objective DE"
+              }
+            ]
+          },
+          "activities": [
+            {
+              "title": [
+                {
+                  "translation": "API generated activity title DE",
+                  "language": "DE"
+                },
+                {
+                  "translation": "API generated activity title EN",
+                  "language": "EN"
+                }
+              ],
+              "description": [
+                {
+                  "translation": "API generated activity description DE",
+                  "language": "DE"
+                },
+                {
+                  "translation": "API generated activity description EN",
+                  "language": "EN"
+                }
+              ],
+              "startPeriod": 1,
+              "endPeriod": 4
+            }
+          ],
+          "outputs": [
+            {
+              "programmeOutputIndicatorId": 1,
+              "title": [
+                {
+                  "translation": "API generated output 1 title DE",
+                  "language": "DE"
+                },
+                {
+                  "translation": "API generated output 1 title EN",
+                  "language": "EN"
+                }
+              ],
+              "targetValue": 3,
+              "periodNumber": 3,
+              "description": [
+                {
+                  "translation": "API generated output 1 description DE",
+                  "language": "DE"
+                },
+                {
+                  "translation": "API generated output 1 description EN",
+                  "language": "EN"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "results": [
+        {
+          "programmeResultIndicatorId": 1,
+          "resultNumber": 0,
+          "targetValue": 13,
+          "baseline": 0,
+          "baselineMaxValue": 0,
+          "periodNumber": "",
+          "description": [
+            {
+              "translation": "API generated project result description DE",
+              "language": "DE"
+            },
+            {
+              "translation": "API generated project result description EN",
+              "language": "EN"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

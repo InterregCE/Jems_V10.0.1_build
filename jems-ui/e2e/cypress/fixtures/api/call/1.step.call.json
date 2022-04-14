@@ -1,7 +1,7 @@
 {
   "generalCallSettings": {
     "id": null,
-    "name": "api-call",
+    "name": "randomize",
     "type": "STANDARD",
     "startDateTime": null,
     "endDateTimeStep1": null,
