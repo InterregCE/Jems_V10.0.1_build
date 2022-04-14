@@ -129,7 +129,7 @@ export class PartnerReportProcurementsTabComponent {
 
   updateReportProcurements() {
     this.pageStore.saveProcurements(this.procurements.value.filter(
-      (procurement: ProjectPartnerReportProcurementDTO) => procurement.reportNumber == this.currentReportNumber)
+      (procurement: ProjectPartnerReportProcurementDTO) => procurement.reportNumber === this.currentReportNumber)
     ).pipe(
         take(1),
         tap(() => this.formService.setSuccess('project.procurements.tab.saved')),
@@ -143,7 +143,7 @@ export class PartnerReportProcurementsTabComponent {
   }
 
   isProcurementFromCurrentReport(control: AbstractControl): boolean {
-    return control.value.reportNumber == this.currentReportNumber;
+    return control.value.reportNumber === this.currentReportNumber;
   }
 
   isProcurementEditable(control: AbstractControl): boolean {

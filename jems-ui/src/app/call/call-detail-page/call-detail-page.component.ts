@@ -132,11 +132,11 @@ export class CallDetailPageComponent {
     call.funds = call.funds.filter((fund: any) => !!fund.selected);
     call.stateAidIds = stateAids.filter(stateAid => stateAid.selected).map(stateAid => stateAid.id);
 
-    let startDate = new Date(call.startDateTime);
+    const startDate = new Date(call.startDateTime);
     startDate.setSeconds(0, 0);
     call.startDateTime = startDate;
 
-    let endDate = new Date(call.endDateTime);
+    const endDate = new Date(call.endDateTime);
     endDate.setSeconds(0, 0);
     call.endDateTime = endDate;
 
@@ -144,7 +144,7 @@ export class CallDetailPageComponent {
       call.endDateTimeStep1 = null;
       call.is2Step = null;
     } else {
-      let endDateStep1 = new Date(call.endDateTimeStep1);
+      const endDateStep1 = new Date(call.endDateTimeStep1);
       endDateStep1.setSeconds(0, 0);
       call.endDateTimeStep1 = endDateStep1;
     }
