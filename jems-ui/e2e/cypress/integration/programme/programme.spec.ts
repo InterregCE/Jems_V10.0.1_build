@@ -117,7 +117,7 @@ context('Programme management tests', () => {
       cy.contains(priority.objective).click();
 
       priority.specificObjectives.forEach(specificObjective => {
-        cy.contains('div.ng-pristine', specificObjective.programmeObjectivePolicy).then(el => {
+        cy.contains(specificObjective.programmeObjectivePolicy).parent().then(el => {
           cy.wrap(el).find('input[type="checkbox"]').check({force: true});
           cy.wrap(el).contains('div', 'Programme specific objective code').find('input').type(specificObjective.code);
         });
@@ -179,8 +179,10 @@ context('Programme management tests', () => {
       cy.get('mat-select[name="specificObjective"').click();
       cy.contains('mat-option', indicator.programmeObjectivePolicy).click();
 
-      cy.get('mat-select[formcontrolname="resultIndicatorId"').click();
-      cy.contains('mat-option', indicator.resultIndicator).click();
+      if (indicator.resultIndicator) {
+        cy.get('mat-select[formcontrolname="resultIndicatorId"').click();
+        cy.contains('mat-option', indicator.resultIndicator).click();
+      }
 
       cy.get('input[name="milestone"').type(indicator.milestone.toString());
       cy.get('input[name="finalTarget"').type(indicator.finalTarget);

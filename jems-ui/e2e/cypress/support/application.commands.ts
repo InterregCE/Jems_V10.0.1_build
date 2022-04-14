@@ -14,6 +14,7 @@ import {
 import {ProjectAssessmentQualityDTO} from '../../../build/swagger-code-jems-api/model/projectAssessmentQualityDTO'
 import {ApplicationActionInfoDTO} from '../../../build/swagger-code-jems-api/model/applicationActionInfoDTO'
 import {InputTranslation} from '../../../build/swagger-code-jems-api/model/inputTranslation'
+import {ProjectLumpSumDTO} from '../../../build/swagger-code-jems-api/model/projectLumpSumDTO'
 import faker from '@faker-js/faker';
 import {createPartners} from './partner.commands';
 import user from '../fixtures/users.json';
@@ -27,6 +28,7 @@ declare global {
     identification?: InputProjectData,
     partners?: ProjectPartner[],
     description?: ProjectDescription,
+    lumpSums?: ProjectLumpSumDTO[],
     assessments: {}
   }
 
@@ -69,6 +71,8 @@ declare global {
 
       updateProjectLongTermPlans(applicationId: number, longTermPlans);
 
+      updateLumpSums(applicationId: number, lumpSums);
+
       runPreSubmissionCheck(applicationId: number);
 
       submitProjectApplication(applicationId: number);
@@ -95,14 +99,14 @@ declare global {
 }
 
 Cypress.Commands.add('createApplication', (application: Application) => {
-  createApplication(application.details).then(function (response) {
+  createApplication(application.details).then(response => {
     application.id = response.body.id;
     cy.wrap(application.id).as('applicationId');
   });
 });
 
-Cypress.Commands.add('createFullApplication', function (application: Application, approvingUserEmail?: string) {
-  createApplication(application.details).then(function (response) {
+Cypress.Commands.add('createFullApplication', (application: Application, approvingUserEmail?: string) => {
+  createApplication(application.details).then(response => {
     application.id = response.body.id;
     updateIdentification(application.id, application.identification);
 
@@ -117,6 +121,12 @@ Cypress.Commands.add('createFullApplication', function (application: Application
 
     // B - project partners
     createPartners(application.id, application.partners);
+
+    // E - project lump sums
+    cy.get(`@${application.partners[0].details.abbreviation}`).then((partnerId: any) => {
+      application.lumpSums[0].lumpSumContributions[0].partnerId = partnerId;
+      updateLumpSums(application.id, application.lumpSums);
+    });
 
     runPreSubmissionCheck(application.id);
     submitProjectApplication(application.id);
@@ -163,6 +173,10 @@ Cypress.Commands.add('updateProjectManagement', (applicationId: number, manageme
 
 Cypress.Commands.add('updateProjectLongTermPlans', (applicationId: number, longTermPlans: InputProjectLongTermPlans) => {
   updateLongTermPlans(applicationId, longTermPlans);
+});
+
+Cypress.Commands.add('updateLumpSums', (applicationId: number, lumpSums: ProjectLumpSumDTO[]) => {
+  updateLumpSums(applicationId, lumpSums);
 });
 
 Cypress.Commands.add('runPreSubmissionCheck', (applicationId: number) => {
@@ -310,7 +324,6 @@ function createWorkPlan(applicationId: number, workPlan: WorkPackage[]) {
         url: `api/project/${applicationId}/workPackage/${result.body.id}/activity`,
         body: workPackage.activities
       }).then(response => {
-        // TODO request does not return proper id
         cy.wrap(response.body[0].id).as('activityId');
       });
       cy.request({
@@ -343,6 +356,14 @@ function updateLongTermPlans(applicationId: number, longTermPlans: InputProjectL
     method: 'PUT',
     url: `api/project/${applicationId}/description/c8`,
     body: longTermPlans
+  });
+}
+
+function updateLumpSums(applicationId: number, lumpSums: ProjectLumpSumDTO[]) {
+  cy.request({
+    method: 'PUT',
+    url: `api/project/${applicationId}/lumpSum`,
+    body: lumpSums
   });
 }
 
