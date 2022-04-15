@@ -5,11 +5,15 @@ import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.entity.TranslationId
+import io.cloudflight.jems.server.common.minio.MinioStorage
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportExpenditureCostEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportExpenditureCostTranslEntity
+import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
 import io.cloudflight.jems.server.project.repository.report.ProjectPartnerReportRepository
+import io.cloudflight.jems.server.project.repository.report.file.ProjectReportFileRepository
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportExpenditureCost
+import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -21,6 +25,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 import java.time.LocalDate
+import java.time.ZonedDateTime
 
 class ProjectReportExpenditurePersistenceProviderTest : UnitTest() {
 
@@ -32,9 +37,25 @@ class ProjectReportExpenditurePersistenceProviderTest : UnitTest() {
         private const val EXPENDITURE_TO_UPDATE = 40L
         private const val EXPENDITURE_TO_DELETE = 41L
         private const val EXPENDITURE_TO_STAY = 42L
+        private const val EXPENDITURE_TO_ADD_1 = -1L
+        private const val EXPENDITURE_TO_ADD_2 = -2L
 
         private val YESTERDAY = LocalDate.now().minusDays(1)
         private val TOMORROW = LocalDate.now().plusDays(1)
+
+        val dummyAttachment = ReportProjectFileEntity(
+            id = 970L,
+            projectId = 4L,
+            partnerId = PARTNER_ID,
+            path = "",
+            minioBucket = "minioBucket",
+            minioLocation = "",
+            name = "some_file.txt",
+            type = mockk(),
+            size = 1475,
+            user = mockk(),
+            uploaded = ZonedDateTime.now(),
+        )
 
         private fun dummyExpenditure(id: Long, report: ProjectPartnerReportEntity) = PartnerReportExpenditureCostEntity(
             id = id,
@@ -53,6 +74,7 @@ class ProjectReportExpenditurePersistenceProviderTest : UnitTest() {
             currencyConversionRate = BigDecimal.valueOf(368),
             declaredAmountAfterSubmission = BigDecimal.valueOf(3680),
             translatedValues = mutableSetOf(),
+            attachment = dummyAttachment,
         ).apply {
             translatedValues.add(
                 PartnerReportExpenditureCostTranslEntity(
@@ -80,6 +102,7 @@ class ProjectReportExpenditurePersistenceProviderTest : UnitTest() {
             currencyCode = "HUF",
             currencyConversionRate = BigDecimal.valueOf(368),
             declaredAmountAfterSubmission = BigDecimal.valueOf(3680),
+            attachment = ProjectReportFileMetadata(dummyAttachment.id, dummyAttachment.name, dummyAttachment.uploaded),
         )
 
         private fun dummyExpectedExpenditureNew(id: Long) = ProjectPartnerReportExpenditureCost(
@@ -99,7 +122,8 @@ class ProjectReportExpenditurePersistenceProviderTest : UnitTest() {
             currencyCode = "HUF",
             currencyConversionRate = BigDecimal.valueOf(368),
             declaredAmountAfterSubmission = BigDecimal.valueOf(3680),
-        )
+            attachment = ProjectReportFileMetadata(dummyAttachment.id, dummyAttachment.name, dummyAttachment.uploaded),
+            )
     }
 
     @MockK
@@ -107,6 +131,12 @@ class ProjectReportExpenditurePersistenceProviderTest : UnitTest() {
 
     @MockK
     lateinit var reportExpenditureRepository: ProjectPartnerReportExpenditureRepository
+
+    @MockK
+    lateinit var minioStorage: MinioStorage
+
+    @MockK
+    lateinit var reportFileRepository: ProjectReportFileRepository
 
     @InjectMockKs
     lateinit var persistence: ProjectReportExpenditurePersistenceProvider
@@ -130,59 +160,59 @@ class ProjectReportExpenditurePersistenceProviderTest : UnitTest() {
     }
 
     @Test
+    fun existsByExpenditureId() {
+        every { reportExpenditureRepository.existsByPartnerReportPartnerIdAndPartnerReportIdAndId(
+            PARTNER_ID, reportId = 18L, 45L) } returns false
+        assertThat(persistence.existsByExpenditureId(PARTNER_ID, reportId = 18L, 45L)).isFalse
+    }
+
+    @Test
     fun updatePartnerReportExpenditureCosts() {
         val report = mockk<ProjectPartnerReportEntity>()
+        val entityToStay = dummyExpenditure(EXPENDITURE_TO_STAY, report)
+        val entityToDelete = dummyExpenditure(EXPENDITURE_TO_DELETE, report)
+        val entityToUpdate = dummyExpenditure(EXPENDITURE_TO_UPDATE, report)
         every { reportRepository.findByIdAndPartnerId(id = 58L, PARTNER_ID) } returns report
         every { reportExpenditureRepository.findExistingExpenditureIdsFor(report) } returns
             setOf(EXPENDITURE_TO_UPDATE, EXPENDITURE_TO_DELETE, EXPENDITURE_TO_STAY)
 
-        val slotDeletedIds = slot<Set<Long>>()
-        every { reportExpenditureRepository.deleteAllById(capture(slotDeletedIds)) } answers { }
+        every { reportExpenditureRepository.findByPartnerReportOrderByIdDesc(report) } returns
+            mutableListOf(entityToStay, entityToDelete, entityToUpdate)
 
-        val slotSavedEntities = slot<Iterable<PartnerReportExpenditureCostEntity>>()
-        every { reportExpenditureRepository.saveAll(capture(slotSavedEntities)) } returnsArgument 0
+        every { minioStorage.deleteFile(dummyAttachment.minioBucket, dummyAttachment.minioLocation) } answers { }
+        every { reportFileRepository.delete(dummyAttachment) } answers { }
+        val slotDeleted = slot<Iterable<PartnerReportExpenditureCostEntity>>()
+        every { reportExpenditureRepository.deleteAll(capture(slotDeleted)) } answers { }
 
-        val changes = listOf(
-            dummyExpectedExpenditureNew(EXPENDITURE_TO_UPDATE),
-            dummyExpectedExpenditure(EXPENDITURE_TO_STAY),
+        val slotSavedEntities = mutableListOf<PartnerReportExpenditureCostEntity>()
+        every { reportExpenditureRepository.save(capture(slotSavedEntities)) } returnsArgument 0
+
+        persistence.updatePartnerReportExpenditureCosts(PARTNER_ID, reportId = 58L, listOf(
+            dummyExpectedExpenditure(id = EXPENDITURE_TO_STAY),
+            dummyExpectedExpenditure(id = EXPENDITURE_TO_UPDATE),
+            dummyExpectedExpenditureNew(id = EXPENDITURE_TO_ADD_1),
+            dummyExpectedExpenditureNew(id = EXPENDITURE_TO_ADD_2),
+        ))
+
+        assertThat(slotDeleted.captured).containsExactly(entityToDelete)
+        assertThat(slotSavedEntities.map { it.id }).containsExactly(
+            // order is important, because not-yet-existing elements will get ID based on insertion order
+            EXPENDITURE_TO_ADD_1, EXPENDITURE_TO_ADD_2
         )
 
-        assertThat(persistence.updatePartnerReportExpenditureCosts(PARTNER_ID, reportId = 58L, changes))
-            .containsExactlyInAnyOrder(
-                dummyExpectedExpenditureNew(EXPENDITURE_TO_UPDATE),
-                dummyExpectedExpenditure(EXPENDITURE_TO_STAY),
-            )
-
-        assertThat(slotDeletedIds.captured).containsExactly(EXPENDITURE_TO_DELETE)
-        assertThat(slotSavedEntities.captured).hasSize(2)
-
-        with(slotSavedEntities.captured.first { it.id == EXPENDITURE_TO_UPDATE }) {
-            assertThat(costCategory).isEqualTo(BudgetCategory.EquipmentCosts)
-            assertThat(investmentId).isEqualTo(INVESTMENT_ID + 10)
-            assertThat(procurementId).isEqualTo(PROCUREMENT_ID + 10)
-            assertThat(internalReferenceNumber).isEqualTo("irn NEW")
-            assertThat(invoiceNumber).isEqualTo("invoice NEW")
-            assertThat(invoiceDate).isEqualTo(YESTERDAY.minusDays(1))
-            assertThat(dateOfPayment).isEqualTo(TOMORROW.plusDays(1))
-            assertThat(translatedValues.first().comment).isEqualTo("comment EN NEW")
-            assertThat(translatedValues.first().description).isEqualTo("desc EN NEW")
-            assertThat(totalValueInvoice).isEqualByComparingTo(BigDecimal.ZERO)
-            assertThat(vat).isEqualByComparingTo(BigDecimal.TEN)
-            assertThat(declaredAmount).isEqualByComparingTo(BigDecimal.ONE)
-        }
-        with(slotSavedEntities.captured.first { it.id == EXPENDITURE_TO_STAY }) {
-            assertThat(costCategory).isEqualTo(BudgetCategory.InfrastructureCosts)
-            assertThat(investmentId).isEqualTo(INVESTMENT_ID)
-            assertThat(procurementId).isEqualTo(PROCUREMENT_ID)
-            assertThat(internalReferenceNumber).isEqualTo("irn")
-            assertThat(invoiceNumber).isEqualTo("invoice")
-            assertThat(invoiceDate).isEqualTo(YESTERDAY)
-            assertThat(dateOfPayment).isEqualTo(TOMORROW)
-            assertThat(translatedValues.first().comment).isEqualTo("comment EN")
-            assertThat(translatedValues.first().description).isEqualTo("desc EN")
-            assertThat(totalValueInvoice).isEqualByComparingTo(BigDecimal.ONE)
-            assertThat(vat).isEqualByComparingTo(BigDecimal.ZERO)
-            assertThat(declaredAmount).isEqualByComparingTo(BigDecimal.TEN)
+        slotSavedEntities.forEach {
+            assertThat(it.costCategory).isEqualTo(BudgetCategory.EquipmentCosts)
+            assertThat(it.investmentId).isEqualTo(INVESTMENT_ID + 10)
+            assertThat(it.procurementId).isEqualTo(PROCUREMENT_ID + 10)
+            assertThat(it.internalReferenceNumber).isEqualTo("irn NEW")
+            assertThat(it.invoiceNumber).isEqualTo("invoice NEW")
+            assertThat(it.invoiceDate).isEqualTo(YESTERDAY.minusDays(1))
+            assertThat(it.dateOfPayment).isEqualTo(TOMORROW.plusDays(1))
+            assertThat(it.translatedValues.first().comment).isEqualTo("comment EN NEW")
+            assertThat(it.translatedValues.first().description).isEqualTo("desc EN NEW")
+            assertThat(it.totalValueInvoice).isEqualByComparingTo(BigDecimal.ZERO)
+            assertThat(it.vat).isEqualByComparingTo(BigDecimal.TEN)
+            assertThat(it.declaredAmount).isEqualByComparingTo(BigDecimal.ONE)
         }
     }
 

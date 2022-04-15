@@ -12,6 +12,7 @@ import io.cloudflight.jems.server.project.service.report.model.PartnerReportIden
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportExpenditureCost
+import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
 import io.cloudflight.jems.server.project.service.report.model.procurement.ProjectPartnerReportProcurement
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectReportExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectReportProcurementPersistence
@@ -30,6 +31,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.math.BigDecimal
 import java.time.LocalDate
+import java.time.ZonedDateTime
 import java.util.Collections
 import kotlin.collections.ArrayList
 
@@ -37,6 +39,7 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
 
     private val PROJECT_ID = 350L
     private val PARTNER_ID = 489L
+    private val UPLOADED = ZonedDateTime.now()
 
     private val reportExpenditureCost = ProjectPartnerReportExpenditureCost(
         id = 780,
@@ -55,6 +58,7 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
         currencyCode = "GBP",
         currencyConversionRate = BigDecimal.valueOf(0.84),
         declaredAmountAfterSubmission = BigDecimal.valueOf(8.4),
+        attachment = ProjectReportFileMetadata(47L, "file.xlsx", UPLOADED),
     )
 
     private fun reportWithCurrency(id: Long, status: ReportStatus, version: String, currency: String): ProjectPartnerReport {
@@ -131,6 +135,13 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
             )
         } returnsArgument 2
 
+        every {
+            reportExpenditurePersistence.getPartnerReportExpenditureCosts(
+                partnerId = PARTNER_ID,
+                reportId = 84L,
+            )
+        } returns mutableListOf(reportExpenditureCost)
+
         assertThat(
             updatePartnerReportExpenditureCosts.updatePartnerReportExpenditureCosts(
                 PARTNER_ID,
@@ -169,6 +180,13 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
                 any(),
             )
         } returnsArgument 2
+
+        every {
+            reportExpenditurePersistence.getPartnerReportExpenditureCosts(
+                partnerId = PARTNER_ID,
+                reportId = 90L,
+            )
+        } returns mutableListOf(reportExpenditureCost.copy(contractId = null, investmentId = null))
 
         assertThat(
             updatePartnerReportExpenditureCosts.updatePartnerReportExpenditureCosts(

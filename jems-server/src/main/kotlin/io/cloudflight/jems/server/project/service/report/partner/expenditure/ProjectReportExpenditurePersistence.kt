@@ -10,6 +10,8 @@ interface ProjectReportExpenditurePersistence {
         partnerId: Long,
         reportId: Long,
         expenditureCosts: List<ProjectPartnerReportExpenditureCost>,
-    ): List<ProjectPartnerReportExpenditureCost>
+    )
+
+    fun existsByExpenditureId(partnerId: Long, reportId: Long, expenditureId: Long): Boolean
 
 }
