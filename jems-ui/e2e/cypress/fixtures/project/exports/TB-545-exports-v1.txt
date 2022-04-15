@@ -1,0 +1,239 @@
+Name of the lead partner organisationName in org language
+Name of the lead partner organisation in 
+English
+Name in english
+Project titleProject title EN
+Project acronymtb-545
+Programme priorityPO1 Innovation EN
+Specific objectiveSO1.1: Developing and enhancing research and 
+innovation capacities and the uptake of advanced 
+technologies
+Project duration in months18
+A.2 Project summary
+Please give a short overview of the project and describe:
+the common challenge of the programme area you are jointly tackling in your project;
+the overall objective of the project and the expected change your project will make to the current 
+situation;
+the main outputs you will produce and those who will benefit from them;
+the approach you plan to take and why a cross-border/transnational/inter-regional approach is 
+needed;
+what is new/original about the project.
+Summary EN
+
+2
+B - Project partners
+Partners overview
+NumberStatusName of the Organization in englishCountryOrganisation abbreviationPartner rolePartner total eligible budget
+1ActiveName in englishÅland Islands (AX)Lead PartnerLP638.89
+
+3
+B.1 Lead partner
+Partner number1
+Partner roleLP
+Name of the Organization in original languageName in org language
+Name of the Organization in englishName in english
+Organisation abbreviationLead Partner
+Department / unit / divisionDepartment EN
+Partner main address
+CountryÅland Islands (AX)
+NUTS 2Åland Islands (AX00)
+NUTS 3Åland Islands (AX000)
+Street, House number, Postal code, City Street99
+ 9090Island city
+Homepagecity@city.com
+Address of department / unit / division (if applicable)
+CountryÅland Islands (AX)
+NUTS 2Åland Islands (AX00)
+NUTS 3Åland Islands (AX000)
+Street, House number, Postal code, City Secondstreet88
+ 8080City
+Legal and financial information
+Type of partnerOther
+Legal statusInternal EN
+VAT number (if applicable)233455666
+Contact
+Legal representative  MrLegalRep
+Contact person  MsContactPerson
+Emailcontact@address.com
+
+4
+Contact
+Telephone no.+009988776655
+Co-financing
+SourceAmountPercentage
+ERDF383.3360.00 %
+Partner contribution255.5640.00 %
+Partner total eligible budget638.89100.00 %
+Origin of partner contribution
+Source of contributionLegal status of contributionAmount% of total partner budget
+Lead PartnerPublic255.5640.00 %
+
+5
+C - Project description
+C.1 Project overall objective
+Below, you can see the Programme priority specific objective your project will contribute to (chosen in 
+section A.1.).
+SO1.1: Developing and enhancing research and innovation capacities and the uptake of advanced 
+technologies
+
+6
+C.2 Project relevance and context
+C.2.1 What are the common territorial challenge(s) that will be tackled by the project?
+Please describe why your project is needed in the programme area and the relevance of your project for 
+the programme area, in terms of common challenges and opportunities addressed.
+API generated application territorial challenge EN
+C.2.2 How does the project tackle identified common challenges and/or opportunities and what is new 
+about the approach the project takes?
+Please describe new solutions that will be developed during the project and/or existing solutions that will 
+be adopted and implemented during the project lifetime. Describe also in what way the approach goes 
+beyond existing practice in the sector/programme area/participating countries.
+API generated application common challenge EN
+C.2.3 Why is cross-border/transnational/inter-regional cooperation needed to achieve the project’s 
+objectives and result?
+Please explain why the project objectives cannot be efficiently reached acting only on a national/regional
+/local level and/or describe what benefits the project partners/target groups/ project area/programme 
+area gain in taking a cross-border/transnational/inter-regional approach.
+API generated application transitional cooperation EN
+C.2.4 Who will benefit from your project outputs?
+In the first column of each row, please select one of the pre-defined target groups from the drop-down list. 
+In the second column explain in more detail exactly who will benefit from your project. For example, if you 
+choose the category education, you need to explain which specific schools or groups of schools and in 
+which territory.
+Target GroupSpecification
+Local public authorityAPI generated application benefits EN
+C.2.5 How does the project contribute to wider strategies and policies?
+Please indicate to which strategies and policies your project will contribute. Then describe in what way you 
+will contribute.
+StrategyContribution
+ EU Strategy for the Adriatic and Ionian Region
+Strategy
+API generated application strategy contribution 
+EN
+
+7
+C.2.7 How does the project build on available knowledge?
+Please describe the experiences/lessons learned that the project draws on, and other available knowledge 
+the project capitalises on.
+API generated application available knowledge EN
+
+8
+C.3 Project partnership
+Describe the structure of your partnership and explain why these partners are needed to implement the 
+project and to achieve project objectives. What is the contribution of each partner to the project?
+API generated project partnership EN
+
+9
+C.4 Project work plan
+Number
+1
+
+10
+Work package 1
+Objectives
+Your objectives should be:
+realistic and achievable by the end of the project;
+specific (who needs project outputs delivered in this work package, and in which territory);
+measurable – indicate the change you are aiming for.
+Define one project specific objective that will be achieved when all activities in this work package are 
+implemented and outputs delivered.
+API generated specific objective EN
+Think about the communication objective that will contribute to the achievement of the specific objective. 
+Communication objectives aim at changes in a target audience's behaviour, knowledge or belief.
+API generated project objective and audience EN
+Activities
+Activity 1.1
+TitleAPI generated activity title EN
+Start period  Period1, 1- 3
+End period  Period4, 10- 12
+DescriptionAPI generated activity description EN
+Outputs
+Output 1.1
+Output TitleAPI generated output 1 title EN
+Programme Output IndicatorOI1: Enterprises supported (of which: micro, small, 
+medium, large)
+Measurement Unitenterprises
+Target Value3.00
+Delivery period  Period3, 7- 9
+Output DescriptionAPI generated output 1 description EN
+
+11
+C.5 Project Results
+What do you expect to change because of the activities you plan to implement and the outputs you plan to 
+deliver? Please take a look at the programme result indicators and select those that you will contribute to.
+ Result1
+Programme result indicatorRI1: Jobs created in supported entities
+Measurement unitannual FTEs
+Baseline0.00
+Target value13.00
+Result descriptionAPI generated project result description EN
+
+12
+C.6 Project Time Plan
+
+13
+C.7 Project management
+In addition to the thematic work you will do in your project, you will need time and resources for 
+coordination and internal communication. Please describe below how you plan to organise yourself to 
+ensure the project work runs smoothly.
+C.7.1 How will you coordinate your project?
+Who will be responsible for coordination? Will you have any other management structures (e.g., thematic 
+groups, WP managers)? How will the internal communication work?
+API generated project coordination EN
+C.7.2 Which measures will you take to ensure quality in your project?
+Describe specific approaches and processes and responsible partners. If you plan to have any type of 
+project evaluation, please describe its purpose and scope here.
+API generated project quality EN
+C.7.3 What will be the general approach you will follow to communicate about your project?
+Who will coordinate project communication and how will he/she ensure the involvement of all partners? 
+How will the communication function contribute to transfer your project results? Please note that all 
+communication activities should be included in the work packages, as an integral part of your project. 
+There is no need to repeat this information here.
+API generated project communication EN
+C.7.4 How do you foresee the financial management of the project and reporting procedures for 
+activities and budget (within the partnership and towards the programme)?
+Define responsibilities, deadlines in financial flows, reporting flows, project related transfers, reclaims, etc.
+API generated project financial forecast EN
+C.7.5 Cooperation criteria
+Please select all cooperation criteria that apply to your project and describe how you will fulfil them.
+Cooperation criteriaDescription
+Joint developmentYesAPI generated project joint development EN
+Joint implementationYesAPI generated project joint implementation EN
+Joint staffingYesAPI generated project joint staffing EN
+Joint financingYesAPI generated project joint financing EN
+
+14
+C.7.6 Horizontal principles
+Please indicate which type of contribution to horizontal principles applies to the project, and justify your 
+choice.
+Horizontal principlesType of 
+contribution
+Description of contribution
+Sustainable developmentnegative effectsAPI generated project sustainable 
+development EN
+Equal opportunities and non-
+discrimination
+neutralAPI generated project equal opportunities 
+EN
+Equality between men and womenpositive effectsAPI generated project equality EN
+
+15
+C.8 Long-term plans
+As a programme, we would like to support projects that have a long-lasting effect in the territory and those 
+who will benefit from them. Please describe below what you will do to ensure this.
+C.8.1 Ownership
+Please describe who will ensure the financial and institutional support for the outputs/deliverables 
+developed by the project (e.g., tools), and explain how these outputs/deliverables will be integrated in the 
+work of the institutions.
+API generated project ownership EN
+C.8.2 Durability
+Some outputs/deliverables should be used by relevant groups (project partners or others) after the 
+project's lifetime, in order to have a lasting effect on the territory and the population. For example, new 
+practices in urban transport need to be used by local authorities to have cleaner air in the city, and the 
+whole population will benefit from this. Please describe how your outputs/deliverables will be used after 
+the project ends and by whom.
+API generated project durability EN
+C.8.3 Transferability
+Some outputs/deliverables that you will deliver could be adapted or further developed to be used by other 
+target groups or in other territories. What will you do to make sure that relevant groups are aware of your 
+outputs/deliverables and are able to use them?
+API generated project transferability EN
