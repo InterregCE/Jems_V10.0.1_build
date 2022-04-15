@@ -1,14 +1,17 @@
 package io.cloudflight.jems.server.project.repository.report.file
 
+import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.minio.MinioStorage
 import io.cloudflight.jems.server.project.entity.report.contribution.ProjectPartnerReportContributionEntity
+import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportExpenditureCostEntity
 import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
 import io.cloudflight.jems.server.project.entity.report.procurement.ProjectPartnerReportProcurementEntity
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageActivityDeliverableEntity
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageActivityEntity
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageOutputEntity
 import io.cloudflight.jems.server.project.repository.report.contribution.ProjectPartnerReportContributionRepository
+import io.cloudflight.jems.server.project.repository.report.expenditure.ProjectPartnerReportExpenditureRepository
 import io.cloudflight.jems.server.project.repository.report.procurement.ProjectPartnerReportProcurementRepository
 import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPartnerReportWorkPackageActivityDeliverableRepository
 import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPartnerReportWorkPackageActivityRepository
@@ -107,6 +110,25 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
             attachment = attachment,
         )
 
+        private fun expenditure(id: Long, attachment: ReportProjectFileEntity?) = PartnerReportExpenditureCostEntity(
+            id = id,
+            partnerReport = mockk(),
+            costCategory = BudgetCategory.StaffCosts,
+            investmentId = 1L,
+            procurementId = 1L,
+            internalReferenceNumber = "internalReferenceNumber",
+            invoiceNumber = "invoiceNumber",
+            invoiceDate = LAST_WEEK.toLocalDate(),
+            dateOfPayment = LAST_WEEK.plusWeeks(1).toLocalDate(),
+            totalValueInvoice = ONE,
+            vat = ONE,
+            declaredAmount = ONE,
+            currencyCode = "currencyCode",
+            currencyConversionRate = ONE,
+            declaredAmountAfterSubmission = ONE,
+            attachment = attachment,
+        )
+
         private fun fileCreate(name: String = "new_file.txt", type: ProjectPartnerReportFileType) = ProjectReportFileCreate(
             projectId = 6666L,
             partnerId = PARTNER_ID,
@@ -140,6 +162,9 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
 
     @MockK
     lateinit var contributionRepository: ProjectPartnerReportContributionRepository
+
+    @MockK
+    lateinit var expenditureRepository: ProjectPartnerReportExpenditureRepository
 
     @MockK
     lateinit var userRepository: UserRepository
@@ -298,6 +323,26 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
 
         assertFile(filePathMinio.captured, fileEntity.captured)
         assertThat(fileEntity.captured.type).isEqualTo(ProjectPartnerReportFileType.Output)
+    }
+
+    @Test
+    fun updatePartnerReportExpenditureAttachment() {
+        val filePathMinio = slot<String>()
+        val fileEntity = slot<ReportProjectFileEntity>()
+
+        val oldFile = mockk<ReportProjectFileEntity>()
+
+        val expenditure = expenditure(id = 90L, attachment = oldFile)
+        every { expenditureRepository.findById(40L) } returns Optional.of(expenditure)
+
+        val fileCreate = fileCreate(type = ProjectPartnerReportFileType.Expenditure)
+        mockFileDeletionAndSaving(oldFile, filePathMinio, fileEntity)
+
+        assertThat(persistence.updatePartnerReportExpenditureAttachment(40L, file = fileCreate).name)
+            .isEqualTo("new_file.txt")
+
+        assertFile(filePathMinio.captured, fileEntity.captured)
+        assertThat(fileEntity.captured.type).isEqualTo(ProjectPartnerReportFileType.Expenditure)
     }
 
     private fun mockFileDeletionAndSaving(

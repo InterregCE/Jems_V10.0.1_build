@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.entity.report.expenditure
 
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
+import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
 import java.math.BigDecimal
 import java.time.LocalDate
 import javax.persistence.CascadeType
@@ -33,22 +34,26 @@ class PartnerReportExpenditureCostEntity(
     @field:NotNull
     var costCategory: BudgetCategory,
 
-    val investmentId: Long?,
-    val procurementId: Long?,
-    val internalReferenceNumber: String?,
-    val invoiceNumber: String?,
-    val invoiceDate: LocalDate?,
-    val dateOfPayment: LocalDate?,
-    val totalValueInvoice: BigDecimal?,
-    val vat: BigDecimal?,
+    var investmentId: Long?,
+    var procurementId: Long?,
+    var internalReferenceNumber: String?,
+    var invoiceNumber: String?,
+    var invoiceDate: LocalDate?,
+    var dateOfPayment: LocalDate?,
+    var totalValueInvoice: BigDecimal?,
+    var vat: BigDecimal?,
     @field:NotNull
-    val declaredAmount: BigDecimal,
+    var declaredAmount: BigDecimal,
 
     @field:NotNull
-    val currencyCode: String,
-    val currencyConversionRate: BigDecimal?,
-    val declaredAmountAfterSubmission: BigDecimal?,
+    var currencyCode: String,
+    var currencyConversionRate: BigDecimal?,
+    var declaredAmountAfterSubmission: BigDecimal?,
 
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.sourceEntity")
     val translatedValues: MutableSet<PartnerReportExpenditureCostTranslEntity> = mutableSetOf(),
+
+    @ManyToOne
+    @JoinColumn(name = "file_id")
+    var attachment: ReportProjectFileEntity?,
 )

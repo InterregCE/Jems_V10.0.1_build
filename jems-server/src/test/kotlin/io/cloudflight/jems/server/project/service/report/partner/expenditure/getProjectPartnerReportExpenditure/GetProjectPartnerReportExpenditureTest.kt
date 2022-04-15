@@ -8,6 +8,7 @@ import io.cloudflight.jems.server.project.service.report.ProjectReportPersistenc
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportExpenditureCost
+import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectReportExpenditurePersistence
 import io.mockk.clearMocks
 import io.mockk.every
@@ -22,6 +23,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import java.math.BigDecimal
 import java.time.LocalDate
+import java.time.ZonedDateTime
 
 internal class GetProjectPartnerReportExpenditureTest : UnitTest() {
 
@@ -30,6 +32,7 @@ internal class GetProjectPartnerReportExpenditureTest : UnitTest() {
         private val TODAY = LocalDate.now()
         private val YEAR = LocalDate.now().year
         private val MONTH = LocalDate.now().monthValue
+        private val MOMENT = ZonedDateTime.now()
 
         private fun expenditure(id: Long) = ProjectPartnerReportExpenditureCost(
             id = id,
@@ -44,6 +47,7 @@ internal class GetProjectPartnerReportExpenditureTest : UnitTest() {
             currencyCode = "CST",
             currencyConversionRate = null,
             declaredAmountAfterSubmission = null,
+            attachment = ProjectReportFileMetadata(45L, "file.txt", MOMENT),
         )
 
         private fun filledInExpenditure(id: Long) = ProjectPartnerReportExpenditureCost(
@@ -59,6 +63,7 @@ internal class GetProjectPartnerReportExpenditureTest : UnitTest() {
             currencyCode = "CST",
             currencyConversionRate = BigDecimal.valueOf(24302, 4),
             declaredAmountAfterSubmission = BigDecimal.valueOf(1000, 2),
+            attachment = ProjectReportFileMetadata(45L, "file.txt", MOMENT),
         )
 
         private val cstCurrency = CurrencyConversion(
