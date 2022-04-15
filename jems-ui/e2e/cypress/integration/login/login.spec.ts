@@ -45,8 +45,8 @@ context('Login tests', () => {
     cy.get('jems-alert').should('be.visible').and('contain', 'Email or password incorrect.');
     cy.get('jems-alert').contains('span', '×').click();
 
-    cy.get('#email').type(user.admin.email);
-    cy.get('#password').type('random_unknown_password');
+    cy.get('#email').clear().type(user.admin.email);
+    cy.get('#password').clear().type('random_unknown_password');
 
     cy.get('button').contains('Login').click();
 
