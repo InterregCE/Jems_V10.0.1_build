@@ -234,7 +234,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       {minInRem: 7},
       {minInRem: 5},
       {minInRem: 7},
-      {minInRem: 10},
+      {minInRem: 12},
       {minInRem: 5},
     ];
 
