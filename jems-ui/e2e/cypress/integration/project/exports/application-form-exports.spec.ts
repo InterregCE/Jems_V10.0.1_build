@@ -154,7 +154,7 @@ context('Application form exports', () => {
     });
   });
 
-  it('TB-373 Export application form in different steps', () => {
+  it('TB-373 Export application form in different steps [step 2 only]', () => {
     cy.fixture('project/exports/TB-373.json').then(testData => {
       call2step.applicationFormConfiguration = testData.call.applicationFormConfiguration;
       call2step.generalCallSettings.name = 'randomize';
@@ -211,6 +211,69 @@ context('Application form exports', () => {
 
             cy.contains('div#export-config button', 'Export').clickToDownload(`api/project/${applicationId}/export/application?*version=1.0`, 'pdf').then(file => {
               cy.fixture('project/exports/TB-373-exports-v1.txt').then(fileContent => {
+                const assertionMessage = 'Verify downloaded pdf file for step 1 version';
+                expect(file.text.includes(fileContent), assertionMessage).to.be.true;
+              });
+            });
+          });
+        });
+      });
+    });
+  });
+
+  it('TB-545 Export application form in different steps [step 1&2]', () => {
+    cy.fixture('project/exports/TB-545.json').then(testData => {
+      call2step.applicationFormConfiguration = testData.call.applicationFormConfiguration;
+      call2step.generalCallSettings.name = 'randomize';
+      cy.create2StepCall(call2step, user.programmeUser.email).then(callId => {
+        cy.publishCall(callId, user.programmeUser.email);
+        testData.application.details.projectCallId = callId;
+        cy.createApplication(testData.application).then(applicationId => {
+
+          // 1st step version
+          cy.updateProjectIdentification(applicationId, testData.application.identification);
+          const leadPartner = testData.application.partners[0];
+          cy.createPartner(applicationId, leadPartner.details).then(partnerId => {
+            cy.createProjectWorkPlan(applicationId, testData.application.description.workPlan);
+            cy.updateProjectRelevanceAndContext(applicationId, testData.application.description.relevanceAndContext);
+            cy.updateProjectPartnership(applicationId, testData.application.description.partnership);
+            cy.createProjectResults(applicationId, testData.application.description.results);
+            cy.updateProjectManagement(applicationId, testData.application.description.management);
+            cy.updateProjectLongTermPlans(applicationId, testData.application.description.longTermPlans);
+            cy.updatePartnerAddress(partnerId, leadPartner.address);
+            cy.updatePartnerContact(partnerId, leadPartner.contact);
+            cy.updatePartnerBudget(partnerId, leadPartner.budget);
+            cy.updatePartnerCofinancing(partnerId, leadPartner.cofinancing);
+
+            cy.runPreSubmissionCheck(applicationId);
+            cy.submitProjectApplication(applicationId);
+
+            cy.loginByRequest(user.programmeUser.email);
+            cy.approveApplication(applicationId, application2step.assessments);
+            cy.startSecondStep(applicationId);
+
+            // 2nd step version
+            cy.loginByRequest(user.applicantUser.email);
+            cy.runPreSubmissionCheck(applicationId);
+            cy.submitProjectApplication(applicationId);
+
+            cy.approveApplication(applicationId, application2step.assessments, user.programmeUser.email);
+            cy.visit(`app/project/detail/${applicationId}/export`, {failOnStatusCode: false});
+
+            // export current step 2 (approved) version
+            cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/application?*`, 'pdf').then(file => {
+              cy.fixture('project/exports/TB-545-exports-v2.txt').then(fileContent => {
+                const assertionMessage = 'Verify downloaded pdf file for step 2 version';
+                expect(file.text.includes(fileContent), assertionMessage).to.be.true;
+              });
+            });
+
+            // export step 1 version
+            cy.get('div#export-config').contains('div', 'Project version').find('mat-select').click();
+            cy.contains('mat-option', 'V. 1.0').click();
+
+            cy.contains('div#export-config button', 'Export').clickToDownload(`api/project/${applicationId}/export/application?*version=1.0`, 'pdf').then(file => {
+              cy.fixture('project/exports/TB-545-exports-v1.txt').then(fileContent => {
                 const assertionMessage = 'Verify downloaded pdf file for step 1 version';
                 expect(file.text.includes(fileContent), assertionMessage).to.be.true;
               });
