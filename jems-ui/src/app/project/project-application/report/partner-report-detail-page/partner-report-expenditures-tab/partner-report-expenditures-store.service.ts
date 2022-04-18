@@ -1,16 +1,16 @@
 import {Injectable} from '@angular/core';
-import {combineLatest, merge, Observable, Subject} from 'rxjs';
+import {BehaviorSubject, combineLatest, merge, Observable, Subject} from 'rxjs';
 import {
   CurrencyDTO,
   IdNamePairDTO,
   InvestmentSummaryDTO,
   ProjectPartnerBudgetOptionsDto, ProjectPartnerReportDTO,
   ProjectPartnerReportExpenditureCostDTO,
-  ProjectPartnerReportExpenditureCostsService
+  ProjectPartnerReportExpenditureCostsService, ProjectReportFileMetadataDTO
 } from '@cat/api';
 
 import {PartnerReportDetailPageStore} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
-import {filter, map, shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
+import {filter, map, shareReplay, startWith, switchMap, take, tap} from 'rxjs/operators';
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {AllowedBudgetCategories} from '@project/model/allowed-budget-category';
 import {BudgetOptions} from '@project/model/budget/budget-options';
@@ -21,10 +21,13 @@ import {
   PartnerReportProcurementsPageStore
 } from '@project/project-application/report/partner-report-detail-page/partner-report-procurements-tab/partner-report-procurement-page-store.service';
 import {CurrencyStore} from '@common/services/currency.store';
+import {RoutingService} from '@common/services/routing.service';
+import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
 
 @Injectable({providedIn: 'root'})
 export class PartnerReportExpendituresStore {
 
+  partnerId$: Observable<string | number | null>;
   isEditable$: Observable<boolean>;
   costCategories$: Observable<string[]>;
   contractIDs$: Observable<IdNamePairDTO[]>;
@@ -32,6 +35,7 @@ export class PartnerReportExpendituresStore {
   expendituresCosts$: Observable<ProjectPartnerReportExpenditureCostDTO[]>;
   currencies$: Observable<CurrencyDTO[]>;
   currentReport$: Observable<ProjectPartnerReportDTO>;
+  refreshExpenditures$ = new BehaviorSubject<void>(undefined);
   private expendituresUpdated$ = new Subject<ProjectPartnerReportExpenditureCostDTO[]>();
 
   constructor(private partnerReportExpenditureCostsService: ProjectPartnerReportExpenditureCostsService,
@@ -39,7 +43,9 @@ export class PartnerReportExpendituresStore {
               private projectStore: ProjectStore,
               private projectPartnerBudgetStore: ProjectPartnerBudgetStore,
               private reportProcurementPageStore: PartnerReportProcurementsPageStore,
-              private currencyStore: CurrencyStore) {
+              private currencyStore: CurrencyStore,
+              private routingService: RoutingService,
+              private partnerReportPageStore: PartnerReportPageStore) {
     this.expendituresCosts$ = this.partnerReportExpenditureCosts();
     this.costCategories$ = this.costCategories();
     this.isEditable$ = this.partnerReportDetailPageStore.reportEditable$;
@@ -47,12 +53,13 @@ export class PartnerReportExpendituresStore {
     this.investmentsSummary$ = this.investmentSummariesForReport();
     this.currencies$ = this.currencyStore.currencies$;
     this.currentReport$ = this.partnerReportDetailPageStore.partnerReport$;
+    this.partnerId$ = this.partnerReportPageStore.partnerId$;
   }
 
   updateExpenditures(partnerExpenditures: ProjectPartnerReportExpenditureCostDTO[]): Observable<ProjectPartnerReportExpenditureCostDTO[]> {
     return combineLatest([
       this.partnerReportDetailPageStore.partnerId$,
-      this.partnerReportDetailPageStore.partnerReportId$
+      this.partnerReportDetailPageStore.partnerReportId$,
     ]).pipe(
       switchMap(([partnerId, reportId]) =>
         this.partnerReportExpenditureCostsService.updatePartnerReportExpenditures(partnerId as number, reportId, partnerExpenditures)
@@ -64,9 +71,10 @@ export class PartnerReportExpendituresStore {
   private partnerReportExpenditureCosts(): Observable<ProjectPartnerReportExpenditureCostDTO[]> {
     const initialExpenditureCosts$ = combineLatest([
       this.partnerReportDetailPageStore.partnerId$,
-      this.partnerReportDetailPageStore.partnerReportId$
+      this.partnerReportDetailPageStore.partnerReportId$,
+      this.refreshExpenditures$
     ]).pipe(
-      switchMap(([partnerId, reportId]) =>
+      switchMap(([partnerId, reportId, _]) =>
         this.partnerReportExpenditureCostsService.getProjectPartnerReports(partnerId as number, reportId)
       )
     );
@@ -153,4 +161,15 @@ export class PartnerReportExpendituresStore {
     return costCategories;
   }
 
+  uploadFile(file: File, expenditureId: number): Observable<ProjectReportFileMetadataDTO> {
+    return combineLatest([
+      this.partnerId$.pipe(map(id => Number(id))),
+      this.currentReport$
+    ]).pipe(
+      take(1),
+      switchMap(([partnerId, currentReport]) => this.partnerReportExpenditureCostsService
+        .uploadFileToExpenditureForm(file, expenditureId, partnerId, currentReport.id)
+      ),
+    );
+  }
 }
