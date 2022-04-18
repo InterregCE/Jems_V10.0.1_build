@@ -6,7 +6,7 @@
 
             <button mat-raised-button *ngIf="data.isReportEditable" jemsText class="mb-3 mt-3 mat-primary"
                                  [disabled]="procurements.length >= constants.MAX_NUMBER_OF_ITEMS"
-                                 (click)="addNewProcurement()">
+                                 (click)="addNewProcurement(data.currentReport)">
                 + {{'project.application.partner.report.procurements.add' | translate}}
             </button>
 
