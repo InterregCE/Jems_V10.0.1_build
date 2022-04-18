@@ -230,4 +230,7 @@ export class PartnerReportContributionTabComponent {
     }
   }
 
+  refreshContributions(): void {
+    this.pageStore.refreshContributions$.next(undefined);
+  }
 }

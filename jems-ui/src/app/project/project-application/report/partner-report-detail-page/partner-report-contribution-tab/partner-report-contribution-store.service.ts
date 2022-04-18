@@ -5,7 +5,7 @@ import {
   ProjectPartnerReportService, ProjectReportFileMetadataDTO,
   UpdateProjectPartnerReportContributionDataDTO,
 } from '@cat/api';
-import {combineLatest, merge, Observable, Subject} from 'rxjs';
+import {BehaviorSubject, combineLatest, merge, Observable, Subject} from 'rxjs';
 import {map, switchMap, take, tap} from 'rxjs/operators';
 import {RoutingService} from '@common/services/routing.service';
 import {Log} from '@common/utils/log';
@@ -23,6 +23,7 @@ export class PartnerReportContributionStore {
   partnerId$: Observable<number>;
   partnerContribution$: Observable<ProjectPartnerReportContributionWrapperDTO>;
 
+  refreshContributions$ = new BehaviorSubject<void>(undefined);
   private savedContribution$ = new Subject<ProjectPartnerReportContributionWrapperDTO>();
 
   constructor(
@@ -42,8 +43,9 @@ export class PartnerReportContributionStore {
       this.routingService
         .routeParameterChanges(PartnerReportDetailPageStore.REPORT_DETAIL_PATH, 'reportId')
         .pipe(map(reportId => Number(reportId))),
+      this.refreshContributions$
     ]).pipe(
-      switchMap(([partnerId, reportId]) =>
+      switchMap(([partnerId, reportId, _ ]) =>
         this.projectPartnerReportContributionService.getContribution(partnerId, reportId)
       ),
       tap(data => Log.info('Fetched contribution for partner report', this, data)),

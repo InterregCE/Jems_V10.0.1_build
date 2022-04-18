@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
-import {catchError, map, tap} from 'rxjs/operators';
+import {catchError, map, take, tap} from 'rxjs/operators';
 import {HttpErrorResponse} from '@angular/common/http';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {FormService} from '@common/components/section/form/form.service';
@@ -20,6 +20,9 @@ import {
 } from '@project/work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
 import {CurrencyCodesEnum} from '@common/services/currency.store';
 import {NumberService} from '@common/services/number.service';
+import {
+  PartnerFileManagementStore
+} from '@project/project-application/report/partner-report-detail-page/partner-file-management-store';
 
 @UntilDestroy()
 @Component({
@@ -38,6 +41,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
   withConfigs$: Observable<TableConfig[]>;
   currencies: CurrencyDTO[];
   currentReport: ProjectPartnerReportDTO;
+  isReportEditable$: Observable<boolean>;
   data$: Observable<{
     expendituresCosts: ProjectPartnerReportExpenditureCostDTO[];
     costCategories: string[];
@@ -49,7 +53,10 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
 
   constructor(public pageStore: PartnerReportExpendituresStore,
               private formBuilder: FormBuilder,
-              private formService: FormService) {}
+              private formService: FormService,
+              private partnerFileManagementStore: PartnerFileManagementStore) {
+    this.isReportEditable$ = this.pageStore.isEditable$;
+  }
 
   ngOnInit(): void {
     this.initForm();
@@ -140,12 +147,13 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       dateOfPayment: '',
       description: [[]],
       comment: [[]],
-      totalValueInvoice: '',
-      vat: '',
-      declaredAmount: '',
+      totalValueInvoice: 0,
+      vat: 0,
+      declaredAmount: 0,
       currencyCode: this.currentReport.identification?.currency ,
       currencyConversionRate: this.getConversionRateByCode(this.currentReport.identification?.currency),
-      declaredAmountInEur: ''
+      declaredAmountInEur: 0,
+      attachment: [],
     });
     this.items.push(item);
     this.tableData = [...this.items.controls];
@@ -210,6 +218,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       'currencyCode',
       'currencyConversionRate',
       'declaredAmountInEur',
+      'uploadFunction',
       'actions'
     ];
     if (investments.length > 0) {
@@ -235,7 +244,8 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       {minInRem: 5},
       {minInRem: 7},
       {minInRem: 12},
-      {minInRem: 5},
+      {minInRem: 13},
+      {minInRem: 4},
     ];
 
     if (investments.length > 0) {
@@ -266,6 +276,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
         currencyCode: this.formBuilder.control(reportExpenditureCost?.currencyCode),
         currencyConversionRate: this.formBuilder.control(conversionRate),
         declaredAmountInEur: this.formBuilder.control(this.getAmountInEur(conversionRate, reportExpenditureCost?.declaredAmount || 0)),
+        attachment: this.formBuilder.control(reportExpenditureCost?.attachment, []),
       })
     );
   }
@@ -281,6 +292,10 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
 
   get items(): FormArray {
     return this.reportExpendituresForm.get(this.constants.FORM_CONTROL_NAMES.items) as FormArray;
+  }
+
+  attachment(index: number): FormControl {
+    return this.items.at(index).get(this.constants.FORM_CONTROL_NAMES.attachment) as FormControl;
   }
 
   updateConversionRate(expenditureIndex: number, newValue: MatSelectChange) {
@@ -307,5 +322,30 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     const declaredAmountInEur = declaredAmount && newConversionRate ?  NumberService.roundNumber(NumberService.divide(declaredAmount, newConversionRate)) : 0;
 
     this.items.at(expenditureIndex).get('declaredAmountInEur')?.setValue(NumberService.roundNumber(declaredAmountInEur));
+  }
+
+  onUploadFileToExpenditure(target: any, expenditureId: number, expenditureIndex: number) {
+    if (!target || expenditureId === 0) {
+      return;
+    }
+    this.pageStore.uploadFile(target?.files[0], expenditureId)
+      .pipe(take(1))
+      .subscribe(value => this.attachment(expenditureIndex)?.patchValue(value));
+  }
+
+  onDownloadFile(fileId: number) {
+    this.partnerFileManagementStore.downloadFile(fileId)
+      .pipe(take(1))
+      .subscribe();
+  }
+
+  onDeleteFile(fileId: number, expenditureIndex: number) {
+    this.partnerFileManagementStore.deleteFile(fileId)
+      .pipe(take(1))
+      .subscribe(_ => this.attachment(expenditureIndex)?.patchValue(null));
+  }
+
+  refreshListOfExpenditures(): void {
+    this.pageStore.refreshExpenditures$.next(undefined);
   }
 }

@@ -1,6 +1,6 @@
 <ng-container *ngIf="savedContribution$ | async as savedContribution">
     <jems-form (save)="saveForm()"
-               (discard)="resetForm(savedContribution)">
+               (discard)="refreshContributions()">
         <form jemsFormLayout [formGroup]="contributionForm">
             <h3 class="mb5">{{'project.application.partner.report.contribution.tab.subtitle' | translate}}</h3>
             <mat-table jemsNoWidthLimit
@@ -127,7 +127,6 @@
                                 type="button"
                                 *ngIf="control.value.createdInThisReport"
                                 [disabled]="!!control.get('attachment').value"
-                                matTooltip="{{'common.delete.entry.tooltip' | translate}}"
                                 (click)="removeContribution(i)">
                             <mat-icon
                                     matTooltip="{{ (attachment(i).value ? 'project.application.partner.report.attachment.delete.file.first' : null) | translate }}">

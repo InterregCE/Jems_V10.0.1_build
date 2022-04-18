@@ -1,6 +1,6 @@
 <div *ngIf="data$ | async as data">
     <jems-form (save)="updateReportExpenditures()"
-               (discard)="resetForm(data.expendituresCosts)">
+               (discard)="refreshListOfExpenditures()">
         <form jemsFormLayout [formGroup]="reportExpendituresForm">
             <h3>{{'project.application.partner.report.expenditures.title' | translate}}</h3>
 
@@ -273,7 +273,7 @@
                         </ng-container>
 
                         <ng-container matColumnDef="currencyCode">
-                            <mat-header-cell class="end-flex-header-table" *matHeaderCellDef>
+                            <mat-header-cell *matHeaderCellDef>
                                         <span jemsText
                                               maxLines="1">{{'project.application.partner.report.expenditures.currency' | translate}}</span>
                             </mat-header-cell>
@@ -332,21 +332,40 @@
                             <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                         </ng-container>
 
+                        <ng-container matColumnDef="uploadFunction">
+                            <mat-header-cell *matHeaderCellDef>{{'project.application.partner.report.attachments' | translate}}</mat-header-cell>
+                            <mat-cell class="justify-start" *matCellDef="let control;let expenditureIndex=index" [formGroupName]="expenditureIndex" >
+                                <jems-partner-actions-cell
+                                        *ngIf="control.get('id').value"
+                                        [formControlName]="constants.FORM_CONTROL_NAMES.attachment"
+                                        [isReportEditable]="isReportEditable$ | async"
+                                        (upload)="onUploadFileToExpenditure($event, control.get('id').value, expenditureIndex)"
+                                        (download)="onDownloadFile($event)"
+                                        (delete)="onDeleteFile($event, expenditureIndex)">
+                                </jems-partner-actions-cell>
+                            </mat-cell>
+                            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                        </ng-container>
+
                         <ng-container matColumnDef="actions" stickyEnd>
                             <mat-header-cell *matHeaderCellDef></mat-header-cell>
                             <mat-cell *matCellDef="let control;let index=index" class="justify-end">
-                                <button *ngIf="reportExpendituresForm.enabled"
+                                <button mat-icon-button *ngIf="reportExpendituresForm.enabled"
+                                        [disabled]="!!control.get(constants.FORM_CONTROL_NAMES.attachment).value"
                                         (click)="removeItem(index)"
                                         class="delete-button"
-                                        color="accent" mat-icon-button
-                                        matTooltip="{{'common.delete.entry.tooltip' | translate}}"
+                                        color="accent"
                                         tabindex="-1"
                                         type="button">
-                                    <mat-icon>delete</mat-icon>
+                                    <mat-icon
+                                            matTooltip="{{ (attachment(index).value ? 'project.application.partner.report.attachment.delete.file.first' : null) | translate }}">
+                                        {{ attachment(index).value ? 'delete_forever' : 'delete'}}
+                                    </mat-icon>
                                 </button>
                             </mat-cell>
                             <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                         </ng-container>
+
                         <mat-header-row *matHeaderRowDef="data.columnsToDisplay"></mat-header-row>
                         <mat-row *matRowDef="let myRowData; columns: data.columnsToDisplay; let rowIndex =index"
                                  [class.row-has-error]="items.controls[rowIndex]?.invalid"></mat-row>
