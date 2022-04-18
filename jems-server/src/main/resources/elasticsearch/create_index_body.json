@@ -16,7 +16,8 @@
       "user": {
         "properties": {
           "email": {
-            "type": "keyword"
+            "type": "text",
+            "analyzer": "email_analyzer"
           },
           "id": {
             "type": "long"
@@ -48,6 +49,22 @@
   },
   "settings": {
     "number_of_shards": 3,
-    "number_of_replicas": 2
+    "number_of_replicas": 2,
+    "max_ngram_diff" : 50,
+    "analysis": {
+      "analyzer": {
+        "email_analyzer": {
+          "tokenizer": "standard",
+          "filter": [ "mynGram" ]
+        }
+      },
+      "filter": {
+        "mynGram": {
+          "type": "ngram",
+          "min_gram": 2,
+          "max_gram": 50
+        }
+      }
+    }
   }
 }
