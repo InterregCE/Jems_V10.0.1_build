@@ -102,7 +102,7 @@ export class PartnerReportProcurementsTabComponent {
 
   resetForm(procurements: ProjectPartnerReportProcurementDTO[], currentReport?: ProjectPartnerReportDTO): void {
     this.procurements.clear();
-    procurements.forEach((procurement) => this.addNewProcurement(procurement, currentReport));
+    procurements.forEach((procurement) => this.addNewProcurement(currentReport, procurement));
     this.tableData = [...this.procurements.controls];
     this.formService.resetEditable();
   }
@@ -117,7 +117,7 @@ export class PartnerReportProcurementsTabComponent {
     this.formService.setDirty(true);
   }
 
-  addNewProcurement(procurement?: ProjectPartnerReportProcurementDTO, currentReport?: ProjectPartnerReportDTO): void {
+  addNewProcurement(currentReport?: ProjectPartnerReportDTO, procurement?: ProjectPartnerReportProcurementDTO): void {
     if (this.procurements.length <= this.constants.MAX_NUMBER_OF_ITEMS) {
       const item = this.formBuilder.group({
         id: procurement?.id || 0,
