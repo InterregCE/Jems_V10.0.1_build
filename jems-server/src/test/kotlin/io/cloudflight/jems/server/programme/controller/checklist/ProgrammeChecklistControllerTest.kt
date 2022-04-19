@@ -40,6 +40,7 @@ class ProgrammeChecklistControllerTest : UnitTest() {
         type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
         name = "test",
         lastModificationDate = ZonedDateTime.of(2020, 1, 10, 10, 10, 10, 10, ZoneId.systemDefault()),
+        locked = false
     )
     private val checklistDTO = ProgrammeChecklistDTO(
         id = ID,
@@ -74,6 +75,7 @@ class ProgrammeChecklistControllerTest : UnitTest() {
         type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
         name = "test",
         lastModificationDate = ZonedDateTime.of(2020, 1, 10, 10, 10, 10, 10, ZoneId.systemDefault()),
+        locked = false,
         components = components
     )
 

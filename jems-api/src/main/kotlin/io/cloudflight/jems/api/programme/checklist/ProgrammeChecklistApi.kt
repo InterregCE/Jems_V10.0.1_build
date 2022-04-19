@@ -1,7 +1,9 @@
 package io.cloudflight.jems.api.programme.checklist
 
+import io.cloudflight.jems.api.common.dto.IdNamePairDTO
 import io.cloudflight.jems.api.programme.dto.checklist.ProgrammeChecklistDTO
 import io.cloudflight.jems.api.programme.dto.checklist.ProgrammeChecklistDetailDTO
+import io.cloudflight.jems.api.programme.dto.checklist.ProgrammeChecklistTypeDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import org.springframework.http.MediaType
@@ -38,4 +40,8 @@ interface ProgrammeChecklistApi {
     @ApiOperation("Delete a programme checklist")
     @DeleteMapping("${ENDPOINT_API_PROGRAMME_CHECKLIST}/delete/{checklistId}")
     fun deleteChecklist(@PathVariable checklistId: Long)
+
+    @ApiOperation("Retrieve programme checklists by type")
+    @GetMapping("$ENDPOINT_API_PROGRAMME_CHECKLIST/byType/{checklistType}")
+    fun getProgrammeChecklistsByType(@PathVariable checklistType: ProgrammeChecklistTypeDTO): List<IdNamePairDTO>
 }

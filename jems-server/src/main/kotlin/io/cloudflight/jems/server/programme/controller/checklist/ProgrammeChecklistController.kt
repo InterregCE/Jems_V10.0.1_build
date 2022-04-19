@@ -1,8 +1,11 @@
 package io.cloudflight.jems.server.programme.controller.checklist
 
+import io.cloudflight.jems.api.common.dto.IdNamePairDTO
 import io.cloudflight.jems.api.programme.checklist.ProgrammeChecklistApi
 import io.cloudflight.jems.api.programme.dto.checklist.ProgrammeChecklistDTO
 import io.cloudflight.jems.api.programme.dto.checklist.ProgrammeChecklistDetailDTO
+import io.cloudflight.jems.api.programme.dto.checklist.ProgrammeChecklistTypeDTO
+import io.cloudflight.jems.server.common.toDTO
 import io.cloudflight.jems.server.programme.service.checklist.create.CreateProgrammeChecklistInteractor
 import io.cloudflight.jems.server.programme.service.checklist.delete.DeleteProgrammeChecklistInteractor
 import io.cloudflight.jems.server.programme.service.checklist.getList.GetProgrammeChecklistInteractor
@@ -34,4 +37,7 @@ class ProgrammeChecklistController(
     override fun deleteChecklist(checklistId: Long) =
         deleteInteractor.deleteProgrammeChecklist(checklistId)
 
+    override fun getProgrammeChecklistsByType(checklistType: ProgrammeChecklistTypeDTO): List<IdNamePairDTO> {
+        return getChecklistInteractor.getProgrammeChecklistsByType(checklistType.toModel()).toDTO()
+    }
 }

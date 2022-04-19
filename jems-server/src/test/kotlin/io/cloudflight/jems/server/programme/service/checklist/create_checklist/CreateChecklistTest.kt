@@ -4,6 +4,7 @@ import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
+import io.cloudflight.jems.server.programme.service.checklist.ChecklistTemplateValidator
 import io.cloudflight.jems.server.programme.service.checklist.ProgrammeChecklistPersistence
 import io.cloudflight.jems.server.programme.service.checklist.create.CreateProgrammeChecklist
 import io.cloudflight.jems.server.programme.service.checklist.create.CreateProgrammeChecklist.Companion.MAX_NUMBER_OF_CHECKLIST_COMPONENTS
@@ -35,6 +36,7 @@ internal class CreateChecklistTest : UnitTest() {
         type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
         name = "name",
         lastModificationDate = ZonedDateTime.of(2020, 1, 10, 10, 10, 10, 10, ZoneId.systemDefault()),
+        locked = false,
         components = emptyList()
     )
 
@@ -43,6 +45,9 @@ internal class CreateChecklistTest : UnitTest() {
 
     @RelaxedMockK
     lateinit var generalValidator: GeneralValidatorService
+
+    @RelaxedMockK
+    lateinit var checklistTemplateValidator: ChecklistTemplateValidator
 
     @InjectMockKs
     lateinit var createProgrammeChecklist: CreateProgrammeChecklist
@@ -60,7 +65,6 @@ internal class CreateChecklistTest : UnitTest() {
     fun `create - successfully`() {
         every { persistence.countAll() } returns 1
         every { persistence.createOrUpdate(checkList) } returns checkList
-
         Assertions.assertThat(createProgrammeChecklist.create(checkList)).isEqualTo(checkList)
     }
 
@@ -72,21 +76,21 @@ internal class CreateChecklistTest : UnitTest() {
 
     @Test
     fun `create - max amount of components`() {
-        every { persistence.createOrUpdate(checkList) } returns checkList
-        every { persistence.countAll() } returns 99
         val listMock = ArrayList(Collections.nCopies(101, mockk<ProgrammeChecklistComponent>()))
-        every { generalValidator.maxSize(listMock, MAX_NUMBER_OF_CHECKLIST_COMPONENTS, "components") } returns
-            (mapOf(
-                "components" to I18nMessage(i18nKey = "common.error.field.max.size"),
-            ))
-        val toBeUpdated = ProgrammeChecklistDetail(
+        val toBeCreated = ProgrammeChecklistDetail(
             id = CHECKLIST_ID,
             type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
             name = "name",
             lastModificationDate = ZonedDateTime.of(2020, 1, 10, 10, 10, 10, 10, ZoneId.systemDefault()),
+            locked = false,
             components = listMock
         )
-        assertThrows<AppInputValidationException> { createProgrammeChecklist.create(toBeUpdated) }
-        verify(exactly = 1) { generalValidator.maxSize(listMock, MAX_NUMBER_OF_CHECKLIST_COMPONENTS, "components") }
+        val errors = mapOf(
+            "components" to I18nMessage(i18nKey = "common.error.field.max.size"),
+        )
+        every { generalValidator.maxSize(listMock, MAX_NUMBER_OF_CHECKLIST_COMPONENTS, "components") } returns errors
+        every { checklistTemplateValidator.validateNewChecklist(toBeCreated) } throws AppInputValidationException(errors)
+        assertThrows<AppInputValidationException> { createProgrammeChecklist.create(toBeCreated) }
+        verify(exactly = 1) { checklistTemplateValidator.validateNewChecklist((toBeCreated)) }
     }
 }

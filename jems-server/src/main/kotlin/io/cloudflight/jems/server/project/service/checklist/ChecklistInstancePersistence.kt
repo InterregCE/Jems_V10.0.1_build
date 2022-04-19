@@ -23,4 +23,6 @@ interface ChecklistInstancePersistence {
     fun deleteById(id: Long)
 
     fun getStatus(id: Long): ChecklistInstanceStatus
+
+    fun countAllByChecklistTemplateId(checklistTemplateId: Long): Long
 }

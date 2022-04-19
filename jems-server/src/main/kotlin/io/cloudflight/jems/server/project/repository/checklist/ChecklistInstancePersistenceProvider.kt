@@ -72,6 +72,11 @@ class ChecklistInstancePersistenceProvider(
         return repository.findStatusForId(id)
     }
 
+    @Transactional(readOnly = true)
+    override fun countAllByChecklistTemplateId(checklistTemplateId: Long): Long {
+        return repository.countByProgrammeChecklistId(checklistTemplateId)
+    }
+
     private fun getChecklistOrThrow(id: Long): ChecklistInstanceEntity =
         repository.findById(id).orElseThrow { GetChecklistInstanceDetailNotFoundException() }
 }
