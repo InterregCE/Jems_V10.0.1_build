@@ -92,7 +92,20 @@ export class ProjectBudgetOverviewComponent {
     };
 
     if (isCallSpf) {
-      datasource.push({label:'project.application.form.overview.budget.table.spf.cofinacing', extended: true, allowedAutoContribution: this.isAutomaticPublicContributionAllowed()}, ...euFundsForSpf, totalEuForSpf as any, ...otherFundsForSpf, totalSpfBudget, {label:'project.application.form.overview.budget.table.cofinacing', extended: true, allowedAutoContribution: this.isAutomaticPublicContributionAllowed()});
+      datasource.push(
+          {
+            label:'project.application.form.overview.budget.table.spf.cofinacing',
+            extended: true,
+            allowedAutoContribution: this.isAutomaticPublicContributionAllowed()},
+            ...euFundsForSpf, totalEuForSpf as any,
+            ...otherFundsForSpf,
+            totalSpfBudget,
+          {
+            label:'project.application.form.overview.budget.table.cofinacing',
+            extended: true,
+            allowedAutoContribution: this.isAutomaticPublicContributionAllowed()
+          }
+        );
     }
 
     const euFundsForManagement = this.getEuFunds(overview.projectManagementCoFinancing.fundOverviews);
@@ -125,7 +138,10 @@ export class ProjectBudgetOverviewComponent {
     const total = {
       label: 'project.application.form.overview.budget.table.total',
       fundingAmount: totalSpfBudget.fundingAmount + totalManagementBudget.fundingAmount,
-      coFinancingRate: NumberService.truncateNumber(NumberService.divide(NumberService.product([totalSpfBudget.fundingAmount + totalManagementBudget.fundingAmount, 100]), totalSpfBudget.totalFundAndContribution + totalManagementBudget.totalFundAndContribution), 2),
+      coFinancingRate: NumberService.divide(
+        NumberService.product([totalSpfBudget.fundingAmount + totalManagementBudget.fundingAmount, 100]),
+        totalSpfBudget.totalFundAndContribution + totalManagementBudget.totalFundAndContribution
+      ),
       autoPublicContribution: totalSpfBudget.autoPublicContribution + totalManagementBudget.autoPublicContribution,
       otherPublicContribution: totalSpfBudget.otherPublicContribution + totalManagementBudget.otherPublicContribution,
       totalPublicContribution: totalSpfBudget.totalPublicContribution + totalManagementBudget.totalPublicContribution,
@@ -147,7 +163,7 @@ export class ProjectBudgetOverviewComponent {
   private getEuFunds(funds: ProjectCoFinancingByFundOverviewDTO[]):  ProjectCoFinancingByFundOverviewDTO[] {
     return funds
       .filter(fund => fund.fundType !== ProjectCoFinancingByFundOverviewDTO.FundTypeEnum.OTHER)
-      .sort((fund1, fund2) => this.euFundsComparator(fund1, fund2));
+      .sort((fund1, fund2) => ProjectBudgetOverviewComponent.euFundsComparator(fund1, fund2));
   }
 
   private getOtherFunds(funds: ProjectCoFinancingByFundOverviewDTO[]): ProjectCoFinancingByFundOverviewDTO[] {
@@ -156,7 +172,7 @@ export class ProjectBudgetOverviewComponent {
       .sort((fund1, fund2) => fund1.fundId - fund2.fundId);
   }
 
-  private euFundsComparator(f1: ProjectCoFinancingByFundOverviewDTO, f2: ProjectCoFinancingByFundOverviewDTO): number {
+  private static euFundsComparator(f1: ProjectCoFinancingByFundOverviewDTO, f2: ProjectCoFinancingByFundOverviewDTO): number {
     if (f1.fundType === f2.fundType) {
       return f1.fundId - f2.fundId;
     }
