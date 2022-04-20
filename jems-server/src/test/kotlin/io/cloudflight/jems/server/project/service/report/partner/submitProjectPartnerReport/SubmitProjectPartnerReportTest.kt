@@ -66,6 +66,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             currencyCode = "CZK",
             currencyConversionRate = null,
             declaredAmountAfterSubmission = null,
+            attachment = null,
         )
     }
 

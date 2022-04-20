@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.common.minio.MinioStorage
 import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
 import io.cloudflight.jems.server.project.repository.report.procurement.ProjectPartnerReportProcurementRepository
 import io.cloudflight.jems.server.project.repository.report.contribution.ProjectPartnerReportContributionRepository
+import io.cloudflight.jems.server.project.repository.report.expenditure.ProjectPartnerReportExpenditureRepository
 import io.cloudflight.jems.server.project.repository.report.toModel
 import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPartnerReportWorkPackageActivityDeliverableRepository
 import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPartnerReportWorkPackageActivityRepository
@@ -25,6 +26,7 @@ class ProjectReportFilePersistenceProvider(
     private val workPlanOutputRepository: ProjectPartnerReportWorkPackageOutputRepository,
     private val procurementRepository: ProjectPartnerReportProcurementRepository,
     private val contributionRepository: ProjectPartnerReportContributionRepository,
+    private val expenditureRepository: ProjectPartnerReportExpenditureRepository,
     private val userRepository: UserRepository,
 ) : ProjectReportFilePersistence {
 
@@ -102,6 +104,17 @@ class ProjectReportFilePersistenceProvider(
         contribution.attachment.deleteIfPresent()
 
         return persistFileAndUpdateLink(file = file) { contribution.attachment = it }
+    }
+
+    @Transactional
+    override fun updatePartnerReportExpenditureAttachment(
+        expenditureId: Long,
+        file: ProjectReportFileCreate
+    ): ProjectReportFileMetadata {
+        val expenditure = expenditureRepository.findById(expenditureId).get()
+        expenditure.attachment.deleteIfPresent()
+
+        return persistFileAndUpdateLink(file = file) { expenditure.attachment = it }
     }
 
     private fun persistFileAndUpdateLink(file: ProjectReportFileCreate, additionalStep: (ReportProjectFileEntity) -> Unit): ProjectReportFileMetadata {

@@ -17,4 +17,7 @@ interface ProjectPartnerReportExpenditureRepository : JpaRepository<PartnerRepor
     @Query("SELECT e.id FROM #{#entityName} e where e.partnerReport=:reportEntity")
     fun findExistingExpenditureIdsFor(reportEntity: ProjectPartnerReportEntity): Set<Long>
 
+    fun findByPartnerReportOrderByIdDesc(reportEntity: ProjectPartnerReportEntity): MutableList<PartnerReportExpenditureCostEntity>
+
+    fun existsByPartnerReportPartnerIdAndPartnerReportIdAndId(partnerId: Long, reportId: Long, expenditureId: Long): Boolean
 }

@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.common.entity.extractTranslation
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportExpenditureCostEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportExpenditureCostTranslEntity
+import io.cloudflight.jems.server.project.repository.report.toModel
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportExpenditureCost
 
 fun List<PartnerReportExpenditureCostEntity>.toModel() = map {
@@ -25,6 +26,7 @@ fun List<PartnerReportExpenditureCostEntity>.toModel() = map {
         currencyCode = it.currencyCode,
         currencyConversionRate = it.currencyConversionRate,
         declaredAmountAfterSubmission = it.declaredAmountAfterSubmission,
+        attachment = it.attachment?.toModel(),
         comment = it.translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.comment) },
         description = it.translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.description) }
     )
@@ -48,10 +50,34 @@ fun List<ProjectPartnerReportExpenditureCost>.toEntities(reportEntity: ProjectPa
         currencyConversionRate = it.currencyConversionRate,
         declaredAmountAfterSubmission = it.declaredAmountAfterSubmission,
         translatedValues = mutableSetOf(),
+        attachment = null,
     ).apply {
         translatedValues.addTranslation(this, it.comment, it.description)
     }
 }
+
+fun ProjectPartnerReportExpenditureCost.toEntity(reportEntity: ProjectPartnerReportEntity) =
+    PartnerReportExpenditureCostEntity(
+        id = id ?: 0L,
+        partnerReport = reportEntity,
+        costCategory = costCategory,
+        investmentId = investmentId,
+        procurementId = contractId,
+        internalReferenceNumber = internalReferenceNumber,
+        invoiceNumber = invoiceNumber,
+        invoiceDate = invoiceDate,
+        dateOfPayment = dateOfPayment,
+        totalValueInvoice = totalValueInvoice,
+        vat = vat,
+        declaredAmount = declaredAmount,
+        currencyCode = currencyCode,
+        currencyConversionRate = currencyConversionRate,
+        declaredAmountAfterSubmission = declaredAmountAfterSubmission,
+        translatedValues = mutableSetOf(),
+        attachment = null,
+    ).apply {
+        translatedValues.addTranslation(this, comment, description)
+    }
 
 fun MutableSet<PartnerReportExpenditureCostTranslEntity>.addTranslation(
     sourceEntity: PartnerReportExpenditureCostEntity,

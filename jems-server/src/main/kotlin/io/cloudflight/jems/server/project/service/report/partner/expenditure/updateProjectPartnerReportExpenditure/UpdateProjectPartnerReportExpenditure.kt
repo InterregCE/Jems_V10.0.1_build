@@ -11,6 +11,7 @@ import io.cloudflight.jems.server.project.service.report.partner.expenditure.Pro
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.clearConversions
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.filterInvalidCurrencies
 import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectReportProcurementPersistence
+import io.cloudflight.jems.server.project.service.report.partner.procurement.fillThisReportFlag
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
@@ -54,10 +55,15 @@ class UpdateProjectPartnerReportExpenditure(
             ).mapTo(HashSet()) { it.id },
         )
 
-        return reportExpenditurePersistence.updatePartnerReportExpenditureCosts(
+        reportExpenditurePersistence.updatePartnerReportExpenditureCosts(
             partnerId = partnerId,
             reportId = report.id,
             expenditureCosts = expenditureCosts.clearConversions(),
+        )
+
+        return reportExpenditurePersistence.getPartnerReportExpenditureCosts(
+            partnerId = partnerId,
+            reportId = report.id,
         )
     }
 
