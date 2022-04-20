@@ -8,6 +8,7 @@ import io.cloudflight.jems.api.programme.dto.checklist.ProgrammeChecklistTypeDTO
 import io.cloudflight.jems.api.programme.dto.checklist.metadata.HeadlineMetadataDTO
 import io.cloudflight.jems.api.programme.dto.checklist.metadata.OptionsToggleMetadataDTO
 import io.cloudflight.jems.api.programme.dto.checklist.metadata.ProgrammeChecklistMetadataDTO
+import io.cloudflight.jems.api.programme.dto.checklist.metadata.TextInputMetadataDTO
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklist
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistComponent
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistComponentType
@@ -16,6 +17,7 @@ import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChe
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.HeadlineMetadata
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.OptionsToggleMetadata
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.ProgrammeChecklistMetadata
+import io.cloudflight.jems.server.programme.service.checklist.model.metadata.TextInputMetadata
 import org.mapstruct.AfterMapping
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping
@@ -74,12 +76,14 @@ fun ProgrammeChecklistMetadata.toDtoMetadata(type: ProgrammeChecklistComponentTy
     when (type) {
         ProgrammeChecklistComponentType.HEADLINE -> (this as HeadlineMetadata).toDto()
         ProgrammeChecklistComponentType.OPTIONS_TOGGLE -> (this as OptionsToggleMetadata).toDto()
+        ProgrammeChecklistComponentType.TEXT_INPUT -> (this as TextInputMetadata).toDto()
     }
 
 fun ProgrammeChecklistMetadataDTO.toModelMetadata(type: ProgrammeChecklistComponentTypeDTO): ProgrammeChecklistMetadata =
     when (type) {
         ProgrammeChecklistComponentTypeDTO.HEADLINE -> (this as HeadlineMetadataDTO).toModel()
         ProgrammeChecklistComponentTypeDTO.OPTIONS_TOGGLE -> (this as OptionsToggleMetadataDTO).toModel()
+        ProgrammeChecklistComponentTypeDTO.TEXT_INPUT -> (this as TextInputMetadataDTO).toModel()
     }
 
 private fun HeadlineMetadata.toDto(): HeadlineMetadataDTO =
@@ -108,4 +112,16 @@ private fun OptionsToggleMetadataDTO.toModel(): OptionsToggleMetadata =
         thirdOption
     )
 
+private fun TextInputMetadata.toDto(): TextInputMetadataDTO =
+        TextInputMetadataDTO(
+            question,
+            explanationLabel,
+            explanationMaxLength
+        )
 
+private fun TextInputMetadataDTO.toModel(): TextInputMetadata =
+        TextInputMetadata(
+            question,
+            explanationLabel,
+            explanationMaxLength
+        )

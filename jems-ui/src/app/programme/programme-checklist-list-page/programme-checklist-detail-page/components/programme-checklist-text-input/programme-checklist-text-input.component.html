@@ -1,0 +1,43 @@
+<div [formGroup]="form">
+    <mat-form-field jemsFormFieldWidth="full">
+        <mat-label>{{'programme.checklists.component.options.toggle.question' | translate}}</mat-label>
+        <textarea formControlName="question" matInput required
+                  #autosize="cdkTextareaAutosize"
+                  [cdkTextareaAutosize]
+                  [cdkAutosizeMinRows]="3"
+                  [cdkAutosizeMaxRows]="5"
+                  #question>
+        </textarea>
+        <mat-hint [jemsHintFor]="question">
+            <jems-text-hint [currentLength]="question.value.length" [maxLength]="1000"></jems-text-hint>
+        </mat-hint>
+        <mat-error>
+            <jems-form-field-errors [errors]="form.get('question')?.errors"></jems-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+    <div jemsMultiColumnRow stretch >
+        <mat-form-field jemsNoWidthLimit>
+            <mat-label>{{'programme.checklists.component.text.input.label' | translate}}</mat-label>
+            <input #explanationLabel formControlName="explanationLabel" matInput required>
+            <mat-hint [jemsHintFor]="explanationLabel" [hide]="form.controls?.explanationLabel?.errors !== null">
+                <jems-text-hint [currentLength]="explanationLabel?.value?.length" [maxLength]="50"></jems-text-hint>
+            </mat-hint>
+            <mat-error>
+                <jems-form-field-errors [errors]="form.get('explanationLabel')?.errors"></jems-form-field-errors>
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field jemsFormFieldWidth="medium">
+            <mat-label>{{'programme.checklists.component.text.input.characters' | translate}}</mat-label>
+            <input #explanationMaxLength type="number" [min]="0" [max]="5000" formControlName="explanationMaxLength" matInput  required>
+            <mat-hint [jemsHintFor]="explanationMaxLength" >
+                {{'programme.checklists.component.text.input.characters.hint' | translate : {maxLengthAllowed: '5000'} }}
+            </mat-hint>
+            <mat-error>
+                <jems-form-field-errors
+                        [errors]="form.get('explanationMaxLength')?.errors"
+                        [messages]="FORM_ERRORS.explanationMaxValue"> </jems-form-field-errors>
+            </mat-error>
+        </mat-form-field>
+    </div>
+</div>

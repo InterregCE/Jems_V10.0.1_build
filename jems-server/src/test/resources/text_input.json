@@ -1,0 +1,6 @@
+{
+  "type": "TEXT_INPUT",
+  "question": "Question to be answered",
+  "explanationLabel": "Label",
+  "explanationMaxLength": 2000
+}

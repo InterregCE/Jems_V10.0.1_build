@@ -9,15 +9,13 @@ import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistIns
 import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistInstanceDetail
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistComponentType
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
-import io.cloudflight.jems.server.programme.service.checklist.model.metadata.HeadlineInstanceMetadata
-import io.cloudflight.jems.server.programme.service.checklist.model.metadata.HeadlineMetadata
-import io.cloudflight.jems.server.programme.service.checklist.model.metadata.OptionsToggleInstanceMetadata
-import io.cloudflight.jems.server.programme.service.checklist.model.metadata.OptionsToggleMetadata
+import io.cloudflight.jems.server.programme.service.checklist.model.metadata.*
 import io.cloudflight.jems.server.project.entity.checklist.ChecklistComponentInstanceEntity
 import io.cloudflight.jems.server.project.entity.checklist.ChecklistComponentInstanceId
 import io.cloudflight.jems.server.project.entity.checklist.ChecklistInstanceEntity
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceStatus
 import io.cloudflight.jems.server.project.service.checklist.model.CreateChecklistInstanceModel
+import io.cloudflight.jems.server.project.service.checklist.model.metadata.TextInputInstanceMetadata
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import io.cloudflight.jems.server.user.repository.user.UserRepository
@@ -73,6 +71,13 @@ class ChecklistInstancePersistenceTest : UnitTest() {
                 2,
                 OptionsToggleMetadata("What option do you choose", "yes", "no", "maybe"),
                 OptionsToggleInstanceMetadata("yes")
+            ),
+            ChecklistComponentInstance(
+                4L,
+                ProgrammeChecklistComponentType.TEXT_INPUT,
+                3,
+                TextInputMetadata("Question to be answered", "Label", 2000),
+                TextInputInstanceMetadata("Explanation")
             )
         )
     )
@@ -98,6 +103,13 @@ class ChecklistInstancePersistenceTest : UnitTest() {
                 ProgrammeChecklistComponentType.OPTIONS_TOGGLE,
                 2,
                 OptionsToggleMetadata("What option do you choose", "yes", "no", "maybe"),
+                null
+            ),
+            ChecklistComponentInstance(
+                4L,
+                ProgrammeChecklistComponentType.TEXT_INPUT,
+                3,
+                TextInputMetadata("Question to be answered", "Label", 2000),
                 null
             )
         )
@@ -127,6 +139,13 @@ class ChecklistInstancePersistenceTest : UnitTest() {
                 2,
                 null,
                 File(this::class.java.classLoader.getResource("options_toggle.json").file).readText()
+            ),
+            ProgrammeChecklistComponentEntity(
+                4L,
+                ProgrammeChecklistComponentType.TEXT_INPUT,
+                3,
+                null,
+                File(this::class.java.classLoader.getResource("text_input.json").file).readText()
             )
         )
     )
@@ -170,6 +189,17 @@ class ChecklistInstancePersistenceTest : UnitTest() {
                     File(this::class.java.classLoader.getResource("options_toggle.json").file).readText()
                 ),
                 "{\"answer\":\"yes\"}"
+            ),
+            ChecklistComponentInstanceEntity(
+                ChecklistComponentInstanceId(4L),
+                ProgrammeChecklistComponentEntity(
+                    4L,
+                    ProgrammeChecklistComponentType.TEXT_INPUT,
+                    3,
+                    null,
+                    File(this::class.java.classLoader.getResource("text_input.json").file).readText()
+                ),
+                "{\"explanation\":\"Explanation\"}"
             )
         )
     )

@@ -51,10 +51,7 @@ export class ProgrammeChecklistDetailPageStore {
         tap(checklist => Log.info('Fetched checklist', this, checklist))
       );
 
-    return merge(initialChecklist$, this.savedChecklist$)
-      .pipe(
-        share()
-      );
+    return merge(initialChecklist$, this.savedChecklist$);
   }
 
 

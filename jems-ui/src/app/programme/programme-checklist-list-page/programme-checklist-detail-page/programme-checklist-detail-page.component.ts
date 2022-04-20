@@ -116,12 +116,12 @@ export class ProgrammeChecklistDetailPageComponent  {
   }
 
   private getPreviewComponents(components: ProgrammeChecklistComponentDTO[]): ChecklistComponentInstanceDTO[] {
-    return components.map(component => ({
+    return components ? components.map(component => ({
       id: null as any,
       type: component.type ,
       position: component.position,
       programmeMetadata: component.metadata,
       instanceMetadata: null as any
-    }));
+    })) : [];
   }
 }

@@ -12,6 +12,7 @@ import io.cloudflight.jems.api.programme.dto.checklist.ProgrammeChecklistCompone
 )
 @JsonSubTypes(
     JsonSubTypes.Type(value = OptionsToggleInstanceMetadataDTO::class, name = "OPTIONS_TOGGLE"),
-    JsonSubTypes.Type(value = HeadlineInstanceMetadataDTO::class, name = "HEADLINE")
+    JsonSubTypes.Type(value = HeadlineInstanceMetadataDTO::class, name = "HEADLINE"),
+    JsonSubTypes.Type(value = TextInputInstanceMetadataDTO::class, name = "TEXT_INPUT")
 )
 open class ChecklistInstanceMetadataDTO(@JsonIgnore val type: ProgrammeChecklistComponentTypeDTO)

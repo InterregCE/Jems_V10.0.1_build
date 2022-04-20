@@ -7,6 +7,7 @@ import io.cloudflight.jems.api.project.dto.checklist.ChecklistInstanceDetailDTO
 import io.cloudflight.jems.api.project.dto.checklist.CreateChecklistInstanceDTO
 import io.cloudflight.jems.api.project.dto.checklist.metadata.HeadlineInstanceMetadataDTO
 import io.cloudflight.jems.api.project.dto.checklist.metadata.OptionsToggleInstanceMetadataDTO
+import io.cloudflight.jems.api.project.dto.checklist.metadata.TextInputInstanceMetadataDTO
 import io.cloudflight.jems.server.programme.controller.checklist.toDtoMetadata
 import io.cloudflight.jems.server.programme.controller.checklist.toModelMetadata
 import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistComponentInstance
@@ -16,6 +17,7 @@ import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChe
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.HeadlineInstanceMetadata
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.OptionsToggleInstanceMetadata
 import io.cloudflight.jems.server.project.service.checklist.model.CreateChecklistInstanceModel
+import io.cloudflight.jems.server.project.service.checklist.model.metadata.TextInputInstanceMetadata
 import org.mapstruct.AfterMapping
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping
@@ -55,6 +57,7 @@ abstract class ChecklistInstanceComponentMapper {
         dto.instanceMetadata = when (model.type) {
             ProgrammeChecklistComponentType.HEADLINE -> HeadlineInstanceMetadataDTO()
             ProgrammeChecklistComponentType.OPTIONS_TOGGLE -> (model.instanceMetadata as? OptionsToggleInstanceMetadata)?.toDto()
+            ProgrammeChecklistComponentType.TEXT_INPUT -> (model.instanceMetadata as? TextInputInstanceMetadata)?.toDto()
         }
     }
 
@@ -69,6 +72,7 @@ abstract class ChecklistInstanceComponentMapper {
         model.instanceMetadata = when (dto.type) {
             ProgrammeChecklistComponentTypeDTO.HEADLINE -> HeadlineInstanceMetadata()
             ProgrammeChecklistComponentTypeDTO.OPTIONS_TOGGLE -> (dto.instanceMetadata as OptionsToggleInstanceMetadataDTO).toModel()
+            ProgrammeChecklistComponentTypeDTO.TEXT_INPUT -> (dto.instanceMetadata as TextInputInstanceMetadataDTO).toModel()
         }
     }
 
@@ -77,5 +81,11 @@ abstract class ChecklistInstanceComponentMapper {
 
     private fun OptionsToggleInstanceMetadataDTO.toModel(): OptionsToggleInstanceMetadata =
         OptionsToggleInstanceMetadata(answer)
+
+    private fun TextInputInstanceMetadata.toDto(): TextInputInstanceMetadataDTO =
+        TextInputInstanceMetadataDTO(explanation)
+
+    private fun TextInputInstanceMetadataDTO.toModel(): TextInputInstanceMetadata =
+        TextInputInstanceMetadata(explanation)
 
 }

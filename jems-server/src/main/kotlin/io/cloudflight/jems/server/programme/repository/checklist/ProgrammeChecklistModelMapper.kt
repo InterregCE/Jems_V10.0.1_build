@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.programme.repository.checklist
 import io.cloudflight.jems.server.common.gson.toHeadline
 import io.cloudflight.jems.server.common.gson.toJson
 import io.cloudflight.jems.server.common.gson.toOptionsToggle
+import io.cloudflight.jems.server.common.gson.toTextInput
 import io.cloudflight.jems.server.programme.entity.checklist.ProgrammeChecklistComponentEntity
 import io.cloudflight.jems.server.programme.entity.checklist.ProgrammeChecklistEntity
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklist
@@ -65,6 +66,7 @@ fun ProgrammeChecklistComponentEntity.toModelMetadata(): ProgrammeChecklistMetad
     when (this.type) {
         ProgrammeChecklistComponentType.HEADLINE -> this.metadata.toHeadline()
         ProgrammeChecklistComponentType.OPTIONS_TOGGLE -> this.metadata.toOptionsToggle()
+        ProgrammeChecklistComponentType.TEXT_INPUT -> this.metadata.toTextInput()
     }
 
 fun ProgrammeChecklistComponent.toEntity(): ProgrammeChecklistComponentEntity =

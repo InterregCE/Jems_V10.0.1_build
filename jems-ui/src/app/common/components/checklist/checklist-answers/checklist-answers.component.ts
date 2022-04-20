@@ -11,10 +11,11 @@ import {
 import {
   ChecklistComponentInstanceDTO, ChecklistInstanceDetailDTO,
   ProgrammeChecklistComponentDTO,
+  ProgrammeChecklistDetailDTO, TextInputMetadataDTO
 } from '@cat/api';
 import {Alert} from '@common/components/forms/alert';
 import {FormService} from '@common/components/section/form/form.service';
-import {FormArray, FormBuilder} from '@angular/forms';
+import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {of} from 'rxjs';
 
 @Component({
@@ -76,10 +77,22 @@ export class ChecklistAnswersComponent implements OnInit, OnChanges {
         position: component.position,
         type: component.type,
         programmeMetadata: component.programmeMetadata,
-        instanceMetadata: component.instanceMetadata && this.formBuilder.group(component.instanceMetadata)
+        instanceMetadata: this.getInstanceForm(component)
       }))
     );
     this.formService.resetEditable();
+  }
+
+  private getInstanceForm(component: ChecklistComponentInstanceDTO): FormGroup | null{
+    if (!component.instanceMetadata) {
+      return null;
+    }
+
+    const group = this.formBuilder.group(component.instanceMetadata);
+    if(component.type === ChecklistComponentInstanceDTO.TypeEnum.TEXTINPUT) {
+      group.get('explanation')?.addValidators([Validators.maxLength((component.programmeMetadata as TextInputMetadataDTO).explanationMaxLength)]);
+    }
+    return group;
   }
 
   get formComponents(): FormArray {
@@ -94,7 +107,11 @@ export class ChecklistAnswersComponent implements OnInit, OnChanges {
           case ChecklistComponentInstanceDTO.TypeEnum.OPTIONSTOGGLE: component.instanceMetadata = {
             type:ChecklistComponentInstanceDTO.TypeEnum.OPTIONSTOGGLE,
             answer: null
-          };
+          }; break;
+          case ChecklistComponentInstanceDTO.TypeEnum.TEXTINPUT: component.instanceMetadata = {
+            type:ChecklistComponentInstanceDTO.TypeEnum.TEXTINPUT,
+            explanation: null
+          }; break;
         }
     });
   }
