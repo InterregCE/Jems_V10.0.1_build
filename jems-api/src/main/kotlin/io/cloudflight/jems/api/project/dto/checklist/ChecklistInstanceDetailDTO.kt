@@ -8,4 +8,8 @@ open class ChecklistInstanceDetailDTO(
     val finishedDate: LocalDate?,
     val name: String?,
     val components: List<ChecklistComponentInstanceDTO> = emptyList()
-)
+) {
+    init {
+        components.sortedWith(compareBy { it.position })
+    }
+}

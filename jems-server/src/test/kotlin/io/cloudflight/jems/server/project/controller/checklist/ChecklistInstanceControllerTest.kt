@@ -59,16 +59,20 @@ class ChecklistInstanceControllerTest : UnitTest() {
         status = ChecklistInstanceStatus.DRAFT,
         relatedToId = RELATED_TO_ID,
         finishedDate = null,
+        type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
+        name = "test",
         components = mutableListOf(
             ChecklistComponentInstance(
                 2L,
                 ProgrammeChecklistComponentType.HEADLINE,
+                0,
                 HeadlineMetadata("headline"),
                 HeadlineInstanceMetadata()
             ),
             ChecklistComponentInstance(
                 3L,
                 ProgrammeChecklistComponentType.OPTIONS_TOGGLE,
+                1,
                 OptionsToggleMetadata("What option do you choose", "yes", "no", "maybe"),
                 OptionsToggleInstanceMetadata("yes")
             )
@@ -79,17 +83,19 @@ class ChecklistInstanceControllerTest : UnitTest() {
         id = CHECKLIST_ID,
         status = ChecklistInstanceStatusDTO.DRAFT,
         finishedDate = null,
-        name = null,
+        name = "test",
         components = mutableListOf(
             ChecklistComponentInstanceDTO(
                 2L,
                 ProgrammeChecklistComponentTypeDTO.HEADLINE,
+                0,
                 HeadlineMetadataDTO("headline"),
                 HeadlineInstanceMetadataDTO()
             ),
             ChecklistComponentInstanceDTO(
                 3L,
                 ProgrammeChecklistComponentTypeDTO.OPTIONS_TOGGLE,
+                1,
                 OptionsToggleMetadataDTO("What option do you choose", "yes", "no", "maybe"),
                 OptionsToggleInstanceMetadataDTO("yes")
             )

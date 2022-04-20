@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.programme.service.checklist.getDetail.GetCheck
 import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistComponentInstance
 import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistInstanceDetail
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistComponentType
+import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.HeadlineInstanceMetadata
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.HeadlineMetadata
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.OptionsToggleInstanceMetadata
@@ -27,18 +28,22 @@ internal class GetChecklistInstanceDetailTest : UnitTest() {
         id = CHECKLIST_ID,
         programmeChecklistId = PROGRAMME_CHECKLIST_ID,
         status = ChecklistInstanceStatus.DRAFT,
+        type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
+        name = "name",
         relatedToId = RELATED_TO_ID,
         finishedDate = null,
         components = mutableListOf(
             ChecklistComponentInstance(
                 2L,
                 ProgrammeChecklistComponentType.HEADLINE,
+                1,
                 HeadlineMetadata("headline"),
                 HeadlineInstanceMetadata()
             ),
             ChecklistComponentInstance(
                 3L,
                 ProgrammeChecklistComponentType.OPTIONS_TOGGLE,
+                2,
                 OptionsToggleMetadata("What option do you choose", "yes", "no", "maybe"),
                 OptionsToggleInstanceMetadata("yes")
             )

@@ -12,6 +12,7 @@ import io.cloudflight.jems.server.project.service.checklist.model.CreateChecklis
 import io.cloudflight.jems.server.user.repository.user.UserRepository
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDate
 
 @Repository
 class ChecklistInstancePersistenceProvider(
@@ -47,7 +48,7 @@ class ChecklistInstancePersistenceProvider(
                 programmeChecklist = programmeChecklist,
                 components = programmeChecklist.components?.map { it.toInstanceEntity() }?.toMutableSet()
             ).also {
-                it.components?.map { component -> component.checklistComponentId.checklist = it }
+                it.components?.forEach { component -> component.checklistComponentId.checklist = it }
             }
         ).toDetailModel()
     }
@@ -56,6 +57,8 @@ class ChecklistInstancePersistenceProvider(
     override fun update(checklist: ChecklistInstanceDetail): ChecklistInstanceDetail {
         val checklistInstance = getChecklistOrThrow(checklist.id)
         checklistInstance.update(checklist)
+        if (checklist.status == ChecklistInstanceStatus.FINISHED)
+            checklistInstance.finishedDate = LocalDate.now()
         return checklistInstance.toDetailModel()
     }
 

@@ -6,6 +6,7 @@ import io.cloudflight.jems.server.programme.service.checklist.model.metadata.Pro
 data class ChecklistComponentInstance(
     val id: Long,
     val type: ProgrammeChecklistComponentType,
+    val position: Int,
     var programmeMetadata: ProgrammeChecklistMetadata?,
     var instanceMetadata: ChecklistInstanceMetadata?
 )

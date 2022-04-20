@@ -6,6 +6,8 @@ import java.time.LocalDate
 class ChecklistInstanceDetail(
     val id: Long,
     val programmeChecklistId: Long,
+    val type: ProgrammeChecklistType?,
+    val name: String?,
     val status: ChecklistInstanceStatus,
     val finishedDate: LocalDate?,
     var relatedToId: Long?,
