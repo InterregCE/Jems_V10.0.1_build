@@ -55,18 +55,22 @@ class ChecklistInstancePersistenceTest : UnitTest() {
         id = ID,
         programmeChecklistId = PROGRAMME_CHECKLIST_ID,
         status = ChecklistInstanceStatus.DRAFT,
+        type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
+        name = "name",
         relatedToId = RELATED_TO_ID,
         finishedDate = null,
         components = mutableListOf(
             ChecklistComponentInstance(
                 2L,
                 ProgrammeChecklistComponentType.HEADLINE,
+                1,
                 HeadlineMetadata("headline"),
                 HeadlineInstanceMetadata()
             ),
             ChecklistComponentInstance(
                 3L,
                 ProgrammeChecklistComponentType.OPTIONS_TOGGLE,
+                2,
                 OptionsToggleMetadata("What option do you choose", "yes", "no", "maybe"),
                 OptionsToggleInstanceMetadata("yes")
             )
@@ -77,18 +81,22 @@ class ChecklistInstancePersistenceTest : UnitTest() {
         id = 0,
         programmeChecklistId = PROGRAMME_CHECKLIST_ID,
         status = ChecklistInstanceStatus.DRAFT,
+        type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
+        name = "name",
         relatedToId = RELATED_TO_ID,
         finishedDate = null,
         components = mutableListOf(
             ChecklistComponentInstance(
                 2L,
                 ProgrammeChecklistComponentType.HEADLINE,
+                1,
                 HeadlineMetadata("headline"),
                 null
             ),
             ChecklistComponentInstance(
                 3L,
                 ProgrammeChecklistComponentType.OPTIONS_TOGGLE,
+                2,
                 OptionsToggleMetadata("What option do you choose", "yes", "no", "maybe"),
                 null
             )
@@ -157,7 +165,7 @@ class ChecklistInstancePersistenceTest : UnitTest() {
                 ProgrammeChecklistComponentEntity(
                     3L,
                     ProgrammeChecklistComponentType.OPTIONS_TOGGLE,
-                    1,
+                    2,
                     null,
                     File(this::class.java.classLoader.getResource("options_toggle.json").file).readText()
                 ),

@@ -14,8 +14,6 @@ import io.cloudflight.jems.server.programme.service.checklist.model.metadata.Pro
 import io.cloudflight.jems.server.project.entity.checklist.ChecklistComponentInstanceEntity
 import io.cloudflight.jems.server.project.entity.checklist.ChecklistComponentInstanceId
 import io.cloudflight.jems.server.project.entity.checklist.ChecklistInstanceEntity
-import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceStatus
-import java.time.LocalDate
 
 fun ChecklistInstanceEntity.toDto(): ChecklistInstance =
     ChecklistInstance(
@@ -36,6 +34,8 @@ fun ChecklistInstanceEntity.toDetailModel(): ChecklistInstanceDetail {
         id = id,
         programmeChecklistId = programmeChecklist.id,
         status = status,
+        type = programmeChecklist.type,
+        name = programmeChecklist.name,
         finishedDate = finishedDate,
         relatedToId = relatedToId,
         components = components?.map { it.toModel() }
@@ -54,6 +54,7 @@ private fun ChecklistComponentInstanceEntity.toModel(): ChecklistComponentInstan
     ChecklistComponentInstance(
         id = checklistComponentId.programmeComponentId,
         type = programmeChecklistComponentEntity.type,
+        position = programmeChecklistComponentEntity.positionOnTable,
         programmeMetadata = toModelProgrammeMetadata(),
         instanceMetadata = toModelInstanceMetadata()
     )
@@ -68,8 +69,6 @@ private fun ChecklistComponentInstanceEntity.toModelInstanceMetadata(): Checklis
     }
 
 fun ChecklistInstanceEntity.update(checklist: ChecklistInstanceDetail) {
-    if (checklist.status == ChecklistInstanceStatus.FINISHED)
-        this.finishedDate = LocalDate.now()
     this.status = checklist.status
     components?.forEach {
         it.metadata = findComponent(checklist, it.checklistComponentId.programmeComponentId)?.instanceMetadata.toJson()

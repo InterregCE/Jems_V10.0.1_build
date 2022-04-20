@@ -80,4 +80,8 @@ enum class AuditAction {
     // report
     PARTNER_REPORT_ADDED,
     PARTNER_REPORT_SUBMITTED,
+
+    // Checklist
+    ASSESSMENT_CHECKLIST_STATUS_CHANGE,
+    ASSESSMENT_CHECKLIST_DELETED,
 }

@@ -7,6 +7,7 @@ import io.cloudflight.jems.api.project.dto.checklist.metadata.ChecklistInstanceM
 data class ChecklistComponentInstanceDTO(
     val id: Long,
     val type: ProgrammeChecklistComponentTypeDTO,
+    val position: Int,
     var programmeMetadata: ProgrammeChecklistMetadataDTO?,
     var instanceMetadata: ChecklistInstanceMetadataDTO?
 )
