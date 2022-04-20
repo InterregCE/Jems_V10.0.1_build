@@ -28,6 +28,13 @@
                               control: component.get('instanceMetadata')?.get('answer')
                               }">
                 </ng-container>
+                <ng-container *ngSwitchCase="ComponentType.TEXTINPUT"
+                              [ngTemplateOutlet]="textInput"
+                              [ngTemplateOutletContext]="{
+                              options: component.get('programmeMetadata').value,
+                              control: component.get('instanceMetadata')?.get('explanation')
+                              }">
+                </ng-container>
                 <ng-container *ngSwitchDefault></ng-container>
             </div>
         </ng-container>
@@ -63,7 +70,7 @@
 
 <ng-template #optionsToggle let-options="options" let-control="control">
     <div jemsMultiColumnRow stretch>
-        <span jemsText>{{options.question}}</span>
+        <p jemsText>{{options.question}}</p>
         <span class="box">
             <mat-button-toggle-group [formControl]="control || {}">
                 <mat-button-toggle [value]="options.firstOption">
@@ -78,6 +85,27 @@
                 </mat-button-toggle>
             </mat-button-toggle-group>
         </span>
+    </div>
+</ng-template>
+
+<ng-template #textInput let-options="options" let-control="control">
+    <div jemsNoWidthLimit stretch>
+        <p jemsText>{{options.question}}</p>
+        <mat-form-field jemsFormFieldWidth="full" >
+            <mat-label>{{options.explanationLabel}}</mat-label>
+            <pre>{{form.get('explanation')}}</pre>
+            <textarea #explanation matInput
+                      [formControl]="control || {}"
+                      [cdkTextareaAutosize]
+                      [cdkAutosizeMinRows]="1"
+                      [cdkAutosizeMaxRows]="5"></textarea>
+            <mat-hint [jemsHintFor]="explanation">
+                <jems-text-hint [currentLength]="explanation?.value?.length" [maxLength]="options.explanationMaxLength || 0"></jems-text-hint>
+            </mat-hint>
+            <mat-error>
+                <jems-form-field-errors [errors]="control?.errors"></jems-form-field-errors>
+            </mat-error>
+        </mat-form-field>
     </div>
 </ng-template>
 

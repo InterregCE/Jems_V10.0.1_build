@@ -41,7 +41,7 @@
                             <span>{{'programme.checklists.detail.options' | translate}}</span>
                             <span *ngIf="form.enabled">{{'common.delete.entry' | translate}}</span>
                         </div>
-                        <div *ngFor="let component of components.controls; let i=index" [formGroupName]="i">
+                        <div class="line-bottom-padding" *ngFor="let component of components.controls; let i=index" [formGroupName]="i" >
                             <div *ngIf="form.enabled" class="move-buttons">
                                 <mat-icon *ngIf="i > 0" class="move-button"
                                           (click)="move(-1, i)">expand_less</mat-icon>
@@ -70,6 +70,9 @@
                                 <jems-programme-checklist-options-toggle *ngSwitchCase="COMPONENT_TYPE.OPTIONSTOGGLE"
                                                                          formControlName="metadata" class="w-100">
                                 </jems-programme-checklist-options-toggle>
+                                <jems-programme-checklist-text-input *ngSwitchCase="COMPONENT_TYPE.TEXTINPUT"
+                                                                         formControlName="metadata" class="w-100">
+                                </jems-programme-checklist-text-input>
                                 <div *ngSwitchDefault></div>
                             </div>
                             <div *ngIf="form.enabled" class="top-cell justify-end">

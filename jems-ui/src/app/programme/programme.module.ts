@@ -47,6 +47,9 @@ import {ProgrammeChecklistOptionsToggleComponent}
 import {ProgrammeBasicDataComponent} from './programme-basic-data/programme-basic-data.component';
 import {ProgrammeDataExportComponent} from './programme-data-export/programme-data-export.component';
 import {ProgrammeConversionRatesComponent} from './programme-conversion-rates/programme-conversion-rates.component';
+import {
+  ProgrammeChecklistTextInputComponent
+} from './programme-checklist-list-page/programme-checklist-detail-page/components/programme-checklist-text-input/programme-checklist-text-input.component';
 
 @NgModule({
   declarations: [
@@ -88,6 +91,7 @@ import {ProgrammeConversionRatesComponent} from './programme-conversion-rates/pr
     ProgrammeChecklistDetailPageComponent,
     ProgrammeChecklistHeadlineComponent,
     ProgrammeChecklistOptionsToggleComponent,
+    ProgrammeChecklistTextInputComponent,
     ProgrammeDataExportComponent,
     ProgrammeConversionRatesComponent
   ],

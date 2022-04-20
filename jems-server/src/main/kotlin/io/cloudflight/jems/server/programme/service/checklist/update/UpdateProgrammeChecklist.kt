@@ -21,11 +21,12 @@ class UpdateProgrammeChecklist(
     @ExceptionWrapper(UpdateProgrammeChecklistException::class)
     override fun update(programmeChecklist: ProgrammeChecklistDetail): ProgrammeChecklistDetail {
         checklistTemplateValidator.validateInput(programmeChecklist)
+        programmeChecklist.components?.forEach { checklistTemplateValidator.validateCheckListComponents(it) }
+
         val checklistInstancesCount = checklistInstancePersistence.countAllByChecklistTemplateId(programmeChecklist.id ?: 0)
         if (checklistInstancesCount > 0) {
             throw ChecklistLockedException()
         }
         return persistence.createOrUpdate(programmeChecklist)
     }
-
 }
