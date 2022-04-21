@@ -35,7 +35,7 @@ export const routes: Routes = [
         canActivate: [PermissionGuard],
         data: {
           skipBreadcrumb: true,
-          permissionsOnly: [PermissionsEnum.ProgrammeSetupRetrieve, PermissionsEnum.ProgrammeSetupUpdate],
+          permissionsOnly: [PermissionsEnum.ProgrammeSetupRetrieve, PermissionsEnum.ProgrammeSetupUpdate, PermissionsEnum.ProgrammeDataExportRetrieve],
         },
         children:[
           {
@@ -207,6 +207,7 @@ export const routes: Routes = [
       {
         path: 'export',
         component: ProgrammeDataExportComponent,
+        canActivate: [PermissionGuard],
         data: {
           breadcrumb: 'programme.breadcrumb.data.export',
           permissionsOnly: [PermissionsEnum.ProgrammeDataExportRetrieve],
@@ -214,8 +215,10 @@ export const routes: Routes = [
       },
       {
         path: 'checklists',
+        canActivate: [PermissionGuard],
         data: {
           breadcrumb: 'programme.checklists.title',
+          permissionsOnly: [PermissionsEnum.ProgrammeSetupRetrieve, PermissionsEnum.ProgrammeSetupUpdate],
         },
         children: [
           {
