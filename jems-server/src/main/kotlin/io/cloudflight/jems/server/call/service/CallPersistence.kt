@@ -44,5 +44,5 @@ interface CallPersistence {
 
     fun updateProjectCallStateAids(callId: Long, stateAids: Set<Long>): CallDetail
 
-    fun updateProjectCallPreSubmissionCheckPlugin(callId: Long, pluginKey: PreSubmissionPlugins) : CallDetail
+    fun updateProjectCallPreSubmissionCheckPlugin(callId: Long, pluginKeys: PreSubmissionPlugins) : CallDetail
 }
