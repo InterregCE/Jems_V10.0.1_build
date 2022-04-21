@@ -39,7 +39,8 @@
                                     jemsNoWidthLimit
                                     id="lump-sums-table"
                                     [jemsTableConfig]="data.withConfigs"
-                                    [dataSource]="tableData" [formArrayName]="constants.FORM_CONTROL_NAMES.items">
+                                    [dataSource]="tableData" [formArrayName]="constants.FORM_CONTROL_NAMES.items"
+                                    class="jems-table-config table-condensed">
                                 <ng-container matColumnDef="lumpSum" sticky>
                                     <mat-header-cell *matHeaderCellDef>
                                         <span jemsText maxLines="2">{{'project.application.form.section.part.e.lump.sums.column.title' | translate}}</span>

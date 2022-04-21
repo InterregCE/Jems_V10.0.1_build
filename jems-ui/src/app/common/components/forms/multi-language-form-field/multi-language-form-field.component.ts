@@ -61,6 +61,8 @@ export class MultiLanguageFormFieldComponent implements OnInit, ControlValueAcce
   isFallBackLanguageReadonly = false;
   @Input()
   disabled = false;
+  @Input()
+  condensed = false;
 
   multiLanguageFormGroup: FormGroup;
   currentLanguage$: Observable<string>;
