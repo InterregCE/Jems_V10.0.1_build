@@ -88,11 +88,12 @@ export class ProgrammePageSidenavService {
               route: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/stateAid`,
             },
           ]
-        }] : [],
-      {
-        headline: {i18nKey: 'programme.checklists.title'},
-        route: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/checklists`,
-      },
+        },
+        {
+          headline: {i18nKey: 'programme.checklists.title'},
+          route: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/checklists`,
+        },
+        ] : [],
       ...permissions.includes(PermissionsEnum.ProgrammeDataExportRetrieve) ? [{
         headline: {i18nKey: 'programme.data.export.title'},
         route: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/export`,
