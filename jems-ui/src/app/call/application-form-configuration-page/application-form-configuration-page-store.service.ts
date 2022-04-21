@@ -244,13 +244,14 @@ export class ApplicationFormConfigurationPageStore {
 
   private getProjectRelevanceAndContextSubSection(callPublished: boolean, configs: ApplicationFormFieldConfigurationDTO[]): ApplicationFormFieldNode{
     return ApplicationFormConfigurationPageStore.addParentNode('application.config.project.section.c.2', 2,[
-      this.addLeafNode('application.config.project.territorial.challenges',2, callPublished, configs, true, true),
-      this.addLeafNode('application.config.project.how.are.challenges.and.opportunities.tackled',2, callPublished, configs, true, true),
-      this.addLeafNode('application.config.project.why.is.cooperation.needed',2, callPublished, configs, true, true),
-      this.addLeafNode('application.config.project.target.group',2, callPublished, configs, true, true),
-      this.addLeafNode('application.config.project.spf.recipient.group',2, callPublished, configs, true, true, false, true),
-      this.addLeafNode('application.config.project.strategy.contribution',2, callPublished, configs, true, true ),
-      this.addLeafNode('application.config.project.how.builds.project.on.available.knowledge',2, callPublished, configs, true, true),
+      this.addLeafNode('application.config.project.territorial.challenges', 2, callPublished, configs, true, true),
+      this.addLeafNode('application.config.project.how.are.challenges.and.opportunities.tackled', 2, callPublished, configs, true, true),
+      this.addLeafNode('application.config.project.why.is.cooperation.needed', 2, callPublished, configs, true, true),
+      this.addLeafNode('application.config.project.target.group', 2, callPublished, configs, true, true),
+      this.addLeafNode('application.config.project.spf.recipient.group', 2, callPublished, configs, true, true, false, true),
+      this.addLeafNode('application.config.project.strategy.contribution', 2, callPublished, configs, true, true ),
+      this.addLeafNode('application.config.project.synergies', 2, callPublished, configs, true, true ),
+      this.addLeafNode('application.config.project.how.builds.project.on.available.knowledge', 2, callPublished, configs, true, true),
     ]);
   }
 
