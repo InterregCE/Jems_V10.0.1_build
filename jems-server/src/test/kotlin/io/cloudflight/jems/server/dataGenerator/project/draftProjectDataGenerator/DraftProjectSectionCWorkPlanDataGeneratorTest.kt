@@ -46,7 +46,7 @@ class DraftProjectSectionCWorkPlanDataGeneratorTest(@LocalServerPort private val
 
     @Test
     @Order(3)
-    @ExpectSelect(9)
+    @ExpectSelect(10)
     @ExpectInsert(5)
     @ExpectUpdate(1)
     @ExpectDelete(1)
@@ -65,7 +65,7 @@ class DraftProjectSectionCWorkPlanDataGeneratorTest(@LocalServerPort private val
 
     @Test
     @Order(4)
-    @ExpectSelect(13)
+    @ExpectSelect(14)
     @ExpectInsert(20)
     @ExpectUpdate(2)
     @ExpectDelete(1)
@@ -118,7 +118,7 @@ class DraftProjectSectionCWorkPlanDataGeneratorTest(@LocalServerPort private val
 
     @Test
     @Order(4)
-    @ExpectSelect(10)
+    @ExpectSelect(11)
     @ExpectInsert(5)
     @ExpectUpdate(1)
     @ExpectDelete(1)

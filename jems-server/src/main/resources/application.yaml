@@ -3,6 +3,7 @@ api:
 
 spring:
   jpa:
+    open-in-view: false
     properties:
       hibernate:
         types:
@@ -19,10 +20,8 @@ spring:
     driver-class-name: org.mariadb.jdbc.Driver
     jpa:
       database: mariadb
-      open-in-view: false
       hibernate:
         ddl-auto: update
-      show-sql: false
   servlet:
     multipart:
       enabled: true
