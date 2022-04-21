@@ -28,14 +28,14 @@ class ProgrammeChecklistPersistenceTest : UnitTest() {
 
     private val checkList = ProgrammeChecklist(
         id = ID,
-        type = ProgrammeChecklistType.ELIGIBILITY,
+        type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
         name = "name",
         lastModificationDate = ZonedDateTime.of(2020, 1, 10, 10, 10, 10, 10, ZoneId.systemDefault())
     )
 
     private val checkLisDetail = ProgrammeChecklistDetail(
         id = ID,
-        type = ProgrammeChecklistType.ELIGIBILITY,
+        type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
         name = "name",
         lastModificationDate = ZonedDateTime.of(2020, 1, 10, 10, 10, 10, 10, ZoneId.systemDefault()),
         components = mutableListOf(
@@ -56,7 +56,7 @@ class ProgrammeChecklistPersistenceTest : UnitTest() {
 
     private val checkListEntity = ProgrammeChecklistEntity(
         id = ID,
-        type = ProgrammeChecklistType.ELIGIBILITY,
+        type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
         name = "name",
         lastModificationDate = ZonedDateTime.of(2020, 1, 10, 10, 10, 10, 10, ZoneId.systemDefault()),
         components = mutableSetOf(
