@@ -78,6 +78,9 @@ import {
   PartnerReportProcurementsTabComponent
 } from '@project/project-application/report/partner-report-detail-page/partner-report-procurements-tab/partner-report-procurements-tab.component';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
+import {
+  AssessmentAndDecisionChecklistPageComponent
+} from '@project/project-application/assessment-and-decision/assessment-and-decision-checklist-page/assessment-and-decision-checklist-page.component';
 
 export const routes: Routes = [
   {
@@ -178,38 +181,34 @@ export const routes: Routes = [
               {
                 path: '',
                 component: AssessmentAndDecisionComponent,
+                canActivate: [PermissionGuard],
               },
               {
-                path: 'assessment',
-                data: {
-                  skipBreadcrumb: true,
-                  permissionsOnly: [PermissionsEnum.ProjectAssessmentView],
-                },
-                canActivate: [PermissionGuard],
-                children: [
-                  {
-                    path: 'eligibilityDecision/:step',
-                    component: ProjectApplicationEligibilityDecisionPageComponent,
-                    data: {breadcrumb: 'project.breadcrumb.eligibilityDecision'},
-                  },
-                  {
-                    path: 'qualityCheck/:step',
-                    component: ProjectApplicationQualityCheckComponent,
-                    data: {breadcrumb: 'project.breadcrumb.qualityCheck'},
-                  },
-                  {
-                    path: 'eligibilityCheck/:step',
-                    component: ProjectApplicationEligibilityCheckComponent,
-                    data: {breadcrumb: 'project.breadcrumb.eligibilityCheck'},
-                  },
-                  {
-                    path: 'fundingDecision/:step',
-                    component: ProjectApplicationFundingPageComponent,
-                    data: {breadcrumb: 'project.breadcrumb.fundingDecision'},
-                  },
-                ],
+                path: 'checklist/:checklistId',
+                component: AssessmentAndDecisionChecklistPageComponent,
+                data: {breadcrumb: 'checklists.instance.title'},
               },
-            ]
+              {
+                path: 'eligibilityDecision/:step',
+                component: ProjectApplicationEligibilityDecisionPageComponent,
+                data: {breadcrumb: 'project.breadcrumb.eligibilityDecision'},
+              },
+              {
+                path: 'qualityCheck/:step',
+                component: ProjectApplicationQualityCheckComponent,
+                data: {breadcrumb: 'project.breadcrumb.qualityCheck'},
+              },
+              {
+                path: 'eligibilityCheck/:step',
+                component: ProjectApplicationEligibilityCheckComponent,
+                data: {breadcrumb: 'project.breadcrumb.eligibilityCheck'},
+              },
+              {
+                path: 'fundingDecision/:step',
+                component: ProjectApplicationFundingPageComponent,
+                data: {breadcrumb: 'project.breadcrumb.fundingDecision'},
+              },
+            ],
           },
           {
             path: 'modification',

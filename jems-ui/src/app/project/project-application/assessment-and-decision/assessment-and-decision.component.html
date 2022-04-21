@@ -89,4 +89,10 @@
             <jems-api-error-content [error]="error"></jems-api-error-content>
         </jems-alert>
     </div>
+
+    <h3 class="mt-3">{{'project.application.form.section.assessment.and.decision.checklists' | translate}}</h3>
+    <jems-checklist-instance-list [relatedType]="ChecklistType.ASSESSMENT"
+                                  [relatedId]="data.projectId"
+                                  jemsNoWidthLimit>
+    </jems-checklist-instance-list>
 </jems-project-page-template>

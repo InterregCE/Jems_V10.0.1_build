@@ -2,8 +2,8 @@ import {Injectable} from '@angular/core';
 import {ProgrammeChecklistDetailDTO, ProgrammeChecklistDTO, ProgrammeChecklistService} from '@cat/api';
 import {RoutingService} from '@common/services/routing.service';
 import {Log} from '@common/utils/log';
-import {merge, Observable, of, Subject} from 'rxjs';
-import {shareReplay, switchMap, take, tap} from 'rxjs/operators';
+import {combineLatest, merge, Observable, of, Subject} from 'rxjs';
+import {map, share, switchMap, take, tap} from 'rxjs/operators';
 import {ProgrammeEditableStateStore} from '../../programme-page/services/programme-editable-state-store.service';
 
 @Injectable()
@@ -11,7 +11,7 @@ export class ProgrammeChecklistDetailPageStore {
   static readonly CHECKLIST_DETAIL_PATH = '/app/programme/checklists/';
 
   checklist$: Observable<ProgrammeChecklistDetailDTO>;
-  canEditProgramme$: Observable<boolean>;
+  isEditable$: Observable<boolean>;
 
   private savedChecklist$ = new Subject<ProgrammeChecklistDetailDTO>();
 
@@ -19,26 +19,10 @@ export class ProgrammeChecklistDetailPageStore {
               private routingService: RoutingService,
               private programmeEditableStateStore: ProgrammeEditableStateStore) {
     this.checklist$ = this.checklist();
-    this.canEditProgramme$ = this.programmeEditableStateStore.hasEditPermission$;
+    this.isEditable$ = this.isEditable();
   }
 
-  private checklist(): Observable<ProgrammeChecklistDetailDTO> {
-    const initialChecklist$ =  this.checkListId()
-      .pipe(
-        switchMap(checklistId => checklistId
-          ? this.programmeChecklistService.getProgrammeChecklistDetail(checklistId as number)
-          : of({} as ProgrammeChecklistDetailDTO)
-        ),
-        tap(checklist => Log.info('Fetched checklist', this, checklist))
-      );
-
-    return merge(initialChecklist$, this.savedChecklist$)
-      .pipe(
-        shareReplay(1)
-      );
-  }
-
-  public saveChecklist(checklist: ProgrammeChecklistDetailDTO): Observable<ProgrammeChecklistDTO> {
+  saveChecklist(checklist: ProgrammeChecklistDetailDTO): Observable<ProgrammeChecklistDTO> {
     return this.checkListId()
       .pipe(
         take(1),
@@ -57,7 +41,31 @@ export class ProgrammeChecklistDetailPageStore {
       );
   }
 
+  private checklist(): Observable<ProgrammeChecklistDetailDTO> {
+    const initialChecklist$ =  this.checkListId()
+      .pipe(
+        switchMap(checklistId => checklistId
+          ? this.programmeChecklistService.getProgrammeChecklistDetail(checklistId as number)
+          : of({} as ProgrammeChecklistDetailDTO)
+        ),
+        tap(checklist => Log.info('Fetched checklist', this, checklist))
+      );
+
+    return merge(initialChecklist$, this.savedChecklist$)
+      .pipe(
+        share()
+      );
+  }
+
+
   private checkListId(): Observable<any> {
     return this.routingService.routeParameterChanges(ProgrammeChecklistDetailPageStore.CHECKLIST_DETAIL_PATH, 'checklistId');
+  }
+
+  private isEditable(): Observable<boolean> {
+    return combineLatest([this.programmeEditableStateStore.hasEditPermission$, this.checklist$])
+      .pipe(
+        map(([hasEditPermission, checklist]) => hasEditPermission && !checklist.locked),
+      );
   }
 }

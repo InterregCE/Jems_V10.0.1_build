@@ -47,13 +47,13 @@ export class ProgrammeChecklistListPageComponent implements OnInit {
       routerLink: this.DETAIL_PATH,
       columns: [
         {
-          displayedColumn: 'programme.checklists.type',
+          displayedColumn: 'common.type',
           elementTranslationKey: 'programme.checklists.type',
           elementProperty: 'type',
           columnWidth: ColumnWidth.DateColumn
         },
         {
-          displayedColumn: 'programme.checklists.name',
+          displayedColumn: 'common.name',
           elementProperty: 'name',
           columnWidth: ColumnWidth.extraWideColumn
         },

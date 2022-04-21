@@ -13,7 +13,7 @@
             <ng-container *ngIf="isAssessmentEditable(decisions?.eligibilityAssessment)">
                 <a *jemsHasPermission="Permissions.ProjectAssessmentEligibilityEnter"
                    mat-stroked-button
-                   [routerLink]="['./assessment/eligibilityCheck', step]" queryParamsHandling="merge">
+                   [routerLink]="['./eligibilityCheck', step]" queryParamsHandling="merge">
                     {{'project.assessment.eligibilityCheck.assessment' | translate}}
                 </a>
             </ng-container>
@@ -21,7 +21,7 @@
                 <a *jemsHasPermission="Permissions.ProjectAssessmentView"
                    [disabled]="!decisions?.eligibilityAssessment"
                    mat-stroked-button
-                   [routerLink]="decisions?.eligibilityAssessment ? ['./assessment/eligibilityCheck', step] : []" queryParamsHandling="merge">
+                   [routerLink]="decisions?.eligibilityAssessment ? ['./eligibilityCheck', step] : []" queryParamsHandling="merge">
                     {{'project.assessment.eligibilityCheck.assessment.view' | translate}}
                 </a>
             </ng-container>
@@ -37,7 +37,7 @@
                 <a *jemsHasPermission="Permissions.ProjectAssessmentQualityEnter"
                    mat-stroked-button
                    [disabled]="currentVersionOfProjectStatus.status === stepStatus.ineligible"
-                   [routerLink]="currentVersionOfProjectStatus.status !== stepStatus.ineligible ? ['./assessment/qualityCheck', step] : []" queryParamsHandling="merge">
+                   [routerLink]="currentVersionOfProjectStatus.status !== stepStatus.ineligible ? ['./qualityCheck', step] : []" queryParamsHandling="merge">
                     {{'project.assessment.qualityCheck.assessment' | translate}}
                 </a>
             </ng-container>
@@ -45,7 +45,7 @@
                 <a *jemsHasPermission="Permissions.ProjectAssessmentView"
                    [disabled]="!decisions?.qualityAssessment"
                    mat-stroked-button
-                   [routerLink]="decisions?.qualityAssessment ? ['./assessment/qualityCheck', step] : []" queryParamsHandling="merge">
+                   [routerLink]="decisions?.qualityAssessment ? ['./qualityCheck', step] : []" queryParamsHandling="merge">
                     {{'project.assessment.qualityCheck.assessment.view' | translate}}
                 </a>
             </ng-container>

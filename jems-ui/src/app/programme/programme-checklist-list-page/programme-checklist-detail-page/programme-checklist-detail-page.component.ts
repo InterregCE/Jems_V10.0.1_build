@@ -1,8 +1,8 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {ProgrammeChecklistComponentDTO, ProgrammeChecklistDetailDTO} from '@cat/api';
+import {ChecklistComponentInstanceDTO, ProgrammeChecklistComponentDTO, ProgrammeChecklistDetailDTO} from '@cat/api';
 import {FormArray, FormBuilder, Validators} from '@angular/forms';
 import {Observable} from 'rxjs';
-import {catchError, tap} from 'rxjs/operators';
+import {catchError, map, tap} from 'rxjs/operators';
 import {FormService} from '@common/components/section/form/form.service';
 import {RoutingService} from '@common/services/routing.service';
 import {ActivatedRoute} from '@angular/router';
@@ -21,7 +21,10 @@ export class ProgrammeChecklistDetailPageComponent  {
   CHECKLIST_TYPE = ProgrammeChecklistDetailDTO.TypeEnum;
   COMPONENT_TYPE = ProgrammeChecklistComponentDTO.TypeEnum;
 
-  checklist$: Observable<ProgrammeChecklistDetailDTO>;
+  data$: Observable<{
+    checklist: ProgrammeChecklistDetailDTO;
+    previewComponents: ChecklistComponentInstanceDTO[];
+  }>;
 
   form = this.formBuilder.group({
     id: [null],
@@ -36,12 +39,16 @@ export class ProgrammeChecklistDetailPageComponent  {
               public formService: FormService,
               private routingService: RoutingService,
               private activatedRoute: ActivatedRoute) {
-    this.checklist$ = this.pageStore.checklist$
+    this.data$ = this.pageStore.checklist$
       .pipe(
         tap(checklist => this.resetForm(checklist)),
-        tap(checklist => this.formService.setCreation(!checklist?.id))
+        tap(checklist => this.formService.setCreation(!checklist?.id)),
+        map(checklist => ({
+          checklist,
+          previewComponents: this.getPreviewComponents(checklist.components)
+        }))
       );
-    this.formService.init(this.form, this.pageStore.canEditProgramme$);
+    this.formService.init(this.form, this.pageStore.isEditable$);
   }
 
   save(): void {
@@ -106,5 +113,15 @@ export class ProgrammeChecklistDetailPageComponent  {
     this.components.clear();
     checklist?.components?.forEach(component => this.addComponent(component));
     this.formService.resetEditable();
+  }
+
+  private getPreviewComponents(components: ProgrammeChecklistComponentDTO[]): ChecklistComponentInstanceDTO[] {
+    return components.map(component => ({
+      id: null as any,
+      type: component.type ,
+      position: component.position,
+      programmeMetadata: component.metadata,
+      instanceMetadata: null as any
+    }));
   }
 }
