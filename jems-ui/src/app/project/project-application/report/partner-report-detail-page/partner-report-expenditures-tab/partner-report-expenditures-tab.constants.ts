@@ -20,6 +20,7 @@ export class PartnerReportExpendituresTabConstants {
     vat: 'vat',
     declaredAmount: 'declaredAmount',
     items: 'items',
+    attachment: 'attachment',
     currencyCode: 'currencyCode',
     currencyConversionRate: 'currencyConversionRate',
     declaredAmountInEur: 'declaredAmountInEur'
