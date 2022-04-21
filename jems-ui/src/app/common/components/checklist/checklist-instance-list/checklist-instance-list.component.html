@@ -1,0 +1,37 @@
+<mat-tab-group>
+    <mat-tab *jemsHasPermission="PermissionsEnum.ProjectAssessmentChecklistUpdate"
+             label="{{'checklists.instance.list.tab' | translate}}">
+
+        <span jemsMultiColumnRow>
+            <mat-form-field jemsFormFieldWidth="xx-large">
+                <mat-select placeholder="{{'checklists.instance.list.new.select' | translate}}"
+                            [(ngModel)]="selectedTemplate">
+                    <mat-option *ngFor="let template of checklistTemplates$ | async"
+                                [value]="template">
+                        <span jemsText>{{template.name}}</span>
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <button *ngIf="selectedTemplate"
+                    jemsText mat-raised-button color="primary" class="mb-3 mt-3"
+                    (click)="createInstance()">
+                + {{'checklists.instance.list.new.button' | translate}}
+            </button>
+        </span>
+
+        <ng-container *ngIf="checklistInstances$ | async as checklists">
+            <jems-table *ngIf="checklists.length"
+                        [configuration]="tableConfiguration"
+                        [rows]="checklists">
+            </jems-table>
+        </ng-container>
+    </mat-tab>
+</mat-tab-group>
+
+<ng-template #deleteCell let-checklist>
+    <button mat-icon-button color="accent"
+            (click)="delete(checklist.id);$event.stopPropagation();"
+            matTooltip="{{'common.delete.entry.tooltip' | translate}}">
+        <mat-icon>delete</mat-icon>
+    </button>
+</ng-template>

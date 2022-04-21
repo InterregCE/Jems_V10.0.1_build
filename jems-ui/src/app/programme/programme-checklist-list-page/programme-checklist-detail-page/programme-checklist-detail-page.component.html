@@ -1,9 +1,9 @@
 <jems-main-page-template subTitleKey="programme.checklists.title"
                          titleKey="{{'programme.checklists.detail.title'}}">
-    <mat-tab-group *ngIf="checklist$ | async as checklist">
+    <mat-tab-group *ngIf="data$ | async as data">
         <mat-tab label="{{'programme.checklists.tab.create' | translate}}">
             <jems-form (save)="save()"
-                       (discard)="discard(checklist)">
+                       (discard)="discard(data.checklist)">
                 <form jemsFormLayout [formGroup]="form">
                     <h3>{{'programme.checklists.detail.identity' | translate}}</h3>
                     <div jemsMultiColumnRow stretch>
@@ -90,8 +90,8 @@
             </jems-form>
         </mat-tab>
         <mat-tab label="{{'programme.checklists.tab.preview' | translate}}">
-            <jems-checklist-answers [checklist]="checklist"
-                                    [dirty]="formService.dirty$ | async">
+            <jems-checklist-answers [components]="data.previewComponents"
+                                    [warning]="form.dirty && 'programme.checklists.tab.preview.warn'">
             </jems-checklist-answers>
         </mat-tab>
     </mat-tab-group>

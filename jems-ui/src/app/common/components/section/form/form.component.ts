@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output, TemplateRef} from '@angular/core';
 import {FormService} from '@common/components/section/form/form.service';
 import {animate, style, transition, trigger} from '@angular/animations';
 import {combineLatest} from 'rxjs';
@@ -26,6 +26,8 @@ export class FormComponent {
 
   @Input()
   confirmSave: ConfirmDialogData;
+  @Input()
+  additionalAction: TemplateRef<any>;
 
   @Output()
   save = new EventEmitter<void>();

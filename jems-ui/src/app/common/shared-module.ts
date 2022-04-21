@@ -59,6 +59,9 @@ import {ChecklistAnswersComponent} from '@common/components/checklist/checklist-
 import {
   PublicPageTemplateComponent
 } from '@common/components/page-templates/public-page-template/public-page-template.component';
+import {
+  ChecklistInstanceListComponent
+} from '@common/components/checklist/checklist-instance-list/checklist-instance-list.component';
 
 const modules = [
   CommonModule,
@@ -122,6 +125,7 @@ const declarations = [
   FilterAutocompleteInputComponent,
   SecondsToTimePipePipe,
   ChecklistAnswersComponent,
+  ChecklistInstanceListComponent,
   PublicPageTemplateComponent
 ];
 

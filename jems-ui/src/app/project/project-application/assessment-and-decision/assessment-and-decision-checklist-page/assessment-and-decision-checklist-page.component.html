@@ -1,0 +1,12 @@
+<jems-project-page-template *ngIf="checklist$ | async as checklist"
+                            [needsCard]="false"
+                            titleText="checklists.instance.title"
+                            [subTitleKey]="checklist.name">
+    <jems-checklist-answers
+            [components]="checklist.components"
+            [status]="checklist.status"
+            [finishedDate]="checklist.finishedDate"
+            (save)="save($event, checklist)"
+            (finish)="finish($event, checklist)">
+    </jems-checklist-answers>
+</jems-project-page-template>

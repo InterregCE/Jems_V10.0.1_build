@@ -145,9 +145,7 @@ import {
 import {
   PartnerActionsCellComponent
 } from '@project/project-application/report/partner-report-detail-page/partner-report-actions/partner-actions-cell.component';
-import {
-  ProjectApplicationFormVisibilityService
-} from '@project/project-application/containers/project-application-form-page/services/project-application-form-visibility.service';
+import {AssessmentAndDecisionChecklistPageComponent} from './project-application/assessment-and-decision/assessment-and-decision-checklist-page/assessment-and-decision-checklist-page.component';
 
 @NgModule({
   declarations: [
@@ -265,7 +263,8 @@ import {
     PartnerReportProcurementsTabComponent,
     PartnerReportContributionTabComponent,
     PartnerReportExpendituresTabComponent,
-    PartnerActionsCellComponent
+    PartnerActionsCellComponent,
+    AssessmentAndDecisionChecklistPageComponent
   ],
   imports: [
     SharedModule,

@@ -17,7 +17,7 @@
 </jems-main-page-template>
 
 <ng-template #deleteCell let-checklist>
-    <button mat-icon-button color="accent"
+    <button *ngIf="!checklist.locked" mat-icon-button color="accent"
             (click)="delete(checklist.id);$event.stopPropagation();"
             matTooltip="{{'common.delete.entry.tooltip' | translate}}">
         <mat-icon>delete</mat-icon>

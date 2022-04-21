@@ -8,9 +8,7 @@ import {ProjectStore} from '@project/project-application/containers/project-appl
 import {PermissionService} from '../../../security/permissions/permission.service';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable()
 export class AssessmentAndDecisionStore {
   private static readonly LOG_INFO_CHANGE_STATUS_PROJECT = 'Changed status for project';
 

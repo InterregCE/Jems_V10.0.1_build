@@ -24,7 +24,7 @@
                 <a *jemsHasPermission="[Permissions.ProjectStatusDecideEligible, Permissions.ProjectStatusDecideIneligible]"
                    mat-stroked-button jemsFormFieldWidth="x-large"
                    [disabled]="!data.decision?.eligibilityAssessment"
-                   [routerLink]="data.decision?.eligibilityAssessment ? ['./assessment/eligibilityDecision', step] : []" queryParamsHandling="merge">
+                   [routerLink]="data.decision?.eligibilityAssessment ? ['./eligibilityDecision', step] : []" queryParamsHandling="merge">
                     {{'project.assessment.eligibilityDecision.assessment' | translate}}
                 </a>
             </ng-container>
@@ -32,7 +32,7 @@
                 <a *jemsHasPermission="Permissions.ProjectAssessmentView"
                    [disabled]="!data.decision?.eligibilityDecision"
                    mat-stroked-button jemsFormFieldWidth="x-large"
-                   [routerLink]="data.decision?.eligibilityDecision ? ['./assessment/eligibilityDecision', step] : []" queryParamsHandling="merge">
+                   [routerLink]="data.decision?.eligibilityDecision ? ['./eligibilityDecision', step] : []" queryParamsHandling="merge">
                     {{'project.assessment.eligibilityDecision.assessment.view' | translate}}
                 </a>
             </ng-container>
@@ -52,7 +52,7 @@
             <ng-container *ngIf="(data.callHasTwoSteps && data.isStep2Now && step === 1) || data.isDecisionFinal || (data.isReturnedNow && !!data.fundingDecisionResult) || (!data.isDecisionFinal && !data.userCanChangeFunding && !!data.preFundingDecision)">
                 <a *jemsHasPermission="Permissions.ProjectAssessmentView"
                    mat-stroked-button jemsFormFieldWidth="x-large"
-                   [routerLink]="['./assessment/fundingDecision', step]" queryParamsHandling="merge">
+                   [routerLink]="['./fundingDecision', step]" queryParamsHandling="merge">
                     {{'project.assessment.fundingDecision.assessment.view' | translate}}
                 </a>
             </ng-container>
@@ -61,7 +61,7 @@
                    mat-stroked-button jemsFormFieldWidth="x-large"
                    [disabled]="!data.isFundingDecisionPreconditionOk"
                    [color]="data.currentVersionOfProjectStatus.status === stepStatus.approvedWithConditions ? 'primary' : null"
-                   [routerLink]="data.isFundingDecisionPreconditionOk ? ['./assessment/fundingDecision', step] : []" queryParamsHandling="merge">
+                   [routerLink]="data.isFundingDecisionPreconditionOk ? ['./fundingDecision', step] : []" queryParamsHandling="merge">
                     {{ (data.currentVersionOfProjectStatus.status === STATUS.APPROVEDWITHCONDITIONS || data.currentVersionOfProjectStatus.status === STATUS.CONDITIONSSUBMITTED ? 'project.assessment.fundingDecision.assessment.update' : 'project.assessment.fundingDecision.assessment') | translate}}
                 </a>
             </ng-container>
