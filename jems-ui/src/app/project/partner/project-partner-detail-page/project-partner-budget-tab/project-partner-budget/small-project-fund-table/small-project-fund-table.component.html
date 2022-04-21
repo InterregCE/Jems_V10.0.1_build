@@ -19,7 +19,8 @@
 
                             <ng-container>
                                 <jems-multi-language-form-field
-                                        [formControlName]="constants.SPF_FORM_CONTROL_NAMES.description">
+                                        [formControlName]="constants.SPF_FORM_CONTROL_NAMES.description"
+                                        condensed="true">
                                 </jems-multi-language-form-field>
                             </ng-container>
                         </mat-cell>
@@ -37,7 +38,8 @@
                         <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                             <jems-multi-language-form-field
                                     [formControlName]="constants.SPF_FORM_CONTROL_NAMES.comments"
-                                    [maxLength]="constants.MAX_STAFF_COMMENTS_TEXT_LENGTH">
+                                    [maxLength]="constants.MAX_STAFF_COMMENTS_TEXT_LENGTH"
+                                    condensed="true">
                             </jems-multi-language-form-field>
                         </mat-cell>
                         <mat-footer-cell *matFooterCellDef>
@@ -56,7 +58,8 @@
                                 <jems-multi-language-form-field
                                         [formControlName]="constants.SPF_FORM_CONTROL_NAMES.unitType"
                                         [maxLength]="constants.MAX_UNIT_TYPE_TEXT_LENGTH"
-                                        jemsFormFieldWidth="full">
+                                        jemsFormFieldWidth="full"
+                                        condensed="true">
                                 </jems-multi-language-form-field>
                             </ng-container>
                         </mat-cell>
@@ -180,7 +183,8 @@
                 <jems-form-field-errors
                         [args]="constants.FORM_ERRORS_ARGS.total"
                         [errors]="total.errors"
-                        [messages]="constants.FORM_ERRORS.total">
+                        [messages]="constants.FORM_ERRORS.total"
+                        condensed="true">
                 </jems-form-field-errors>
             </mat-error>
         </ng-container>

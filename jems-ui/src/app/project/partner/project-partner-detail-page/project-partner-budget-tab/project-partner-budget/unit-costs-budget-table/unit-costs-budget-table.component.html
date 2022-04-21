@@ -9,7 +9,7 @@
             <jems-multi-language-container>
                 <mat-table [jemsTableConfig]="tableConfig"
                            [dataSource]="dataSource" [formArrayName]="constants.FORM_CONTROL_NAMES.items"
-                           class="unitcost-budget-table">
+                           class="unitcost-budget-table table-condensed">
                     <ng-container sticky matColumnDef="unitCost">
                         <mat-header-cell *matHeaderCellDef>
                             <span jemsText maxLines="2">{{'project.partner.budget.table.unitcosts.selection' | translate}}</span>
@@ -27,7 +27,8 @@
                                 <mat-error>
                                     <jems-form-field-errors
                                             [errors]="control.get(constants.FORM_CONTROL_NAMES.unitCost)?.errors"
-                                            [messages]="constants.FORM_ERRORS.unitCost">
+                                            [messages]="constants.FORM_ERRORS.unitCost"
+                                            condensed="true">
                                     </jems-form-field-errors>
                                 </mat-error>
                             </mat-form-field>
@@ -158,7 +159,8 @@
                 <jems-form-field-errors
                         [errors]="total.errors"
                         [args]="constants.FORM_ERRORS_ARGS.total"
-                        [messages]="constants.FORM_ERRORS.total">
+                        [messages]="constants.FORM_ERRORS.total"
+                        condensed="true">
                 </jems-form-field-errors>
             </mat-error>
         </ng-container>

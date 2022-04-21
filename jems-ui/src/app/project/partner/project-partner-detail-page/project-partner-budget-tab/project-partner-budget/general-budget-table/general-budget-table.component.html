@@ -9,7 +9,7 @@
             <jems-multi-language-container>
                 <mat-table [jemsTableConfig]="tableConfig"
                            [dataSource]="dataSource" [formArrayName]="constants.FORM_CONTROL_NAMES.items"
-                           class="budget-table">
+                           class="budget-table table-condensed">
                     <ng-container matColumnDef="unitCost" sticky>
                         <mat-header-cell *matHeaderCellDef>
                             <span jemsText maxLines="2">{{'project.partner.budget.table.unitcosts.selection' | translate}}</span>
@@ -32,7 +32,8 @@
                                 <mat-error>
                                     <jems-form-field-errors
                                             [errors]="getUnitCost(control)?.errors"
-                                            [messages]="constants.FORM_ERRORS.unitCost">
+                                            [messages]="constants.FORM_ERRORS.unitCost"
+                                            condensed="true">
                                     </jems-form-field-errors>
                                 </mat-error>
                             </mat-form-field>
@@ -54,7 +55,8 @@
                                      class="text-overflow-ellipsis"> {{getUnitCost(control).value.description | translateByInputLanguage | async}}</div>
                                 <jems-multi-language-form-field
                                         *ngIf="!getUnitCost(control).value"
-                                        [formControlName]="constants.FORM_CONTROL_NAMES.description">
+                                        [formControlName]="constants.FORM_CONTROL_NAMES.description"
+                                        condensed="true">
                                 </jems-multi-language-form-field>
                             </ng-container>
                         </mat-cell>
@@ -73,7 +75,8 @@
                             <jems-multi-language-form-field
                                     *ngIf="fieldEnabled(control)"
                                     [formControlName]="constants.FORM_CONTROL_NAMES.comments"
-                                    [maxLength]="constants.MAX_STAFF_COMMENTS_TEXT_LENGTH">
+                                    [maxLength]="constants.MAX_STAFF_COMMENTS_TEXT_LENGTH"
+                                    condensed="true">
                             </jems-multi-language-form-field>
                         </mat-cell>
                         <mat-footer-cell *matFooterCellDef>
@@ -91,7 +94,8 @@
                             <jems-multi-language-form-field
                                     *ngIf="fieldEnabled(control)"
                                     [formControlName]="constants.FORM_CONTROL_NAMES.awardProcedures"
-                                    [maxLength]="constants.MAX_AWARD_PROCEDURES_TEXT_LENGTH">
+                                    [maxLength]="constants.MAX_AWARD_PROCEDURES_TEXT_LENGTH"
+                                    condensed="true">
                             </jems-multi-language-form-field>
                         </mat-cell>
                         <mat-footer-cell *matFooterCellDef>
@@ -134,7 +138,8 @@
                                 <jems-multi-language-form-field
                                         *ngIf="!getUnitCost(control).value"
                                         [formControlName]="constants.FORM_CONTROL_NAMES.unitType"
-                                        [maxLength]="constants.MAX_UNIT_TYPE_TEXT_LENGTH">
+                                        [maxLength]="constants.MAX_UNIT_TYPE_TEXT_LENGTH"
+                                        condensed="true">
                                 </jems-multi-language-form-field>
                             </ng-container>
                         </mat-cell>
@@ -262,7 +267,8 @@
                 <jems-form-field-errors
                         [args]="constants.FORM_ERRORS_ARGS.total"
                         [errors]="total.errors"
-                        [messages]="constants.FORM_ERRORS.total">
+                        [messages]="constants.FORM_ERRORS.total"
+                        condensed="true">
                 </jems-form-field-errors>
             </mat-error>
         </ng-container>

@@ -229,23 +229,23 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
 
   private getTableConfig(investments: InvestmentSummary[]): TableConfig[] {
     const tableConfig = [
-      {minInRem: 1},
-      {minInRem: 11},
-      {minInRem: 6},
-      {minInRem: 9},
-      {minInRem: 8},
-      {minInRem: 8},
-      {minInRem: 8},
-      {minInRem: 12},
-      {minInRem: 12},
-      {minInRem: 8},
-      {minInRem: 7},
-      {minInRem: 7},
-      {minInRem: 5},
-      {minInRem: 7},
-      {minInRem: 12},
-      {minInRem: 13},
-      {minInRem: 4},
+      {minInRem: 1, maxInRem: 3},   // id
+      {minInRem: 11, maxInRem: 16}, // cost category
+      {minInRem: 8, maxInRem: 8},   // contract id
+      {minInRem: 5, maxInRem: 8},   // internal reference
+      {minInRem: 5, maxInRem: 8},   // invoice number
+      {minInRem: 8, maxInRem: 8},   // invoice date
+      {minInRem: 8, maxInRem: 8},   // payment date
+      {minInRem: 16},               // description
+      {minInRem: 16},               // comment
+      {minInRem: 8, maxInRem: 8},   // total invoice value
+      {minInRem: 8, maxInRem: 8},   // vat
+      {minInRem: 8, maxInRem: 8},   // declared amount
+      {minInRem: 5, maxInRem: 5},   // currency
+      {minInRem: 5, maxInRem: 5},   // conversion rate
+      {minInRem: 8, maxInRem: 8},   // declared amount in EUR
+      {minInRem: 13, maxInRem: 16},               // attachment
+      {minInRem: 3, maxInRem: 3},   // delete
     ];
 
     if (investments.length > 0) {
