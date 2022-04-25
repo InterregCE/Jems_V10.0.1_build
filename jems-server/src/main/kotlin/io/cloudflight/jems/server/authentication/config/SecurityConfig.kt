@@ -19,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository
 import org.springframework.security.web.header.writers.HstsHeaderWriter
 import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter
+import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter.ReferrerPolicy
 import org.springframework.security.web.header.writers.XContentTypeOptionsHeaderWriter
 import org.springframework.security.web.header.writers.XXssProtectionHeaderWriter
 import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter
@@ -51,8 +52,10 @@ class SecurityConfig(
 
     override fun configure(http: HttpSecurity) {
         if (!environment.acceptsProfiles(Profiles.of(ApplicationContextProfiles.TEST_CONTAINER))) {
-            http.csrf().csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                .and().cors()
+            http.csrf().disable()
+                // discuss enabling this to prevent CSRF attack
+                //.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).and()
+                .cors()
         } else {
             http.csrf().ignoringAntMatchers("/api/**")
         }
@@ -77,7 +80,7 @@ class SecurityConfig(
         http.headers()
             .addHeaderWriter(XContentTypeOptionsHeaderWriter())
             .addHeaderWriter(XFrameOptionsHeaderWriter())
-            .addHeaderWriter(ReferrerPolicyHeaderWriter())
+            .addHeaderWriter(ReferrerPolicyHeaderWriter(ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN))
             .addHeaderWriter(XXssProtectionHeaderWriter())
             .addHeaderWriter(HstsHeaderWriter())
     }
