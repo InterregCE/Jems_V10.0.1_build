@@ -11,17 +11,19 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class DeleteProgrammeChecklist(
     private val persistence: ProgrammeChecklistPersistence,
-    private val checklistInstancePersistence: ChecklistInstancePersistence,
+    private val checklistInstancePersistence: ChecklistInstancePersistence
 ) : DeleteProgrammeChecklistInteractor {
 
     @Transactional
     @CanUpdateProgrammeSetup
     @ExceptionWrapper(DeleteProgrammeChecklistException::class)
     override fun deleteProgrammeChecklist(programmeChecklistId: Long) {
-        checklistInstancePersistence.countAllByChecklistTemplateId(programmeChecklistId).let {
-            if (it > 0)
-                throw ChecklistLockedException()
+        checklistInstancePersistence.countAllByChecklistTemplateId(programmeChecklistId)
+            .let { checklistInstanceCount ->
+                if (checklistInstanceCount > 0)
+                    throw ChecklistLockedException()
         }
+
         persistence.deleteById(programmeChecklistId)
     }
 }
