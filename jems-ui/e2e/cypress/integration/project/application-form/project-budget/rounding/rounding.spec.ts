@@ -75,7 +75,7 @@ context('Rounding', () => {
           // verify PDF export
           cy.visit(`app/project/detail/${applicationId}/export`, {failOnStatusCode: false});
           cy.contains('button', 'Export').clickToDownload('**/export/application?*', 'pdf').then(exportFile => {
-            cy.fixture('project/application-form/project-budget/rounding/TB-383-pdf.txt').then(testDataFile => {
+            cy.fixture('project/application-form/project-budget/rounding/TB-383-export-pdf.txt').then(testDataFile => {
               const assertionMessage = 'Verify downloaded pdf file';
               expect(exportFile.text.includes(testDataFile), assertionMessage).to.be.true;
             });
@@ -84,7 +84,7 @@ context('Rounding', () => {
           // verify CSV export
           cy.contains('button', 'Partners budget').click();
           cy.contains('button', 'Export').clickToDownload('**/export/budget?*', 'csv').then(exportFile => {
-            cy.fixture('project/application-form/project-budget/rounding/TB-383-csv.txt').parseCSV().then(testDataFile => {
+            cy.fixture('project/application-form/project-budget/rounding/TB-383-export.csv').parseCSV().then(testDataFile => {
                 const assertionMessage = 'Verify downloaded csv file';
                 expect(exportFile.content.slice(1), assertionMessage).to.deep.equal(testDataFile);
             });
