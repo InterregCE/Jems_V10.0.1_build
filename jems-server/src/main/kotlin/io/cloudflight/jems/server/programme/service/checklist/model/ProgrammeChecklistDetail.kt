@@ -7,5 +7,6 @@ class ProgrammeChecklistDetail(
     type: ProgrammeChecklistType = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
     name: String?,
     lastModificationDate: ZonedDateTime?,
+    locked: Boolean,
     val components: List<ProgrammeChecklistComponent>? = emptyList()
-) : ProgrammeChecklist(id, type, name, lastModificationDate)
+) : ProgrammeChecklist(id, type, name, lastModificationDate, locked)

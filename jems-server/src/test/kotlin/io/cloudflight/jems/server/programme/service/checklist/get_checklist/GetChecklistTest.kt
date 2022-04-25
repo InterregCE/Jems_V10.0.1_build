@@ -21,7 +21,8 @@ internal class GetChecklistTest : UnitTest() {
         id = CHECKLIST_ID,
         type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
         name = "name",
-        lastModificationDate = ZonedDateTime.of(2020, 1, 10, 10, 10, 10, 10, ZoneId.systemDefault())
+        lastModificationDate = ZonedDateTime.of(2020, 1, 10, 10, 10, 10, 10, ZoneId.systemDefault()),
+        locked = false
     )
 
     @MockK

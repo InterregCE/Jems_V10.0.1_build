@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.programme.service.checklist.ProgrammeChecklist
 import io.cloudflight.jems.server.programme.service.checklist.getDetail.GetProgrammeChecklistDetail
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistDetail
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
+import io.cloudflight.jems.server.project.service.checklist.ChecklistInstancePersistence
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -22,17 +23,22 @@ internal class GetChecklistDetailTest : UnitTest() {
         type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
         name = "name",
         lastModificationDate = ZonedDateTime.of(2020, 1, 10, 10, 10, 10, 10, ZoneId.systemDefault()),
+        locked = false,
         components = emptyList()
     )
 
     @MockK
     lateinit var persistence: ProgrammeChecklistPersistence
 
+    @MockK
+    lateinit var checklistInstancePersistence: ChecklistInstancePersistence
+
     @InjectMockKs
     lateinit var getProgrammeChecklist: GetProgrammeChecklistDetail
 
     @Test
     fun getChecklistDetail() {
+        every { checklistInstancePersistence.countAllByChecklistTemplateId(CHECKLIST_ID) } returns 0
         every { persistence.getChecklistDetail(CHECKLIST_ID) } returns checklist
         assertThat(getProgrammeChecklist.getProgrammeChecklistDetail(CHECKLIST_ID))
             .usingRecursiveComparison()

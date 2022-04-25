@@ -7,12 +7,14 @@ import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChe
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistComponent
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistComponentType
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistDetail
+import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistRow
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.HeadlineMetadata
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.OptionsToggleMetadata
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -30,7 +32,8 @@ class ProgrammeChecklistPersistenceTest : UnitTest() {
         id = ID,
         type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
         name = "name",
-        lastModificationDate = ZonedDateTime.of(2020, 1, 10, 10, 10, 10, 10, ZoneId.systemDefault())
+        lastModificationDate = ZonedDateTime.of(2020, 1, 10, 10, 10, 10, 10, ZoneId.systemDefault()),
+        locked = false
     )
 
     private val checkLisDetail = ProgrammeChecklistDetail(
@@ -38,6 +41,7 @@ class ProgrammeChecklistPersistenceTest : UnitTest() {
         type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
         name = "name",
         lastModificationDate = ZonedDateTime.of(2020, 1, 10, 10, 10, 10, 10, ZoneId.systemDefault()),
+        locked = false,
         components = mutableListOf(
             ProgrammeChecklistComponent(
                 2L,
@@ -77,7 +81,6 @@ class ProgrammeChecklistPersistenceTest : UnitTest() {
         )
     )
 
-
     @MockK
     lateinit var repository: ProgrammeChecklistRepository
 
@@ -86,8 +89,15 @@ class ProgrammeChecklistPersistenceTest : UnitTest() {
 
     @Test
     fun getMax100Checklists() {
-        every { repository.findTop100ByOrderById() } returns listOf(checkListEntity)
-        assertThat(persistence.getMax100Checklists().get(0))
+        val programmeChecklistRow: ProgrammeChecklistRow = mockk()
+        every { programmeChecklistRow.id } returns ID
+        every { programmeChecklistRow.type } returns ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT
+        every { programmeChecklistRow.name } returns "name"
+        every { programmeChecklistRow.lastModificationDate } returns ZonedDateTime.of(2020, 1, 10, 10, 10, 10, 10, ZoneId.systemDefault())
+        every { programmeChecklistRow.count } returns 0
+
+        every { repository.findTop100ByOrderById() } returns listOf(programmeChecklistRow)
+        assertThat(persistence.getMax100Checklists()[0])
             .usingRecursiveComparison()
             .isEqualTo(checkList)
     }

@@ -7,5 +7,6 @@ class ProgrammeChecklistDetailDTO(
     type: ProgrammeChecklistTypeDTO = ProgrammeChecklistTypeDTO.APPLICATION_FORM_ASSESSMENT,
     name: String?,
     lastModificationDate: ZonedDateTime?,
+    locked: Boolean? = false,
     val components: List<ProgrammeChecklistComponentDTO> = emptyList()
-) : ProgrammeChecklistDTO(id, type, name, lastModificationDate)
+) : ProgrammeChecklistDTO(id, type, name, lastModificationDate, locked)

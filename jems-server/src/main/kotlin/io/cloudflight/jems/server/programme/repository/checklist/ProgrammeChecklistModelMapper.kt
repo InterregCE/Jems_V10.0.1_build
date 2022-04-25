@@ -9,15 +9,16 @@ import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChe
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistComponent
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistComponentType
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistDetail
+import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistRow
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.ProgrammeChecklistMetadata
 
-fun Iterable<ProgrammeChecklistEntity>.toModel() = map { it.toModel() }.sortedBy { it.id }
 fun ProgrammeChecklistEntity.toModel(): ProgrammeChecklist =
     ProgrammeChecklist(
         id = id,
         type = type,
         name = name,
-        lastModificationDate = lastModificationDate
+        lastModificationDate = lastModificationDate,
+        locked = false
     )
 
 fun ProgrammeChecklistEntity.toDetailModel(): ProgrammeChecklistDetail =
@@ -26,7 +27,19 @@ fun ProgrammeChecklistEntity.toDetailModel(): ProgrammeChecklistDetail =
         type = type,
         name = name,
         lastModificationDate = lastModificationDate,
+        locked = false,
         components = components?.map { it.toModel() }?.sortedBy { it.position }
+    )
+
+fun Iterable<ProgrammeChecklistRow>.toModel() = map { it.toModel() }.sortedBy { it.id }
+
+fun ProgrammeChecklistRow.toModel(): ProgrammeChecklist =
+    ProgrammeChecklist(
+        id = id,
+        type = type,
+        name = name,
+        lastModificationDate = lastModificationDate,
+        locked = count > 0
     )
 
 fun ProgrammeChecklistDetail.toEntity(): ProgrammeChecklistEntity =
@@ -61,6 +74,7 @@ fun ProgrammeChecklistComponent.toEntity(): ProgrammeChecklistComponentEntity =
         positionOnTable = position,
         metadata = metadata.toJson()
     )
+
 
 private fun ProgrammeChecklistEntity.assignComponents() =
     this.components?.forEach { it.checklist = this }

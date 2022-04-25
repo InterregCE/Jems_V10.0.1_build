@@ -6,5 +6,6 @@ open class ProgrammeChecklist(
     val id: Long?,
     val type: ProgrammeChecklistType = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
     val name: String?,
-    val lastModificationDate: ZonedDateTime?
+    val lastModificationDate: ZonedDateTime?,
+    var locked: Boolean
 )
