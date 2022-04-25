@@ -2,7 +2,6 @@ package io.cloudflight.jems.server.programme.service.checklist
 
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistDetail
-import io.cloudflight.jems.server.programme.service.checklist.update.ChecklistLockedException
 import org.springframework.stereotype.Service
 
 @Service
@@ -28,9 +27,4 @@ class ChecklistTemplateValidator(private val validator: GeneralValidatorService)
             )
         )
 
-    fun validateChecklistState(checklistLocked: Boolean) {
-        if(checklistLocked) {
-            throw ChecklistLockedException()
-        }
-    }
 }

@@ -1,7 +1,6 @@
 package io.cloudflight.jems.server.programme.service.checklist.delete_checklist
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.programme.service.checklist.ChecklistTemplateValidator
 import io.cloudflight.jems.server.programme.service.checklist.ProgrammeChecklistPersistence
 import io.cloudflight.jems.server.programme.service.checklist.delete.DeleteProgrammeChecklist
 import io.cloudflight.jems.server.programme.service.checklist.getList.GetProgrammeChecklistDetailNotFoundException
@@ -12,7 +11,6 @@ import io.cloudflight.jems.server.project.service.checklist.ChecklistInstancePer
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
-import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.verify
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -41,9 +39,6 @@ internal class DeleteChecklistTest : UnitTest() {
     @MockK
     lateinit var checklistInstancePersistence: ChecklistInstancePersistence
 
-    @RelaxedMockK
-    lateinit var checklistTemplateValidator: ChecklistTemplateValidator
-
     @InjectMockKs
     lateinit var deleteProgrammeChecklist: DeleteProgrammeChecklist
 
@@ -51,20 +46,20 @@ internal class DeleteChecklistTest : UnitTest() {
     fun `delete checklist - OK`() {
         val checklist = getChecklist()
         every { checklistInstancePersistence.countAllByChecklistTemplateId(CHECKLIST_ID) } returns 0
-        every { persistence.deleteById(CHECKLIST_ID) } answers {}
+        every { persistence.deleteById(CHECKLIST_ID) } returns Unit
         every { persistence.getChecklistDetail(CHECKLIST_ID) } returns checklist
-        every { checklistTemplateValidator.validateChecklistState(false) } returns Unit
         deleteProgrammeChecklist.deleteProgrammeChecklist(CHECKLIST_ID)
         verify { persistence.deleteById(CHECKLIST_ID) }
     }
 
     @Test
     fun `delete checklist - not existing`() {
-        every { checklistInstancePersistence.countAllByChecklistTemplateId(-1L) } returns 0
-        every { persistence.deleteById(-1L) } throws GetProgrammeChecklistDetailNotFoundException()
+        val idNotExisting = -1L
+        every { checklistInstancePersistence.countAllByChecklistTemplateId(idNotExisting) } returns 0
+        every { persistence.deleteById(idNotExisting) } throws GetProgrammeChecklistDetailNotFoundException()
         assertThrows<GetProgrammeChecklistDetailNotFoundException> {
             deleteProgrammeChecklist
-                .deleteProgrammeChecklist(-1L)
+                .deleteProgrammeChecklist(idNotExisting)
         }
     }
 
@@ -73,4 +68,5 @@ internal class DeleteChecklistTest : UnitTest() {
         every { checklistInstancePersistence.countAllByChecklistTemplateId(CHECKLIST_ID) } returns 1
         assertThrows<ChecklistLockedException> { deleteProgrammeChecklist.deleteProgrammeChecklist(CHECKLIST_ID) }
     }
+
 }
