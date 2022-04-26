@@ -54,15 +54,20 @@
     "analysis": {
       "analyzer": {
         "email_analyzer": {
-          "tokenizer": "standard",
-          "filter": [ "mynGram" ]
+          "tokenizer": "email_tokenizer"
         }
       },
-      "filter": {
-        "mynGram": {
+      "tokenizer": {
+        "email_tokenizer": {
           "type": "ngram",
           "min_gram": 2,
-          "max_gram": 50
+          "max_gram": 50,
+          "token_chars": [
+            "letter",
+            "digit",
+            "symbol",
+            "punctuation"
+          ]
         }
       }
     }
