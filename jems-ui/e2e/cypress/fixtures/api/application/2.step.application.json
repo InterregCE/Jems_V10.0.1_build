@@ -49,7 +49,6 @@
     "partners": [
       {
         "details": {
-          "id": null,
           "abbreviation": "Lead Partner v2",
           "role": "LEAD_PARTNER",
           "nameInOriginalLanguage": "Lead Partner in original language",
@@ -167,7 +166,6 @@
           },
           "external": [
             {
-              "id": null,
               "description": [
                 {
                   "translation": "API generated travel and accommodation cost description DE",
@@ -251,7 +249,6 @@
           ],
           "equipment": [
             {
-              "id": null,
               "description": [
                 {
                   "translation": "API generated equipment cost description DE",
@@ -335,7 +332,6 @@
           ],
           "infrastructure": [
             {
-              "id": null,
               "description": [
                 {
                   "translation": "API generated infrastructure and works cost description DE",
