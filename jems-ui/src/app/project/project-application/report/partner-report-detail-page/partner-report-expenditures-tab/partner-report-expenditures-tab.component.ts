@@ -308,9 +308,9 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
 
   getConversionRateByCode(currencyCode: string, reportExpenditureCost?: ProjectPartnerReportExpenditureCostDTO): number {
     if(this.currentReport.status === ProjectPartnerReportDTO.StatusEnum.Submitted && reportExpenditureCost) {
-      return NumberService.roundNumber(reportExpenditureCost.currencyConversionRate);
+      return reportExpenditureCost.currencyConversionRate;
     }
-    return NumberService.roundNumber(this.currencies.find((currency) => currency.code === currencyCode)?.conversionRate || 0);
+    return this.currencies.find((currency) => currency.code === currencyCode)?.conversionRate || 0;
   }
 
   getAmountInEur(conversionRate: number, amountInLocalCurrency: number): number {
