@@ -9,7 +9,6 @@ import org.elasticsearch.action.search.SearchRequest
 import org.elasticsearch.client.RequestOptions
 import org.elasticsearch.client.RestHighLevelClient
 import org.elasticsearch.index.query.BoolQueryBuilder
-import org.elasticsearch.index.query.MatchQueryBuilder
 import org.elasticsearch.index.query.RangeQueryBuilder
 import org.elasticsearch.index.query.TermsQueryBuilder
 import org.elasticsearch.search.builder.SearchSourceBuilder
@@ -28,17 +27,18 @@ class AuditPersistenceProvider(
     companion object {
         const val AUDIT_INDEX = "audit-log"
         const val AUDIT_INDEX_V2 = "audit-log-v2"
+        const val AUDIT_INDEX_V3 = "audit-log-v3"
     }
 
     override fun saveAudit(audit: Audit): String {
-        val request = IndexRequest(AUDIT_INDEX_V2).source(audit.toElasticsearchEntity())
+        val request = IndexRequest(AUDIT_INDEX_V3).source(audit.toElasticsearchEntity())
         val response = client.index(request, RequestOptions.DEFAULT)
         return response.id
     }
 
     override fun getAudit(searchRequest: AuditSearchRequest): Page<Audit> =
         client.search(
-            searchRequest.getQuery(AUDIT_INDEX_V2, searchRequest.pageable.sort),
+            searchRequest.getQuery(AUDIT_INDEX_V3, searchRequest.pageable.sort),
             RequestOptions.DEFAULT,
         ).hits.toModel(searchRequest.pageable)
 
@@ -53,10 +53,8 @@ class AuditPersistenceProvider(
 
         if (userEmail.values.isNotEmpty())
             filterQuery.must(
-                MatchQueryBuilder(
-                    "$FIELD_USER.$FIELD_USER_EMAIL",
-                    userEmail.values.toTypedArray().joinToString())
-                    .analyzer("standard")
+                TermsQueryBuilder(
+                    "$FIELD_USER.$FIELD_USER_EMAIL", userEmail.values)
             )
 
         val order = if (sort.getOrderFor("timestamp")?.direction?.isAscending == true) SortOrder.ASC else SortOrder.DESC
