@@ -23,6 +23,7 @@ import {
 import {CurrencyStore} from '@common/services/currency.store';
 import {RoutingService} from '@common/services/routing.service';
 import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
+import {Log} from '@common/utils/log';
 
 @Injectable({providedIn: 'root'})
 export class PartnerReportExpendituresStore {
@@ -76,13 +77,11 @@ export class PartnerReportExpendituresStore {
     ]).pipe(
       switchMap(([partnerId, reportId, _]) =>
         this.partnerReportExpenditureCostsService.getProjectPartnerReports(partnerId as number, reportId)
-      )
+      ),
+      tap(data => Log.info('Fetched list of expenditures for partner report', this, data)),
     );
 
-    return merge(initialExpenditureCosts$, this.expendituresUpdated$)
-      .pipe(
-        shareReplay(1)
-      );
+    return merge(initialExpenditureCosts$, this.expendituresUpdated$);
   }
 
   private costCategories(): Observable<string[]> {

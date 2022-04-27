@@ -300,11 +300,9 @@
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                                 <mat-form-field jemsFormFieldWidth="full" [class.mat-form-field-disabled]="true">
-                                    <input [formControlName]="constants.FORM_CONTROL_NAMES.currencyConversionRate"
-                                           [options]="{align: 'right'}"
+                                    <input class="text-right" [formControlName]="constants.FORM_CONTROL_NAMES.currencyConversionRate"
                                            [readonly]="true"
-                                           currencyMask matInput
-                                           type="decimal">
+                                           matInput>
                                 </mat-form-field>
                             </mat-cell>
                             <mat-footer-cell *matFooterCellDef></mat-footer-cell>
