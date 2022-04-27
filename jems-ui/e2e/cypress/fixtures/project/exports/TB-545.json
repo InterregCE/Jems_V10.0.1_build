@@ -618,6 +618,13 @@
         "showVisibilitySwitch": true
       },
       {
+        "id": "application.config.project.synergies",
+        "visible": true,
+        "availableInStep": "STEP_ONE_AND_TWO",
+        "showStepToggle": true,
+        "showVisibilitySwitch": true
+      },
+      {
         "id": "application.config.project.how.builds.project.on.available.knowledge",
         "visible": true,
         "availableInStep": "STEP_ONE_AND_TWO",

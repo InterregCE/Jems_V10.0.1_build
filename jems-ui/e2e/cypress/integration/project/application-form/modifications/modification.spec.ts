@@ -3,7 +3,7 @@ import call from '../../../../fixtures/api/call/1.step.call.json';
 import application from '../../../../fixtures/api/application/application.json';
 import date from 'date-and-time';
 
-context('Application modification approved', () => {
+context('Application modifications', () => {
 
   before(() => {
     cy.loginByRequest(user.programmeUser.email);

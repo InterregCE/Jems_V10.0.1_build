@@ -604,8 +604,8 @@
           }
         },
         "associatedOrganization": {
-          "nameInOriginalLanguage": "API generated associated organization",
-          "nameInEnglish": "API generated associated organization name in english",
+          "nameInOriginalLanguage": "API generated associated organisation",
+          "nameInEnglish": "API generated associated organisation name in english",
           "address": {
             "country": "Egypt (EG)",
             "nutsRegion2": "Alexandria (EG01)",
@@ -633,11 +633,11 @@
           ],
           "roleDescription": [
             {
-              "translation": "API generated associated organization role DE",
+              "translation": "API generated associated organisation role DE",
               "language": "DE"
             },
             {
-              "translation": "API generated associated organization role EN",
+              "translation": "API generated associated organisation role EN",
               "language": "EN"
             }
           ]
