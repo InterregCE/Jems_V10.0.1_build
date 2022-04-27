@@ -71,6 +71,10 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
         private const val activityId1 = 3L
         private const val activityId2 = 2L
 
+        private const val deliverable2_1_id = 2L
+        private const val deliverable2_2_id = 1L
+
+
         private val outputId1 = WorkPackageOutputId(workPackageId = WORK_PACKAGE_ID, outputNumber = 1)
         private val outputId2 = WorkPackageOutputId(workPackageId = WORK_PACKAGE_ID, outputNumber = 2)
 
@@ -85,35 +89,6 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
                 sourceEntity = deliverableEntity,
                 language = lang
             )
-
-        private val deliverable2_2 = WorkPackageActivityDeliverableEntity(
-            id = 1L,
-            deliverableNumber = 2,
-            startPeriod = 2
-        )
-        private val deliverable2_1 = WorkPackageActivityDeliverableEntity(
-            id = 2L,
-            deliverableNumber = 1,
-            startPeriod = 1,
-            translatedValues = mutableSetOf()
-        ).apply {
-            translatedValues.addAll(
-                setOf(
-                    WorkPackageActivityDeliverableTranslationEntity(
-                        translationId = trIdActDel(this, SK),
-                        description = "sk_deliverable_desc"
-                    ),
-                    WorkPackageActivityDeliverableTranslationEntity(
-                        translationId = trIdActDel(this, CS),
-                        description = ""
-                    ),
-                    WorkPackageActivityDeliverableTranslationEntity(
-                        translationId = trIdActDel(this, EN),
-                        description = null
-                    )
-                )
-            )
-        }
 
         const val activityProjectPartnerId = 3L
         val activityPartnerMock: WorkPackageActivityPartnerEntity = mockk()
@@ -147,8 +122,41 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
             startPeriod = 1,
             endPeriod = 3,
             translatedValues = mutableSetOf(),
-            deliverables = mutableSetOf(deliverable2_2, deliverable2_1)
+            deliverables = mutableSetOf()
         ).apply {
+            deliverables.addAll(mutableSetOf(
+                WorkPackageActivityDeliverableEntity(
+                    id = 1L,
+                    deliverableNumber = 2,
+                    startPeriod = 2,
+                    workPackageActivity = this
+                ),
+                WorkPackageActivityDeliverableEntity(
+                    id = 2L,
+                    deliverableNumber = 1,
+                    startPeriod = 1,
+                    translatedValues = mutableSetOf(),
+                    workPackageActivity = this
+                ).apply {
+                    translatedValues.addAll(
+                        setOf(
+                            WorkPackageActivityDeliverableTranslationEntity(
+                                translationId = trIdActDel(this, SK),
+                                description = "sk_deliverable_desc"
+                            ),
+                            WorkPackageActivityDeliverableTranslationEntity(
+                                translationId = trIdActDel(this, CS),
+                                description = ""
+                            ),
+                            WorkPackageActivityDeliverableTranslationEntity(
+                                translationId = trIdActDel(this, EN),
+                                description = null
+                            )
+                        )
+                    )
+                }
+
+            ))
             translatedValues.addAll(
                 setOf(
                     WorkPackageActivityTranslationEntity(
@@ -169,6 +177,7 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
                 )
             )
         }
+
         val activity2_model = WorkPackageActivity(
             id = activityId2,
             workPackageId = 1L,
@@ -184,7 +193,7 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
             endPeriod = 3,
             deliverables = listOf(
                 WorkPackageActivityDeliverable(
-                    id = deliverable2_1.id,
+                    id = deliverable2_1_id,
                     deliverableNumber = 1,
                     period = 1,
                     description = setOf(
@@ -195,7 +204,7 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
                     )
                 ),
                 WorkPackageActivityDeliverable(
-                    id = deliverable2_2.id,
+                    id = deliverable2_2_id,
                     deliverableNumber = 2,
                     period = 2
                 )
@@ -390,7 +399,7 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
         every { mockWPAPRow.workPackageId } returns wpId
         every { mockWPAPRow.projectPartnerId } returns 5
         val mockWPDRow: WorkPackageDeliverableRow = mockk()
-        every { mockWPDRow.id } returns deliverable2_1.id
+        every { mockWPDRow.id } returns deliverable2_1_id
         every { mockWPDRow.deliverableNumber } returns 4
         every { mockWPDRow.language } returns EN
         every { mockWPDRow.startPeriod } returns 1
@@ -450,7 +459,7 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
                         endPeriod = mockWPARow.endPeriod,
                         deliverables = listOf(
                             WorkPackageActivityDeliverable(
-                                id = deliverable2_1.id,
+                                id = deliverable2_1_id,
                                 deliverableNumber = mockWPDRow.deliverableNumber,
                                 description = setOf(
                                     InputTranslation(EN, mockWPDRow.description)

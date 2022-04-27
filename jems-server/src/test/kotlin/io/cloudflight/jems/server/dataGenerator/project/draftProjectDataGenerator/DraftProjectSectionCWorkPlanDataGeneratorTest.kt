@@ -67,7 +67,7 @@ class DraftProjectSectionCWorkPlanDataGeneratorTest(@LocalServerPort private val
     @Order(4)
     @ExpectSelect(14)
     @ExpectInsert(20)
-    @ExpectUpdate(2)
+    @ExpectUpdate(0)
     @ExpectDelete(1)
     fun `should add activities to the work plan`() {
         assertThat(

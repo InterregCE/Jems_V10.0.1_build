@@ -20,16 +20,19 @@ import io.cloudflight.jems.server.project.service.workpackage.activity.model.Wor
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityTranslatedValue
 
 fun WorkPackageActivity.toEntity(workPackage: WorkPackageEntity, index: Int): WorkPackageActivityEntity {
-    return WorkPackageActivityEntity(
+    val workPackageActivityEntity = WorkPackageActivityEntity(
         id = id,
         workPackage = workPackage,
         activityNumber = index,
         translatedValues = mutableSetOf(),
         startPeriod = startPeriod,
         endPeriod = endPeriod,
-        deliverables = deliverables.toIndexedEntity(),
+        deliverables = mutableSetOf(),
         partners = mutableSetOf()
-    ).apply {
+    )
+    val deliverablesEntity = deliverables.toIndexedEntity(workPackageActivityEntity)
+    return workPackageActivityEntity.apply {
+        deliverables.addAll(deliverablesEntity)
         partners.addAll(partnerIds.map {
             WorkPackageActivityPartnerEntity(WorkPackageActivityPartnerId(this, it))
         }.toMutableSet())
@@ -49,13 +52,15 @@ fun List<WorkPackageActivity>.toIndexedEntity(workPackage: WorkPackageEntity, sh
     mapIndexed { index, activity -> activity.toEntity(workPackage, index.plus(1).plus(shiftIndexBy)) }.toMutableList()
 
 fun WorkPackageActivityDeliverable.toEntity(
-    index: Int
+    index: Int,
+    workPackageActivityEntity: WorkPackageActivityEntity
 ): WorkPackageActivityDeliverableEntity {
     return WorkPackageActivityDeliverableEntity(
         id = id,
         deliverableNumber = index,
         translatedValues = mutableSetOf(),
         startPeriod = period,
+        workPackageActivity = workPackageActivityEntity
     ).apply {
         translatedValues.addTranslationEntities(
             { language ->
@@ -69,8 +74,8 @@ fun WorkPackageActivityDeliverable.toEntity(
     }
 }
 
-fun List<WorkPackageActivityDeliverable>.toIndexedEntity() =
-    mapIndexedTo(HashSet()) { index, deliverable -> deliverable.toEntity(index.plus(1)) }
+fun List<WorkPackageActivityDeliverable>.toIndexedEntity(workPackageActivityEntity: WorkPackageActivityEntity) =
+    mapIndexedTo(HashSet()) { index, deliverable -> deliverable.toEntity(index.plus(1), workPackageActivityEntity) }
 
 fun WorkPackageActivityEntity.toModel() =
     WorkPackageActivity(
