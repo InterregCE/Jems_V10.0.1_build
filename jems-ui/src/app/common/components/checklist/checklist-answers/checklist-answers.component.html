@@ -1,33 +1,83 @@
-<jems-form>
+<jems-form (save)="save.emit(formComponents.value)"
+           (discard)="resetForm()"
+           [additionalAction]="finishChecklist">
+
     <jems-alert [type]="Alert.WARNING"
                 [closable]="false"
-                [show]="dirty">
-        <div>{{'programme.checklists.tab.preview.warn' | translate}}</div>
+                [show]="!!warning">
+        <div>{{warning | translate}}</div>
     </jems-alert>
-    <div *ngIf="checklist" jemsFormLayout>
-        <ng-container *ngFor="let component of checklist.components">
-            <div [ngSwitch]="component.type" class="mt-3">
-                <h4 *ngSwitchCase="COMPONENT_TYPE.HEADLINE">
-                    <span>{{ getHeadline(component).value }}</span>
-                </h4>
-                <div *ngSwitchCase="COMPONENT_TYPE.OPTIONSTOGGLE" jemsMultiColumnRow stretch>
-                    <span jemsText>{{ getOptionsToggle(component).question }}</span>
-                    <span class="box">
-                    <mat-button-toggle-group>
-                        <mat-button-toggle>
-                            <span jemsText maxWidth="70">{{ getOptionsToggle(component).firstOption }}</span>
-                        </mat-button-toggle>
-                        <mat-button-toggle>
-                            <span jemsText maxWidth="70">{{ getOptionsToggle(component).secondOption }}</span>
-                        </mat-button-toggle>
-                        <mat-button-toggle *ngIf="getOptionsToggle(component).thirdOption">
-                            <span jemsText maxWidth="70">{{ getOptionsToggle(component).thirdOption }}</span>
-                        </mat-button-toggle>
-                    </mat-button-toggle-group>
-                </span>
-                </div>
-                <div *ngSwitchDefault></div>
+
+    <ng-container *ngIf="status"
+                  [ngTemplateOutlet]="statusChip">
+    </ng-container>
+
+    <div *ngIf="formComponents?.length" jemsFormLayout>
+        <ng-container *ngFor="let component of formComponents.controls">
+            <div [ngSwitch]="component.get('type')?.value" class="mt-3">
+                <ng-container *ngSwitchCase="ComponentType.HEADLINE"
+                              [ngTemplateOutlet]="headline"
+                              [ngTemplateOutletContext]="{
+                              headline: component.get('programmeMetadata').value
+                              }">
+                </ng-container>
+                <ng-container *ngSwitchCase="ComponentType.OPTIONSTOGGLE"
+                              [ngTemplateOutlet]="optionsToggle"
+                              [ngTemplateOutletContext]="{
+                              options: component.get('programmeMetadata').value,
+                              control: component.get('instanceMetadata')?.get('answer')
+                              }">
+                </ng-container>
+                <ng-container *ngSwitchDefault></ng-container>
             </div>
         </ng-container>
     </div>
 </jems-form>
+
+<ng-template #finishChecklist>
+    <jems-pending-button *ngIf="status === Status.DRAFT" class="mr-2"
+                         icon="done"
+                         [confirm]="confirmFinish"
+                         (clicked)="finish.emit(formComponents.value)">
+        {{'checklists.instance.confirm.finish.title' | translate}}
+    </jems-pending-button>
+</ng-template>
+
+<ng-template #statusChip>
+    <div id="status" class="mb-3">
+        {{'common.status' | translate}}:
+        <mat-chip-list class="mr-1 ml-1">
+            <mat-chip selected="true"
+                      [class.draft]="status === Status.DRAFT"
+                      [class.finished]="status === Status.FINISHED">
+                {{'checklists.instance.status.' + status | translate}}
+            </mat-chip>
+        </mat-chip-list>
+        <span *ngIf="finishedDate">{{'checklists.instance.finished.since' | translate : {date: finishedDate | localeDate} }}</span>
+    </div>
+</ng-template>
+
+<ng-template #headline let-headline="headline">
+    <h4>{{headline.value}}</h4>
+</ng-template>
+
+<ng-template #optionsToggle let-options="options" let-control="control">
+    <div jemsMultiColumnRow stretch>
+        <span jemsText>{{options.question}}</span>
+        <span class="box">
+            <mat-button-toggle-group [formControl]="control || {}">
+                <mat-button-toggle [value]="options.firstOption">
+                    <span jemsText maxWidth="70">{{options.firstOption}}</span>
+                </mat-button-toggle>
+                <mat-button-toggle [value]="options.secondOption">
+                    <span jemsText maxWidth="70">{{options.secondOption}}</span>
+                </mat-button-toggle>
+                <mat-button-toggle *ngIf="options.thirdOption"
+                                   [value]="options.thirdOption">
+                    <span jemsText maxWidth="70">{{options.thirdOption}}</span>
+                </mat-button-toggle>
+            </mat-button-toggle-group>
+        </span>
+    </div>
+</ng-template>
+
