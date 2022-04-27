@@ -86,15 +86,15 @@ entities
 4
 B - Project partners
 Partners overview
-NumberStatusName of the Organization in englishCountryOrganisation abbreviationPartner rolePartner total eligible budget
+NumberStatusName of the organisation in englishCountryOrganisation abbreviationPartner rolePartner total eligible budget
 1ActiveName in englishÅland Islands (AX)Lead PartnerLP638.89
 
 5
 B.1 Lead partner
 Partner number1
 Partner roleLP
-Name of the Organization in original languageName in org language
-Name of the Organization in englishName in english
+Name of the organisation in original languageName in org language
+Name of the organisation in englishName in english
 Organisation abbreviationLead Partner
 Department / unit / divisionDepartment EN
 Partner main address

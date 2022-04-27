@@ -27,8 +27,10 @@ context('Application form exports', () => {
 
           cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/application?exportLanguage=EN&inputLanguage=DE`, 'pdf').then(file => {
             expect(file.fileName).to.contain('tb-366_en_de_2022');
-            const assertionMessage = 'Verify downloaded pdf file';
-            expect(file.text.includes(testData.exportedApplicationDataDE), assertionMessage).to.be.true;
+            cy.fixture('project/exports/TB-366-export-de.txt').then(testDataFile => {
+              const assertionMessage = 'Verify downloaded pdf file';
+              expect(file.text.includes(testDataFile), assertionMessage).to.be.true;
+            });
           });
 
           cy.contains('div', 'Export language').find('mat-select').click();
@@ -38,8 +40,10 @@ context('Application form exports', () => {
 
           cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/application?exportLanguage=DE&inputLanguage=EN`, 'pdf').then(file => {
             expect(file.fileName).to.contain('tb-366_de_en_2022');
-            const assertionMessage = 'Verify downloaded pdf file';
-            expect(file.text.includes(testData.exportedApplicationDataEN), assertionMessage).to.be.true;
+            cy.fixture('project/exports/TB-366-export-en.txt').then(testDataFile => {
+              const assertionMessage = 'Verify downloaded pdf file';
+              expect(file.text.includes(testDataFile), assertionMessage).to.be.true;
+            });
           });
         });
       });
@@ -118,8 +122,10 @@ context('Application form exports', () => {
 
             // export current (approved) version
             cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/application?*`, 'pdf').then(file => {
-              const assertionMessage = 'Verify downloaded pdf file for current version';
-              expect(file.text.includes(testData.approvedModificationExportData), assertionMessage).to.be.true;
+              cy.fixture('project/exports/TB-367-v3.txt').then(testDataFile => {
+                const assertionMessage = 'Verify downloaded pdf file for current version';
+                expect(file.text.includes(testDataFile), assertionMessage).to.be.true;
+              });
             });
 
             // export step 1 version
@@ -127,8 +133,10 @@ context('Application form exports', () => {
             cy.contains('mat-option', 'V. 1.0').click();
 
             cy.contains('div#export-config button', 'Export').clickToDownload(`api/project/${applicationId}/export/application?*version=1.0`, 'pdf').then(file => {
-              const assertionMessage = 'Verify downloaded pdf file for step 1 version';
-              expect(file.text.includes(testData.step1ExportData), assertionMessage).to.be.true;
+              cy.fixture('project/exports/TB-367-v1.txt').then(testDataFile => {
+                const assertionMessage = 'Verify downloaded pdf file for step 1 version';
+                expect(file.text.includes(testDataFile), assertionMessage).to.be.true;
+              });
             });
 
             // export step 2 version
@@ -136,8 +144,10 @@ context('Application form exports', () => {
             cy.contains('mat-option', 'V. 2.0').click();
 
             cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/application?*version=2.0`, 'pdf').then(file => {
-              const assertionMessage = 'Verify downloaded pdf file for step 2 version';
-              expect(file.text.includes(testData.step2ExportData), assertionMessage).to.be.true;
+              cy.fixture('project/exports/TB-367-v2.txt').then(testDataFile => {
+                const assertionMessage = 'Verify downloaded pdf file for step 2 version';
+                expect(file.text.includes(testDataFile), assertionMessage).to.be.true;
+              });
             });
 
             // export rejected version
@@ -145,8 +155,10 @@ context('Application form exports', () => {
             cy.contains('mat-option', 'V. 4.0').click();
 
             cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/application?*version=4.0`, 'pdf').then(file => {
-              const assertionMessage = 'Verify downloaded pdf file for rejected version';
-              expect(file.text.includes(testData.rejectedModificationExportData), assertionMessage).to.be.true;
+              cy.fixture('project/exports/TB-367-v4.txt').then(testDataFile => {
+                const assertionMessage = 'Verify downloaded pdf file for rejected version';
+                expect(file.text.includes(testDataFile), assertionMessage).to.be.true;
+              });
             });
           });
         });

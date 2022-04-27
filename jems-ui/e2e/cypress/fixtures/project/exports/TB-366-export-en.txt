@@ -1,10 +1,10 @@
-Name of the lead partner organisationName in org language
+Name of the lead partner organisationLead Partner in original language
 Name of the lead partner organisation in 
 English
-Name in english
+Lead Partner in english
 Project titleAPI generated application title EN
-Project acronymtb-373 v2
-Programme priorityPO1 Innovation EN
+Project acronymtb-366
+Programme priorityPO1 Innovation DE
 Specific objectiveSO1.1: Developing and enhancing research and 
 innovation capacities and the uptake of advanced 
 technologies
@@ -18,7 +18,8 @@ the main outputs you will produce and those who will benefit from them;
 the approach you plan to take and why a cross-border/transnational/inter-regional approach is 
 needed;
 what is new/original about the project.
-API generated application summary EN
+API generated application summary 
+ <html><br></></html>!@#$%^&*(){}>?üä#öšđćčž EN
 
 2
 A.3 Project budget overview
@@ -29,6 +30,8 @@ Funding sourceFunding
 amount
 Co-financing
 rate (%)
+Automatic public
+contribution
 Other public
 contribution
 Total public
@@ -37,14 +40,14 @@ Private
 contribution
 Total
 contribution
-ERDF383.3360.00 %255.56255.560.00255.56638.89
+ERDF38.058,4760,00 %0,0025.372,3225.372,320,0025.372,3263.430,79
 Neighbourhood 
 CBC
-0.000.00 %0.000.000.000.000.00
-Total EU funds383.3360.00 %255.56255.560.00255.56638.89
+0,000,00 %0,000,000,000,000,000,00
+Total EU funds38.058,4760,00 %0,0025.372,3225.372,320,0025.372,3263.430,79
 Total project 
 budget
-383.3360.00 %255.56255.560.00255.56638.89
+38.058,4760,00 %0,0025.372,3225.372,320,0025.372,3263.430,79
 
 3
 A.4 Project outputs and result overview
@@ -72,74 +75,165 @@ unit
 Enterprises supported 
 (of which: micro, small, 
 medium, large)
-3.00enterprisesOutput 
+8,00enterprisesOutput 
 1.1
 API 
 generated 
 output 1 
 title EN
-3.00Jobs created 
+3,00Jobs created 
 in supported 
 entities
-0.0013.00annual FTEs
+0,0013,00annual FTEs
+Output 
+1.2
+API 
+generated 
+output 2 
+title EN
+5,00
 
 4
 B - Project partners
 Partners overview
-NumberStatusName of the organisation in englishCountryOrganisation abbreviationPartner rolePartner total eligible budget
-1ActiveName in englishÅland Islands (AX)First PartnerLP638.89
+NumberStatusName of the organisation in 
+english
+CountryOrganisation 
+abbreviation
+Partner 
+role
+Associated 
+organisations
+Partner total eligible 
+budget
+1ActiveLead Partner in englishÖsterreich 
+(AT)
+Lead PartnerLP63430.79
 
 5
 B.1 Lead partner
 Partner number1
 Partner roleLP
-Name of the organisation in original languageName in org language
-Name of the organisation in englishName in english
-Organisation abbreviationFirst Partner
-Department / unit / divisionDepartment EN
+Name of the organisation in original languageLead Partner in original language
+Name of the organisation in englishLead Partner in english
+Organisation abbreviationLead Partner
+Department / unit / divisionAPI generated department / unit / division EN
 Partner main address
-CountryÅland Islands (AX)
-NUTS 2Åland Islands (AX00)
-NUTS 3Åland Islands (AX000)
-Street, House number, Postal code, City Street99
- 9090Island city
-Homepagecity@city.com
+CountryÖsterreich (AT)
+NUTS 2Wien (AT13)
+NUTS 3Wien (AT130)
+Street, House number, Postal code, City Partnerstreet2
+ 1020Partner city
+Homepagepartner@test.com
 Address of department / unit / division (if applicable)
-CountryÅland Islands (AX)
-NUTS 2Åland Islands (AX00)
-NUTS 3Åland Islands (AX000)
-Street, House number, Postal code, City Secondstreet88
- 8080City
+CountryÖsterreich (AT)
+NUTS 2Oberösterreich (AT31)
+NUTS 3Linz-Wels (AT312)
+Street, House number, Postal code, City Departmentstreet5
+ 4020Department city
 Legal and financial information
-Type of partnerRegional public authority
-Legal statusPrivate
-VAT number (if applicable)123334454556
-Contact
-Legal representative  MrLegalRep
-Contact person  MsContactPerson
-Emailcontact@address.com
+Type of partnerLocal public authority
+Subtype of partnerMicro enterprise
+Legal statusPublic DE
+Sector of activity at NACE group levelA.03.22
+VAT number (if applicable)123456
+Is your organisation entitled to recover VAT 
+based on national legislation for the activities 
+implemented in the project?
+Yes
 
 6
+Legal and financial information
+Other identifier number654321
+Other identifier descriptionAPI generated other identifier description EN
+PIC (from EC Participant Register)123456789
 Contact
-Telephone no.+009988776655
+Legal representative  MrLegalRepresentative
+Contact person  MsContactPerson
+Emailcontact@person.com
+Telephone no.+1234567890
+Motivation
+Which of the organisation's thematic competences and experiences are relevant for the project?
+API generated partner motivation EN
+What is the role (contribution and main activities) of your organisation in the project?
+API generated partner role EN
+If applicable, describe the organisation's experience in participating in and/or managing EU co-
+financed projects or other international projects.
+API generated partner experience EN
 Co-financing
 SourceAmountPercentage
-ERDF383.3360.00 %
-Partner contribution255.5640.00 %
-Partner total eligible budget638.89100.00 %
+ERDF DE38.058,4760,00 %
+Partner contribution25.372,3240,00 %
+Partner total eligible budget63.430,79100,00 %
 Origin of partner contribution
 Source of contributionLegal status of contributionAmount% of total partner budget
-First PartnerPublic255.5640.00 %
+Lead PartnerPublic25.372,3240,00 %
+Total
+Sub-total public contribution25.372,3240,00 %
+Sub-total automatic public contribution0,000,00 %
 
 7
+Total
+Sub-total private contribution0,000,00 %
+Total25.372,3240,00 %
+State Aid
+State aid criteria self-check
+Criterium I: Is the partner involved in economic activities through the project?
+1. Will the project applicant implement 
+activities and/or offer goods/services for 
+which a market exists?
+YesAPI generated partner state aid criterium 1 
+justification 1 EN
+2. Are there activities/goods/services that 
+could have been undertaken by an operator 
+with the view to making profit (even if this is 
+not the applicant’s intention)?
+NoAPI generated partner state aid criterium 1 
+justification 2 EN
+Criterium II: Does the partner receive an undue advantage in the framework of the project?
+1. Does the project applicant plan to carry out 
+the economic activities on its own i.e. not to 
+select an external service provider via public 
+procurement procedures for example?
+NoAPI generated partner state aid criterium 2 
+justification 1 EN
+2. Will the project applicant, any other operator 
+not included in the project as a project partner 
+or the target audience gain any benefits from 
+its project economic activities, not received in 
+the normal course of business (i.e. not 
+received in the absence of funding granted 
+through the project)?
+YesAPI generated partner state aid criterium 2 
+justification 2 EN
+Result of State aid criteria self-check:There is a risk of indirect aid
+State aid relevant activitiesActivity1.1
+GBER scheme / de minimisGeneral de minimis DE
+
+8
+Associated organisations
+NumberStatusName of the organisation in original 
+language
+Name of the responsible project 
+partner
+
+9
 C - Project description
 C.1 Project overall objective
 Below, you can see the Programme priority specific objective your project will contribute to (chosen in 
 section A.1.).
 SO1.1: Developing and enhancing research and innovation capacities and the uptake of advanced 
 technologies
+Project overall objective
+Now think about your main objective – what do you aim to achieve by the end of your project? Remember 
+your project needs to contribute to the programme’s objective.
+Your objective should:
+be realistic and achievable by the end of the project, or shortly after;
+specify who needs project results and in which territory;
+be measurable – indicate the change you are aiming for.
+API generated application overall objective EN
 
-8
+10
 C.2 Project relevance and context
 C.2.1 What are the common territorial challenge(s) that will be tackled by the project?
 Please describe why your project is needed in the programme area and the relevance of your project for 
@@ -173,7 +267,7 @@ Strategy
 API generated application strategy contribution 
 EN
 
-9
+11
 C.2.6 Which synergies with past or current EU and other projects or initiatives will the project make use 
 of?
 Project or InitiativeSynergy
@@ -183,19 +277,21 @@ Please describe the experiences/lessons learned that the project draws on, and o
 the project capitalises on.
 API generated application available knowledge EN
 
-10
+12
 C.3 Project partnership
 Describe the structure of your partnership and explain why these partners are needed to implement the 
 project and to achieve project objectives. What is the contribution of each partner to the project?
 API generated project partnership EN
 
-11
+13
 C.4 Project work plan
-Number
-1
+NumberWork package name
+1API generated project work package title EN
 
-12
+14
 Work package 1
+Work package title
+API generated project work package title EN
 Objectives
 Your objectives should be:
 realistic and achievable by the end of the project;
@@ -209,35 +305,134 @@ Communication objectives aim at changes in a target audience's behaviour, knowle
 API generated project objective and audience EN
 Activities
 Activity 1.1
-TitleAPI generated activity title EN
+TitleAPI generated activity 1 title EN
 Start period  Period1, 1- 3
 End period  Period4, 10- 12
-DescriptionAPI generated activity description EN
+DescriptionAPI generated activity translation EN
+Partner(s) involved
+Deliverables 1.1
+Running 
+number
+Deliverable titleDescriptionDelivery 
+period
+D.1.1.1API generated activity 
+deliverable title EN
+API generated activity deliverable 
+description EN
+  Period2, 4- 
+6
+D.1.1.2API generated activity 
+deliverable title EN
+API generated activity deliverable 
+description EN
+  Period4, 10
+- 12
+
+15
+Activity 1.2
+TitleAPI generated activity 2 title EN
+Start period  Period5, 13- 15
+End period  Period8, 22- 24
+DescriptionAPI generated activity translation EN
+Partner(s) involved
+Deliverables 1.2
+Running 
+number
+Deliverable titleDescriptionDelivery 
+period
+D.1.2.1API generated activity 
+deliverable title EN
+API generated activity deliverable 
+description EN
+  Period3, 7- 
+9
+D.1.2.2API generated activity 
+deliverable title EN
+API generated activity deliverable 
+description EN
+  Period5, 13
+- 15
 Outputs
 Output 1.1
 Output TitleAPI generated output 1 title EN
 Programme Output IndicatorOI1: Enterprises supported (of which: micro, small, 
 medium, large)
 Measurement Unitenterprises
-Target Value3.00
+Target Value3,00
 Delivery period  Period3, 7- 9
 Output DescriptionAPI generated output 1 description EN
+Output 1.2
+Output TitleAPI generated output 2 title EN
+Programme Output IndicatorOI1: Enterprises supported (of which: micro, small, 
+medium, large)
+Measurement Unitenterprises
+Target Value5,00
 
-13
+16
+Output 1.2
+Delivery period  Period4, 10- 12
+Output DescriptionAPI generated output 2 description EN
+Investments
+Investment 1.1
+Title
+API generated investment title EN
+Expected delivery period
+  Period1, 1- 3
+Justification
+Please explain why this investment is needed.
+API generated investment justification EN
+Please clearly describe the cross-border/transnational relevance of the investment.
+API generated investment transnational relevance EN
+Please describe who is benefiting (e.g. partners, regions, end-users, etc.) from this investment, and in what 
+way.
+API generated investment benefits EN
+In the case of pilot investment, please clarify which problem it tackles, which findings you expect from it, 
+how it can be replicated, and how the experience coming from it will be used for the benefit of the 
+programme area.
+API generated investment pilot clarification EN
+Location of the physical investment
+CountryDeutschland (DE)
+NUTS 2Stuttgart (DE11)
+NUTS 3Stuttgart, Stadtkreis (DE111)
+   StreetHouse number,Postal code,City   Investmentstreet1,1010,Investment city
+Risk associated with the investment
+
+17
+Describe the risk associated with the investment, go/no-go decisions, etc. (if any).
+API generated investment risk EN
+Investment documentation
+Please list all technical requirements and permissions (e.g. building permits) required for the investment 
+according to the respective national legislation. If these are already available, attach them to this 
+application form, otherwise indicate when you expect them to be available.
+API generated investment technical requirements EN
+For investments in infrastructure with an expected lifespan of at least five years, please indicate whether 
+an assessment of expected impacts of climate change has been carried out. Should it be necessary, you 
+must be ready to submit this documentation to the relevant programme body/ies.
+API generated investment climate change assessment EN
+Ownership
+Who owns the site where the investment is located?
+API generated investment ownership EN
+Who will retain ownership of the investment at the end of the project?
+API generated investment ownership retainment EN
+Who will take care of the maintenance of the investment? How will this be done?
+API generated investment maintenance EN
+
+18
 C.5 Project Results
 What do you expect to change because of the activities you plan to implement and the outputs you plan to 
 deliver? Please take a look at the programme result indicators and select those that you will contribute to.
  Result1
 Programme result indicatorRI1: Jobs created in supported entities
 Measurement unitannual FTEs
-Baseline0.00
-Target value13.00
+Baseline0,00
+Target value13,00
+Delivery period  Period8, 22- 24
 Result descriptionAPI generated project result description EN
 
-14
+19
 C.6 Project Time Plan
 
-15
+20
 C.7 Project management
 In addition to the thematic work you will do in your project, you will need time and resources for 
 coordination and internal communication. Please describe below how you plan to organise yourself to 
@@ -268,7 +463,7 @@ Joint implementationYesAPI generated project joint implementation EN
 Joint staffingYesAPI generated project joint staffing EN
 Joint financingYesAPI generated project joint financing EN
 
-16
+21
 C.7.6 Horizontal principles
 Please indicate which type of contribution to horizontal principles applies to the project, and justify your 
 choice.
@@ -283,7 +478,7 @@ neutralAPI generated project equal opportunities
 EN
 Equality between men and womenpositive effectsAPI generated project equality EN
 
-17
+22
 C.8 Long-term plans
 As a programme, we would like to support projects that have a long-lasting effect in the territory and those 
 who will benefit from them. Please describe below what you will do to ensure this.
