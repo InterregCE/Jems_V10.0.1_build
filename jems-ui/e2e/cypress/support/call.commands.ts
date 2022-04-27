@@ -58,7 +58,7 @@ Cypress.Commands.add('publishCall', (callId: number, publishingUserEmail?: strin
 function createCall(call: Call, creatingUserEmail?: string) {
   // randomize name
   if (call.generalCallSettings.name === 'randomize')
-    call.generalCallSettings.name = `${faker.hacker.adjective()} ${faker.hacker.noun()}`;
+    call.generalCallSettings.name = `${faker.word.adverb()} ${faker.hacker.adjective()} ${faker.hacker.noun()}`;
   // set relative dates if not set
   if (!call.generalCallSettings.startDateTime)
     call.generalCallSettings.startDateTime = faker.date.recent();
