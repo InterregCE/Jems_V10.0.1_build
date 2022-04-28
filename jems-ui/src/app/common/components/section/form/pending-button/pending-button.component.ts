@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 import {MatDialog} from '@angular/material/dialog';
-import {Forms} from '../../../../utils/forms';
+import {Forms} from '@common/utils/forms';
 import {take, tap} from 'rxjs/operators';
 import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.data';
 
@@ -20,6 +20,8 @@ export class PendingButtonComponent {
   disabled = false;
   @Input()
   confirm: ConfirmDialogData;
+  @Input()
+  type: 'primary' | 'secondary' = 'primary';
 
   @Output()
   clicked = new EventEmitter<void>();
