@@ -6,8 +6,7 @@
     </mat-card-content>
 
     <ng-container *ngIf="showSaveDiscard$ | async"
-                  [ngTemplateOutlet]="saveDiscard"
-                  [ngTemplateOutletContext]="{additionalAction: additionalAction}">
+                  [ngTemplateOutlet]="saveDiscard">
     </ng-container>
     <ng-container *ngIf="formService.success$ | async as success"
                   [ngTemplateOutlet]="saveSuccess"
@@ -19,14 +18,13 @@
     </ng-container>
 </mat-card>
 
-<ng-template #saveDiscard let-additionalAction="additionalAction">
+<ng-template #saveDiscard>
     <mat-card-footer [@slideInOut] class="footer">
         <button jemsText [disabled]="(formService.pending$ | async) === true"
                 mat-stroked-button class="action-button discard" type="button"
                 (click)="formService.setDirty(false); this.discard.emit(); formService.reset()">
             <mat-icon>cancel</mat-icon>&nbsp;{{'common.cancel.label' | translate}}
         </button>
-        <ng-container *ngTemplateOutlet="additionalAction"></ng-container>
         <jems-pending-button
                 icon="save"
                 [confirm]="confirmSave"

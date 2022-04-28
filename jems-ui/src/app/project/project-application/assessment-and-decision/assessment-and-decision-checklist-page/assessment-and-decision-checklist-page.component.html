@@ -1,6 +1,6 @@
 <jems-project-page-template *ngIf="checklist$ | async as checklist"
                             [needsCard]="false"
-                            titleText="checklists.instance.title"
+                            titleText="{{'checklists.instance.title' | translate}}"
                             [subTitleKey]="checklist.name">
     <jems-checklist-answers
             [components]="checklist.components"
