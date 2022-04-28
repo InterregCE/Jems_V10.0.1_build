@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.audit.repository
 
 import io.cloudflight.jems.server.audit.repository.AuditPersistenceProvider.Companion.AUDIT_INDEX
 import io.cloudflight.jems.server.audit.repository.AuditPersistenceProvider.Companion.AUDIT_INDEX_V2
+import io.cloudflight.jems.server.audit.repository.AuditPersistenceProvider.Companion.AUDIT_INDEX_V3
 import io.cloudflight.jems.server.config.AUDIT_ENABLED
 import io.cloudflight.jems.server.config.AUDIT_PROPERTY_PREFIX
 import org.apache.commons.io.IOUtils
@@ -22,6 +23,7 @@ import java.nio.charset.StandardCharsets
 
 private const val INDEX_NAME = AUDIT_INDEX
 private const val INDEX_NAME_V2 = AUDIT_INDEX_V2
+private const val INDEX_NAME_V3 = AUDIT_INDEX_V3
 private const val ES_INDEX_SOURCE_JSON = "elasticsearch/create_index_body.json"
 
 
@@ -34,8 +36,10 @@ class ElasticsearchAuditIndexInitializer(private val client: RestHighLevelClient
         private val logger = LoggerFactory.getLogger(ElasticsearchAuditIndexInitializer::class.java)
     }
 
-    override fun onApplicationEvent(event: ApplicationReadyEvent) =
+    override fun onApplicationEvent(event: ApplicationReadyEvent) {
         createIndexIfNotExists(INDEX_NAME, INDEX_NAME_V2)
+        createIndexIfNotExists(INDEX_NAME_V2, INDEX_NAME_V3)
+    }
 
     private fun createIndexIfNotExists(oldIndex: String, newIndex: String) {
         val getOldRequest = GetIndexRequest(oldIndex)
