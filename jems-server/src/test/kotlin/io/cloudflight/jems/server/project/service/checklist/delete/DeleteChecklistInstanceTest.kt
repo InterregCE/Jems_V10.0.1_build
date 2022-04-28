@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.service.checklist.delete
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.programme.service.checklist.delete.DeleteChecklistInstance
+import io.cloudflight.jems.server.programme.service.checklist.delete.DeleteChecklistInstanceStatusNotAllowedException
 import io.cloudflight.jems.server.programme.service.checklist.getList.GetChecklistInstanceDetailNotFoundException
 import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistComponentInstance
 import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistInstanceDetail
@@ -53,6 +54,17 @@ internal class DeleteChecklistInstanceTest : UnitTest() {
         )
     )
 
+    private val checkLisDetailWithFinishStatus = ChecklistInstanceDetail(
+        id = CHECKLIST_ID,
+        programmeChecklistId = 1L,
+        status = ChecklistInstanceStatus.FINISHED,
+        type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
+        name = "name",
+        relatedToId = 1L,
+        finishedDate = null,
+        components = emptyList()
+    )
+
     @MockK
     lateinit var persistence: ChecklistInstancePersistence
 
@@ -78,5 +90,11 @@ internal class DeleteChecklistInstanceTest : UnitTest() {
         assertThrows<GetChecklistInstanceDetailNotFoundException> {
             deleteChecklistInstance.deleteById(-1L)
         }
+    }
+
+    @Test
+    fun `delete checklist - is already in FINISHED status`() {
+        every { persistence.getChecklistDetail(CHECKLIST_ID) } returns checkLisDetailWithFinishStatus
+        assertThrows<DeleteChecklistInstanceStatusNotAllowedException> { deleteChecklistInstance.deleteById(CHECKLIST_ID) }
     }
 }
