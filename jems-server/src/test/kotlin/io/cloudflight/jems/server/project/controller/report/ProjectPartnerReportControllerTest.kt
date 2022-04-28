@@ -13,6 +13,10 @@ import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoF
 import io.cloudflight.jems.api.project.dto.report.ProjectPartnerReportDTO
 import io.cloudflight.jems.api.project.dto.report.ProjectPartnerReportSummaryDTO
 import io.cloudflight.jems.api.project.dto.report.ReportStatusDTO
+import io.cloudflight.jems.api.project.dto.report.file.ProjectPartnerReportFileTypeDTO
+import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileDTO
+import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileSearchRequestDTO
+import io.cloudflight.jems.api.project.dto.report.file.UserSimpleDTO
 import io.cloudflight.jems.api.project.dto.report.partner.PartnerReportIdentificationCoFinancingDTO
 import io.cloudflight.jems.api.project.dto.report.partner.PartnerReportIdentificationDTO
 import io.cloudflight.jems.server.UnitTest
@@ -20,6 +24,7 @@ import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
 import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatus
 import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatusType
+import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
@@ -28,14 +33,21 @@ import io.cloudflight.jems.server.project.service.report.model.PartnerReportIden
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSummary
 import io.cloudflight.jems.server.project.service.report.model.ReportStatus
+import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType
+import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFile
+import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileSearchRequest
+import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
 import io.cloudflight.jems.server.project.service.report.partner.createProjectPartnerReport.CreateProjectPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.deleteProjectPartnerReportFile.DeleteProjectPartnerReportFileInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.downloadProjectPartnerReportFile.DownloadProjectPartnerReportFileInteractor
+import io.cloudflight.jems.server.project.service.report.partner.file.listProjectPartnerReportFile.ListProjectPartnerReportFileInteractor
+import io.cloudflight.jems.server.project.service.report.partner.file.uploadFileToProjectPartnerReport.UploadFileToProjectPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.getProjectPartnerReport.GetProjectPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.submitProjectPartnerReport.SubmitProjectPartnerReportInteractor
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -141,6 +153,25 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
                 )
             )
         )
+
+        private val reportFile = ProjectReportFile(
+            id = 478L,
+            name = "attachment.pdf",
+            type = ProjectPartnerReportFileType.Contribution,
+            uploaded = YESTERDAY,
+            author = UserSimple(45L, email = "admin@cloudflight.io", name = "Admin", surname = "Big"),
+            size = 47889L,
+        )
+
+        private val reportFileDto = ProjectReportFileDTO(
+            id = 478L,
+            name = "attachment.pdf",
+            type = ProjectPartnerReportFileTypeDTO.Contribution,
+            uploaded = YESTERDAY,
+            author = UserSimpleDTO(45L, email = "admin@cloudflight.io", name = "Admin", surname = "Big"),
+            size = 47889L,
+            sizeString = "46.8\u0020kB",
+        )
     }
 
     @MockK
@@ -157,6 +188,12 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
 
     @MockK
     lateinit var deletePartnerReportFile: DeleteProjectPartnerReportFileInteractor
+
+    @MockK
+    lateinit var listPartnerReportFile: ListProjectPartnerReportFileInteractor
+
+    @MockK
+    lateinit var uploadPartnerReportFile: UploadFileToProjectPartnerReportInteractor
 
     @InjectMockKs
     private lateinit var controller: ProjectPartnerReportController
@@ -240,4 +277,36 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
         controller.deleteAttachment(partnerId = 24L, fileId = 300L)
         verify(exactly = 1) { deletePartnerReportFile.delete(partnerId = 24L, fileId = 300L) }
     }
+
+    @Test
+    fun uploadAttachment() {
+        val slotFile = slot<ProjectFile>()
+        every { uploadPartnerReportFile.uploadToReport(27L, reportId = 35L, capture(slotFile)) } returns dummyFile
+        assertThat(controller.uploadAttachment(27L, 35L, dummyMultipartFile())).isEqualTo(dummyFileDto)
+        assertThat(slotFile.captured).isEqualTo(dummyFileExpected)
+    }
+
+    @Test
+    fun listAttachments() {
+        val searchRequest = slot<ProjectReportFileSearchRequest>()
+        every { listPartnerReportFile.list(29L, Pageable.unpaged(), capture(searchRequest)) } returns
+            PageImpl(listOf(reportFile))
+
+        val searchRequestDto = ProjectReportFileSearchRequestDTO(
+            reportId = 80L,
+            treeNode = ProjectPartnerReportFileTypeDTO.PartnerReport,
+            filterSubtypes = setOf(ProjectPartnerReportFileTypeDTO.Activity),
+        )
+
+        assertThat(controller.listAttachments(29L, Pageable.unpaged(), searchRequestDto).content)
+            .containsExactly(reportFileDto)
+        assertThat(searchRequest.captured).isEqualTo(
+            ProjectReportFileSearchRequest(
+                reportId = 80L,
+                treeNode = ProjectPartnerReportFileType.PartnerReport,
+                filterSubtypes = setOf(ProjectPartnerReportFileType.Activity),
+            )
+        )
+    }
+
 }

@@ -7,7 +7,7 @@ import io.cloudflight.jems.server.project.controller.report.toDto
 import io.cloudflight.jems.server.project.controller.report.toProjectFile
 import io.cloudflight.jems.server.project.service.report.partner.procurement.getProjectPartnerReportProcurement.GetProjectPartnerReportProcurementInteractor
 import io.cloudflight.jems.server.project.service.report.partner.procurement.updateProjectPartnerReportProcurement.UpdateProjectPartnerReportProcurementInteractor
-import io.cloudflight.jems.server.project.service.report.partner.procurement.uploadFileToProjectPartnerReportProcurement.UploadFileToProjectPartnerReportProcurement
+import io.cloudflight.jems.server.project.service.report.partner.procurement.uploadFileToProjectPartnerReportProcurement.UploadFileToProjectPartnerReportProcurementInteractor
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
 
@@ -15,7 +15,7 @@ import org.springframework.web.multipart.MultipartFile
 class ProjectPartnerReportProcurementController(
     private val getProcurement: GetProjectPartnerReportProcurementInteractor,
     private val updateProcurement: UpdateProjectPartnerReportProcurementInteractor,
-    private val uploadFileToProcurement: UploadFileToProjectPartnerReportProcurement,
+    private val uploadFileToProcurement: UploadFileToProjectPartnerReportProcurementInteractor,
 ) : ProjectPartnerReportProcurementApi {
 
     override fun getProcurement(partnerId: Long, reportId: Long) =
