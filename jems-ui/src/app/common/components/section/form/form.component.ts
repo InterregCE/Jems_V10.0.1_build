@@ -26,8 +26,6 @@ export class FormComponent {
 
   @Input()
   confirmSave: ConfirmDialogData;
-  @Input()
-  additionalAction: TemplateRef<any>;
 
   @Output()
   save = new EventEmitter<void>();

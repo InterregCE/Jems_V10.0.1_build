@@ -2,14 +2,16 @@ import {ChangeDetectionStrategy, Component, Input, OnInit, TemplateRef, ViewChil
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {ColumnWidth} from '@common/components/table/model/column-width';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
-import {ChecklistInstanceDTO, IdNamePairDTO, ProgrammeChecklistDetailDTO, UserRoleDTO} from '@cat/api';
+import {ChecklistInstanceDTO, IdNamePairDTO, ProgrammeChecklistDetailDTO} from '@cat/api';
 import {Observable} from 'rxjs';
 import {
   ChecklistInstanceListStore
 } from '@common/components/checklist/checklist-instance-list/checklist-instance-list-store.service';
-import {tap} from 'rxjs/operators';
+import {filter, switchMap, take, tap} from 'rxjs/operators';
 import {RoutingService} from '@common/services/routing.service';
 import {ActivatedRoute} from '@angular/router';
+import {MatDialog} from "@angular/material/dialog";
+import {Forms} from "@common/utils/forms";
 
 @Component({
   selector: 'jems-checklist-instance-list',
@@ -19,7 +21,7 @@ import {ActivatedRoute} from '@angular/router';
   providers: [ChecklistInstanceListStore]
 })
 export class ChecklistInstanceListComponent implements OnInit {
-  PermissionsEnum = UserRoleDTO.PermissionsEnum;
+  Status = ChecklistInstanceDTO.StatusEnum;
 
   @Input()
   relatedType: ProgrammeChecklistDetailDTO.TypeEnum;
@@ -37,7 +39,8 @@ export class ChecklistInstanceListComponent implements OnInit {
 
   constructor(public pageStore: ChecklistInstanceListStore,
               private routingService: RoutingService,
-              private activatedRoute: ActivatedRoute) { }
+              private activatedRoute: ActivatedRoute,
+              private dialog: MatDialog) { }
 
   ngOnInit(): void {
     this.checklistInstances$ = this.pageStore.checklistInstances(this.relatedType, this.relatedId);
@@ -45,8 +48,17 @@ export class ChecklistInstanceListComponent implements OnInit {
     this.initializeTableConfiguration();
   }
 
-  delete(id: number): void {
-    this.pageStore.deleteChecklistInstance(id).subscribe();
+  delete(checklist: ChecklistInstanceDTO): void {
+    Forms.confirm(
+      this.dialog, {
+        title: checklist.name,
+        message: {i18nKey: 'checklists.instance.delete.confirm', i18nArguments: {name: checklist.name}}
+      })
+      .pipe(
+        take(1),
+        filter(answer => !!answer),
+        switchMap(() => this.pageStore.deleteChecklistInstance(checklist.id)),
+      ).subscribe();
   }
 
   private initializeTableConfiguration(): void {

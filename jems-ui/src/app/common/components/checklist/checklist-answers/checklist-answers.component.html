@@ -1,6 +1,5 @@
 <jems-form (save)="save.emit(formComponents.value)"
-           (discard)="resetForm()"
-           [additionalAction]="finishChecklist">
+           (discard)="resetForm()">
 
     <jems-alert [type]="Alert.WARNING"
                 [closable]="false"
@@ -8,8 +7,9 @@
         <div>{{warning | translate}}</div>
     </jems-alert>
 
-    <ng-container *ngIf="status"
-                  [ngTemplateOutlet]="statusChip">
+    <ng-container *ngIf="status">
+        <ng-container [ngTemplateOutlet]="statusChip"></ng-container>
+        <ng-container [ngTemplateOutlet]="finishChecklist"></ng-container>
     </ng-container>
 
     <div *ngIf="formComponents?.length" jemsFormLayout>
@@ -36,7 +36,7 @@
 
 <ng-template #finishChecklist>
     <jems-pending-button *ngIf="status === Status.DRAFT" class="mr-2"
-                         icon="done"
+                         type="secondary"
                          [confirm]="confirmFinish"
                          (clicked)="finish.emit(formComponents.value)">
         {{'checklists.instance.confirm.finish.title' | translate}}
