@@ -1,5 +1,5 @@
 plugins {
-    id "cloudflight-gradle-plugin" version "6.4.0"
+    id "cloudflight-gradle-plugin" version "6.5.11"
 }
 
 // add version-postfix if build was triggered by customer

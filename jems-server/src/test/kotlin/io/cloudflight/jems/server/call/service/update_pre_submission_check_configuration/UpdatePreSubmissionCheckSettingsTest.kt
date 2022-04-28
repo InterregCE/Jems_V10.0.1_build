@@ -64,7 +64,7 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
 
         verify(exactly = 1) { persistence.updateProjectCallPreSubmissionCheckPlugin(
             callId = 1L,
-            pluginKey = PreSubmissionPlugins("jems-pre-condition-check-off", PreConditionCheckSamplePluginKey),
+            pluginKeys = PreSubmissionPlugins("jems-pre-condition-check-off", PreConditionCheckSamplePluginKey),
         ) }
     }
 
