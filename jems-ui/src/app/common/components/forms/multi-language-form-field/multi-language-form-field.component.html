@@ -12,6 +12,7 @@
                             [readonly]="!isEditable(getLanguageValue(formGroup),languageStore.fallbackLanguage$ | async)"
                             [formControlName]="constants.FORM_CONTROL_NAMES.translation"
                             (keydown.enter)="$event.preventDefault()"
+                            [matTooltip]="condensed ? input.value + ' (' + getTranslationLength(formGroup) + '/' + maxLength + ')' : ''"
                             matInput>
                     <jems-context-info *ngIf="contextInfoText"
                                       [infoText]="contextInfoText">
@@ -25,8 +26,9 @@
                     <mat-error>
                         <jems-form-field-errors
                                 [errors]="getTranslation(formGroup).errors"
-                                [messages]="constants.FORM_ERRORS.translation">
-                        </jems-form-field-errors>
+                                [messages]="constants.FORM_ERRORS.translation"
+                                [condensed]="condensed">
+                       </jems-form-field-errors>
                     </mat-error>
                 </mat-form-field>
                 <mat-form-field *ngIf="type==='textarea'"
@@ -36,6 +38,7 @@
                     <textarea [formControlName]="constants.FORM_CONTROL_NAMES.translation"
                               matInput
                               #textarea
+                              [matTooltip]="condensed ? textarea.value + ' (' + getTranslationLength(formGroup) + '/' + maxLength + ')' : ''"
                               [placeholder]="useFallBackLanguage? (inputs.value | translateBySystemLanguage: true | async) : ''"
                               [readonly]="!isEditable(getLanguageValue(formGroup), languageStore.fallbackLanguage$ | async)"
                               [cdkTextareaAutosize]
@@ -54,7 +57,8 @@
                     <mat-error>
                         <jems-form-field-errors
                                 [errors]="getTranslation(formGroup).errors"
-                                [messages]="constants.FORM_ERRORS.translation">
+                                [messages]="constants.FORM_ERRORS.translation"
+                                [condensed]="condensed">
                         </jems-form-field-errors>
                     </mat-error>
                 </mat-form-field>
