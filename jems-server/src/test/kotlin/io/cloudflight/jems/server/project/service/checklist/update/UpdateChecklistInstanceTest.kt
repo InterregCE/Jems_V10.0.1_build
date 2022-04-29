@@ -19,9 +19,7 @@ import io.cloudflight.jems.server.project.service.checklist.ChecklistInstancePer
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceStatus
 import io.cloudflight.jems.server.project.service.checklist.model.metadata.TextInputInstanceMetadata
 import io.mockk.*
-import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
-import io.mockk.impl.annotations.RelaxedMockK
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -54,8 +52,8 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
                 3L,
                 ProgrammeChecklistComponentType.OPTIONS_TOGGLE,
                 2,
-                OptionsToggleMetadata("What option do you choose", "yes", "no", "maybe"),
-                OptionsToggleInstanceMetadata("yes")
+                OptionsToggleMetadata("What option do you choose", "yes", "no", "maybe", ""),
+                OptionsToggleInstanceMetadata("yes", "test")
             ),
             ChecklistComponentInstance(
                 4L,

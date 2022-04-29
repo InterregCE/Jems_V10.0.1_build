@@ -24,8 +24,8 @@
                 <ng-container *ngSwitchCase="ComponentType.OPTIONSTOGGLE"
                               [ngTemplateOutlet]="optionsToggle"
                               [ngTemplateOutletContext]="{
-                              options: component.get('programmeMetadata').value,
-                              control: component.get('instanceMetadata')?.get('answer')
+                                options: component.get('programmeMetadata').value,
+                                controls: component.get('instanceMetadata')
                               }">
                 </ng-container>
                 <ng-container *ngSwitchCase="ComponentType.TEXTINPUT"
@@ -68,11 +68,11 @@
     <h4>{{headline.value}}</h4>
 </ng-template>
 
-<ng-template #optionsToggle let-options="options" let-control="control">
-    <div jemsMultiColumnRow stretch>
-        <p jemsText>{{options.question}}</p>
-        <span class="box">
-            <mat-button-toggle-group [formControl]="control || {}">
+<ng-template #optionsToggle let-options="options" let-controls="controls">
+    <div>
+        <p jemsText jemsMultiColumnRow>{{options.question}}</p>
+        <span class="box mt-2" jemsMultiColumnRow>
+            <mat-button-toggle-group [formControl]="controls?.get('answer') || {}">
                 <mat-button-toggle [value]="options.firstOption">
                     <span jemsText maxWidth="70">{{options.firstOption}}</span>
                 </mat-button-toggle>
@@ -85,6 +85,14 @@
                 </mat-button-toggle>
             </mat-button-toggle-group>
         </span>
+        <jems-expandable-textarea jemsMultiColumnRow class="mt-2"
+                                  [control]="controls?.get('justification')"
+                                  [characterLimit]="5000"
+                                  [minRows]="1"
+                                  [maxRows]="30"
+                                  [label]="'checklists.instance.component.field.justification'">
+        </jems-expandable-textarea>
+
     </div>
 </ng-template>
 

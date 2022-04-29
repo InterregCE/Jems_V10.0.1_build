@@ -60,7 +60,7 @@ internal class CreateChecklistInstanceTest : UnitTest() {
                 3L,
                 ProgrammeChecklistComponentType.OPTIONS_TOGGLE,
                 2,
-                OptionsToggleMetadata("What option do you choose", "yes", "no", "maybe"),
+                OptionsToggleMetadata("What option do you choose", "yes", "no", "maybe", ""),
                 null
             ),
             ChecklistComponentInstance(

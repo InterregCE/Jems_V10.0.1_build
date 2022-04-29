@@ -4,5 +4,6 @@ class OptionsToggleMetadata(
     var question: String = "",
     val firstOption: String,
     val secondOption: String,
-    val thirdOption: String? = null
+    val thirdOption: String? = null,
+    val justification: String? = null
 ) : ProgrammeChecklistMetadata

@@ -67,7 +67,8 @@ class ProgrammeChecklistControllerTest : UnitTest() {
             OptionsToggleMetadata(
                 question = "question 1",
                 firstOption = "yes",
-                secondOption = "no"
+                secondOption = "no",
+                justification = ""
             )
         ),
         ProgrammeChecklistComponent(
@@ -105,7 +106,8 @@ class ProgrammeChecklistControllerTest : UnitTest() {
             OptionsToggleMetadataDTO(
                 "question 1",
                 "yes",
-                "no"
+                "no",
+                justification = ""
             )
         ),
         ProgrammeChecklistComponentDTO(

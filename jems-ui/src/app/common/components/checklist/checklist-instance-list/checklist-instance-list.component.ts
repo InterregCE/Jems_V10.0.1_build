@@ -10,8 +10,8 @@ import {
 import {filter, switchMap, take, tap} from 'rxjs/operators';
 import {RoutingService} from '@common/services/routing.service';
 import {ActivatedRoute} from '@angular/router';
-import {MatDialog} from "@angular/material/dialog";
-import {Forms} from "@common/utils/forms";
+import {MatDialog} from '@angular/material/dialog';
+import {Forms} from '@common/utils/forms';
 
 @Component({
   selector: 'jems-checklist-instance-list',
