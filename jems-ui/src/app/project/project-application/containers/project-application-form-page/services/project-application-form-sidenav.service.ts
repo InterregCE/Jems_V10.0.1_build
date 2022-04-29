@@ -117,15 +117,24 @@ export class ProjectApplicationFormSidenavService {
     this.permissionService.hasPermission(PermissionsEnum.ProjectStatusReturnToApplicant),
     this.permissionService.hasPermission(PermissionsEnum.ProjectStartStepTwo),
     this.permissionService.hasPermission(PermissionsEnum.ProjectStatusDecisionRevert),
+    this.permissionService.hasPermission(PermissionsEnum.ProjectAssessmentChecklistUpdate),
     this.fileManagementStore.canReadAssessmentFile$,
   ]).pipe(
     map(([projectStatus, callHas2Steps, hasAssessmentViewPermission, hasReturnToaApplicantPermission, hasStartStepTwoPermission,
-           hasRevertDecisionPermission, canReadAssessmentFiles]: any) => {
-      return ((canReadAssessmentFiles || hasAssessmentViewPermission || hasRevertDecisionPermission) &&
-          ((callHas2Steps && projectStatus !== StatusEnum.STEP1DRAFT) || (!callHas2Steps && projectStatus !== StatusEnum.DRAFT)))
-        || (hasStartStepTwoPermission && (projectStatus === StatusEnum.STEP1APPROVED || projectStatus === StatusEnum.STEP1APPROVEDWITHCONDITIONS))
-        || (hasReturnToaApplicantPermission && (projectStatus === StatusEnum.SUBMITTED || projectStatus === StatusEnum.APPROVED ||
-          projectStatus === StatusEnum.APPROVEDWITHCONDITIONS || projectStatus === StatusEnum.ELIGIBLE));
+           hasRevertDecisionPermission, hasChecklistPermission, canReadAssessmentFiles]: any) => {
+      return (
+          (canReadAssessmentFiles || hasAssessmentViewPermission || hasRevertDecisionPermission || hasChecklistPermission) &&
+          ((callHas2Steps && projectStatus !== StatusEnum.STEP1DRAFT) || (!callHas2Steps && projectStatus !== StatusEnum.DRAFT))
+        )
+        || (
+          hasStartStepTwoPermission &&
+          (projectStatus === StatusEnum.STEP1APPROVED || projectStatus === StatusEnum.STEP1APPROVEDWITHCONDITIONS)
+        )
+        || (
+          hasReturnToaApplicantPermission &&
+          (projectStatus === StatusEnum.SUBMITTED || projectStatus === StatusEnum.APPROVED
+            || projectStatus === StatusEnum.APPROVEDWITHCONDITIONS || projectStatus === StatusEnum.ELIGIBLE)
+        );
     }),
   );
 
