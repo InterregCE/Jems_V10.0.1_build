@@ -101,7 +101,8 @@ private fun OptionsToggleMetadata.toDto(): OptionsToggleMetadataDTO =
         question,
         firstOption,
         secondOption,
-        thirdOption
+        thirdOption,
+        justification
     )
 
 private fun OptionsToggleMetadataDTO.toModel(): OptionsToggleMetadata =
@@ -109,7 +110,8 @@ private fun OptionsToggleMetadataDTO.toModel(): OptionsToggleMetadata =
         question,
         firstOption,
         secondOption,
-        thirdOption
+        thirdOption,
+        justification
     )
 
 private fun TextInputMetadata.toDto(): TextInputMetadataDTO =

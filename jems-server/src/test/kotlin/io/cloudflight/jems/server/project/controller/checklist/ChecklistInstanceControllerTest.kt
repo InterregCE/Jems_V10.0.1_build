@@ -78,7 +78,7 @@ class ChecklistInstanceControllerTest : UnitTest() {
                 ProgrammeChecklistComponentType.OPTIONS_TOGGLE,
                 1,
                 OptionsToggleMetadata("What option do you choose", "yes", "no", "maybe"),
-                OptionsToggleInstanceMetadata("yes")
+                OptionsToggleInstanceMetadata("yes", "test")
             ),
             ChecklistComponentInstance(
                 4L,
@@ -108,7 +108,7 @@ class ChecklistInstanceControllerTest : UnitTest() {
                 ProgrammeChecklistComponentTypeDTO.OPTIONS_TOGGLE,
                 1,
                 OptionsToggleMetadataDTO("What option do you choose", "yes", "no", "maybe"),
-                OptionsToggleInstanceMetadataDTO("yes")
+                OptionsToggleInstanceMetadataDTO("yes", "test")
             ),
             ChecklistComponentInstanceDTO(
                 4L,

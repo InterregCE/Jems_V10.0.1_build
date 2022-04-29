@@ -46,8 +46,8 @@ internal class DeleteChecklistInstanceTest : UnitTest() {
                 3L,
                 ProgrammeChecklistComponentType.OPTIONS_TOGGLE,
                 2,
-                OptionsToggleMetadata("What option do you choose", "yes", "no", "maybe"),
-                OptionsToggleInstanceMetadata("yes")
+                OptionsToggleMetadata("What option do you choose", "yes", "no", "maybe", ""),
+                OptionsToggleInstanceMetadata("yes","test")
             ),
             ChecklistComponentInstance(
                 4L,
