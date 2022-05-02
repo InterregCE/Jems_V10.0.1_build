@@ -77,10 +77,10 @@ abstract class ChecklistInstanceComponentMapper {
     }
 
     private fun OptionsToggleInstanceMetadata.toDto(): OptionsToggleInstanceMetadataDTO =
-        OptionsToggleInstanceMetadataDTO(answer)
+        OptionsToggleInstanceMetadataDTO(answer, justification)
 
     private fun OptionsToggleInstanceMetadataDTO.toModel(): OptionsToggleInstanceMetadata =
-        OptionsToggleInstanceMetadata(answer)
+        OptionsToggleInstanceMetadata(answer, justification)
 
     private fun TextInputInstanceMetadata.toDto(): TextInputInstanceMetadataDTO =
         TextInputInstanceMetadataDTO(explanation)

@@ -107,9 +107,9 @@ export class ChecklistAnswersComponent implements OnInit, OnChanges {
         switch (component.type) {
           case ChecklistComponentInstanceDTO.TypeEnum.OPTIONSTOGGLE: component.instanceMetadata = {
             type:ChecklistComponentInstanceDTO.TypeEnum.OPTIONSTOGGLE,
-            answer: null
-          };
-          break;
+            answer: null,
+            justification: null
+          }; break;
           case ChecklistComponentInstanceDTO.TypeEnum.TEXTINPUT: component.instanceMetadata = {
             type:ChecklistComponentInstanceDTO.TypeEnum.TEXTINPUT,
             explanation: null
