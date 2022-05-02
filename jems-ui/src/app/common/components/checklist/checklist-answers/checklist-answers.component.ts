@@ -9,9 +9,10 @@ import {
   SimpleChanges
 } from '@angular/core';
 import {
-  ChecklistComponentInstanceDTO, ChecklistInstanceDetailDTO,
+  ChecklistComponentInstanceDTO,
+  ChecklistInstanceDetailDTO,
   ProgrammeChecklistComponentDTO,
-  ProgrammeChecklistDetailDTO, TextInputMetadataDTO
+  TextInputMetadataDTO
 } from '@cat/api';
 import {Alert} from '@common/components/forms/alert';
 import {FormService} from '@common/components/section/form/form.service';
@@ -107,11 +108,13 @@ export class ChecklistAnswersComponent implements OnInit, OnChanges {
           case ChecklistComponentInstanceDTO.TypeEnum.OPTIONSTOGGLE: component.instanceMetadata = {
             type:ChecklistComponentInstanceDTO.TypeEnum.OPTIONSTOGGLE,
             answer: null
-          }; break;
+          };
+          break;
           case ChecklistComponentInstanceDTO.TypeEnum.TEXTINPUT: component.instanceMetadata = {
             type:ChecklistComponentInstanceDTO.TypeEnum.TEXTINPUT,
             explanation: null
-          }; break;
+          };
+          break;
         }
     });
   }

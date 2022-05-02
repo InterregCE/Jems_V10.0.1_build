@@ -48,12 +48,12 @@ class ChecklistTemplateValidator(private val validator: GeneralValidatorService)
                     "question"
                 ),
                 validator.maxLength(
-                    (component.metadata as OptionsToggleMetadata).question,
+                    (component.metadata as OptionsToggleMetadata).firstOption,
                     100,
                     "firstOption"
                 ),
                 validator.maxLength(
-                    (component.metadata as OptionsToggleMetadata).question,
+                    (component.metadata as OptionsToggleMetadata).secondOption,
                     100,
                     "secondOption"
                 )
