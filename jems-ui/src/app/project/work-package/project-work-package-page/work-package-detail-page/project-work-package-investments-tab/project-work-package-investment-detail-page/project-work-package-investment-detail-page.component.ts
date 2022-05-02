@@ -40,8 +40,11 @@ export class ProjectWorkPackageInvestmentDetailPageComponent implements OnInit {
     justificationPilot: ['', this.constants.JUSTIFICATION_PILOT.validators],
     address: this.formBuilder.group({
       country: [''],
+      countryCode: [''],
       region2: [''],
+      region2Code: [''],
       region3: [''],
+      region3Code: [''],
       street: ['', Validators.maxLength(50)],
       houseNumber: ['', Validators.maxLength(20)],
       postalCode: ['', Validators.maxLength(20)],
@@ -120,8 +123,11 @@ export class ProjectWorkPackageInvestmentDetailPageComponent implements OnInit {
     this.workPackageInvestmentForm.controls.justificationBenefits?.setValue(investment?.justificationBenefits || []);
     this.workPackageInvestmentForm.controls.justificationPilot?.setValue(investment?.justificationPilot || []);
     this.address.country.setValue(investment?.address?.country);
+    this.address.countryCode.setValue(investment?.address?.countryCode);
     this.address.region2.setValue(investment?.address?.region2);
+    this.address.region2Code.setValue(investment?.address?.region2Code);
     this.address.region3.setValue(investment?.address?.region3);
+    this.address.region3Code.setValue(investment?.address?.region3Code);
     this.address.street.setValue(investment?.address?.street);
     this.address.houseNumber.setValue(investment?.address?.houseNumber);
     this.address.postalCode.setValue(investment?.address?.postalCode);

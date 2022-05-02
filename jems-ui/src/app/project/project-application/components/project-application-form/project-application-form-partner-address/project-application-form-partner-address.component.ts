@@ -30,8 +30,11 @@ export class ProjectApplicationFormPartnerAddressComponent implements OnInit, On
   partnerAddressForm: FormGroup = this.formBuilder.group({
     organization: this.formBuilder.group({
       country: [''],
+      countryCode: [''],
       region2: [''],
+      region2Code: [''],
       region3: [''],
+      region3Code: [''],
       street: ['', Validators.maxLength(50)],
       houseNumber: ['', Validators.maxLength(20)],
       postalCode: ['', Validators.maxLength(20)],
@@ -40,8 +43,11 @@ export class ProjectApplicationFormPartnerAddressComponent implements OnInit, On
     }),
     department: this.formBuilder.group({
       country: [''],
+      countryCode: [''],
       region2: [''],
+      region2Code: [''],
       region3: [''],
+      region3Code: [''],
       street: ['', Validators.maxLength(50)],
       houseNumber: ['', Validators.maxLength(20)],
       postalCode: ['', Validators.maxLength(20)],
@@ -110,8 +116,11 @@ export class ProjectApplicationFormPartnerAddressComponent implements OnInit, On
     const partnerOrganizationAddress = {
       type: ProjectPartnerAddressDTO.TypeEnum.Organization,
       country: this.organization.country.value,
+      countryCode: this.organization.countryCode.value,
       nutsRegion2: this.organization.region2.value,
+      nutsRegion2Code: this.organization.region2Code.value,
       nutsRegion3: this.organization.region3.value,
+      nutsRegion3Code: this.organization.region3Code.value,
       street: this.organization.street.value,
       houseNumber: this.organization.houseNumber.value,
       postalCode: this.organization.postalCode.value,
@@ -121,8 +130,11 @@ export class ProjectApplicationFormPartnerAddressComponent implements OnInit, On
     const partnerDepartmentAddress = {
       type: ProjectPartnerAddressDTO.TypeEnum.Department,
       country: this.department.country.value,
+      countryCode: this.department.countryCode.value,
       nutsRegion2: this.department.region2.value,
+      nutsRegion2Code: this.department.region2Code.value,
       nutsRegion3: this.department.region3.value,
+      nutsRegion3Code: this.department.region3Code.value,
       street: this.department.street.value,
       houseNumber: this.department.houseNumber.value,
       postalCode: this.department.postalCode.value,
@@ -146,8 +158,11 @@ export class ProjectApplicationFormPartnerAddressComponent implements OnInit, On
     const partnerMainAddress = this.organizationDetails?.find(
       person => person.type === ProjectPartnerAddressDTO.TypeEnum.Organization);
     this.organization.country.setValue(partnerMainAddress?.country);
+    this.organization.countryCode.setValue(partnerMainAddress?.countryCode);
     this.organization.region2.setValue(partnerMainAddress?.nutsRegion2);
+    this.organization.region2Code.setValue(partnerMainAddress?.nutsRegion2Code);
     this.organization.region3.setValue(partnerMainAddress?.nutsRegion3);
+    this.organization.region3Code.setValue(partnerMainAddress?.nutsRegion3Code);
     this.organization.street.setValue(partnerMainAddress?.street);
     this.organization.houseNumber.setValue(partnerMainAddress?.houseNumber);
     this.organization.postalCode.setValue(partnerMainAddress?.postalCode);
@@ -159,8 +174,11 @@ export class ProjectApplicationFormPartnerAddressComponent implements OnInit, On
     const partnerMainAddress = this.organizationDetails?.find(
       person => person.type === ProjectPartnerAddressDTO.TypeEnum.Department);
     this.department.country.setValue(partnerMainAddress?.country);
+    this.department.countryCode.setValue(partnerMainAddress?.countryCode);
     this.department.region2.setValue(partnerMainAddress?.nutsRegion2);
+    this.department.region2Code.setValue(partnerMainAddress?.nutsRegion2Code);
     this.department.region3.setValue(partnerMainAddress?.nutsRegion3);
+    this.department.region3Code.setValue(partnerMainAddress?.nutsRegion3Code);
     this.department.street.setValue(partnerMainAddress?.street);
     this.department.houseNumber.setValue(partnerMainAddress?.houseNumber);
     this.department.postalCode.setValue(partnerMainAddress?.postalCode);

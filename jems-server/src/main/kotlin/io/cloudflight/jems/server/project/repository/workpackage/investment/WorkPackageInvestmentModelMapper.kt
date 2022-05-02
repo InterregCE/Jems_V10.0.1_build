@@ -113,17 +113,30 @@ fun WorkPackageInvestment.toWorkPackageInvestmentEntity(workPackageEntity: WorkP
     }
 
 fun Address.toAddressEntity() = AddressEntity(
-    this.country,
-    this.nutsRegion2,
-    this.nutsRegion3,
-    this.street,
-    this.houseNumber,
-    this.postalCode,
-    this.city
+    country = this.country,
+    countryCode = this.countryCode,
+    nutsRegion2 = this.nutsRegion2,
+    nutsRegion2Code = this.nutsRegion2Code,
+    nutsRegion3 = this.nutsRegion3,
+    nutsRegion3Code = this.nutsRegion3Code,
+    street = this.street,
+    houseNumber = this.houseNumber,
+    postalCode = this.postalCode,
+    city = this.city
 )
 
-fun AddressEntity.toAddress() =
-    Address(this.country, this.nutsRegion2, this.nutsRegion3, this.street, this.houseNumber, this.postalCode, this.city)
+fun AddressEntity.toAddress() = Address(
+    country = this.country,
+    countryCode = this.countryCode,
+    nutsRegion2 = this.nutsRegion2,
+    nutsRegion2Code = this.nutsRegion2Code,
+    nutsRegion3 = this.nutsRegion3,
+    nutsRegion3Code = this.nutsRegion3Code,
+    street = this.street,
+    houseNumber = this.houseNumber,
+    postalCode = this.postalCode,
+    city = this.city
+)
 
 fun List<WorkPackageInvestmentRow>.toWorkPackageInvestmentHistoricalData() =
     this.groupBy { it.id }.map { groupedRows -> WorkPackageInvestment(
@@ -137,8 +150,11 @@ fun List<WorkPackageInvestmentRow>.toWorkPackageInvestmentHistoricalData() =
         justificationPilot = groupedRows.value.extractField { it.justificationPilot },
         address = Address(
             country = groupedRows.value.first().country,
+            countryCode = groupedRows.value.first().countryCode,
             nutsRegion2 = groupedRows.value.first().nutsRegion2,
+            nutsRegion2Code = groupedRows.value.first().nutsRegion2Code,
             nutsRegion3 = groupedRows.value.first().nutsRegion3,
+            nutsRegion3Code = groupedRows.value.first().nutsRegion3Code,
             street = groupedRows.value.first().street,
             houseNumber = groupedRows.value.first().houseNumber,
             postalCode = groupedRows.value.first().postalCode,
@@ -163,8 +179,11 @@ fun List<WorkPackageInvestmentRow>.toWorkPackageInvestmentHistoricalList() =
         justificationPilot = groupedRows.value.extractField { it.justificationPilot },
         address = Address(
             country = groupedRows.value.first().country,
+            countryCode = groupedRows.value.first().countryCode,
             nutsRegion2 = groupedRows.value.first().nutsRegion2,
+            nutsRegion2Code = groupedRows.value.first().nutsRegion2Code,
             nutsRegion3 = groupedRows.value.first().nutsRegion3,
+            nutsRegion3Code = groupedRows.value.first().nutsRegion3Code,
             street = groupedRows.value.first().street,
             houseNumber = groupedRows.value.first().houseNumber,
             postalCode = groupedRows.value.first().postalCode,

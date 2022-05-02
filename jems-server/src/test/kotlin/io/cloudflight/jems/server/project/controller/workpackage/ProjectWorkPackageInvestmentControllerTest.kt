@@ -36,7 +36,7 @@ class ProjectWorkPackageInvestmentControllerTest {
             justificationTransactionalRelevance = setOf(InputTranslation(SystemLanguage.EN, "justificationTransactionalRelevance")),
             justificationBenefits = setOf(InputTranslation(SystemLanguage.EN, "justificationBenefits")),
             justificationPilot = setOf(InputTranslation(SystemLanguage.EN, "justificationPilot")),
-            address = Address("country", "reg2", "reg3", "str", "nr", "code", "city"),
+            address = Address("country", "AT", "reg2", "AT01", "reg3", "AT011", "str", "nr", "code", "city"),
             risk = setOf(InputTranslation(SystemLanguage.EN, "risk")),
             documentation = setOf(InputTranslation(SystemLanguage.EN, "documentation")),
             ownershipSiteLocation = setOf(InputTranslation(SystemLanguage.EN, "ownershipSiteLocation")),
