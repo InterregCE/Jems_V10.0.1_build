@@ -11,8 +11,12 @@ export class SecondsToTimePipePipe implements PipeTransform {
   }
 
   transform(seconds: number | null): Observable<string> {
-      if(seconds == null) {return  of('');}
-      if(seconds > 86400) {return this.translateService.get('common.more.than.a.day');}
+      if(seconds == null) {
+        return  of('');
+      }
+      if(seconds > 86400) {
+        return this.translateService.get('common.more.than.a.day');
+      }
       else {return of(new Date(seconds * 1000).toISOString().substr(11, 8));}
   }
 

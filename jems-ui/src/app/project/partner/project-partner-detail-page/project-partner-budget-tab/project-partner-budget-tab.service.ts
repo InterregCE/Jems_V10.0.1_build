@@ -96,15 +96,19 @@ export class ProjectPartnerBudgetTabService {
   }
 
   getPeriodsWidthConfigs(projectPeriods: ProjectPeriodDTO[]): TableConfig[] {
-    return this.formVisibilityStatusService.isVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_BUDGET_PERIODS) ?
-      (projectPeriods?.length ? [...projectPeriods?.map(() => ({minInRem: 8, maxInRem: 8})), {minInRem: 8, maxInRem: 8}] : [])
-      : [];
+    if (this.formVisibilityStatusService.isVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_BUDGET_PERIODS)
+      && projectPeriods?.length) {
+      return [...projectPeriods?.map(() => ({minInRem: 8, maxInRem: 8})), {minInRem: 8, maxInRem: 8}];
+    }
+    return [];
   }
 
   getPeriodTableColumns(projectPeriods: ProjectPeriodDTO[]): string[] {
-    return this.formVisibilityStatusService.isVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_BUDGET_PERIODS) ?
-      (projectPeriods?.length ? [...projectPeriods?.map(period => 'period' + period.number), 'openForPeriods'] : [])
-      : [];
+    if (this.formVisibilityStatusService.isVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_BUDGET_PERIODS)
+      && projectPeriods?.length) {
+      return [...projectPeriods?.map(period => 'period' + period.number), 'openForPeriods'];
+    }
+    return [];
   }
 
   addIfItsVisible(field: ApplicationFormModel | string, result: any[]): any[] {

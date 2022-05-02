@@ -15,7 +15,7 @@ import {
 } from '@cat/api';
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 import {filter, map, share, shareReplay, startWith, switchMap, tap, withLatestFrom} from 'rxjs/operators';
-import {combineLatest, forkJoin, MonoTypeOperatorFunction, Observable, of, Subject} from 'rxjs';
+import {combineLatest, forkJoin, Observable, of, Subject} from 'rxjs';
 import {PartnerBudgetTables} from '@project/model/budget/partner-budget-tables';
 import {StaffCostsBudgetTable} from '@project/model/budget/staff-costs-budget-table';
 import {StaffCostsBudgetTableEntry} from '@project/model/budget/staff-costs-budget-table-entry';

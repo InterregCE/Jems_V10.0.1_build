@@ -74,8 +74,8 @@ export class ProgrammeBasicDataComponent extends ViewEditFormComponent implement
     programmeAmendingDecisionDate: [''],
     projectIdProgrammeAbbreviation: ['', Validators.maxLength(12)],
     projectIdUseCallId: false,
-  },                                     {
-    validator: this.firstYearBeforeLastYear
+  },{
+    validators: [this.firstYearBeforeLastYear],
   });
 
   projectIdExample$: Observable<string>;

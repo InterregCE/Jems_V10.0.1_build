@@ -60,7 +60,7 @@ sonarqube {
         // exclude certain big enums from code duplication checks
         property "sonar.cpd.exclusions", "**/NaceGroupLevel.kt, **/NaceGroupLevelDTO.kt"
 
-        property "sonar.issue.ignore.multicriteria", "e1,e2,e3"
+        property "sonar.issue.ignore.multicriteria", "e1,e2,e3,e4"
         // ignore rule: readonly was decided to provide no big advantage
         property "sonar.issue.ignore.multicriteria.e1.ruleKey", "typescript:S2933"
         property "sonar.issue.ignore.multicriteria.e1.resourceKey", "**/*.ts"
@@ -70,5 +70,8 @@ sonarqube {
         // ignore rule: empty css files do not matter
         property "sonar.issue.ignore.multicriteria.e3.ruleKey", "css:S4667"
         property "sonar.issue.ignore.multicriteria.e3.resourceKey", "**/*.scss"
+        // ignore rule: at-rule "@use" in scss
+        property "sonar.issue.ignore.multicriteria.e4.ruleKey", "css:S4662"
+        property "sonar.issue.ignore.multicriteria.e4.resourceKey", "**/*.scss"
     }
 }

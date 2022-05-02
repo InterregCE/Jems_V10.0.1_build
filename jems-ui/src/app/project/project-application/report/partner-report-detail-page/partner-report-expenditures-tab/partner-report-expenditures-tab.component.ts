@@ -25,7 +25,7 @@ import {
 } from '@project/project-application/report/partner-report-detail-page/partner-file-management-store';
 import {
   PartnerReportDetailPageStore
-} from "@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service";
+} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
 
 @UntilDestroy()
 @Component({
