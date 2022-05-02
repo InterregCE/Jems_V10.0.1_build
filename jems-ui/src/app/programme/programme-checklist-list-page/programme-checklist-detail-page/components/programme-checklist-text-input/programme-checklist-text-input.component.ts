@@ -73,7 +73,7 @@ export class ProgrammeChecklistTextInputComponent implements ControlValueAccesso
     this.form = this.formBuilder.group({
       question: [this.metadata?.question, [Validators.required, Validators.maxLength(1000)]],
       explanationLabel: [this.metadata?.explanationLabel, [Validators.required, Validators.maxLength(50)]],
-      explanationMaxLength: [this.metadata?.explanationMaxLength || 5000, [Validators.min(0), Validators.max(5000), Validators.maxLength(4)]]
+      explanationMaxLength: [this.metadata?.explanationMaxLength || 5000, [Validators.min(1), Validators.max(5000), Validators.maxLength(4)]]
     });
 
     this.updateFormValues();

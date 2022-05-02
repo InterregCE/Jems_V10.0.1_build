@@ -76,7 +76,7 @@
                                 <div *ngSwitchDefault></div>
                             </div>
                             <div *ngIf="form.enabled" class="top-cell justify-end">
-                                <button mat-icon-button color="accent"
+                                <button mat-icon-button color="accent" type="button"
                                         (click)="components.removeAt(i); formService.setDirty(true)"
                                         matTooltip="{{'common.delete.entry.tooltip' | translate}}">
                                     <mat-icon>delete</mat-icon>
