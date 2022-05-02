@@ -1,4 +1,4 @@
-import {CurrencyDTO, CurrencyImportAndConversionService, NutsImportService, OutputNuts} from '@cat/api';
+import {CurrencyDTO, CurrencyImportAndConversionService} from '@cat/api';
 import {Injectable} from '@angular/core';
 import {map, shareReplay, take, tap} from 'rxjs/operators';
 import {Log} from '../utils/log';
