@@ -8,12 +8,18 @@ data class AddressEntity(
 
     @Column
     val country: String? = null,
+    @Column
+    val countryCode: String? = null,
 
     @Column
     val nutsRegion2: String? = null,
+    @Column(name = "nuts_region2_code")
+    val nutsRegion2Code: String? = null,
 
     @Column
     val nutsRegion3: String? = null,
+    @Column(name = "nuts_region3_code")
+    val nutsRegion3Code: String? = null,
 
     @Column
     val street: String? = null,

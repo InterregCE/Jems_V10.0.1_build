@@ -35,7 +35,8 @@
             <input name="region3" formControlName="region3" matInput
                    [matAutocomplete]="region3"
                    (focusout)="region3Unfocused($event)">
-            <mat-autocomplete #region3="matAutocomplete">
+            <mat-autocomplete #region3="matAutocomplete"
+                              (optionSelected)="region3Changed($event.option?.value)">
                 <mat-option *ngFor="let region of filteredRegion3 | async" [value]="region">
                     {{region}}
                 </mat-option>

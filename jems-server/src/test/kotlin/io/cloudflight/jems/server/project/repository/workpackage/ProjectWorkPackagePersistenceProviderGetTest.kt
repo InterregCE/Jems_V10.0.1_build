@@ -811,8 +811,11 @@ class ProjectWorkPackagePersistenceProviderGetTest : UnitTest() {
                 override val investmentId: Long? = null
                 override val investmentNumber: Int? = null
                 override val investmentCountry: String? = null
+                override val investmentCountryCode: String? = null
                 override val investmentNutsRegion2: String? = null
+                override val investmentNutsRegion2Code: String? = null
                 override val investmentNutsRegion3: String? = null
+                override val investmentNutsRegion3Code: String? = null
                 override val investmentStreet: String? = null
                 override val investmentHouseNumber: String? = null
                 override val investmentPostalCode: String? = null

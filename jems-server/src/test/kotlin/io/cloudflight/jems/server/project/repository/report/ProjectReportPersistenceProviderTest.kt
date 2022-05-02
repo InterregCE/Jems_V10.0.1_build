@@ -215,6 +215,7 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
                 partnerType = ProjectTargetGroup.SectoralAgency,
                 vatRecovery = ProjectPartnerVatRecovery.Yes,
                 country = "Österreich (AT)",
+                countryCode = "AT",
                 currency = "EUR",
                 coFinancing = coFinancing,
             ),

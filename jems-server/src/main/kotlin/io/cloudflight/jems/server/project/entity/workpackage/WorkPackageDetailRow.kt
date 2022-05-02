@@ -18,7 +18,7 @@ interface WorkPackageDetailRow : TranslationView {
     val startPeriod: Int?
     val endPeriod: Int?
     val partnerId: Long?
-    //activity translaiton
+    //activity translation
     val activityTitle: String?
     val activityLanguage: SystemLanguage?
     val activityDescription: String?
@@ -47,8 +47,11 @@ interface WorkPackageDetailRow : TranslationView {
     val investmentId: Long?
     val investmentNumber: Int?
     val investmentCountry: String?
+    val investmentCountryCode: String?
     val investmentNutsRegion2: String?
+    val investmentNutsRegion2Code: String?
     val investmentNutsRegion3: String?
+    val investmentNutsRegion3Code: String?
     val investmentStreet: String?
     val investmentHouseNumber: String?
     val investmentPostalCode: String?

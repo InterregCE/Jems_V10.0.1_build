@@ -80,14 +80,27 @@ fun List<WorkPackageOutput>.toDto() = map {
 }
 
 fun Address.toAddressDTO() = AddressDTO(
-    this.country,
-    this.nutsRegion2,
-    this.nutsRegion3,
-    this.street,
-    this.houseNumber,
-    this.postalCode,
-    this.city
+    country = this.country,
+    countryCode = this.countryCode,
+    region2 = this.nutsRegion2,
+    region2Code = this.nutsRegion2Code,
+    region3 = this.nutsRegion3,
+    region3Code = this.nutsRegion3Code,
+    street = this.street,
+    houseNumber = this.houseNumber,
+    postalCode = this.postalCode,
+    city = this.city
 )
 
-fun AddressDTO.toAddress() =
-    Address(this.country, this.region2, this.region3, this.street, this.houseNumber, this.postalCode, this.city)
+fun AddressDTO.toAddress() = Address(
+    country = this.country,
+    countryCode = this.countryCode,
+    nutsRegion2 = this.region2,
+    nutsRegion2Code = this.region2Code,
+    nutsRegion3 = this.region3,
+    nutsRegion3Code = this.region3Code,
+    street = this.street,
+    houseNumber = this.houseNumber,
+    postalCode = this.postalCode,
+    city = this.city
+)
