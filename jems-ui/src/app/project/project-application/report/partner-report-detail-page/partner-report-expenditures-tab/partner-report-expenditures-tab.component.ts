@@ -23,6 +23,9 @@ import {NumberService} from '@common/services/number.service';
 import {
   PartnerFileManagementStore
 } from '@project/project-application/report/partner-report-detail-page/partner-file-management-store';
+import {
+  PartnerReportDetailPageStore
+} from "@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service";
 
 @UntilDestroy()
 @Component({
@@ -37,8 +40,6 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
   reportExpendituresForm: FormGroup;
   tableData: AbstractControl[] = [];
   constants = PartnerReportExpendituresTabConstants;
-  columnsToDisplay$: Observable<string[]>;
-  withConfigs$: Observable<TableConfig[]>;
   currencies: CurrencyDTO[];
   currentReport: ProjectPartnerReportDTO;
   isReportEditable$: Observable<boolean>;
@@ -50,24 +51,34 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     columnsToDisplay: string[];
     withConfigs: TableConfig[];
   }>;
+  tableConfiguration$: Observable<{
+    columnsToDisplay: string[];
+    withConfigs: TableConfig[];
+  }>;
 
   constructor(public pageStore: PartnerReportExpendituresStore,
               private formBuilder: FormBuilder,
               private formService: FormService,
-              private partnerFileManagementStore: PartnerFileManagementStore) {
+              private partnerFileManagementStore: PartnerFileManagementStore,
+              private partnerReportDetailPageStore: PartnerReportDetailPageStore) {
     this.isReportEditable$ = this.pageStore.isEditable$;
   }
 
   ngOnInit(): void {
     this.initForm();
-    this.columnsToDisplay$ = this.pageStore.investmentsSummary$.pipe(
-      map((investments: InvestmentSummary[]) => this.getColumnsToDisplay(investments))
+    this.tableConfiguration$ = combineLatest([
+      this.pageStore.investmentsSummary$,
+      this.partnerReportDetailPageStore.reportEditable$,
+    ]).pipe(
+      map(([investments, editable]) => ({
+          columnsToDisplay: this.getColumnsToDisplay(investments, editable),
+          withConfigs: this.getTableConfig(investments, editable)
+        })
+      )
     );
     this.pageStore.currentReport$.pipe(untilDestroyed(this)).subscribe(report=> this.currentReport = report);
     this.pageStore.currencies$.pipe(untilDestroyed(this)).subscribe(currencies=> this.currencies = currencies);
 
-    this.withConfigs$ = this.pageStore.investmentsSummary$.pipe(map((investments: InvestmentSummary[]) =>
-      this.getTableConfig(investments)));
     this.dataAsObservable();
   }
 
@@ -185,23 +196,21 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       this.pageStore.costCategories$,
       this.pageStore.investmentsSummary$,
       this.pageStore.contractIDs$,
-      this.columnsToDisplay$,
-      this.withConfigs$,
+      this.tableConfiguration$
     ]).pipe(
-      map(([expendituresCosts, costCategories, investmentsSummary, contractIDs, columnsToDisplay, withConfigs]) => ({
+      map(([expendituresCosts, costCategories, investmentsSummary, contractIDs, tableConfiguration]) => ({
           expendituresCosts,
           costCategories,
           investmentsSummary,
           contractIDs,
-          columnsToDisplay,
-          withConfigs
+          ...tableConfiguration
         })
       ),
       tap(data => this.resetForm(data.expendituresCosts))
     );
   }
 
-  private getColumnsToDisplay(investments: InvestmentSummary[]): string[] {
+  private getColumnsToDisplay(investments: InvestmentSummary[], isEditable: boolean): string[] {
     const columnsToDisplay = [
       'costItemID',
       'costCategory',
@@ -219,15 +228,17 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       'currencyConversionRate',
       'declaredAmountInEur',
       'uploadFunction',
-      'actions'
     ];
+    if (isEditable) {
+      columnsToDisplay.push('actions');
+    }
     if (investments.length > 0) {
       columnsToDisplay.splice(2, 0, 'investmentId');
     }
     return columnsToDisplay;
   }
 
-  private getTableConfig(investments: InvestmentSummary[]): TableConfig[] {
+  private getTableConfig(investments: InvestmentSummary[], isEditable: boolean): TableConfig[] {
     const tableConfig = [
       {minInRem: 1, maxInRem: 3},   // id
       {minInRem: 11, maxInRem: 16}, // cost category
@@ -243,11 +254,12 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       {minInRem: 8, maxInRem: 8},   // declared amount
       {minInRem: 5, maxInRem: 5},   // currency
       {minInRem: 5, maxInRem: 5},   // conversion rate
-      {minInRem: 8, maxInRem: 8},   // declared amount in EUR
-      {minInRem: 13, maxInRem: 16},               // attachment
-      {minInRem: 3, maxInRem: 3},   // delete
+      {minInRem: 14, maxInRem: 14},   // declared amount in EUR
+      {minInRem: 10, maxInRem: 16}   //attachment
     ];
-
+    if(isEditable){
+      tableConfig.push({minInRem: 3, maxInRem: 3}); //delete
+    }
     if (investments.length > 0) {
       tableConfig.splice(2, 0, {minInRem: 6});
     }
