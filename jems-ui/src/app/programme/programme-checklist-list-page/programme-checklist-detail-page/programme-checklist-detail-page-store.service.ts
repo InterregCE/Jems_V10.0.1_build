@@ -3,7 +3,7 @@ import {ProgrammeChecklistDetailDTO, ProgrammeChecklistDTO, ProgrammeChecklistSe
 import {RoutingService} from '@common/services/routing.service';
 import {Log} from '@common/utils/log';
 import {combineLatest, merge, Observable, of, Subject} from 'rxjs';
-import {map, share, switchMap, take, tap} from 'rxjs/operators';
+import {map, switchMap, take, tap} from 'rxjs/operators';
 import {ProgrammeEditableStateStore} from '../../programme-page/services/programme-editable-state-store.service';
 
 @Injectable()
