@@ -3,14 +3,11 @@ package io.cloudflight.jems.server.programme.repository.checklist
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.programme.entity.checklist.ProgrammeChecklistComponentEntity
 import io.cloudflight.jems.server.programme.entity.checklist.ProgrammeChecklistEntity
-import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklist
-import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistComponent
-import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistComponentType
-import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistDetail
-import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistRow
-import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
+import io.cloudflight.jems.server.programme.service.checklist.model.*
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.HeadlineMetadata
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.OptionsToggleMetadata
+import io.cloudflight.jems.server.programme.service.checklist.model.metadata.TextInputMetadata
+import io.cloudflight.jems.server.project.service.checklist.model.metadata.TextInputInstanceMetadata
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -54,6 +51,12 @@ class ProgrammeChecklistPersistenceTest : UnitTest() {
                 ProgrammeChecklistComponentType.OPTIONS_TOGGLE,
                 2,
                 OptionsToggleMetadata("What option do you choose", "yes", "no", "maybe")
+            ),
+            ProgrammeChecklistComponent(
+                4L,
+                ProgrammeChecklistComponentType.TEXT_INPUT,
+                3,
+                TextInputMetadata("Question to be answered", "Label", 2000)
             )
         )
     )
@@ -77,6 +80,13 @@ class ProgrammeChecklistPersistenceTest : UnitTest() {
                 2,
                 null,
                 File(this::class.java.classLoader.getResource("options_toggle.json").file).readText()
+            ),
+            ProgrammeChecklistComponentEntity(
+                4L,
+                ProgrammeChecklistComponentType.TEXT_INPUT,
+                3,
+                null,
+                File(this::class.java.classLoader.getResource("text_input.json").file).readText()
             )
         )
     )

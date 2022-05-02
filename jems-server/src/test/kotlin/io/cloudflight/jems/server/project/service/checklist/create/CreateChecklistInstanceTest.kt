@@ -12,6 +12,7 @@ import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChe
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.HeadlineMetadata
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.OptionsToggleMetadata
+import io.cloudflight.jems.server.programme.service.checklist.model.metadata.TextInputMetadata
 import io.cloudflight.jems.server.project.authorization.AuthorizationUtil
 import io.cloudflight.jems.server.project.service.checklist.ChecklistInstancePersistence
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceStatus
@@ -60,6 +61,13 @@ internal class CreateChecklistInstanceTest : UnitTest() {
                 ProgrammeChecklistComponentType.OPTIONS_TOGGLE,
                 2,
                 OptionsToggleMetadata("What option do you choose", "yes", "no", "maybe"),
+                null
+            ),
+            ChecklistComponentInstance(
+                4L,
+                ProgrammeChecklistComponentType.TEXT_INPUT,
+                3,
+                TextInputMetadata("Question to be answered", "Label", 2000),
                 null
             )
         )

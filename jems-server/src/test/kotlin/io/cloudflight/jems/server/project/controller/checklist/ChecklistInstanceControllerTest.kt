@@ -4,6 +4,7 @@ import io.cloudflight.jems.api.programme.dto.checklist.ProgrammeChecklistCompone
 import io.cloudflight.jems.api.programme.dto.checklist.ProgrammeChecklistTypeDTO
 import io.cloudflight.jems.api.programme.dto.checklist.metadata.HeadlineMetadataDTO
 import io.cloudflight.jems.api.programme.dto.checklist.metadata.OptionsToggleMetadataDTO
+import io.cloudflight.jems.api.programme.dto.checklist.metadata.TextInputMetadataDTO
 import io.cloudflight.jems.api.project.dto.checklist.ChecklistComponentInstanceDTO
 import io.cloudflight.jems.api.project.dto.checklist.ChecklistInstanceDTO
 import io.cloudflight.jems.api.project.dto.checklist.ChecklistInstanceDetailDTO
@@ -11,6 +12,7 @@ import io.cloudflight.jems.api.project.dto.checklist.ChecklistInstanceStatusDTO
 import io.cloudflight.jems.api.project.dto.checklist.CreateChecklistInstanceDTO
 import io.cloudflight.jems.api.project.dto.checklist.metadata.HeadlineInstanceMetadataDTO
 import io.cloudflight.jems.api.project.dto.checklist.metadata.OptionsToggleInstanceMetadataDTO
+import io.cloudflight.jems.api.project.dto.checklist.metadata.TextInputInstanceMetadataDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.programme.service.checklist.create.CreateChecklistInstanceInteractor
 import io.cloudflight.jems.server.programme.service.checklist.delete.DeleteChecklistInstanceInteractor
@@ -25,9 +27,11 @@ import io.cloudflight.jems.server.programme.service.checklist.model.metadata.Hea
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.HeadlineMetadata
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.OptionsToggleInstanceMetadata
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.OptionsToggleMetadata
+import io.cloudflight.jems.server.programme.service.checklist.model.metadata.TextInputMetadata
 import io.cloudflight.jems.server.programme.service.checklist.update.UpdateChecklistInstanceInteractor
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceStatus
 import io.cloudflight.jems.server.project.service.checklist.model.CreateChecklistInstanceModel
+import io.cloudflight.jems.server.project.service.checklist.model.metadata.TextInputInstanceMetadata
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -75,6 +79,13 @@ class ChecklistInstanceControllerTest : UnitTest() {
                 1,
                 OptionsToggleMetadata("What option do you choose", "yes", "no", "maybe"),
                 OptionsToggleInstanceMetadata("yes")
+            ),
+            ChecklistComponentInstance(
+                4L,
+                ProgrammeChecklistComponentType.TEXT_INPUT,
+                1,
+                TextInputMetadata("Question for the text input", "Explanation label", 1000),
+                TextInputInstanceMetadata("The reason is")
             )
         )
     )
@@ -98,6 +109,13 @@ class ChecklistInstanceControllerTest : UnitTest() {
                 1,
                 OptionsToggleMetadataDTO("What option do you choose", "yes", "no", "maybe"),
                 OptionsToggleInstanceMetadataDTO("yes")
+            ),
+            ChecklistComponentInstanceDTO(
+                4L,
+                ProgrammeChecklistComponentTypeDTO.TEXT_INPUT,
+                1,
+                TextInputMetadataDTO("Question for the text input", "Explanation label", 1000),
+                TextInputInstanceMetadataDTO("The reason is")
             )
         )
     )

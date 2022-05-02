@@ -7,6 +7,7 @@ import io.cloudflight.jems.api.programme.dto.checklist.ProgrammeChecklistDetailD
 import io.cloudflight.jems.api.programme.dto.checklist.ProgrammeChecklistTypeDTO
 import io.cloudflight.jems.api.programme.dto.checklist.metadata.HeadlineMetadataDTO
 import io.cloudflight.jems.api.programme.dto.checklist.metadata.OptionsToggleMetadataDTO
+import io.cloudflight.jems.api.programme.dto.checklist.metadata.TextInputMetadataDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.programme.service.checklist.create.CreateProgrammeChecklistInteractor
 import io.cloudflight.jems.server.programme.service.checklist.delete.DeleteProgrammeChecklistInteractor
@@ -19,6 +20,7 @@ import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChe
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.HeadlineMetadata
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.OptionsToggleMetadata
+import io.cloudflight.jems.server.programme.service.checklist.model.metadata.TextInputMetadata
 import io.cloudflight.jems.server.programme.service.checklist.update.UpdateProgrammeChecklistInteractor
 import io.mockk.Runs
 import io.mockk.every
@@ -67,7 +69,17 @@ class ProgrammeChecklistControllerTest : UnitTest() {
                 firstOption = "yes",
                 secondOption = "no"
             )
-        )
+        ),
+        ProgrammeChecklistComponent(
+            3L,
+            ProgrammeChecklistComponentType.TEXT_INPUT,
+            1,
+            TextInputMetadata(
+                "question 2",
+                "Explanation",
+                1000
+            )
+        ),
     )
 
     private val checklistDetail = ProgrammeChecklistDetail(
@@ -94,6 +106,16 @@ class ProgrammeChecklistControllerTest : UnitTest() {
                 "question 1",
                 "yes",
                 "no"
+            )
+        ),
+        ProgrammeChecklistComponentDTO(
+            3L,
+            ProgrammeChecklistComponentTypeDTO.TEXT_INPUT,
+            1,
+            TextInputMetadataDTO(
+                "question 2",
+                "Explanation",
+                1000
             )
         )
     )

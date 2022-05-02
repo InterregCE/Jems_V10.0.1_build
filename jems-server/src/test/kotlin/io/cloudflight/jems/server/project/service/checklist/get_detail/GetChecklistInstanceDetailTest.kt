@@ -6,12 +6,10 @@ import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistCom
 import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistInstanceDetail
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistComponentType
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
-import io.cloudflight.jems.server.programme.service.checklist.model.metadata.HeadlineInstanceMetadata
-import io.cloudflight.jems.server.programme.service.checklist.model.metadata.HeadlineMetadata
-import io.cloudflight.jems.server.programme.service.checklist.model.metadata.OptionsToggleInstanceMetadata
-import io.cloudflight.jems.server.programme.service.checklist.model.metadata.OptionsToggleMetadata
+import io.cloudflight.jems.server.programme.service.checklist.model.metadata.*
 import io.cloudflight.jems.server.project.service.checklist.ChecklistInstancePersistence
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceStatus
+import io.cloudflight.jems.server.project.service.checklist.model.metadata.TextInputInstanceMetadata
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -46,6 +44,13 @@ internal class GetChecklistInstanceDetailTest : UnitTest() {
                 2,
                 OptionsToggleMetadata("What option do you choose", "yes", "no", "maybe"),
                 OptionsToggleInstanceMetadata("yes")
+            ),
+            ChecklistComponentInstance(
+                4L,
+                ProgrammeChecklistComponentType.TEXT_INPUT,
+                3,
+                TextInputMetadata("Question to be answered", "Label", 2000),
+                TextInputInstanceMetadata("Explanation")
             )
         )
     )
