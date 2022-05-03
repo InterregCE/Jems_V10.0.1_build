@@ -1,20 +1,18 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  EventEmitter,
   Input, OnChanges,
   OnInit,
-  Output, SimpleChanges
+  SimpleChanges
 } from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {OutputProjectLongTermPlans, InputProjectLongTermPlans} from '@cat/api';
+import {OutputProjectLongTermPlans, ProjectDescriptionService} from '@cat/api';
 import {BaseComponent} from '@common/components/base-component';
 import {FormService} from '@common/components/section/form/form.service';
-import {Observable} from 'rxjs';
-import {HttpErrorResponse} from '@angular/common/http';
-import {takeUntil, tap} from 'rxjs/operators';
+import {catchError, tap} from 'rxjs/operators';
 import {ProjectStore} from '../../../containers/project-application-detail/services/project-store.service';
-import { APPLICATION_FORM } from '@project/common/application-form-model';
+import {APPLICATION_FORM} from '@project/common/application-form-model';
+import {Log} from '@common/utils/log';
 
 @Component({
   selector: 'jems-project-application-form-future-plans-detail',
@@ -26,16 +24,11 @@ import { APPLICATION_FORM } from '@project/common/application-form-model';
 export class ProjectApplicationFormFuturePlansDetailComponent extends BaseComponent implements OnInit, OnChanges {
 
   APPLICATION_FORM = APPLICATION_FORM;
-  // TODO: remove these and adapt the component to save independently
-  @Input()
-  error$: Observable<HttpErrorResponse | null>;
-  @Input()
-  success$: Observable<any>;
 
   @Input()
-  project: OutputProjectLongTermPlans;
-  @Output()
-  updateData = new EventEmitter<InputProjectLongTermPlans>();
+  projectId: number;
+  @Input()
+  outputProjectLongTermPlans: OutputProjectLongTermPlans;
 
   futurePlansForm: FormGroup = this.formBuilder.group({
     ownership: ['', Validators.maxLength(5000)],
@@ -45,44 +38,42 @@ export class ProjectApplicationFormFuturePlansDetailComponent extends BaseCompon
 
   constructor(private formBuilder: FormBuilder,
               private formService: FormService,
-              private projectStore: ProjectStore) {
+              private projectStore: ProjectStore,
+              private projectDescriptionService: ProjectDescriptionService) {
     super();
   }
 
   ngOnInit(): void {
     this.formService.init(this.futurePlansForm, this.projectStore.projectEditable$);
-    this.error$
-      .pipe(
-        takeUntil(this.destroyed$),
-        tap(err => this.formService.setError(err))
-      )
-      .subscribe();
-    this.success$
-      .pipe(
-        takeUntil(this.destroyed$),
-        tap(() => this.formService.setSuccess('project.application.form.future.plans.save.success'))
-      )
-      .subscribe();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.project) {
+    if (changes.outputProjectLongTermPlans) {
       this.resetForm();
     }
   }
 
   onSubmit(): void {
-    this.updateData.emit({
+    this.projectDescriptionService.updateProjectLongTermPlans(this.projectId, this.createOutputProjectLongTermPlans())
+      .pipe(
+        tap(saved => Log.info('Updated project long-term plans:', this, saved)),
+        tap(() => this.formService.setSuccess('project.application.form.save.success')),
+        catchError(error => this.formService.setError(error))
+      ).subscribe();
+  }
+
+  createOutputProjectLongTermPlans(): OutputProjectLongTermPlans {
+    return {
       projectOwnership: this.futurePlansForm.controls.ownership.value,
       projectDurability: this.futurePlansForm.controls.durability.value,
       projectTransferability: this.futurePlansForm.controls.transferability.value
-    });
+    };
   }
 
   resetForm(): void {
-    this.futurePlansForm.controls.ownership.setValue(this.project?.projectOwnership);
-    this.futurePlansForm.controls.durability.setValue(this.project?.projectDurability);
-    this.futurePlansForm.controls.transferability.setValue(this.project?.projectTransferability);
+    this.futurePlansForm.controls.ownership.setValue(this.outputProjectLongTermPlans?.projectOwnership);
+    this.futurePlansForm.controls.durability.setValue(this.outputProjectLongTermPlans?.projectDurability);
+    this.futurePlansForm.controls.transferability.setValue(this.outputProjectLongTermPlans?.projectTransferability);
   }
 
 }

@@ -1,5 +1,4 @@
 import { ComponentFixture, fakeAsync, TestBed, waitForAsync } from '@angular/core/testing';
-import {InputProjectPartnership} from '@cat/api';
 import {ProjectApplicationFormProjectPartnershipSectionComponent} from './project-application-form-project-partnership-section.component';
 import {HttpTestingController} from '@angular/common/http/testing';
 import {TestModule} from '@common/test-module';
@@ -34,13 +33,4 @@ describe('ProjectApplicationFormProjectPartnershipSectionComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
-
-  it('should update project parthenrship', fakeAsync(() => {
-    component.updatePartnership$.next({} as InputProjectPartnership);
-
-    httpTestingController.expectOne({
-      method: 'PUT',
-      url: '//api/project/1/description/c3'
-    });
-  }));
 });

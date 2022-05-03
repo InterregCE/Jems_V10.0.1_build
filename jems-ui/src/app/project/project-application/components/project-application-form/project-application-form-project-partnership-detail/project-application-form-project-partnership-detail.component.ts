@@ -1,21 +1,18 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  EventEmitter,
   Input,
   OnChanges,
   OnInit,
-  Output,
   SimpleChanges
 } from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {InputProjectPartnership} from '@cat/api';
+import {InputProjectPartnership, ProjectDescriptionService} from '@cat/api';
 import {BaseComponent} from '@common/components/base-component';
 import {FormService} from '@common/components/section/form/form.service';
-import {Observable} from 'rxjs';
-import {HttpErrorResponse} from '@angular/common/http';
-import {takeUntil, tap} from 'rxjs/operators';
+import {catchError, tap} from 'rxjs/operators';
 import {ProjectStore} from '../../../containers/project-application-detail/services/project-store.service';
+import {Log} from '@common/utils/log';
 
 @Component({
   selector: 'jems-project-application-form-project-partnership-detail',
@@ -25,16 +22,11 @@ import {ProjectStore} from '../../../containers/project-application-detail/servi
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectApplicationFormProjectPartnershipDetailComponent extends BaseComponent implements OnInit, OnChanges {
-  // TODO: remove these and adapt the component to save independently
-  @Input()
-  error$: Observable<HttpErrorResponse | null>;
-  @Input()
-  success$: Observable<any>;
 
   @Input()
-  project: InputProjectPartnership;
-  @Output()
-  updateData = new EventEmitter<InputProjectPartnership>();
+  projectId: number;
+  @Input()
+  inputProjectPartnership: InputProjectPartnership;
 
   projectPartnershipForm: FormGroup = this.formBuilder.group({
     partnership: ['', Validators.maxLength(5000)]
@@ -42,39 +34,35 @@ export class ProjectApplicationFormProjectPartnershipDetailComponent extends Bas
 
   constructor(private formBuilder: FormBuilder,
               private formService: FormService,
-              private projectStore: ProjectStore) {
+              private projectStore: ProjectStore,
+              private projectDescriptionService: ProjectDescriptionService) {
     super();
   }
 
   ngOnInit(): void {
-    this.resetForm();
     this.formService.init(this.projectPartnershipForm, this.projectStore.projectEditable$);
-    this.error$
-      .pipe(
-        takeUntil(this.destroyed$),
-        tap(err => this.formService.setError(err))
-      )
-      .subscribe();
-    this.success$
-      .pipe(
-        takeUntil(this.destroyed$),
-        tap(() => this.formService.setSuccess('project.application.form.project.partnership.save.success'))
-      )
-      .subscribe();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.project) {
+    if (changes.inputProjectPartnership) {
       this.resetForm();
     }
   }
 
   onSubmit(): void {
-    this.updateData.emit(this.projectPartnershipForm.value);
+    this.projectDescriptionService.updateProjectPartnership(this.projectId,
+      <InputProjectPartnership>{
+        partnership: this.projectPartnershipForm.get('partnership')?.value
+      })
+      .pipe(
+        tap(saved => Log.info('Updated project partnership:', this, saved)),
+        tap(() => this.formService.setSuccess('project.application.form.save.success')),
+        catchError(error => this.formService.setError(error))
+      ).subscribe();
   }
 
   resetForm(): void {
-    this.projectPartnershipForm.get('partnership')?.setValue(this.project?.partnership || []);
+    this.projectPartnershipForm.get('partnership')?.setValue(this.inputProjectPartnership?.partnership || []);
   }
 
 }

@@ -1,23 +1,24 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  EventEmitter,
   Input,
   OnChanges,
   OnInit,
-  Output,
   SimpleChanges
 } from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {InputProjectHorizontalPrinciples, InputProjectManagement, OutputProjectManagement} from '@cat/api';
+import {
+  InputProjectHorizontalPrinciples,
+  InputProjectManagement,
+  OutputProjectManagement, ProjectDescriptionService
+} from '@cat/api';
 import {SelectionModel} from '@angular/cdk/collections';
 import {FormService} from '@common/components/section/form/form.service';
 import {BaseComponent} from '@common/components/base-component';
-import {Observable} from 'rxjs';
-import {HttpErrorResponse} from '@angular/common/http';
-import {takeUntil, tap} from 'rxjs/operators';
+import {catchError, tap} from 'rxjs/operators';
 import {ProjectStore} from '../../../containers/project-application-detail/services/project-store.service';
-import { APPLICATION_FORM } from '@project/common/application-form-model';
+import {APPLICATION_FORM} from '@project/common/application-form-model';
+import {Log} from '@common/utils/log';
 
 @Component({
   selector: 'jems-project-application-form-management-detail',
@@ -27,20 +28,14 @@ import { APPLICATION_FORM } from '@project/common/application-form-model';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectApplicationFormManagementDetailComponent extends BaseComponent implements OnInit, OnChanges {
-
   APPLICATION_FORM = APPLICATION_FORM;
-  // TODO: remove these and adapt the component to save independently
-  @Input()
-  error$: Observable<HttpErrorResponse | null>;
-  @Input()
-  success$: Observable<any>;
 
+  @Input()
+  projectId: number;
   @Input()
   editable: boolean;
   @Input()
-  project: OutputProjectManagement;
-  @Output()
-  updateData = new EventEmitter<InputProjectManagement>();
+  projectManagement: OutputProjectManagement;
 
   selection = new SelectionModel<string>(true, []);
   selectedContributionPrincipleDevelopment = '';
@@ -63,34 +58,32 @@ export class ProjectApplicationFormManagementDetailComponent extends BaseCompone
 
   constructor(private formBuilder: FormBuilder,
               private formService: FormService,
-              private projectStore: ProjectStore) {
+              private projectStore: ProjectStore,
+              private projectDescriptionService: ProjectDescriptionService) {
     super();
   }
 
   ngOnInit(): void {
     this.formService.init(this.managementForm, this.projectStore.projectEditable$);
-    this.error$
-      .pipe(
-        takeUntil(this.destroyed$),
-        tap(err => this.formService.setError(err))
-      )
-      .subscribe();
-    this.success$
-      .pipe(
-        takeUntil(this.destroyed$),
-        tap(() => this.formService.setSuccess('project.application.form.management.save.success'))
-      )
-      .subscribe();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.project) {
+    if (changes.projectManagement) {
       this.resetForm();
     }
   }
 
   onSubmit(): void {
-    this.updateData.emit({
+    this.projectDescriptionService.updateProjectManagement(this.projectId, this.createInputProjectManagement())
+      .pipe(
+        tap(saved => Log.info('Updated project management:', this, saved)),
+        tap(() => this.formService.setSuccess('project.application.form.save.success')),
+        catchError(error => this.formService.setError(error))
+      ).subscribe();
+  }
+
+  createInputProjectManagement(): InputProjectManagement {
+    return {
       projectCoordination: this.managementForm.controls.coordination.value || [],
       projectQualityAssurance: this.managementForm.controls.quality.value || [],
       projectCommunication: this.managementForm.controls.communication.value || [],
@@ -113,17 +106,17 @@ export class ProjectApplicationFormManagementDetailComponent extends BaseCompone
       sustainableDevelopmentDescription: this.managementForm.controls.principles_sustainable.value || [],
       equalOpportunitiesDescription: this.managementForm.controls.principles_opportunities.value || [],
       sexualEqualityDescription: this.managementForm.controls.principles_equality.value || []
-    });
+    };
   }
 
   resetForm(): void {
-    this.managementForm.controls.coordination.setValue(this.project?.projectCoordination);
-    this.managementForm.controls.quality.setValue(this.project?.projectQualityAssurance);
-    this.managementForm.controls.communication.setValue(this.project?.projectCommunication);
-    this.managementForm.controls.financial.setValue(this.project?.projectFinancialManagement);
+    this.managementForm.controls.coordination.setValue(this.projectManagement?.projectCoordination);
+    this.managementForm.controls.quality.setValue(this.projectManagement?.projectQualityAssurance);
+    this.managementForm.controls.communication.setValue(this.projectManagement?.projectCommunication);
+    this.managementForm.controls.financial.setValue(this.projectManagement?.projectFinancialManagement);
 
-    this.managementForm.controls.criteria_development.setValue(this.project?.projectJointDevelopmentDescription);
-    if (this.project?.projectCooperationCriteria?.projectJointDevelopment) {
+    this.managementForm.controls.criteria_development.setValue(this.projectManagement?.projectJointDevelopmentDescription);
+    if (this.projectManagement?.projectCooperationCriteria?.projectJointDevelopment) {
       this.selection.select('criteria_development');
       this.enableSelection('criteria_development');
     } else {
@@ -131,8 +124,8 @@ export class ProjectApplicationFormManagementDetailComponent extends BaseCompone
       this.managementForm.get('criteria_development')?.disable();
     }
 
-    this.managementForm.controls.criteria_implementation.setValue(this.project?.projectJointImplementationDescription);
-    if (this.project?.projectCooperationCriteria?.projectJointImplementation) {
+    this.managementForm.controls.criteria_implementation.setValue(this.projectManagement?.projectJointImplementationDescription);
+    if (this.projectManagement?.projectCooperationCriteria?.projectJointImplementation) {
       this.selection.select('criteria_implementation');
       this.enableSelection('criteria_implementation');
     } else {
@@ -140,8 +133,8 @@ export class ProjectApplicationFormManagementDetailComponent extends BaseCompone
       this.managementForm.get('criteria_implementation')?.disable();
     }
 
-    this.managementForm.controls.criteria_staffing.setValue(this.project?.projectJointStaffingDescription);
-    if (this.project?.projectCooperationCriteria?.projectJointStaffing) {
+    this.managementForm.controls.criteria_staffing.setValue(this.projectManagement?.projectJointStaffingDescription);
+    if (this.projectManagement?.projectCooperationCriteria?.projectJointStaffing) {
       this.selection.select('criteria_staffing');
       this.enableSelection('criteria_staffing');
     } else {
@@ -149,8 +142,8 @@ export class ProjectApplicationFormManagementDetailComponent extends BaseCompone
       this.managementForm.get('criteria_staffing')?.disable();
     }
 
-    this.managementForm.controls.criteria_financing.setValue(this.project?.projectJointFinancingDescription);
-    if (this.project?.projectCooperationCriteria?.projectJointFinancing) {
+    this.managementForm.controls.criteria_financing.setValue(this.projectManagement?.projectJointFinancingDescription);
+    if (this.projectManagement?.projectCooperationCriteria?.projectJointFinancing) {
       this.selection.select('criteria_financing');
       this.enableSelection('criteria_financing');
     } else {
@@ -158,14 +151,14 @@ export class ProjectApplicationFormManagementDetailComponent extends BaseCompone
       this.managementForm.get('criteria_financing')?.disable();
     }
 
-    this.selectedContributionPrincipleDevelopment = this.project?.projectHorizontalPrinciples?.sustainableDevelopmentCriteriaEffect;
-    this.selectedContributionPrincipleOpportunities = this.project?.projectHorizontalPrinciples?.equalOpportunitiesEffect;
-    this.selectedContributionPrincipleEquality = this.project?.projectHorizontalPrinciples?.sexualEqualityEffect;
-    this.managementForm.controls.principles_sustainable.setValue(this.project?.sustainableDevelopmentDescription);
+    this.selectedContributionPrincipleDevelopment = this.projectManagement?.projectHorizontalPrinciples?.sustainableDevelopmentCriteriaEffect;
+    this.selectedContributionPrincipleOpportunities = this.projectManagement?.projectHorizontalPrinciples?.equalOpportunitiesEffect;
+    this.selectedContributionPrincipleEquality = this.projectManagement?.projectHorizontalPrinciples?.sexualEqualityEffect;
+    this.managementForm.controls.principles_sustainable.setValue(this.projectManagement?.sustainableDevelopmentDescription);
     this.enableSelection('principles_sustainable');
-    this.managementForm.controls.principles_opportunities.setValue(this.project?.equalOpportunitiesDescription);
+    this.managementForm.controls.principles_opportunities.setValue(this.projectManagement?.equalOpportunitiesDescription);
     this.enableSelection('principles_opportunities');
-    this.managementForm.controls.principles_equality.setValue(this.project?.sexualEqualityDescription);
+    this.managementForm.controls.principles_equality.setValue(this.projectManagement?.sexualEqualityDescription);
     this.enableSelection('principles_equality');
   }
 
