@@ -37,6 +37,7 @@ export class ProjectWorkPackageInvestmentsTabComponent implements OnInit {
   titleCell: TemplateRef<any>;
 
   investments$: Observable<WorkPackageInvestmentDTO[]>;
+  editable: boolean;
 
   constructor(private activatedRoute: ActivatedRoute,
               public workPackageStore: WorkPackagePageStore,
@@ -45,9 +46,9 @@ export class ProjectWorkPackageInvestmentsTabComponent implements OnInit {
               public projectStore: ProjectStore,
               private visibilityStatusService: FormVisibilityStatusService,
               private dialog: MatDialog) {
-    this.investments$ = combineLatest([this.workPackageStore.investments$, this.workPackageStore.workPackage$])
+    this.investments$ = combineLatest([this.workPackageStore.investments$, this.workPackageStore.workPackage$, this.projectStore.projectEditable$])
       .pipe(
-        tap(([investments, workPackage]) => this.workPackageNumber = workPackage.number),
+        tap(([investments, workPackage, editable]) => { this.workPackageNumber = workPackage.number; this.editable = editable;} ),
         map(([investments]) => investments)
       );
   }
@@ -75,12 +76,12 @@ export class ProjectWorkPackageInvestmentsTabComponent implements OnInit {
           elementProperty: 'address.region3',
           sortProperty: 'address.region3',
         }] : [],
-        {
+        ...this.editable? [{
           displayedColumn: ' ',
           columnType: ColumnType.CustomComponent,
           customCellTemplate: this.deletionCell,
           columnWidth: ColumnWidth.IdColumn
-        },
+        }] : [],
       ]
     });
   }

@@ -92,7 +92,7 @@ export class TravelAndAccommodationCostsBudgetTableComponent implements OnInit, 
       ...this.budgetTabService.addIfItsVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.TRAVEL_AND_ACCOMMODATION.UNIT_TYPE_AND_NUMBER_OF_UNITS, ['unitType', 'numberOfUnits']),
       'pricePerUnit', 'total',
       ...this.budgetTabService.getPeriodTableColumns(this.projectPeriods),
-      'action'
+      ...this.editable ? ['action'] : []
     ];
 
     this.tableConfig = [
@@ -104,7 +104,7 @@ export class TravelAndAccommodationCostsBudgetTableComponent implements OnInit, 
       }]),
       {minInRem: 8, maxInRem: 8}, {minInRem: 8},
       ...this.budgetTabService.getPeriodsWidthConfigs(this.projectPeriods),
-      {minInRem: 3, maxInRem: 3}
+      ...this.editable ? [{minInRem: 3, maxInRem: 3}] : []
     ];
 
     if (this.availableUnitCosts.length > 0) {

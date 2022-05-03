@@ -99,6 +99,10 @@ export class GeneralBudgetTableComponent implements OnInit, OnChanges {
       untilDestroyed(this)
     ).subscribe();
 
+    this.setTableConfig();
+  }
+
+  setTableConfig() {
     this.columnsToDisplay = [
       ...this.budgetTabService.addIfItsVisible(this.getFieldId(FIELD_KEYS.DESCRIPTION), ['description']),
       ...this.budgetTabService.addIfItsVisible(this.getFieldId(FIELD_KEYS.COMMENTS), ['comments']),
@@ -107,7 +111,8 @@ export class GeneralBudgetTableComponent implements OnInit, OnChanges {
       ...this.budgetTabService.addIfItsVisible(this.getFieldId(FIELD_KEYS.UNIT_TYPE_AND_NUMBER_OF_UNITS), ['unitType', 'numberOfUnits']),
       'pricePerUnit',
       'total',
-      ...this.budgetTabService.getPeriodTableColumns(this.projectPeriods), 'action',
+      ...this.budgetTabService.getPeriodTableColumns(this.projectPeriods),
+      ...this.editable ? ['action'] : []
     ];
 
     this.tableConfig = [
@@ -121,7 +126,8 @@ export class GeneralBudgetTableComponent implements OnInit, OnChanges {
       }]),
       {minInRem: 8, maxInRem: 8},
       {minInRem: 9, maxInRem: 9}, // totals column
-      ...this.budgetTabService.getPeriodsWidthConfigs(this.projectPeriods), {minInRem: 3, maxInRem: 3}
+      ...this.budgetTabService.getPeriodsWidthConfigs(this.projectPeriods),
+      ...this.editable ? [{minInRem: 3, maxInRem: 3}] : []
     ];
 
     if (this.availableUnitCosts.length > 0) {
