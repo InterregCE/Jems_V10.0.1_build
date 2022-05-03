@@ -119,6 +119,7 @@ class ProjectServiceTest : UnitTest() {
                             WorkPackageActivityDeliverableEntity(
                                 deliverableNumber = 1,
                                 startPeriod = deliverablePeriod,
+                                workPackageActivity = this
                             )
                         )
                     }

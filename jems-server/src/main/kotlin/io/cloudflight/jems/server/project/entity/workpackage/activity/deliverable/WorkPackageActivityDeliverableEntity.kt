@@ -1,13 +1,8 @@
 package io.cloudflight.jems.server.project.entity.workpackage.activity.deliverable
 
 import io.cloudflight.jems.server.common.entity.resetTranslations
-import javax.persistence.CascadeType
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
-import javax.persistence.Id
-import javax.persistence.OneToMany
+import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityEntity
+import javax.persistence.*
 import javax.validation.constraints.NotNull
 
 @Entity(name = "project_work_package_activity_deliverable")
@@ -25,6 +20,11 @@ class WorkPackageActivityDeliverableEntity(
     val translatedValues: MutableSet<WorkPackageActivityDeliverableTranslationEntity> = mutableSetOf(),
 
     var startPeriod: Int? = null,
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name="activity_id")
+    @field:NotNull
+    var workPackageActivity: WorkPackageActivityEntity
 ){
     fun updateTranslations(newTranslations: Set<WorkPackageActivityDeliverableTranslationEntity>) {
         this.translatedValues.resetTranslations(newTranslations

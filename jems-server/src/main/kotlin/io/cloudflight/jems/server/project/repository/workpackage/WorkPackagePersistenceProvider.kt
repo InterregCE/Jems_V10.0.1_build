@@ -289,12 +289,11 @@ class WorkPackagePersistenceProvider(
     override fun updateWorkPackageActivities(
         workPackageId: Long,
         workPackageActivities: List<WorkPackageActivity>
-    ): List<WorkPackageActivity> {
-        val workPackage = getWorkPackageOrThrow(workPackageId)
-        return workPackageActivityRepository.saveAll(workPackage.also {
-            it.updateActivities(workPackageActivities.toIndexedEntity(workPackage = workPackage))
-        }.activities).toModel()
-    }
+    ): List<WorkPackageActivity> =
+        getWorkPackageOrThrow(workPackageId).also {
+            it.updateActivities(workPackageActivities.toIndexedEntity(workPackage = it))
+            workPackageActivityRepository.flush()
+        }.activities.toModel()
 
 
     @Transactional(readOnly = true)

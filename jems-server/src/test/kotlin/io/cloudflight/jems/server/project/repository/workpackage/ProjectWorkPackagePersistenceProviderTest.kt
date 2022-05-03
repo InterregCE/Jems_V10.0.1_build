@@ -69,35 +69,6 @@ class ProjectWorkPackagePersistenceProviderTest : UnitTest() {
                 language = lang
             )
 
-        private val deliverable2_2 = WorkPackageActivityDeliverableEntity(
-            id = 1L,
-            deliverableNumber = 2,
-            startPeriod = 2
-        )
-        private val deliverable2_1 = WorkPackageActivityDeliverableEntity(
-            id = 2L,
-            deliverableNumber = 1,
-            startPeriod = 1,
-            translatedValues = mutableSetOf()
-        ).apply {
-            translatedValues.addAll(
-                setOf(
-                    WorkPackageActivityDeliverableTranslationEntity(
-                        translationId = trIdActDel(this, SK),
-                        description = "sk_deliverable_desc"
-                    ),
-                    WorkPackageActivityDeliverableTranslationEntity(
-                        translationId = trIdActDel(this, CS),
-                        description = ""
-                    ),
-                    WorkPackageActivityDeliverableTranslationEntity(
-                        translationId = trIdActDel(this, EN),
-                        description = null
-                    )
-                )
-            )
-        }
-
         const val activityProjectPartnerId = 3L
         val activityPartnerMock: WorkPackageActivityPartnerEntity = mockk()
         var activity1 = WorkPackageActivityEntity(
@@ -115,8 +86,42 @@ class ProjectWorkPackagePersistenceProviderTest : UnitTest() {
             startPeriod = 1,
             endPeriod = 3,
             translatedValues = mutableSetOf(),
-            deliverables = mutableSetOf(deliverable2_2, deliverable2_1)
+            deliverables = mutableSetOf()
         ).apply {
+            deliverables.addAll(
+                mutableSetOf(
+                    WorkPackageActivityDeliverableEntity(
+                        id = 1L,
+                        deliverableNumber = 2,
+                        startPeriod = 2,
+                        workPackageActivity = this
+                    ),
+                    WorkPackageActivityDeliverableEntity(
+                        id = 2L,
+                        deliverableNumber = 1,
+                        startPeriod = 1,
+                        translatedValues = mutableSetOf(),
+                        workPackageActivity = this
+                    ).apply {
+                        translatedValues.addAll(
+                            setOf(
+                                WorkPackageActivityDeliverableTranslationEntity(
+                                    translationId = trIdActDel(this, SK),
+                                    description = "sk_deliverable_desc"
+                                ),
+                                WorkPackageActivityDeliverableTranslationEntity(
+                                    translationId = trIdActDel(this, CS),
+                                    description = ""
+                                ),
+                                WorkPackageActivityDeliverableTranslationEntity(
+                                    translationId = trIdActDel(this, EN),
+                                    description = null
+                                )
+                            )
+                        )
+                    }
+                )
+            )
             translatedValues.addAll(
                 setOf(
                     WorkPackageActivityTranslationEntity(
@@ -256,7 +261,7 @@ class ProjectWorkPackagePersistenceProviderTest : UnitTest() {
                     startPeriod = 1,
                     endPeriod = 3,
                     translatedValues = mutableSetOf(),
-                    deliverables = mutableSetOf(deliverable2_2, deliverable2_1)
+                    deliverables = activity2.deliverables
                 ),
                 WorkPackageActivityEntity(
                     id = activityId1,
@@ -297,9 +302,7 @@ class ProjectWorkPackagePersistenceProviderTest : UnitTest() {
                 deliverables = emptyList()
             )
         )
-
-        every { repositoryActivity.saveAll(wp.activities) } returns wp.activities
-
+        every { repositoryActivity.flush() } returns Unit
         val activities = persistence.updateWorkPackageActivities(WORK_PACKAGE_ID, toBeSaved)
 
         assertThat(activities).containsExactly(

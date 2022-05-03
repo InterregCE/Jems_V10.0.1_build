@@ -55,8 +55,7 @@ class WorkPackageActivityEntity(
 
     var endPeriod: Int? = null,
 
-    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true)
-    @JoinColumn(name = "activity_id", nullable = false, insertable = true)
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "workPackageActivity")
     val deliverables: MutableSet<WorkPackageActivityDeliverableEntity> = mutableSetOf(),
 
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "id.activity")
@@ -69,6 +68,7 @@ class WorkPackageActivityEntity(
             currentDeliverable.deliverableNumber = newDeliverable.deliverableNumber
             currentDeliverable.startPeriod = newDeliverable.startPeriod
             currentDeliverable.updateTranslations(newDeliverable.translatedValues)
+            currentDeliverable.workPackageActivity = this
         }
         this.deliverables.addAll(newDeliverables.filter { it.id == 0L })
     }
