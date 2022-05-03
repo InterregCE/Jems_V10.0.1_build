@@ -1,11 +1,9 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  EventEmitter,
   Input,
   OnChanges,
   OnInit,
-  Output,
   SimpleChanges
 } from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
@@ -14,15 +12,15 @@ import {
   InputProjectRelevance,
   InputProjectRelevanceBenefit, ProjectRelevanceSpfRecipientDTO,
   InputProjectRelevanceStrategy,
-  InputProjectRelevanceSynergy
+  InputProjectRelevanceSynergy, ProjectDescriptionService
 } from '@cat/api';
 import {Observable} from 'rxjs';
-import {takeUntil, tap} from 'rxjs/operators';
+import {catchError, tap} from 'rxjs/operators';
 import {FormService} from '@common/components/section/form/form.service';
 import {BaseComponent} from '@common/components/base-component';
-import {HttpErrorResponse} from '@angular/common/http';
 import {ProjectStore} from '../../../containers/project-application-detail/services/project-store.service';
-import { APPLICATION_FORM } from '@project/common/application-form-model';
+import {APPLICATION_FORM} from '@project/common/application-form-model';
+import {Log} from '@common/utils/log';
 
 @Component({
   selector: 'jems-project-application-form-project-relevance-and-context-detail',
@@ -33,22 +31,15 @@ import { APPLICATION_FORM } from '@project/common/application-form-model';
 })
 export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent extends BaseComponent implements OnInit, OnChanges {
   APPLICATION_FORM = APPLICATION_FORM;
-  // TODO: remove these and adapt the component to save independently
-  @Input()
-  error$: Observable<HttpErrorResponse | null>;
-  @Input()
-  success$: Observable<any>;
 
+  @Input()
+  projectId: number;
   @Input()
   editable: boolean;
   @Input()
-  project: InputProjectRelevance;
+  inputProjectRelevance: InputProjectRelevance;
   @Input()
   strategiesFromCall: InputProjectRelevanceStrategy.StrategyEnum[];
-  @Output()
-  updateData = new EventEmitter<InputProjectRelevance>();
-  @Output()
-  deleteData = new EventEmitter<InputProjectRelevance>();
 
   benefits: InputProjectRelevanceBenefit[];
   spfRecipients: ProjectRelevanceSpfRecipientDTO[];
@@ -70,53 +61,50 @@ export class ProjectApplicationFormProjectRelevanceAndContextDetailComponent ext
 
   constructor(private formBuilder: FormBuilder,
               private formService: FormService,
-              public projectStore: ProjectStore) {
+              public projectStore: ProjectStore,
+              private projectDescriptionService: ProjectDescriptionService) {
     super();
     this.callType$ = projectStore.projectCallType$;
   }
 
   ngOnInit(): void {
-
     this.formService.init(this.projectRelevanceForm, this.projectStore.projectEditable$);
-    this.error$
-      .pipe(
-        takeUntil(this.destroyed$),
-        tap(err => this.formService.setError(err))
-      )
-      .subscribe();
-    this.success$
-      .pipe(
-        takeUntil(this.destroyed$),
-        tap(() => this.formService.setSuccess('project.application.form.relevance.save.success'))
-      )
-      .subscribe();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.project) {
+    if (changes.inputProjectRelevance) {
       this.resetForm();
     }
   }
 
   onSubmit(): void {
-    this.updateData.emit({
+    this.projectDescriptionService.updateProjectRelevance(this.projectId, this.createInputProjectRelevance())
+      .pipe(
+        tap(saved => Log.info('Updated project relevance and context:', this, saved)),
+        tap(() => this.formService.setSuccess('project.application.form.save.success')),
+        catchError(error => this.formService.setError(error))
+      ).subscribe();
+  }
+
+  createInputProjectRelevance(): InputProjectRelevance {
+    return {
       ...this.projectRelevanceForm.value,
       projectBenefits: this.buildBenefitsToSave(),
       projectSpfRecipients: this.buildSpfRecipientsToSave(),
       projectStrategies: this.buildStrategiesToSave(),
-      projectSynergies: this.buildSynergiesToSave(),
-    });
+      projectSynergies: this.buildSynergiesToSave()
+    };
   }
 
   resetForm(): void {
-    this.projectRelevanceForm.get('territorialChallenge')?.setValue(this.project?.territorialChallenge || []);
-    this.projectRelevanceForm.get('commonChallenge')?.setValue(this.project?.commonChallenge || []);
-    this.projectRelevanceForm.get('transnationalCooperation')?.setValue(this.project?.transnationalCooperation || []);
-    this.projectRelevanceForm.get('availableKnowledge')?.setValue(this.project?.availableKnowledge || []);
-    this.benefits = this.project?.projectBenefits ? [...this.project.projectBenefits] : [];
-    this.spfRecipients = this.project?.projectSpfRecipients ? [...this.project.projectSpfRecipients] : [];
-    this.strategies = this.project?.projectStrategies ? [...this.project.projectStrategies] : [];
-    this.synergies = this.project?.projectSynergies ? [...this.project.projectSynergies] : [];
+    this.projectRelevanceForm.get('territorialChallenge')?.setValue(this.inputProjectRelevance?.territorialChallenge || []);
+    this.projectRelevanceForm.get('commonChallenge')?.setValue(this.inputProjectRelevance?.commonChallenge || []);
+    this.projectRelevanceForm.get('transnationalCooperation')?.setValue(this.inputProjectRelevance?.transnationalCooperation || []);
+    this.projectRelevanceForm.get('availableKnowledge')?.setValue(this.inputProjectRelevance?.availableKnowledge || []);
+    this.benefits = this.inputProjectRelevance?.projectBenefits ? [...this.inputProjectRelevance.projectBenefits] : [];
+    this.spfRecipients = this.inputProjectRelevance?.projectSpfRecipients ? [...this.inputProjectRelevance.projectSpfRecipients] : [];
+    this.strategies = this.inputProjectRelevance?.projectStrategies ? [...this.inputProjectRelevance.projectStrategies] : [];
+    this.synergies = this.inputProjectRelevance?.projectSynergies ? [...this.inputProjectRelevance.projectSynergies] : [];
     this.formService.resetEditable();
   }
 

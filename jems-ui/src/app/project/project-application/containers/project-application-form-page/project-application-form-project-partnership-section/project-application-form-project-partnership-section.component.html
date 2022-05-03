@@ -2,9 +2,7 @@
         [titleText]="'project.application.form.acronym' | translate : {projectTitle: projectStore.projectTitle$ | async} "
         subTitleKey="project.application.form.section.part.c">
     <jems-project-application-form-project-partnership-detail
-            [success$]="saveSuccess$"
-            [project]="partnership$ | async"
-            [error$]="saveError$"
-            (updateData)="updatePartnership$.next($event)">
+            [inputProjectPartnership]="projectPartnership$ | async"
+            [projectId]="projectId">
     </jems-project-application-form-project-partnership-detail>
 </jems-project-page-template>
