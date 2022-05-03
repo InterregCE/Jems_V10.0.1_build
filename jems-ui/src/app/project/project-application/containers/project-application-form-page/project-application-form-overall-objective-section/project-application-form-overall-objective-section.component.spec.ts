@@ -1,5 +1,4 @@
 import { ComponentFixture, fakeAsync, TestBed, waitForAsync } from '@angular/core/testing';
-import {InputProjectOverallObjective} from '@cat/api';
 import {ProjectApplicationFormOverallObjectiveSectionComponent} from './project-application-form-overall-objective-section.component';
 import {TestModule} from '../../../../../common/test-module';
 import {ProjectModule} from '../../../../project.module';
@@ -35,13 +34,4 @@ describe('ProjectApplicationFormOverallObjectiveSectionComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
-
-  it('should update project overall objective', fakeAsync(() => {
-    component.updateProjectDescription$.next({} as InputProjectOverallObjective);
-
-    httpTestingController.expectOne({
-      method: 'PUT',
-      url: '//api/project/1/description/c1'
-    });
-  }));
 });

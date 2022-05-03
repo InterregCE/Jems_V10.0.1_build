@@ -2,10 +2,8 @@
         [titleText]="'project.application.form.acronym' | translate : {projectTitle: projectStore.projectTitle$ | async} "
         subTitleKey="project.application.form.section.part.c">
     <jems-project-application-form-future-plans-detail
-            *ngIf="futurePlans$ | async as plans"
-            [success$]="saveSuccess$"
-            [project]="plans"
-            [error$]="saveError$"
-            (updateData)="updateFuturePlans$.next($event)">
+            *ngIf="projectLongTermPlans$ | async as projectLongTermPlans"
+            [projectId]="projectId"
+            [outputProjectLongTermPlans]="projectLongTermPlans">
     </jems-project-application-form-future-plans-detail>
 </jems-project-page-template>

@@ -3,12 +3,9 @@
         subTitleKey="project.application.form.section.part.c">
     <jems-project-application-form-project-relevance-and-context-detail
             *ngIf="details$ | async as details"
-            [success$]="saveSuccess$"
-            [project]="details.relevance"
+            [projectId]="projectId"
+            [inputProjectRelevance]="details.relevance"
             [editable]="projectStore.projectEditable$ | async"
-            [strategiesFromCall]="details.strategies"
-            [error$]="saveError$"
-            (updateData)="updateProjectRelevance$.next($event)"
-            (deleteData)="deleteEntriesFromTables$.next($event)">
+            [strategiesFromCall]="details.callStrategies">
     </jems-project-application-form-project-relevance-and-context-detail>
 </jems-project-page-template>
