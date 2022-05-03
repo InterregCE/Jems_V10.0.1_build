@@ -254,8 +254,8 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       {minInRem: 8, maxInRem: 8},   // declared amount
       {minInRem: 5, maxInRem: 5},   // currency
       {minInRem: 5, maxInRem: 5},   // conversion rate
-      {minInRem: 14, maxInRem: 14},   // declared amount in EUR
-      {minInRem: 10, maxInRem: 16}   //attachment
+      {minInRem: 8, maxInRem: 8},   // declared amount in EUR
+      {minInRem: 13, maxInRem: 16}   //attachment
     ];
     if(isEditable){
       tableConfig.push({minInRem: 3, maxInRem: 3}); //delete

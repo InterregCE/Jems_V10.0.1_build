@@ -36,8 +36,14 @@ export class FormFieldErrorsComponent {
       case 'required': {
         return this.translateService.get(this.messages && this.messages[error.key] || 'common.error.field.blank', error.value);
       }
+      case 'min': {
+        return this.translateService.get(this.messages && this.messages[error.key] || 'common.error.field.min.decimal', {minValue: error.value.min});
+      }
+      case 'max': {
+        return this.translateService.get(this.messages && this.messages[error.key] || 'common.error.field.max.decimal', {maxValue: error.value.max});
+      }
       default: {
-        return this.translateService.get(this.messages && this.messages[error.key] || error.value || error.key, this.args as any);
+          return this.translateService.get(this.messages && this.messages[error.key] || 'common.error.input.invalid', this.args as any);
       }
     }
   }
