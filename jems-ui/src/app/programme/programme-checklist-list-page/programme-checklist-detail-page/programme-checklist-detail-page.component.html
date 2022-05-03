@@ -63,7 +63,7 @@
                                     </mat-error>
                                 </mat-form-field>
                             </div>
-                            <div [ngSwitch]="component.get('type').value" class="mt-2">
+                            <div [ngSwitch]="component.get('type').value" class="mt-2 pb-2">
                                 <jems-programme-checklist-headline *ngSwitchCase="COMPONENT_TYPE.HEADLINE"
                                                                    formControlName="metadata" class="w-100">
                                 </jems-programme-checklist-headline>

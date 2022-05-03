@@ -39,11 +39,6 @@ export class ProgrammeChecklistTextInputComponent implements ControlValueAccesso
 
   metadata: TextInputMetadataDTO;
   form: FormGroup;
-  FORM_ERRORS = {
-    explanationMaxValue: {
-      max: 'programme.checklists.component.text.input.characters.error'
-    }
-  };
 
   @ViewChild('autosize', {static: false}) autosize: CdkTextareaAutosize;
 
