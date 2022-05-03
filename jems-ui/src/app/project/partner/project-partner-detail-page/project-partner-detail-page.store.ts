@@ -175,13 +175,17 @@ export class ProjectPartnerDetailPageStore {
     return this.projectPartnerStateAidsStore.updateStateAid(partnerId, stateAid);
   }
 
+  private static sortById(a: CallFundRateDTO, b: CallFundRateDTO): number {
+    return (a.programmeFund.id > b.programmeFund.id) ? 1 : -1;
+  }
+
   private callFunds(): Observable<Map<number, CallFundRateDTO>> {
     return this.projectStore.project$
       .pipe(
         map(project => project.callSettings.callId),
         switchMap(callId => this.callService.getCallById(callId)),
         map(call => new Map(call.funds
-            .sort((a, b) => (a.programmeFund.id > b.programmeFund.id) ? 1 : -1)
+            .sort(ProjectPartnerDetailPageStore.sortById)
             .map(fund => [fund.programmeFund.id, fund])
           )
         ),

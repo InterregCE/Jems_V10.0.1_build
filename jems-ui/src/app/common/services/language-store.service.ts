@@ -55,7 +55,11 @@ export class LanguageStore {
         const languageIsAvailable = systemLanguages.includes(this.userAgentLanguage);
         return this.saveSelectedLanguageToLocalStorage( languageIsAvailable ? this.userAgentLanguage : DEFAULT_FALLBACK_LANGUAGE);
       }),
-      tap(storedLanguage => storedLanguage ? this.defaultLanguage = storedLanguage : ''),
+      tap(storedLanguage => {
+        if (storedLanguage) {
+          this.defaultLanguage = storedLanguage;
+        }
+      }),
       untilDestroyed(this)
     ).subscribe();
   }
@@ -119,7 +123,11 @@ export class LanguageStore {
       tap(language => this.translate.use(language)),
       tap(language => this.currentSystemLanguageSubject.next(language)),
       tap(language => this.updateSelectedLanguageToLocalStorage(language)),
-      tap(storedLanguage => storedLanguage !== '' ? this.defaultLanguage = storedLanguage : ''),
+      tap(storedLanguage => {
+        if (storedLanguage !== '') {
+          this.defaultLanguage = storedLanguage;
+        }
+      }),
       untilDestroyed(this)
     ).subscribe();
   }
