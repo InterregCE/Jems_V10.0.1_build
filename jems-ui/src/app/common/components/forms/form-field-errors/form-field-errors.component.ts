@@ -43,7 +43,7 @@ export class FormFieldErrorsComponent {
         return this.translateService.get(this.messages && this.messages[error.key] || 'common.error.field.max.decimal', {maxValue: error.value.max});
       }
       default: {
-          return this.translateService.get(this.messages && this.messages[error.key] || 'common.error.input.invalid', this.args as any);
+        return this.translateService.get(this.messages && this.messages[error.key] || 'common.error.input.invalid', this.args as any);
       }
     }
   }

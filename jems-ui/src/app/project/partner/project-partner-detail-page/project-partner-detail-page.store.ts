@@ -14,7 +14,7 @@ import {
   ProjectPartnerDetailDTO,
   ProjectPartnerService,
   ProjectPartnerStateAidDTO,
-  ProjectPeriodDTO
+  ProjectPeriodDTO, ProjectStatusDTO
 } from '@cat/api';
 import {ProjectPartnerStore} from '../../project-application/containers/project-application-form-page/services/project-partner-store.service';
 import {NumberService} from '@common/services/number.service';
@@ -239,7 +239,7 @@ export class ProjectPartnerDetailPageStore {
       this.projectVersionStore.versions$
     ]).pipe(
       map(([partner, status, versions]) => {
-        const contracted = versions.find(version => ProjectUtil.isContractedOrAnyStatusAfterContracted(version.status));
+        const contracted = versions.find(version => version.status === ProjectStatusDTO.StatusEnum.CONTRACTED);
         return !contracted|| partner.createdAt > contracted.createdAt;
       }),
     );
