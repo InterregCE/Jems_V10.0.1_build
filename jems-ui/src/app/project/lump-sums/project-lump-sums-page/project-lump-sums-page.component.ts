@@ -73,9 +73,11 @@ export class ProjectLumpSumsPageComponent implements OnInit {
     partnerColumnsTotal: number[];
     loading: boolean;
   }>;
+  tableConfiguration$: Observable<{
+    columnsToDisplay: string[];
+    withConfigs: TableConfig[];
+  }>;
 
-  private columnsToDisplay$: Observable<string[]>;
-  private withConfigs$: Observable<TableConfig[]>;
   private showAddButton$: Observable<boolean>;
   private costIsNotSplittableError$: Observable<ValidationErrors | null>;
   private partnerColumnsTotal$: Observable<number[]>;
@@ -91,7 +93,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
     return NumberService.minus(lumpSumCost, rowSum);
   }
 
-  private getColumnsToDisplay(partners: ProjectPartner[]): string[] {
+  private getColumnsToDisplay(partners: ProjectPartner[], isProjectEditable: boolean): string[] {
     return [
       'lumpSum',
       ...this.formVisibilityStatusService.isVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_BUDGET_PERIODS) ? ['period'] : [],
@@ -100,11 +102,11 @@ export class ProjectLumpSumsPageComponent implements OnInit {
       'rowSum',
       'gap',
       ...this.formVisibilityStatusService.isVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PROJECT_LUMP_SUMS_DESCRIPTION) ? ['description'] : [],
-      'actions'
+      ...isProjectEditable ? ['actions'] : []
     ];
   }
 
-  private getTableConfig(partners: ProjectPartner[]): TableConfig[] {
+  private getTableConfig(partners: ProjectPartner[], isProjectEditable: boolean): TableConfig[] {
     return [
       {minInRem: 8},
       ...this.formVisibilityStatusService.isVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_BUDGET_PERIODS) ? [{minInRem: 5}] : [],
@@ -115,7 +117,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
       {minInRem: 8},
       {minInRem: 8},
       ...this.formVisibilityStatusService.isVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PROJECT_LUMP_SUMS_DESCRIPTION) ? [{minInRem: 12}] : [],
-      {minInRem: 3}
+      ...isProjectEditable ? [{minInRem: 3}] : []
     ];
   }
 
@@ -134,11 +136,13 @@ export class ProjectLumpSumsPageComponent implements OnInit {
     this.showPeriodMissingWarning$ = combineLatest([this.items.valueChanges.pipe(startWith(null)), this.formService.reset$.pipe(startWith(null))]).pipe(
       map(() => this.items.controls.some(control => this.isPeriodMissingInRow(control))),
     );
-
-    this.columnsToDisplay$ = this.pageStore.partners$.pipe(
-        map((partners: ProjectPartner[]) => this.getColumnsToDisplay(partners))
+    this.tableConfiguration$ = combineLatest([this.pageStore.partners$, this.pageStore.isProjectEditable$]).pipe(
+      map(([partners, isProjectEditable]) => ({
+          columnsToDisplay: this.getColumnsToDisplay(partners, isProjectEditable),
+          withConfigs: this.getTableConfig(partners, isProjectEditable)
+        })
+      )
     );
-    this.withConfigs$ = this.pageStore.partners$.pipe(map((partners: ProjectPartner[]) => this.getTableConfig(partners)));
     this.costIsNotSplittableError$ = this.items.valueChanges
       .pipe(startWith(null), map(() => this.items.controls.find(itemFormGroup => itemFormGroup.errors !== null)?.errors || null));
     this.partnerColumnsTotal$ = combineLatest(
@@ -147,8 +151,6 @@ export class ProjectLumpSumsPageComponent implements OnInit {
 
     this.data$ = combineLatest([
       this.pageStore.projectTitle$,
-      this.columnsToDisplay$,
-      this.withConfigs$,
       this.pageStore.partners$,
       this.pageStore.projectCallLumpSums$,
       this.pageStore.projectPeriods$,
@@ -157,13 +159,12 @@ export class ProjectLumpSumsPageComponent implements OnInit {
       this.showPeriodMissingWarning$,
       this.costIsNotSplittableError$,
       this.partnerColumnsTotal$,
-      this.loading
+      this.loading,
+      this.tableConfiguration$,
     ]).pipe(
-      map(([projectTitle, columnsToDisplay, withConfigs, partners, lumpSums, periods, showAddButton, showGapExistsWarning, showPeriodMissingWarning, costIsNotSplittableError, partnerColumnsTotal, loading]: any) => {
+      map(([projectTitle, partners, lumpSums, periods, showAddButton, showGapExistsWarning, showPeriodMissingWarning, costIsNotSplittableError, partnerColumnsTotal, loading, tableConfiguration]: any) => {
         return {
           projectTitle,
-          columnsToDisplay,
-          withConfigs,
           partners,
           lumpSums,
           periods,
@@ -172,7 +173,8 @@ export class ProjectLumpSumsPageComponent implements OnInit {
           showPeriodMissingWarning,
           costIsNotSplittableError,
           partnerColumnsTotal,
-          loading
+          loading,
+          ...tableConfiguration
         };
       })
     );
@@ -314,7 +316,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
     setTimeout(() => {
       this.tableData = [...this.items.controls];
       this.loading.next(false);
-    },         0);
+    }, 0);
     this.formService.resetEditable();
   }
 

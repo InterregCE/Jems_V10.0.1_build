@@ -85,12 +85,15 @@ export class SmallProjectFundTableComponent implements OnInit, OnChanges, OnDest
   }
 
   ngOnInit(): void {
-
     this.formService.reset$.pipe(
       map(() => this.resetSpfFormGroup(this.spfCostTable)),
       untilDestroyed(this)
     ).subscribe();
 
+   this.setTableConfig();
+  }
+
+  setTableConfig() {
     this.columnsToDisplay = [
       ...this.budgetTabService.addIfItsVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.SPF_COST.DESCRIPTION, ['description']),
       ...this.budgetTabService.addIfItsVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.SPF_COST.COMMENTS, ['comments']),
@@ -98,7 +101,7 @@ export class SmallProjectFundTableComponent implements OnInit, OnChanges, OnDest
       ...this.budgetTabService.addIfItsVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.SPF_COST.PRICE_PER_UNIT, ['pricePerUnit']),
       'total',
       ...this.budgetTabService.getPeriodTableColumns(this.projectPeriods),
-      'action'
+      ...this.editable ? ['action'] : []
     ];
 
     this.tableConfig = [
@@ -107,9 +110,9 @@ export class SmallProjectFundTableComponent implements OnInit, OnChanges, OnDest
       ...this.budgetTabService.addIfItsVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.SPF_COST.UNIT_TYPE_AND_NUMBER_OF_UNITS, [{minInRem: 12}]),
       ...this.budgetTabService.addIfItsVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.SPF_COST.PRICE_PER_UNIT, [{minInRem: 5, maxInRem:5}]),
       {minInRem: 8, maxInRem: 8}, {minInRem: 8},
-      ...this.budgetTabService.getPeriodsWidthConfigs(this.projectPeriods), {minInRem: 3, maxInRem: 3}
+      ...this.budgetTabService.getPeriodsWidthConfigs(this.projectPeriods),
+      ...this.editable ? [{minInRem: 3, maxInRem: 3}] : []
     ];
-
   }
 
   ngOnChanges(changes: SimpleChanges): void {
