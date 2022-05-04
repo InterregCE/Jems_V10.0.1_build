@@ -56,12 +56,14 @@ class UpdateBudgetOptions(
     }
 
     private fun validateContractedChanges(inputOptions: ProjectPartnerBudgetOptions, partnerId: Long) {
-        val contracted = projectVersionPersistence
+        val versions = projectVersionPersistence
             .getAllVersionsByProjectId(partnerPersistence.getProjectIdForPartnerId(partnerId))
-            .firstOrNull { it.status.isAlreadyContracted() } ?: return
+
+        if (versions.isEmpty() || !versions[0].status.isAlreadyContracted())
+            return
 
         val partnerCreatedAt = ZonedDateTime.of(partnerPersistence.getById(partnerId).createdAt.toLocalDateTime(), ZoneOffset.UTC)
-        if (partnerCreatedAt.isAfter(contracted.createdAt))
+        if (partnerCreatedAt.isAfter(versions[0].createdAt))
             return
 
         if (!optionsEnabledOrDisabled(persistence.getBudgetOptions(partnerId), inputOptions))
