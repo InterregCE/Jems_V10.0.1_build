@@ -88,11 +88,17 @@ export class ChecklistAnswersComponent implements OnInit, OnChanges {
     if (!component.instanceMetadata) {
       return null;
     }
-
     const group = this.formBuilder.group(component.instanceMetadata);
-    if(component.type === ChecklistComponentInstanceDTO.TypeEnum.TEXTINPUT) {
-      group.get('explanation')?.addValidators([Validators.maxLength((component.programmeMetadata as TextInputMetadataDTO).explanationMaxLength)]);
+
+    switch (component.type) {
+      case ChecklistComponentInstanceDTO.TypeEnum.OPTIONSTOGGLE:
+        group.get('justification')?.addValidators([Validators.maxLength(5000)]);
+        break;
+      case ChecklistComponentInstanceDTO.TypeEnum.TEXTINPUT:
+        group.get('explanation')?.addValidators([Validators.maxLength((component.programmeMetadata as TextInputMetadataDTO).explanationMaxLength)]);
+        break;
     }
+
     return group;
   }
 

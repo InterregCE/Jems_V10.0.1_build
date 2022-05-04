@@ -31,7 +31,7 @@ export class BudgetPagePartnerPerPeriodComponent {
   }>;
 
   private static sortByNumber(a: ProjectPartnerBudgetPerPeriodDTO, b: ProjectPartnerBudgetPerPeriodDTO): number {
-    return a.partner.sortNumber - b.partner.sortNumber
+    return a.partner.sortNumber - b.partner.sortNumber;
   }
 
 
@@ -42,7 +42,7 @@ export class BudgetPagePartnerPerPeriodComponent {
       .pipe(
         map((projectBudgetOverviewPerPartnerPerPeriod) => {
           const perPeriodSorted = [...projectBudgetOverviewPerPartnerPerPeriod.partnersBudgetPerPeriod]
-            .sort(BudgetPagePartnerPerPeriodComponent.sortByNumber)
+            .sort(BudgetPagePartnerPerPeriodComponent.sortByNumber);
           return {
             partnersBudgetPerPeriod: perPeriodSorted,
             totals: projectBudgetOverviewPerPartnerPerPeriod.totals,
