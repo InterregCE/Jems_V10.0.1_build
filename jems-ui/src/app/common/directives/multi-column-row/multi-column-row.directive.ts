@@ -20,5 +20,6 @@ export class MultiColumnRowDirective implements OnInit {
     this.el.nativeElement.style.setProperty('--flex', this.stretch === 'none' ? 'none' : 1);
     this.el.nativeElement.style.setProperty('--justifyContent', this.justifyContent);
     this.el.nativeElement.style.setProperty('--alignItems', this.alignItems);
+    this.el.nativeElement.style.setProperty('display', 'block');
   }
 }
