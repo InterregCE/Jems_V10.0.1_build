@@ -87,12 +87,12 @@
         </span>
         <jems-expandable-textarea jemsMultiColumnRow class="mt-2"
                                   [control]="controls?.get('justification')"
+                                  [errors]="controls?.get('justification')?.errors"
                                   [characterLimit]="5000"
                                   [minRows]="1"
                                   [maxRows]="30"
-                                  [label]="'checklists.instance.component.field.justification'">
+                                  label='checklists.instance.component.field.justification'>
         </jems-expandable-textarea>
-
     </div>
 </ng-template>
 
