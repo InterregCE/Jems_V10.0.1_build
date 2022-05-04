@@ -1,13 +1,12 @@
 package io.cloudflight.jems.server.project.service.checklist.update
 
 import io.cloudflight.jems.api.audit.dto.AuditAction
+import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
-import io.cloudflight.jems.server.common.validator.GeneralValidatorDefaultImpl
-import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistComponentInstance
 import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistInstanceDetail
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistComponentType
@@ -16,6 +15,7 @@ import io.cloudflight.jems.server.programme.service.checklist.model.metadata.*
 import io.cloudflight.jems.server.programme.service.checklist.update.UpdateChecklistInstance
 import io.cloudflight.jems.server.programme.service.checklist.update.UpdateChecklistInstanceStatusNotAllowedException
 import io.cloudflight.jems.server.project.service.checklist.ChecklistInstancePersistence
+import io.cloudflight.jems.server.project.service.checklist.ChecklistInstanceValidator
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceStatus
 import io.cloudflight.jems.server.project.service.checklist.model.metadata.TextInputInstanceMetadata
 import io.mockk.*
@@ -65,6 +65,22 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
         )
     )
 
+    private val optionsToggleComponentInstance = ChecklistComponentInstance(
+        4L,
+        ProgrammeChecklistComponentType.OPTIONS_TOGGLE,
+        0,
+        OptionsToggleMetadata("Question to be answered", "yes", "no", "", ""),
+        OptionsToggleInstanceMetadata("yes", "A".repeat(5001))
+    )
+
+    private val textInputComponentInstance = ChecklistComponentInstance(
+        4L,
+        ProgrammeChecklistComponentType.TEXT_INPUT,
+        0,
+        TextInputMetadata("Question to be answered", "Label", 2000),
+        TextInputInstanceMetadata("A".repeat(3000))
+    )
+
     private val checkLisDetailWithError = ChecklistInstanceDetail(
         id = CHECKLIST_ID,
         programmeChecklistId = PROGRAMME_CHECKLIST_ID,
@@ -73,15 +89,7 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
         name = "name",
         relatedToId = RELATED_TO_ID,
         finishedDate = null,
-        components = mutableListOf(
-            ChecklistComponentInstance(
-                4L,
-                ProgrammeChecklistComponentType.TEXT_INPUT,
-                0,
-                TextInputMetadata("Question to be answered", "Label", 2000),
-                TextInputInstanceMetadata("A".repeat(3000))
-            )
-        )
+        components = mutableListOf(textInputComponentInstance)
     )
 
     @MockK
@@ -92,19 +100,20 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
 
     lateinit var updateChecklistInstance: UpdateChecklistInstance
 
-    lateinit var generalValidator: GeneralValidatorService
+    lateinit var checklistInstanceValidator: ChecklistInstanceValidator
 
     @BeforeEach
     fun setup() {
         clearMocks(persistence)
         MockKAnnotations.init(this)
-        generalValidator = GeneralValidatorDefaultImpl()
-        updateChecklistInstance = UpdateChecklistInstance(persistence, auditPublisher, generalValidator)
+        checklistInstanceValidator = mockk()
+        updateChecklistInstance = UpdateChecklistInstance(persistence, auditPublisher, checklistInstanceValidator)
     }
 
     @Test
     fun `update - successfully`() {
         val auditSlot = slot<AuditCandidateEvent>()
+        every { checklistInstanceValidator.validateChecklistComponents(checkLisDetail.components) } returns Unit
         every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit
         every { persistence.update(checkLisDetail) } returns checkLisDetail
         every { persistence.getStatus(checkLisDetail.id) } returns ChecklistInstanceStatus.DRAFT
@@ -115,6 +124,7 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
     @Test
     fun `update checklist with different status should trigger an audit log`() {
         val auditSlot = slot<AuditCandidateEvent>()
+        every { checklistInstanceValidator.validateChecklistComponents(checkLisDetail.components) } returns Unit
         every { auditPublisher.publishEvent(capture(auditSlot)) } answers {}
         every { persistence.update(checkLisDetail) } returns checkLisDetail
         every { persistence.getStatus(checkLisDetail.id) } returns ChecklistInstanceStatus.DRAFT
@@ -141,8 +151,29 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
     }
 
     @Test
-    fun `update - max length exception`() {
+    fun `update - text input component max length exception`() {
         val auditSlot = slot<AuditCandidateEvent>()
+        val textInputInstanceMetadata = textInputComponentInstance.instanceMetadata as TextInputInstanceMetadata
+        val exception = AppInputValidationException(
+            mapOf(
+                textInputInstanceMetadata.explanation to I18nMessage(i18nKey = "common.error.field.max.length")
+            )
+        )
+        every { checklistInstanceValidator.validateChecklistComponents(checkLisDetailWithError.components) } throws exception
+        every { auditPublisher.publishEvent(capture(auditSlot)) } answers {}
+        every { persistence.update(checkLisDetailWithError) } returns checkLisDetailWithError
+        every { persistence.getStatus(checkLisDetailWithError.id) } returns ChecklistInstanceStatus.DRAFT
+        assertThrows<AppInputValidationException> { updateChecklistInstance.update(checkLisDetailWithError) }
+    }
+
+    @Test
+    fun `update - options toggle justification field max length exception`() {
+        val auditSlot = slot<AuditCandidateEvent>()
+        val justificationField = (optionsToggleComponentInstance.instanceMetadata as OptionsToggleInstanceMetadata).justification ?: ""
+        val exception = AppInputValidationException(
+            mapOf(justificationField to I18nMessage(i18nKey = "common.error.field.max.length"))
+        )
+        every { checklistInstanceValidator.validateChecklistComponents(checkLisDetailWithError.components) } throws exception
         every { auditPublisher.publishEvent(capture(auditSlot)) } answers {}
         every { persistence.update(checkLisDetailWithError) } returns checkLisDetailWithError
         every { persistence.getStatus(checkLisDetailWithError.id) } returns ChecklistInstanceStatus.DRAFT
