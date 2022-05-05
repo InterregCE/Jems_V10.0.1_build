@@ -1,7 +1,12 @@
 package io.cloudflight.jems.server.project.service.report.partner.expenditure
 
 import io.cloudflight.jems.server.currency.service.model.CurrencyConversion
+import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportExpenditureCost
+import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportLumpSum
+import io.cloudflight.jems.server.project.service.report.model.expenditure.ReportBudgetCategory
+import java.math.BigDecimal
+import java.math.RoundingMode
 
 fun List<ProjectPartnerReportExpenditureCost>.fillCurrencyRates(rates: Map<String, CurrencyConversion>) = map {
     it.apply {
@@ -22,3 +27,43 @@ inline fun <T> Collection<T>.filterInvalidCurrencies(defaultCurrency: String?, e
         map { extractFunction.invoke(it) }.filterTo(HashSet()) { it != defaultCurrency }
     else
         emptySet()
+
+fun ProjectPartnerReportExpenditureCost.fillInLumpSum(lumpSum: ProjectPartnerReportLumpSum) {
+    unitCostId = null
+    lumpSumId = lumpSum.id
+    costCategory = ReportBudgetCategory.Multiple
+    investmentId = null
+    contractId = null
+    internalReferenceNumber = null
+    invoiceNumber = null
+    invoiceDate = null
+    dateOfPayment = null
+    totalValueInvoice = null
+    vat = null
+    numberOfUnits = BigDecimal.ONE
+    pricePerUnit = lumpSum.cost
+    declaredAmount = lumpSum.cost
+    currencyCode = "EUR"
+}
+
+fun ProjectPartnerReportExpenditureCost.fillInUnitCost(unitCost: ProgrammeUnitCost) {
+    unitCostId = unitCost.id
+    lumpSumId = null
+
+    if (unitCost.isOneCostCategory)
+        costCategory = ReportBudgetCategory.valueOf(unitCost.categories.first().name)
+    else
+        costCategory = ReportBudgetCategory.Multiple
+
+    investmentId = null
+    contractId = null
+    internalReferenceNumber = null
+    invoiceNumber = null
+    invoiceDate = null
+    dateOfPayment = null
+    totalValueInvoice = null
+    vat = null
+    pricePerUnit = unitCost.costPerUnit ?: BigDecimal.ZERO
+    declaredAmount = numberOfUnits.multiply(pricePerUnit).setScale(2, RoundingMode.DOWN)
+    currencyCode = "EUR"
+}

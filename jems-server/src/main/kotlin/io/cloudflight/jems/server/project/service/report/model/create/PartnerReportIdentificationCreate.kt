@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.service.report.model
+package io.cloudflight.jems.server.project.service.report.model.create
 
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing

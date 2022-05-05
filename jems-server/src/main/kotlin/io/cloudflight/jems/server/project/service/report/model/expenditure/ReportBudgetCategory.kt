@@ -1,6 +1,6 @@
-package io.cloudflight.jems.api.project.dto.report.partner.expenditure
+package io.cloudflight.jems.server.project.service.report.model.expenditure
 
-enum class BudgetCategoryDTO {
+enum class ReportBudgetCategory {
     StaffCosts,
     OfficeAndAdministrationCosts,
     TravelAndAccommodationCosts,

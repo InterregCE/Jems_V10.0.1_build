@@ -1,17 +1,14 @@
-package io.cloudflight.jems.server.project.service.report.model
+package io.cloudflight.jems.server.project.service.report.model.create
 
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceBenefit
-import io.cloudflight.jems.server.project.service.report.model.contribution.create.CreateProjectPartnerReportContribution
 import io.cloudflight.jems.server.project.service.report.model.workPlan.create.CreateProjectPartnerReportWorkPackage
 
 data class ProjectPartnerReportCreate(
-    val partnerId: Long,
-    val reportNumber: Int,
-    val status: ReportStatus,
-    val version: String,
-
+    val baseData: PartnerReportBaseData,
     val identification: PartnerReportIdentificationCreate,
+
     val workPackages: List<CreateProjectPartnerReportWorkPackage>,
     val targetGroups: List<ProjectRelevanceBenefit>,
-    val contributions: List<CreateProjectPartnerReportContribution>,
+
+    val budget: PartnerReportBudget,
 )

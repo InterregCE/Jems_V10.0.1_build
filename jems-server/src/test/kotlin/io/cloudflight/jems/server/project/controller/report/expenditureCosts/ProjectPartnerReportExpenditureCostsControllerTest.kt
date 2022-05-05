@@ -1,13 +1,18 @@
 package io.cloudflight.jems.server.project.controller.report.expenditureCosts
 
-import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadataDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.BudgetCategoryDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportExpenditureCostDTO
+import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportLumpSumDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportExpenditureCost
+import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportLumpSum
+import io.cloudflight.jems.server.project.service.report.model.expenditure.ReportBudgetCategory
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.partner.expenditure.getAvailableLumpSumsForReport.GetAvailableLumpSumsForReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.getProjectPartnerReportExpenditure.GetProjectPartnerReportExpenditureInteractor
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.updateProjectPartnerReportExpenditure.UpdateProjectPartnerReportExpenditureInteractor
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.uploadFileToProjectPartnerReportExpenditure.UploadFileToProjectPartnerReportExpenditure
@@ -31,7 +36,9 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
 
     private val reportExpenditureCost = ProjectPartnerReportExpenditureCost(
         id = 754,
-        costCategory = BudgetCategory.ExternalCosts,
+        lumpSumId = null,
+        unitCostId = null,
+        costCategory = ReportBudgetCategory.ExternalCosts,
         investmentId = 10L,
         contractId = CONTRACT_ID,
         internalReferenceNumber = "internal-1",
@@ -42,6 +49,8 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
         comment = emptySet(),
         totalValueInvoice = BigDecimal.valueOf(22),
         vat = BigDecimal.valueOf(18.0),
+        numberOfUnits = BigDecimal.ZERO,
+        pricePerUnit = BigDecimal.ZERO,
         declaredAmount = BigDecimal.valueOf(31.2),
         currencyCode = "CZK",
         currencyConversionRate = BigDecimal.valueOf(24),
@@ -51,6 +60,8 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
 
     private val reportExpenditureCostDto = ProjectPartnerReportExpenditureCostDTO(
         id = 754,
+        lumpSumId = null,
+        unitCostId = null,
         costCategory = BudgetCategoryDTO.ExternalCosts,
         investmentId = 10L,
         contractId = CONTRACT_ID,
@@ -62,6 +73,8 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
         comment = emptySet(),
         totalValueInvoice = BigDecimal.valueOf(22),
         vat = BigDecimal.valueOf(18.0),
+        numberOfUnits = BigDecimal.ZERO,
+        pricePerUnit = BigDecimal.ZERO,
         declaredAmount = BigDecimal.valueOf(31.2),
         currencyCode = "CZK",
         currencyConversionRate = BigDecimal.valueOf(24),
@@ -83,6 +96,21 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
         return file
     }
 
+    private val dummyLumpSum = ProjectPartnerReportLumpSum(
+        id = 18L,
+        lumpSumProgrammeId = 140L,
+        period = 4,
+        cost = BigDecimal.ONE,
+        name = setOf(InputTranslation(SystemLanguage.EN, "EN lump sum"))
+    )
+
+    private val dummyLumpSumDto = ProjectPartnerReportLumpSumDTO(
+        id = 18L,
+        lumpSumProgrammeId = 140L,
+        period = 4,
+        cost = BigDecimal.ONE,
+        name = setOf(InputTranslation(SystemLanguage.EN, "EN lump sum"))
+    )
 
     @MockK
     lateinit var getProjectPartnerReportExpenditureInteractor: GetProjectPartnerReportExpenditureInteractor
@@ -92,6 +120,9 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
 
     @MockK
     lateinit var uploadFileToExpenditure: UploadFileToProjectPartnerReportExpenditure
+
+    @MockK
+    lateinit var getAvailableLumpSumsForReportInteractor: GetAvailableLumpSumsForReportInteractor
 
     @InjectMockKs
     private lateinit var controller: ProjectPartnerReportExpenditureCostsController
@@ -127,6 +158,13 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
         every { uploadFileToExpenditure.uploadToExpenditure(PARTNER_ID, reportId = 35L, 75L, capture(slotFile)) } returns dummyFile
         assertThat(controller.uploadFileToExpenditure(PARTNER_ID, 35L, 75L, dummyMultipartFile())).isEqualTo(dummyFileDto)
         assertThat(slotFile.captured).isEqualTo(dummyFileExpected)
+    }
+
+    @Test
+    fun getAvailableLumpSums() {
+        every { getAvailableLumpSumsForReportInteractor.getLumpSums(PARTNER_ID, 38L) } returns
+            listOf(dummyLumpSum)
+        assertThat(controller.getAvailableLumpSums(PARTNER_ID, reportId = 38L)).containsExactly(dummyLumpSumDto)
     }
 
 }

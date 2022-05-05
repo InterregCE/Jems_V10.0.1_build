@@ -1,8 +1,8 @@
 package io.cloudflight.jems.server.project.entity.report.expenditure
 
-import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
+import io.cloudflight.jems.server.project.service.report.model.expenditure.ReportBudgetCategory
 import java.math.BigDecimal
 import java.time.LocalDate
 import javax.persistence.CascadeType
@@ -30,9 +30,12 @@ class PartnerReportExpenditureCostEntity(
     @field:NotNull
     val partnerReport: ProjectPartnerReportEntity,
 
+    @ManyToOne
+    var reportLumpSum: PartnerReportLumpSumEntity?,
+
     @Enumerated(EnumType.STRING)
     @field:NotNull
-    var costCategory: BudgetCategory,
+    var costCategory: ReportBudgetCategory,
 
     var investmentId: Long?,
     var procurementId: Long?,
@@ -42,6 +45,10 @@ class PartnerReportExpenditureCostEntity(
     var dateOfPayment: LocalDate?,
     var totalValueInvoice: BigDecimal?,
     var vat: BigDecimal?,
+    @field:NotNull
+    var numberOfUnits: BigDecimal,
+    @field:NotNull
+    var pricePerUnit: BigDecimal,
     @field:NotNull
     var declaredAmount: BigDecimal,
 
