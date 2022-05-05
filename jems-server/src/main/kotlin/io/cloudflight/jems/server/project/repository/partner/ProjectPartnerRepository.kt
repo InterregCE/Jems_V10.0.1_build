@@ -401,11 +401,7 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
                     staffCost.row_sum AS staffCostTotal,
                     lumpSum.row_sum AS lumpSumsTotal
                 FROM project_partner AS entity
-                LEFT JOIN (
-                    SELECT *
-                    FROM project_partner_budget_options
-                    WHERE partner_id IN :partnerIds GROUP BY partner_id
-                ) AS partnerBudgetOptions ON entity.id = partnerBudgetOptions.partner_id
+                LEFT JOIN project_partner_budget_options AS partnerBudgetOptions ON entity.id = partnerBudgetOptions.partner_id
                 LEFT JOIN (
                     SELECT partner_id, SUM(row_sum) AS row_sum
                     FROM project_partner_budget_unit_cost
@@ -465,11 +461,8 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
                     staffCost.row_sum AS staffCostTotal,
                     lumpSum.row_sum AS lumpSumsTotal
                 FROM project_partner FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
-                LEFT JOIN (
-                    SELECT *
-                    FROM project_partner_budget_options FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp
-                    WHERE partner_id IN :partnerIds GROUP BY partner_id
-                ) AS partnerBudgetOptions ON entity.id = partnerBudgetOptions.partner_id
+                LEFT JOIN project_partner_budget_options FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS partnerBudgetOptions
+                    ON entity.id = partnerBudgetOptions.partner_id
                 LEFT JOIN (
                     SELECT partner_id, SUM(row_sum) AS row_sum
                     FROM project_partner_budget_unit_cost FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp
