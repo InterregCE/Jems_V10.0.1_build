@@ -23,6 +23,7 @@ import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import java.math.BigDecimal
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.util.*
@@ -35,6 +36,9 @@ internal class CreateChecklistTest : UnitTest() {
         id = CHECKLIST_ID,
         type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
         name = "name",
+        minScore = BigDecimal(0),
+        maxScore = BigDecimal(10),
+        allowsDecimalScore = false,
         lastModificationDate = ZonedDateTime.of(2020, 1, 10, 10, 10, 10, 10, ZoneId.systemDefault()),
         locked = false,
         components = emptyList()
@@ -81,6 +85,9 @@ internal class CreateChecklistTest : UnitTest() {
             id = CHECKLIST_ID,
             type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
             name = "name",
+            minScore = BigDecimal(0),
+            maxScore = BigDecimal(10),
+            allowsDecimalScore = false,
             lastModificationDate = ZonedDateTime.of(2020, 1, 10, 10, 10, 10, 10, ZoneId.systemDefault()),
             locked = false,
             components = listMock

@@ -7,6 +7,7 @@ import io.cloudflight.jems.api.programme.dto.checklist.ProgrammeChecklistDetailD
 import io.cloudflight.jems.api.programme.dto.checklist.ProgrammeChecklistTypeDTO
 import io.cloudflight.jems.api.programme.dto.checklist.metadata.HeadlineMetadataDTO
 import io.cloudflight.jems.api.programme.dto.checklist.metadata.OptionsToggleMetadataDTO
+import io.cloudflight.jems.api.programme.dto.checklist.metadata.ScoreMetadataDTO
 import io.cloudflight.jems.api.programme.dto.checklist.metadata.TextInputMetadataDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.programme.service.checklist.create.CreateProgrammeChecklistInteractor
@@ -20,6 +21,7 @@ import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChe
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.HeadlineMetadata
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.OptionsToggleMetadata
+import io.cloudflight.jems.server.programme.service.checklist.model.metadata.ScoreMetadata
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.TextInputMetadata
 import io.cloudflight.jems.server.programme.service.checklist.update.UpdateProgrammeChecklistInteractor
 import io.mockk.Runs
@@ -31,6 +33,7 @@ import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
+import java.math.BigDecimal
 import java.time.ZoneId
 import java.time.ZonedDateTime
 
@@ -41,12 +44,18 @@ class ProgrammeChecklistControllerTest : UnitTest() {
         id = ID,
         type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
         name = "test",
+        minScore = BigDecimal(0),
+        maxScore = BigDecimal(10),
+        allowsDecimalScore = false,
         lastModificationDate = ZonedDateTime.of(2020, 1, 10, 10, 10, 10, 10, ZoneId.systemDefault()),
         locked = false
     )
     private val checklistDTO = ProgrammeChecklistDTO(
         id = ID,
         type = ProgrammeChecklistTypeDTO.APPLICATION_FORM_ASSESSMENT,
+        minScore = BigDecimal(0),
+        maxScore = BigDecimal(10),
+        allowsDecimalScore = false,
         name = "test",
         lastModificationDate = ZonedDateTime.of(2020, 1, 10, 10, 10, 10, 10, ZoneId.systemDefault()),
     )
@@ -74,11 +83,20 @@ class ProgrammeChecklistControllerTest : UnitTest() {
         ProgrammeChecklistComponent(
             3L,
             ProgrammeChecklistComponentType.TEXT_INPUT,
-            1,
+            3,
             TextInputMetadata(
                 "question 2",
                 "Explanation",
                 1000
+            )
+        ),
+        ProgrammeChecklistComponent(
+            4L,
+            ProgrammeChecklistComponentType.SCORE,
+            4,
+            ScoreMetadata(
+                "question",
+                BigDecimal(1),
             )
         ),
     )
@@ -87,6 +105,9 @@ class ProgrammeChecklistControllerTest : UnitTest() {
         id = ID,
         type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
         name = "test",
+        minScore = BigDecimal(0),
+        maxScore = BigDecimal(10),
+        allowsDecimalScore = false,
         lastModificationDate = ZonedDateTime.of(2020, 1, 10, 10, 10, 10, 10, ZoneId.systemDefault()),
         locked = false,
         components = components
@@ -113,11 +134,20 @@ class ProgrammeChecklistControllerTest : UnitTest() {
         ProgrammeChecklistComponentDTO(
             3L,
             ProgrammeChecklistComponentTypeDTO.TEXT_INPUT,
-            1,
+            3,
             TextInputMetadataDTO(
                 "question 2",
                 "Explanation",
                 1000
+            )
+        ),
+        ProgrammeChecklistComponentDTO(
+            4L,
+            ProgrammeChecklistComponentTypeDTO.SCORE,
+            4,
+            ScoreMetadataDTO(
+                "question",
+                BigDecimal(1)
             )
         )
     )
@@ -126,6 +156,9 @@ class ProgrammeChecklistControllerTest : UnitTest() {
         id = ID,
         type = ProgrammeChecklistTypeDTO.APPLICATION_FORM_ASSESSMENT,
         name = "test",
+        minScore = BigDecimal(0),
+        maxScore = BigDecimal(10),
+        allowsDecimalScore = false,
         lastModificationDate = ZonedDateTime.of(2020, 1, 10, 10, 10, 10, 10, ZoneId.systemDefault()),
         components = componentsDTO
     )

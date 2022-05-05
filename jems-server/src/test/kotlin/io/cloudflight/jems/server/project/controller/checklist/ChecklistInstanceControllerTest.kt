@@ -40,6 +40,7 @@ import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
+import java.math.BigDecimal
 
 class ChecklistInstanceControllerTest : UnitTest() {
 
@@ -65,6 +66,9 @@ class ChecklistInstanceControllerTest : UnitTest() {
         finishedDate = null,
         type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
         name = "test",
+        minScore = BigDecimal(0),
+        maxScore = BigDecimal(10),
+        allowsDecimalScore = false,
         creatorEmail = "a@a",
         consolidated = false,
         components = mutableListOf(
@@ -98,6 +102,9 @@ class ChecklistInstanceControllerTest : UnitTest() {
         finishedDate = null,
         name = "test",
         creatorEmail = "a@a",
+        minScore = BigDecimal(0),
+        maxScore = BigDecimal(10),
+        allowsDecimalScore = false,
         consolidated = false,
         components = mutableListOf(
             ChecklistComponentInstanceDTO(

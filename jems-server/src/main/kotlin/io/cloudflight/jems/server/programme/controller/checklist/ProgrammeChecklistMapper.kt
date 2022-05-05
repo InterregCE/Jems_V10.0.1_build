@@ -5,21 +5,13 @@ import io.cloudflight.jems.api.programme.dto.checklist.ProgrammeChecklistCompone
 import io.cloudflight.jems.api.programme.dto.checklist.ProgrammeChecklistDTO
 import io.cloudflight.jems.api.programme.dto.checklist.ProgrammeChecklistDetailDTO
 import io.cloudflight.jems.api.programme.dto.checklist.ProgrammeChecklistTypeDTO
-import io.cloudflight.jems.api.programme.dto.checklist.metadata.HeadlineMetadataDTO
-import io.cloudflight.jems.api.programme.dto.checklist.metadata.OptionsToggleMetadataDTO
-import io.cloudflight.jems.api.programme.dto.checklist.metadata.ProgrammeChecklistMetadataDTO
-import io.cloudflight.jems.api.programme.dto.checklist.metadata.TextInputMetadataDTO
-import io.cloudflight.jems.api.project.dto.checklist.ChecklistInstanceStatusDTO
+import io.cloudflight.jems.api.programme.dto.checklist.metadata.*
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklist
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistComponent
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistComponentType
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistDetail
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
-import io.cloudflight.jems.server.programme.service.checklist.model.metadata.HeadlineMetadata
-import io.cloudflight.jems.server.programme.service.checklist.model.metadata.OptionsToggleMetadata
-import io.cloudflight.jems.server.programme.service.checklist.model.metadata.ProgrammeChecklistMetadata
-import io.cloudflight.jems.server.programme.service.checklist.model.metadata.TextInputMetadata
-import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceStatus
+import io.cloudflight.jems.server.programme.service.checklist.model.metadata.*
 import org.mapstruct.AfterMapping
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping
@@ -79,6 +71,7 @@ fun ProgrammeChecklistMetadata.toDtoMetadata(type: ProgrammeChecklistComponentTy
         ProgrammeChecklistComponentType.HEADLINE -> (this as HeadlineMetadata).toDto()
         ProgrammeChecklistComponentType.OPTIONS_TOGGLE -> (this as OptionsToggleMetadata).toDto()
         ProgrammeChecklistComponentType.TEXT_INPUT -> (this as TextInputMetadata).toDto()
+        ProgrammeChecklistComponentType.SCORE -> (this as ScoreMetadata).toDto()
     }
 
 fun ProgrammeChecklistMetadataDTO.toModelMetadata(type: ProgrammeChecklistComponentTypeDTO): ProgrammeChecklistMetadata =
@@ -86,6 +79,7 @@ fun ProgrammeChecklistMetadataDTO.toModelMetadata(type: ProgrammeChecklistCompon
         ProgrammeChecklistComponentTypeDTO.HEADLINE -> (this as HeadlineMetadataDTO).toModel()
         ProgrammeChecklistComponentTypeDTO.OPTIONS_TOGGLE -> (this as OptionsToggleMetadataDTO).toModel()
         ProgrammeChecklistComponentTypeDTO.TEXT_INPUT -> (this as TextInputMetadataDTO).toModel()
+        ProgrammeChecklistComponentTypeDTO.SCORE -> (this as ScoreMetadataDTO).toModel()
     }
 
 private fun HeadlineMetadata.toDto(): HeadlineMetadataDTO =
@@ -129,3 +123,15 @@ private fun TextInputMetadataDTO.toModel(): TextInputMetadata =
             explanationLabel,
             explanationMaxLength
         )
+
+private fun ScoreMetadata.toDto(): ScoreMetadataDTO =
+    ScoreMetadataDTO(
+        question,
+        weight
+    )
+
+private fun ScoreMetadataDTO.toModel(): ScoreMetadata =
+    ScoreMetadata(
+        question,
+        weight
+    )

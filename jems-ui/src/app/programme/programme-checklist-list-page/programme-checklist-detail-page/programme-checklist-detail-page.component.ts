@@ -23,6 +23,14 @@ export class ProgrammeChecklistDetailPageComponent  {
   COMPONENT_TYPE = ProgrammeChecklistComponentDTO.TypeEnum;
   Alert = Alert;
 
+  FORM_ERRORS = {
+    minScore: {
+      max: 'programme.checklists.detail.range.min.error'
+    },
+    maxScore: {
+      min: 'programme.checklists.detail.range.max.error'
+    }
+  };
   data$: Observable<{
     checklist: ProgrammeChecklistDetailDTO;
     previewComponents: ChecklistComponentInstanceDTO[];
@@ -32,6 +40,9 @@ export class ProgrammeChecklistDetailPageComponent  {
     id: [null],
     type: ['', Validators.required],
     name: ['', Validators.maxLength(100)],
+    minScore: ['0', [Validators.required, Validators.min(0), Validators.max(10)]],
+    maxScore: ['10', [Validators.required, Validators.min(0), Validators.max(100)]],
+    allowsDecimalScore: [false],
     components: this.formBuilder.array([])
   });
 
@@ -54,6 +65,7 @@ export class ProgrammeChecklistDetailPageComponent  {
   }
 
   save(): void {
+    this.updateScoreValues();
     this.components.controls.forEach(
       (component, index) => component.get('position')?.setValue(index)
     );
@@ -115,6 +127,7 @@ export class ProgrammeChecklistDetailPageComponent  {
     this.components.clear();
     checklist?.components?.forEach(component => this.addComponent(component));
     this.formService.resetEditable();
+    this.updateScoreRangeValidations();
   }
 
   private getPreviewComponents(components: ProgrammeChecklistComponentDTO[]): ChecklistComponentInstanceDTO[] {
@@ -125,5 +138,17 @@ export class ProgrammeChecklistDetailPageComponent  {
       programmeMetadata: component.metadata,
       instanceMetadata: null as any
     })) : [];
+  }
+
+  updateScoreRangeValidations() {
+    this.form.get('maxScore')?.setValidators([Validators.required, Validators.min(this.form.value?.minScore || 0), Validators.max(100)]);
+    this.form.get('minScore')?.setValidators([Validators.required, Validators.max(this.form.value?.maxScore || 10)]);
+  }
+
+  updateScoreValues() {
+    if (!this.form.value?.allowsDecimalScore) {
+      this.form.get('minScore')?.setValue(parseInt(this.form.get('minScore')?.value, 10));
+      this.form.get('maxScore')?.setValue(parseInt(this.form.get('maxScore')?.value, 10));
+    }
   }
 }

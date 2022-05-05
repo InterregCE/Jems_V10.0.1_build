@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.programme.entity.checklist
 
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
+import java.math.BigDecimal
 import java.time.ZonedDateTime
 import javax.persistence.CascadeType
 import javax.persistence.Entity
@@ -26,6 +27,12 @@ class ProgrammeChecklistEntity(
     val type: ProgrammeChecklistType = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
 
     val name: String?,
+
+    val minScore: BigDecimal?,
+
+    val maxScore: BigDecimal?,
+
+    val allowsDecimalScore: Boolean? = false,
 
     var lastModificationDate: ZonedDateTime?,
 

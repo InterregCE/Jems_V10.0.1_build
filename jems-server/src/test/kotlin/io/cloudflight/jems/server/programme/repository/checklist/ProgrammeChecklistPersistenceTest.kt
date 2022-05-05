@@ -16,6 +16,7 @@ import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.io.File
+import java.math.BigDecimal
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.util.*
@@ -29,14 +30,20 @@ class ProgrammeChecklistPersistenceTest : UnitTest() {
         id = ID,
         type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
         name = "name",
+        minScore = BigDecimal(0),
+        maxScore = BigDecimal(10),
+        allowsDecimalScore = false,
         lastModificationDate = ZonedDateTime.of(2020, 1, 10, 10, 10, 10, 10, ZoneId.systemDefault()),
-        locked = false
+        locked = false,
     )
 
     private val checkLisDetail = ProgrammeChecklistDetail(
         id = ID,
         type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
         name = "name",
+        minScore = BigDecimal(0),
+        maxScore = BigDecimal(10),
+        allowsDecimalScore = false,
         lastModificationDate = ZonedDateTime.of(2020, 1, 10, 10, 10, 10, 10, ZoneId.systemDefault()),
         locked = false,
         components = mutableListOf(
@@ -65,6 +72,9 @@ class ProgrammeChecklistPersistenceTest : UnitTest() {
         id = ID,
         type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
         name = "name",
+        minScore = BigDecimal(0),
+        maxScore = BigDecimal(10),
+        allowsDecimalScore = false,
         lastModificationDate = ZonedDateTime.of(2020, 1, 10, 10, 10, 10, 10, ZoneId.systemDefault()),
         components = mutableSetOf(
             ProgrammeChecklistComponentEntity(
@@ -103,6 +113,9 @@ class ProgrammeChecklistPersistenceTest : UnitTest() {
         every { programmeChecklistRow.id } returns ID
         every { programmeChecklistRow.type } returns ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT
         every { programmeChecklistRow.name } returns "name"
+        every { programmeChecklistRow.minScore } returns BigDecimal(0)
+        every { programmeChecklistRow.maxScore } returns BigDecimal(10)
+        every { programmeChecklistRow.allowsDecimalScore } returns false
         every { programmeChecklistRow.lastModificationDate } returns ZonedDateTime.of(2020, 1, 10, 10, 10, 10, 10, ZoneId.systemDefault())
         every { programmeChecklistRow.count } returns 0
 

@@ -13,6 +13,9 @@
     <jems-checklist-answers
             [components]="data.checklist.components"
             [status]="data.checklist.status"
+            [minScore]="data.checklist.minScore"
+            [maxScore]="data.checklist.maxScore"
+            [allowsDecimalScore]="data.checklist.allowsDecimalScore"
             [editable]="data.editable"
             (save)="save(data.checklist)">
 

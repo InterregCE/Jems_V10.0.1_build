@@ -50,6 +50,9 @@ import {ProgrammeConversionRatesComponent} from './programme-conversion-rates/pr
 import {
   ProgrammeChecklistTextInputComponent
 } from './programme-checklist-list-page/programme-checklist-detail-page/components/programme-checklist-text-input/programme-checklist-text-input.component';
+import {
+  ProgrammeChecklistScoreComponent
+} from './programme-checklist-list-page/programme-checklist-detail-page/components/programme-checklist-score/programme-checklist-score.component';
 
 @NgModule({
   declarations: [
@@ -92,6 +95,7 @@ import {
     ProgrammeChecklistHeadlineComponent,
     ProgrammeChecklistOptionsToggleComponent,
     ProgrammeChecklistTextInputComponent,
+    ProgrammeChecklistScoreComponent,
     ProgrammeDataExportComponent,
     ProgrammeConversionRatesComponent
   ],
