@@ -49,8 +49,11 @@ interface ProjectAssociatedOrganizationRepository : JpaRepository<ProjectAssocia
             SELECT
              entity.id as id,
              addresses.*,
+             addresses.country_code AS countryCode,
              addresses.nuts_region2 AS nutsRegion2,
+             addresses.nuts_region2_code AS nutsRegion2Code,
              addresses.nuts_region3 AS nutsRegion3,
+             addresses.nuts_region3_code AS nutsRegion3Code,
              addresses.house_number AS houseNumber,
              addresses.postal_code AS postalCode
              FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
@@ -142,8 +145,11 @@ interface ProjectAssociatedOrganizationRepository : JpaRepository<ProjectAssocia
              entityTranslation.role_description as roleDescription,
 
              address.country,
+             address.country_code as countryCode,
              address.nuts_region2 as nutsRegion2,
+             address.nuts_region2_code as nutsRegion2Code,
              address.nuts_region3 as nutsRegion3,
+             address.nuts_region3_code as nutsRegion3Code,
              address.street,
              address.house_number as houseNumber,
              address.postal_code as postalCode,

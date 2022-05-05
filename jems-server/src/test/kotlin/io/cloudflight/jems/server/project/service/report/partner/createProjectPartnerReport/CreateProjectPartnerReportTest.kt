@@ -92,7 +92,7 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
             duration = null,
         )
 
-        private fun partnerDetail(id: Long) = ProjectPartnerDetail(
+        private fun partnerDetail(id: Long, countryCode: String?) = ProjectPartnerDetail(
             projectId = PROJECT_ID,
             id = id,
             active = true,
@@ -110,7 +110,11 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
             legalStatusId = 697854L,
             vat = "",
             addresses = listOf(
-                ProjectPartnerAddress(type = ProjectPartnerAddressType.Organization, country = "Österreich (AT)")
+                ProjectPartnerAddress(
+                    type = ProjectPartnerAddressType.Organization,
+                    country = "Österreich (AT)",
+                    countryCode = countryCode
+                )
             ),
             vatRecovery = ProjectPartnerVatRecovery.Yes,
         )
@@ -159,6 +163,7 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
                 partnerType = ProjectTargetGroup.SectoralAgency,
                 vatRecovery = ProjectPartnerVatRecovery.Yes,
                 country = "Österreich (AT)",
+                countryCode = "AT",
                 currency = "EUR",
                 coFinancing = coFinancing
             ),
@@ -216,6 +221,32 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
                     currentlyReported = BigDecimal.ZERO,
                 ),
             ),
+        )
+
+        private fun expectedCreationObjectLimited(partnerId: Long) = ProjectPartnerReportCreate(
+            partnerId = partnerId,
+            reportNumber = 7 + 1,
+            status = ReportStatus.Draft,
+            version = "14.2.0",
+            identification = PartnerReportIdentificationCreate(
+                projectIdentifier = "XE.1_0001",
+                projectAcronym = "project acronym",
+                partnerNumber = 4,
+                partnerAbbreviation = "abbr",
+                partnerRole = ProjectPartnerRole.PARTNER,
+                nameInOriginalLanguage = "name in orig",
+                nameInEnglish = "name in eng",
+                legalStatusId = 697854L,
+                partnerType = ProjectTargetGroup.SectoralAgency,
+                vatRecovery = ProjectPartnerVatRecovery.Yes,
+                country = "Österreich (AT)",
+                countryCode = null,
+                currency = "EUR",
+                coFinancing = coFinancing
+            ),
+            workPackages = emptyList(),
+            targetGroups = emptyList(),
+            contributions = emptyList()
         )
 
         private val reportsForContribution = listOf(
@@ -326,7 +357,7 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
     @EnumSource(value = ApplicationStatus::class, names = ["CONTRACTED", "IN_MODIFICATION", "MODIFICATION_SUBMITTED", "MODIFICATION_REJECTED"])
     fun createReportFor(status: ApplicationStatus) {
         val partnerId = 66L
-        val detail = partnerDetail(partnerId)
+        val detail = partnerDetail(partnerId, "AT")
         every { projectPartnerPersistence.getProjectIdForPartnerId(partnerId) } returns PROJECT_ID
         every { versionPersistence.getLatestApprovedOrCurrent(PROJECT_ID) } returns "14.2.0"
         every { projectPersistence.getProject(PROJECT_ID, "14.2.0") } returns projectSummary(status)
@@ -355,6 +386,48 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
         createReport.createReportFor(partnerId)
 
         assertThat(slotReport.captured).isEqualTo(expectedCreationObject(partnerId))
+        assertThat(auditSlot.captured.auditCandidate.action).isEqualTo(AuditAction.PARTNER_REPORT_ADDED)
+        assertThat(auditSlot.captured.auditCandidate.project?.id).isEqualTo(PROJECT_ID.toString())
+        assertThat(auditSlot.captured.auditCandidate.project?.customIdentifier).isEqualTo("XE.1_0001")
+        assertThat(auditSlot.captured.auditCandidate.project?.name).isEqualTo("project acronym")
+        assertThat(auditSlot.captured.auditCandidate.entityRelatedId).isEqualTo(50L)
+        assertThat(auditSlot.captured.auditCandidate.description).isEqualTo(
+            "[XE.1_0001] [PP4] Partner report R.8 added"
+        )
+    }
+
+    @Test
+    fun createReportLimited() {
+        val partnerId = 67L
+        val detail = partnerDetail(partnerId, null)
+        every { projectPartnerPersistence.getProjectIdForPartnerId(partnerId) } returns PROJECT_ID
+        every { versionPersistence.getLatestApprovedOrCurrent(PROJECT_ID) } returns "14.2.0"
+        every { projectPersistence.getProject(PROJECT_ID, "14.2.0") } returns projectSummary(ApplicationStatus.CONTRACTED)
+        every { reportPersistence.countForPartner(partnerId) } returns 24
+        every { reportPersistence.getCurrentLatestReportNumberForPartner(partnerId) } returns 7
+        every { partnerCoFinancingPersistence.getCoFinancingAndContributions(partnerId, "14.2.0") } returns
+            ProjectPartnerCoFinancingAndContribution(coFinancing, emptyList(), "")
+        every { projectPartnerPersistence.getById(partnerId, "14.2.0") } returns detail
+        every { currencyPersistence.getCurrencyForCountry("AT") } returns "EUR"
+        // work plan
+        every { projectWorkPackagePersistence.getWorkPackagesWithOutputsAndActivitiesByProjectId(PROJECT_ID, "14.2.0") } returns emptyList()
+        // identification
+        every { projectDescriptionPersistence.getBenefits(PROJECT_ID, "14.2.0") } returns null
+        // contribution
+        every { reportPersistence.listSubmittedPartnerReports(partnerId) } returns emptyList()
+        every { reportContributionPersistence.getAllContributionsForReportIds(emptySet()) } returns emptyList()
+
+        val slotReport = slot<ProjectPartnerReportCreate>()
+        val createdReport = mockk<ProjectPartnerReportSummary>()
+        every { createdReport.id } returns 50L
+        every { reportPersistence.createPartnerReport(capture(slotReport)) } returns createdReport
+
+        val auditSlot = slot<AuditCandidateEvent>()
+        every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit
+
+        createReport.createReportFor(partnerId)
+
+        assertThat(slotReport.captured).isEqualTo(expectedCreationObjectLimited(partnerId))
         assertThat(auditSlot.captured.auditCandidate.action).isEqualTo(AuditAction.PARTNER_REPORT_ADDED)
         assertThat(auditSlot.captured.auditCandidate.project?.id).isEqualTo(PROJECT_ID.toString())
         assertThat(auditSlot.captured.auditCandidate.project?.customIdentifier).isEqualTo("XE.1_0001")

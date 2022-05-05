@@ -93,7 +93,7 @@ class CreateProjectPartnerReport(
             identification = projectPartnerPersistence.getById(partnerId, version).let {
                 it.toReportIdentification(project).apply {
                     this.coFinancing = coFinancing.finances
-                    this.currency = getCurrencyCodeForCountry(country)
+                    this.currency = getCurrencyCodeForCountry(countryCode, country)
                 }
             },
 
@@ -111,12 +111,21 @@ class CreateProjectPartnerReport(
         )
     }
 
-    private fun getCurrencyCodeForCountry(country: String?) =
-        country?.let { getCountryCodeForCountry(it) }
-            ?.let { currencyPersistence.getCurrencyForCountry(it) }
+    private fun getCurrencyCodeForCountry(countryCode: String?, country: String?): String? {
+        var code = countryCode
+        // prevent null when historic data did not map countryCode yet
+        if (countryCode.isNullOrEmpty() && !country.isNullOrEmpty()) {
+            code = getCountryCodeForCountry(country)
+        }
+        return if (code != null) {
+            currencyPersistence.getCurrencyForCountry(code)
+        } else {
+            null
+        }
+    }
 
     private fun getCountryCodeForCountry(country: String) =
-        country.substringAfter('(').substringBefore(')')
+        Regex("\\(([A-Z]{2})\\)$").find(country)?.value?.substring(1, 3)
 
     private fun getLatestReportNumberIncreasedByOne(partnerId: Long) =
         reportPersistence.getCurrentLatestReportNumberForPartner(partnerId).plus(1)
@@ -133,6 +142,7 @@ class CreateProjectPartnerReport(
         partnerType = partnerType,
         vatRecovery = vatRecovery,
         country = addresses.firstOrNull { it.type == ProjectPartnerAddressType.Organization }?.country,
+        countryCode = addresses.firstOrNull { it.type == ProjectPartnerAddressType.Organization }?.countryCode,
         coFinancing = emptyList()
     )
 

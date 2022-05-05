@@ -224,8 +224,11 @@ fun partnerDetailRows(): List<PartnerDetailRow> =
 
                 override val addressType = ProjectPartnerAddressType.Organization
                 override val country = "AT"
+                override val countryCode = "AT"
                 override val nutsRegion2: String? = null
+                override val nutsRegion2Code: String? = null
                 override val nutsRegion3: String? = null
+                override val nutsRegion3Code: String? = null
                 override val street: String? = null
                 override val houseNumber: String? = null
                 override val postalCode: String? = null

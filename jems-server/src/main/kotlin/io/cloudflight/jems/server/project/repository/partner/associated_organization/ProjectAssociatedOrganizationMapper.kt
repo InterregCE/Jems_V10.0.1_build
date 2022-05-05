@@ -61,8 +61,11 @@ fun InputProjectAssociatedOrganizationAddress?.toEntity(organizationId: Long): M
             organizationId = organizationId,
             address = AddressEntity(
                 country = country,
+                countryCode = countryCode,
                 nutsRegion2 = nutsRegion2,
+                nutsRegion2Code = nutsRegion2Code,
                 nutsRegion3 = nutsRegion3,
+                nutsRegion3Code = nutsRegion3Code,
                 street = street,
                 houseNumber = houseNumber,
                 postalCode = postalCode,
@@ -121,8 +124,11 @@ fun ProjectAssociatedOrganizationContact.toOutputProjectAssociatedOrganizationCo
 
 fun ProjectAssociatedOrganizationAddress.toOutputProjectAssociatedOrganizationDetails() = OutputProjectAssociatedOrganizationAddress(
     country = address?.country,
+    countryCode = address?.countryCode,
     nutsRegion2 = address?.nutsRegion2,
+    nutsRegion2Code = address?.nutsRegion2Code,
     nutsRegion3 = address?.nutsRegion3,
+    nutsRegion3Code = address?.nutsRegion3Code,
     street = address?.street,
     houseNumber = address?.houseNumber,
     postalCode = address?.postalCode,
@@ -150,8 +156,11 @@ fun List<AssociatedOrganizationAddressRow>.toProjectAssociatedOrganizationAddres
     this.groupBy { it.id }.map { groupedRows ->
         OutputProjectAssociatedOrganizationAddress(
             country = groupedRows.value.first().country,
+            countryCode = groupedRows.value.first().countryCode,
             nutsRegion2 = groupedRows.value.first().nutsRegion2,
+            nutsRegion2Code = groupedRows.value.first().nutsRegion2Code,
             nutsRegion3 = groupedRows.value.first().nutsRegion3,
+            nutsRegion3Code = groupedRows.value.first().nutsRegion3Code,
             street = groupedRows.value.first().street,
             houseNumber = groupedRows.value.first().houseNumber,
             postalCode = groupedRows.value.first().postalCode,
@@ -199,8 +208,11 @@ fun List<AssociatedOrganizationDetailRow>.toModel() =
             sortNumber = groupedRows.value.first().sortNumber,
             address = OutputProjectAssociatedOrganizationAddress(
                 country = groupedRows.value.first().country,
+                countryCode = groupedRows.value.first().countryCode,
                 nutsRegion2 = groupedRows.value.first().nutsRegion2,
+                nutsRegion2Code = groupedRows.value.first().nutsRegion2Code,
                 nutsRegion3 = groupedRows.value.first().nutsRegion3,
+                nutsRegion3Code = groupedRows.value.first().nutsRegion3Code,
                 street = groupedRows.value.first().street,
                 houseNumber = groupedRows.value.first().houseNumber,
                 postalCode = groupedRows.value.first().postalCode,
