@@ -114,7 +114,7 @@
                                         <span class="mat-body-strong">{{'project.work.package.tab.deliverables.title' | translate }}</span>
                                         <span class="mat-body-strong">{{'project.work.package.tab.deliverables.description' | translate }}</span>
                                         <span class="mat-body-strong">{{'project.work.package.tab.deliverables.period' | translate }}</span>
-                                        <div class="mat-body-strong"></div>
+                                        <div *ngIf="form.enabled" class="mat-body-strong"></div>
                                     </div>
                                     <div *ngFor="let deliverable of deliverables(i).controls;let j=index">
                                         <ng-container [formArrayName]="constants.DELIVERABLES.name">
@@ -142,9 +142,8 @@
                                                         (selectionChanged)="formService.setDirty(true)">
                                                 </jems-project-periods-select>
 
-                                                <div>
-                                                    <button *ngIf="form.enabled"
-                                                            type="button"
+                                                <div *ngIf="form.enabled">
+                                                    <button type="button"
                                                             (click)="removeDeliverable(i, j)"
                                                             mat-icon-button
                                                             color="accent">

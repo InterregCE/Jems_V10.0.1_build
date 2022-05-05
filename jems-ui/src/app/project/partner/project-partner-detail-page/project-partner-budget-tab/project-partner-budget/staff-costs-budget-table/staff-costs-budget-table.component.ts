@@ -121,7 +121,7 @@ export class StaffCostsBudgetTableComponent implements OnInit, OnChanges, OnDest
       ...this.budgetTabService.addIfItsVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.STAFF_COST.UNIT_TYPE_AND_NUMBER_OF_UNITS, ['unitType', 'numberOfUnits']),
       'pricePerUnit', 'total',
       ...this.budgetTabService.getPeriodTableColumns(this.projectPeriods),
-      'action'
+      ...this.editable ? ['action'] : []
     ];
 
     this.tableConfig = [
@@ -132,7 +132,8 @@ export class StaffCostsBudgetTableComponent implements OnInit, OnChanges, OnDest
         maxInRem: 5
       }]),
       {minInRem: 8, maxInRem: 8}, {minInRem: 8},
-      ...this.budgetTabService.getPeriodsWidthConfigs(this.projectPeriods), {minInRem: 3, maxInRem: 3}
+      ...this.budgetTabService.getPeriodsWidthConfigs(this.projectPeriods),
+      ...this.editable ? [{minInRem: 3, maxInRem: 3}] : []
     ];
 
     if (this.availableUnitCosts.length > 0) {
