@@ -55,7 +55,7 @@ export class ProjectApplicationFormAddressComponent implements OnInit, OnChanges
 
   region2Changed(region2Title: string): void {
     this.selectedRegion2 = this.findByName(region2Title, this.getRegion2Areas());
-    this.addressForm.controls.region2Code.patchValue(this.selectedRegion2?.code)
+    this.addressForm.controls.region2Code.patchValue(this.selectedRegion2?.code);
     this.addressForm.controls.region3.patchValue('');
     this.addressForm.controls.region3Code.patchValue(null);
   }

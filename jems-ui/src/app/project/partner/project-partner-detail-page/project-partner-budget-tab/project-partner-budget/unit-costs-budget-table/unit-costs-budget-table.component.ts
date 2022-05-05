@@ -93,7 +93,7 @@ export class UnitCostsBudgetTableComponent implements OnInit, OnChanges {
     this.tableConfig = [
       {minInRem: 10, maxInRem: 10},
       ...this.budgetTabService.addIfItsVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.UNIT_COSTS.DESCRIPTION, [{minInRem: 12}]),
-      {minInRem: 12}, {minInRem: 5, maxInRem: 5}, {minInRem: 8, maxInRem: 8}, {minInRem: 8},
+      {minInRem: 12}, {minInRem: 5, maxInRem: 5}, {minInRem: 8, maxInRem: 8}, {minInRem: 9, maxInRem: 9},
       ...this.budgetTabService.getPeriodsWidthConfigs(this.projectPeriods),
       ...this.editable ? [{minInRem: 3, maxInRem: 3}] : []
     ];

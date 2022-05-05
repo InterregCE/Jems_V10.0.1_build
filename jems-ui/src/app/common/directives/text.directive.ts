@@ -24,7 +24,7 @@ export class TextDirective implements OnInit {
       this.el.nativeElement.style.display = '-webkit-box';
       this.el.nativeElement.style['-webkit-box-orient'] = 'vertical';
       this.el.nativeElement.style['-webkit-line-clamp'] = this.maxLines;
-      this.el.nativeElement.style['word-break'] = 'break-all';
+      this.el.nativeElement.style['word-break'] = 'break-word';
     }
     this.el.nativeElement.style.overflow = 'hidden';
     this.el.nativeElement.style['text-overflow'] = 'ellipsis';
