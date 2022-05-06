@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.project.service.report.model.file
 
 enum class ProjectPartnerReportFileType(
     private val parent: ProjectPartnerReportFileType?,
-    private val needsId: Boolean,
+    val needsId: Boolean,
 ) {
     Project(null, true),
       Report(Project, false),

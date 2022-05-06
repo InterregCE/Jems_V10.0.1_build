@@ -19,6 +19,7 @@ import io.cloudflight.jems.server.project.service.report.model.procurement.Proje
 import io.cloudflight.jems.server.project.service.report.partner.procurement.getProjectPartnerReportProcurement.GetProjectPartnerReportProcurementInteractor
 import io.cloudflight.jems.server.project.service.report.partner.procurement.updateProjectPartnerReportProcurement.UpdateProjectPartnerReportProcurementInteractor
 import io.cloudflight.jems.server.project.service.report.partner.procurement.uploadFileToProjectPartnerReportProcurement.UploadFileToProjectPartnerReportProcurement
+import io.cloudflight.jems.server.project.service.report.partner.procurement.uploadFileToProjectPartnerReportProcurement.UploadFileToProjectPartnerReportProcurementInteractor
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -93,7 +94,7 @@ class ProjectPartnerReportProcurementControllerTest : UnitTest() {
     lateinit var updateProcurement: UpdateProjectPartnerReportProcurementInteractor
 
     @MockK
-    lateinit var uploadFileToProcurement: UploadFileToProjectPartnerReportProcurement
+    lateinit var uploadFileToProcurement: UploadFileToProjectPartnerReportProcurementInteractor
 
     @InjectMockKs
     private lateinit var controller: ProjectPartnerReportProcurementController

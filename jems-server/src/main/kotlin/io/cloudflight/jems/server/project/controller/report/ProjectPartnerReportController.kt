@@ -1,10 +1,15 @@
 package io.cloudflight.jems.server.project.controller.report
 
 import io.cloudflight.jems.api.project.dto.report.ProjectPartnerReportSummaryDTO
+import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileDTO
+import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadataDTO
+import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileSearchRequestDTO
 import io.cloudflight.jems.api.project.report.ProjectPartnerReportApi
 import io.cloudflight.jems.server.project.service.report.partner.createProjectPartnerReport.CreateProjectPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.deleteProjectPartnerReportFile.DeleteProjectPartnerReportFileInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.downloadProjectPartnerReportFile.DownloadProjectPartnerReportFileInteractor
+import io.cloudflight.jems.server.project.service.report.partner.file.listProjectPartnerReportFile.ListProjectPartnerReportFileInteractor
+import io.cloudflight.jems.server.project.service.report.partner.file.uploadFileToProjectPartnerReport.UploadFileToProjectPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.getProjectPartnerReport.GetProjectPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.submitProjectPartnerReport.SubmitProjectPartnerReportInteractor
 import org.springframework.core.io.ByteArrayResource
@@ -14,6 +19,7 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.multipart.MultipartFile
 
 @RestController
 class ProjectPartnerReportController(
@@ -22,6 +28,8 @@ class ProjectPartnerReportController(
     private val getPartnerReport: GetProjectPartnerReportInteractor,
     private val downloadPartnerReportFile: DownloadProjectPartnerReportFileInteractor,
     private val deletePartnerReportFile: DeleteProjectPartnerReportFileInteractor,
+    private val listPartnerReportFile: ListProjectPartnerReportFileInteractor,
+    private val uploadPartnerReportFile: UploadFileToProjectPartnerReportInteractor,
 ) : ProjectPartnerReportApi {
 
     override fun getProjectPartnerReports(
@@ -53,5 +61,21 @@ class ProjectPartnerReportController(
 
     override fun deleteAttachment(partnerId: Long, fileId: Long) =
         deletePartnerReportFile.delete(partnerId = partnerId, fileId = fileId)
+
+    override fun uploadAttachment(partnerId: Long, reportId: Long, file: MultipartFile) =
+        uploadPartnerReportFile
+            .uploadToReport(partnerId, reportId, file.toProjectFile())
+            .toDto()
+
+    override fun listAttachments(
+        partnerId: Long,
+        pageable: Pageable,
+        searchRequest: ProjectReportFileSearchRequestDTO,
+    ): Page<ProjectReportFileDTO> =
+        listPartnerReportFile.list(
+            partnerId = partnerId,
+            pageable = pageable,
+            searchRequest = searchRequest.toModel(),
+        ).map { it.toDto() }
 
 }

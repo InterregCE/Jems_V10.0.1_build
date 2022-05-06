@@ -10,9 +10,13 @@ import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPart
 import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPartnerReportWorkPackageActivityRepository
 import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPartnerReportWorkPackageOutputRepository
 import io.cloudflight.jems.server.project.service.report.file.ProjectReportFilePersistence
+import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType
+import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFile
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileCreate
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
 import io.cloudflight.jems.server.user.repository.user.UserRepository
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 import java.time.ZonedDateTime
@@ -37,6 +41,10 @@ class ProjectReportFilePersistenceProvider(
     @Transactional(readOnly = true)
     override fun existsFile(partnerId: Long, fileId: Long) =
         reportFileRepository.existsByPartnerIdAndId(partnerId = partnerId, fileId = fileId)
+
+    @Transactional(readOnly = true)
+    override fun existsFile(location: String, fileName: String) =
+        reportFileRepository.existsByPathAndName(path = location, name = fileName)
 
     @Transactional(readOnly = true)
     override fun downloadFile(partnerId: Long, fileId: Long) =
@@ -116,6 +124,24 @@ class ProjectReportFilePersistenceProvider(
 
         return persistFileAndUpdateLink(file = file) { expenditure.attachment = it }
     }
+
+    @Transactional(readOnly = true)
+    override fun listAttachments(
+        pageable: Pageable,
+        indexPrefix: String,
+        filterSubtypes: Set<ProjectPartnerReportFileType>,
+        filterUserIds: Set<Long>,
+    ): Page<ProjectReportFile> =
+        reportFileRepository.filterAttachment(
+            pageable = pageable,
+            indexPrefix = indexPrefix,
+            filterSubtypes = filterSubtypes,
+            filterUserIds = filterUserIds,
+        ).toModel()
+
+    @Transactional
+    override fun addAttachmentToPartnerReport(file: ProjectReportFileCreate) =
+        persistFileAndUpdateLink(file = file) { /* we do not need to update any link */ }
 
     private fun persistFileAndUpdateLink(file: ProjectReportFileCreate, additionalStep: (ReportProjectFileEntity) -> Unit): ProjectReportFileMetadata {
         return persistAttachmentAndMetadata(file = file, locationForMinio = file.getMinioFullPath())
