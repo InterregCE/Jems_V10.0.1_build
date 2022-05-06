@@ -5,7 +5,7 @@
                 <h4>{{'project.partner.budget.header.spf' |  translate}}</h4>
                 <jems-small-project-fund-table
                         *ngIf="spfCost"
-                        [editable]="spfBudgetsForm.enabled"
+                        [editable]="editable$ | async"
                         [projectPeriods]="data.periods"
                         [spfCostTable]="data.spfBudgetTables.spfCosts"
                         jemsNoWidthLimit>

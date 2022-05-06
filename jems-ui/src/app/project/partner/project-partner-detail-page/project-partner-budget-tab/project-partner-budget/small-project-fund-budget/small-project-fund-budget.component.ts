@@ -1,14 +1,20 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {FormService} from '@common/components/section/form/form.service';
-import {combineLatest} from 'rxjs';
+import {combineLatest, Observable} from 'rxjs';
 import {catchError, map, startWith, tap} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {HttpErrorResponse} from '@angular/common/http';
 import {ProjectPeriodDTO} from '@cat/api';
-import {ProjectPartnerBudgetConstants} from '@project/partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/project-partner-budget.constants';
-import {ProjectPartnerBudgetTabService} from '@project/partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget-tab.service';
-import {ProjectPartnerDetailPageStore} from '@project/partner/project-partner-detail-page/project-partner-detail-page.store';
+import {
+  ProjectPartnerBudgetConstants
+} from '@project/partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/project-partner-budget.constants';
+import {
+  ProjectPartnerBudgetTabService
+} from '@project/partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget-tab.service';
+import {
+  ProjectPartnerDetailPageStore
+} from '@project/partner/project-partner-detail-page/project-partner-detail-page.store';
 import {PartnerBudgetSpfTables} from '@project/model/budget/partner-budget-spf-tables';
 import {SpfPartnerBudgetTable} from '@project/model/budget/spf-partner-budget-table';
 import {SpfPartnerBudgetTableEntry} from '@project/model/budget/spf-partner-budget-table-entry';
@@ -29,6 +35,7 @@ export class SmallProjectFundBudgetComponent implements OnInit {
     spfBudgetTables: PartnerBudgetSpfTables;
     periods: ProjectPeriodDTO[];
   };
+  editable$: Observable<boolean>;
 
   constructor(private cdr: ChangeDetectorRef, private formService: FormService, private tabService: ProjectPartnerBudgetTabService, private formBuilder: FormBuilder, private pageStore: ProjectPartnerDetailPageStore) {
   }
@@ -38,9 +45,17 @@ export class SmallProjectFundBudgetComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.formService.init(this.spfBudgetsForm, combineLatest([this.pageStore.isProjectEditable$, this.tabService.isBudgetOptionsFormInEditMode$.pipe(startWith(false))]).pipe(map(([isProjectEditable, isBudgetOptionsFormInEditMode]) => isProjectEditable && !isBudgetOptionsFormInEditMode)));
-    this.tabService.trackBudgetFormState(this.formService);
+    this.editable$ = combineLatest([
+        this.pageStore.isProjectEditable$,
+        this.tabService.isBudgetOptionsFormInEditMode$.pipe(startWith(false)),
+        this.tabService.isBudgetFormInEditMode$.pipe(startWith(false))
+      ]
+    ).pipe(
+      map(([isProjectEditable, isBudgetOptionsFormInEditMode, isBudgetFormInEditMode]) => isProjectEditable && !isBudgetOptionsFormInEditMode && !isBudgetFormInEditMode),
+    );
 
+    this.formService.init(this.spfBudgetsForm, this.editable$);
+    this.tabService.trackSPFBudgetFormState(this.formService);
     this.pageStore.spfBudgets$.pipe(untilDestroyed(this)).subscribe();
 
     combineLatest([

@@ -20,7 +20,8 @@
                       formControlName="allowRealEquipmentCosts">
             {{'call.allow.real.costs.equipment' | translate}}
         </mat-checkbox>
-        <mat-checkbox [disabled]="data.callIsPublished && data.allowedRealCosts.allowRealInfrastructureCosts"
+        <mat-checkbox *ngIf="!data.isSPFCall"
+                      [disabled]="data.callIsPublished && data.allowedRealCosts.allowRealInfrastructureCosts"
                       formControlName="allowRealInfrastructureCosts">
             {{'call.allow.real.costs.infrastructure' | translate}}
         </mat-checkbox>

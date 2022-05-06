@@ -50,10 +50,10 @@ export class BudgetTableComponent implements OnInit, OnChanges {
     private activatedRoute: ActivatedRoute,
     private projectService: ProjectService,
   ) {
+    this.dataSourceChanged$ = new BehaviorSubject<ProjectPartnerBudgetDTO[]>(this.dataSource);
   }
 
   ngOnInit(): void {
-    this.dataSourceChanged$ = new BehaviorSubject<ProjectPartnerBudgetDTO[]>(this.dataSource);
     this.budget$ = combineLatest([
       this.dataSourceChanged$,
       this.projectStore.allowedBudgetCategories$,

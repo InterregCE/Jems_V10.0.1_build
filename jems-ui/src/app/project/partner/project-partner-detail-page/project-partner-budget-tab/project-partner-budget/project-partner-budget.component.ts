@@ -46,6 +46,7 @@ export class ProjectPartnerBudgetComponent implements OnInit {
   allowedBudgetCategories: AllowedBudgetCategories;
 
   budgetsForm = this.initForm();
+  editable$: Observable<boolean>;
 
   data: {
     budgetTables: PartnerBudgetTables;
@@ -102,9 +103,19 @@ export class ProjectPartnerBudgetComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.formService.init(this.budgetsForm, combineLatest([this.pageStore.isProjectEditable$, this.tabService.isBudgetOptionsFormInEditMode$.pipe(startWith(false))]).pipe(map(([isProjectEditable, isBudgetOptionsFormInEditMode]) => isProjectEditable && !isBudgetOptionsFormInEditMode)));
-    this.tabService.trackBudgetFormState(this.formService);
 
+    this.editable$ = combineLatest([
+        this.pageStore.isProjectEditable$,
+        this.tabService.isBudgetOptionsFormInEditMode$.pipe(startWith(false)),
+        this.tabService.isSPFBudgetFormInEditMode$.pipe(startWith(false))
+      ]
+    ).pipe(
+      map(([isProjectEditable, isBudgetOptionsFormInEditMode, isSPFBudgetFormInEditMode]) => {
+        return isProjectEditable && !isBudgetOptionsFormInEditMode && !isSPFBudgetFormInEditMode;
+      })
+    );
+    this.formService.init(this.budgetsForm, this.editable$);
+    this.tabService.trackBudgetFormState(this.formService);
     this.pageStore.budgets$.pipe(untilDestroyed(this)).subscribe();
 
     this.staffCostsTotal$ = combineLatest([this.pageStore.budgetOptions$, this.budgetsForm.valueChanges]).pipe(
