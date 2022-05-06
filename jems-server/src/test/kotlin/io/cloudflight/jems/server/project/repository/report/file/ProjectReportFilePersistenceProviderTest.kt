@@ -18,7 +18,10 @@ import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPart
 import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPartnerReportWorkPackageOutputRepository
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType
+import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFile
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileCreate
+import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
+import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.repository.user.UserRepository
 import io.mockk.CapturingSlot
 import io.mockk.clearMocks
@@ -31,7 +34,8 @@ import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import java.math.BigDecimal
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.Pageable
 import java.math.BigDecimal.ONE
 import java.time.ZonedDateTime
 import java.util.*
@@ -140,6 +144,30 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
             userId = USER_ID,
         )
 
+        private val dummyReportFile = ProjectReportFile(
+            id = 478L,
+            name = "attachment.pdf",
+            type = ProjectPartnerReportFileType.Contribution,
+            uploaded = LAST_WEEK,
+            author = UserSimple(45L, email = "admin@cloudflight.io", name = "Admin", surname = "Big"),
+            size = 47889L,
+        )
+
+        private val dummyReportFileEntity = ReportProjectFileEntity(
+            id = 478L,
+            projectId = 4L,
+            partnerId = 5L,
+            path = "",
+            minioBucket = "minioBucket",
+            minioLocation = "",
+            name = "attachment.pdf",
+            type = ProjectPartnerReportFileType.Contribution,
+            size = 47889L,
+            user = UserEntity(id = 45L, email = "admin@cloudflight.io", name = "Admin", surname = "Big",
+                password = "##", userRole = mockk(), userStatus = mockk()),
+            uploaded = LAST_WEEK,
+        )
+
     }
 
     @MockK
@@ -182,6 +210,12 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
     fun existsFile() {
         every { reportFileRepository.existsByPartnerIdAndId(PARTNER_ID, fileId = 14L) } returns true
         assertThat(persistence.existsFile(PARTNER_ID, fileId = 14L)).isTrue
+    }
+
+    @Test
+    fun existsFileByLocation() {
+        every { reportFileRepository.existsByPathAndName(path = "Project/Report/Partner/", name = "test.xlsx") } returns false
+        assertThat(persistence.existsFile(location = "Project/Report/Partner/", fileName = "test.xlsx")).isFalse
     }
 
     @Test
@@ -368,6 +402,45 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
         assertThat(fileEntity.minioBucket).isEqualTo("project-report")
         assertThat(fileEntity.minioLocation).isEqualTo("our/indexed/path/new_file.txt")
         assertThat(fileEntity.name).isEqualTo("new_file.txt")
+    }
+
+    @Test
+    fun listAttachments() {
+        val filterSubtypes = setOf(ProjectPartnerReportFileType.Activity)
+        val filterUserIds = setOf(45L, 46L, 47L)
+
+        every { reportFileRepository.filterAttachment(
+            pageable = Pageable.unpaged(),
+            indexPrefix = "indexPrefix",
+            filterSubtypes = filterSubtypes,
+            filterUserIds = filterUserIds,
+        ) } returns PageImpl(listOf(dummyReportFileEntity))
+
+        assertThat(persistence.listAttachments(Pageable.unpaged(), "indexPrefix", filterSubtypes, filterUserIds).content)
+            .containsExactly(dummyReportFile)
+    }
+
+    @Test
+    fun addAttachmentToPartnerReport() {
+        val filePathMinio = slot<String>()
+        val fileEntity = slot<ReportProjectFileEntity>()
+
+        val fileCreate = fileCreate(type = ProjectPartnerReportFileType.PartnerReport).copy(name = "new_file_to_partner.txt")
+
+        every { minioStorage.saveFile("project-report", capture(filePathMinio), any(), any(), true) } answers { }
+        every { userRepository.getById(270) } returns mockk()
+        every { reportFileRepository.save(capture(fileEntity)) } returnsArgument 0
+
+        assertThat(persistence.addAttachmentToPartnerReport(file = fileCreate).name)
+            .isEqualTo("new_file_to_partner.txt")
+
+        assertThat(filePathMinio.captured).isEqualTo("our/indexed/path/new_file_to_partner.txt")
+        assertThat(fileEntity.captured.partnerId).isEqualTo(PARTNER_ID)
+        assertThat(fileEntity.captured.path).isEqualTo("our/indexed/path/")
+        assertThat(fileEntity.captured.minioBucket).isEqualTo("project-report")
+        assertThat(fileEntity.captured.minioLocation).isEqualTo("our/indexed/path/new_file_to_partner.txt")
+        assertThat(fileEntity.captured.name).isEqualTo("new_file_to_partner.txt")
+        assertThat(fileEntity.captured.type).isEqualTo(ProjectPartnerReportFileType.PartnerReport)
     }
 
 }

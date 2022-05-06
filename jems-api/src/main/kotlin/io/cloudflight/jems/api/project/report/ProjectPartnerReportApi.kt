@@ -2,6 +2,9 @@ package io.cloudflight.jems.api.project.report
 
 import io.cloudflight.jems.api.project.dto.report.ProjectPartnerReportDTO
 import io.cloudflight.jems.api.project.dto.report.ProjectPartnerReportSummaryDTO
+import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileDTO
+import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadataDTO
+import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileSearchRequestDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
 import io.swagger.annotations.ApiImplicitParams
@@ -15,6 +18,9 @@ import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestPart
+import org.springframework.web.multipart.MultipartFile
 
 @Api("Project Partner Report")
 interface ProjectPartnerReportApi {
@@ -65,5 +71,32 @@ interface ProjectPartnerReportApi {
     @ApiOperation("Delete file from partner report")
     @DeleteMapping("$ENDPOINT_API_PROJECT_PARTNER_REPORT/byPartnerId/{partnerId}/{fileId}")
     fun deleteAttachment(@PathVariable partnerId: Long, @PathVariable fileId: Long)
+
+    @ApiOperation("Upload file to partner report")
+    @PostMapping(
+        "$ENDPOINT_API_PROJECT_PARTNER_REPORT/byPartnerId/{partnerId}/byReportId/{reportId}",
+        consumes = [MediaType.MULTIPART_FORM_DATA_VALUE]
+    )
+    fun uploadAttachment(
+        @PathVariable partnerId: Long,
+        @PathVariable reportId: Long,
+        @RequestPart("file") file: MultipartFile,
+    ): ProjectReportFileMetadataDTO
+
+    @ApiOperation("List attachments")
+    @ApiImplicitParams(
+        ApiImplicitParam(paramType = "query", name = "page", dataType = "integer"),
+        ApiImplicitParam(paramType = "query", name = "size", dataType = "integer"),
+        ApiImplicitParam(paramType = "query", name = "sort", dataType = "string")
+    )
+    @PostMapping(
+        "$ENDPOINT_API_PROJECT_PARTNER_REPORT/byPartnerId/{partnerId}/attachments",
+        consumes = [MediaType.APPLICATION_JSON_VALUE],
+    )
+    fun listAttachments(
+        @PathVariable partnerId: Long,
+        pageable: Pageable,
+        @RequestBody searchRequest: ProjectReportFileSearchRequestDTO,
+    ): Page<ProjectReportFileDTO>
 
 }

@@ -31,6 +31,10 @@
       "reason": "helper method calls repo methods handed to it via arg - thus @Transactional or repo-call check fails here"
     },
     {
+      "hash": "46f274f2",
+      "reason": "queryDSL extension is inside repository wrapping other repository methods, thus it should be considered as Transactional"
+    },
+    {
       "hash": "cc26f5aa",
       "reason": "an indirect npm dependency fails because of it"
     }

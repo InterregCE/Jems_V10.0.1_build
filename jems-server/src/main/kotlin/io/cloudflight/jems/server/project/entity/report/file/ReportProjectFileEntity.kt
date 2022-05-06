@@ -11,9 +11,20 @@ import javax.persistence.GenerationType
 import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
+import javax.persistence.NamedAttributeNode
+import javax.persistence.NamedEntityGraph
+import javax.persistence.NamedEntityGraphs
 import javax.validation.constraints.NotNull
 
 @Entity(name = "report_project_file")
+@NamedEntityGraphs(
+    NamedEntityGraph(
+        name = "ReportProjectFileEntity.user",
+        attributeNodes = [
+            NamedAttributeNode(value = "user"),
+        ],
+    )
+)
 class ReportProjectFileEntity(
 
     @Id
@@ -43,9 +54,10 @@ class ReportProjectFileEntity(
     @field:NotNull
     val size: Long,
 
+    @field:NotNull
     @ManyToOne(optional = false)
     @JoinColumn(name = "account_id")
-    val user: UserEntity?,
+    val user: UserEntity,
 
     @field:NotNull
     val uploaded: ZonedDateTime,
