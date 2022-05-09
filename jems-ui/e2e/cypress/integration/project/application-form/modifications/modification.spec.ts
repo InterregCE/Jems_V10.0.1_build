@@ -14,10 +14,6 @@ context('Application modifications', () => {
     });
   });
 
-  beforeEach(() => {
-    cy.viewport(1920, 1080);
-  });
-
   it('TB-359 Open new modification and approve it', () => {
     cy.fixture('project/application-form/modifications/TB-359.json').then(testData => {
       cy.loginByRequest(user.applicantUser.email);

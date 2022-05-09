@@ -5,7 +5,6 @@ import testData from '../../../../../fixtures/project/application-form/project-b
 context('Rounding', () => {
 
   beforeEach(() => {
-    cy.viewport(1920, 1080);
     cy.loginByRequest(user.applicantUser.email);
   });
 

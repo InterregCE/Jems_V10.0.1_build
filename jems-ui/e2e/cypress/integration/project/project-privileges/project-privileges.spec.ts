@@ -5,10 +5,6 @@ import application from '../../../fixtures/api/application/application.json';
 
 context('Project privileges tests', () => {
 
-  beforeEach(() => {
-    cy.viewport(1920, 1080);
-  });
-
   it('TB-379 Automatically assign users to projects', () => {
     cy.fixture('project/project-privileges/TB-379.json').then(testData => {
       cy.loginByRequest(user.admin.email);

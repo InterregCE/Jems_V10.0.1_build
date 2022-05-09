@@ -13,7 +13,6 @@ import stateAid from '../../fixtures/programme/state.aid.json';
 context('Programme management tests', () => {
 
   beforeEach(() => {
-    cy.viewport(1920, 1080);
     cy.loginByRequest(user.programmeUser.email);
   });
 
@@ -152,7 +151,6 @@ context('Programme management tests', () => {
         cy.contains('jems-multi-language-container', 'Source of data').then(el => {
           cy.wrap(el).contains('button', source.language).click();
           cy.wrap(el).find('textarea').type(source.translation);
-
         });
       });
 

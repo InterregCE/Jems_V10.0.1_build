@@ -15,7 +15,6 @@ context('Project management tests', () => {
   });
 
   beforeEach(() => {
-    cy.viewport(1920, 1080);
     cy.loginByRequest(user.applicantUser.email);
   });
 

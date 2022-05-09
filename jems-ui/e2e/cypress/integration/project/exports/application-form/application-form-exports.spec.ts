@@ -7,7 +7,6 @@ import partner from '../../../../fixtures/api/application/partner/partner.json';
 
 context('Application form exports', () => {
   beforeEach(() => {
-    cy.viewport(1920, 1080);
     cy.loginByRequest(user.applicantUser.email);
   });
 
