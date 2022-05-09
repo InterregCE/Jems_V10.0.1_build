@@ -70,6 +70,8 @@ class ProgrammeUnitCostPersistenceTest {
             costPerUnit = BigDecimal.ONE,
             isOneCostCategory = false,
             categories = mutableSetOf(categoryEquipment, categoryTravel),
+            costPerUnitForeignCurrency = BigDecimal.ZERO,
+            foreignCurrencyCode = null
         )
         expectedUnitCost = ProgrammeUnitCost(
             id = testUnitCost.id,
@@ -77,6 +79,8 @@ class ProgrammeUnitCostPersistenceTest {
             description = testUnitCost.translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.description) },
             type = testUnitCost.translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.type) },
             costPerUnit = testUnitCost.costPerUnit,
+            costPerUnitForeignCurrency = BigDecimal.ZERO,
+            foreignCurrencyCode = null,
             isOneCostCategory = false,
             categories = setOf(categoryEquipment.category, categoryTravel.category),
         )

@@ -23,24 +23,11 @@ import io.cloudflight.jems.api.programme.language.ProgrammeLanguageApi
 import io.cloudflight.jems.api.programme.legalstatus.ProgrammeLegalStatusApi
 import io.cloudflight.jems.api.programme.priority.ProgrammePriorityApi
 import io.cloudflight.jems.server.DataGeneratorTest
-import io.cloudflight.jems.server.dataGenerator.PROGRAMME_DATA_INITIALIZER_ORDER
-import io.cloudflight.jems.server.dataGenerator.PROGRAMME_INPUT_LANGUAGES
-import io.cloudflight.jems.server.dataGenerator.PROGRAMME_LEGAL_STATUSES
-import io.cloudflight.jems.server.dataGenerator.PROGRAMME_LUMP_SUMS
-import io.cloudflight.jems.server.dataGenerator.PROGRAMME_OUTPUT_INDICATOR
-import io.cloudflight.jems.server.dataGenerator.PROGRAMME_PRIORITY
-import io.cloudflight.jems.server.dataGenerator.PROGRAMME_RESULT_INDICATOR
-import io.cloudflight.jems.server.dataGenerator.PROGRAMME_STRATEGIES
-import io.cloudflight.jems.server.dataGenerator.PROGRAMME_UI_LANGUAGES
-import io.cloudflight.jems.server.dataGenerator.PROGRAMME_UNIT_COSTS
-import io.cloudflight.jems.server.dataGenerator.SELECTED_PROGRAMME_FUNDS
-import io.cloudflight.jems.server.dataGenerator.inputTranslation
+import io.cloudflight.jems.server.dataGenerator.*
 import io.cloudflight.platform.test.openfeign.FeignTestClientFactory
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.ClassOrderer
 import org.junit.jupiter.api.Order
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.TestClassOrder
 import org.quickperf.sql.annotation.ExpectDelete
 import org.quickperf.sql.annotation.ExpectInsert
 import org.quickperf.sql.annotation.ExpectSelect
@@ -173,6 +160,8 @@ class ProgrammeDataGeneratorTest(@LocalServerPort private val port: Int) : DataG
                     description = inputTranslation("description"),
                     type = inputTranslation("type"),
                     costPerUnit = BigDecimal.valueOf(123, 2),
+                    costPerUnitForeignCurrency = null,
+                    foreignCurrencyCode = null,
                     oneCostCategory = false,
                     categories = setOf(BudgetCategory.StaffCosts, BudgetCategory.ExternalCosts)
                 )

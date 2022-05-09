@@ -1,6 +1,5 @@
 package io.cloudflight.jems.server.project.repository
 
-import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumPhase
@@ -40,7 +39,7 @@ import org.junit.jupiter.api.assertThrows
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.ZonedDateTime
-import java.util.Optional
+import java.util.*
 
 internal class ProjectWorkflowPersistenceTest : UnitTest() {
 
@@ -111,6 +110,8 @@ internal class ProjectWorkflowPersistenceTest : UnitTest() {
                             category = BudgetCategory.OfficeAndAdministrationCosts
                         ),
                     ),
+                    costPerUnitForeignCurrency = BigDecimal.ZERO,
+                    foreignCurrencyCode = null
                 )
             )
             return call

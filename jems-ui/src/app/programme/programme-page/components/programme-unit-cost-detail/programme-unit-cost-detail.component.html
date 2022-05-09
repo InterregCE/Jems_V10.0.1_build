@@ -30,10 +30,11 @@
         </jems-multi-language-form-field>
     </jems-multi-language-container>
     <mat-form-field>
-        <mat-label>{{'unit.cost.form.field.cost' | translate}}</mat-label>
+        <mat-label>{{'unit.cost.form.field.cost.currency.euro' | translate}}</mat-label>
         <input currencyMask type="decimal"
                [options]="{nullable: true}"
                name="costPerUnit" formControlName="costPerUnit" matInput required>
+        <jems-context-info infoPosition="after" infoText="{{'unit.cost.form.field.cost.info.currency.euro' | translate}}"></jems-context-info>
         <mat-error>
             <jems-form-field-errors
                     [errors]="unitCostForm?.controls?.costPerUnit?.errors"
@@ -41,6 +42,33 @@
             </jems-form-field-errors>
         </mat-error>
     </mat-form-field>
+
+    <div jemsMultiColumnRow>
+        <mat-form-field jemsFormFieldWidth="two-thirds" class="mr-2">
+            <mat-label>{{'unit.cost.form.field.cost.currency.other' | translate}}</mat-label>
+            <input currencyMask type="decimal"
+                   [options]="{nullable: true}"
+                   name="costPerUnitForeignCurrency" formControlName="costPerUnitForeignCurrency" matInput>
+            <mat-error>
+                <jems-form-field-errors
+                        [errors]="unitCostForm?.controls?.costPerUnitForeignCurrency?.errors"
+                        [messages]="costForeignCurrencyErrors">
+                </jems-form-field-errors>
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field jemsFormFieldWidth="one-third">
+            <mat-label>{{'unit.cost.form.field.cost.currencies' | translate}}</mat-label>
+            <mat-select formControlName="foreignCurrencyCode"
+                        placeholder="{{'project.application.partner.report.expenditures.currency.placeholder' | translate}}">
+                <mat-option *ngFor="let currency of currencies" [value]="currency.code">{{currency.code}}</mat-option>
+            </mat-select>
+            <jems-context-info infoPosition="after" infoText="{{'unit.cost.form.field.cost.info.currency.other' | translate}}"></jems-context-info>
+            <mat-error>
+                <jems-form-field-errors [errors]="unitCostForm?.controls?.foreignCurrencyCode?.errors"></jems-form-field-errors>
+            </mat-error>
+        </mat-form-field>
+    </div>
 
     <h4 jemsLabel class="mat-required-marker"
          [ngClass]="{'empty': !oneCostToggle.checked && !multiCostToggle.checked}">

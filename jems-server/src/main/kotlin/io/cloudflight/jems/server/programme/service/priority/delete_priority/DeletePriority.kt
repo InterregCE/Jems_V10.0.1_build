@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.programme.service.priority.delete_priority
 
 import io.cloudflight.jems.server.programme.authorization.CanUpdateProgrammeSetup
-import io.cloudflight.jems.server.programme.service.is_programme_setup_locked.IsProgrammeSetupLockedInteractor
+import io.cloudflight.jems.server.programme.service.info.isSetupLocked.IsProgrammeSetupLockedInteractor
 import io.cloudflight.jems.server.programme.service.priority.ProgrammePriorityPersistence
 import io.cloudflight.jems.server.programme.service.priority.validator.checkNoCallExistsForRemovedSpecificObjectives
 import org.springframework.stereotype.Service

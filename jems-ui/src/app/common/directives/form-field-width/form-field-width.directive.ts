@@ -1,6 +1,6 @@
 import {Directive, ElementRef, Input, OnInit} from '@angular/core';
 
-type WidthType = 'small' | 'medium' | 'large' | 'x-large' | 'xx-large' | 'xxx-large' | 'half' | 'full';
+type WidthType = 'small' | 'medium' | 'large' | 'x-large' | 'xx-large' | 'xxx-large' | 'half' | 'full' | 'one-third' | 'two-thirds';
 type NumberOfCharsType = 1 | 2 | 3 | 4 | 5;
 
 @Directive({
@@ -69,6 +69,10 @@ export class FormFieldWidthDirective implements OnInit {
         return '50%';
       case 'full':
         return '100%';
+      case 'one-third':
+          return '33%';
+      case 'two-thirds':
+          return '66%';
       default:
         return width;
     }

@@ -15,7 +15,7 @@ import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
 import io.cloudflight.jems.server.programme.service.fund.update_funds.UpdateFunds.Companion.MAX_FUND_ABBREVIATION_LENGTH
 import io.cloudflight.jems.server.programme.service.fund.update_funds.UpdateFunds.Companion.MAX_FUND_DESCRIPTION_LENGTH
 import io.cloudflight.jems.server.programme.service.fund.update_funds.UpdateFunds.Companion.MAX_NUMBER_OF_FUNDS
-import io.cloudflight.jems.server.programme.service.is_programme_setup_locked.IsProgrammeSetupLockedInteractor
+import io.cloudflight.jems.server.programme.service.info.isSetupLocked.IsProgrammeSetupLockedInteractor
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs

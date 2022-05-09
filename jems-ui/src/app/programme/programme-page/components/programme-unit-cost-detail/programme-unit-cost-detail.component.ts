@@ -13,9 +13,7 @@ import {MatDialog} from '@angular/material/dialog';
 import {FormState} from '@common/components/forms/form-state';
 import {Forms} from '../../../../common/utils/forms';
 import {filter, take, takeUntil, tap} from 'rxjs/operators';
-import {
-  ProgrammeUnitCostDTO
-} from '@cat/api';
+import {CurrencyDTO, ProgrammeUnitCostDTO} from '@cat/api';
 import {SelectionModel} from '@angular/cdk/collections';
 import {NumberService} from '../../../../common/services/number.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
@@ -38,6 +36,8 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditFormComponent impl
   @Input()
   unitCost: ProgrammeUnitCostDTO;
   @Input()
+  currencies: CurrencyDTO[];
+  @Input()
   isCreate: boolean;
   @Output()
   createUnitCost: EventEmitter<ProgrammeUnitCostDTO> = new EventEmitter<ProgrammeUnitCostDTO>();
@@ -47,6 +47,7 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditFormComponent impl
   cancelCreate: EventEmitter<void> = new EventEmitter<void>();
 
   isProgrammeSetupLocked: boolean;
+  programmeHasContractedProjects: boolean;
 
   unitCostForm = this.formBuilder.group({
     isOneCostCategory: [null, Validators.required],
@@ -58,11 +59,21 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditFormComponent impl
       Validators.max(this.MAX_VALUE),
       Validators.required])
     ],
+    costPerUnitForeignCurrency:[null, Validators.compose([
+      Validators.min(this.MIN_VALUE),
+      Validators.max(this.MAX_VALUE)])
+    ],
+    foreignCurrencyCode: [null,[]],
     categories: ['', Validators.required]
   });
 
   costErrors = {
     required: ProgrammeUnitCostDetailComponent.PROGRAMME_UNIT_COST_INVALID,
+    min: ProgrammeUnitCostDetailComponent.PROGRAMME_UNIT_COST_INVALID,
+    max: ProgrammeUnitCostDetailComponent.PROGRAMME_UNIT_COST_INVALID
+  };
+
+  costForeignCurrencyErrors = {
     min: ProgrammeUnitCostDetailComponent.PROGRAMME_UNIT_COST_INVALID,
     max: ProgrammeUnitCostDetailComponent.PROGRAMME_UNIT_COST_INVALID
   };
@@ -112,6 +123,11 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditFormComponent impl
       tap(isProgrammeEditingLimited => this.isProgrammeSetupLocked = isProgrammeEditingLimited),
       untilDestroyed(this)
     ).subscribe();
+
+    this.programmeEditableStateStore.hasContractedProjects$.pipe(
+      tap(hasContractedProjects => this.programmeHasContractedProjects = hasContractedProjects),
+      untilDestroyed(this)
+    ).subscribe();
   }
 
   ngOnInit(): void {
@@ -131,6 +147,8 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditFormComponent impl
     this.unitCostForm.controls.description.setValue(this.unitCost.description);
     this.unitCostForm.controls.type.setValue(this.unitCost.type);
     this.unitCostForm.controls.costPerUnit.setValue(this.unitCost.costPerUnit);
+    this.unitCostForm.controls.costPerUnitForeignCurrency.setValue(this.unitCost.costPerUnitForeignCurrency);
+    this.unitCostForm.controls.foreignCurrencyCode.setValue(this.unitCost.foreignCurrencyCode);
     this.unitCostForm.controls.isOneCostCategory.setValue(this.unitCost.oneCostCategory);
     this.selectionMultiple.clear();
     this.selectionSingle.clear();
@@ -165,6 +183,8 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditFormComponent impl
           description: this.unitCostForm?.controls?.description?.value,
           type: this.unitCostForm?.controls?.type?.value,
           costPerUnit: this.unitCostForm?.controls?.costPerUnit?.value,
+          costPerUnitForeignCurrency: this.unitCostForm?.controls?.costPerUnitForeignCurrency.value,
+          foreignCurrencyCode: this.unitCostForm?.controls?.foreignCurrencyCode.value,
           oneCostCategory: this.unitCostForm?.controls?.isOneCostCategory?.value,
           categories: this.unitCostForm?.controls?.isOneCostCategory?.value ? this.selectionSingle.selected : this.selectionMultiple.selected
         } as ProgrammeUnitCostDTO);
@@ -175,6 +195,8 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditFormComponent impl
           description: this.unitCostForm?.controls?.description?.value,
           type: this.unitCostForm?.controls?.type?.value,
           costPerUnit: this.unitCostForm?.controls?.costPerUnit?.value,
+          costPerUnitForeignCurrency: this.unitCostForm?.controls?.costPerUnitForeignCurrency.value,
+          foreignCurrencyCode: this.unitCostForm?.controls?.foreignCurrencyCode.value,
           oneCostCategory: this.unitCostForm?.controls?.isOneCostCategory?.value,
           categories: this.unitCostForm?.controls?.isOneCostCategory?.value ? this.selectionSingle.selected : this.selectionMultiple.selected
         });
@@ -232,6 +254,10 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditFormComponent impl
     }
     if (this.isProgrammeSetupLocked && !this.isCreate) {
       this.unitCostForm.controls.costPerUnit.disable();
+    }
+    if (this.programmeHasContractedProjects && !this.isCreate){
+      this.unitCostForm.controls.costPerUnitForeignCurrency.disable();
+      this.unitCostForm.controls.foreignCurrencyCode.disable();
     }
   }
 }

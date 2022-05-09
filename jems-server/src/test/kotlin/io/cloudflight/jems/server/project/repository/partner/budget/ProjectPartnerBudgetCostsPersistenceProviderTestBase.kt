@@ -471,7 +471,13 @@ open class ProjectPartnerBudgetCostsPersistenceProviderTestBase : UnitTest() {
                 rowSum = BigDecimal.TEN
             ),
             budgetPeriodEntities = mutableSetOf(),
-            unitCost = ProgrammeUnitCostEntity(id = entityId, costPerUnit = BigDecimal.TEN, isOneCostCategory = true)
+            unitCost = ProgrammeUnitCostEntity(
+                id = entityId,
+                costPerUnit = BigDecimal.TEN,
+                isOneCostCategory = true,
+                costPerUnitForeignCurrency = BigDecimal.ZERO,
+                foreignCurrencyCode = null
+            )
         )
 
     private fun budgetUnitCostEntry(entity: ProjectPartnerBudgetUnitCostEntity) =

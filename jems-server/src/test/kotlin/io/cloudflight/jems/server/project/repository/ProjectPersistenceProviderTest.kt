@@ -188,6 +188,8 @@ internal class ProjectPersistenceProviderTest : UnitTest() {
                             category = BudgetCategory.OfficeAndAdministrationCosts
                         ),
                     ),
+                    costPerUnitForeignCurrency = BigDecimal.ZERO,
+                    foreignCurrencyCode = null
                 )
             )
             return call

@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditBuilder
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.nuts.service.NutsIdentifier
+import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.language.model.ProgrammeLanguage
 import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatus
@@ -103,6 +104,14 @@ fun programmeTranslationFileUploaded(
         context = context,
         auditCandidate = AuditBuilder(AuditAction.PROGRAMME_TRANSLATION_FILE_UPLOADED)
             .description("Translation file $fileName uploaded")
+            .build()
+    )
+
+fun unitCostChangedAudit(context: Any, unitCost: ProgrammeUnitCost): AuditCandidateEvent =
+    AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditBuilder(AuditAction.PROGRAMME_UNIT_COST_CHANGED)
+            .description("Programme unit cost (id=${unitCost.id}) '${unitCost.name}' has been changed")
             .build()
     )
 

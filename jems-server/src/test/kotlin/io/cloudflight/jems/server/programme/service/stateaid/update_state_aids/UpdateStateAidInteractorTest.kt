@@ -7,13 +7,11 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.call.service.CallPersistence
-import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
-import io.cloudflight.jems.server.programme.service.is_programme_setup_locked.IsProgrammeSetupLockedInteractor
+import io.cloudflight.jems.server.programme.service.info.isSetupLocked.IsProgrammeSetupLockedInteractor
 import io.cloudflight.jems.server.programme.service.stateaid.ProgrammeStateAidPersistence
 import io.cloudflight.jems.server.programme.service.stateaid.model.ProgrammeStateAid
 import io.cloudflight.jems.server.programme.service.stateaid.update_stateaid.DeletionIsNotAllowedException
-import io.cloudflight.jems.server.programme.service.stateaid.update_stateaid.MaxAllowedStateAidsReachedException
 import io.cloudflight.jems.server.programme.service.stateaid.update_stateaid.UpdateStateAid
 import io.mockk.clearMocks
 import io.mockk.every

@@ -4,14 +4,17 @@ import io.cloudflight.jems.api.nuts.dto.OutputNuts
 import io.cloudflight.jems.api.programme.ProgrammeDataApi
 import io.cloudflight.jems.api.programme.dto.ProgrammeDataUpdateRequestDTO
 import io.cloudflight.jems.api.programme.dto.ProgrammeDataDTO
+import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.server.programme.service.ProgrammeDataService
-import io.cloudflight.jems.server.programme.service.is_programme_setup_locked.IsProgrammeSetupLockedInteractor
+import io.cloudflight.jems.server.programme.service.info.hasProjectsInStatus.HasProjectsInStatusInteractor
+import io.cloudflight.jems.server.programme.service.info.isSetupLocked.IsProgrammeSetupLockedInteractor
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class ProgrammeDataController(
     private val programmeDataService: ProgrammeDataService,
-    private val isProgrammeSetupLocked: IsProgrammeSetupLockedInteractor
+    private val isProgrammeSetupLocked: IsProgrammeSetupLockedInteractor,
+    private val hasProjectsInStatus: HasProjectsInStatusInteractor
 ) : ProgrammeDataApi {
 
     override fun get(): ProgrammeDataDTO {
@@ -30,4 +33,6 @@ class ProgrammeDataController(
 
     override fun isProgrammeSetupLocked(): Boolean = isProgrammeSetupLocked.isLocked()
 
+    override fun hasProjectsInStatus(projectStatus: ApplicationStatusDTO): Boolean =
+        hasProjectsInStatus.programmeHasProjectsInStatus(projectStatus)
 }

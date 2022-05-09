@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {Observable, Subject} from 'rxjs';
 import {map, shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
 import {Log} from '../../../common/utils/log';
-import {ProgrammeDataService, UserRoleCreateDTO} from '@cat/api';
+import {ProgrammeDataService, ProjectStatusDTO, UserRoleCreateDTO} from '@cat/api';
 import {PermissionService} from '../../../security/permissions/permission.service';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 
@@ -11,8 +11,10 @@ export class ProgrammeEditableStateStore {
   isProgrammeEditableDependingOnCall$: Observable<boolean>;
   hasOnlyViewPermission$: Observable<boolean>;
   hasEditPermission$: Observable<boolean>;
+  hasContractedProjects$: Observable<boolean>;
 
   firstCallPublished$ = new Subject<void>();
+  firstContractedProject$ = new Subject<void>();
 
   constructor(
     private programmeDataService: ProgrammeDataService,
@@ -21,6 +23,7 @@ export class ProgrammeEditableStateStore {
     this.isProgrammeEditableDependingOnCall$ = this.isProgrammeEditable();
     this.hasOnlyViewPermission$ = this.hasUserOnlyViewPermission();
     this.hasEditPermission$ = this.hasUserEditPermission();
+    this.hasContractedProjects$ = this.programmeHasContractedProjects();
   }
 
   private isProgrammeEditable(): Observable<boolean> {
@@ -47,4 +50,13 @@ export class ProgrammeEditableStateStore {
         shareReplay(1),
       );
   }
-}
+
+  private programmeHasContractedProjects(): Observable<boolean>{
+      return this.firstContractedProject$.pipe(
+        startWith(null),
+        switchMap(() => this.programmeDataService.hasProjectsInStatus(ProjectStatusDTO.StatusEnum.CONTRACTED)),
+        tap(flag => Log.info('Fetched programme has contracted projects: ', flag)),
+      );
+  }
+
+ }

@@ -14,6 +14,8 @@ fun ProgrammeUnitCostEntity.toProgrammeUnitCost() = ProgrammeUnitCost(
     description = translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.description) },
     type = translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.type) },
     costPerUnit = costPerUnit,
+    costPerUnitForeignCurrency = costPerUnitForeignCurrency,
+    foreignCurrencyCode = foreignCurrencyCode,
     isOneCostCategory = isOneCostCategory,
     categories = categories.mapTo(HashSet()) { it.category }
 )
@@ -21,9 +23,11 @@ fun ProgrammeUnitCostEntity.toProgrammeUnitCost() = ProgrammeUnitCost(
 fun Iterable<ProgrammeUnitCostEntity>.toProgrammeUnitCost() = map { it.toProgrammeUnitCost() }
 
 fun ProgrammeUnitCost.toEntity() = ProgrammeUnitCostEntity(
-    id = id,
     // translatedValues - needs programmeUnitCostId
+    id = id,
     costPerUnit = costPerUnit!!,
+    costPerUnitForeignCurrency = costPerUnitForeignCurrency,
+    foreignCurrencyCode = foreignCurrencyCode,
     isOneCostCategory = isOneCostCategory,
     categories = if (id == 0L) mutableSetOf() else categories.toBudgetCategoryEntity(id)
 )

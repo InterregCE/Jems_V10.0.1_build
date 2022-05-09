@@ -10,6 +10,8 @@ fun ProgrammeUnitCost.toDto() = ProgrammeUnitCostDTO(
     description = description,
     type = type,
     costPerUnit = costPerUnit,
+    costPerUnitForeignCurrency = costPerUnitForeignCurrency,
+    foreignCurrencyCode = foreignCurrencyCode,
     oneCostCategory = isOneCostCategory,
     categories = categories
 )
@@ -20,7 +22,7 @@ fun Iterable<ProgrammeUnitCost>.toDto() = sorted().map {
         name = it.name,
         type = it.type,
         costPerUnit = it.costPerUnit,
-        categories = it.categories,
+        categories = it.categories
     )
 }
 
@@ -30,6 +32,8 @@ fun ProgrammeUnitCostDTO.toModel() = ProgrammeUnitCost(
     description = description,
     type = type,
     costPerUnit = costPerUnit,
+    costPerUnitForeignCurrency = costPerUnitForeignCurrency,
+    foreignCurrencyCode = foreignCurrencyCode,
     isOneCostCategory = oneCostCategory,
     categories = categories
 )
