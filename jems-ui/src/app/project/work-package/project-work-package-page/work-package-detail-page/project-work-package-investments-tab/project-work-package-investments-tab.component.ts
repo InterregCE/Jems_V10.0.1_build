@@ -48,7 +48,10 @@ export class ProjectWorkPackageInvestmentsTabComponent implements OnInit {
               private dialog: MatDialog) {
     this.investments$ = combineLatest([this.workPackageStore.investments$, this.workPackageStore.workPackage$, this.projectStore.projectEditable$])
       .pipe(
-        tap(([investments, workPackage, editable]) => { this.workPackageNumber = workPackage.number; this.editable = editable;} ),
+        tap(([investments, workPackage, editable]) => {
+          this.workPackageNumber = workPackage.number;
+          this.editable = editable;
+        }),
         map(([investments]) => investments)
       );
   }

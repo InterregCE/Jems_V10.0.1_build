@@ -32,10 +32,12 @@
   }
 
   &.right {
-    position: relative;
     display: inline-block;
-    margin-top: -1em;
-    margin-right: -1em;
+    width: 1.5rem;
+    vertical-align: top;
+    mat-icon {
+      margin-top: -0.15rem;
+    }
   }
 
   /* appear "hanging" off the left edge of an inline element, e.g. a headline */

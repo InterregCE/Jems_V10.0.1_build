@@ -297,7 +297,7 @@
 
 
                         <ng-container matColumnDef="currencyConversionRate">
-                            <mat-header-cell class="end-flex-header-table" *matHeaderCellDef>
+                            <mat-header-cell class="end-flex-header-table justify-end" *matHeaderCellDef>
                                         <span jemsText
                                               maxLines="2">{{'project.application.partner.report.expenditures.conversion.rate' | translate}}</span>
                             </mat-header-cell>
@@ -312,13 +312,13 @@
                         </ng-container>
 
                         <ng-container matColumnDef="declaredAmountInEur" >
-                            <mat-header-cell class="justify-center" *matHeaderCellDef>
+                            <mat-header-cell class="justify-end" *matHeaderCellDef>
                                 <span jemsText maxLines="2">
                                     {{'project.application.partner.report.expenditures.declared.amount.eur' | translate}}
+                                    <jems-context-info infoPosition="right"
+                                                       infoText="{{'project.application.partner.report.expenditures.amount.in.euro.info' | translate}}">
+                                    </jems-context-info>
                                 </span>
-                                <jems-context-info infoPosition="right"
-                                                   infoText="{{'project.application.partner.report.expenditures.amount.in.euro.info' | translate}}">
-                                </jems-context-info>
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                                 <mat-form-field jemsFormFieldWidth="full" [class.mat-form-field-disabled]="true">
