@@ -2,7 +2,7 @@
     <jems-filter-template *ngIf="filterData$ | async as filterData"
                           [formGroup]="filterForm"
                           [isThereAnyActiveFilter]="isThereAnyActiveFilter()">
-        <div alignItems="start" jemsMultiColumnRow>
+        <div alignItems="start" jemsMultiColumnRow display="block">
             <jems-filter-text-input
                     formControlName="id"
                     label="project.table.column.name.id">
@@ -32,7 +32,7 @@
             </jems-filter-autocomplete-input>
         </div>
 
-        <div jemsMultiColumnRow>
+        <div jemsMultiColumnRow display="block">
             <jems-filter-date-input
                     formControlName="firstSubmissionFrom"
                     label="project.filter.submission.from">
