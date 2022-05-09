@@ -19,18 +19,28 @@ context('Application contracting', () => {
   });
 
   it('TB-519 A project can be set to contracted', () => {
-
     cy.createFullApplication(application, user.programmeUser.email).then(applicationId => {
       cy.loginByRequest(user.programmeUser.email);
       cy.visit(`app/project/detail/${applicationId}/`, {failOnStatusCode: false});
       cy.contains('Contract monitoring').click();
       cy.contains('Set project to contracted').click();
       cy.contains('button', 'Confirm').click();
-      cy.contains('Partner reports').should('be.visible');
+      cy.get('jems-alert').should('contain', 'You have successfully contracted project');
+
       cy.contains('Project overview').click();
       cy.get('#status').contains('Contracted').should('be.visible');
+
+      cy.contains('div', 'Partner reports').should(reportingSection => {
+        expect(reportingSection).to.contain(application.partners[0].details.abbreviation);
+      });
+      cy.contains(application.partners[0].details.abbreviation).click();
+      cy.contains('Add Partner Report').click();
+      cy.contains('A.1 Partner progress report identification').should('be.visible');
+
+      cy.loginByRequest(user.applicantUser.email);
+      cy.visit(`app/project/detail/${applicationId}/`, {failOnStatusCode: false});
       cy.contains('.link', 'A - Project identification').click();
-      cy.get('jems-multi-language-form-field').get('[label="project.application.form.field.project.title"]').should('be.visible').get('textarea').should('have.attr', 'readonly', 'true');
+      cy.contains('div', 'Project title').find('textarea').should('have.attr', 'readonly');
     });
   });
 });
