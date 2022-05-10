@@ -1,9 +1,9 @@
 package io.cloudflight.jems.server.project.repository.checklist
 
 import io.cloudflight.jems.server.programme.repository.checklist.ProgrammeChecklistRepository
-import io.cloudflight.jems.server.programme.service.checklist.getList.GetChecklistInstanceDetailNotFoundException
+import io.cloudflight.jems.server.project.service.checklist.getMyInstances.GetChecklistInstanceDetailNotFoundException
 import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistInstance
-import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistInstanceDetail
+import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
 import io.cloudflight.jems.server.project.entity.checklist.ChecklistInstanceEntity
 import io.cloudflight.jems.server.project.service.checklist.ChecklistInstancePersistence
@@ -26,15 +26,24 @@ class ChecklistInstancePersistenceProvider(
         relatedToId: Long,
         creatorId: Long,
         type: ProgrammeChecklistType
-    ): List<ChecklistInstance> {
-        return repository.findByRelatedToIdAndCreatorIdAndProgrammeChecklistType(relatedToId, creatorId, type).toDto()
-    }
+    ): List<ChecklistInstance> =
+        repository.findByRelatedToIdAndCreatorIdAndProgrammeChecklistType(relatedToId, creatorId, type).toModel()
 
+    @Transactional(readOnly = true)
+    override fun getChecklistsByRelatedIdAndType(
+        relatedToId: Long,
+        type: ProgrammeChecklistType
+    ): List<ChecklistInstance> =
+        repository.findByRelatedToIdAndProgrammeChecklistType(relatedToId, type).toModel()
 
     @Transactional(readOnly = true)
     override fun getChecklistDetail(id: Long): ChecklistInstanceDetail {
         return getChecklistOrThrow(id).toDetailModel()
     }
+
+    @Transactional(readOnly = true)
+    override fun getChecklistSummary(checklistId: Long): ChecklistInstance
+        = getChecklistOrThrow(checklistId).toModel()
 
     @Transactional
     override fun create(createChecklist: CreateChecklistInstanceModel, creatorId: Long): ChecklistInstanceDetail {
@@ -57,8 +66,6 @@ class ChecklistInstancePersistenceProvider(
     override fun update(checklist: ChecklistInstanceDetail): ChecklistInstanceDetail {
         val checklistInstance = getChecklistOrThrow(checklist.id)
         checklistInstance.update(checklist)
-        if (checklist.status == ChecklistInstanceStatus.FINISHED)
-            checklistInstance.finishedDate = LocalDate.now()
         return checklistInstance.toDetailModel()
     }
 
@@ -68,13 +75,25 @@ class ChecklistInstancePersistenceProvider(
     }
 
     @Transactional(readOnly = true)
-    override fun getStatus(id: Long): ChecklistInstanceStatus {
-        return repository.findStatusForId(id)
-    }
-
-    @Transactional(readOnly = true)
     override fun countAllByChecklistTemplateId(checklistTemplateId: Long): Long {
         return repository.countByProgrammeChecklistId(checklistTemplateId)
+    }
+
+    @Transactional
+    override fun consolidateChecklistInstance(checklistId: Long, consolidated: Boolean): ChecklistInstance {
+        val checklistInstance = getChecklistOrThrow(checklistId)
+        checklistInstance.consolidated = consolidated
+        return checklistInstance.toModel()
+    }
+
+    @Transactional
+    override fun changeStatus(checklistId: Long, status: ChecklistInstanceStatus): ChecklistInstance {
+        val checklistInstance = getChecklistOrThrow(checklistId)
+        checklistInstance.status = status
+        checklistInstance.finishedDate =
+            if (status == ChecklistInstanceStatus.FINISHED) LocalDate.now()
+            else null
+        return checklistInstance.toModel()
     }
 
     private fun getChecklistOrThrow(id: Long): ChecklistInstanceEntity =

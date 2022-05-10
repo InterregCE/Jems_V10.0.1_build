@@ -1,16 +1,7 @@
-<jems-form (save)="save.emit(formComponents.value)"
+<jems-form (save)="save.emit()"
            (discard)="resetForm()">
 
-    <jems-alert [type]="Alert.WARNING"
-                [closable]="false"
-                [show]="!!warning">
-        <div>{{warning | translate}}</div>
-    </jems-alert>
-
-    <ng-container *ngIf="status">
-        <ng-container [ngTemplateOutlet]="statusChip"></ng-container>
-        <ng-container [ngTemplateOutlet]="finishChecklist"></ng-container>
-    </ng-container>
+    <ng-content></ng-content>
 
     <div *ngIf="formComponents?.length" jemsFormLayout>
         <ng-container *ngFor="let component of formComponents.controls">
@@ -40,29 +31,6 @@
         </ng-container>
     </div>
 </jems-form>
-
-<ng-template #finishChecklist>
-    <jems-pending-button *ngIf="status === Status.DRAFT" class="mr-2"
-                         type="secondary"
-                         [confirm]="confirmFinish"
-                         (clicked)="finish.emit(formComponents.value)">
-        {{'checklists.instance.confirm.finish.title' | translate}}
-    </jems-pending-button>
-</ng-template>
-
-<ng-template #statusChip>
-    <div id="status" class="mb-3">
-        {{'common.status' | translate}}:
-        <mat-chip-list class="mr-1 ml-1">
-            <mat-chip selected="true"
-                      [class.draft]="status === Status.DRAFT"
-                      [class.finished]="status === Status.FINISHED">
-                {{'checklists.instance.status.' + status | translate}}
-            </mat-chip>
-        </mat-chip-list>
-        <span *ngIf="finishedDate">{{'checklists.instance.finished.since' | translate : {date: finishedDate | localeDate} }}</span>
-    </div>
-</ng-template>
 
 <ng-template #headline let-headline="headline">
     <h4>{{headline.value}}</h4>

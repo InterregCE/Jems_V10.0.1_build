@@ -1,8 +1,8 @@
-package io.cloudflight.jems.server.programme.service.checklist.create
+package io.cloudflight.jems.server.project.service.checklist.create
 
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
-import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistInstanceDetail
+import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
 import io.cloudflight.jems.server.project.authorization.CanCreateChecklistAssessment
 import io.cloudflight.jems.server.project.service.checklist.ChecklistInstancePersistence
 import io.cloudflight.jems.server.project.service.checklist.model.CreateChecklistInstanceModel

@@ -42,6 +42,7 @@ enum class UserRolePermissionDTO(val key: String) {
     ProjectFileAssessmentUpdate("ProjectFileAssessmentUpdate"),
 
     ProjectAssessmentChecklistUpdate("ProjectAssessmentChecklistUpdate"),
+    ProjectAssessmentChecklistConsolidate("ProjectAssessmentChecklistConsolidate"),
 
     ProjectModificationView("ProjectModificationView"),
     ProjectStatusDecideModificationApproved("ProjectStatusDecideModificationApproved"),

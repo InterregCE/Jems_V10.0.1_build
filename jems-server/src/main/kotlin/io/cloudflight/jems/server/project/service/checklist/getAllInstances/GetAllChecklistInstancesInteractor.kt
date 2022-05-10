@@ -1,11 +1,11 @@
-package io.cloudflight.jems.server.programme.service.checklist.getList
+package io.cloudflight.jems.server.project.service.checklist.getAllInstances
 
 import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistInstance
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
 
-interface GetChecklistInstanceInteractor {
+interface GetAllChecklistInstancesInteractor {
 
-    fun getChecklistInstancesOfCurrentUserByTypeAndRelatedId(
+    fun getChecklistInstancesByTypeAndRelatedId(
         relatedToId: Long,
         type: ProgrammeChecklistType
     ): List<ChecklistInstance>

@@ -43,5 +43,8 @@ class ChecklistInstanceEntity(
     val creator: UserEntity,
 
     @OneToMany(mappedBy = "checklistComponentId.checklist", cascade = [CascadeType.ALL], orphanRemoval = true)
-    var components: MutableSet<ChecklistComponentInstanceEntity>? = mutableSetOf()
+    var components: MutableSet<ChecklistComponentInstanceEntity>? = mutableSetOf(),
+
+    @field:NotNull
+    var consolidated: Boolean = false
 )

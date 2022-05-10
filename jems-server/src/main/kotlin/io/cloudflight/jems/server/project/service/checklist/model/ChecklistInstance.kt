@@ -11,5 +11,6 @@ data class ChecklistInstance(
     val creatorEmail: String?,
     val relatedToId: Long?,
     val finishedDate: LocalDate? = null,
-    val programmeChecklistId: Long?
+    val programmeChecklistId: Long?,
+    val consolidated: Boolean = false
 )

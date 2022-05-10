@@ -205,10 +205,21 @@ export class Permission {
               editTooltip: 'permission.inspect.annexes'
             },
             {
-              name: 'permission.create.and.edit.assessments',
-              mode: PermissionMode.TOGGLE_EDIT,
-              editPermissions: [PermissionsEnum.ProjectAssessmentChecklistUpdate],
-            },
+              name: 'project.application.form.section.assessment.and.decision.checklists',
+              children: [
+                {
+                  name: 'permission.assessment.instantiate',
+                  mode: PermissionMode.TOGGLE_EDIT,
+                  editPermissions: [PermissionsEnum.ProjectAssessmentChecklistUpdate],
+                },
+                {
+                  name: 'permission.assessment.consolidate',
+                  mode: PermissionMode.TOGGLE_EDIT,
+                  editPermissions: [PermissionsEnum.ProjectAssessmentChecklistConsolidate],
+                  infoMessage: 'permission.assessment.consolidate.info'
+                },
+              ]
+            }
           ],
         },
         {

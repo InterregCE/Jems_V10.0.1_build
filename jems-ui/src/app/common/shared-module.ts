@@ -62,6 +62,9 @@ import {
 import {
   ChecklistInstanceListComponent
 } from '@common/components/checklist/checklist-instance-list/checklist-instance-list.component';
+import {
+  ChecklistConsolidatorOptionsComponent
+} from '@common/components/checklist/checklist-consolidator-options/checklist-consolidator-options.component';
 
 const modules = [
   CommonModule,
@@ -126,6 +129,7 @@ const declarations = [
   SecondsToTimePipePipe,
   ChecklistAnswersComponent,
   ChecklistInstanceListComponent,
+  ChecklistConsolidatorOptionsComponent,
   PublicPageTemplateComponent
 ];
 

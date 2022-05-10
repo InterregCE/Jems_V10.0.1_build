@@ -1,9 +1,7 @@
 package io.cloudflight.jems.api.project.checklist
 
 import io.cloudflight.jems.api.programme.dto.checklist.ProgrammeChecklistTypeDTO
-import io.cloudflight.jems.api.project.dto.checklist.ChecklistInstanceDTO
-import io.cloudflight.jems.api.project.dto.checklist.ChecklistInstanceDetailDTO
-import io.cloudflight.jems.api.project.dto.checklist.CreateChecklistInstanceDTO
+import io.cloudflight.jems.api.project.dto.checklist.*
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import org.springframework.http.MediaType
@@ -21,9 +19,16 @@ interface ChecklistInstanceApi {
         private const val ENDPOINT_API_CHECKLIST_INSTANCE = "/api/checklist/instance"
     }
 
-    @ApiOperation("Retrieve all checklists instances related to specific id object (project) and checklist programme type")
+    @ApiOperation("Retrieve the checklists instances for the current user related to specific id and checklist programme type")
+    @GetMapping("$ENDPOINT_API_CHECKLIST_INSTANCE/mine/{relatedToId}/{type}")
+    fun getMyChecklistInstances(
+        @PathVariable relatedToId: Long,
+        @PathVariable type: ProgrammeChecklistTypeDTO
+    ): List<ChecklistInstanceDTO>
+
+    @ApiOperation("Retrieve all checklists instances related to specific id and checklist programme type")
     @GetMapping("$ENDPOINT_API_CHECKLIST_INSTANCE/{relatedToId}/{type}")
-    fun getChecklistInstances(
+    fun getAllChecklistInstances(
         @PathVariable relatedToId: Long,
         @PathVariable type: ProgrammeChecklistTypeDTO
     ): List<ChecklistInstanceDTO>
@@ -33,14 +38,22 @@ interface ChecklistInstanceApi {
     fun getChecklistInstanceDetail(@PathVariable checklistId: Long): ChecklistInstanceDetailDTO
 
     @ApiOperation("Create a checklist instance")
-    @PostMapping("$ENDPOINT_API_CHECKLIST_INSTANCE/create", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PostMapping(ENDPOINT_API_CHECKLIST_INSTANCE, consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun createChecklistInstance(@RequestBody checklist: CreateChecklistInstanceDTO): ChecklistInstanceDetailDTO
 
     @ApiOperation("Update a checklist instance")
-    @PutMapping("$ENDPOINT_API_CHECKLIST_INSTANCE/update", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PutMapping(ENDPOINT_API_CHECKLIST_INSTANCE, consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateChecklistInstance(@RequestBody checklist: ChecklistInstanceDetailDTO): ChecklistInstanceDetailDTO
 
+    @ApiOperation("Changes the status for a checklist instances")
+    @PutMapping("${ENDPOINT_API_CHECKLIST_INSTANCE}/status/{checklistId}/{status}")
+    fun changeChecklistStatus(@PathVariable checklistId: Long, @PathVariable status: ChecklistInstanceStatusDTO): ChecklistInstanceDTO
+
+    @ApiOperation("Set the consolidated flag for a checklist instances")
+    @PutMapping("${ENDPOINT_API_CHECKLIST_INSTANCE}/consolidate/{checklistId}", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun consolidateChecklistInstance(@PathVariable checklistId: Long, @RequestBody options: ChecklistConsolidatorOptionsDTO)
+
     @ApiOperation("Delete a checklist instance")
-    @DeleteMapping("${ENDPOINT_API_CHECKLIST_INSTANCE}/delete/{checklistId}")
+    @DeleteMapping("${ENDPOINT_API_CHECKLIST_INSTANCE}/{checklistId}")
     fun deleteChecklistInstance(@PathVariable checklistId: Long)
 }

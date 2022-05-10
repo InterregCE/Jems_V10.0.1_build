@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.programme.service.checklist.getList
+package io.cloudflight.jems.server.project.service.checklist.getMyInstances
 
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
@@ -9,10 +9,10 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-class GetChecklistInstance(
+class GetMyChecklistInstances(
     private val persistence: ChecklistInstancePersistence,
     private val securityService: SecurityService
-) : GetChecklistInstanceInteractor {
+) : GetMyChecklistInstancesInteractor {
 
     @Transactional(readOnly = true)
     @ExceptionWrapper(GetChecklistInstanceException::class)

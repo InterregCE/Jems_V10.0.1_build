@@ -13,10 +13,10 @@ import {APIError} from '@common/models/APIError';
 @UntilDestroy()
 @Injectable()
 export class FormService {
-  private form: FormGroup | FormArray;
   private resetSubject = new Subject();
   private editable = true;
 
+  form: FormGroup | FormArray;
   saveLabel = 'common.save.label';
   valid$ = new ReplaySubject<boolean>(1);
   dirty$ = new ReplaySubject<boolean>(1);

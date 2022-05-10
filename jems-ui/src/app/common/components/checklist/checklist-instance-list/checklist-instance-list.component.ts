@@ -12,13 +12,15 @@ import {RoutingService} from '@common/services/routing.service';
 import {ActivatedRoute} from '@angular/router';
 import {MatDialog} from '@angular/material/dialog';
 import {Forms} from '@common/utils/forms';
+import {FormService} from '@common/components/section/form/form.service';
+import {FormArray, FormBuilder, FormControl} from '@angular/forms';
 
 @Component({
   selector: 'jems-checklist-instance-list',
   templateUrl: './checklist-instance-list.component.html',
   styleUrls: ['./checklist-instance-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  providers: [ChecklistInstanceListStore]
+  providers: [ChecklistInstanceListStore, FormService]
 })
 export class ChecklistInstanceListComponent implements OnInit {
   Status = ChecklistInstanceDTO.StatusEnum;
@@ -28,22 +30,38 @@ export class ChecklistInstanceListComponent implements OnInit {
   @Input()
   relatedId: number;
 
+  form = this.formBuilder.group({
+    visibilities: this.formBuilder.array([])
+  });
+
   checklistInstances$: Observable<ChecklistInstanceDTO[]>;
   checklistTemplates$: Observable<IdNamePairDTO[]>;
 
   tableConfiguration: TableConfiguration;
   selectedTemplate: IdNamePairDTO;
 
+  @ViewChild('consolidateCell', {static: true})
+  consolidateCell: TemplateRef<any>;
+
+  @ViewChild('visibleCell', {static: true})
+  visibleCell: TemplateRef<any>;
+
   @ViewChild('deleteCell', {static: true})
   deleteCell: TemplateRef<any>;
 
   constructor(public pageStore: ChecklistInstanceListStore,
+              private formService: FormService,
+              private formBuilder: FormBuilder,
               private routingService: RoutingService,
               private activatedRoute: ActivatedRoute,
               private dialog: MatDialog) { }
 
   ngOnInit(): void {
-    this.checklistInstances$ = this.pageStore.checklistInstances(this.relatedType, this.relatedId);
+    this.formService.init(this.form);
+    this.checklistInstances$ = this.pageStore.checklistInstances(this.relatedType, this.relatedId)
+      .pipe(
+        tap(checklists => this.resetForm(checklists)),
+      );
     this.checklistTemplates$ = this.pageStore.checklistTemplates(this.relatedType);
     this.initializeTableConfiguration();
   }
@@ -71,6 +89,11 @@ export class ChecklistInstanceListComponent implements OnInit {
           displayedColumn: 'common.id',
           elementProperty: 'id',
           columnWidth: ColumnWidth.IdColumn
+        },
+        {
+          displayedColumn: 'checklists.instance.consolidated',
+          customCellTemplate: this.consolidateCell,
+          columnWidth: ColumnWidth.DateColumn
         },
         {
           displayedColumn: 'common.status',
@@ -118,5 +141,37 @@ export class ChecklistInstanceListComponent implements OnInit {
           )
         )
       ).subscribe();
+  }
+
+  save(): void {
+    this.pageStore.setVisibilities(
+      this.visibilities.controls.reduce(
+        (map: {[index: number]: any} , obj) => {
+          map[(obj.get('id')?.value)] = (obj.get('visible')?.value);
+          return map;
+        }, {}
+      )
+    ).pipe(
+      tap(() => this.formService.setSuccess('checklists.instances.list.saved.successfully'))
+    ).subscribe();
+  }
+
+  get visibilities(): FormArray {
+    return this.form.get('visibilities') as FormArray;
+  }
+
+  getVisibleGroup(instance: ChecklistInstanceDTO): FormControl {
+    return this.visibilities.controls
+      .find(control => control.get('id')?.value === instance.id)
+      ?.get('visible') as FormControl;
+  }
+
+  resetForm(instances: ChecklistInstanceDTO[]): void {
+    this.visibilities.clear();
+    instances.forEach(instance => this.visibilities.push(this.formBuilder.group({
+      id: [instance.id],
+      // visible: [instance.visible],
+    })));
+    this.formService.resetEditable();
   }
 }
