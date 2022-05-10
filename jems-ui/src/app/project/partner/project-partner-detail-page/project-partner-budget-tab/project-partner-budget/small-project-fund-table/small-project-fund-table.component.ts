@@ -27,7 +27,9 @@ import {ProjectPeriodDTO} from '@cat/api';
 import {Alert} from '@common/components/forms/alert';
 import {TableConfig} from '@common/directives/table-config/TableConfig';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
-import {ProjectPartnerBudgetTabService} from '@project/partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget-tab.service';
+import {
+  ProjectPartnerBudgetTabService
+} from '@project/partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget-tab.service';
 import {SpfPartnerBudgetTable} from '@project/model/budget/spf-partner-budget-table';
 
 @UntilDestroy()

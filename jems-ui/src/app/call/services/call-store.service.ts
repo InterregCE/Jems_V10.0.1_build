@@ -76,6 +76,12 @@ export class CallStore {
     );
   }
 
+  isSPFCall(): Observable<boolean> {
+    return this.callType$.asObservable().pipe(
+      map(callType => callType === CallDetailDTO.TypeEnum.SPF)
+    );
+  }
+
   private call(): Observable<CallDetailDTO> {
     const initialCall$ = this.router.routeParameterChanges(CallStore.CALL_DETAIL_PATH, 'callId')
       .pipe(

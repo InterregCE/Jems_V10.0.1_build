@@ -73,7 +73,10 @@ export class CallPageSidenavService {
           this.sideNavConstants.PRE_SUBMISSION_CHECK_SETTINGS(callId)
         ];
       case CallDetailDTO.TypeEnum.SPF:
-        return [this.sideNavConstants.APPLICATION_FORM_CONFIGURATION(callId)];
+        return [
+          this.sideNavConstants.FLAT_RATES(callId),
+          this.sideNavConstants.APPLICATION_FORM_CONFIGURATION(callId)
+        ];
       default:
         return [];
     }

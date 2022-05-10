@@ -187,10 +187,6 @@ private fun getDefaultAllowedRealCosts(callType: CallType) : AllowedRealCostsEnt
     return when (callType) {
         CallType.STANDARD -> AllowedRealCostsEntity()
         CallType.SPF -> AllowedRealCostsEntity(
-            allowRealStaffCosts = false,
-            allowRealTravelAndAccommodationCosts = false,
-            allowRealExternalExpertiseAndServicesCosts = false,
-            allowRealEquipmentCosts = false,
             allowRealInfrastructureCosts = false
         )
     }

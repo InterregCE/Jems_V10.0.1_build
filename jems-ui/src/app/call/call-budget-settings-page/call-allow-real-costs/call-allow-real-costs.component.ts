@@ -26,15 +26,16 @@ export class CallAllowedRealCostsComponent {
   data$: Observable<{
     allowedRealCosts: AllowedRealCostsDTO;
     callIsPublished: boolean;
+    isSPFCall: boolean;
   }>;
 
   constructor(private pageStore: CallBudgetSettingsPageStore,
               private formBuilder: FormBuilder,
               private formService: FormService) {
     this.formService.init(this.form, this.pageStore.callIsEditable$);
-    this.data$ = combineLatest([this.pageStore.allowedRealCosts$, this.pageStore.callIsPublished$])
+    this.data$ = combineLatest([this.pageStore.allowedRealCosts$, this.pageStore.callIsPublished$, this.pageStore.isSPFCall$])
       .pipe(
-        map(([allowedRealCosts, callIsPublished]) => ({allowedRealCosts, callIsPublished})),
+        map(([allowedRealCosts, callIsPublished, isSPFCall]) => ({allowedRealCosts, callIsPublished, isSPFCall})),
         tap(data => this.resetForm(data.allowedRealCosts))
       );
   }

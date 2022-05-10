@@ -13,7 +13,7 @@
                         *ngIf="staff"
                         [allowedBudgetCategory]="allowedBudgetCategories.staff"
                         [availableUnitCosts]="data.unitCosts | filterUnitCosts:  true : BudgetCostCategoryEnum.STAFF_COSTS"
-                        [editable]="budgetsForm.enabled"
+                        [editable]="editable$ | async"
                         [projectPeriods]="data.periods"
                         [staffCostTable]="data.budgetTables.staffCosts"
                         jemsNoWidthLimit></jems-staff-costs-budget-table>

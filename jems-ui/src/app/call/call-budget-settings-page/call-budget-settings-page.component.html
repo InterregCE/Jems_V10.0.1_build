@@ -1,6 +1,6 @@
 <jems-main-page-template *ngIf="call$ | async as call"
                         subTitleKey="call.detail.budget.settings"
-                        titleKey="call.detail.title">
+                        titleKey="{{'call.detail.title' | adaptTranslationKeyByCallType | async}}">
     <jems-call-allow-real-costs class="my-3 block"></jems-call-allow-real-costs>
     <jems-call-flat-rates class="my-3 block"></jems-call-flat-rates>
     <jems-call-lump-sums class="my-3 block"></jems-call-lump-sums>
