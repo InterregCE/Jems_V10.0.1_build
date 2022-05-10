@@ -1,7 +1,10 @@
 package io.cloudflight.jems.api.project.checklist
 
 import io.cloudflight.jems.api.programme.dto.checklist.ProgrammeChecklistTypeDTO
-import io.cloudflight.jems.api.project.dto.checklist.*
+import io.cloudflight.jems.api.project.dto.checklist.ChecklistConsolidatorOptionsDTO
+import io.cloudflight.jems.api.project.dto.checklist.ChecklistInstanceDTO
+import io.cloudflight.jems.api.project.dto.checklist.ChecklistInstanceDetailDTO
+import io.cloudflight.jems.api.project.dto.checklist.CreateChecklistInstanceDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import org.springframework.http.MediaType

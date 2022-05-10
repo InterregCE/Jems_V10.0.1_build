@@ -2,22 +2,20 @@ package io.cloudflight.jems.server.project.controller.checklist
 
 import io.cloudflight.jems.api.programme.dto.checklist.ProgrammeChecklistTypeDTO
 import io.cloudflight.jems.api.project.checklist.ChecklistInstanceApi
-import io.cloudflight.jems.api.project.dto.checklist.*
+import io.cloudflight.jems.api.project.dto.checklist.ChecklistInstanceDTO
+import io.cloudflight.jems.api.project.dto.checklist.ChecklistInstanceDetailDTO
+import io.cloudflight.jems.api.project.dto.checklist.CreateChecklistInstanceDTO
 import io.cloudflight.jems.server.programme.controller.checklist.toModel
-import io.cloudflight.jems.server.project.service.checklist.create.CreateChecklistInstanceInteractor
+import io.cloudflight.jems.server.programme.service.checklist.create.CreateChecklistInstanceInteractor
 import io.cloudflight.jems.server.programme.service.checklist.delete.DeleteChecklistInstanceInteractor
-import io.cloudflight.jems.server.project.service.checklist.getDetail.GetChecklistInstanceDetailInteractor
-import io.cloudflight.jems.server.project.service.checklist.getMyInstances.GetMyChecklistInstancesInteractor
-import io.cloudflight.jems.server.project.service.checklist.update.UpdateChecklistInstanceInteractor
-import io.cloudflight.jems.server.project.service.checklist.consolidateInstance.ConsolidateChecklistInstanceInteractor
-import io.cloudflight.jems.server.project.service.checklist.getAllInstances.GetAllChecklistInstancesInteractor
-import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceStatus
+import io.cloudflight.jems.server.programme.service.checklist.getDetail.GetChecklistInstanceDetailInteractor
+import io.cloudflight.jems.server.programme.service.checklist.getList.GetChecklistInstanceInteractor
+import io.cloudflight.jems.server.programme.service.checklist.update.UpdateChecklistInstanceInteractor
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
 class ChecklistInstanceController(
-    private val getMyChecklistInteractor: GetMyChecklistInstancesInteractor,
-    private val getAllChecklistInteractor: GetAllChecklistInstancesInteractor,
+    private val getChecklistInteractor: GetChecklistInstanceInteractor,
     private val getChecklistDetailInteractor: GetChecklistInstanceDetailInteractor,
     private val updateInteractor: UpdateChecklistInstanceInteractor,
     private val createInteractor: CreateChecklistInstanceInteractor,

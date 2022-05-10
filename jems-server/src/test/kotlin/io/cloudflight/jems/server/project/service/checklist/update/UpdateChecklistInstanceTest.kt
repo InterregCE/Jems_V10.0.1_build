@@ -1,7 +1,6 @@
 package io.cloudflight.jems.server.project.service.checklist.update
 
 import io.cloudflight.jems.api.audit.dto.AuditAction
-import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
@@ -13,7 +12,13 @@ import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistCom
 import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistInstance
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistComponentType
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
-import io.cloudflight.jems.server.programme.service.checklist.model.metadata.*
+import io.cloudflight.jems.server.programme.service.checklist.model.metadata.HeadlineInstanceMetadata
+import io.cloudflight.jems.server.programme.service.checklist.model.metadata.HeadlineMetadata
+import io.cloudflight.jems.server.programme.service.checklist.model.metadata.OptionsToggleInstanceMetadata
+import io.cloudflight.jems.server.programme.service.checklist.model.metadata.OptionsToggleMetadata
+import io.cloudflight.jems.server.programme.service.checklist.model.metadata.ScoreMetadata
+import io.cloudflight.jems.server.programme.service.checklist.model.metadata.TextInputMetadata
+import io.cloudflight.jems.server.programme.service.checklist.update.UpdateChecklistInstance
 import io.cloudflight.jems.server.project.service.checklist.ChecklistInstancePersistence
 import io.cloudflight.jems.server.project.service.checklist.ChecklistInstanceValidator
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
@@ -22,8 +27,13 @@ import io.cloudflight.jems.server.project.service.checklist.model.metadata.Score
 import io.cloudflight.jems.server.project.service.checklist.model.metadata.TextInputInstanceMetadata
 import io.cloudflight.jems.server.user.service.authorization.UserAuthorization
 import io.cloudflight.jems.server.utils.user
-import io.mockk.*
+import io.mockk.MockKAnnotations
+import io.mockk.clearMocks
+import io.mockk.every
 import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
+import io.mockk.slot
+import io.mockk.verify
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -200,6 +210,7 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } answers {}
         every { persistence.update(checkLisDetail) } returns checkLisDetail
+        every { checklistInstanceValidator.validateChecklistComponents(checkLisDetail.components) } returns Unit
 
         every { userAuthorization.getUser() } returns user
         every { persistence.getChecklistSummary(CHECKLIST_ID) } returns checklistInstance(ChecklistInstanceStatus.DRAFT)
@@ -219,23 +230,9 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
     }
 
     @Test
-    fun `change status to FINISHED only allowed to assessor`() {
-        every { userAuthorization.getUser() } returns user
-        every { persistence.getChecklistSummary(CHECKLIST_ID) } returns checklistInstance(ChecklistInstanceStatus.DRAFT, "different@email")
-
-        assertThrows<UpdateChecklistInstanceStatusNotAllowedException> {
-            updateChecklistInstance.changeStatus(CHECKLIST_ID, ChecklistInstanceStatus.FINISHED)
-        }
-    }
-
-    @Test
-    fun `change status to DRAFT only allowed to consolidator`() {
-        every { userAuthorization.getUser() } returns user
-        every { persistence.getChecklistSummary(CHECKLIST_ID) } returns checklistInstance(ChecklistInstanceStatus.FINISHED)
-
-        assertThrows<UpdateChecklistInstanceStatusNotAllowedException> {
-            updateChecklistInstance.changeStatus(CHECKLIST_ID, ChecklistInstanceStatus.DRAFT)
-        }
+    fun `update - checkLisDetail is already in FINISHED status`() {
+        every { persistence.update(checkLisDetail) } returns checkLisDetail
+        assertThrows<UpdateChecklistInstanceStatusNotAllowedException> { updateChecklistInstance.update(checkLisDetail) }
     }
 
     @Test
