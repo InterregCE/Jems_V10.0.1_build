@@ -1,0 +1,100 @@
+<mat-card *ngIf="data$ | async as data" jemsNoWidthLimit>
+        <mat-table *ngIf="data.files.content?.length; else noFiles"
+                   [dataSource]="dataSource">
+
+            <ng-container matColumnDef="name">
+                <mat-header-cell *matHeaderCellDef>
+                    <span jemsText maxLines="2">{{'file.table.column.name.name' | translate }}</span>
+                </mat-header-cell>
+                <mat-cell *matCellDef="let file">
+                    <span jemsText maxWidth="100" maxLines="1"> {{ file?.name }}</span>
+                </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="location">
+                <mat-header-cell *matHeaderCellDef>
+                    <span jemsText maxLines="2">{{'file.table.column.name.location' | translate }}</span>
+                </mat-header-cell>
+                <mat-cell *matCellDef="let file">
+                    <span jemsText maxWidth="100" maxLines="1"> {{'file.table.column.name.location.' + file?.type | translate}}</span>
+                </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="uploadDate">
+                <mat-header-cell *matHeaderCellDef>
+                    <span jemsText maxLines="2">{{'file.table.column.name.timestamp' | translate }}</span>
+                </mat-header-cell>
+                <mat-cell *matCellDef="let file">
+                    {{ file?.uploaded | localeDate: 'L' : 'LT'}}
+                </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="user">
+                <mat-header-cell *matHeaderCellDef>
+                    <span jemsText maxLines="2">{{'file.table.column.name.username' | translate }}</span>
+                </mat-header-cell>
+                <mat-cell *matCellDef="let file">{{ file?.author?.email }}</mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="size">
+                <mat-header-cell *matHeaderCellDef>
+                    <span jemsText maxWidth="120" maxLines="2">{{'file.table.column.name.size' | translate }}</span>
+                </mat-header-cell>
+                <mat-cell *matCellDef="let file">{{  file?.sizeString}}</mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="actions">
+                <mat-header-cell *matHeaderCellDef class="justify-end">
+                    <span jemsText maxLines="2">{{'file.table.column.name.action' | translate }}</span>
+                </mat-header-cell>
+                <mat-cell *matCellDef="let file" class="justify-end">
+                    <jems-actions-cell
+                            (deleteReportFile)="deleteFile($event)"
+                            (download)="downloadFile($event)"
+                            [reportFile]="file"
+                            [reportStatus]="data.reportStatus"
+                            [reportFileType]="file.type"
+                            [isReport]="true">
+                    </jems-actions-cell>
+                </mat-cell>
+            </ng-container>
+
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+
+        </mat-table>
+
+        <jems-paginator (pageIndexChanged)="fileManagementStore.newPageIndex$.next($event)"
+                        (pageSizeChanged)="fileManagementStore.newPageSize$.next($event)"
+                        *ngIf="data.files.content?.length"
+                        [currentPageIndex]="Tables.DEFAULT_INITIAL_PAGE_INDEX"
+                        [currentPageSize]="Tables.DEFAULT_INITIAL_PAGE_SIZE"
+                        [length]="data.files.totalElements">
+        </jems-paginator>
+
+        <div *ngIf="fileManagementStore.canUpload$ | async">
+            <input #selectFile (change)="uploadFile($event?.target)" onclick="this.value=null;"
+                   type="file" [accept]="acceptedFilesTypes" [hidden]="true">
+            <button (click)="selectFile.click()"
+                    mat-stroked-button>+ {{'file.upload.add.new' | translate}}
+            </button>
+        </div>
+</mat-card>
+
+<jems-alert *ngIf="fileManagementStore.error$ | async as error"
+            [show]="!!error"
+            [type]="Alert.ERROR">
+    <jems-api-error-content [error]="error"></jems-api-error-content>
+</jems-alert>
+<jems-alert *ngIf="fileSizeOverLimitError$ | async as showError"
+            [show]="showError"
+            [type]="Alert.ERROR">
+    <p>{{'project.file.size.over.limit' | translate}} {{maximumAllowedFileSizeInMB}} MB</p>
+</jems-alert>
+
+<ng-template #noFiles>
+    <jems-alert [show]="true"
+                [type]="Alert.WARNING">
+        <p>{{'file.table.no.files' | translate}}</p>
+    </jems-alert>
+</ng-template>

@@ -275,7 +275,7 @@ export class FileManagementStore {
     return this.findRootForSection(fullTree, section) || {};
   }
 
-  private findRootForSection(root: CategoryNode, section: CategoryInfo): CategoryNode | null {
+  public findRootForSection(root: CategoryNode, section: CategoryInfo): CategoryNode | null {
     if (root.info?.type === section.type && root.info?.id === section.id) {
       return root;
     }
@@ -309,7 +309,7 @@ export class FileManagementStore {
       );
   }
 
-  private getPath(selectedCategory: CategoryInfo, node: CategoryNode): I18nMessage[] {
+  public getPath(selectedCategory: CategoryInfo, node: CategoryNode): I18nMessage[] {
     if (node.info?.type === selectedCategory?.type && (!selectedCategory?.id || selectedCategory.id === node.info?.id)) {
       return [node.name as any];
     }
