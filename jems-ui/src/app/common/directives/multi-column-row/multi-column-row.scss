@@ -1,7 +1,6 @@
 .jems-layout  {
   &.jems-layout-row {
     &.jems-multi-column-row {
-      display: flex;
       flex-direction: row;
       align-items: var(--alignItems);
       justify-content: var(--justifyContent);
