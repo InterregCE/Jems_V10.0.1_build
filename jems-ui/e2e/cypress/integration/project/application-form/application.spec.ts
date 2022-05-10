@@ -8,7 +8,6 @@ context('Project management tests', () => {
   before(() => {
     cy.loginByRequest(user.programmeUser.email);
     cy.createCall(call).then(callId => {
-      call.generalCallSettings.id = callId;
       application.details.projectCallId = callId;
       cy.publishCall(callId);
     });
@@ -28,6 +27,7 @@ context('Project management tests', () => {
     cy.contains('Apply').click();
 
     application.details.acronym = `${faker.hacker.adjective()} ${faker.hacker.noun()}`;
+    cy.wrap(application.details.acronym).as('applicationAcronym')
     cy.get('input[name="acronym"]').type(`${application.details.acronym}`);
 
     cy.contains('Create project application').click();
@@ -40,14 +40,14 @@ context('Project management tests', () => {
     });
   });
 
-  it('TB-556 Applicant can open and edit his projects', () => {
+  it('TB-556 Applicant can open and edit his projects', function () {
     cy.fixture('project/application-form/TB-390').then(testData => {
 
       cy.visit('/');
 
       cy.contains('My applications').should('be.visible');
 
-      cy.contains(application.details.acronym).click({force: true});
+      cy.contains(this.applicationAcronym).click({force: true});
 
       cy.get('span:contains("Project identification")').eq(2).click();
 

@@ -8,7 +8,6 @@ context('Application modifications', () => {
   before(() => {
     cy.loginByRequest(user.programmeUser.email);
     cy.createCall(call).then(callId => {
-      call.generalCallSettings.id = callId;
       application.details.projectCallId = callId;
       cy.publishCall(callId);
     });

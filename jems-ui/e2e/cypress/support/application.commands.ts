@@ -259,9 +259,7 @@ Cypress.Commands.add('rejectModification', (applicationId: number, rejectionInfo
 });
 
 function createApplication(applicationDetails: ProjectCreateDTO) {
-  if (applicationDetails.acronym === 'randomize') {
-    applicationDetails.acronym = `${faker.hacker.adjective()} ${faker.hacker.noun()}`;
-  }
+  applicationDetails.acronym = `${faker.hacker.adjective()} ${faker.hacker.noun()}`;
   return cy.request({
     method: 'POST',
     url: 'api/project',
@@ -270,9 +268,7 @@ function createApplication(applicationDetails: ProjectCreateDTO) {
 }
 
 function updateIdentification(applicationId: number, projectIdentification: InputProjectData) {
-  if (projectIdentification.acronym === 'randomize') {
-    projectIdentification.acronym = `${faker.hacker.adjective()} ${faker.hacker.noun()}`;
-  }
+  projectIdentification.acronym = `${faker.hacker.adjective()} ${faker.hacker.noun()}`;
   cy.request({
     method: 'PUT',
     url: `api/project/${applicationId}`,

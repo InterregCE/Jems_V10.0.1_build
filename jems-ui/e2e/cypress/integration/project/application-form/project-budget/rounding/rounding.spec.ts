@@ -11,7 +11,6 @@ context('Rounding', () => {
   it('TB-383 Rounding values in partner co-financing', () => {
     call.generalCallSettings.additionalFundAllowed = false;
     cy.createCall(call, user.programmeUser.email).then(callId => {
-      call.generalCallSettings.id = callId;
       testData.application.details.projectCallId = callId;
       cy.publishCall(callId, user.programmeUser.email);
 

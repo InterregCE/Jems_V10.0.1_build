@@ -1,6 +1,5 @@
 {
   "generalCallSettings": {
-    "id": null,
     "name": "randomize",
     "type": "STANDARD",
     "startDateTime": null,
