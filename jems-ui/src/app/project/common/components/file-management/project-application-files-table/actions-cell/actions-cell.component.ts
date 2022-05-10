@@ -1,5 +1,10 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
-import {ProjectFileMetadataDTO, ProjectStatusDTO} from '@cat/api';
+import {
+  ProjectFileMetadataDTO,
+  ProjectPartnerReportSummaryDTO, ProjectReportFileDTO,
+  ProjectReportFileMetadataDTO,
+  ProjectStatusDTO
+} from '@cat/api';
 import {FileCategoryTypeEnum} from '@project/common/components/file-management/file-category-type';
 import {ProjectUtil} from '@project/common/project-util';
 
@@ -13,9 +18,15 @@ export class ActionsCellComponent {
   @Input()
   file: ProjectFileMetadataDTO;
   @Input()
+  reportFile: ProjectReportFileMetadataDTO;
+  @Input()
   type: FileCategoryTypeEnum;
   @Input()
+  reportFileType: ProjectReportFileDTO.TypeEnum;
+  @Input()
   projectStatus: ProjectStatusDTO;
+  @Input()
+  reportStatus: ProjectPartnerReportSummaryDTO.StatusEnum;
 
   @Input()
   isAllowedToChangeApplicationFile: boolean;
@@ -23,6 +34,8 @@ export class ActionsCellComponent {
   isAllowedToChangeAssessmentFile: boolean;
   @Input()
   isThisUserOwner: boolean;
+  @Input()
+  isReport: boolean;
 
   @Output()
   edit = new EventEmitter<number>();
@@ -30,6 +43,8 @@ export class ActionsCellComponent {
   download = new EventEmitter<number>();
   @Output()
   delete = new EventEmitter<ProjectFileMetadataDTO>();
+  @Output()
+  deleteReportFile = new EventEmitter<ProjectReportFileMetadataDTO>();
 
   canChangeFile(): boolean {
     if (this.type === FileCategoryTypeEnum.ALL) {
@@ -45,6 +60,11 @@ export class ActionsCellComponent {
     }
     return this.type === FileCategoryTypeEnum.ASSESSMENT
       ? this.canChangeAssessmentFile() : this.canDeleteApplicationFile();
+  }
+
+  canDeleteReport(): boolean {
+    return this.reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.Draft
+      && this.reportFileType === ProjectReportFileDTO.TypeEnum.PartnerReport;
   }
 
   private canChangeApplicationFile(): boolean {

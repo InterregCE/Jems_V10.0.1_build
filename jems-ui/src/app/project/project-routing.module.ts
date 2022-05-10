@@ -81,6 +81,7 @@ import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {
   AssessmentAndDecisionChecklistPageComponent
 } from '@project/project-application/assessment-and-decision/assessment-and-decision-checklist-page/assessment-and-decision-checklist-page.component';
+import { PartnerReportAnnexesTabComponent } from './project-application/report/partner-report-detail-page/partner-report-annexes-tab/partner-report-annexes-tab.component';
 
 export const routes: Routes = [
   {
@@ -148,6 +149,10 @@ export const routes: Routes = [
                       {
                         path: 'contribution',
                         component: PartnerReportContributionTabComponent,
+                      },
+                      {
+                        path: 'annexes',
+                        component: PartnerReportAnnexesTabComponent,
                       },
                       {
                         path: 'submission',

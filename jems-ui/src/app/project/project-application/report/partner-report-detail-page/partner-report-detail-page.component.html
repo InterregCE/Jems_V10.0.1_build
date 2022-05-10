@@ -40,6 +40,13 @@
                     </span>
                 </a>
 
+                <a [active]="activeTab('annexes')" mat-tab-link
+                   (click)="routeTo('annexes')">
+                    <span jemsText maxWidth="230">
+                        {{'project.application.partner.report.tab.annexes' | translate}}
+                    </span>
+                </a>
+
                 <a [active]="activeTab('submission')" mat-tab-link
                    (click)="routeTo('submission')">
                     <span jemsText maxWidth="230">

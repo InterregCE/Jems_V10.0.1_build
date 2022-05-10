@@ -1,15 +1,30 @@
-<button (click)="edit.emit(file.id)" *ngIf="canChangeFile()" color="accent"
-        mat-icon-button
-        matTooltip="{{'file.table.action.description.tooltip' | translate}}">
-    <mat-icon>edit</mat-icon>
-</button>
-<button (click)="download.emit(file.id)" color="accent"
-        mat-icon-button
-        matTooltip="{{'file.table.action.download.tooltip' | translate}}">
-    <mat-icon>download</mat-icon>
-</button>
-<button (click)="delete.emit(file)" *ngIf="canDeleteFile()" color="accent"
-        mat-icon-button
-        matTooltip="{{'file.table.action.delete.tooltip' | translate}}">
-    <mat-icon>delete</mat-icon>
-</button>
+<ng-container *ngIf="!isReport">
+    <button (click)="edit.emit(file.id)" *ngIf="canChangeFile()" color="accent"
+            mat-icon-button
+            matTooltip="{{'file.table.action.description.tooltip' | translate}}">
+        <mat-icon>edit</mat-icon>
+    </button>
+    <button (click)="download.emit(file.id)" color="accent"
+            mat-icon-button
+            matTooltip="{{'file.table.action.download.tooltip' | translate}}">
+        <mat-icon>download</mat-icon>
+    </button>
+    <button (click)="delete.emit(file)" *ngIf="canDeleteFile()" color="accent"
+            mat-icon-button
+            matTooltip="{{'file.table.action.delete.tooltip' | translate}}">
+        <mat-icon>delete</mat-icon>
+    </button>
+</ng-container>
+
+<ng-container *ngIf="isReport">
+    <button (click)="download.emit(reportFile.id)" color="accent"
+            mat-icon-button
+            matTooltip="{{'file.table.action.download.tooltip' | translate}}">
+        <mat-icon>download</mat-icon>
+    </button>
+    <button (click)="deleteReportFile.emit(reportFile)" *ngIf="canDeleteReport()" color="accent"
+            mat-icon-button
+            matTooltip="{{'file.table.action.delete.tooltip' | translate}}">
+        <mat-icon>delete</mat-icon>
+    </button>
+</ng-container>

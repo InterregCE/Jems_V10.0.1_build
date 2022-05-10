@@ -146,6 +146,8 @@ import {
   PartnerActionsCellComponent
 } from '@project/project-application/report/partner-report-detail-page/partner-report-actions/partner-actions-cell.component';
 import {AssessmentAndDecisionChecklistPageComponent} from './project-application/assessment-and-decision/assessment-and-decision-checklist-page/assessment-and-decision-checklist-page.component';
+import { PartnerReportAnnexesTabComponent } from './project-application/report/partner-report-detail-page/partner-report-annexes-tab/partner-report-annexes-tab.component';
+import { ReportAnnexesTableComponent } from './project-application/report/partner-report-detail-page/partner-report-annexes-tab/report-annexes-table/report-annexes-table.component';
 
 @NgModule({
   declarations: [
@@ -264,7 +266,9 @@ import {AssessmentAndDecisionChecklistPageComponent} from './project-application
     PartnerReportContributionTabComponent,
     PartnerReportExpendituresTabComponent,
     PartnerActionsCellComponent,
-    AssessmentAndDecisionChecklistPageComponent
+    AssessmentAndDecisionChecklistPageComponent,
+    PartnerReportAnnexesTabComponent,
+    ReportAnnexesTableComponent
   ],
   imports: [
     SharedModule,

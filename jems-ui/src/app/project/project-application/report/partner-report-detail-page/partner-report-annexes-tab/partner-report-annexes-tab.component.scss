@@ -1,0 +1,16 @@
+#report-files {
+  display: flex;
+
+  #report-files-tree {
+    width: 20rem;
+    border: 1px solid var(--table-border-color);
+  }
+
+  #report-files-table {
+    flex: auto;
+  }
+}
+
+.overflow-auto {
+  overflow: auto;
+}
