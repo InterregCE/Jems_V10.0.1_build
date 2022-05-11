@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanEditPartnerReport
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
+import io.cloudflight.jems.server.project.service.file.uploadProjectFile.isFileTypeInvalid
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.file.ProjectReportFilePersistence
@@ -26,6 +27,9 @@ class UploadFileToProjectPartnerReport(
     override fun uploadToReport(partnerId: Long, reportId: Long, file: ProjectFile): ProjectReportFileMetadata {
         if (!reportPersistence.exists(partnerId, reportId = reportId))
             throw PartnerReportNotFound()
+
+        if (isFileTypeInvalid(file))
+            throw FileTypeNotSupported()
 
         with(ProjectPartnerReportFileType.PartnerReport) {
             val projectId = partnerPersistence.getProjectIdForPartnerId(partnerId)

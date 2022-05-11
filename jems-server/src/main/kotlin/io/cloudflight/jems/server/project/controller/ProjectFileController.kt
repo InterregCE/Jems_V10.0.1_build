@@ -8,7 +8,7 @@ import io.cloudflight.jems.server.project.service.file.download_project_file.Dow
 import io.cloudflight.jems.server.project.service.file.list_project_file_metadata.ListProjectFileMetadataInteractor
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.file.set_project_file_description.SetProjectFileDescriptionInteractor
-import io.cloudflight.jems.server.project.service.file.upload_project_file.UploadProjectFileInteractor
+import io.cloudflight.jems.server.project.service.file.uploadProjectFile.UploadProjectFileInteractor
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable

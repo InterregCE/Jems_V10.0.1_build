@@ -83,6 +83,18 @@ class UploadFileToProjectPartnerReportTest : UnitTest() {
     }
 
     @Test
+    fun `uploadToReport - file type invalid`() {
+        every { reportPersistence.exists(45L, 901L) } returns true
+
+        val file = mockk<ProjectFile>()
+        every { file.name } returns "invalid.exe"
+
+        assertThrows<FileTypeNotSupported> {
+            interactor.uploadToReport(45L, 901L, file)
+        }
+    }
+
+    @Test
     fun `uploadToReport - file already exists`() {
         every { reportPersistence.exists(45L, 902L) } returns true
         every { partnerPersistence.getProjectIdForPartnerId(45L) } returns PROJECT_ID

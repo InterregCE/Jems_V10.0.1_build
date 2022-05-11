@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.service.report.partner.workPlan.uploa
 import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.server.common.exception.ApplicationException
 import io.cloudflight.jems.server.common.exception.ApplicationNotFoundException
+import io.cloudflight.jems.server.common.exception.ApplicationUnprocessableException
 
 private const val UPLOAD_FILE_TO_PROJECT_PARTNER_REPORT_WP_ERROR_CODE_PREFIX = "S-UFTPPRWP"
 private const val UPLOAD_FILE_TO_PROJECT_PARTNER_REPORT_WP_ERROR_KEY_PREFIX = "use.case.upload.file.to.project.partner.report.work.plan"
@@ -35,4 +36,9 @@ class OutputNotFoundException(outputId: Long) : ApplicationNotFoundException(
         i18nKey = "$UPLOAD_FILE_TO_PROJECT_PARTNER_REPORT_WP_ERROR_KEY_PREFIX.output.not.found",
         i18nArguments = mapOf("outputId" to outputId.toString())
     ),
+)
+
+class FileTypeNotSupported : ApplicationUnprocessableException(
+    code = "$UPLOAD_FILE_TO_PROJECT_PARTNER_REPORT_WP_ERROR_CODE_PREFIX-004",
+    i18nMessage = I18nMessage("$UPLOAD_FILE_TO_PROJECT_PARTNER_REPORT_WP_ERROR_CODE_PREFIX.type.not.supported")
 )

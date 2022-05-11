@@ -20,8 +20,8 @@ import io.cloudflight.jems.server.project.service.file.model.ProjectFileCategory
 import io.cloudflight.jems.server.utils.projectFileCategoryDTO
 import io.cloudflight.jems.server.project.service.file.set_project_file_description.SetProjectFileDescriptionExceptions
 import io.cloudflight.jems.server.project.service.file.set_project_file_description.SetProjectFileDescriptionInteractor
-import io.cloudflight.jems.server.project.service.file.upload_project_file.UploadFileExceptions
-import io.cloudflight.jems.server.project.service.file.upload_project_file.UploadProjectFileInteractor
+import io.cloudflight.jems.server.project.service.file.uploadProjectFile.UploadFileExceptions
+import io.cloudflight.jems.server.project.service.file.uploadProjectFile.UploadProjectFileInteractor
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK

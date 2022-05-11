@@ -81,6 +81,18 @@ internal class UploadFileToProjectPartnerReportWorkPlanTest : UnitTest() {
     }
 
     @Test
+    fun `uploadToActivity - file type invalid`() {
+        every { reportWorkPlanPersistence.existsByActivityId(PARTNER_ID, REPORT_ID, WP_ID, 12L) } returns true
+
+        val file = mockk<ProjectFile>()
+        every { file.name } returns "invalid.exe"
+
+        assertThrows<FileTypeNotSupported> {
+            interactor.uploadToActivity(PARTNER_ID, REPORT_ID, WP_ID, 12L, file)
+        }
+    }
+
+    @Test
     fun uploadToDeliverable() {
         every { reportWorkPlanPersistence.existsByDeliverableId(PARTNER_ID, REPORT_ID, WP_ID, activityId = 10L, deliverableId = 12L) } returns true
 
@@ -96,6 +108,18 @@ internal class UploadFileToProjectPartnerReportWorkPlanTest : UnitTest() {
         with(newFile.captured) {
             assertThat(path).isEqualTo("Project/000450/Report/Partner/000478/PartnerReport/000462/WorkPlan/WorkPackage/000481/Activity/000010/Deliverable/000012/")
             assertThat(type).isEqualTo(ProjectPartnerReportFileType.Deliverable)
+        }
+    }
+
+    @Test
+    fun `uploadToDeliverable - file type invalid`() {
+        every { reportWorkPlanPersistence.existsByDeliverableId(PARTNER_ID, REPORT_ID, WP_ID, 10L, 14L) } returns true
+
+        val file = mockk<ProjectFile>()
+        every { file.name } returns "invalid.exe"
+
+        assertThrows<FileTypeNotSupported> {
+            interactor.uploadToDeliverable(PARTNER_ID, REPORT_ID, WP_ID, 10L, 14L, file)
         }
     }
 
@@ -131,6 +155,18 @@ internal class UploadFileToProjectPartnerReportWorkPlanTest : UnitTest() {
         every { reportWorkPlanPersistence.existsByOutputId(PARTNER_ID, REPORT_ID, WP_ID, outputId = -1L) } returns false
         assertThrows<OutputNotFoundException> {
             interactor.uploadToOutput(PARTNER_ID, REPORT_ID, WP_ID, -1L, mockk())
+        }
+    }
+
+    @Test
+    fun `uploadToOutput - file type invalid`() {
+        every { reportWorkPlanPersistence.existsByOutputId(PARTNER_ID, REPORT_ID, WP_ID, 17L) } returns true
+
+        val file = mockk<ProjectFile>()
+        every { file.name } returns "invalid.exe"
+
+        assertThrows<FileTypeNotSupported> {
+            interactor.uploadToOutput(PARTNER_ID, REPORT_ID, WP_ID, 17L, file)
         }
     }
 

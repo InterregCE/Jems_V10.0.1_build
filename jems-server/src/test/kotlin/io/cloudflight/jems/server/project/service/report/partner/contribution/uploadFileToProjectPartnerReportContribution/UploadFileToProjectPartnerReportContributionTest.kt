@@ -74,4 +74,16 @@ internal class UploadFileToProjectPartnerReportProcurementTest : UnitTest() {
         assertThrows<ContributionNotFoundException> { interactor.uploadToContribution(PARTNER_ID, REPORT_ID, -1L, mockk()) }
     }
 
+    @Test
+    fun `uploadToContribution - file type invalid`() {
+        every { reportContributionPersistence.existsByContributionId(PARTNER_ID, REPORT_ID, 30L) } returns true
+
+        val file = mockk<ProjectFile>()
+        every { file.name } returns "invalid.exe"
+
+        assertThrows<FileTypeNotSupported> {
+            interactor.uploadToContribution(PARTNER_ID, REPORT_ID, 30L, file)
+        }
+    }
+
 }

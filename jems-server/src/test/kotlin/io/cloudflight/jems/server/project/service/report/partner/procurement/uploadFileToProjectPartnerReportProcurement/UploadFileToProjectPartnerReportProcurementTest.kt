@@ -71,8 +71,21 @@ internal class UploadFileToProjectPartnerReportProcurementTest : UnitTest() {
 
     @Test
     fun `uploadToProcurement - not exists`() {
-        every { reportProcurementPersistence.existsByProcurementId(PARTNER_ID, REPORT_ID, 22L) } returns false
-        assertThrows<ProcurementNotFoundException> { interactor.uploadToProcurement(PARTNER_ID, REPORT_ID, 22L, mockk()) }
+        every { reportProcurementPersistence.existsByProcurementId(PARTNER_ID, REPORT_ID, -1L) } returns false
+        assertThrows<ProcurementNotFoundException> { interactor.uploadToProcurement(PARTNER_ID, REPORT_ID, -1L, mockk()) }
+    }
+
+    @Test
+    fun `uploadToProcurement - file type invalid`() {
+        every { reportProcurementPersistence.existsByProcurementId(PARTNER_ID, REPORT_ID, 25L) } returns true
+
+        val file = mockk<ProjectFile>()
+        every { file.name } returns "invalid.exe"
+
+        assertThrows<FileTypeNotSupported> {
+            interactor.uploadToProcurement(
+                PARTNER_ID, REPORT_ID, 25L, file)
+        }
     }
 
 }
