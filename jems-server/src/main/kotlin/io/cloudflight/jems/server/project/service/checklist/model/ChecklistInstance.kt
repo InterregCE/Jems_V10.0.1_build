@@ -12,5 +12,6 @@ data class ChecklistInstance(
     val relatedToId: Long?,
     val finishedDate: LocalDate? = null,
     val programmeChecklistId: Long?,
-    val consolidated: Boolean = false
+    val consolidated: Boolean = false,
+    val visible: Boolean
 )

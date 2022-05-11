@@ -138,7 +138,8 @@ class ChecklistInstanceControllerTest : UnitTest() {
         name = "name",
         creatorEmail = "test@email.com",
         relatedToId = RELATED_TO_ID,
-        programmeChecklistId = PROGRAMME_CHECKLIST_ID
+        programmeChecklistId = PROGRAMME_CHECKLIST_ID,
+        visible = false
     )
 
     private val checklistDTO = ChecklistInstanceDTO(

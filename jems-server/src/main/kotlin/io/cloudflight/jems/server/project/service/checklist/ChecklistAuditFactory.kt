@@ -50,3 +50,16 @@ fun checklistConsolidated(
             description = "[${checklist.id}] [${checklist.type}] [${checklist.name}] consolidation set to ${checklist.consolidated}"
         )
     )
+
+fun checklistSelectionUpdate(
+    context: Any,
+    checklist: ChecklistInstance
+): AuditCandidateEvent =
+    AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditCandidate(
+            action = AuditAction.ASSESSMENT_CHECKLIST_VISIBILITY_CHANGE,
+            project = AuditProject(id = checklist.relatedToId.toString()),
+            description = "[${checklist.id}] [${checklist.type}] [${checklist.name}] set to visibility ${checklist.visible}"
+        )
+    )

@@ -4,6 +4,7 @@ import io.cloudflight.jems.api.programme.dto.checklist.ProgrammeChecklistTypeDTO
 import io.cloudflight.jems.api.project.dto.checklist.ChecklistConsolidatorOptionsDTO
 import io.cloudflight.jems.api.project.dto.checklist.ChecklistInstanceDTO
 import io.cloudflight.jems.api.project.dto.checklist.ChecklistInstanceDetailDTO
+import io.cloudflight.jems.api.project.dto.checklist.ChecklistInstanceSelectionDTO
 import io.cloudflight.jems.api.project.dto.checklist.CreateChecklistInstanceDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
@@ -36,6 +37,13 @@ interface ChecklistInstanceApi {
         @PathVariable type: ProgrammeChecklistTypeDTO
     ): List<ChecklistInstanceDTO>
 
+    @ApiOperation("Retrieve all checklists instances related to specific id object and programme type for selection")
+    @GetMapping("$ENDPOINT_API_CHECKLIST_INSTANCE/selection/{relatedToId}/{type}")
+    fun getChecklistInstancesForSelection(
+        @PathVariable relatedToId: Long,
+        @PathVariable type: ProgrammeChecklistTypeDTO
+    ): List<ChecklistInstanceSelectionDTO>
+
     @ApiOperation("Retrieve detailed checklist instance")
     @GetMapping("$ENDPOINT_API_CHECKLIST_INSTANCE/detail/{checklistId}")
     fun getChecklistInstanceDetail(@PathVariable checklistId: Long): ChecklistInstanceDetailDTO
@@ -55,6 +63,10 @@ interface ChecklistInstanceApi {
     @ApiOperation("Set the consolidated flag for a checklist instances")
     @PutMapping("${ENDPOINT_API_CHECKLIST_INSTANCE}/consolidate/{checklistId}", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun consolidateChecklistInstance(@PathVariable checklistId: Long, @RequestBody options: ChecklistConsolidatorOptionsDTO): Boolean
+
+    @ApiOperation("Update selection of a checklist instance")
+    @PutMapping("$ENDPOINT_API_CHECKLIST_INSTANCE/selection/{checklistId}", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun updateChecklistInstanceSelection(@PathVariable checklistId: Long, @RequestBody visible: Boolean)
 
     @ApiOperation("Delete a checklist instance")
     @DeleteMapping("${ENDPOINT_API_CHECKLIST_INSTANCE}/{checklistId}")

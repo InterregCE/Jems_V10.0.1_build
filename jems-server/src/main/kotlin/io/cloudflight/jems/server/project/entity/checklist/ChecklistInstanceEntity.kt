@@ -32,6 +32,9 @@ class ChecklistInstanceEntity(
 
     val relatedToId: Long? = null,
 
+    @field:NotNull
+    var visible: Boolean = false,
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "programme_checklist_id")
     @field:NotNull

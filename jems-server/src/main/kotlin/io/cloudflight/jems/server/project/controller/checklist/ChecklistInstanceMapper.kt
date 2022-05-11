@@ -4,6 +4,7 @@ import io.cloudflight.jems.api.programme.dto.checklist.ProgrammeChecklistCompone
 import io.cloudflight.jems.api.project.dto.checklist.ChecklistComponentInstanceDTO
 import io.cloudflight.jems.api.project.dto.checklist.ChecklistInstanceDTO
 import io.cloudflight.jems.api.project.dto.checklist.ChecklistInstanceDetailDTO
+import io.cloudflight.jems.api.project.dto.checklist.ChecklistInstanceSelectionDTO
 import io.cloudflight.jems.api.project.dto.checklist.CreateChecklistInstanceDTO
 import io.cloudflight.jems.api.project.dto.checklist.metadata.HeadlineInstanceMetadataDTO
 import io.cloudflight.jems.api.project.dto.checklist.metadata.OptionsToggleInstanceMetadataDTO
@@ -29,6 +30,7 @@ import org.mapstruct.factory.Mappers
 private val mapper = Mappers.getMapper(ChecklistInstanceMapper::class.java)
 
 fun List<ChecklistInstance>.toDto() = map { mapper.map(it) }
+fun List<ChecklistInstance>.toSelectionDto() = map { mapper.mapToSelectionDto(it) }
 fun ChecklistInstanceDTO.toModel() = mapper.map(this)
 fun ChecklistInstance.toDto() = mapper.map(this)
 fun ChecklistInstanceDetail.toDetailDto() = mapper.mapToDetail(this)
@@ -44,6 +46,7 @@ interface ChecklistInstanceMapper {
     fun mapToModel(checklistDetailDTO: ChecklistInstanceDetailDTO): ChecklistInstanceDetail
     fun mapToCreateModel(createChecklistInstanceDTO: CreateChecklistInstanceDTO): CreateChecklistInstanceModel
     fun mapToCreateDto(createChecklistInstanceModel: CreateChecklistInstanceModel): CreateChecklistInstanceDTO
+    fun mapToSelectionDto(model: ChecklistInstance): ChecklistInstanceSelectionDTO
 }
 
 @Mapper

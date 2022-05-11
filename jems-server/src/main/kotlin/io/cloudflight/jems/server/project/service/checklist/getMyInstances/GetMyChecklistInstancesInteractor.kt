@@ -9,4 +9,9 @@ interface GetMyChecklistInstancesInteractor {
         relatedToId: Long,
         type: ProgrammeChecklistType
     ): List<ChecklistInstance>
+
+    fun getChecklistInstancesForSelection(
+        relatedToId: Long,
+        type: ProgrammeChecklistType
+    ): List<ChecklistInstance>
 }

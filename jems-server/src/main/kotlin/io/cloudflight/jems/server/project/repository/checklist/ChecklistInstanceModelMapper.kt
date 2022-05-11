@@ -23,7 +23,8 @@ fun ChecklistInstanceEntity.toModel(): ChecklistInstance =
         relatedToId,
         finishedDate,
         programmeChecklist.id,
-        consolidated
+        consolidated,
+        visible
     )
 
 fun List<ChecklistInstanceEntity>.toModel(): List<ChecklistInstance> = this.map { it.toModel() }

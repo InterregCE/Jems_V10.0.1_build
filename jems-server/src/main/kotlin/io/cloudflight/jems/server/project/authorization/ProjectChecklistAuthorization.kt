@@ -18,9 +18,18 @@ annotation class CanUpdateChecklistAssessment
 @PreAuthorize("hasAuthority('ProjectAssessmentChecklistUpdate')")
 annotation class CanDeleteChecklistAssessment
 
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("hasAuthority('ProjectAssessmentChecklistSelectedRetrieve')")
+annotation class CanViewChecklistAssessmentSelection
+
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("hasAuthority('ProjectAssessmentChecklistSelectedUpdate')")
+annotation class CanUpdateChecklistAssessmentSelection
+
 @Component
 class ProjectChecklistAuthorization(securityService: SecurityService) : Authorization(securityService) {
 
     fun canConsolidate(projectId: Long): Boolean =
         hasPermission(UserRolePermission.ProjectAssessmentChecklistConsolidate, projectId)
 }
+

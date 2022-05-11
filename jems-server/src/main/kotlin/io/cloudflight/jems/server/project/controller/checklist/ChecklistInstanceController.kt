@@ -4,6 +4,7 @@ import io.cloudflight.jems.api.programme.dto.checklist.ProgrammeChecklistTypeDTO
 import io.cloudflight.jems.api.project.checklist.ChecklistInstanceApi
 import io.cloudflight.jems.api.project.dto.checklist.ChecklistInstanceDTO
 import io.cloudflight.jems.api.project.dto.checklist.ChecklistInstanceDetailDTO
+import io.cloudflight.jems.api.project.dto.checklist.ChecklistInstanceSelectionDTO
 import io.cloudflight.jems.api.project.dto.checklist.CreateChecklistInstanceDTO
 import io.cloudflight.jems.server.programme.controller.checklist.toModel
 import io.cloudflight.jems.server.programme.service.checklist.create.CreateChecklistInstanceInteractor
@@ -29,6 +30,12 @@ class ChecklistInstanceController(
     override fun getAllChecklistInstances(relatedToId: Long, type: ProgrammeChecklistTypeDTO): List<ChecklistInstanceDTO> =
         getAllChecklistInteractor.getChecklistInstancesByTypeAndRelatedId(relatedToId, type.toModel()).toDto()
 
+    override fun getChecklistInstancesForSelection(
+        relatedToId: Long,
+        type: ProgrammeChecklistTypeDTO
+    ): List<ChecklistInstanceSelectionDTO> =
+        getChecklistInteractor.getChecklistInstancesOfCurrentUserByTypeAndRelatedId(relatedToId, type.toModel()).toSelectionDto()
+
     override fun getChecklistInstanceDetail(checklistId: Long): ChecklistInstanceDetailDTO =
         getChecklistDetailInteractor.getChecklistInstanceDetail(checklistId).toDetailDto()
 
@@ -43,6 +50,9 @@ class ChecklistInstanceController(
 
     override fun consolidateChecklistInstance(checklistId: Long, options: ChecklistConsolidatorOptionsDTO): Boolean =
         consolidateInteractor.consolidateChecklistInstance(checklistId, options.consolidated)
+
+    override fun updateChecklistInstanceSelection(checklistId: Long, visible: Boolean) =
+        updateInteractor.updateSelection(checklistId, visible)
 
     override fun deleteChecklistInstance(checklistId: Long) =
         deleteInteractor.deleteById(checklistId)

@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistInstance
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
+import io.cloudflight.jems.server.project.authorization.CanViewChecklistAssessmentSelection
 import io.cloudflight.jems.server.project.service.checklist.ChecklistInstancePersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -25,4 +26,20 @@ class GetMyChecklistInstances(
             creatorId = securityService.currentUser?.user?.id!!,
             type = type
         )
+
+    @CanViewChecklistAssessmentSelection
+    @Transactional(readOnly = true)
+    @ExceptionWrapper(GetChecklistInstanceException::class)
+    override fun getChecklistInstancesForSelection(
+        relatedToId: Long,
+        type: ProgrammeChecklistType
+    ): List<ChecklistInstance> {
+        // check visibility
+        // also invisible if CanEditChecklistAssessmentSelection ?
+        return persistence.getChecklistsByRelationAndType(
+            relatedToId = relatedToId,
+            type = type,
+            visible = true
+        )
+    }
 }

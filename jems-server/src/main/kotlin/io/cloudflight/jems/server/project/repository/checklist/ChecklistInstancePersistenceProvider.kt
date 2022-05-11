@@ -37,6 +37,16 @@ class ChecklistInstancePersistenceProvider(
         repository.findByRelatedToIdAndProgrammeChecklistType(relatedToId, type).toModel()
 
     @Transactional(readOnly = true)
+    override fun getChecklistsByRelationAndType(
+        relatedToId: Long,
+        type: ProgrammeChecklistType,
+        visible: Boolean
+    ): List<ChecklistInstance> {
+        return repository.findByRelatedToIdAndVisibleAndProgrammeChecklistTypeAndVisible(relatedToId, type, visible)
+            .toDto()
+    }
+
+    @Transactional(readOnly = true)
     override fun getChecklistDetail(id: Long): ChecklistInstanceDetail {
         return getChecklistOrThrow(id).toDetailModel()
     }
@@ -67,6 +77,13 @@ class ChecklistInstancePersistenceProvider(
         val checklistInstance = getChecklistOrThrow(checklist.id)
         checklistInstance.update(checklist)
         return checklistInstance.toDetailModel()
+    }
+
+    @Transactional
+    override fun updateSelection(checklistId: Long, visible: Boolean): ChecklistInstance {
+        val checklistInstance = getChecklistOrThrow(checklistId)
+        checklistInstance.visible = visible
+        return checklistInstance.toDto()
     }
 
     @Transactional

@@ -16,6 +16,12 @@ interface ChecklistInstancePersistence {
 
     fun getChecklistsByRelatedIdAndType(relatedToId: Long, type: ProgrammeChecklistType): List<ChecklistInstance>
 
+    fun getChecklistsByRelationAndType(
+        relatedToId: Long,
+        type: ProgrammeChecklistType,
+        visible: Boolean
+    ): List<ChecklistInstance>
+
     fun getChecklistDetail(id: Long): ChecklistInstanceDetail
 
     fun getChecklistSummary(checklistId: Long): ChecklistInstance
@@ -23,6 +29,8 @@ interface ChecklistInstancePersistence {
     fun create(createChecklist: CreateChecklistInstanceModel, creatorId: Long): ChecklistInstanceDetail
 
     fun update(checklist: ChecklistInstanceDetail): ChecklistInstanceDetail
+
+    fun updateSelection(checklistId: Long, visible: Boolean): ChecklistInstance
 
     fun deleteById(id: Long)
 
