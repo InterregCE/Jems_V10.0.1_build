@@ -3,7 +3,9 @@ import {combineLatest, Observable} from 'rxjs';
 import {BudgetOptions} from '../../model/budget/budget-options';
 import {CallFlatRateSetting} from '../../model/call-flat-rate-setting';
 import {filter, map, shareReplay, startWith, switchMap} from 'rxjs/operators';
-import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
+import {
+  ProjectStore
+} from '../../project-application/containers/project-application-detail/services/project-store.service';
 import {
   CallFundRateDTO,
   CallService,
@@ -14,25 +16,36 @@ import {
   ProjectPartnerDetailDTO,
   ProjectPartnerService,
   ProjectPartnerStateAidDTO,
-  ProjectPeriodDTO, ProjectStatusDTO
+  ProjectPeriodDTO,
+  ProjectStatusDTO
 } from '@cat/api';
-import {ProjectPartnerStore} from '../../project-application/containers/project-application-form-page/services/project-partner-store.service';
+import {
+  ProjectPartnerStore
+} from '../../project-application/containers/project-application-form-page/services/project-partner-store.service';
 import {NumberService} from '@common/services/number.service';
 import {PartnerBudgetTables} from '../../model/budget/partner-budget-tables';
-import {WorkPackagePageStore} from '../../work-package/project-work-package-page/work-package-detail-page/work-package-page-store.service';
-import {InvestmentSummary} from '../../work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
+import {
+  WorkPackagePageStore
+} from '../../work-package/project-work-package-page/work-package-detail-page/work-package-page-store.service';
+import {
+  InvestmentSummary
+} from '../../work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
 import {ProgrammeUnitCost} from '../../model/programmeUnitCost';
 import {ProjectVersionStore} from '../../common/services/project-version-store.service';
 import {AllowedBudgetCategories} from '@project/model/allowed-budget-category';
 import {ProjectPartnerBudgetStore} from '@project/budget/services/project-partner-budget.store';
-import {ProjectPartnerCoFinancingStore} from '@project/partner/project-partner-detail-page/project-partner-co-financing-tab/services/project-partner-co-financing.store';
+import {
+  ProjectPartnerCoFinancingStore
+} from '@project/partner/project-partner-detail-page/project-partner-co-financing-tab/services/project-partner-co-financing.store';
 import {ProjectPartnerStateAidsStore} from '@project/partner/services/project-partner-state-aids.store';
 import {PartnerLumpSum} from '@project/model/lump-sums/partnerLumpSum';
 import {ProjectLumpSumsStore} from '@project/lump-sums/project-lump-sums-page/project-lump-sums-store.service';
 import {ProgrammeLumpSum} from '@project/model/lump-sums/programmeLumpSum';
 import {PartnerBudgetSpfTables} from '@project/model/budget/partner-budget-spf-tables';
 import {ProjectUtil} from '@project/common/project-util';
-import {ProjectPartnerCoFinancingSpfStore} from './project-partner-co-financing-spf-tab/project-partner-co-financing-spf.store';
+import {
+  ProjectPartnerCoFinancingSpfStore
+} from './project-partner-co-financing-spf-tab/project-partner-co-financing-spf.store';
 
 @Injectable()
 export class ProjectPartnerDetailPageStore {
@@ -210,7 +223,7 @@ export class ProjectPartnerDetailPageStore {
               callLumpSum?.description || [],
               callLumpSum?.cost,
               lumpSum.period,
-              lumpSum.lumpSumContributions.find(it=> it.partnerId === partner.id)?.amount || 0
+              lumpSum.lumpSumContributions.find(it => it.partnerId === partner.id)?.amount || 0
             );
           })
       ),
@@ -239,8 +252,12 @@ export class ProjectPartnerDetailPageStore {
       this.projectVersionStore.versions$
     ]).pipe(
       map(([partner, status, versions]) => {
-        const contracted = versions.find(version => version.status === ProjectStatusDTO.StatusEnum.CONTRACTED);
-        return !contracted|| partner.createdAt > contracted.createdAt;
+        const isContracted = versions.find(version => version.status === ProjectStatusDTO.StatusEnum.CONTRACTED);
+        if (!isContracted) {
+          return true;
+        }
+        const latestContracted = versions.find(version => ProjectUtil.isContractedOrAnyStatusAfterContracted(version.status));
+        return !latestContracted || partner.createdAt > latestContracted.createdAt;
       }),
     );
   }
