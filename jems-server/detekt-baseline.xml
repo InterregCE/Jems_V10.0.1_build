@@ -44,6 +44,7 @@
     <ID>MaxLineLength:CreateOutputIndicator.kt$CreateOutputIndicator$resultIndicatorPersistence.getResultIndicator(outputIndicator.resultIndicatorId).programmeObjectivePolicy != outputIndicator.programmeObjectivePolicy</ID>
     <ID>MaxLineLength:CreateOutputIndicatorTest.kt$CreateOutputIndicatorTest$fun</ID>
     <ID>MaxLineLength:ExceptionWrapperAspectTest.kt$ExceptionWrapperAspectTest$fun</ID>
+    <ID>MaxLineLength:FileHelper.kt$private val ALLOWED_EXTENSIONS = arrayOf("ddoc", "asice", "asics", "adoc", "bdoc", "edoc", "sce", "scs", "csv","dat","db","dbf","log","mdb","xml","email","eml","emlx","msg","oft","ost","pst","vcf","bmp","gif","jpeg","jpg","png","psd","svg","tif","tiff","htm","html","key","odp","pps","ppt","pptx","ods","xls","xlsm","xlsx","doc","docx","odt","pdf","rtf","tex","txt","wpd","mov","avi","mp4","zip","rar","ace","7z","url")</ID>
     <ID>MaxLineLength:GetBudgetTotalCostTest.kt$GetBudgetTotalCostTest$fun</ID>
     <ID>MaxLineLength:GetProjectPartner.kt$GetProjectPartner$return PageImpl(partnerBudgets.map { ProjectBudgetPartnerSummary(partnerSummary = ProjectPartnerSummary(it.partner.id, it.partner.abbreviation, it.partner.active, it.partner.role, it.partner.sortNumber, it.partner.country, it.partner.region), totalBudget = it.totalCosts) }, page, partnerBudgets.size.toLong())</ID>
     <ID>MaxLineLength:InModificationApplicationStateTest.kt$InModificationApplicationStateTest$every { projectPersistence.getProjectCallSettings(InModificationApplicationStateTest.PROJECT_ID) } returns InModificationApplicationStateTest.projectCallSettings</ID>
@@ -121,7 +122,6 @@
     <ID>MaxLineLength:UpdateCallLumpSumsTest.kt$UpdateCallLumpSumsTest$every { persistence.updateProjectCallLumpSum(ID, setOf(2, 3)) } returns call.copy(lumpSums = listOf(ProgrammeLumpSum(id = 2, splittingAllowed = true), ProgrammeLumpSum(id = 3, splittingAllowed = true)))</ID>
     <ID>MaxLineLength:UpdateOutputIndicatorTest.kt$UpdateOutputIndicatorTest$fun</ID>
     <ID>MaxLineLength:UploadFileToProjectPartnerReportWorkPlanTest.kt$UploadFileToProjectPartnerReportWorkPlanTest$assertThat(path).isEqualTo("Project/000450/Report/Partner/000478/PartnerReport/000462/WorkPlan/WorkPackage/000481/Activity/000010/Deliverable/000012/")</ID>
-    <ID>MaxLineLength:UploadProjectFile.kt$UploadProjectFile$if</ID>
     <ID>MaxLineLength:UploadTranslationFileTest.kt$UploadTranslationFileTest$fun</ID>
     <ID>MaxLineLength:UserAuthorization.kt$UserAuthorization$(hasPermission(ProjectCreatorCollaboratorsRetrieve) &amp;&amp; isActiveUserIdEqualToOneOf(projectPersistence.getApplicantAndStatusById(projectId).getUserIdsWithViewLevel()))</ID>
     <ID>MaxLineLength:UserAuthorization.kt$UserAuthorization$(hasPermission(ProjectCreatorCollaboratorsUpdate) &amp;&amp; isActiveUserIdEqualToOneOf(projectPersistence.getApplicantAndStatusById(projectId).getUserIdsWithManageLevel()))</ID>
@@ -575,9 +575,6 @@
     <ID>PackageNaming:UpdateWorkPackageInvestmentInteractor.kt$package io.cloudflight.jems.server.project.service.workpackage.investment.update_work_package_investment</ID>
     <ID>PackageNaming:UpdateWorkPackageOutput.kt$package io.cloudflight.jems.server.project.service.workpackage.output.update_work_package_output</ID>
     <ID>PackageNaming:UpdateWorkPackageOutputInteractor.kt$package io.cloudflight.jems.server.project.service.workpackage.output.update_work_package_output</ID>
-    <ID>PackageNaming:UploadProjectFile.kt$package io.cloudflight.jems.server.project.service.file.upload_project_file</ID>
-    <ID>PackageNaming:UploadProjectFileExceptions.kt$package io.cloudflight.jems.server.project.service.file.upload_project_file</ID>
-    <ID>PackageNaming:UploadProjectFileInteractor.kt$package io.cloudflight.jems.server.project.service.file.upload_project_file</ID>
     <ID>PackageNaming:UploadTranslationFile.kt$package io.cloudflight.jems.server.programme.service.translation.upload_translation_file</ID>
     <ID>PackageNaming:UploadTranslationFileExceptions.kt$package io.cloudflight.jems.server.programme.service.translation.upload_translation_file</ID>
     <ID>PackageNaming:UploadTranslationFileInteractor.kt$package io.cloudflight.jems.server.programme.service.translation.upload_translation_file</ID>
@@ -588,42 +585,6 @@
     <ID>ReturnCount:GetBudgetFundsPerPeriod.kt$GetBudgetFundsPerPeriod$private fun getTotalFundPerPeriodForPartner( partnerBudgetPerPeriod: ProjectPeriodBudget?, partnerCoFinancing: List&lt;ProjectPartnerCoFinancing&gt;?, fund: ProgrammeFund ): BigDecimal</ID>
     <ID>ReturnCount:ProjectDescriptionMapper.kt$fun getMappedStrategy(strategy: ProgrammeStrategy?): ProgrammeStrategy?</ID>
     <ID>ReturnCount:UserRoleAuditFactory.kt$private fun getAuditPermissionState(node: UserRolePermissionNode, permissions: Set&lt;UserRolePermission&gt;): String</ID>
-    <ID>SerialVersionUIDInSerializableClass:AllowRealCostsEntity.kt$AllowedRealCostsEntity : Serializable</ID>
-    <ID>SerialVersionUIDInSerializableClass:ApplicationFormFieldConfigurationId.kt$ApplicationFormFieldConfigurationId : Serializable</ID>
-    <ID>SerialVersionUIDInSerializableClass:BudgetPeriodId.kt$BudgetPeriodId&lt;T : ProjectPartnerBudgetBase&gt; : Serializable</ID>
-    <ID>SerialVersionUIDInSerializableClass:FlatRateSetupId.kt$FlatRateSetupId : Serializable</ID>
-    <ID>SerialVersionUIDInSerializableClass:FundSetupId.kt$FundSetupId : Serializable</ID>
-    <ID>SerialVersionUIDInSerializableClass:ProgrammeFundTranslationId.kt$ProgrammeFundTranslationId : Serializable</ID>
-    <ID>SerialVersionUIDInSerializableClass:ProgrammeLumpSumTranslId.kt$ProgrammeLumpSumTranslId : Serializable</ID>
-    <ID>SerialVersionUIDInSerializableClass:ProgrammePriorityTranslId.kt$ProgrammePriorityTranslId : Serializable</ID>
-    <ID>SerialVersionUIDInSerializableClass:ProgrammeUnitCostTranslId.kt$ProgrammeUnitCostTranslId : Serializable</ID>
-    <ID>SerialVersionUIDInSerializableClass:ProjectAssessmentId.kt$ProjectAssessmentId : Serializable</ID>
-    <ID>SerialVersionUIDInSerializableClass:ProjectAssociatedOrganizationContactId.kt$ProjectAssociatedOrganizationContactId : Serializable</ID>
-    <ID>SerialVersionUIDInSerializableClass:ProjectFileCategoryId.kt$ProjectFileCategoryId : Serializable</ID>
-    <ID>SerialVersionUIDInSerializableClass:ProjectLumpSumId.kt$ProjectLumpSumId : Serializable</ID>
-    <ID>SerialVersionUIDInSerializableClass:ProjectPartnerAddressId.kt$ProjectPartnerAddressId : Serializable</ID>
-    <ID>SerialVersionUIDInSerializableClass:ProjectPartnerCoFinancingFundId.kt$ProjectPartnerCoFinancingFundId : Serializable</ID>
-    <ID>SerialVersionUIDInSerializableClass:ProjectPartnerContactId.kt$ProjectPartnerContactId : Serializable</ID>
-    <ID>SerialVersionUIDInSerializableClass:ProjectPartnerLumpSumId.kt$ProjectPartnerLumpSumId : Serializable</ID>
-    <ID>SerialVersionUIDInSerializableClass:ProjectPartnerStateAidActivityId.kt$ProjectPartnerStateAidActivityId : Serializable</ID>
-    <ID>SerialVersionUIDInSerializableClass:ProjectPeriodId.kt$ProjectPeriodId : Serializable</ID>
-    <ID>SerialVersionUIDInSerializableClass:ProjectResultId.kt$ProjectResultId : Serializable</ID>
-    <ID>SerialVersionUIDInSerializableClass:ProjectVersionId.kt$ProjectVersionId : Serializable</ID>
-    <ID>SerialVersionUIDInSerializableClass:StateAidSetupId.kt$StateAidSetupId : Serializable</ID>
-    <ID>SerialVersionUIDInSerializableClass:TranslationFileId.kt$TranslationFileId : Serializable</ID>
-    <ID>SerialVersionUIDInSerializableClass:TranslationId.kt$TranslationId : Serializable</ID>
-    <ID>SerialVersionUIDInSerializableClass:TranslationId.kt$TranslationId&lt;T&gt; : Serializable</ID>
-    <ID>SerialVersionUIDInSerializableClass:TranslationOrganizationId.kt$TranslationOrganizationId : Serializable</ID>
-    <ID>SerialVersionUIDInSerializableClass:TranslationPartnerId.kt$TranslationPartnerId : Serializable</ID>
-    <ID>SerialVersionUIDInSerializableClass:TranslationResultId.kt$TranslationResultId : Serializable</ID>
-    <ID>SerialVersionUIDInSerializableClass:TranslationUuId.kt$TranslationUuId : Serializable</ID>
-    <ID>SerialVersionUIDInSerializableClass:UserPartnerId.kt$UserPartnerId : Serializable</ID>
-    <ID>SerialVersionUIDInSerializableClass:UserProjectId.kt$UserProjectId : Serializable</ID>
-    <ID>SerialVersionUIDInSerializableClass:UserRolePermissionId.kt$UserRolePermissionId : Serializable</ID>
-    <ID>SerialVersionUIDInSerializableClass:WorkPackageActivityId.kt$WorkPackageActivityId : Serializable</ID>
-    <ID>SerialVersionUIDInSerializableClass:WorkPackageActivityPartnerId.kt$WorkPackageActivityPartnerId : Serializable</ID>
-    <ID>SerialVersionUIDInSerializableClass:WorkPackageInvestmentTranslation.kt$WorkPackageInvestmentTranslation&lt;T&gt; : Serializable</ID>
-    <ID>SerialVersionUIDInSerializableClass:WorkPackageOutputId.kt$WorkPackageOutputId : Serializable</ID>
     <ID>ThrowsCount:BudgetCostValidator.kt$BudgetCostValidator$final fun validateBaseEntries(budgetEntries: List&lt;BaseBudgetEntry&gt;)</ID>
     <ID>ThrowsCount:CreateOutputIndicator.kt$CreateOutputIndicator$private fun validateOutputIndicatorDetail(outputIndicator: OutputIndicator)</ID>
     <ID>ThrowsCount:CreateUser.kt$CreateUser$private fun validateUser(user: UserChange)</ID>

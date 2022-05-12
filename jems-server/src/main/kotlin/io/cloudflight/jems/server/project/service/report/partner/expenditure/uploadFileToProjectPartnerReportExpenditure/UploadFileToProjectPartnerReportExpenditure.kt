@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanEditPartnerReport
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
+import io.cloudflight.jems.server.project.service.file.uploadProjectFile.isFileTypeInvalid
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.file.ProjectReportFilePersistence
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType
@@ -31,6 +32,9 @@ class UploadFileToProjectPartnerReportExpenditure(
     ): ProjectReportFileMetadata {
         if (!reportExpenditurePersistence.existsByExpenditureId(partnerId, reportId = reportId, expenditureId = expenditureId))
             throw ExpenditureNotFoundException(expenditureId = expenditureId)
+
+        if (isFileTypeInvalid(file))
+            throw FileTypeNotSupported()
 
         with(ProjectPartnerReportFileType.Expenditure) {
             val projectId = partnerPersistence.getProjectIdForPartnerId(partnerId)

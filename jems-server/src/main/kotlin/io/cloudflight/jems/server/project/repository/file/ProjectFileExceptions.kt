@@ -3,8 +3,8 @@ package io.cloudflight.jems.server.project.repository.file
 import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.server.common.exception.ApplicationUnprocessableException
 
-const val PROJECT_FILE_ERROR_CODE_PREFIX = "P-PF"
-const val PROJECT_FILE_ERROR_KEY_PREFIX = "project.file"
+private const val PROJECT_FILE_ERROR_CODE_PREFIX = "P-PF"
+private const val PROJECT_FILE_ERROR_KEY_PREFIX = "project.file"
 
 class FileNameAlreadyExistsException : ApplicationUnprocessableException(
     code = "$PROJECT_FILE_ERROR_CODE_PREFIX-001",

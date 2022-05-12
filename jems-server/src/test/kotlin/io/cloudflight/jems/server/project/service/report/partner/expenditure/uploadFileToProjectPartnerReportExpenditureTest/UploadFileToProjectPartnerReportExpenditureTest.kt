@@ -10,6 +10,7 @@ import io.cloudflight.jems.server.project.service.report.model.file.ProjectRepor
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectReportExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.uploadFileToProjectPartnerReportExpenditure.ExpenditureNotFoundException
+import io.cloudflight.jems.server.project.service.report.partner.expenditure.uploadFileToProjectPartnerReportExpenditure.FileTypeNotSupported
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.uploadFileToProjectPartnerReportExpenditure.UploadFileToProjectPartnerReportExpenditure
 import io.mockk.clearMocks
 import io.mockk.every
@@ -17,7 +18,6 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.slot
-import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -73,7 +73,20 @@ class UploadFileToProjectPartnerReportExpenditureTest : UnitTest() {
 
     @Test
     fun `uploadToExpenditure - not exists`() {
-        every { reportExpenditurePersistence.existsByExpenditureId(PARTNER_ID, REPORT_ID, 22L) } returns false
-        assertThrows<ExpenditureNotFoundException> { interactor.uploadToExpenditure(PARTNER_ID, REPORT_ID, 22L, mockk()) }
+        every { reportExpenditurePersistence.existsByExpenditureId(PARTNER_ID, REPORT_ID, -1L) } returns false
+        assertThrows<ExpenditureNotFoundException> { interactor.uploadToExpenditure(PARTNER_ID, REPORT_ID, -1L, mockk()) }
     }
+
+    @Test
+    fun `uploadToExpenditure - file type invalid`() {
+        every { reportExpenditurePersistence.existsByExpenditureId(PARTNER_ID, REPORT_ID, 25L) } returns true
+
+        val file = mockk<ProjectFile>()
+        every { file.name } returns "invalid.exe"
+
+        assertThrows<FileTypeNotSupported> {
+            interactor.uploadToExpenditure(PARTNER_ID, REPORT_ID, 25L, file)
+        }
+    }
+
 }

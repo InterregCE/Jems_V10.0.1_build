@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.service.file.upload_project_file
+package io.cloudflight.jems.server.project.service.file.uploadProjectFile
 
 import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.server.common.exception.ApplicationException

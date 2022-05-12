@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.service.report.partner.procurement.up
 import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.server.common.exception.ApplicationException
 import io.cloudflight.jems.server.common.exception.ApplicationNotFoundException
+import io.cloudflight.jems.server.common.exception.ApplicationUnprocessableException
 
 private const val UPLOAD_FILE_TO_PROJECT_PARTNER_REPORT_PROCUREMENT_ERROR_CODE_PREFIX = "S-UFTPPRP"
 private const val UPLOAD_FILE_TO_PROJECT_PARTNER_REPORT_PROCUREMENT_ERROR_KEY_PREFIX = "use.case.upload.file.to.project.partner.report.procurement"
@@ -19,4 +20,9 @@ class ProcurementNotFoundException(procurementId: Long) : ApplicationNotFoundExc
         i18nKey = "$UPLOAD_FILE_TO_PROJECT_PARTNER_REPORT_PROCUREMENT_ERROR_KEY_PREFIX.procurement.not.found",
         i18nArguments = mapOf("procurementId" to procurementId.toString())
     ),
+)
+
+class FileTypeNotSupported : ApplicationUnprocessableException(
+    code = "$UPLOAD_FILE_TO_PROJECT_PARTNER_REPORT_PROCUREMENT_ERROR_CODE_PREFIX-002",
+    i18nMessage = I18nMessage("$UPLOAD_FILE_TO_PROJECT_PARTNER_REPORT_PROCUREMENT_ERROR_KEY_PREFIX.type.not.supported")
 )

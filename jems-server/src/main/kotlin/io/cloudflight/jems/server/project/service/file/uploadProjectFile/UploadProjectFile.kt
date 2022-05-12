@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.service.file.upload_project_file
+package io.cloudflight.jems.server.project.service.file.uploadProjectFile
 
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
@@ -15,7 +15,6 @@ import io.cloudflight.jems.server.project.service.projectFileUploadFailed
 import io.cloudflight.jems.server.project.service.projectFileUploadSucceed
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import io.cloudflight.jems.server.user.service.UserPersistence
-import org.apache.commons.io.FilenameUtils
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -38,7 +37,7 @@ class UploadProjectFile(
     override fun upload(
         projectId: Long, projectFileCategory: ProjectFileCategory, projectFile: ProjectFile
     ): ProjectFileMetadata {
-        throwIfFileTypeIsNotAllowed(projectFile.name)
+        throwIfFileTypeIsNotAllowed(projectFile)
         throwIfUploadToCategoryIsNotAllowed(projectFileCategory)
         projectPersistence.throwIfNotExists(projectId)
         userPersistence.throwIfNotExists(securityService.currentUser?.user?.id!!)
@@ -80,9 +79,8 @@ class UploadProjectFile(
         ) throw UploadInCategoryIsNotAllowedExceptions()
     }
 
-    private fun throwIfFileTypeIsNotAllowed(fileName: String) {
-        if (!arrayOf("ddoc", "asice", "asics", "adoc", "bdoc", "edoc", "sce", "scs", "csv","dat","db","dbf","log","mdb","xml","email","eml","emlx","msg","oft","ost","pst","vcf","bmp","gif","jpeg","jpg","png","psd","svg","tif","tiff","htm","html","key","odp","pps","ppt","pptx","ods","xls","xlsm","xlsx","doc","docx","odt","pdf","rtf","tex","txt","wpd","mov","avi","mp4","zip","rar","ace","7z","url")
-                .contains(FilenameUtils.getExtension(fileName).lowercase()))
-            throw ProjectFileTypeNotSupported();
+    private fun throwIfFileTypeIsNotAllowed(file: ProjectFile) {
+        if (isFileTypeInvalid(file))
+            throw ProjectFileTypeNotSupported()
     }
 }

@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanEditPartnerReport
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
+import io.cloudflight.jems.server.project.service.file.uploadProjectFile.isFileTypeInvalid
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.file.ProjectReportFilePersistence
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType
@@ -32,6 +33,8 @@ class UploadFileToProjectPartnerReportWorkPlan(
     ): ProjectReportFileMetadata {
         if (!reportWorkPlanPersistence.existsByActivityId(partnerId, reportId = reportId, workPackageId, activityId = activityId))
             throw ActivityNotFoundException(activityId = activityId)
+
+        validateFile(file)
 
         with(ProjectPartnerReportFileType.Activity) {
             val projectId = partnerPersistence.getProjectIdForPartnerId(partnerId)
@@ -64,6 +67,8 @@ class UploadFileToProjectPartnerReportWorkPlan(
             ))
             throw DeliverableNotFoundException(deliverableId = deliverableId)
 
+        validateFile(file)
+
         with(ProjectPartnerReportFileType.Deliverable) {
             val projectId = partnerPersistence.getProjectIdForPartnerId(partnerId)
             val location = generatePath(projectId, partnerId, reportId, workPackageId, activityId, deliverableId)
@@ -88,6 +93,8 @@ class UploadFileToProjectPartnerReportWorkPlan(
         if (!reportWorkPlanPersistence.existsByOutputId(partnerId, reportId = reportId, workPackageId, outputId = outputId))
             throw OutputNotFoundException(outputId = outputId)
 
+        validateFile(file)
+
         with(ProjectPartnerReportFileType.Output) {
             val projectId = partnerPersistence.getProjectIdForPartnerId(partnerId)
             val location = generatePath(projectId, partnerId, reportId, workPackageId, outputId)
@@ -97,6 +104,11 @@ class UploadFileToProjectPartnerReportWorkPlan(
                 file = file.getFileMetadata(projectId, partnerId, location, type = this, securityService.getUserIdOrThrow()),
             )
         }
+    }
+
+    private fun validateFile(file: ProjectFile) {
+        if (isFileTypeInvalid(file))
+            throw FileTypeNotSupported()
     }
 
 }
