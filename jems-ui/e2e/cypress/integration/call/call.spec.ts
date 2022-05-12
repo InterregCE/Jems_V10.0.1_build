@@ -4,7 +4,6 @@ import user from '../../fixtures/users.json';
 context('Call management tests', () => {
 
   beforeEach(() => {
-    cy.viewport(1920, 1080);
     cy.loginByRequest(user.programmeUser.email);
   });
 

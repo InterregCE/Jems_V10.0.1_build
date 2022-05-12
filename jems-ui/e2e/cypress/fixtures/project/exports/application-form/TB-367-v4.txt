@@ -1,9 +1,15 @@
+
+
+1
+A - Project identification
+A.1 Project identification
+Project id (automatically created)000{{applicationId}}
 Name of the lead partner organisationLead Partner in original language
 Name of the lead partner organisation in 
 English
 Lead Partner in english
 Project titleRejected version title EN
-Project acronymtb-367 v4
+Project acronym{{acronym}}
 Programme priorityPO1 Innovation EN
 Specific objectiveSO1.1: Developing and enhancing research and 
 innovation capacities and the uptake of advanced 

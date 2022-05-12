@@ -32,10 +32,13 @@ declare global {
 }
 
 Cypress.Commands.add('createCall', (call: Call, creatingUserEmail?: string) => {
+  call.generalCallSettings.startDateTime = faker.date.recent();
+  call.generalCallSettings.endDateTime = faker.date.soon(2);
   createCall(call, creatingUserEmail);
 });
 
 Cypress.Commands.add('create2StepCall', (call: Call, creatingUserEmail?: string) => {
+  call.generalCallSettings.startDateTime = faker.date.recent();
   call.generalCallSettings.endDateTimeStep1 = faker.date.soon(1);
   call.generalCallSettings.endDateTime = faker.date.soon(1, call.generalCallSettings.endDateTimeStep1);
   createCall(call, creatingUserEmail);
@@ -56,14 +59,7 @@ Cypress.Commands.add('publishCall', (callId: number, publishingUserEmail?: strin
 });
 
 function createCall(call: Call, creatingUserEmail?: string) {
-  // randomize name
-  if (call.generalCallSettings.name === 'randomize')
-    call.generalCallSettings.name = `${faker.word.adverb()} ${faker.hacker.noun()} ${faker.datatype.uuid()}`;
-  // set relative dates if not set
-  if (!call.generalCallSettings.startDateTime)
-    call.generalCallSettings.startDateTime = faker.date.recent();
-  if (!call.generalCallSettings.endDateTime)
-    call.generalCallSettings.endDateTime = faker.date.soon(2);
+  call.generalCallSettings.name = `${faker.word.adverb()} ${faker.hacker.noun()} ${faker.datatype.uuid()}`;
   if (creatingUserEmail)
     loginByRequest(creatingUserEmail);
   cy.request({

@@ -7,14 +7,12 @@ context('Application contracting', () => {
   before(() => {
     cy.loginByRequest(user.programmeUser.email);
     cy.createCall(call).then(callId => {
-      call.generalCallSettings.id = callId;
       application.details.projectCallId = callId;
       cy.publishCall(callId);
     });
   });
 
   beforeEach(() => {
-    cy.viewport(1920, 1080);
     cy.loginByRequest(user.applicantUser.email);
   });
 

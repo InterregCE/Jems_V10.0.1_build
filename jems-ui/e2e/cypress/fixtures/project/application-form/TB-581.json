@@ -1,0 +1,36 @@
+{
+  "partner": {
+    "abbreviation": "Lead Partner",
+    "role": "Lead partner",
+    "nameInOriginalLanguage": "Project Partner in original language",
+    "nameInEnglish": "Project Partner in english",
+    "department": [
+      {
+        "translation": "Lead partner department / unit / division DE",
+        "language": "DE"
+      },
+      {
+        "translation": "Lead partner department / unit / division EN",
+        "language": "EN"
+      }
+    ],
+    "partnerType": "Regional public authority",
+    "partnerSubType": "Small enterprise",
+    "legalStatus": "Public",
+    "nace": "M.75.00",
+    "vat": "123123123",
+    "vatRecovery": "Partly",
+    "otherIdentifierNumber": "321321321",
+    "otherIdentifierDescription": [
+      {
+        "translation": "Lead partner other identifier description DE",
+        "language": "DE"
+      },
+      {
+        "translation": "Lead partner other identifier description EN",
+        "language": "EN"
+      }
+    ],
+    "pic": "111111111"
+  }
+}

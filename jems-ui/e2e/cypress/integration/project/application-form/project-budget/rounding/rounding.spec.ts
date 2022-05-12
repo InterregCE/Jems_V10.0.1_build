@@ -5,14 +5,12 @@ import testData from '../../../../../fixtures/project/application-form/project-b
 context('Rounding', () => {
 
   beforeEach(() => {
-    cy.viewport(1920, 1080);
     cy.loginByRequest(user.applicantUser.email);
   });
 
   it('TB-383 Rounding values in partner co-financing', () => {
     call.generalCallSettings.additionalFundAllowed = false;
     cy.createCall(call, user.programmeUser.email).then(callId => {
-      call.generalCallSettings.id = callId;
       testData.application.details.projectCallId = callId;
       cy.publishCall(callId, user.programmeUser.email);
 

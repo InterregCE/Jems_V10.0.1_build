@@ -5,10 +5,6 @@ import partner from '../../../../fixtures/api/application/partner/partner.json';
 
 context('Project budget tests', () => {
 
-  beforeEach(() => {
-    cy.viewport(1920, 1080);
-  });
-
   it('TB-534 Amounts cross-checks within AF', () => {
     cy.fixture('project/application-form/project-budget/TB-534.json').then(testData => {
 
