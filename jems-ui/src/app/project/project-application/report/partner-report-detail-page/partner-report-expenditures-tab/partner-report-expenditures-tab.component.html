@@ -27,6 +27,29 @@
                             </mat-cell>
                             <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                         </ng-container>
+                        <ng-container matColumnDef="lumpSumId">
+                            <mat-header-cell *matHeaderCellDef>
+                                        <span jemsText
+                                              maxLines="2">{{'project.application.partner.report.expenditures.tab.cost.lump.sum' | translate}}</span>
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                                <mat-form-field jemsFormFieldWidth="full">
+                                    <mat-select #lumpSumSelect
+                                                (selectionChange)="onLumpSumChange($event, control)"
+                                                [formControlName]="constants.FORM_CONTROL_NAMES.lumpSumId"
+                                                [matTooltip]="lumpSumSelect.triggerValue"
+                                                [placeholder]="'common.not.applicable.option' | translate">
+                                        <mat-option
+                                                [value]="null">{{'common.not.applicable.option' | translate}}</mat-option>
+                                        <mat-option *ngFor="let lumpSum of data.lumpSums"
+                                                    [value]="lumpSum.id">
+                                            {{ (lumpSum.name | translateBySystemLanguage | async) + ' - ' + getLumpSumPeriod(lumpSum) }}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </mat-cell>
+                            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                        </ng-container>
                         <ng-container matColumnDef="costCategory">
                             <mat-header-cell *matHeaderCellDef>
                                         <span jemsText
@@ -40,6 +63,8 @@
                                                 [formControlName]="constants.FORM_CONTROL_NAMES.costCategory"
                                                 [matTooltip]="costCategorySelect.triggerValue"
                                                 [placeholder]="'common.not.applicable.option' | translate">
+                                        <mat-option *ngIf="isLumpSumSelectedInCurrentFormGroup(i)"
+                                                [value]="CostCategoryEnum.Multiple">{{'project.application.partner.report.expenditures.cost.category.multiple' | translate}}</mat-option>
                                         <mat-option *ngFor="let costCategory of data.costCategories"
                                                     [value]="costCategory">
                                             {{ ('project.application.partner.report.expenditures.cost.category.' + costCategory) | translate}}
@@ -251,6 +276,35 @@
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                                 <mat-form-field jemsFormFieldWidth="full">
                                     <input [formControlName]="constants.FORM_CONTROL_NAMES.vat"
+                                           [options]="{min: constants.MIN_VALUE, max: constants.MAX_VALUE, align: 'right'}"
+                                           currencyMask matInput
+                                           type="decimal">
+                                </mat-form-field>
+                            </mat-cell>
+                            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="numberOfUnits">
+                            <mat-header-cell class="end-flex-header-table" *matHeaderCellDef>
+                                        <span jemsText
+                                              maxLines="2">{{'project.application.partner.report.expenditures.tab.number.of.units' | translate}}</span>
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                                <mat-form-field jemsFormFieldWidth="full">
+                                    <input [formControlName]="constants.FORM_CONTROL_NAMES.numberOfUnits"
+                                           matInput
+                                           type="integer">
+                                </mat-form-field>
+                            </mat-cell>
+                            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="pricePerUnit">
+                            <mat-header-cell class="end-flex-header-table" *matHeaderCellDef>
+                                        <span jemsText
+                                              maxLines="2">{{'project.application.partner.report.expenditures.tab.price.per.unit' | translate}}</span>
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                                <mat-form-field jemsFormFieldWidth="full">
+                                    <input [formControlName]="constants.FORM_CONTROL_NAMES.pricePerUnit"
                                            [options]="{min: constants.MIN_VALUE, max: constants.MAX_VALUE, align: 'right'}"
                                            currencyMask matInput
                                            type="decimal">

@@ -6,7 +6,7 @@ import {
   InvestmentSummaryDTO,
   ProjectPartnerBudgetOptionsDto, ProjectPartnerReportDTO,
   ProjectPartnerReportExpenditureCostDTO,
-  ProjectPartnerReportExpenditureCostsService, ProjectReportFileMetadataDTO
+  ProjectPartnerReportExpenditureCostsService, ProjectPartnerReportLumpSumDTO, ProjectReportFileMetadataDTO
 } from '@cat/api';
 
 import {PartnerReportDetailPageStore} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
@@ -37,6 +37,7 @@ export class PartnerReportExpendituresStore {
   currencies$: Observable<CurrencyDTO[]>;
   currentReport$: Observable<ProjectPartnerReportDTO>;
   refreshExpenditures$ = new BehaviorSubject<void>(undefined);
+  reportLumpSums$: Observable<ProjectPartnerReportLumpSumDTO[]>;
   private expendituresUpdated$ = new Subject<ProjectPartnerReportExpenditureCostDTO[]>();
 
   constructor(private partnerReportExpenditureCostsService: ProjectPartnerReportExpenditureCostsService,
@@ -55,6 +56,7 @@ export class PartnerReportExpendituresStore {
     this.currencies$ = this.currencyStore.currencies$;
     this.currentReport$ = this.partnerReportDetailPageStore.partnerReport$;
     this.partnerId$ = this.partnerReportPageStore.partnerId$;
+    this.reportLumpSums$ = this.reportLumpSums();
   }
 
   updateExpenditures(partnerExpenditures: ProjectPartnerReportExpenditureCostDTO[]): Observable<ProjectPartnerReportExpenditureCostDTO[]> {
@@ -170,5 +172,19 @@ export class PartnerReportExpendituresStore {
         .uploadFileToExpenditureForm(file, expenditureId, partnerId, currentReport.id)
       ),
     );
+  }
+
+  private reportLumpSums(): Observable<ProjectPartnerReportLumpSumDTO[]> {
+    return combineLatest([
+      this.partnerReportDetailPageStore.partnerId$,
+      this.partnerReportDetailPageStore.partnerReport$
+    ])
+      .pipe(
+        filter(([partnerId, partnerReport]) => partnerId !== null && partnerReport !== null),
+        switchMap(([partnerId, partnerReport]) => this.partnerReportExpenditureCostsService
+          .getAvailableLumpSums(Number(partnerId), partnerReport.id)),
+        map((lumpSums: ProjectPartnerReportLumpSumDTO[]) => lumpSums),
+        shareReplay(1)
+      );
   }
 }

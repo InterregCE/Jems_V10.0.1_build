@@ -13,7 +13,13 @@ import {
   PartnerReportExpendituresStore
 } from '@project/project-application/report/partner-report-detail-page/partner-report-expenditures-tab/partner-report-expenditures-store.service';
 import {MatSelectChange} from '@angular/material/select/select';
-import {CurrencyDTO, IdNamePairDTO, ProjectPartnerReportDTO, ProjectPartnerReportExpenditureCostDTO} from '@cat/api';
+import {
+  CurrencyDTO,
+  IdNamePairDTO,
+  ProjectPartnerReportDTO,
+  ProjectPartnerReportExpenditureCostDTO,
+  ProjectPartnerReportLumpSumDTO
+} from '@cat/api';
 import {BudgetCostCategoryEnum} from '@project/model/lump-sums/BudgetCostCategoryEnum';
 import {
   InvestmentSummary
@@ -37,6 +43,7 @@ import {
 })
 export class PartnerReportExpendituresTabComponent implements OnInit {
   CurrencyCodesEnum = CurrencyCodesEnum;
+  CostCategoryEnum = ProjectPartnerReportExpenditureCostDTO.CostCategoryEnum;
   reportExpendituresForm: FormGroup;
   tableData: AbstractControl[] = [];
   constants = PartnerReportExpendituresTabConstants;
@@ -50,11 +57,16 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     contractIDs: IdNamePairDTO[];
     columnsToDisplay: string[];
     withConfigs: TableConfig[];
+    lumpSums: ProjectPartnerReportLumpSumDTO[];
   }>;
   tableConfiguration$: Observable<{
     columnsToDisplay: string[];
     withConfigs: TableConfig[];
   }>;
+
+  lumpSumsAvailable: boolean;
+  lumpSumHasValue = false;
+  availableLumpSums: ProjectPartnerReportLumpSumDTO[];
 
   constructor(public pageStore: PartnerReportExpendituresStore,
               private formBuilder: FormBuilder,
@@ -69,9 +81,10 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     this.tableConfiguration$ = combineLatest([
       this.pageStore.investmentsSummary$,
       this.partnerReportDetailPageStore.reportEditable$,
+      this.pageStore.reportLumpSums$,
     ]).pipe(
-      map(([investments, editable]) => ({
-          columnsToDisplay: this.getColumnsToDisplay(investments, editable),
+      map(([investments, editable, lumpSums]) => ({
+          columnsToDisplay: this.getColumnsToDisplay(investments, editable, lumpSums.length > 0),
           withConfigs: this.getTableConfig(investments, editable)
         })
       )
@@ -105,6 +118,39 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     }
   }
 
+  onLumpSumChange(change: MatSelectChange, control: FormGroup): void {
+    control.patchValue({lumpSumId: change.value});
+    this.clearFieldsOnLumpSumSelection(control);
+    if (change.value === null) {
+      this.lumpSumHasValue = false;
+      control.get('costCategory')?.enable();
+      control.get('contractId')?.enable();
+      control.get('internalReferenceNumber')?.enable();
+      control.get('invoiceNumber')?.enable();
+      control.get('invoiceDate')?.enable();
+      control.get('dateOfPayment')?.enable();
+      control.get('totalValueInvoice')?.enable();
+      control.get('vat')?.enable();
+      control.get('numberOfUnits')?.disable();
+      control.get('pricePerUnit')?.disable();
+      control.get('declaredAmount')?.enable();
+      control.get('currencyCode')?.enable();
+      control.get('currencyConversionRate')?.enable();
+      control.get('declaredAmountInEur')?.enable();
+      control.get('investmentId')?.enable();
+    } else {
+      this.lumpSumHasValue = true;
+      control.patchValue({costCategory: this.CostCategoryEnum.Multiple});
+      control.patchValue({numberOfUnits: 1});
+      control.patchValue({pricePerUnit: this.availableLumpSums.filter(lumpSum => lumpSum.id === change.value)[0].cost});
+      control.patchValue({declaredAmount: this.availableLumpSums.filter(lumpSum => lumpSum.id === change.value)[0].cost});
+      control.patchValue({currencyCode: CurrencyCodesEnum.EUR});
+      control.patchValue({currencyConversionRate: this.getConversionRateByCode(CurrencyCodesEnum.EUR)});
+      control.patchValue({declaredAmountInEur: this.availableLumpSums.filter(lumpSum => lumpSum.id === change.value)[0].cost});
+      this.disableLumpSumSelectionRelatedFields(control);
+    }
+  }
+
   disableOnReset(control: FormGroup): void {
     if (this.isStaffCostsSelectedForCostCategoryRow(control) ||
       this.isTravelAndAccommodationSelectedForCostCategoryRow(control)) {
@@ -114,6 +160,9 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       control.get('vat')?.disable();
       control.get('contractId')?.disable();
       control.get('invoiceNumber')?.disable();
+    }
+    if((control?.get(this.constants.FORM_CONTROL_NAMES.lumpSumId) as FormControl)?.value !== null) {
+      this.disableLumpSumSelectionRelatedFields(control);
     }
   }
 
@@ -149,6 +198,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
   addNewItem(): void {
     const item = this.formBuilder.group({
       id: null,
+      lumpSumId: null,
       costCategory: ['', Validators.required],
       investmentId: '',
       contractId: '',
@@ -160,6 +210,8 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       comment: [[]],
       totalValueInvoice: 0,
       vat: 0,
+      numberOfUnits: 0,
+      pricePerUnit: 0,
       declaredAmount: 0,
       currencyCode: this.currentReport.identification?.currency ,
       currencyConversionRate: this.getConversionRateByCode(this.currentReport.identification?.currency),
@@ -167,6 +219,8 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       attachment: [],
     });
     this.items.push(item);
+    item.get('numberOfUnits')?.disable();
+    item.get('pricePerUnit')?.disable();
     this.tableData = [...this.items.controls];
     this.formService.setDirty(true);
   }
@@ -196,21 +250,25 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       this.pageStore.costCategories$,
       this.pageStore.investmentsSummary$,
       this.pageStore.contractIDs$,
-      this.tableConfiguration$
+      this.tableConfiguration$,
+      this.pageStore.reportLumpSums$
     ]).pipe(
-      map(([expendituresCosts, costCategories, investmentsSummary, contractIDs, tableConfiguration]) => ({
+      map(([expendituresCosts, costCategories, investmentsSummary, contractIDs, tableConfiguration, lumpSums]) => ({
           expendituresCosts,
           costCategories,
           investmentsSummary,
           contractIDs,
-          ...tableConfiguration
+          ...tableConfiguration,
+          lumpSums
         })
       ),
-      tap(data => this.resetForm(data.expendituresCosts))
+      tap(data => this.resetForm(data.expendituresCosts)),
+      tap(data => this.lumpSumsAvailable = data.lumpSums.length > 0),
+      tap(data => this.availableLumpSums = data.lumpSums)
     );
   }
 
-  private getColumnsToDisplay(investments: InvestmentSummary[], isEditable: boolean): string[] {
+  private getColumnsToDisplay(investments: InvestmentSummary[], isEditable: boolean, lumpSumsAvailable: boolean): string[] {
     const columnsToDisplay = [
       'costItemID',
       'costCategory',
@@ -235,12 +293,18 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     if (investments.length > 0) {
       columnsToDisplay.splice(2, 0, 'investmentId');
     }
+    if (lumpSumsAvailable) {
+      columnsToDisplay.splice(1, 0, 'lumpSumId');
+      columnsToDisplay.splice(12, 0, 'numberOfUnits');
+      columnsToDisplay.splice(13, 0, 'pricePerUnit');
+    }
     return columnsToDisplay;
   }
 
   private getTableConfig(investments: InvestmentSummary[], isEditable: boolean): TableConfig[] {
     const tableConfig = [
       {minInRem: 1, maxInRem: 3},   // id
+      {minInRem: 11, maxInRem: 16}, // lump sum
       {minInRem: 11, maxInRem: 16}, // cost category
       {minInRem: 8, maxInRem: 8},   // contract id
       {minInRem: 5, maxInRem: 8},   // internal reference
@@ -251,6 +315,8 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       {minInRem: 16},               // comment
       {minInRem: 8, maxInRem: 8},   // total invoice value
       {minInRem: 8, maxInRem: 8},   // vat
+      {minInRem: 8, maxInRem: 8},   // number of units
+      {minInRem: 8, maxInRem: 8},   // price per unit
       {minInRem: 8, maxInRem: 8},   // declared amount
       {minInRem: 5, maxInRem: 5},   // currency
       {minInRem: 5, maxInRem: 5},   // conversion rate
@@ -271,6 +337,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     this.items.push(this.formBuilder.group(
       {
         id: this.formBuilder.control(reportExpenditureCost?.id),
+        lumpSumId: this.formBuilder.control(reportExpenditureCost?.lumpSumId),
         costCategory: this.formBuilder.control(reportExpenditureCost?.costCategory),
         investmentId: this.formBuilder.control(reportExpenditureCost?.investmentId),
         contractId: this.formBuilder.control(reportExpenditureCost?.contractId),
@@ -284,6 +351,8 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
         comment: this.formBuilder.control(reportExpenditureCost?.comment),
         totalValueInvoice: this.formBuilder.control(reportExpenditureCost?.totalValueInvoice),
         vat: this.formBuilder.control(reportExpenditureCost?.vat),
+        numberOfUnits: this.formBuilder.control(reportExpenditureCost?.numberOfUnits),
+        pricePerUnit: this.formBuilder.control(reportExpenditureCost?.pricePerUnit),
         declaredAmount: this.formBuilder.control(reportExpenditureCost?.declaredAmount),
         currencyCode: this.formBuilder.control(reportExpenditureCost?.currencyCode),
         currencyConversionRate: this.formBuilder.control(conversionRate),
@@ -362,5 +431,55 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
 
   refreshListOfExpenditures(): void {
     this.pageStore.refreshExpenditures$.next(undefined);
+  }
+
+  getLumpSumPeriod(lumpSum: ProjectPartnerReportLumpSumDTO): string {
+    if (lumpSum.period === 0) {
+      return 'Preparation';
+    }
+    if (lumpSum.period === 255) {
+      return 'Closure';
+    }
+    return `Period ${lumpSum.period}`;
+  }
+
+  isLumpSumSelectedInCurrentFormGroup(index: number): boolean {
+    return this.items.at(index).get('lumpSumId')?.value !== null;
+  }
+
+  disableLumpSumSelectionRelatedFields(control: FormGroup): void {
+    control.get('costCategory')?.disable();
+    control.get('contractId')?.disable();
+    control.get('internalReferenceNumber')?.disable();
+    control.get('invoiceNumber')?.disable();
+    control.get('invoiceDate')?.disable();
+    control.get('dateOfPayment')?.disable();
+    control.get('totalValueInvoice')?.disable();
+    control.get('vat')?.disable();
+    control.get('numberOfUnits')?.disable();
+    control.get('declaredAmount')?.disable();
+    control.get('pricePerUnit')?.disable();
+    control.get('currencyCode')?.disable();
+    control.get('currencyConversionRate')?.disable();
+    control.get('declaredAmountInEur')?.disable();
+    control.get('investmentId')?.disable();
+  }
+
+  clearFieldsOnLumpSumSelection(control: FormGroup): void {
+    control.patchValue({costCategory: null});
+    control.patchValue({contractId: null});
+    control.patchValue({internalReferenceNumber: null});
+    control.patchValue({invoiceNumber: null});
+    control.patchValue({invoiceDate: null});
+    control.patchValue({dateOfPayment: null});
+    control.patchValue({totalValueInvoice: null});
+    control.patchValue({vat: null});
+    control.patchValue({investmentId: null});
+    control.patchValue({numberOfUnits: null});
+    control.patchValue({pricePerUnit: null});
+    control.patchValue({declaredAmount: 0});
+    control.patchValue({currencyCode: this.currentReport.identification?.currency});
+    control.patchValue({currencyConversionRate: this.getConversionRateByCode(this.currentReport.identification?.currency)});
+    control.patchValue({declaredAmountInEur: 0});
   }
 }
