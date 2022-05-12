@@ -20,7 +20,7 @@ interface ChecklistInstanceRepository : JpaRepository<ChecklistInstanceEntity, L
         programmeChecklistType: ProgrammeChecklistType
     ): List<ChecklistInstanceEntity>
 
-    fun findByRelatedToIdAndVisibleAndProgrammeChecklistTypeAndVisible(
+    fun findByRelatedToIdAndProgrammeChecklistTypeAndVisible(
         relatedToId: Long,
         programmeChecklistType: ProgrammeChecklistType,
         visible: Boolean

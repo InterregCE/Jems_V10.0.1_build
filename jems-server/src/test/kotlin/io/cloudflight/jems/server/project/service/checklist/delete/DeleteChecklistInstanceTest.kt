@@ -4,7 +4,7 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.programme.service.checklist.delete.DeleteChecklistInstance
 import io.cloudflight.jems.server.programme.service.checklist.delete.DeleteChecklistInstanceStatusNotAllowedException
-import io.cloudflight.jems.server.project.service.checklist.getMyInstances.GetChecklistInstanceDetailNotFoundException
+import io.cloudflight.jems.server.project.service.checklist.getInstances.GetChecklistInstanceDetailNotFoundException
 import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistComponentInstance
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistComponentType

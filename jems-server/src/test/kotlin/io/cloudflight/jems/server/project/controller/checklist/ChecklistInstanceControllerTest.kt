@@ -13,7 +13,7 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.checklist.create.CreateChecklistInstanceInteractor
 import io.cloudflight.jems.server.programme.service.checklist.delete.DeleteChecklistInstanceInteractor
 import io.cloudflight.jems.server.project.service.checklist.getDetail.GetChecklistInstanceDetailInteractor
-import io.cloudflight.jems.server.project.service.checklist.getMyInstances.GetMyChecklistInstancesInteractor
+import io.cloudflight.jems.server.project.service.checklist.getInstances.GetChecklistInstancesInteractor
 import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistComponentInstance
 import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistInstance
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
@@ -26,7 +26,6 @@ import io.cloudflight.jems.server.programme.service.checklist.model.metadata.Opt
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.TextInputMetadata
 import io.cloudflight.jems.server.project.service.checklist.update.UpdateChecklistInstanceInteractor
 import io.cloudflight.jems.server.project.service.checklist.consolidateInstance.ConsolidateChecklistInstanceInteractor
-import io.cloudflight.jems.server.project.service.checklist.getAllInstances.GetAllChecklistInstancesInteractor
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceStatus
 import io.cloudflight.jems.server.project.service.checklist.model.CreateChecklistInstanceModel
 import io.cloudflight.jems.server.project.service.checklist.model.metadata.TextInputInstanceMetadata
@@ -154,11 +153,8 @@ class ChecklistInstanceControllerTest : UnitTest() {
     )
 
 
-    @MockK
-    lateinit var getMyChecklistInteractor: GetMyChecklistInstancesInteractor
-
     @RelaxedMockK
-    lateinit var getAllChecklistInteractor: GetAllChecklistInstancesInteractor
+    lateinit var getChecklistInteractor: GetChecklistInstancesInteractor
 
     @RelaxedMockK
     lateinit var updateInteractor: UpdateChecklistInstanceInteractor
@@ -181,7 +177,7 @@ class ChecklistInstanceControllerTest : UnitTest() {
     @Test
     fun `get my checklists`() {
         every {
-            getMyChecklistInteractor.getChecklistInstancesOfCurrentUserByTypeAndRelatedId(
+            getChecklistInteractor.getChecklistInstancesOfCurrentUserByTypeAndRelatedId(
                 RELATED_TO_ID,
                 ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT
             )
@@ -204,7 +200,7 @@ class ChecklistInstanceControllerTest : UnitTest() {
         )
 
         verify {
-            getAllChecklistInteractor.getChecklistInstancesByTypeAndRelatedId(
+            getChecklistInteractor.getChecklistInstancesByTypeAndRelatedId(
                 RELATED_TO_ID,
                 ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT
             )

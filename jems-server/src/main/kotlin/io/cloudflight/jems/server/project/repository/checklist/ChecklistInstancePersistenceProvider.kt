@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.repository.checklist
 
 import io.cloudflight.jems.server.programme.repository.checklist.ProgrammeChecklistRepository
-import io.cloudflight.jems.server.project.service.checklist.getMyInstances.GetChecklistInstanceDetailNotFoundException
+import io.cloudflight.jems.server.project.service.checklist.getInstances.GetChecklistInstanceDetailNotFoundException
 import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistInstance
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
@@ -42,8 +42,7 @@ class ChecklistInstancePersistenceProvider(
         type: ProgrammeChecklistType,
         visible: Boolean
     ): List<ChecklistInstance> {
-        return repository.findByRelatedToIdAndVisibleAndProgrammeChecklistTypeAndVisible(relatedToId, type, visible)
-            .toDto()
+        return repository.findByRelatedToIdAndProgrammeChecklistTypeAndVisible(relatedToId, type, visible).toModel()
     }
 
     @Transactional(readOnly = true)
@@ -83,7 +82,7 @@ class ChecklistInstancePersistenceProvider(
     override fun updateSelection(checklistId: Long, visible: Boolean): ChecklistInstance {
         val checklistInstance = getChecklistOrThrow(checklistId)
         checklistInstance.visible = visible
-        return checklistInstance.toDto()
+        return checklistInstance.toModel()
     }
 
     @Transactional

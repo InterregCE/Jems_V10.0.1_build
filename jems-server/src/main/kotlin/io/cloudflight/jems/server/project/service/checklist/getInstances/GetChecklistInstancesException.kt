@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.service.checklist.getMyInstances
+package io.cloudflight.jems.server.project.service.checklist.getInstances
 
 import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.server.common.exception.ApplicationException

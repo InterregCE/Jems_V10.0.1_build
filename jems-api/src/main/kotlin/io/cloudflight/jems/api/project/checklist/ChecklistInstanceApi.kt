@@ -6,6 +6,7 @@ import io.cloudflight.jems.api.project.dto.checklist.ChecklistInstanceDTO
 import io.cloudflight.jems.api.project.dto.checklist.ChecklistInstanceDetailDTO
 import io.cloudflight.jems.api.project.dto.checklist.ChecklistInstanceSelectionDTO
 import io.cloudflight.jems.api.project.dto.checklist.CreateChecklistInstanceDTO
+import io.cloudflight.jems.api.project.dto.checklist.ChecklistInstanceStatusDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import org.springframework.http.MediaType

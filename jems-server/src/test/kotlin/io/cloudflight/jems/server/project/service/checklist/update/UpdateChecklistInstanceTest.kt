@@ -18,7 +18,6 @@ import io.cloudflight.jems.server.programme.service.checklist.model.metadata.Opt
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.OptionsToggleMetadata
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.ScoreMetadata
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.TextInputMetadata
-import io.cloudflight.jems.server.programme.service.checklist.update.UpdateChecklistInstance
 import io.cloudflight.jems.server.project.service.checklist.ChecklistInstancePersistence
 import io.cloudflight.jems.server.project.service.checklist.ChecklistInstanceValidator
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
@@ -137,6 +136,7 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
         creatorEmail = creatorEmail,
         finishedDate = null,
         consolidated = false,
+        visible = true
     )
 
     private val checkLisDetailWithErrorOnScore = ChecklistInstanceDetail(
@@ -233,6 +233,25 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
     fun `update - checkLisDetail is already in FINISHED status`() {
         every { persistence.update(checkLisDetail) } returns checkLisDetail
         assertThrows<UpdateChecklistInstanceStatusNotAllowedException> { updateChecklistInstance.update(checkLisDetail) }
+    }
+
+    fun `change status to FINISHED only allowed to assessor`() {
+        every { userAuthorization.getUser() } returns user
+        every { persistence.getChecklistSummary(CHECKLIST_ID) } returns checklistInstance(ChecklistInstanceStatus.DRAFT, "different@email")
+
+        assertThrows<UpdateChecklistInstanceStatusNotAllowedException> {
+            updateChecklistInstance.changeStatus(CHECKLIST_ID, ChecklistInstanceStatus.FINISHED)
+        }
+    }
+
+    @Test
+    fun `change status to DRAFT only allowed to consolidator`() {
+        every { userAuthorization.getUser() } returns user
+        every { persistence.getChecklistSummary(CHECKLIST_ID) } returns checklistInstance(ChecklistInstanceStatus.FINISHED)
+
+        assertThrows<UpdateChecklistInstanceStatusNotAllowedException> {
+            updateChecklistInstance.changeStatus(CHECKLIST_ID, ChecklistInstanceStatus.DRAFT)
+        }
     }
 
     @Test

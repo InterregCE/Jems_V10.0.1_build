@@ -3,21 +3,24 @@ package io.cloudflight.jems.server.project.service.checklist.get_list
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
 import io.cloudflight.jems.server.authentication.service.SecurityService
-import io.cloudflight.jems.server.project.service.checklist.getMyInstances.GetMyChecklistInstances
+import io.cloudflight.jems.server.project.service.checklist.getInstances.GetChecklistInstances
 import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistInstance
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
 import io.cloudflight.jems.server.project.authorization.AuthorizationUtil
+import io.cloudflight.jems.server.project.authorization.ProjectChecklistAuthorization
 import io.cloudflight.jems.server.project.service.checklist.ChecklistInstancePersistence
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceStatus
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 
-internal class GetMyChecklistInstancesTest : UnitTest() {
+internal class GetChecklistInstancesTest : UnitTest() {
 
     private val CHECKLIST_ID = 100L
     private val RELATED_TO_ID = 2L
@@ -35,14 +38,17 @@ internal class GetMyChecklistInstancesTest : UnitTest() {
         visible = false
     )
 
-    @MockK
+    @RelaxedMockK
     lateinit var persistence: ChecklistInstancePersistence
 
     @MockK
     lateinit var securityService: SecurityService
 
+    @RelaxedMockK
+    lateinit var checklistAuthorization: ProjectChecklistAuthorization
+
     @InjectMockKs
-    lateinit var getMyChecklistInstances: GetMyChecklistInstances
+    lateinit var getChecklistInstances: GetChecklistInstances
 
     @Test
     fun getChecklistInstancesOfCurrentUserByTypeAndRelatedId() {
@@ -53,8 +59,16 @@ internal class GetMyChecklistInstancesTest : UnitTest() {
         every { securityService.currentUser } returns currentUser
         every { persistence.getChecklistsByRelationAndCreatorAndType(RELATED_TO_ID, CREATOR_ID,
             ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT) } returns listOf(checklist)
-        assertThat(getMyChecklistInstances.getChecklistInstancesOfCurrentUserByTypeAndRelatedId(RELATED_TO_ID,
+        assertThat(getChecklistInstances.getChecklistInstancesOfCurrentUserByTypeAndRelatedId(RELATED_TO_ID,
             ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT)).containsExactly(checklist)
     }
 
+    @Test
+    fun `get all instances`() {
+        every { checklistAuthorization.canConsolidate(1) } returns true
+
+        getChecklistInstances.getChecklistInstancesByTypeAndRelatedId(1, ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT)
+
+        verify { persistence.getChecklistsByRelatedIdAndType(1, ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT) }
+    }
 }

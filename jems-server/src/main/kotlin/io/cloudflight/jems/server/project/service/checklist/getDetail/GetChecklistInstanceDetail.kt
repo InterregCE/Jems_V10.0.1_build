@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.checklist.getDetail
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
-import io.cloudflight.jems.server.project.service.checklist.getMyInstances.GetChecklistInstanceDetailNotFoundException
+import io.cloudflight.jems.server.project.service.checklist.getInstances.GetChecklistInstanceDetailNotFoundException
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
 import io.cloudflight.jems.server.project.service.checklist.ChecklistInstancePersistence
 import org.springframework.stereotype.Service
