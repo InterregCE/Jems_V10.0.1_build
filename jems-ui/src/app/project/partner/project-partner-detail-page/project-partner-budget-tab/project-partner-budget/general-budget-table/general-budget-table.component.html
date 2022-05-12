@@ -173,9 +173,12 @@
                             <span jemsText maxLines="2">{{'project.partner.budget.table.price.per.unit' | translate}}</span>
                         </mat-header-cell>
                         <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                            <mat-form-field *ngIf="fieldEnabled(control)" jemsFormFieldWidth="full">
+                            <mat-form-field *ngIf="fieldEnabled(control)"
+                                            [class.mat-form-field-disabled]="getUnitCost(control).value"
+                                            jemsFormFieldWidth="full">
                                 <input [formControlName]="constants.FORM_CONTROL_NAMES.pricePerUnit"
                                        [options]="{min: constants.MIN_VALUE, max: constants.MAX_VALUE, align: 'right'}"
+                                       [readonly]="getUnitCost(control).value"
                                        currencyMask matInput
                                        type="decimal">
                             </mat-form-field>
