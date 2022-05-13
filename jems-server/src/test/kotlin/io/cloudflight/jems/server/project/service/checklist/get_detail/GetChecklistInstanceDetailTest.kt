@@ -15,6 +15,7 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import java.math.BigDecimal
 
 internal class GetChecklistInstanceDetailTest : UnitTest() {
 
@@ -32,6 +33,9 @@ internal class GetChecklistInstanceDetailTest : UnitTest() {
         relatedToId = RELATED_TO_ID,
         finishedDate = null,
         consolidated = false,
+        minScore = BigDecimal(0),
+        maxScore = BigDecimal(10),
+        allowsDecimalScore = false,
         components = mutableListOf(
             ChecklistComponentInstance(
                 2L,

@@ -65,6 +65,7 @@ import {
 import {
   ChecklistConsolidatorOptionsComponent
 } from '@common/components/checklist/checklist-consolidator-options/checklist-consolidator-options.component';
+import {MatSliderModule} from '@angular/material/slider';
 
 const modules = [
   CommonModule,
@@ -76,7 +77,8 @@ const modules = [
   MaterialModule,
   NgxCurrencyModule,
   MatBadgeModule,
-  MatProgressSpinnerModule
+  MatProgressSpinnerModule,
+  MatSliderModule
 ];
 
 const declarations = [

@@ -3,5 +3,6 @@ package io.cloudflight.jems.api.programme.dto.checklist
 enum class ProgrammeChecklistComponentTypeDTO {
     HEADLINE,
     OPTIONS_TOGGLE,
-    TEXT_INPUT
+    TEXT_INPUT,
+    SCORE
 }

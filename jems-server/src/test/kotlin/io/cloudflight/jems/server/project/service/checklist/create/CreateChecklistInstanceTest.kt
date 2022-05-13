@@ -26,6 +26,7 @@ import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.security.core.authority.SimpleGrantedAuthority
+import java.math.BigDecimal
 
 internal class CreateChecklistInstanceTest : UnitTest() {
 
@@ -48,6 +49,9 @@ internal class CreateChecklistInstanceTest : UnitTest() {
         relatedToId = RELATED_TO_ID,
         creatorEmail = "a@a",
         finishedDate = null,
+        minScore = BigDecimal(0),
+        maxScore = BigDecimal(10),
+        allowsDecimalScore = false,
         consolidated = false,
         components = mutableListOf(
             ChecklistComponentInstance(

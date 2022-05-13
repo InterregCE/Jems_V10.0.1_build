@@ -14,6 +14,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.verify
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import java.math.BigDecimal
 import java.time.ZoneId
 import java.time.ZonedDateTime
 
@@ -27,6 +28,9 @@ internal class DeleteChecklistTest : UnitTest() {
             id = CHECKLIST_ID,
             type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
             name = "name",
+            minScore = BigDecimal(0),
+            maxScore = BigDecimal(10),
+            allowsDecimalScore = false,
             lastModificationDate = ZonedDateTime.of(2020, 1, 10, 10, 10, 10, 10, ZoneId.systemDefault()),
             locked = locked,
             components = emptyList()

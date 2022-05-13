@@ -21,6 +21,7 @@ import io.mockk.verify
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.context.ApplicationEventPublisher
+import java.math.BigDecimal
 
 internal class DeleteChecklistInstanceTest : UnitTest() {
 
@@ -35,6 +36,9 @@ internal class DeleteChecklistInstanceTest : UnitTest() {
         creatorEmail = "a@a",
         relatedToId = 1L,
         finishedDate = null,
+        minScore = BigDecimal(0),
+        maxScore = BigDecimal(10),
+        allowsDecimalScore = false,
         consolidated = false,
         components = mutableListOf(
             ChecklistComponentInstance(
@@ -71,6 +75,9 @@ internal class DeleteChecklistInstanceTest : UnitTest() {
         relatedToId = 1L,
         finishedDate = null,
         consolidated = false,
+        minScore = BigDecimal(0),
+        maxScore = BigDecimal(10),
+        allowsDecimalScore = false,
         components = emptyList()
     )
 

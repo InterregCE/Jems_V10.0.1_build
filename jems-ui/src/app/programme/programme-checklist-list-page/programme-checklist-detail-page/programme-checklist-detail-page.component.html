@@ -32,6 +32,54 @@
                         </mat-form-field>
                     </div>
 
+                    <h3>{{'programme.checklists.detail.range.title' | translate}}</h3>
+                    <span>{{'programme.checklists.detail.range.description' | translate}}</span>
+                    <div jemsMultiColumnRow stretch>
+                        <mat-form-field jemsFormFieldWidth="medium">
+                            <mat-label>{{'programme.checklists.detail.range.min.label' | translate}}</mat-label>
+                            <input *ngIf="!form.get('allowsDecimalScore')?.value" type="integer" currencyMask matInput required
+                                   formControlName="minScore"
+                                   [min]="0"
+                                   [maxLength]="3"
+                                   (blur)="updateScoreRangeValidations()">
+
+                            <input *ngIf="form.get('allowsDecimalScore')?.value" type="decimal" currencyMask matInput required
+                                   formControlName="minScore"
+                                   [min]="0"
+                                   [maxLength]="5"
+                                   (blur)="updateScoreRangeValidations()">
+                            <mat-error>
+                                <jems-form-field-errors
+                                        [errors]="form.get('minScore')?.errors"
+                                        [messages]="FORM_ERRORS.minScore">
+                                </jems-form-field-errors>
+                            </mat-error>
+                        </mat-form-field>
+
+                        <mat-form-field jemsFormFieldWidth="medium">
+                            <mat-label>{{'programme.checklists.detail.range.max.label' | translate}}</mat-label>
+                            <input *ngIf="!form.get('allowsDecimalScore')?.value" type="integer" currencyMask matInput required
+                                   formControlName="maxScore"
+                                   [maxLength]="3"
+                                   (blur)="updateScoreRangeValidations()">
+
+                            <input *ngIf="form.get('allowsDecimalScore')?.value" type="decimal" currencyMask matInput required
+                                   formControlName="maxScore"
+                                   [maxLength]="5"
+                                   (blur)="updateScoreRangeValidations()">
+                            <mat-error>
+                                <jems-form-field-errors
+                                        [errors]="form.get('maxScore')?.errors"
+                                        [messages]="FORM_ERRORS.maxScore">
+                                </jems-form-field-errors>
+                            </mat-error>
+                        </mat-form-field>
+
+                        <mat-checkbox formControlName="allowsDecimalScore" (change)="updateScoreValues()">
+                            {{'programme.checklists.detail.range.decimal.label' | translate}}
+                        </mat-checkbox>
+                    </div>
+
                     <h3>{{'programme.checklists.detail.form' | translate}}</h3>
                     <div *ngIf="components?.controls?.length" formArrayName="components" jemsNoWidthLimit
                          [jemsTableConfig]="getTableConfig()">
@@ -73,6 +121,9 @@
                                 <jems-programme-checklist-text-input *ngSwitchCase="COMPONENT_TYPE.TEXTINPUT"
                                                                          formControlName="metadata" class="w-100">
                                 </jems-programme-checklist-text-input>
+                                <jems-programme-checklist-score *ngSwitchCase="COMPONENT_TYPE.SCORE"
+                                                                     formControlName="metadata" class="w-100">
+                                </jems-programme-checklist-score>
                                 <div *ngSwitchDefault></div>
                             </div>
                             <div *ngIf="form.enabled" class="top-cell justify-end">
@@ -93,7 +144,10 @@
             </jems-form>
         </mat-tab>
         <mat-tab label="{{'programme.checklists.tab.preview' | translate}}">
-            <jems-checklist-answers [components]="data.previewComponents">
+            <jems-checklist-answers [components]="data.previewComponents"
+                                    [minScore]="data.checklist.minScore"
+                                    [maxScore]="data.checklist.maxScore"
+                                    [allowsDecimalScore]="data.checklist.allowsDecimalScore">
                 <jems-alert [type]="Alert.WARNING"
                             [closable]="false"
                             [show]="form.dirty">

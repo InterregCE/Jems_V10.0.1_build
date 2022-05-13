@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistCom
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistComponentType
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.OptionsToggleInstanceMetadata
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.TextInputMetadata
+import io.cloudflight.jems.server.project.service.checklist.model.metadata.ScoreInstanceMetadata
 import io.cloudflight.jems.server.project.service.checklist.model.metadata.TextInputInstanceMetadata
 import org.springframework.stereotype.Service
 
@@ -23,6 +24,7 @@ class ChecklistInstanceValidator(private val validator: GeneralValidatorService)
         when(component.type) {
             ProgrammeChecklistComponentType.TEXT_INPUT -> validateTextInputComponent(component)
             ProgrammeChecklistComponentType.OPTIONS_TOGGLE -> validateOptionsToggleComponent(component)
+            ProgrammeChecklistComponentType.SCORE -> validateScoreComponent(component)
             else -> return
         }
     }
@@ -41,6 +43,16 @@ class ChecklistInstanceValidator(private val validator: GeneralValidatorService)
         validator.throwIfAnyIsInvalid(
             validator.maxLength(
                 (component.instanceMetadata as OptionsToggleInstanceMetadata).justification,
+                JUSTIFICATION_FIELD_MAX_LENGTH,
+                "justification"
+            )
+        )
+    }
+
+    fun validateScoreComponent(component: ChecklistComponentInstance) {
+        validator.throwIfAnyIsInvalid(
+            validator.maxLength(
+                (component.instanceMetadata as ScoreInstanceMetadata).justification,
                 JUSTIFICATION_FIELD_MAX_LENGTH,
                 "justification"
             )

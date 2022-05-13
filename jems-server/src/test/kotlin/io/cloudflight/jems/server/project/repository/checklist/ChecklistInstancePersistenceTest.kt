@@ -29,6 +29,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.io.File
 import java.time.LocalDate
+import java.math.BigDecimal
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.util.*
@@ -61,6 +62,9 @@ class ChecklistInstancePersistenceTest : UnitTest() {
         creatorEmail = "test@email.com",
         finishedDate = null,
         consolidated = false,
+        minScore = BigDecimal(0),
+        maxScore = BigDecimal(10),
+        allowsDecimalScore = false,
         components = mutableListOf(
             ChecklistComponentInstance(
                 2L,
@@ -96,6 +100,9 @@ class ChecklistInstancePersistenceTest : UnitTest() {
         relatedToId = RELATED_TO_ID,
         finishedDate = null,
         consolidated = false,
+        minScore = BigDecimal(0),
+        maxScore = BigDecimal(10),
+        allowsDecimalScore = false,
         components = mutableListOf(
             ChecklistComponentInstance(
                 2L,
@@ -130,6 +137,9 @@ class ChecklistInstancePersistenceTest : UnitTest() {
         id = PROGRAMME_CHECKLIST_ID,
         type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
         name = "name",
+        minScore = BigDecimal(0),
+        maxScore = BigDecimal(10),
+        allowsDecimalScore = false,
         lastModificationDate = ZonedDateTime.of(2020, 1, 10, 10, 10, 10, 10, ZoneId.systemDefault()),
         components = mutableSetOf(
             ProgrammeChecklistComponentEntity(

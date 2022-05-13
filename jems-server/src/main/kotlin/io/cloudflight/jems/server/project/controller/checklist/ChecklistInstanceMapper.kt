@@ -7,6 +7,7 @@ import io.cloudflight.jems.api.project.dto.checklist.ChecklistInstanceDetailDTO
 import io.cloudflight.jems.api.project.dto.checklist.CreateChecklistInstanceDTO
 import io.cloudflight.jems.api.project.dto.checklist.metadata.HeadlineInstanceMetadataDTO
 import io.cloudflight.jems.api.project.dto.checklist.metadata.OptionsToggleInstanceMetadataDTO
+import io.cloudflight.jems.api.project.dto.checklist.metadata.ScoreInstanceMetadataDTO
 import io.cloudflight.jems.api.project.dto.checklist.metadata.TextInputInstanceMetadataDTO
 import io.cloudflight.jems.server.programme.controller.checklist.toDtoMetadata
 import io.cloudflight.jems.server.programme.controller.checklist.toModelMetadata
@@ -17,6 +18,7 @@ import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChe
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.HeadlineInstanceMetadata
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.OptionsToggleInstanceMetadata
 import io.cloudflight.jems.server.project.service.checklist.model.CreateChecklistInstanceModel
+import io.cloudflight.jems.server.project.service.checklist.model.metadata.ScoreInstanceMetadata
 import io.cloudflight.jems.server.project.service.checklist.model.metadata.TextInputInstanceMetadata
 import org.mapstruct.AfterMapping
 import org.mapstruct.Mapper
@@ -58,6 +60,7 @@ abstract class ChecklistInstanceComponentMapper {
             ProgrammeChecklistComponentType.HEADLINE -> HeadlineInstanceMetadataDTO()
             ProgrammeChecklistComponentType.OPTIONS_TOGGLE -> (model.instanceMetadata as? OptionsToggleInstanceMetadata)?.toDto()
             ProgrammeChecklistComponentType.TEXT_INPUT -> (model.instanceMetadata as? TextInputInstanceMetadata)?.toDto()
+            ProgrammeChecklistComponentType.SCORE -> (model.instanceMetadata as? ScoreInstanceMetadata)?.toDto()
         }
     }
 
@@ -73,6 +76,7 @@ abstract class ChecklistInstanceComponentMapper {
             ProgrammeChecklistComponentTypeDTO.HEADLINE -> HeadlineInstanceMetadata()
             ProgrammeChecklistComponentTypeDTO.OPTIONS_TOGGLE -> (dto.instanceMetadata as OptionsToggleInstanceMetadataDTO).toModel()
             ProgrammeChecklistComponentTypeDTO.TEXT_INPUT -> (dto.instanceMetadata as TextInputInstanceMetadataDTO).toModel()
+            ProgrammeChecklistComponentTypeDTO.SCORE -> (dto.instanceMetadata as ScoreInstanceMetadataDTO).toModel()
         }
     }
 
@@ -87,5 +91,11 @@ abstract class ChecklistInstanceComponentMapper {
 
     private fun TextInputInstanceMetadataDTO.toModel(): TextInputInstanceMetadata =
         TextInputInstanceMetadata(explanation)
+
+    private fun ScoreInstanceMetadata.toDto(): ScoreInstanceMetadataDTO =
+        ScoreInstanceMetadataDTO(score, justification)
+
+    private fun ScoreInstanceMetadataDTO.toModel(): ScoreInstanceMetadata =
+        ScoreInstanceMetadata(score, justification)
 
 }

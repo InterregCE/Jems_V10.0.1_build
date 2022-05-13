@@ -1,0 +1,37 @@
+<div [formGroup]="form">
+
+    <div jemsMultiColumnRow stretch >
+        <mat-form-field jemsFormFieldWidth="medium">
+            <mat-label>{{'programme.checklists.detail.range.weight.label' | translate}}</mat-label>
+            <input #weight type="decimal" formControlName="weight" currencyMask matInput  required
+                   [min]="0"
+                   [max]="100"
+                   [maxLength]="5">
+            <mat-hint [jemsHintFor]="weight" >
+                {{'programme.checklists.detail.range.weight.hint' | translate}}
+            </mat-hint>
+            <mat-error>
+                <jems-form-field-errors
+                        [errors]="form.get('weight')?.errors"
+                        [args]="FORM_ERRORS_ARGS.weight"
+                        [messages]="FORM_ERRORS.weight">
+                </jems-form-field-errors>
+            </mat-error>
+        </mat-form-field>
+    </div>
+    <mat-form-field jemsFormFieldWidth="full">
+        <mat-label>{{'programme.checklists.component.options.toggle.question' | translate}}</mat-label>
+        <textarea formControlName="question" matInput required
+                  #autosize="cdkTextareaAutosize"
+                  [cdkTextareaAutosize]
+                  [cdkAutosizeMinRows]="3"
+                  [cdkAutosizeMaxRows]="5"
+                  #question></textarea>
+        <mat-hint [jemsHintFor]="question">
+            <jems-text-hint [currentLength]="question.value.length" [maxLength]="1000"></jems-text-hint>
+        </mat-hint>
+        <mat-error>
+            <jems-form-field-errors [errors]="form.get('question')?.errors"></jems-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+</div>
