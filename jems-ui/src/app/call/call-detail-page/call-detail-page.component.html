@@ -19,6 +19,25 @@
                     [pending]="publishPending">
                 {{'call.detail.button.publish' | translate}}
             </jems-pending-button>
+
+            <ng-container *ngIf="(isPublishDisabled(data.call) | async) && data.call?.id && !published">
+
+                <jems-alert [closable]="false" [show]="!data.call.funds || !data.call.funds.length" [type]="Alert.INFO" disableMargins="true">
+                    <span>{{ 'call.detail.button.publish.disabled.because.funds' | translate }}</span>
+                </jems-alert>
+
+                <jems-alert [closable]="false" [show]="!data.call.objectives || !data.call.objectives.length" [type]="Alert.INFO" disableMargins="true">
+                    <span>{{ 'call.detail.button.publish.disabled.because.priority' | translate }}</span>
+                </jems-alert>
+
+                <jems-alert [closable]="false" [show]="!data.call.preSubmissionCheckPluginKey || !data.call.preSubmissionCheckPluginKey.length" [type]="Alert.INFO" disableMargins="true">
+                    <span>
+                        {{'call.detail.button.publish.disabled.because.presubmissionCheck' | translate}}
+                        <a [routerLink]="['preSubmissionCheckSettings']">{{'call.detail.button.publish.disabled.because.presubmissionCheck.link' | translate}}</a>
+                    </span>
+                </jems-alert>
+            </ng-container>
+
             <h3>{{'call.identification.title' | translate}}</h3>
             <mat-form-field>
                 <mat-label>{{'call.detail.field.name' | translate}}</mat-label>
