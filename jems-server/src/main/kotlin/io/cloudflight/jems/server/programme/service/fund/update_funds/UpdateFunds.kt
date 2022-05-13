@@ -6,7 +6,7 @@ import io.cloudflight.jems.server.programme.authorization.CanUpdateProgrammeSetu
 import io.cloudflight.jems.server.programme.service.fund.ProgrammeFundPersistence
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
-import io.cloudflight.jems.server.programme.service.is_programme_setup_locked.IsProgrammeSetupLockedInteractor
+import io.cloudflight.jems.server.programme.service.info.isSetupLocked.IsProgrammeSetupLockedInteractor
 import io.cloudflight.jems.server.programme.service.programmeFundsChanged
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service

@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.programme.service.stateaid.update_stateaid
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.authorization.CanUpdateProgrammeSetup
-import io.cloudflight.jems.server.programme.service.is_programme_setup_locked.IsProgrammeSetupLockedInteractor
+import io.cloudflight.jems.server.programme.service.info.isSetupLocked.IsProgrammeSetupLockedInteractor
 import io.cloudflight.jems.server.programme.service.programmeStateAidsChanged
 import io.cloudflight.jems.server.programme.service.stateaid.ProgrammeStateAidPersistence
 import io.cloudflight.jems.server.programme.service.stateaid.model.ProgrammeStateAid

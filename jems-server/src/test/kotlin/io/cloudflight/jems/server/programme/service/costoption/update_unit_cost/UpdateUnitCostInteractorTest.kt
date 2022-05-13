@@ -1,14 +1,15 @@
 package io.cloudflight.jems.server.programme.service.costoption.update_unit_cost
 
+import io.cloudflight.jems.api.audit.dto.AuditAction
+import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory.OfficeAndAdministrationCosts
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory.StaffCosts
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.api.audit.dto.AuditAction
-import io.cloudflight.jems.api.common.dto.I18nMessage
+import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditCandidate
-import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.common.exception.I18nFieldError
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
@@ -17,7 +18,8 @@ import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeUnitCostPersistence
 import io.cloudflight.jems.server.programme.service.costoption.UpdateUnitCostWhenProgrammeSetupRestricted
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
-import io.cloudflight.jems.server.programme.service.is_programme_setup_locked.IsProgrammeSetupLockedInteractor
+import io.cloudflight.jems.server.programme.service.info.hasProjectsInStatus.HasProjectsInStatusInteractor
+import io.cloudflight.jems.server.programme.service.info.isSetupLocked.IsProgrammeSetupLockedInteractor
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -25,11 +27,12 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.slot
 import io.mockk.verify
-import java.math.BigDecimal
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.springframework.context.ApplicationEventPublisher
+import java.math.BigDecimal
 
 class UpdateUnitCostInteractorTest : UnitTest() {
 
@@ -51,8 +54,11 @@ class UpdateUnitCostInteractorTest : UnitTest() {
     @MockK
     lateinit var isProgrammeSetupLocked: IsProgrammeSetupLockedInteractor
 
+    @MockK
+    lateinit var hasProjectsInStatus: HasProjectsInStatusInteractor
+
     @RelaxedMockK
-    lateinit var auditService: AuditService
+    lateinit var auditPublisher: ApplicationEventPublisher
 
     @RelaxedMockK
     lateinit var generalValidator: GeneralValidatorService
@@ -100,10 +106,10 @@ class UpdateUnitCostInteractorTest : UnitTest() {
             isOneCostCategory = false,
             categories = setOf(OfficeAndAdministrationCosts, StaffCosts),
         )
-        val auditSlot = slot<AuditCandidate>()
-        every { auditService.logEvent(capture(auditSlot)) } answers {}
+        val auditSlot = slot<AuditCandidateEvent>()
+        every { auditPublisher.publishEvent(capture(auditSlot)) } answers {}
         assertThat(updateUnitCost.updateUnitCost(unitCost)).isEqualTo(unitCost.copy())
-        assertThat(auditSlot.captured).isEqualTo(AuditCandidate(
+        assertThat(auditSlot.captured.auditCandidate).isEqualTo(AuditCandidate(
             action = AuditAction.PROGRAMME_UNIT_COST_CHANGED,
             description = "Programme unit cost (id=4) '[EN=UC1]' has been changed"
         ))
@@ -141,6 +147,7 @@ class UpdateUnitCostInteractorTest : UnitTest() {
     fun `update unit cost - call already published with same costPerUnit effective value but different number of decimal zeros`() {
         every { persistence.updateUnitCost(any()) } returnsArgument 0
         every { isProgrammeSetupLocked.isLocked() } returns true
+        every { hasProjectsInStatus.programmeHasProjectsInStatus(ApplicationStatusDTO.CONTRACTED) } returns false
         every { persistence.getUnitCost(any()) } returns initialUnitCost
         val unitCost = ProgrammeUnitCost(
             id = 4,
@@ -151,10 +158,10 @@ class UpdateUnitCostInteractorTest : UnitTest() {
             isOneCostCategory = false,
             categories = setOf(OfficeAndAdministrationCosts, StaffCosts),
         )
-        val auditSlot = slot<AuditCandidate>()
-        every { auditService.logEvent(capture(auditSlot)) } answers {}
+        val auditSlot = slot<AuditCandidateEvent>()
+        every { auditPublisher.publishEvent(capture(auditSlot)) } answers {}
         assertThat(updateUnitCost.updateUnitCost(unitCost)).isEqualTo(unitCost.copy())
-        assertThat(auditSlot.captured).isEqualTo(AuditCandidate(
+        assertThat(auditSlot.captured.auditCandidate).isEqualTo(AuditCandidate(
             action = AuditAction.PROGRAMME_UNIT_COST_CHANGED,
             description = "Programme unit cost (id=4) '[EN=UC1 changed]' has been changed"
         ))

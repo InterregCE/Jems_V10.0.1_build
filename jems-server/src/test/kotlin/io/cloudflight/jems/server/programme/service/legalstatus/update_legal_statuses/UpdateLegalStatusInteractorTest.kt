@@ -8,7 +8,7 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
-import io.cloudflight.jems.server.programme.service.is_programme_setup_locked.IsProgrammeSetupLockedInteractor
+import io.cloudflight.jems.server.programme.service.info.isSetupLocked.IsProgrammeSetupLockedInteractor
 import io.cloudflight.jems.server.programme.service.legalstatus.ProgrammeLegalStatusPersistence
 import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatus
 import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatusType

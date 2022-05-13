@@ -171,7 +171,6 @@
     <ID>PackageNaming:AssignUserToProjectException.kt$package io.cloudflight.jems.server.project.service.projectuser.assign_user_to_project</ID>
     <ID>PackageNaming:AssignUserToProjectInteractor.kt$package io.cloudflight.jems.server.project.service.projectuser.assign_user_to_project</ID>
     <ID>PackageNaming:AssociatedOrganizationPersistenceProvider.kt$package io.cloudflight.jems.server.project.repository.partner.associated_organization</ID>
-    <ID>PackageNaming:CheckIfProgrammeSetupIsLockedExceptions.kt$package io.cloudflight.jems.server.programme.service.is_programme_setup_locked</ID>
     <ID>PackageNaming:CoFinancingOverviewCalculator.kt$package io.cloudflight.jems.server.project.service.cofinancing.get_project_cofinancing_overview</ID>
     <ID>PackageNaming:CreateCall.kt$package io.cloudflight.jems.server.call.service.create_call</ID>
     <ID>PackageNaming:CreateCallExceptions.kt$package io.cloudflight.jems.server.call.service.create_call</ID>
@@ -380,8 +379,6 @@
     <ID>PackageNaming:HandBackToApplicant.kt$package io.cloudflight.jems.server.project.service.application.hand_back_to_applicant</ID>
     <ID>PackageNaming:HandBackToApplicantExceptions.kt$package io.cloudflight.jems.server.project.service.application.hand_back_to_applicant</ID>
     <ID>PackageNaming:HandBackToApplicantInteractor.kt$package io.cloudflight.jems.server.project.service.application.hand_back_to_applicant</ID>
-    <ID>PackageNaming:IsProgrammeSetupLocked.kt$package io.cloudflight.jems.server.programme.service.is_programme_setup_locked</ID>
-    <ID>PackageNaming:IsProgrammeSetupLockedInteractor.kt$package io.cloudflight.jems.server.programme.service.is_programme_setup_locked</ID>
     <ID>PackageNaming:ListCalls.kt$package io.cloudflight.jems.server.call.service.list_calls</ID>
     <ID>PackageNaming:ListCallsExceptions.kt$package io.cloudflight.jems.server.call.service.list_calls</ID>
     <ID>PackageNaming:ListCallsInteractor.kt$package io.cloudflight.jems.server.call.service.list_calls</ID>

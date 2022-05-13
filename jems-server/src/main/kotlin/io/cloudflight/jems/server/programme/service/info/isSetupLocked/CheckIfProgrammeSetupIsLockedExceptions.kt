@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.programme.service.is_programme_setup_locked
+package io.cloudflight.jems.server.programme.service.info.isSetupLocked
 
 import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.server.common.exception.ApplicationException

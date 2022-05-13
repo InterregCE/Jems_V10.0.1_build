@@ -84,7 +84,9 @@ class ProjectPartnerBudgetPersistenceTest: UnitTest() {
                 type = setOf(InputTranslation(SystemLanguage.EN, "test"))
             ),
             costPerUnit = BigDecimal.TEN,
-            isOneCostCategory = false
+            isOneCostCategory = false,
+            costPerUnitForeignCurrency = BigDecimal.ZERO,
+            foreignCurrencyCode = null
         )
 
         private val projectPeriodEntity = ProjectPeriodEntity(projectPeriodId, 1, 2)

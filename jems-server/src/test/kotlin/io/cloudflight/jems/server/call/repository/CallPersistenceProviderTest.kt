@@ -124,7 +124,7 @@ internal class CallPersistenceProviderTest {
         )
 
         private fun callEntity(id: Long, callType: CallType = CallType.STANDARD): CallEntity {
-            val call = createTestCallEntity(id, type = callType)
+            val call = createTestCallEntity(id, type = callType, unitCosts = mutableSetOf(unitCost2, unitCost3))
             fund = callFundRateEntity(call, FUND_ID)
             call.preSubmissionCheckPluginKey = PLUGIN_KEY
             call.firstStepPreSubmissionCheckPluginKey = PLUGIN_KEY
@@ -168,7 +168,9 @@ internal class CallPersistenceProviderTest {
                             programmeUnitCostId = UNIT_COST_ID,
                             category = BudgetCategory.InfrastructureCosts
                         )
-                    )
+                    ),
+                    costPerUnitForeignCurrency = BigDecimal.ZERO,
+                    foreignCurrencyCode = null
                 )
             )
             return call
@@ -262,6 +264,8 @@ internal class CallPersistenceProviderTest {
             ),
             isOneCostCategory = false,
             costPerUnit = BigDecimal.ZERO,
+            costPerUnitForeignCurrency = BigDecimal.ZERO,
+            foreignCurrencyCode = null
         )
 
         private val unitCost3 = ProgrammeUnitCostEntity(
@@ -274,6 +278,8 @@ internal class CallPersistenceProviderTest {
             ),
             isOneCostCategory = false,
             costPerUnit = BigDecimal.ONE,
+            costPerUnitForeignCurrency = BigDecimal.ZERO,
+            foreignCurrencyCode = null
         )
     }
 

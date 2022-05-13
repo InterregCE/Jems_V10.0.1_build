@@ -4,6 +4,7 @@
                         subTitleKey="programme.tab.costs.option">
     <jems-programme-unit-cost-detail
             [unitCost]="details"
+            [currencies]="currencies$ | async"
             [success$]="unitCostSaveSuccess$"
             [error$]="unitCostSaveError$"
             [isCreate]="isCreate"

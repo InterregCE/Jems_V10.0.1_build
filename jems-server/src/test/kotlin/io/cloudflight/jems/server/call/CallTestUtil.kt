@@ -30,6 +30,7 @@ import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.programme.entity.ProgrammeStrategyEntity
+import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostEntity
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
@@ -86,7 +87,8 @@ fun createTestCallEntity(
     strategies: MutableSet<ProgrammeStrategyEntity> = mutableSetOf(),
     funds: MutableSet<CallFundRateEntity> = mutableSetOf(),
     flatRates: MutableSet<ProjectCallFlatRateEntity> = mutableSetOf(),
-    allowedRealCosts:  AllowedRealCostsEntity = defaultAllowedRealCostsByCallType(type)
+    allowedRealCosts:  AllowedRealCostsEntity = defaultAllowedRealCostsByCallType(type),
+    unitCosts: MutableSet<ProgrammeUnitCostEntity> = mutableSetOf()
 ): CallEntity {
     val call = CallEntity(
         id = id,
@@ -106,7 +108,8 @@ fun createTestCallEntity(
         flatRates = flatRates,
         allowedRealCosts = allowedRealCosts,
         preSubmissionCheckPluginKey = null,
-        firstStepPreSubmissionCheckPluginKey = null
+        firstStepPreSubmissionCheckPluginKey = null,
+        unitCosts = unitCosts
     ).apply {
         translatedValues.add(CallTranslEntity(TranslationId(this, SystemLanguage.EN), "This is a dummy call"))
         flatRates.add(
@@ -325,6 +328,8 @@ private val defaultUnitCosts = listOf(
         costPerUnit = BigDecimal.TEN,
         isOneCostCategory = true,
         categories = setOf(BudgetCategory.InfrastructureCosts),
+        costPerUnitForeignCurrency = BigDecimal.ZERO,
+        foreignCurrencyCode = null
     )
 )
 

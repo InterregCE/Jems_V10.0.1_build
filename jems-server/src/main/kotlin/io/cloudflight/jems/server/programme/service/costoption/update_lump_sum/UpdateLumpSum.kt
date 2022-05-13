@@ -11,7 +11,7 @@ import io.cloudflight.jems.server.programme.service.costoption.ProgrammeLumpSumP
 import io.cloudflight.jems.server.programme.service.costoption.UpdateLumpSumWhenProgrammeSetupRestricted
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.costoption.validateUpdateLumpSum
-import io.cloudflight.jems.server.programme.service.is_programme_setup_locked.IsProgrammeSetupLockedInteractor
+import io.cloudflight.jems.server.programme.service.info.isSetupLocked.IsProgrammeSetupLockedInteractor
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
