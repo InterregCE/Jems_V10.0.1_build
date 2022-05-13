@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.programme.service.checklist.create
+package io.cloudflight.jems.server.project.service.checklist.create
 
 import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.server.common.exception.ApplicationException

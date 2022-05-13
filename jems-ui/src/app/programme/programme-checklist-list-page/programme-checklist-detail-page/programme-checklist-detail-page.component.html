@@ -93,8 +93,12 @@
             </jems-form>
         </mat-tab>
         <mat-tab label="{{'programme.checklists.tab.preview' | translate}}">
-            <jems-checklist-answers [components]="data.previewComponents"
-                                    [warning]="form.dirty && 'programme.checklists.tab.preview.warn'">
+            <jems-checklist-answers [components]="data.previewComponents">
+                <jems-alert [type]="Alert.WARNING"
+                            [closable]="false"
+                            [show]="form.dirty">
+                    <div>{{'programme.checklists.tab.preview.warn' | translate}}</div>
+                </jems-alert>
             </jems-checklist-answers>
         </mat-tab>
     </mat-tab-group>

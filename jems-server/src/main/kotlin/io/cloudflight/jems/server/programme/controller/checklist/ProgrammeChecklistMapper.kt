@@ -9,6 +9,7 @@ import io.cloudflight.jems.api.programme.dto.checklist.metadata.HeadlineMetadata
 import io.cloudflight.jems.api.programme.dto.checklist.metadata.OptionsToggleMetadataDTO
 import io.cloudflight.jems.api.programme.dto.checklist.metadata.ProgrammeChecklistMetadataDTO
 import io.cloudflight.jems.api.programme.dto.checklist.metadata.TextInputMetadataDTO
+import io.cloudflight.jems.api.project.dto.checklist.ChecklistInstanceStatusDTO
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklist
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistComponent
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistComponentType
@@ -18,6 +19,7 @@ import io.cloudflight.jems.server.programme.service.checklist.model.metadata.Hea
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.OptionsToggleMetadata
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.ProgrammeChecklistMetadata
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.TextInputMetadata
+import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceStatus
 import org.mapstruct.AfterMapping
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping

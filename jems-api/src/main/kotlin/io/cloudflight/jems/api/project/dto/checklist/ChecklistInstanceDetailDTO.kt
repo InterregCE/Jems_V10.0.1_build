@@ -7,6 +7,8 @@ open class ChecklistInstanceDetailDTO(
     val status: ChecklistInstanceStatusDTO,
     val finishedDate: LocalDate?,
     val name: String?,
+    val creatorEmail: String?,
+    val consolidated: Boolean?,
     val components: List<ChecklistComponentInstanceDTO> = emptyList()
 ) {
     init {

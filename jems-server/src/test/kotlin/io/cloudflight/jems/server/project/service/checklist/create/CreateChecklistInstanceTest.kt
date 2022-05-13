@@ -5,9 +5,8 @@ import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
-import io.cloudflight.jems.server.programme.service.checklist.create.CreateChecklistInstance
 import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistComponentInstance
-import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistInstanceDetail
+import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistComponentType
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.HeadlineMetadata
@@ -47,7 +46,9 @@ internal class CreateChecklistInstanceTest : UnitTest() {
         type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
         name = "name",
         relatedToId = RELATED_TO_ID,
+        creatorEmail = "a@a",
         finishedDate = null,
+        consolidated = false,
         components = mutableListOf(
             ChecklistComponentInstance(
                 2L,

@@ -27,7 +27,6 @@ import {of} from 'rxjs';
 })
 export class ChecklistAnswersComponent implements OnInit, OnChanges {
   ComponentType = ProgrammeChecklistComponentDTO.TypeEnum;
-  Status = ChecklistInstanceDetailDTO.StatusEnum;
   Alert = Alert;
 
   @Input()
@@ -35,22 +34,14 @@ export class ChecklistAnswersComponent implements OnInit, OnChanges {
   @Input()
   status: ChecklistInstanceDetailDTO.StatusEnum;
   @Input()
-  finishedDate: string;
-  @Input()
-  warning: string;
+  editable: boolean;
 
   @Output()
-  save = new EventEmitter<ChecklistComponentInstanceDTO[]>();
-  @Output()
-  finish = new EventEmitter<ChecklistComponentInstanceDTO[]>();
+  save = new EventEmitter<void>();
 
   form = this.formBuilder.group({
     formComponents: this.formBuilder.array([])
   });
-  confirmFinish = {
-    title: 'checklists.instance.confirm.finish.title',
-    message: 'checklists.instance.confirm.finish.message'
-  };
 
   constructor(private formService: FormService,
               private formBuilder: FormBuilder) {
@@ -59,7 +50,7 @@ export class ChecklistAnswersComponent implements OnInit, OnChanges {
   ngOnInit(): void {
     if (this.status) {
       // if there is no status we're dealing with a programme checklist (no instance)
-      this.formService.init(this.form, of(this.status === this.Status.DRAFT));
+      this.formService.init(this.form, of(this.editable));
     }
   }
 

@@ -6,7 +6,7 @@ import io.cloudflight.jems.server.programme.entity.checklist.ProgrammeChecklistE
 import io.cloudflight.jems.server.programme.repository.checklist.ProgrammeChecklistRepository
 import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistComponentInstance
 import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistInstance
-import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistInstanceDetail
+import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistComponentType
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.*
@@ -24,9 +24,11 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.slot
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.io.File
+import java.time.LocalDate
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.util.*
@@ -56,7 +58,9 @@ class ChecklistInstancePersistenceTest : UnitTest() {
         type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
         name = "name",
         relatedToId = RELATED_TO_ID,
+        creatorEmail = "test@email.com",
         finishedDate = null,
+        consolidated = false,
         components = mutableListOf(
             ChecklistComponentInstance(
                 2L,
@@ -88,8 +92,10 @@ class ChecklistInstancePersistenceTest : UnitTest() {
         status = ChecklistInstanceStatus.DRAFT,
         type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
         name = "name",
+        creatorEmail = "test@email.com",
         relatedToId = RELATED_TO_ID,
         finishedDate = null,
+        consolidated = false,
         components = mutableListOf(
             ChecklistComponentInstance(
                 2L,
@@ -233,6 +239,46 @@ class ChecklistInstancePersistenceTest : UnitTest() {
         )
             .usingRecursiveComparison()
             .isEqualTo(checkList)
+    }
+
+    @Test
+    fun `get checklists by related id and type`() {
+        every {
+            repository.findByRelatedToIdAndProgrammeChecklistType(RELATED_TO_ID, ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT)
+        } returns listOf(checkListEntity)
+
+        persistence.getChecklistsByRelatedIdAndType(RELATED_TO_ID, ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT)
+
+        verify { repository.findByRelatedToIdAndProgrammeChecklistType(RELATED_TO_ID, ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT) }
+    }
+
+    @Test
+    fun `consolidate checklist`() {
+        every { repository.findById(ID) } returns Optional.of(checkListEntity)
+
+        persistence.consolidateChecklistInstance(ID, true)
+
+        assertThat(checkListEntity.consolidated).isTrue
+    }
+
+    @Test
+    fun `change status to FINISHED`() {
+        every { repository.findById(ID) } returns Optional.of(checkListEntity)
+
+        persistence.changeStatus(ID, ChecklistInstanceStatus.FINISHED)
+
+        assertThat(checkListEntity.status).isEqualTo(ChecklistInstanceStatus.FINISHED)
+        assertThat(checkListEntity.finishedDate).isNotNull
+    }
+
+    @Test
+    fun `change status to DRAFT`() {
+        every { repository.findById(ID) } returns Optional.of(checkListEntity)
+
+        persistence.changeStatus(ID, ChecklistInstanceStatus.DRAFT)
+
+        assertThat(checkListEntity.status).isEqualTo(ChecklistInstanceStatus.DRAFT)
+        assertThat(checkListEntity.finishedDate).isNull()
     }
 
     @Test

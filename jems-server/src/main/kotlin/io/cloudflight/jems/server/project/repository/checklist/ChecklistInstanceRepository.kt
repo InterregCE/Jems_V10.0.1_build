@@ -16,9 +16,10 @@ interface ChecklistInstanceRepository : JpaRepository<ChecklistInstanceEntity, L
         programmeChecklistType: ProgrammeChecklistType,
     ): List<ChecklistInstanceEntity>
 
-
-    @Query("SELECT checklist.status FROM #{#entityName} checklist where checklist.id=:id")
-    fun findStatusForId(id: Long): ChecklistInstanceStatus
+    fun findByRelatedToIdAndProgrammeChecklistType(
+        relatedToId: Long,
+        programmeChecklistType: ProgrammeChecklistType
+    ): List<ChecklistInstanceEntity>
 
     @Query("SELECT COUNT(checklist) FROM #{#entityName} checklist where checklist.programmeChecklist.id=:checklistTemplateId")
     fun countByProgrammeChecklistId(checklistTemplateId: Long): Long

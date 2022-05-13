@@ -9,6 +9,7 @@ import {ActivatedRoute} from '@angular/router';
 import {TableConfig} from '@common/directives/table-config/TableConfig';
 import {ProgrammeChecklistDetailPageStore} from './programme-checklist-detail-page-store.service';
 import {ProgrammePageSidenavService} from '../../programme-page/services/programme-page-sidenav.service';
+import {Alert} from '@common/components/forms/alert';
 
 @Component({
   selector: 'jems-programme-checklist-detail-page',
@@ -20,6 +21,7 @@ import {ProgrammePageSidenavService} from '../../programme-page/services/program
 export class ProgrammeChecklistDetailPageComponent  {
   CHECKLIST_TYPE = ProgrammeChecklistDetailDTO.TypeEnum;
   COMPONENT_TYPE = ProgrammeChecklistComponentDTO.TypeEnum;
+  Alert = Alert;
 
   data$: Observable<{
     checklist: ProgrammeChecklistDetailDTO;

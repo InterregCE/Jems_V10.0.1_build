@@ -1,12 +1,50 @@
-<jems-project-page-template *ngIf="checklist$ | async as checklist"
+<jems-project-page-template *ngIf="data$ | async as data"
                             [needsCard]="false"
-                            titleText="{{'checklists.instance.title' | translate}}"
-                            [subTitleKey]="checklist.name">
+                            titleText="{{'checklists.instance.title' | translate}}">
+
+    <jems-checklist-consolidator-options
+            *ngIf="data.userCanConsolidate"
+            [checklistId]="data.checklist.id"
+            [consolidated]="data.checklist.consolidated">
+    </jems-checklist-consolidator-options>
+
+    <div class="mb-3"></div>
+
     <jems-checklist-answers
-            [components]="checklist.components"
-            [status]="checklist.status"
-            [finishedDate]="checklist.finishedDate"
-            (save)="save($event, checklist)"
-            (finish)="finish($event, checklist)">
+            [components]="data.checklist.components"
+            [status]="data.checklist.status"
+            [editable]="data.editable"
+            (save)="save(data.checklist)">
+
+        <div id="status" class="mb-3">
+            {{'common.status' | translate}}:
+            <mat-chip-list class="mr-1 ml-1">
+                <mat-chip selected="true"
+                          [class.draft]="data.checklist.status === Status.DRAFT"
+                          [class.finished]="data.checklist.status === Status.FINISHED">
+                    {{'checklists.instance.status.' + data.checklist.status | translate}}
+                </mat-chip>
+            </mat-chip-list>
+            <span *ngIf="data.checklist.finishedDate">
+                {{'checklists.instance.finished.since' | translate : {date: data.checklist.finishedDate | localeDate} }}
+            </span>
+        </div>
+
+        <h2 class="mb-2">{{data.checklist.name}}</h2>
+
+        <jems-pending-button *ngIf="data.editable"
+                             class="mr-2" type="secondary"
+                             [confirm]="confirmFinish"
+                             (clicked)="updateStatus(data.checklist.id,Status.FINISHED)">
+            {{'checklists.instance.confirm.finish.title' | translate}}
+        </jems-pending-button>
+
+        <jems-pending-button *ngIf="data.checklist.status === Status.FINISHED && data.userCanConsolidate"
+                             class="mr-2" type="secondary"
+                             [confirm]="confirmDraft"
+                             (clicked)="updateStatus(data.checklist.id, Status.DRAFT)">
+            {{'checklists.instance.return.to.user.button' | translate : {name: data.checklist.creatorEmail} }}
+        </jems-pending-button>
+
     </jems-checklist-answers>
 </jems-project-page-template>

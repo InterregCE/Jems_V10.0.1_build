@@ -209,6 +209,7 @@ export class UserRoleDetailPageComponent {
     } else {
       this.state(permission)?.setValue(PermissionState.EDIT);
     }
+    this.adaptDependentPermissions(permission);
     this.formChanged();
   }
 
@@ -238,6 +239,10 @@ export class UserRoleDetailPageComponent {
     return control.get('editTooltip') as AbstractControl;
   }
 
+  infoMessage(control: AbstractControl): AbstractControl {
+    return control.get('infoMessage') as AbstractControl;
+  }
+
   formChanged(): void {
     this.formService.setDirty(true);
   }
@@ -262,7 +267,7 @@ export class UserRoleDetailPageComponent {
                                         currentRolePermissions: PermissionsEnum[],
                                         parentIndex: number): FormGroup {
     if (!perm.children?.length) {
-      return this.formBuilder.group({
+      const formGroup = this.formBuilder.group({
         name: perm.name,
         parentIndex,
         mode: perm.mode,
@@ -272,8 +277,10 @@ export class UserRoleDetailPageComponent {
         hideTooltip: perm.hideTooltip,
         viewTooltip: perm.viewTooltip,
         editTooltip: perm.editTooltip,
+        infoMessage: perm.infoMessage,
         icon: perm.icon
       });
+      return formGroup;
     } else {
       return this.formBuilder.group({
         name: perm.name,
@@ -356,5 +363,19 @@ export class UserRoleDetailPageComponent {
 
     return permissionNode.children.flatMap((node: PermissionNode, index: number) =>
       this.hasAnyStateNotHidden(this.subtree(nodeForm).at(index), node));
+  }
+
+  private adaptDependentPermissions(permission: AbstractControl): void {
+    if (!(permission.get('name')?.value === 'permission.assessment.instantiate')) {
+      return;
+    }
+    const consolidateGroup = this.treeControlInspect.dataNodes
+      .find(node => node.name === 'permission.assessment.consolidate') as any;
+    if (this.state(permission)?.value === PermissionState.HIDDEN) {
+      this.state(consolidateGroup.form)?.setValue(PermissionState.HIDDEN);
+      consolidateGroup.disabled = true;
+    } else {
+      consolidateGroup.disabled = false;
+    }
   }
 }

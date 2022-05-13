@@ -1,6 +1,5 @@
 <mat-tab-group>
     <mat-tab label="{{'checklists.instance.list.tab' | translate}}">
-
         <span jemsMultiColumnRow>
             <mat-form-field jemsFormFieldWidth="xx-large">
                 <mat-select placeholder="{{'checklists.instance.list.new.select' | translate}}"
@@ -18,20 +17,35 @@
             </button>
         </span>
 
-        <ng-container *ngIf="checklistInstances$ | async as checklists">
-            <jems-table *ngIf="checklists.length"
-                        [configuration]="tableConfiguration"
-                        [rows]="checklists">
-            </jems-table>
-        </ng-container>
+        <jems-form *ngIf="checklistInstances$ | async as instances"
+                   (save)="save()"
+                   (discard)="resetForm(instances)">
+            <form [formGroup]="form">
+                <jems-table *ngIf="instances.length"
+                            [configuration]="tableConfiguration"
+                            [rows]="instances">
+                </jems-table>
+            </form>
+        </jems-form>
+
     </mat-tab>
 </mat-tab-group>
 
 <ng-template #deleteCell let-checklist>
-    <button *ngIf="checklist.status === Status.DRAFT"
+    <button *ngIf="checklist.status === Status.DRAFT && (pageStore.currentUserEmail$ | async) === checklist.creatorEmail"
             mat-icon-button color="accent"
             (click)="delete(checklist);$event.stopPropagation();"
             matTooltip="{{'common.delete.entry.tooltip' | translate}}">
         <mat-icon>delete</mat-icon>
     </button>
+</ng-template>
+
+<ng-template #visibleCell let-checklist>
+    <mat-checkbox (click)="$event.stopPropagation()"
+                  [formControl]="getVisibleGroup(checklist)">
+    </mat-checkbox>
+</ng-template>
+
+<ng-template #consolidateCell let-checklist>
+    <mat-icon *ngIf="checklist.consolidated">done_all</mat-icon>
 </ng-template>

@@ -4,9 +4,9 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.programme.service.checklist.delete.DeleteChecklistInstance
 import io.cloudflight.jems.server.programme.service.checklist.delete.DeleteChecklistInstanceStatusNotAllowedException
-import io.cloudflight.jems.server.programme.service.checklist.getList.GetChecklistInstanceDetailNotFoundException
+import io.cloudflight.jems.server.project.service.checklist.getMyInstances.GetChecklistInstanceDetailNotFoundException
 import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistComponentInstance
-import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistInstanceDetail
+import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistComponentType
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.*
@@ -32,8 +32,10 @@ internal class DeleteChecklistInstanceTest : UnitTest() {
         status = ChecklistInstanceStatus.DRAFT,
         type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
         name = "name",
+        creatorEmail = "a@a",
         relatedToId = 1L,
         finishedDate = null,
+        consolidated = false,
         components = mutableListOf(
             ChecklistComponentInstance(
                 2L,
@@ -65,8 +67,10 @@ internal class DeleteChecklistInstanceTest : UnitTest() {
         status = ChecklistInstanceStatus.FINISHED,
         type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
         name = "name",
+        creatorEmail = "a@a",
         relatedToId = 1L,
         finishedDate = null,
+        consolidated = false,
         components = emptyList()
     )
 

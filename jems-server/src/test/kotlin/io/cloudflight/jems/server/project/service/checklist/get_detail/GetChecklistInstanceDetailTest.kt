@@ -1,9 +1,9 @@
 package io.cloudflight.jems.server.project.service.checklist.get_detail
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.programme.service.checklist.getDetail.GetChecklistInstanceDetail
+import io.cloudflight.jems.server.project.service.checklist.getDetail.GetChecklistInstanceDetail
 import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistComponentInstance
-import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistInstanceDetail
+import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistComponentType
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.*
@@ -28,8 +28,10 @@ internal class GetChecklistInstanceDetailTest : UnitTest() {
         status = ChecklistInstanceStatus.DRAFT,
         type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
         name = "name",
+        creatorEmail = "a@a",
         relatedToId = RELATED_TO_ID,
         finishedDate = null,
+        consolidated = false,
         components = mutableListOf(
             ChecklistComponentInstance(
                 2L,

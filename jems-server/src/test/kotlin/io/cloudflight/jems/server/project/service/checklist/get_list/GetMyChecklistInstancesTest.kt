@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.project.service.checklist.get_list
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
 import io.cloudflight.jems.server.authentication.service.SecurityService
-import io.cloudflight.jems.server.programme.service.checklist.getList.GetChecklistInstance
+import io.cloudflight.jems.server.project.service.checklist.getMyInstances.GetMyChecklistInstances
 import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistInstance
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
 import io.cloudflight.jems.server.project.authorization.AuthorizationUtil
@@ -17,7 +17,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 
-internal class GetChecklistInstancesTest : UnitTest() {
+internal class GetMyChecklistInstancesTest : UnitTest() {
 
     private val CHECKLIST_ID = 100L
     private val RELATED_TO_ID = 2L
@@ -41,7 +41,7 @@ internal class GetChecklistInstancesTest : UnitTest() {
     lateinit var securityService: SecurityService
 
     @InjectMockKs
-    lateinit var getChecklistInstance: GetChecklistInstance
+    lateinit var getMyChecklistInstances: GetMyChecklistInstances
 
     @Test
     fun getChecklistInstancesOfCurrentUserByTypeAndRelatedId() {
@@ -52,7 +52,7 @@ internal class GetChecklistInstancesTest : UnitTest() {
         every { securityService.currentUser } returns currentUser
         every { persistence.getChecklistsByRelationAndCreatorAndType(RELATED_TO_ID, CREATOR_ID,
             ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT) } returns listOf(checklist)
-        assertThat(getChecklistInstance.getChecklistInstancesOfCurrentUserByTypeAndRelatedId(RELATED_TO_ID,
+        assertThat(getMyChecklistInstances.getChecklistInstancesOfCurrentUserByTypeAndRelatedId(RELATED_TO_ID,
             ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT)).containsExactly(checklist)
     }
 

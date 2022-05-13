@@ -190,6 +190,10 @@
                                                                   [checked]="state(node.form)?.value === PermissionState.EDIT">
                                                 </mat-slide-toggle>
                                                 {{ 'common.permission.active' | translate}}
+                                                <jems-context-info *ngIf="infoMessage(node.form)?.value"
+                                                        infoText="{{infoMessage(node.form)?.value | translate}}"
+                                                        infoPosition="right">
+                                                </jems-context-info>
                                             </span>
                                         </div>
                                     </div>

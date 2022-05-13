@@ -29,4 +29,5 @@ export class PermissionNode {
   hideTooltip?: string;
   viewTooltip?: string;
   editTooltip?: string;
+  infoMessage?: string;
 }

@@ -6,18 +6,22 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
+import io.cloudflight.jems.server.call.controller.ApplicationFormConfigurationControllerTest
+import io.cloudflight.jems.server.call.service.update_application_form_field_configuration.UpdateApplicationFormFieldConfigurationsException
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistComponentInstance
-import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistInstanceDetail
+import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistInstance
+import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistComponentType
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.*
-import io.cloudflight.jems.server.programme.service.checklist.update.UpdateChecklistInstance
-import io.cloudflight.jems.server.programme.service.checklist.update.UpdateChecklistInstanceStatusNotAllowedException
 import io.cloudflight.jems.server.project.service.checklist.ChecklistInstancePersistence
 import io.cloudflight.jems.server.project.service.checklist.ChecklistInstanceValidator
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceStatus
 import io.cloudflight.jems.server.project.service.checklist.model.metadata.TextInputInstanceMetadata
+import io.cloudflight.jems.server.user.service.authorization.UserAuthorization
+import io.cloudflight.jems.server.user.service.model.User
+import io.cloudflight.jems.server.utils.user
 import io.mockk.*
 import io.mockk.impl.annotations.MockK
 import org.assertj.core.api.Assertions
@@ -32,38 +36,43 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
     private val RELATED_TO_ID = 2L
     private val PROGRAMME_CHECKLIST_ID = 4L
 
-    private val checkLisDetail = ChecklistInstanceDetail(
-        id = CHECKLIST_ID,
-        programmeChecklistId = PROGRAMME_CHECKLIST_ID,
-        status = ChecklistInstanceStatus.FINISHED,
-        type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
-        name = "name",
-        relatedToId = RELATED_TO_ID,
-        finishedDate = null,
-        components = mutableListOf(
-            ChecklistComponentInstance(
-                2L,
-                ProgrammeChecklistComponentType.HEADLINE,
-                1,
-                HeadlineMetadata("headline"),
-                HeadlineInstanceMetadata()
-            ),
-            ChecklistComponentInstance(
-                3L,
-                ProgrammeChecklistComponentType.OPTIONS_TOGGLE,
-                2,
-                OptionsToggleMetadata("What option do you choose", "yes", "no", "maybe", ""),
-                OptionsToggleInstanceMetadata("yes", "test")
-            ),
-            ChecklistComponentInstance(
-                4L,
-                ProgrammeChecklistComponentType.TEXT_INPUT,
-                2,
-                TextInputMetadata("Question to be answered", "Label", 2000),
-                TextInputInstanceMetadata("Explanation")
+    private val checkLisDetail = checklistInstanceDetail()
+
+    private fun checklistInstanceDetail(status: ChecklistInstanceStatus = ChecklistInstanceStatus.DRAFT) =
+        ChecklistInstanceDetail(
+            id = CHECKLIST_ID,
+            programmeChecklistId = PROGRAMME_CHECKLIST_ID,
+            status = status,
+            type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
+            name = "name",
+            relatedToId = RELATED_TO_ID,
+            creatorEmail = "a@a",
+            finishedDate = null,
+            consolidated = false,
+            components = mutableListOf(
+                ChecklistComponentInstance(
+                    2L,
+                    ProgrammeChecklistComponentType.HEADLINE,
+                    1,
+                    HeadlineMetadata("headline"),
+                    HeadlineInstanceMetadata()
+                ),
+                ChecklistComponentInstance(
+                    3L,
+                    ProgrammeChecklistComponentType.OPTIONS_TOGGLE,
+                    2,
+                    OptionsToggleMetadata("What option do you choose", "yes", "no", "maybe", ""),
+                    OptionsToggleInstanceMetadata("yes", "test")
+                ),
+                ChecklistComponentInstance(
+                    4L,
+                    ProgrammeChecklistComponentType.TEXT_INPUT,
+                    2,
+                    TextInputMetadata("Question to be answered", "Label", 2000),
+                    TextInputInstanceMetadata("Explanation")
+                )
             )
         )
-    )
 
     private val optionsToggleComponentInstance = ChecklistComponentInstance(
         4L,
@@ -84,12 +93,26 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
     private val checkLisDetailWithError = ChecklistInstanceDetail(
         id = CHECKLIST_ID,
         programmeChecklistId = PROGRAMME_CHECKLIST_ID,
-        status = ChecklistInstanceStatus.FINISHED,
+        status = ChecklistInstanceStatus.DRAFT,
+        type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
+        name = "name",
+        creatorEmail = "a@a",
+        relatedToId = RELATED_TO_ID,
+        finishedDate = null,
+        consolidated = false,
+        components = mutableListOf(textInputComponentInstance)
+    )
+
+    private fun checklistInstance(status: ChecklistInstanceStatus, creatorEmail: String = "user@applicant.dev") = ChecklistInstance(
+        id = CHECKLIST_ID,
+        programmeChecklistId = PROGRAMME_CHECKLIST_ID,
+        status = status,
         type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
         name = "name",
         relatedToId = RELATED_TO_ID,
+        creatorEmail = creatorEmail,
         finishedDate = null,
-        components = mutableListOf(textInputComponentInstance)
+        consolidated = false,
     )
 
     @MockK
@@ -97,6 +120,9 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
 
     @MockK
     lateinit var auditPublisher: ApplicationEventPublisher
+
+    @MockK
+    lateinit var userAuthorization: UserAuthorization
 
     lateinit var updateChecklistInstance: UpdateChecklistInstance
 
@@ -107,7 +133,8 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
         clearMocks(persistence)
         MockKAnnotations.init(this)
         checklistInstanceValidator = mockk()
-        updateChecklistInstance = UpdateChecklistInstance(persistence, auditPublisher, checklistInstanceValidator)
+        every { userAuthorization.hasPermissionForProject(any(), any()) } returns false
+        updateChecklistInstance = UpdateChecklistInstance(persistence, auditPublisher, checklistInstanceValidator, userAuthorization)
     }
 
     @Test
@@ -116,20 +143,20 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
         every { checklistInstanceValidator.validateChecklistComponents(checkLisDetail.components) } returns Unit
         every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit
         every { persistence.update(checkLisDetail) } returns checkLisDetail
-        every { persistence.getStatus(checkLisDetail.id) } returns ChecklistInstanceStatus.DRAFT
+        every { persistence.getChecklistDetail(checkLisDetail.id) } returns checklistInstanceDetail(ChecklistInstanceStatus.DRAFT)
         Assertions.assertThat(updateChecklistInstance.update(checkLisDetail))
             .isEqualTo(checkLisDetail)
     }
 
     @Test
-    fun `update checklist with different status should trigger an audit log`() {
+    fun `change status should trigger an audit log`() {
         val auditSlot = slot<AuditCandidateEvent>()
-        every { checklistInstanceValidator.validateChecklistComponents(checkLisDetail.components) } returns Unit
-        every { auditPublisher.publishEvent(capture(auditSlot)) } answers {}
-        every { persistence.update(checkLisDetail) } returns checkLisDetail
-        every { persistence.getStatus(checkLisDetail.id) } returns ChecklistInstanceStatus.DRAFT
 
-        updateChecklistInstance.update(checkLisDetail)
+        every { userAuthorization.getUser() } returns user
+        every { persistence.getChecklistSummary(CHECKLIST_ID) } returns checklistInstance(ChecklistInstanceStatus.DRAFT)
+        every { persistence.changeStatus(CHECKLIST_ID, ChecklistInstanceStatus.FINISHED) } returns checklistInstance(ChecklistInstanceStatus.FINISHED)
+
+        updateChecklistInstance.changeStatus(CHECKLIST_ID, ChecklistInstanceStatus.FINISHED)
 
         verify(exactly = 1) { auditPublisher.publishEvent(capture(auditSlot)) }
         Assertions.assertThat(auditSlot.captured.auditCandidate).isEqualTo(
@@ -137,17 +164,29 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
                 action = AuditAction.ASSESSMENT_CHECKLIST_STATUS_CHANGE,
                 project = AuditProject(id = checkLisDetail.relatedToId.toString()),
                 description = "[" + checkLisDetail.id + "] [" + checkLisDetail.type + "]" +
-                    " [" + checkLisDetail.name + "]" + " status changed from " + "[" + "DRAFT" + "]"
-                    + " to " + "[" + checkLisDetail.status + "]"
+                    " [" + checkLisDetail.name + "]" + " status changed from [DRAFT] to [FINISHED]"
             )
         )
     }
 
     @Test
-    fun `update - checkLisDetail is already in FINISHED status`() {
-        every { persistence.update(checkLisDetail) } returns checkLisDetail
-        every { persistence.getStatus(checkLisDetail.id) } returns ChecklistInstanceStatus.FINISHED
-        assertThrows<UpdateChecklistInstanceStatusNotAllowedException> { updateChecklistInstance.update(checkLisDetail) }
+    fun `change status to FINISHED only allowed to assessor`() {
+        every { userAuthorization.getUser() } returns user
+        every { persistence.getChecklistSummary(CHECKLIST_ID) } returns checklistInstance(ChecklistInstanceStatus.DRAFT, "different@email")
+
+        assertThrows<UpdateChecklistInstanceStatusNotAllowedException> {
+            updateChecklistInstance.changeStatus(CHECKLIST_ID, ChecklistInstanceStatus.FINISHED)
+        }
+    }
+
+    @Test
+    fun `change status to DRAFT only allowed to consolidator`() {
+        every { userAuthorization.getUser() } returns user
+        every { persistence.getChecklistSummary(CHECKLIST_ID) } returns checklistInstance(ChecklistInstanceStatus.FINISHED)
+
+        assertThrows<UpdateChecklistInstanceStatusNotAllowedException> {
+            updateChecklistInstance.changeStatus(CHECKLIST_ID, ChecklistInstanceStatus.DRAFT)
+        }
     }
 
     @Test
@@ -162,21 +201,22 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
         every { checklistInstanceValidator.validateChecklistComponents(checkLisDetailWithError.components) } throws exception
         every { auditPublisher.publishEvent(capture(auditSlot)) } answers {}
         every { persistence.update(checkLisDetailWithError) } returns checkLisDetailWithError
-        every { persistence.getStatus(checkLisDetailWithError.id) } returns ChecklistInstanceStatus.DRAFT
+        every { persistence.getChecklistDetail(checkLisDetail.id) } returns checklistInstanceDetail(ChecklistInstanceStatus.DRAFT)
         assertThrows<AppInputValidationException> { updateChecklistInstance.update(checkLisDetailWithError) }
     }
 
     @Test
     fun `update - options toggle justification field max length exception`() {
         val auditSlot = slot<AuditCandidateEvent>()
-        val justificationField = (optionsToggleComponentInstance.instanceMetadata as OptionsToggleInstanceMetadata).justification ?: ""
+        val justificationField =
+            (optionsToggleComponentInstance.instanceMetadata as OptionsToggleInstanceMetadata).justification ?: ""
         val exception = AppInputValidationException(
             mapOf(justificationField to I18nMessage(i18nKey = "common.error.field.max.length"))
         )
         every { checklistInstanceValidator.validateChecklistComponents(checkLisDetailWithError.components) } throws exception
         every { auditPublisher.publishEvent(capture(auditSlot)) } answers {}
         every { persistence.update(checkLisDetailWithError) } returns checkLisDetailWithError
-        every { persistence.getStatus(checkLisDetailWithError.id) } returns ChecklistInstanceStatus.DRAFT
+        every { persistence.getChecklistDetail(checkLisDetail.id) } returns checklistInstanceDetail(ChecklistInstanceStatus.DRAFT)
         assertThrows<AppInputValidationException> { updateChecklistInstance.update(checkLisDetailWithError) }
     }
 

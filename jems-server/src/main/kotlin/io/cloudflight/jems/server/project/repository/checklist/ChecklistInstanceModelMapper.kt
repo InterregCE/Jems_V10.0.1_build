@@ -8,15 +8,15 @@ import io.cloudflight.jems.server.programme.entity.checklist.ProgrammeChecklistC
 import io.cloudflight.jems.server.programme.repository.checklist.toModelMetadata
 import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistComponentInstance
 import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistInstance
-import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistInstanceDetail
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistComponentType
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.ChecklistInstanceMetadata
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.ProgrammeChecklistMetadata
 import io.cloudflight.jems.server.project.entity.checklist.ChecklistComponentInstanceEntity
 import io.cloudflight.jems.server.project.entity.checklist.ChecklistComponentInstanceId
 import io.cloudflight.jems.server.project.entity.checklist.ChecklistInstanceEntity
+import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
 
-fun ChecklistInstanceEntity.toDto(): ChecklistInstance =
+fun ChecklistInstanceEntity.toModel(): ChecklistInstance =
     ChecklistInstance(
         id,
         status,
@@ -25,10 +25,11 @@ fun ChecklistInstanceEntity.toDto(): ChecklistInstance =
         creator.email,
         relatedToId,
         finishedDate,
-        programmeChecklist.id
+        programmeChecklist.id,
+        consolidated
     )
 
-fun List<ChecklistInstanceEntity>.toDto(): List<ChecklistInstance> = this.map { it.toDto() }
+fun List<ChecklistInstanceEntity>.toModel(): List<ChecklistInstance> = this.map { it.toModel() }
 
 fun ChecklistInstanceEntity.toDetailModel(): ChecklistInstanceDetail {
     return ChecklistInstanceDetail(
@@ -37,8 +38,10 @@ fun ChecklistInstanceEntity.toDetailModel(): ChecklistInstanceDetail {
         status = status,
         type = programmeChecklist.type,
         name = programmeChecklist.name,
+        creatorEmail = creator.email,
         finishedDate = finishedDate,
         relatedToId = relatedToId,
+        consolidated = consolidated,
         components = components?.map { it.toModel() }
     )
 }

@@ -7,9 +7,10 @@ import {
 } from '@project/project-application/assessment-and-decision/assessment-and-decision-checklist-page/assessment-and-decision-checklist-page-store.service';
 import {ChecklistComponentInstanceDTO, ChecklistInstanceDetailDTO} from '@cat/api';
 import {FormService} from '@common/components/section/form/form.service';
-import {tap} from 'rxjs/operators';
+import {map, tap} from 'rxjs/operators';
 import {RoutingService} from '@common/services/routing.service';
 import {ActivatedRoute} from '@angular/router';
+import {combineLatest, Observable} from 'rxjs';
 
 @Component({
   selector: 'jems-assessment-and-decision-checklist-page',
@@ -19,30 +20,56 @@ import {ActivatedRoute} from '@angular/router';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AssessmentAndDecisionChecklistPageComponent {
+  Status = ChecklistInstanceDetailDTO.StatusEnum;
 
-  checklist$ = this.pageStore.checklist$;
+  data$: Observable<{
+    checklist: ChecklistInstanceDetailDTO;
+    editable: boolean;
+    userCanConsolidate: boolean;
+  }>;
+
+  confirmFinish = {
+    title: 'checklists.instance.confirm.finish.title',
+    message: 'checklists.instance.confirm.finish.message'
+  };
+
+  confirmDraft = {
+    title: 'checklists.instance.confirm.return.to.user.title',
+    message: 'checklists.instance.confirm.return.to.user'
+  };
 
   constructor(private projectSidenavService: ProjectApplicationFormSidenavService,
               private pageStore: AssessmentAndDecisionChecklistPageStore,
               private formService: FormService,
               private routingService: RoutingService,
-              private activatedRoute: ActivatedRoute) { }
+              private activatedRoute: ActivatedRoute) {
+    this.data$ = combineLatest([
+      this.pageStore.checklist$,
+      this.pageStore.checklistEditable$,
+      this.pageStore.userCanConsolidate$
+    ]).pipe(
+      map(([checklist, editable, userCanConsolidate]) => ({checklist, editable, userCanConsolidate}))
+    );
+  }
 
-  save(components: ChecklistComponentInstanceDTO[], checklist: ChecklistInstanceDetailDTO): void {
-    checklist.components = components;
+  save(checklist: ChecklistInstanceDetailDTO): void {
+    checklist.components = this.getFormComponents();
     this.pageStore.updateChecklist(checklist)
       .pipe(
         tap(() => this.formService.setSuccess('checklists.instance.saved.successfully'))
       ).subscribe();
   }
 
-  finish(components: ChecklistComponentInstanceDTO[], checklist: ChecklistInstanceDetailDTO) {
-    checklist.components = components;
-    checklist.status = ChecklistInstanceDetailDTO.StatusEnum.FINISHED;
-    this.pageStore.updateChecklist(checklist)
+
+  updateStatus(checklistId: number, status: ChecklistInstanceDetailDTO.StatusEnum) {
+    this.pageStore.changeStatus(checklistId, status)
       .pipe(
         tap(() => this.formService.setDirty(false)),
         tap(() => this.routingService.navigate(['../..'], {relativeTo: this.activatedRoute}))
       ).subscribe();
+  }
+
+  private getFormComponents(): ChecklistComponentInstanceDTO[] {
+    return this.formService.form.get('formComponents')?.value;
   }
 }

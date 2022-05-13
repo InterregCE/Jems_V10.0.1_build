@@ -22,7 +22,7 @@ import {
 import {
   ReportFileCategoryTypeEnum
 } from '@project/project-application/report/partner-report-detail-page/partner-report-annexes-tab/report-file-category-type';
-import {FileManagementStore} from "@project/common/components/file-management/file-management-store";
+import {FileManagementStore} from '@project/common/components/file-management/file-management-store';
 
 @Injectable({
   providedIn: 'root'
