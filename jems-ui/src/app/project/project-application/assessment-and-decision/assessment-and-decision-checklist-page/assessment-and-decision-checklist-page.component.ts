@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {
   ProjectApplicationFormSidenavService
 } from '@project/project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
@@ -11,6 +11,7 @@ import {map, tap} from 'rxjs/operators';
 import {RoutingService} from '@common/services/routing.service';
 import {ActivatedRoute} from '@angular/router';
 import {combineLatest, Observable} from 'rxjs';
+import {Alert} from '@common/components/forms/alert';
 
 @Component({
   selector: 'jems-assessment-and-decision-checklist-page',
@@ -20,7 +21,10 @@ import {combineLatest, Observable} from 'rxjs';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AssessmentAndDecisionChecklistPageComponent {
+  Alert = Alert;
+
   Status = ChecklistInstanceDetailDTO.StatusEnum;
+  isConsolidated: boolean;
 
   data$: Observable<{
     checklist: ChecklistInstanceDetailDTO;
@@ -48,7 +52,8 @@ export class AssessmentAndDecisionChecklistPageComponent {
       this.pageStore.checklistEditable$,
       this.pageStore.userCanConsolidate$
     ]).pipe(
-      map(([checklist, editable, userCanConsolidate]) => ({checklist, editable, userCanConsolidate}))
+      map(([checklist, editable, userCanConsolidate]) => ({checklist, editable, userCanConsolidate})),
+      tap(data => this.isConsolidated = data.checklist.consolidated)
     );
   }
 
@@ -71,5 +76,9 @@ export class AssessmentAndDecisionChecklistPageComponent {
 
   private getFormComponents(): ChecklistComponentInstanceDTO[] {
     return this.formService.form.get('formComponents')?.value;
+  }
+
+  updateConsolidatedFlag(consolidated: boolean) {
+    this.isConsolidated = consolidated;
   }
 }

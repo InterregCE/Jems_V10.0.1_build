@@ -43,7 +43,7 @@ class ChecklistInstanceController(
     override fun changeChecklistStatus(checklistId: Long, status: ChecklistInstanceStatusDTO): ChecklistInstanceDTO =
         updateInteractor.changeStatus(checklistId, ChecklistInstanceStatus.valueOf(status.name)).toDto()
 
-    override fun consolidateChecklistInstance(checklistId: Long, options: ChecklistConsolidatorOptionsDTO) =
+    override fun consolidateChecklistInstance(checklistId: Long, options: ChecklistConsolidatorOptionsDTO): Boolean =
         consolidateInteractor.consolidateChecklistInstance(checklistId, options.consolidated)
 
     override fun deleteChecklistInstance(checklistId: Long) =
