@@ -122,7 +122,10 @@ export class PartnerReportWorkPlanProgressTabComponent {
       return;
     }
     this.pageStore.uploadDeliverableFile(target?.files[0], activityId, deliverableId, workPackageId)
-      .pipe(take(1))
+      .pipe(
+        take(1),
+        catchError(err => this.formService.setError(err))
+      )
       .subscribe(value => {
         this.deliverableFileMetadata(workPackageIndex, activityIndex, deliverableIndex)?.patchValue(value);
       });
@@ -140,7 +143,10 @@ export class PartnerReportWorkPlanProgressTabComponent {
       return;
     }
     this.pageStore.uploadActivityFile(target?.files[0], activityId, workPackageId)
-      .pipe(take(1))
+      .pipe(
+        take(1),
+        catchError(err => this.formService.setError(err))
+      )
       .subscribe(value => {
         this.activityFileMetadata(workPackageIndex, activityIndex)?.patchValue(value);
       });
@@ -157,7 +163,10 @@ export class PartnerReportWorkPlanProgressTabComponent {
       return;
     }
     this.pageStore.uploadOutputFile(target?.files[0], outputId, workPackageId)
-      .pipe(take(1))
+      .pipe(
+        take(1),
+        catchError(err => this.formService.setError(err))
+      )
       .subscribe(value => {
         this.outputFileMetadata(workPackageIndex, outputIndex)?.patchValue(value);
       });

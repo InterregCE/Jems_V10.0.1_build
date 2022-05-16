@@ -201,7 +201,10 @@ export class PartnerReportContributionTabComponent {
   onUploadFile(target: any, procurementId: number, index: number): void {
     if (target && procurementId !== 0) {
       this.pageStore.uploadFile(target?.files[0], procurementId)
-        .pipe(take(1))
+        .pipe(
+          take(1),
+          catchError(err => this.formService.setError(err))
+        )
         .subscribe(value => this.attachment(index)?.patchValue(value));
     }
   }

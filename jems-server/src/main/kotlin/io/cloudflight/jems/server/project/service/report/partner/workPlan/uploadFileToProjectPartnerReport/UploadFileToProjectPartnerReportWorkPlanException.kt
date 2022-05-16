@@ -40,5 +40,5 @@ class OutputNotFoundException(outputId: Long) : ApplicationNotFoundException(
 
 class FileTypeNotSupported : ApplicationUnprocessableException(
     code = "$UPLOAD_FILE_TO_PROJECT_PARTNER_REPORT_WP_ERROR_CODE_PREFIX-004",
-    i18nMessage = I18nMessage("$UPLOAD_FILE_TO_PROJECT_PARTNER_REPORT_WP_ERROR_CODE_PREFIX.type.not.supported")
+    i18nMessage = I18nMessage("$UPLOAD_FILE_TO_PROJECT_PARTNER_REPORT_WP_ERROR_KEY_PREFIX.type.not.supported")
 )
