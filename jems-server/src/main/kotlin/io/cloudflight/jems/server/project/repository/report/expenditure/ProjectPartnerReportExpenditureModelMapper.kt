@@ -7,12 +7,15 @@ import io.cloudflight.jems.server.common.entity.extractTranslation
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportExpenditureCostEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportExpenditureCostTranslEntity
+import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportLumpSumEntity
 import io.cloudflight.jems.server.project.repository.report.toModel
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportExpenditureCost
 
 fun List<PartnerReportExpenditureCostEntity>.toModel() = map {
     ProjectPartnerReportExpenditureCost(
         id = it.id,
+        lumpSumId = it.reportLumpSum?.id,
+        unitCostId = null,
         costCategory = it.costCategory,
         investmentId = it.investmentId,
         contractId = it.procurementId,
@@ -22,6 +25,8 @@ fun List<PartnerReportExpenditureCostEntity>.toModel() = map {
         dateOfPayment = it.dateOfPayment,
         totalValueInvoice = it.totalValueInvoice,
         vat = it.vat,
+        numberOfUnits = it.numberOfUnits,
+        pricePerUnit = it.pricePerUnit,
         declaredAmount = it.declaredAmount,
         currencyCode = it.currencyCode,
         currencyConversionRate = it.currencyConversionRate,
@@ -32,34 +37,14 @@ fun List<PartnerReportExpenditureCostEntity>.toModel() = map {
     )
 }
 
-fun List<ProjectPartnerReportExpenditureCost>.toEntities(reportEntity: ProjectPartnerReportEntity) = map {
-    PartnerReportExpenditureCostEntity(
-        id = it.id ?: 0L,
-        partnerReport = reportEntity,
-        costCategory = it.costCategory,
-        investmentId = it.investmentId,
-        procurementId = it.contractId,
-        internalReferenceNumber = it.internalReferenceNumber,
-        invoiceNumber = it.invoiceNumber,
-        invoiceDate = it.invoiceDate,
-        dateOfPayment = it.dateOfPayment,
-        totalValueInvoice = it.totalValueInvoice,
-        vat = it.vat,
-        declaredAmount = it.declaredAmount,
-        currencyCode = it.currencyCode,
-        currencyConversionRate = it.currencyConversionRate,
-        declaredAmountAfterSubmission = it.declaredAmountAfterSubmission,
-        translatedValues = mutableSetOf(),
-        attachment = null,
-    ).apply {
-        translatedValues.addTranslation(this, it.comment, it.description)
-    }
-}
-
-fun ProjectPartnerReportExpenditureCost.toEntity(reportEntity: ProjectPartnerReportEntity) =
+fun ProjectPartnerReportExpenditureCost.toEntity(
+    reportEntity: ProjectPartnerReportEntity,
+    lumpSums: Map<Long, PartnerReportLumpSumEntity>,
+) =
     PartnerReportExpenditureCostEntity(
         id = id ?: 0L,
         partnerReport = reportEntity,
+        reportLumpSum = if (lumpSumId != null) lumpSums[lumpSumId] else null,
         costCategory = costCategory,
         investmentId = investmentId,
         procurementId = contractId,
@@ -69,6 +54,8 @@ fun ProjectPartnerReportExpenditureCost.toEntity(reportEntity: ProjectPartnerRep
         dateOfPayment = dateOfPayment,
         totalValueInvoice = totalValueInvoice,
         vat = vat,
+        numberOfUnits = numberOfUnits,
+        pricePerUnit = pricePerUnit,
         declaredAmount = declaredAmount,
         currencyCode = currencyCode,
         currencyConversionRate = currencyConversionRate,

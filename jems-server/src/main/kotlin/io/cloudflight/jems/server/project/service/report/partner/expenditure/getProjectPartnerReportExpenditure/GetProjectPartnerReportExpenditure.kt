@@ -8,6 +8,7 @@ import io.cloudflight.jems.server.project.service.report.model.expenditure.Proje
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectReportExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.fillCurrencyRates
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
 
 @Service
@@ -18,6 +19,7 @@ class GetProjectPartnerReportExpenditure(
 ) : GetProjectPartnerReportExpenditureInteractor {
 
     @CanViewPartnerReport
+    @Transactional(readOnly = true)
     @ExceptionWrapper(GetProjectPartnerReportExpenditureException::class)
     override fun getExpenditureCosts(partnerId: Long, reportId: Long): List<ProjectPartnerReportExpenditureCost> {
         val isSubmitted = reportPersistence.getPartnerReportById(partnerId = partnerId, reportId).status.isClosed()

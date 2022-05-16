@@ -1,6 +1,5 @@
 package io.cloudflight.jems.server.project.service.report.partner.expenditure.getProjectPartnerReportExpenditure
 
-import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.currency.repository.CurrencyPersistence
 import io.cloudflight.jems.server.currency.service.model.CurrencyConversion
@@ -8,6 +7,7 @@ import io.cloudflight.jems.server.project.service.report.ProjectReportPersistenc
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportExpenditureCost
+import io.cloudflight.jems.server.project.service.report.model.expenditure.ReportBudgetCategory
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectReportExpenditurePersistence
 import io.mockk.clearMocks
@@ -36,13 +36,17 @@ internal class GetProjectPartnerReportExpenditureTest : UnitTest() {
 
         private fun expenditure(id: Long) = ProjectPartnerReportExpenditureCost(
             id = id,
-            costCategory = BudgetCategory.TravelAndAccommodationCosts,
+            lumpSumId = 45L,
+            unitCostId = null,
+            costCategory = ReportBudgetCategory.TravelAndAccommodationCosts,
             investmentId = 89L,
             contractId = 54L,
             internalReferenceNumber = "145",
             invoiceNumber = "1",
             invoiceDate = TODAY,
             dateOfPayment = TODAY,
+            numberOfUnits = BigDecimal.ONE,
+            pricePerUnit = BigDecimal.ZERO,
             declaredAmount = BigDecimal.valueOf(2431, 2),
             currencyCode = "CST",
             currencyConversionRate = null,
@@ -52,13 +56,17 @@ internal class GetProjectPartnerReportExpenditureTest : UnitTest() {
 
         private fun filledInExpenditure(id: Long) = ProjectPartnerReportExpenditureCost(
             id = id,
-            costCategory = BudgetCategory.TravelAndAccommodationCosts,
+            lumpSumId = 45L,
+            unitCostId = null,
+            costCategory = ReportBudgetCategory.TravelAndAccommodationCosts,
             investmentId = 89L,
             contractId = 54L,
             internalReferenceNumber = "145",
             invoiceNumber = "1",
             invoiceDate = TODAY,
             dateOfPayment = TODAY,
+            numberOfUnits = BigDecimal.ONE,
+            pricePerUnit = BigDecimal.ZERO,
             declaredAmount = BigDecimal.valueOf(2431, 2),
             currencyCode = "CST",
             currencyConversionRate = BigDecimal.valueOf(24302, 4),

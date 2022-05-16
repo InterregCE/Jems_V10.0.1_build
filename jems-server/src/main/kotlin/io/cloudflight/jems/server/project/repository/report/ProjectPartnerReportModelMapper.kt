@@ -20,7 +20,7 @@ import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerR
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.report.model.PartnerReportIdentification
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReport
-import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportCreate
+import io.cloudflight.jems.server.project.service.report.model.create.ProjectPartnerReportCreate
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSummary
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
@@ -101,10 +101,10 @@ fun List<ProjectPartnerReportCoFinancingEntity>.toModel() = map {
 fun ProjectPartnerReportCreate.toEntity(
     legalStatus: ProgrammeLegalStatusEntity?
 ) = ProjectPartnerReportEntity(
-    partnerId = partnerId,
-    number = reportNumber,
-    status = status,
-    applicationFormVersion = version,
+    partnerId = baseData.partnerId,
+    number = baseData.reportNumber,
+    status = baseData.status,
+    applicationFormVersion = baseData.version,
     firstSubmission = null,
 
     identification = PartnerReportIdentificationEntity(

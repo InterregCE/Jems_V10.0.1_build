@@ -2,18 +2,23 @@ package io.cloudflight.jems.server.project.service.report.partner.expenditure.up
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
+import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.project.authorization.CanEditPartnerReport
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.ReportStatus
+import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportLumpSum
+import io.cloudflight.jems.server.project.service.report.model.expenditure.ReportBudgetCategory
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectReportExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.clearConversions
+import io.cloudflight.jems.server.project.service.report.partner.expenditure.fillInLumpSum
+import io.cloudflight.jems.server.project.service.report.partner.expenditure.fillInUnitCost
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.filterInvalidCurrencies
 import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectReportProcurementPersistence
-import io.cloudflight.jems.server.project.service.report.partner.procurement.fillThisReportFlag
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
 
 @Service
@@ -34,6 +39,7 @@ class UpdateProjectPartnerReportExpenditure(
     }
 
     @CanEditPartnerReport
+    @Transactional
     @ExceptionWrapper(UpdateProjectPartnerReportExpenditureException::class)
     override fun updatePartnerReportExpenditureCosts(
         partnerId: Long,
@@ -44,6 +50,7 @@ class UpdateProjectPartnerReportExpenditure(
 
         val report = reportPersistence.getPartnerReportById(partnerId, reportId = reportId)
         validateReportNotClosed(status = report.status)
+        validateCostCategories(expenditureCosts)
         validateCurrencies(expenditureCosts, defaultCurrency = report.identification.currency)
 
         validateLinkedProcurements(
@@ -55,21 +62,35 @@ class UpdateProjectPartnerReportExpenditure(
             ).mapTo(HashSet()) { it.id },
         )
 
-        reportExpenditurePersistence.updatePartnerReportExpenditureCosts(
+        validateCostOptions(
+            expenditureCosts = expenditureCosts,
+            allowedLumpSums = reportExpenditurePersistence.getAvailableLumpSums(partnerId, reportId = reportId),
+            allowedUnitCosts = emptyList(),
+        )
+
+        return reportExpenditurePersistence.updatePartnerReportExpenditureCosts(
             partnerId = partnerId,
             reportId = report.id,
             expenditureCosts = expenditureCosts.clearConversions(),
-        )
-
-        return reportExpenditurePersistence.getPartnerReportExpenditureCosts(
-            partnerId = partnerId,
-            reportId = report.id,
         )
     }
 
     private fun validateReportNotClosed(status: ReportStatus) {
         if (status.isClosed())
             throw ReportAlreadyClosed()
+    }
+
+    private fun validateCostCategories(expenditureCosts: List<ProjectPartnerReportExpenditureCost>) {
+        expenditureCosts.forEach {
+            if (it.costCategory == ReportBudgetCategory.StaffCosts || it.costCategory == ReportBudgetCategory.TravelAndAccommodationCosts)
+                it.investmentId = null
+
+            if (it.costCategory == ReportBudgetCategory.StaffCosts) {
+                it.contractId = null
+                it.vat = null
+                it.invoiceNumber = null
+            }
+        }
     }
 
     private fun validateCurrencies(expenditureCosts: List<ProjectPartnerReportExpenditureCost>, defaultCurrency: String?) {
@@ -113,8 +134,28 @@ class UpdateProjectPartnerReportExpenditure(
         }
     }
 
+    private fun validateCostOptions(
+        expenditureCosts: List<ProjectPartnerReportExpenditureCost>,
+        allowedLumpSums: List<ProjectPartnerReportLumpSum>,
+        allowedUnitCosts: List<ProgrammeUnitCost>,
+    ) {
+        val lumpSumsById = allowedLumpSums.associateBy { it.id }
+        val unitCostsById = allowedUnitCosts.associateBy { it.id }
+        expenditureCosts.forEach {
+            if (it.lumpSumId in lumpSumsById.keys) {
+                it.fillInLumpSum(lumpSum = lumpSumsById[it.lumpSumId]!!)
+            } else if (it.unitCostId in unitCostsById.keys) {
+                it.fillInUnitCost(unitCost = unitCostsById[it.unitCostId]!!)
+            } else {
+                it.numberOfUnits = BigDecimal.ZERO
+                it.pricePerUnit = BigDecimal.ZERO
+            }
+        }
+    }
+
     private fun getAvailableProcurements(partnerId: Long, reportId: Long) =
         reportProcurementPersistence.getProcurementsForReportIds(
             reportIds = reportPersistence.getReportIdsBefore(partnerId = partnerId, beforeReportId = reportId).plus(reportId),
         )
+
 }

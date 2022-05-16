@@ -5,9 +5,11 @@ import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.common.minio.MinioStorage
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportExpenditureCostEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportExpenditureCostTranslEntity
+import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportLumpSumEntity
 import io.cloudflight.jems.server.project.repository.report.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.repository.report.file.ProjectReportFileRepository
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportExpenditureCost
+import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportLumpSum
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectReportExpenditurePersistence
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -17,6 +19,7 @@ import kotlin.collections.HashSet
 class ProjectReportExpenditurePersistenceProvider(
     private val reportRepository: ProjectPartnerReportRepository,
     private val reportExpenditureRepository: ProjectPartnerReportExpenditureRepository,
+    private val reportLumpSumRepository: ProjectPartnerReportLumpSumRepository,
     private val minioStorage: MinioStorage,
     private val reportFileRepository: ProjectReportFileRepository,
 ) : ProjectReportExpenditurePersistence {
@@ -36,7 +39,7 @@ class ProjectReportExpenditurePersistenceProvider(
         partnerId: Long,
         reportId: Long,
         expenditureCosts: List<ProjectPartnerReportExpenditureCost>,
-    ) {
+    ): List<ProjectPartnerReportExpenditureCost> {
         val reportEntity = reportRepository.findByIdAndPartnerId(partnerId = partnerId, id = reportId)
 
         val toNotBeDeletedIds = expenditureCosts.mapNotNullTo(HashSet()) { it.id }
@@ -45,14 +48,17 @@ class ProjectReportExpenditurePersistenceProvider(
         reportExpenditureRepository.deleteAll(
             existingIds.minus(toNotBeDeletedIds).values.deleteAttachments()
         )
-        expenditureCosts.forEach { newData ->
+        return expenditureCosts.map { newData ->
             existingIds[newData.id].let { existing ->
+                val lumpSumsById = reportLumpSumRepository
+                    .findByReportEntityPartnerIdAndReportEntityIdOrderByPeriodAscIdAsc(partnerId, reportId)
+                    .associateBy { it.id }
                 when {
-                    existing != null -> existing.updateWith(newData)
-                    else -> reportExpenditureRepository.save(newData.toEntity(reportEntity))
+                    existing != null -> existing.apply { updateWith(newData, lumpSumsById) }
+                    else -> reportExpenditureRepository.save(newData.toEntity(reportEntity, lumpSumsById))
                 }
             }
-        }
+        }.toModel()
     }
 
     @Transactional(readOnly = true)
@@ -60,8 +66,18 @@ class ProjectReportExpenditurePersistenceProvider(
         reportExpenditureRepository
             .existsByPartnerReportPartnerIdAndPartnerReportIdAndId(partnerId, reportId = reportId, expenditureId = expenditureId)
 
+    @Transactional(readOnly = true)
+    override fun getAvailableLumpSums(partnerId: Long, reportId: Long): List<ProjectPartnerReportLumpSum> =
+        reportLumpSumRepository.findByReportEntityPartnerIdAndReportEntityIdOrderByPeriodAscIdAsc(
+            partnerId = partnerId,
+            reportId = reportId,
+        ).toModel()
 
-    private fun PartnerReportExpenditureCostEntity.updateWith(newData: ProjectPartnerReportExpenditureCost) {
+    private fun PartnerReportExpenditureCostEntity.updateWith(
+        newData: ProjectPartnerReportExpenditureCost,
+        lumpSums: Map<Long, PartnerReportLumpSumEntity>,
+    ) {
+        reportLumpSum = if (newData.lumpSumId != null) lumpSums[newData.lumpSumId] else null
         costCategory = newData.costCategory
         investmentId = newData.investmentId
         internalReferenceNumber = newData.internalReferenceNumber
@@ -70,6 +86,8 @@ class ProjectReportExpenditurePersistenceProvider(
         dateOfPayment = newData.dateOfPayment
         totalValueInvoice = newData.totalValueInvoice
         vat = newData.vat
+        numberOfUnits = newData.numberOfUnits
+        pricePerUnit = newData.pricePerUnit
         declaredAmount = newData.declaredAmount
         currencyCode = newData.currencyCode
         currencyConversionRate = newData.currencyConversionRate

@@ -17,6 +17,7 @@ import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPart
 import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPartnerReportWorkPackageActivityRepository
 import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPartnerReportWorkPackageOutputRepository
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
+import io.cloudflight.jems.server.project.service.report.model.expenditure.ReportBudgetCategory
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFile
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileCreate
@@ -37,6 +38,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import java.math.BigDecimal.ONE
+import java.math.BigDecimal.ZERO
 import java.time.ZonedDateTime
 import java.util.*
 
@@ -117,7 +119,8 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
         private fun expenditure(id: Long, attachment: ReportProjectFileEntity?) = PartnerReportExpenditureCostEntity(
             id = id,
             partnerReport = mockk(),
-            costCategory = BudgetCategory.StaffCosts,
+            reportLumpSum = null,
+            costCategory = ReportBudgetCategory.StaffCosts,
             investmentId = 1L,
             procurementId = 1L,
             internalReferenceNumber = "internalReferenceNumber",
@@ -126,6 +129,8 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
             dateOfPayment = LAST_WEEK.plusWeeks(1).toLocalDate(),
             totalValueInvoice = ONE,
             vat = ONE,
+            numberOfUnits = ONE,
+            pricePerUnit = ZERO,
             declaredAmount = ONE,
             currencyCode = "currencyCode",
             currencyConversionRate = ONE,

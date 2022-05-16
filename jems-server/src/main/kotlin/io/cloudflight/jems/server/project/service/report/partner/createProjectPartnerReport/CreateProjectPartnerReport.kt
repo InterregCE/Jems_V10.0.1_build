@@ -9,30 +9,26 @@ import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPartnerCoFinancingPersistence
-import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
-import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAddressType
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
+import io.cloudflight.jems.server.project.service.report.ProjectReportCreatePersistence
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
-import io.cloudflight.jems.server.project.service.report.model.PartnerReportIdentificationCreate
-import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportCreate
+import io.cloudflight.jems.server.project.service.report.model.create.PartnerReportIdentificationCreate
+import io.cloudflight.jems.server.project.service.report.model.create.ProjectPartnerReportCreate
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSummary
 import io.cloudflight.jems.server.project.service.report.model.ReportStatus
-import io.cloudflight.jems.server.project.service.report.model.contribution.create.CreateProjectPartnerReportContribution
-import io.cloudflight.jems.server.project.service.report.model.contribution.withoutCalculations.ProjectPartnerReportEntityContribution
+import io.cloudflight.jems.server.project.service.report.model.create.PartnerReportBaseData
 import io.cloudflight.jems.server.project.service.report.model.workPlan.create.CreateProjectPartnerReportWorkPackage
 import io.cloudflight.jems.server.project.service.report.model.workPlan.create.CreateProjectPartnerReportWorkPackageActivity
 import io.cloudflight.jems.server.project.service.report.model.workPlan.create.CreateProjectPartnerReportWorkPackageActivityDeliverable
 import io.cloudflight.jems.server.project.service.report.model.workPlan.create.CreateProjectPartnerReportWorkPackageOutput
-import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectReportContributionPersistence
 import io.cloudflight.jems.server.project.service.report.partnerReportCreated
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackage
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.math.BigDecimal
-import java.util.UUID
 
 @Service
 class CreateProjectPartnerReport(
@@ -43,9 +39,10 @@ class CreateProjectPartnerReport(
     private val projectWorkPackagePersistence: WorkPackagePersistence,
     private val projectDescriptionPersistence: ProjectDescriptionPersistence,
     private val reportPersistence: ProjectReportPersistence,
-    private val reportContributionPersistence: ProjectReportContributionPersistence,
+    private val reportCreatePersistence: ProjectReportCreatePersistence,
     private val currencyPersistence: CurrencyPersistence,
-    private val auditPublisher: ApplicationEventPublisher
+    private val createProjectPartnerReportBudget: CreateProjectPartnerReportBudget,
+    private val auditPublisher: ApplicationEventPublisher,
 ) : CreateProjectPartnerReportInteractor {
 
     companion object {
@@ -64,13 +61,69 @@ class CreateProjectPartnerReport(
         validateMaxAmountOfReports(currentAmount = reportPersistence.countForPartner(partnerId = partnerId))
         validateProjectIsContracted(project)
 
-        val report = generateReport(project = project, partnerId = partnerId, version = version)
+        val baseData = generateReportBaseData(
+            partnerId = partnerId,
+            latestReportNumber = reportPersistence.getCurrentLatestReportNumberForPartner(partnerId),
+            version = version,
+        )
 
-        return reportPersistence.createPartnerReport(report).also {
+        val coFinancing = partnerCoFinancingPersistence.getCoFinancingAndContributions(partnerId, version)
+        val identification = generateReportIdentification(
+            partner = projectPartnerPersistence.getById(partnerId, version),
+            project = project,
+            finances = coFinancing.finances,
+            currencyResolver = { currencyPersistence.getCurrencyForCountry(it) },
+        )
+
+        val workPackages = projectWorkPackagePersistence
+            .getWorkPackagesWithOutputsAndActivitiesByProjectId(projectId = project.id!!, version = version)
+            .toCreateEntity()
+
+        val budget = createProjectPartnerReportBudget.retrieveBudgetDataFor(
+            projectId = projectId,
+            partnerId = partnerId,
+            version = version,
+            partnerContributions = coFinancing.partnerContributions,
+        )
+
+        val report = ProjectPartnerReportCreate(
+            baseData = baseData,
+            identification = identification,
+            workPackages = workPackages,
+            targetGroups = projectDescriptionPersistence.getBenefits(projectId = project.id, version = version) ?: emptyList(),
+            budget = budget,
+        )
+
+        return reportCreatePersistence.createPartnerReport(report).also {
             auditPublisher.publishEvent(partnerReportCreated(this, project, report, it.id))
         }
     }
 
+    private fun generateReportBaseData(
+        partnerId: Long,
+        latestReportNumber: Int,
+        version: String,
+    ): PartnerReportBaseData {
+        return PartnerReportBaseData(
+            partnerId = partnerId,
+            reportNumber = latestReportNumber.plus(1),
+            status = ReportStatus.Draft,
+            version = version,
+        )
+    }
+
+    private fun generateReportIdentification(
+        partner: ProjectPartnerDetail,
+        project: ProjectFull,
+        finances: List<ProjectPartnerCoFinancing>,
+        currencyResolver: (String) -> String?,
+    ): PartnerReportIdentificationCreate {
+        return partner.toReportIdentification(
+                project = project,
+                finances = finances,
+                currencyResolver = currencyResolver,
+            )
+    }
 
     private fun validateMaxAmountOfReports(currentAmount: Int) {
         if (currentAmount >= MAX_REPORTS)
@@ -82,43 +135,14 @@ class CreateProjectPartnerReport(
             throw ReportCanBeCreatedOnlyWhenContractedException()
     }
 
-    private fun generateReport(project: ProjectFull, partnerId: Long, version: String): ProjectPartnerReportCreate {
-        val coFinancing = partnerCoFinancingPersistence.getCoFinancingAndContributions(partnerId, version)
-        return ProjectPartnerReportCreate(
-            partnerId = partnerId,
-            reportNumber = getLatestReportNumberIncreasedByOne(partnerId),
-            status = ReportStatus.Draft,
-            version = version,
-
-            identification = projectPartnerPersistence.getById(partnerId, version).let {
-                it.toReportIdentification(project).apply {
-                    this.coFinancing = coFinancing.finances
-                    this.currency = getCurrencyCodeForCountry(countryCode, country)
-                }
-            },
-
-            workPackages = projectWorkPackagePersistence
-                .getWorkPackagesWithOutputsAndActivitiesByProjectId(projectId = project.id!!, version = version)
-                .toCreateEntity(),
-
-            targetGroups = projectDescriptionPersistence.getBenefits(projectId = project.id, version = version)
-                ?: emptyList(),
-
-            contributions = generateContributionsFromPreviousReports(
-                partnerId = partnerId,
-                partnerContributionsSorted = coFinancing.partnerContributions.sortedWith(compareBy({ it.isNotPartner() }, { it.id })),
-            ),
-        )
-    }
-
-    private fun getCurrencyCodeForCountry(countryCode: String?, country: String?): String? {
+    private fun getCurrencyCodeForCountry(countryCode: String?, country: String?, currencyResolver: (String) -> String?): String? {
         var code = countryCode
         // prevent null when historic data did not map countryCode yet
         if (countryCode.isNullOrEmpty() && !country.isNullOrEmpty()) {
             code = getCountryCodeForCountry(country)
         }
         return if (code != null) {
-            currencyPersistence.getCurrencyForCountry(code)
+            currencyResolver.invoke(code)
         } else {
             null
         }
@@ -127,10 +151,11 @@ class CreateProjectPartnerReport(
     private fun getCountryCodeForCountry(country: String) =
         Regex("\\(([A-Z]{2})\\)$").find(country)?.value?.substring(1, 3)
 
-    private fun getLatestReportNumberIncreasedByOne(partnerId: Long) =
-        reportPersistence.getCurrentLatestReportNumberForPartner(partnerId).plus(1)
-
-    private fun ProjectPartnerDetail.toReportIdentification(project: ProjectFull) = PartnerReportIdentificationCreate(
+    private fun ProjectPartnerDetail.toReportIdentification(
+        project: ProjectFull,
+        finances: List<ProjectPartnerCoFinancing>,
+        currencyResolver: (String) -> String?,
+    ) = PartnerReportIdentificationCreate(
         projectIdentifier = project.customIdentifier,
         projectAcronym = project.acronym,
         partnerNumber = sortNumber!!,
@@ -143,8 +168,10 @@ class CreateProjectPartnerReport(
         vatRecovery = vatRecovery,
         country = addresses.firstOrNull { it.type == ProjectPartnerAddressType.Organization }?.country,
         countryCode = addresses.firstOrNull { it.type == ProjectPartnerAddressType.Organization }?.countryCode,
-        coFinancing = emptyList()
-    )
+        coFinancing = finances,
+    ).apply {
+        currency = getCurrencyCodeForCountry(countryCode, country, currencyResolver)
+    }
 
     private fun List<ProjectWorkPackage>.toCreateEntity() = map { wp ->
         CreateProjectPartnerReportWorkPackage(
@@ -170,72 +197,6 @@ class CreateProjectPartnerReport(
                      title = o.title,
                  )
              },
-        )
-    }
-
-    private fun generateContributionsFromPreviousReports(
-        partnerId: Long,
-        partnerContributionsSorted: List<ProjectPartnerContribution>,
-    ): List<CreateProjectPartnerReportContribution> {
-        val submittedReportIds = reportPersistence.listSubmittedPartnerReports(partnerId = partnerId).mapTo(HashSet()) { it.id }
-
-        val mapIdToHistoricalIdentifier: MutableMap<Long, UUID> = mutableMapOf()
-        val contributionsNotLinkedToApplicationForm: LinkedHashMap<UUID, Pair<String?, ProjectPartnerContributionStatus?>> = LinkedHashMap()
-        val historicalContributions: MutableMap<UUID, MutableList<BigDecimal>> = mutableMapOf()
-
-        reportContributionPersistence.getAllContributionsForReportIds(reportIds = submittedReportIds).forEach {
-            if (it.idFromApplicationForm != null)
-                mapIdToHistoricalIdentifier[it.idFromApplicationForm] = it.historyIdentifier
-            else
-                contributionsNotLinkedToApplicationForm.putIfAbsent(it.historyIdentifier, it.toModel())
-
-            historicalContributions.getOrPut(it.historyIdentifier) { mutableListOf() }
-                .add(it.currentlyReported)
-        }
-
-        return partnerContributionsSorted
-            .fromApplicationForm(
-                idToUuid = mapIdToHistoricalIdentifier,
-                historicalContributions = historicalContributions
-            )
-            .plus(
-                contributionsNotLinkedToApplicationForm
-                    .accumulatePreviousContributions(historicalContributions = historicalContributions)
-            )
-    }
-
-    private fun ProjectPartnerReportEntityContribution.toModel() = Pair(sourceOfContribution, legalStatus)
-
-    private fun List<ProjectPartnerContribution>.fromApplicationForm(
-        idToUuid: Map<Long, UUID>,
-        historicalContributions: Map<UUID, MutableList<BigDecimal>>,
-    ) = filter { it.id != null }.map {
-        (idToUuid[it.id] ?: UUID.randomUUID()).let { uuid ->
-            CreateProjectPartnerReportContribution(
-                sourceOfContribution = it.name,
-                legalStatus = it.status?.name?.let { ProjectPartnerContributionStatus.valueOf(it) },
-                idFromApplicationForm = it.id,
-                historyIdentifier = uuid,
-                createdInThisReport = false,
-                amount = it.amount ?: BigDecimal.ZERO,
-                previouslyReported = historicalContributions[uuid]?.sumOf { it } ?: BigDecimal.ZERO,
-                currentlyReported = BigDecimal.ZERO,
-            )
-        }
-    }
-
-    private fun Map<UUID, Pair<String?, ProjectPartnerContributionStatus?>>.accumulatePreviousContributions(
-        historicalContributions: Map<UUID, MutableList<BigDecimal>>,
-    ) = map { (uuid, formData) ->
-        CreateProjectPartnerReportContribution(
-            sourceOfContribution = formData.first,
-            legalStatus = formData.second,
-            idFromApplicationForm = null,
-            historyIdentifier = uuid,
-            createdInThisReport = false,
-            amount = BigDecimal.ZERO,
-            previouslyReported = historicalContributions[uuid]?.sumOf { it } ?: BigDecimal.ZERO,
-            currentlyReported = BigDecimal.ZERO,
         )
     }
 

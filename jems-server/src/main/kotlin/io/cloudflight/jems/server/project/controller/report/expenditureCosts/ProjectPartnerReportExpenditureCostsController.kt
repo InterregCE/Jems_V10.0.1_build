@@ -1,9 +1,11 @@
 package io.cloudflight.jems.server.project.controller.report.expenditureCosts
 
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportExpenditureCostDTO
+import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportLumpSumDTO
 import io.cloudflight.jems.api.project.report.ProjectPartnerReportExpenditureCostsApi
 import io.cloudflight.jems.server.project.controller.report.toDto
 import io.cloudflight.jems.server.project.controller.report.toProjectFile
+import io.cloudflight.jems.server.project.service.report.partner.expenditure.getAvailableLumpSumsForReport.GetAvailableLumpSumsForReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.getProjectPartnerReportExpenditure.GetProjectPartnerReportExpenditureInteractor
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.updateProjectPartnerReportExpenditure.UpdateProjectPartnerReportExpenditureInteractor
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.uploadFileToProjectPartnerReportExpenditure.UploadFileToProjectPartnerReportExpenditureInteractor
@@ -15,7 +17,8 @@ class ProjectPartnerReportExpenditureCostsController(
     private val getProjectPartnerReportExpenditureInteractor: GetProjectPartnerReportExpenditureInteractor,
     private val updateProjectPartnerReportExpenditureInteractor: UpdateProjectPartnerReportExpenditureInteractor,
     private val uploadFileToExpenditure: UploadFileToProjectPartnerReportExpenditureInteractor,
-    ) : ProjectPartnerReportExpenditureCostsApi {
+    private val getAvailableLumpSumsForReportInteractor: GetAvailableLumpSumsForReportInteractor,
+) : ProjectPartnerReportExpenditureCostsApi {
 
     override fun getProjectPartnerReports(
         partnerId: Long, reportId: Long
@@ -45,4 +48,8 @@ class ProjectPartnerReportExpenditureCostsController(
         uploadFileToExpenditure
             .uploadToExpenditure(partnerId, reportId, expenditureId = expenditureId, file.toProjectFile())
             .toDto()
+
+    override fun getAvailableLumpSums(partnerId: Long, reportId: Long): List<ProjectPartnerReportLumpSumDTO> =
+        getAvailableLumpSumsForReportInteractor.getLumpSums(partnerId = partnerId, reportId = reportId).toLumpSumDto()
+
 }

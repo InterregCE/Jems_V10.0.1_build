@@ -30,19 +30,18 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAd
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVatRecovery
+import io.cloudflight.jems.server.project.service.report.ProjectReportCreatePersistence
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
-import io.cloudflight.jems.server.project.service.report.model.PartnerReportIdentificationCreate
-import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportCreate
+import io.cloudflight.jems.server.project.service.report.model.create.PartnerReportIdentificationCreate
+import io.cloudflight.jems.server.project.service.report.model.create.ProjectPartnerReportCreate
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSummary
 import io.cloudflight.jems.server.project.service.report.model.ReportStatus
-import io.cloudflight.jems.server.project.service.report.model.contribution.create.CreateProjectPartnerReportContribution
-import io.cloudflight.jems.server.project.service.report.model.contribution.withoutCalculations.ProjectPartnerReportEntityContribution
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.create.PartnerReportBaseData
+import io.cloudflight.jems.server.project.service.report.model.create.PartnerReportBudget
 import io.cloudflight.jems.server.project.service.report.model.workPlan.create.CreateProjectPartnerReportWorkPackage
 import io.cloudflight.jems.server.project.service.report.model.workPlan.create.CreateProjectPartnerReportWorkPackageActivity
 import io.cloudflight.jems.server.project.service.report.model.workPlan.create.CreateProjectPartnerReportWorkPackageActivityDeliverable
 import io.cloudflight.jems.server.project.service.report.model.workPlan.create.CreateProjectPartnerReportWorkPackageOutput
-import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectReportContributionPersistence
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityDeliverable
@@ -74,9 +73,6 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
         private const val WORK_PACKAGE_ID = 5658L
         private const val ACTIVITY_ID = 5942L
         private const val DELIVERABLE_ID = 5225L
-
-        private val HISTORY_CONTRIBUTION_UUID_1 = UUID.randomUUID()
-        private val HISTORY_CONTRIBUTION_UUID_2 = UUID.randomUUID()
 
         private fun projectSummary(status: ApplicationStatus) = ProjectFull(
             id = PROJECT_ID,
@@ -146,11 +142,13 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
             ),
         )
 
-        private fun expectedCreationObject(partnerId: Long) = ProjectPartnerReportCreate(
-            partnerId = partnerId,
-            reportNumber = 7 + 1,
-            status = ReportStatus.Draft,
-            version = "14.2.0",
+        private fun expectedCreationObject(partnerId: Long, budget: PartnerReportBudget) = ProjectPartnerReportCreate(
+            baseData = PartnerReportBaseData(
+                partnerId = partnerId,
+                reportNumber = 7 + 1,
+                status = ReportStatus.Draft,
+                version = "14.2.0",
+            ),
             identification = PartnerReportIdentificationCreate(
                 projectIdentifier = "XE.1_0001",
                 projectAcronym = "project acronym",
@@ -199,35 +197,16 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
                     specification = setOf(InputTranslation(EN, "EducationTrainingCentreAndSchool")),
                 ),
             ),
-            contributions = listOf(
-                CreateProjectPartnerReportContribution(
-                    sourceOfContribution = "private id=200 amount=10",
-                    legalStatus = ProjectPartnerContributionStatus.Private,
-                    idFromApplicationForm = 200L,
-                    historyIdentifier = HISTORY_CONTRIBUTION_UUID_1,
-                    createdInThisReport = false,
-                    amount = BigDecimal.TEN,
-                    previouslyReported = BigDecimal.ONE, // coming from currently reported previous one
-                    currentlyReported = BigDecimal.ZERO,
-                ),
-                CreateProjectPartnerReportContribution(
-                    sourceOfContribution = "this has been added inside reporting (not linked to AF)",
-                    legalStatus = ProjectPartnerContributionStatus.Private,
-                    idFromApplicationForm = null,
-                    historyIdentifier = HISTORY_CONTRIBUTION_UUID_2,
-                    createdInThisReport = false,
-                    amount = BigDecimal.ZERO,
-                    previouslyReported = BigDecimal.ONE, // coming from currently reported previous one
-                    currentlyReported = BigDecimal.ZERO,
-                ),
-            ),
+            budget = budget,
         )
 
-        private fun expectedCreationObjectLimited(partnerId: Long) = ProjectPartnerReportCreate(
-            partnerId = partnerId,
-            reportNumber = 7 + 1,
-            status = ReportStatus.Draft,
-            version = "14.2.0",
+        private fun expectedCreationObjectLimited(partnerId: Long, budget: PartnerReportBudget) = ProjectPartnerReportCreate(
+            baseData = PartnerReportBaseData(
+                partnerId = partnerId,
+                reportNumber = 7 + 1,
+                status = ReportStatus.Draft,
+                version = "14.2.0",
+            ),
             identification = PartnerReportIdentificationCreate(
                 projectIdentifier = "XE.1_0001",
                 projectAcronym = "project acronym",
@@ -246,45 +225,7 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
             ),
             workPackages = emptyList(),
             targetGroups = emptyList(),
-            contributions = emptyList()
-        )
-
-        private val reportsForContribution = listOf(
-            ProjectPartnerReportSummary(
-                id = 408L,
-                reportNumber = 4,
-                status = ReportStatus.Submitted,
-                version = "10.1",
-                firstSubmission = ZonedDateTime.now().minusDays(10),
-                createdAt = ZonedDateTime.now().minusDays(20),
-            ),
-        )
-
-        private val previousContributions = listOf(
-            ProjectPartnerReportEntityContribution(
-                id = 1L,
-                sourceOfContribution = "old source, should be ignored and taken from AF",
-                legalStatus = ProjectPartnerContributionStatus.Public, // should also be ignored
-                idFromApplicationForm = 200L,
-                historyIdentifier = HISTORY_CONTRIBUTION_UUID_1,
-                createdInThisReport = false,
-                amount = BigDecimal.ZERO, // should be ignored
-                previouslyReported = BigDecimal.ZERO,
-                currentlyReported = BigDecimal.ONE,
-                attachment = ProjectReportFileMetadata(780L, "this_is_ignored", mockk()),
-            ),
-            ProjectPartnerReportEntityContribution(
-                id = 2L,
-                sourceOfContribution = "this has been added inside reporting (not linked to AF)",
-                legalStatus = ProjectPartnerContributionStatus.Private,
-                idFromApplicationForm = null,
-                historyIdentifier = HISTORY_CONTRIBUTION_UUID_2,
-                createdInThisReport = true,
-                amount = BigDecimal.ZERO,
-                previouslyReported = BigDecimal.ZERO,
-                currentlyReported = BigDecimal.ONE,
-                attachment = null,
-            ),
+            budget = budget,
         )
 
         private val workPlan = listOf(
@@ -331,8 +272,6 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
     @MockK
     lateinit var projectPartnerPersistence: PartnerPersistence
     @MockK
-    lateinit var currencyPersistence: CurrencyPersistence
-    @MockK
     lateinit var partnerCoFinancingPersistence: ProjectPartnerCoFinancingPersistence
     @MockK
     lateinit var projectWorkPackagePersistence: WorkPackagePersistence
@@ -341,7 +280,11 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
     @MockK
     lateinit var reportPersistence: ProjectReportPersistence
     @MockK
-    lateinit var reportContributionPersistence: ProjectReportContributionPersistence
+    lateinit var reportCreatePersistence: ProjectReportCreatePersistence
+    @MockK
+    lateinit var currencyPersistence: CurrencyPersistence
+    @MockK
+    lateinit var createProjectPartnerReportBudget: CreateProjectPartnerReportBudget
     @MockK
     lateinit var auditPublisher: ApplicationEventPublisher
 
@@ -369,23 +312,23 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
         every { currencyPersistence.getCurrencyForCountry("AT") } returns "EUR"
         // work plan
         every { projectWorkPackagePersistence.getWorkPackagesWithOutputsAndActivitiesByProjectId(PROJECT_ID, "14.2.0") } returns workPlan
+        // budget
+        val budgetMock = mockk<PartnerReportBudget>()
+        every { createProjectPartnerReportBudget.retrieveBudgetDataFor(PROJECT_ID, partnerId, "14.2.0", contributions) } returns budgetMock
         // identification
         every { projectDescriptionPersistence.getBenefits(PROJECT_ID, "14.2.0") } returns benefits
-        // contribution
-        every { reportPersistence.listSubmittedPartnerReports(partnerId) } returns reportsForContribution
-        every { reportContributionPersistence.getAllContributionsForReportIds(setOf(408L)) } returns previousContributions
 
         val slotReport = slot<ProjectPartnerReportCreate>()
         val createdReport = mockk<ProjectPartnerReportSummary>()
         every { createdReport.id } returns 50L
-        every { reportPersistence.createPartnerReport(capture(slotReport)) } returns createdReport
+        every { reportCreatePersistence.createPartnerReport(capture(slotReport)) } returns createdReport
 
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit
 
         createReport.createReportFor(partnerId)
 
-        assertThat(slotReport.captured).isEqualTo(expectedCreationObject(partnerId))
+        assertThat(slotReport.captured).isEqualTo(expectedCreationObject(partnerId, budgetMock))
         assertThat(auditSlot.captured.auditCandidate.action).isEqualTo(AuditAction.PARTNER_REPORT_ADDED)
         assertThat(auditSlot.captured.auditCandidate.project?.id).isEqualTo(PROJECT_ID.toString())
         assertThat(auditSlot.captured.auditCandidate.project?.customIdentifier).isEqualTo("XE.1_0001")
@@ -411,23 +354,23 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
         every { currencyPersistence.getCurrencyForCountry("AT") } returns "EUR"
         // work plan
         every { projectWorkPackagePersistence.getWorkPackagesWithOutputsAndActivitiesByProjectId(PROJECT_ID, "14.2.0") } returns emptyList()
+        // budget
+        val budgetMock = mockk<PartnerReportBudget>()
+        every { createProjectPartnerReportBudget.retrieveBudgetDataFor(PROJECT_ID, partnerId, "14.2.0", emptyList()) } returns budgetMock
         // identification
         every { projectDescriptionPersistence.getBenefits(PROJECT_ID, "14.2.0") } returns null
-        // contribution
-        every { reportPersistence.listSubmittedPartnerReports(partnerId) } returns emptyList()
-        every { reportContributionPersistence.getAllContributionsForReportIds(emptySet()) } returns emptyList()
 
         val slotReport = slot<ProjectPartnerReportCreate>()
         val createdReport = mockk<ProjectPartnerReportSummary>()
         every { createdReport.id } returns 50L
-        every { reportPersistence.createPartnerReport(capture(slotReport)) } returns createdReport
+        every { reportCreatePersistence.createPartnerReport(capture(slotReport)) } returns createdReport
 
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit
 
         createReport.createReportFor(partnerId)
 
-        assertThat(slotReport.captured).isEqualTo(expectedCreationObjectLimited(partnerId))
+        assertThat(slotReport.captured).isEqualTo(expectedCreationObjectLimited(partnerId, budgetMock))
         assertThat(auditSlot.captured.auditCandidate.action).isEqualTo(AuditAction.PARTNER_REPORT_ADDED)
         assertThat(auditSlot.captured.auditCandidate.project?.id).isEqualTo(PROJECT_ID.toString())
         assertThat(auditSlot.captured.auditCandidate.project?.customIdentifier).isEqualTo("XE.1_0001")

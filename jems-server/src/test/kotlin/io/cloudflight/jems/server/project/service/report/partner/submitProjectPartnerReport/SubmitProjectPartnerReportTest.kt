@@ -13,6 +13,7 @@ import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerRep
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportExpenditureCost
+import io.cloudflight.jems.server.project.service.report.model.expenditure.ReportBudgetCategory
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectReportExpenditurePersistence
 import io.mockk.clearMocks
 import io.mockk.every
@@ -55,13 +56,17 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
 
         private val expenditure1 = ProjectPartnerReportExpenditureCost(
             id = 630,
-            costCategory = BudgetCategory.StaffCosts,
+            lumpSumId = null,
+            unitCostId = null,
+            costCategory = ReportBudgetCategory.StaffCosts,
             investmentId = 10L,
             contractId = 54L,
             internalReferenceNumber = "internal-1",
             invoiceNumber = "invoice-1",
             invoiceDate = LocalDate.of(2022, 1, 1),
             dateOfPayment = LocalDate.of(2022, 2, 1),
+            numberOfUnits = BigDecimal.ZERO,
+            pricePerUnit = BigDecimal.ZERO,
             declaredAmount = BigDecimal.valueOf(25448, 2),
             currencyCode = "CZK",
             currencyConversionRate = null,
