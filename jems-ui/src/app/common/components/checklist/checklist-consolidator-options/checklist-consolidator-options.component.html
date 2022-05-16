@@ -8,5 +8,8 @@
             </mat-slide-toggle>
         {{'checklists.instance.consolidator.options.consolidated' | translate}}
         </span>
+        <jems-alert [closable]="false" [show]="isChecklistFinished(checklistStatus)" [type]="Alert.INFO" disableMargins="true">
+            <span>{{ 'checklist.instance.consolidated.info' | translate }}</span>
+        </jems-alert>
     </form>
 </jems-form>

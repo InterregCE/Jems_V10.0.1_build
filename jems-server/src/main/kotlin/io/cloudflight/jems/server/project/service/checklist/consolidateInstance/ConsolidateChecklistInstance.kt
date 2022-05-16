@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.ProjectChecklistAuthorization
 import io.cloudflight.jems.server.project.service.checklist.ChecklistInstancePersistence
 import io.cloudflight.jems.server.project.service.checklist.checklistConsolidated
+import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceStatus
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -17,20 +18,21 @@ class ConsolidateChecklistInstance(
 
     @Transactional
     @ExceptionWrapper(ConsolidateChecklistNotAllowed::class)
-    override fun consolidateChecklistInstance(checklistId: Long, consolidated: Boolean) {
+    override fun consolidateChecklistInstance(checklistId: Long, consolidated: Boolean): Boolean {
         val checklist = persistence.getChecklistSummary(checklistId)
 
-        if (!checklistAuthorization.canConsolidate(checklist.relatedToId!!)) {
+        if (!checklistAuthorization.canConsolidate(checklist.relatedToId!!) ||
+            checklist.status !== ChecklistInstanceStatus.FINISHED) {
             throw ConsolidateChecklistNotAllowed()
         }
 
-        persistence.consolidateChecklistInstance(checklistId, consolidated).also {
+        return persistence.consolidateChecklistInstance(checklistId, consolidated).also {
             auditPublisher.publishEvent(
                 checklistConsolidated(
                     context = this,
                     checklist = it
                 )
             )
-        }
+        }.consolidated
     }
 }

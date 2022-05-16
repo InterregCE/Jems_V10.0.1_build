@@ -5,7 +5,9 @@
     <jems-checklist-consolidator-options
             *ngIf="data.userCanConsolidate"
             [checklistId]="data.checklist.id"
-            [consolidated]="data.checklist.consolidated">
+            [checklistStatus]="data.checklist.status"
+            [consolidated]="data.checklist.consolidated"
+            (consolidatedFlagChanged)="updateConsolidatedFlag($event)">
     </jems-checklist-consolidator-options>
 
     <div class="mb-3"></div>
@@ -45,9 +47,14 @@
         <jems-pending-button *ngIf="data.checklist.status === Status.FINISHED && data.userCanConsolidate"
                              class="mr-2" type="secondary"
                              [confirm]="confirmDraft"
+                             [disabled]="isConsolidated"
                              (clicked)="updateStatus(data.checklist.id, Status.DRAFT)">
             {{'checklists.instance.return.to.user.button' | translate : {name: data.checklist.creatorEmail} }}
         </jems-pending-button>
+
+        <jems-alert [closable]="false" [show]="isConsolidated" [type]="Alert.INFO" disableMargins="false">
+            <span>{{ 'checklist.instance.consolidated.return.to.assessor.info' | translate }}</span>
+        </jems-alert>
 
     </jems-checklist-answers>
 </jems-project-page-template>
