@@ -20,7 +20,7 @@
                 {{'call.detail.button.publish' | translate}}
             </jems-pending-button>
 
-            <ng-container *ngIf="(isPublishDisabled(data.call) | async) && data.call?.id && !published">
+            <ng-container *ngIf="(isPublishDisabled(data.call) | async) && data.call?.id && data.callIsEditable && !published">
 
                 <jems-alert [closable]="false" [show]="!data.call.funds || !data.call.funds.length" [type]="Alert.INFO" disableMargins="true">
                     <span>{{ 'call.detail.button.publish.disabled.because.funds' | translate }}</span>
