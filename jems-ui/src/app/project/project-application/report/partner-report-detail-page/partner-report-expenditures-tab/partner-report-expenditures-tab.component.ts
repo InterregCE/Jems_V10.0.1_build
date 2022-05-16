@@ -68,6 +68,9 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
   lumpSumHasValue = false;
   availableLumpSums: ProjectPartnerReportLumpSumDTO[];
 
+  readonly PERIOD_PREPARATION: number = 0;
+  readonly PERIOD_CLOSURE: number = 255;
+
   constructor(public pageStore: PartnerReportExpendituresStore,
               private formBuilder: FormBuilder,
               private formService: FormService,
@@ -433,16 +436,6 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     this.pageStore.refreshExpenditures$.next(undefined);
   }
 
-  getLumpSumPeriod(lumpSum: ProjectPartnerReportLumpSumDTO): string {
-    if (lumpSum.period === 0) {
-      return 'Preparation';
-    }
-    if (lumpSum.period === 255) {
-      return 'Closure';
-    }
-    return `Period ${lumpSum.period}`;
-  }
-
   isLumpSumSelectedInCurrentFormGroup(index: number): boolean {
     return this.items.at(index).get('lumpSumId')?.value !== null;
   }
@@ -475,8 +468,8 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     control.patchValue({totalValueInvoice: null});
     control.patchValue({vat: null});
     control.patchValue({investmentId: null});
-    control.patchValue({numberOfUnits: null});
-    control.patchValue({pricePerUnit: null});
+    control.patchValue({numberOfUnits: 1});
+    control.patchValue({pricePerUnit: 0});
     control.patchValue({declaredAmount: 0});
     control.patchValue({currencyCode: this.currentReport.identification?.currency});
     control.patchValue({currencyConversionRate: this.getConversionRateByCode(this.currentReport.identification?.currency)});

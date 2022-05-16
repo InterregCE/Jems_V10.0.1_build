@@ -41,10 +41,17 @@
                                                 [placeholder]="'common.not.applicable.option' | translate">
                                         <mat-option
                                                 [value]="null">{{'common.not.applicable.option' | translate}}</mat-option>
-                                        <mat-option *ngFor="let lumpSum of data.lumpSums"
-                                                    [value]="lumpSum.id">
-                                            {{ (lumpSum.name | translateBySystemLanguage | async) + ' - ' + getLumpSumPeriod(lumpSum) }}
-                                        </mat-option>
+                                        <mat-optgroup *ngIf="data.lumpSums.length" [label]="'lump.sums.table.title' | translate">
+                                            <mat-option *ngFor="let lumpSum of data.lumpSums"
+                                                        [value]="lumpSum.id">
+                                                <span>{{ (lumpSum.name | translateBySystemLanguage | async) }}</span>
+                                                <span *ngIf="lumpSum.period !== null && lumpSum.period !== undefined">
+                                                    - {{ lumpSum.period === PERIOD_PREPARATION ? ('project.application.form.section.part.e.period.preparation' | translate) :
+                                                    (lumpSum.period === PERIOD_CLOSURE ? ('project.application.form.section.part.e.period.closure' | translate) :
+                                                        ('project.partner.budget.table.period' | translate) + ' ' + lumpSum.period) }}
+                                            </span>
+                                            </mat-option>
+                                        </mat-optgroup>
                                     </mat-select>
                                 </mat-form-field>
                             </mat-cell>
@@ -289,7 +296,7 @@
                                               maxLines="2">{{'project.application.partner.report.expenditures.tab.number.of.units' | translate}}</span>
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                                <mat-form-field jemsFormFieldWidth="full">
+                                <mat-form-field jemsFormFieldWidth="full" *ngIf="control.value.lumpSumId">
                                     <input [formControlName]="constants.FORM_CONTROL_NAMES.numberOfUnits"
                                            matInput
                                            type="integer">
@@ -303,7 +310,7 @@
                                               maxLines="2">{{'project.application.partner.report.expenditures.tab.price.per.unit' | translate}}</span>
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                                <mat-form-field jemsFormFieldWidth="full">
+                                <mat-form-field jemsFormFieldWidth="full" *ngIf="control.value.lumpSumId">
                                     <input [formControlName]="constants.FORM_CONTROL_NAMES.pricePerUnit"
                                            [options]="{min: constants.MIN_VALUE, max: constants.MAX_VALUE, align: 'right'}"
                                            currencyMask matInput
