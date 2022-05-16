@@ -19,6 +19,9 @@ export class AlertComponent {
   @Input()
   type: Alert;
 
+  @Input()
+  disableMargins = false;
+
   @Output()
   closed = new EventEmitter<void>();
 

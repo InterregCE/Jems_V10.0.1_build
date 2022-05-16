@@ -17,15 +17,16 @@
 </ng-container>
 
 <ng-container *ngIf="isReport">
-    <button (click)="download.emit(reportFile.id)" color="accent"
+    <button (click)="download.emit(reportFile.id)"
+            color="primary"
             mat-icon-button
             matTooltip="{{'file.table.action.download.tooltip' | translate}}">
-        <mat-icon>download</mat-icon>
+        <mat-icon fontSet="material-icons-outlined">file_download</mat-icon>
     </button>
     <span [matTooltip]="!canDeleteReport() ? ('file.table.action.delete.disabled.for.tab.tooltip' | translate) : ('file.table.action.delete.tooltip' | translate)">
         <button (click)="deleteReportFile.emit(reportFile)" [disabled]="!canDeleteReport()" color="accent"
                 mat-icon-button>
-            <mat-icon>delete</mat-icon>
+            <mat-icon>{{ canDeleteReport() ? 'delete' : 'delete_forever'}}</mat-icon>
         </button>
     </span>
 </ng-container>
