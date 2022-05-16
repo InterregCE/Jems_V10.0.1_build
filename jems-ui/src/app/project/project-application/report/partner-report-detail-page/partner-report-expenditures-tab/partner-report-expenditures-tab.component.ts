@@ -341,7 +341,10 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       return;
     }
     this.pageStore.uploadFile(target?.files[0], expenditureId)
-      .pipe(take(1))
+      .pipe(
+        take(1),
+        catchError(err => this.formService.setError(err))
+      )
       .subscribe(value => this.attachment(expenditureIndex)?.patchValue(value));
   }
 
