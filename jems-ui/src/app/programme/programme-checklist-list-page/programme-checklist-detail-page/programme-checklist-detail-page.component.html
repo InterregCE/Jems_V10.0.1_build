@@ -40,14 +40,12 @@
                             <input *ngIf="!form.get('allowsDecimalScore')?.value" type="integer" currencyMask matInput required
                                    formControlName="minScore"
                                    [min]="0"
-                                   [maxLength]="3"
-                                   (blur)="updateScoreRangeValidations()">
+                                   [maxLength]="3">
 
                             <input *ngIf="form.get('allowsDecimalScore')?.value" type="decimal" currencyMask matInput required
                                    formControlName="minScore"
                                    [min]="0"
-                                   [maxLength]="5"
-                                   (blur)="updateScoreRangeValidations()">
+                                   [maxLength]="5">
                             <mat-error>
                                 <jems-form-field-errors
                                         [errors]="form.get('minScore')?.errors"
@@ -60,13 +58,11 @@
                             <mat-label>{{'programme.checklists.detail.range.max.label' | translate}}</mat-label>
                             <input *ngIf="!form.get('allowsDecimalScore')?.value" type="integer" currencyMask matInput required
                                    formControlName="maxScore"
-                                   [maxLength]="3"
-                                   (blur)="updateScoreRangeValidations()">
+                                   [maxLength]="3">
 
                             <input *ngIf="form.get('allowsDecimalScore')?.value" type="decimal" currencyMask matInput required
                                    formControlName="maxScore"
-                                   [maxLength]="5"
-                                   (blur)="updateScoreRangeValidations()">
+                                   [maxLength]="5">
                             <mat-error>
                                 <jems-form-field-errors
                                         [errors]="form.get('maxScore')?.errors"

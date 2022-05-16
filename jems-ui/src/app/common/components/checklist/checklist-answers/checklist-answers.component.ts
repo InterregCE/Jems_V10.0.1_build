@@ -11,7 +11,9 @@ import {
 import {
   ChecklistComponentInstanceDTO,
   ChecklistInstanceDetailDTO,
-  ProgrammeChecklistComponentDTO, ScoreInstanceMetadataDTO, ScoreMetadataDTO,
+  ProgrammeChecklistComponentDTO,
+  ScoreInstanceMetadataDTO,
+  ScoreMetadataDTO,
   TextInputMetadataDTO
 } from '@cat/api';
 import {Alert} from '@common/components/forms/alert';
@@ -37,9 +39,13 @@ export class ChecklistAnswersComponent implements OnInit, OnChanges {
   @Input()
   editable: boolean;
   @Input()
+  isScored: boolean;
+  @Input()
   minScore: number;
   @Input()
   maxScore: number;
+  @Input()
+  maxTotalScore: number;
   @Input()
   allowsDecimalScore: boolean;
 
@@ -72,6 +78,8 @@ export class ChecklistAnswersComponent implements OnInit, OnChanges {
       // if there is no status we're dealing with a programme checklist (no instance)
       this.formService.init(this.form, of(this.editable));
     }
+    this.maxTotalScore = this.getWeightedMaxScoreQuestions();
+    this.isScored = this.maxTotalScore > 0;
 
     this.FORM_ERRORS_ARGS = {
       score: {
@@ -90,7 +98,7 @@ export class ChecklistAnswersComponent implements OnInit, OnChanges {
   resetForm(): void {
     this.formComponents.clear();
     this.components.forEach(component => {
-        if(component.type === this.ComponentType.SCORE) {
+        if (component.type === this.ComponentType.SCORE) {
           this.sliderValues[component.position] = (component.instanceMetadata as ScoreInstanceMetadataDTO).score || this.minScore;
         }
         this.formComponents.push(this.formBuilder.group({
@@ -105,7 +113,18 @@ export class ChecklistAnswersComponent implements OnInit, OnChanges {
     this.formService.resetEditable();
   }
 
-  private getInstanceForm(component: ChecklistComponentInstanceDTO): FormGroup | null{
+  private getWeightedMaxScoreQuestions(): number {
+    let questionsScored = 0;
+    this.components.forEach(component => {
+      if (component.type === this.ComponentType.SCORE) {
+        const metadataWeight = (component.programmeMetadata as ScoreMetadataDTO).weight;
+        questionsScored = questionsScored + this.maxScore * metadataWeight;
+      }
+    })
+    return questionsScored;
+  }
+
+  private getInstanceForm(component: ChecklistComponentInstanceDTO): FormGroup | null {
     if (!component.instanceMetadata) {
       return null;
     }
