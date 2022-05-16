@@ -14,6 +14,7 @@ import io.cloudflight.jems.server.programme.service.unitCostChangedAudit
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.math.BigDecimal
 
 @Service
 class UpdateUnitCost(
@@ -48,15 +49,17 @@ class UpdateUnitCost(
     }
 
     private fun unitCostUpdateRestrictions(existingUnitCost: ProgrammeUnitCost, updatedUnitCost: ProgrammeUnitCost) {
-        if (existingUnitCost.costPerUnit?.compareTo( updatedUnitCost.costPerUnit) != 0 ||
+        if (existingUnitCost.costPerUnit?.compareTo(updatedUnitCost.costPerUnit) != 0 ||
             existingUnitCost.isOneCostCategory != updatedUnitCost.isOneCostCategory ||
-            !updatedUnitCost.categories.containsAll(existingUnitCost.categories )
+            !updatedUnitCost.categories.containsAll(existingUnitCost.categories)
         )
             throw UpdateUnitCostWhenProgrammeSetupRestricted()
     }
 
     private fun updateCostInForeignCurrencyRestrictions(existingUnitCost: ProgrammeUnitCost, updatedUnitCost: ProgrammeUnitCost) {
-        if (existingUnitCost.costPerUnitForeignCurrency?.compareTo(updatedUnitCost.costPerUnitForeignCurrency) != 0 ||
+        val existingCostPerUnitForeignCurrency = existingUnitCost.costPerUnitForeignCurrency ?: BigDecimal.ZERO
+        val updatedCostPerUnitForeignCurrency = updatedUnitCost.costPerUnitForeignCurrency ?: BigDecimal.ZERO
+        if (existingCostPerUnitForeignCurrency.compareTo(updatedCostPerUnitForeignCurrency) != 0 ||
             existingUnitCost.foreignCurrencyCode != updatedUnitCost.foreignCurrencyCode
         )
             throw UpdateUnitCostWhenProgrammeSetupRestricted()
