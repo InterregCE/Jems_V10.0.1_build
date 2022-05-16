@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {ChecklistComponentInstanceDTO, ProgrammeChecklistComponentDTO, ProgrammeChecklistDetailDTO} from '@cat/api';
 import {FormArray, FormBuilder, Validators} from '@angular/forms';
 import {Observable} from 'rxjs';
@@ -18,7 +18,7 @@ import {Alert} from '@common/components/forms/alert';
   providers: [ProgrammeChecklistDetailPageStore, FormService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProgrammeChecklistDetailPageComponent  {
+export class ProgrammeChecklistDetailPageComponent implements OnInit {
   CHECKLIST_TYPE = ProgrammeChecklistDetailDTO.TypeEnum;
   COMPONENT_TYPE = ProgrammeChecklistComponentDTO.TypeEnum;
   Alert = Alert;
@@ -61,7 +61,26 @@ export class ProgrammeChecklistDetailPageComponent  {
           previewComponents: this.getPreviewComponents(checklist.components)
         }))
       );
+  }
+
+  ngOnInit() {
     this.formService.init(this.form, this.pageStore.isEditable$);
+    const minControl = this.form.get('minScore');
+    const maxControl = this.form.get('maxScore');
+    minControl?.setValidators([Validators.required, Validators.max(this.form.value?.maxScore || 10)]);
+    maxControl?.setValidators([Validators.required, Validators.min(this.form.value?.minScore || 0), Validators.max(100)]);
+    minControl?.valueChanges.subscribe(value => {
+      if (value !== this.form.value?.minScore) {
+        maxControl?.setValidators([Validators.required, Validators.min(value), Validators.max(100)]);
+        maxControl?.updateValueAndValidity();
+      }
+    });
+    maxControl?.valueChanges.subscribe(value => {
+      if (value !== this.form.value?.maxScore) {
+        minControl?.setValidators([Validators.required, Validators.max(value)]);
+        minControl?.updateValueAndValidity();
+      }
+    });
   }
 
   save(): void {
@@ -127,7 +146,6 @@ export class ProgrammeChecklistDetailPageComponent  {
     this.components.clear();
     checklist?.components?.forEach(component => this.addComponent(component));
     this.formService.resetEditable();
-    this.updateScoreRangeValidations();
   }
 
   private getPreviewComponents(components: ProgrammeChecklistComponentDTO[]): ChecklistComponentInstanceDTO[] {
@@ -138,11 +156,6 @@ export class ProgrammeChecklistDetailPageComponent  {
       programmeMetadata: component.metadata,
       instanceMetadata: null as any
     })) : [];
-  }
-
-  updateScoreRangeValidations() {
-    this.form.get('maxScore')?.setValidators([Validators.required, Validators.min(this.form.value?.minScore || 0), Validators.max(100)]);
-    this.form.get('minScore')?.setValidators([Validators.required, Validators.max(this.form.value?.maxScore || 10)]);
   }
 
   updateScoreValues() {

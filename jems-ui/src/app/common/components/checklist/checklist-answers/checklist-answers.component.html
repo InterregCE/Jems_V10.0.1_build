@@ -124,6 +124,7 @@
                 </mat-error>
             </mat-form-field>
             <span>/ {{maxScore}}</span>
+            <span class="score-weight"> {{'checklists.instance.component.score.weight.info' | translate: {weight: options.weight} }}</span>
         </div>
         <jems-expandable-textarea jemsMultiColumnRow class="mt-2"
                                   [control]="controls?.get('justification')"
@@ -137,7 +138,13 @@
 </ng-template>
 
 <ng-template #scoreCalculationTemplate>
-    <hr class="ml-0">
-    <div><strong>{{getAverageScore()}} / {{maxScore}}</strong> {{'checklists.instance.component.score.average.calculation.label' | translate}}</div>
+    <ng-container *ngIf="this.isScored">
+        <div class="score-calculation">
+            <span class="rating-main">
+                {{'checklists.instance.component.score.average.calculation.label' | translate}} {{getAverageScore()}} /
+            </span>
+            <span> {{maxTotalScore}}</span>
+        </div>
+    </ng-container>
 </ng-template>
 
