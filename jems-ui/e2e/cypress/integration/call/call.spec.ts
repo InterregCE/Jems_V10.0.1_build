@@ -73,7 +73,7 @@ context('Call management tests', () => {
       cy.wrap(el).find('input[name="staffCostFlatRate"]').type('19');
     });
 
-    const flatRate2 = 'Office and administration flat rate based on direct staff cost';
+    const flatRate2 = 'Office and administrative costs flat rate based on direct staff cost';
     cy.get('jems-call-flat-rates span').contains(flatRate2).parent().then(el => {
       cy.wrap(el).find('input[type="checkbox"]').check({force: true});
       cy.wrap(el).find('input[name="officeOnStaffFlatRate"]').type('14');
