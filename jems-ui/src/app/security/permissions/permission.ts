@@ -218,6 +218,12 @@ export class Permission {
                   editPermissions: [PermissionsEnum.ProjectAssessmentChecklistConsolidate],
                   infoMessage: 'permission.assessment.consolidate.info'
                 },
+                {
+                  name: 'permission.assessment.selection',
+                  mode: PermissionMode.HIDDEN_VIEW_EDIT,
+                  viewPermissions: [PermissionsEnum.ProjectAssessmentChecklistSelectedRetrieve],
+                  editPermissions: [PermissionsEnum.ProjectAssessmentChecklistSelectedUpdate]
+                }
               ]
             }
           ],

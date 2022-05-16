@@ -71,8 +71,12 @@ class UpdateChecklistInstance(
     @Transactional
     @ExceptionWrapper(UpdateChecklistInstanceException::class)
     override fun updateSelection(checklistId: Long, visible: Boolean) {
-        val checklist = persistence.updateSelection(checklistId, visible)
+        val existing = persistence.getChecklistSummary(checklistId)
 
+        if (existing.status != ChecklistInstanceStatus.FINISHED)
+            throw UpdateChecklistInstanceStatusNotFinishedException()
+
+        val checklist = persistence.updateSelection(checklistId, visible)
         auditPublisher.publishEvent(
             checklistSelectionUpdate(
                 context = this,

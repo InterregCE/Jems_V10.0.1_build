@@ -188,11 +188,11 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
 
     @BeforeEach
     fun setup() {
-        clearMocks(persistence)
+        clearMocks(persistence, auditPublisher)
         MockKAnnotations.init(this)
         every { userAuthorization.hasPermissionForProject(any(), any()) } returns false
-        checklistInstanceValidator = mockk()
         generalValidator = GeneralValidatorDefaultImpl()
+        checklistInstanceValidator = mockk()
         checklistInstanceValidator = ChecklistInstanceValidator(generalValidator)
         updateChecklistInstance = UpdateChecklistInstance(persistence, auditPublisher, checklistInstanceValidator, userAuthorization)
     }
@@ -210,8 +210,6 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } answers {}
         every { persistence.update(checkLisDetail) } returns checkLisDetail
-        every { checklistInstanceValidator.validateChecklistComponents(checkLisDetail.components) } returns Unit
-
         every { userAuthorization.getUser() } returns user
         every { persistence.getChecklistSummary(CHECKLIST_ID) } returns checklistInstance(ChecklistInstanceStatus.DRAFT)
         every { persistence.changeStatus(CHECKLIST_ID, ChecklistInstanceStatus.FINISHED) } returns checklistInstance(ChecklistInstanceStatus.FINISHED)
@@ -231,10 +229,13 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
 
     @Test
     fun `update - checkLisDetail is already in FINISHED status`() {
-        every { persistence.update(checkLisDetail) } returns checkLisDetail
-        assertThrows<UpdateChecklistInstanceStatusNotAllowedException> { updateChecklistInstance.update(checkLisDetail) }
+        every { persistence.getChecklistDetail(CHECKLIST_ID) } returns checkLisDetail
+        assertThrows<UpdateChecklistInstanceStatusNotAllowedException> {
+            updateChecklistInstance.update(checklistInstanceDetail(ChecklistInstanceStatus.FINISHED))
+        }
     }
 
+    @Test
     fun `change status to FINISHED only allowed to assessor`() {
         every { userAuthorization.getUser() } returns user
         every { persistence.getChecklistSummary(CHECKLIST_ID) } returns checklistInstance(ChecklistInstanceStatus.DRAFT, "different@email")
@@ -275,4 +276,57 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
 
         assertThrows<AppInputValidationException> { updateChecklistInstance.update(checkLisDetailWithErrorOnScore) }
     }
+
+    @Test
+    fun `update selection - not finished exception`() {
+        val checklist = checklistInstance(ChecklistInstanceStatus.DRAFT)
+        every { persistence.getChecklistSummary(CHECKLIST_ID) } returns checklist
+
+        assertThrows<UpdateChecklistInstanceStatusNotFinishedException> {
+            updateChecklistInstance.updateSelection(CHECKLIST_ID, true)
+        }
+    }
+
+    @Test
+    fun `update selection - set visible`() {
+        val auditSlot = slot<AuditCandidateEvent>()
+        every { auditPublisher.publishEvent(capture(auditSlot)) } answers {}
+        val checklist = checklistInstance(ChecklistInstanceStatus.FINISHED)
+        every { persistence.getChecklistSummary(CHECKLIST_ID) } returns checklist
+        every { persistence.updateSelection(CHECKLIST_ID, true) } returns checklist
+
+        updateChecklistInstance.updateSelection(CHECKLIST_ID, true)
+
+        verify(exactly = 1) { auditPublisher.publishEvent(capture(auditSlot)) }
+        Assertions.assertThat(auditSlot.captured.auditCandidate).isEqualTo(
+            AuditCandidate(
+                action = AuditAction.ASSESSMENT_CHECKLIST_VISIBILITY_CHANGE,
+                project = AuditProject(id = checklist.relatedToId.toString()),
+                description = "[" + checklist.id + "] [" + checklist.type + "]" +
+                    " [" + checklist.name + "]" + " set to visibility true"
+            )
+        )
+    }
+
+    @Test
+    fun `update selection - set invisible`() {
+        val auditSlot = slot<AuditCandidateEvent>()
+        every { auditPublisher.publishEvent(capture(auditSlot)) } answers {}
+        val checklist = checklistInstance(ChecklistInstanceStatus.FINISHED).copy(visible = false)
+        every { persistence.getChecklistSummary(CHECKLIST_ID) } returns checklist
+        every { persistence.updateSelection(CHECKLIST_ID, false) } returns checklist
+
+        updateChecklistInstance.updateSelection(CHECKLIST_ID, false)
+
+        verify(exactly = 1) { auditPublisher.publishEvent(capture(auditSlot)) }
+        Assertions.assertThat(auditSlot.captured.auditCandidate).isEqualTo(
+            AuditCandidate(
+                action = AuditAction.ASSESSMENT_CHECKLIST_VISIBILITY_CHANGE,
+                project = AuditProject(id = checklist.relatedToId.toString()),
+                description = "[" + checklist.id + "] [" + checklist.type + "]" +
+                    " [" + checklist.name + "]" + " set to visibility false"
+            )
+        )
+    }
+
 }
