@@ -10,7 +10,6 @@ import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditCandidate
-import io.cloudflight.jems.server.common.exception.I18nFieldError
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
@@ -86,10 +85,10 @@ class UpdateUnitCostInteractorTest : UnitTest() {
             isOneCostCategory = false,
             categories = setOf(OfficeAndAdministrationCosts),
         )
-        val ex = assertThrows<I18nValidationException> { updateUnitCost.updateUnitCost(wrongUnitCost) }
-        assertThat(ex.i18nFieldErrors).containsExactlyInAnyOrderEntriesOf(mapOf(
-            "costPerUnit" to I18nFieldError(i18nKey = "programme.unitCost.costPerUnit.invalid"),
-            "categories" to I18nFieldError(i18nKey = "programme.unitCost.categories.min.2"),
+        val ex = assertThrows<AppInputValidationException> { updateUnitCost.updateUnitCost(wrongUnitCost) }
+        assertThat(ex.formErrors).containsExactlyInAnyOrderEntriesOf(mapOf(
+            "costPerUnit" to I18nMessage(i18nKey = "programme.unitCost.costPerUnit.invalid", mapOf("costPerUnit" to wrongUnitCost.costPerUnit.toString())),
+            "categories" to I18nMessage(i18nKey = "programme.unitCost.categories.min.2"),
         ))
     }
 

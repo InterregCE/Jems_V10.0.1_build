@@ -1,16 +1,13 @@
 package io.cloudflight.jems.server.programme.service.costoption.create_unit_cost
 
-import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory.OfficeAndAdministrationCosts
-import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory.StaffCosts
-import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory.TravelAndAccommodationCosts
-import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
-import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.api.common.dto.I18nMessage
+import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory.*
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
-import io.cloudflight.jems.server.common.exception.I18nFieldError
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
@@ -66,10 +63,10 @@ class CreateUnitCostInteractorTest : UnitTest() {
             isOneCostCategory = false,
             categories = setOf(OfficeAndAdministrationCosts),
         )
-        val ex = assertThrows<I18nValidationException> { createUnitCost.createUnitCost(wrongUnitCost) }
-        assertThat(ex.i18nFieldErrors).containsExactlyInAnyOrderEntriesOf(mapOf(
-            "costPerUnit" to I18nFieldError(i18nKey = "programme.unitCost.costPerUnit.invalid"),
-            "categories" to I18nFieldError(i18nKey = "programme.unitCost.categories.min.2"),
+        val ex = assertThrows<AppInputValidationException> { createUnitCost.createUnitCost(wrongUnitCost) }
+        assertThat(ex.formErrors).containsExactlyInAnyOrderEntriesOf(mapOf(
+            "costPerUnit" to I18nMessage(i18nKey = "programme.unitCost.costPerUnit.invalid", mapOf("costPerUnit" to wrongUnitCost.costPerUnit.toString())),
+            "categories" to I18nMessage(i18nKey = "programme.unitCost.categories.min.2"),
         ))
     }
 
@@ -85,10 +82,10 @@ class CreateUnitCostInteractorTest : UnitTest() {
             isOneCostCategory = true,
             categories = setOf(StaffCosts, TravelAndAccommodationCosts),
         )
-        val ex = assertThrows<I18nValidationException> { createUnitCost.createUnitCost(wrongUnitCost) }
-        assertThat(ex.i18nFieldErrors).containsExactlyInAnyOrderEntriesOf(mapOf(
-            "costPerUnit" to I18nFieldError(i18nKey = "programme.unitCost.costPerUnit.invalid"),
-            "categories" to I18nFieldError(i18nKey = "programme.unitCost.categories.exactly.1"),
+        val ex = assertThrows<AppInputValidationException> { createUnitCost.createUnitCost(wrongUnitCost) }
+        assertThat(ex.formErrors).containsExactlyInAnyOrderEntriesOf(mapOf(
+            "costPerUnit" to I18nMessage(i18nKey = "programme.unitCost.costPerUnit.invalid", mapOf("costPerUnit" to wrongUnitCost.costPerUnit.toString())),
+            "categories" to I18nMessage(i18nKey = "programme.unitCost.categories.exactly.1"),
         ))
     }
 
@@ -104,9 +101,9 @@ class CreateUnitCostInteractorTest : UnitTest() {
             isOneCostCategory = true,
             categories = setOf(OfficeAndAdministrationCosts),
         )
-        val ex = assertThrows<I18nValidationException> { createUnitCost.createUnitCost(wrongUnitCost) }
-        assertThat(ex.i18nFieldErrors).containsExactlyInAnyOrderEntriesOf(mapOf(
-            "categories" to I18nFieldError(i18nKey = "programme.unitCost.categories.restricted"),
+        val ex = assertThrows<AppInputValidationException> { createUnitCost.createUnitCost(wrongUnitCost) }
+        assertThat(ex.formErrors).containsExactlyInAnyOrderEntriesOf(mapOf(
+            "categories" to I18nMessage(i18nKey = "programme.unitCost.categories.restricted"),
         ))
     }
 
