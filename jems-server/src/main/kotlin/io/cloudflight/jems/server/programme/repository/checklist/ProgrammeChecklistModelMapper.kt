@@ -1,6 +1,10 @@
 package io.cloudflight.jems.server.programme.repository.checklist
 
-import io.cloudflight.jems.server.common.gson.*
+import io.cloudflight.jems.server.common.gson.toHeadline
+import io.cloudflight.jems.server.common.gson.toJson
+import io.cloudflight.jems.server.common.gson.toOptionsToggle
+import io.cloudflight.jems.server.common.gson.toScore
+import io.cloudflight.jems.server.common.gson.toTextInput
 import io.cloudflight.jems.server.programme.entity.checklist.ProgrammeChecklistComponentEntity
 import io.cloudflight.jems.server.programme.entity.checklist.ProgrammeChecklistEntity
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklist
@@ -46,7 +50,7 @@ fun ProgrammeChecklistRow.toModel(): ProgrammeChecklist =
         maxScore = maxScore,
         allowsDecimalScore = allowsDecimalScore,
         lastModificationDate = lastModificationDate,
-        locked = count > 0
+        locked = instancesCount > 0
     )
 
 fun ProgrammeChecklistDetail.toEntity(): ProgrammeChecklistEntity =

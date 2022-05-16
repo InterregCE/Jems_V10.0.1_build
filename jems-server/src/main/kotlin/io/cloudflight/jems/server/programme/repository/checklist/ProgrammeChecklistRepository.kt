@@ -14,16 +14,22 @@ interface ProgrammeChecklistRepository : JpaRepository<ProgrammeChecklistEntity,
     @Query(
         """
             SELECT DISTINCT
-             entity.*,
-             COUNT(instance.id) AS count
+                new io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistRow(
+                    entity.id,
+                    entity.type,
+                    entity.name,
+                    entity.minScore,
+                    entity.maxScore,
+                    entity.allowsDecimalScore,
+                    entity.lastModificationDate,
+                    COUNT(instance.id)
+                )
              FROM #{#entityName} AS entity
-             LEFT JOIN checklist_instance AS instance ON entity.id = instance.programme_checklist_id
+             LEFT JOIN checklist_instance AS instance ON entity.id = instance.programmeChecklist.id
              GROUP by entity.id
-             ORDER BY entity.id ASC LIMIT 100
-             """,
-        nativeQuery = true
+             """
     )
-    fun findTop100ByOrderById(): Iterable<ProgrammeChecklistRow>
+    fun findTop100ByOrderByIdDesc(): Iterable<ProgrammeChecklistRow>
 
     fun findByType(checklistType: ProgrammeChecklistType): Iterable<IdNamePair>
 

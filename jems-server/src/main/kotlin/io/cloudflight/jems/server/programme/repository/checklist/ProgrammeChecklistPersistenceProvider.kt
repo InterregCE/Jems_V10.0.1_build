@@ -17,7 +17,7 @@ class ProgrammeChecklistPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getMax100Checklists(): List<ProgrammeChecklist> {
-        return repository.findTop100ByOrderById().toModel()
+        return repository.findTop100ByOrderByIdDesc().toModel()
     }
 
     @Transactional(readOnly = true)

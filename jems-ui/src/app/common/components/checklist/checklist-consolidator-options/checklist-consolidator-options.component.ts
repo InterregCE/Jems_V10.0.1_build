@@ -81,7 +81,7 @@ export class ChecklistConsolidatorOptionsComponent implements OnInit, OnChanges 
     }
   }
 
-  isChecklistFinished(status: ChecklistInstanceDetailDTO.StatusEnum): Boolean {
+  isChecklistFinished(status: ChecklistInstanceDetailDTO.StatusEnum): boolean {
     return status !== ChecklistInstanceDetailDTO.StatusEnum.FINISHED;
   }
 }

@@ -58,7 +58,7 @@ export class ApplicationFormConfigurationPageStore {
         withLatestFrom(this.callStore.callIsPublished$, this.callStore.callType$),
         map(([configs, callIsPublished, callType]) => {
           if (callType === CallDetailDTO.TypeEnum.SPF) {
-           return this.getSPFApplicationFormFieldNodeList(this.getApplicationFormFieldNodeList(callIsPublished,configs));
+            return this.getSPFApplicationFormFieldNodeList(this.getApplicationFormFieldNodeList(callIsPublished, configs));
           }
           return this.getStandardApplicationFormFieldNodeList(this.getApplicationFormFieldNodeList(callIsPublished, configs));
         })

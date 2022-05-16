@@ -78,8 +78,6 @@ export class ChecklistAnswersComponent implements OnInit, OnChanges {
       // if there is no status we're dealing with a programme checklist (no instance)
       this.formService.init(this.form, of(this.editable));
     }
-    this.maxTotalScore = this.getWeightedMaxScoreQuestions();
-    this.isScored = this.maxTotalScore > 0;
 
     this.FORM_ERRORS_ARGS = {
       score: {
@@ -97,9 +95,12 @@ export class ChecklistAnswersComponent implements OnInit, OnChanges {
 
   resetForm(): void {
     this.formComponents.clear();
+    let questionsScored = 0;
     this.components.forEach(component => {
         if (component.type === this.ComponentType.SCORE) {
           this.sliderValues[component.position] = (component.instanceMetadata as ScoreInstanceMetadataDTO).score || this.minScore;
+          const metadataWeight = (component.programmeMetadata as ScoreMetadataDTO).weight;
+          questionsScored = questionsScored + this.maxScore * metadataWeight;
         }
         this.formComponents.push(this.formBuilder.group({
           id: component.id,
@@ -110,18 +111,10 @@ export class ChecklistAnswersComponent implements OnInit, OnChanges {
         }));
       }
     );
-    this.formService.resetEditable();
-  }
+    this.maxTotalScore = questionsScored;
+    this.isScored = this.maxTotalScore > 0;
 
-  private getWeightedMaxScoreQuestions(): number {
-    let questionsScored = 0;
-    this.components.forEach(component => {
-      if (component.type === this.ComponentType.SCORE) {
-        const metadataWeight = (component.programmeMetadata as ScoreMetadataDTO).weight;
-        questionsScored = questionsScored + this.maxScore * metadataWeight;
-      }
-    })
-    return questionsScored;
+    this.formService.resetEditable();
   }
 
   private getInstanceForm(component: ChecklistComponentInstanceDTO): FormGroup | null {

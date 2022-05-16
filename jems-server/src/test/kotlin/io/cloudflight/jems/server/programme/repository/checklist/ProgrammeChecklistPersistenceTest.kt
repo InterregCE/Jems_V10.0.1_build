@@ -7,7 +7,6 @@ import io.cloudflight.jems.server.programme.service.checklist.model.*
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.HeadlineMetadata
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.OptionsToggleMetadata
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.TextInputMetadata
-import io.cloudflight.jems.server.project.service.checklist.model.metadata.TextInputInstanceMetadata
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -117,9 +116,9 @@ class ProgrammeChecklistPersistenceTest : UnitTest() {
         every { programmeChecklistRow.maxScore } returns BigDecimal(10)
         every { programmeChecklistRow.allowsDecimalScore } returns false
         every { programmeChecklistRow.lastModificationDate } returns ZonedDateTime.of(2020, 1, 10, 10, 10, 10, 10, ZoneId.systemDefault())
-        every { programmeChecklistRow.count } returns 0
+        every { programmeChecklistRow.instancesCount } returns 0
 
-        every { repository.findTop100ByOrderById() } returns listOf(programmeChecklistRow)
+        every { repository.findTop100ByOrderByIdDesc() } returns listOf(programmeChecklistRow)
         assertThat(persistence.getMax100Checklists()[0])
             .usingRecursiveComparison()
             .isEqualTo(checkList)
