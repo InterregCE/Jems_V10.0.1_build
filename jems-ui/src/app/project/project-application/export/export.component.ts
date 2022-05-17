@@ -50,7 +50,7 @@ export class ExportComponent {
         categories,
         isSPFProjectCallType: projectCallType === ProjectCallSettingsDTO.CallTypeEnum.SPF
       })),
-      tap((data) => this.resetForm(data.versions))
+      tap((data) => this.resetForm(data.versions, data.inputLanguages, data.exportLanguages))
     );
   }
 
@@ -65,10 +65,10 @@ export class ExportComponent {
     }
   }
 
-  resetForm(versions: ProjectVersionDTO[]): void {
+  resetForm(versions: ProjectVersionDTO[], inputLanguages: string[], exportLanguages: string[]): void {
     this.exportForm = this.formBuilder.group({
-      inputLanguage: [this.exportPageStore.fallBackLanguage],
-      exportLanguage: [this.exportPageStore.fallBackLanguage],
+      inputLanguage: [this.setFallBackLanguageIfInLanguageList(inputLanguages)],
+      exportLanguage: [this.setFallBackLanguageIfInLanguageList(exportLanguages)],
       version: [versions.find(it => it.current)?.version || versions[0].version],
     });
   }
@@ -83,10 +83,14 @@ export class ExportComponent {
   }
 
   get inputLanguage(): string {
-    return this.exportForm.get('inputLanguage')?.value || this.exportPageStore.fallBackLanguage;
+    return this.exportForm.get('inputLanguage')?.value;
   }
 
   get exportLanguage(): string {
-    return this.exportForm.get('exportLanguage')?.value || this.exportPageStore.fallBackLanguage;
+    return this.exportForm.get('exportLanguage')?.value;
+  }
+
+  setFallBackLanguageIfInLanguageList(languagesList: string[]): string {
+    return languagesList.includes(this.exportPageStore.fallBackLanguage) ? this.exportPageStore.fallBackLanguage : '';
   }
 }
