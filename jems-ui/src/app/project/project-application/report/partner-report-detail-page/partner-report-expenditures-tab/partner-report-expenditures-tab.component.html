@@ -69,7 +69,7 @@
                                                 (selectionChange)="onCostCategoryChange($event, control)"
                                                 [formControlName]="constants.FORM_CONTROL_NAMES.costCategory"
                                                 [matTooltip]="costCategorySelect.triggerValue"
-                                                [placeholder]="'common.not.applicable.option' | translate">
+                                                [placeholder]="'project.application.partner.report.expenditures.cost.category.placeholder' | translate">
                                         <mat-option *ngIf="isLumpSumSelectedInCurrentFormGroup(i)"
                                                 [value]="CostCategoryEnum.Multiple">{{'project.application.partner.report.expenditures.cost.category.multiple' | translate}}</mat-option>
                                         <mat-option *ngFor="let costCategory of data.costCategories"
@@ -77,13 +77,6 @@
                                             {{ ('project.application.partner.report.expenditures.cost.category.' + costCategory) | translate}}
                                         </mat-option>
                                     </mat-select>
-                                    <mat-error>
-                                        <jems-form-field-errors
-                                                [errors]="control?.get(constants.FORM_CONTROL_NAMES.costCategory)?.errors"
-                                                [messages]="constants.FORM_ERRORS.costCategory"
-                                                condensed="true"
-                                        ></jems-form-field-errors>
-                                    </mat-error>
                                 </mat-form-field>
                             </mat-cell>
                             <mat-footer-cell *matFooterCellDef></mat-footer-cell>

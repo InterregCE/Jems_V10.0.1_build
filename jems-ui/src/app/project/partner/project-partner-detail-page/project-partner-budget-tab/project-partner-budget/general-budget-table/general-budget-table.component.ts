@@ -125,7 +125,7 @@ export class GeneralBudgetTableComponent implements OnInit, OnChanges {
         maxInRem: 6
       }]),
       {minInRem: 8, maxInRem: 8},
-      {minInRem: 9, maxInRem: 9}, // totals column
+      {minInRem: 9}, // totals column
       ...this.budgetTabService.getPeriodsWidthConfigs(this.projectPeriods),
       ...this.editable ? [{minInRem: 3, maxInRem: 3}] : []
     ];
