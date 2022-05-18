@@ -82,4 +82,59 @@ context('Application modifications', () => {
       cy.contains('div', 'Project version').should('contain', '(current) V. 1.0');
     });
   });
+
+  it('TB-356 Edit project in modification and resubmit', () => {
+    cy.fixture('project/application-form/modifications/TB-359.json').then(testData => {
+      cy.loginByRequest(user.applicantUser.email);
+      cy.createFullApplication(application, user.programmeUser.email).then(applicationId => {
+        cy.loginByRequest(user.programmeUser.email);
+        cy.visit(`app/project/detail/${applicationId}/modification`, {failOnStatusCode: false});
+        cy.contains('Open new modification').click();
+        cy.get('jems-confirm-dialog').should('be.visible');
+        cy.get('jems-confirm-dialog').find('.mat-dialog-actions').contains('Confirm').click();
+        cy.contains('You have successfully opened a modification').should('be.visible');
+
+        cy.loginByRequest(user.applicantUser.email);
+        cy.visit(`app/project/detail/${applicationId}`, {failOnStatusCode: false});
+        cy.get('jems-project-application-information').find('div').should('contain.text', 'In modification precontracted');
+        cy.get('jems-side-nav').find('mat-select-trigger').find('span').should('contain.text', ' (current) V. 2.0');
+
+        cy.contains('.link', 'A - Project identification').click();
+        cy.contains('div', 'Project title').find('textarea').clear().type('New title');
+        cy.contains('Save changes').click();
+
+        cy.runPreSubmissionCheck(applicationId);
+        cy.submitProjectApplication(applicationId);
+
+        cy.loginByRequest(user.programmeUser.email);
+        cy.visit(`app/project/detail/${applicationId}`, {failOnStatusCode: false});
+        cy.get('jems-project-application-information').find('div').should('contain.text', 'Modification precontracted submitted');
+        cy.contains('span', 'Modification').click();
+        cy.contains('Approve modification').click();
+        cy.get('jems-modification-confirmation').contains('div', 'Decision date (MM/DD/YYYY)').find('input').type(testData.approved.entryIntoForceDate);
+        cy.get('jems-modification-confirmation').contains('div', 'Entry into force (MM/DD/YYYY)').find('input').type(testData.approved.entryIntoForceDate);
+        cy.get('jems-modification-confirmation').contains('div', 'Explanatory notes').find('textarea').type(testData.approved.note);
+        cy.get('jems-modification-confirmation').contains('Save changes').click();
+        cy.wait(2000); //TODO: improve code - remove wait - MP2-2539
+
+        cy.contains('Past modifications').next().should(pastModificationsSection => {
+          expect(pastModificationsSection).to.contain('Approved');
+          expect(pastModificationsSection).to.contain('Modification 1');
+          expect(pastModificationsSection).to.contain('Project Version 2.0');
+        });
+
+        cy.contains('Project overview').click();
+        cy.get('jems-project-application-information').find('div').should('contain.text', 'Approved');
+
+        cy.contains('.link', 'A - Project identification').click();
+        cy.get('textarea').should('have.value', 'New title');
+
+        cy.contains('(current) V. 2.0').click();
+        cy.contains('V. 1.0').should('be.visible').click();
+        cy.contains('.link', 'A - Project identification').click();
+        cy.get('textarea').should('have.value', 'API generated application title DE');
+      });
+    });
+  });
+
 });
