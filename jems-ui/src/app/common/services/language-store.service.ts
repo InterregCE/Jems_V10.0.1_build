@@ -23,7 +23,7 @@ export class LanguageStore {
   private defaultLanguage = localStorage.getItem(CLIENT_SELECTED_LANGUAGE) || this.userAgentLanguage || DEFAULT_FALLBACK_LANGUAGE;
   private inputLanguagesSubject = new BehaviorSubject<string[]>([]);
   private systemLanguagesSubject = new BehaviorSubject<string[]>([]);
-  private fallbackLanguageSubject = new BehaviorSubject<string>(this.defaultLanguage);
+  private fallbackLanguageSubject = new BehaviorSubject<string>(DEFAULT_FALLBACK_LANGUAGE);
   private currentSystemLanguageSubject = new BehaviorSubject<string>(this.defaultLanguage);
 
 
@@ -58,6 +58,7 @@ export class LanguageStore {
       tap(storedLanguage => {
         if (storedLanguage) {
           this.defaultLanguage = storedLanguage;
+          translate.use(storedLanguage);
         }
       }),
       untilDestroyed(this)
@@ -88,12 +89,12 @@ export class LanguageStore {
     this.systemLanguagesSubject.next(systemLanguages);
     this.inputLanguagesSubject.next(inputLanguages);
 
-    this.fallbackLanguageSubject.next(this.defaultLanguage || fallbackLanguage || DEFAULT_FALLBACK_LANGUAGE);
+    this.fallbackLanguageSubject.next(fallbackLanguage || DEFAULT_FALLBACK_LANGUAGE);
     if (!this.isSystemLanguageExist(this.currentSystemLanguageSubject.getValue())) {
       this.currentSystemLanguageSubject.next(this.determineSystemLanguage(systemLanguages, this.fallbackLanguageSubject.getValue()));
     }
     this.translate.addLangs(systemLanguages);
-    this.translate.setDefaultLang(this.defaultLanguage || fallbackLanguage || DEFAULT_FALLBACK_LANGUAGE);
+    this.translate.setDefaultLang(fallbackLanguage || DEFAULT_FALLBACK_LANGUAGE);
   }
 
   isInputLanguageExist(language: string): boolean {
@@ -144,7 +145,6 @@ export class LanguageStore {
     const storedLanguage = localStorage.getItem(CLIENT_SELECTED_LANGUAGE);
     if (!storedLanguage) {
       localStorage.setItem(CLIENT_SELECTED_LANGUAGE, language);
-      this.fallbackLanguageSubject.next(language);
       return language;
     }
     return storedLanguage;
@@ -154,7 +154,6 @@ export class LanguageStore {
     const storedLanguage = localStorage.getItem(CLIENT_SELECTED_LANGUAGE);
     if (storedLanguage !== null && storedLanguage !== newLanguage){
       localStorage.setItem(CLIENT_SELECTED_LANGUAGE, newLanguage);
-      this.fallbackLanguageSubject.next(newLanguage);
       return newLanguage;
     }
     return storedLanguage ? storedLanguage : '';
