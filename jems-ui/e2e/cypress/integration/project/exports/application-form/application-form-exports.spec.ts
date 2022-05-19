@@ -288,7 +288,6 @@ context('Application form exports', () => {
   });
 
   function replace(testDataFile: string, applicationId: number, acronym: string) {
-    console.log(acronym);
     const id = String(applicationId).padStart(5, '0');
     return testDataFile.replace('{{acronym}}', acronym).replace('{{applicationId}}', id);
   }
