@@ -60,7 +60,7 @@
                             <mat-form-field jemsFormFieldWidth="medium"
                                             *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RESULT.TARGET_VALUE">
                                 <mat-label>{{'project.results.result.target.value' | translate}}</mat-label>
-                                <input currencyMask type="decimal" [options]="{min: 1, max: 99999999, align: 'right'}"
+                                <input currencyMask type="decimal" [options]="{min: 0.01, max: 99999999, align: 'right'}"
                                        name="targetValue" formControlName="targetValue" matInput>
                             </mat-form-field>
 
