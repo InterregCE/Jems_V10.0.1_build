@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {catchError, map, take, tap} from 'rxjs/operators';
 import {HttpErrorResponse} from '@angular/common/http';
@@ -72,6 +72,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
   readonly PERIOD_CLOSURE: number = 255;
 
   constructor(public pageStore: PartnerReportExpendituresStore,
+              protected changeDetectorRef: ChangeDetectorRef,
               private formBuilder: FormBuilder,
               private formService: FormService,
               private partnerFileManagementStore: PartnerFileManagementStore,
@@ -190,6 +191,8 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     this.formService.resetEditable();
     this.items.controls.forEach((formGroup: FormGroup) => (
       this.disableOnReset(formGroup)));
+
+    setTimeout(() => this.changeDetectorRef.detectChanges());
   }
 
   removeItem(index: number): void {
@@ -226,6 +229,8 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     item.get('pricePerUnit')?.disable();
     this.tableData = [...this.items.controls];
     this.formService.setDirty(true);
+
+    setTimeout(() => this.changeDetectorRef.detectChanges());
   }
 
   updateReportExpenditures(): void {

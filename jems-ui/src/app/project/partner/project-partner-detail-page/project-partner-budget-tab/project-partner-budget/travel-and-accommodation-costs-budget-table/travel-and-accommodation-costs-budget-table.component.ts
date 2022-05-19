@@ -102,7 +102,8 @@ export class TravelAndAccommodationCostsBudgetTableComponent implements OnInit, 
         minInRem: 5,
         maxInRem: 5
       }]),
-      {minInRem: 8, maxInRem: 8}, {minInRem: 9, maxInRem: 9},
+      {minInRem: 8, maxInRem: 8},
+      {minInRem: 9}, // totals
       ...this.budgetTabService.getPeriodsWidthConfigs(this.projectPeriods),
       ...this.editable ? [{minInRem: 3, maxInRem: 3}] : []
     ];
