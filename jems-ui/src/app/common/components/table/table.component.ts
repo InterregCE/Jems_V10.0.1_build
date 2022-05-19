@@ -77,6 +77,9 @@ export class TableComponent implements OnInit {
     if (column.alternativeValueCondition && column.alternativeValueCondition(elementValue)) {
       return column.alternativeValue;
     }
+    if (column.columnType === ColumnType.DateOnlyColumn) {
+      return this.localeDatePipe.transform(elementValue, 'L');
+    }
     if (column.columnType === ColumnType.DateColumn) {
       return this.localeDatePipe.transform(elementValue, 'L', 'LT');
     }

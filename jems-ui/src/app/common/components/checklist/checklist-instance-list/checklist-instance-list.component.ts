@@ -120,7 +120,7 @@ export class ChecklistInstanceListComponent implements OnInit {
         {
           displayedColumn: 'checklists.instance.finished.date',
           elementProperty: 'finishedDate',
-          columnType: ColumnType.DateColumn,
+          columnType: ColumnType.DateOnlyColumn,
           columnWidth: ColumnWidth.DateColumn
         },
         {
