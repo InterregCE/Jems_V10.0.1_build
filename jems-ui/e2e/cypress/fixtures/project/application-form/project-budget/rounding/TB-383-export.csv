@@ -5,5 +5,5 @@
 ""
 "Partner budget overview"
 "Partner number","Status","Organisation abbreviation","Name of the organisation in original language","Name of the organisation in english","Country","NUTS 3","NUTS 2","Cost category","Description","Comments","Award procedures","Investment","Programme lump sum","Flat Rate %","Unit Costs","Unit type","No. of units","Price per unit","Preparation","Period 1","Period 2","Period 3","Closure","Total"
-"LP1","Active","Lead Partner","Lead Partner in original language","Lead Partner in english","","","","Travel and accommodation","API generated travel cost item description EN","","","","","","N/A","API generated travel cost item unit type EN","1.00","5123.12","0","0","0","0","0","5123.12"
+"LP1","Active","Lead Partner","Lead Partner in original language","Lead Partner in english","","","","Travel and accommodation","API generated travel cost item description EN","API generated travel cost item comments EN","","","","","N/A","API generated travel cost item unit type EN","1.00","5123.12","0","0","0","0","0","5123.12"
 "Total","","","","","","","","","","","","","","","","","","","0","0","0","0","0","5123.12"

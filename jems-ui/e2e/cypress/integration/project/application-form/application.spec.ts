@@ -49,7 +49,7 @@ context('Project management tests', () => {
 
       cy.contains(this.applicationAcronym).click({force: true});
 
-      cy.get('span:contains("Project identification")').eq(2).click();
+      cy.get('span:contains("Project identification")').should('be.visible').eq(2).click();
 
       application.identification.acronym = `${faker.hacker.adjective()} ${faker.hacker.noun()}`;
 
