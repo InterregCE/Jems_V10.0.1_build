@@ -62,7 +62,7 @@ context('Programme management tests', () => {
     cy.visit('/app/programme/areas', {failOnStatusCode: false});
 
     cy.contains('Download').click();
-    cy.get('jems-alert p', {timeout: 20000}).should('contain.text', 'Up to date NUTS dataset was successfully downloaded.');
+    cy.get('jems-alert p', {timeout: 40000}).should('contain.text', 'Up to date NUTS dataset was successfully downloaded.');
 
     cy.contains('DE Deutschland').click();
     cy.contains('AT Österreich').click();
