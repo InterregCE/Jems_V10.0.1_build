@@ -44,7 +44,12 @@ export class CallPageSidenavService {
         take(1),
         tap(callIsReadable => {
           if (callId && callIsReadable) {
-            bulletsArray.push(...this.getSideNavHeadlines(call.type, callId));
+            bulletsArray.push(...[
+                this.sideNavConstants.FLAT_RATES(callId),
+                this.sideNavConstants.APPLICATION_FORM_CONFIGURATION(callId),
+                this.sideNavConstants.PRE_SUBMISSION_CHECK_SETTINGS(callId)
+              ]
+            );
           }
           this.sideNavService.setHeadlines(CallStore.CALL_DETAIL_PATH, [
             {
@@ -63,23 +68,4 @@ export class CallPageSidenavService {
   redirectToCallDetail(callId: number, callType: CallDetailDTO.TypeEnum, successMessage?: I18nLabel): void {
     this.routingService.navigate(['/app/call/detail/' + callId], {state: {success: successMessage}});
   }
-
-  private getSideNavHeadlines(callType: CallDetailDTO.TypeEnum, callId: number): HeadlineRoute[] {
-    switch (callType) {
-      case CallDetailDTO.TypeEnum.STANDARD:
-        return [
-          this.sideNavConstants.FLAT_RATES(callId),
-          this.sideNavConstants.APPLICATION_FORM_CONFIGURATION(callId),
-          this.sideNavConstants.PRE_SUBMISSION_CHECK_SETTINGS(callId)
-        ];
-      case CallDetailDTO.TypeEnum.SPF:
-        return [
-          this.sideNavConstants.FLAT_RATES(callId),
-          this.sideNavConstants.APPLICATION_FORM_CONFIGURATION(callId)
-        ];
-      default:
-        return [];
-    }
-  }
-
 }

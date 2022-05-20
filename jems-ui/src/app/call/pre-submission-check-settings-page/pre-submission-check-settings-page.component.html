@@ -1,5 +1,6 @@
 <jems-main-page-template *ngIf="data$ | async as data"
-                         titleKey="call.detail.pre.submission.check.config.title">
+                         titleKey="call.detail.pre.submission.check.config.title"
+                         [subTitleKey]="'call.type.subtitle' | adaptTranslationKeyByCallType | async">
     <jems-form (save)="save()"
                (discard)="resetForm(data.pluginKeys)">
         <form jemsFormLayout [formGroup]="form">

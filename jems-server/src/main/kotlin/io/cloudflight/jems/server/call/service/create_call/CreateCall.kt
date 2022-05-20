@@ -1,15 +1,13 @@
 package io.cloudflight.jems.server.call.service.create_call
 
 import io.cloudflight.jems.api.call.dto.CallStatus
-import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.call.authorization.CanUpdateCall
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.call.service.callCreated
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldSetting
-import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.call.service.model.Call
-import io.cloudflight.jems.server.call.service.model.PreSubmissionPlugins
+import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.call.service.validator.CallValidator
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import org.springframework.context.ApplicationEventPublisher
@@ -38,13 +36,6 @@ class CreateCall(
         ).also {
             persistence.updateProjectCallStateAids(it.id, call.stateAidIds)
             persistence.saveApplicationFormFieldConfigurations(it.id, ApplicationFormFieldSetting.getDefaultApplicationFormFieldConfigurations(it.type))
-            // ToDo to be removed when implementing MP2-2210
-            if (call.type == CallType.SPF) {
-                persistence.updateProjectCallPreSubmissionCheckPlugin(it.id, PreSubmissionPlugins(
-                    pluginKey = "jems-pre-condition-check-blocked",
-                    firstStepPluginKey = null,
-                ))
-            }
             auditPublisher.publishEvent(callCreated(this, it))
         }
     }
