@@ -44,7 +44,7 @@ class UpdateChecklistInstance(
 
         val consolidatorCanReturnToDraft = existing.status == ChecklistInstanceStatus.FINISHED
             && status == ChecklistInstanceStatus.DRAFT
-            && this.userAuthorization.hasPermissionForProject(UserRolePermission.ProjectAssessmentChecklistConsolidate, checklistId)
+            && this.userAuthorization.hasPermissionForProject(UserRolePermission.ProjectAssessmentChecklistConsolidate, existing.relatedToId!!)
             && !existing.consolidated
 
         val assessorCanFinish = existing.status == ChecklistInstanceStatus.DRAFT
