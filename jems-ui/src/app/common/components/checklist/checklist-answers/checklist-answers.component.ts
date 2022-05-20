@@ -18,9 +18,10 @@ import {
 } from '@cat/api';
 import {Alert} from '@common/components/forms/alert';
 import {FormService} from '@common/components/section/form/form.service';
-import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {of} from 'rxjs';
 import {NumberService} from '@common/services/number.service';
+import {TableConfig} from "@common/directives/table-config/TableConfig";
 
 @Component({
   selector: 'jems-checklist-answers',
@@ -39,8 +40,6 @@ export class ChecklistAnswersComponent implements OnInit, OnChanges {
   @Input()
   editable: boolean;
   @Input()
-  isScored: boolean;
-  @Input()
   minScore: number;
   @Input()
   maxScore: number;
@@ -56,6 +55,12 @@ export class ChecklistAnswersComponent implements OnInit, OnChanges {
     formComponents: this.formBuilder.array([])
   });
 
+  tableConfig: TableConfig[] = [
+    {minInRem:15},
+    {minInRem: 5, maxInRem: 7},
+    {minInRem: 5, maxInRem: 7},
+    {minInRem: 7, maxInRem: 9}
+  ];
   sliderValues: number[] = [];
   FORM_ERRORS = {
     score: {
@@ -112,7 +117,6 @@ export class ChecklistAnswersComponent implements OnInit, OnChanges {
       }
     );
     this.maxTotalScore = questionsScored;
-    this.isScored = this.maxTotalScore > 0;
 
     this.formService.resetEditable();
   }
@@ -142,6 +146,10 @@ export class ChecklistAnswersComponent implements OnInit, OnChanges {
 
   get formComponents(): FormArray {
     return this.form.get('formComponents') as FormArray;
+  }
+
+  get scoreComponents(): AbstractControl[] {
+    return this.formComponents.controls.filter(component => component.value.type === this.ComponentType.SCORE);
   }
 
   private initializeEmptyComponents(): void {
@@ -176,9 +184,12 @@ export class ChecklistAnswersComponent implements OnInit, OnChanges {
 
   getAverageScore(): number {
     let sum = 0;
-    const scoreComponents = this.formComponents.controls.filter(component => component.value.type === this.ComponentType.SCORE);
-    scoreComponents.forEach(component => sum += NumberService.product([(component.value.instanceMetadata as ScoreInstanceMetadataDTO).score, (component.value.programmeMetadata as ScoreMetadataDTO).weight]));
+    this.scoreComponents.forEach(component => sum += NumberService.product([(component.value.instanceMetadata as ScoreInstanceMetadataDTO).score, (component.value.programmeMetadata as ScoreMetadataDTO).weight]));
 
     return NumberService.roundNumber(sum, 2);
+  }
+
+  getWeightedScore(scoreComponent: AbstractControl): number {
+    return NumberService.roundNumber(NumberService.product([scoreComponent.value.programmeMetadata.weight, scoreComponent.value.instanceMetadata.score]));
   }
 }
