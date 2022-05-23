@@ -28,8 +28,3 @@ body {
   margin: 0;
   image-rendering: auto;
 }
-
-.background-floating-stars {
-  background: url("assets/logos/StarsBG.png") no-repeat 12.5% 10%, linear-gradient(90deg, #4994C3 0%, var(--app-bar-secondary) 100%);
-  background-size: 42rem auto, cover;
-}
