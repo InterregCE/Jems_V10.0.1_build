@@ -66,8 +66,8 @@ interface ChecklistInstanceApi {
     fun consolidateChecklistInstance(@PathVariable checklistId: Long, @RequestBody options: ChecklistConsolidatorOptionsDTO): Boolean
 
     @ApiOperation("Update selection of a checklist instance")
-    @PutMapping("$ENDPOINT_API_CHECKLIST_INSTANCE/selection/{checklistId}", consumes = [MediaType.APPLICATION_JSON_VALUE])
-    fun updateChecklistInstanceSelection(@PathVariable checklistId: Long, @RequestBody visible: Boolean)
+    @PutMapping("$ENDPOINT_API_CHECKLIST_INSTANCE/selection", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun updateChecklistInstanceSelection(@RequestBody selection: Map<Long,  Boolean>)
 
     @ApiOperation("Delete a checklist instance")
     @DeleteMapping("${ENDPOINT_API_CHECKLIST_INSTANCE}/{checklistId}")

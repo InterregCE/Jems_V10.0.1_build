@@ -5,6 +5,7 @@ import java.time.LocalDate
 
 data class ChecklistInstanceSelectionDTO(
     val id: Long? = null,
+    val consolidated: Boolean,
     val status: ChecklistInstanceStatusDTO,
     val type: ProgrammeChecklistTypeDTO,
     val name: String?,

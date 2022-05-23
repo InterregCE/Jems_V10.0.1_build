@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.checklist.update
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
-import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistInstance
+import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstance
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
 import io.cloudflight.jems.server.project.authorization.CanUpdateChecklistAssessment
 import io.cloudflight.jems.server.project.authorization.CanUpdateChecklistAssessmentSelection
@@ -70,18 +70,13 @@ class UpdateChecklistInstance(
     @CanUpdateChecklistAssessmentSelection
     @Transactional
     @ExceptionWrapper(UpdateChecklistInstanceException::class)
-    override fun updateSelection(checklistId: Long, visible: Boolean) {
-        val existing = persistence.getChecklistSummary(checklistId)
-
-        if (existing.status != ChecklistInstanceStatus.FINISHED)
-            throw UpdateChecklistInstanceStatusNotFinishedException()
-
-        val checklist = persistence.updateSelection(checklistId, visible)
-        auditPublisher.publishEvent(
-            checklistSelectionUpdate(
-                context = this,
-                checklist = checklist
+    override fun updateSelection(selection: Map<Long,  Boolean>) =
+        persistence.updateSelection(selection).let {
+            auditPublisher.publishEvent(
+                checklistSelectionUpdate(
+                    context = this,
+                    checklists = it
+                )
             )
-        )
-    }
+        }
 }

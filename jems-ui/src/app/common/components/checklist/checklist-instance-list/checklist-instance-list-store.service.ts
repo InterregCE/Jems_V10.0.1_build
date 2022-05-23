@@ -1,6 +1,6 @@
 import {Injectable} from '@angular/core';
 import {
-  ChecklistInstanceDTO,
+  ChecklistInstanceDTO, ChecklistInstanceSelectionDTO,
   ChecklistInstanceService, IdNamePairDTO,
   ProgrammeChecklistDetailDTO, ProgrammeChecklistService, UserRoleDTO
 } from '@cat/api';
@@ -14,6 +14,7 @@ import {SecurityService} from '../../../../security/security.service';
 export class ChecklistInstanceListStore {
 
   currentUserEmail$: Observable<string>;
+  userCanChangeSelection$: Observable<boolean>;
 
   private userCanConsolidate$: Observable<boolean>;
   private listChanged$ = new Subject();
@@ -24,6 +25,7 @@ export class ChecklistInstanceListStore {
               private securityService: SecurityService) {
     this.userCanConsolidate$ = this.permissionService.hasPermission(UserRoleDTO.PermissionsEnum.ProjectAssessmentChecklistConsolidate);
     this.currentUserEmail$ = this.currentUserEmail();
+    this.userCanChangeSelection$ = this.permissionService.hasPermission(UserRoleDTO.PermissionsEnum.ProjectAssessmentChecklistSelectedUpdate);
   }
 
   checklistTemplates(relatedType: ProgrammeChecklistDetailDTO.TypeEnum): Observable<IdNamePairDTO[]> {
@@ -42,6 +44,13 @@ export class ChecklistInstanceListStore {
         : this.checklistInstanceService.getMyChecklistInstances(relatedId, relatedType as string)),
       tap(checklists => Log.info('Fetched the checklist instances', this, checklists))
     );
+  }
+
+  selectedInstances(relatedType: ProgrammeChecklistDetailDTO.TypeEnum, relatedId: number): Observable<ChecklistInstanceSelectionDTO[]> {
+    return this.checklistInstanceService.getChecklistInstancesForSelection(relatedId, relatedType as string)
+      .pipe(
+        tap(checklists => Log.info('Fetched the checklist selection instances', this, checklists))
+      );
   }
 
   deleteChecklistInstance(id: number): Observable<void> {
@@ -64,7 +73,11 @@ export class ChecklistInstanceListStore {
   }
 
   setVisibilities(instances: { [key: string]: boolean }): Observable<ChecklistInstanceDTO[]> {
-    return of([]);
+    return this.checklistInstanceService.updateChecklistInstanceSelection(instances)
+      .pipe(
+        take(1),
+        tap(() => Log.info('Updated the checklist instance selection', this, instances))
+      );
   }
 
   currentUserEmail(): Observable<string> {

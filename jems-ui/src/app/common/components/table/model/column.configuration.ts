@@ -26,8 +26,12 @@ export class ColumnConfiguration {
   customCellTemplate?: TemplateRef<any>;
   // the cell tooltip
   tooltip?: TooltipConfiguration;
+  // information shown in header
+  infoMessage?: string;
   // determines the max width of a column
   columnWidth?: ColumnWidth;
+  // determines if column overrides isTableClickable
+  clickable?: boolean;
 
   public constructor(init?: Partial<ColumnConfiguration>) {
     Object.assign(this, init);

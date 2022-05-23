@@ -13,7 +13,7 @@ import io.cloudflight.jems.api.project.dto.checklist.metadata.TextInputInstanceM
 import io.cloudflight.jems.server.programme.controller.checklist.toDtoMetadata
 import io.cloudflight.jems.server.programme.controller.checklist.toModelMetadata
 import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistComponentInstance
-import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistInstance
+import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstance
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistComponentType
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.HeadlineInstanceMetadata

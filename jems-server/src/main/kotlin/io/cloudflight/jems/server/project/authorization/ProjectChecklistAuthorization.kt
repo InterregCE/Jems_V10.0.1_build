@@ -19,7 +19,7 @@ annotation class CanUpdateChecklistAssessment
 annotation class CanDeleteChecklistAssessment
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("hasAuthority('ProjectAssessmentChecklistSelectedRetrieve')")
+@PreAuthorize("authorization.hasPermission('ProjectAssessmentChecklistSelectedRetrieve', #relatedToId)")
 annotation class CanViewChecklistAssessmentSelection
 
 @Retention(AnnotationRetention.RUNTIME)

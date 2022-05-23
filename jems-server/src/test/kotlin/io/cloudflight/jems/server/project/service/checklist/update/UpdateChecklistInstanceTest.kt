@@ -9,7 +9,7 @@ import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorDefaultImpl
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistComponentInstance
-import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistInstance
+import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstance
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistComponentType
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.HeadlineInstanceMetadata
@@ -278,24 +278,14 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
     }
 
     @Test
-    fun `update selection - not finished exception`() {
-        val checklist = checklistInstance(ChecklistInstanceStatus.DRAFT)
-        every { persistence.getChecklistSummary(CHECKLIST_ID) } returns checklist
-
-        assertThrows<UpdateChecklistInstanceStatusNotFinishedException> {
-            updateChecklistInstance.updateSelection(CHECKLIST_ID, true)
-        }
-    }
-
-    @Test
     fun `update selection - set visible`() {
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } answers {}
         val checklist = checklistInstance(ChecklistInstanceStatus.FINISHED)
         every { persistence.getChecklistSummary(CHECKLIST_ID) } returns checklist
-        every { persistence.updateSelection(CHECKLIST_ID, true) } returns checklist
+        every { persistence.updateSelection(mapOf(CHECKLIST_ID to true)) } returns listOf(checklist)
 
-        updateChecklistInstance.updateSelection(CHECKLIST_ID, true)
+        updateChecklistInstance.updateSelection(mapOf(CHECKLIST_ID to true))
 
         verify(exactly = 1) { auditPublisher.publishEvent(capture(auditSlot)) }
         Assertions.assertThat(auditSlot.captured.auditCandidate).isEqualTo(
@@ -314,9 +304,9 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
         every { auditPublisher.publishEvent(capture(auditSlot)) } answers {}
         val checklist = checklistInstance(ChecklistInstanceStatus.FINISHED).copy(visible = false)
         every { persistence.getChecklistSummary(CHECKLIST_ID) } returns checklist
-        every { persistence.updateSelection(CHECKLIST_ID, false) } returns checklist
+        every { persistence.updateSelection(mapOf(CHECKLIST_ID to false)) } returns listOf(checklist)
 
-        updateChecklistInstance.updateSelection(CHECKLIST_ID, false)
+        updateChecklistInstance.updateSelection(mapOf(CHECKLIST_ID to false))
 
         verify(exactly = 1) { auditPublisher.publishEvent(capture(auditSlot)) }
         Assertions.assertThat(auditSlot.captured.auditCandidate).isEqualTo(

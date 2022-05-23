@@ -1,26 +1,10 @@
 package io.cloudflight.jems.server.project.service.checklist
 
-import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistInstance
-import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
-import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
-import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceStatus
-import io.cloudflight.jems.server.project.service.checklist.model.CreateChecklistInstanceModel
+import io.cloudflight.jems.server.project.service.checklist.model.*
 
 interface ChecklistInstancePersistence {
 
-    fun getChecklistsByRelationAndCreatorAndType(
-        relatedToId: Long,
-        creatorId: Long,
-        type: ProgrammeChecklistType
-    ): List<ChecklistInstance>
-
-    fun getChecklistsByRelatedIdAndType(relatedToId: Long, type: ProgrammeChecklistType): List<ChecklistInstance>
-
-    fun getChecklistsByRelationAndType(
-        relatedToId: Long,
-        type: ProgrammeChecklistType,
-        visible: Boolean
-    ): List<ChecklistInstance>
+    fun findChecklistInstances(searchRequest: ChecklistInstanceSearchRequest): List<ChecklistInstance>
 
     fun getChecklistDetail(id: Long): ChecklistInstanceDetail
 
@@ -30,7 +14,7 @@ interface ChecklistInstancePersistence {
 
     fun update(checklist: ChecklistInstanceDetail): ChecklistInstanceDetail
 
-    fun updateSelection(checklistId: Long, visible: Boolean): ChecklistInstance
+    fun updateSelection(selection: Map<Long,  Boolean>): List<ChecklistInstance>
 
     fun deleteById(id: Long)
 

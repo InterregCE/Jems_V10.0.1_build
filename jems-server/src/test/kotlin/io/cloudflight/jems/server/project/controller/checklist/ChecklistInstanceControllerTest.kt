@@ -18,7 +18,7 @@ import io.cloudflight.jems.api.project.dto.checklist.metadata.TextInputInstanceM
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.programme.service.checklist.delete.DeleteChecklistInstanceInteractor
 import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistComponentInstance
-import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistInstance
+import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstance
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistComponentType
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.HeadlineInstanceMetadata
@@ -242,7 +242,7 @@ class ChecklistInstanceControllerTest : UnitTest() {
     @Test
     fun `get checklists for selection`() {
         every {
-            getChecklistInteractor.getChecklistInstancesOfCurrentUserByTypeAndRelatedId(
+            getChecklistInteractor.getChecklistInstancesForSelection(
                 RELATED_TO_ID,
                 ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT
             )
@@ -262,6 +262,7 @@ class ChecklistInstanceControllerTest : UnitTest() {
                 name = "name",
                 relatedToId = RELATED_TO_ID,
                 programmeChecklistId = PROGRAMME_CHECKLIST_ID,
+                consolidated = false,
                 visible = false
             ),
             ChecklistInstanceSelectionDTO(
@@ -272,6 +273,7 @@ class ChecklistInstanceControllerTest : UnitTest() {
                 name = "name",
                 relatedToId = RELATED_TO_ID,
                 programmeChecklistId = PROGRAMME_CHECKLIST_ID,
+                consolidated = false,
                 visible = true
             )
         )
@@ -323,7 +325,7 @@ class ChecklistInstanceControllerTest : UnitTest() {
 
     @Test
     fun `update checklist selection`() {
-        controller.updateChecklistInstanceSelection(CHECKLIST_ID, true)
-        verify { updateInteractor.updateSelection(CHECKLIST_ID, true) }
+        controller.updateChecklistInstanceSelection(mapOf(CHECKLIST_ID to true))
+        verify { updateInteractor.updateSelection(mapOf(CHECKLIST_ID to true)) }
     }
 }

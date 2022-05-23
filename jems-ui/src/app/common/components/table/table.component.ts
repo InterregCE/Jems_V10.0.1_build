@@ -11,6 +11,9 @@ import {LanguageStore} from '../../services/language-store.service';
 import {InputTranslation} from '@cat/api';
 import {ColumnWidth} from './model/column-width';
 import {LocaleDatePipe} from '../../pipe/locale-date.pipe';
+import {RoutingService} from '@common/services/routing.service';
+import {ActivatedRoute} from '@angular/router';
+import {TooltipConfiguration} from '@common/components/table/model/tooltip.configuration';
 
 @Component({
   selector: 'jems-table',
@@ -44,7 +47,9 @@ export class TableComponent implements OnInit {
 
   constructor(private moneyPipe: MoneyPipe,
               private localeDatePipe: LocaleDatePipe,
-              public languageStore: LanguageStore) {
+              public languageStore: LanguageStore,
+              private routingService: RoutingService,
+              private activatedRoute: ActivatedRoute) {
   }
 
   ngOnInit(): void {
@@ -114,5 +119,12 @@ export class TableComponent implements OnInit {
       return `${column.tooltip.tooltipTranslationKey}.${elementTitle}`;
     }
     return elementTitle;
+  }
+
+  cellClicked(row: any, column: ColumnConfiguration): void {
+    if (column.clickable === false || !this.configuration.isTableClickable) {
+      return;
+    }
+    this.routingService.navigate([this.configuration.routerLink, row.id], {relativeTo: this.activatedRoute});
   }
 }

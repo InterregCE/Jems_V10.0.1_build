@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.service.checklist.getInstances
 
-import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistInstance
+import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstance
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
 
 interface GetChecklistInstancesInteractor {

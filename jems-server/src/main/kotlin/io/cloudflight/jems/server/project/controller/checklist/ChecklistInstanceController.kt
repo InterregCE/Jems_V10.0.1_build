@@ -33,7 +33,7 @@ class ChecklistInstanceController(
         relatedToId: Long,
         type: ProgrammeChecklistTypeDTO
     ): List<ChecklistInstanceSelectionDTO> =
-        getChecklistInteractor.getChecklistInstancesOfCurrentUserByTypeAndRelatedId(relatedToId, type.toModel()).toSelectionDto()
+        getChecklistInteractor.getChecklistInstancesForSelection(relatedToId, type.toModel()).toSelectionDto()
 
     override fun getChecklistInstanceDetail(checklistId: Long): ChecklistInstanceDetailDTO =
         getChecklistDetailInteractor.getChecklistInstanceDetail(checklistId).toDetailDto()
@@ -50,8 +50,8 @@ class ChecklistInstanceController(
     override fun consolidateChecklistInstance(checklistId: Long, options: ChecklistConsolidatorOptionsDTO): Boolean =
         consolidateInteractor.consolidateChecklistInstance(checklistId, options.consolidated)
 
-    override fun updateChecklistInstanceSelection(checklistId: Long, visible: Boolean) =
-        updateInteractor.updateSelection(checklistId, visible)
+    override fun updateChecklistInstanceSelection(selection: Map<Long,  Boolean>) =
+        updateInteractor.updateSelection(selection)
 
     override fun deleteChecklistInstance(checklistId: Long) =
         deleteInteractor.deleteById(checklistId)
