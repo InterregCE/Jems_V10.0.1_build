@@ -1,6 +1,6 @@
 <div class="background-visual background-floating-stars"></div>
 <div class="double-card-container">
-    <mat-card class="programme-card">
+    <mat-card class="content-card">
         <mat-card-content>
             <div class="authentication-logo px-3">
                 <img *ngIf="largeLogo$ | async as logo; else defaultLogo" class="logo" src="data:image/png;base64,{{logo.value}}" alt="" width="">
@@ -16,11 +16,11 @@
             </div>
         </mat-card-content>
     </mat-card>
-    <mat-card class="form-card">
+    <mat-card class="content-card">
         <mat-card-content>
             <form jemsFormLayout [formGroup]="userForm" class="px-3">
 
-                <h1>{{'user.registration.title' | translate}}</h1>
+                <h2>{{'user.registration.title' | translate}}</h2>
 
                 <mat-form-field>
                     <mat-label>{{'user.registration.field.name' | translate}}</mat-label>
@@ -69,12 +69,16 @@
                     <mat-hint>{{'user.registration.field.password.hint' | translate}}</mat-hint>
                 </mat-form-field>
 
-                <div>
+                <div class="py-3">
                     <mat-checkbox
                             formControlName="acceptTerms"
                             (change)="areTermsAccepted = $event.checked">
-                        {{'user.terms.register.firstText' | translate}}
-                        <span class="terms-link"><a [href]="termsAndPrivacyPolicyUrl$ | async"> {{'user.terms.linkText' | translate}} *</a></span>
+                        <span>
+                            {{'user.terms.register.firstText' | translate}}
+                            <span class="terms-link">
+                                <a [href]="termsAndPrivacyPolicyUrl$ | async">{{'user.terms.linkText' | translate}} *</a>
+                            </span>
+                        </span>
                     </mat-checkbox>
                 </div>
 
