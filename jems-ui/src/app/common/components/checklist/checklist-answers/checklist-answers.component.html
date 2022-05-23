@@ -128,7 +128,7 @@
                             [args]="FORM_ERRORS_ARGS.score"></jems-form-field-errors>
                 </mat-error>
             </mat-form-field>
-            <span>/ {{maxScore}}</span>
+            <span>/ {{maxScore | asMoney}}</span>
             <span class="score-weight"> {{'checklists.instance.component.score.weight.info' | translate: {weight: options.weight} }}</span>
         </div>
         <jems-expandable-textarea jemsMultiColumnRow class="mt-2"
@@ -147,7 +147,7 @@
         <span class="rating-main">
             {{'checklists.instance.component.score.average.calculation.label' | translate}} {{getAverageScore()}} /
         </span>
-        <span> {{maxTotalScore}}</span>
+        <span>{{maxTotalScore | asMoney}}</span>
     </div>
 </ng-template>
 
@@ -177,7 +177,7 @@
                 <span>
                     <strong>{{getAverageScore() | asMoney}}</strong>
                     <br>
-                    <span class="score-weight"> {{'checklists.instance.component.score.table.column.total.label' | translate : {total: maxTotalScore} }}</span>
+                    <span class="score-weight"> {{'checklists.instance.component.score.table.column.total.label' | translate : {total: maxTotalScore | asMoney} }}</span>
                 </span>
             </div>
         </div>
