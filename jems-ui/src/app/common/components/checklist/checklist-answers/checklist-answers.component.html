@@ -145,7 +145,7 @@
 <ng-template #scoreCalculationTemplate>
     <div class="score-calculation">
         <span class="rating-main">
-            {{'checklists.instance.component.score.average.calculation.label' | translate}} {{getAverageScore()}} /
+            {{'checklists.instance.component.score.average.calculation.label' | translate}} {{getAverageScore() | asMoney}} /
         </span>
         <span>{{maxTotalScore | asMoney}}</span>
     </div>
@@ -165,9 +165,9 @@
         <ng-container *ngFor="let scoreComponent of scoreComponents">
             <div>
                 <span>{{scoreComponent.value.programmeMetadata.question}}</span>
-                <span>{{scoreComponent.value.instanceMetadata.score}}</span>
-                <span class="justify-end">{{scoreComponent.value.programmeMetadata.weight}}</span>
-                <span class="justify-end"><strong>{{getWeightedScore(scoreComponent)}}</strong></span>
+                <span>{{scoreComponent.value.instanceMetadata.score | asMoney}}</span>
+                <span class="justify-end">{{scoreComponent.value.programmeMetadata.weight | asMoney}}</span>
+                <span class="justify-end"><strong>{{getWeightedScore(scoreComponent) | asMoney}}</strong></span>
             </div>
         </ng-container>
 
