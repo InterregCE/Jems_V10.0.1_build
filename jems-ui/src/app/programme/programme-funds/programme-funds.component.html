@@ -36,14 +36,14 @@
 
                             <jems-multi-language-form-field
                                     formControlName="abbreviation"
-                                    [useFallBackLanguage]="true"
+                                    [useFallBackLanguage]="isPredefinedFund(fund)"
                                     [isFallBackLanguageReadonly]="isPredefinedFund(fund)"
                                     maxLength="127">
                             </jems-multi-language-form-field>
 
                             <jems-multi-language-form-field
                                     formControlName="description"
-                                    [useFallBackLanguage]="true"
+                                    [useFallBackLanguage]="isPredefinedFund(fund)"
                                     [isFallBackLanguageReadonly]="isPredefinedFund(fund)"
                                     maxLength="127">
                             </jems-multi-language-form-field>
