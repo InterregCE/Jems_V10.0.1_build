@@ -1,7 +1,7 @@
 <jems-public-page-template>
-    <h1 class="login-headline">
-        <img class="logo-inline" src="assets/logos/JemsLogoNoClaim_96.png" alt="">
-        &ndash; {{'authentication.login.title.label' | translate}}</h1>
+    <h2 class="login-headline">
+        <img class="logo-inline" src="assets/logos/JemsLogoNoClaim_96.png" alt="Logo Jems - Joint Electronic Monitoring System">
+        &ndash; {{'authentication.login.title.label' | translate}}</h2>
     <form jemsFormLayout gap="0.5rem" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
         <mat-form-field>
             <mat-label>
@@ -20,7 +20,8 @@
                    [type]="hide ? 'password' : 'text'" formControlName="password" id="password"
                    name="password" required>
             <button mat-icon-button matSuffix (click)="hide = !hide" [attr.aria-label]="'Hide password'"
-                    [attr.aria-pressed]="hide" type="button">
+                    [attr.aria-pressed]="hide" type="button"
+                    name="toggle password visibility">
                 <mat-icon>{{hide ? 'visibility_off' : 'visibility'}}</mat-icon>
             </button>
             <mat-error *ngIf="!loginForm.controls.password.valid">
@@ -37,6 +38,7 @@
                 class="button-full-width"
                 color="primary"
                 type="submit"
+                name="login"
                 [disabled]="!loginForm.valid || submitted">
             {{'user.login.button' | translate}}
         </button>
@@ -51,18 +53,21 @@
         </jems-alert>
     </form>
     <div class="accessibility-statement">
-        {{'user.login.accessibility.statement.part.1' | translate}}
-        <a [href]="accessibilityStatementUrl$ | async">{{'user.login.accessibility.statement.part.2' | translate}}</a> {{'user.login.accessibility.statement.part.3' | translate}}
+        <mat-icon>accessibility_new</mat-icon>
+        <span>
+            {{'user.login.accessibility.statement.part.1' | translate}}
+            <a [href]="accessibilityStatementUrl$ | async">{{'user.login.accessibility.statement.part.2' | translate}}</a>
+        </span>
     </div>
     <p class="interact-info">
         <span>{{'user.login.interact.project' | translate}}</span>
-        <a href="https://www.interact-eu.net"><img class="logo" src="assets/logos/InteractLogo_48.png" alt=""></a>
+        <a href="https://www.interact-eu.net"><img class="logo" src="assets/logos/InteractLogo_48.png" alt="Logo Interact EU"></a>
     </p>
     <div class="developer-info">
                     <span>{{'user.login.interact.developer' | translate}}&nbsp;
                         <a href="https://www.cloudflight.io"><img class="logo-inline"
                                                                   src="assets/logos/CloudflightLogoWhite_128.png"
-                                                                  alt=""></a>
+                                                                  alt="Logo Cloudflight"></a>
                     </span>
     </div>
 </jems-public-page-template>

@@ -323,7 +323,13 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
     justify-content: space-between; // space out brand from logo
     padding: 0.125rem 1rem 0 0.5rem;
     border-bottom: 1px solid var(--light-blue-gray);
-
+    background: linear-gradient(157deg, var(--app-bar) 10rem, var(--app-bar-secondary) 95%);
+    &.no-user {
+      padding-right: 1.75rem;
+      .navbar-logos {
+        visibility: hidden;
+      }
+    }
     // Because flex properties aren't inherited, we need to redeclare these first
     // few properties so that content nested within behave properly.
     %container-flex-properties {
@@ -414,6 +420,9 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
 
     &.left-side-menu {
       margin: 0 auto;
+      .nav-item:hover {
+        background: rgba(white, 0.4);
+      }
     }
 
     .nav-link {
@@ -484,6 +493,11 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
           flex-flow: row nowrap;
           justify-content: flex-start;
 
+          &.no-user {
+            border: none;
+            background: none;
+          }
+
           .navbar-nav {
             flex-direction: row;
             align-items: stretch;
@@ -543,7 +557,6 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
 
 :host {
   display: inline-block;
-  background: linear-gradient(157deg, var(--app-bar) 10rem, var(--app-bar-secondary) 95%);
 }
 
 .language-select {
@@ -551,6 +564,9 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
   border: 2px solid var(--font-text-link);
   border-radius: 0.35rem;
   padding: 0.35rem;
+  &:focus {
+    background: var(--background-card);
+  }
 }
 
 .mat-stroked-button {
@@ -633,12 +649,10 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
       line-height: 0.95rem;
     }
   }
-
   &.active-collapsed {
     border-bottom: .125rem solid var(--font-text-link);
     background: rgba(white, 0.75);
   }
-
   &.active-not-collapsed .nav-text {
     text-decoration: underline;
     font-weight: 600;
