@@ -10,7 +10,14 @@ jems-top-bar {
 
 .main-content {
   padding: 2rem 1rem 3rem 1rem;
+  background: none !important;
 }
+
+.background-floating-stars {
+  background: url("../../../assets/logos/StarsBG.png") no-repeat 12.5% 10%, linear-gradient(90deg, #4994C3 0%, var(--app-bar-secondary) 100%) !important;
+  background-size: 45rem auto, cover !important;
+}
+
 
 mat-sidenav-container {
   position: fixed;
