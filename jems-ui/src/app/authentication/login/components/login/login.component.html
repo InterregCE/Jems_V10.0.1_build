@@ -46,14 +46,15 @@
             <a [routerLink]="registerLink"><strong>{{'user.login.button.create' | translate}}</strong></a>
             <a [routerLink]="forgotPasswordLink"><strong>{{'user.login.button.forgot' | translate}}</strong></a>
         </div>
-        <jems-alert *ngIf="error$ | async as error"
-                    [show]="!submitted && !!error.i18nMessage?.i18nKey"
-                    [type]="Alert.ERROR">
-            <jems-api-error-content [error]="error"></jems-api-error-content>
-        </jems-alert>
+        <div role="alert">
+            <jems-alert *ngIf="error$ | async as error"
+                        [show]="!submitted && !!error.i18nMessage?.i18nKey"
+                        [type]="Alert.ERROR">
+                <jems-api-error-content [error]="error"></jems-api-error-content>
+            </jems-alert>
+        </div>
     </form>
     <div class="accessibility-statement">
-        <mat-icon>accessibility_new</mat-icon>
         <span>
             {{'user.login.accessibility.statement.part.1' | translate}}
             <a [href]="accessibilityStatementUrl$ | async">{{'user.login.accessibility.statement.part.2' | translate}}</a>

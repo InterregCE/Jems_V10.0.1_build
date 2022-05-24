@@ -96,23 +96,23 @@
                         {{'user.registration.button.register' | translate}}
                     </button>
                 </div>
-                <jems-alert
-                        [closable]="false"
-                        [show]="!submitted && (showSuccessMessage$ | async)"
-                        [type]="Alert.SUCCESS">
+                <div role="alert">
+                    <jems-alert
+                            [closable]="false"
+                            [show]="!submitted && (showSuccessMessage$ | async)"
+                            [type]="Alert.SUCCESS">
 
-                    <p>{{'user.registration.save.success' | translate}}</p>
-                    <button mat-stroked-button (click)="redirectToLogin()">
-                        {{'user.registration.save.success.redirect.login' | translate}}
-                    </button>
-                </jems-alert>
-
-                <jems-alert *ngIf="error$ | async as error"
-                           [show]="!submitted && !!error.i18nMessage?.i18nKey"
-                           [type]="Alert.ERROR">
-                    <jems-api-error-content [error]="error"></jems-api-error-content>
-                </jems-alert>
-
+                        <p>{{'user.registration.save.success' | translate}}</p>
+                        <button mat-stroked-button (click)="redirectToLogin()">
+                            {{'user.registration.save.success.redirect.login' | translate}}
+                        </button>
+                    </jems-alert>
+                    <jems-alert *ngIf="error$ | async as error"
+                               [show]="!submitted && !!error.i18nMessage?.i18nKey"
+                               [type]="Alert.ERROR">
+                        <jems-api-error-content [error]="error"></jems-api-error-content>
+                    </jems-alert>
+                </div>
             </form>
         </mat-card-content>
     </mat-card>

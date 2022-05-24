@@ -564,6 +564,7 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
   border: 2px solid var(--font-text-link);
   border-radius: 0.35rem;
   padding: 0.35rem;
+  background: rgb(186, 234, 243);
   &:focus {
     background: var(--background-card);
   }

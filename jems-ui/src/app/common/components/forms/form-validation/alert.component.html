@@ -6,7 +6,7 @@
      [class.jems-alert-warning]="type === Alert.WARNING"
      [class.jems-alert-info]="type === Alert.INFO"
      [class.jems-alert-margins]="!disableMargins"
-     id="successMessage" role="alert">
+     id="successMessage">
     <button jemsText *ngIf="closable" type="button" data-dismiss="jems-alert" class="close-btn" aria-label="Close"
             (click)="show = false; closed.emit()">
         <span aria-hidden="true">&times;</span>
