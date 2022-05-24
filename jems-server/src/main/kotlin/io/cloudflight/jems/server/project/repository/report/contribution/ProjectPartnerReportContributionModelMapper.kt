@@ -1,13 +1,16 @@
 package io.cloudflight.jems.server.project.repository.report.contribution
 
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumEntity
+import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostEntity
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.contribution.ProjectPartnerReportContributionEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportLumpSumEntity
+import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportUnitCostEntity
 import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
 import io.cloudflight.jems.server.project.service.report.model.contribution.create.CreateProjectPartnerReportContribution
 import io.cloudflight.jems.server.project.service.report.model.contribution.withoutCalculations.ProjectPartnerReportEntityContribution
 import io.cloudflight.jems.server.project.service.report.model.create.PartnerReportLumpSum
+import io.cloudflight.jems.server.project.service.report.model.create.PartnerReportUnitCostBase
 import org.mapstruct.Mapper
 import org.mapstruct.factory.Mappers
 
@@ -37,6 +40,16 @@ fun PartnerReportLumpSum.toEntity(
     programmeLumpSum = lumpSumResolver.invoke(lumpSumId),
     period = period,
     cost = value,
+)
+
+fun PartnerReportUnitCostBase.toEntity(
+    report: ProjectPartnerReportEntity,
+    unitCostResolver: (Long) -> ProgrammeUnitCostEntity,
+) = PartnerReportUnitCostEntity(
+    reportEntity = report,
+    programmeUnitCost = unitCostResolver.invoke(unitCostId),
+    totalCost = totalCost,
+    numberOfUnits = numberOfUnits
 )
 
 private val mapper = Mappers.getMapper(ProjectPartnerReportContributionModelMapper::class.java)

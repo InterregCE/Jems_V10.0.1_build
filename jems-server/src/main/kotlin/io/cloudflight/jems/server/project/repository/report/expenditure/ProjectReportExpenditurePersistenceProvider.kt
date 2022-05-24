@@ -6,10 +6,12 @@ import io.cloudflight.jems.server.common.minio.MinioStorage
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportExpenditureCostEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportExpenditureCostTranslEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportLumpSumEntity
+import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportUnitCostEntity
 import io.cloudflight.jems.server.project.repository.report.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.repository.report.file.ProjectReportFileRepository
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportLumpSum
+import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportUnitCost
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectReportExpenditurePersistence
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -20,6 +22,7 @@ class ProjectReportExpenditurePersistenceProvider(
     private val reportRepository: ProjectPartnerReportRepository,
     private val reportExpenditureRepository: ProjectPartnerReportExpenditureRepository,
     private val reportLumpSumRepository: ProjectPartnerReportLumpSumRepository,
+    private val reportUnitCostRepository: ProjectPartnerReportUnitCostRepository,
     private val minioStorage: MinioStorage,
     private val reportFileRepository: ProjectReportFileRepository,
 ) : ProjectReportExpenditurePersistence {
@@ -53,9 +56,12 @@ class ProjectReportExpenditurePersistenceProvider(
                 val lumpSumsById = reportLumpSumRepository
                     .findByReportEntityPartnerIdAndReportEntityIdOrderByPeriodAscIdAsc(partnerId, reportId)
                     .associateBy { it.id }
+                val unitCostsById = reportUnitCostRepository
+                    .findByReportEntityPartnerIdAndReportEntityIdOrderByIdAsc(partnerId, reportId)
+                    .associateBy { it.id }
                 when {
-                    existing != null -> existing.apply { updateWith(newData, lumpSumsById) }
-                    else -> reportExpenditureRepository.save(newData.toEntity(reportEntity, lumpSumsById))
+                    existing != null -> existing.apply { updateWith(newData, lumpSumsById, unitCostsById) }
+                    else -> reportExpenditureRepository.save(newData.toEntity(reportEntity, lumpSumsById, unitCostsById))
                 }
             }
         }.toModel()
@@ -73,11 +79,20 @@ class ProjectReportExpenditurePersistenceProvider(
             reportId = reportId,
         ).toModel()
 
+    @Transactional(readOnly = true)
+    override fun getAvailableUnitCosts(partnerId: Long, reportId: Long): List<ProjectPartnerReportUnitCost> =
+        reportUnitCostRepository.findByReportEntityPartnerIdAndReportEntityIdOrderByIdAsc(
+            partnerId = partnerId,
+            reportId = reportId,
+        ).toModel()
+
     private fun PartnerReportExpenditureCostEntity.updateWith(
         newData: ProjectPartnerReportExpenditureCost,
         lumpSums: Map<Long, PartnerReportLumpSumEntity>,
+        unitCosts: Map<Long, PartnerReportUnitCostEntity>,
     ) {
         reportLumpSum = if (newData.lumpSumId != null) lumpSums[newData.lumpSumId] else null
+        reportUnitCost = if (newData.unitCostId != null) unitCosts[newData.unitCostId] else null
         costCategory = newData.costCategory
         investmentId = newData.investmentId
         internalReferenceNumber = newData.internalReferenceNumber

@@ -3,6 +3,7 @@ package io.cloudflight.jems.api.project.report
 import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadataDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportExpenditureCostDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportLumpSumDTO
+import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportUnitCostDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import org.springframework.http.MediaType
@@ -52,5 +53,12 @@ interface ProjectPartnerReportExpenditureCostsApi {
         @PathVariable partnerId: Long,
         @PathVariable reportId: Long,
     ): List<ProjectPartnerReportLumpSumDTO>
+
+    @ApiOperation("Returns all Unit Costs available for this report")
+    @GetMapping("$ENDPOINT_API_PARTNER_REPORT_EXPENDITURE_COSTS/unitCosts")
+    fun getAvailableUnitCosts(
+        @PathVariable partnerId: Long,
+        @PathVariable reportId: Long,
+    ): List<ProjectPartnerReportUnitCostDTO>
 
 }

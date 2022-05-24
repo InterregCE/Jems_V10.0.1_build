@@ -120,6 +120,7 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
             id = id,
             partnerReport = mockk(),
             reportLumpSum = null,
+            reportUnitCost = null,
             costCategory = ReportBudgetCategory.StaffCosts,
             investmentId = 1L,
             procurementId = 1L,

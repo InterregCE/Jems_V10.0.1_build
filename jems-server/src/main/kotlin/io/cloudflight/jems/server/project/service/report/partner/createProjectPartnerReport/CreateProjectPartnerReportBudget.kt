@@ -13,6 +13,7 @@ import io.cloudflight.jems.server.project.service.report.model.contribution.crea
 import io.cloudflight.jems.server.project.service.report.model.contribution.withoutCalculations.ProjectPartnerReportEntityContribution
 import io.cloudflight.jems.server.project.service.report.model.create.PartnerReportBudget
 import io.cloudflight.jems.server.project.service.report.model.create.PartnerReportLumpSum
+import io.cloudflight.jems.server.project.service.report.model.create.PartnerReportUnitCostBase
 import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectReportContributionPersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -41,12 +42,15 @@ class CreateProjectPartnerReportBudget(
             partnerContributionsSorted = partnerContributions.sortedWith(compareBy({ it.isNotPartner() }, { it.id })),
         ),
         lumpSums = lumpSumPersistence.getLumpSums(projectId, version = version).toPartnerReportLumpSums(partnerId = partnerId),
-        unitCostIds = partnerBudgetCostsPersistence.getBudgetStaffCosts(partnerId, version).extractUnitCostIds()
-            union partnerBudgetCostsPersistence.getBudgetTravelAndAccommodationCosts(partnerId, version).extractUnitCostIds()
-            union partnerBudgetCostsPersistence.getBudgetExternalExpertiseAndServicesCosts(partnerId, version).extractUnitCostIds()
-            union partnerBudgetCostsPersistence.getBudgetEquipmentCosts(partnerId, version).extractUnitCostIds()
-            union partnerBudgetCostsPersistence.getBudgetInfrastructureAndWorksCosts(partnerId, version).extractUnitCostIds()
-            union partnerBudgetCostsPersistence.getBudgetUnitCosts(partnerId, version).extractUnitCostIds(),
+        unitCosts = getSetOfUnitCostsWithTotalAndNumberOfUnits(
+            partnerBudgetCostsPersistence.getBudgetStaffCosts(partnerId, version)
+                .asSequence()
+                .plus(partnerBudgetCostsPersistence.getBudgetTravelAndAccommodationCosts(partnerId, version))
+                .plus(partnerBudgetCostsPersistence.getBudgetExternalExpertiseAndServicesCosts(partnerId, version))
+                .plus(partnerBudgetCostsPersistence.getBudgetEquipmentCosts(partnerId, version))
+                .plus(partnerBudgetCostsPersistence.getBudgetInfrastructureAndWorksCosts(partnerId, version))
+                .plus(partnerBudgetCostsPersistence.getBudgetUnitCosts(partnerId, version))
+                .toList()),
         budgetPerPeriod = getPartnerBudgetPerPeriod.getPartnerBudgetPerPeriod(projectId = projectId, version)
             .partnersBudgetPerPeriod.firstOrNull { it.partner.id == partnerId }
             ?.periodBudgets?.map { Pair(it.periodNumber, it.totalBudgetPerPeriod) }
@@ -120,13 +124,19 @@ class CreateProjectPartnerReportBudget(
         )
     }
 
-    private fun List<BaseBudgetEntry>.extractUnitCostIds(): Set<Long> = this.mapNotNullTo(HashSet()) { it.unitCostId }
-
     private fun List<ProjectLumpSum>.toPartnerReportLumpSums(partnerId: Long) = map {
         PartnerReportLumpSum(
             lumpSumId = it.programmeLumpSumId,
             period = it.period,
             value = it.lumpSumContributions.firstOrNull { it.partnerId == partnerId }?.amount ?: BigDecimal.ZERO,
         )
+    }
+
+    private fun getSetOfUnitCostsWithTotalAndNumberOfUnits(budgetEntries: List<BaseBudgetEntry>): Set<PartnerReportUnitCostBase> {
+        return budgetEntries.filter {it.unitCostId != null}.groupBy { it.unitCostId }.entries.map { mapOfUnitCostsById -> PartnerReportUnitCostBase(
+            unitCostId = mapOfUnitCostsById.key!!,
+            totalCost = mapOfUnitCostsById.value.sumOf { it.rowSum!! },
+            numberOfUnits = mapOfUnitCostsById.value.sumOf { it.numberOfUnits },
+        ) }.toSet()
     }
 }

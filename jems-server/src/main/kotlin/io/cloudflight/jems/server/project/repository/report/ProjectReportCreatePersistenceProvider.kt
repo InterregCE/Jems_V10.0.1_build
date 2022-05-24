@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.repository.report
 
 import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeLumpSumRepository
+import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeUnitCostRepository
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
 import io.cloudflight.jems.server.programme.repository.legalstatus.ProgrammeLegalStatusRepository
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
@@ -11,6 +12,7 @@ import io.cloudflight.jems.server.project.entity.report.identification.ProjectPa
 import io.cloudflight.jems.server.project.repository.report.contribution.ProjectPartnerReportContributionRepository
 import io.cloudflight.jems.server.project.repository.report.contribution.toEntity
 import io.cloudflight.jems.server.project.repository.report.expenditure.ProjectPartnerReportLumpSumRepository
+import io.cloudflight.jems.server.project.repository.report.expenditure.ProjectPartnerReportUnitCostRepository
 import io.cloudflight.jems.server.project.repository.report.identification.ProjectPartnerReportIdentificationRepository
 import io.cloudflight.jems.server.project.repository.report.identification.ProjectPartnerReportIdentificationTargetGroupRepository
 import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPartnerReportWorkPackageActivityDeliverableRepository
@@ -26,6 +28,7 @@ import io.cloudflight.jems.server.project.service.report.model.create.ProjectPar
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSummary
 import io.cloudflight.jems.server.project.service.report.model.contribution.create.CreateProjectPartnerReportContribution
 import io.cloudflight.jems.server.project.service.report.model.create.PartnerReportLumpSum
+import io.cloudflight.jems.server.project.service.report.model.create.PartnerReportUnitCostBase
 import io.cloudflight.jems.server.project.service.report.model.workPlan.create.CreateProjectPartnerReportWorkPackage
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -37,6 +40,7 @@ class ProjectReportCreatePersistenceProvider(
     private val legalStatusRepository: ProgrammeLegalStatusRepository,
     private val programmeFundRepository: ProgrammeFundRepository,
     private val programmeLumpSumRepository: ProgrammeLumpSumRepository,
+    private val programmeUnitCostRepository: ProgrammeUnitCostRepository,
     private val workPlanRepository: ProjectPartnerReportWorkPackageRepository,
     private val workPlanActivityRepository: ProjectPartnerReportWorkPackageActivityRepository,
     private val workPlanActivityDeliverableRepository: ProjectPartnerReportWorkPackageActivityDeliverableRepository,
@@ -45,6 +49,7 @@ class ProjectReportCreatePersistenceProvider(
     private val identificationTargetGroupRepository: ProjectPartnerReportIdentificationTargetGroupRepository,
     private val contributionRepository: ProjectPartnerReportContributionRepository,
     private val reportLumpSumRepository: ProjectPartnerReportLumpSumRepository,
+    private val reportUnitCostRepository: ProjectPartnerReportUnitCostRepository,
 ) : ProjectReportCreatePersistence {
 
     @Transactional
@@ -55,6 +60,7 @@ class ProjectReportCreatePersistenceProvider(
         persistTargetGroupsToReport(report.targetGroups, report = reportEntity)
         persistContributionsToReport(report.budget.contributions, report = reportEntity)
         persistAvailableLumpSumsToReport(report.budget.lumpSums, report = reportEntity)
+        persistAvailableUnitCostsToReport(report.budget.unitCosts, report = reportEntity)
         return reportEntity.toModelSummary()
     }
 
@@ -144,6 +150,14 @@ class ProjectReportCreatePersistenceProvider(
     ) =
         reportLumpSumRepository.saveAll(
             lumpSums.map { ls -> ls.toEntity(report, lumpSumResolver = { programmeLumpSumRepository.getById(it) }) }
+        )
+
+    private fun persistAvailableUnitCostsToReport(
+        unitCosts: Set<PartnerReportUnitCostBase>,
+        report: ProjectPartnerReportEntity,
+    ) =
+        reportUnitCostRepository.saveAll(
+            unitCosts.map { uc -> uc.toEntity(report, unitCostResolver = { programmeUnitCostRepository.getById(it) }) }
         )
 
 }
