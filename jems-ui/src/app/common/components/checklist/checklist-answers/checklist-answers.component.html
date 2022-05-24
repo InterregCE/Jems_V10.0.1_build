@@ -152,33 +152,36 @@
 </ng-template>
 
 <ng-template #scoreOverviewTable>
-    <div jemsNoWidthLimit id="score-overview-table" class="mt-3"
-         [jemsTableConfig]="tableConfig">
+    <div class="mt-3">
+        <h3>{{'checklists.instance.component.score.table.overview.header' | translate}}</h3>
+        <div jemsNoWidthLimit id="score-overview-table" class="mt-3"
+             [jemsTableConfig]="tableConfig">
 
-        <div>
-            <span>{{ 'programme.checklists.component.options.toggle.question' | translate }}</span>
-            <span>{{ 'checklists.instance.component.score.table.column.label' | translate }}</span>
-            <span class="justify-end">{{ 'checklists.instance.component.score.table.column.weight.label' | translate }}</span>
-            <span class="justify-end">{{ 'checklists.instance.component.score.table.column.weighted.score.label' | translate }}</span>
-        </div>
-
-        <ng-container *ngFor="let scoreComponent of scoreComponents">
             <div>
-                <span>{{scoreComponent.value.programmeMetadata.question}}</span>
-                <span>{{scoreComponent.value.instanceMetadata.score | asMoney}}</span>
-                <span class="justify-end">{{scoreComponent.value.programmeMetadata.weight | asMoney}}</span>
-                <span class="justify-end"><strong>{{getWeightedScore(scoreComponent) | asMoney}}</strong></span>
+                <span>{{ 'programme.checklists.component.options.toggle.question' | translate }}</span>
+                <span>{{ 'checklists.instance.component.score.table.column.label' | translate }}</span>
+                <span class="justify-end">{{ 'checklists.instance.component.score.table.column.weight.label' | translate }}</span>
+                <span class="justify-end">{{ 'checklists.instance.component.score.table.column.weighted.score.label' | translate }}</span>
             </div>
-        </ng-container>
 
-        <div class="footer">
-            <span>{{ 'project.partner.budget.table.total' | translate }}</span>
-            <div class="justify-end">
-                <span>
-                    <strong>{{getAverageScore() | asMoney}}</strong>
-                    <br>
-                    <span class="score-weight"> {{'checklists.instance.component.score.table.column.total.label' | translate : {total: maxTotalScore | asMoney} }}</span>
-                </span>
+            <ng-container *ngFor="let scoreComponent of scoreComponents">
+                <div>
+                    <span>{{scoreComponent.value.programmeMetadata.question}}</span>
+                    <span>{{scoreComponent.value.instanceMetadata.score | asMoney}}</span>
+                    <span class="justify-end">{{scoreComponent.value.programmeMetadata.weight | asMoney}}</span>
+                    <span class="justify-end"><strong>{{getWeightedScore(scoreComponent) | asMoney}}</strong></span>
+                </div>
+            </ng-container>
+
+            <div class="footer">
+                <span>{{ 'project.partner.budget.table.total' | translate }}</span>
+                <div class="justify-end">
+                    <span>
+                        <strong>{{getAverageScore() | asMoney}}</strong>
+                        <br>
+                        <span class="score-weight"> {{'checklists.instance.component.score.table.column.total.label' | translate : {total: maxTotalScore | asMoney} }}</span>
+                    </span>
+                </div>
             </div>
         </div>
     </div>
