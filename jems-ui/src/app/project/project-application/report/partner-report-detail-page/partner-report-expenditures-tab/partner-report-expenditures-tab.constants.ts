@@ -7,7 +7,7 @@ export class PartnerReportExpendituresTabConstants {
   public static MAX_LENGTH_INVOICE = 30;
   public static FORM_CONTROL_NAMES = {
     rowId: 'rowId',
-    lumpSumId: 'lumpSumId',
+    costOptions: 'costOptions',
     costCategory: 'costCategory',
     investmentId: 'investmentId',
     contractId: 'contractId',
