@@ -19,8 +19,8 @@ context('Application contracting', () => {
   it('TB-519 A project can be set to contracted', () => {
     cy.createFullApplication(application, user.programmeUser.email).then(applicationId => {
       cy.loginByRequest(user.programmeUser.email);
-      cy.visit(`app/project/detail/${applicationId}/`, {failOnStatusCode: false});
-      cy.contains('Contract monitoring').click();
+      cy.visit(`app/project/detail/${applicationId}`, {failOnStatusCode: false});
+      cy.contains('Contract monitoring').should('be.visible').click();
       cy.contains('Set project to contracted').click();
       cy.contains('button', 'Confirm').click();
       cy.get('jems-alert').should('contain', 'You have successfully contracted project');
@@ -36,7 +36,7 @@ context('Application contracting', () => {
       cy.contains('A.1 Partner progress report identification').should('be.visible');
 
       cy.loginByRequest(user.applicantUser.email);
-      cy.visit(`app/project/detail/${applicationId}/`, {failOnStatusCode: false});
+      cy.visit(`app/project/detail/${applicationId}`, {failOnStatusCode: false});
       cy.contains('.link', 'A - Project identification').click();
       cy.contains('div', 'Project title').find('textarea').should('have.attr', 'readonly');
     });
