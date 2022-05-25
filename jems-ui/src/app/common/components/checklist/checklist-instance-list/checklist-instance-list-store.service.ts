@@ -1,10 +1,14 @@
 import {Injectable} from '@angular/core';
 import {
-  ChecklistInstanceDTO, ChecklistInstanceSelectionDTO,
-  ChecklistInstanceService, IdNamePairDTO,
-  ProgrammeChecklistDetailDTO, ProgrammeChecklistService, UserRoleDTO
+  ChecklistInstanceDTO,
+  ChecklistInstanceSelectionDTO,
+  ChecklistInstanceService,
+  IdNamePairDTO,
+  ProgrammeChecklistDetailDTO,
+  ProgrammeChecklistService,
+  UserRoleDTO
 } from '@cat/api';
-import {combineLatest, Observable, of, Subject} from 'rxjs';
+import {combineLatest, Observable, Subject} from 'rxjs';
 import {map, startWith, switchMap, take, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 import {PermissionService} from '../../../../security/permissions/permission.service';

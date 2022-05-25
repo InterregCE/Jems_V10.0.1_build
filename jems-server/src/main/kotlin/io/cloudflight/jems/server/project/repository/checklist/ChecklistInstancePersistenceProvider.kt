@@ -4,7 +4,11 @@ import io.cloudflight.jems.server.programme.repository.checklist.ProgrammeCheckl
 import io.cloudflight.jems.server.project.entity.checklist.ChecklistInstanceEntity
 import io.cloudflight.jems.server.project.service.checklist.ChecklistInstancePersistence
 import io.cloudflight.jems.server.project.service.checklist.getInstances.GetChecklistInstanceDetailNotFoundException
-import io.cloudflight.jems.server.project.service.checklist.model.*
+import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstance
+import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
+import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceSearchRequest
+import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceStatus
+import io.cloudflight.jems.server.project.service.checklist.model.CreateChecklistInstanceModel
 import io.cloudflight.jems.server.project.service.checklist.update.UpdateChecklistInstanceStatusNotFinishedException
 import io.cloudflight.jems.server.user.repository.user.UserRepository
 import org.springframework.stereotype.Repository
