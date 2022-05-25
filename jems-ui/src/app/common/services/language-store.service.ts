@@ -3,7 +3,7 @@ import {InputTranslation, InputUserProfile, UserProfileService} from '@cat/api';
 import {catchError, filter, map, mergeMap, startWith, switchMap, take, tap, withLatestFrom} from 'rxjs/operators';
 import {TranslateService} from '@ngx-translate/core';
 import {SecurityService} from '../../security/security.service';
-import {BehaviorSubject, Observable, of} from 'rxjs';
+import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {Log} from '../utils/log';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import LanguageEnum = InputTranslation.LanguageEnum;
@@ -20,7 +20,7 @@ export class LanguageStore {
   fallbackLanguage$: Observable<string>;
   currentSystemLanguage$: Observable<string>;
   private readonly userAgentLanguage = navigator.language.substr(0, 2 ).toUpperCase();
-  private defaultLanguage = localStorage.getItem(CLIENT_SELECTED_LANGUAGE) || this.userAgentLanguage || DEFAULT_FALLBACK_LANGUAGE;
+  private defaultLanguage = localStorage.getItem(CLIENT_SELECTED_LANGUAGE) || this.userAgentLanguage; // || DEFAULT_FALLBACK_LANGUAGE;
   private inputLanguagesSubject = new BehaviorSubject<string[]>([]);
   private systemLanguagesSubject = new BehaviorSubject<string[]>([]);
   private fallbackLanguageSubject = new BehaviorSubject<string>(DEFAULT_FALLBACK_LANGUAGE);
@@ -34,32 +34,29 @@ export class LanguageStore {
     this.systemLanguages$ = this.systemLanguagesSubject.asObservable();
     this.currentSystemLanguage$ = this.currentSystemLanguageSubject.asObservable();
     this.fallbackLanguage$ = this.fallbackLanguageSubject.asObservable();
-    this.securityService.currentUser.pipe(
-      switchMap(user => user ? this.userProfileService.getUserProfile() : of(null)),
-      map(profile => {
-          if (profile?.language) {
-            return profile?.language;
-          } else {
-            this.updateUserProfileLanguage(this.defaultLanguage);
-            return this.defaultLanguage;
-          }
+
+    const userProfile$ = this.securityService.currentUser.pipe(
+      switchMap(user => user ? this.userProfileService.getUserProfile() : of(null))
+    );
+    combineLatest([userProfile$, this.systemLanguages$]).pipe(
+      map(([userProfile, systemLanguages]) => {
+        if (userProfile !== null && (systemLanguages.includes(userProfile?.language))) {
+          return userProfile.language;
+        } else {
+          this.updateUserProfileLanguage(this.defaultLanguage);
+          return this.defaultLanguage;
         }
-      ),
+      }),
       tap(language => this.setSystemLanguage(language)),
       untilDestroyed(this)
     ).subscribe();
 
     this.systemLanguages$.pipe(
       filter(systemLanguages => !!systemLanguages.length),
-      map(systemLanguages => {
-        const languageIsAvailable = systemLanguages.includes(this.userAgentLanguage);
-        return this.saveSelectedLanguageToLocalStorage( languageIsAvailable ? this.userAgentLanguage : DEFAULT_FALLBACK_LANGUAGE);
-      }),
-      tap(storedLanguage => {
-        if (storedLanguage) {
-          this.defaultLanguage = storedLanguage;
-          translate.use(storedLanguage);
-        }
+      tap(systemLanguages => {
+        this.defaultLanguage = this.determineLanguageToUse(systemLanguages);
+        translate.use(this.defaultLanguage);
+        this.saveSelectedLanguageToLocalStorage(this.defaultLanguage);
       }),
       untilDestroyed(this)
     ).subscribe();
@@ -157,5 +154,15 @@ export class LanguageStore {
       return newLanguage;
     }
     return storedLanguage ? storedLanguage : '';
+  }
+
+  private determineLanguageToUse(systemLanguages: string[]): string {
+    const storedLanguage = localStorage.getItem(CLIENT_SELECTED_LANGUAGE);
+    if (storedLanguage) {
+      return storedLanguage;
+    } else if (systemLanguages.includes(this.userAgentLanguage)) {
+      return this.userAgentLanguage;
+    }
+    return systemLanguages[0] ? systemLanguages[0] : DEFAULT_FALLBACK_LANGUAGE;
   }
 }
