@@ -4,7 +4,7 @@ import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
-import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistInstance
+import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstance
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceStatus
 
@@ -48,5 +48,20 @@ fun checklistConsolidated(
             action = AuditAction.ASSESSMENT_CHECKLIST_CONSOLIDATION_CHANGE,
             project = AuditProject(id = checklist.relatedToId.toString()),
             description = "[${checklist.id}] [${checklist.type}] [${checklist.name}] consolidation set to ${checklist.consolidated}"
+        )
+    )
+
+fun checklistSelectionUpdate(
+    context: Any,
+    checklists: List<ChecklistInstance>
+): AuditCandidateEvent =
+    AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditCandidate(
+            action = AuditAction.ASSESSMENT_CHECKLIST_VISIBILITY_CHANGE,
+            project = AuditProject(id = checklists[0].relatedToId.toString()),
+            description = checklists.joinToString (", ") {
+                "[${it.id}] [${it.type}] [${it.name}] set to visibility ${it.visible}"
+            }
         )
     )

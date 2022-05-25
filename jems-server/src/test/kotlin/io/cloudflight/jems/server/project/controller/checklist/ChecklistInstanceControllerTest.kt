@@ -5,18 +5,20 @@ import io.cloudflight.jems.api.programme.dto.checklist.ProgrammeChecklistTypeDTO
 import io.cloudflight.jems.api.programme.dto.checklist.metadata.HeadlineMetadataDTO
 import io.cloudflight.jems.api.programme.dto.checklist.metadata.OptionsToggleMetadataDTO
 import io.cloudflight.jems.api.programme.dto.checklist.metadata.TextInputMetadataDTO
-import io.cloudflight.jems.api.project.dto.checklist.*
+import io.cloudflight.jems.api.project.dto.checklist.ChecklistComponentInstanceDTO
+import io.cloudflight.jems.api.project.dto.checklist.ChecklistConsolidatorOptionsDTO
+import io.cloudflight.jems.api.project.dto.checklist.ChecklistInstanceDTO
+import io.cloudflight.jems.api.project.dto.checklist.ChecklistInstanceDetailDTO
+import io.cloudflight.jems.api.project.dto.checklist.ChecklistInstanceSelectionDTO
+import io.cloudflight.jems.api.project.dto.checklist.ChecklistInstanceStatusDTO
+import io.cloudflight.jems.api.project.dto.checklist.CreateChecklistInstanceDTO
 import io.cloudflight.jems.api.project.dto.checklist.metadata.HeadlineInstanceMetadataDTO
 import io.cloudflight.jems.api.project.dto.checklist.metadata.OptionsToggleInstanceMetadataDTO
 import io.cloudflight.jems.api.project.dto.checklist.metadata.TextInputInstanceMetadataDTO
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.project.service.checklist.create.CreateChecklistInstanceInteractor
 import io.cloudflight.jems.server.programme.service.checklist.delete.DeleteChecklistInstanceInteractor
-import io.cloudflight.jems.server.project.service.checklist.getDetail.GetChecklistInstanceDetailInteractor
-import io.cloudflight.jems.server.project.service.checklist.getMyInstances.GetMyChecklistInstancesInteractor
 import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistComponentInstance
-import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistInstance
-import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
+import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstance
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistComponentType
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.HeadlineInstanceMetadata
@@ -26,11 +28,15 @@ import io.cloudflight.jems.server.programme.service.checklist.model.metadata.Opt
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.TextInputMetadata
 import io.cloudflight.jems.server.project.service.checklist.update.UpdateChecklistInstanceInteractor
 import io.cloudflight.jems.server.project.service.checklist.consolidateInstance.ConsolidateChecklistInstanceInteractor
-import io.cloudflight.jems.server.project.service.checklist.getAllInstances.GetAllChecklistInstancesInteractor
+import io.cloudflight.jems.server.project.service.checklist.create.CreateChecklistInstanceInteractor
+import io.cloudflight.jems.server.project.service.checklist.getDetail.GetChecklistInstanceDetailInteractor
+import io.cloudflight.jems.server.project.service.checklist.getInstances.GetChecklistInstancesInteractor
+import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceStatus
 import io.cloudflight.jems.server.project.service.checklist.model.CreateChecklistInstanceModel
 import io.cloudflight.jems.server.project.service.checklist.model.metadata.TextInputInstanceMetadata
 import io.mockk.Runs
+import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -38,9 +44,11 @@ import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.just
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import java.math.BigDecimal
+import java.time.LocalDate
 
 class ChecklistInstanceControllerTest : UnitTest() {
 
@@ -138,7 +146,19 @@ class ChecklistInstanceControllerTest : UnitTest() {
         name = "name",
         creatorEmail = "test@email.com",
         relatedToId = RELATED_TO_ID,
-        programmeChecklistId = PROGRAMME_CHECKLIST_ID
+        programmeChecklistId = PROGRAMME_CHECKLIST_ID,
+        visible = false
+    )
+    private val checklistSelected = ChecklistInstance(
+        id = 1L,
+        status = ChecklistInstanceStatus.FINISHED,
+        finishedDate = LocalDate.now(),
+        type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
+        name = "name",
+        creatorEmail = "test@email.com",
+        relatedToId = RELATED_TO_ID,
+        programmeChecklistId = PROGRAMME_CHECKLIST_ID,
+        visible = true
     )
 
     private val checklistDTO = ChecklistInstanceDTO(
@@ -153,11 +173,8 @@ class ChecklistInstanceControllerTest : UnitTest() {
     )
 
 
-    @MockK
-    lateinit var getMyChecklistInteractor: GetMyChecklistInstancesInteractor
-
     @RelaxedMockK
-    lateinit var getAllChecklistInteractor: GetAllChecklistInstancesInteractor
+    lateinit var getChecklistInteractor: GetChecklistInstancesInteractor
 
     @RelaxedMockK
     lateinit var updateInteractor: UpdateChecklistInstanceInteractor
@@ -177,10 +194,15 @@ class ChecklistInstanceControllerTest : UnitTest() {
     @InjectMockKs
     private lateinit var controller: ChecklistInstanceController
 
+    @BeforeEach
+    fun reset() {
+        clearMocks(getChecklistInteractor)
+    }
+
     @Test
     fun `get my checklists`() {
         every {
-            getMyChecklistInteractor.getChecklistInstancesOfCurrentUserByTypeAndRelatedId(
+            getChecklistInteractor.getChecklistInstancesOfCurrentUserByTypeAndRelatedId(
                 RELATED_TO_ID,
                 ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT
             )
@@ -197,17 +219,64 @@ class ChecklistInstanceControllerTest : UnitTest() {
 
     @Test
     fun `get all checklists`() {
+        every {
+            getChecklistInteractor.getChecklistInstancesByTypeAndRelatedId(
+                RELATED_TO_ID,
+                ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT
+            )
+        } returns listOf(checklist)
+
         controller.getAllChecklistInstances(
             RELATED_TO_ID,
             ProgrammeChecklistTypeDTO.APPLICATION_FORM_ASSESSMENT
         )
 
         verify {
-            getAllChecklistInteractor.getChecklistInstancesByTypeAndRelatedId(
+            getChecklistInteractor.getChecklistInstancesByTypeAndRelatedId(
                 RELATED_TO_ID,
                 ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT
             )
         }
+    }
+
+    @Test
+    fun `get checklists for selection`() {
+        every {
+            getChecklistInteractor.getChecklistInstancesForSelection(
+                RELATED_TO_ID,
+                ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT
+            )
+        } returns listOf(checklist, checklistSelected)
+
+        val checklists = controller.getChecklistInstancesForSelection(
+            RELATED_TO_ID,
+            ProgrammeChecklistTypeDTO.APPLICATION_FORM_ASSESSMENT
+        )
+
+        assertThat(checklists).contains(
+            ChecklistInstanceSelectionDTO(
+                id = CHECKLIST_ID,
+                status = ChecklistInstanceStatusDTO.DRAFT,
+                finishedDate = null,
+                type = ProgrammeChecklistTypeDTO.APPLICATION_FORM_ASSESSMENT,
+                name = "name",
+                relatedToId = RELATED_TO_ID,
+                programmeChecklistId = PROGRAMME_CHECKLIST_ID,
+                consolidated = false,
+                visible = false
+            ),
+            ChecklistInstanceSelectionDTO(
+                id = 1L,
+                status = ChecklistInstanceStatusDTO.FINISHED,
+                finishedDate = checklistSelected.finishedDate,
+                type = ProgrammeChecklistTypeDTO.APPLICATION_FORM_ASSESSMENT,
+                name = "name",
+                relatedToId = RELATED_TO_ID,
+                programmeChecklistId = PROGRAMME_CHECKLIST_ID,
+                consolidated = false,
+                visible = true
+            )
+        )
     }
 
     @Test
@@ -237,7 +306,7 @@ class ChecklistInstanceControllerTest : UnitTest() {
     @Test
     fun `delete checklist`() {
         every { deleteInteractor.deleteById(CHECKLIST_ID) } just Runs
-        assertDoesNotThrow { deleteInteractor.deleteById(CHECKLIST_ID) }
+        assertDoesNotThrow { controller.deleteChecklistInstance(CHECKLIST_ID) }
     }
 
     @Test
@@ -252,5 +321,11 @@ class ChecklistInstanceControllerTest : UnitTest() {
         controller.consolidateChecklistInstance(CHECKLIST_ID, ChecklistConsolidatorOptionsDTO(true))
 
         verify { consolidateInteractor.consolidateChecklistInstance(CHECKLIST_ID, true) }
+    }
+
+    @Test
+    fun `update checklist selection`() {
+        controller.updateChecklistInstanceSelection(mapOf(CHECKLIST_ID to true))
+        verify { updateInteractor.updateSelection(mapOf(CHECKLIST_ID to true)) }
     }
 }

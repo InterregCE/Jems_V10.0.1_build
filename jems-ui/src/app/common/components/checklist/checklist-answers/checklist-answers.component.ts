@@ -21,7 +21,7 @@ import {FormService} from '@common/components/section/form/form.service';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {of} from 'rxjs';
 import {NumberService} from '@common/services/number.service';
-import {TableConfig} from "@common/directives/table-config/TableConfig";
+import {TableConfig} from '@common/directives/table-config/TableConfig';
 
 @Component({
   selector: 'jems-checklist-answers',

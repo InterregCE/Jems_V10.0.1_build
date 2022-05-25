@@ -1,7 +1,6 @@
 package io.cloudflight.jems.server.project.service.checklist.update
 
 import io.cloudflight.jems.api.audit.dto.AuditAction
-import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
@@ -10,10 +9,15 @@ import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorDefaultImpl
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistComponentInstance
-import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistInstance
+import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstance
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistComponentType
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
-import io.cloudflight.jems.server.programme.service.checklist.model.metadata.*
+import io.cloudflight.jems.server.programme.service.checklist.model.metadata.HeadlineInstanceMetadata
+import io.cloudflight.jems.server.programme.service.checklist.model.metadata.HeadlineMetadata
+import io.cloudflight.jems.server.programme.service.checklist.model.metadata.OptionsToggleInstanceMetadata
+import io.cloudflight.jems.server.programme.service.checklist.model.metadata.OptionsToggleMetadata
+import io.cloudflight.jems.server.programme.service.checklist.model.metadata.ScoreMetadata
+import io.cloudflight.jems.server.programme.service.checklist.model.metadata.TextInputMetadata
 import io.cloudflight.jems.server.project.service.checklist.ChecklistInstancePersistence
 import io.cloudflight.jems.server.project.service.checklist.ChecklistInstanceValidator
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
@@ -22,8 +26,13 @@ import io.cloudflight.jems.server.project.service.checklist.model.metadata.Score
 import io.cloudflight.jems.server.project.service.checklist.model.metadata.TextInputInstanceMetadata
 import io.cloudflight.jems.server.user.service.authorization.UserAuthorization
 import io.cloudflight.jems.server.utils.user
-import io.mockk.*
+import io.mockk.MockKAnnotations
+import io.mockk.clearMocks
+import io.mockk.every
 import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
+import io.mockk.slot
+import io.mockk.verify
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -127,6 +136,7 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
         creatorEmail = creatorEmail,
         finishedDate = null,
         consolidated = false,
+        visible = true
     )
 
     private val checkLisDetailWithErrorOnScore = ChecklistInstanceDetail(
@@ -178,11 +188,11 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
 
     @BeforeEach
     fun setup() {
-        clearMocks(persistence)
+        clearMocks(persistence, auditPublisher)
         MockKAnnotations.init(this)
         every { userAuthorization.hasPermissionForProject(any(), any()) } returns false
-        checklistInstanceValidator = mockk()
         generalValidator = GeneralValidatorDefaultImpl()
+        checklistInstanceValidator = mockk()
         checklistInstanceValidator = ChecklistInstanceValidator(generalValidator)
         updateChecklistInstance = UpdateChecklistInstance(persistence, auditPublisher, checklistInstanceValidator, userAuthorization)
     }
@@ -200,7 +210,6 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } answers {}
         every { persistence.update(checkLisDetail) } returns checkLisDetail
-
         every { userAuthorization.getUser() } returns user
         every { persistence.getChecklistSummary(CHECKLIST_ID) } returns checklistInstance(ChecklistInstanceStatus.DRAFT)
         every { persistence.changeStatus(CHECKLIST_ID, ChecklistInstanceStatus.FINISHED) } returns checklistInstance(ChecklistInstanceStatus.FINISHED)
@@ -216,6 +225,14 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
                     " [" + checkLisDetail.name + "]" + " status changed from [DRAFT] to [FINISHED]"
             )
         )
+    }
+
+    @Test
+    fun `update - checkLisDetail is already in FINISHED status`() {
+        every { persistence.getChecklistDetail(CHECKLIST_ID) } returns checkLisDetail
+        assertThrows<UpdateChecklistInstanceStatusNotAllowedException> {
+            updateChecklistInstance.update(checklistInstanceDetail(ChecklistInstanceStatus.FINISHED))
+        }
     }
 
     @Test
@@ -259,4 +276,47 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
 
         assertThrows<AppInputValidationException> { updateChecklistInstance.update(checkLisDetailWithErrorOnScore) }
     }
+
+    @Test
+    fun `update selection - set visible`() {
+        val auditSlot = slot<AuditCandidateEvent>()
+        every { auditPublisher.publishEvent(capture(auditSlot)) } answers {}
+        val checklist = checklistInstance(ChecklistInstanceStatus.FINISHED)
+        every { persistence.getChecklistSummary(CHECKLIST_ID) } returns checklist
+        every { persistence.updateSelection(mapOf(CHECKLIST_ID to true)) } returns listOf(checklist)
+
+        updateChecklistInstance.updateSelection(mapOf(CHECKLIST_ID to true))
+
+        verify(exactly = 1) { auditPublisher.publishEvent(capture(auditSlot)) }
+        Assertions.assertThat(auditSlot.captured.auditCandidate).isEqualTo(
+            AuditCandidate(
+                action = AuditAction.ASSESSMENT_CHECKLIST_VISIBILITY_CHANGE,
+                project = AuditProject(id = checklist.relatedToId.toString()),
+                description = "[" + checklist.id + "] [" + checklist.type + "]" +
+                    " [" + checklist.name + "]" + " set to visibility true"
+            )
+        )
+    }
+
+    @Test
+    fun `update selection - set invisible`() {
+        val auditSlot = slot<AuditCandidateEvent>()
+        every { auditPublisher.publishEvent(capture(auditSlot)) } answers {}
+        val checklist = checklistInstance(ChecklistInstanceStatus.FINISHED).copy(visible = false)
+        every { persistence.getChecklistSummary(CHECKLIST_ID) } returns checklist
+        every { persistence.updateSelection(mapOf(CHECKLIST_ID to false)) } returns listOf(checklist)
+
+        updateChecklistInstance.updateSelection(mapOf(CHECKLIST_ID to false))
+
+        verify(exactly = 1) { auditPublisher.publishEvent(capture(auditSlot)) }
+        Assertions.assertThat(auditSlot.captured.auditCandidate).isEqualTo(
+            AuditCandidate(
+                action = AuditAction.ASSESSMENT_CHECKLIST_VISIBILITY_CHANGE,
+                project = AuditProject(id = checklist.relatedToId.toString()),
+                description = "[" + checklist.id + "] [" + checklist.type + "]" +
+                    " [" + checklist.name + "]" + " set to visibility false"
+            )
+        )
+    }
+
 }

@@ -2,7 +2,13 @@ import {ChangeDetectionStrategy, Component, Input, OnInit, TemplateRef, ViewChil
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {ColumnWidth} from '@common/components/table/model/column-width';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
-import {ChecklistInstanceDTO, IdNamePairDTO, ProgrammeChecklistDetailDTO} from '@cat/api';
+import {
+  ChecklistInstanceDTO,
+  ChecklistInstanceSelectionDTO,
+  IdNamePairDTO,
+  ProgrammeChecklistDetailDTO,
+  UserRoleDTO
+} from '@cat/api';
 import {Observable} from 'rxjs';
 import {
   ChecklistInstanceListStore
@@ -24,6 +30,7 @@ import {FormArray, FormBuilder, FormControl} from '@angular/forms';
 })
 export class ChecklistInstanceListComponent implements OnInit {
   Status = ChecklistInstanceDTO.StatusEnum;
+  PermissionEnum = UserRoleDTO.PermissionsEnum;
 
   @Input()
   relatedType: ProgrammeChecklistDetailDTO.TypeEnum;
@@ -36,8 +43,10 @@ export class ChecklistInstanceListComponent implements OnInit {
 
   checklistInstances$: Observable<ChecklistInstanceDTO[]>;
   checklistTemplates$: Observable<IdNamePairDTO[]>;
+  selectedChecklists$: Observable<ChecklistInstanceSelectionDTO[]>;
 
-  tableConfiguration: TableConfiguration;
+  instancesTableConfiguration: TableConfiguration;
+  selectionTableConfiguration: TableConfiguration;
   selectedTemplate: IdNamePairDTO;
 
   @ViewChild('consolidateCell', {static: true})
@@ -57,13 +66,16 @@ export class ChecklistInstanceListComponent implements OnInit {
               private dialog: MatDialog) { }
 
   ngOnInit(): void {
-    this.formService.init(this.form);
-    this.checklistInstances$ = this.pageStore.checklistInstances(this.relatedType, this.relatedId)
+    this.formService.init(this.form, this.pageStore.userCanChangeSelection$);
+    this.checklistInstances$ = this.pageStore.checklistInstances(this.relatedType, this.relatedId);
+    this.checklistTemplates$ = this.pageStore.checklistTemplates(this.relatedType);
+    this.selectedChecklists$ = this.pageStore.selectedInstances(this.relatedType, this.relatedId)
       .pipe(
         tap(checklists => this.resetForm(checklists)),
       );
-    this.checklistTemplates$ = this.pageStore.checklistTemplates(this.relatedType);
-    this.initializeTableConfiguration();
+
+    this.instancesTableConfiguration = this.initializeTableConfiguration(false);
+    this.selectionTableConfiguration = this.initializeTableConfiguration(true);
   }
 
   delete(checklist: ChecklistInstanceDTO): void {
@@ -79,8 +91,8 @@ export class ChecklistInstanceListComponent implements OnInit {
       ).subscribe();
   }
 
-  private initializeTableConfiguration(): void {
-    this.tableConfiguration = new TableConfiguration({
+  private initializeTableConfiguration(selection: boolean): TableConfiguration {
+    return new TableConfiguration({
       isTableClickable: true,
       sortable: false,
       routerLink: 'checklist',
@@ -112,22 +124,30 @@ export class ChecklistInstanceListComponent implements OnInit {
           elementProperty: 'name',
           columnWidth: ColumnWidth.extraWideColumn
         },
-        {
+        ...!selection ? [{
           displayedColumn: 'checklists.instance.assessor',
           elementProperty: 'creatorEmail',
           columnWidth: ColumnWidth.DateColumn
-        },
+        }] : [],
         {
           displayedColumn: 'checklists.instance.finished.date',
           elementProperty: 'finishedDate',
           columnType: ColumnType.DateOnlyColumn,
           columnWidth: ColumnWidth.DateColumn
         },
-        {
+        ...selection ? [{
+          displayedColumn: 'checklists.instance.visible',
+          customCellTemplate: this.visibleCell,
+          columnWidth: ColumnWidth.DateColumn,
+          infoMessage:'checklists.instance.visible.tooltip',
+          clickable: false
+        }
+        ] : [{
           displayedColumn: 'common.delete.entry',
           customCellTemplate: this.deleteCell,
-          columnWidth: ColumnWidth.IdColumn
-        }
+          columnWidth: ColumnWidth.IdColumn,
+          clickable: false
+        }]
       ]
     });
   }
@@ -160,17 +180,17 @@ export class ChecklistInstanceListComponent implements OnInit {
     return this.form.get('visibilities') as FormArray;
   }
 
-  getVisibleGroup(instance: ChecklistInstanceDTO): FormControl {
+  getVisibleGroup(instance: ChecklistInstanceSelectionDTO): FormControl {
     return this.visibilities.controls
       .find(control => control.get('id')?.value === instance.id)
       ?.get('visible') as FormControl;
   }
 
-  resetForm(instances: ChecklistInstanceDTO[]): void {
+  resetForm(instances: ChecklistInstanceSelectionDTO[]): void {
     this.visibilities.clear();
     instances.forEach(instance => this.visibilities.push(this.formBuilder.group({
       id: [instance.id],
-      // visible: [instance.visible],
+      visible: [instance.visible],
     })));
     this.formService.resetEditable();
   }

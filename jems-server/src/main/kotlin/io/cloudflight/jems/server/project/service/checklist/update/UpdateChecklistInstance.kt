@@ -1,11 +1,13 @@
 package io.cloudflight.jems.server.project.service.checklist.update
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
-import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistInstance
+import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstance
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
 import io.cloudflight.jems.server.project.authorization.CanUpdateChecklistAssessment
+import io.cloudflight.jems.server.project.authorization.CanUpdateChecklistAssessmentSelection
 import io.cloudflight.jems.server.project.service.checklist.ChecklistInstancePersistence
 import io.cloudflight.jems.server.project.service.checklist.ChecklistInstanceValidator
+import io.cloudflight.jems.server.project.service.checklist.checklistSelectionUpdate
 import io.cloudflight.jems.server.project.service.checklist.checklistStatusChanged
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceStatus
 import io.cloudflight.jems.server.user.service.authorization.UserAuthorization
@@ -64,4 +66,17 @@ class UpdateChecklistInstance(
             )
         }
     }
+
+    @CanUpdateChecklistAssessmentSelection
+    @Transactional
+    @ExceptionWrapper(UpdateChecklistInstanceException::class)
+    override fun updateSelection(selection: Map<Long,  Boolean>) =
+        persistence.updateSelection(selection).let {
+            auditPublisher.publishEvent(
+                checklistSelectionUpdate(
+                    context = this,
+                    checklists = it
+                )
+            )
+        }
 }

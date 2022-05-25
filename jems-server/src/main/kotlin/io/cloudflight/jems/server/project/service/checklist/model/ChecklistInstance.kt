@@ -1,6 +1,6 @@
-package io.cloudflight.jems.server.programme.service.checklist.model
+package io.cloudflight.jems.server.project.service.checklist.model
 
-import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceStatus
+import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
 import java.time.LocalDate
 
 data class ChecklistInstance(
@@ -12,5 +12,6 @@ data class ChecklistInstance(
     val relatedToId: Long?,
     val finishedDate: LocalDate? = null,
     val programmeChecklistId: Long?,
-    val consolidated: Boolean = false
+    val consolidated: Boolean = false,
+    val visible: Boolean
 )

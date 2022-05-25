@@ -4,7 +4,7 @@ import io.cloudflight.jems.server.common.gson.*
 import io.cloudflight.jems.server.programme.entity.checklist.ProgrammeChecklistComponentEntity
 import io.cloudflight.jems.server.programme.repository.checklist.toModelMetadata
 import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistComponentInstance
-import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistInstance
+import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstance
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistComponentType
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.ChecklistInstanceMetadata
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.ProgrammeChecklistMetadata
@@ -23,7 +23,8 @@ fun ChecklistInstanceEntity.toModel(): ChecklistInstance =
         relatedToId,
         finishedDate,
         programmeChecklist.id,
-        consolidated
+        consolidated,
+        visible
     )
 
 fun List<ChecklistInstanceEntity>.toModel(): List<ChecklistInstance> = this.map { it.toModel() }

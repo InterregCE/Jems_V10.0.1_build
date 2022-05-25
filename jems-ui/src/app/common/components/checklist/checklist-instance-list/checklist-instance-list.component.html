@@ -17,17 +17,26 @@
             </button>
         </span>
 
-        <jems-form *ngIf="checklistInstances$ | async as instances"
+        <ng-container *ngIf="checklistInstances$ | async as instances">
+            <jems-table *ngIf="instances.length"
+                        [configuration]="instancesTableConfiguration"
+                        [rows]="instances">
+            </jems-table>
+        </ng-container>
+    </mat-tab>
+
+    <mat-tab *jemsHasPermission="PermissionEnum.ProjectAssessmentChecklistSelectedRetrieve"
+             label="{{'checklists.instance.selected.tab' | translate}}">
+        <jems-form *ngIf="selectedChecklists$ | async as selections"
                    (save)="save()"
-                   (discard)="resetForm(instances)">
+                   (discard)="resetForm(selections)">
             <form [formGroup]="form">
-                <jems-table *ngIf="instances.length"
-                            [configuration]="tableConfiguration"
-                            [rows]="instances">
+                <jems-table *ngIf="selections.length"
+                            [configuration]="selectionTableConfiguration"
+                            [rows]="selections">
                 </jems-table>
             </form>
         </jems-form>
-
     </mat-tab>
 </mat-tab-group>
 
@@ -41,7 +50,7 @@
 </ng-template>
 
 <ng-template #visibleCell let-checklist>
-    <mat-checkbox (click)="$event.stopPropagation()"
+    <mat-checkbox class="text-right" (click)="$event.stopPropagation()"
                   [formControl]="getVisibleGroup(checklist)">
     </mat-checkbox>
 </ng-template>
