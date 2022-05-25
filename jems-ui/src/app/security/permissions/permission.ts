@@ -293,7 +293,7 @@ export class Permission {
       editTooltip: 'permission.top.bar.applications.edit'
     },
     {
-      name: 'Calls',
+      name: 'topbar.main.call',
       mode: PermissionMode.HIDDEN_VIEW_EDIT,
       viewPermissions: [PermissionsEnum.CallRetrieve],
       editPermissions: [PermissionsEnum.CallUpdate],
