@@ -109,7 +109,7 @@ export class MultiLanguageFormFieldComponent implements OnInit, ControlValueAcce
           });
           this.inputs.setValue(inputTranslations, {emitEvent: false});
         } else {
-          this.inputs.setValue(newValue, {emitEvent: false});
+          this.inputs.patchValue(newValue, {emitEvent: false});
         }
       } else {
         this.inputs.setValue(this.multiLanguageContainerService.multiLanguageFormFieldDefaultValue(this.useFallBackLanguage), {emitEvent: false});
