@@ -10,6 +10,7 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.springframework.data.domain.Sort
 import java.math.BigDecimal
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -37,8 +38,8 @@ internal class GetChecklistTest : UnitTest() {
 
     @Test
     fun getMax100Checklists() {
-        every { persistence.getMax100Checklists() } returns listOf(checklist)
-        assertThat(getProgrammeChecklist.getProgrammeChecklist()).containsExactly(checklist)
+        every { persistence.getMax100Checklists(Sort.unsorted()) } returns listOf(checklist)
+        assertThat(getProgrammeChecklist.getProgrammeChecklist(Sort.unsorted())).containsExactly(checklist)
     }
 
 }

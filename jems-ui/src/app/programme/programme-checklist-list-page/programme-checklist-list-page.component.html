@@ -12,7 +12,8 @@
 
     <jems-table *ngIf="checklists?.length"
                 [configuration]="tableConfiguration"
-                [rows]="checklists">
+                [rows]="checklists"
+                (sortRows)="pageStore.newSort$.next($event)">
     </jems-table>
 </jems-main-page-template>
 

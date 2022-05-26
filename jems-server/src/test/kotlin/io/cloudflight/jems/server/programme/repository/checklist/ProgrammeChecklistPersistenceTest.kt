@@ -14,6 +14,7 @@ import io.mockk.mockk
 import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.springframework.data.domain.Sort
 import java.io.File
 import java.math.BigDecimal
 import java.time.ZoneId
@@ -118,8 +119,8 @@ class ProgrammeChecklistPersistenceTest : UnitTest() {
         every { programmeChecklistRow.lastModificationDate } returns ZonedDateTime.of(2020, 1, 10, 10, 10, 10, 10, ZoneId.systemDefault())
         every { programmeChecklistRow.instancesCount } returns 0
 
-        every { repository.findTop100ByOrderByIdDesc() } returns listOf(programmeChecklistRow)
-        assertThat(persistence.getMax100Checklists()[0])
+        every { repository.findTop100ByOrderByIdDesc(Sort.unsorted()) } returns listOf(programmeChecklistRow)
+        assertThat(persistence.getMax100Checklists(Sort.unsorted())[0])
             .usingRecursiveComparison()
             .isEqualTo(checkList)
     }

@@ -50,18 +50,21 @@ export class ProgrammeChecklistListPageComponent implements OnInit {
           displayedColumn: 'common.type',
           elementTranslationKey: 'programme.checklists.type',
           elementProperty: 'type',
-          columnWidth: ColumnWidth.DateColumn
+          columnWidth: ColumnWidth.DateColumn,
+          sortProperty: 'type',
         },
         {
           displayedColumn: 'common.name',
           elementProperty: 'name',
-          columnWidth: ColumnWidth.extraWideColumn
+          columnWidth: ColumnWidth.extraWideColumn,
+          sortProperty: 'name',
         },
         {
           displayedColumn: 'programme.checklists.modification.date',
           elementProperty: 'lastModificationDate',
           columnType: ColumnType.DateColumn,
-          columnWidth: ColumnWidth.DateColumn
+          columnWidth: ColumnWidth.DateColumn,
+          sortProperty: 'lastModificationDate',
         },
         ...canEditProgramme ? [{
           displayedColumn: 'common.delete.entry',

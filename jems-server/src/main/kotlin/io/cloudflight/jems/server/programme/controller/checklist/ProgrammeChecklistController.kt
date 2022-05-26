@@ -11,6 +11,7 @@ import io.cloudflight.jems.server.programme.service.checklist.delete.DeleteProgr
 import io.cloudflight.jems.server.programme.service.checklist.getList.GetProgrammeChecklistInteractor
 import io.cloudflight.jems.server.programme.service.checklist.getDetail.GetProgrammeChecklistDetailInteractor
 import io.cloudflight.jems.server.programme.service.checklist.update.UpdateProgrammeChecklistInteractor
+import org.springframework.data.domain.Pageable
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
@@ -22,8 +23,8 @@ class ProgrammeChecklistController(
     private val deleteInteractor: DeleteProgrammeChecklistInteractor,
 ) : ProgrammeChecklistApi {
 
-    override fun getProgrammeChecklists(): List<ProgrammeChecklistDTO> =
-        getChecklistInteractor.getProgrammeChecklist().toDto()
+    override fun getProgrammeChecklists(pageable: Pageable): List<ProgrammeChecklistDTO> =
+        getChecklistInteractor.getProgrammeChecklist(sort = pageable.sort).toDto()
 
     override fun getProgrammeChecklistDetail(checklistId: Long): ProgrammeChecklistDetailDTO =
         getChecklistDetailInteractor.getProgrammeChecklistDetail(checklistId).toDetailDto()

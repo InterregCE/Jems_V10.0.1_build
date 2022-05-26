@@ -5,7 +5,10 @@ import io.cloudflight.jems.api.programme.dto.checklist.ProgrammeChecklistDTO
 import io.cloudflight.jems.api.programme.dto.checklist.ProgrammeChecklistDetailDTO
 import io.cloudflight.jems.api.programme.dto.checklist.ProgrammeChecklistTypeDTO
 import io.swagger.annotations.Api
+import io.swagger.annotations.ApiImplicitParam
+import io.swagger.annotations.ApiImplicitParams
 import io.swagger.annotations.ApiOperation
+import org.springframework.data.domain.Pageable
 import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -22,8 +25,11 @@ interface ProgrammeChecklistApi {
     }
 
     @ApiOperation("Retrieve all programme checklists")
+    @ApiImplicitParams(
+        ApiImplicitParam(paramType = "query", name = "sort", dataType = "string", allowMultiple = true)
+    )
     @GetMapping(ENDPOINT_API_PROGRAMME_CHECKLIST)
-    fun getProgrammeChecklists(): List<ProgrammeChecklistDTO>
+    fun getProgrammeChecklists(pageable: Pageable): List<ProgrammeChecklistDTO>
 
     @ApiOperation("Retrieve detailed programme checklist")
     @GetMapping("$ENDPOINT_API_PROGRAMME_CHECKLIST/detail/{checklistId}")
