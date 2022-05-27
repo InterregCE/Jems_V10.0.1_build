@@ -142,7 +142,7 @@
                        [matAutocomplete]="nace"
                        (focusout)="selectionUnfocused($event)">
                 <mat-autocomplete #nace="matAutocomplete" [displayWith]="displayFn">
-                    <mat-option *ngFor="let naceValue of filteredNace | async" [value]="naceValue">
+                    <mat-option *ngFor="let naceValue of filteredNace$ | async" [value]="naceValue">
                         {{displayFn(naceValue)}}
                     </mat-option>
                 </mat-autocomplete>
