@@ -1,6 +1,6 @@
-<a mat-icon-button [matMenuTriggerFor]="menu">
+<button mat-icon-button aria-label="help button" [matMenuTriggerFor]="menu">
     <mat-icon>help_outline</mat-icon>
-</a>
+</button>
 <mat-menu #menu="matMenu">
     <label *ngIf="helpdeskUrl || helpdeskEmail" class="help-category">{{'topbar.help.title' | translate}}</label>
     <ng-container *ngIf="helpdeskUrl">
