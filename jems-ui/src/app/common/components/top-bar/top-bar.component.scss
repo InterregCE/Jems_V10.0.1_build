@@ -325,7 +325,6 @@ $rfs-breakpoint-unit-cache: unit($rfs-breakpoint);
     border-bottom: 1px solid var(--light-blue-gray);
     background: linear-gradient(157deg, var(--app-bar) 10rem, var(--app-bar-secondary) 95%);
     &.no-user {
-      padding-right: 1.75rem;
       .navbar-logos {
         visibility: hidden;
       }
