@@ -18,7 +18,8 @@ import {
   IdNamePairDTO,
   ProjectPartnerReportDTO,
   ProjectPartnerReportExpenditureCostDTO,
-  ProjectPartnerReportLumpSumDTO
+  ProjectPartnerReportLumpSumDTO,
+  ProjectPartnerReportUnitCostDTO
 } from '@cat/api';
 import {BudgetCostCategoryEnum} from '@project/model/lump-sums/BudgetCostCategoryEnum';
 import {
@@ -57,16 +58,26 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     contractIDs: IdNamePairDTO[];
     columnsToDisplay: string[];
     withConfigs: TableConfig[];
+    unitCosts: ProjectPartnerReportUnitCostDTO[];
     lumpSums: ProjectPartnerReportLumpSumDTO[];
   }>;
   tableConfiguration$: Observable<{
     columnsToDisplay: string[];
     withConfigs: TableConfig[];
   }>;
+  reportCosts$: Observable<{
+    unitCosts: ProjectPartnerReportUnitCostDTO[];
+    lumpSums: ProjectPartnerReportLumpSumDTO[];
+  }>;
 
   lumpSumsAvailable: boolean;
+  unitCostsAvailable: boolean;
   lumpSumHasValue = false;
+  unitCostHasValue = false;
+
   availableLumpSums: ProjectPartnerReportLumpSumDTO[];
+  availableUnitCosts: ProjectPartnerReportUnitCostDTO[];
+  availableCurrenciesPerRow: CurrencyDTO[][] = [];
 
   readonly PERIOD_PREPARATION: number = 0;
   readonly PERIOD_CLOSURE: number = 255;
@@ -86,9 +97,10 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       this.pageStore.investmentsSummary$,
       this.partnerReportDetailPageStore.reportEditable$,
       this.pageStore.reportLumpSums$,
+      this.pageStore.reportUnitCosts$
     ]).pipe(
-      map(([investments, editable, lumpSums]) => ({
-          columnsToDisplay: this.getColumnsToDisplay(investments, editable, lumpSums.length > 0),
+      map(([investments, editable, lumpSums, unitCosts]) => ({
+          columnsToDisplay: this.getColumnsToDisplay(investments, editable, lumpSums.length > 0 || unitCosts.length > 0),
           withConfigs: this.getTableConfig(investments, editable)
         })
       )
@@ -122,40 +134,82 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     }
   }
 
-  onLumpSumChange(change: MatSelectChange, control: FormGroup): void {
-    control.patchValue({lumpSumId: change.value});
-    this.clearFieldsOnLumpSumSelection(control);
+  onCostOptionChange(change: any, control: FormGroup, index: number): void {
+    this.clearFieldsOnCostOptionSelection(control);
+
     if (change.value === null) {
+      this.availableCurrenciesPerRow[index] = this.currencies;
       this.lumpSumHasValue = false;
-      control.get('costCategory')?.enable();
-      control.get('contractId')?.enable();
-      control.get('internalReferenceNumber')?.enable();
-      control.get('invoiceNumber')?.enable();
-      control.get('invoiceDate')?.enable();
-      control.get('dateOfPayment')?.enable();
-      control.get('totalValueInvoice')?.enable();
-      control.get('vat')?.enable();
-      control.get('numberOfUnits')?.disable();
-      control.get('pricePerUnit')?.disable();
-      control.get('declaredAmount')?.enable();
-      control.get('currencyCode')?.enable();
-      control.get('currencyConversionRate')?.enable();
-      control.get('declaredAmountInEur')?.enable();
-      control.get('investmentId')?.enable();
+      this.setControlsDisableStatusForNoCostOption(control);
     } else {
-      this.lumpSumHasValue = true;
-      control.patchValue({costCategory: this.CostCategoryEnum.Multiple});
-      control.patchValue({numberOfUnits: 1});
-      control.patchValue({pricePerUnit: this.availableLumpSums.filter(lumpSum => lumpSum.id === change.value)[0].cost});
-      control.patchValue({declaredAmount: this.availableLumpSums.filter(lumpSum => lumpSum.id === change.value)[0].cost});
-      control.patchValue({currencyCode: CurrencyCodesEnum.EUR});
-      control.patchValue({currencyConversionRate: this.getConversionRateByCode(CurrencyCodesEnum.EUR)});
-      control.patchValue({declaredAmountInEur: this.availableLumpSums.filter(lumpSum => lumpSum.id === change.value)[0].cost});
-      this.disableLumpSumSelectionRelatedFields(control);
+      if (change.value['type'] === 'lumpSum') {
+        this.lumpSumHasValue = true;
+        this.availableCurrenciesPerRow[index] =  this.getAvailableCurrenciesByType('lumpSum');
+        control.patchValue({costCategory: this.CostCategoryEnum.Multiple});
+        control.patchValue({numberOfUnits: 1});
+        control.patchValue({pricePerUnit: this.availableLumpSums.filter(lumpSum => lumpSum.id === change.value['id'])[0].cost});
+        control.patchValue({declaredAmount: this.availableLumpSums.filter(lumpSum => lumpSum.id === change.value['id'])[0].cost});
+        control.patchValue({currencyCode: CurrencyCodesEnum.EUR});
+        control.patchValue({currencyConversionRate: this.getConversionRateByCode(CurrencyCodesEnum.EUR)});
+        control.patchValue({declaredAmountInEur: this.availableLumpSums.filter(lumpSum => lumpSum.id === change.value['id'])[0].cost});
+
+        this.disableCostOptionSelectionRelatedFields(control, 'lumpSum', index);
+      } else {
+        const unitCost = this.availableUnitCosts.filter(uc => uc.id === change.value['id'])[0];
+        const unitCostCurrency = this.getUnitCostCurrency(unitCost);
+        const conversionRate = this.getConversionRateByCode(unitCostCurrency);
+        const declaredAmount = this.availableUnitCosts.filter(uc => uc.id === change.value['id'])[0].total;
+
+        this.availableCurrenciesPerRow[index] = this.getAvailableCurrenciesByType('unitCost', change);
+        this.unitCostHasValue = true;
+
+        control.patchValue({costCategory: this.availableUnitCosts.filter(uc => uc.id === change.value['id'])[0].category});
+        control.patchValue({numberOfUnits: 1});
+        control.patchValue({pricePerUnit: this.getUnitCostPricePerUnitByCurrency(unitCost, unitCostCurrency)});
+        control.patchValue({declaredAmount});
+        control.patchValue({currencyCode: unitCostCurrency});
+        control.patchValue({currencyConversionRate: conversionRate});
+        control.patchValue({declaredAmountInEur: this.getAmountInEur(conversionRate, declaredAmount)});
+        this.disableCostOptionSelectionRelatedFields(control, 'unitCost', index);
+      }
     }
   }
 
-  disableOnReset(control: FormGroup): void {
+  getAvailableCurrenciesByType(type: string | null, unitCost?: any) {
+    switch(type) {
+      case 'lumpSum': return this.currencies.filter((currency) => currency.code === CurrencyCodesEnum.EUR);
+      case 'unitCost': return this.currencies.filter((currency) => currency.code === CurrencyCodesEnum.EUR || currency.code === this.availableUnitCosts.filter(el => (el.id === unitCost?.value?.id || el.id === unitCost?.id) )[0].foreignCurrencyCode);
+      default: return this.currencies;
+    }
+  }
+
+  setControlsDisableStatusForNoCostOption(control: FormGroup) {
+    control.get('costCategory')?.enable();
+    control.get('contractId')?.enable();
+    control.get('internalReferenceNumber')?.enable();
+    control.get('invoiceNumber')?.enable();
+    control.get('invoiceDate')?.enable();
+    control.get('dateOfPayment')?.enable();
+    control.get('totalValueInvoice')?.enable();
+    control.get('vat')?.enable();
+    control.get('numberOfUnits')?.disable();
+    control.get('pricePerUnit')?.disable();
+    control.get('declaredAmount')?.enable();
+    control.get('currencyCode')?.enable();
+    control.get('currencyConversionRate')?.enable();
+    control.get('declaredAmountInEur')?.enable();
+    control.get('investmentId')?.enable();
+  }
+
+  getUnitCostPricePerUnitByCurrency(unitCost: ProjectPartnerReportUnitCostDTO, selectedCurrency: string): number {
+    return selectedCurrency ? unitCost.foreignCurrencyCode === selectedCurrency ? unitCost.costPerUnitForeignCurrency : unitCost.costPerUnit : 0;
+  }
+
+  getUnitCostCurrency(unitCost: ProjectPartnerReportUnitCostDTO): string {
+    return  unitCost.foreignCurrencyCode ? '' : CurrencyCodesEnum.EUR;
+  }
+
+  disableOnReset(control: FormGroup, index: number): void {
     if (this.isStaffCostsSelectedForCostCategoryRow(control) ||
       this.isTravelAndAccommodationSelectedForCostCategoryRow(control)) {
       control.get('investmentId')?.disable();
@@ -165,8 +219,8 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       control.get('contractId')?.disable();
       control.get('invoiceNumber')?.disable();
     }
-    if((control?.get(this.constants.FORM_CONTROL_NAMES.lumpSumId) as FormControl)?.value !== null) {
-      this.disableLumpSumSelectionRelatedFields(control);
+    if((control?.get(this.constants.FORM_CONTROL_NAMES.costOptions) as FormControl)?.value !== null) {
+      this.disableCostOptionSelectionRelatedFields(control, control.value?.costOptions?.type, index);
     }
   }
 
@@ -185,12 +239,13 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
   }
 
   resetForm(partnerReportExpenditures: ProjectPartnerReportExpenditureCostDTO[]): void {
+    this.availableCurrenciesPerRow = [];
     this.items.clear();
     partnerReportExpenditures.forEach(partnerReportExpenditure => this.addExpenditure(partnerReportExpenditure));
     this.tableData = [...this.items.controls];
     this.formService.resetEditable();
-    this.items.controls.forEach((formGroup: FormGroup) => (
-      this.disableOnReset(formGroup)));
+    this.items.controls.forEach((formGroup: FormGroup, index) => (
+      this.disableOnReset(formGroup, index)));
 
     setTimeout(() => this.changeDetectorRef.detectChanges());
   }
@@ -204,7 +259,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
   addNewItem(): void {
     const item = this.formBuilder.group({
       id: null,
-      lumpSumId: null,
+      costOptions: null,
       costCategory: ['', Validators.required],
       investmentId: '',
       contractId: '',
@@ -229,6 +284,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     item.get('pricePerUnit')?.disable();
     this.tableData = [...this.items.controls];
     this.formService.setDirty(true);
+    this.availableCurrenciesPerRow.push(this.getAvailableCurrenciesByType(null));
 
     setTimeout(() => this.changeDetectorRef.detectChanges());
   }
@@ -253,30 +309,44 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
   }
 
   private dataAsObservable(): void {
+    this.reportCosts$ = combineLatest([
+      this.pageStore.reportUnitCosts$,
+      this.pageStore.reportLumpSums$,
+    ]).pipe(
+      map(([unitCosts, lumpSums]) => ({
+          unitCosts: unitCosts.map(unit => ({...unit, type: 'unitCost'})),
+          lumpSums: lumpSums.map(lumpSum => ({...lumpSum, type: 'lumpSum'}))
+        })
+      ),
+      tap(data => this.lumpSumsAvailable = data.lumpSums.length > 0),
+      tap(data => this.unitCostsAvailable = data.unitCosts.length > 0),
+      tap(data => this.availableLumpSums = data.lumpSums),
+      tap(data => this.availableUnitCosts = data.unitCosts)
+    );
+
     this.data$ = combineLatest([
       this.pageStore.expendituresCosts$,
       this.pageStore.costCategories$,
       this.pageStore.investmentsSummary$,
       this.pageStore.contractIDs$,
       this.tableConfiguration$,
-      this.pageStore.reportLumpSums$
+      this.reportCosts$
     ]).pipe(
-      map(([expendituresCosts, costCategories, investmentsSummary, contractIDs, tableConfiguration, lumpSums]) => ({
+      map(([expendituresCosts, costCategories, investmentsSummary, contractIDs, tableConfiguration, reportCosts]) => ({
           expendituresCosts,
           costCategories,
           investmentsSummary,
           contractIDs,
           ...tableConfiguration,
-          lumpSums
+          ...reportCosts
         })
       ),
-      tap(data => this.resetForm(data.expendituresCosts)),
-      tap(data => this.lumpSumsAvailable = data.lumpSums.length > 0),
-      tap(data => this.availableLumpSums = data.lumpSums)
+      tap(data => this.resetForm(data.expendituresCosts))
     );
+
   }
 
-  private getColumnsToDisplay(investments: InvestmentSummary[], isEditable: boolean, lumpSumsAvailable: boolean): string[] {
+  private getColumnsToDisplay(investments: InvestmentSummary[], isEditable: boolean, costOptionsAvailable: boolean): string[] {
     const columnsToDisplay = [
       'costItemID',
       'costCategory',
@@ -301,8 +371,8 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     if (investments.length > 0) {
       columnsToDisplay.splice(2, 0, 'investmentId');
     }
-    if (lumpSumsAvailable) {
-      columnsToDisplay.splice(1, 0, 'lumpSumId');
+    if (costOptionsAvailable) {
+      columnsToDisplay.splice(1, 0, 'costOptions');
       columnsToDisplay.splice(12, 0, 'numberOfUnits');
       columnsToDisplay.splice(13, 0, 'pricePerUnit');
     }
@@ -340,43 +410,61 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     return tableConfig;
   }
 
-  private addExpenditure(reportExpenditureCost?: ProjectPartnerReportExpenditureCostDTO): void {
-    const conversionRate = this.getConversionRateByCode(reportExpenditureCost?.currencyCode || '', reportExpenditureCost);
-    this.items.push(this.formBuilder.group(
-      {
-        id: this.formBuilder.control(reportExpenditureCost?.id),
-        lumpSumId: this.formBuilder.control(reportExpenditureCost?.lumpSumId),
-        costCategory: this.formBuilder.control(reportExpenditureCost?.costCategory),
-        investmentId: this.formBuilder.control(reportExpenditureCost?.investmentId),
-        contractId: this.formBuilder.control(reportExpenditureCost?.contractId),
-        internalReferenceNumber: this.formBuilder.control(reportExpenditureCost?.internalReferenceNumber,
-          Validators.maxLength(30)),
-        invoiceNumber: this.formBuilder.control(reportExpenditureCost?.invoiceNumber,
-          Validators.maxLength(30)),
-        invoiceDate: this.formBuilder.control(reportExpenditureCost?.invoiceDate),
-        dateOfPayment: this.formBuilder.control(reportExpenditureCost?.dateOfPayment),
-        description: this.formBuilder.control(reportExpenditureCost?.description),
-        comment: this.formBuilder.control(reportExpenditureCost?.comment),
-        totalValueInvoice: this.formBuilder.control(reportExpenditureCost?.totalValueInvoice),
-        vat: this.formBuilder.control(reportExpenditureCost?.vat),
-        numberOfUnits: this.formBuilder.control(reportExpenditureCost?.numberOfUnits),
-        pricePerUnit: this.formBuilder.control(reportExpenditureCost?.pricePerUnit),
-        declaredAmount: this.formBuilder.control(reportExpenditureCost?.declaredAmount),
-        currencyCode: this.formBuilder.control(reportExpenditureCost?.currencyCode),
-        currencyConversionRate: this.formBuilder.control(conversionRate),
-        declaredAmountInEur: this.formBuilder.control(this.getAmountInEur(conversionRate, reportExpenditureCost?.declaredAmount || 0)),
-        attachment: this.formBuilder.control(reportExpenditureCost?.attachment, []),
-      })
-    );
+  private getUnitCostOrLumpSumObject(reportExpenditureCost: ProjectPartnerReportExpenditureCostDTO): ProjectPartnerReportUnitCostDTO | ProjectPartnerReportLumpSumDTO | undefined {
+    return (reportExpenditureCost.lumpSumId !== null ?
+     this.availableLumpSums.find(lumpSum => lumpSum.id === reportExpenditureCost.lumpSumId) :
+      this.availableUnitCosts.find(unitCost => unitCost.id === reportExpenditureCost.unitCostId));
+  }
+
+  getUnitCostType(reportExpenditureCost: ProjectPartnerReportExpenditureCostDTO) {
+    if(!reportExpenditureCost.lumpSumId && !reportExpenditureCost.unitCostId) {
+      return '';
+    }
+    return reportExpenditureCost.lumpSumId ? 'lumpSum' : 'unitCost';
+  }
+
+  private addExpenditure(reportExpenditureCost: ProjectPartnerReportExpenditureCostDTO): void {
+      const conversionRate = this.getConversionRateByCode(reportExpenditureCost.currencyCode || '', reportExpenditureCost);
+      const costOption = this.getUnitCostOrLumpSumObject(reportExpenditureCost);
+      this.availableCurrenciesPerRow.push(this.getAvailableCurrenciesByType(this.getUnitCostType(reportExpenditureCost), costOption));
+
+      this.items.push(this.formBuilder.group(
+        {
+          id: this.formBuilder.control(reportExpenditureCost.id),
+          costOptions: this.formBuilder.control(costOption),
+          costCategory: this.formBuilder.control(reportExpenditureCost.costCategory),
+          investmentId: this.formBuilder.control(reportExpenditureCost.investmentId),
+          contractId: this.formBuilder.control(reportExpenditureCost.contractId),
+          internalReferenceNumber: this.formBuilder.control(reportExpenditureCost.internalReferenceNumber,
+            Validators.maxLength(30)),
+          invoiceNumber: this.formBuilder.control(reportExpenditureCost.invoiceNumber,
+            Validators.maxLength(30)),
+          invoiceDate: this.formBuilder.control(reportExpenditureCost.invoiceDate),
+          dateOfPayment: this.formBuilder.control(reportExpenditureCost.dateOfPayment),
+          description: this.formBuilder.control(reportExpenditureCost.description),
+          comment: this.formBuilder.control(reportExpenditureCost.comment),
+          totalValueInvoice: this.formBuilder.control(reportExpenditureCost.totalValueInvoice),
+          vat: this.formBuilder.control(reportExpenditureCost.vat),
+          numberOfUnits: this.formBuilder.control(reportExpenditureCost.numberOfUnits),
+          pricePerUnit: this.formBuilder.control(reportExpenditureCost.pricePerUnit),
+          declaredAmount: this.formBuilder.control(reportExpenditureCost.declaredAmount),
+          currencyCode: this.formBuilder.control(reportExpenditureCost.currencyCode),
+          currencyConversionRate: this.formBuilder.control(conversionRate),
+          declaredAmountInEur: this.formBuilder.control(this.getAmountInEur(conversionRate, reportExpenditureCost.declaredAmount || 0)),
+          attachment: this.formBuilder.control(reportExpenditureCost.attachment, []),
+        })
+      );
   }
 
   private formToReportExpenditures(): ProjectPartnerReportExpenditureCostDTO[] {
-    return this.items.controls.map((formGroup: FormGroup) => ({
+   return this.items.controls.map((formGroup: FormGroup) => ({
       costCategory: [formGroup.value?.costCategory, Validators.required],
       internalReferenceNumber: [formGroup.getRawValue()?.internalReferenceNumber, Validators.maxLength(30)],
       invoiceNumber: [formGroup.getRawValue()?.invoiceNumber, Validators.maxLength(30)],
-      ...formGroup.getRawValue()
-    }));
+      ...formGroup.getRawValue(),
+      lumpSumId: formGroup.getRawValue()?.costOptions.type === 'lumpSum' ? formGroup.getRawValue()?.costOptions.id : null,
+      unitCostId: formGroup.getRawValue()?.costOptions.type === 'unitCost' ? formGroup.getRawValue()?.costOptions.id : null,
+     }));
   }
 
   get items(): FormArray {
@@ -385,6 +473,14 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
 
   attachment(index: number): FormControl {
     return this.items.at(index).get(this.constants.FORM_CONTROL_NAMES.attachment) as FormControl;
+  }
+
+  onCurrencyChange(expenditureIndex: number, newValue: MatSelectChange) {
+    if (this.isCostOptionSelectedInCurrentFormGroup(expenditureIndex)) {
+      const unitCost = this.items.at(expenditureIndex).get('costOptions')?.value;
+      this.items.at(expenditureIndex).get('pricePerUnit')?.setValue(this.getUnitCostPricePerUnitByCurrency(unitCost, newValue.value) );
+    }
+    this.updateConversionRate(expenditureIndex, newValue);
   }
 
   updateConversionRate(expenditureIndex: number, newValue: MatSelectChange) {
@@ -411,6 +507,12 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     const declaredAmountInEur = declaredAmount && newConversionRate ?  NumberService.roundNumber(NumberService.divide(declaredAmount, newConversionRate)) : 0;
 
     this.items.at(expenditureIndex).get('declaredAmountInEur')?.setValue(NumberService.roundNumber(declaredAmountInEur));
+  }
+
+  onUpdateNumberOfUnits(expenditureIndex: number) {
+    const total = NumberService.product([this.items.at(expenditureIndex).get('pricePerUnit')?.value , this.items.at(expenditureIndex).get('numberOfUnits')?.value]);
+    this.items.at(expenditureIndex).get('declaredAmount')?.setValue(NumberService.roundNumber(total));
+    this.updateAmountInEur(expenditureIndex, total);
   }
 
   onUploadFileToExpenditure(target: any, expenditureId: number, expenditureIndex: number) {
@@ -441,11 +543,11 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     this.pageStore.refreshExpenditures$.next(undefined);
   }
 
-  isLumpSumSelectedInCurrentFormGroup(index: number): boolean {
-    return this.items.at(index).get('lumpSumId')?.value !== null;
+  isCostOptionSelectedInCurrentFormGroup(index: number): boolean {
+    return this.items.at(index).get('costOptions')?.value !== null;
   }
 
-  disableLumpSumSelectionRelatedFields(control: FormGroup): void {
+  disableCostOptionSelectionRelatedFields(control: FormGroup, selectionType: string, index: number): void {
     control.get('costCategory')?.disable();
     control.get('contractId')?.disable();
     control.get('internalReferenceNumber')?.disable();
@@ -461,9 +563,20 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     control.get('currencyConversionRate')?.disable();
     control.get('declaredAmountInEur')?.disable();
     control.get('investmentId')?.disable();
+
+    if (selectionType === 'unitCost') {
+      control.get('numberOfUnits')?.enable();
+      if (this.isUnitCostForeignCurrencyAvailable(index)) {
+          control.get('currencyCode')?.enable();
+        }
+    }
   }
 
-  clearFieldsOnLumpSumSelection(control: FormGroup): void {
+  isUnitCostForeignCurrencyAvailable(index: number): boolean {
+    return this.availableCurrenciesPerRow[index]?.length > 1;
+  }
+
+  clearFieldsOnCostOptionSelection(control: FormGroup): void {
     control.patchValue({costCategory: null});
     control.patchValue({contractId: null});
     control.patchValue({internalReferenceNumber: null});
@@ -471,6 +584,8 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     control.patchValue({invoiceDate: null});
     control.patchValue({dateOfPayment: null});
     control.patchValue({totalValueInvoice: null});
+    control.patchValue({description: []});
+    control.patchValue({comment: []});
     control.patchValue({vat: null});
     control.patchValue({investmentId: null});
     control.patchValue({numberOfUnits: 1});

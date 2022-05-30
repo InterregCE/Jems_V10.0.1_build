@@ -4,9 +4,13 @@ import {
   CurrencyDTO,
   IdNamePairDTO,
   InvestmentSummaryDTO,
-  ProjectPartnerBudgetOptionsDto, ProjectPartnerReportDTO,
+  ProjectPartnerBudgetOptionsDto,
+  ProjectPartnerReportDTO,
   ProjectPartnerReportExpenditureCostDTO,
-  ProjectPartnerReportExpenditureCostsService, ProjectPartnerReportLumpSumDTO, ProjectReportFileMetadataDTO
+  ProjectPartnerReportExpenditureCostsService,
+  ProjectPartnerReportLumpSumDTO,
+  ProjectPartnerReportUnitCostDTO,
+  ProjectReportFileMetadataDTO
 } from '@cat/api';
 
 import {PartnerReportDetailPageStore} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
@@ -38,6 +42,7 @@ export class PartnerReportExpendituresStore {
   currentReport$: Observable<ProjectPartnerReportDTO>;
   refreshExpenditures$ = new BehaviorSubject<void>(undefined);
   reportLumpSums$: Observable<ProjectPartnerReportLumpSumDTO[]>;
+  reportUnitCosts$: Observable<ProjectPartnerReportUnitCostDTO[]>;
   private expendituresUpdated$ = new Subject<ProjectPartnerReportExpenditureCostDTO[]>();
 
   constructor(private partnerReportExpenditureCostsService: ProjectPartnerReportExpenditureCostsService,
@@ -57,6 +62,7 @@ export class PartnerReportExpendituresStore {
     this.currentReport$ = this.partnerReportDetailPageStore.partnerReport$;
     this.partnerId$ = this.partnerReportPageStore.partnerId$;
     this.reportLumpSums$ = this.reportLumpSums();
+    this.reportUnitCosts$ = this.reportUnitCosts();
   }
 
   updateExpenditures(partnerExpenditures: ProjectPartnerReportExpenditureCostDTO[]): Observable<ProjectPartnerReportExpenditureCostDTO[]> {
@@ -184,6 +190,20 @@ export class PartnerReportExpendituresStore {
         switchMap(([partnerId, partnerReport]) => this.partnerReportExpenditureCostsService
           .getAvailableLumpSums(Number(partnerId), partnerReport.id)),
         map((lumpSums: ProjectPartnerReportLumpSumDTO[]) => lumpSums),
+        shareReplay(1)
+      );
+  }
+
+  private reportUnitCosts(): Observable<ProjectPartnerReportUnitCostDTO[]> {
+    return combineLatest([
+      this.partnerReportDetailPageStore.partnerId$,
+      this.partnerReportDetailPageStore.partnerReport$
+    ])
+      .pipe(
+        filter(([partnerId, partnerReport]) => partnerId !== null && partnerReport !== null),
+        switchMap(([partnerId, partnerReport]) => this.partnerReportExpenditureCostsService
+          .getAvailableUnitCosts(Number(partnerId), partnerReport.id)),
+        map((unitCosts: ProjectPartnerReportUnitCostDTO[]) => unitCosts),
         shareReplay(1)
       );
   }
