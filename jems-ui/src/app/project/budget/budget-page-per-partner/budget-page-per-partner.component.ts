@@ -58,13 +58,18 @@ export class BudgetPagePerPartnerComponent {
               private visibilityStatusService: FormVisibilityStatusService) {
     this.tableConfig$ = combineLatest([this.chosenProjectFunds$, this.isCallTypeSpf$])
       .pipe(map( ([funds, isSpf]) => [
-        {minInRem: 2}, {minInRem: 2},
+        {minInRem: 2},
+        {minInRem: 2},
         ...isSpf ? [{minInRem: 3}] : [],
         ...funds.flatMap(() => [{minInRem: 7}, {minInRem: 7}]),
-        {minInRem: 5}, {minInRem: 5}, {minInRem: 5},
+        {minInRem: 5},
+        {minInRem: 5},
+        {minInRem: 5},
         ...this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_ADD_NEW_CONTRIBUTION_ORIGIN)
           ? [{minInRem: 5}] : [],
-        {minInRem: 4}, {minInRem: 4}, {minInRem: 5}
+        {minInRem: 9, maxInRem: 9}, // total eligible budget
+        {minInRem: 4, maxInRem: 4}, // % of total eligible budget
+        {minInRem: 5}
       ]));
   }
 
