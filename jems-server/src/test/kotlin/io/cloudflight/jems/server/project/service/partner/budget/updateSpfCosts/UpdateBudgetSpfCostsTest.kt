@@ -76,6 +76,7 @@ internal class UpdateBudgetSpfCostsTest : UnitTest() {
 
     @BeforeAll
     fun setup() {
+        every { projectPersistence.getCallIdOfProject(projectId) } returns callSettings.callId
         every { partnerPersistence.getProjectIdForPartnerId(partnerId) } returns projectId
         every { projectPersistence.getProjectCallSettings(projectId) } returns callSettings
         every { budgetCostValidator.validateAllowedSpfCosts(callSettings) } returns Unit
@@ -85,6 +86,13 @@ internal class UpdateBudgetSpfCostsTest : UnitTest() {
     fun `should update and return budget spf cost entries for the specified partner`() {
         val periods = spfCostEntries.map { it.budgetPeriods }.flatten().toSet()
         val pricePerUnits = spfCostEntries.map { it.pricePerUnit }
+        every { budgetCostValidator.validateAgainstAFConfig(
+            callSettings.callId,
+            periods,
+            null,
+            spfCostEntries.map { it.numberOfUnits }.toList(),
+            spfCostEntries.map { it.unitType }.toList()
+        ) } returns Unit
         every { budgetCostValidator.validateBaseEntries(spfCostEntries) } returns Unit
         every { budgetCostValidator.validatePricePerUnits(pricePerUnits) } returns Unit
         every { budgetCostValidator.validateBudgetPeriods(periods, validPeriodNumbers) } returns Unit
@@ -96,36 +104,68 @@ internal class UpdateBudgetSpfCostsTest : UnitTest() {
 
         val result = updateBudgetSpfCosts.updateBudgetSpfCosts(partnerId, spfCostEntries)
 
-        verify(atLeast = 1) { projectPersistence.getProjectCallSettings(projectId) }
-        verify(atLeast = 1) { budgetCostValidator.validateBaseEntries(spfCostEntries) }
-        verify(atLeast = 1) { budgetCostValidator.validatePricePerUnits(pricePerUnits) }
-        verify(atLeast = 1) { budgetCostValidator.validateBudgetPeriods(periods, validPeriodNumbers) }
-        verify(atLeast = 1) { budgetCostValidator.validateAllowedSpfCosts(callSettings) }
-        verify(atLeast = 1) { projectPersistence.getProjectPeriods(projectId) }
-        verify(atLeast = 1) { partnerPersistence.getProjectIdForPartnerId(partnerId) }
-        verify(atLeast = 1) { persistence.deleteAllBudgetSpfCostsExceptFor(partnerId, listBudgetEntriesIds) }
-        verify(atLeast = 1) {
+        verify { partnerPersistence.getProjectIdForPartnerId(partnerId) }
+        verify { projectPersistence.getCallIdOfProject(projectId) }
+        verify { budgetCostValidator.validateAgainstAFConfig(
+            callSettings.callId,
+            periods,
+            null,
+            spfCostEntries.map { it.numberOfUnits }.toList(),
+            spfCostEntries.map { it.unitType }.toList()
+        ) }
+        verify { projectPersistence.getProjectCallSettings(projectId) }
+        verify { budgetCostValidator.validateBaseEntries(spfCostEntries) }
+        verify { budgetCostValidator.validatePricePerUnits(pricePerUnits) }
+        verify { budgetCostValidator.validateBudgetPeriods(periods, validPeriodNumbers) }
+        verify { budgetCostValidator.validateAllowedSpfCosts(callSettings) }
+        verify { projectPersistence.getProjectPeriods(projectId) }
+        verify { persistence.deleteAllBudgetSpfCostsExceptFor(partnerId, listBudgetEntriesIds) }
+        verify {
             persistence.createOrUpdateBudgetSpfCosts(projectId, partnerId, spfCostEntries.toList())
         }
-        confirmVerified(persistence, budgetCostValidator, projectPersistence)
+        confirmVerified(persistence, budgetCostValidator, projectPersistence, partnerPersistence)
         assertEquals(spfCostEntries, result)
     }
 
     @Test
     fun `should throw I18nValidationException when there is a base validation error`() {
+        every { budgetCostValidator.validateAgainstAFConfig(
+            callSettings.callId,
+            spfCostEntries.map { it.budgetPeriods }.flatten().toSet(),
+            null,
+            spfCostEntries.map { it.numberOfUnits }.toList(),
+            spfCostEntries.map { it.unitType }.toList()
+        ) } returns Unit
         every { budgetCostValidator.validateBaseEntries(spfCostEntries) } throws I18nValidationException()
 
         assertThrows<I18nValidationException> {
             updateBudgetSpfCosts.updateBudgetSpfCosts(partnerId, spfCostEntries)
         }
 
-        verify(atLeast = 1) { budgetCostValidator.validateBaseEntries(spfCostEntries) }
-        confirmVerified(budgetCostValidator)
+        verify { partnerPersistence.getProjectIdForPartnerId(partnerId) }
+        verify { projectPersistence.getCallIdOfProject(projectId) }
+        verify { budgetCostValidator.validateAgainstAFConfig(
+            callSettings.callId,
+            spfCostEntries.map { it.budgetPeriods }.flatten().toSet(),
+            null,
+            spfCostEntries.map { it.numberOfUnits }.toList(),
+            spfCostEntries.map { it.unitType }.toList()
+        ) }
+        verify { budgetCostValidator.validateBaseEntries(spfCostEntries) }
+        confirmVerified(budgetCostValidator, projectPersistence, partnerPersistence)
     }
 
     @Test
     fun `should throw I18nValidationException when there is validation error in pricePerUnits`() {
         val pricePerUnits = spfCostEntries.map { it.pricePerUnit }
+        every { budgetCostValidator.validateAgainstAFConfig(
+            callSettings.callId,
+            spfCostEntries.map { it.budgetPeriods }.flatten().toSet(),
+            null,
+            spfCostEntries.map { it.numberOfUnits }.toList(),
+            spfCostEntries.map { it.unitType }.toList()
+        ) } returns Unit
+
         every { budgetCostValidator.validateBaseEntries(spfCostEntries) } returns Unit
         every { budgetCostValidator.validatePricePerUnits(pricePerUnits) } throws I18nValidationException()
 
@@ -133,16 +173,32 @@ internal class UpdateBudgetSpfCostsTest : UnitTest() {
             updateBudgetSpfCosts.updateBudgetSpfCosts(partnerId, spfCostEntries)
         }
 
-        verify(atLeast = 1) { budgetCostValidator.validateBaseEntries(spfCostEntries) }
-        verify(atLeast = 1) { budgetCostValidator.validatePricePerUnits(pricePerUnits) }
-        verify(atLeast = 1) { projectPersistence.getProjectCallSettings(projectId) }
-        verify(atLeast = 1) { budgetCostValidator.validateAllowedSpfCosts(callSettings) }
-        confirmVerified(budgetCostValidator, projectPersistence)
+        verify { partnerPersistence.getProjectIdForPartnerId(partnerId) }
+        verify { projectPersistence.getCallIdOfProject(projectId) }
+        verify { budgetCostValidator.validateAgainstAFConfig(
+            callSettings.callId,
+            spfCostEntries.map { it.budgetPeriods }.flatten().toSet(),
+            null,
+            spfCostEntries.map { it.numberOfUnits }.toList(),
+            spfCostEntries.map { it.unitType }.toList()
+        ) }
+        verify { budgetCostValidator.validatePricePerUnits(pricePerUnits) }
+        verify { projectPersistence.getProjectCallSettings(projectId) }
+        verify { budgetCostValidator.validateAllowedSpfCosts(callSettings) }
+        verify { budgetCostValidator.validateBaseEntries(spfCostEntries) }
+        confirmVerified(budgetCostValidator, projectPersistence, partnerPersistence)
     }
 
     @Test
     fun `should throw I18nValidationException when there is a validation error in budgetPeriods`() {
         val budgetPeriods = spfCostEntriesWithInvalidPeriods.map { it.budgetPeriods }.flatten().toSet()
+        every { budgetCostValidator.validateAgainstAFConfig(
+            callSettings.callId,
+            budgetPeriods,
+            null,
+            spfCostEntries.map { it.numberOfUnits }.toList(),
+            spfCostEntries.map { it.unitType }.toList()
+        ) } returns Unit
         every { budgetCostValidator.validateBaseEntries(spfCostEntriesWithInvalidPeriods) } returns Unit
         every { budgetCostValidator.validatePricePerUnits(spfCostEntriesWithInvalidPeriods.map { it.pricePerUnit }) } returns Unit
         every {
@@ -154,14 +210,48 @@ internal class UpdateBudgetSpfCostsTest : UnitTest() {
             updateBudgetSpfCosts.updateBudgetSpfCosts(partnerId, spfCostEntriesWithInvalidPeriods)
         }
 
-        verify(atLeast = 1) { budgetCostValidator.validateBaseEntries(spfCostEntriesWithInvalidPeriods) }
-        verify(atLeast = 1) { budgetCostValidator.validatePricePerUnits(spfCostEntriesWithInvalidPeriods.map { it.pricePerUnit }) }
-        verify(atLeast = 1) { budgetCostValidator.validateBudgetPeriods(budgetPeriods, validPeriodNumbers) }
-        verify(atLeast = 1) { projectPersistence.getProjectCallSettings(projectId) }
-        verify(atLeast = 1) { budgetCostValidator.validateAllowedSpfCosts(callSettings) }
-        verify(atLeast = 1) { projectPersistence.getProjectPeriods(projectId) }
-        verify(atLeast = 1) { partnerPersistence.getProjectIdForPartnerId(partnerId) }
-        confirmVerified(budgetCostValidator, projectPersistence)
+        verify { partnerPersistence.getProjectIdForPartnerId(partnerId) }
+        verify { projectPersistence.getCallIdOfProject(projectId) }
+        verify { budgetCostValidator.validateAgainstAFConfig(
+            callSettings.callId,
+            budgetPeriods,
+            null,
+            spfCostEntries.map { it.numberOfUnits }.toList(),
+            spfCostEntries.map { it.unitType }.toList()
+        ) }
+        verify { budgetCostValidator.validateBaseEntries(spfCostEntriesWithInvalidPeriods) }
+        verify { budgetCostValidator.validatePricePerUnits(spfCostEntriesWithInvalidPeriods.map { it.pricePerUnit }) }
+        verify { budgetCostValidator.validateBudgetPeriods(budgetPeriods, validPeriodNumbers) }
+        verify { projectPersistence.getProjectCallSettings(projectId) }
+        verify { budgetCostValidator.validateAllowedSpfCosts(callSettings) }
+        verify { projectPersistence.getProjectPeriods(projectId) }
+        confirmVerified(budgetCostValidator, projectPersistence, partnerPersistence)
+    }
+
+    @Test
+    fun `should throw I18nValidationException when budget data not according to AF Config`() {
+        every { budgetCostValidator.validateAgainstAFConfig(
+            callSettings.callId,
+            spfCostEntries.map { it.budgetPeriods }.flatten().toSet(),
+            null,
+            spfCostEntries.map { it.numberOfUnits }.toList(),
+            spfCostEntries.map { it.unitType }.toList()
+        ) } throws I18nValidationException()
+
+        assertThrows<I18nValidationException> {
+            updateBudgetSpfCosts.updateBudgetSpfCosts(partnerId, spfCostEntries)
+        }
+
+        verify { partnerPersistence.getProjectIdForPartnerId(partnerId) }
+        verify { projectPersistence.getCallIdOfProject(projectId) }
+        verify { budgetCostValidator.validateAgainstAFConfig(
+            callSettings.callId,
+            spfCostEntries.map { it.budgetPeriods }.flatten().toSet(),
+            null,
+            spfCostEntries.map { it.numberOfUnits }.toList(),
+            spfCostEntries.map { it.unitType }.toList()
+        ) }
+        confirmVerified(budgetCostValidator, projectPersistence, partnerPersistence)
     }
 }
 

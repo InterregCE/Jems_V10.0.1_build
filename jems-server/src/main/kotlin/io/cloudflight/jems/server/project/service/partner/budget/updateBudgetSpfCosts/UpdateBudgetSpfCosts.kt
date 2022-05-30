@@ -25,10 +25,19 @@ class UpdateBudgetSpfCosts(
         partnerId: Long,
         spfCosts: List<BudgetSpfCostEntry>
     ): List<BudgetSpfCostEntry> {
+        val projectId = partnerPersistence.getProjectIdForPartnerId(partnerId)
+        val callId = projectPersistence.getCallIdOfProject(projectId)
+        val periods = spfCosts.map { it.budgetPeriods }.flatten().toSet()
+        budgetCostValidator.validateAgainstAFConfig(
+            callId,
+            periods,
+            null,
+            spfCosts.map { it.numberOfUnits }.toList(),
+            spfCosts.map { it.unitType }.toList()
+        )
 
         budgetCostValidator.validateBaseEntries(spfCosts)
         budgetCostValidator.validatePricePerUnits(spfCosts.map { it.pricePerUnit })
-        val projectId = partnerPersistence.getProjectIdForPartnerId(partnerId)
         budgetCostValidator.validateAllowedSpfCosts(projectPersistence.getProjectCallSettings(projectId))
 
         budgetCostValidator.validateBudgetPeriods(
