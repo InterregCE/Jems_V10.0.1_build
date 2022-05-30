@@ -63,7 +63,8 @@
             </div>
         </div>
 
-        <ng-container *jemsHasPermission="PermissionsEnum.ProjectAssessmentChecklistUpdate">
+        <ng-container *jemsHasPermission="[PermissionsEnum.ProjectAssessmentChecklistUpdate,
+                                           PermissionsEnum.ProjectAssessmentChecklistSelectedRetrieve]">
             <h3 class="mt-3">{{'project.application.form.section.assessment.and.decision.checklists' | translate}}</h3>
             <jems-checklist-instance-list [relatedType]="ChecklistType.ASSESSMENT"
                                           [relatedId]="data.projectId"

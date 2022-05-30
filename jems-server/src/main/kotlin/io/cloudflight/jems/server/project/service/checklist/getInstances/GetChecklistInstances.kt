@@ -55,7 +55,7 @@ class GetChecklistInstances(
         relatedToId: Long,
         type: ProgrammeChecklistType
     ): List<ChecklistInstance> {
-        return if (checklistAuthorization.hasPermission(UserRolePermission.ProjectAssessmentChecklistSelectedUpdate, relatedToId))
+        return if (checklistAuthorization.hasPermission(UserRolePermission.ProjectAssessmentChecklistSelectedUpdate))
             persistence.findChecklistInstances(ChecklistInstanceSearchRequest(
                 relatedToId = relatedToId,
                 type = type,

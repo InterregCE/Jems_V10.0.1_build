@@ -1,5 +1,6 @@
 <mat-tab-group>
-    <mat-tab label="{{'checklists.instance.list.tab' | translate}}">
+    <mat-tab *jemsHasPermission="PermissionEnum.ProjectAssessmentChecklistUpdate"
+             label="{{'checklists.instance.list.tab' | translate}}">
         <span jemsMultiColumnRow>
             <mat-form-field jemsFormFieldWidth="xx-large">
                 <mat-select placeholder="{{'checklists.instance.list.new.select' | translate}}"
