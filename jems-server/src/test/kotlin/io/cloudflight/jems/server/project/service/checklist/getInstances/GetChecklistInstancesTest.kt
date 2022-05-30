@@ -90,7 +90,6 @@ internal class GetChecklistInstancesTest : UnitTest() {
 
     @Test
     fun `get all instances - without permission`() {
-        val searchRequest = slot<ChecklistInstanceSearchRequest>()
         every { checklistAuthorization.canConsolidate(RELATED_TO_ID) } returns false
 
         assertThrows<ConsolidateChecklistNotAllowed> {
@@ -105,7 +104,7 @@ internal class GetChecklistInstancesTest : UnitTest() {
     fun `get instances for selection - without update permission`() {
         val searchRequest = slot<ChecklistInstanceSearchRequest>()
         every {
-            checklistAuthorization.hasPermission(UserRolePermission.ProjectAssessmentChecklistSelectedUpdate, RELATED_TO_ID)
+            checklistAuthorization.hasPermission(UserRolePermission.ProjectAssessmentChecklistSelectedUpdate)
         } returns false
 
         getChecklistInstances.getChecklistInstancesForSelection(RELATED_TO_ID, ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT)
@@ -121,7 +120,7 @@ internal class GetChecklistInstancesTest : UnitTest() {
     fun `get instances for selection - with update permission`() {
         val searchRequest = slot<ChecklistInstanceSearchRequest>()
         every {
-            checklistAuthorization.hasPermission(UserRolePermission.ProjectAssessmentChecklistSelectedUpdate, RELATED_TO_ID)
+            checklistAuthorization.hasPermission(UserRolePermission.ProjectAssessmentChecklistSelectedUpdate)
         } returns true
 
         getChecklistInstances.getChecklistInstancesForSelection(RELATED_TO_ID, ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT)
