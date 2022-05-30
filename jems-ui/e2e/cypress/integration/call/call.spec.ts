@@ -52,6 +52,7 @@ context('Call management tests', () => {
     cy.get('jems-call-state-aids').contains('General de minimis').click();
 
     cy.get('jems-pending-button').contains('Create').click();
+    cy.contains('span', 'General call settings').should('be.visible');
     cy.get('input[name="name"]').should('have.value', callName);
   });
 
