@@ -6,9 +6,11 @@ import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroupDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumEntity
+import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostEntity
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeLumpSumRepository
+import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeUnitCostRepository
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
 import io.cloudflight.jems.server.programme.repository.legalstatus.ProgrammeLegalStatusRepository
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
@@ -19,6 +21,7 @@ import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportCoFi
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.contribution.ProjectPartnerReportContributionEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportLumpSumEntity
+import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportUnitCostEntity
 import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportIdentificationEntity
 import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportIdentificationTargetGroupEntity
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageActivityDeliverableEntity
@@ -27,6 +30,7 @@ import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerR
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageOutputEntity
 import io.cloudflight.jems.server.project.repository.report.contribution.ProjectPartnerReportContributionRepository
 import io.cloudflight.jems.server.project.repository.report.expenditure.ProjectPartnerReportLumpSumRepository
+import io.cloudflight.jems.server.project.repository.report.expenditure.ProjectPartnerReportUnitCostRepository
 import io.cloudflight.jems.server.project.repository.report.identification.ProjectPartnerReportIdentificationRepository
 import io.cloudflight.jems.server.project.repository.report.identification.ProjectPartnerReportIdentificationTargetGroupRepository
 import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPartnerReportWorkPackageActivityDeliverableRepository
@@ -190,7 +194,11 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
                         value = ONE,
                     ),
                 ),
-                unitCostIds = setOf(5L),
+                unitCosts = setOf(PartnerReportUnitCostBase(
+                    unitCostId = 5L,
+                    totalCost = ONE,
+                    numberOfUnits = ONE
+                )),
                 budgetPerPeriod = listOf(
                     Pair(1, ONE),
                     Pair(2, TEN),
@@ -223,6 +231,9 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
     lateinit var programmeLumpSumRepository: ProgrammeLumpSumRepository
 
     @MockK
+    lateinit var programmeUnitCostRepository: ProgrammeUnitCostRepository
+
+    @MockK
     lateinit var workPlanRepository: ProjectPartnerReportWorkPackageRepository
 
     @MockK
@@ -245,6 +256,9 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
 
     @MockK
     lateinit var reportLumpSumRepository: ProjectPartnerReportLumpSumRepository
+
+    @MockK
+    lateinit var reportUnitCostRepository: ProjectPartnerReportUnitCostRepository
 
     @InjectMockKs
     lateinit var persistence: ProjectReportCreatePersistenceProvider
@@ -283,6 +297,20 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
         every { programmeLumpSumRepository.getById(85L) } returns lumpSumEntity
         val lumpSumSlot = slot<Iterable<PartnerReportLumpSumEntity>>()
         every { reportLumpSumRepository.saveAll(capture(lumpSumSlot)) } returnsArgument 0
+
+        // available unitCosts
+        val unitCostEntity = ProgrammeUnitCostEntity(
+            id = 5L,
+            isOneCostCategory = false,
+            costPerUnit = ONE,
+            costPerUnitForeignCurrency = ONE,
+            foreignCurrencyCode = "RON",
+            translatedValues = mutableSetOf(),
+            categories = mutableSetOf()
+        )
+        every { programmeUnitCostRepository.getById(5L) } returns unitCostEntity
+        val unitCostSlot = slot<Iterable<PartnerReportUnitCostEntity>>()
+        every { reportUnitCostRepository.saveAll(capture(unitCostSlot)) } returnsArgument 0
 
         val createdReport = persistence.createPartnerReport(reportToBeCreated.copy(
             identification = reportToBeCreated.identification.removeLegalStatusIf(withoutLegalStatus)
@@ -333,6 +361,7 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
         assertIdentification(idSlot, idTargetGroupsSlot)
         assertContribution(contribSlot)
         assertLumpSums(lumpSumSlot)
+        assertUnitCosts(unitCostSlot)
     }
 
     private fun PartnerReportIdentificationCreate.removeLegalStatusIf(needed: Boolean) =
@@ -435,6 +464,17 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
             assertThat(programmeLumpSum).isNotNull
             assertThat(period).isEqualTo(0)
             assertThat(cost).isEqualTo(ONE)
+        }
+    }
+
+    private fun assertUnitCosts(
+        unitCostSlot: CapturingSlot<Iterable<PartnerReportUnitCostEntity>>,
+    ) {
+        assertThat(unitCostSlot.captured).hasSize(1)
+        with(unitCostSlot.captured.first()) {
+            assertThat(programmeUnitCost).isNotNull
+            assertThat(totalCost).isEqualTo(ONE)
+            assertThat(numberOfUnits).isEqualTo(ONE)
         }
     }
 

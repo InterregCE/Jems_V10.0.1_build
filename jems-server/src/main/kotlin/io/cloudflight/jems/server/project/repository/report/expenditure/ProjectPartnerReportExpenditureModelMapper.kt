@@ -8,6 +8,7 @@ import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEnti
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportExpenditureCostEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportExpenditureCostTranslEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportLumpSumEntity
+import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportUnitCostEntity
 import io.cloudflight.jems.server.project.repository.report.toModel
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportExpenditureCost
 
@@ -15,7 +16,7 @@ fun List<PartnerReportExpenditureCostEntity>.toModel() = map {
     ProjectPartnerReportExpenditureCost(
         id = it.id,
         lumpSumId = it.reportLumpSum?.id,
-        unitCostId = null,
+        unitCostId = it.reportUnitCost?.id,
         costCategory = it.costCategory,
         investmentId = it.investmentId,
         contractId = it.procurementId,
@@ -40,11 +41,13 @@ fun List<PartnerReportExpenditureCostEntity>.toModel() = map {
 fun ProjectPartnerReportExpenditureCost.toEntity(
     reportEntity: ProjectPartnerReportEntity,
     lumpSums: Map<Long, PartnerReportLumpSumEntity>,
+    unitCosts: Map<Long, PartnerReportUnitCostEntity>,
 ) =
     PartnerReportExpenditureCostEntity(
         id = id ?: 0L,
         partnerReport = reportEntity,
         reportLumpSum = if (lumpSumId != null) lumpSums[lumpSumId] else null,
+        reportUnitCost = if (unitCostId != null) unitCosts[unitCostId] else null,
         costCategory = costCategory,
         investmentId = investmentId,
         procurementId = contractId,

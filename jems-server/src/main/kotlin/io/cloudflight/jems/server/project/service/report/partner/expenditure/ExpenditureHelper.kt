@@ -1,9 +1,9 @@
 package io.cloudflight.jems.server.project.service.report.partner.expenditure
 
 import io.cloudflight.jems.server.currency.service.model.CurrencyConversion
-import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportLumpSum
+import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportUnitCost
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ReportBudgetCategory
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -46,15 +46,10 @@ fun ProjectPartnerReportExpenditureCost.fillInLumpSum(lumpSum: ProjectPartnerRep
     currencyCode = "EUR"
 }
 
-fun ProjectPartnerReportExpenditureCost.fillInUnitCost(unitCost: ProgrammeUnitCost) {
+fun ProjectPartnerReportExpenditureCost.fillInUnitCost(unitCost: ProjectPartnerReportUnitCost, currencyCodeValue: String) {
     unitCostId = unitCost.id
     lumpSumId = null
-
-    if (unitCost.isOneCostCategory)
-        costCategory = ReportBudgetCategory.valueOf(unitCost.categories.first().name)
-    else
-        costCategory = ReportBudgetCategory.Multiple
-
+    costCategory = unitCost.category
     investmentId = null
     contractId = null
     internalReferenceNumber = null
@@ -63,7 +58,7 @@ fun ProjectPartnerReportExpenditureCost.fillInUnitCost(unitCost: ProgrammeUnitCo
     dateOfPayment = null
     totalValueInvoice = null
     vat = null
-    pricePerUnit = unitCost.costPerUnit ?: BigDecimal.ZERO
+    currencyCode = if (currencyCodeValue == "EUR" || currencyCodeValue == unitCost.foreignCurrencyCode) currencyCodeValue else "EUR"
+    pricePerUnit = if (currencyCode == "EUR") unitCost.costPerUnit else unitCost.costPerUnitForeignCurrency!!
     declaredAmount = numberOfUnits.multiply(pricePerUnit).setScale(2, RoundingMode.DOWN)
-    currencyCode = "EUR"
 }

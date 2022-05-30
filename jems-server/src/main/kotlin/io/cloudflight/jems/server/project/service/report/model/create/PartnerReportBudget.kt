@@ -7,7 +7,7 @@ import java.math.BigDecimal
 data class PartnerReportBudget(
     val contributions: List<CreateProjectPartnerReportContribution>,
     val lumpSums: List<PartnerReportLumpSum>,
-    val unitCostIds: Set<Long>,
+    val unitCosts: Set<PartnerReportUnitCostBase>,
     val budgetPerPeriod: List<Pair<Int, BigDecimal>>,
     val budgetOptions: ProjectPartnerBudgetOptions?,
 )

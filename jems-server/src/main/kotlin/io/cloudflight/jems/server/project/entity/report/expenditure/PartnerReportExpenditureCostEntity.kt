@@ -33,6 +33,9 @@ class PartnerReportExpenditureCostEntity(
     @ManyToOne
     var reportLumpSum: PartnerReportLumpSumEntity?,
 
+    @ManyToOne
+    var reportUnitCost: PartnerReportUnitCostEntity?,
+
     @Enumerated(EnumType.STRING)
     @field:NotNull
     var costCategory: ReportBudgetCategory,

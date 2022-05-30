@@ -2,13 +2,13 @@ package io.cloudflight.jems.server.project.service.report.partner.expenditure.up
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
-import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.project.authorization.CanEditPartnerReport
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportLumpSum
+import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportUnitCost
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ReportBudgetCategory
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectReportExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.clearConversions
@@ -65,7 +65,7 @@ class UpdateProjectPartnerReportExpenditure(
         validateCostOptions(
             expenditureCosts = expenditureCosts,
             allowedLumpSums = reportExpenditurePersistence.getAvailableLumpSums(partnerId, reportId = reportId),
-            allowedUnitCosts = emptyList(),
+            allowedUnitCosts = reportExpenditurePersistence.getAvailableUnitCosts(partnerId, reportId = reportId),
         )
 
         return reportExpenditurePersistence.updatePartnerReportExpenditureCosts(
@@ -137,7 +137,7 @@ class UpdateProjectPartnerReportExpenditure(
     private fun validateCostOptions(
         expenditureCosts: List<ProjectPartnerReportExpenditureCost>,
         allowedLumpSums: List<ProjectPartnerReportLumpSum>,
-        allowedUnitCosts: List<ProgrammeUnitCost>,
+        allowedUnitCosts: List<ProjectPartnerReportUnitCost>,
     ) {
         val lumpSumsById = allowedLumpSums.associateBy { it.id }
         val unitCostsById = allowedUnitCosts.associateBy { it.id }
@@ -145,7 +145,7 @@ class UpdateProjectPartnerReportExpenditure(
             if (it.lumpSumId in lumpSumsById.keys) {
                 it.fillInLumpSum(lumpSum = lumpSumsById[it.lumpSumId]!!)
             } else if (it.unitCostId in unitCostsById.keys) {
-                it.fillInUnitCost(unitCost = unitCostsById[it.unitCostId]!!)
+                it.fillInUnitCost(unitCost = unitCostsById[it.unitCostId]!!, currencyCodeValue = it.currencyCode)
             } else {
                 it.numberOfUnits = BigDecimal.ZERO
                 it.pricePerUnit = BigDecimal.ZERO

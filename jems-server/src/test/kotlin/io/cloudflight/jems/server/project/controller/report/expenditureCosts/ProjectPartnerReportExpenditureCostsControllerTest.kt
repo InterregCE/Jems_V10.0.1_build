@@ -6,13 +6,16 @@ import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadata
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.BudgetCategoryDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportExpenditureCostDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportLumpSumDTO
+import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportUnitCostDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportLumpSum
+import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportUnitCost
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ReportBudgetCategory
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.getAvailableLumpSumsForReport.GetAvailableLumpSumsForReportInteractor
+import io.cloudflight.jems.server.project.service.report.partner.expenditure.getAvailableUnitCostsForReport.GetAvailableUnitCostsForReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.getProjectPartnerReportExpenditure.GetProjectPartnerReportExpenditureInteractor
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.updateProjectPartnerReportExpenditure.UpdateProjectPartnerReportExpenditureInteractor
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.uploadFileToProjectPartnerReportExpenditure.UploadFileToProjectPartnerReportExpenditure
@@ -112,6 +115,30 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
         name = setOf(InputTranslation(SystemLanguage.EN, "EN lump sum"))
     )
 
+    private val dummyUnitCost = ProjectPartnerReportUnitCost(
+        id = 18L,
+        unitCostProgrammeId = 140L,
+        costPerUnit = BigDecimal.ONE,
+        numberOfUnits = BigDecimal.ONE,
+        total = BigDecimal.ONE,
+        costPerUnitForeignCurrency = BigDecimal.TEN,
+        foreignCurrencyCode = "RON",
+        name = setOf(InputTranslation(SystemLanguage.EN, "EN unit cost")),
+        category = ReportBudgetCategory.Multiple
+    )
+
+    private val dummyUnitCostDTO = ProjectPartnerReportUnitCostDTO(
+        id = 18L,
+        unitCostProgrammeId = 140L,
+        costPerUnit = BigDecimal.ONE,
+        numberOfUnits = BigDecimal.ONE,
+        total = BigDecimal.ONE,
+        costPerUnitForeignCurrency = BigDecimal.TEN,
+        foreignCurrencyCode = "RON",
+        name = setOf(InputTranslation(SystemLanguage.EN, "EN unit cost")),
+        category = BudgetCategoryDTO.Multiple
+    )
+
     @MockK
     lateinit var getProjectPartnerReportExpenditureInteractor: GetProjectPartnerReportExpenditureInteractor
 
@@ -123,6 +150,9 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
 
     @MockK
     lateinit var getAvailableLumpSumsForReportInteractor: GetAvailableLumpSumsForReportInteractor
+
+    @MockK
+    lateinit var getAvailableUnitCostsForReportInteractor: GetAvailableUnitCostsForReportInteractor
 
     @InjectMockKs
     private lateinit var controller: ProjectPartnerReportExpenditureCostsController
@@ -165,6 +195,13 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
         every { getAvailableLumpSumsForReportInteractor.getLumpSums(PARTNER_ID, 38L) } returns
             listOf(dummyLumpSum)
         assertThat(controller.getAvailableLumpSums(PARTNER_ID, reportId = 38L)).containsExactly(dummyLumpSumDto)
+    }
+
+    @Test
+    fun getAvailableUnitCosts() {
+        every { getAvailableUnitCostsForReportInteractor.getUnitCosts(PARTNER_ID, 38L) } returns
+            listOf(dummyUnitCost)
+        assertThat(controller.getAvailableUnitCosts(PARTNER_ID, reportId = 38L)).containsExactly(dummyUnitCostDTO)
     }
 
 }

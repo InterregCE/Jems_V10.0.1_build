@@ -137,6 +137,8 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
 
         every { reportExpenditurePersistence.getAvailableLumpSums(PARTNER_ID, reportId = 84L) } returns emptyList()
 
+        every { reportExpenditurePersistence.getAvailableUnitCosts(PARTNER_ID, reportId = 84L) } returns emptyList()
+
         every {
             reportExpenditurePersistence.updatePartnerReportExpenditureCosts(
                 partnerId = PARTNER_ID,
@@ -177,6 +179,8 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
         every { workPackagePersistence.getProjectInvestmentSummaries(projectId = PROJECT_ID, "0.9") } returns listOf(investment60)
 
         every { reportExpenditurePersistence.getAvailableLumpSums(PARTNER_ID, reportId = 90L) } returns emptyList()
+
+        every { reportExpenditurePersistence.getAvailableUnitCosts(PARTNER_ID, reportId = 90L) } returns emptyList()
 
         every {
             reportExpenditurePersistence.updatePartnerReportExpenditureCosts(
@@ -343,6 +347,8 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
         every { workPackagePersistence.getProjectInvestmentSummaries(projectId = PROJECT_ID, "1") } returns listOf(investment)
 
         every { reportExpenditurePersistence.getAvailableLumpSums(PARTNER_ID, reportId = reportId) } returns emptyList()
+
+        every { reportExpenditurePersistence.getAvailableUnitCosts(PARTNER_ID, reportId = reportId) } returns emptyList()
 
         every { reportExpenditurePersistence.updatePartnerReportExpenditureCosts(PARTNER_ID, reportId = reportId, any()) } returnsArgument 2
     }

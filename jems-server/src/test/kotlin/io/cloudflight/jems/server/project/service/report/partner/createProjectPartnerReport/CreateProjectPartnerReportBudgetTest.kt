@@ -128,24 +128,32 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
     private fun staffCost(unitCostId: Long): BudgetStaffCostEntry {
         val staffCost = mockk<BudgetStaffCostEntry>()
         every { staffCost.unitCostId } returns unitCostId
+        every { staffCost.rowSum } returns BigDecimal.ZERO
+        every { staffCost.numberOfUnits } returns BigDecimal.ZERO
         return staffCost
     }
 
     private fun travelCost(unitCostId: Long): BudgetTravelAndAccommodationCostEntry {
         val cost = mockk<BudgetTravelAndAccommodationCostEntry>()
         every { cost.unitCostId } returns unitCostId
+        every { cost.rowSum } returns BigDecimal.ZERO
+        every { cost.numberOfUnits } returns BigDecimal.ZERO
         return cost
     }
 
     private fun generalCost(unitCostId: Long): BudgetGeneralCostEntry {
         val cost = mockk<BudgetGeneralCostEntry>()
         every { cost.unitCostId } returns unitCostId
+        every { cost.rowSum } returns BigDecimal.ZERO
+        every { cost.numberOfUnits } returns BigDecimal.ZERO
         return cost
     }
 
     private fun unitCost(unitCostId: Long): BudgetUnitCostEntry {
         val cost = mockk<BudgetUnitCostEntry>()
         every { cost.unitCostId } returns unitCostId
+        every { cost.rowSum } returns BigDecimal.ZERO
+        every { cost.numberOfUnits } returns BigDecimal.ZERO
         return cost
     }
 
@@ -278,7 +286,7 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
 
         assertThat(result.contributions).hasSize(3)
         assertThat(result.lumpSums).containsExactly(PartnerReportLumpSum(lumpSumId = 44L, period = 3, value = BigDecimal.TEN))
-        assertThat(result.unitCostIds).containsExactly(4, 5, 6, 7, 8, 9, 10)
+        assertThat(result.unitCosts.map {it.unitCostId}).containsExactly(4, 5, 6, 7, 8, 9, 10)
         assertThat(result.budgetPerPeriod).containsExactly(Pair(1, BigDecimal.ONE), Pair(2, BigDecimal.TEN))
         assertThat(result.budgetOptions).isEqualTo(budgetOptions)
 
