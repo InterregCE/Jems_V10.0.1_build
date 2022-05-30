@@ -1,15 +1,22 @@
 import {Injectable} from '@angular/core';
 import {ProgrammeChecklistDTO, ProgrammeChecklistService} from '@cat/api';
 import { Log } from '@common/utils/log';
-import {Observable, Subject} from 'rxjs';
-import {startWith, switchMap, take, tap} from 'rxjs/operators';
+import {combineLatest, Observable, Subject} from 'rxjs';
+import {map, startWith, switchMap, take, tap} from 'rxjs/operators';
 import {ProgrammeEditableStateStore} from '../programme-page/services/programme-editable-state-store.service';
+import {MatSort} from '@angular/material/sort';
+import {Tables} from '@common/utils/tables';
+import { BehaviorSubject } from 'rxjs';
 
 @Injectable()
 export class ProgrammeChecklistListPageStore {
 
+  defaultSort: Partial<MatSort> = {active: 'lastModificationDate', direction: 'desc'};
+
   checklists$: Observable<ProgrammeChecklistDTO[]>;
   canEditProgramme$: Observable<boolean>;
+
+  newSort$ = new BehaviorSubject<Partial<MatSort>>(this.defaultSort);
 
   private checklistsChanged$ = new Subject<void>();
 
@@ -29,11 +36,15 @@ export class ProgrammeChecklistListPageStore {
   }
 
   private checklists(): Observable<ProgrammeChecklistDTO[]> {
-    return this.checklistsChanged$
+    return combineLatest([
+      this.checklistsChanged$.pipe(startWith(null)),
+      this.newSort$.pipe(
+        map(sort => sort?.direction ? sort : Tables.DEFAULT_INITIAL_SORT),
+        map(sort => [`${sort.active},${sort.direction}`])
+      )
+    ])
       .pipe(
-        startWith(null),
-        switchMap(() => this.checklistService.getProgrammeChecklists()),
-        tap(checklists => checklists.sort((a, b) => a.lastModificationDate > b.lastModificationDate ? -1 : 1)),
+        switchMap(([_, sort]) => this.checklistService.getProgrammeChecklists(sort)),
         tap(checklists => Log.info('Fetched checklists', this, checklists)),
       );
   }

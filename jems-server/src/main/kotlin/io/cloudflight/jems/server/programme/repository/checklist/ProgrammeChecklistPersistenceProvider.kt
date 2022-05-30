@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.programme.service.checklist.getList.GetProgram
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklist
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistDetail
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 
@@ -16,8 +17,8 @@ class ProgrammeChecklistPersistenceProvider(
 ) : ProgrammeChecklistPersistence {
 
     @Transactional(readOnly = true)
-    override fun getMax100Checklists(): List<ProgrammeChecklist> {
-        return repository.findTop100ByOrderByIdDesc().toModel()
+    override fun getMax100Checklists(sort: Sort): List<ProgrammeChecklist> {
+        return repository.findTop100ByOrderByIdDesc(sort).toModel()
     }
 
     @Transactional(readOnly = true)

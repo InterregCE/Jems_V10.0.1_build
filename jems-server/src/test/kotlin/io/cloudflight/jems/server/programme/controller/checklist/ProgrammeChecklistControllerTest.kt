@@ -33,6 +33,8 @@ import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 import java.math.BigDecimal
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -183,8 +185,8 @@ class ProgrammeChecklistControllerTest : UnitTest() {
 
     @Test
     fun `get checklists`() {
-        every { getChecklistInteractor.getProgrammeChecklist() } returns listOf(checklist)
-        assertThat(controller.getProgrammeChecklists().get(0))
+        every { getChecklistInteractor.getProgrammeChecklist(Sort.unsorted()) } returns listOf(checklist)
+        assertThat(controller.getProgrammeChecklists(Pageable.unpaged()).get(0))
             .usingRecursiveComparison()
             .isEqualTo(checklistDTO)
     }

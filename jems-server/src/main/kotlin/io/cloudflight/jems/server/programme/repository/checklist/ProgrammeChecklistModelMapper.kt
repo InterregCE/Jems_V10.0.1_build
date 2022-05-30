@@ -39,7 +39,7 @@ fun ProgrammeChecklistEntity.toDetailModel(): ProgrammeChecklistDetail =
         components = components?.map { it.toModel() }?.sortedBy { it.position }
     )
 
-fun Iterable<ProgrammeChecklistRow>.toModel() = map { it.toModel() }.sortedBy { it.id }
+fun Iterable<ProgrammeChecklistRow>.toModel() = map { it.toModel() }
 
 fun ProgrammeChecklistRow.toModel(): ProgrammeChecklist =
     ProgrammeChecklist(

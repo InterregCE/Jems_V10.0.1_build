@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.call.service.model.IdNamePair
 import io.cloudflight.jems.server.programme.entity.checklist.ProgrammeChecklistEntity
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistRow
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
+import org.springframework.data.domain.Sort
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
@@ -29,7 +30,7 @@ interface ProgrammeChecklistRepository : JpaRepository<ProgrammeChecklistEntity,
              GROUP by entity.id
              """
     )
-    fun findTop100ByOrderByIdDesc(): Iterable<ProgrammeChecklistRow>
+    fun findTop100ByOrderByIdDesc(sort: Sort): List<ProgrammeChecklistRow>
 
     fun findByType(checklistType: ProgrammeChecklistType): Iterable<IdNamePair>
 

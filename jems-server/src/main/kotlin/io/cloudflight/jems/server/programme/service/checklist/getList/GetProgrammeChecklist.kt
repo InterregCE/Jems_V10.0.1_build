@@ -6,6 +6,7 @@ import io.cloudflight.jems.server.programme.authorization.CanRetrieveProgrammeSe
 import io.cloudflight.jems.server.programme.service.checklist.ProgrammeChecklistPersistence
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklist
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -17,8 +18,8 @@ class GetProgrammeChecklist(
     @CanRetrieveProgrammeSetup
     @Transactional(readOnly = true)
     @ExceptionWrapper(GetProgrammeChecklistException::class)
-    override fun getProgrammeChecklist(): List<ProgrammeChecklist> =
-        persistence.getMax100Checklists()
+    override fun getProgrammeChecklist(sort: Sort): List<ProgrammeChecklist> =
+        persistence.getMax100Checklists(sort)
 
 
     @CanRetrieveProgrammeSetup
