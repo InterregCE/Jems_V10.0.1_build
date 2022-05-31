@@ -71,7 +71,7 @@
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                                 <mat-form-field jemsFormFieldWidth="full">
-                                    <mat-select class="placeholder-required"
+                                    <mat-select class="placeholder-required" required
                                                 #costCategorySelect
                                                 (selectionChange)="onCostCategoryChange($event, control)"
                                                 [formControlName]="constants.FORM_CONTROL_NAMES.costCategory"

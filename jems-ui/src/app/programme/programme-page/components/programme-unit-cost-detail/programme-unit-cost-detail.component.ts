@@ -19,6 +19,7 @@ import {NumberService} from '../../../../common/services/number.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ProgrammeEditableStateStore} from '../../services/programme-editable-state-store.service';
 import {TranslateService} from '@ngx-translate/core';
+import {CurrencyCodesEnum, CurrencyStore} from "@common/services/currency.store";
 
 @UntilDestroy()
 @Component({
@@ -48,6 +49,7 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditFormComponent impl
 
   isProgrammeSetupLocked: boolean;
   programmeHasContractedProjects: boolean;
+  availableCurrencies: CurrencyDTO[];
 
   unitCostForm = this.formBuilder.group({
     isOneCostCategory: [null, Validators.required],
@@ -116,7 +118,8 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditFormComponent impl
               public programmeEditableStateStore: ProgrammeEditableStateStore,
               protected changeDetectorRef: ChangeDetectorRef,
               protected translationService: TranslateService,
-              public numberService: NumberService) {
+              public numberService: NumberService,
+              private currencyStore: CurrencyStore) {
     super(changeDetectorRef, translationService);
 
     this.programmeEditableStateStore.isProgrammeEditableDependingOnCall$.pipe(
@@ -128,6 +131,11 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditFormComponent impl
       tap(hasContractedProjects => this.programmeHasContractedProjects = hasContractedProjects),
       untilDestroyed(this)
     ).subscribe();
+
+     this.currencyStore.currencies$.pipe(
+       tap(currencies => this.prepareCurrencyList(currencies)),
+       untilDestroyed(this)
+     ).subscribe();
   }
 
   ngOnInit(): void {
@@ -258,6 +266,20 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditFormComponent impl
     if (this.programmeHasContractedProjects && !this.isCreate){
       this.unitCostForm.controls.costPerUnitForeignCurrency.disable();
       this.unitCostForm.controls.foreignCurrencyCode.disable();
+    }
+  }
+
+  isForeignCurrencySelected(): boolean {
+    return this.getForm()?.get('foreignCurrencyCode')?.value;
+  }
+
+  prepareCurrencyList(currencies: CurrencyDTO[]) {
+    this.availableCurrencies = currencies.filter((el) => el.code !== CurrencyCodesEnum.EUR);
+  }
+
+  onForeignCurrencyChange(selectionChange: any) {
+    if (!selectionChange.value) {
+      this.getForm()?.get('costPerUnitForeignCurrency')?.setValue(null);
     }
   }
 }

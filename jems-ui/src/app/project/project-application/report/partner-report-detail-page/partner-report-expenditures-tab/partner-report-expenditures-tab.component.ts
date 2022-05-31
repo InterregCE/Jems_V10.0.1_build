@@ -101,7 +101,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     ]).pipe(
       map(([investments, editable, lumpSums, unitCosts]) => ({
           columnsToDisplay: this.getColumnsToDisplay(investments, editable, lumpSums.length > 0 || unitCosts.length > 0),
-          withConfigs: this.getTableConfig(investments, editable)
+          withConfigs: this.getTableConfig(investments, editable, lumpSums.length > 0 || unitCosts.length > 0)
         })
       )
     );
@@ -159,7 +159,6 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
         const unitCostCurrency = this.getUnitCostCurrency(unitCost);
         const conversionRate = this.getConversionRateByCode(unitCostCurrency);
         const declaredAmount = this.availableUnitCosts.filter(uc => uc.id === change.value['id'])[0].total;
-
         this.availableCurrenciesPerRow[index] = this.getAvailableCurrenciesByType('unitCost', change);
         this.unitCostHasValue = true;
 
@@ -205,8 +204,12 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     return selectedCurrency ? unitCost.foreignCurrencyCode === selectedCurrency ? unitCost.costPerUnitForeignCurrency : unitCost.costPerUnit : 0;
   }
 
+  getUnitCostDeclaredAmountByCurrency(expenditureIndex: number): number {
+    return NumberService.product([this.items.at(expenditureIndex).get('pricePerUnit')?.value, this.items.at(expenditureIndex).get('numberOfUnits')?.value]);
+  }
+
   getUnitCostCurrency(unitCost: ProjectPartnerReportUnitCostDTO): string {
-    return  unitCost.foreignCurrencyCode ? '' : CurrencyCodesEnum.EUR;
+    return  this.hasPartnerCurrencySetToEur() ? CurrencyCodesEnum.EUR : unitCost.foreignCurrencyCode ? '' : CurrencyCodesEnum.EUR;
   }
 
   disableOnReset(control: FormGroup, index: number): void {
@@ -252,6 +255,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
 
   removeItem(index: number): void {
     this.items.removeAt(index);
+    this.availableCurrenciesPerRow.splice(index, 1);
     this.tableData = [...this.items.controls];
     this.formService.setDirty(true);
   }
@@ -346,7 +350,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
 
   }
 
-  private getColumnsToDisplay(investments: InvestmentSummary[], isEditable: boolean, costOptionsAvailable: boolean): string[] {
+  private getColumnsToDisplay(investments: InvestmentSummary[], isEditable: boolean, isCostOptionsAvailable: boolean): string[] {
     const columnsToDisplay = [
       'costItemID',
       'costCategory',
@@ -371,7 +375,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     if (investments.length > 0) {
       columnsToDisplay.splice(2, 0, 'investmentId');
     }
-    if (costOptionsAvailable) {
+    if (isCostOptionsAvailable) {
       columnsToDisplay.splice(1, 0, 'costOptions');
       columnsToDisplay.splice(12, 0, 'numberOfUnits');
       columnsToDisplay.splice(13, 0, 'pricePerUnit');
@@ -379,33 +383,44 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     return columnsToDisplay;
   }
 
-  private getTableConfig(investments: InvestmentSummary[], isEditable: boolean): TableConfig[] {
-    const tableConfig = [
-      {minInRem: 1, maxInRem: 3},   // id
-      {minInRem: 11, maxInRem: 16}, // lump sum
+  private getTableConfig(investments: InvestmentSummary[], isEditable: boolean, isCostOptionsAvailable: boolean): TableConfig[] {
+    const tableConfig = [{minInRem: 1, maxInRem: 3}]; // id
+
+    if (isCostOptionsAvailable) {
+      tableConfig.push({minInRem: 11, maxInRem: 16}); // cost options
+    }
+    tableConfig.push(
       {minInRem: 11, maxInRem: 16}, // cost category
       {minInRem: 8, maxInRem: 8},   // contract id
       {minInRem: 5, maxInRem: 8},   // internal reference
       {minInRem: 5, maxInRem: 8},   // invoice number
       {minInRem: 8, maxInRem: 8},   // invoice date
       {minInRem: 8, maxInRem: 8},   // payment date
-      {minInRem: 16},               // description
-      {minInRem: 16},               // comment
+      {minInRem: 16, maxInRem: 10}, // description
+      {minInRem: 16, maxInRem: 10}, // comment
       {minInRem: 8, maxInRem: 8},   // total invoice value
-      {minInRem: 8, maxInRem: 8},   // vat
-      {minInRem: 8, maxInRem: 8},   // number of units
-      {minInRem: 8, maxInRem: 8},   // price per unit
+      {minInRem: 8, maxInRem: 8}    // vat
+    );
+    if (isCostOptionsAvailable) {
+      tableConfig.push(
+        {minInRem: 8, maxInRem: 8}, // number of units
+        {minInRem: 8, maxInRem: 8}  // price per unit
+      );
+    }
+
+     tableConfig.push(
       {minInRem: 8, maxInRem: 8},   // declared amount
       {minInRem: 5, maxInRem: 5},   // currency
       {minInRem: 5, maxInRem: 5},   // conversion rate
       {minInRem: 8, maxInRem: 8},   // declared amount in EUR
-      {minInRem: 13, maxInRem: 16}   //attachment
-    ];
+      {minInRem: 13, maxInRem: 16}  //attachment
+     );
+
     if(isEditable){
       tableConfig.push({minInRem: 3, maxInRem: 3}); //delete
     }
     if (investments.length > 0) {
-      tableConfig.splice(2, 0, {minInRem: 6});
+      tableConfig.splice(2, 0, {minInRem: 6, maxInRem: 12});
     }
     return tableConfig;
   }
@@ -462,8 +477,8 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       internalReferenceNumber: [formGroup.getRawValue()?.internalReferenceNumber, Validators.maxLength(30)],
       invoiceNumber: [formGroup.getRawValue()?.invoiceNumber, Validators.maxLength(30)],
       ...formGroup.getRawValue(),
-      lumpSumId: formGroup.getRawValue()?.costOptions.type === 'lumpSum' ? formGroup.getRawValue()?.costOptions.id : null,
-      unitCostId: formGroup.getRawValue()?.costOptions.type === 'unitCost' ? formGroup.getRawValue()?.costOptions.id : null,
+      lumpSumId: formGroup.getRawValue()?.costOptions?.type === 'lumpSum' ? formGroup.getRawValue()?.costOptions.id : null,
+      unitCostId: formGroup.getRawValue()?.costOptions?.type === 'unitCost' ? formGroup.getRawValue()?.costOptions.id : null,
      }));
   }
 
@@ -478,7 +493,8 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
   onCurrencyChange(expenditureIndex: number, newValue: MatSelectChange) {
     if (this.isCostOptionSelectedInCurrentFormGroup(expenditureIndex)) {
       const unitCost = this.items.at(expenditureIndex).get('costOptions')?.value;
-      this.items.at(expenditureIndex).get('pricePerUnit')?.setValue(this.getUnitCostPricePerUnitByCurrency(unitCost, newValue.value) );
+      this.items.at(expenditureIndex).get('pricePerUnit')?.setValue(this.getUnitCostPricePerUnitByCurrency(unitCost, newValue.value));
+      this.items.at(expenditureIndex).get('declaredAmount')?.setValue(this.getUnitCostDeclaredAmountByCurrency(expenditureIndex));
     }
     this.updateConversionRate(expenditureIndex, newValue);
   }
@@ -563,10 +579,9 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     control.get('currencyConversionRate')?.disable();
     control.get('declaredAmountInEur')?.disable();
     control.get('investmentId')?.disable();
-
     if (selectionType === 'unitCost') {
       control.get('numberOfUnits')?.enable();
-      if (this.isUnitCostForeignCurrencyAvailable(index)) {
+      if (this.isUnitCostForeignCurrencyAvailable(index) && !this.hasPartnerCurrencySetToEur()) {
           control.get('currencyCode')?.enable();
         }
     }
@@ -594,5 +609,9 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     control.patchValue({currencyCode: this.currentReport.identification?.currency});
     control.patchValue({currencyConversionRate: this.getConversionRateByCode(this.currentReport.identification?.currency)});
     control.patchValue({declaredAmountInEur: 0});
+  }
+
+  hasPartnerCurrencySetToEur(): boolean {
+    return  this.currentReport.identification.currency === CurrencyCodesEnum.EUR;
   }
 }
