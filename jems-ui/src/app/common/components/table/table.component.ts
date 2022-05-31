@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {TableConfiguration} from './model/table.configuration';
 import {ColumnConfiguration} from './model/column.configuration';
 import {ColumnType} from './model/column-type.enum';
@@ -13,7 +13,6 @@ import {ColumnWidth} from './model/column-width';
 import {LocaleDatePipe} from '../../pipe/locale-date.pipe';
 import {RoutingService} from '@common/services/routing.service';
 import {ActivatedRoute} from '@angular/router';
-import {TooltipConfiguration} from '@common/components/table/model/tooltip.configuration';
 
 @Component({
   selector: 'jems-table',
@@ -41,6 +40,8 @@ export class TableComponent implements OnInit {
   newPageSize: EventEmitter<number> = new EventEmitter<number>();
   @Output()
   newPageIndex: EventEmitter<number> = new EventEmitter<number>();
+
+  @ViewChild(MatSort) matSort: MatSort;
 
   columnsToDisplay: string[] = [];
   currentPageSize = Tables.DEFAULT_INITIAL_PAGE_SIZE;

@@ -18,9 +18,10 @@
             </button>
         </span>
 
-        <ng-container *ngIf="checklistInstances$ | async as instances">
-            <jems-table *ngIf="instances.length"
+        <ng-container *ngIf="checklistInstancesSorted$ | async as instances">
+            <jems-table #tableInstances *ngIf="instances.length"
                         [configuration]="instancesTableConfiguration"
+                        (sortRows)="onInstancesSortChange($event)"
                         [rows]="instances">
             </jems-table>
         </ng-container>
@@ -28,12 +29,13 @@
 
     <mat-tab *jemsHasPermission="PermissionEnum.ProjectAssessmentChecklistSelectedRetrieve"
              label="{{'checklists.instance.selected.tab' | translate}}">
-        <jems-form *ngIf="selectedChecklists$ | async as selections"
-                   (save)="save()"
+        <jems-form *ngIf="selectedChecklistsSorted$ | async as selections"
+                   (save)="save(selections)"
                    (discard)="resetForm(selections)">
             <form [formGroup]="form">
-                <jems-table *ngIf="selections.length"
+                <jems-table #tableSelected *ngIf="selections.length"
                             [configuration]="selectionTableConfiguration"
+                            (sortRows)="onSelectedSortChange($event)"
                             [rows]="selections">
                 </jems-table>
             </form>
@@ -51,8 +53,9 @@
 </ng-template>
 
 <ng-template #visibleCell let-checklist>
-    <mat-checkbox class="text-right" (click)="$event.stopPropagation()"
-                  [formControl]="getVisibleGroup(checklist)">
+    <mat-checkbox class="text-right"
+                  [checked]="visibilities.value.includes(checklist.id)"
+                  (change)="onVisibilityChange($event, checklist.id)">
     </mat-checkbox>
 </ng-template>
 

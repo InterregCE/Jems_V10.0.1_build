@@ -9,17 +9,21 @@ import {
   ProgrammeChecklistDetailDTO,
   UserRoleDTO
 } from '@cat/api';
-import {Observable} from 'rxjs';
+import {combineLatest, Observable} from 'rxjs';
 import {
   ChecklistInstanceListStore
 } from '@common/components/checklist/checklist-instance-list/checklist-instance-list-store.service';
-import {filter, switchMap, take, tap} from 'rxjs/operators';
+import {filter, map, switchMap, take, tap} from 'rxjs/operators';
 import {RoutingService} from '@common/services/routing.service';
 import {ActivatedRoute} from '@angular/router';
 import {MatDialog} from '@angular/material/dialog';
 import {Forms} from '@common/utils/forms';
 import {FormService} from '@common/components/section/form/form.service';
 import {FormArray, FormBuilder, FormControl} from '@angular/forms';
+import {TableComponent} from '@common/components/table/table.component';
+import {MatSort} from '@angular/material/sort';
+import {MatCheckboxChange} from '@angular/material/checkbox';
+import {ChecklistSort} from '@common/components/checklist/checklist-instance-list/checklist-instance-list-custom-sort';
 
 @Component({
   selector: 'jems-checklist-instance-list',
@@ -41,9 +45,11 @@ export class ChecklistInstanceListComponent implements OnInit {
     visibilities: this.formBuilder.array([])
   });
 
-  checklistInstances$: Observable<ChecklistInstanceDTO[]>;
+  private checklistInstances$: Observable<ChecklistInstanceDTO[]>;
+  checklistInstancesSorted$: Observable<ChecklistInstanceDTO[]>;
   checklistTemplates$: Observable<IdNamePairDTO[]>;
-  selectedChecklists$: Observable<ChecklistInstanceSelectionDTO[]>;
+  private selectedChecklists$: Observable<ChecklistInstanceSelectionDTO[]>;
+  selectedChecklistsSorted$: Observable<ChecklistInstanceSelectionDTO[]>;
 
   instancesTableConfiguration: TableConfiguration;
   selectionTableConfiguration: TableConfiguration;
@@ -58,6 +64,9 @@ export class ChecklistInstanceListComponent implements OnInit {
   @ViewChild('deleteCell', {static: true})
   deleteCell: TemplateRef<any>;
 
+  @ViewChild('tableInstances') tableInstances: TableComponent;
+  @ViewChild('tableSelected') tableSelected: TableComponent;
+
   constructor(public pageStore: ChecklistInstanceListStore,
               private formService: FormService,
               private formBuilder: FormBuilder,
@@ -65,14 +74,52 @@ export class ChecklistInstanceListComponent implements OnInit {
               private activatedRoute: ActivatedRoute,
               private dialog: MatDialog) { }
 
+  onInstancesSortChange(sort: Partial<MatSort>) {
+    const field = sort.active || '';
+    const order = sort.direction;
+
+    const oldField = this.tableSelected.matSort.active;
+    const oldOrder = this.tableSelected.matSort.direction === 'desc' ? 'desc' : 'asc';
+
+    if (field !== oldField || (field === oldField && order !== oldOrder)) {
+      this.tableSelected.matSort.sort({id: field, start: 'asc', disableClear: true});
+    }
+    this.pageStore.setInstancesSort({...sort, direction: order === 'desc' ? 'desc' : 'asc'});
+  }
+
+  onSelectedSortChange(sort: Partial<MatSort>) {
+    const field = sort.active || '';
+    const order = sort.direction;
+
+    const oldField = this.tableInstances.matSort.active;
+    const oldOrder = this.tableInstances.matSort.direction === 'desc' ? 'desc' : 'asc';
+
+    if (field !== oldField || (field === oldField && order !== oldOrder)) {
+      this.tableInstances.matSort.sort({id: field, start: 'asc', disableClear: true});
+    }
+    this.pageStore.setSelectedSort({...sort, direction: order === 'desc' ? 'desc' : 'asc'});
+  }
+
   ngOnInit(): void {
     this.formService.init(this.form, this.pageStore.userCanChangeSelection$);
     this.checklistInstances$ = this.pageStore.checklistInstances(this.relatedType, this.relatedId);
+    this.checklistInstancesSorted$ = combineLatest([
+      this.checklistInstances$,
+      this.pageStore.getInstancesSort$,
+    ]).pipe(
+      map(([checklists, sort]) => [...checklists].sort(ChecklistSort.customSort(sort))),
+    );
     this.checklistTemplates$ = this.pageStore.checklistTemplates(this.relatedType);
     this.selectedChecklists$ = this.pageStore.selectedInstances(this.relatedType, this.relatedId)
       .pipe(
         tap(checklists => this.resetForm(checklists)),
       );
+    this.selectedChecklistsSorted$ = combineLatest([
+      this.selectedChecklists$,
+      this.pageStore.getSelectedSort$,
+    ]).pipe(
+      map(([checklists, sort]) => [...checklists].sort(ChecklistSort.customSort(sort))),
+    );
 
     this.instancesTableConfiguration = this.initializeTableConfiguration(false);
     this.selectionTableConfiguration = this.initializeTableConfiguration(true);
@@ -100,40 +147,46 @@ export class ChecklistInstanceListComponent implements OnInit {
         {
           displayedColumn: 'common.id',
           elementProperty: 'id',
-          columnWidth: ColumnWidth.IdColumn
+          columnWidth: ColumnWidth.IdColumn,
+          sortProperty: 'id',
         },
         {
           displayedColumn: 'checklists.instance.consolidated',
           customCellTemplate: this.consolidateCell,
-          columnWidth: ColumnWidth.DateColumn
+          sortProperty: 'consolidated',
         },
         {
           displayedColumn: 'common.status',
           elementTranslationKey: 'checklists.instance.status',
           elementProperty: 'status',
-          columnWidth: ColumnWidth.DateColumn
+          columnWidth: ColumnWidth.DateColumn,
+          sortProperty: 'status',
         },
         {
           displayedColumn: 'common.type',
           elementTranslationKey: 'programme.checklists.type',
           elementProperty: 'type',
-          columnWidth: ColumnWidth.DateColumn
+          columnWidth: ColumnWidth.DateColumn,
+          sortProperty: 'type',
         },
         {
           displayedColumn: 'common.name',
           elementProperty: 'name',
-          columnWidth: ColumnWidth.extraWideColumn
+          columnWidth: ColumnWidth.extraWideColumn,
+          sortProperty: 'name',
         },
         ...!selection ? [{
           displayedColumn: 'checklists.instance.assessor',
           elementProperty: 'creatorEmail',
-          columnWidth: ColumnWidth.DateColumn
+          columnWidth: ColumnWidth.WideColumn,
+          sortProperty: 'creatorEmail',
         }] : [],
         {
           displayedColumn: 'checklists.instance.finished.date',
           elementProperty: 'finishedDate',
           columnType: ColumnType.DateOnlyColumn,
-          columnWidth: ColumnWidth.DateColumn
+          columnWidth: ColumnWidth.DateColumn,
+          sortProperty: 'finishedDate',
         },
         ...selection ? [{
           displayedColumn: 'checklists.instance.visible',
@@ -163,35 +216,41 @@ export class ChecklistInstanceListComponent implements OnInit {
       ).subscribe();
   }
 
-  save(): void {
-    this.pageStore.setVisibilities(
-      this.visibilities.controls.reduce(
-        (map: {[index: number]: any} , obj) => {
-          map[(obj.get('id')?.value)] = (obj.get('visible')?.value);
-          return map;
-        }, {}
-      )
-    ).pipe(
-      tap(() => this.formService.setSuccess('checklists.instances.list.saved.successfully'))
-    ).subscribe();
+  save(original: ChecklistInstanceSelectionDTO[]): void {
+    const allIds = original.map(ch => ch.id);
+    const visibilities = allIds.reduce((resultObject: {[index: number]: any}, id) => {
+      resultObject[id] = this.visibilities.value.includes(id);
+      return resultObject;
+    }, {});
+    this.pageStore.setVisibilities(visibilities)
+      .pipe(
+        tap(() => this.formService.setSuccess('checklists.instances.list.saved.successfully'))
+      ).subscribe();
+  }
+
+  resetForm(instances: ChecklistInstanceSelectionDTO[]): void {
+    this.visibilities.clear();
+    instances.filter(instance => instance.visible).forEach(instance => {
+      this.visibilities.push(this.formBuilder.control(instance.id));
+    });
+    this.formService.resetEditable();
+  }
+
+  onVisibilityChange(change: MatCheckboxChange, id: number) {
+    if (change.checked) {
+      this.visibilities.push(this.formBuilder.control(id));
+      this.formService.setDirty(true);
+    } else {
+      const index = this.visibilities.value.indexOf(id);
+      if (index > -1) {
+        this.visibilities.removeAt(index);
+        this.formService.setDirty(true);
+      }
+    }
   }
 
   get visibilities(): FormArray {
     return this.form.get('visibilities') as FormArray;
   }
 
-  getVisibleGroup(instance: ChecklistInstanceSelectionDTO): FormControl {
-    return this.visibilities.controls
-      .find(control => control.get('id')?.value === instance.id)
-      ?.get('visible') as FormControl;
-  }
-
-  resetForm(instances: ChecklistInstanceSelectionDTO[]): void {
-    this.visibilities.clear();
-    instances.forEach(instance => this.visibilities.push(this.formBuilder.group({
-      id: [instance.id],
-      visible: [instance.visible],
-    })));
-    this.formService.resetEditable();
-  }
 }
