@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.dataGenerator.call
 
+import io.cloudflight.jems.api.call.ApplicationFormConfigurationApi
 import io.cloudflight.jems.api.call.CallApi
 import io.cloudflight.jems.api.call.dto.AllowedRealCostsDTO
 import io.cloudflight.jems.api.call.dto.CallFundRateDTO
@@ -7,9 +8,12 @@ import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.api.call.dto.CallUpdateRequestDTO
 import io.cloudflight.jems.api.call.dto.PreSubmissionPluginsDTO
+import io.cloudflight.jems.api.call.dto.applicationFormConfiguration.StepSelectionOptionDTO
+import io.cloudflight.jems.api.call.dto.applicationFormConfiguration.UpdateApplicationFormFieldConfigurationRequestDTO
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateDTO
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateSetupDTO
 import io.cloudflight.jems.server.DataGeneratorTest
+import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldSetting
 import io.cloudflight.jems.server.dataGenerator.CALL_DATA_INITIALIZER_ORDER
 import io.cloudflight.jems.server.dataGenerator.PROGRAMME_LUMP_SUMS
 import io.cloudflight.jems.server.dataGenerator.PROGRAMME_PRIORITY
@@ -37,6 +41,7 @@ import java.time.ZonedDateTime
 class StandardCallDataGeneratorTest(@LocalServerPort private val port: Int) : DataGeneratorTest() {
 
     private val callApi = FeignTestClientFactory.createClientApi(CallApi::class.java, port, config)
+    private val afConfigApi = FeignTestClientFactory.createClientApi(ApplicationFormConfigurationApi::class.java, port, config)
 
     private var callId = 0L
 
@@ -46,7 +51,7 @@ class StandardCallDataGeneratorTest(@LocalServerPort private val port: Int) : Da
     @ExpectInsert(148)
     @ExpectUpdate(0)
     @ExpectDelete(1)
-    fun `should creat standard call`() {
+    fun `should create standard call`() {
         assertThat(
             callApi.createCall(
                 CallUpdateRequestDTO(
@@ -65,6 +70,36 @@ class StandardCallDataGeneratorTest(@LocalServerPort private val port: Int) : Da
                 )
             ).also { callId = it.id }
         ).isNotNull
+    }
+
+    @Test
+    @Order(2)
+    @ExpectSelect(28)
+    @ExpectInsert(0)
+    @ExpectUpdate(2)
+    @ExpectDelete(2)
+    fun `should set application form configuration for the call`() {
+        val afConfigSets = afConfigApi.getByCallId(callId)
+        val updateAfConfig = afConfigSets.map {
+            var availableInStep = it.availableInStep
+            var visible = it.visible
+            if (it.id == ApplicationFormFieldSetting.PROJECT_INVESTMENT_TITLE.id
+                || it.id == ApplicationFormFieldSetting.PROJECT_ACTIVITIES_DELIVERABLES.id) {
+                visible = true
+                availableInStep = StepSelectionOptionDTO.STEP_TWO_ONLY
+            }
+            UpdateApplicationFormFieldConfigurationRequestDTO(it.id, visible, availableInStep)
+        }.toMutableSet()
+
+        val callDetail = afConfigApi.update(callId, updateAfConfig)
+
+        assertThat(callDetail.id).isEqualTo(callId)
+        assertThat(callDetail.applicationFormFieldConfigurations
+            .find { it.id == ApplicationFormFieldSetting.PROJECT_INVESTMENT_TITLE.id }?.availableInStep)
+            .isEqualTo(StepSelectionOptionDTO.STEP_TWO_ONLY)
+        assertThat(callDetail.applicationFormFieldConfigurations
+            .find { it.id == ApplicationFormFieldSetting.PROJECT_ACTIVITIES_DELIVERABLES.id }?.availableInStep)
+            .isEqualTo(StepSelectionOptionDTO.STEP_TWO_ONLY)
     }
 
     @Test
