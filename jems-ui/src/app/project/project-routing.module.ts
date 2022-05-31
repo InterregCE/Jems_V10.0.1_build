@@ -330,7 +330,6 @@ export const routes: Routes = [
             component: ProjectApplicationFormOverallObjectiveSectionComponent,
             data: {
               breadcrumb: 'project.breadcrumb.applicationForm.overallObjective',
-              visibleOnly: [APPLICATION_FORM.SECTION_C.PROJECT_OVERALL_OBJECTIVE]
             },
           },
           {
