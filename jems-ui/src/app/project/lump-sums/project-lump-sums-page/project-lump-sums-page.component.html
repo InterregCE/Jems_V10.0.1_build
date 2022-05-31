@@ -141,8 +141,7 @@
                                         <ng-container *ngIf="isLumpSumSelectedForRow(control)"
                                                       [formArrayName]="constants.FORM_CONTROL_NAMES.partnersContribution">
                                             <ng-container [formGroupName]="partnerAmountIndex">
-                                                <jems-inline-editable-field jemsFormFieldWidth="full">
-                                                    <mat-form-field>
+                                                    <mat-form-field jemsFormFieldWidth="full">
                                                         <input
                                                                 currencyMask
                                                                 [options]="{min: constants.MIN_VALUE, max: constants.MAX_VALUE, align: 'right'}"
@@ -150,7 +149,6 @@
                                                                 type="decimal"
                                                                 matInput>
                                                     </mat-form-field>
-                                                </jems-inline-editable-field>
                                             </ng-container>
                                         </ng-container>
                                     </mat-cell>
