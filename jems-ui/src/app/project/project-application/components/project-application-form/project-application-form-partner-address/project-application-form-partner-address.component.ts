@@ -9,6 +9,7 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ActivatedRoute} from '@angular/router';
 import {RoutingService} from '@common/services/routing.service';
 import {FormVisibilityStatusService} from '@project/common/services/form-visibility-status.service';
+import {Alert} from "@common/components/forms/alert";
 
 @UntilDestroy()
 @Component({
@@ -19,6 +20,8 @@ import {FormVisibilityStatusService} from '@project/common/services/form-visibil
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectApplicationFormPartnerAddressComponent implements OnInit, OnChanges {
+  Alert = Alert;
+
   @Input()
   partnerId: number;
   @Input()

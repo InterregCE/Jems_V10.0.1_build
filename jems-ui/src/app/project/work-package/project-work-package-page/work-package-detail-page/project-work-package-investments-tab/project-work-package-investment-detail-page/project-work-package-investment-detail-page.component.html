@@ -97,6 +97,11 @@
                     *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.ADDRESS">
                 <h4>{{'project.application.form.workpackage.investment.location' | translate}}</h4>
                 <p>{{'project.application.form.workpackage.investment.location.description' | translate}}</p>
+                <jems-alert [show]="true"
+                            [type]="Alert.INFO"
+                            [closable]="false">
+                    <span>{{'common.hint.nuts' | translate}} <a target="_blank" href="https://ec.europa.eu/eurostat/web/nuts/background">https://ec.europa.eu/eurostat/web/nuts/background</a></span>
+                </jems-alert>
 
                 <jems-project-application-form-address
                         [addressForm]="workPackageInvestmentForm.controls.address"
