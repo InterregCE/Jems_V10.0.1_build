@@ -41,7 +41,8 @@ export class ProjectApplicationFormPartnerEditComponent implements OnInit {
 
   partnerId = this.router.getParameter(this.activatedRoute, 'partnerId');
   legalStatuses$ = this.programmeLegalStatusService.getProgrammeLegalStatusList();
-  filteredNace: Observable<string[]>;
+  filteredNace$: Observable<string[]>;
+  isSpfCallType:  boolean;
 
   data$: Observable<{
     partner: ProjectPartnerDetailDTO;
@@ -92,18 +93,22 @@ export class ProjectApplicationFormPartnerEditComponent implements OnInit {
     this.formService.init(this.partnerForm, this.partnerStore.isProjectEditable$);
     this.data$ = combineLatest([this.partnerStore.partners$, this.partnerStore.partner$, this.partnerStore.projectCallType$])
       .pipe(
-        map(([partners, partner, callType]) => ({
-          partners,
-          partner,
-          projectCallType: callType,
-          isSpf: callType === CallTypeEnum.SPF
-        })),
+        map(([partners, partner, callType]) => {
+            this.isSpfCallType = callType === CallTypeEnum.SPF;
+            return {
+              partners,
+              partner,
+              projectCallType: callType,
+              isSpf: this.isSpfCallType
+            };
+          }
+        ),
         tap((data: any) => this.resetForm(data.projectCallType, data.partner))
       );
   }
 
   ngOnInit(): void {
-    this.filteredNace = this.partnerForm.controls.nace.valueChanges
+    this.filteredNace$ = this.partnerForm.controls.nace.valueChanges
       .pipe(
         startWith(''),
         map(value => this.filter(value))
@@ -182,20 +187,27 @@ export class ProjectApplicationFormPartnerEditComponent implements OnInit {
   }
 
   private confirmLeadPartnerChange(partners: ProjectPartner[]): Observable<boolean>{
-        const leadPartner = partners.find(it => it.role === ProjectPartnerRoleEnum.LEAD_PARTNER);
-        if (leadPartner === undefined || leadPartner === null || leadPartner.id === this.controls.id.value || this.controls.role.value === ProjectPartnerRoleEnum.PARTNER){
-          return of(true);
-        }else {
-          return Forms.confirmDialog(
-            this.dialog,
-            'project.partner.role.lead.already.existing.title',
-            'project.partner.role.lead.already.existing',
-            {
-              old_name: leadPartner.abbreviation,
-              new_name: this.controls.abbreviation.value
-            }
-          );
+    const leadPartner = partners.find(it => it.role === ProjectPartnerRoleEnum.LEAD_PARTNER);
+    if (
+      leadPartner === undefined ||
+      leadPartner === null ||
+      !leadPartner.active ||
+      leadPartner.id === this.controls.id.value ||
+      this.controls.role.value === ProjectPartnerRoleEnum.PARTNER ||
+      this.isSpfCallType
+    ) {
+      return of(true);
+    } else {
+      return Forms.confirmDialog(
+        this.dialog,
+        'project.partner.role.lead.already.existing.title',
+        'project.partner.role.lead.already.existing',
+        {
+          old_name: leadPartner.abbreviation,
+          new_name: this.controls.abbreviation.value
         }
+      );
+    }
   }
 
   discard(callType: CallTypeEnum, partner?: ProjectPartnerDetailDTO): void {
