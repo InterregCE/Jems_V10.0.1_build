@@ -118,13 +118,14 @@ export class ProjectApplicationFormSidenavService {
     this.permissionService.hasPermission(PermissionsEnum.ProjectStartStepTwo),
     this.permissionService.hasPermission(PermissionsEnum.ProjectStatusDecisionRevert),
     this.permissionService.hasPermission(PermissionsEnum.ProjectAssessmentChecklistUpdate),
-    this.fileManagementStore.canReadAssessmentFile$,
+    this.permissionService.hasPermission(PermissionsEnum.ProjectAssessmentChecklistSelectedRetrieve),
+    this.fileManagementStore.canReadAssessmentFile$
   ]).pipe(
     map(([projectStatus, callHas2Steps, hasAssessmentViewPermission, hasReturnToaApplicantPermission, hasStartStepTwoPermission,
-           hasRevertDecisionPermission, hasChecklistPermission, canReadAssessmentFiles]: any) => {
+           hasRevertDecisionPermission, hasInstantiateChecklistPermission, hasSelectedAssessmentListView, canReadAssessmentFiles]: any) => {
       return (
-          (canReadAssessmentFiles || hasAssessmentViewPermission || hasRevertDecisionPermission || hasChecklistPermission) &&
-          ((callHas2Steps && projectStatus !== StatusEnum.STEP1DRAFT) || (!callHas2Steps && projectStatus !== StatusEnum.DRAFT))
+          (canReadAssessmentFiles || hasAssessmentViewPermission || hasRevertDecisionPermission || hasInstantiateChecklistPermission || hasSelectedAssessmentListView) &&
+          ((callHas2Steps && projectStatus !== StatusEnum.STEP1DRAFT && projectStatus !== StatusEnum.DRAFT) || (!callHas2Steps && projectStatus !== StatusEnum.DRAFT))
         )
         || (
           hasStartStepTwoPermission &&
