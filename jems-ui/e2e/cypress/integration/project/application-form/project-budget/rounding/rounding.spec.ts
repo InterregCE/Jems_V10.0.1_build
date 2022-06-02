@@ -81,10 +81,11 @@ context('Rounding', () => {
 
           // verify CSV export
           cy.contains('button', 'Partners budget').click();
-          cy.contains('button', 'Export').clickToDownload('**/export/budget?*', 'csv').then(exportFile => {
-            cy.fixture('project/application-form/project-budget/rounding/TB-383-export.csv').parseCSV().then(testDataFile => {
-                const assertionMessage = 'Verify downloaded csv file';
-                expect(exportFile.content.slice(1), assertionMessage).to.deep.equal(testDataFile);
+          cy.contains('button', 'Export').clickToDownload('**/export/budget?*', 'xlsx').then(exportFile => {
+            cy.fixture('project/application-form/project-budget/rounding/TB-383-export.xlsx', null).parseXLSX().then(testDataFile => {
+                const assertionMessage = 'Verify downloaded xlsx file';
+                expect(exportFile.content[0].data.slice(1), assertionMessage).to.deep.equal(testDataFile[0].data.slice(1));
+                expect(exportFile.content[1].data.slice(1), assertionMessage).to.deep.equal(testDataFile[1].data.slice(1));
             });
           });
         });

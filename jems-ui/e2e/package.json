@@ -16,6 +16,7 @@
     "@faker-js/faker": "^6.1.2",
     "@types/node": "^17.0.23",
     "csv-parse": "^5.0.4",
+    "node-xlsx": "^0.21.0",
     "cy2": "^2.0.0",
     "cypress": "^9.5.3",
     "date-and-time": "^2.3.0",
