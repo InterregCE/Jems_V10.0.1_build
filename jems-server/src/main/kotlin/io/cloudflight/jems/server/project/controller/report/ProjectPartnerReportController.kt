@@ -1,10 +1,11 @@
 package io.cloudflight.jems.server.project.controller.report
 
+import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.api.project.dto.report.ProjectPartnerReportSummaryDTO
 import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileDTO
-import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadataDTO
 import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileSearchRequestDTO
 import io.cloudflight.jems.api.project.report.ProjectPartnerReportApi
+import io.cloudflight.jems.server.common.exception.ApplicationException
 import io.cloudflight.jems.server.project.service.report.partner.createProjectPartnerReport.CreateProjectPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.deleteProjectPartnerReportFile.DeleteProjectPartnerReportFileInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.downloadProjectPartnerReportFile.DownloadProjectPartnerReportFileInteractor
@@ -16,6 +17,7 @@ import org.springframework.core.io.ByteArrayResource
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
@@ -42,7 +44,9 @@ class ProjectPartnerReportController(
         getPartnerReport.findById(partnerId = partnerId, reportId = reportId).toDto()
 
     override fun createProjectPartnerReport(partnerId: Long) =
-        createPartnerReport.createReportFor(partnerId = partnerId).toDto()
+        throw ApplicationException(httpStatus = HttpStatus.TOO_EARLY, cause = null, code = "CPPR-NS",
+            i18nMessage = I18nMessage("Creation of project partner report is not yet supported."))
+//        createPartnerReport.createReportFor(partnerId = partnerId).toDto()
 
     override fun submitProjectPartnerReport(partnerId: Long, reportId: Long): ProjectPartnerReportSummaryDTO =
         submitPartnerReport.submit(partnerId = partnerId, reportId = reportId).toDto()
