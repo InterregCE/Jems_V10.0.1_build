@@ -3,6 +3,7 @@ import {parse as parseCSV} from 'csv-parse';
 import {finished} from 'stream/promises';
 import date from 'date-and-time';
 import fetch from 'node-fetch';
+import xlsx from 'node-xlsx';
 import CypressRunResult = CypressCommandLine.CypressRunResult;
 
 /**
@@ -27,6 +28,12 @@ export default async (on: Cypress.PluginEvents, config: Cypress.PluginConfigOpti
 
       await finished(parser);
       return result;
+    },
+  });
+
+  on('task', {
+    async parseXLSX(subject) {
+      return xlsx.parse(Buffer.from(subject.data));
     },
   });
 

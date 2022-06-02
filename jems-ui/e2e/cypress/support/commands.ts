@@ -33,6 +33,8 @@ declare global {
 
       parseCSV();
 
+      parseXLSX();
+
       clickToDownload(requestToIntercept: string, fileExtension: string);
     }
   }
@@ -44,6 +46,10 @@ Cypress.Commands.add('parsePDF', {prevSubject: true}, (subject) => {
 
 Cypress.Commands.add('parseCSV', {prevSubject: true}, (subject) => {
   cy.task('parseCSV', subject);
+});
+
+Cypress.Commands.add('parseXLSX', {prevSubject: true}, (subject) => {
+  cy.task('parseXLSX', subject);
 });
 
 Cypress.Commands.add('clickToDownload', {prevSubject: true}, (subject, requestToIntercept, fileExtension) => {
@@ -64,6 +70,11 @@ Cypress.Commands.add('clickToDownload', {prevSubject: true}, (subject, requestTo
       });
     } else if (fileExtension === 'csv') {
       cy.readFile('./cypress/downloads/' + fileName).parseCSV().then(content => {
+        const file = {fileName: fileName, content: content};
+        cy.wrap(file);
+      });
+    } else if (fileExtension === 'xlsx') {
+      cy.readFile('./cypress/downloads/' + fileName, null).parseXLSX().then(content => {
         const file = {fileName: fileName, content: content};
         cy.wrap(file);
       });
