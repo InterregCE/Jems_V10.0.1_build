@@ -384,7 +384,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
   }
 
   private getTableConfig(investments: InvestmentSummary[], isEditable: boolean, isCostOptionsAvailable: boolean): TableConfig[] {
-    const tableConfig = [{minInRem: 1, maxInRem: 3}]; // id
+    let tableConfig: TableConfig[] = [{minInRem: 1, maxInRem: 3}]; // id
 
     if (isCostOptionsAvailable) {
       tableConfig.push({minInRem: 11, maxInRem: 16}); // cost options
@@ -396,8 +396,8 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       {minInRem: 5, maxInRem: 8},   // invoice number
       {minInRem: 8, maxInRem: 8},   // invoice date
       {minInRem: 8, maxInRem: 8},   // payment date
-      {minInRem: 16, maxInRem: 10}, // description
-      {minInRem: 16, maxInRem: 10}, // comment
+      {minInRem: 16}, // description
+      {minInRem: 16}, // comment
       {minInRem: 8, maxInRem: 8},   // total invoice value
       {minInRem: 8, maxInRem: 8}    // vat
     );
@@ -420,7 +420,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       tableConfig.push({minInRem: 3, maxInRem: 3}); //delete
     }
     if (investments.length > 0) {
-      tableConfig.splice(2, 0, {minInRem: 6, maxInRem: 12});
+      tableConfig.splice(2, 0, {minInRem: 6});
     }
     return tableConfig;
   }
