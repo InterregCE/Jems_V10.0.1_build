@@ -30,21 +30,30 @@ class UpdateBudgetStaffCosts(
         partnerId: Long,
         staffCosts: List<BudgetStaffCostEntry>
     ): List<BudgetStaffCostEntry> {
+        val periods = staffCosts.map { it.budgetPeriods }.flatten().toSet()
+        val projectId = partnerPersistence.getProjectIdForPartnerId(partnerId)
+        val callId = projectPersistence.getCallIdOfProject(projectId)
+        budgetCostValidator.validateAgainstAFConfig(
+            callId,
+            periods,
+            BudgetCategory.StaffCosts,
+            staffCosts.map { it.numberOfUnits }.toList(),
+            staffCosts.map { it.unitType }.toList()
+        )
 
         budgetCostValidator.validateBaseEntries(staffCosts)
         budgetCostValidator.validatePricePerUnits(staffCosts.map { it.pricePerUnit })
 
         throwIfStaffCostFlatRateIsSet(budgetOptionsPersistence.getBudgetOptions(partnerId))
 
-        val projectId = partnerPersistence.getProjectIdForPartnerId(partnerId)
         budgetCostValidator.validateAllowedRealCosts(
-            projectPersistence.getCallIdOfProject(projectId),
+            callId,
             staffCosts,
             BudgetCategory.StaffCosts
         )
 
         budgetCostValidator.validateBudgetPeriods(
-            staffCosts.map { it.budgetPeriods }.flatten().toSet(),
+            periods,
             projectPersistence.getProjectPeriods(projectId).map { it.number }.toSet()
         )
 

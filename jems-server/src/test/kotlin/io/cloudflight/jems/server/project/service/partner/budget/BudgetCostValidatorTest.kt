@@ -1,18 +1,28 @@
 package io.cloudflight.jems.server.project.service.partner.budget
 
 import io.cloudflight.jems.api.call.dto.CallType
+import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.service.CallPersistence
+import io.cloudflight.jems.server.call.service.model.AllowedRealCosts
+import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
+import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldSetting
+import io.cloudflight.jems.server.call.service.model.CallApplicationFormFieldsConfiguration
+import io.cloudflight.jems.server.call.service.model.FieldVisibilityStatus
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.partner.model.BaseBudgetEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetPeriod
+import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.RelaxedMockK
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.DynamicTest
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestFactory
+import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import java.math.BigDecimal
 import java.time.ZonedDateTime
@@ -20,6 +30,10 @@ import java.util.stream.IntStream
 import kotlin.streams.toList
 
 internal class BudgetCostValidatorTest : UnitTest() {
+
+    companion object {
+        private const val callId = 2L
+    }
 
     @RelaxedMockK
     lateinit var callPersistence: CallPersistence
@@ -159,6 +173,195 @@ internal class BudgetCostValidatorTest : UnitTest() {
             budgetCostValidator.validateAllowedSpfCosts(createCallSettings(CallType.STANDARD))
         }
         assertEquals(BUDGET_COST_SPF_COST_NOT_ALLOWED, ex.i18nKey)
+    }
+
+    @Test
+    fun `should throw I18nValidationException when numberOfUnits not acc to AF config`() {
+        val numberOfUnits = listOf(BigDecimal.TEN)
+        val afConfiguration = CallApplicationFormFieldsConfiguration(
+            CallType.STANDARD,
+            mutableSetOf(
+                ApplicationFormFieldConfiguration(
+                    ApplicationFormFieldSetting.PARTNER_BUDGET_EQUIPMENT_UNIT_TYPE_AND_NUMBER_OF_UNITS.id,
+                    FieldVisibilityStatus.NONE
+                )
+            )
+        )
+        every { callPersistence.getApplicationFormFieldConfigurations(callId) } returns afConfiguration
+
+        val ex = assertThrows<I18nValidationException> {
+            budgetCostValidator.validateAgainstAFConfig(
+                callId,
+                emptySet(),
+                BudgetCategory.EquipmentCosts,
+                numberOfUnits,
+                emptyList()
+            )
+        }
+        assertEquals(BUDGET_COST_NUMBER_UNITS_NOT_ENABLED_ERROR_KEY, ex.i18nKey)
+    }
+
+    @Test
+    fun `should throw I18nValidationException when periods not acc to AF config`() {
+        val periods = setOf(BudgetPeriod(1, BigDecimal.ONE))
+        val afConfiguration = CallApplicationFormFieldsConfiguration(
+            CallType.STANDARD,
+            mutableSetOf(
+                ApplicationFormFieldConfiguration(
+                    ApplicationFormFieldSetting.PARTNER_BUDGET_PERIODS.id,
+                    FieldVisibilityStatus.NONE
+                )
+            )
+        )
+        every { callPersistence.getApplicationFormFieldConfigurations(callId) } returns afConfiguration
+
+        val ex = assertThrows<I18nValidationException> {
+            budgetCostValidator.validateAgainstAFConfig(
+                callId,
+                periods,
+                BudgetCategory.StaffCosts,
+                listOf(BigDecimal.ONE),
+                emptyList()
+            )
+        }
+        assertEquals(BUDGET_COST_PERIODS_NOT_ENABLED_ERROR_KEY, ex.i18nKey)
+    }
+
+    @Test
+    fun `should throw I18nValidationException when unitType not acc to AF config`() {
+        val unitTypes = listOf(setOf(InputTranslation(SystemLanguage.EN, "string")))
+        val afConfiguration = CallApplicationFormFieldsConfiguration(
+            CallType.STANDARD,
+            mutableSetOf(
+                ApplicationFormFieldConfiguration(
+                    ApplicationFormFieldSetting.PARTNER_BUDGET_INFRASTRUCTURE_AND_WORKS_UNIT_TYPE_AND_NUMBER_OF_UNITS.id,
+                    FieldVisibilityStatus.NONE
+                )
+            )
+        )
+        every { callPersistence.getApplicationFormFieldConfigurations(callId) } returns afConfiguration
+
+        val ex = assertThrows<I18nValidationException> {
+            budgetCostValidator.validateAgainstAFConfig(
+                callId,
+                emptySet(),
+                BudgetCategory.InfrastructureCosts,
+                listOf(BigDecimal.ONE),
+                unitTypes
+            )
+        }
+        assertEquals(BUDGET_COST_NUMBER_UNITS_NOT_ENABLED_ERROR_KEY, ex.i18nKey)
+    }
+
+    @Test
+    fun `should be successful when data acc to AF config`() {
+        val periods = setOf(BudgetPeriod(1, BigDecimal.ONE))
+        val numberOfUnits = listOf(BigDecimal.TEN)
+        val unitTypes = listOf(setOf(InputTranslation(SystemLanguage.EN, "string")))
+        val afConfiguration = CallApplicationFormFieldsConfiguration(
+            CallType.STANDARD,
+            mutableSetOf(
+                ApplicationFormFieldConfiguration(
+                    ApplicationFormFieldSetting.PARTNER_BUDGET_PERIODS.id,
+                    FieldVisibilityStatus.STEP_TWO_ONLY
+                ),
+                ApplicationFormFieldConfiguration(
+                    ApplicationFormFieldSetting.PARTNER_BUDGET_EXTERNAL_EXPERTISE_UNIT_TYPE_AND_NUMBER_OF_UNITS.id,
+                    FieldVisibilityStatus.STEP_TWO_ONLY
+                )
+            )
+        )
+        every { callPersistence.getApplicationFormFieldConfigurations(callId) } returns afConfiguration
+
+        assertDoesNotThrow { budgetCostValidator.validateAgainstAFConfig(
+                callId,
+                periods,
+                BudgetCategory.ExternalCosts,
+                numberOfUnits,
+                unitTypes
+            )
+        }
+    }
+
+    @Test
+    fun `should throw I18nValidationException when SPF data not acc to AF config`() {
+        val periods = setOf(BudgetPeriod(1, BigDecimal.ONE))
+        val numberOfUnits = listOf(BigDecimal.ONE)
+        val unitTypes = listOf(setOf(InputTranslation(SystemLanguage.EN, "string")))
+        val afConfiguration = CallApplicationFormFieldsConfiguration(
+            CallType.SPF,
+            mutableSetOf(
+                ApplicationFormFieldConfiguration(
+                    ApplicationFormFieldSetting.PARTNER_BUDGET_PERIODS.id,
+                    FieldVisibilityStatus.STEP_TWO_ONLY
+                ),
+                ApplicationFormFieldConfiguration(
+                    ApplicationFormFieldSetting.PARTNER_BUDGET_SPF_UNIT_TYPE_AND_NUMBER_OF_UNITS.id,
+                    FieldVisibilityStatus.NONE
+                )
+            )
+        )
+        every { callPersistence.getApplicationFormFieldConfigurations(callId) } returns afConfiguration
+
+        val ex = assertThrows<I18nValidationException> { budgetCostValidator.validateAgainstAFConfig(
+            callId,
+            periods,
+            null,
+            numberOfUnits,
+            unitTypes
+        )}
+        assertEquals(BUDGET_COST_NUMBER_UNITS_NOT_ENABLED_ERROR_KEY, ex.i18nKey)
+    }
+
+    @Test
+    fun `should throw I18nValidationException when Staff real costs not allowed`() {
+        val budgetCostEntries = listOf(
+            object : BaseBudgetEntry {
+                override val id: Long? = null
+                override val numberOfUnits = BigDecimal.ZERO
+                override val budgetPeriods = mutableSetOf<BudgetPeriod>()
+                override val rowSum = BigDecimal.ZERO
+                override val unitCostId = null
+            }
+        )
+        val allowedRealCost = AllowedRealCosts(
+            allowRealStaffCosts = false,
+            allowRealTravelAndAccommodationCosts = false,
+            allowRealExternalExpertiseAndServicesCosts = false,
+            allowRealEquipmentCosts = false,
+            allowRealInfrastructureCosts = false
+        )
+        every { callPersistence.getAllowedRealCosts(callId) } returns allowedRealCost
+
+        val ex = assertThrows<I18nValidationException> {
+            budgetCostValidator.validateAllowedRealCosts(callId, budgetCostEntries, BudgetCategory.StaffCosts)
+        }
+        assertEquals(BUDGET_COST_REAL_COST_NOT_ALLOWED, ex.i18nKey)
+    }
+
+    @Test
+    fun `should be successful when Equipment real costs allowed`() {
+        val budgetCostEntries = listOf(
+            object : BaseBudgetEntry {
+                override val id: Long? = null
+                override val numberOfUnits = BigDecimal.ZERO
+                override val budgetPeriods = mutableSetOf<BudgetPeriod>()
+                override val rowSum = BigDecimal.ZERO
+                override val unitCostId = null
+            }
+        )
+        val allowedRealCost = AllowedRealCosts(
+            allowRealStaffCosts = false,
+            allowRealTravelAndAccommodationCosts = false,
+            allowRealExternalExpertiseAndServicesCosts = false,
+            allowRealEquipmentCosts = true,
+            allowRealInfrastructureCosts = false
+        )
+        every { callPersistence.getAllowedRealCosts(callId) } returns allowedRealCost
+
+        assertDoesNotThrow {
+            budgetCostValidator.validateAllowedRealCosts(callId, budgetCostEntries, BudgetCategory.EquipmentCosts)
+        }
     }
 
     @TestFactory

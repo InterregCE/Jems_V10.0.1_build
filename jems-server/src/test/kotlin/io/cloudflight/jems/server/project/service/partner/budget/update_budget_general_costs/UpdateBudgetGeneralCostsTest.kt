@@ -21,6 +21,7 @@ open class UpdateBudgetGeneralCostsTest : UnitTest() {
 
     protected val partnerId = 1L
     protected val projectId = 2L
+    protected val callId = 3L
     protected val listBudgetEntriesIds = setOf(1L, 2L)
     protected val validPeriodNumbers = IntStream.range(1, 4).toList().toSet()
     protected val projectPeriods = createProjectPeriods(validPeriodNumbers)
@@ -49,6 +50,7 @@ open class UpdateBudgetGeneralCostsTest : UnitTest() {
     @BeforeAll
     fun setup() {
         every { partnerPersistence.getProjectIdForPartnerId(partnerId) } returns projectId
+        every { projectPersistence.getCallIdOfProject(projectId) } returns callId
     }
 
     private fun budgetGeneralCostEntries(listBudgetEntriesIds: Set<Long>, budgetPeriods: MutableSet<BudgetPeriod>) =

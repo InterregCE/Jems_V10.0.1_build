@@ -1,6 +1,9 @@
 package io.cloudflight.jems.server.project.service.partner.cofinancing.update_cofinancing
 
+import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectPartner
+import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPartnerCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContributionSpf
@@ -12,7 +15,10 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class UpdateCoFinancing(
-    private val persistence: ProjectPartnerCoFinancingPersistence
+    private val persistence: ProjectPartnerCoFinancingPersistence,
+    private val partnerPersistence: PartnerPersistence,
+    private val projectPersistence: ProjectPersistence,
+    private val callPersistence: CallPersistence
 ) : UpdateCoFinancingInteractor {
 
     @Transactional
@@ -22,7 +28,11 @@ class UpdateCoFinancing(
         finances: List<UpdateProjectPartnerCoFinancing>,
         partnerContributions: List<ProjectPartnerContribution>
     ): ProjectPartnerCoFinancingAndContribution {
+        val projectId = partnerPersistence.getProjectIdForPartnerId(partnerId)
+        val callId = projectPersistence.getCallIdOfProject(projectId)
+        val afConfig = callPersistence.getApplicationFormFieldConfigurations(callId)
 
+        validateContributionAFConfiguration(afConfig.applicationFormFieldConfigurations, partnerContributions)
         validateFinancing(finances, persistence.getAvailableFunds(partnerId).map { it.id }.toSet())
         validateContribution(partnerContributions)
 
@@ -36,7 +46,11 @@ class UpdateCoFinancing(
         finances: List<UpdateProjectPartnerCoFinancing>,
         partnerContributions: List<ProjectPartnerContributionSpf>
     ): ProjectPartnerCoFinancingAndContributionSpf {
+        val projectId = partnerPersistence.getProjectIdForPartnerId(partnerId)
+        val callId = projectPersistence.getCallIdOfProject(projectId)
+        val afConfig = callPersistence.getApplicationFormFieldConfigurations(callId)
 
+        validateSpfContributionAFConfiguration(afConfig.applicationFormFieldConfigurations, partnerContributions)
         validateFinancing(finances, persistence.getAvailableFunds(partnerId).map { it.id }.toSet())
         validateContributionSpf(partnerContributions)
 
