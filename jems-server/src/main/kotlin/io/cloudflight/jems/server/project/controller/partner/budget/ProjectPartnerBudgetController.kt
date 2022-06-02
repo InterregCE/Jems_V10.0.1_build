@@ -20,7 +20,7 @@ import io.cloudflight.jems.server.project.service.partner.budget.update_budget_g
 import io.cloudflight.jems.server.project.service.partner.budget.update_budget_general_costs.update_budget_infrastructure_and_works_costs.UpdateBudgetInfrastructureAndWorksCostsInteractor
 import io.cloudflight.jems.server.project.service.partner.budget.update_budget_options.UpdateBudgetOptionsInteractor
 import io.cloudflight.jems.server.project.service.partner.budget.update_budget_travel_and_accommodation_costs.UpdateBudgetTravelAndAccommodationCostsInteractor
-import io.cloudflight.jems.server.project.service.partner.budget.update_budget_unit_costs.UpdateBudgetUnitCostsInteractor
+import io.cloudflight.jems.server.project.service.partner.budget.updateBudgetUnitCosts.UpdateBudgetUnitCostsInteractor
 import io.cloudflight.jems.server.project.service.partner.cofinancing.get_cofinancing.GetCoFinancingInteractor
 import io.cloudflight.jems.server.project.service.partner.cofinancing.toContributionModel
 import io.cloudflight.jems.server.project.service.partner.cofinancing.toContributionSpfModel

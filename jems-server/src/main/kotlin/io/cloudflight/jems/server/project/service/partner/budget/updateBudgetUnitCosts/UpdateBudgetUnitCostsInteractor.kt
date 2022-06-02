@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.service.partner.budget.update_budget_unit_costs
+package io.cloudflight.jems.server.project.service.partner.budget.updateBudgetUnitCosts
 
 import io.cloudflight.jems.server.project.service.partner.model.BudgetUnitCostEntry
 
