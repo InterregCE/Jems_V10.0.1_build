@@ -2,8 +2,8 @@ import {Injectable} from '@angular/core';
 import {ProgrammeChecklistDetailDTO, ProgrammeChecklistDTO, ProgrammeChecklistService} from '@cat/api';
 import {RoutingService} from '@common/services/routing.service';
 import {Log} from '@common/utils/log';
-import {combineLatest, merge, Observable, of, Subject} from 'rxjs';
-import {map, switchMap, take, tap} from 'rxjs/operators';
+import {BehaviorSubject, merge, Observable, of, Subject} from 'rxjs';
+import {map, switchMap, take, tap, withLatestFrom} from 'rxjs/operators';
 import {ProgrammeEditableStateStore} from '../../programme-page/services/programme-editable-state-store.service';
 
 @Injectable()
@@ -11,7 +11,7 @@ export class ProgrammeChecklistDetailPageStore {
   static readonly CHECKLIST_DETAIL_PATH = '/app/programme/checklists/';
 
   checklist$: Observable<ProgrammeChecklistDetailDTO>;
-  isEditable$: Observable<boolean>;
+  isEditable$ = new BehaviorSubject<boolean>(true);
 
   private savedChecklist$ = new Subject<ProgrammeChecklistDetailDTO>();
 
@@ -19,7 +19,6 @@ export class ProgrammeChecklistDetailPageStore {
               private routingService: RoutingService,
               private programmeEditableStateStore: ProgrammeEditableStateStore) {
     this.checklist$ = this.checklist();
-    this.isEditable$ = this.isEditable();
   }
 
   saveChecklist(checklist: ProgrammeChecklistDetailDTO): Observable<ProgrammeChecklistDTO> {
@@ -48,7 +47,10 @@ export class ProgrammeChecklistDetailPageStore {
           ? this.programmeChecklistService.getProgrammeChecklistDetail(checklistId as number)
           : of({} as ProgrammeChecklistDetailDTO)
         ),
-        tap(checklist => Log.info('Fetched checklist', this, checklist))
+        tap(checklist => Log.info('Fetched checklist', this, checklist)),
+        withLatestFrom(this.programmeEditableStateStore.hasEditPermission$),
+        tap(([checklist, hasEditPermission]) => this.isEditable$.next(hasEditPermission && !checklist.locked)),
+        map(([checklist]) => checklist)
       );
 
     return merge(initialChecklist$, this.savedChecklist$);
@@ -57,12 +59,5 @@ export class ProgrammeChecklistDetailPageStore {
 
   private checkListId(): Observable<any> {
     return this.routingService.routeParameterChanges(ProgrammeChecklistDetailPageStore.CHECKLIST_DETAIL_PATH, 'checklistId');
-  }
-
-  private isEditable(): Observable<boolean> {
-    return combineLatest([this.programmeEditableStateStore.hasEditPermission$, this.checklist$])
-      .pipe(
-        map(([hasEditPermission, checklist]) => hasEditPermission && !checklist.locked),
-      );
   }
 }
