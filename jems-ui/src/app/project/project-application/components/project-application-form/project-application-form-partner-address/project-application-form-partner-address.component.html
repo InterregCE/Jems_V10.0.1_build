@@ -4,6 +4,12 @@
         <h3>{{'project.partner.address.header' | translate}}</h3>
         <h4>{{'project.partner.main-address.header' | translate}}</h4>
         <ng-container *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.ADDRESS.MAIN">
+            <jems-alert
+                    [show]="true"
+                    [closable]="false"
+                    [type]="Alert.INFO">
+                <span>{{'common.hint.nuts' | translate}} <a target="_blank" href="https://ec.europa.eu/eurostat/web/nuts/background">https://ec.europa.eu/eurostat/web/nuts/background</a></span>
+            </jems-alert>
             <jems-project-application-form-address
                     *ngIf="partnerAddressForm?.controls"
                     [partnerId]="partnerId"

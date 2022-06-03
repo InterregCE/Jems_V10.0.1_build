@@ -9,6 +9,7 @@ import {combineLatest, Observable} from 'rxjs';
 import {ProjectWorkPackageInvestmentDetailPageStore} from './project-work-package-Investment-detail-page-store.service';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {WorkPackagePageStore} from '@project/work-package/project-work-package-page/work-package-detail-page/work-package-page-store.service';
+import {Alert} from "@common/components/forms/alert";
 
 @Component({
   selector: 'jems-project-work-package-investment-detail-page',
@@ -18,6 +19,8 @@ import {WorkPackagePageStore} from '@project/work-package/project-work-package-p
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProjectWorkPackageInvestmentDetailPageComponent implements OnInit {
+  Alert = Alert;
+
   constants = ProjectWorkPackageInvestmentDetailPageConstants;
   APPLICATION_FORM = APPLICATION_FORM;
 
