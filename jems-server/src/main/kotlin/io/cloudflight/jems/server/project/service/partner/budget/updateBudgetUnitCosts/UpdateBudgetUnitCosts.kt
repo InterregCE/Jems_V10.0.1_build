@@ -1,5 +1,7 @@
-package io.cloudflight.jems.server.project.service.partner.budget.update_budget_unit_costs
+package io.cloudflight.jems.server.project.service.partner.budget.updateBudgetUnitCosts
 
+import io.cloudflight.jems.server.call.service.CallPersistence
+import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectPartner
 import io.cloudflight.jems.server.project.service.ProjectPersistence
@@ -20,12 +22,14 @@ class UpdateBudgetUnitCosts(
     private val persistence: ProjectPartnerBudgetCostsUpdatePersistence,
     private val projectPersistence: ProjectPersistence,
     private val partnerPersistence: PartnerPersistence,
+    private val callPersistence: CallPersistence,
     private val budgetOptionsPersistence: ProjectPartnerBudgetOptionsPersistence,
     private val budgetCostValidator: BudgetCostValidator
 ) : UpdateBudgetUnitCostsInteractor {
 
     @Transactional
     @CanUpdateProjectPartner
+    @ExceptionWrapper(UpdateBudgetUnitCostsException::class)
     override fun updateBudgetUnitCosts(
         partnerId: Long,
         unitCosts: List<BudgetUnitCostEntry>
@@ -36,6 +40,7 @@ class UpdateBudgetUnitCosts(
         throwIfOtherCostFlatRateIsSet(budgetOptionsPersistence.getBudgetOptions(partnerId))
 
         val projectId = partnerPersistence.getProjectIdForPartnerId(partnerId)
+        validateSectionIsAllowedToBeSet(projectId = projectId)
 
         val unitCostPerUnitById =
             projectPersistence.getProjectUnitCosts(projectId).associateBy({ it.id }, { it.costPerUnit })
@@ -53,6 +58,13 @@ class UpdateBudgetUnitCosts(
                 }
             }.toList()
         )
+    }
+
+    private fun validateSectionIsAllowedToBeSet(projectId: Long) {
+        val multipleCategoryUnitCosts = callPersistence.getCallByProjectId(projectId).unitCosts.filter { it.isMultipleCategoryUnitCost() }
+        if (multipleCategoryUnitCosts.isEmpty()) {
+            throw UnitCostsBudgetSectionIsNotAllowed()
+        }
     }
 
     private fun throwIfOtherCostFlatRateIsSet(budgetOptions: ProjectPartnerBudgetOptions?) {

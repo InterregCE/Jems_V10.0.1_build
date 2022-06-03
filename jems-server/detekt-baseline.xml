@@ -493,8 +493,6 @@
     <ID>PackageNaming:UpdateBudgetStaffCostsInteractor.kt$package io.cloudflight.jems.server.project.service.partner.budget.update_budge_staff_costs</ID>
     <ID>PackageNaming:UpdateBudgetTravelAndAccommodationCosts.kt$package io.cloudflight.jems.server.project.service.partner.budget.update_budget_travel_and_accommodation_costs</ID>
     <ID>PackageNaming:UpdateBudgetTravelAndAccommodationCostsInteractor.kt$package io.cloudflight.jems.server.project.service.partner.budget.update_budget_travel_and_accommodation_costs</ID>
-    <ID>PackageNaming:UpdateBudgetUnitCosts.kt$package io.cloudflight.jems.server.project.service.partner.budget.update_budget_unit_costs</ID>
-    <ID>PackageNaming:UpdateBudgetUnitCostsInteractor.kt$package io.cloudflight.jems.server.project.service.partner.budget.update_budget_unit_costs</ID>
     <ID>PackageNaming:UpdateCall.kt$package io.cloudflight.jems.server.call.service.update_call</ID>
     <ID>PackageNaming:UpdateCallExceptions.kt$package io.cloudflight.jems.server.call.service.update_call</ID>
     <ID>PackageNaming:UpdateCallFlatRates.kt$package io.cloudflight.jems.server.call.service.update_call_flat_rates</ID>

@@ -22,4 +22,6 @@ data class ProgrammeUnitCost(
         else -> if (id > other.id) 1 else if (id < other.id) -1 else 0
     }
 
+    fun isMultipleCategoryUnitCost() = !isOneCostCategory
+
 }
