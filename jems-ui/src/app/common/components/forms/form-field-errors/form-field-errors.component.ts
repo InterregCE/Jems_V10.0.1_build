@@ -28,24 +28,36 @@ export class FormFieldErrorsComponent {
   getErrorMessage(error: ValidationErrors): Observable<string> {
     switch (error.key) {
       case 'maxlength': {
-        return this.translateService.get(this.messages && this.messages[error.key] || 'common.error.field.max.length', error.value);
+        return this.translateService.get(this.getErrorTranslationKey(error, 'common.error.field.max.length'), error.value);
       }
       case 'minlength': {
-        return this.translateService.get(this.messages && this.messages[error.key] || 'common.error.field.min.length', error.value);
+        return this.translateService.get(this.getErrorTranslationKey(error, 'common.error.field.min.length'), error.value);
       }
       case 'required': {
-        return this.translateService.get(this.messages && this.messages[error.key] || 'common.error.field.blank', error.value);
+        return this.translateService.get(this.getErrorTranslationKey(error, 'common.error.field.blank'), error.value);
       }
       case 'min': {
-        return this.translateService.get(this.messages && this.messages[error.key] || 'common.error.field.min.decimal', {minValue: error.value.min});
+        return this.translateService.get(
+          this.getErrorTranslationKey(error, 'common.error.field.min.decimal'),
+          this.args && this.args[error.key] || {minValue: error.value.min}
+        );
       }
       case 'max': {
-        return this.translateService.get(this.messages && this.messages[error.key] || 'common.error.field.max.decimal', {maxValue: error.value.max});
+        return this.translateService.get(
+          this.getErrorTranslationKey(error, 'common.error.field.max.decimal'),
+          this.args && this.args[error.key] || {maxValue: error.value.max}
+        );
       }
       default: {
-        return this.translateService.get(this.messages && this.messages[error.key] || 'common.error.input.invalid', this.args as any);
+        return this.translateService.get(
+          this.getErrorTranslationKey(error, 'common.error.input.invalid'),
+          this.args && this.args[error.key] || {}
+        );
       }
     }
   }
 
+  getErrorTranslationKey(error: ValidationErrors, defaultMessage: string) {
+   return this.messages && this.messages[error.key] || defaultMessage;
+  }
 }
