@@ -67,6 +67,7 @@ private val pluginCallDataMapper = Mappers.getMapper(PluginCallDataMapper::class
 @Mapper
 abstract class PluginCallDataMapper {
 
+    @Mapping(source = "adjustable", target = "isAdjustable")
     abstract fun map(projectCallFlatRate: ProjectCallFlatRate): FlatRateData
     abstract fun map(programmeSpecificObjective: ProgrammeSpecificObjective): ProgrammeSpecificObjectiveData
     abstract fun map(programmeObjectivePolicy: ProgrammeObjectivePolicy): ProgrammeObjectivePolicyData

@@ -15,6 +15,10 @@ import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import {
   PartnerReportDetailPageStore
 } from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
+import {TranslateService} from '@ngx-translate/core';
+import {
+  MultiLanguageGlobalService
+} from '@common/components/forms/multi-language-container/multi-language-global.service';
 
 @Component({
   selector: 'jems-contract-monitoring',
@@ -44,15 +48,21 @@ export class PartnerReportComponent implements AfterViewInit {
               private activatedRoute: ActivatedRoute,
               private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
               private router: RoutingService,
-              private partnerReportDetail: PartnerReportDetailPageStore) {
+              private partnerReportDetail: PartnerReportDetailPageStore,
+              private translateService: TranslateService,
+              private multiLanguageGlobalService: MultiLanguageGlobalService) {
     this.data$ = combineLatest([
       this.pageStore.partnerReports$,
       this.pageStore.partnerSummary$,
+      this.multiLanguageGlobalService.activeSystemLanguage$
     ]).pipe(
-      map(([partnerReports, partner]) => ({
-        partnerReports,
-        partner,
-      }))
+      map(([partnerReports, partner]) => {
+        return {
+            partnerReports: partnerReports.map(partnerReport => this.translatePartnerReportStatus(partnerReport)),
+            partner
+          };
+        }
+      )
     );
   }
 
@@ -126,5 +136,17 @@ export class PartnerReportComponent implements AfterViewInit {
       this.error$.next(null);
     },         4000);
     return of(null);
+  }
+
+  private translatePartnerReportStatus(partnerReport:  ProjectPartnerReportSummaryDTO):  ProjectPartnerReportSummaryDTO{
+    const partnerReportStatus = this.translateService.instant(`project.application.partner.report.table.status.${partnerReport.status.toLowerCase()}`);
+    return {
+      id: partnerReport.id,
+      reportNumber: partnerReport.reportNumber,
+      status: partnerReportStatus,
+      linkedFormVersion: partnerReport.linkedFormVersion,
+      firstSubmission: partnerReport.firstSubmission,
+      createdAt: partnerReport.createdAt
+    } as ProjectPartnerReportSummaryDTO;
   }
 }

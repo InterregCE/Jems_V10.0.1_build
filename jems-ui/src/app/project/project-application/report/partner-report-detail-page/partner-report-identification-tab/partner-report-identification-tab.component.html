@@ -15,7 +15,7 @@
         </div>
         <div class="project-row">
             <span class="header p-1 pr-3">{{'project.application.partner.report.status' | translate}}</span>
-            <span class="p-1">{{data.partnerReport.status}}</span>
+            <span class="p-1">{{'project.application.partner.report.table.status.' + data.partnerReport.status.toLowerCase() | translate}}</span>
         </div>
         <div class="project-row">
             <span class="header p-1 pr-3">{{'project.application.form.partner.table.number' | translate}}</span>

@@ -24,6 +24,7 @@ import io.cloudflight.jems.server.project.service.checklist.model.metadata.TextI
 import org.mapstruct.AfterMapping
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping
+import org.mapstruct.Mappings
 import org.mapstruct.MappingTarget
 import org.mapstruct.factory.Mappers
 
@@ -43,6 +44,11 @@ interface ChecklistInstanceMapper {
     fun map(model: ChecklistInstance): ChecklistInstanceDTO
     fun map(dto: ChecklistInstanceDTO): ChecklistInstance
     fun mapToDetail(model: ChecklistInstanceDetail): ChecklistInstanceDetailDTO
+    @Mappings(
+        Mapping(target = "relatedToId", ignore = true),
+        Mapping(target = "type", ignore = true),
+        Mapping(target = "programmeChecklistId", ignore = true),
+    )
     fun mapToModel(checklistDetailDTO: ChecklistInstanceDetailDTO): ChecklistInstanceDetail
     fun mapToCreateModel(createChecklistInstanceDTO: CreateChecklistInstanceDTO): CreateChecklistInstanceModel
     fun mapToCreateDto(createChecklistInstanceModel: CreateChecklistInstanceModel): CreateChecklistInstanceDTO

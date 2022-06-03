@@ -55,25 +55,18 @@ function getNestedEndDateFromPeriod(period: number): Moment {
   return getEndDateFromPeriod(period).subtract(1, 'd');
 }
 
-function periodLabelFunction(date: Date, scale: string, step: number): string {
-  const periodNumber = Math.round(moment(date).diff(
-    moment(START_DATE), 'months', true)
-  );
-  return `Period ${periodNumber}`;
-}
 
 function groupTemplateFunction(item: any, translateService: TranslateService): string {
   const data = item.data;
   switch (data.type) {
     case GroupType.WorkPackage:
       return `<span>${escapeHtml(translateService.instant(
-        'common.label.workpackage',
-        {wpNumber: data.wpNumber, title: item.content}
+        'common.label.workpackage', {wpNumber: `${data.wpNumber}`, title: `${item.content}`}
       ))}</span>`;
     case GroupType.Activity:
       return `<span>${escapeHtml(translateService.instant(
         'common.label.activity',
-        {wpNumber: data.wpNumber, activityNumber: data.activityNumber, title: item.content}
+        {wpNumber: `${data.wpNumber}`, activityNumber: `${data.activityNumber}`, title: `${item.content}`}
       ))}</span>`;
     case GroupType.Indicator:
       return `<span>${escapeHtml(item.content)}</span>`;
@@ -399,7 +392,7 @@ export function getOptions(translateService: TranslateService, custom?: Partial<
       showMajorLabels: false,
       orientation: 'top',
       timeAxis: {scale: 'month' as TimelineTimeAxisScaleType, step: 1},
-      format: {minorLabels: periodLabelFunction},
+      format: {minorLabels: getMinorLabelsFunction(translateService)},
       margin: {
         axis: 10,
         item: {vertical: 10, horizontal: 0}
@@ -411,6 +404,15 @@ export function getOptions(translateService: TranslateService, custom?: Partial<
     },
     custom
   );
+}
+
+function getMinorLabelsFunction(translateService: TranslateService){
+  return function periodLabelFunction(date: Date, scale: string, step: number): string {
+    const periodNumber = Math.round(moment(date).diff(
+      moment(START_DATE), 'months', true)
+    );
+    return translateService.instant(`common.label.period`, {periodNumber});
+  };
 }
 
 function escapeHtml(unsafe: string)

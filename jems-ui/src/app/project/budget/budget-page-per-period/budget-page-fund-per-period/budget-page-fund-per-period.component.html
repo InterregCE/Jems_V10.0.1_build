@@ -6,7 +6,7 @@
              [jemsTableConfig]="tableConfig"
              *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_BUDGET_PERIODS">
             <div>
-                <span>{{ 'Fund' | translate}}</span>
+                <span>{{ 'project.partner.budget.table.fund' | translate}}</span>
                 <span>{{(data.isCallTypeSpf ? 'project.partner.spf.cost' : '') | translate}}</span>
                 <span *ngFor="let periodNumber of projectPeriodNumbers">
                 {{(periodNumber !== PERIOD_PREPARATION && periodNumber !== PERIOD_CLOSURE)

@@ -50,15 +50,16 @@ export class ProjectTimeplanPageComponent {
       this.pageStore.workPackages$,
       this.pageStore.projectResults$,
       this.pageStore.periods$,
-      this.multiLanguageGlobalService.activeInputLanguage$
+      this.multiLanguageGlobalService.activeInputLanguage$,
+      this.multiLanguageGlobalService.activeSystemLanguage$
     ])
       .pipe(
-        map(([workPackages, results, periods, language]) => ({
+        map(([workPackages, results, periods, inputLanguage, systemLanguage]) => ({
           workPackages,
           results,
           timelineGroups: getGroups(workPackages, results),
           timelineItems: getItems(workPackages, results, this.translateService),
-          timelineTranslations: getInputTranslations(workPackages)[language] || [],
+          timelineTranslations: getInputTranslations(workPackages)[inputLanguage] || [],
           periods,
         })),
         tap(data => this.createVisualizationOrUpdateJustTranslations(data.periods, data.timelineItems, data.timelineGroups)),
