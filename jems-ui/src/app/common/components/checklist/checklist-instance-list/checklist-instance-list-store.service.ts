@@ -8,20 +8,32 @@ import {
   ProgrammeChecklistService,
   UserRoleDTO
 } from '@cat/api';
-import {combineLatest, Observable, Subject} from 'rxjs';
+import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
 import {map, startWith, switchMap, take, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 import {PermissionService} from '../../../../security/permissions/permission.service';
 import {SecurityService} from '../../../../security/security.service';
+import {MatSort} from '@angular/material/sort';
 
 @Injectable()
 export class ChecklistInstanceListStore {
+
+  defaultSort: Partial<MatSort> = {active: 'id', direction: 'desc'};
 
   currentUserEmail$: Observable<string>;
   userCanChangeSelection$: Observable<boolean>;
 
   private userCanConsolidate$: Observable<boolean>;
   private listChanged$ = new Subject();
+
+  private instancesSort$ = new BehaviorSubject<Partial<MatSort>>(this.defaultSort);
+  getInstancesSort$ = this.instancesSort$.pipe(
+    map(sort => sort?.direction ? sort : this.defaultSort),
+  );
+  private selectedSort$ = new BehaviorSubject<Partial<MatSort>>(this.defaultSort);
+  getSelectedSort$ = this.selectedSort$.pipe(
+    map(sort => sort?.direction ? sort : this.defaultSort),
+  );
 
   constructor(private checklistInstanceService: ChecklistInstanceService,
               private programmeChecklistService: ProgrammeChecklistService,
@@ -30,6 +42,14 @@ export class ChecklistInstanceListStore {
     this.userCanConsolidate$ = this.permissionService.hasPermission(UserRoleDTO.PermissionsEnum.ProjectAssessmentChecklistConsolidate);
     this.currentUserEmail$ = this.currentUserEmail();
     this.userCanChangeSelection$ = this.permissionService.hasPermission(UserRoleDTO.PermissionsEnum.ProjectAssessmentChecklistSelectedUpdate);
+  }
+
+  setInstancesSort(sort: Partial<MatSort>) {
+    this.instancesSort$.next(sort);
+  }
+
+  setSelectedSort(sort: Partial<MatSort>) {
+    this.selectedSort$.next(sort);
   }
 
   checklistTemplates(relatedType: ProgrammeChecklistDetailDTO.TypeEnum): Observable<IdNamePairDTO[]> {
