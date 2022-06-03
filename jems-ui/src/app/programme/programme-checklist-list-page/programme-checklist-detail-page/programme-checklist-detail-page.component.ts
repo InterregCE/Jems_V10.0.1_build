@@ -10,7 +10,9 @@ import {TableConfig} from '@common/directives/table-config/TableConfig';
 import {ProgrammeChecklistDetailPageStore} from './programme-checklist-detail-page-store.service';
 import {ProgrammePageSidenavService} from '../../programme-page/services/programme-page-sidenav.service';
 import {Alert} from '@common/components/forms/alert';
+import {UntilDestroy, untilDestroyed} from "@ngneat/until-destroy";
 
+@UntilDestroy()
 @Component({
   selector: 'jems-programme-checklist-detail-page',
   templateUrl: './programme-checklist-detail-page.component.html',
@@ -69,16 +71,16 @@ export class ProgrammeChecklistDetailPageComponent implements OnInit {
     const maxControl = this.form.get('maxScore');
     minControl?.setValidators([Validators.required, Validators.max(this.form.value?.maxScore || 10)]);
     maxControl?.setValidators([Validators.required, Validators.min(this.form.value?.minScore || 0), Validators.max(100)]);
-    minControl?.valueChanges.subscribe(value => {
+    minControl?.valueChanges.pipe(untilDestroyed(this)).subscribe(value => {
       if (value !== this.form.value?.minScore) {
         maxControl?.setValidators([Validators.required, Validators.min(value), Validators.max(100)]);
-        maxControl?.updateValueAndValidity();
+        maxControl?.updateValueAndValidity({emitEvent: false});
       }
     });
-    maxControl?.valueChanges.subscribe(value => {
+    maxControl?.valueChanges.pipe(untilDestroyed(this)).subscribe(value => {
       if (value !== this.form.value?.maxScore) {
         minControl?.setValidators([Validators.required, Validators.max(value)]);
-        minControl?.updateValueAndValidity();
+        minControl?.updateValueAndValidity({emitEvent: false});
       }
     });
   }
