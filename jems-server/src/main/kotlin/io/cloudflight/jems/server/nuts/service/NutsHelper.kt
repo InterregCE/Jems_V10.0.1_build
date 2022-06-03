@@ -99,7 +99,9 @@ data class NutsIdentifier(
         return "$id|$title"
     }
 
-    override fun compareTo(other: NutsIdentifier): Int = collatorGerman.compare(this.title, other.title)
+    override fun compareTo(other: NutsIdentifier): Int = collatorGerman.compare(this.title, other.title).let {
+        if (it != 0) it else id.compareTo(other.id)
+    }
 
 }
 
