@@ -5,7 +5,7 @@
     <label *ngIf="helpdeskUrl || helpdeskEmail" class="help-category">{{'topbar.help.title' | translate}}</label>
     <ng-container *ngIf="helpdeskUrl">
         <a mat-menu-item
-           [href]="helpdeskUrl" target="_blank">
+           [href]="helpdeskUrl" target="_blank" rel="noopener">
             {{'topbar.help.legal.helpdesk' | translate}}
         </a>
     </ng-container>
