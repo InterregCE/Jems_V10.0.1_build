@@ -19,7 +19,7 @@ import {NumberService} from '../../../../common/services/number.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ProgrammeEditableStateStore} from '../../services/programme-editable-state-store.service';
 import {TranslateService} from '@ngx-translate/core';
-import {CurrencyCodesEnum, CurrencyStore} from "@common/services/currency.store";
+import {CurrencyCodesEnum, CurrencyStore} from '@common/services/currency.store';
 
 @UntilDestroy()
 @Component({

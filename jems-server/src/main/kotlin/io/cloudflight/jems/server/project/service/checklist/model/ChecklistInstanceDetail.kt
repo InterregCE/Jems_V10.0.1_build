@@ -1,9 +1,8 @@
 package io.cloudflight.jems.server.project.service.checklist.model
 
-import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceStatus
-import java.math.BigDecimal
 import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistComponentInstance
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
+import java.math.BigDecimal
 import java.time.LocalDate
 
 class ChecklistInstanceDetail(
