@@ -384,7 +384,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
   }
 
   private getTableConfig(investments: InvestmentSummary[], isEditable: boolean, isCostOptionsAvailable: boolean): TableConfig[] {
-    let tableConfig: TableConfig[] = [{minInRem: 1, maxInRem: 3}]; // id
+    const tableConfig: TableConfig[] = [{minInRem: 1, maxInRem: 3}]; // id
 
     if (isCostOptionsAvailable) {
       tableConfig.push({minInRem: 11, maxInRem: 16}); // cost options

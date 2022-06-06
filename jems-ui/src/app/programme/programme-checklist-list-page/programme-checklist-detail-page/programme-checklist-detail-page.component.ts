@@ -10,7 +10,7 @@ import {TableConfig} from '@common/directives/table-config/TableConfig';
 import {ProgrammeChecklistDetailPageStore} from './programme-checklist-detail-page-store.service';
 import {ProgrammePageSidenavService} from '../../programme-page/services/programme-page-sidenav.service';
 import {Alert} from '@common/components/forms/alert';
-import {UntilDestroy, untilDestroyed} from "@ngneat/until-destroy";
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
 @UntilDestroy()
 @Component({
