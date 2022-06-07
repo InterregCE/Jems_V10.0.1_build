@@ -74,7 +74,7 @@ internal class UpdateBudgetStaffCostsTest : UnitTest() {
             periods,
             BudgetCategory.StaffCosts,
             budgetStaffCostEntries.map { it.numberOfUnits }.toList(),
-            budgetStaffCostEntries.map { it.unitType }.toList()
+            budgetStaffCostEntries.map { Pair(it.unitCostId, it.unitType) }.toList()
         ) } returns Unit
         every { budgetCostValidator.validateBaseEntries(budgetStaffCostEntries) } returns Unit
         every { budgetCostValidator.validatePricePerUnits(pricePerUnits) } returns Unit
@@ -121,7 +121,7 @@ internal class UpdateBudgetStaffCostsTest : UnitTest() {
             budgetStaffCostEntries.map { it.budgetPeriods }.flatten().toSet(),
             BudgetCategory.StaffCosts,
             budgetStaffCostEntries.map { it.numberOfUnits }.toList(),
-            budgetStaffCostEntries.map { it.unitType }.toList()
+            budgetStaffCostEntries.map { Pair(it.unitCostId, it.unitType) }.toList()
         ) } returns Unit
         every { budgetCostValidator.validateBaseEntries(budgetStaffCostEntries) } throws I18nValidationException()
 
@@ -144,7 +144,7 @@ internal class UpdateBudgetStaffCostsTest : UnitTest() {
             budgetStaffCostEntries.map { it.budgetPeriods }.flatten().toSet(),
             BudgetCategory.StaffCosts,
             budgetStaffCostEntries.map { it.numberOfUnits }.toList(),
-            budgetStaffCostEntries.map { it.unitType }.toList()
+            budgetStaffCostEntries.map { Pair(it.unitCostId, it.unitType) }.toList()
         ) } returns Unit
         every { budgetCostValidator.validateBaseEntries(budgetStaffCostEntries) } returns Unit
         every { budgetCostValidator.validatePricePerUnits(pricePerUnits) } throws I18nValidationException()
@@ -168,7 +168,7 @@ internal class UpdateBudgetStaffCostsTest : UnitTest() {
             budgetStaffCostEntries.map { it.budgetPeriods }.flatten().toSet(),
             BudgetCategory.StaffCosts,
             budgetStaffCostEntries.map { it.numberOfUnits }.toList(),
-            budgetStaffCostEntries.map { it.unitType }.toList()
+            budgetStaffCostEntries.map { Pair(it.unitCostId, it.unitType) }.toList()
         ) } returns Unit
         every { budgetCostValidator.validateBaseEntries(budgetStaffCostEntries) } returns Unit
         every { budgetCostValidator.validatePricePerUnits(budgetStaffCostEntries.map { it.pricePerUnit }) } returns Unit
@@ -198,7 +198,7 @@ internal class UpdateBudgetStaffCostsTest : UnitTest() {
             budgetPeriods,
             BudgetCategory.StaffCosts,
             budgetStaffCostEntries.map { it.numberOfUnits }.toList(),
-            budgetStaffCostEntries.map { it.unitType }.toList()
+            budgetStaffCostEntries.map { Pair(it.unitCostId, it.unitType) }.toList()
         ) } returns Unit
         every { budgetCostValidator.validateBaseEntries(budgetStaffCostEntriesWithInvalidPeriods) } returns Unit
         every { budgetCostValidator.validatePricePerUnits(budgetStaffCostEntriesWithInvalidPeriods.map { it.pricePerUnit }) } returns Unit

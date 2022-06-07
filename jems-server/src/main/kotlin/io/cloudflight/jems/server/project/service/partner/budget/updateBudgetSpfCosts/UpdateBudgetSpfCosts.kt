@@ -32,8 +32,8 @@ class UpdateBudgetSpfCosts(
             callId,
             periods,
             null,
-            spfCosts.map { it.numberOfUnits }.toList(),
-            spfCosts.map { it.unitType }.toList()
+            spfCosts.map { it.numberOfUnits },
+            spfCosts.map { Pair(it.unitCostId, it.unitType) }
         )
 
         budgetCostValidator.validateBaseEntries(spfCosts)

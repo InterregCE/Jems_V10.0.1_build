@@ -36,8 +36,8 @@ abstract class UpdateBudgetGeneralCosts(
             callId,
             periods,
             budgetCategory,
-            budgetGeneralCosts.map { it.numberOfUnits }.toList(),
-            budgetGeneralCosts.map { it.unitType }.toList()
+            budgetGeneralCosts.map { it.numberOfUnits },
+            budgetGeneralCosts.map { Pair(it.unitCostId, it.unitType) }
         )
 
         budgetCostValidator.validateBaseEntries(budgetGeneralCosts)
