@@ -32,7 +32,7 @@ fun validateContributionAFConfiguration(
     val addPartnerContribution = afConfig
         .find { it.id == ApplicationFormFieldSetting.PARTNER_ADD_NEW_CONTRIBUTION_ORIGIN.id }
     if (addPartnerContribution?.visibilityStatus == FieldVisibilityStatus.NONE
-        && partnerContributions.any { it.isPartner }) {
+        && partnerContributions.size > 1) {
         throw I18nValidationException(i18nKey = PARTNER_CONTRIBUTIONS_NOT_ENABLED_ERROR_KEY)
     }
 }
@@ -53,7 +53,7 @@ fun validateSpfContributionAFConfiguration(
     val addPartnerContribution = afConfig
         .find { it.id == ApplicationFormFieldSetting.PARTNER_ADD_NEW_CONTRIBUTION_ORIGIN.id }
     if (addPartnerContribution?.visibilityStatus == FieldVisibilityStatus.NONE
-        && partnerContributions.size <= 1) {
+        && partnerContributions.size > 1) {
         throw I18nValidationException(i18nKey = PARTNER_CONTRIBUTIONS_NOT_ENABLED_ERROR_KEY)
     }
 }

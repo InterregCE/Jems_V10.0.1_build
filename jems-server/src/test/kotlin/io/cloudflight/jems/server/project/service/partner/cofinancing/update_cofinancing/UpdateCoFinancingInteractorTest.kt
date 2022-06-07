@@ -158,9 +158,32 @@ internal class UpdateCoFinancingInteractorTest {
     }
 
     @Test
+    fun `test success on partner contribution if disabled in configuration`() {
+        val partnerContributions = listOf(
+            ProjectPartnerContribution(name = null, amount = BigDecimal.TEN, status = Public, isPartner = true)
+        )
+        val afConfigurationNoContrib = CallApplicationFormFieldsConfiguration(
+            CallType.STANDARD,
+            mutableSetOf(
+                ApplicationFormFieldConfiguration(
+                    ApplicationFormFieldSetting.PARTNER_ADD_NEW_CONTRIBUTION_ORIGIN.id,
+                    FieldVisibilityStatus.NONE
+                )
+            )
+        )
+        every { callPersistence.getApplicationFormFieldConfigurations(callId) } returns afConfigurationNoContrib
+        every { persistence.getAvailableFunds(partnerId) } returns setOf(callFund(1L))
+        val result = ProjectPartnerCoFinancingAndContribution(emptyList(), partnerContributions, "")
+        every { persistence.updateCoFinancingAndContribution(partnerId, financingOk, partnerContributions) } returns result
+
+        assertThat(updateCoFinancing.updateCoFinancing(partnerId, financingOk, partnerContributions)).isEqualTo(result)
+    }
+
+    @Test
     fun `test exception on partner contribution if disabled in configuration`() {
         val partnerContributions = listOf(
-            ProjectPartnerContribution(name = null, amount = BigDecimal.TEN, isPartner = true, status = Public)
+            ProjectPartnerContribution(name = null, amount = BigDecimal.TEN, isPartner = true, status = Public),
+            ProjectPartnerContribution(name = null, amount = BigDecimal.TEN, isPartner = false, status = Public)
         )
         val afConfigurationNoContrib = CallApplicationFormFieldsConfiguration(
             CallType.STANDARD,
@@ -468,7 +491,8 @@ internal class UpdateCoFinancingInteractorTest {
     @Test
     fun `test exception on SPF partner contribution if disabled in configuration`() {
         val partnerSpfContributions = listOf(
-            ProjectPartnerContributionSpf(name = null, amount = BigDecimal.TEN, status = Public)
+            ProjectPartnerContributionSpf(name = null, amount = BigDecimal.TEN, status = Public),
+            ProjectPartnerContributionSpf(name = null, amount = BigDecimal.ONE, status = Private)
         )
         val afConfigurationNoContrib = CallApplicationFormFieldsConfiguration(
             CallType.SPF,
