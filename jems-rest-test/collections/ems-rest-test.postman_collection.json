@@ -3,7 +3,8 @@
 		"_postman_id": "b8e1d763-86fc-441f-984e-e8b5fe6911d4",
 		"name": "ems-rest-test",
 		"description": "Check JEMS application for common use-cases",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "1630872"
 	},
 	"item": [
 		{
@@ -1458,6 +1459,79 @@
 								"byId",
 								"{{callId}}",
 								"unitCost"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "setup AF config to call",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('call unit cost is saved successfully', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{programme_user_password}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{programme_user_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\r\n        \"id\": \"application.config.project.partner.budget.and.co.financing\",\r\n        \"visible\": \"true\",\r\n        \"availableInStep\": \"STEP_ONE_AND_TWO\"\r\n    },\r\n    {\r\n        \"id\": \"application.config.project.partner.co.financing.add.new.contribution.origin\",\r\n        \"visible\": \"true\",\r\n        \"availableInStep\": \"STEP_ONE_AND_TWO\"\r\n    },\r\n    {\r\n        \"id\": \"application.config.project.partner.budget.staff.cost.unit.type.and.number.of.units\",\r\n        \"visible\": \"true\",\r\n        \"availableInStep\": \"STEP_ONE_AND_TWO\"\r\n    },\r\n    {\r\n        \"id\": \"application.config.project.partner.budget.travel.and.accommodation.unit.type.and.number.of.units\",\r\n        \"visible\": \"true\",\r\n        \"availableInStep\": \"STEP_ONE_AND_TWO\"\r\n    },\r\n    {\r\n        \"id\": \"application.config.project.partner.budget.infrastructure.and.works.unit.type.and.number.of.units\",\r\n        \"visible\": \"true\",\r\n        \"availableInStep\": \"STEP_ONE_AND_TWO\"\r\n    },\r\n        {\r\n        \"id\": \"application.config.project.activities.deliverables\",\r\n        \"visible\": \"true\",\r\n        \"availableInStep\": \"STEP_ONE_AND_TWO\"\r\n    }\r\n]\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/call/{{callId}}/applicationFormFieldConfigurations",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"call",
+								"{{callId}}",
+								"applicationFormFieldConfigurations"
 							]
 						}
 					},
