@@ -12,6 +12,7 @@
 
     <ng-container *ngIf="pageStore.userCanEditReports$ | async">
         <jems-pending-button jemsText class="mb-3"
+                             [disabled]="true" matTooltip="Feature is not yet supported 😞 You can check it out on our testing environment and/or stay tuned for next release 🎉🍸"
                              (click)="createPartnerReport()"
                              [pending]="actionPending">
             + {{'project.application.partner.reports.add' | translate}}
