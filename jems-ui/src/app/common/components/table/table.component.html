@@ -1,14 +1,15 @@
 <jems-paginator
-        *ngIf="configuration?.sortable && !temporarilyHidePagination"
+        *ngIf="configuration?.sortable"
         [length]="totalElements"
         [currentPageIndex]="pageIndex"
         [currentPageSize]="currentPageSize"
+        [confirmPageChange]="confirmPageChange"
         (pageIndexChanged)="newPageIndex.emit($event)"
         (pageSizeChanged)="currentPageSize = $event;newPageSize.emit($event)">
 </jems-paginator>
 <mat-table matSort
            [dataSource]="rows"
-           (matSortChange)="!temporarilyHidePagination && sortRows.emit($event)">
+           (matSortChange)="sortRows.emit($event)">
 
     <ng-container *ngFor="let column of configuration.columns; let i = index"
                   matColumnDef="{{column.displayedColumn}}">
@@ -77,6 +78,7 @@
         [length]="totalElements"
         [currentPageIndex]="pageIndex"
         [currentPageSize]="currentPageSize"
+        [confirmPageChange]="confirmPageChange"
         (pageIndexChanged)="newPageIndex.emit($event)"
         (pageSizeChanged)="currentPageSize = $event;newPageSize.emit($event)">
 </jems-paginator>

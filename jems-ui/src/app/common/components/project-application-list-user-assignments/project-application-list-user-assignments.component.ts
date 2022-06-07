@@ -67,7 +67,7 @@ export class ProjectApplicationListUserAssignmentsComponent implements OnInit {
     private projectUserService: ProjectUserService,
     public projectUserStore: ProjectApplicationListUserAssignmentsStore,
     private userService: UserService,
-    private formService: FormService,
+    public formService: FormService,
   ) {
     this.formService.init(this.form);
     this.data$ = combineLatest([

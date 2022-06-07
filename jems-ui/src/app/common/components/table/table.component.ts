@@ -32,7 +32,7 @@ export class TableComponent implements OnInit {
   @Input()
   pageIndex: number;
   @Input()
-  temporarilyHidePagination = false;
+  confirmPageChange: boolean = false;
 
   @Output()
   sortRows = new EventEmitter<Partial<MatSort>>();

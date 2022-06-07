@@ -6,7 +6,7 @@
                    [rows]="data.rows"
                    [totalElements]="data.totalElements"
                    [pageIndex]="projectUserStore.newPageIndex$ | async"
-                   [temporarilyHidePagination]="!!changes.length"
+                   [confirmPageChange]="formService.dirty$ | async"
                    (newPageIndex)="projectUserStore.newPageIndex$.next($event)"
                    (newPageSize)="projectUserStore.newPageSize$.next($event)"
                    (sortRows)="projectUserStore.newSort$.next($event)">
