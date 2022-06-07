@@ -26,7 +26,6 @@ class AuditPersistenceProvider(
 
     companion object {
         const val AUDIT_INDEX = "audit-log"
-        const val AUDIT_INDEX_V2 = "audit-log-v2"
         const val AUDIT_INDEX_V3 = "audit-log-v3"
     }
 
