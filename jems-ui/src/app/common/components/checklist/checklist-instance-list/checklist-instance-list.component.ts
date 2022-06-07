@@ -78,12 +78,15 @@ export class ChecklistInstanceListComponent implements OnInit {
     const field = sort.active || '';
     const order = sort.direction;
 
-    const oldField = this.tableSelected.matSort.active;
-    const oldOrder = this.tableSelected.matSort.direction === 'desc' ? 'desc' : 'asc';
+    if (this.tableSelected) {
+      const oldField = this.tableSelected.matSort.active;
+      const oldOrder = this.tableSelected.matSort.direction === 'desc' ? 'desc' : 'asc';
 
-    if (field !== oldField || (field === oldField && order !== oldOrder)) {
-      this.tableSelected.matSort.sort({id: field, start: 'asc', disableClear: true});
+      if (field !== oldField || (field === oldField && order !== oldOrder)) {
+        this.tableSelected.matSort.sort({id: field, start: 'asc', disableClear: true});
+      }
     }
+
     this.pageStore.setInstancesSort({...sort, direction: order === 'desc' ? 'desc' : 'asc'});
   }
 
@@ -91,12 +94,15 @@ export class ChecklistInstanceListComponent implements OnInit {
     const field = sort.active || '';
     const order = sort.direction;
 
-    const oldField = this.tableInstances.matSort.active;
-    const oldOrder = this.tableInstances.matSort.direction === 'desc' ? 'desc' : 'asc';
+    if (this.tableInstances) {
+      const oldField = this.tableInstances.matSort.active;
+      const oldOrder = this.tableInstances.matSort.direction === 'desc' ? 'desc' : 'asc';
 
-    if (field !== oldField || (field === oldField && order !== oldOrder)) {
-      this.tableInstances.matSort.sort({id: field, start: 'asc', disableClear: true});
+      if (field !== oldField || (field === oldField && order !== oldOrder)) {
+        this.tableInstances.matSort.sort({id: field, start: 'asc', disableClear: true});
+      }
     }
+
     this.pageStore.setSelectedSort({...sort, direction: order === 'desc' ? 'desc' : 'asc'});
   }
 
@@ -167,7 +173,6 @@ export class ChecklistInstanceListComponent implements OnInit {
           elementTranslationKey: 'programme.checklists.type',
           elementProperty: 'type',
           columnWidth: ColumnWidth.DateColumn,
-          sortProperty: 'type',
         },
         {
           displayedColumn: 'common.name',
