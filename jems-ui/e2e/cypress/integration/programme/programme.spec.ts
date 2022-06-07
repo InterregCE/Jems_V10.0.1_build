@@ -188,7 +188,7 @@ context('Programme management tests', () => {
       cy.contains('Save').click();
       cy.contains('Confirm').should('be.visible').click();
 
-      cy.contains('jems-programme-output-indicators-list div', indicator.code).should('exist');
+      cy.contains('jems-programme-output-indicators-list div', indicator.code, { timeout: 8000 }).should('exist');
     });
   });
 
