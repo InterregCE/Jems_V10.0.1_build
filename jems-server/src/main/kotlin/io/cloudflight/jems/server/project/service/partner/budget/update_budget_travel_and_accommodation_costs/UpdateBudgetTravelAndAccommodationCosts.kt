@@ -37,8 +37,8 @@ class UpdateBudgetTravelAndAccommodationCosts(
             callId,
             periods,
             BudgetCategory.TravelAndAccommodationCosts,
-            travelCosts.map { it.numberOfUnits }.toList(),
-            travelCosts.map { it.unitType }.toList()
+            travelCosts.map { it.numberOfUnits },
+            travelCosts.map { Pair(it.unitCostId, it.unitType) }
         )
 
         budgetCostValidator.validateBaseEntries(travelCosts)

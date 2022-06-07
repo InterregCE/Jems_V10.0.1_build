@@ -75,7 +75,7 @@ internal class UpdateBudgetTravelAndAccommodationCostsTest : UnitTest() {
             periods,
             BudgetCategory.TravelAndAccommodationCosts,
             budgetTravelCostEntries.map { it.numberOfUnits }.toList(),
-            budgetTravelCostEntries.map { it.unitType }.toList()
+            budgetTravelCostEntries.map { Pair(it.unitCostId, it.unitType) }.toList()
         ) } returns Unit
         every { budgetCostValidator.validateBaseEntries(budgetTravelCostEntries) } returns Unit
         every { budgetCostValidator.validatePricePerUnits(pricePerUnits) } returns Unit
@@ -136,7 +136,7 @@ internal class UpdateBudgetTravelAndAccommodationCostsTest : UnitTest() {
             budgetTravelCostEntries.map { it.budgetPeriods }.flatten().toSet(),
             BudgetCategory.TravelAndAccommodationCosts,
             budgetTravelCostEntries.map { it.numberOfUnits }.toList(),
-            budgetTravelCostEntries.map { it.unitType }.toList()
+            budgetTravelCostEntries.map { Pair(it.unitCostId, it.unitType) }.toList()
         ) } returns Unit
         every { budgetCostValidator.validateBaseEntries(budgetTravelCostEntries) } throws I18nValidationException()
 
@@ -161,7 +161,7 @@ internal class UpdateBudgetTravelAndAccommodationCostsTest : UnitTest() {
             budgetTravelCostEntries.map { it.budgetPeriods }.flatten().toSet(),
             BudgetCategory.TravelAndAccommodationCosts,
             budgetTravelCostEntries.map { it.numberOfUnits }.toList(),
-            budgetTravelCostEntries.map { it.unitType }.toList()
+            budgetTravelCostEntries.map { Pair(it.unitCostId, it.unitType) }.toList()
         ) } returns Unit
         val pricePerUnits = budgetTravelCostEntries.map { it.pricePerUnit }
         every { budgetCostValidator.validateBaseEntries(budgetTravelCostEntries) } returns Unit
@@ -190,7 +190,7 @@ internal class UpdateBudgetTravelAndAccommodationCostsTest : UnitTest() {
             budgetTravelCostEntries.map { it.budgetPeriods }.flatten().toSet(),
             BudgetCategory.TravelAndAccommodationCosts,
             budgetTravelCostEntries.map { it.numberOfUnits }.toList(),
-            budgetTravelCostEntries.map { it.unitType }.toList()
+            budgetTravelCostEntries.map { Pair(it.unitCostId, it.unitType) }.toList()
         ) } returns Unit
         every { budgetCostValidator.validateBaseEntries(budgetTravelCostEntries) } returns Unit
         every { budgetCostValidator.validatePricePerUnits(budgetTravelCostEntries.map { it.pricePerUnit }) } returns Unit
@@ -222,7 +222,7 @@ internal class UpdateBudgetTravelAndAccommodationCostsTest : UnitTest() {
             budgetTravelCostEntries.map { it.budgetPeriods }.flatten().toSet(),
             BudgetCategory.TravelAndAccommodationCosts,
             budgetTravelCostEntries.map { it.numberOfUnits }.toList(),
-            budgetTravelCostEntries.map { it.unitType }.toList()
+            budgetTravelCostEntries.map { Pair(it.unitCostId, it.unitType) }.toList()
         ) } returns Unit
         every { budgetCostValidator.validateBaseEntries(budgetTravelCostEntries) } returns Unit
         every { budgetCostValidator.validatePricePerUnits(budgetTravelCostEntries.map { it.pricePerUnit }) } returns Unit
@@ -255,7 +255,7 @@ internal class UpdateBudgetTravelAndAccommodationCostsTest : UnitTest() {
             budgetPeriods,
             BudgetCategory.TravelAndAccommodationCosts,
             budgetTravelCostEntries.map { it.numberOfUnits }.toList(),
-            budgetTravelCostEntries.map { it.unitType }.toList()
+            budgetTravelCostEntries.map { Pair(it.unitCostId, it.unitType) }.toList()
         ) } returns Unit
         every { budgetCostValidator.validateBaseEntries(budgetTravelCostEntriesWithInvalidPeriods) } returns Unit
         every { budgetCostValidator.validatePricePerUnits(budgetTravelCostEntriesWithInvalidPeriods.map { it.pricePerUnit }) } returns Unit

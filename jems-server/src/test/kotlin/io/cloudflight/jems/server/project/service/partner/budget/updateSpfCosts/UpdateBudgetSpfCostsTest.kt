@@ -91,7 +91,7 @@ internal class UpdateBudgetSpfCostsTest : UnitTest() {
             periods,
             null,
             spfCostEntries.map { it.numberOfUnits }.toList(),
-            spfCostEntries.map { it.unitType }.toList()
+            spfCostEntries.map { Pair(it.unitCostId, it.unitType) }.toList()
         ) } returns Unit
         every { budgetCostValidator.validateBaseEntries(spfCostEntries) } returns Unit
         every { budgetCostValidator.validatePricePerUnits(pricePerUnits) } returns Unit
@@ -111,7 +111,7 @@ internal class UpdateBudgetSpfCostsTest : UnitTest() {
             periods,
             null,
             spfCostEntries.map { it.numberOfUnits }.toList(),
-            spfCostEntries.map { it.unitType }.toList()
+            spfCostEntries.map { Pair(it.unitCostId, it.unitType) }.toList()
         ) }
         verify { projectPersistence.getProjectCallSettings(projectId) }
         verify { budgetCostValidator.validateBaseEntries(spfCostEntries) }
@@ -134,7 +134,7 @@ internal class UpdateBudgetSpfCostsTest : UnitTest() {
             spfCostEntries.map { it.budgetPeriods }.flatten().toSet(),
             null,
             spfCostEntries.map { it.numberOfUnits }.toList(),
-            spfCostEntries.map { it.unitType }.toList()
+            spfCostEntries.map { Pair(it.unitCostId, it.unitType) }.toList()
         ) } returns Unit
         every { budgetCostValidator.validateBaseEntries(spfCostEntries) } throws I18nValidationException()
 
@@ -149,7 +149,7 @@ internal class UpdateBudgetSpfCostsTest : UnitTest() {
             spfCostEntries.map { it.budgetPeriods }.flatten().toSet(),
             null,
             spfCostEntries.map { it.numberOfUnits }.toList(),
-            spfCostEntries.map { it.unitType }.toList()
+            spfCostEntries.map { Pair(it.unitCostId, it.unitType) }.toList()
         ) }
         verify { budgetCostValidator.validateBaseEntries(spfCostEntries) }
         confirmVerified(budgetCostValidator, projectPersistence, partnerPersistence)
@@ -163,7 +163,7 @@ internal class UpdateBudgetSpfCostsTest : UnitTest() {
             spfCostEntries.map { it.budgetPeriods }.flatten().toSet(),
             null,
             spfCostEntries.map { it.numberOfUnits }.toList(),
-            spfCostEntries.map { it.unitType }.toList()
+            spfCostEntries.map { Pair(it.unitCostId, it.unitType) }.toList()
         ) } returns Unit
 
         every { budgetCostValidator.validateBaseEntries(spfCostEntries) } returns Unit
@@ -180,7 +180,7 @@ internal class UpdateBudgetSpfCostsTest : UnitTest() {
             spfCostEntries.map { it.budgetPeriods }.flatten().toSet(),
             null,
             spfCostEntries.map { it.numberOfUnits }.toList(),
-            spfCostEntries.map { it.unitType }.toList()
+            spfCostEntries.map { Pair(it.unitCostId, it.unitType) }.toList()
         ) }
         verify { budgetCostValidator.validatePricePerUnits(pricePerUnits) }
         verify { projectPersistence.getProjectCallSettings(projectId) }
@@ -197,7 +197,7 @@ internal class UpdateBudgetSpfCostsTest : UnitTest() {
             budgetPeriods,
             null,
             spfCostEntries.map { it.numberOfUnits }.toList(),
-            spfCostEntries.map { it.unitType }.toList()
+            spfCostEntries.map { Pair(it.unitCostId, it.unitType) }.toList()
         ) } returns Unit
         every { budgetCostValidator.validateBaseEntries(spfCostEntriesWithInvalidPeriods) } returns Unit
         every { budgetCostValidator.validatePricePerUnits(spfCostEntriesWithInvalidPeriods.map { it.pricePerUnit }) } returns Unit
@@ -217,7 +217,7 @@ internal class UpdateBudgetSpfCostsTest : UnitTest() {
             budgetPeriods,
             null,
             spfCostEntries.map { it.numberOfUnits }.toList(),
-            spfCostEntries.map { it.unitType }.toList()
+            spfCostEntries.map { Pair(it.unitCostId, it.unitType) }.toList()
         ) }
         verify { budgetCostValidator.validateBaseEntries(spfCostEntriesWithInvalidPeriods) }
         verify { budgetCostValidator.validatePricePerUnits(spfCostEntriesWithInvalidPeriods.map { it.pricePerUnit }) }
@@ -235,7 +235,7 @@ internal class UpdateBudgetSpfCostsTest : UnitTest() {
             spfCostEntries.map { it.budgetPeriods }.flatten().toSet(),
             null,
             spfCostEntries.map { it.numberOfUnits }.toList(),
-            spfCostEntries.map { it.unitType }.toList()
+            spfCostEntries.map { Pair(it.unitCostId, it.unitType) }.toList()
         ) } throws I18nValidationException()
 
         assertThrows<I18nValidationException> {
@@ -249,7 +249,7 @@ internal class UpdateBudgetSpfCostsTest : UnitTest() {
             spfCostEntries.map { it.budgetPeriods }.flatten().toSet(),
             null,
             spfCostEntries.map { it.numberOfUnits }.toList(),
-            spfCostEntries.map { it.unitType }.toList()
+            spfCostEntries.map { Pair(it.unitCostId, it.unitType) }.toList()
         ) }
         confirmVerified(budgetCostValidator, projectPersistence, partnerPersistence)
     }

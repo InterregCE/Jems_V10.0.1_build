@@ -34,13 +34,13 @@ class UpdateBudgetUnitCosts(
         partnerId: Long,
         unitCosts: List<BudgetUnitCostEntry>
     ): List<BudgetUnitCostEntry> {
-
         budgetCostValidator.validateBaseEntries(unitCosts)
 
         throwIfOtherCostFlatRateIsSet(budgetOptionsPersistence.getBudgetOptions(partnerId))
 
         val projectId = partnerPersistence.getProjectIdForPartnerId(partnerId)
-        validateSectionIsAllowedToBeSet(projectId = projectId)
+        if (unitCosts.isNotEmpty())
+            validateSectionIsAllowedToBeSet(projectId = projectId)
 
         val unitCostPerUnitById =
             projectPersistence.getProjectUnitCosts(projectId).associateBy({ it.id }, { it.costPerUnit })

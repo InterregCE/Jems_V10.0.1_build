@@ -229,7 +229,7 @@ internal class BudgetCostValidatorTest : UnitTest() {
 
     @Test
     fun `should throw I18nValidationException when unitType not acc to AF config`() {
-        val unitTypes = listOf(setOf(InputTranslation(SystemLanguage.EN, "string")))
+        val unitTypes = listOf(Pair(null, setOf(InputTranslation(SystemLanguage.EN, "string"))))
         val afConfiguration = CallApplicationFormFieldsConfiguration(
             CallType.STANDARD,
             mutableSetOf(
@@ -257,7 +257,7 @@ internal class BudgetCostValidatorTest : UnitTest() {
     fun `should be successful when data acc to AF config`() {
         val periods = setOf(BudgetPeriod(1, BigDecimal.ONE))
         val numberOfUnits = listOf(BigDecimal.TEN)
-        val unitTypes = listOf(setOf(InputTranslation(SystemLanguage.EN, "string")))
+        val unitTypes = listOf(Pair(null, setOf(InputTranslation(SystemLanguage.EN, "string"))))
         val afConfiguration = CallApplicationFormFieldsConfiguration(
             CallType.STANDARD,
             mutableSetOf(
@@ -287,7 +287,7 @@ internal class BudgetCostValidatorTest : UnitTest() {
     fun `should throw I18nValidationException when SPF data not acc to AF config`() {
         val periods = setOf(BudgetPeriod(1, BigDecimal.ONE))
         val numberOfUnits = listOf(BigDecimal.ONE)
-        val unitTypes = listOf(setOf(InputTranslation(SystemLanguage.EN, "string")))
+        val unitTypes = listOf(Pair(null, setOf(InputTranslation(SystemLanguage.EN, "string"))))
         val afConfiguration = CallApplicationFormFieldsConfiguration(
             CallType.SPF,
             mutableSetOf(

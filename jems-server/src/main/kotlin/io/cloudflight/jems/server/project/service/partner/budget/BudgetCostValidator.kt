@@ -102,7 +102,7 @@ class BudgetCostValidator(private val callPersistence: CallPersistence) {
         periods: Set<BudgetPeriod>,
         budgetCategory: BudgetCategory?,
         numberOfUnits: List<BigDecimal>,
-        unitTypes: List<Set<InputTranslation>>
+        unitTypes: List<Pair<Long?, Set<InputTranslation>>>
     ) {
         val afConfig = callPersistence.getApplicationFormFieldConfigurations(callId)
         val periodsOnBudget = afConfig.applicationFormFieldConfigurations
@@ -114,16 +114,19 @@ class BudgetCostValidator(private val callPersistence: CallPersistence) {
             )
 
         val fieldNumberOfUnits = getFieldNumberOfUnitsForCategory(budgetCategory)
-        val numberOfUnitsDisabled = afConfig.applicationFormFieldConfigurations
+        val numberOfUnitsAndUnitTypesDisabled = afConfig.applicationFormFieldConfigurations
             .find { it.id == fieldNumberOfUnits?.id }?.visibilityStatus == FieldVisibilityStatus.NONE
-        if (numberOfUnitsDisabled
-            && (numberOfUnits.any { it != BigDecimal.ONE } || unitTypes.any { it.isNotEmpty() })) {
+        if (numberOfUnitsAndUnitTypesDisabled
+            && (numberOfUnits.any { it != BigDecimal.ONE } || isUnitTypeSetForRealCosts(unitTypes))) {
             throw I18nValidationException(
                 httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
                 i18nKey = BUDGET_COST_NUMBER_UNITS_NOT_ENABLED_ERROR_KEY
             )
         }
     }
+
+    private fun isUnitTypeSetForRealCosts(unitTypes: List<Pair<Long?, Set<InputTranslation>>>) =
+        unitTypes.any { it.second.isNotEmpty() && it.first == null }
 
     private fun getFieldNumberOfUnitsForCategory(budgetCategory: BudgetCategory?): ApplicationFormFieldSetting? {
         return when (budgetCategory) {

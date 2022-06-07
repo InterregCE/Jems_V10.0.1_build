@@ -26,7 +26,7 @@ internal class UpdateBudgetInfrastructureAndWorksCostsTest : UpdateBudgetGeneral
             periods,
             BudgetCategory.InfrastructureCosts,
             budgetGeneralCostEntries.map { it.numberOfUnits }.toList(),
-            budgetGeneralCostEntries.map { it.unitType }.toList()
+            budgetGeneralCostEntries.map { Pair(it.unitCostId, it.unitType) }.toList()
         ) } returns Unit
         every { budgetCostValidator.validateBaseEntries(budgetGeneralCostEntries) } returns Unit
         every { budgetCostValidator.validatePricePerUnits(pricePerUnits) } returns Unit
@@ -90,7 +90,7 @@ internal class UpdateBudgetInfrastructureAndWorksCostsTest : UpdateBudgetGeneral
             budgetGeneralCostEntries.map { it.budgetPeriods }.flatten().toSet(),
             BudgetCategory.InfrastructureCosts,
             budgetGeneralCostEntries.map { it.numberOfUnits }.toList(),
-            budgetGeneralCostEntries.map { it.unitType }.toList()
+            budgetGeneralCostEntries.map { Pair(it.unitCostId, it.unitType) }.toList()
         ) } returns Unit
         every { budgetCostValidator.validateBaseEntries(budgetGeneralCostEntries) } throws I18nValidationException()
 
@@ -117,7 +117,7 @@ internal class UpdateBudgetInfrastructureAndWorksCostsTest : UpdateBudgetGeneral
             budgetGeneralCostEntries.map { it.budgetPeriods }.flatten().toSet(),
             BudgetCategory.InfrastructureCosts,
             budgetGeneralCostEntries.map { it.numberOfUnits }.toList(),
-            budgetGeneralCostEntries.map { it.unitType }.toList()
+            budgetGeneralCostEntries.map { Pair(it.unitCostId, it.unitType) }.toList()
         ) } returns Unit
         every { budgetCostValidator.validateBaseEntries(budgetGeneralCostEntries) } returns Unit
         every { budgetCostValidator.validatePricePerUnits(pricePerUnits) } throws I18nValidationException()
@@ -146,7 +146,7 @@ internal class UpdateBudgetInfrastructureAndWorksCostsTest : UpdateBudgetGeneral
             budgetPeriods,
             BudgetCategory.InfrastructureCosts,
             budgetGeneralCostEntries.map { it.numberOfUnits }.toList(),
-            budgetGeneralCostEntries.map { it.unitType }.toList()
+            budgetGeneralCostEntries.map { Pair(it.unitCostId, it.unitType) }.toList()
         ) } returns Unit
         every { budgetCostValidator.validateBaseEntries(budgetGeneralCostEntriesWithInvalidPeriods) } returns Unit
         every { budgetCostValidator.validatePricePerUnits(budgetGeneralCostEntriesWithInvalidPeriods.map { it.pricePerUnit }) } returns Unit
@@ -186,7 +186,7 @@ internal class UpdateBudgetInfrastructureAndWorksCostsTest : UpdateBudgetGeneral
             periods,
             BudgetCategory.InfrastructureCosts,
             budgetGeneralCostEntries.map { it.numberOfUnits }.toList(),
-            budgetGeneralCostEntries.map { it.unitType }.toList()
+            budgetGeneralCostEntries.map { Pair(it.unitCostId, it.unitType) }.toList()
         ) } returns Unit
         every { budgetOptionsPersistence.getBudgetOptions(partnerId) } returns ProjectPartnerBudgetOptions(
             partnerId,

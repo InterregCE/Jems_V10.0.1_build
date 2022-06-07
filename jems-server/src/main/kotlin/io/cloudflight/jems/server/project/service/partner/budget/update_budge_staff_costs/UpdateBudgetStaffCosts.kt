@@ -37,8 +37,8 @@ class UpdateBudgetStaffCosts(
             callId,
             periods,
             BudgetCategory.StaffCosts,
-            staffCosts.map { it.numberOfUnits }.toList(),
-            staffCosts.map { it.unitType }.toList()
+            staffCosts.map { it.numberOfUnits },
+            staffCosts.map { Pair(it.unitCostId, it.unitType) }
         )
 
         budgetCostValidator.validateBaseEntries(staffCosts)

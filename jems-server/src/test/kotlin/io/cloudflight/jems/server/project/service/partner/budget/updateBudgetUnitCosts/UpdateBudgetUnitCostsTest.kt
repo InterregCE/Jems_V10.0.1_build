@@ -13,9 +13,11 @@ import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerB
 import io.cloudflight.jems.server.project.service.partner.model.BudgetPeriod
 import io.cloudflight.jems.server.project.service.partner.model.BudgetUnitCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
-import io.mockk.*
+import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
+import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -104,7 +106,31 @@ internal class UpdateBudgetUnitCostsTest : UnitTest() {
         every { call.unitCosts } returns listOf(unitCost)
         every { callPersistence.getCallByProjectId(1057) } returns call
 
-        assertThrows<UnitCostsBudgetSectionIsNotAllowed> { updateBudgetUnitCosts.updateBudgetUnitCosts(57L, emptyList()) }
+        assertThrows<UnitCostsBudgetSectionIsNotAllowed> {
+            updateBudgetUnitCosts.updateBudgetUnitCosts(57L, listOf(budgetUnitCostNew))
+        }
     }
 
+    @Test
+    fun `empty unit cost section can be saved`() {
+        val projectId = 1057L
+        val partnerId = 57L
+        every { budgetCostValidator.validateBaseEntries(any()) } answers { }
+        every { budgetOptionsPersistence.getBudgetOptions(partnerId) } returns
+            ProjectPartnerBudgetOptions(partnerId = partnerId, otherCostsOnStaffCostsFlatRate = null)
+        every { partnerPersistence.getProjectIdForPartnerId(partnerId) } returns projectId
+
+        val unitCost = ProgrammeUnitCost(id = 1L, isOneCostCategory = true, costPerUnit = BigDecimal.TEN)
+        val call = mockk<CallDetail>()
+        every { call.unitCosts } returns listOf(unitCost)
+        every { callPersistence.getCallByProjectId(projectId) } returns call
+        every { projectPersistence.getProjectUnitCosts(projectId) } returns listOf(unitCost)
+        every { persistence.deleteAllUnitCostsExceptFor(partnerId, emptySet()) } returns Unit
+        every {
+            persistence.createOrUpdateBudgetUnitCosts(projectId, partnerId, emptyList())
+        } returns listOf(budgetUnitCostExisting)
+
+        assertThat(updateBudgetUnitCosts.updateBudgetUnitCosts(partnerId, emptyList()))
+            .contains(budgetUnitCostExisting)
+    }
 }
