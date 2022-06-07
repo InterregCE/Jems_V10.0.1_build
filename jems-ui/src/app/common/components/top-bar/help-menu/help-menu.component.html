@@ -14,7 +14,7 @@
     <a mat-menu-item [href]="termsAndPrivacyPolicyUrl">{{'topbar.help.legal.terms.and.privacy' | translate}}</a>
     <a mat-menu-item [href]="accessibilityStatementUrl">{{'topbar.help.legal.accessibility' | translate}}</a>
     <ng-container *ngIf="version">
-        <label class="help-category">Version</label>
+        <label class="help-category">{{'topbar.help.version' | translate}}</label>
         <a disabled mat-menu-item>{{ version }}</a>
     </ng-container>
 </mat-menu>

@@ -9,7 +9,7 @@ import {combineLatest, Observable} from 'rxjs';
 import {ProjectWorkPackageInvestmentDetailPageStore} from './project-work-package-Investment-detail-page-store.service';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {WorkPackagePageStore} from '@project/work-package/project-work-package-page/work-package-detail-page/work-package-page-store.service';
-import {Alert} from "@common/components/forms/alert";
+import {Alert} from '@common/components/forms/alert';
 
 @Component({
   selector: 'jems-project-work-package-investment-detail-page',
