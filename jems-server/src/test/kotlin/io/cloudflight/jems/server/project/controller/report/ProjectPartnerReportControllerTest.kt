@@ -20,7 +20,6 @@ import io.cloudflight.jems.api.project.dto.report.file.UserSimpleDTO
 import io.cloudflight.jems.api.project.dto.report.partner.PartnerReportIdentificationCoFinancingDTO
 import io.cloudflight.jems.api.project.dto.report.partner.PartnerReportIdentificationDTO
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.common.exception.ApplicationException
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
 import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatus
@@ -52,7 +51,6 @@ import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
@@ -239,7 +237,8 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
 
     @Test
     fun createProjectPartnerReport() {
-        assertThrows<ApplicationException> { controller.createProjectPartnerReport(18) }
+        every { createPartnerReport.createReportFor(18) } returns reportSummary
+        assertThat(controller.createProjectPartnerReport(18)).isEqualTo(reportSummaryDTO)
     }
 
     @Test
