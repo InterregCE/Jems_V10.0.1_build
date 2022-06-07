@@ -31,12 +31,13 @@ internal class AddWorkPackageInvestmentTestWorkPackageInvestmentBase : UnitTestW
                 FieldVisibilityStatus.NONE
             }
             return mutableSetOf(
-                ApplicationFormFieldConfiguration(ApplicationFormFieldSetting.PROJECT_INVESTMENT_TITLE.id, titleVisibility),
+                ApplicationFormFieldConfiguration(ApplicationFormFieldSetting.PROJECT_INVESTMENT_TITLE.id, FieldVisibilityStatus.NONE),
                 ApplicationFormFieldConfiguration(ApplicationFormFieldSetting.PROJECT_INVESTMENT_PERIOD.id, FieldVisibilityStatus.NONE),
                 ApplicationFormFieldConfiguration(
                     ApplicationFormFieldSetting.PROJECT_INVESTMENT_CROSS_BORDER_TRANSNATIONAL_RELEVANCE_OF_INVESTMENT.id,
                     FieldVisibilityStatus.NONE
                 ),
+                ApplicationFormFieldConfiguration(ApplicationFormFieldSetting.PROJECT_INVESTMENT_WHY_IS_INVESTMENT_NEEDED.id, titleVisibility),
                 ApplicationFormFieldConfiguration(ApplicationFormFieldSetting.PROJECT_INVESTMENT_WHO_IS_BENEFITING.id, FieldVisibilityStatus.NONE),
                 ApplicationFormFieldConfiguration(ApplicationFormFieldSetting.PROJECT_INVESTMENT_PILOT_CLARIFICATION.id, FieldVisibilityStatus.NONE),
                 ApplicationFormFieldConfiguration(ApplicationFormFieldSetting.PROJECT_INVESTMENT_COUNTRY.id, FieldVisibilityStatus.NONE),

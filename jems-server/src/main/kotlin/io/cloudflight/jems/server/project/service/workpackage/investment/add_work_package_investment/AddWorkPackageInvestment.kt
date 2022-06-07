@@ -45,6 +45,7 @@ class AddWorkPackageInvestment(
         listOf(
             ApplicationFormFieldSetting.PROJECT_INVESTMENT_TITLE.id,
             ApplicationFormFieldSetting.PROJECT_INVESTMENT_PERIOD.id,
+            ApplicationFormFieldSetting.PROJECT_INVESTMENT_WHY_IS_INVESTMENT_NEEDED.id,
             ApplicationFormFieldSetting.PROJECT_INVESTMENT_CROSS_BORDER_TRANSNATIONAL_RELEVANCE_OF_INVESTMENT.id,
             ApplicationFormFieldSetting.PROJECT_INVESTMENT_WHO_IS_BENEFITING.id,
             ApplicationFormFieldSetting.PROJECT_INVESTMENT_PILOT_CLARIFICATION.id,
