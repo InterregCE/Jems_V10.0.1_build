@@ -1,0 +1,21 @@
+{
+  "mainAddress": {
+      "country": "France (FR)",
+      "nutsRegion2": "Rhône-Alpes (FRK2)",
+      "nutsRegion3": "Savoie (FRK27)",
+      "street": "Partnerstreet",
+      "houseNumber": "2",
+      "postalCode": "1020",
+      "city": "Partner city",
+      "homepage": "partner@test.com"
+    },
+  "departmentAddress": {
+      "country": "España (ES)",
+      "nutsRegion2": "Castilla y León (ES41)",
+      "nutsRegion3": "León (ES413)",
+      "street": "Departmentstreet",
+      "houseNumber": "5",
+      "postalCode": "4020",
+      "city": "Department city"
+    }
+}

@@ -1,0 +1,34 @@
+{
+  "motivation": {
+    "organizationRelevance": [
+      {
+        "translation": "Motivation DE",
+        "language": "DE"
+      },
+      {
+        "translation": "Motivation EN",
+        "language": "EN"
+      }
+    ],
+    "organizationRole": [
+      {
+        "translation": "Role DE",
+        "language": "DE"
+      },
+      {
+        "translation": "Role EN",
+        "language": "EN"
+      }
+    ],
+    "organizationExperience": [
+      {
+        "translation": "Experience DE",
+        "language": "DE"
+      },
+      {
+        "translation": "Experience EN",
+        "language": "EN"
+      }
+    ]
+  }
+}

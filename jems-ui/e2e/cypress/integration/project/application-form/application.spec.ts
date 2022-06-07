@@ -81,7 +81,7 @@ context('Project management tests', () => {
     });
   });
 
-  it('TB-581 Applicant can add partner to the project', function () {
+  it('TB-581 Applicant can add lead partner to the project', function () {
     cy.fixture('project/application-form/TB-581').then(testData => {
       cy.visit(`app/project/detail/${this.applicationId}`, {failOnStatusCode: false});
       cy.contains('Partners overview').click();
@@ -89,6 +89,7 @@ context('Project management tests', () => {
       const leadPartner = testData.partner;
       cy.contains('button', leadPartner.role).click();
       cy.contains('div', 'Abbreviated name of the organisation').find('input').type(leadPartner.abbreviation);
+      cy.wrap(leadPartner.abbreviation).as('partnerAbbreviation');
       cy.contains('div', 'Name of the organisation in original language').find('input').type(leadPartner.nameInOriginalLanguage);
       cy.contains('div', 'Name of the organisation in english').find('input').type(leadPartner.nameInEnglish);
       cy.contains('div', 'Department').find('textarea').type(leadPartner.nameInEnglish);
@@ -120,4 +121,97 @@ context('Project management tests', () => {
       });
     });
   });
-})
+
+  it('TB-608 Applicant can edit partners address', function () {
+    cy.fixture('project/application-form/TB-608').then(testData => {
+      cy.visit(`app/project/detail/${this.applicationId}`, {failOnStatusCode: false});
+      cy.contains(this.partnerAbbreviation).click();
+      cy.contains('a', 'Address').click();
+      
+      cy.contains('Partner main address').next().then((mainAddressSection)=> {
+        cy.wrap(mainAddressSection).contains('div', 'Country').find('input').click();
+        cy.contains('mat-option', testData.mainAddress.country).click();
+        cy.wrap(mainAddressSection).contains('div', 'NUTS 2').find('input').click();
+        cy.contains('mat-option', testData.mainAddress.nutsRegion2).click();
+        cy.wrap(mainAddressSection).contains('div', 'NUTS 3').find('input').click();
+        cy.contains('mat-option', testData.mainAddress.nutsRegion3).click();
+
+        cy.wrap(mainAddressSection).contains('div', 'Street').find('input').type(testData.mainAddress.street);
+        cy.wrap(mainAddressSection).contains('div', 'House number').find('input').type(testData.mainAddress.houseNumber);
+        cy.wrap(mainAddressSection).contains('div', 'Postal code').find('input').type(testData.mainAddress.postalCode);
+        cy.wrap(mainAddressSection).contains('div', 'City').find('input').type(testData.mainAddress.city);
+        cy.wrap(mainAddressSection).contains('div', 'Homepage').find('input').type(testData.mainAddress.homepage);
+      });
+      
+      cy.contains('Address of department').next().then((departmentAddressSection)=> {
+        cy.wrap(departmentAddressSection).contains('div', 'Country').find('input').click();
+        cy.contains('mat-option', testData.departmentAddress.country).click();
+        cy.wrap(departmentAddressSection).contains('div', 'NUTS 2').find('input').click();
+        cy.contains('mat-option', testData.departmentAddress.nutsRegion2).click();
+        cy.wrap(departmentAddressSection).contains('div', 'NUTS 3').find('input').click();
+        cy.contains('mat-option', testData.departmentAddress.nutsRegion3).click();
+
+        cy.wrap(departmentAddressSection).contains('div', 'Street').find('input').type(testData.departmentAddress.street);
+        cy.wrap(departmentAddressSection).contains('div', 'House number').find('input').type(testData.departmentAddress.houseNumber);
+        cy.wrap(departmentAddressSection).contains('div', 'Postal code').find('input').type(testData.departmentAddress.postalCode);
+        cy.wrap(departmentAddressSection).contains('div', 'City').find('input').type(testData.departmentAddress.city);
+      });
+      
+      cy.contains('Save changes').click();
+      // TODO add an assertion for successful save as soon as bug MP2-2274 is fixed
+    });
+  });
+
+  it('TB-609 Applicant can edit partners contact info', function () {
+    cy.fixture('project/application-form/TB-609').then(testData => {
+      cy.visit(`app/project/detail/${this.applicationId}`, {failOnStatusCode: false});
+      cy.contains(this.partnerAbbreviation).click();
+      cy.contains('a', 'Contact').click();
+      
+      cy.get('input[name="partnerRepresentativeTitle"]').type(testData.legalRepresentative.title)
+      cy.get('input[name="partnerRepresentativeFirstName"]').type(testData.legalRepresentative.firstName)
+      cy.get('input[name="partnerRepresentativeLastName"]').type(testData.legalRepresentative.lastName);
+
+      cy.get('input[name="partnerContactTitle"]').type(testData.contactPerson.title)
+      cy.get('input[name="partnerContactFirstName"]').type(testData.contactPerson.firstName)
+      cy.get('input[name="partnerContactLastName"]').type(testData.contactPerson.lastName);
+      cy.get('input[name="partnerContactEmail"]').type(testData.contactPerson.email);
+      cy.get('input[name="partnerContactTelephone"]').type(testData.contactPerson.number);
+      
+      cy.contains('Save changes').click();
+      cy.contains('Partner contact saved successfully').should('be.visible');
+    });
+  });
+
+  it('TB-610 Applicant can edit partners motivation info', function () {
+    cy.fixture('project/application-form/TB-610').then(testData => {
+      cy.visit(`app/project/detail/${this.applicationId}`, {failOnStatusCode: false});
+      cy.contains(this.partnerAbbreviation).click();
+      cy.contains('a', 'Motivation').click();
+      
+      testData.motivation.organizationRelevance.forEach(organizationRelevance => {
+        cy.get('jems-multi-language-container').eq(0).then(organizationRelevanceSection => {
+          cy.wrap(organizationRelevanceSection).contains('button', organizationRelevance.language).click();
+          cy.wrap(organizationRelevanceSection).find('textarea').type(organizationRelevance.translation);
+        });
+      });
+      
+      testData.motivation.organizationRole.forEach(organizationRole => {
+        cy.get('jems-multi-language-container').eq(1).then(organizationRoleSection => {
+          cy.wrap(organizationRoleSection).contains('button', organizationRole.language).click();
+          cy.wrap(organizationRoleSection).find('textarea').type(organizationRole.translation);
+        });
+      });
+      
+      testData.motivation.organizationExperience.forEach(organizationExperience => {
+        cy.get('jems-multi-language-container').eq(2).then(organizationExperienceSection => {
+          cy.wrap(organizationExperienceSection).contains('button', organizationExperience.language).click();
+          cy.wrap(organizationExperienceSection).find('textarea').type(organizationExperience.translation);
+        });
+      });
+      
+      cy.contains('Save changes').click();
+      cy.contains('Partner motivation and contribution saved successfully.').should('be.visible');
+    });
+  });
+});
