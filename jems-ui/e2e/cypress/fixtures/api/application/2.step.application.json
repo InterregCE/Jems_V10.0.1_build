@@ -188,22 +188,22 @@
               ],
               "awardProcedures": [
                 {
-                  "translation": "API generated travel and accommodation cost award procedures DE",
+                  "translation": "API generated external cost award procedures DE",
                   "language": "DE"
                 },
                 {
-                  "translation": "API generated travel and accommodation cost award procedures EN",
+                  "translation": "API generated external cost award procedures EN",
                   "language": "EN"
                 }
               ],
               "investmentId": null,
               "unitType": [
                 {
-                  "translation": "API generated travel and accommodation cost unit type DE",
+                  "translation": "API generated external cost unit type DE",
                   "language": "DE"
                 },
                 {
-                  "translation": "API generated travel and accommodation cost unit type EN",
+                  "translation": "API generated external cost unit type EN",
                   "language": "EN"
                 }
               ],

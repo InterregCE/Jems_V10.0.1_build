@@ -26,7 +26,7 @@ context('Partners budget exports', () => {
           const fileNameRegex = generateRegex(applicationId, application.identification.acronym);
           expect(exportFile.fileName).to.match(fileNameRegex);
           cy.fixture('project/exports/partners-budget/TB-369-export-en-de.xlsx', null).parseXLSX().then(testDataFile => {
-            const assertionMessage = 'Verify downloaded xlsx file';
+            const assertionMessage = 'Verify downloaded en-de xlsx file';
             expect(exportFile.content[0].data.slice(1), assertionMessage).to.deep.equal(testDataFile[0].data.slice(1));
             expect(exportFile.content[1].data.slice(1), assertionMessage).to.deep.equal(testDataFile[1].data.slice(1));
           });
@@ -41,7 +41,7 @@ context('Partners budget exports', () => {
           const fileNameRegex = generateRegex(applicationId, application.identification.acronym);
           expect(exportFile.fileName).to.match(fileNameRegex);
           cy.fixture('project/exports/partners-budget/TB-369-export-de-en.xlsx', null).parseXLSX().then(testDataFile => {
-            const assertionMessage = 'Verify downloaded xlsx file';
+            const assertionMessage = 'Verify downloaded de-en lsx file';
             expect(exportFile.content[0].data.slice(1), assertionMessage).to.deep.equal(testDataFile[0].data.slice(1));
             expect(exportFile.content[1].data.slice(1), assertionMessage).to.deep.equal(testDataFile[1].data.slice(1));
           });
@@ -178,7 +178,7 @@ context('Partners budget exports', () => {
   function generateRegex(applicationId, applicationAcronym) {
     const id = String(applicationId).padStart(5, '0');
     const today = new Date();
-    const formattedToday = date.format(today, 'YYMMDD');
-    return new RegExp(`${id}_${applicationAcronym}_Budget_${formattedToday}_\\d{6}.xlsx`);
+    const formattedToday = date.format(today, 'YYMM');
+    return new RegExp(`${id}_${applicationAcronym}_Budget_${formattedToday}\\d\\d_\\d{6}.xlsx`);
   }
 });

@@ -153,42 +153,42 @@
             "id": null,
             "description": [
               {
-                "translation": "API generated travel and accommodation cost description DE",
+                "translation": "API generated external cost description DE",
                 "language": "DE"
               },
               {
-                "translation": "API generated travel and accommodation cost description EN",
+                "translation": "API generated external cost description EN",
                 "language": "EN"
               }
             ],
             "comments": [
               {
-                "translation": "API generated travel and accommodation cost comments DE",
+                "translation": "API generated external cost comments DE",
                 "language": "DE"
               },
               {
-                "translation": "API generated travel and accommodation cost comments EN",
+                "translation": "API generated external cost comments EN",
                 "language": "EN"
               }
             ],
             "awardProcedures": [
               {
-                "translation": "API generated travel and accommodation cost award procedures DE",
+                "translation": "API generated external cost award procedures DE",
                 "language": "DE"
               },
               {
-                "translation": "API generated travel and accommodation cost award procedures EN",
+                "translation": "API generated external cost award procedures EN",
                 "language": "EN"
               }
             ],
             "investmentId": null,
             "unitType": [
               {
-                "translation": "API generated travel and accommodation cost unit type DE",
+                "translation": "API generated external cost unit type DE",
                 "language": "DE"
               },
               {
-                "translation": "API generated travel and accommodation cost unit type EN",
+                "translation": "API generated external cost unit type EN",
                 "language": "EN"
               }
             ],
