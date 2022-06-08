@@ -128,7 +128,7 @@ context('Project management tests', () => {
       cy.contains(this.partnerAbbreviation).click();
       cy.contains('a', 'Address').click();
       
-      cy.contains('Partner main address').next().then((mainAddressSection)=> {
+      cy.get('jems-project-application-form-address').eq(0).then((mainAddressSection)=> {
         cy.wrap(mainAddressSection).contains('div', 'Country').find('input').click();
         cy.contains('mat-option', testData.mainAddress.country).click();
         cy.wrap(mainAddressSection).contains('div', 'NUTS 2').find('input').click();
