@@ -24,7 +24,7 @@ context('Application form exports', () => {
 
           cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/application?exportLanguage=EN&inputLanguage=DE`, 'pdf').then(file => {
             expect(file.fileName).to.contain(`${application.identification.acronym}_en_de_2022`);
-            cy.fixture('project/exports/application-form/TB-366-export-de.txt').then(testDataFile => {
+            cy.fixture('project/exports/application-form/TB-366-export-en-de.txt').then(testDataFile => {
               const assertionMessage = 'Verify downloaded pdf file';
               testDataFile = replace(testDataFile, applicationId, application.identification.acronym);
               expect(file.text === testDataFile, assertionMessage).to.be.true;
@@ -38,7 +38,7 @@ context('Application form exports', () => {
 
           cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/application?exportLanguage=DE&inputLanguage=EN`, 'pdf').then(file => {
             expect(file.fileName).to.contain(`${application.identification.acronym}_de_en_2022`);
-            cy.fixture('project/exports/application-form/TB-366-export-en.txt').then(testDataFile => {
+            cy.fixture('project/exports/application-form/TB-366-export-de-en.txt').then(testDataFile => {
               testDataFile = replace(testDataFile, applicationId, application.identification.acronym);
               const assertionMessage = 'Verify downloaded pdf file';
               expect(file.text === testDataFile, assertionMessage).to.be.true;
