@@ -44,8 +44,8 @@ Total public
 contribution
 Private
 contribution
-Total
-contribution
+Total contri
+bution
 ERDF38,058.4760.00 %0.0025,372.3225,372.320.0025,372.3263,430.79
 Neighbourhood 
 CBC
@@ -57,46 +57,52 @@ budget
 
 3
 A.4 Project outputs and result overview
-Programme Output 
-Indicator
-Aggregated value
-per Programme
-output indicator
-Measurement 
+Programme Output IndicatorAggregated value per
+Programme output
+indicator
+Measur
+ement 
 Unit
-OutputOutput 
-Title
-Output
+Out
+put
+Output TitleOutput
 target
 value
 Programme 
-result 
+result indicator
+Ba
+sel
+ine
+Result
 indicator
-BaselineResult
-indicator
-target
-value
-Measurement 
+target value
+Measur
+ement 
 unit
-Enterprises supported 
-(of which: micro, small, 
-medium, large)
-8.00enterprisesOutput 
+Enterprises supported (of 
+which: micro, small, medium, 
+large)
+8.00enterpri
+ses
+Out
+put 
 1.1
-API 
-generated 
-output 1 
-title EN
-3.00Jobs created 
-in supported 
+API generated 
+output 1 title 
+EN
+3.00Jobs created in 
+supported 
 entities
-0.0013.00annual FTEs
-Output 
+0.0
+0
+13.00annual 
+FTEs
+Out
+put 
 1.2
-API 
-generated 
-output 2 
-title EN
+API generated 
+output 2 title 
+EN
 5.00
 
 4
@@ -114,7 +120,7 @@ Partner total eligible
 budget
 1ActiveLead Partner in englishÖsterreich 
 (AT)
-Lead PartnerLP63430.79
+Lead PartnerLP63,430.79
 
 5
 B.1 Lead partner

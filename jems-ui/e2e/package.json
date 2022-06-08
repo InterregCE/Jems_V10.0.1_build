@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "type": "module",
   "description": "Jems E2E Tests",
-  "main": "index.js",
   "scripts": {
     "run": "cypress run --browser chrome",
     "open": "cypress open",
@@ -11,7 +10,6 @@
     "test": "cy2 run --parallel --record --key xxx --ci-build-id $CI_BUILD_ID"
   },
   "author": "Cloudflight GmbH",
-  "license": "ISC",
   "devDependencies": {
     "@faker-js/faker": "^6.1.2",
     "@types/node": "^17.0.23",

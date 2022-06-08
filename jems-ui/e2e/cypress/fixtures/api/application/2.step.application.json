@@ -168,21 +168,21 @@
             {
               "description": [
                 {
-                  "translation": "API generated travel and accommodation cost description DE",
+                  "translation": "API generated external cost description DE",
                   "language": "DE"
                 },
                 {
-                  "translation": "API generated travel and accommodation cost description EN",
+                  "translation": "API generated external cost description EN",
                   "language": "EN"
                 }
               ],
               "comments": [
                 {
-                  "translation": "API generated travel and accommodation cost comments DE",
+                  "translation": "API generated external cost comments DE",
                   "language": "DE"
                 },
                 {
-                  "translation": "API generated travel and accommodation cost comments EN",
+                  "translation": "API generated external cost comments EN",
                   "language": "EN"
                 }
               ],
