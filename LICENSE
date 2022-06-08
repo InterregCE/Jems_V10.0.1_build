@@ -17,6 +17,7 @@ Some parts of the software are not property of the City of Vienna. The excluded 
 · swagger (Apache 2.0) - version 2.9.2
 · h2database (MPL 2.0) - version 1.4.200
 · ElasticSearch (Apache 2.0 for most of parts) - version 7.16.3
+· SimpleCaptcha (BSD) - version 1.3.0
 
 2. Front-End
 

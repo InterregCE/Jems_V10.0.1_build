@@ -1,5 +1,6 @@
 package io.cloudflight.jems.api.user
 
+import io.cloudflight.jems.api.user.dto.CaptchaDTO
 import io.cloudflight.jems.api.user.dto.UserRegistrationDTO
 import io.cloudflight.jems.api.user.dto.UserDTO
 import io.swagger.annotations.Api
