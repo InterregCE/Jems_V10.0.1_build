@@ -14,8 +14,8 @@ Total public
 contribution
 Private
 contribution
-Total
-contribution
+Total contri
+bution
 ERDF0.000.00 %0.000.000.000.000.000.00
 Neighbourhood 
 CBC
@@ -41,7 +41,7 @@ Associated
 organisations
 Partner total eligible 
 budget
-1ActiveLead Partner in englishLead PartnerLP5123.12
+1ActiveLead Partner in englishLead PartnerLP5,123.12
 
 5
 B.1 Lead partner
