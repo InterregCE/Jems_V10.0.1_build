@@ -58,6 +58,10 @@ data class ProjectEntity(
     @JoinColumn(name = "last_resubmission_id")
     var lastResubmission: ProjectStatusHistoryEntity? = null,
 
+    @ManyToOne(optional = true)
+    @JoinColumn(name = "first_submission_step1_id")
+    var firstSubmissionStep1: ProjectStatusHistoryEntity? = null,
+
     @ManyToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "eligibility_decision_step1_id")
     var decisionEligibilityStep1: ProjectStatusHistoryEntity? = null,
@@ -81,6 +85,10 @@ data class ProjectEntity(
     @ManyToOne(optional = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "modification_decision_id")
     var modificationDecision: ProjectStatusHistoryEntity? = null,
+
+    @ManyToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "contracted_decision_id")
+    var contractedDecision: ProjectStatusHistoryEntity? = null,
 
     @Embedded
     val projectData: ProjectData? = null,

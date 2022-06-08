@@ -15,9 +15,12 @@ export class FormVisibilityStatusService {
   }
 
   isVisible(fieldIds: string | ApplicationFormModel): boolean {
-    return !this.projectStore.project ?
-      false :
-      this.shouldBeVisible(fieldIds, this.projectStore.project.callSettings.applicationFormFieldConfigurations, this.projectStore.project.callSettings.endDateStep1 !== undefined, this.projectStore.project.step2Active);
+    return !this.projectStore.project ? false : this.shouldBeVisible(
+        fieldIds,
+        this.projectStore.project.callSettings.applicationFormFieldConfigurations,
+        this.projectStore.project.callSettings.endDateStep1 !== undefined,
+        this.projectStore.project.step2Active
+      );
   }
 
   isVisible$(fieldIds: string | ApplicationFormModel): Observable<boolean> {

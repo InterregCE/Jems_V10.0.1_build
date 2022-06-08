@@ -17,7 +17,7 @@ export const colors = [
   'bg-blue',
 ];
 
-const EMPTY_STRING = '&nbsp';
+const EMPTY_STRING = ' ';
 export const START_DATE = '2000-01-01';
 
 export const RESULT_GROUP_TITLE_ID = 9_950_000;
@@ -55,30 +55,23 @@ function getNestedEndDateFromPeriod(period: number): Moment {
   return getEndDateFromPeriod(period).subtract(1, 'd');
 }
 
-function periodLabelFunction(date: Date, scale: string, step: number): string {
-  const periodNumber = Math.round(moment(date).diff(
-    moment(START_DATE), 'months', true)
-  );
-  return `Period ${periodNumber}`;
-}
 
 function groupTemplateFunction(item: any, translateService: TranslateService): string {
   const data = item.data;
   switch (data.type) {
     case GroupType.WorkPackage:
-      return `<span>${translateService.instant(
-        'common.label.workpackage',
-        {wpNumber: data.wpNumber, title: item.content}
-      )}</span>`;
+      return `<span>${escapeHtml(translateService.instant(
+        'common.label.workpackage', {wpNumber: `${data.wpNumber}`, title: `${item.content}`}
+      ))}</span>`;
     case GroupType.Activity:
-      return `<span>${translateService.instant(
+      return `<span>${escapeHtml(translateService.instant(
         'common.label.activity',
-        {wpNumber: data.wpNumber, activityNumber: data.activityNumber, title: item.content}
-      )}</span>`;
+        {wpNumber: `${data.wpNumber}`, activityNumber: `${data.activityNumber}`, title: `${item.content}`}
+      ))}</span>`;
     case GroupType.Indicator:
-      return `<span>${item.content}</span>`;
+      return `<span>${escapeHtml(item.content)}</span>`;
     case GroupType.ResultTitle:
-      return `<span>${translateService.instant('result.indicator.title')}</span>`;
+      return `<span>${escapeHtml(translateService.instant('result.indicator.title'))}</span>`;
     default:
       return 'error';
   }
@@ -207,7 +200,7 @@ export function getItems(workPackages: ProjectWorkPackageDTO[], results: Project
         start: getNestedStartDateFromPeriod(output.periodNumber),
         end: getNestedEndDateFromPeriod(output.periodNumber),
         type: 'range',
-        title: getIndicatorTooltip(output.targetValue, translateService),
+        title: getOutputIndicatorTooltip(output.targetValue, translateService),
         content: `O${wp.workPackageNumber}.${output.outputNumber}`,
         className: getColor(indexWp),
       });
@@ -238,7 +231,7 @@ export function getItems(workPackages: ProjectWorkPackageDTO[], results: Project
       start: getNestedStartDateFromPeriod(result.periodNumber),
       end: getNestedEndDateFromPeriod(result.periodNumber),
       type: 'range',
-      title: getIndicatorTooltip(result.targetValue, translateService),
+      title: getResultIndicatorTooltip(result.targetValue, translateService),
       content: `R.${result.resultNumber}`,
       data: {type: GroupType.Indicator},
       className: 'bg-blue',
@@ -248,9 +241,19 @@ export function getItems(workPackages: ProjectWorkPackageDTO[], results: Project
   return new DataSet(items);
 }
 
-function getIndicatorTooltip(targetValue: number, translateService: TranslateService): string {
+function getResultIndicatorTooltip(targetValue: number, translateService: TranslateService): string {
   return targetValue
-    ? `<span>${translateService.instant('project.results.result.target.value')}: ${NumberService.toLocale(targetValue)}</span>`
+    ? `<span>${escapeHtml(
+      `${translateService.instant('project.results.result.target.value')}: ${NumberService.toLocale(targetValue)}`
+    )}</span>`
+    : '';
+}
+
+function getOutputIndicatorTooltip(targetValue: number, translateService: TranslateService): string {
+  return targetValue
+    ? `<span>${escapeHtml(
+      `${translateService.instant('project.application.form.work.package.output.target.value')}: ${NumberService.toLocale(targetValue)}`
+    )}</span>`
     : '';
 }
 
@@ -389,7 +392,7 @@ export function getOptions(translateService: TranslateService, custom?: Partial<
       showMajorLabels: false,
       orientation: 'top',
       timeAxis: {scale: 'month' as TimelineTimeAxisScaleType, step: 1},
-      format: {minorLabels: periodLabelFunction},
+      format: {minorLabels: getMinorLabelsFunction(translateService)},
       margin: {
         axis: 10,
         item: {vertical: 10, horizontal: 0}
@@ -401,4 +404,23 @@ export function getOptions(translateService: TranslateService, custom?: Partial<
     },
     custom
   );
+}
+
+function getMinorLabelsFunction(translateService: TranslateService){
+  return function periodLabelFunction(date: Date, scale: string, step: number): string {
+    const periodNumber = Math.round(moment(date).diff(
+      moment(START_DATE), 'months', true)
+    );
+    return translateService.instant(`common.label.period`, {periodNumber});
+  };
+}
+
+function escapeHtml(unsafe: string)
+{
+  return unsafe
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
 }

@@ -11,7 +11,7 @@ import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.data';
 
 @Component({
-  selector: 'app-project-application-eligibility-decision-page',
+  selector: 'jems-project-application-eligibility-decision-page',
   templateUrl: './project-application-eligibility-decision-page.component.html',
   styleUrls: ['./project-application-eligibility-decision-page.component.scss'],
   providers: [ProjectEligibilityDecisionStore],

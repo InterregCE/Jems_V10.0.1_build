@@ -13,7 +13,7 @@ import {ActivatedRoute} from '@angular/router';
 
 @UntilDestroy()
 @Component({
-  selector: 'app-project-application-form-partner-contribution',
+  selector: 'jems-project-application-form-partner-contribution',
   templateUrl: './project-application-form-partner-contribution.component.html',
   styleUrls: ['./project-application-form-partner-contribution.component.scss'],
   providers: [FormService],

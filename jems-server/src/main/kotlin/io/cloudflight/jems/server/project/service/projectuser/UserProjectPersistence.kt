@@ -8,4 +8,6 @@ interface UserProjectPersistence {
 
     fun changeUsersAssignedToProject(projectId: Long, userIdsToRemove: Set<Long>, userIdsToAssign: Set<Long>): Set<Long>
 
+    fun unassignUserFromProjects(userId: Long)
+
 }

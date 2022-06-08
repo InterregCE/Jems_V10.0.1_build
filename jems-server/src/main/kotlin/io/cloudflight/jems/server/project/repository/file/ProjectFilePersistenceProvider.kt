@@ -42,8 +42,8 @@ class ProjectFilePersistenceProvider(
         projectFileRepository.save(
             ProjectFileEntity(
                 name = projectFile.name,
-                project = projectRepository.getOne(projectId),
-                user = userRepository.getOne(userId),
+                project = projectRepository.getById(projectId),
+                user = userRepository.getById(userId),
                 description = null, size = projectFile.size, updated = ZonedDateTime.now()
             )
         ).also { savedEntity ->

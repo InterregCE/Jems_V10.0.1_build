@@ -1,5 +1,4 @@
-import { ComponentFixture, fakeAsync, TestBed, waitForAsync } from '@angular/core/testing';
-import {InputProjectRelevance} from '@cat/api';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import {ProjectApplicationFormProjectRelevanceAndContextSectionComponent} from './project-application-form-project-relevance-and-context-section.component';
 import {HttpTestingController} from '@angular/common/http/testing';
 import {TestModule} from '../../../../../common/test-module';
@@ -40,22 +39,4 @@ describe('ProjectApplicationFormProjectRelevanceAndContextSectionComponent', () 
   it('should create', () => {
     expect(component).toBeTruthy();
   });
-
-  it('should update project relevance', fakeAsync(() => {
-    component.updateProjectRelevance$.next({} as InputProjectRelevance);
-
-    httpTestingController.expectOne({
-      method: 'PUT',
-      url: '//api/project/1/description/c2'
-    });
-  }));
-
-  it('should delete an entry from project relevance tables', fakeAsync(() => {
-    component.deleteEntriesFromTables$.next({} as InputProjectRelevance);
-
-    httpTestingController.expectOne({
-      method: 'PUT',
-      url: '//api/project/1/description/c2'
-    });
-  }));
 });

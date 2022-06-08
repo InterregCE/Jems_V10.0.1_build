@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.plugin.services
 
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.plugin.contract.models.project.ProjectData
 import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ProjectLifecycleData
 import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA4.ProjectResultIndicatorOverview
@@ -7,6 +8,7 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionB.ProjectDataSe
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.ProjectPartnerData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.PartnerBudgetData
 import io.cloudflight.jems.plugin.contract.models.project.sectionD.ProjectDataSectionD
+import io.cloudflight.jems.plugin.contract.models.project.versions.ProjectVersionData
 import io.cloudflight.jems.plugin.contract.services.ProjectDataProvider
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeLumpSumPersistence
@@ -20,8 +22,10 @@ import io.cloudflight.jems.server.project.service.associatedorganization.Associa
 import io.cloudflight.jems.server.project.service.budget.ProjectBudgetPersistence
 import io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_period.PartnerBudgetPerPeriodCalculator
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResult
+import io.cloudflight.jems.server.project.service.budget.model.PartnersAggregatedInfo
 import io.cloudflight.jems.server.project.service.cofinancing.get_project_cofinancing_overview.CoFinancingOverviewCalculator
 import io.cloudflight.jems.server.project.service.cofinancing.model.PartnerBudgetCoFinancing
+import io.cloudflight.jems.server.project.service.cofinancing.model.ProjectCoFinancingCategoryOverview
 import io.cloudflight.jems.server.project.service.cofinancing.model.ProjectCoFinancingOverview
 import io.cloudflight.jems.server.project.service.common.BudgetCostsCalculatorService
 import io.cloudflight.jems.server.project.service.common.PartnerBudgetPerFundCalculatorService
@@ -31,6 +35,7 @@ import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerB
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
 import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPartnerCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContributionSpf
 import io.cloudflight.jems.server.project.service.partner.model.BudgetCosts
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import io.cloudflight.jems.server.project.service.result.ProjectResultPersistence
@@ -40,6 +45,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal.ZERO
+import java.math.BigDecimal.valueOf
 
 @Service
 class ProjectDataProviderImpl(
@@ -71,8 +77,13 @@ class ProjectDataProviderImpl(
     }
 
     @Transactional(readOnly = true)
+    override fun getAllProjectVersions(): List<ProjectVersionData> =
+        projectVersionPersistence.getAllVersions().toDataModel()
+
+    @Transactional(readOnly = true)
     override fun getProjectDataForProjectId(projectId: Long, version: String?): ProjectData {
         val project = projectPersistence.getProject(projectId, version)
+        val isSpfCall = project.callSettings.callType == CallType.SPF
         val legalStatuses = programmeLegalStatusPersistence.getMax20Statuses()
         val lumpSums = projectLumpSumPersistence.getLumpSums(projectId, version)
 
@@ -83,12 +94,25 @@ class ProjectDataProviderImpl(
 
         val budgetCoFinancingAndContributions: MutableMap<Long, ProjectPartnerCoFinancingAndContribution> =
             mutableMapOf()
+        val budgetSPFCoFinancingAndContributions: MutableMap<Long, ProjectPartnerCoFinancingAndContributionSpf> =
+            mutableMapOf()
 
         val partnersData = partners.map { partner ->
             val budgetOptions = partnersBudgetOptions.firstOrNull() { it.partnerId == partner.id }
             val coFinancing = coFinancingPersistence.getCoFinancingAndContributions(partner.id, version).also {
                 budgetCoFinancingAndContributions[partner.id] = it
             }.toDataModel()
+
+            val spfCoFinancing =
+                if (isSpfCall)
+                    coFinancingPersistence.getSpfCoFinancingAndContributions(partner.id, version).also {
+                        budgetSPFCoFinancingAndContributions[partner.id] = it
+                    }.toDataModel()
+                else null
+            val spfTotalBudget =
+                if (isSpfCall)
+                    getBudgetCostsPersistence.getBudgetSpfCostTotal(partner.id, version)
+                else valueOf(0, 2)
 
             val budgetCosts = BudgetCosts(
                 staffCosts = getBudgetCostsPersistence.getBudgetStaffCosts(partner.id, version),
@@ -103,6 +127,7 @@ class ProjectDataProviderImpl(
                     version
                 ),
                 unitCosts = getBudgetCostsPersistence.getBudgetUnitCosts(partner.id, version),
+                spfCosts = getBudgetCostsPersistence.getBudgetSpfCosts(partner.id, version)
             ).toDataModel()
             val budgetCalculationResult = getBudgetTotalCosts(budgetOptions, partner.id, version).toDataModel()
             val budget = PartnerBudgetData(
@@ -110,7 +135,9 @@ class ProjectDataProviderImpl(
                 coFinancing,
                 budgetCosts,
                 budgetCalculationResult.totalCosts,
-                budgetCalculationResult
+                budgetCalculationResult,
+                spfCoFinancing,
+                spfTotalBudget
             )
             val stateAid = partnerPersistence.getPartnerStateAid(partnerId = partner.id, version)
 
@@ -122,7 +149,7 @@ class ProjectDataProviderImpl(
         }.toSet()
 
         val sectionA = project.toDataModel(
-            tableA3data = getCoFinancingOverview(partnersData, version),
+            tableA3data = getCoFinancingOverview(partnersData, version, isSpfCall),
             tableA4data = getResultIndicatorOverview(projectId, version)
         )
 
@@ -147,17 +174,18 @@ class ProjectDataProviderImpl(
                             budgetCoFinancingAndContributions[partner.id],
                             total = partner.budget.projectBudgetCostsCalculationResult.totalCosts
                         )
-                    }
-
+                    },
+                    spfCoFinancing = null
                 ).toProjectPartnerBudgetPerFundData()
             },
             projectPartnerBudgetPerPeriodData = partnerBudgetPerPeriodCalculator.calculate(
-                partners = partnersSummary,
-                budgetOptions = partnersBudgetOptions,
-                budgetPerPartner = projectBudgetPersistence.getBudgetPerPartner(partnerIds, projectId, version),
+                PartnersAggregatedInfo(
+                    partnersSummary, partnersBudgetOptions,
+                    projectBudgetPersistence.getBudgetPerPartner(partnerIds, projectId, version),
+                    projectBudgetPersistence.getBudgetTotalForPartners(partnerIds, projectId, version)
+                ),
                 lumpSums = lumpSums,
                 projectPeriods = projectPersistence.getProjectPeriods(projectId, version),
-                partnerTotalBudget = projectBudgetPersistence.getBudgetTotalForPartners(partnerIds, projectId, version)
             ).toProjectBudgetOverviewPerPartnerPerPeriod()
         )
 
@@ -169,7 +197,15 @@ class ProjectDataProviderImpl(
 
         return ProjectData(
             sectionA, sectionB, sectionC, sectionD, sectionE,
-            lifecycleData = ProjectLifecycleData(status = project.projectStatus.status.toDataModel()),
+            lifecycleData = ProjectLifecycleData(
+                status = project.projectStatus.status.toDataModel(),
+                submissionDateStepOne = project.firstSubmissionStep1?.updated,
+                firstSubmissionDate = project.firstSubmission?.updated,
+                lastResubmissionDate = project.lastResubmission?.updated,
+                contractedDate = project.contractedDecision?.updated,
+                assessmentStep1 = project.assessmentStep1?.toDataModel(),
+                assessmentStep2 = project.assessmentStep2?.toDataModel()
+            ),
             versions = projectVersionPersistence.getAllVersionsByProjectId(projectId).toDataModel()
         )
     }
@@ -209,15 +245,38 @@ class ProjectDataProviderImpl(
         )
     }
 
-    private fun getCoFinancingOverview(partners: Set<ProjectPartnerData>, version: String?): ProjectCoFinancingOverview {
+    private fun getCoFinancingOverview(
+        partners: Set<ProjectPartnerData>,
+        version: String?,
+        isSpfCall: Boolean
+    ): ProjectCoFinancingOverview {
         val partnersByIds = partners.associateBy { it.id!! }
-        val funds = if (partnersByIds.keys.isNotEmpty()) coFinancingPersistence.getAvailableFunds(partnersByIds.keys.first()) else emptySet()
+        val funds =
+            if (partnersByIds.keys.isNotEmpty()) coFinancingPersistence.getAvailableFunds(partnersByIds.keys.first()) else emptySet()
 
-        return CoFinancingOverviewCalculator.calculateCoFinancingOverview(
+        val managementCoFinancingOverview = CoFinancingOverviewCalculator.calculateCoFinancingOverview(
             partnerIds = partnersByIds.keys,
-            getBudgetTotalCost = { partnerId -> partnersByIds[partnerId]?.budget?.projectBudgetCostsCalculationResult?.totalCosts ?: ZERO },
+            getBudgetTotalCost = { partnerId ->
+                partnersByIds[partnerId]?.budget?.projectBudgetCostsCalculationResult?.totalCosts ?: ZERO
+            },
             getCoFinancingAndContributions = { coFinancingPersistence.getCoFinancingAndContributions(it, version) },
             funds = funds,
+        )
+
+        val spfCoFinancingCategoryOverview = if (isSpfCall) {
+            CoFinancingOverviewCalculator.calculateCoFinancingOverview(
+                partnerIds = partnersByIds.keys,
+                getBudgetTotalCost = { partnerId ->
+                    partnersByIds[partnerId]?.budget?.projectPartnerSpfBudgetTotalCost ?: ZERO
+                },
+                getCoFinancingAndContributions = { coFinancingPersistence.getSpfCoFinancingAndContributions(it, version) },
+                funds = funds,
+            )
+        } else ProjectCoFinancingCategoryOverview()
+
+        return ProjectCoFinancingOverview(
+            projectManagementCoFinancing = managementCoFinancingOverview,
+            projectSpfCoFinancing = spfCoFinancingCategoryOverview
         )
     }
 

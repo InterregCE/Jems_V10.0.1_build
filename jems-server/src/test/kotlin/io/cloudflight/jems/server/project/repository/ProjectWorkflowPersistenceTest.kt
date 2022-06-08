@@ -6,7 +6,7 @@ import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumPhase
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.call.callWithId
+import io.cloudflight.jems.server.call.createTestCallEntity
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.call.entity.FlatRateSetupId
 import io.cloudflight.jems.server.call.entity.ProjectCallFlatRateEntity
@@ -39,7 +39,7 @@ import org.junit.jupiter.api.assertThrows
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.ZonedDateTime
-import java.util.Optional
+import java.util.*
 
 internal class ProjectWorkflowPersistenceTest : UnitTest() {
 
@@ -51,7 +51,7 @@ internal class ProjectWorkflowPersistenceTest : UnitTest() {
         val endDate: ZonedDateTime = ZonedDateTime.now().plusDays(2)
 
         private fun dummyCall(): CallEntity {
-            val call = callWithId(CALL_ID)
+            val call = createTestCallEntity(CALL_ID)
             call.name = "call name"
             call.startDate = startDate
             call.endDate = endDate
@@ -110,6 +110,8 @@ internal class ProjectWorkflowPersistenceTest : UnitTest() {
                             category = BudgetCategory.OfficeAndAdministrationCosts
                         ),
                     ),
+                    costPerUnitForeignCurrency = BigDecimal.ZERO,
+                    foreignCurrencyCode = null
                 )
             )
             return call
@@ -271,8 +273,8 @@ internal class ProjectWorkflowPersistenceTest : UnitTest() {
     fun `update Application first Submission`() {
         val user = ProjectPartnerTestUtil.user
         val project = dummyProject()
-        every { projectRepository.getOne(PROJECT_ID) } returns project
-        every { userRepository.getOne(user.id) } returns user
+        every { projectRepository.getById(PROJECT_ID) } returns project
+        every { userRepository.getById(user.id) } returns user
         val status =
             ProjectStatusHistoryEntity(id = 1, status = ApplicationStatus.SUBMITTED, user = user, updated = startDate)
         // any because of auto set updated timestamp
@@ -286,8 +288,8 @@ internal class ProjectWorkflowPersistenceTest : UnitTest() {
     fun `update Application last ReSubmission`() {
         val user = ProjectPartnerTestUtil.user
         val project = dummyProject()
-        every { projectRepository.getOne(PROJECT_ID) } returns project
-        every { userRepository.getOne(user.id) } returns user
+        every { projectRepository.getById(PROJECT_ID) } returns project
+        every { userRepository.getById(user.id) } returns user
         val status =
             ProjectStatusHistoryEntity(id = 1, status = ApplicationStatus.APPROVED, user = user, updated = endDate)
         // any because of auto set updated timestamp
@@ -353,7 +355,7 @@ internal class ProjectWorkflowPersistenceTest : UnitTest() {
 
     @Test
     fun `reset Project FundingDecision`() {
-        every { projectRepository.getOne(PROJECT_ID) } returns dummyProject()
+        every { projectRepository.getById(PROJECT_ID) } returns dummyProject()
         assertThat(persistence.resetProjectFundingDecisionToCurrentStatus(PROJECT_ID))
             .isEqualTo(ApplicationStatus.SUBMITTED)
     }
@@ -362,8 +364,8 @@ internal class ProjectWorkflowPersistenceTest : UnitTest() {
     fun `update Project EligibilityDecision`() {
         val user = ProjectPartnerTestUtil.user
         val project = dummyProject()
-        every { projectRepository.getOne(PROJECT_ID) } returns project
-        every { userRepository.getOne(user.id) } returns user
+        every { projectRepository.getById(PROJECT_ID) } returns project
+        every { userRepository.getById(user.id) } returns user
         val statusHistories = listOf(
             ProjectStatusHistoryEntity(id = 1, status = ApplicationStatus.DRAFT, user = user, updated = startDate),
             ProjectStatusHistoryEntity(id = 2, status = ApplicationStatus.APPROVED, user = user, updated = endDate)
@@ -386,8 +388,8 @@ internal class ProjectWorkflowPersistenceTest : UnitTest() {
     fun `update Project FundingDecision`() {
         val user = ProjectPartnerTestUtil.user
         val project = dummyProject()
-        every { projectRepository.getOne(PROJECT_ID) } returns project
-        every { userRepository.getOne(user.id) } returns user
+        every { projectRepository.getById(PROJECT_ID) } returns project
+        every { userRepository.getById(user.id) } returns user
         val statusHistories = listOf(
             ProjectStatusHistoryEntity(id = 1, status = ApplicationStatus.DRAFT, user = user, updated = startDate),
             ProjectStatusHistoryEntity(id = 2, status = ApplicationStatus.APPROVED, user = user, updated = endDate)
@@ -422,7 +424,9 @@ internal class ProjectWorkflowPersistenceTest : UnitTest() {
                 listOf(
                     ApplicationStatus.MODIFICATION_PRECONTRACTING_SUBMITTED,
                     ApplicationStatus.MODIFICATION_REJECTED,
-                    ApplicationStatus.APPROVED
+                    ApplicationStatus.APPROVED,
+                    ApplicationStatus.MODIFICATION_SUBMITTED,
+                    ApplicationStatus.CONTRACTED,
                 )
             )
         } returns listOf(status2, status1)
@@ -438,7 +442,9 @@ internal class ProjectWorkflowPersistenceTest : UnitTest() {
                 listOf(
                     ApplicationStatus.MODIFICATION_PRECONTRACTING_SUBMITTED,
                     ApplicationStatus.MODIFICATION_REJECTED,
-                    ApplicationStatus.APPROVED
+                    ApplicationStatus.APPROVED,
+                    ApplicationStatus.MODIFICATION_SUBMITTED,
+                    ApplicationStatus.CONTRACTED,
                 )
             )
         } returns emptyList()

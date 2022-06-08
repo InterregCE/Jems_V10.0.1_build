@@ -3,16 +3,20 @@ import {ProjectDetailDTO, ProjectStatusDTO, ProjectVersionDTO, UserRoleDTO} from
 import {FileCategoryTypeEnum} from '@project/common/components/file-management/file-category-type';
 import {CategoryInfo} from '@project/common/components/category-tree/categoryModels';
 import {combineLatest, Observable} from 'rxjs';
-import {map, take, tap} from 'rxjs/operators';
+import {filter, map, switchMap, take, tap} from 'rxjs/operators';
 import {ModificationPageStore} from '@project/project-application/modification-page/modification-page-store.service';
 import {RoutingService} from '@common/services/routing.service';
 import {ActivatedRoute} from '@angular/router';
-import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {
+  ProjectStore
+} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 import {Alert} from '@common/components/forms/alert';
+import {Forms} from '@common/utils/forms';
+import {MatDialog} from '@angular/material/dialog';
 
 @Component({
-  selector: 'app-modification-page',
+  selector: 'jems-modification-page',
   templateUrl: './modification-page.component.html',
   styleUrls: ['./modification-page.component.scss'],
   providers: [ModificationPageStore],
@@ -42,7 +46,8 @@ export class ModificationPageComponent {
               private routingService: RoutingService,
               private activatedRoute: ActivatedRoute,
               private projectVersionStore: ProjectVersionStore,
-              private changeDetectorRef: ChangeDetectorRef) {
+              private changeDetectorRef: ChangeDetectorRef,
+              private dialog: MatDialog) {
     this.data$ = combineLatest([
       this.projectStore.currentVersionOfProject$,
       this.pageStore.currentVersionOfProjectTitle$,
@@ -58,17 +63,25 @@ export class ModificationPageComponent {
         modificationDecisions,
         canOpenModification: this.canOpenModification(currentVersionOfProjectStatus, hasOpenPermission),
         canHandBackModification: this.canHandBackModification(currentVersionOfProjectStatus, hasOpenPermission),
-        versions: this.isModificationOpened(currentVersionOfProjectStatus) ? versions.splice(1, versions.length - 1) : versions
+        versions: this.isModificationOpenedOrSubmitted(currentVersionOfProjectStatus) ? versions.slice(1, versions.length - 1) : versions
       }))
     );
   }
 
   startModification(): void {
-    this.pageStore.startModification()
-      .pipe(
-        take(1),
-        tap(() => this.showSuccessMessage()))
-      .subscribe();
+    Forms.confirm(
+      this.dialog,
+      {
+        title: 'application.action.open.modification.confirmation.dialog',
+        warnMessage: 'application.action.open.modification.confirmation.dialog.warning'
+      }
+    ).pipe(
+      take(1),
+      filter(yes => !!yes),
+      take(1),
+      switchMap(() => this.pageStore.startModification()),
+      tap(() => this.showSuccessMessage())
+    ).subscribe();
   }
 
   handBackToApplicant(): void {
@@ -85,11 +98,11 @@ export class ModificationPageComponent {
 
   private canOpenModification(projectStatus: ProjectStatusDTO.StatusEnum, hasOpenPermission: boolean): boolean {
     return hasOpenPermission
-      && (projectStatus === this.ProjectStatusEnum.APPROVED || projectStatus === this.ProjectStatusEnum.NOTAPPROVED);
+      && (projectStatus === this.ProjectStatusEnum.APPROVED || projectStatus === this.ProjectStatusEnum.NOTAPPROVED || projectStatus === this.ProjectStatusEnum.CONTRACTED);
   }
 
   private canHandBackModification(projectStatus: ProjectStatusDTO.StatusEnum, hasOpenPermission: boolean): boolean {
-    return hasOpenPermission && projectStatus === this.ProjectStatusEnum.MODIFICATIONPRECONTRACTINGSUBMITTED;
+    return hasOpenPermission && (projectStatus === this.ProjectStatusEnum.MODIFICATIONPRECONTRACTINGSUBMITTED || projectStatus === this.ProjectStatusEnum.MODIFICATIONSUBMITTED);
   }
 
   private showSuccessMessage(): void {
@@ -100,8 +113,10 @@ export class ModificationPageComponent {
     }, 4000);
   }
 
-  isModificationOpened(currentStatus: ProjectStatusDTO.StatusEnum) {
+  isModificationOpenedOrSubmitted(currentStatus: ProjectStatusDTO.StatusEnum) {
     return currentStatus === ProjectVersionDTO.StatusEnum.MODIFICATIONPRECONTRACTING ||
-      currentStatus === ProjectVersionDTO.StatusEnum.MODIFICATIONPRECONTRACTINGSUBMITTED;
+      currentStatus === ProjectVersionDTO.StatusEnum.MODIFICATIONPRECONTRACTINGSUBMITTED ||
+      currentStatus === ProjectStatusDTO.StatusEnum.INMODIFICATION ||
+      currentStatus === ProjectStatusDTO.StatusEnum.MODIFICATIONSUBMITTED;
   }
 }

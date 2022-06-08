@@ -1,4 +1,7 @@
-<button appText mat-raised-button class="action-button" color="primary" type="button"
+<button jemsText class="action-button" type="button" mat-raised-button
+        [class.mat-raised-button]="type === 'primary'"
+        [class.mat-stroked-button]="type === 'secondary'"
+        [color]="type === 'primary' && 'primary'"
         [disabled]="disabled || pending"
         (click)="click()">
     <span>

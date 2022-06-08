@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.programme.service.language.update_languages
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.programme.authorization.CanUpdateProgrammeSetup
-import io.cloudflight.jems.server.programme.service.is_programme_setup_locked.IsProgrammeSetupLockedInteractor
+import io.cloudflight.jems.server.programme.service.info.isSetupLocked.IsProgrammeSetupLockedInteractor
 import io.cloudflight.jems.server.programme.service.language.ProgrammeLanguagePersistence
 import io.cloudflight.jems.server.programme.service.language.model.ProgrammeLanguage
 import io.cloudflight.jems.server.programme.service.programmeInputLanguagesChanged

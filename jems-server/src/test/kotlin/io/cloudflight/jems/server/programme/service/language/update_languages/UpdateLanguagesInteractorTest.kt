@@ -12,7 +12,7 @@ import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.call.repository.CallRepository
 import io.cloudflight.jems.server.common.exception.I18nValidationException
-import io.cloudflight.jems.server.programme.service.is_programme_setup_locked.IsProgrammeSetupLockedInteractor
+import io.cloudflight.jems.server.programme.service.info.isSetupLocked.IsProgrammeSetupLockedInteractor
 import io.cloudflight.jems.server.programme.service.language.ProgrammeLanguagePersistence
 import io.cloudflight.jems.server.programme.service.language.model.ProgrammeLanguage
 import io.mockk.every

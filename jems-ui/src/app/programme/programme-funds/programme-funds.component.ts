@@ -16,7 +16,7 @@ import {ProgrammePageSidenavService} from '../programme-page/services/programme-
 
 @UntilDestroy()
 @Component({
-  selector: 'app-programme-funds',
+  selector: 'jems-programme-funds',
   templateUrl: './programme-funds.component.html',
   styleUrls: ['./programme-funds.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -82,7 +82,7 @@ export class ProgrammeFundsComponent extends ViewEditFormComponent implements On
       untilDestroyed(this)
     ).subscribe();
 
-    // todo remove after switching to app-form
+    // todo remove after switching to jems-form
     this.success$ = this.fundsSaveSuccess$.asObservable();
     this.error$ = this.fundsSaveError$.asObservable();
     combineLatest([this.changeFormState$, this.funds$])

@@ -1,17 +1,17 @@
 <ng-container *ngIf="(data$ | async) as data">
-    <app-form (save)="updateActivities()">
-        <form appFormLayout [formGroup]="form">
+    <jems-form (save)="updateActivities()">
+        <form jemsFormLayout [formGroup]="form">
             <h3>{{'project.work.package.tab.title' | translate}}</h3>
             <p>{{'project.work.package.tab.intro' | translate}}</p>
-            <div appNoWidthLimit *ngFor="let activity of activities.controls;let i=index">
+            <div jemsNoWidthLimit *ngFor="let activity of activities.controls;let i=index">
                 <ng-container [formArrayName]="constants.ACTIVITIES.name">
-                    <div appFormLayout [formGroupName]="i" class="activity-container">
-                        <div class="activity-header" appNoWidthLimit appMultiColumnRow justifyContent="space-between">
-                            <h4 appMultiColumnRow class="mb-0">
+                    <div jemsFormLayout [formGroupName]="i" class="activity-container">
+                        <div class="activity-header" stretch="1" jemsNoWidthLimit jemsMultiColumnRow justifyContent="space-between">
+                            <h4 jemsMultiColumnRow stretch="1" class="mb-0 activity-header-inner">
                                 <span>{{('project.work.package.tab.activity' | translate) + ' ' + data.workPackageNumber + '.' + (i + 1) }}</span>
-                                <span appFormFieldWidth="full"
-                                      *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.ACTIVITIES.TITLE"
-                                      class="text-overflow-ellipsis">{{activity.get(constants.TITLE.name).value | translateByInputLanguage | async}}</span>
+                                <span *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.ACTIVITIES.TITLE">
+                                    {{activity.get(constants.TITLE.name).value | translateByInputLanguage | async}}
+                                </span>
                             </h4>
 
                             <button *ngIf="form.enabled"
@@ -20,56 +20,63 @@
                                 <mat-icon>delete</mat-icon>
                             </button>
                         </div>
-                        <app-multi-language-container
-                                *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.ACTIVITIES.TITLE">
-                            <app-multi-language-form-field
+                        <jems-multi-language-container
+                                *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.ACTIVITIES.TITLE">
+                            <jems-multi-language-form-field
                                     type="textarea"
                                     minRows="1"
                                     [label]="'project.work.package.tab.activity.title'"
                                     [formControlName]="constants.TITLE.name"
                                     [maxLength]="constants.TITLE.maxLength">
-                            </app-multi-language-form-field>
-                        </app-multi-language-container>
+                            </jems-multi-language-form-field>
+                        </jems-multi-language-container>
 
                         <div>
-                            <div appMultiColumnRow stretch>
-                                <app-project-periods-select
-                                        *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.ACTIVITIES.START_PERIOD"
+                            <div jemsMultiColumnRow stretch>
+                                <jems-project-periods-select
+                                        *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.ACTIVITIES.START_PERIOD"
                                         [periods]="data.periods"
                                         [control]="activity.get(constants.START_PERIOD.name)"
                                         label='project.work.package.tab.activity.start.period'
                                         (selectionChanged)="formService.setDirty(true)">
-                                </app-project-periods-select>
+                                </jems-project-periods-select>
 
-                                <app-project-periods-select
-                                        *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.ACTIVITIES.END_PERIOD"
+                                <jems-project-periods-select
+                                        *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.ACTIVITIES.END_PERIOD"
                                         [periods]="data.periods"
                                         [control]="activity.get(constants.END_PERIOD.name)"
                                         label='project.work.package.tab.activity.end.period'
                                         (selectionChanged)="formService.setDirty(true)">
-                                </app-project-periods-select>
+                                </jems-project-periods-select>
                             </div>
                             <mat-error *ngIf="activity.errors">
-                                <app-form-field-errors
+                                <jems-form-field-errors
                                         [errors]="activity.errors"
-                                        [messages]="constants.PERIODS.errorMessages"></app-form-field-errors>
+                                        [messages]="constants.PERIODS.errorMessages"></jems-form-field-errors>
                             </mat-error>
                         </div>
 
-                        <app-multi-language-container
-                                *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.ACTIVITIES.DESCRIPTION">
-                            <app-multi-language-form-field
+                        <jems-multi-language-container
+                                *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.ACTIVITIES.DESCRIPTION">
+                            <jems-multi-language-form-field
                                     type="textarea"
                                     [label]="'project.work.package.tab.activity.description'"
                                     [formControlName]="constants.DESCRIPTION.name"
                                     [maxLength]="constants.DESCRIPTION.maxLength">
-                            </app-multi-language-form-field>
-                        </app-multi-language-container>
+                            </jems-multi-language-form-field>
+                        </jems-multi-language-container>
+
+                        <jems-alert *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.ACTIVITIES.STATE_AID_PARTNERS_INVOLVED"
+                                [type]="Alert.WARNING"
+                                [show]="data.partners.length === 0"
+                                [closable]="false">
+                            <span>{{'project.work.package.tab.activity.partnersInvolved.warning' | translate}}</span>
+                        </jems-alert>
 
                         <mat-form-field class="example-chip-list" appearance="fill"
-                                        *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.ACTIVITIES.STATE_AID_PARTNERS_INVOLVED">
+                                        *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.ACTIVITIES.STATE_AID_PARTNERS_INVOLVED">
                             <mat-label>{{ 'project.work.package.tab.activity.partnersInvolved' | translate }}</mat-label>
-                            <mat-chip-list #chipList [disabled]="!data.isEditable">
+                            <mat-chip-list #chipList [disabled]="!data.isEditable || data.partners.length === 0 ">
                                 <mat-chip
                                         *ngFor="let partner of partners(i).value;let partnerIndex = index"
                                         [selectable]="false"
@@ -90,53 +97,53 @@
                                 <mat-option
                                         *ngFor="let partner of getPartnersWithoutSelected(data.partners, i) | filterPartner: filterPartners.value"
                                         [value]="partner.id">
-                                    {{ partner.toPartnerNumberString()}} {{partner.abbreviation}}
+                                    {{ 'common.label.project.partner.role.shortcut.' + partner.role | adaptTranslationKeyByCallType | async
+                                        | translate: {partner: partner.sortNumber} }} {{partner.abbreviation}}
                                 </mat-option>
                             </mat-autocomplete>
                         </mat-form-field>
 
                         <ng-container
-                                *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.ACTIVITIES.DELIVERABLES">
+                                *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.ACTIVITIES.DELIVERABLES">
                             <h4>{{'project.work.package.tab.deliverables' | translate}}</h4>
                             <p>{{'project.work.package.tab.deliverables.intro' | translate}}</p>
-                            <app-multi-language-container appNoWidthLimit *ngIf="deliverables(i).controls?.length">
-                                <div [appTableConfig]="[{maxInRem:3},{minInRem:15},{minInRem:15},{minInRem:10},{maxInRem:2}]">
+                            <jems-multi-language-container jemsNoWidthLimit *ngIf="deliverables(i).controls?.length">
+                                <div [jemsTableConfig]="[{maxInRem:3},{minInRem:15},{minInRem:15},{minInRem:10},{maxInRem:2}]">
                                     <div>
                                         <span class="mat-body-strong">{{'project.work.package.tab.deliverables.number' | translate }}</span>
                                         <span class="mat-body-strong">{{'project.work.package.tab.deliverables.title' | translate }}</span>
                                         <span class="mat-body-strong">{{'project.work.package.tab.deliverables.description' | translate }}</span>
                                         <span class="mat-body-strong">{{'project.work.package.tab.deliverables.period' | translate }}</span>
-                                        <div class="mat-body-strong"></div>
+                                        <div *ngIf="form.enabled" class="mat-body-strong"></div>
                                     </div>
                                     <div *ngFor="let deliverable of deliverables(i).controls;let j=index">
                                         <ng-container [formArrayName]="constants.DELIVERABLES.name">
                                             <ng-container [formGroupName]="j">
                                                 <div>D.{{data.workPackageNumber}}.{{i + 1}}.{{j + 1}}</div>
 
-                                                <app-multi-language-form-field
+                                                <jems-multi-language-form-field
                                                         type="textarea"
                                                         [label]="'project.work.package.tab.deliverables.title'"
                                                         [formControlName]="constants.DELIVERABLE_TITLE.name"
                                                         [maxLength]="constants.DELIVERABLE_TITLE.maxLength">
-                                                </app-multi-language-form-field>
+                                                </jems-multi-language-form-field>
 
-                                                <app-multi-language-form-field
+                                                <jems-multi-language-form-field
                                                         type="textarea"
                                                         [label]="'project.work.package.tab.deliverables.description'"
                                                         [formControlName]="constants.DELIVERABLE_DESCRIPTION.name"
                                                         [maxLength]="constants.DELIVERABLE_DESCRIPTION.maxLength">
-                                                </app-multi-language-form-field>
+                                                </jems-multi-language-form-field>
 
-                                                <app-project-periods-select
+                                                <jems-project-periods-select
                                                         [periods]="data.periods"
                                                         [control]="deliverable.get(constants.PERIOD.name)"
                                                         label='project.work.package.tab.deliverables.period'
                                                         (selectionChanged)="formService.setDirty(true)">
-                                                </app-project-periods-select>
+                                                </jems-project-periods-select>
 
-                                                <div>
-                                                    <button *ngIf="form.enabled"
-                                                            type="button"
+                                                <div *ngIf="form.enabled">
+                                                    <button type="button"
                                                             (click)="removeDeliverable(i, j)"
                                                             mat-icon-button
                                                             color="accent">
@@ -147,8 +154,8 @@
                                         </ng-container>
                                     </div>
                                 </div>
-                            </app-multi-language-container>
-                            <button appText *ngIf="addDeliverableVisible(i)" mat-stroked-button type="button"
+                            </jems-multi-language-container>
+                            <button jemsText *ngIf="addDeliverableVisible(i)" mat-stroked-button type="button"
                                     (click)="addNewDeliverable(i)">
                                 <mat-icon>add</mat-icon>
                             </button>
@@ -160,5 +167,5 @@
                 + {{'project.work.package.tab.activity.add' | translate}}
             </button>
         </form>
-    </app-form>
+    </jems-form>
 </ng-container>

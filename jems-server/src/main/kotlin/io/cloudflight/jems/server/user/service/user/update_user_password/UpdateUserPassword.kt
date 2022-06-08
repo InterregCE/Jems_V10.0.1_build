@@ -32,7 +32,7 @@ class UpdateUserPassword(
         val user = persistence.getById(userId)
 
         persistence.updatePassword(userId, passwordEncoder.encode(newPassword)).also {
-            auditPublisher.publishEvent(passwordChanged(this, user, initiator = securityService.currentUser!!.user))
+            auditPublisher.publishEvent(passwordChanged(user, initiator = securityService.currentUser!!.user))
         }
     }
 
@@ -44,7 +44,7 @@ class UpdateUserPassword(
         val user = persistence.getById(securityService.currentUser!!.user.id)
 
         updatePasswordIfOldPasswordMatches(user, passwordData).also {
-            auditPublisher.publishEvent(passwordChanged(this, user))
+            auditPublisher.publishEvent(passwordChanged(user))
         }
     }
 

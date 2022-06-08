@@ -1,21 +1,21 @@
-<app-main-page-template [needsCard]="true" titleKey="programme.data.page.title"
+<jems-main-page-template [needsCard]="true" titleKey="programme.data.page.title"
                         subTitleKey="programme.priority.add.title">
-    <div appFormLayout>
+    <div jemsFormLayout>
         <h3>{{'programme.priority.list.header' | translate}}</h3>
+        <button jemsText mat-stroked-button class="mt-2 mb-2"
+                *jemsHasPermission="PermissionsEnum.ProgrammeSetupUpdate"
+                routerLink="/app/programme/priorities/create">
+            <mat-icon>add</mat-icon>&nbsp;{{'programme.priority.button.add' | translate}}
+        </button>
         <ng-container *ngIf="prioritiesPageStore.priorities$ | async as priorities">
-            <app-table
-                    appNoWidthLimit
+            <jems-table
+                    jemsNoWidthLimit
                     *ngIf="priorities.length"
                     [configuration]="tableConfiguration"
                     [rows]="priorities"
                     [totalElements]="priorities.length">
-            </app-table>
+            </jems-table>
         </ng-container>
-        <button appText mat-stroked-button
-                *hasPermission="PermissionsEnum.ProgrammeSetupUpdate"
-                routerLink="/app/programme/priorities/create">
-            <mat-icon>add</mat-icon>&nbsp;{{'programme.priority.button.add' | translate}}
-        </button>
     </div>
     <ng-template #specificObjective let-priority>
         <div>
@@ -24,4 +24,4 @@
             </div>
         </div>
     </ng-template>
-</app-main-page-template>
+</jems-main-page-template>

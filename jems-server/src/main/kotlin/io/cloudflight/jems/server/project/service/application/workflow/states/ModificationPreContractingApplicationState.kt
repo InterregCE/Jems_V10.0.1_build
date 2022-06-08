@@ -5,7 +5,7 @@ import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectWorkflowPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.application.workflow.ApplicationState
-import io.cloudflight.jems.server.project.service.application.workflow.ReturnToApplicantIsNotPossibleException
+import io.cloudflight.jems.server.project.service.application.workflow.InvalidPreviousStatusException
 import io.cloudflight.jems.server.project.service.model.ProjectStatus
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import org.springframework.context.ApplicationEventPublisher
@@ -38,7 +38,7 @@ class ModificationPreContractingApplicationState(
         projectWorkflowPersistence.getApplicationPreviousStatus(projectSummary.id).also { previousStatus ->
             when (previousStatus.status) {
                 ApplicationStatus.APPROVED, ApplicationStatus.MODIFICATION_PRECONTRACTING_SUBMITTED -> Unit
-                else -> throw ReturnToApplicantIsNotPossibleException(
+                else -> throw InvalidPreviousStatusException(
                     fromStatus = projectSummary.status,
                     toStatus = previousStatus.status
                 )

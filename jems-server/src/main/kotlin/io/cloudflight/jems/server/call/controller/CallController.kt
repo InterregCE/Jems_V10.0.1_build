@@ -4,7 +4,9 @@ import io.cloudflight.jems.api.call.CallApi
 import io.cloudflight.jems.api.call.dto.AllowedRealCostsDTO
 import io.cloudflight.jems.api.call.dto.CallDTO
 import io.cloudflight.jems.api.call.dto.CallDetailDTO
+import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.call.dto.CallUpdateRequestDTO
+import io.cloudflight.jems.api.call.dto.PreSubmissionPluginsDTO
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateSetupDTO
 import io.cloudflight.jems.api.common.dto.IdNamePairDTO
 import io.cloudflight.jems.server.call.service.create_call.CreateCallInteractor
@@ -17,6 +19,7 @@ import io.cloudflight.jems.server.call.service.update_call.UpdateCallInteractor
 import io.cloudflight.jems.server.call.service.update_call_flat_rates.UpdateCallFlatRatesInteractor
 import io.cloudflight.jems.server.call.service.update_call_lump_sums.UpdateCallLumpSumsInteractor
 import io.cloudflight.jems.server.call.service.update_call_unit_costs.UpdateCallUnitCostsInteractor
+import io.cloudflight.jems.server.call.service.update_pre_submission_check_configuration.UpdatePreSubmissionCheckSettingsInteractor
 import io.cloudflight.jems.server.common.toDTO
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -34,13 +37,14 @@ class CallController(
     private val getAllowedRealCosts: GetAllowedRealCostsInteractor,
     private val updateCallLumpSums: UpdateCallLumpSumsInteractor,
     private val updateCallUnitCosts: UpdateCallUnitCostsInteractor,
+    private val updatePreSubmissionCheckSettings: UpdatePreSubmissionCheckSettingsInteractor
 ) : CallApi {
 
     override fun getCalls(pageable: Pageable): Page<CallDTO> =
         getCall.getCalls(pageable).toDto()
 
-    override fun listCalls(): List<IdNamePairDTO> =
-        listCalls.list().toDTO()
+    override fun listCalls(status: CallStatus?): List<IdNamePairDTO> =
+        listCalls.list(status).toDTO()
 
     override fun getPublishedCalls(pageable: Pageable): Page<CallDTO> =
         getCall.getPublishedCalls(pageable).toDto()
@@ -71,5 +75,8 @@ class CallController(
 
     override fun updateCallUnitCosts(callId: Long, unitCostIds: Set<Long>) =
         updateCallUnitCosts.updateUnitCosts(callId, unitCostIds).toDto()
+
+    override fun updatePreSubmissionCheckSettings(callId: Long, pluginKeys: PreSubmissionPluginsDTO): CallDetailDTO =
+        updatePreSubmissionCheckSettings.update(callId, pluginKeys.toModel()).toDto()
 
 }

@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.service.get_project
 
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
 import io.cloudflight.jems.server.authentication.service.SecurityService
@@ -8,6 +9,7 @@ import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
+import io.cloudflight.jems.server.project.service.partner.UserPartnerCollaboratorPersistence
 import io.cloudflight.jems.server.project.service.projectuser.UserProjectCollaboratorPersistence
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -28,6 +30,7 @@ internal class GetProjectTest : UnitTest() {
         val callSettings = ProjectCallSettings(
             callId = 15,
             callName = "Call 15",
+            callType = CallType.STANDARD,
             startDate = startDate,
             endDate = endDate,
             endDateStep1 = null,
@@ -37,7 +40,9 @@ internal class GetProjectTest : UnitTest() {
             lumpSums = emptyList(),
             unitCosts = emptyList(),
             stateAids = emptyList(),
-            applicationFormFieldConfigurations = mutableSetOf()
+            applicationFormFieldConfigurations = mutableSetOf(),
+            preSubmissionCheckPluginKey = null,
+            firstStepPreSubmissionCheckPluginKey = null
         )
 
         val dummyProject = ProjectSummary(
@@ -57,7 +62,10 @@ internal class GetProjectTest : UnitTest() {
     lateinit var persistence: ProjectPersistence
 
     @MockK
-    lateinit var collaboratorPersistence: UserProjectCollaboratorPersistence
+    lateinit var projectCollaboratorPersistence: UserProjectCollaboratorPersistence
+
+    @MockK
+    lateinit var partnerCollaboratorPersistence: UserPartnerCollaboratorPersistence
 
     @MockK
     lateinit var securityService: SecurityService
@@ -79,10 +87,11 @@ internal class GetProjectTest : UnitTest() {
         every { persistence.getProjectsOfUserPlusExtra(Pageable.unpaged(), capture(extraProjectIds)) } returns PageImpl(listOf(dummyProject))
         every { securityService.currentUser } returns user
         every { securityService.getUserIdOrThrow() } returns user.user.id
-        every { collaboratorPersistence.getProjectIdsForUser(44L) } returns setOf(11L, 12L)
+        every { projectCollaboratorPersistence.getProjectIdsForUser(44L) } returns setOf(11L, 12L)
+        every { partnerCollaboratorPersistence.getProjectIdsForUser(44L) } returns setOf(13L, 14L)
 
         assertThat(getProject.getMyProjects(Pageable.unpaged()).content).containsExactly(dummyProject)
-        assertThat(extraProjectIds.captured).containsExactlyInAnyOrder(10L, 11L, 12L)
+        assertThat(extraProjectIds.captured).containsExactlyInAnyOrder(10L, 11L, 12L, 13L, 14L)
     }
 
 }

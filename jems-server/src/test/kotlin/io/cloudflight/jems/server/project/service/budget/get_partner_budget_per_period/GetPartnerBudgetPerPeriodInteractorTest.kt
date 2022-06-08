@@ -3,19 +3,21 @@ package io.cloudflight.jems.server.project.service.budget.get_partner_budget_per
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.budget.ProjectBudgetPersistence
+import io.cloudflight.jems.server.project.service.budget.model.PartnersAggregatedInfo
 import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerBudget
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectPartnerLumpSum
+import io.cloudflight.jems.server.project.service.model.BudgetCostsDetail
 import io.cloudflight.jems.server.project.service.model.ProjectBudgetOverviewPerPartnerPerPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectPartnerBudgetPerPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectPeriodBudget
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
+import io.cloudflight.jems.server.project.service.partner.model.PartnerTotalBudgetPerCostCategory
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
-import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerTotalBudget
 import io.cloudflight.jems.server.toScaledBigDecimal
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -56,10 +58,13 @@ class GetPartnerBudgetPerPeriodInteractorTest : UnitTest() {
 
     @MockK
     lateinit var persistence: ProjectBudgetPersistence
+
     @MockK
     lateinit var optionPersistence: ProjectPartnerBudgetOptionsPersistence
+
     @MockK
     lateinit var projectPersistence: ProjectPersistence
+
     @MockK
     lateinit var lumpSumPersistence: ProjectLumpSumPersistence
 
@@ -74,7 +79,7 @@ class GetPartnerBudgetPerPeriodInteractorTest : UnitTest() {
         val projectId = 1L
         val version = "1.0"
 
-        val partnerTotal1 = ProjectPartnerTotalBudget(
+        val partnerTotal1 = PartnerTotalBudgetPerCostCategory(
             partner1Id,
             null,
             null,
@@ -90,7 +95,7 @@ class GetPartnerBudgetPerPeriodInteractorTest : UnitTest() {
             BigDecimal.ZERO
         )
 
-        val partnerTotal2 = ProjectPartnerTotalBudget(
+        val partnerTotal2 = PartnerTotalBudgetPerCostCategory(
             partner2Id,
             null,
             null,
@@ -138,19 +143,27 @@ class GetPartnerBudgetPerPeriodInteractorTest : UnitTest() {
                 ProjectPartnerBudgetPerPeriod(
                     partner = partner1,
                     periodBudgets = getProjectPeriods(170.00.toScaledBigDecimal(), 130.00.toScaledBigDecimal()),
-                    totalPartnerBudget = 300.toScaledBigDecimal()
+                    totalPartnerBudget = 300.toScaledBigDecimal(),
+                    totalPartnerBudgetDetail = BudgetCostsDetail()
                 ),
                 ProjectPartnerBudgetPerPeriod(
                     partner = partner2,
                     periodBudgets = getProjectPeriods(250.toScaledBigDecimal(), 0.toScaledBigDecimal()),
-                    totalPartnerBudget = 250.toScaledBigDecimal()
+                    totalPartnerBudget = 250.toScaledBigDecimal(),
+                    totalPartnerBudgetDetail = BudgetCostsDetail()
                 )
             ),
             totals = listOf(),
             totalsPercentage = listOf()
         )
         every { persistence.getPartnersForProjectId(projectId, version) } returns listOf(partner1, partner2)
-        every { optionPersistence.getBudgetOptions(setOf(partner1Id, partner2Id), projectId, version) } returns budgetOptions
+        every {
+            optionPersistence.getBudgetOptions(
+                setOf(partner1Id, partner2Id),
+                projectId,
+                version
+            )
+        } returns budgetOptions
         every { lumpSumPersistence.getLumpSums(projectId, version) } returns listOf(
             lumpSumEntry(partner2Id, 100.toBigDecimal())
         )
@@ -168,14 +181,16 @@ class GetPartnerBudgetPerPeriodInteractorTest : UnitTest() {
 
         every {
             calculatePartnerBudgetPerPeriod.calculate(
-                partners = listOf(partner1, partner2),
-                budgetOptions = budgetOptions,
-                budgetPerPartner = listOf(p1budgetPeriod1, p1budgetPeriod2, p2budgetPeriod1),
+                PartnersAggregatedInfo(
+                    listOf(partner1, partner2),
+                    budgetOptions,
+                    listOf(p1budgetPeriod1, p1budgetPeriod2, p2budgetPeriod1),
+                    mapOf(Pair(partner1Id, partnerTotal1), Pair(partner2Id, partnerTotal2))
+                ),
                 lumpSums = listOf(
                     lumpSumEntry(partner2Id, 100.toBigDecimal())
                 ),
                 projectPeriods = projectPeriods(),
-                partnerTotalBudget = mapOf(Pair(partner1Id, partnerTotal1), Pair(partner2Id, partnerTotal2))
             )
         } returns expectedResult
 
@@ -191,28 +206,32 @@ class GetPartnerBudgetPerPeriodInteractorTest : UnitTest() {
                 periodStart = 0,
                 periodEnd = 0,
                 totalBudgetPerPeriod = BigDecimal.ZERO,
-                lastPeriod = false
+                lastPeriod = false,
+                budgetPerPeriodDetail = BudgetCostsDetail()
             ),
             ProjectPeriodBudget(
                 periodNumber = 1,
                 periodStart = 1,
                 periodEnd = 2,
                 totalBudgetPerPeriod = total1,
-                lastPeriod = false
+                lastPeriod = false,
+                budgetPerPeriodDetail = BudgetCostsDetail()
             ),
             ProjectPeriodBudget(
                 periodNumber = 2,
                 periodStart = 2,
                 periodEnd = 2,
                 totalBudgetPerPeriod = total2,
-                lastPeriod = false
+                lastPeriod = false,
+                budgetPerPeriodDetail = BudgetCostsDetail()
             ),
             ProjectPeriodBudget(
                 periodNumber = 255,
                 periodStart = 0,
                 periodEnd = 0,
                 totalBudgetPerPeriod = BigDecimal.ZERO,
-                lastPeriod = true
+                lastPeriod = true,
+                budgetPerPeriodDetail = BudgetCostsDetail()
             )
         )
 }

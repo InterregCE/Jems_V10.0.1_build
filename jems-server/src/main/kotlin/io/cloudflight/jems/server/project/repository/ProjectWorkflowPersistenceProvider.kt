@@ -35,13 +35,17 @@ class ProjectWorkflowPersistenceProvider(
 
     @Transactional
     override fun updateApplicationFirstSubmission(projectId: Long, userId: Long, status: ApplicationStatus) =
-        projectRepository.getOne(projectId).apply {
+        projectRepository.getById(projectId).apply {
             val newStatus = projectStatusHistoryRepository.save(
                 ProjectStatusHistoryEntity(
-                    project = this, status = status, user = userRepository.getOne(userId)
+                        project = this, status = status, user = userRepository.getById(userId)
                 )
             )
-            firstSubmission = newStatus
+            if (this.currentStatus.status.isInStep2()) {
+                firstSubmission = newStatus
+            } else {
+                firstSubmissionStep1 = newStatus
+            }
             currentStatus = newStatus
         }.currentStatus.status
 
@@ -60,12 +64,12 @@ class ProjectWorkflowPersistenceProvider(
         decisionDate: LocalDate? = null,
         note: String? = null
     ) =
-        projectRepository.getOne(projectId).apply {
+        projectRepository.getById(projectId).apply {
             val newStatus = projectStatusHistoryRepository.save(
                 ProjectStatusHistoryEntity(
                     project = this,
                     status = status,
-                    user = userRepository.getOne(userId),
+                    user = userRepository.getById(userId),
                     decisionDate = decisionDate,
                     note = note,
                 )
@@ -82,13 +86,17 @@ class ProjectWorkflowPersistenceProvider(
         actionInfo: ApplicationActionInfo?
     ) =
         projectRepository.getById(projectId).apply {
-            currentStatus = projectStatusHistoryRepository.save(
+            val newStatus = projectStatusHistoryRepository.save(
                 ProjectStatusHistoryEntity(
                     project = this, status = status, user = userRepository.getById(userId),
                     decisionDate = actionInfo?.date,
                     note = actionInfo?.note
                 )
             )
+            if (status == ApplicationStatus.CONTRACTED){
+                contractedDecision = newStatus
+            }
+            currentStatus = newStatus
         }.currentStatus.status
 
     @Transactional
@@ -97,10 +105,10 @@ class ProjectWorkflowPersistenceProvider(
         userId: Long,
         actionInfo: ApplicationActionInfo?
     ): ApplicationStatus =
-        projectRepository.getOne(projectId).apply {
+        projectRepository.getById(projectId).apply {
             currentStatus = projectStatusHistoryRepository.save(
                 ProjectStatusHistoryEntity(
-                    project = this, status = ApplicationStatus.DRAFT, user = userRepository.getOne(userId),
+                    project = this, status = ApplicationStatus.DRAFT, user = userRepository.getById(userId),
                     decisionDate = actionInfo?.date,
                     note = actionInfo?.note
                 )
@@ -118,7 +126,7 @@ class ProjectWorkflowPersistenceProvider(
 
     @Transactional
     override fun resetProjectFundingDecisionToCurrentStatus(projectId: Long) =
-        projectRepository.getOne(projectId).apply {
+        projectRepository.getById(projectId).apply {
             if (this.currentStatus.status.isInStep2())
                 if (this.currentStatus.status == ApplicationStatus.APPROVED_WITH_CONDITIONS || this.currentStatus.status == ApplicationStatus.CONDITIONS_SUBMITTED)
                     this.decisionFundingStep2 = null
@@ -133,11 +141,11 @@ class ProjectWorkflowPersistenceProvider(
     override fun updateProjectEligibilityDecision(
         projectId: Long, userId: Long, status: ApplicationStatus, actionInfo: ApplicationActionInfo
     ) =
-        projectRepository.getOne(projectId).apply {
+        projectRepository.getById(projectId).apply {
             val newStatus = projectStatusHistoryRepository.save(
                 ProjectStatusHistoryEntity(
                     project = this, status = status, note = actionInfo.note,
-                    decisionDate = actionInfo.date, user = userRepository.getOne(userId)
+                    decisionDate = actionInfo.date, user = userRepository.getById(userId)
                 )
             )
             if (this.currentStatus.status.isInStep2())
@@ -149,7 +157,7 @@ class ProjectWorkflowPersistenceProvider(
 
     @Transactional
     override fun clearProjectEligibilityDecision(projectId: Long) {
-        projectRepository.getOne(projectId).apply {
+        projectRepository.getById(projectId).apply {
             if (this.currentStatus.status.isInStep2())
                 this.decisionEligibilityStep2 = null
             else
@@ -161,11 +169,11 @@ class ProjectWorkflowPersistenceProvider(
     override fun updateProjectFundingDecision(
         projectId: Long, userId: Long, status: ApplicationStatus, actionInfo: ApplicationActionInfo
     ) =
-        projectRepository.getOne(projectId).apply {
+        projectRepository.getById(projectId).apply {
             val newStatus = projectStatusHistoryRepository.save(
                 ProjectStatusHistoryEntity(
                     project = this, status = status, note = actionInfo.note,
-                    decisionDate = actionInfo.date, user = userRepository.getOne(userId)
+                    decisionDate = actionInfo.date, user = userRepository.getById(userId)
                 )
             )
             if (this.currentStatus.status.isInStep2())
@@ -191,7 +199,7 @@ class ProjectWorkflowPersistenceProvider(
                     note = actionInfo?.note,
                     decisionDate = actionInfo?.date,
                     entryIntoForceDate = actionInfo?.entryIntoForceDate,
-                    user = userRepository.getOne(userId)
+                    user = userRepository.getById(userId)
                 )
             )
 
@@ -205,14 +213,20 @@ class ProjectWorkflowPersistenceProvider(
             listOf(
                 ApplicationStatus.MODIFICATION_PRECONTRACTING_SUBMITTED,
                 ApplicationStatus.MODIFICATION_REJECTED,
-                ApplicationStatus.APPROVED
+                ApplicationStatus.APPROVED,
+                ApplicationStatus.MODIFICATION_SUBMITTED,
+                ApplicationStatus.CONTRACTED,
             )
         ).zipWithNext()
             .filter {
-                it.second.status == ApplicationStatus.MODIFICATION_PRECONTRACTING_SUBMITTED && listOf(
+                (it.second.status == ApplicationStatus.MODIFICATION_PRECONTRACTING_SUBMITTED && listOf(
                     ApplicationStatus.MODIFICATION_REJECTED,
                     ApplicationStatus.APPROVED
-                ).contains(it.first.status)
+                ).contains(it.first.status)) ||
+                    (it.second.status == ApplicationStatus.MODIFICATION_SUBMITTED && listOf(
+                    ApplicationStatus.MODIFICATION_REJECTED,
+                    ApplicationStatus.CONTRACTED
+                ).contains(it.first.status))
             }.map { it.first.toProjectStatus() }
 
     @Transactional

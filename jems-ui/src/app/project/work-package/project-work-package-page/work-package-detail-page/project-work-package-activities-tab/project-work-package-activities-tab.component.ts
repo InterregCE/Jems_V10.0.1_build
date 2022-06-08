@@ -11,10 +11,11 @@ import {ProjectWorkPackageActivitiesTabConstants} from './project-work-package-a
 import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {ProjectPartnerStore} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
 import {ProjectPartner} from '@project/model/ProjectPartner';
+import {Alert} from '@common/components/forms/alert';
 
 @UntilDestroy()
 @Component({
-  selector: 'app-project-work-package-activities-tab',
+  selector: 'jems-project-work-package-activities-tab',
   templateUrl: './project-work-package-activities-tab.component.html',
   styleUrls: ['./project-work-package-activities-tab.component.scss'],
   providers: [FormService],
@@ -23,6 +24,7 @@ import {ProjectPartner} from '@project/model/ProjectPartner';
 export class ProjectWorkPackageActivitiesTabComponent implements OnInit {
   constants = ProjectWorkPackageActivitiesTabConstants;
   APPLICATION_FORM = APPLICATION_FORM;
+  Alert = Alert;
 
   separatorKeysCodes: number[] = [ENTER, COMMA];
 
@@ -61,14 +63,14 @@ export class ProjectWorkPackageActivitiesTabComponent implements OnInit {
       this.workPackageStore.workPackage$,
       this.workPackageStore.projectForm$,
       this.partnerStore.partners$,
-      this.workPackageStore.isProjectEditable$,
+      this.workPackageStore.isProjectEditable$
     ]).pipe(
       map(([activities, workPackage, projectForm, partners, isEditable]) => ({
           activities,
           periods: projectForm.periods,
           workPackageNumber: workPackage.number,
           partners,
-          isEditable,
+          isEditable
         })
       ));
   }
@@ -145,7 +147,7 @@ export class ProjectWorkPackageActivitiesTabComponent implements OnInit {
 
   getAbbreviationForPartnerId(partners: ProjectPartner[], partnerId: number): string {
     const partner = partners.find(p => p.id === partnerId);
-    return `${partner?.toPartnerNumberString() || '-'} ${partner?.abbreviation || '-'}`;
+    return `${partner?.partnerNumber || '-'} ${partner?.abbreviation || '-'}`;
   }
 
   getPartnersWithoutSelected(partners: ProjectPartner[], activityIndex: number): ProjectPartner[] {

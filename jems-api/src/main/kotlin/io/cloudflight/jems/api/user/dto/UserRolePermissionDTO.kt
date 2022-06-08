@@ -2,25 +2,25 @@ package io.cloudflight.jems.api.user.dto
 
 enum class UserRolePermissionDTO(val key: String) {
 
-    ProgrammeSetupRetrieve("ProgrammeSetupRetrieve"),
-    ProgrammeSetupUpdate("ProgrammeSetupUpdate"),
-
-    CallRetrieve("CallRetrieve"),
-    CallPublishedRetrieve("CallPublishedRetrieve"),
-    CallUpdate("CallUpdate"),
-
-    ProjectRetrieve("ProjectRetrieve"),
-    ProjectRetrieveEditUserAssignments("ProjectRetrieveEditUserAssignments"),
-    ProjectsWithOwnershipRetrieve("ProjectsWithOwnershipRetrieve"),
+    // region Creator
     ProjectCreate("ProjectCreate"),
+
+    ProjectCreatorCollaboratorsRetrieve("ProjectCreatorCollaboratorsRetrieve"),
+    ProjectCreatorCollaboratorsUpdate("ProjectCreatorCollaboratorsUpdate"),
+    // endregion Creator
+
+    // region Monitor
+    ProjectReportingView("ProjectReportingView"),
+    ProjectReportingEdit("ProjectReportingEdit"),
+
+    ProjectContractingView("ProjectContractingView"),
+    ProjectSetToContracted("ProjectSetToContracted"),
 
     ProjectFormRetrieve("ProjectFormRetrieve"),
     ProjectFormUpdate("ProjectFormUpdate"),
 
     ProjectFileApplicationRetrieve("ProjectFileApplicationRetrieve"),
     ProjectFileApplicationUpdate("ProjectFileApplicationUpdate"),
-    ProjectFileAssessmentRetrieve("ProjectFileAssessmentRetrieve"),
-    ProjectFileAssessmentUpdate("ProjectFileAssessmentUpdate"),
 
     ProjectCheckApplicationForm("ProjectCheckApplicationForm"),
     ProjectSubmission("ProjectSubmission"),
@@ -28,39 +28,62 @@ enum class UserRolePermissionDTO(val key: String) {
     ProjectAssessmentView("ProjectAssessmentView"),
     ProjectAssessmentQualityEnter("ProjectAssessmentQualityEnter"),
     ProjectAssessmentEligibilityEnter("ProjectAssessmentEligibilityEnter"),
-    ProjectStatusReturnToApplicant("ProjectStatusReturnToApplicant"),
     ProjectStatusDecideEligible("ProjectStatusDecideEligible"),
     ProjectStatusDecideIneligible("ProjectStatusDecideIneligible"),
     ProjectStatusDecideApproved("ProjectStatusDecideApproved"),
     ProjectStatusDecideApprovedWithConditions("ProjectStatusDecideApprovedWithConditions"),
     ProjectStatusDecideNotApproved("ProjectStatusDecideNotApproved"),
+
     ProjectStatusDecisionRevert("ProjectStatusDecisionRevert"),
+    ProjectStatusReturnToApplicant("ProjectStatusReturnToApplicant"),
     ProjectStartStepTwo("ProjectStartStepTwo"),
 
-    ProjectContractingView("ProjectContractingView"),
-    ProjectSetToContracted("ProjectSetToContracted"),
+    ProjectFileAssessmentRetrieve("ProjectFileAssessmentRetrieve"),
+    ProjectFileAssessmentUpdate("ProjectFileAssessmentUpdate"),
+
+    ProjectAssessmentChecklistUpdate("ProjectAssessmentChecklistUpdate"),
+    ProjectAssessmentChecklistConsolidate("ProjectAssessmentChecklistConsolidate"),
+    ProjectAssessmentChecklistSelectedRetrieve("ProjectAssessmentChecklistSelectedRetrieve"),
+    ProjectAssessmentChecklistSelectedUpdate("ProjectAssessmentChecklistSelectedUpdate"),
 
     ProjectModificationView("ProjectModificationView"),
     ProjectStatusDecideModificationApproved("ProjectStatusDecideModificationApproved"),
     ProjectStatusDecideModificationNotApproved("ProjectStatusDecideModificationNotApproved"),
+
     ProjectOpenModification("ProjectOpenModification"),
+
     ProjectModificationFileAssessmentRetrieve("ProjectModificationFileAssessmentRetrieve"),
     ProjectModificationFileAssessmentUpdate("ProjectModificationFileAssessmentUpdate"),
 
-    ProjectCreatorCollaboratorsRetrieve("ProjectCreatorCollaboratorsRetrieve"),
-    ProjectCreatorCollaboratorsUpdate("ProjectCreatorCollaboratorsUpdate"),
     ProjectMonitorCollaboratorsRetrieve("ProjectMonitorCollaboratorsRetrieve"),
     ProjectMonitorCollaboratorsUpdate("ProjectMonitorCollaboratorsUpdate"),
+    // endregion Monitor
 
-    AuditRetrieve("AuditRetrieve"),
+    // region top navigation
+    ProjectsWithOwnershipRetrieve("ProjectsWithOwnershipRetrieve"),
+    CallPublishedRetrieve("CallPublishedRetrieve"),
 
-    RoleRetrieve("RoleRetrieve"),
-    RoleCreate("RoleCreate"),
-    RoleUpdate("RoleUpdate"),
+    ProjectRetrieve("ProjectRetrieve"),
+    ProjectRetrieveEditUserAssignments("ProjectRetrieveEditUserAssignments"),
+
+    CallRetrieve("CallRetrieve"),
+    CallUpdate("CallUpdate"),
+
+    ProgrammeSetupRetrieve("ProgrammeSetupRetrieve"),
+    ProgrammeSetupUpdate("ProgrammeSetupUpdate"),
+
+    ProgrammeDataExportRetrieve("ProgrammeDataExportRetrieve"),
 
     UserRetrieve("UserRetrieve"),
+    RoleRetrieve("RoleRetrieve"),
     UserCreate("UserCreate"),
     UserUpdate("UserUpdate"),
     UserUpdateRole("UserUpdateRole"),
     UserUpdatePassword("UserUpdatePassword"),
+    RoleCreate("RoleCreate"),
+    RoleUpdate("RoleUpdate"),
+
+    AuditRetrieve("AuditRetrieve"),
+    // endregion top navigation
+
 }

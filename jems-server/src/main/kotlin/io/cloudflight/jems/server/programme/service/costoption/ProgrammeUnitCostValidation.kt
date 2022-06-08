@@ -1,8 +1,9 @@
 package io.cloudflight.jems.server.programme.service.costoption
 
+import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory
-import io.cloudflight.jems.server.common.exception.I18nFieldError
 import io.cloudflight.jems.server.common.exception.I18nValidationException
+import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import org.springframework.http.HttpStatus
 import java.math.BigDecimal
@@ -28,32 +29,50 @@ fun validateUpdateUnitCost(unitCost: ProgrammeUnitCost) {
 }
 
 private fun validateCommonUnitCost(unitCost: ProgrammeUnitCost) {
-    val errors = mutableMapOf<String, I18nFieldError>()
+    val errors = mutableMapOf<String, I18nMessage>()
 
-    val costPerUnit = unitCost.costPerUnit
-    if (costPerUnit == null || costPerUnit <= BigDecimal.ZERO || costPerUnit > MAX_COST || costPerUnit.scale() > 2)
-        errors.put("costPerUnit", I18nFieldError(i18nKey = "programme.unitCost.costPerUnit.invalid"))
-
+    validateCostPerUnit(unitCost.costPerUnit, errors)
+    validateCostPerUnitForeignCurrency(unitCost.costPerUnitForeignCurrency, errors)
     validateOneCostCategory(unitCost = unitCost, errors = errors)
 
     if (errors.isNotEmpty())
-        throw I18nValidationException(
-            i18nKey = "programme.unitCost.invalid",
-            httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
-            i18nFieldErrors = errors,
+        throw AppInputValidationException(formErrors = errors)
+}
+
+private fun validateCostPerUnit(costPerUnit: BigDecimal?, errors: MutableMap<String, I18nMessage>) {
+    if (costPerUnit == null || costPerUnit <= BigDecimal.ZERO || costPerUnit > MAX_COST || costPerUnit.scale() > 2)
+        errors["costPerUnit"] = I18nMessage(
+            i18nKey = "programme.unitCost.costPerUnit.invalid",
+            mapOf("costPerUnit" to costPerUnit.toString())
         )
 }
 
-private fun validateOneCostCategory(unitCost: ProgrammeUnitCost, errors: MutableMap<String, I18nFieldError>) {
-    if (unitCost.isOneCostCategory == true) {
+private fun validateOneCostCategory(unitCost: ProgrammeUnitCost, errors: MutableMap<String, I18nMessage>) {
+    if (unitCost.isOneCostCategory) {
         if (unitCost.categories.size != 1)
-            errors.put("categories", I18nFieldError(i18nKey = "programme.unitCost.categories.exactly.1"))
+
+            errors["categories"] = I18nMessage(i18nKey = "programme.unitCost.categories.exactly.1")
+
         else {
             if (unitCost.categories.contains(BudgetCategory.OfficeAndAdministrationCosts))
-                errors.put("categories", I18nFieldError(i18nKey = "programme.unitCost.categories.restricted"))
+                errors["categories"] = I18nMessage(i18nKey = "programme.unitCost.categories.restricted")
         }
     } else {
         if (unitCost.categories.size < 2)
-            errors.put("categories", I18nFieldError(i18nKey = "programme.unitCost.categories.min.2"))
+            errors["categories"] = I18nMessage(i18nKey = "programme.unitCost.categories.min.2")
+    }
+}
+
+private fun validateCostPerUnitForeignCurrency(
+    costPerUnitForeignCurrency: BigDecimal?,
+    errors: MutableMap<String, I18nMessage>
+) {
+    if (costPerUnitForeignCurrency != null) {
+        if (costPerUnitForeignCurrency <= BigDecimal.ZERO || costPerUnitForeignCurrency > MAX_COST || costPerUnitForeignCurrency.scale() > 2) {
+            errors["costPerUnitForeignCurrency"] = I18nMessage(
+                i18nKey = "programme.unitCost.costPerUnit.invalid",
+                mapOf("costPerUnitForeignCurrency" to costPerUnitForeignCurrency.toString())
+            )
+        }
     }
 }

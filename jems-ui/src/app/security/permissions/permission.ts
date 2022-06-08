@@ -3,9 +3,7 @@ import {UserRoleCreateDTO} from '@cat/api';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 
 export class Permission {
-  public static readonly ADMINISTRATOR = 'administrator';
-  public static readonly PROGRAMME_USER = 'programme user';
-  public static readonly APPLICANT_USER = 'applicant user';
+  public static readonly PROJECT_APPLICATION_FORM_TITLE_NAME = 'project.application.form.title';
 
   public static readonly SYSTEM_MODULE_PERMISSIONS = [
     PermissionsEnum.AuditRetrieve,
@@ -24,9 +22,24 @@ export class Permission {
   public static readonly PROGRAMME_SETUP_MODULE_PERMISSIONS = [
     PermissionsEnum.ProgrammeSetupRetrieve,
     PermissionsEnum.ProgrammeSetupUpdate,
+    PermissionsEnum.ProgrammeDataExportRetrieve
   ];
 
   public static readonly DEFAULT_USER_CREATE_AND_COLLABORATE_PERMISSIONS: PermissionNode[] = [
+    {
+      name: 'project.application.reporting.title',
+      children: [
+        {
+          name: 'project.application.reporting.title',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [],
+          editPermissions: [],
+          disabled: true,
+          state: PermissionState.EDIT,
+          editTooltip: 'permission.create.reporting'
+        }
+      ]
+    },
     {
       name: 'project.application.contracting.title',
       children: [
@@ -42,10 +55,10 @@ export class Permission {
         ]
     },
     {
-      name: 'project.application.form.title',
+      name: Permission.PROJECT_APPLICATION_FORM_TITLE_NAME,
       children: [
         {
-          name: 'project.application.form.title',
+          name: Permission.PROJECT_APPLICATION_FORM_TITLE_NAME,
           mode: PermissionMode.HIDDEN_VIEW_EDIT,
           viewPermissions: [],
           editPermissions: [],
@@ -101,6 +114,18 @@ export class Permission {
 
   public static readonly DEFAULT_USER_INSPECT_PERMISSIONS: PermissionNode[] = [
     {
+      name: 'project.application.reporting.title',
+      children: [
+        {
+          name: 'project.application.reporting.title',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [PermissionsEnum.ProjectReportingView],
+          editPermissions: [PermissionsEnum.ProjectReportingEdit],
+          editTooltip: 'permission.inspect.reporting'
+        }
+      ]
+    },
+    {
       name: 'project.application.contracting.title',
       children: [
         {
@@ -113,10 +138,10 @@ export class Permission {
       ]
     },
     {
-      name: 'project.application.form.title',
+      name: Permission.PROJECT_APPLICATION_FORM_TITLE_NAME,
       children: [
         {
-          name: 'project.application.form.title',
+          name: Permission.PROJECT_APPLICATION_FORM_TITLE_NAME,
           mode: PermissionMode.HIDDEN_VIEW_EDIT,
           viewPermissions: [PermissionsEnum.ProjectFormRetrieve],
           editPermissions: [PermissionsEnum.ProjectFormUpdate],
@@ -179,6 +204,28 @@ export class Permission {
               editPermissions: [PermissionsEnum.ProjectFileAssessmentUpdate],
               editTooltip: 'permission.inspect.annexes'
             },
+            {
+              name: 'project.application.form.section.assessment.and.decision.checklists',
+              children: [
+                {
+                  name: 'permission.assessment.instantiate',
+                  mode: PermissionMode.TOGGLE_EDIT,
+                  editPermissions: [PermissionsEnum.ProjectAssessmentChecklistUpdate],
+                },
+                {
+                  name: 'permission.assessment.consolidate',
+                  mode: PermissionMode.TOGGLE_EDIT,
+                  editPermissions: [PermissionsEnum.ProjectAssessmentChecklistConsolidate],
+                  infoMessage: 'permission.assessment.consolidate.info'
+                },
+                {
+                  name: 'permission.assessment.selection',
+                  mode: PermissionMode.HIDDEN_VIEW_EDIT,
+                  viewPermissions: [PermissionsEnum.ProjectAssessmentChecklistSelectedRetrieve],
+                  editPermissions: [PermissionsEnum.ProjectAssessmentChecklistSelectedUpdate]
+                }
+              ]
+            }
           ],
         },
         {
@@ -252,7 +299,7 @@ export class Permission {
       editTooltip: 'permission.top.bar.applications.edit'
     },
     {
-      name: 'Calls',
+      name: 'topbar.main.call',
       mode: PermissionMode.HIDDEN_VIEW_EDIT,
       viewPermissions: [PermissionsEnum.CallRetrieve],
       editPermissions: [PermissionsEnum.CallUpdate],
@@ -261,11 +308,21 @@ export class Permission {
     },
     {
       name: 'topbar.main.programme',
-      mode: PermissionMode.HIDDEN_VIEW_EDIT,
-      viewPermissions: [PermissionsEnum.ProgrammeSetupRetrieve],
-      editPermissions: [PermissionsEnum.ProgrammeSetupUpdate],
       icon: 'business',
-      editTooltip: 'permission.top.bar.programme.data'
+      children: [
+        {
+          name: 'topbar.main.programme.setup',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [PermissionsEnum.ProgrammeSetupRetrieve],
+          editPermissions: [PermissionsEnum.ProgrammeSetupUpdate],
+          editTooltip: 'permission.top.bar.programme.data',
+        },
+        {
+          name: 'topbar.main.programme.data.export',
+          mode: PermissionMode.HIDDEN_VIEW,
+          viewPermissions: [PermissionsEnum.ProgrammeDataExportRetrieve],
+        },
+      ]
     },
     {
       name: 'topbar.main.system',

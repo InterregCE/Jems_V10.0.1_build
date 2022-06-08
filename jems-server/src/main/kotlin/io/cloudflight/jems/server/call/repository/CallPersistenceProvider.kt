@@ -8,12 +8,13 @@ import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.call.service.model.AllowedRealCosts
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.Call
+import io.cloudflight.jems.server.call.service.model.CallApplicationFormFieldsConfiguration
 import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.call.service.model.CallFundRate
 import io.cloudflight.jems.server.call.service.model.CallSummary
 import io.cloudflight.jems.server.call.service.model.IdNamePair
+import io.cloudflight.jems.server.call.service.model.PreSubmissionPlugins
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
-import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.repository.StrategyRepository
 import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeLumpSumRepository
 import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeUnitCostRepository
@@ -73,10 +74,10 @@ class CallPersistenceProvider(
 
         adjustTimeToLastNanoSec(call)
 
-        val created = callRepo.save(
+        val created = callRepo.saveAndFlush(
             call.toEntity(
-                user = userRepo.getOne(userId),
-                retrieveSpecificObjective = { programmeSpecificObjectiveRepo.getOne(it) },
+                user = userRepo.getById(userId),
+                retrieveSpecificObjective = { programmeSpecificObjectiveRepo.getById(it) },
                 retrieveStrategies = { programmeStrategyRepo.getAllByStrategyInAndActiveTrue(it).toSet() }
             )
         )
@@ -111,7 +112,7 @@ class CallPersistenceProvider(
         return callRepo.save(
             call.toEntity(
                 user = existingCall.creator,
-                retrieveSpecificObjective = { programmeSpecificObjectiveRepo.getOne(it) },
+                retrieveSpecificObjective = { programmeSpecificObjectiveRepo.getById(it) },
                 retrieveStrategies = { programmeStrategyRepo.getAllByStrategyInAndActiveTrue(it).toSet() },
                 existingEntity = existingCall,
             )
@@ -149,9 +150,24 @@ class CallPersistenceProvider(
     }
 
     @Transactional
-    override fun updateProjectCallFlatRate(callId: Long, flatRates: Set<ProjectCallFlatRate>): CallDetail {
+    override fun updateProjectCallFlatRate(callId: Long, flatRatesRequest: Set<ProjectCallFlatRate>): CallDetail {
         val call = callRepo.findById(callId).orElseThrow { CallNotFound() }
-        call.updateFlatRateSetup(flatRates.toEntity(call))
+            .apply {
+                val groupedByType = flatRatesRequest.toEntity(this).associateBy { it.setupId.type }.toMutableMap()
+                flatRates.forEach {
+                    if (groupedByType.keys.contains(it.setupId.type)) {
+                        val newValue = groupedByType.getValue(it.setupId.type)
+                        it.rate = newValue.rate
+                        it.isAdjustable = newValue.isAdjustable
+                    }
+                }
+                flatRates.removeIf { !groupedByType.keys.contains(it.setupId.type) }
+                val existingTypes = flatRates.associateBy { it.setupId.type }.keys
+                groupedByType.filterKeys { !existingTypes.contains(it) }
+                    .forEach {
+                        flatRates.add(it.value)
+                    }
+            }
         return call.toDetailModel(
             applicationFormFieldConfigurationRepository.findAllByCallId(callId),
             projectCallStateAidRepo.findAllByIdCallId(callId)
@@ -215,12 +231,20 @@ class CallPersistenceProvider(
         callRepo.existsByidAndStatus(callId, CallStatus.PUBLISHED)
 
     @Transactional(readOnly = true)
-    override fun listCalls(): List<IdNamePair> =
-        callRepo.findAll().toIdNamePair()
+    override fun listCalls(status: CallStatus?): List<IdNamePair> =
+        if (status != null)
+            callRepo.findAllByStatus(status).toIdNamePair()
+        else
+            callRepo.findAll().toIdNamePair()
 
     @Transactional(readOnly = true)
-    override fun getApplicationFormFieldConfigurations(callId: Long): MutableSet<ApplicationFormFieldConfiguration> =
-        applicationFormFieldConfigurationRepository.findAllByCallId(callId).toModel()
+    override fun getApplicationFormFieldConfigurations(callId: Long): CallApplicationFormFieldsConfiguration {
+        val callType = callRepo.findById(callId).orElseThrow { CallNotFound() }.type
+        return CallApplicationFormFieldsConfiguration(
+            callType = callType,
+            applicationFormFieldConfigurations = applicationFormFieldConfigurationRepository.findAllByCallId(callId).toModel()
+        )
+    }
 
     @Transactional
     override fun saveApplicationFormFieldConfigurations(
@@ -251,12 +275,18 @@ class CallPersistenceProvider(
         )
     }
 
+    @Transactional
+    override fun updateProjectCallPreSubmissionCheckPlugin(callId: Long, pluginKeys: PreSubmissionPlugins) =
+        callRepo.findById(callId).orElseThrow { CallNotFound() }
+        .apply { preSubmissionCheckPluginKey = pluginKeys.pluginKey
+                  firstStepPreSubmissionCheckPluginKey = pluginKeys.firstStepPluginKey  }.toDetailModel(
+                applicationFormFieldConfigurationRepository.findAllByCallId(callId),
+                projectCallStateAidRepo.findAllByIdCallId(callId)
+            )
 
     private fun adjustTimeToLastNanoSec(call: Call) {
-
         call.startDate = call.startDate.withSecond(0).withNano(0)
         call.endDateStep1 = call.endDateStep1?.withSecond(0)?.withNano(0)?.plusMinutes(1)?.minusNanos(1)
         call.endDate = call.endDate.withSecond(0).withNano(0).plusMinutes(1).minusNanos(1)
-
     }
 }

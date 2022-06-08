@@ -4,7 +4,8 @@ import io.cloudflight.jems.api.audit.dto.AuditAction.APPLICATION_STATUS_CHANGED
 import io.cloudflight.jems.api.audit.dto.AuditAction.APPLICATION_VERSION_RECORDED
 import io.cloudflight.jems.api.audit.dto.AuditAction.CALL_ALREADY_ENDED
 import io.cloudflight.jems.api.call.dto.CallStatus
-import io.cloudflight.jems.api.programme.dto.OutputProgrammeData
+import io.cloudflight.jems.api.call.dto.CallType
+import io.cloudflight.jems.api.programme.dto.ProgrammeDataDTO
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
@@ -27,8 +28,9 @@ import io.cloudflight.jems.server.project.service.model.ProjectVersion
 import io.cloudflight.jems.server.project.service.save_project_version.CreateNewProjectVersionInteractor
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
-import io.cloudflight.jems.server.project.entity.projectuser.CollaboratorLevel
-import io.cloudflight.jems.server.project.entity.projectuser.CollaboratorLevel.MANAGE
+import io.cloudflight.jems.server.project.entity.projectuser.ProjectCollaboratorLevel
+import io.cloudflight.jems.server.project.entity.projectuser.ProjectCollaboratorLevel.MANAGE
+import io.cloudflight.jems.server.project.service.model.ProjectVersionSummary
 import io.cloudflight.jems.server.user.repository.user.toUserSummary
 import io.cloudflight.jems.server.project.service.projectuser.UserProjectCollaboratorPersistence
 import io.cloudflight.jems.server.user.service.model.UserStatus
@@ -61,17 +63,21 @@ internal class CreateProjectTest : UnitTest() {
             id = CALL_ID,
             name = "call name",
             status = CallStatus.PUBLISHED,
+            type = CallType.STANDARD,
             startDate = startDate,
             endDateStep1 = endDateStep1,
             endDate = endDate,
             isAdditionalFundAllowed = true,
             lengthOfPeriod = 12,
-            applicationFormFieldConfigurations = mutableSetOf()
+            applicationFormFieldConfigurations = mutableSetOf(),
+            preSubmissionCheckPluginKey = null,
+            firstStepPreSubmissionCheckPluginKey = null
         )
 
         val callSettings = ProjectCallSettings(
             callId = CALL_ID,
             callName = "call name",
+            callType = CallType.STANDARD,
             startDate = call.startDate,
             endDateStep1 = call.endDateStep1,
             endDate = call.endDate,
@@ -81,7 +87,9 @@ internal class CreateProjectTest : UnitTest() {
             lumpSums = emptyList(),
             unitCosts = emptyList(),
             stateAids = emptyList(),
-            applicationFormFieldConfigurations = mutableSetOf()
+            applicationFormFieldConfigurations = mutableSetOf(),
+            preSubmissionCheckPluginKey = null,
+            firstStepPreSubmissionCheckPluginKey = null
         )
 
         private val userEntity = UserEntity(
@@ -102,6 +110,15 @@ internal class CreateProjectTest : UnitTest() {
                 user = userEntity,
                 status = status,
                 current = true
+            )
+        }
+
+        private fun projectVersionSummary(): ProjectVersionSummary {
+            return ProjectVersionSummary(
+                version = "1.0",
+                projectId = PROJECT_ID,
+                createdAt = ZonedDateTime.now(),
+                user = userEntity,
             )
         }
 
@@ -126,7 +143,7 @@ internal class CreateProjectTest : UnitTest() {
         )
 
         private fun getProgrammeData(projectIdProgrammeAbbreviation: String?, projectIdUseCallId: Boolean) =
-            OutputProgrammeData(
+            ProgrammeDataDTO(
                 "cci",
                 "title",
                 "version",
@@ -186,12 +203,12 @@ internal class CreateProjectTest : UnitTest() {
             dummyProjectWithStatus(acronym = "test application", status = DRAFT)
         every { programmeService.get() } returns getProgrammeData("SK-AT_", true)
         every { projectPersistence.updateProjectCustomIdentifier(PROJECT_ID, "SK-AT_5400029") } answers {}
-        every { createNewProjectVersion.create(PROJECT_ID, DRAFT) } returns projectVersion(DRAFT)
+        every { createNewProjectVersion.create(PROJECT_ID) } returns projectVersionSummary()
 
         val slot = mutableListOf<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(slot)) } answers { }
 
-        val usersToPersistSlot = slot<Map<Long, CollaboratorLevel>>()
+        val usersToPersistSlot = slot<Map<Long, ProjectCollaboratorLevel>>()
         every { collaboratorPersistence.changeUsersAssignedToProject(PROJECT_ID, capture(usersToPersistSlot)) } returns emptyList()
 
         val result = createProject.createProject("test application", CALL_ID)
@@ -233,12 +250,12 @@ internal class CreateProjectTest : UnitTest() {
             dummyProjectWithStatus(acronym = acronym, status = STEP1_DRAFT)
         every { programmeService.get() } returns getProgrammeData("CZ-DE", false)
         every { projectPersistence.updateProjectCustomIdentifier(PROJECT_ID, "CZ-DE00029") } answers {}
-        every { createNewProjectVersion.create(PROJECT_ID, STEP1_DRAFT) } returns projectVersion(STEP1_DRAFT)
+        every { createNewProjectVersion.create(PROJECT_ID) } returns projectVersionSummary()
 
         val slot = mutableListOf<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(slot)) } answers { }
 
-        val usersToPersistSlot = slot<Map<Long, CollaboratorLevel>>()
+        val usersToPersistSlot = slot<Map<Long, ProjectCollaboratorLevel>>()
         every { collaboratorPersistence.changeUsersAssignedToProject(PROJECT_ID, capture(usersToPersistSlot)) } returns emptyList()
 
         val result = createProject.createProject(acronym, CALL_ID)
@@ -280,10 +297,10 @@ internal class CreateProjectTest : UnitTest() {
             dummyProjectWithStatus(acronym = acronym, status = STEP1_DRAFT)
         every { programmeService.get() } returns getProgrammeData(null, false)
         every { projectPersistence.updateProjectCustomIdentifier(PROJECT_ID, any()) } answers {}
-        every { createNewProjectVersion.create(PROJECT_ID, STEP1_DRAFT) } returns projectVersion(STEP1_DRAFT)
+        every { createNewProjectVersion.create(PROJECT_ID) } returns projectVersionSummary()
         every { auditPublisher.publishEvent(any()) } answers { }
 
-        val usersToPersistSlot = slot<Map<Long, CollaboratorLevel>>()
+        val usersToPersistSlot = slot<Map<Long, ProjectCollaboratorLevel>>()
         every { collaboratorPersistence.changeUsersAssignedToProject(PROJECT_ID, capture(usersToPersistSlot)) } returns emptyList()
 
         createProject.createProject(acronym, CALL_ID)

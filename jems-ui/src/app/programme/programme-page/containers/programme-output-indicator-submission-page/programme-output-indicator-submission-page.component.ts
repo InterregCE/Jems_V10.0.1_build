@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {BaseComponent} from '@common/components/base-component';
 import {
   OutputIndicatorCreateRequestDTO, OutputIndicatorUpdateRequestDTO,
-  ProgrammeIndicatorService,
+  ProgrammeIndicatorOutputService,
   ProgrammePriorityService
 } from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
@@ -14,7 +14,7 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {ProgrammePageSidenavService} from '../../services/programme-page-sidenav.service';
 
 @Component({
-  selector: 'app-programme-output-indicator-submission-page',
+  selector: 'jems-programme-output-indicator-submission-page',
   templateUrl: './programme-output-indicator-submission-page.component.html',
   styleUrls: ['./programme-output-indicator-submission-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -37,7 +37,7 @@ export class ProgrammeOutputIndicatorSubmissionPageComponent extends BaseCompone
       tap(page => Log.info('Fetched the priorities:', this, page)),
     );
 
-  constructor(private programmeIndicatorService: ProgrammeIndicatorService,
+  constructor(private programmeIndicatorService: ProgrammeIndicatorOutputService,
               private activatedRoute: ActivatedRoute,
               private programmePriorityService: ProgrammePriorityService,
               private programmePageSidenavService: ProgrammePageSidenavService) {

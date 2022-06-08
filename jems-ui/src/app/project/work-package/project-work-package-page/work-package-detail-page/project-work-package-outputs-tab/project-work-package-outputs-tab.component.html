@@ -1,17 +1,17 @@
-<app-form *ngIf="data$ | async as data" (save)="updateOutputs()">
-    <form appFormLayout [formGroup]="form">
+<jems-form *ngIf="data$ | async as data" (save)="updateOutputs()">
+    <form jemsFormLayout [formGroup]="form">
 
         <h3>{{'project.application.form.workpackage.form.outputs' | translate}}</h3>
         <p>{{'project.application.form.workpackage.form.intro' | translate}}</p>
 
-        <div appNoWidthLimit *ngFor="let output of outputs.controls;let i=index">
+        <div jemsNoWidthLimit *ngFor="let output of outputs.controls;let i=index">
             <ng-container [formArrayName]="constants.OUTPUTS.name">
-                <div class="output-container" appFormLayout [formGroupName]="i">
-                    <div class="output-header" stretch="1" appNoWidthLimit appMultiColumnRow justifyContent="space-between">
-                        <h4 class="mb-0 output-header-inner" stretch="1" appMultiColumnRow>
+                <div class="output-container" jemsFormLayout [formGroupName]="i">
+                    <div class="output-header" stretch="1" jemsNoWidthLimit jemsMultiColumnRow justifyContent="space-between">
+                        <h4 class="mb-0 output-header-inner" stretch="1" jemsMultiColumnRow>
                             <span>{{('project.application.form.work.package.output' | translate) + ' ' + data.workPackageNumber + '.' + (i + 1) }}</span>
                             <span
-                                  *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS.TITLE">{{output.get(constants.TITLE.name).value | translateByInputLanguage | async}}</span>
+                                  *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS.TITLE">{{output.get(constants.TITLE.name).value | translateByInputLanguage | async}}</span>
                         </h4>
                         <button *ngIf="form.enabled" type="button" mat-icon-button color="accent"
                                 matTooltip="{{'project.application.form.work.package.output.table.action.delete.tooltip' | translate}}"
@@ -20,20 +20,20 @@
                         </button>
                     </div>
 
-                    <app-multi-language-container *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS.TITLE">
-                        <app-multi-language-form-field type="textarea" minRows="2"
+                    <jems-multi-language-container *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS.TITLE">
+                        <jems-multi-language-form-field type="textarea" minRows="2"
                                 label="project.application.form.work.package.output.title"
                                 [formControlName]="constants.TITLE.name"
                                 [maxLength]="constants.TITLE.maxLength">
-                        </app-multi-language-form-field>
-                    </app-multi-language-container>
+                        </jems-multi-language-form-field>
+                    </jems-multi-language-container>
 
-                    <app-alert [closable]="false"
+                    <jems-alert [closable]="false"
                                [type]="Alert.WARNING"
                                [show]="!data.outputIndicators?.length">
                             {{'project.application.form.overall.objective.specific.objective.required' | translate}}
-                    </app-alert>
-                    <mat-form-field *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS.PROGRAMME_OUTPUT_INDICATOR_AND_MEASUREMENT_UNIT">
+                    </jems-alert>
+                    <mat-form-field *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS.PROGRAMME_OUTPUT_INDICATOR_AND_MEASUREMENT_UNIT">
                         <mat-label>{{'project.application.form.work.package.output.programme.output.indicator' | translate}}</mat-label>
                         <mat-select [disabled]="!data.outputIndicators.length"
                                     [formControlName]="constants.RESULT_INDICATOR.name">
@@ -44,8 +44,8 @@
                         </mat-select>
                     </mat-form-field>
 
-                    <div appMultiColumnRow stretch>
-                        <mat-form-field *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS.PROGRAMME_OUTPUT_INDICATOR_AND_MEASUREMENT_UNIT">
+                    <div jemsMultiColumnRow stretch>
+                        <mat-form-field *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS.PROGRAMME_OUTPUT_INDICATOR_AND_MEASUREMENT_UNIT">
                             <mat-label>{{'project.application.form.work.package.output.measurement.unit' | translate}}</mat-label>
                             <input readonly matInput
                                    value="{{getMeasurementUnit(output.get(constants.RESULT_INDICATOR.name)?.value, data.outputIndicators)
@@ -53,34 +53,34 @@
                                    [disabled]="true">
                         </mat-form-field>
 
-                        <mat-form-field appFormFieldWidth="medium" *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS.TARGET_VALUE">
+                        <mat-form-field jemsFormFieldWidth="medium" *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS.TARGET_VALUE">
                             <mat-label>{{'project.application.form.work.package.output.target.value' | translate}}</mat-label>
-                            <input currencyMask type="decimal" [options]="{min: 1, max: 99999999, align: 'right'}"
+                            <input currencyMask type="decimal" [options]="{min: 0.01, max: 99999999, align: 'right'}"
                                    name="targetValue" formControlName="targetValue" matInput>
                         </mat-form-field>
                     </div>
 
-                    <app-project-periods-select
-                            *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS.DELIVERY_PERIOD"
+                    <jems-project-periods-select
+                            *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS.DELIVERY_PERIOD"
                             [periods]="data.periods"
                             [control]="output.get(constants.PERIOD.name)"
                             label='project.application.form.work.package.output.delivery.period'
                             (selectionChanged)="formService.setDirty(true)">
-                    </app-project-periods-select>
+                    </jems-project-periods-select>
 
-                    <app-multi-language-container *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS.DESCRIPTION">
-                        <app-multi-language-form-field type="textarea" minRows="3"
+                    <jems-multi-language-container *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS.DESCRIPTION">
+                        <jems-multi-language-form-field type="textarea" minRows="3"
                                 label="project.application.form.work.package.output.description"
                                 [formControlName]="constants.DESCRIPTION.name"
                                 [maxLength]="constants.DESCRIPTION.maxLength">
-                        </app-multi-language-form-field>
-                    </app-multi-language-container>
+                        </jems-multi-language-form-field>
+                    </jems-multi-language-container>
                 </div>
             </ng-container>
         </div>
-        <button appText *ngIf="addOutputVisible()" mat-stroked-button color="primary"
+        <button jemsText *ngIf="addOutputVisible()" mat-stroked-button color="primary"
                 (click)="addNewOutput()" type="button">
             + {{'project.application.form.workpackage.output.add' | translate}}
         </button>
     </form>
-</app-form>
+</jems-form>

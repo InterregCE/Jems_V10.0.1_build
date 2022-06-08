@@ -1,0 +1,28 @@
+<mat-card *ngIf="data$ | async as data" jemsFormLayout>
+    <h3>{{'project.application.partner.report.submit.title' | translate }}</h3>
+    <div *ngIf="data.userCanEditReport && data.reportStatus === StatusEnum.Draft">
+        <p>{{'project.application.partner.report.submit.description.one' | translate}} : {{'common.label.project.partner.role.shortcut.' + data.partnerReport?.identification?.partnerRole | adaptTranslationKeyByCallType | async | translate : {partner: data.partnerReport?.identification?.partnerNumber + ' ' + data.partnerSummary.abbreviation} }} - {{'project.application.partner.reports.title.number' | translate : {reportNumber: data.partnerReport?.reportNumber} }}</p>
+        <p>{{'project.application.partner.report.submit.description.two' | translate}}</p>
+    </div>
+    <div *ngIf="data.userCanEditReport && data.reportStatus === StatusEnum.Submitted">
+        {{'project.application.partner.report.submit.description.submitted' | translate}}
+    </div>
+    <div *ngIf="!data.userCanEditReport">
+        <p>{{'project.application.partner.report.submit.description.view.mode' | translate}}</p>
+    </div>
+
+    <div jemsNoWidthLimit>
+        <jems-pending-button *ngIf="data.userCanEditReport && data.reportStatus === StatusEnum.Draft"
+                [confirm]="{title: 'project.application.partner.report.submit.dialog.title', message: 'project.application.partner.report.submit.dialog.message'}"
+                [pending]="actionPending"
+                (clicked)="submitReport(data.projectId, data.partnerSummary.id, data.partnerReport.id)"
+                class="mr-2 mt-2">
+            {{'project.application.partner.report.button.submit' | translate}}
+        </jems-pending-button>
+    </div>
+    <jems-alert *ngIf="error$ | async as error"
+                [show]="!!error.i18nMessage?.i18nKey"
+                [type]="Alert.ERROR">
+        <jems-api-error-content [error]="error"></jems-api-error-content>
+    </jems-alert>
+</mat-card>

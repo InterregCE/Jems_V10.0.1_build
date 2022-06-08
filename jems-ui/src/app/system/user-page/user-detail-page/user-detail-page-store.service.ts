@@ -1,12 +1,11 @@
 import {Injectable} from '@angular/core';
 import {combineLatest, merge, Observable, of, ReplaySubject, Subject} from 'rxjs';
 import {OutputCurrentUser, PasswordDTO, UserChangeDTO, UserDTO, UserRoleSummaryDTO, UserService} from '@cat/api';
-import {catchError, map, shareReplay, switchMap, tap} from 'rxjs/operators';
+import {catchError, filter, map, shareReplay, switchMap, take, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 import {HttpErrorResponse} from '@angular/common/http';
 import {SecurityService} from '../../../security/security.service';
 import {RoutingService} from '@common/services/routing.service';
-import {filter, take} from 'rxjs/internal/operators';
 import {RoleStore} from '../../services/role-store.service';
 import {APIError} from '@common/models/APIError';
 

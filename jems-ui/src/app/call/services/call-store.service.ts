@@ -2,20 +2,22 @@ import {Injectable} from '@angular/core';
 import {
   CallDetailDTO,
   CallService,
-  FlatRateSetupDTO,
+  FlatRateSetupDTO, PreSubmissionPluginsDTO,
   ProgrammeCostOptionService,
   ProgrammeLumpSumListDTO,
   ProgrammeUnitCostListDTO,
   UserRoleCreateDTO
 } from '@cat/api';
-import {merge, Observable, of, Subject} from 'rxjs';
+import {BehaviorSubject, merge, Observable, of, Subject} from 'rxjs';
 import {map, shareReplay, switchMap, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 import {PermissionService} from '../../security/permissions/permission.service';
 import {RoutingService} from '@common/services/routing.service';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class CallStore {
   public static CALL_DETAIL_PATH = '/app/call/detail';
   private callId: number;
@@ -28,6 +30,7 @@ export class CallStore {
   callIsPublished$: Observable<boolean>;
 
   savedCall$ = new Subject<CallDetailDTO>();
+  callType$ = new BehaviorSubject<CallDetailDTO.TypeEnum>(CallDetailDTO.TypeEnum.STANDARD);
 
   constructor(private callService: CallService,
               private programmeCostOptionService: ProgrammeCostOptionService,
@@ -66,11 +69,29 @@ export class CallStore {
       );
   }
 
+  savePreSubmissionCheckSettings(pluginKeys: PreSubmissionPluginsDTO): Observable<CallDetailDTO> {
+    return this.callService.updatePreSubmissionCheckSettings(this.callId, pluginKeys).pipe(
+      tap(saved => this.savedCall$.next(saved)),
+      tap(saved => Log.info('Updated call pre-submission check settings:', this, saved))
+    );
+  }
+
+  isSPFCall(): Observable<boolean> {
+    return this.callType$.asObservable().pipe(
+      map(callType => callType === CallDetailDTO.TypeEnum.SPF)
+    );
+  }
+
   private call(): Observable<CallDetailDTO> {
     const initialCall$ = this.router.routeParameterChanges(CallStore.CALL_DETAIL_PATH, 'callId')
       .pipe(
         switchMap(id => id ? this.callService.getCallById(Number(id)) : of({} as CallDetailDTO)),
         tap(call => this.callId = (call as any)?.id),
+        tap(call => {
+          if (call.type) {
+            this.callType$.next(call.type);
+          }
+        }),
         tap(call => Log.info('Fetched the call:', this, call)),
       );
     return merge(initialCall$, this.savedCall$)

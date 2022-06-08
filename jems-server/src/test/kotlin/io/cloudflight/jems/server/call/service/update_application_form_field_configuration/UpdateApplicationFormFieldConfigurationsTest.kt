@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.call.service.update_application_form_field_configuration
 
 import io.cloudflight.jems.api.call.dto.CallStatus
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
@@ -20,7 +21,7 @@ class UpdateApplicationFormFieldConfigurationsTest : UnitTest() {
 
     private val CALL_ID = 1L
     private val fieldsThatDependsOnBudget = ApplicationFormFieldSetting.getFieldsThatDependsOnBudgetSetting()
-    private val applicationFormFieldConfigurations: MutableSet<ApplicationFormFieldConfiguration> = mutableSetOf(
+    private val applicationFormFieldConfigStandard: MutableSet<ApplicationFormFieldConfiguration> = mutableSetOf(
         ApplicationFormFieldConfiguration(
             id = ApplicationFormFieldSetting.PROJECT_ACRONYM.id,
             visibilityStatus = FieldVisibilityStatus.STEP_ONE_AND_TWO
@@ -37,7 +38,9 @@ class UpdateApplicationFormFieldConfigurationsTest : UnitTest() {
             id = ApplicationFormFieldSetting.PARTNER_BUDGET_AND_CO_FINANCING.id,
             visibilityStatus = FieldVisibilityStatus.STEP_ONE_AND_TWO
         ),
-        *fieldsThatDependsOnBudget.map {
+        *fieldsThatDependsOnBudget
+            .filterNot { it.startsWith("application.config.project.partner.budget.spf") }
+            .map {
             ApplicationFormFieldConfiguration(
                 id = it,
                 visibilityStatus = FieldVisibilityStatus.STEP_TWO_ONLY
@@ -49,6 +52,7 @@ class UpdateApplicationFormFieldConfigurationsTest : UnitTest() {
         id = CALL_ID,
         name = "call name",
         status = CallStatus.DRAFT,
+        type = CallType.STANDARD,
         startDate = ZonedDateTime.now().minusDays(1),
         endDateStep1 = null,
         endDate = ZonedDateTime.now().plusDays(1),
@@ -61,7 +65,9 @@ class UpdateApplicationFormFieldConfigurationsTest : UnitTest() {
         flatRates = sortedSetOf(),
         lumpSums = listOf(),
         unitCosts = listOf(),
-        applicationFormFieldConfigurations = applicationFormFieldConfigurations
+        applicationFormFieldConfigurations = applicationFormFieldConfigStandard,
+        preSubmissionCheckPluginKey = null,
+        firstStepPreSubmissionCheckPluginKey = null
     )
 
 
@@ -76,12 +82,12 @@ class UpdateApplicationFormFieldConfigurationsTest : UnitTest() {
         every {
             persistence.saveApplicationFormFieldConfigurations(
                 CALL_ID,
-                applicationFormFieldConfigurations
+                applicationFormFieldConfigStandard
             )
         } returns callDetail
         every { persistence.getCallById(CALL_ID) } returns callDetail
 
-        val result = updateApplicationFormConfiguration.update(CALL_ID, applicationFormFieldConfigurations)
+        val result = updateApplicationFormConfiguration.update(CALL_ID, applicationFormFieldConfigStandard)
 
         assertThat(result).isEqualTo(callDetail)
     }
@@ -167,12 +173,12 @@ class UpdateApplicationFormFieldConfigurationsTest : UnitTest() {
         every { persistence.saveApplicationFormFieldConfigurations(CALL_ID, capture(slot)) } returns callDetail
         every { persistence.getCallById(CALL_ID) } returns callDetail
 
-        val result = updateApplicationFormConfiguration.update(CALL_ID, applicationFormFieldConfigurations)
+        val result = updateApplicationFormConfiguration.update(CALL_ID, applicationFormFieldConfigStandard)
 
         val budgetSetting =
-            applicationFormFieldConfigurations.first { it.id == ApplicationFormFieldSetting.PARTNER_BUDGET_AND_CO_FINANCING.id }
+            applicationFormFieldConfigStandard.first { it.id == ApplicationFormFieldSetting.PARTNER_BUDGET_AND_CO_FINANCING.id }
         assertThat(slot.captured).containsAll(
-            applicationFormFieldConfigurations.map {
+            applicationFormFieldConfigStandard.map {
                 if (fieldsThatDependsOnBudget.contains(it.id) && it.visibilityStatus != FieldVisibilityStatus.NONE)
                     ApplicationFormFieldConfiguration(it.id, budgetSetting.visibilityStatus)
                 else it

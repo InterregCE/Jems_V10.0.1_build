@@ -4,11 +4,23 @@ import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.CS
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.EN
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.SK
 import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.server.call.callDetail
+import io.cloudflight.jems.server.call.service.CallPersistence
+import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
+import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldSetting
+import io.cloudflight.jems.server.call.service.model.FieldVisibilityStatus
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
+import io.cloudflight.jems.server.project.service.workpackage.activity.ACTIVITY_DESCRIPTION_SIZE_ERROR_KEY
+import io.cloudflight.jems.server.project.service.workpackage.activity.ACTIVITY_MAX_ERROR_KEY
+import io.cloudflight.jems.server.project.service.workpackage.activity.ACTIVITY_START_PERIOD_LATE_ERROR_KEY
+import io.cloudflight.jems.server.project.service.workpackage.activity.ACTIVITY_TITLE_SIZE_ERROR_KEY
+import io.cloudflight.jems.server.project.service.workpackage.activity.DELIVERABLES_MAX_ERROR_KEY
+import io.cloudflight.jems.server.project.service.workpackage.activity.DELIVERABLES_NOT_ENABLED_ERROR_KEY
+import io.cloudflight.jems.server.project.service.workpackage.activity.DELIVERABLE_DESCRIPTION_LONG_ERROR_KEY
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityDeliverable
 import io.mockk.every
@@ -16,6 +28,7 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
@@ -27,6 +40,9 @@ import java.util.stream.Collectors
 internal class UpdateActivityTest {
 
     companion object {
+        const val projectId = 1L
+        val callDetail = callDetail()
+
         val activity1 = WorkPackageActivity(
             workPackageId = 1L,
             title = setOf(
@@ -51,7 +67,7 @@ internal class UpdateActivityTest {
         )
 
         val projectPartnerIds = listOf(
-            ProjectPartnerSummary(id = 3, abbreviation = "lp1", role = ProjectPartnerRole.LEAD_PARTNER, active = true,),
+            ProjectPartnerSummary(id = 3, abbreviation = "lp1", role = ProjectPartnerRole.LEAD_PARTNER, active = true),
             ProjectPartnerSummary(id = 5, abbreviation = "p2", role = ProjectPartnerRole.PARTNER, active = true)
         )
     }
@@ -60,6 +76,8 @@ internal class UpdateActivityTest {
     lateinit var persistence: WorkPackagePersistence
     @MockK
     lateinit var partnerPersistence: PartnerPersistence
+    @MockK
+    lateinit var callPersistence: CallPersistence
 
     @InjectMockKs
     lateinit var updateActivity: UpdateActivity
@@ -69,35 +87,40 @@ internal class UpdateActivityTest {
     @MockK
     lateinit var veryBigDeliverablesList: List<WorkPackageActivityDeliverable>
 
+    @BeforeEach
+    fun setup() {
+        every { callPersistence.getCallByProjectId(projectId) } returns callDetail
+    }
+
     @Test
     fun updateActivitiesForWorkPackage() {
         every { persistence.updateWorkPackageActivities(1L, any()) } returnsArgument 1
-        every { partnerPersistence.findAllByProjectIdForDropdown(1L, Sort.unsorted()) } returns projectPartnerIds
-        assertThat(updateActivity.updateActivitiesForWorkPackage(1L, 1L, listOf(activity1))).containsExactly(activity1)
+        every { partnerPersistence.findAllByProjectIdForDropdown(projectId, Sort.unsorted()) } returns projectPartnerIds
+        assertThat(updateActivity.updateActivitiesForWorkPackage(projectId, 1L, listOf(activity1))).containsExactly(activity1)
     }
 
     @Test
     fun `update activities when max allowed activities amount reached`() {
         every { veryBigActivitiesList.size } returns 21
-        val exception = assertThrows<I18nValidationException> { updateActivity.updateActivitiesForWorkPackage(1L, 2L, veryBigActivitiesList) }
-        assertThat(exception.i18nKey).isEqualTo("workPackage.activity.max.allowed.reached")
+        val exception = assertThrows<I18nValidationException> { updateActivity.updateActivitiesForWorkPackage(projectId, 2L, veryBigActivitiesList) }
+        assertThat(exception.i18nKey).isEqualTo(ACTIVITY_MAX_ERROR_KEY)
     }
 
     @Test
     fun `update activities - empty activities should pass`() {
         every { persistence.updateWorkPackageActivities(3L, any()) } returns emptyList()
-        every { partnerPersistence.findAllByProjectIdForDropdown(1L, Sort.unsorted()) } returns projectPartnerIds
-        assertDoesNotThrow { updateActivity.updateActivitiesForWorkPackage(1L, 3L, emptyList()) }
+        every { partnerPersistence.findAllByProjectIdForDropdown(projectId, Sort.unsorted()) } returns projectPartnerIds
+        assertDoesNotThrow { updateActivity.updateActivitiesForWorkPackage(projectId, 3L, emptyList()) }
     }
 
     @Test
     fun `update activities - empty deliverables should pass`() {
         every { persistence.updateWorkPackageActivities(4L, any()) } returns emptyList()
-        every { partnerPersistence.findAllByProjectIdForDropdown(1L, Sort.unsorted()) } returns projectPartnerIds
+        every { partnerPersistence.findAllByProjectIdForDropdown(projectId, Sort.unsorted()) } returns projectPartnerIds
         assertDoesNotThrow { updateActivity.updateActivitiesForWorkPackage(
             1L,
             4L,
-            listOf(WorkPackageActivity(1L, 4L, deliverables = emptyList()))
+            listOf(WorkPackageActivity(projectId, 4L, deliverables = emptyList()))
         ) }
     }
 
@@ -105,33 +128,63 @@ internal class UpdateActivityTest {
     fun `update activities when max allowed deliverables amount reached`() {
         every { veryBigDeliverablesList.size } returns 21
         val toBeSaved = listOf(WorkPackageActivity(1L, 5L, deliverables = veryBigDeliverablesList))
-        val exception = assertThrows<I18nValidationException> { updateActivity.updateActivitiesForWorkPackage(1L, 5L, toBeSaved) }
-        assertThat(exception.i18nKey).isEqualTo("workPackage.activity.deliverables.max.allowed.reached")
+        val exception = assertThrows<I18nValidationException> { updateActivity.updateActivitiesForWorkPackage(projectId, 5L, toBeSaved) }
+        assertThat(exception.i18nKey).isEqualTo(DELIVERABLES_MAX_ERROR_KEY)
     }
 
     @Test
     fun `update activities when start period is after end period`() {
         val toBeSaved = listOf(WorkPackageActivity(1L, 6L, startPeriod = 2568, endPeriod = 2567))
-        val exception = assertThrows<I18nValidationException> { updateActivity.updateActivitiesForWorkPackage(1L, 6L, toBeSaved) }
-        assertThat(exception.i18nKey).isEqualTo("workPackage.activity.startPeriod.is.after.endPeriod")
+        val exception = assertThrows<I18nValidationException> { updateActivity.updateActivitiesForWorkPackage(projectId, 6L, toBeSaved) }
+        assertThat(exception.i18nKey).isEqualTo(ACTIVITY_START_PERIOD_LATE_ERROR_KEY)
     }
 
     @Test
     fun `update activities without partners assigned`() {
         every { persistence.updateWorkPackageActivities(1L, any()) } returnsArgument 1
-        every { partnerPersistence.findAllByProjectIdForDropdown(1L, Sort.unsorted()) } returns emptyList()
+        every { partnerPersistence.findAllByProjectIdForDropdown(projectId, Sort.unsorted()) } returns emptyList()
         val activity = activity1.copy(partnerIds = emptySet())
-        assertThat(updateActivity.updateActivitiesForWorkPackage(1L, 1L, listOf(activity)))
+        assertThat(updateActivity.updateActivitiesForWorkPackage(projectId, 1L, listOf(activity)))
             .containsExactly(activity)
     }
 
     @Test
     fun `update activities when partner is not assigned to project`() {
-        every { partnerPersistence.findAllByProjectIdForDropdown(1L, Sort.unsorted()) } returns projectPartnerIds
+        every { partnerPersistence.findAllByProjectIdForDropdown(projectId, Sort.unsorted()) } returns projectPartnerIds
         val exception = assertThrows<PartnersNotFound> {
-            updateActivity.updateActivitiesForWorkPackage(1L, 2L, listOf(activity1.copy(partnerIds = setOf(3, 10))))
+            updateActivity.updateActivitiesForWorkPackage(projectId, 2L, listOf(activity1.copy(partnerIds = setOf(3, 10))))
         }
         assertThat(exception.message).isEqualTo("PartnerIds: 10")
+    }
+
+    @Test
+    fun `update activities throwing error on adding disabled deliverables`() {
+        val pId = 3L
+        val callDetailWConfig = callDetail()
+        every { callPersistence.getCallByProjectId(pId) } returns callDetailWConfig
+        callDetailWConfig.applicationFormFieldConfigurations.add(
+            ApplicationFormFieldConfiguration(ApplicationFormFieldSetting.PROJECT_ACTIVITIES_DELIVERABLES.id, FieldVisibilityStatus.NONE)
+        )
+        val exception = assertThrows<I18nValidationException> {
+            updateActivity.updateActivitiesForWorkPackage(pId, 2L, listOf(activity1))
+        }
+        assertThat(exception.i18nKey).isEqualTo(DELIVERABLES_NOT_ENABLED_ERROR_KEY)
+    }
+
+    @Test
+    fun `update activities successful on not adding disabled deliverables`() {
+        val pId = 4L
+        val callDetailWConfig = callDetail()
+        every { callPersistence.getCallByProjectId(pId) } returns callDetailWConfig
+        callDetailWConfig.applicationFormFieldConfigurations.add(
+            ApplicationFormFieldConfiguration(ApplicationFormFieldSetting.PROJECT_ACTIVITIES_DELIVERABLES.id, FieldVisibilityStatus.NONE)
+        )
+        every { partnerPersistence.findAllByProjectIdForDropdown(pId, Sort.unsorted()) } returns projectPartnerIds
+        every { persistence.updateWorkPackageActivities(2L, any()) } returnsArgument 1
+
+        assertDoesNotThrow {
+            updateActivity.updateActivitiesForWorkPackage(pId, 2L, listOf(activity1.copy(deliverables = emptyList())))
+        }
     }
 
     @Test
@@ -141,8 +194,8 @@ internal class UpdateActivityTest {
             translation = getStringOfLength(201)
         ))
         val toBeSaved = listOf(WorkPackageActivity(1L, 7L, title = title))
-        val exception = assertThrows<I18nValidationException> { updateActivity.updateActivitiesForWorkPackage(1L, 7L, toBeSaved) }
-        assertThat(exception.i18nKey).isEqualTo("workPackage.activity.title.size.too.long")
+        val exception = assertThrows<I18nValidationException> { updateActivity.updateActivitiesForWorkPackage(projectId, 7L, toBeSaved) }
+        assertThat(exception.i18nKey).isEqualTo(ACTIVITY_TITLE_SIZE_ERROR_KEY)
     }
 
     @Test
@@ -152,21 +205,21 @@ internal class UpdateActivityTest {
             translation = getStringOfLength(1001)
         ))
         val toBeSaved = listOf(WorkPackageActivity(1L, 8L, description = description))
-        val exception = assertThrows<I18nValidationException> { updateActivity.updateActivitiesForWorkPackage(1L, 8L, toBeSaved) }
-        assertThat(exception.i18nKey).isEqualTo("workPackage.activity.description.size.too.long")
+        val exception = assertThrows<I18nValidationException> { updateActivity.updateActivitiesForWorkPackage(projectId, 8L, toBeSaved) }
+        assertThat(exception.i18nKey).isEqualTo(ACTIVITY_DESCRIPTION_SIZE_ERROR_KEY)
     }
 
     @Test
     fun `update activity deliverables when description is too long`() {
-        every { partnerPersistence.findAllByProjectIdForDropdown(1L, Sort.unsorted()) } returns projectPartnerIds
+        every { partnerPersistence.findAllByProjectIdForDropdown(projectId, Sort.unsorted()) } returns projectPartnerIds
         every { persistence.updateWorkPackageActivities(any(), any()) } returnsArgument 1
         val description = InputTranslation(
             language = EN,
             translation = getStringOfLength(1001)
         )
         val toBeSaved = listOf(WorkPackageActivity(1L, 9L, deliverables = listOf(WorkPackageActivityDeliverable(description = setOf(description)))))
-        val exception = assertThrows<I18nValidationException> { updateActivity.updateActivitiesForWorkPackage(1L, 9L, toBeSaved) }
-        assertThat(exception.i18nKey).isEqualTo("workPackage.activity.deliverable.description.size.too.long")
+        val exception = assertThrows<I18nValidationException> { updateActivity.updateActivitiesForWorkPackage(projectId, 9L, toBeSaved) }
+        assertThat(exception.i18nKey).isEqualTo(DELIVERABLE_DESCRIPTION_LONG_ERROR_KEY)
     }
 
     private fun getStringOfLength(length: Int): String =

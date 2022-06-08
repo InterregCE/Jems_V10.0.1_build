@@ -1,5 +1,7 @@
 package io.cloudflight.jems.server.project.controller
 
+import io.cloudflight.jems.api.call.dto.CallType
+import io.cloudflight.jems.api.call.dto.applicationFormConfiguration.ApplicationFormFieldConfigurationDTO
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateSetupDTO
 import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.api.plugin.dto.MessageTypeDTO
@@ -14,11 +16,9 @@ import io.cloudflight.jems.api.project.dto.ProjectCallSettingsDTO
 import io.cloudflight.jems.api.project.dto.ProjectDetailDTO
 import io.cloudflight.jems.api.project.dto.ProjectDetailFormDTO
 import io.cloudflight.jems.api.project.dto.ProjectPeriodDTO
+import io.cloudflight.jems.api.project.dto.ProjectSearchRequestDTO
 import io.cloudflight.jems.api.project.dto.ProjectVersionDTO
 import io.cloudflight.jems.api.project.dto.budget.ProjectPartnerBudgetDTO
-import io.cloudflight.jems.api.project.dto.file.ProjectFileCategoryDTO
-import io.cloudflight.jems.api.project.dto.file.ProjectFileCategoryTypeDTO
-import io.cloudflight.jems.api.project.dto.file.ProjectFileMetadataDTO
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.api.project.dto.status.ProjectStatusDTO
 import io.cloudflight.jems.plugin.contract.models.common.I18nMessageData
@@ -26,7 +26,10 @@ import io.cloudflight.jems.plugin.contract.pre_condition_check.models.MessageTyp
 import io.cloudflight.jems.plugin.contract.pre_condition_check.models.PreConditionCheckMessage
 import io.cloudflight.jems.plugin.contract.pre_condition_check.models.PreConditionCheckResult
 import io.cloudflight.jems.server.call.controller.CallDTOMapper
+import io.cloudflight.jems.server.call.controller.toDTO
 import io.cloudflight.jems.server.call.controller.toDto
+import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
+import io.cloudflight.jems.server.call.service.model.FieldVisibilityStatus
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
@@ -34,19 +37,19 @@ import io.cloudflight.jems.server.programme.service.stateaid.model.ProgrammeStat
 import io.cloudflight.jems.server.project.service.application.ApplicationActionInfo
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.budget.model.PartnerBudget
-import io.cloudflight.jems.server.project.service.file.model.ProjectFileCategory
-import io.cloudflight.jems.server.project.service.file.model.ProjectFileCategoryType
-import io.cloudflight.jems.server.project.service.file.model.ProjectFileMetadata
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectDetail
 import io.cloudflight.jems.server.project.service.model.ProjectForm
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
+import io.cloudflight.jems.server.project.service.model.ProjectSearchRequest
 import io.cloudflight.jems.server.project.service.model.ProjectStatus
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.model.ProjectVersion
 import io.cloudflight.jems.server.user.controller.toDto
+import org.mapstruct.IterableMapping
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping
+import org.mapstruct.Named
 import org.mapstruct.factory.Mappers
 import org.springframework.data.domain.Page
 
@@ -89,10 +92,12 @@ fun ProjectDetail.toDto() = ProjectDetailDTO(
     programmePriority = programmePriority,
     projectStatus = projectStatus.toDto(),
     firstSubmission = firstSubmission?.toDto(),
+    firstSubmissionStep1 = firstSubmissionStep1?.toDTO(),
     lastResubmission = lastResubmission?.toDto(),
     step2Active = projectStatus.status.isInStep2(),
     firstStepDecision = assessmentStep1?.toDto(),
     secondStepDecision = assessmentStep2?.toDto(),
+    contractedDecision = contractedDecision?.toDto()
 )
 
 fun ProjectForm.toDto() = ProjectDetailFormDTO(
@@ -131,11 +136,7 @@ fun Page<ProjectSummary>.toDto() = map {
     )
 }
 
-fun ProjectFileCategoryTypeDTO.toModel() = projectMapper.map(this)
-fun ProjectFileCategoryDTO.toModel() = projectMapper.map(this)
-fun ProjectFileMetadata.toDTO() = projectMapper.map(this)
-fun Page<ProjectFileMetadata>.toDTO() = map { projectMapper.map(it) }
-
+fun ProjectSearchRequestDTO.toModel() = projectMapper.map(this)
 
 private val projectMapper = Mappers.getMapper(ProjectMapper::class.java)
 
@@ -149,14 +150,16 @@ abstract class ProjectMapper {
 
     @Mapping(source = "submissionAllowed", target = "submissionAllowed")
     abstract fun map(preConditionCheckResult: PreConditionCheckResult): PreConditionCheckResultDTO
+    @IterableMapping(qualifiedByName = ["mapWithoutIssueCount"])
     abstract fun map(preConditionCheckMessageList: List<PreConditionCheckMessage>): List<PreConditionCheckMessageDTO>
+    @Named("mapWithoutIssueCount")
+    @Mapping(target = "issueCount", ignore = true)
+    abstract fun mapWithoutIssueCount(message: PreConditionCheckMessage): PreConditionCheckMessageDTO
     abstract fun map(messageType: MessageType): MessageTypeDTO
 
     @Mapping(source = "totalCosts", target = "totalSum")
     abstract fun map(partnerBudget: PartnerBudget): ProjectPartnerBudgetDTO
 
-    @Mapping(source = "additionalFundAllowed", target = "additionalFundAllowed")
-    abstract fun map(projectCallSettings: ProjectCallSettings): ProjectCallSettingsDTO
     abstract fun mapToLumpSumDTO(programmeLumpSum: List<ProgrammeLumpSum>): List<ProgrammeLumpSumDTO>
 
     @Mapping(source = "oneCostCategory", target = "oneCostCategory")
@@ -166,25 +169,41 @@ abstract class ProjectMapper {
     @Mapping(source = "stateAids", target = "stateAids")
     abstract fun mapToStateAidsDTO(stateAids: List<ProgrammeStateAid>): List<ProgrammeStateAidDTO>
 
-    abstract fun map(fileCategoryTypDTO: ProjectFileCategoryTypeDTO): ProjectFileCategoryType
-    abstract fun map(fileCategoryDTO: ProjectFileCategoryDTO): ProjectFileCategory
-
-
-    fun map(fileMetadata: ProjectFileMetadata): ProjectFileMetadataDTO =
-        ProjectFileMetadataDTO(
-            fileMetadata.id,
-            fileMetadata.projectId,
-            fileMetadata.name,
-            fileMetadata.size,
-            fileMetadata.uploadedAt,
-            fileMetadata.uploadedBy.toDto(),
-            fileMetadata.description
-        )
-
+    abstract fun map(searchRequestDTO: ProjectSearchRequestDTO): ProjectSearchRequest
 
     fun map(projectCallFlatRateSet: Set<ProjectCallFlatRate>): FlatRateSetupDTO =
         projectCallFlatRateSet.toDto()
 
     fun map(i18nMessageData: I18nMessageData): I18nMessage =
         I18nMessage(i18nMessageData.i18nKey, i18nMessageData.i18nArguments)
+
+    fun map(projectCallSettings: ProjectCallSettings): ProjectCallSettingsDTO {
+        return ProjectCallSettingsDTO(
+            callId = projectCallSettings.callId,
+            callName = projectCallSettings.callName,
+            callType = projectCallSettings.callType,
+            startDate = projectCallSettings.startDate,
+            endDate = projectCallSettings.endDate,
+            endDateStep1 = projectCallSettings.endDateStep1,
+            lengthOfPeriod = projectCallSettings.lengthOfPeriod,
+            additionalFundAllowed = projectCallSettings.isAdditionalFundAllowed,
+            flatRates = projectCallSettings.flatRates.toDto(),
+            lumpSums = this.mapToLumpSumDTO(projectCallSettings.lumpSums),
+            unitCosts = this.mapToUnitCostDTO(projectCallSettings.unitCosts),
+            stateAids = this.mapToStateAidsDTO(projectCallSettings.stateAids),
+            applicationFormFieldConfigurations = projectCallSettings.applicationFormFieldConfigurations.toDto(projectCallSettings.callType)
+
+        )
+    }
+
+    fun map(applicationFormFieldConfiguration: ApplicationFormFieldConfiguration, callType: CallType): ApplicationFormFieldConfigurationDTO =
+        ApplicationFormFieldConfigurationDTO(
+            applicationFormFieldConfiguration.id,
+            visible = applicationFormFieldConfiguration.visibilityStatus != FieldVisibilityStatus.NONE,
+            visibilityLocked = !applicationFormFieldConfiguration.getValidVisibilityStatusSet(callType)
+                .contains(FieldVisibilityStatus.NONE),
+            availableInStep = applicationFormFieldConfiguration.visibilityStatus.toDTO(),
+            stepSelectionLocked = !applicationFormFieldConfiguration.getValidVisibilityStatusSet(callType)
+                .containsAll(listOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY))
+        )
 }

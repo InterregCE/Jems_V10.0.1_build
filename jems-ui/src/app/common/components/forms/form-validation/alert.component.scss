@@ -1,13 +1,16 @@
-.app-alert {
+.jems-alert {
   position: relative;
   padding: .75rem 1.25rem;
-  margin-bottom: 1rem;
   border: 1px solid transparent;
   border-radius: .25rem;
+}
+
+.jems-alert-margins {
+  margin-bottom: 1rem;
   margin-top: 1rem;
 }
 
-.app-alert-dismissible {
+.jems-alert-dismissible {
   padding-right: (1rem * 1.5) + (1.25rem * 2);
 
   .close-btn {
@@ -28,7 +31,7 @@
   }
 }
 
-.app-fade {
+.jems-fade {
   transition: opacity .15s linear;
 
   &:not(.show) {

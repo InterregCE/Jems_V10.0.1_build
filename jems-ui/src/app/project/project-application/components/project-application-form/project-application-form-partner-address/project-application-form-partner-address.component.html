@@ -1,27 +1,33 @@
-<app-form (save)="onSubmit()"
+<jems-form (save)="onSubmit()"
           (discard)="resetForm()">
-    <form appFormLayout [formGroup]="partnerAddressForm">
+    <form jemsFormLayout [formGroup]="partnerAddressForm">
         <h3>{{'project.partner.address.header' | translate}}</h3>
         <h4>{{'project.partner.main-address.header' | translate}}</h4>
-        <ng-container *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.ADDRESS.MAIN">
-            <app-project-application-form-address
+        <ng-container *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.ADDRESS.MAIN">
+            <jems-alert
+                    [show]="true"
+                    [closable]="false"
+                    [type]="Alert.INFO">
+                <span>{{'common.hint.nuts' | translate}} <a target="_blank" rel="noopener" href="https://ec.europa.eu/eurostat/web/nuts/background">https://ec.europa.eu/eurostat/web/nuts/background</a></span>
+            </jems-alert>
+            <jems-project-application-form-address
                     *ngIf="partnerAddressForm?.controls"
                     [partnerId]="partnerId"
                     [addressForm]="partnerAddressForm.controls.organization"
                     [nuts]="nuts"
                     [fieldIds]="APPLICATION_FORM.SECTION_B.ADDRESS.MAIN">
-            </app-project-application-form-address>
+            </jems-project-application-form-address>
         </ng-container>
 
-        <ng-container *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.ADDRESS.SECONDARY">
+        <ng-container *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.ADDRESS.SECONDARY">
             <h4>{{'project.partner.department-address.header' | translate}}</h4>
-            <app-project-application-form-address
+            <jems-project-application-form-address
                     *ngIf="partnerAddressForm?.controls"
                     [partnerId]="partnerId"
                     [addressForm]="partnerAddressForm.controls.department"
                     [nuts]="nuts"
                     [fieldIds]="APPLICATION_FORM.SECTION_B.ADDRESS.SECONDARY">
-            </app-project-application-form-address>
+            </jems-project-application-form-address>
         </ng-container>
     </form>
-</app-form>
+</jems-form>

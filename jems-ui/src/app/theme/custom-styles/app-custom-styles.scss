@@ -1,7 +1,6 @@
 @use '~@angular/material' as mat;
 @import "custom-buttons-styles";
 @import "custom-tooltip-styles";
-@import "custom-tab-group-styles";
 @import "custom-form-field-styles";
 @import "custom-mat-table-styles";
 @import "custom-date-time-picker-styles";
@@ -93,7 +92,6 @@
 
   @include custom-buttons-styles($is-dark-theme);
   @include custom-tooltip-styles();
-  @include custom-tab-group-styles();
   @include custom-form-field-styles();
   @include custom-mat-table-styles($is-dark-theme);
   @include custom-date-time-picker-styles()

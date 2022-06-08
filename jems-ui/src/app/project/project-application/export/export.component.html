@@ -1,23 +1,23 @@
-<app-project-page-template *ngIf="data$ | async as data" [needsCard]="true"
+<jems-project-page-template *ngIf="data$ | async as data" [needsCard]="true"
                            [titleText]="'project.application.form.acronym' | translate : {projectTitle: data.projectTitle} "
                            subTitleKey="project.application.form.section.export"
                            [isVersionedData]="false">
 
     <div id="export-container" *ngIf="selectedCategory$ | async as selectedCategory">
-        <app-category-tree id="export-category-tree" class="mr-3"
+        <jems-category-tree id="export-category-tree" class="mr-3"
                            [categories]="data.categories"
                            (categorySelected)="onCategoryChanged($event)"
                            [selectedCategory]="selectedCategory"
-        ></app-category-tree>
+        ></jems-category-tree>
         <div id="export-config">
             <h3>{{'export.header.' + selectedCategory?.type?.toLowerCase() | translate}}</h3>
-            <form appFormLayout [formGroup]="exportForm">
-                <mat-form-field appFormFieldWidth="xx-large">
+            <form jemsFormLayout [formGroup]="exportForm">
+                <mat-form-field jemsFormFieldWidth="xx-large">
                     <mat-label>{{'export.label.project.version' | translate}}</mat-label>
                     <mat-select formControlName="version">
                         <mat-option *ngFor="let projectVersion of data.versions" [value]="projectVersion.version" role="option">
                             <ng-container *ngIf="projectVersion.current">
-                                {{'project.versions.select.format.current' | translate : {version: projectVersion.version} }}
+                                {{'project.versions.select.format.current' | translate }} {{'project.versions.select.format' | translate : {version: projectVersion.version} }}
                             </ng-container>
                             <ng-container *ngIf="!projectVersion.current">
                                 {{'project.versions.select.format' | translate : {version: projectVersion.version} }}
@@ -26,7 +26,7 @@
                     </mat-select>
                 </mat-form-field>
 
-                <mat-form-field appFormFieldWidth="xx-large">
+                <mat-form-field jemsFormFieldWidth="xx-large">
                     <mat-label>{{'export.label.export.language' | translate}}</mat-label>
                     <mat-select formControlName="exportLanguage">
                         <mat-option *ngFor="let exportLanguage of data.exportLanguages" [value]="exportLanguage"
@@ -36,7 +36,7 @@
                     </mat-select>
                 </mat-form-field>
 
-                <mat-form-field appFormFieldWidth="xx-large">
+                <mat-form-field jemsFormFieldWidth="xx-large">
                     <mat-label>{{'export.label.input.language' | translate}}</mat-label>
                     <mat-select formControlName="inputLanguage">
                         <mat-option *ngFor="let inputLanguage of data.inputLanguages" [value]="inputLanguage"
@@ -46,12 +46,12 @@
                     </mat-select>
                 </mat-form-field>
             </form>
-            <app-pending-button appText
+            <jems-pending-button jemsText
                                 [disabled]="!selectedCategory || !exportLanguage || !inputLanguage || !data.projectId"
                                 (click)="exportData(selectedCategory, exportLanguage, inputLanguage, data.projectId, getVersion(data.versions))"
                                 [pending]="isExportingInProgress$ | async">
                 {{'export.label.export.button' | translate}}
-            </app-pending-button>
+            </jems-pending-button>
         </div>
     </div>
-</app-project-page-template>
+</jems-project-page-template>

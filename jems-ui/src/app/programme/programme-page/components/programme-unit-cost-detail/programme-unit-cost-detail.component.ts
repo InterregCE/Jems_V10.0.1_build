@@ -13,29 +13,31 @@ import {MatDialog} from '@angular/material/dialog';
 import {FormState} from '@common/components/forms/form-state';
 import {Forms} from '../../../../common/utils/forms';
 import {filter, take, takeUntil, tap} from 'rxjs/operators';
-import {
-  ProgrammeUnitCostDTO
-} from '@cat/api';
+import {CurrencyDTO, ProgrammeUnitCostDTO} from '@cat/api';
 import {SelectionModel} from '@angular/cdk/collections';
 import {NumberService} from '../../../../common/services/number.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ProgrammeEditableStateStore} from '../../services/programme-editable-state-store.service';
 import {TranslateService} from '@ngx-translate/core';
+import {CurrencyCodesEnum, CurrencyStore} from '@common/services/currency.store';
 
 @UntilDestroy()
 @Component({
-  selector: 'app-programme-unit-cost-detail',
+  selector: 'jems-programme-unit-cost-detail',
   templateUrl: './programme-unit-cost-detail.component.html',
   styleUrls: ['./programme-unit-cost-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProgrammeUnitCostDetailComponent extends ViewEditFormComponent implements OnInit {
+  private static readonly PROGRAMME_UNIT_COST_INVALID = 'programme.unitCost.costPerUnit.invalid';
 
   MIN_VALUE = 0.01;
-  MAX_VALUE =  999999999.99;
+  MAX_VALUE = 999999999.99;
 
   @Input()
   unitCost: ProgrammeUnitCostDTO;
+  @Input()
+  currencies: CurrencyDTO[];
   @Input()
   isCreate: boolean;
   @Output()
@@ -46,6 +48,8 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditFormComponent impl
   cancelCreate: EventEmitter<void> = new EventEmitter<void>();
 
   isProgrammeSetupLocked: boolean;
+  programmeHasContractedProjects: boolean;
+  availableCurrencies: CurrencyDTO[];
 
   unitCostForm = this.formBuilder.group({
     isOneCostCategory: [null, Validators.required],
@@ -57,13 +61,23 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditFormComponent impl
       Validators.max(this.MAX_VALUE),
       Validators.required])
     ],
+    costPerUnitForeignCurrency:[null, Validators.compose([
+      Validators.min(this.MIN_VALUE),
+      Validators.max(this.MAX_VALUE)])
+    ],
+    foreignCurrencyCode: [null,[]],
     categories: ['', Validators.required]
   });
 
   costErrors = {
-    required: 'programme.unitCost.costPerUnit.invalid',
-    min: 'programme.unitCost.costPerUnit.invalid',
-    max: 'programme.unitCost.costPerUnit.invalid'
+    required: ProgrammeUnitCostDetailComponent.PROGRAMME_UNIT_COST_INVALID,
+    min: ProgrammeUnitCostDetailComponent.PROGRAMME_UNIT_COST_INVALID,
+    max: ProgrammeUnitCostDetailComponent.PROGRAMME_UNIT_COST_INVALID
+  };
+
+  costForeignCurrencyErrors = {
+    min: ProgrammeUnitCostDetailComponent.PROGRAMME_UNIT_COST_INVALID,
+    max: ProgrammeUnitCostDetailComponent.PROGRAMME_UNIT_COST_INVALID
   };
 
   categoriesErrorsMultiple = {
@@ -104,13 +118,24 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditFormComponent impl
               public programmeEditableStateStore: ProgrammeEditableStateStore,
               protected changeDetectorRef: ChangeDetectorRef,
               protected translationService: TranslateService,
-              public numberService: NumberService) {
+              public numberService: NumberService,
+              private currencyStore: CurrencyStore) {
     super(changeDetectorRef, translationService);
 
     this.programmeEditableStateStore.isProgrammeEditableDependingOnCall$.pipe(
-        tap(isProgrammeEditingLimited => this.isProgrammeSetupLocked = isProgrammeEditingLimited),
-        untilDestroyed(this)
+      tap(isProgrammeEditingLimited => this.isProgrammeSetupLocked = isProgrammeEditingLimited),
+      untilDestroyed(this)
     ).subscribe();
+
+    this.programmeEditableStateStore.hasContractedProjects$.pipe(
+      tap(hasContractedProjects => this.programmeHasContractedProjects = hasContractedProjects),
+      untilDestroyed(this)
+    ).subscribe();
+
+     this.currencyStore.currencies$.pipe(
+       tap(currencies => this.prepareCurrencyList(currencies)),
+       untilDestroyed(this)
+     ).subscribe();
   }
 
   ngOnInit(): void {
@@ -130,6 +155,8 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditFormComponent impl
     this.unitCostForm.controls.description.setValue(this.unitCost.description);
     this.unitCostForm.controls.type.setValue(this.unitCost.type);
     this.unitCostForm.controls.costPerUnit.setValue(this.unitCost.costPerUnit);
+    this.unitCostForm.controls.costPerUnitForeignCurrency.setValue(this.unitCost.costPerUnitForeignCurrency);
+    this.unitCostForm.controls.foreignCurrencyCode.setValue(this.unitCost.foreignCurrencyCode);
     this.unitCostForm.controls.isOneCostCategory.setValue(this.unitCost.oneCostCategory);
     this.selectionMultiple.clear();
     this.selectionSingle.clear();
@@ -164,6 +191,8 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditFormComponent impl
           description: this.unitCostForm?.controls?.description?.value,
           type: this.unitCostForm?.controls?.type?.value,
           costPerUnit: this.unitCostForm?.controls?.costPerUnit?.value,
+          costPerUnitForeignCurrency: this.unitCostForm?.controls?.costPerUnitForeignCurrency.value,
+          foreignCurrencyCode: this.unitCostForm?.controls?.foreignCurrencyCode.value,
           oneCostCategory: this.unitCostForm?.controls?.isOneCostCategory?.value,
           categories: this.unitCostForm?.controls?.isOneCostCategory?.value ? this.selectionSingle.selected : this.selectionMultiple.selected
         } as ProgrammeUnitCostDTO);
@@ -174,6 +203,8 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditFormComponent impl
           description: this.unitCostForm?.controls?.description?.value,
           type: this.unitCostForm?.controls?.type?.value,
           costPerUnit: this.unitCostForm?.controls?.costPerUnit?.value,
+          costPerUnitForeignCurrency: this.unitCostForm?.controls?.costPerUnitForeignCurrency.value,
+          foreignCurrencyCode: this.unitCostForm?.controls?.foreignCurrencyCode.value,
           oneCostCategory: this.unitCostForm?.controls?.isOneCostCategory?.value,
           categories: this.unitCostForm?.controls?.isOneCostCategory?.value ? this.selectionSingle.selected : this.selectionMultiple.selected
         });
@@ -226,11 +257,29 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditFormComponent impl
       this.unitCostForm.controls.categories.setErrors(null);
     }
     if ((this.unitCost.oneCostCategory && this.unitCost.categories?.length === 1)
-        || (!this.unitCost.oneCostCategory && this.unitCost.categories?.length >= 2)) {
+      || (!this.unitCost.oneCostCategory && this.unitCost.categories?.length >= 2)) {
       this.validNumberOfSelections = true;
     }
     if (this.isProgrammeSetupLocked && !this.isCreate) {
       this.unitCostForm.controls.costPerUnit.disable();
+    }
+    if (this.programmeHasContractedProjects && !this.isCreate){
+      this.unitCostForm.controls.costPerUnitForeignCurrency.disable();
+      this.unitCostForm.controls.foreignCurrencyCode.disable();
+    }
+  }
+
+  isForeignCurrencySelected(): boolean {
+    return this.getForm()?.get('foreignCurrencyCode')?.value;
+  }
+
+  prepareCurrencyList(currencies: CurrencyDTO[]) {
+    this.availableCurrencies = currencies.filter((el) => el.code !== CurrencyCodesEnum.EUR);
+  }
+
+  onForeignCurrencyChange(selectionChange: any) {
+    if (!selectionChange.value) {
+      this.getForm()?.get('costPerUnitForeignCurrency')?.setValue(null);
     }
   }
 }

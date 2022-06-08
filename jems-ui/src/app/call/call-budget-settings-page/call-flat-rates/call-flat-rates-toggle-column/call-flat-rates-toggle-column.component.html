@@ -6,12 +6,12 @@
             class="intro-text-small"
             [value]="false"
             (change)="selected.emit($event.value)">
-        <span appText maxWidth="230">{{'call.detail.flat.rate.fixed' | translate}}</span>
+        <span jemsText maxWidth="230">{{'call.detail.flat.rate.fixed' | translate}}</span>
     </mat-button-toggle>
     <mat-button-toggle
             class="intro-text-small"
             [value]="true"
             (change)="selected.emit($event.value)">
-        <span appText maxWidth="230">{{'call.detail.flat.rate.up.to' | translate}}</span>
+        <span jemsText maxWidth="230">{{'call.detail.flat.rate.up.to' | translate}}</span>
     </mat-button-toggle>
 </mat-button-toggle-group>

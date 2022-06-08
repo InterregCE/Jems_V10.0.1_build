@@ -5,7 +5,7 @@ import {UserRegistrationDTO} from '@cat/api';
 import {RegistrationPageService} from '../../services/registration-page.service';
 
 @Component({
-  selector: 'app-registration-page',
+  selector: 'jems-registration-page',
   templateUrl: './registration-page.component.html',
   styleUrls: ['./registration-page.component.scss']
 })

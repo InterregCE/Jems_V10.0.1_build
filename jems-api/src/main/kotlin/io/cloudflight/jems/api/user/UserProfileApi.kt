@@ -8,20 +8,21 @@ import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
 import javax.validation.Valid
 
 @Api("User Profile")
-@RequestMapping("/api/profile")
 interface UserProfileApi {
 
+    companion object {
+        private const val ENDPOINT_API_USER_PROFILE = "/api/profile"
+    }
 
     @ApiOperation("Updates user profile")
-    @PutMapping(consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PutMapping(ENDPOINT_API_USER_PROFILE, consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateUserProfile(@Valid @RequestBody profileData: InputUserProfile): OutputUserProfile
 
     @ApiOperation("Gets user profile")
-    @GetMapping()
+    @GetMapping(ENDPOINT_API_USER_PROFILE)
     fun getUserProfile(): OutputUserProfile?
 
 }

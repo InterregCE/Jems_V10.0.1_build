@@ -1,64 +1,15 @@
-
-.background-visual {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.double-card-container {
-  display: flex;
-  flex-direction: row;
-  gap: 2rem;
-  align-items: flex-start;
-  margin-top: 5%;
-}
-
-@media all and (max-width: 75rem) {
-  .double-card-container {
-    flex-direction: column;
-    align-items: center;
-  }
-}
-
-mat-card-title,
-mat-card-content,
-mat-card-subtitle, {
-  display: flex;
-  justify-content: center;
-  flex-direction: row;
-  padding: 0.5rem;
-  height: auto !important;
-
-  > * {
-    flex: 1 1 0;
-    min-width: 25rem;
-  }
-}
-
 .logo {
   width: 100%;
   height: auto;
 }
 .logo-inline {
-  height: 1em;
-  margin-bottom: -0.1em;
+  height: 0.8em;
+  margin-bottom: -0.05em;
 }
-h1.login-headline {
+.login-headline {
   width: 100%;
   text-align: center;
   margin-bottom: 1em;
-}
-
-.authentication-logo {
-  background: white;
-  color: black;
-  font-style: italic;
-  font-weight: 400;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 }
 
 .space-between {
@@ -71,9 +22,14 @@ h1.login-headline {
 }
 
 .accessibility-statement {
-  background: #f5f5f5;
+  display: flex;
+  gap: 0.5rem;
+  border: 1px dotted var(--table-border-color);
   padding: 0.75rem;
-  margin: 1.5em 0;
+  margin: 2.5rem 0 1.5rem 0;
+  mat-icon {
+    color: var(--font-color-secondary);
+  }
 }
 
 .button-full-width {
@@ -86,6 +42,8 @@ h1.login-headline {
 }
 
 .interact-info {
+  color: var(--font-color-secondary);
+  font-size: 0.75rem;
   padding-bottom: 0;
   margin-bottom: 0;
 }

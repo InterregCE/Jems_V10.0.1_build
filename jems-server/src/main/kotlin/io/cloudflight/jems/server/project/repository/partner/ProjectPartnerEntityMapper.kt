@@ -27,6 +27,7 @@ import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerMotivatio
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerMotivationTranslEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerTranslEntity
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetPerPeriodRow
+import io.cloudflight.jems.server.project.entity.partner.budget.spf.ProjectSpfBeneficiaryBudgetPerPeriodRow
 import io.cloudflight.jems.server.project.entity.partner.state_aid.PartnerStateAidRow
 import io.cloudflight.jems.server.project.entity.partner.state_aid.ProjectPartnerStateAidActivityEntity
 import io.cloudflight.jems.server.project.entity.partner.state_aid.ProjectPartnerStateAidActivityId
@@ -36,8 +37,8 @@ import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackag
 import io.cloudflight.jems.server.project.repository.partner.cofinancing.toContributionEntity
 import io.cloudflight.jems.server.project.repository.workpackage.activity.toSummaryModel
 import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerBudget
+import io.cloudflight.jems.server.project.service.budget.model.ProjectSpfBudgetPerPeriod
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
-import io.cloudflight.jems.server.project.service.partner.cofinancing.model.UpdateProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAddress
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAddressType
@@ -48,6 +49,8 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSt
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
 import java.math.BigDecimal
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
 
 fun ProjectPartner.toEntity(project: ProjectEntity, legalStatus: ProgrammeLegalStatusEntity) =
     ProjectPartnerEntity(
@@ -102,17 +105,18 @@ fun ProjectPartnerEntity.copy(
     newContacts: Set<ProjectPartnerContact>? = null,
     newMotivation: ProjectPartnerMotivation? = null,
     newPartnerContributions: List<ProjectPartnerContribution>? = null,
-    newFinancing: Collection<UpdateProjectPartnerCoFinancing>? = null
 ): ProjectPartnerEntity = ProjectPartnerEntity(
     id = projectPartner?.id ?: id,
+    active = active,
     project = project,
     abbreviation = projectPartner?.abbreviation ?: abbreviation,
     role = projectPartner?.role ?: role,
     sortNumber = sortNumber,
+    createdAt = createdAt,
     nameInOriginalLanguage = projectPartner?.nameInOriginalLanguage ?: nameInOriginalLanguage,
     nameInEnglish = projectPartner?.nameInEnglish ?: nameInEnglish,
     partnerType = projectPartner?.partnerType ?: partnerType,
-    partnerSubType = projectPartner?.partnerSubType,
+    partnerSubType = projectPartner?.partnerSubType ?: partnerSubType,
     nace = projectPartner?.nace ?: nace,
     otherIdentifierNumber = projectPartner?.otherIdentifierNumber ?: otherIdentifierNumber,
     pic = projectPartner?.pic ?: pic,
@@ -125,8 +129,10 @@ fun ProjectPartnerEntity.copy(
     motivation = newMotivation?.toEntity(id) ?: motivation,
     partnerContributions = newPartnerContributions?.toContributionEntity(id) ?: partnerContributions
 ).apply {
-    if(projectPartner!=null)
+    if(projectPartner != null) {
+        partnerSubType = projectPartner.partnerSubType
         translatedValues.addPartnerTranslations(this, projectPartner.department, projectPartner.otherIdentifierDescription)
+    }
 }
 
 fun Iterable<ProjectPartnerEntity>.toProjectPartner() = map { it.toProjectPartner() }
@@ -150,6 +156,7 @@ fun ProjectPartnerEntity.toProjectPartnerDetail() = ProjectPartnerDetail(
     active = active,
     abbreviation = abbreviation,
     role = role,
+    createdAt = createdAt,
     sortNumber = sortNumber,
     nameInOriginalLanguage = nameInOriginalLanguage,
     nameInEnglish = nameInEnglish,
@@ -172,8 +179,11 @@ fun ProjectPartnerAddress.toEntity(partner: ProjectPartnerEntity) = ProjectPartn
     addressId = ProjectPartnerAddressId(partner.id, type),
     address = AddressEntity(
         country = country,
+        countryCode = countryCode,
         nutsRegion2 = nutsRegion2,
+        nutsRegion2Code = nutsRegion2Code,
         nutsRegion3 = nutsRegion3,
+        nutsRegion3Code = nutsRegion3Code,
         street = street,
         houseNumber = houseNumber,
         postalCode = postalCode,
@@ -264,8 +274,11 @@ fun ProjectPartnerMotivationEntity.toModel() = ProjectPartnerMotivation(
 fun ProjectPartnerAddressEntity.toModel() = ProjectPartnerAddress(
     type = addressId.type,
     country = address.country,
+    countryCode = address.countryCode,
     nutsRegion2 = address.nutsRegion2,
+    nutsRegion2Code = address.nutsRegion2Code,
     nutsRegion3 = address.nutsRegion3,
+    nutsRegion3Code = address.nutsRegion3Code,
     street = address.street,
     houseNumber = address.houseNumber,
     postalCode = address.postalCode,
@@ -317,6 +330,7 @@ fun List<PartnerIdentityRow>.toProjectPartnerDetailHistoricalData(
         abbreviation = groupedRows.value.first().abbreviation,
         role = groupedRows.value.first().role,
         sortNumber = groupedRows.value.first().sortNumber,
+        createdAt = ZonedDateTime.of(groupedRows.value.first().createdAt.toLocalDateTime(), ZoneOffset.UTC),
         nameInOriginalLanguage = groupedRows.value.first().nameInOriginalLanguage,
         nameInEnglish = groupedRows.value.first().nameInEnglish,
         department = extractField { it.department },
@@ -333,7 +347,7 @@ fun List<PartnerIdentityRow>.toProjectPartnerDetailHistoricalData(
         contacts = contacts,
         motivation = motivation
     )
-}.first()
+}.firstOrNull()
 
 fun PartnerSimpleRow.toProjectPartnerHistoricalData() = ProjectPartnerSummary(
     id = id,
@@ -469,6 +483,7 @@ fun List<PartnerDetailRow>.toModel(): List<ProjectPartnerDetail> =
             abbreviation = groupedRows.value.first().abbreviation,
             role = groupedRows.value.first().role,
             sortNumber = groupedRows.value.first().sortNumber,
+            createdAt = ZonedDateTime.of(groupedRows.value.first().createdAt.toLocalDateTime(), ZoneOffset.UTC),
             nameInOriginalLanguage = groupedRows.value.first().nameInOriginalLanguage,
             nameInEnglish = groupedRows.value.first().nameInEnglish,
             department = groupedRows.value.extractField { it.department },
@@ -514,3 +529,10 @@ fun List<PartnerDetailRow>.toModel(): List<ProjectPartnerDetail> =
         )
 
     }
+
+fun List<ProjectSpfBeneficiaryBudgetPerPeriodRow>.toProjectPartnerSpfBudgetPerPeriod() = map { it.toModel() }.toList()
+
+fun ProjectSpfBeneficiaryBudgetPerPeriodRow.toModel() = ProjectSpfBudgetPerPeriod(
+    periodNumber = periodNumber ?: 0,
+    spfCostPerPeriod = spfCostPerPeriod ?: BigDecimal.ZERO
+)

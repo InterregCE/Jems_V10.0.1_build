@@ -20,11 +20,22 @@ class GetProjectCoFinancingOverview(
     @CanRetrieveProjectForm
     override fun getProjectCoFinancingOverview(projectId: Long, version: String?): ProjectCoFinancingOverview {
         val partnerIds = projectBudgetPersistence.getPartnersForProjectId(projectId = projectId, version).mapTo(HashSet()) { it.id!! }
-        return calculateCoFinancingOverview(
+        val funds = projectPartnerCoFinancingPersistence.getAvailableFunds(partnerIds.first())
+
+        val managementCoFinancingOverview = calculateCoFinancingOverview(
             partnerIds = partnerIds,
             getBudgetTotalCost = { getBudgetTotalCost.getBudgetTotalCost(it, version) },
             getCoFinancingAndContributions = { projectPartnerCoFinancingPersistence.getCoFinancingAndContributions(it, version) },
-            funds = projectPartnerCoFinancingPersistence.getAvailableFunds(partnerIds.first()),
+            funds = funds,
         )
+
+        val spfCoFinancingOverview = calculateCoFinancingOverview(
+            partnerIds = partnerIds,
+            getBudgetTotalCost = { getBudgetTotalCost.getBudgetTotalSpfCost(it, version) },
+            getCoFinancingAndContributions = { projectPartnerCoFinancingPersistence.getSpfCoFinancingAndContributions(it, version) },
+            funds = funds,
+        )
+
+        return ProjectCoFinancingOverview(managementCoFinancingOverview, spfCoFinancingOverview)
     }
 }

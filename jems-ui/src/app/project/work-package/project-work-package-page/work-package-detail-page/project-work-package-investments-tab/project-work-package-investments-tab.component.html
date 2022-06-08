@@ -1,23 +1,23 @@
 <ng-container *ngIf="investments$ | async as investments">
-    <app-form>
-        <div appFormLayout>
+    <jems-form>
+        <div jemsFormLayout>
             <h3>{{'project.application.form.workpackage.investment.form.list.title' | translate}}</h3>
             <div>{{'project.work.package.tab.investment.intro' | translate}}</div>
 
-            <button appText mat-stroked-button
-                    routerLink="create"
-                    [disabled]="(projectStore.projectEditable$ | async) === false">
+            <button *ngIf="projectStore.projectEditable$ | async"
+                    jemsText mat-stroked-button
+                    routerLink="create">
                 + {{'project.application.form.add.workpackage.investment' | translate}}
             </button>
 
-            <app-table appNoWidthLimit
+            <jems-table jemsNoWidthLimit
                        *ngIf="investments.length"
                        [configuration]="tableConfiguration"
                        [rows]="investments"
                        [totalElements]="investments.length">
-            </app-table>
+            </jems-table>
         </div>
-    </app-form>
+    </jems-form>
 </ng-container>
 
 <ng-template #numberingCell let-workPackageInvestment>

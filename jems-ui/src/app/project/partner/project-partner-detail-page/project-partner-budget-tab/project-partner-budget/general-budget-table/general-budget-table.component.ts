@@ -45,7 +45,7 @@ const FIELD_KEYS =
 
 @UntilDestroy()
 @Component({
-  selector: 'app-general-budget-table',
+  selector: 'jems-general-budget-table',
   templateUrl: './general-budget-table.component.html',
   styleUrls: ['./general-budget-table.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -99,14 +99,20 @@ export class GeneralBudgetTableComponent implements OnInit, OnChanges {
       untilDestroyed(this)
     ).subscribe();
 
+    this.setTableConfig();
+  }
+
+  setTableConfig() {
     this.columnsToDisplay = [
       ...this.budgetTabService.addIfItsVisible(this.getFieldId(FIELD_KEYS.DESCRIPTION), ['description']),
       ...this.budgetTabService.addIfItsVisible(this.getFieldId(FIELD_KEYS.COMMENTS), ['comments']),
       ...this.budgetTabService.addIfItsVisible(this.getFieldId(FIELD_KEYS.AWARD_PROCEDURE), ['awardProcedures']),
       ...this.budgetTabService.addIfItsVisible(this.getFieldId(FIELD_KEYS.INVESTMENT), ['investment']),
       ...this.budgetTabService.addIfItsVisible(this.getFieldId(FIELD_KEYS.UNIT_TYPE_AND_NUMBER_OF_UNITS), ['unitType', 'numberOfUnits']),
-      'pricePerUnit', 'total',
-      ...this.budgetTabService.getPeriodTableColumns(this.projectPeriods), 'action',
+      'pricePerUnit',
+      'total',
+      ...this.budgetTabService.getPeriodTableColumns(this.projectPeriods),
+      ...this.editable ? ['action'] : []
     ];
 
     this.tableConfig = [
@@ -114,12 +120,14 @@ export class GeneralBudgetTableComponent implements OnInit, OnChanges {
       ...this.budgetTabService.addIfItsVisible(this.getFieldId(FIELD_KEYS.COMMENTS), [{minInRem: 12}]),
       ...this.budgetTabService.addIfItsVisible(this.getFieldId(FIELD_KEYS.AWARD_PROCEDURE), [{minInRem: 12}]),
       ...this.budgetTabService.addIfItsVisible(this.getFieldId(FIELD_KEYS.INVESTMENT), [{minInRem: 5, maxInRem: 5}]),
-      ...this.budgetTabService.addIfItsVisible(this.getFieldId(FIELD_KEYS.UNIT_TYPE_AND_NUMBER_OF_UNITS), [{minInRem: 12}, {
-        minInRem: 5,
-        maxInRem: 5
+      ...this.budgetTabService.addIfItsVisible(this.getFieldId(FIELD_KEYS.UNIT_TYPE_AND_NUMBER_OF_UNITS), [{minInRem: 9}, {
+        minInRem: 6,
+        maxInRem: 6
       }]),
-      {minInRem: 8, maxInRem: 8}, {minInRem: 8},
-      ...this.budgetTabService.getPeriodsWidthConfigs(this.projectPeriods), {minInRem: 3, maxInRem: 3}
+      {minInRem: 8, maxInRem: 8},
+      {minInRem: 9}, // totals column
+      ...this.budgetTabService.getPeriodsWidthConfigs(this.projectPeriods),
+      ...this.editable ? [{minInRem: 3, maxInRem: 3}] : []
     ];
 
     if (this.availableUnitCosts.length > 0) {

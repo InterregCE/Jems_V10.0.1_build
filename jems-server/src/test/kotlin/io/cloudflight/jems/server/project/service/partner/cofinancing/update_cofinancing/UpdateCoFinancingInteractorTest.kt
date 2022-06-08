@@ -1,17 +1,31 @@
 package io.cloudflight.jems.server.project.service.partner.cofinancing.update_cofinancing
 
+import io.cloudflight.jems.api.call.dto.CallType
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO.AutomaticPublic
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO.Private
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO.Public
 import io.cloudflight.jems.server.call.callFund
+import io.cloudflight.jems.server.call.service.CallPersistence
+import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
+import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldSetting
+import io.cloudflight.jems.server.call.service.model.CallApplicationFormFieldsConfiguration
+import io.cloudflight.jems.server.call.service.model.FieldVisibilityStatus
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
+import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
+import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
+import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPartnerCoFinancingPersistence
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContributionSpf
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionSpf
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.UpdateProjectPartnerCoFinancing
-import io.mockk.MockKAnnotations
 import io.mockk.every
+import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
@@ -23,6 +37,9 @@ import java.math.BigDecimal
 internal class UpdateCoFinancingInteractorTest {
 
     companion object {
+        private const val partnerId = 1L
+        private const val projectId = 2L
+        private const val callId = 3L
         private val fund = ProgrammeFundEntity(id = 1, selected = true)
 
         private val financingOk = listOf(
@@ -35,17 +52,35 @@ internal class UpdateCoFinancingInteractorTest {
                 fundId = 1
             )
         )
+        private val afConfiguration = CallApplicationFormFieldsConfiguration(
+            CallType.STANDARD,
+            mutableSetOf(
+                ApplicationFormFieldConfiguration(
+                    ApplicationFormFieldSetting.PARTNER_ADD_NEW_CONTRIBUTION_ORIGIN.id,
+                    FieldVisibilityStatus.STEP_ONE_AND_TWO
+                )
+            )
+        )
+
     }
 
     @MockK
     lateinit var persistence: ProjectPartnerCoFinancingPersistence
+    @MockK
+    lateinit var partnerPersistence: PartnerPersistence
+    @MockK
+    lateinit var projectPersistence: ProjectPersistence
+    @MockK
+    lateinit var callPersistence: CallPersistence
 
-    lateinit var updateInteractor: UpdateCoFinancingInteractor
+    @InjectMockKs
+    lateinit var updateCoFinancing: UpdateCoFinancing
 
     @BeforeEach
     fun setup() {
-        MockKAnnotations.init(this)
-        updateInteractor = UpdateCoFinancing(persistence)
+        every { partnerPersistence.getProjectIdForPartnerId(partnerId) } returns projectId
+        every { projectPersistence.getCallIdOfProject(projectId) } returns callId
+        every { callPersistence.getApplicationFormFieldConfigurations(callId) } returns afConfiguration
     }
 
     @Test
@@ -95,16 +130,16 @@ internal class UpdateCoFinancingInteractorTest {
         ignoreFundIdsRetrieval()
 
         val ex = assertThrows<I18nValidationException> {
-            updateInteractor.updateCoFinancing(1L, testCoFinancing, emptyList())
+            updateCoFinancing.updateCoFinancing(partnerId, testCoFinancing, emptyList())
         }
         assertThat(ex.i18nKey).isEqualTo(errorMsg)
     }
 
-    private fun ignoreFundIdsRetrieval() = every { persistence.getAvailableFunds(1L) } returns emptySet()
+    private fun ignoreFundIdsRetrieval() = every { persistence.getAvailableFunds(partnerId) } returns emptySet()
 
     @Test
     fun `test wrong amount of fundIds - 2 nulls`() {
-        every { persistence.getAvailableFunds(1L) } returns setOf(callFund(101L), callFund(102L), callFund(103L))
+        every { persistence.getAvailableFunds(partnerId) } returns setOf(callFund(101L), callFund(102L), callFund(103L))
         val testCoFinancing = listOf(
             UpdateProjectPartnerCoFinancing(
                 percentage = BigDecimal.valueOf(20),
@@ -117,9 +152,54 @@ internal class UpdateCoFinancingInteractorTest {
         )
 
         val ex = assertThrows<I18nValidationException> {
-            updateInteractor.updateCoFinancing(1L, testCoFinancing, emptyList())
+            updateCoFinancing.updateCoFinancing(partnerId, testCoFinancing, emptyList())
         }
         assertThat(ex.i18nKey).isEqualTo("project.partner.coFinancing.one.and.only.partner.contribution")
+    }
+
+    @Test
+    fun `test success on partner contribution if disabled in configuration`() {
+        val partnerContributions = listOf(
+            ProjectPartnerContribution(name = null, amount = BigDecimal.TEN, status = Public, isPartner = true)
+        )
+        val afConfigurationNoContrib = CallApplicationFormFieldsConfiguration(
+            CallType.STANDARD,
+            mutableSetOf(
+                ApplicationFormFieldConfiguration(
+                    ApplicationFormFieldSetting.PARTNER_ADD_NEW_CONTRIBUTION_ORIGIN.id,
+                    FieldVisibilityStatus.NONE
+                )
+            )
+        )
+        every { callPersistence.getApplicationFormFieldConfigurations(callId) } returns afConfigurationNoContrib
+        every { persistence.getAvailableFunds(partnerId) } returns setOf(callFund(1L))
+        val result = ProjectPartnerCoFinancingAndContribution(emptyList(), partnerContributions, "")
+        every { persistence.updateCoFinancingAndContribution(partnerId, financingOk, partnerContributions) } returns result
+
+        assertThat(updateCoFinancing.updateCoFinancing(partnerId, financingOk, partnerContributions)).isEqualTo(result)
+    }
+
+    @Test
+    fun `test exception on partner contribution if disabled in configuration`() {
+        val partnerContributions = listOf(
+            ProjectPartnerContribution(name = null, amount = BigDecimal.TEN, isPartner = true, status = Public),
+            ProjectPartnerContribution(name = null, amount = BigDecimal.TEN, isPartner = false, status = Public)
+        )
+        val afConfigurationNoContrib = CallApplicationFormFieldsConfiguration(
+            CallType.STANDARD,
+            mutableSetOf(
+                ApplicationFormFieldConfiguration(
+                    ApplicationFormFieldSetting.PARTNER_ADD_NEW_CONTRIBUTION_ORIGIN.id,
+                    FieldVisibilityStatus.NONE
+                )
+            )
+        )
+        every { callPersistence.getApplicationFormFieldConfigurations(callId) } returns afConfigurationNoContrib
+
+        val ex = assertThrows<I18nValidationException> {
+            updateCoFinancing.updateCoFinancing(partnerId, financingOk, partnerContributions)
+        }
+        assertThat(ex.i18nKey).isEqualTo(PARTNER_CONTRIBUTIONS_NOT_ENABLED_ERROR_KEY)
     }
 
     @Test
@@ -137,7 +217,7 @@ internal class UpdateCoFinancingInteractorTest {
         )
 
         val ex = assertThrows<I18nValidationException> {
-            updateInteractor.updateCoFinancing(1L, testCoFinancing, emptyList())
+            updateCoFinancing.updateCoFinancing(1L, testCoFinancing, emptyList())
         }
         assertThat(ex.i18nKey).isEqualTo("project.partner.coFinancing.one.and.only.partner.contribution")
     }
@@ -162,7 +242,7 @@ internal class UpdateCoFinancingInteractorTest {
         )
 
         val ex = assertThrows<I18nValidationException> {
-            updateInteractor.updateCoFinancing(1L, testCoFinancing, emptyList())
+            updateCoFinancing.updateCoFinancing(1L, testCoFinancing, emptyList())
         }
         assertThat(ex.i18nKey).isEqualTo("project.partner.coFinancing.fund.not.unique")
     }
@@ -205,7 +285,7 @@ internal class UpdateCoFinancingInteractorTest {
         )
 
         val ex = assertThrows<I18nValidationException> {
-            updateInteractor.updateCoFinancing(1L, testCoFinancing, emptyList())
+            updateCoFinancing.updateCoFinancing(1L, testCoFinancing, emptyList())
         }
         assertThat(ex.i18nKey).isEqualTo("project.partner.coFinancing.maximum.partner.contributions")
     }
@@ -230,14 +310,14 @@ internal class UpdateCoFinancingInteractorTest {
         )
 
         val ex = assertThrows<I18nValidationException> {
-            updateInteractor.updateCoFinancing(1L, testCoFinancing, emptyList())
+            updateCoFinancing.updateCoFinancing(1L, testCoFinancing, emptyList())
         }
         assertThat(ex.i18nKey).isEqualTo("project.partner.coFinancing.maximum.partner.contributions")
     }
 
     @Test
     fun `update financing forbidden or not-existing fund`() {
-        every { persistence.getAvailableFunds(5) } returns setOf(callFund(fund.id))
+        every { persistence.getAvailableFunds(partnerId) } returns setOf(callFund(fund.id))
 
         val toSave = listOf(
             UpdateProjectPartnerCoFinancing(
@@ -250,7 +330,7 @@ internal class UpdateCoFinancingInteractorTest {
             )
         )
         val ex = assertThrows<I18nValidationException> {
-            updateInteractor.updateCoFinancing(5, toSave, emptyList())
+            updateCoFinancing.updateCoFinancing(partnerId, toSave, emptyList())
         }
         assertThat(ex.i18nKey).isEqualTo("project.partner.coFinancing.fundId.not.allowed.for.call")
     }
@@ -273,7 +353,7 @@ internal class UpdateCoFinancingInteractorTest {
         val toSave = listOf(
             ProjectPartnerContribution(name = null, amount = BigDecimal.TEN, isPartner = true, status = Public)
         )
-        updateInteractor.updateCoFinancing(1, financingOk, toSave)
+        updateCoFinancing.updateCoFinancing(1, financingOk, toSave)
         assertThat(slotPartnerContributions.captured).containsExactly(
             ProjectPartnerContribution(name = null, amount = BigDecimal.TEN, isPartner = true, status = Public)
         )
@@ -291,7 +371,7 @@ internal class UpdateCoFinancingInteractorTest {
 
     @Test
     fun `update financing OK and contribution - wrong partner numbers`() {
-        every { persistence.getAvailableFunds(2) } returns setOf(callFund(fund.id))
+        every { persistence.getAvailableFunds(partnerId) } returns setOf(callFund(fund.id))
 
         val toSave = listOf(
             ProjectPartnerContribution(name = "not used", amount = BigDecimal.TEN, isPartner = true, status = Public),
@@ -299,7 +379,7 @@ internal class UpdateCoFinancingInteractorTest {
         )
 
         assertExceptionMsg(
-            executable = { updateInteractor.updateCoFinancing(2, financingOk, toSave) },
+            executable = { updateCoFinancing.updateCoFinancing(partnerId, financingOk, toSave) },
             expectedError = "project.partner.contribution.one.and.only.partner.contribution",
             description = "there can be only exactly 1 partner contribution"
         )
@@ -307,7 +387,7 @@ internal class UpdateCoFinancingInteractorTest {
 
     @Test
     fun `update financing OK and contribution - wrong partner status`() {
-        every { persistence.getAvailableFunds(3) } returns setOf(callFund(fund.id))
+        every { persistence.getAvailableFunds(partnerId) } returns setOf(callFund(fund.id))
 
         val toSave = listOf(
             ProjectPartnerContribution(
@@ -319,7 +399,7 @@ internal class UpdateCoFinancingInteractorTest {
         )
 
         assertExceptionMsg(
-            executable = { updateInteractor.updateCoFinancing(3, financingOk, toSave) },
+            executable = { updateCoFinancing.updateCoFinancing(partnerId, financingOk, toSave) },
             expectedError = "project.partner.contribution.partner.status.invalid",
             description = "Partner cannot be of status $AutomaticPublic"
         )
@@ -327,7 +407,7 @@ internal class UpdateCoFinancingInteractorTest {
 
     @Test
     fun `update financing OK and contribution - missing name`() {
-        every { persistence.getAvailableFunds(4) } returns setOf(callFund(fund.id))
+        every { persistence.getAvailableFunds(partnerId) } returns setOf(callFund(fund.id))
 
         val toSave = listOf(
             ProjectPartnerContribution(
@@ -340,42 +420,42 @@ internal class UpdateCoFinancingInteractorTest {
         )
 
         assertExceptionMsg(
-            executable = { updateInteractor.updateCoFinancing(4, financingOk, toSave) },
+            executable = { updateCoFinancing.updateCoFinancing(partnerId, financingOk, toSave) },
             expectedError = "project.partner.contribution.name.is.mandatory"
         )
     }
 
     @Test
     fun `update financing OK and contribution - missing status`() {
-        every { persistence.getAvailableFunds(6) } returns setOf(callFund(fund.id))
+        every { persistence.getAvailableFunds(partnerId) } returns setOf(callFund(fund.id))
 
         val toSave = listOf(
             ProjectPartnerContribution(name = "ignored", amount = BigDecimal.TEN, isPartner = true, status = null)
         )
 
         assertExceptionMsg(
-            executable = { updateInteractor.updateCoFinancing(6, financingOk, toSave) },
+            executable = { updateCoFinancing.updateCoFinancing(partnerId, financingOk, toSave) },
             expectedError = "project.partner.contribution.status.is.mandatory"
         )
     }
 
     @Test
     fun `update financing OK and contribution - missing amount`() {
-        every { persistence.getAvailableFunds(7) } returns setOf(callFund(fund.id))
+        every { persistence.getAvailableFunds(partnerId) } returns setOf(callFund(fund.id))
 
         val toSave = listOf(
             ProjectPartnerContribution(name = "ignored", amount = null, isPartner = true, status = Public)
         )
 
         assertExceptionMsg(
-            executable = { updateInteractor.updateCoFinancing(7, financingOk, toSave) },
+            executable = { updateCoFinancing.updateCoFinancing(partnerId, financingOk, toSave) },
             expectedError = "project.partner.contribution.amount.is.mandatory"
         )
     }
 
     @Test
     fun `update financing OK and contribution - amount 0`() {
-        every { persistence.getAvailableFunds(8) } returns setOf(callFund(fund.id))
+        every { persistence.getAvailableFunds(partnerId) } returns setOf(callFund(fund.id))
 
         val toSave = listOf(
             ProjectPartnerContribution(name = "zero", amount = BigDecimal.ZERO, isPartner = true, status = Public)
@@ -385,14 +465,14 @@ internal class UpdateCoFinancingInteractorTest {
         val slotPartnerContributions = slot<List<ProjectPartnerContribution>>()
         every {
             persistence.updateCoFinancingAndContribution(
-                8,
+                partnerId,
                 capture(slotFinances),
                 capture(slotPartnerContributions)
             )
         } returns
             ProjectPartnerCoFinancingAndContribution(emptyList(), emptyList(), "")
 
-        updateInteractor.updateCoFinancing(8, financingOk, toSave)
+        updateCoFinancing.updateCoFinancing(partnerId, financingOk, toSave)
         assertThat(slotPartnerContributions.captured).containsExactly(
             ProjectPartnerContribution(name = "zero", amount = BigDecimal.ZERO, isPartner = true, status = Public)
         )
@@ -406,6 +486,81 @@ internal class UpdateCoFinancingInteractorTest {
                 percentage = BigDecimal.valueOf(40.5)
             )
         )
+    }
+
+    @Test
+    fun `test exception on SPF partner contribution if disabled in configuration`() {
+        val partnerSpfContributions = listOf(
+            ProjectPartnerContributionSpf(name = null, amount = BigDecimal.TEN, status = Public),
+            ProjectPartnerContributionSpf(name = null, amount = BigDecimal.ONE, status = Private)
+        )
+        val afConfigurationNoContrib = CallApplicationFormFieldsConfiguration(
+            CallType.SPF,
+            mutableSetOf(
+                ApplicationFormFieldConfiguration(
+                    ApplicationFormFieldSetting.PARTNER_ADD_NEW_CONTRIBUTION_ORIGIN.id,
+                    FieldVisibilityStatus.NONE
+                )
+            )
+        )
+        every { callPersistence.getApplicationFormFieldConfigurations(callId) } returns afConfigurationNoContrib
+
+        val ex = assertThrows<I18nValidationException> {
+            updateCoFinancing.updateSpfCoFinancing(partnerId, financingOk, partnerSpfContributions)
+        }
+        assertThat(ex.i18nKey).isEqualTo(PARTNER_CONTRIBUTIONS_NOT_ENABLED_ERROR_KEY)
+    }
+
+    @Test
+    fun `update financing SPF OK and contribution - missing amount`() {
+        every { persistence.getAvailableFunds(partnerId) } returns setOf(callFund(fund.id))
+
+        val toSave = listOf(
+            ProjectPartnerContributionSpf(name = "name", amount = null, status = Public)
+        )
+
+        assertExceptionMsg(
+            executable = { updateCoFinancing.updateSpfCoFinancing(partnerId, financingOk, toSave) },
+            expectedError = "project.partner.contribution.amount.is.mandatory"
+        )
+    }
+
+    @Test
+    fun updateSpfCoFinancing() {
+        every { persistence.getAvailableFunds(partnerId) } returns setOf(callFund(fund.id))
+        val updateFinance1 = UpdateProjectPartnerCoFinancing(fundId = 1, percentage = BigDecimal.valueOf(40))
+        val updateFinance2 = UpdateProjectPartnerCoFinancing(fundId = null, percentage = BigDecimal.valueOf(60))
+        val finance1 = ProjectPartnerCoFinancing(
+            fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
+            fund = ProgrammeFund(id = 1, selected = true, ProgrammeFundType.ERDF),
+            percentage = BigDecimal.valueOf(40),
+        )
+        val finance2 = ProjectPartnerCoFinancing(
+            fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution,
+            fund = null,
+            percentage = BigDecimal.valueOf(60),
+        )
+        val partnerSpfContribution = ProjectPartnerContributionSpf(
+            name = "name",
+            amount = BigDecimal.valueOf(30),
+            status = Public
+        )
+
+        val slotFinances = slot<List<UpdateProjectPartnerCoFinancing>>()
+        val slotPartnerSpfContributions = slot<List<ProjectPartnerContributionSpf>>()
+        every {
+            persistence.updateSpfCoFinancingAndContribution(
+                partnerId,
+                capture(slotFinances),
+                capture(slotPartnerSpfContributions)
+            )
+        } returns
+            ProjectPartnerCoFinancingAndContributionSpf(listOf(finance1, finance2), listOf(partnerSpfContribution))
+
+        updateCoFinancing.updateSpfCoFinancing(partnerId, listOf(updateFinance1, updateFinance2), listOf(partnerSpfContribution))
+
+        assertThat(slotFinances.captured).containsExactlyInAnyOrder(updateFinance1, updateFinance2)
+        assertThat(slotPartnerSpfContributions.captured).containsExactly(partnerSpfContribution)
     }
 
     private fun assertExceptionMsg(executable: () -> Unit, expectedError: String, description: String? = null) {

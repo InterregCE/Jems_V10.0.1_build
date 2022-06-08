@@ -7,7 +7,7 @@ import {ProjectUtil} from '@project/common/project-util';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 
 @Component({
-  selector: 'app-project-application-information',
+  selector: 'jems-project-application-information',
   templateUrl: './project-application-information.component.html',
   styleUrls: ['./project-application-information.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -56,7 +56,7 @@ export class ProjectApplicationInformationComponent {
   }
 
   hasDraftStatusColor(): boolean {
-    return ProjectUtil.isDraft(this.project) || ProjectUtil.isReturnedToApplicant(this.project);
+    return ProjectUtil.isDraft(this.project) || ProjectUtil.isStep1Draft(this.project) || ProjectUtil.isReturnedToApplicant(this.project);
   }
 
   hasSubmittedStatusColor(): boolean {
@@ -64,7 +64,8 @@ export class ProjectApplicationInformationComponent {
       || this.projectStatus === ProjectStatusDTO.StatusEnum.ELIGIBLE
       || this.projectStatus === ProjectStatusDTO.StatusEnum.STEP1SUBMITTED
       || this.projectStatus === ProjectStatusDTO.StatusEnum.STEP1ELIGIBLE
-      || this.projectStatus === ProjectStatusDTO.StatusEnum.MODIFICATIONPRECONTRACTINGSUBMITTED;
+      || this.projectStatus === ProjectStatusDTO.StatusEnum.MODIFICATIONPRECONTRACTINGSUBMITTED
+      || this.projectStatus === ProjectStatusDTO.StatusEnum.MODIFICATIONSUBMITTED;
   }
 
   hasApprovedStatusColor(): boolean {

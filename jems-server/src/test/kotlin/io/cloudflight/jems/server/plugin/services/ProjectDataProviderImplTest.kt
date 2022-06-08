@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.plugin.services
 
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumPhase
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
@@ -25,11 +26,18 @@ import io.cloudflight.jems.plugin.contract.models.programme.lumpsum.ProgrammeLum
 import io.cloudflight.jems.plugin.contract.models.programme.strategy.ProgrammeStrategyData
 import io.cloudflight.jems.plugin.contract.models.programme.unitcost.BudgetCategoryData
 import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ApplicationStatusData
+import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ProjectAssessmentEligibilityData
+import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ProjectAssessmentEligibilityResultData
+import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ProjectAssessmentQualityData
+import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ProjectAssessmentQualityResultData
+import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ProjectDecisionData
 import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ProjectLifecycleData
+import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ProjectStatusData
 import io.cloudflight.jems.plugin.contract.models.project.sectionA.ProjectDataSectionA
 import io.cloudflight.jems.plugin.contract.models.project.sectionA.ProjectPeriodData
-import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA3.ProjectCoFinancingByFundOverview
-import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA3.ProjectCoFinancingOverview
+import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA3.ProjectCoFinancingByFundOverviewData
+import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA3.ProjectCoFinancingCategoryOverviewData
+import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA3.ProjectCoFinancingOverviewData
 import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA4.IndicatorOverviewLine
 import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA4.ProjectResultIndicatorOverview
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.ProjectDataSectionB
@@ -76,12 +84,14 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionC.workpackage.W
 import io.cloudflight.jems.plugin.contract.models.project.sectionC.workpackage.WorkPackageInvestmentAddressData
 import io.cloudflight.jems.plugin.contract.models.project.sectionC.workpackage.WorkPackageInvestmentData
 import io.cloudflight.jems.plugin.contract.models.project.sectionC.workpackage.WorkPackageOutputData
+import io.cloudflight.jems.plugin.contract.models.project.sectionD.BudgetCostsDetailData
 import io.cloudflight.jems.plugin.contract.models.project.sectionD.ProjectBudgetOverviewPerPartnerPerPeriodData
 import io.cloudflight.jems.plugin.contract.models.project.sectionD.ProjectPartnerBudgetPerPeriodData
 import io.cloudflight.jems.plugin.contract.models.project.sectionD.ProjectPeriodBudgetData
 import io.cloudflight.jems.plugin.contract.models.project.sectionE.ProjectDataSectionE
 import io.cloudflight.jems.plugin.contract.models.project.sectionE.lumpsum.ProjectLumpSumData
 import io.cloudflight.jems.plugin.contract.models.project.sectionE.lumpsum.ProjectPartnerLumpSumData
+import io.cloudflight.jems.plugin.contract.models.project.versions.ProjectVersionData
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
@@ -110,6 +120,7 @@ import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersiste
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectPartnerLumpSum
 import io.cloudflight.jems.server.project.service.model.Address
+import io.cloudflight.jems.server.project.service.model.BudgetCostsDetail
 import io.cloudflight.jems.server.project.service.model.ProjectAssessment
 import io.cloudflight.jems.server.project.service.model.ProjectBudgetOverviewPerPartnerPerPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
@@ -139,7 +150,6 @@ import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerB
 import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPartnerCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
-import io.cloudflight.jems.server.project.service.partner.model.BudgetCosts
 import io.cloudflight.jems.server.project.service.partner.model.BudgetPeriod
 import io.cloudflight.jems.server.project.service.partner.model.BudgetStaffCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.NaceGroupLevel
@@ -222,15 +232,19 @@ internal class ProjectDataProviderImplTest : UnitTest() {
 
     @RelaxedMockK
     lateinit var projectResultPersistence: ProjectResultPersistence
+
     @RelaxedMockK
     lateinit var listOutputIndicatorsPersistence: OutputIndicatorPersistence
+
     @RelaxedMockK
     lateinit var listResultIndicatorsPersistence: ResultIndicatorPersistence
+
     @RelaxedMockK
     lateinit var partnerBudgetPerFundCalculator: PartnerBudgetPerFundCalculatorService
 
     @MockK
     lateinit var programmeLegalStatusPersistence: ProgrammeLegalStatusPersistence
+
     @MockK
     lateinit var partnerBudgetPerPeriodCalculator: PartnerBudgetPerPeriodCalculator
 
@@ -244,12 +258,21 @@ internal class ProjectDataProviderImplTest : UnitTest() {
         private val startDate = ZonedDateTime.now().minusDays(2)
         private val endDate = ZonedDateTime.now().plusDays(5)
 
-        private val userEntity = UserEntity(3L, "email", "name", "surname", UserRoleEntity(4L, "role"), "password", UserStatus.ACTIVE)
-        private val user = UserSummary(userEntity.id, userEntity.email, userEntity.name, userEntity.surname, UserRoleSummary(4L, "role"), UserStatus.ACTIVE)
+        private val userEntity =
+            UserEntity(3L, "email", "name", "surname", UserRoleEntity(4L, "role"), "password", UserStatus.ACTIVE)
+        private val user = UserSummary(
+            userEntity.id,
+            userEntity.email,
+            userEntity.name,
+            userEntity.surname,
+            UserRoleSummary(4L, "role"),
+            UserStatus.ACTIVE
+        )
         private val projectStatus = ProjectStatus(5L, ApplicationStatus.APPROVED, user, updated = startDate)
         private val callSettings = ProjectCallSettings(
             callId = 2L,
             callName = "call",
+            callType = CallType.STANDARD,
             startDate = startDate,
             endDate = endDate,
             lengthOfPeriod = 2,
@@ -259,7 +282,9 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             unitCosts = emptyList(),
             stateAids = emptyList(),
             isAdditionalFundAllowed = false,
-            applicationFormFieldConfigurations = mutableSetOf()
+            applicationFormFieldConfigurations = mutableSetOf(),
+            preSubmissionCheckPluginKey = null,
+            firstStepPreSubmissionCheckPluginKey = null
         )
         private val legalStatuse = listOf(
             ProgrammeLegalStatus(
@@ -292,9 +317,33 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                 ),
                 projectStatus
             ),
+            assessmentStep2 = ProjectAssessment(
+                ProjectAssessmentQuality(
+                    projectId = 1L,
+                    step = 2,
+                    ProjectAssessmentQualityResult.NOT_RECOMMENDED,
+                    updated = startDate
+                ),
+                ProjectAssessmentEligibility(
+                    projectId = 1L,
+                    step = 2,
+                    ProjectAssessmentEligibilityResult.FAILED,
+                    updated = startDate
+                ),
+                projectStatus
+            ),
             title = setOf(InputTranslation(SystemLanguage.EN, "title"))
         )
-        private val projectVersions = listOf(ProjectVersion("1.0", project.id!!, ZonedDateTime.now(), userEntity, ApplicationStatus.SUBMITTED, true))
+        private val projectVersions = listOf(
+            ProjectVersion(
+                "1.0",
+                project.id!!,
+                ZonedDateTime.now(),
+                userEntity,
+                ApplicationStatus.SUBMITTED,
+                true
+            )
+        )
         private val projectDescription = ProjectDescription(
             projectOverallObjective = ProjectOverallObjective(
                 overallObjective = setOf(InputTranslation(SystemLanguage.EN, "overallObjective"))
@@ -309,6 +358,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                         specification = setOf(InputTranslation(SystemLanguage.EN, "specification"))
                     )
                 ),
+                projectSpfRecipients = emptyList(),
                 projectStrategies = listOf(
                     ProjectRelevanceStrategy(
                         strategy = ProgrammeStrategy.AtlanticStrategy,
@@ -394,6 +444,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             role = ProjectPartnerRole.LEAD_PARTNER,
             nameInOriginalLanguage = "test",
             nameInEnglish = "test",
+            createdAt = ZonedDateTime.now(),
             partnerType = ProjectTargetGroup.BusinessSupportOrganisation,
             partnerSubType = PartnerSubType.LARGE_ENTERPRISE,
             nace = NaceGroupLevel.A,
@@ -441,26 +492,6 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             ),
             partnerContributions = emptyList(),
             partnerAbbreviation = projectPartner.abbreviation
-        )
-        private val budgetCosts = BudgetCosts(
-            staffCosts = listOf(
-                BudgetStaffCostEntry(
-                    id = 3L,
-                    numberOfUnits = BigDecimal.ONE,
-                    rowSum = BigDecimal.TEN,
-                    budgetPeriods = mutableSetOf(BudgetPeriod(number = 1, amount = BigDecimal.ONE)),
-                    pricePerUnit = BigDecimal.TEN,
-                    description = setOf(),
-                    comments = setOf(InputTranslation(SystemLanguage.EN, "comments")),
-                    unitType = setOf(InputTranslation(SystemLanguage.EN, "unitType")),
-                    unitCostId = 4L
-                )
-            ),
-            travelCosts = emptyList(),
-            externalCosts = emptyList(),
-            equipmentCosts = emptyList(),
-            infrastructureCosts = emptyList(),
-            unitCosts = emptyList()
         )
         private val associatedOrganization = OutputProjectAssociatedOrganizationDetail(
             id = 2L,
@@ -512,7 +543,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             ),
             justificationBenefits = setOf(InputTranslation(SystemLanguage.EN, "justificationBenefits")),
             justificationPilot = setOf(InputTranslation(SystemLanguage.EN, "justificationPilot")),
-            address = Address("country", "reg2", "reg3", "str", "nr", "code", "city"),
+            address = Address("country", "AT","reg2", "AT01","reg3", "AT011", "str", "nr", "code", "city"),
             risk = setOf(InputTranslation(SystemLanguage.EN, "risk")),
             documentation = setOf(InputTranslation(SystemLanguage.EN, "documentation")),
             ownershipSiteLocation = setOf(InputTranslation(SystemLanguage.EN, "ownershipSiteLocation")),
@@ -539,7 +570,12 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             title = setOf(InputTranslation(SystemLanguage.EN, "title")),
             description = setOf(InputTranslation(SystemLanguage.EN, "description")),
             programmeOutputIndicatorName = setOf(InputTranslation(SystemLanguage.EN, "programmeOutputIndicatorName")),
-            programmeOutputIndicatorMeasurementUnit = setOf(InputTranslation(SystemLanguage.EN, "programmeOutputIndicatorMeasurementUnit")),
+            programmeOutputIndicatorMeasurementUnit = setOf(
+                InputTranslation(
+                    SystemLanguage.EN,
+                    "programmeOutputIndicatorMeasurementUnit"
+                )
+            ),
             periodStartMonth = 1,
             periodEndMonth = 2
         )
@@ -548,7 +584,12 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             programmeResultIndicatorId = 2L,
             programmeResultIndicatorIdentifier = "ID01",
             programmeResultName = setOf(InputTranslation(language = SystemLanguage.EN, translation = "ID01 name")),
-            programmeResultMeasurementUnit = setOf(InputTranslation(language = SystemLanguage.EN, translation = "ID01 measurement unit")),
+            programmeResultMeasurementUnit = setOf(
+                InputTranslation(
+                    language = SystemLanguage.EN,
+                    translation = "ID01 measurement unit"
+                )
+            ),
             baseline = BigDecimal.ZERO,
             targetValue = BigDecimal.ONE,
             periodNumber = 2,
@@ -586,88 +627,123 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             phase = ProgrammeLumpSumPhase.Preparation,
             categories = setOf(BudgetCategory.StaffCosts)
         )
+
         // data for tableA4/output-result
-        val projectOutputs = listOf(OutputRow(
-            workPackageId = 1,
-            workPackageNumber = 1,
-            outputTitle = setOf(InputTranslation(SystemLanguage.EN, "outputTitle")),
-            outputNumber = 1,
-            outputTargetValue = BigDecimal.TEN,
-            programmeOutputId = 1,
-            programmeResultId = 2
-        ), OutputRow(
-            workPackageId = 1,
-            workPackageNumber = 1,
-            outputTitle = setOf(InputTranslation(SystemLanguage.EN, "outputTitle2")),
-            outputNumber = 2,
-            outputTargetValue = BigDecimal.ONE,
-            programmeOutputId = 2,
-            programmeResultId = 3
-        ))
-        val outputIndicatorSet = setOf(OutputIndicatorSummary(
-            id = 1,
-            identifier = "outputIdentifier",
-            code = "outputCode",
-            name = setOf(InputTranslation(SystemLanguage.EN, "outputIndicatorName")),
-            programmePriorityCode = "programmePriorityCode",
-            measurementUnit = setOf(InputTranslation(SystemLanguage.EN, "outputIndicatorMeasurementUnit"))
-        ), OutputIndicatorSummary(
-            id = 2,
-            identifier = "outputIdentifier2",
-            code = "outputCode",
-            name = setOf(InputTranslation(SystemLanguage.EN, "outputIndicatorName2")),
-            programmePriorityCode = "programmePriorityCode",
-            measurementUnit = setOf(InputTranslation(SystemLanguage.EN, "outputIndicatorMeasurementUnit"))
-        ))
-        val resultIndicatorSet = setOf(ResultIndicatorSummary(
-            id = 2,
-            identifier = "resultIdentifier",
-            code = "resultCode",
-            name = setOf(InputTranslation(SystemLanguage.EN, "resultIndicatorName")),
-            programmePriorityCode = "programmePriorityCode",
-            measurementUnit = setOf(InputTranslation(SystemLanguage.EN, "resultIndicatorMeasurementUnit")),
-            baseline = BigDecimal.ONE
-        ), ResultIndicatorSummary(
-            id = 3,
-            identifier = "resultIdentifier2",
-            code = "resultCode",
-            name = setOf(InputTranslation(SystemLanguage.EN, "resultIndicatorName2")),
-            programmePriorityCode = "programmePriorityCode",
-            measurementUnit = setOf(InputTranslation(SystemLanguage.EN, "resultIndicatorMeasurementUnit")),
-            baseline = BigDecimal.ONE
-        ))
-        val projectResults = listOf(ProjectResult(
-            resultNumber = 4,
-            programmeResultIndicatorId = 2,
-            programmeResultIndicatorIdentifier = "programmeResultIndicatorIdentifier",
-            baseline = BigDecimal.ONE,
-            targetValue = BigDecimal.TEN,
-            periodNumber = 1,
-            description = setOf(InputTranslation(SystemLanguage.EN, "description")),
-        ), ProjectResult(
-            resultNumber = 5,
-            programmeResultIndicatorId = 3,
-            programmeResultIndicatorIdentifier = "programmeResultIndicatorIdentifier",
-            baseline = BigDecimal.ONE,
-            targetValue = BigDecimal.TEN,
-            periodNumber = 1,
-            description = setOf(InputTranslation(SystemLanguage.EN, "description2")),
-        ))
+        val projectOutputs = listOf(
+            OutputRow(
+                workPackageId = 1,
+                workPackageNumber = 1,
+                outputTitle = setOf(InputTranslation(SystemLanguage.EN, "outputTitle")),
+                outputNumber = 1,
+                outputTargetValue = BigDecimal.TEN,
+                programmeOutputId = 1,
+                programmeResultId = 2
+            ), OutputRow(
+                workPackageId = 1,
+                workPackageNumber = 1,
+                outputTitle = setOf(InputTranslation(SystemLanguage.EN, "outputTitle2")),
+                outputNumber = 2,
+                outputTargetValue = BigDecimal.ONE,
+                programmeOutputId = 2,
+                programmeResultId = 3
+            )
+        )
+        val outputIndicatorSet = setOf(
+            OutputIndicatorSummary(
+                id = 1,
+                identifier = "outputIdentifier",
+                code = "outputCode",
+                name = setOf(InputTranslation(SystemLanguage.EN, "outputIndicatorName")),
+                programmePriorityCode = "programmePriorityCode",
+                measurementUnit = setOf(InputTranslation(SystemLanguage.EN, "outputIndicatorMeasurementUnit"))
+            ), OutputIndicatorSummary(
+                id = 2,
+                identifier = "outputIdentifier2",
+                code = "outputCode",
+                name = setOf(InputTranslation(SystemLanguage.EN, "outputIndicatorName2")),
+                programmePriorityCode = "programmePriorityCode",
+                measurementUnit = setOf(InputTranslation(SystemLanguage.EN, "outputIndicatorMeasurementUnit"))
+            )
+        )
+        val resultIndicatorSet = setOf(
+            ResultIndicatorSummary(
+                id = 2,
+                identifier = "resultIdentifier",
+                code = "resultCode",
+                name = setOf(InputTranslation(SystemLanguage.EN, "resultIndicatorName")),
+                programmePriorityCode = "programmePriorityCode",
+                measurementUnit = setOf(InputTranslation(SystemLanguage.EN, "resultIndicatorMeasurementUnit")),
+                baseline = BigDecimal.ONE
+            ), ResultIndicatorSummary(
+                id = 3,
+                identifier = "resultIdentifier2",
+                code = "resultCode",
+                name = setOf(InputTranslation(SystemLanguage.EN, "resultIndicatorName2")),
+                programmePriorityCode = "programmePriorityCode",
+                measurementUnit = setOf(InputTranslation(SystemLanguage.EN, "resultIndicatorMeasurementUnit")),
+                baseline = BigDecimal.ONE
+            )
+        )
+        val projectResults = listOf(
+            ProjectResult(
+                resultNumber = 4,
+                programmeResultIndicatorId = 2,
+                programmeResultIndicatorIdentifier = "programmeResultIndicatorIdentifier",
+                baseline = BigDecimal.ONE,
+                targetValue = BigDecimal.TEN,
+                periodNumber = 1,
+                description = setOf(InputTranslation(SystemLanguage.EN, "description")),
+            ), ProjectResult(
+                resultNumber = 5,
+                programmeResultIndicatorId = 3,
+                programmeResultIndicatorIdentifier = "programmeResultIndicatorIdentifier",
+                baseline = BigDecimal.ONE,
+                targetValue = BigDecimal.TEN,
+                periodNumber = 1,
+                description = setOf(InputTranslation(SystemLanguage.EN, "description2")),
+            )
+        )
+    }
+
+    @Test
+    fun `should return list of all project versions`() {
+        every { projectVersionPersistence.getAllVersions() } returns projectVersions
+        assertThat(projectDataProvider.getAllProjectVersions()).containsExactly(
+            ProjectVersionData(
+                projectVersions[0].version, projectVersions[0].projectId,
+                projectVersions[0].createdAt, ApplicationStatusData.valueOf(projectVersions[0].status.name)
+            )
+        )
     }
 
     @Test
     fun `project data provider get for project Id`() {
         val id = project.id!!
-        val budgetCostsCalculationResult = BudgetCostsCalculationResult(staffCosts = BigDecimal.TEN, totalCosts = BigDecimal.TEN, travelCosts = BigDecimal.ZERO, officeAndAdministrationCosts = BigDecimal.ZERO, otherCosts = BigDecimal.ZERO)
-        val budgetOverviewPerPartnerPerPeriod =  ProjectBudgetOverviewPerPartnerPerPeriod(
+        val budgetCostsCalculationResult = BudgetCostsCalculationResult(
+            staffCosts = BigDecimal.TEN,
+            totalCosts = BigDecimal.TEN,
+            travelCosts = BigDecimal.ZERO,
+            officeAndAdministrationCosts = BigDecimal.ZERO,
+            otherCosts = BigDecimal.ZERO
+        )
+        val budgetOverviewPerPartnerPerPeriod = ProjectBudgetOverviewPerPartnerPerPeriod(
             partnersBudgetPerPeriod = listOf(
                 ProjectPartnerBudgetPerPeriod(
-                    partner = ProjectPartnerSummary(projectPartner.id, projectPartner.abbreviation, projectPartner.active, projectPartner.role, projectPartner.sortNumber, projectPartner.addresses.first{it.type == ProjectPartnerAddressType.Organization}.country, projectPartner.addresses.first{it.type == ProjectPartnerAddressType.Organization}.nutsRegion2),
-                    periodBudgets = mutableListOf(
-                        ProjectPeriodBudget(0, 0, 0, BigDecimal.ZERO, false),
-                        ProjectPeriodBudget(255, 0, 0, BigDecimal.ZERO, true)
+                    partner = ProjectPartnerSummary(
+                        projectPartner.id,
+                        projectPartner.abbreviation,
+                        projectPartner.active,
+                        projectPartner.role,
+                        projectPartner.sortNumber,
+                        projectPartner.addresses.first { it.type == ProjectPartnerAddressType.Organization }.country,
+                        projectPartner.addresses.first { it.type == ProjectPartnerAddressType.Organization }.nutsRegion2
                     ),
-                    totalPartnerBudget = BigDecimal.ZERO
+                    periodBudgets = mutableListOf(
+                        ProjectPeriodBudget(0, 0, 0, BigDecimal.ZERO, BudgetCostsDetail(), false),
+                        ProjectPeriodBudget(255, 0, 0, BigDecimal.ZERO, BudgetCostsDetail(), true)
+                    ),
+                    totalPartnerBudget = BigDecimal.ZERO,
+                    totalPartnerBudgetDetail = BudgetCostsDetail()
                 )
             ),
             totals = listOf(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO),
@@ -677,7 +753,12 @@ internal class ProjectDataProviderImplTest : UnitTest() {
         every { projectVersionPersistence.getAllVersionsByProjectId(id) } returns projectVersions
         every { projectDescriptionPersistence.getProjectDescription(id) } returns projectDescription
         every { partnerPersistence.findTop30ByProjectId(id) } returns listOf(projectPartner)
-        every { budgetOptionsPersistence.getBudgetOptions(setOf(projectPartner.id) , projectPartner.projectId) } returns listOf(partnerBudgetOptions)
+        every {
+            budgetOptionsPersistence.getBudgetOptions(
+                setOf(projectPartner.id),
+                projectPartner.projectId
+            )
+        } returns listOf(partnerBudgetOptions)
         every { coFinancingPersistence.getCoFinancingAndContributions(projectPartner.id) } returns partnerCoFinancing
         every { programmeLegalStatusPersistence.getMax20Statuses() } returns legalStatuse
         every { getBudgetCostsPersistence.getBudgetStaffCosts(projectPartner.id) } returns listOf(
@@ -698,8 +779,25 @@ internal class ProjectDataProviderImplTest : UnitTest() {
         every { getBudgetCostsPersistence.getBudgetEquipmentCosts(projectPartner.id) } returns emptyList()
         every { getBudgetCostsPersistence.getBudgetInfrastructureAndWorksCosts(projectPartner.id) } returns emptyList()
         every { getBudgetCostsPersistence.getBudgetUnitCosts(projectPartner.id) } returns emptyList()
-        every { budgetCostsCalculator.calculateCosts(any(), any(), any(), any(), any(), any(), any(), any()) } returns budgetCostsCalculationResult
-        every { partnerBudgetPerPeriodCalculator.calculate(any(), any(), any(), any(), any(), any()) } returns budgetOverviewPerPartnerPerPeriod
+        every {
+            budgetCostsCalculator.calculateCosts(
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+                any(),
+                any()
+            )
+        } returns budgetCostsCalculationResult
+        every {
+            partnerBudgetPerPeriodCalculator.calculate(
+                any(),
+                any(),
+                any()
+            )
+        } returns budgetOverviewPerPartnerPerPeriod
         every { associatedOrganizationPersistence.findAllByProjectId(id) } returns listOf(associatedOrganization)
         every { resultPersistence.getResultsForProject(id, null) } returns listOf(projectResult)
         every { workPackagePersistence.getWorkPackagesWithAllDataByProjectId(id) } returns listOf(workPackage)
@@ -718,7 +816,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             )
         every { coFinancingPersistence.getAvailableFunds(projectPartner.id) } returns setOf(ERDF_FUND)
         // data for tableA4/output-result
-        every { workPackagePersistence.getAllOutputsForProjectIdSortedByNumbers(id)} returns projectOutputs
+        every { workPackagePersistence.getAllOutputsForProjectIdSortedByNumbers(id) } returns projectOutputs
         every { listOutputIndicatorsPersistence.getTop50OutputIndicators() } returns outputIndicatorSet
         every { listResultIndicatorsPersistence.getTop50ResultIndicators() } returns resultIndicatorSet
         every { projectResultPersistence.getResultsForProject(id, null) } returns projectResults
@@ -737,55 +835,79 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                 duration = project.duration,
                 specificObjective = project.specificObjective?.toDataModel(),
                 programmePriority = project.programmePriority?.toDataModel(),
-                coFinancingOverview = ProjectCoFinancingOverview(
-                    fundOverviews = listOf(
-                        ProjectCoFinancingByFundOverview(
-                            fundType = ProgrammeFundTypeData.ERDF,
-                            fundAbbreviation = emptySet(),
-                            fundingAmount = BigDecimal.valueOf(6_52, 2),
-                            coFinancingRate = BigDecimal.valueOf(100_00, 2),
-                            autoPublicContribution = BigDecimal.ZERO,
-                            otherPublicContribution = BigDecimal.ZERO,
-                            totalPublicContribution = BigDecimal.ZERO,
-                            privateContribution = BigDecimal.ZERO,
-                            totalContribution = BigDecimal.ZERO,
-                            totalFundAndContribution = BigDecimal.valueOf(6_52, 2),
-                        )
+                coFinancingOverview = ProjectCoFinancingOverviewData(
+                    projectManagementCoFinancing = ProjectCoFinancingCategoryOverviewData(
+                        fundOverviews = listOf(
+                            ProjectCoFinancingByFundOverviewData(
+                                fundId = 230L,
+                                fundType = ProgrammeFundTypeData.ERDF,
+                                fundAbbreviation = emptySet(),
+                                fundingAmount = BigDecimal.valueOf(6_52, 2),
+                                coFinancingRate = BigDecimal.valueOf(100_00, 2),
+                                autoPublicContribution = BigDecimal.ZERO,
+                                otherPublicContribution = BigDecimal.ZERO,
+                                totalPublicContribution = BigDecimal.ZERO,
+                                privateContribution = BigDecimal.ZERO,
+                                totalContribution = BigDecimal.ZERO,
+                                totalFundAndContribution = BigDecimal.valueOf(6_52, 2),
+                            )
+                        ),
+                        totalFundingAmount = BigDecimal.valueOf(6_52, 2),
+                        totalEuFundingAmount = BigDecimal.valueOf(6_52, 2),
+                        averageCoFinancingRate = BigDecimal.valueOf(65_20, 2),
+                        averageEuFinancingRate = BigDecimal.valueOf(100_00, 2),
+
+                        totalAutoPublicContribution = BigDecimal.ZERO,
+                        totalEuAutoPublicContribution = BigDecimal.ZERO,
+                        totalOtherPublicContribution = BigDecimal.ZERO,
+                        totalEuOtherPublicContribution = BigDecimal.ZERO,
+                        totalPublicContribution = BigDecimal.ZERO,
+                        totalEuPublicContribution = BigDecimal.ZERO,
+                        totalPrivateContribution = BigDecimal.ZERO,
+                        totalEuPrivateContribution = BigDecimal.ZERO,
+                        totalContribution = BigDecimal.ZERO,
+                        totalEuContribution = BigDecimal.ZERO,
+
+                        totalFundAndContribution = BigDecimal.TEN,
+                        totalEuFundAndContribution = BigDecimal.valueOf(6_52, 2),
                     ),
-                    totalFundingAmount = BigDecimal.valueOf(6_52, 2),
-                    totalEuFundingAmount = BigDecimal.valueOf(6_52, 2),
-                    averageCoFinancingRate = BigDecimal.valueOf(65_20, 2),
-                    averageEuFinancingRate = BigDecimal.valueOf(100_00, 2),
-
-                    totalAutoPublicContribution = BigDecimal.ZERO,
-                    totalEuAutoPublicContribution = BigDecimal.ZERO,
-                    totalOtherPublicContribution = BigDecimal.ZERO,
-                    totalEuOtherPublicContribution = BigDecimal.ZERO,
-                    totalPublicContribution = BigDecimal.ZERO,
-                    totalEuPublicContribution = BigDecimal.ZERO,
-                    totalPrivateContribution = BigDecimal.ZERO,
-                    totalEuPrivateContribution = BigDecimal.ZERO,
-                    totalContribution = BigDecimal.ZERO,
-                    totalEuContribution = BigDecimal.ZERO,
-
-                    totalFundAndContribution = BigDecimal.TEN,
-                    totalEuFundAndContribution = BigDecimal.valueOf(6_52, 2),
+                    projectSpfCoFinancing = ProjectCoFinancingCategoryOverviewData()
                 ),
                 resultIndicatorOverview = ProjectResultIndicatorOverview(
                     indicatorLines = listOf(
                         IndicatorOverviewLine(
                             outputIndicatorId = 1L,
                             outputIndicatorIdentifier = "outputIdentifier",
-                            outputIndicatorName = setOf(InputTranslationData(SystemLanguageData.EN, "outputIndicatorName")),
-                            outputIndicatorMeasurementUnit = setOf(InputTranslationData(SystemLanguageData.EN, "outputIndicatorMeasurementUnit")),
+                            outputIndicatorName = setOf(
+                                InputTranslationData(
+                                    SystemLanguageData.EN,
+                                    "outputIndicatorName"
+                                )
+                            ),
+                            outputIndicatorMeasurementUnit = setOf(
+                                InputTranslationData(
+                                    SystemLanguageData.EN,
+                                    "outputIndicatorMeasurementUnit"
+                                )
+                            ),
                             outputIndicatorTargetValueSumUp = BigDecimal.TEN,
                             projectOutputNumber = "1.1",
                             projectOutputTitle = setOf(InputTranslationData(SystemLanguageData.EN, "outputTitle")),
                             projectOutputTargetValue = BigDecimal.TEN,
                             resultIndicatorId = 2L,
                             resultIndicatorIdentifier = "resultIdentifier",
-                            resultIndicatorName = setOf(InputTranslationData(SystemLanguageData.EN, "resultIndicatorName")),
-                            resultIndicatorMeasurementUnit = setOf(InputTranslationData(SystemLanguageData.EN, "resultIndicatorMeasurementUnit")),
+                            resultIndicatorName = setOf(
+                                InputTranslationData(
+                                    SystemLanguageData.EN,
+                                    "resultIndicatorName"
+                                )
+                            ),
+                            resultIndicatorMeasurementUnit = setOf(
+                                InputTranslationData(
+                                    SystemLanguageData.EN,
+                                    "resultIndicatorMeasurementUnit"
+                                )
+                            ),
                             resultIndicatorBaseline = setOf(BigDecimal.ONE),
                             resultIndicatorTargetValueSumUp = BigDecimal.TEN,
                             onlyResultWithoutOutputs = false
@@ -793,23 +915,43 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                         IndicatorOverviewLine(
                             outputIndicatorId = 2L,
                             outputIndicatorIdentifier = "outputIdentifier2",
-                            outputIndicatorName = setOf(InputTranslationData(SystemLanguageData.EN, "outputIndicatorName2")),
-                            outputIndicatorMeasurementUnit = setOf(InputTranslationData(SystemLanguageData.EN, "outputIndicatorMeasurementUnit")),
+                            outputIndicatorName = setOf(
+                                InputTranslationData(
+                                    SystemLanguageData.EN,
+                                    "outputIndicatorName2"
+                                )
+                            ),
+                            outputIndicatorMeasurementUnit = setOf(
+                                InputTranslationData(
+                                    SystemLanguageData.EN,
+                                    "outputIndicatorMeasurementUnit"
+                                )
+                            ),
                             outputIndicatorTargetValueSumUp = BigDecimal.ONE,
                             projectOutputNumber = "1.2",
                             projectOutputTitle = setOf(InputTranslationData(SystemLanguageData.EN, "outputTitle2")),
                             projectOutputTargetValue = BigDecimal.ONE,
                             resultIndicatorId = 3L,
                             resultIndicatorIdentifier = "resultIdentifier2",
-                            resultIndicatorName = setOf(InputTranslationData(SystemLanguageData.EN, "resultIndicatorName2")),
-                            resultIndicatorMeasurementUnit = setOf(InputTranslationData(SystemLanguageData.EN, "resultIndicatorMeasurementUnit")),
+                            resultIndicatorName = setOf(
+                                InputTranslationData(
+                                    SystemLanguageData.EN,
+                                    "resultIndicatorName2"
+                                )
+                            ),
+                            resultIndicatorMeasurementUnit = setOf(
+                                InputTranslationData(
+                                    SystemLanguageData.EN,
+                                    "resultIndicatorMeasurementUnit"
+                                )
+                            ),
                             resultIndicatorBaseline = setOf(BigDecimal.ONE),
                             resultIndicatorTargetValueSumUp = BigDecimal.TEN,
                             onlyResultWithoutOutputs = false
                         )
                     )
                 ),
-                periods = listOf(ProjectPeriodData(1, 1,1), ProjectPeriodData(2, 2, 2))
+                periods = listOf(ProjectPeriodData(1, 1, 1), ProjectPeriodData(2, 2, 2))
             )
         )
         assertThat(projectData.sectionB).isEqualTo(
@@ -1214,16 +1356,21 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             )
         )
 
+        val allZeroCostDetailData = BudgetCostsDetailData(
+            BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO,
+            BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO
+        )
         assertThat(projectData.sectionD.projectPartnerBudgetPerPeriodData).isEqualTo(
             ProjectBudgetOverviewPerPartnerPerPeriodData(
                 partnersBudgetPerPeriod = listOf(
                     ProjectPartnerBudgetPerPeriodData(
                         partner = ProjectPartnerSummaryData(projectPartner.id, projectPartner.active, projectPartner.abbreviation,ProjectPartnerRoleData.valueOf(projectPartner.role.name), projectPartner.sortNumber, projectPartner.addresses.first { it.type == ProjectPartnerAddressType.Organization }.country, projectPartner.addresses.first { it.type == ProjectPartnerAddressType.Organization }.nutsRegion2),
                         periodBudgets = mutableListOf(
-                            ProjectPeriodBudgetData(0, 0, 0, BigDecimal.ZERO, false),
-                            ProjectPeriodBudgetData(255, 0, 0, BigDecimal.ZERO, true)
+                            ProjectPeriodBudgetData(0, 0, 0, BigDecimal.ZERO, allZeroCostDetailData, false),
+                            ProjectPeriodBudgetData(255, 0, 0, BigDecimal.ZERO, allZeroCostDetailData, true)
                         ),
-                        totalPartnerBudget = BigDecimal.ZERO
+                        totalPartnerBudget = BigDecimal.ZERO,
+                        totalPartnerBudgetDetail = allZeroCostDetailData
                     )
                 ),
                 totals = listOf(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO),
@@ -1233,7 +1380,52 @@ internal class ProjectDataProviderImplTest : UnitTest() {
 
         assertThat(projectData.lifecycleData).isEqualTo(
             ProjectLifecycleData(
-                status = ApplicationStatusData.APPROVED
+                status = ApplicationStatusData.APPROVED,
+                submissionDateStepOne = null,
+                firstSubmissionDate = project.firstSubmission?.updated,
+                lastResubmissionDate = project.lastResubmission?.updated,
+                assessmentStep1 = ProjectDecisionData(
+                    assessmentQuality = ProjectAssessmentQualityData(
+                        projectId = project.assessmentStep1?.assessmentQuality?.projectId!!,
+                        step = project.assessmentStep1?.assessmentQuality?.step!!,
+                        result = ProjectAssessmentQualityResultData.valueOf(project.assessmentStep1?.assessmentQuality?.result?.name!!),
+                        updated = project.assessmentStep1?.assessmentQuality?.updated,
+                        note = project.assessmentStep1?.assessmentQuality?.note
+
+                    ),
+                    assessmentEligibility = ProjectAssessmentEligibilityData(
+                        projectId = project.id!!,
+                        step = project.assessmentStep1?.assessmentEligibility?.step!!,
+                        result = ProjectAssessmentEligibilityResultData.valueOf(project.assessmentStep1?.assessmentEligibility?.result?.name!!),
+                        updated = project.assessmentStep1?.assessmentEligibility?.updated,
+                        note = project.assessmentStep1?.assessmentEligibility?.note
+                    ),
+                    eligibilityDecision = project.assessmentStep1?.eligibilityDecision?.toData(),
+                    preFundingDecision = project.assessmentStep1?.preFundingDecision?.toData(),
+                    fundingDecision = project.assessmentStep1?.fundingDecision?.toData(),
+                    modificationDecision = project.assessmentStep1?.modificationDecision?.toData()
+                ),
+                assessmentStep2 = ProjectDecisionData(
+                    assessmentQuality = ProjectAssessmentQualityData(
+                        projectId = project.assessmentStep2?.assessmentQuality?.projectId!!,
+                        step = project.assessmentStep2?.assessmentQuality?.step!!,
+                        result = ProjectAssessmentQualityResultData.valueOf(project.assessmentStep2?.assessmentQuality?.result?.name!!),
+                        updated = project.assessmentStep2?.assessmentQuality?.updated,
+                        note = project.assessmentStep2?.assessmentQuality?.note
+
+                    ),
+                    assessmentEligibility = ProjectAssessmentEligibilityData(
+                        projectId = project.id!!,
+                        step = project.assessmentStep2?.assessmentEligibility?.step!!,
+                        result = ProjectAssessmentEligibilityResultData.valueOf(project.assessmentStep2?.assessmentEligibility?.result?.name!!),
+                        updated = project.assessmentStep2?.assessmentEligibility?.updated,
+                        note = project.assessmentStep2?.assessmentEligibility?.note
+                    ),
+                    eligibilityDecision = project.assessmentStep2?.eligibilityDecision?.toData(),
+                    preFundingDecision = project.assessmentStep2?.preFundingDecision?.toData(),
+                    fundingDecision = project.assessmentStep2?.fundingDecision?.toData(),
+                    modificationDecision = project.assessmentStep2?.modificationDecision?.toData()
+                )
             )
         )
     }
@@ -1262,6 +1454,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                 commonChallenge = emptySet(),
                 transnationalCooperation = emptySet(),
                 projectBenefits = emptyList(),
+                projectSpfRecipients = emptyList(),
                 projectStrategies = emptyList(),
                 projectSynergies = emptyList(),
                 availableKnowledge = emptySet()
@@ -1299,7 +1492,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
         every { projectLumpSumPersistence.getLumpSums(id) } returns emptyList()
         every { programmeLegalStatusPersistence.getMax20Statuses() } returns legalStatuse
         // data for tableA4/output-result
-        every { workPackagePersistence.getAllOutputsForProjectIdSortedByNumbers(id)} returns emptyList()
+        every { workPackagePersistence.getAllOutputsForProjectIdSortedByNumbers(id) } returns emptyList()
         every { listOutputIndicatorsPersistence.getTop50OutputIndicators() } returns emptySet()
         every { listResultIndicatorsPersistence.getTop50ResultIndicators() } returns emptySet()
         every { projectResultPersistence.getResultsForProject(id, null) } returns emptyList()
@@ -1318,26 +1511,29 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                 duration = null,
                 specificObjective = null,
                 programmePriority = null,
-                coFinancingOverview = ProjectCoFinancingOverview(
-                    fundOverviews = emptyList(),
-                    totalFundingAmount = BigDecimal.ZERO,
-                    totalEuFundingAmount = BigDecimal.ZERO,
-                    averageCoFinancingRate = BigDecimal.ZERO,
-                    averageEuFinancingRate = BigDecimal.ZERO,
+                coFinancingOverview = ProjectCoFinancingOverviewData(
+                    projectManagementCoFinancing = ProjectCoFinancingCategoryOverviewData(
+                        fundOverviews = emptyList(),
+                        totalFundingAmount = BigDecimal.ZERO,
+                        totalEuFundingAmount = BigDecimal.ZERO,
+                        averageCoFinancingRate = BigDecimal.ZERO,
+                        averageEuFinancingRate = BigDecimal.ZERO,
 
-                    totalAutoPublicContribution = BigDecimal.ZERO,
-                    totalEuAutoPublicContribution = BigDecimal.ZERO,
-                    totalOtherPublicContribution = BigDecimal.ZERO,
-                    totalEuOtherPublicContribution = BigDecimal.ZERO,
-                    totalPublicContribution = BigDecimal.ZERO,
-                    totalEuPublicContribution = BigDecimal.ZERO,
-                    totalPrivateContribution = BigDecimal.ZERO,
-                    totalEuPrivateContribution = BigDecimal.ZERO,
-                    totalContribution = BigDecimal.ZERO,
-                    totalEuContribution = BigDecimal.ZERO,
+                        totalAutoPublicContribution = BigDecimal.ZERO,
+                        totalEuAutoPublicContribution = BigDecimal.ZERO,
+                        totalOtherPublicContribution = BigDecimal.ZERO,
+                        totalEuOtherPublicContribution = BigDecimal.ZERO,
+                        totalPublicContribution = BigDecimal.ZERO,
+                        totalEuPublicContribution = BigDecimal.ZERO,
+                        totalPrivateContribution = BigDecimal.ZERO,
+                        totalEuPrivateContribution = BigDecimal.ZERO,
+                        totalContribution = BigDecimal.ZERO,
+                        totalEuContribution = BigDecimal.ZERO,
 
-                    totalFundAndContribution = BigDecimal.ZERO,
-                    totalEuFundAndContribution = BigDecimal.ZERO,
+                        totalFundAndContribution = BigDecimal.ZERO,
+                        totalEuFundAndContribution = BigDecimal.ZERO,
+                    ),
+                    projectSpfCoFinancing = ProjectCoFinancingCategoryOverviewData()
                 ),
                 resultIndicatorOverview = ProjectResultIndicatorOverview(emptyList())
             )
@@ -1406,4 +1602,40 @@ internal class ProjectDataProviderImplTest : UnitTest() {
 
         assertThrows<ResourceNotFoundException> { projectDataProvider.getProjectDataForProjectId(id) }
     }
+
+    @Test
+    fun `should return list of project versions`() {
+        val account = UserEntity(
+            id = 1,
+            email = "admin@admin.dev",
+            name = "Name",
+            surname = "Surname",
+            userRole = UserRoleEntity(id = 1, name = "ADMIN"),
+            password = "hash_pass",
+            userStatus = UserStatus.ACTIVE
+        )
+
+        val createdAt = ZonedDateTime.now()
+
+        val versions = listOf(
+            ProjectVersion("1.0", 1L, createdAt, account, ApplicationStatus.DRAFT, true)
+        )
+        val versionsData = listOf(
+            ProjectVersionData("1.0", 1L, createdAt, ApplicationStatusData.DRAFT)
+        )
+        every { projectVersionPersistence.getAllVersions() } returns versions
+
+        assertThat(projectDataProvider.getAllProjectVersions()).isEqualTo(versionsData)
+    }
+
+    private fun ProjectStatus.toData() =
+        ProjectStatusData(
+            id,
+            ApplicationStatusData.valueOf(status.name),
+            updated,
+            decisionDate,
+            entryIntoForceDate,
+            note
+        )
+
 }

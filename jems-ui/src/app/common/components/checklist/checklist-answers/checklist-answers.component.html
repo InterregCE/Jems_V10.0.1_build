@@ -1,0 +1,191 @@
+<jems-form (save)="save.emit()"
+           (discard)="resetForm()">
+
+    <ng-content></ng-content>
+
+    <div *ngIf="formComponents?.length" jemsFormLayout>
+        <ng-container *ngIf="maxTotalScore > 0"
+                      [ngTemplateOutlet]="scoreOverviewTable">
+        </ng-container>
+        <ng-container *ngFor="let component of formComponents.controls; let index=index">
+            <div [ngSwitch]="component.get('type')?.value" class="mt-3">
+                <ng-container *ngSwitchCase="ComponentType.HEADLINE"
+                              [ngTemplateOutlet]="headline"
+                              [ngTemplateOutletContext]="{
+                              headline: component.get('programmeMetadata').value
+                              }">
+                </ng-container>
+                <ng-container *ngSwitchCase="ComponentType.OPTIONSTOGGLE"
+                              [ngTemplateOutlet]="optionsToggle"
+                              [ngTemplateOutletContext]="{
+                                options: component.get('programmeMetadata').value,
+                                controls: component.get('instanceMetadata')
+                              }">
+                </ng-container>
+                <ng-container *ngSwitchCase="ComponentType.TEXTINPUT"
+                              [ngTemplateOutlet]="textInput"
+                              [ngTemplateOutletContext]="{
+                              options: component.get('programmeMetadata').value,
+                              control: component.get('instanceMetadata')?.get('explanation')
+                              }">
+                </ng-container>
+
+                <ng-container class="error-container" *ngSwitchCase="ComponentType.SCORE"
+                              [ngTemplateOutlet]="scoreTemplate"
+                              [ngTemplateOutletContext]="{
+                              options: component.get('programmeMetadata').value,
+                              controls: component.get('instanceMetadata'),
+                              index: index
+                              }">
+                </ng-container>
+                <ng-container *ngSwitchDefault></ng-container>
+            </div>
+        </ng-container>
+        <ng-container *ngIf="maxTotalScore > 0"
+                      [ngTemplateOutlet]="scoreCalculationTemplate">
+        </ng-container>
+    </div>
+</jems-form>
+
+<ng-template #headline let-headline="headline">
+    <h4>{{headline.value}}</h4>
+</ng-template>
+
+<ng-template #optionsToggle let-options="options" let-controls="controls">
+    <div>
+        <p jemsText jemsMultiColumnRow>{{options.question}}</p>
+        <span class="box mt-2" jemsMultiColumnRow>
+            <mat-button-toggle-group [formControl]="controls?.get('answer') || {}">
+                <mat-button-toggle [value]="options.firstOption">
+                    <span jemsText maxWidth="70">{{options.firstOption}}</span>
+                </mat-button-toggle>
+                <mat-button-toggle [value]="options.secondOption">
+                    <span jemsText maxWidth="70">{{options.secondOption}}</span>
+                </mat-button-toggle>
+                <mat-button-toggle *ngIf="options.thirdOption"
+                                   [value]="options.thirdOption">
+                    <span jemsText maxWidth="70">{{options.thirdOption}}</span>
+                </mat-button-toggle>
+            </mat-button-toggle-group>
+        </span>
+        <jems-expandable-textarea jemsMultiColumnRow class="mt-2"
+                                  [control]="controls?.get('justification')"
+                                  [errors]="controls?.get('justification')?.errors"
+                                  [characterLimit]="5000"
+                                  [minRows]="1"
+                                  [maxRows]="30"
+                                  label='checklists.instance.component.field.justification'>
+        </jems-expandable-textarea>
+    </div>
+</ng-template>
+
+<ng-template #textInput let-options="options" let-control="control">
+    <div jemsNoWidthLimit stretch>
+        <p jemsText>{{options.question}}</p>
+        <mat-form-field jemsFormFieldWidth="full" >
+            <mat-label>{{options.explanationLabel}}</mat-label>
+            <pre>{{form.get('explanation')}}</pre>
+            <textarea #explanation matInput
+                      [formControl]="control || {}"
+                      [cdkTextareaAutosize]
+                      [cdkAutosizeMinRows]="1"
+                      [cdkAutosizeMaxRows]="5"></textarea>
+            <mat-hint [jemsHintFor]="explanation">
+                <jems-text-hint [currentLength]="explanation?.value?.length" [maxLength]="options.explanationMaxLength || 0"></jems-text-hint>
+            </mat-hint>
+            <mat-error>
+                <jems-form-field-errors [errors]="control?.errors"></jems-form-field-errors>
+            </mat-error>
+        </mat-form-field>
+    </div>
+</ng-template>
+
+<ng-template #scoreTemplate let-options="options" let-controls="controls" let-index="index">
+    <div jemsNoWidthLimit stretch>
+        <p jemsText>{{options.question}}</p>
+        <div jemsMultiColumnRow>
+            <mat-slider color="primary" jemsFormFieldWidth="half" thumbLabel
+                        [formControl]="controls.get('score') || {}"
+                        [(ngModel)]="sliderValues[index]"
+                        [step]="getSliderStep()"
+                        [min]="minScore"
+                        [max]="maxScore"
+                        [tickInterval]="getSliderStep()"></mat-slider>
+            <mat-form-field class="score-input">
+                <input *ngIf="!allowsDecimalScore" class="text-right" type="integer" currencyMask matInput
+                       [formControl]="controls.get('score')"
+                       [(ngModel)]="sliderValues[index]"
+                       [maxLength]="3">
+
+                <input *ngIf="allowsDecimalScore" class="text-right" type="decimal" currencyMask  matInput
+                       [formControl]="controls.get('score') || {}"
+                       [(ngModel)]="sliderValues[index]"
+                       [maxlength]="5">
+                <mat-error>
+                    <jems-form-field-errors class="error"
+                            [errors]="controls.get('score')?.errors"
+                            [messages]="FORM_ERRORS.score"
+                            [args]="FORM_ERRORS_ARGS.score"></jems-form-field-errors>
+                </mat-error>
+            </mat-form-field>
+            <span>/ {{maxScore | asMoney}}</span>
+            <span class="score-weight"> {{'checklists.instance.component.score.weight.info' | translate: {weight: options.weight} }}</span>
+        </div>
+        <jems-expandable-textarea jemsMultiColumnRow class="mt-2"
+                                  [control]="controls?.get('justification')"
+                                  [errors]="controls?.get('justification')?.errors"
+                                  [characterLimit]="5000"
+                                  [minRows]="1"
+                                  [maxRows]="30"
+                                  label='checklists.instance.component.field.justification'>
+        </jems-expandable-textarea>
+    </div>
+</ng-template>
+
+<ng-template #scoreCalculationTemplate>
+    <div class="score-calculation">
+        <span class="rating-main">
+            {{'checklists.instance.component.score.average.calculation.label' | translate}} {{getAverageScore() | asMoney}} /
+        </span>
+        <span>{{maxTotalScore | asMoney}}</span>
+    </div>
+</ng-template>
+
+<ng-template #scoreOverviewTable>
+    <div class="mt-3">
+        <h3>{{'checklists.instance.component.score.table.overview.header' | translate}}</h3>
+        <div jemsNoWidthLimit id="score-overview-table" class="mt-3"
+             [jemsTableConfig]="tableConfig">
+
+            <div>
+                <span>{{ 'programme.checklists.component.options.toggle.question' | translate }}</span>
+                <span>{{ 'checklists.instance.component.score.table.column.label' | translate }}</span>
+                <span class="justify-end">{{ 'checklists.instance.component.score.table.column.weight.label' | translate }}</span>
+                <span class="justify-end">{{ 'checklists.instance.component.score.table.column.weighted.score.label' | translate }}</span>
+            </div>
+
+            <ng-container *ngFor="let scoreComponent of scoreComponents">
+                <div>
+                    <span>{{scoreComponent.value.programmeMetadata.question}}</span>
+                    <span>{{scoreComponent.value.instanceMetadata.score | asMoney}}</span>
+                    <span class="justify-end">{{scoreComponent.value.programmeMetadata.weight | asMoney}}</span>
+                    <span class="justify-end"><strong>{{getWeightedScore(scoreComponent) | asMoney}}</strong></span>
+                </div>
+            </ng-container>
+
+            <div class="footer">
+                <span>{{ 'project.partner.budget.table.total' | translate }}</span>
+                <div class="justify-end">
+                    <span>
+                        <strong>{{getAverageScore() | asMoney}}</strong>
+                        <br>
+                        <span class="score-weight"> {{'checklists.instance.component.score.table.column.total.label' | translate : {total: maxTotalScore | asMoney} }}</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-template>
+
+
+

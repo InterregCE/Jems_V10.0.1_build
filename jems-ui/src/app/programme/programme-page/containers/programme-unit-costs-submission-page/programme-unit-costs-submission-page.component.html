@@ -1,14 +1,15 @@
-<app-main-page-template [needsCard]="true"
+<jems-main-page-template [needsCard]="true"
                         *ngIf="unitCost$ | async as details"
                         titleKey="programme.data.page.title"
                         subTitleKey="programme.tab.costs.option">
-    <app-programme-unit-cost-detail
+    <jems-programme-unit-cost-detail
             [unitCost]="details"
+            [currencies]="currencies$ | async"
             [success$]="unitCostSaveSuccess$"
             [error$]="unitCostSaveError$"
             [isCreate]="isCreate"
             (createUnitCost)="createUnitCost($event)"
             (updateUnitCost)="updateUnitCost($event)"
             (cancelCreate)="cancelCreate()">
-    </app-programme-unit-cost-detail>
-</app-main-page-template>
+    </jems-programme-unit-cost-detail>
+</jems-main-page-template>

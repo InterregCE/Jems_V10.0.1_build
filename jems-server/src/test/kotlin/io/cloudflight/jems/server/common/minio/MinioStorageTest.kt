@@ -13,7 +13,6 @@ import io.minio.ObjectWriteResponse
 import io.minio.PutObjectArgs
 import io.minio.RemoveObjectArgs
 import io.minio.Result
-import io.minio.StatObjectArgs
 import io.minio.errors.ErrorResponseException
 import io.minio.messages.Contents
 import io.minio.messages.ErrorResponse
@@ -24,18 +23,19 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verifyOrder
-import java.io.InputStream
-import java.time.LocalDateTime
-import java.time.ZoneId
-import java.time.ZonedDateTime
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertLinesMatch
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.slf4j.LoggerFactory
+import java.io.BufferedInputStream
+import java.io.InputStream
+import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
 
 class MinioStorageTest {
 
@@ -60,17 +60,8 @@ class MinioStorageTest {
         minioStorage = MinioStorageImpl(minioClient)
     }
 
-//    @ParameterizedTest
-//    @CsvSource(
-//        value = ["NO_SUCH_KEY:true", "NO_SUCH_KEY:false", "NO_SUCH_OBJECT:true", "NO_SUCH_OBJECT:false"],
-//        delimiter = ':'
-//    )
-//    fun saveFile_error_isBucket(errorCode: ErrorResponse, bucketExists: Boolean) {
-//        testSave(bucketExists, errorCode)
-//    }
-
     @Test
-    fun saveFile_duplicate() {
+    fun `should throw DuplicateFileException if it already exists and overwrite is not provided`() {
         every { minioClient.bucketExists(bucketExistsArgs("bucket")) } returns true
 
         val contents = mockk<Contents>()
@@ -92,40 +83,31 @@ class MinioStorageTest {
         }
     }
 
-    private fun testSave(bucketExists: Boolean, errorCode: ErrorResponse) {
-        val streamToSave = "test".toByteArray().inputStream()
-        every { minioClient.bucketExists(bucketExistsArgs("test_bucket")) } returns bucketExists
+    @Test
+    fun `should overwrite file if it already exists and overwrite is set to true`() {
+        val content ="test"
+        val bucketName = "bucket-name"
+        val filePath = "filePath"
 
-        val bucketToCreate = slot<String>()
-        every { minioClient.makeBucket(MakeBucketArgs.builder().bucket(capture(bucketToCreate)).build()) } answers { }
+        val streamToSave = BufferedInputStream(content.toByteArray().inputStream())
+        val contents = mockk<Contents>()
+        val fileMetadata = Result<Item>(contents)
+        val putObjectArgsSlot = slot<PutObjectArgs>()
 
-        every { minioClient.statObject(getStatObjectArgs("test_bucket", "test_file")) } throws exception
-
-        val bucketToBe = slot<String>()
-        val filePath = slot<String>()
-        val stream = slot<InputStream>()
-        val options = slot<PutObjectArgs>()
+        every { minioClient.bucketExists(bucketExistsArgs(bucketName)) } returns true
+        every { contents.lastModified() } returns ZonedDateTime.of(LocalDateTime.of(2020, 6, 15, 7, 30), zone)
+        every { contents.objectName() } returns filePath
+        every { minioClient.listObjects(any()) } returns mutableListOf(fileMetadata)
         every {
-            minioClient.putObject(
-                PutObjectArgs.builder()
-                    .bucket(capture(bucketToBe))
-                    .`object`(capture(filePath))
-                    .stream(capture(stream), "test".length.toLong(), -1)
-                    .build()
-            )
-        } answers { ObjectWriteResponse(null, bucketToBe.toString(), null, filePath.toString(), null, null) }
+            minioClient.putObject(capture(putObjectArgsSlot))
+        } answers { ObjectWriteResponse(null, bucketName, null, filePath, null, null) }
 
-        minioStorage.saveFile("test_bucket", "test_file", "test".length.toLong(), streamToSave)
+        minioStorage.saveFile(bucketName, filePath, bucketName.length.toLong(), streamToSave, true)
 
-        if (bucketExists) {
-            assertFalse(bucketToCreate.isCaptured)
-        } else {
-            assertEquals("test_bucket", bucketToCreate.captured)
-        }
-        assertEquals("test_bucket", bucketToBe.captured)
-        assertEquals("test_file", filePath.captured)
-        assertEquals(streamToSave, stream.captured)
-        assertEquals("test".length.toLong(), options.captured.objectSize())
+        assertThat(bucketName).isEqualTo(putObjectArgsSlot.captured.bucket())
+        assertThat(filePath).isEqualTo(putObjectArgsSlot.captured.`object`())
+        assertThat(streamToSave).isEqualTo(putObjectArgsSlot.captured.stream())
+        assertThat(content.toByteArray().size).isEqualTo(putObjectArgsSlot.captured.stream().readAllBytes().size)
     }
 
     @Test
@@ -255,8 +237,51 @@ class MinioStorageTest {
         }
     }
 
-    private fun getStatObjectArgs(bucket: String, filePath: String) =
-        StatObjectArgs.builder().bucket(bucket).`object`(filePath).build()
+    @Test
+    fun `get file - not found gets logged`() {
+        val logger: Logger = LoggerFactory.getLogger(MinioStorageImpl::class.java) as Logger
+        val listAppender = ListAppender<ILoggingEvent>()
+        listAppender.start()
+        logger.addAppender(listAppender)
+
+        val bucket = "bucket"
+        val file = "path"
+        val errResponse = ErrorResponse("NoSuchKey", "The specified key does not exist.", bucket, "", file, "", "")
+        val exBucketNotFound = ErrorResponseException(errResponse, null, "")
+        every {
+            minioClient.getObject(
+                GetObjectArgs.builder().bucket(bucket).`object`(file).build()
+            )
+        } throws exBucketNotFound
+
+        assertThrows<ErrorResponseException> { (minioStorage.getFile(bucket, file)) }
+        assertLinesMatch(
+            listOf("Template '$file' not found in Minio bucket '$bucket'!"),
+            listAppender.list.map { it.formattedMessage })
+    }
+
+    @Test
+    fun `get file - bucket not found is logged`() {
+        val logger: Logger = LoggerFactory.getLogger(MinioStorageImpl::class.java) as Logger
+        val listAppender = ListAppender<ILoggingEvent>()
+        listAppender.start()
+        logger.addAppender(listAppender)
+
+        val bucket = "bucket"
+        val file = "path"
+        val errResponse = ErrorResponse("NoSuchBucket", "Bucket does not exist.", bucket, "", file, "", "")
+        val exBucketNotFound = ErrorResponseException(errResponse, null, "")
+        every {
+            minioClient.getObject(
+                GetObjectArgs.builder().bucket(bucket).`object`(file).build()
+            )
+        } throws exBucketNotFound
+
+        assertThrows<ErrorResponseException> { (minioStorage.getFile(bucket, file)) }
+        assertLinesMatch(
+            listOf("Bucket '$bucket' not found in Minio!"),
+            listAppender.list.map { it.formattedMessage })
+    }
 
     private fun bucketExistsArgs(bucket: String) =
         BucketExistsArgs.builder().bucket(bucket).build()

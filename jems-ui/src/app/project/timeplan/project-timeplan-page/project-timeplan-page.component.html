@@ -1,24 +1,24 @@
-<app-project-page-template
+<jems-project-page-template
         [needsCard]="true"
         [titleText]="'project.application.form.acronym' | translate : {projectTitle: pageStore.projectTitle$ | async}"
         subTitleKey="project.application.form.section.part.c">
-    <div appFormLayout>
+    <div jemsFormLayout>
         <h3>{{ 'project.application.form.section.part.c.subsection.six' | translate }}</h3>
 
-            <app-alert [closable]="false" [type]="Alert.WARNING"
+            <jems-alert [closable]="false" [type]="Alert.WARNING"
                        [show]="periodsUnavailable$ | async">
                 <p>{{'project.application.form.work.package.output.delivery.period.required' | translate}}</p>
-            </app-alert>
-            <app-alert [closable]="false" [type]="Alert.WARNING"
+            </jems-alert>
+            <jems-alert [closable]="false" [type]="Alert.WARNING"
                        [show]="workPackagesUnavailable$ | async">
                 <p>{{'project.application.form.section.part.c.subsection.six.no.data' | translate}}</p>
-            </app-alert>
-        <div appNoWidthLimit [hidden]="workPackagesUnavailable$ | async">
-            <app-multi-language-container [switchButtonsVisible]="dataAvailable$ | async">
+            </jems-alert>
+        <div jemsNoWidthLimit [hidden]="workPackagesUnavailable$ | async">
+            <jems-multi-language-container [switchButtonsVisible]="dataAvailable$ | async">
                 <div #visualization (click)="click($event)"></div>
-            </app-multi-language-container>
+            </jems-multi-language-container>
         </div>
     </div>
-</app-project-page-template>
+</jems-project-page-template>
 
 

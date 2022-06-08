@@ -1,0 +1,228 @@
+<ng-container *ngIf="savedWorkPackages$ | async as savedWorkPackages">
+    <jems-form (discard)="resetForm(savedWorkPackages)"
+               (save)="saveWorkPlan()">
+
+        <h2 class="mb-5">{{'project.application.partner.report.sub.title.workplan' | translate}}</h2>
+
+        <form [formGroup]="workPlanForm" jemsFormLayout>
+            <ng-container *ngFor="let workPackage of savedWorkPackages; let workPackageIndex = index "
+                          [formArrayName]="constants.WORK_PACKAGES.name">
+                <ng-container [formGroupName]="workPackageIndex">
+                    <mat-expansion-panel class="mb-3 mt-3 work-package-panel" [expanded]="false">
+                        <mat-expansion-panel-header>
+                            <mat-panel-title class="mt-2">
+                                {{'project.application.form.workpackage.form.header' | translate}}
+                                {{workPackage.number}}
+                            </mat-panel-title>
+                        </mat-expansion-panel-header>
+
+                        <div>{{'project.application.partner.report.workplan.period.contribution.description' | translate}}</div>
+
+                        <jems-multi-language-container>
+                            <jems-multi-language-form-field
+                                    type="textarea"
+                                    label="common.textarea.enter.text"
+                                    [formControlName]="constants.WORK_PACKAGE_DESCRIPTION.name"
+                                    [maxLength]="200">
+                            </jems-multi-language-form-field>
+                        </jems-multi-language-container>
+
+                        <div *ngIf="workPackage.activities.length || workPackage.outputs.length"
+                             class="mb-3 mt-4">{{'project.application.partner.report.workplan.contribution.description.subtitle' | translate}}</div>
+
+                        <ng-container *ngIf="workPackage.activities.length">
+                            <div jemsNoWidthLimit id="activities-table" class="mb-3 activity-container"
+                                 *ngIf="workPackage.activities as activitiesData">
+
+                                <div class="activity-header header-color" jemsNoWidthLimit jemsMultiColumnRow
+                                     justifyContent="start">
+                                    <span>{{ 'project.application.partner.report.workplan.activity.table.nr' | translate }}</span>
+                                    <span class="justify-start">{{ 'project.application.partner.report.workplan.activity.table.title' | translate }}</span>
+                                    <span class="justify-start progress-header-column">{{ 'project.application.partner.report.workplan.activity.table.progress' | translate }}</span>
+                                    <span class="justify-end attachments-header-column">{{ 'project.application.partner.report.attachments' | translate }}</span>
+                                </div>
+
+                                <ng-container *ngFor="let activity of activitiesData; let activityIndex = index"
+                                              [formArrayName]="constants.ACTIVITIES.name">
+
+                                    <jems-multi-language-container>
+                                        <div [formGroupName]="activityIndex" jemsMultiColumnRow class="activity-items">
+                                            <span>{{ 'project.application.partner.report.workplan.activity.table.nr.entry' | translate: {
+                                                workPackageNr: workPackage.number,
+                                                activityNr: activity.number
+                                            } }}</span>
+
+                                            <span class="justify-center" jemsFormFieldWidth="xx-large">
+                                                       <jems-multi-language-form-field
+                                                               type="textarea"
+                                                               label="common.textarea.enter.text"
+                                                               [disabled]="true"
+                                                               [formControlName]="constants.ACTIVITY_TITLE.name">
+                                                       </jems-multi-language-form-field>
+                                            </span>
+
+                                            <span class="justify-center progress-element">
+                                                       <jems-multi-language-form-field
+                                                               type="textarea"
+                                                               [maxLength]="2000"
+                                                               label="common.textarea.enter.text"
+                                                               [formControlName]="constants.ACTIVITY_PROGRESS.name"
+                                                               [jemsFormFieldWidth]="'xxx-large'">
+                                                       </jems-multi-language-form-field>
+                                            </span>
+
+                                            <jems-partner-actions-cell class="attachments-element" [formControlName]="constants.ACTIVITY_FILE.name"
+                                                                       [isReportEditable]="isReportEditable$ | async"
+                                                                       (upload)="onUploadActivity($event, activity.id, activityIndex, workPackageIndex, workPackage.id)"
+                                                                       (download)="onDownloadFile($event)"
+                                                                       (delete)="onDeleteActivity($event, activityIndex, workPackageIndex)">
+                                            </jems-partner-actions-cell>
+
+                                        </div>
+                                    </jems-multi-language-container>
+
+                                    <jems-multi-language-container *ngIf="activity.deliverables.length">
+                                        <div id="deliverables-table" jemsNoWidthLimit
+                                             [jemsTableConfig]="[{minInRem: 5, maxInRem: 8}, {minInRem:22, maxInRem: 25}, {minInRem: 7, maxInRem: 8}, {minInRem: 5, maxInRem: 6}, {minInRem: 25, maxInRem:30}]">
+                                            <div class="">
+                                                <span>{{ 'project.application.partner.report.workplan.deliverable.table.nr' | translate }}</span>
+                                                <span class="justify-start" >
+                                                    {{ 'project.application.partner.report.workplan.deliverable.table.title' | translate }}
+                                                </span>
+                                                <span  class="justify-start">
+                                                    {{ 'project.application.partner.report.workplan.output.table.contribution' | translate }}
+                                                </span>
+                                                <span jemsText class="justify-start">
+                                                    {{ 'project.application.partner.report.workplan.output.table.evidence' | translate }}
+                                                </span>
+                                                <span jemsText class="justify-start attachments-header-column">
+                                                    {{ 'project.application.partner.report.attachments' | translate }}
+                                                </span>
+                                            </div>
+
+                                            <ng-container [formGroupName]="activityIndex">
+                                                <ng-container
+                                                        *ngFor="let deliverable of activity.deliverables; let deliverableIndex = index"
+                                                        [formArrayName]="constants.DELIVERABLES.name">
+                                                    <div [formGroupName]="deliverableIndex">
+                                                        <span>{{ 'project.application.partner.report.workplan.deliverable.table.nr.entry' | translate: {
+                                                            workPackageNr: workPackage.number,
+                                                            activityNr: activity.number,
+                                                            deliverableNr: deliverable.number
+                                                        } }}</span>
+
+                                                        <span class="justify-start">
+                                                                   <jems-multi-language-form-field
+                                                                           type="textarea"
+                                                                           jemsFormFieldWidth="xx-large"
+                                                                           label="common.textarea.enter.text"
+                                                                           [disabled]="true"
+                                                                           [formControlName]="constants.DELIVERABLE_TITLE.name">
+                                                                   </jems-multi-language-form-field>
+                                                        </span>
+
+                                                        <span class="justify-start">
+                                                            <mat-checkbox
+                                                                    [formControlName]="constants.DELIVERABLE_CONTRIBUTION.name">
+                                                            </mat-checkbox>
+                                                        </span>
+
+                                                        <span class="justify-center">
+                                                            <mat-checkbox
+                                                                    [formControlName]='constants.DELIVERABLE_EVIDENCE.name'>
+                                                            </mat-checkbox>
+                                                        </span>
+                                                        <span class="justify-start attachments-element-deliverable" >
+                                                            <jems-partner-actions-cell
+                                                                    [formControlName]="constants.DELIVERABLE_FILE.name"
+                                                                    [isReportEditable]="isReportEditable$ | async"
+                                                                    (upload)="onUploadDeliverable($event, activity.id, deliverable.id,
+                                                                                        activityIndex, workPackageIndex, deliverableIndex, workPackage.id)"
+                                                                    (download)="onDownloadFile($event)"
+                                                                    (delete)="onDeleteDeliverable($event, activityIndex,
+                                                                                       workPackageIndex, deliverableIndex)">
+                                                            </jems-partner-actions-cell>
+                                                        </span>
+                                                    </div>
+                                                </ng-container>
+                                            </ng-container>
+                                        </div>
+                                    </jems-multi-language-container>
+                                </ng-container>
+                            </div>
+                        </ng-container>
+
+                        <ng-container *ngIf="workPackage.outputs.length" class="mt-3">
+                            <jems-multi-language-container>
+                                <div jemsNoWidthLimit id="outputs-table"
+                                     [jemsTableConfig]="[{minInRem:5, maxInRem: 7}, {minInRem:20}, {minInRem:5, maxInRem: 8}, {minInRem:10, maxInRem: 15}, {minInRem: 25, maxInRem:30}]"
+                                     *ngIf="workPackage.outputs as outputsData">
+
+                                    <div class="header-center header-color">
+                                        <span>{{ 'project.application.partner.report.workplan.output.table.nr' | translate }}</span>
+                                        <span class="justify-start">
+                                            {{ 'project.application.partner.report.workplan.output.table.title' | translate }}
+                                        </span>
+                                        <span class="justify-center">
+                                            {{ 'project.application.partner.report.workplan.output.table.contribution' | translate }}
+                                        </span>
+                                        <span class="justify-center">
+                                            {{ 'project.application.partner.report.workplan.output.table.evidence' | translate }}
+                                        </span>
+                                        <span class="justify-center">
+                                            {{ 'project.application.partner.report.attachments' | translate }}
+                                        </span>
+                                    </div>
+
+                                    <ng-container [formArrayName]="constants.OUTPUTS.name">
+                                        <div *ngFor="let output of outputsData; let outputIndex = index"
+                                             [formGroupName]="outputIndex">
+                                            <span>{{ 'project.application.partner.report.workplan.output.table.nr.entry' | translate: {
+                                                workPackageNr: workPackage.number,
+                                                outputNr: output.number
+                                            } }}</span>
+                                            <span>
+                                                <jems-multi-language-form-field
+                                                        type="textarea"
+                                                        minRows="1"
+                                                        label="common.textarea.enter.text"
+                                                        [disabled]="true"
+                                                        [formControlName]="constants.OUTPUT_TITLE.name"
+                                                        [maxLength]="200">
+                                                </jems-multi-language-form-field>
+                                        </span>
+
+                                            <span class="justify-center">
+                                            <mat-checkbox
+                                                    [formControlName]="constants.OUTPUT_CONTRIBUTION.name">
+                                            </mat-checkbox>
+                                        </span>
+
+                                            <span class="justify-center">
+                                            <mat-checkbox
+                                                    [formControlName]='constants.OUTPUT_EVIDENCE.name'>
+                                            </mat-checkbox>
+                                        </span>
+
+                                        <span class="justify-start">
+                                            <jems-partner-actions-cell
+                                                    [formControlName]="constants.OUTPUT_FILE.name"
+                                                    [isReportEditable]="isReportEditable$ | async"
+                                                    (upload)="onUploadOutput($event, output.id, outputIndex, workPackageIndex, workPackage.id)"
+                                                    (download)="onDownloadFile($event)"
+                                                    (delete)="onDeleteOutput($event, outputIndex, workPackageIndex)">
+                                            </jems-partner-actions-cell>
+                                        </span>
+                                        </div>
+                                    </ng-container>
+
+                                </div>
+                            </jems-multi-language-container>
+                        </ng-container>
+                    </mat-expansion-panel>
+                </ng-container>
+            </ng-container>
+        </form>
+
+    </jems-form>
+</ng-container>

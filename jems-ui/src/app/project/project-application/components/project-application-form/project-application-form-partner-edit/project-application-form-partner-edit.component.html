@@ -1,7 +1,7 @@
-<app-form *ngIf="data$ | async as data"
+<jems-form *ngIf="data$ | async as data"
           (save)="onSubmit(controls, data.partners)"
-          (discard)="discard(data.partner)">
-    <form appFormLayout id="partner-form" [formGroup]="partnerForm">
+          (discard)="discard(data.projectCallType, data.partner)">
+    <form jemsFormLayout id="partner-form" [formGroup]="partnerForm">
         <h3>{{'project.partner.detail.title' | translate}}</h3>
 
         <mat-form-field *ngIf="!partnerForm.enabled && data.partner.sortNumber">
@@ -10,7 +10,7 @@
         </mat-form-field>
 
         <ng-container *ngIf="!partnerForm.enabled">
-            <mat-form-field *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.ROLE">
+            <mat-form-field *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.ROLE">
                 <mat-label>{{'project.partner.role.label' | translate}}</mat-label>
                 <input ngModel="{{('common.label.project.partner.role.' + controls?.role?.value) | translate}}"
                        name="role" formControlName="fakeRole" matInput>
@@ -18,18 +18,18 @@
         </ng-container>
 
         <ng-container *ngIf="partnerForm.enabled">
-            <div *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.ROLE">
-                <div appLabel class="mat-required-marker"
-                [ngClass]="{'empty': !togglePartner.checked && !toggleLeadpartner.checked}">
+            <div *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.ROLE">
+                <div jemsLabel class="mat-required-marker"
+                [ngClass]="{'empty': !togglePartner.checked && !toggleLeadPartner.checked}">
                     {{'project.partner.role.label' | translate}}
                 </div>
 
                 <mat-button-toggle-group name="partnerToggle" formControlName="role">
                     <mat-button-toggle #togglePartner [value]="RoleEnum.PARTNER">
-                        <span appText maxWidth="230">{{'common.label.project.partner.role.PARTNER' | translate}}</span>
+                        <span jemsText maxWidth="230">{{'common.label.project.partner.role.PARTNER' | translate}}</span>
                     </mat-button-toggle>
-                    <mat-button-toggle #toggleLeadpartner [value]="RoleEnum.LEADPARTNER">
-                        <span appText maxWidth="230">{{'common.label.project.partner.role.LEAD_PARTNER' | translate}}</span>
+                    <mat-button-toggle #toggleLeadPartner [value]="RoleEnum.LEADPARTNER">
+                        <span jemsText maxWidth="230">{{'common.label.project.partner.role.LEAD_PARTNER' | translate}}</span>
                     </mat-button-toggle>
                 </mat-button-toggle-group>
             </div>
@@ -37,60 +37,60 @@
         </ng-container>
 
         <mat-form-field class="w-100"
-                        *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.ABBREVIATED_ORGANISATION_NAME">
+                        *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.ABBREVIATED_ORGANISATION_NAME">
             <mat-label>{{'project.partner.name.label' | translate}}</mat-label>
             <input #abbreviationInput name="abbreviation" formControlName="abbreviation" matInput required>
-            <mat-hint [appHintFor]="abbreviationInput" [hide]="controls?.abbreviation?.errors !== null">
-                <app-text-hint [currentLength]="abbreviationInput?.value?.length" [maxLength]="15"></app-text-hint>
+            <mat-hint [jemsHintFor]="abbreviationInput" [hide]="controls?.abbreviation?.errors !== null">
+                <jems-text-hint [currentLength]="abbreviationInput?.value?.length" [maxLength]="15"></jems-text-hint>
             </mat-hint>
             <mat-error>
-                <app-form-field-errors
+                <jems-form-field-errors
                         [errors]="controls?.abbreviation?.errors">
-                </app-form-field-errors>
+                </jems-form-field-errors>
             </mat-error>
         </mat-form-field>
 
         <mat-form-field class="w-100"
-                        *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.ORIGINAL_NAME_OF_ORGANISATION">
+                        *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.ORIGINAL_NAME_OF_ORGANISATION">
             <mat-label>{{'project.organization.original.name.label' | translate}}</mat-label>
             <input #nameInOriginalLanguageInput name="nameInOriginalLanguage" formControlName="nameInOriginalLanguage"
                    matInput>
-            <mat-hint [appHintFor]="nameInOriginalLanguageInput"
+            <mat-hint [jemsHintFor]="nameInOriginalLanguageInput"
                       [hide]="controls?.nameInOriginalLanguage?.errors !== null">
-                <app-text-hint [currentLength]="nameInOriginalLanguageInput?.value?.length"
-                               [maxLength]="100"></app-text-hint>
+                <jems-text-hint [currentLength]="nameInOriginalLanguageInput?.value?.length"
+                               [maxLength]="100"></jems-text-hint>
             </mat-hint>
             <mat-error>
-                <app-form-field-errors
+                <jems-form-field-errors
                         [errors]="controls?.nameInOriginalLanguage?.errors">
-                </app-form-field-errors>
+                </jems-form-field-errors>
             </mat-error>
         </mat-form-field>
 
-        <app-multi-language-container [staticLanguages]="[LANGUAGE.EN]"
-                                      *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.ENGLISH_NAME_OF_ORGANISATION">
-            <app-multi-language-form-field
+        <jems-multi-language-container [staticLanguages]="[LANGUAGE.EN]"
+                                      *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.ENGLISH_NAME_OF_ORGANISATION">
+            <jems-multi-language-form-field
                     label="project.organization.english.name.label"
                     formControlName="nameInEnglish"
                     maxLength="100">
-            </app-multi-language-form-field>
-        </app-multi-language-container>
+            </jems-multi-language-form-field>
+        </jems-multi-language-container>
 
-        <app-multi-language-container
-                *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.DEPARTMENT_UNIT_DIVISION">
-            <app-multi-language-form-field
+        <jems-multi-language-container
+                *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.DEPARTMENT_UNIT_DIVISION">
+            <jems-multi-language-form-field
                     label="project.organization.department.label"
                     type="textarea"
                     formControlName="department"
                     maxLength="250">
-            </app-multi-language-form-field>
-        </app-multi-language-container>
+            </jems-multi-language-form-field>
+        </jems-multi-language-container>
 
         <h4>{{'project.partner.detail.title.legal.financial' | translate}}</h4>
 
-        <mat-form-field *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.TYPE">
+        <mat-form-field *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.TYPE">
             <mat-label>{{'project.partner.type' | translate}}</mat-label>
-            <mat-select name="partnerType" formControlName="partnerType">
+            <mat-select name="partnerType" formControlName="partnerType" (selectionChange)="setSpfBeneficiaryTypeValue($event.value)">
                 <mat-option *ngFor="let type of ProjectApplicationFormPartnerEditConstants.partnerTypeEnums"
                             [value]="type">
                     {{'project.application.form.relevance.target.group.' + type | translate}}
@@ -98,7 +98,14 @@
             </mat-select>
         </mat-form-field>
 
-        <mat-form-field *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.SUB_TYPE">
+        <ng-container *ngIf="data.isSpf">
+            <mat-form-field *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.TYPE">
+                <mat-label>{{'spf.beneficiary.type' | translate}}</mat-label>
+                <input [readonly]="true" name="spfBeneficiaryType" formControlName="spfBeneficiaryType" matInput>
+            </mat-form-field>
+        </ng-container>
+
+        <mat-form-field *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.SUB_TYPE">
             <mat-label>{{'project.partner.subType' | translate}}</mat-label>
             <mat-select name="partnerSubType" formControlName="partnerSubType">
                 <mat-option *ngFor="let subType of ProjectApplicationFormPartnerEditConstants.partnerSubTypeEnums"
@@ -108,7 +115,7 @@
             </mat-select>
         </mat-form-field>
 
-        <mat-form-field *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.LEGAL_STATUS">
+        <mat-form-field *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.LEGAL_STATUS">
             <mat-label>{{'project.partner.legal.status' | translate}}</mat-label>
             <mat-select name="legalStatusId" formControlName="legalStatusId" required>
                 <mat-option *ngFor="let status of legalStatuses$ | async" [value]="status.id">
@@ -116,18 +123,18 @@
                 </mat-option>
             </mat-select>
             <mat-error>
-                <app-form-field-errors
+                <jems-form-field-errors
                         [errors]="controls?.legalStatus?.errors"
                         [messages]="legalStatusErrors">
-                </app-form-field-errors>
+                </jems-form-field-errors>
             </mat-error>
         </mat-form-field>
 
-        <ng-container *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.NACE_GROUP_LEVEL">
+        <ng-container *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.NACE_GROUP_LEVEL">
             <p>
                 {{'project.partner.nace.intro.text.one' | translate}}
                 <a [href]="ProjectApplicationFormPartnerEditConstants.EUROSTAT_WEBSITE"
-                   target="_blank">{{'project.partner.nace.intro.text.one.link' | translate}}</a>
+                   target="_blank" rel="noopener">{{'project.partner.nace.intro.text.one.link' | translate}}</a>
             </p>
             <mat-form-field>
                 <mat-label>{{'project.partner.nace' | translate}}</mat-label>
@@ -135,77 +142,77 @@
                        [matAutocomplete]="nace"
                        (focusout)="selectionUnfocused($event)">
                 <mat-autocomplete #nace="matAutocomplete" [displayWith]="displayFn">
-                    <mat-option *ngFor="let naceValue of filteredNace | async" [value]="naceValue">
+                    <mat-option *ngFor="let naceValue of filteredNace$ | async" [value]="naceValue">
                         {{displayFn(naceValue)}}
                     </mat-option>
                 </mat-autocomplete>
                 <mat-error>
-                    <app-form-field-errors
+                    <jems-form-field-errors
                             [errors]="controls?.nace?.errors">
-                    </app-form-field-errors>
+                    </jems-form-field-errors>
                 </mat-error>
             </mat-form-field>
         </ng-container>
 
-        <mat-form-field class="w-100" *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.VAT_IDENTIFIER">
+        <mat-form-field class="w-100" *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.VAT_IDENTIFIER">
             <mat-label>{{'project.partner.vat' | translate}}</mat-label>
             <input #vatInput name="vat" formControlName="vat" matInput>
-            <mat-hint [appHintFor]="vatInput" [hide]="controls?.vat?.errors !== null">
-                <app-text-hint [currentLength]="vatInput?.value?.length" [maxLength]="50"></app-text-hint>
+            <mat-hint [jemsHintFor]="vatInput" [hide]="controls?.vat?.errors !== null">
+                <jems-text-hint [currentLength]="vatInput?.value?.length" [maxLength]="50"></jems-text-hint>
             </mat-hint>
             <mat-error>
-                <app-form-field-errors
+                <jems-form-field-errors
                         [errors]="controls?.vat?.errors">
-                </app-form-field-errors>
+                </jems-form-field-errors>
             </mat-error>
         </mat-form-field>
-        <ng-container *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.VAT_RECOVERY">
+        <ng-container *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.VAT_RECOVERY">
             <p>{{'project.partner.recoverVat.intro.text' | translate}}</p>
 
             <mat-button-toggle-group formControlName="vatRecovery">
                 <mat-button-toggle [value]="VatRecoveryEnum.Yes">
-                    <span appText maxWidth="230">{{'common.label.project.partner.recoverVat.true' | translate}}</span>
+                    <span jemsText maxWidth="230">{{'common.label.project.partner.recoverVat.yes' | translate}}</span>
                 </mat-button-toggle>
                 <mat-button-toggle [value]="VatRecoveryEnum.Partly">
-                    <span appText maxWidth="230">{{'common.label.project.partner.recoverVat.partly' | translate}}</span>
+                    <span jemsText maxWidth="230">{{'common.label.project.partner.recoverVat.partly' | translate}}</span>
                 </mat-button-toggle>
                 <mat-button-toggle [value]="VatRecoveryEnum.No">
-                    <span appText maxWidth="230">{{'common.label.project.partner.recoverVat.false' | translate}}</span>
+                    <span jemsText maxWidth="230">{{'common.label.project.partner.recoverVat.no' | translate}}</span>
                 </mat-button-toggle>
             </mat-button-toggle-group>
         </ng-container>
 
-        <mat-form-field class="w-100 mt-4" *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.OTHER_IDENTIFIER_NUMBER_AND_DESCRIPTION">
+        <mat-form-field class="w-100 mt-4" *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.OTHER_IDENTIFIER_NUMBER_AND_DESCRIPTION">
             <mat-label>{{'project.partner.other.identifier.number' | translate}}</mat-label>
             <input #otherIdentifierNumberInput name="otherIdentifierNumber" formControlName="otherIdentifierNumber" matInput>
-            <mat-hint [appHintFor]="otherIdentifierNumberInput" [hide]="controls?.otherIdentifierNumber?.errors !== null">
-                <app-text-hint [currentLength]="otherIdentifierNumberInput?.value?.length" [maxLength]="50"></app-text-hint>
+            <mat-hint [jemsHintFor]="otherIdentifierNumberInput" [hide]="controls?.otherIdentifierNumber?.errors !== null">
+                <jems-text-hint [currentLength]="otherIdentifierNumberInput?.value?.length" [maxLength]="50"></jems-text-hint>
             </mat-hint>
             <mat-error>
-                <app-form-field-errors
+                <jems-form-field-errors
                         [errors]="controls?.otherIdentifierNumber?.errors">
-                </app-form-field-errors>
+                </jems-form-field-errors>
             </mat-error>
         </mat-form-field>
 
-        <app-multi-language-container
-                *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.OTHER_IDENTIFIER_NUMBER_AND_DESCRIPTION">
-            <app-multi-language-form-field
+        <jems-multi-language-container
+                *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.OTHER_IDENTIFIER_NUMBER_AND_DESCRIPTION">
+            <jems-multi-language-form-field
                     label="project.partner.other.identifier.description"
                     formControlName="otherIdentifierDescription"
                     maxLength="100">
-            </app-multi-language-form-field>
-        </app-multi-language-container>
+            </jems-multi-language-form-field>
+        </jems-multi-language-container>
 
-        <mat-form-field class="w-100" *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.PIC">
+        <mat-form-field class="w-100" *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.PIC">
             <mat-label>{{'project.partner.pic' | translate}}</mat-label>
             <input name="pic" formControlName="pic" matInput (paste)="tools.checkDigitsOnPaste($event)"
                    (keypress)="tools.checkDigitsOnInput($event)">
             <mat-error>
-                <app-form-field-errors
+                <jems-form-field-errors
                         [errors]="controls?.pic?.errors">
-                </app-form-field-errors>
+                </jems-form-field-errors>
             </mat-error>
         </mat-form-field>
     </form>
-</app-form>
+</jems-form>

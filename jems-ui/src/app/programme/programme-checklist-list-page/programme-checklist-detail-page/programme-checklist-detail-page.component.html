@@ -1,0 +1,155 @@
+<jems-main-page-template subTitleKey="programme.checklists.title"
+                         titleKey="{{'programme.checklists.detail.title'}}">
+    <mat-tab-group *ngIf="data$ | async as data">
+        <mat-tab label="{{'programme.checklists.tab.create' | translate}}">
+            <jems-form (save)="save()"
+                       (discard)="discard(data.checklist)">
+                <form jemsFormLayout [formGroup]="form">
+                    <h3>{{'programme.checklists.detail.identity' | translate}}</h3>
+                    <div jemsMultiColumnRow stretch>
+                        <mat-form-field>
+                            <mat-label>{{'programme.checklists.detail.type' | translate}}</mat-label>
+                            <mat-select formControlName="type" required>
+                                <mat-option *ngFor="let type of checklistTypes"
+                                            [value]="type">
+                                    <mat-label>{{'programme.checklists.type.' + type | translate}}</mat-label>
+                                </mat-option>
+                            </mat-select>
+                            <mat-error>
+                                <jems-form-field-errors [errors]="form?.controls?.type?.errors"></jems-form-field-errors>
+                            </mat-error>
+                        </mat-form-field>
+
+                        <mat-form-field>
+                            <mat-label>{{'programme.checklists.detail.name' | translate}}</mat-label>
+                            <input #name formControlName="name" matInput required>
+                            <mat-hint [jemsHintFor]="name" [hide]="form.controls?.name?.errors !== null">
+                                <jems-text-hint [currentLength]="name?.value?.length" [maxLength]="100"></jems-text-hint>
+                            </mat-hint>
+                            <mat-error>
+                                <jems-form-field-errors [errors]="form?.controls?.name?.errors"></jems-form-field-errors>
+                            </mat-error>
+                        </mat-form-field>
+                    </div>
+
+                    <h3>{{'programme.checklists.detail.range.title' | translate}}</h3>
+                    <span>{{'programme.checklists.detail.range.description' | translate}}</span>
+                    <div jemsMultiColumnRow stretch>
+                        <mat-form-field jemsFormFieldWidth="medium">
+                            <mat-label>{{'programme.checklists.detail.range.min.label' | translate}}</mat-label>
+                            <input *ngIf="!form.get('allowsDecimalScore')?.value" type="integer" currencyMask matInput required
+                                   formControlName="minScore"
+                                   [min]="0"
+                                   [maxLength]="3">
+
+                            <input *ngIf="form.get('allowsDecimalScore')?.value" type="decimal" currencyMask matInput required
+                                   formControlName="minScore"
+                                   [min]="0"
+                                   [maxLength]="5">
+                            <mat-error>
+                                <jems-form-field-errors
+                                        [errors]="form.get('minScore')?.errors"
+                                        [messages]="FORM_ERRORS.minScore">
+                                </jems-form-field-errors>
+                            </mat-error>
+                        </mat-form-field>
+
+                        <mat-form-field jemsFormFieldWidth="medium">
+                            <mat-label>{{'programme.checklists.detail.range.max.label' | translate}}</mat-label>
+                            <input *ngIf="!form.get('allowsDecimalScore')?.value" type="integer" currencyMask matInput required
+                                   formControlName="maxScore"
+                                   [maxLength]="3">
+
+                            <input *ngIf="form.get('allowsDecimalScore')?.value" type="decimal" currencyMask matInput required
+                                   formControlName="maxScore"
+                                   [maxLength]="5">
+                            <mat-error>
+                                <jems-form-field-errors
+                                        [errors]="form.get('maxScore')?.errors"
+                                        [messages]="FORM_ERRORS.maxScore">
+                                </jems-form-field-errors>
+                            </mat-error>
+                        </mat-form-field>
+
+                        <mat-checkbox formControlName="allowsDecimalScore" (change)="updateScoreValues()">
+                            {{'programme.checklists.detail.range.decimal.label' | translate}}
+                        </mat-checkbox>
+                    </div>
+
+                    <h3>{{'programme.checklists.detail.form' | translate}}</h3>
+                    <div *ngIf="components?.controls?.length" formArrayName="components" jemsNoWidthLimit
+                         [jemsTableConfig]="getTableConfig()">
+                        <div>
+                            <span *ngIf="form.enabled">{{'programme.checklists.detail.reorder' | translate}}</span>
+                            <span>{{'programme.checklists.component.type' | translate}}</span>
+                            <span>{{'programme.checklists.detail.options' | translate}}</span>
+                            <span *ngIf="form.enabled">{{'common.delete.entry' | translate}}</span>
+                        </div>
+                        <div class="line-bottom-padding" *ngFor="let component of components.controls; let i=index" [formGroupName]="i" >
+                            <div *ngIf="form.enabled" class="move-buttons">
+                                <mat-icon *ngIf="i > 0" class="move-button"
+                                          (click)="move(-1, i)">expand_less</mat-icon>
+                                <mat-icon *ngIf="i < components.controls.length - 1" class="move-button"
+                                          (click)="move(1, i)">expand_more</mat-icon>
+                            </div>
+                            <div class="top-cell">
+                                <mat-form-field>
+                                    <mat-label>{{'programme.checklists.component.type' | translate}}</mat-label>
+                                    <mat-select formControlName="type" required
+                                                (selectionChange)="componentTypeChanged()">
+                                        <mat-option *ngFor="let type of componentTypes"
+                                                    [value]="type">
+                                            <mat-label>{{'programme.checklists.component.type.' + type.toLowerCase() | translate}}</mat-label>
+                                        </mat-option>
+                                    </mat-select>
+                                    <mat-error>
+                                        <jems-form-field-errors [errors]="component.get('type')?.errors"></jems-form-field-errors>
+                                    </mat-error>
+                                </mat-form-field>
+                            </div>
+                            <div [ngSwitch]="component.get('type').value" class="mt-2 pb-2">
+                                <jems-programme-checklist-headline *ngSwitchCase="COMPONENT_TYPE.HEADLINE"
+                                                                   formControlName="metadata" class="w-100">
+                                </jems-programme-checklist-headline>
+                                <jems-programme-checklist-options-toggle *ngSwitchCase="COMPONENT_TYPE.OPTIONSTOGGLE"
+                                                                         formControlName="metadata" class="w-100">
+                                </jems-programme-checklist-options-toggle>
+                                <jems-programme-checklist-text-input *ngSwitchCase="COMPONENT_TYPE.TEXTINPUT"
+                                                                         formControlName="metadata" class="w-100">
+                                </jems-programme-checklist-text-input>
+                                <jems-programme-checklist-score *ngSwitchCase="COMPONENT_TYPE.SCORE"
+                                                                     formControlName="metadata" class="w-100">
+                                </jems-programme-checklist-score>
+                                <div *ngSwitchDefault></div>
+                            </div>
+                            <div *ngIf="form.enabled" class="top-cell justify-end">
+                                <button mat-icon-button color="accent" type="button"
+                                        (click)="components.removeAt(i); formService.setDirty(true)"
+                                        matTooltip="{{'common.delete.entry.tooltip' | translate}}">
+                                    <mat-icon>delete</mat-icon>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <button *ngIf="form.enabled && components.controls.length < 100"
+                        jemsText mat-stroked-button class="mt-3"
+                        (click)="addComponent(); formService.setDirty(true)">
+                    + {{'programme.checklists.detail.component.add' | translate}}
+                </button>
+            </jems-form>
+        </mat-tab>
+        <mat-tab label="{{'programme.checklists.tab.preview' | translate}}">
+            <jems-checklist-answers [components]="data.previewComponents"
+                                    [minScore]="data.checklist.minScore"
+                                    [maxScore]="data.checklist.maxScore"
+                                    [allowsDecimalScore]="data.checklist.allowsDecimalScore">
+                <jems-alert [type]="Alert.WARNING"
+                            [closable]="false"
+                            [show]="form.dirty">
+                    <div>{{'programme.checklists.tab.preview.warn' | translate}}</div>
+                </jems-alert>
+            </jems-checklist-answers>
+        </mat-tab>
+    </mat-tab-group>
+</jems-main-page-template>

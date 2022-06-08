@@ -1,9 +1,10 @@
 package io.cloudflight.jems.server.call.controller
 
 import io.cloudflight.jems.api.call.dto.CallStatus
-import io.cloudflight.jems.api.call.dto.application_form_configuration.ApplicationFormFieldConfigurationDTO
-import io.cloudflight.jems.api.call.dto.application_form_configuration.StepSelectionOptionDTO
-import io.cloudflight.jems.api.call.dto.application_form_configuration.UpdateApplicationFormFieldConfigurationRequestDTO
+import io.cloudflight.jems.api.call.dto.CallType
+import io.cloudflight.jems.api.call.dto.applicationFormConfiguration.ApplicationFormFieldConfigurationDTO
+import io.cloudflight.jems.api.call.dto.applicationFormConfiguration.StepSelectionOptionDTO
+import io.cloudflight.jems.api.call.dto.applicationFormConfiguration.UpdateApplicationFormFieldConfigurationRequestDTO
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjective
@@ -17,8 +18,8 @@ import io.cloudflight.jems.server.call.service.get_application_form_field_config
 import io.cloudflight.jems.server.call.service.list_calls.ListCallsInteractor
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldSetting
+import io.cloudflight.jems.server.call.service.model.CallApplicationFormFieldsConfiguration
 import io.cloudflight.jems.server.call.service.model.CallDetail
-import io.cloudflight.jems.server.call.service.model.CallFundRate
 import io.cloudflight.jems.server.call.service.model.FieldVisibilityStatus
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.call.service.update_application_form_field_configuration.UpdateApplicationFormFieldConfigurationsException
@@ -46,6 +47,7 @@ class ApplicationFormConfigurationControllerTest : UnitTest() {
             id = ID,
             name = "call name",
             status = CallStatus.DRAFT,
+            type = CallType.STANDARD,
             startDate = ZonedDateTime.now().minusDays(1),
             endDateStep1 = null,
             endDate = ZonedDateTime.now().plusDays(1),
@@ -80,7 +82,9 @@ class ApplicationFormConfigurationControllerTest : UnitTest() {
             unitCosts = listOf(
                 ProgrammeUnitCost(isOneCostCategory = true),
             ),
-            applicationFormFieldConfigurations = mutableSetOf()
+            applicationFormFieldConfigurations = mutableSetOf(),
+            preSubmissionCheckPluginKey = null,
+            firstStepPreSubmissionCheckPluginKey = null
         )
 
         private val configDTO = mutableSetOf(
@@ -123,6 +127,11 @@ class ApplicationFormConfigurationControllerTest : UnitTest() {
                 visibilityStatus = FieldVisibilityStatus.NONE
             )
         )
+
+        private val callApplicationConfig = CallApplicationFormFieldsConfiguration(
+            callType = CallType.STANDARD,
+            applicationFormFieldConfigurations = configModel
+        )
     }
 
     @MockK
@@ -139,7 +148,7 @@ class ApplicationFormConfigurationControllerTest : UnitTest() {
 
     @Test
     fun `get applicationFormFieldConfigurations by id`() {
-        every { getApplicationFormFieldFieldConfigurations.get(ID) } returns configModel
+        every { getApplicationFormFieldFieldConfigurations.get(ID)} returns callApplicationConfig
         assertThat(controller.getByCallId(ID)).isEqualTo(configDTO)
     }
 

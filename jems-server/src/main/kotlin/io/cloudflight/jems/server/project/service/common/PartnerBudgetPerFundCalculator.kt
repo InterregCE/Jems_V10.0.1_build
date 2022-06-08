@@ -3,10 +3,12 @@ package io.cloudflight.jems.server.project.service.common
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.project.service.cofinancing.model.PartnerBudgetCoFinancing
+import io.cloudflight.jems.server.project.service.cofinancing.model.PartnerBudgetSpfCoFinancing
 import io.cloudflight.jems.server.project.service.model.PartnerBudgetPerFund
 import io.cloudflight.jems.server.project.service.model.ProjectPartnerBudgetPerFund
+import io.cloudflight.jems.server.project.service.model.ProjectPartnerCostType
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
-import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectContribution
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
@@ -22,176 +24,169 @@ class PartnerBudgetPerFundCalculator : PartnerBudgetPerFundCalculatorService {
     }
 
     override fun calculate(
-        partners: List<ProjectPartnerSummary>, projectFunds: List<ProgrammeFund>,
-        coFinancing: List<PartnerBudgetCoFinancing>
+        partners: List<ProjectPartnerSummary>,
+        projectFunds: List<ProgrammeFund>,
+        coFinancing: List<PartnerBudgetCoFinancing>,
+        spfCoFinancing: PartnerBudgetSpfCoFinancing?
     ): List<ProjectPartnerBudgetPerFund> {
 
-        val budgetsPerFundWithoutPercentOfTotal: MutableMap<Long, List<PartnerBudgetPerFund>> = mutableMapOf()
-        coFinancing.forEach {
-            budgetsPerFundWithoutPercentOfTotal[it.partner.id!!] =
-                getPartnerBudgetsWithoutPercentOfTotal(
-                    it.projectPartnerCoFinancingAndContribution!!.finances,
-                    it.total!!
-                )
-        }
+        val totalEligibleBudgetManagement = coFinancing.sumOf { it.total!! }
+        val totalEligibleBudgetSum =
+            if (spfCoFinancing?.total != null) {
+                totalEligibleBudgetManagement.add(spfCoFinancing.total)
+            } else {
+                totalEligibleBudgetManagement
+            }
 
-        val totalEligibleBudget = coFinancing.sumOf { it.total!! }
-
-        val totalBudgetsPerFund = projectFunds.map { fund ->
-            PartnerBudgetPerFund(
-                fund = fund,
-                percentage = calculatePercentage(
-                    getTotalBudgetAmountForFund(fund, budgetsPerFundWithoutPercentOfTotal),
-                    totalEligibleBudget,
-                    RoundingMode.HALF_UP
-                ),
-                value = getTotalBudgetAmountForFund(fund, budgetsPerFundWithoutPercentOfTotal)
-            )
-        }
-
+        // add partner lines - (management in case of SPF) costs
         val tableRowsExceptTotal = coFinancing.map {
+            val coFinancingTotal = (it.total ?: BigDecimal.ZERO).setScale(2, RoundingMode.DOWN)
+            val partnerContributions = it.projectPartnerCoFinancingAndContribution?.partnerContributions ?: emptyList()
             ProjectPartnerBudgetPerFund(
                 partner = it.partner,
+                costType = ProjectPartnerCostType.Management,
                 budgetPerFund = getBudgetPerFundForPartner(
                     projectFunds,
-                    budgetsPerFundWithoutPercentOfTotal[it.partner.id]!!,
-                    totalBudgetsPerFund
+                    it.projectPartnerCoFinancingAndContribution?.finances ?: emptyList(),
+                    coFinancingTotal
                 ),
-                publicContribution = getPartnerContribution(
-                    it.projectPartnerCoFinancingAndContribution?.partnerContributions,
-                    ProjectPartnerContributionStatusDTO.Public
-                ),
-                autoPublicContribution = getPartnerContribution(
-                    it.projectPartnerCoFinancingAndContribution?.partnerContributions,
-                    ProjectPartnerContributionStatusDTO.AutomaticPublic
-                ),
-                privateContribution = getPartnerContribution(
-                    it.projectPartnerCoFinancingAndContribution?.partnerContributions,
-                    ProjectPartnerContributionStatusDTO.Private
-                ),
-                totalPartnerContribution = getPartnerContribution(
-                    it.projectPartnerCoFinancingAndContribution?.partnerContributions,
-                    null
-                ),
-                totalEligibleBudget = it.total!!.setScale(2, RoundingMode.DOWN),
-                percentageOfTotalEligibleBudget = calculatePercentage(
-                    it.total.setScale(2, RoundingMode.DOWN),
-                    totalEligibleBudget,
-                    RoundingMode.HALF_UP
-                )
+                publicContribution = getPartnerContribution(partnerContributions, ProjectPartnerContributionStatusDTO.Public),
+                autoPublicContribution = getPartnerContribution(partnerContributions, ProjectPartnerContributionStatusDTO.AutomaticPublic),
+                privateContribution = getPartnerContribution(partnerContributions, ProjectPartnerContributionStatusDTO.Private),
+                totalPartnerContribution = getPartnerContribution(partnerContributions, null),
+                totalEligibleBudget = coFinancingTotal,
+                percentageOfTotalEligibleBudget = calculatePercentage(coFinancingTotal, totalEligibleBudgetSum)
             )
         }.toMutableList()
 
-        val tableRowTotal = ProjectPartnerBudgetPerFund(
-            partner = null,
-            budgetPerFund = totalBudgetsPerFund.toSet(),
-            publicContribution = tableRowsExceptTotal.sumOf { it.publicContribution!! },
-            autoPublicContribution = tableRowsExceptTotal.sumOf { it.autoPublicContribution!! },
-            privateContribution = tableRowsExceptTotal.sumOf { it.privateContribution!! },
-            totalPartnerContribution = tableRowsExceptTotal.sumOf { it.totalPartnerContribution!! },
-            totalEligibleBudget = totalEligibleBudget,
-            percentageOfTotalEligibleBudget = BigDecimal(100)
-        )
+        // add line for SPF costs
+        if (spfCoFinancing != null) {
+            val spfCoFinancingTotal = (spfCoFinancing.total ?: BigDecimal.ZERO).setScale(2, RoundingMode.DOWN)
+            val partnerContributions = spfCoFinancing.projectPartnerCoFinancingAndContribution.partnerContributions
+            tableRowsExceptTotal.add(
+                ProjectPartnerBudgetPerFund(
+                    partner = spfCoFinancing.partner,
+                    costType = ProjectPartnerCostType.Spf,
+                    budgetPerFund = getBudgetPerFundForPartner(
+                        projectFunds,
+                        spfCoFinancing.projectPartnerCoFinancingAndContribution.finances,
+                        spfCoFinancingTotal
+                    ),
+                    publicContribution = getPartnerContribution(partnerContributions, ProjectPartnerContributionStatusDTO.Public),
+                    autoPublicContribution = getPartnerContribution(partnerContributions, ProjectPartnerContributionStatusDTO.AutomaticPublic),
+                    privateContribution = getPartnerContribution(partnerContributions, ProjectPartnerContributionStatusDTO.Private),
+                    totalPartnerContribution = getPartnerContribution(partnerContributions, null),
+                    totalEligibleBudget = spfCoFinancingTotal,
+                    percentageOfTotalEligibleBudget = calculatePercentage(spfCoFinancingTotal, totalEligibleBudgetSum)
+                )
+            )
+        }
 
-        tableRowsExceptTotal.add(tableRowTotal)
+        val totalBudgetsPerFundTotal = projectFunds.map { fund ->
+            val budgetPerFundTotalValue = tableRowsExceptTotal.sumOf { row ->
+                row.budgetPerFund.firstOrNull { it.fund?.id == fund.id }?.value ?: BigDecimal.ZERO
+            }
+            PartnerBudgetPerFund(
+                fund = fund,
+                value = budgetPerFundTotalValue,
+                percentage = calculatePercentage(
+                    budgetPerFundTotalValue,
+                    totalEligibleBudgetSum
+                )
+            )
+        }
+        // set total percentages for funds in previous rows
+        setBudgetPerFundForPartnerTotal(budgetRows = tableRowsExceptTotal)
+
+        // add summary row with totals
+        tableRowsExceptTotal.add(
+            ProjectPartnerBudgetPerFund(
+                partner = null,
+                costType = null,
+                budgetPerFund = totalBudgetsPerFundTotal.toSet(),
+                publicContribution = tableRowsExceptTotal.sumOf { it.publicContribution!! },
+                autoPublicContribution = tableRowsExceptTotal.sumOf { it.autoPublicContribution!! },
+                privateContribution = tableRowsExceptTotal.sumOf { it.privateContribution!! },
+                totalPartnerContribution = tableRowsExceptTotal.sumOf { it.totalPartnerContribution!! },
+                totalEligibleBudget = totalEligibleBudgetSum,
+                percentageOfTotalEligibleBudget = BigDecimal(100)
+            )
+        )
 
         return tableRowsExceptTotal
     }
 
-    private fun getPartnerBudgetsWithoutPercentOfTotal(
-        finances: List<ProjectPartnerCoFinancing>,
-        totalBudget: BigDecimal
-    ): List<PartnerBudgetPerFund> {
-        return finances.filter { it.fund != null }.map {
-            PartnerBudgetPerFund(
-                fund = it.fund,
-                percentage = it.percentage,
-                value = totalBudget
-                    .multiply(
-                        it.percentage
-                            .divide(BigDecimal(100))
-                    )
-                    .setScale(2, RoundingMode.DOWN)
-            )
-        }
-    }
-
-    private fun getTotalBudgetAmountForFund(
-        fund: ProgrammeFund,
-        partnersBudgetsPerFund: Map<Long, List<PartnerBudgetPerFund>>
-    ): BigDecimal {
-        var totalSum = BigDecimal.ZERO
-        partnersBudgetsPerFund.values.forEach { budgetsPerFund ->
-            budgetsPerFund.filter { it.fund?.id == fund.id }.forEach { fund -> totalSum += fund.value }
-        }
-        return totalSum.setScale(2, RoundingMode.DOWN)
-    }
-
     private fun getBudgetPerFundForPartner(
         projectChosenFunds: List<ProgrammeFund>,
-        budgetPerFund: List<PartnerBudgetPerFund>,
-        totalBudgetPerFund: List<PartnerBudgetPerFund>
+        coFinancing: List<ProjectPartnerCoFinancing>?,
+        totalEligibleBudget: BigDecimal
     ): Set<PartnerBudgetPerFund> {
         val partnerBudgetPerFund = mutableSetOf<PartnerBudgetPerFund>()
 
         projectChosenFunds.forEach { fund ->
-            val budgetOfFund = budgetPerFund.firstOrNull { it.fund?.id == fund.id }
-            val totalBudgetOfFund = totalBudgetPerFund.firstOrNull { it.fund?.id == fund.id }
-            if (budgetOfFund != null && totalBudgetOfFund != null) {
-                partnerBudgetPerFund.add(
-                    PartnerBudgetPerFund(
-                        fund = fund,
-                        value = budgetOfFund.value,
-                        percentage = budgetOfFund.percentage,
-                        percentageOfTotal = calculatePercentage(
-                            budgetOfFund.value,
-                            totalBudgetOfFund.value,
-                            RoundingMode.HALF_UP
-                        )
-                    )
+            val fundPercentage = coFinancing?.firstOrNull { it.fund?.id == fund.id }?.percentage
+            val fundValue =
+                if (fundPercentage != null) {
+                    totalEligibleBudget
+                        .multiply(fundPercentage.divide(BigDecimal(100)))
+                        .setScale(2, RoundingMode.DOWN)
+                } else {
+                    BigDecimal.ZERO
+                }
+            partnerBudgetPerFund.add(
+                PartnerBudgetPerFund(
+                    fund = fund,
+                    value = fundValue,
+                    percentage = fundPercentage ?: BigDecimal.ZERO
                 )
-            } else {
-                partnerBudgetPerFund.add(
-                    PartnerBudgetPerFund(
-                        fund = fund,
-                        value = BigDecimal.ZERO,
-                        percentage = BigDecimal.ZERO
-                    )
-                )
-            }
+            )
         }
         return partnerBudgetPerFund
     }
 
-    private fun getPartnerContribution(
-        partnerContributions: Collection<ProjectPartnerContribution>?,
-        status: ProjectPartnerContributionStatusDTO?
-    ): BigDecimal {
-        if (partnerContributions.isNullOrEmpty()) {
-            return BigDecimal.ZERO
+    private fun setBudgetPerFundForPartnerTotal(
+        budgetRows: MutableList<ProjectPartnerBudgetPerFund>
+    ): List<ProjectPartnerBudgetPerFund> {
+        budgetRows.forEach { row ->
+            row.budgetPerFund.forEach { perFund ->
+                val total = budgetRows.sumOf { rowForTotal ->
+                    rowForTotal.budgetPerFund
+                        .firstOrNull { it.fund?.id == perFund.fund?.id }?.value ?: BigDecimal.ZERO
+                }.setScale(2, RoundingMode.DOWN)
+
+                perFund.percentageOfTotal = calculatePercentage(perFund.value, total)
+            }
         }
-
-        if (status == null) {
-            return partnerContributions.sumOf { it.amount!! }
-        }
-
-        val contribution = partnerContributions.filter { it.status == status }
-
-        if (contribution.isNotEmpty()) {
-            return contribution.sumOf { it.amount!! }
-        }
-
-        return BigDecimal.ZERO
+        return budgetRows
     }
 
-    private fun calculatePercentage(toDivide: BigDecimal, divisor: BigDecimal, roundingMode: RoundingMode): BigDecimal {
-        if (toDivide == BigDecimal.ZERO || divisor == BigDecimal.ZERO || toDivide == BigDecimal(BigInteger("0"), 2) || divisor == BigDecimal(BigInteger("0"), 2)) {
+    private fun getPartnerContribution(
+        partnerContributions: Collection<ProjectContribution>?,
+        status: ProjectPartnerContributionStatusDTO?
+    ): BigDecimal {
+        var partnerContribution = BigDecimal.ZERO
+        if (!partnerContributions.isNullOrEmpty()) {
+            if (status == null) {
+                partnerContribution = partnerContributions.sumOf { it.amount!! }
+            }
+            val contribution = partnerContributions.filter { it.status == status }
+            if (contribution.isNotEmpty()) {
+                partnerContribution = contribution.sumOf { it.amount!! }
+            }
+        }
+        return partnerContribution
+    }
+
+    private fun calculatePercentage(toDivide: BigDecimal, divisor: BigDecimal): BigDecimal {
+        if (toDivide == BigDecimal.ZERO || divisor == BigDecimal.ZERO
+            || toDivide == BigDecimal(BigInteger("0"), 2)
+            || divisor == BigDecimal(BigInteger("0"), 2)) {
             return BigDecimal.ZERO
         }
 
         return toDivide
             .divide(divisor, mc)
             .multiply(BigDecimal(100))
-            .setScale(2, roundingMode)
+            .setScale(2, RoundingMode.HALF_UP)
     }
 }

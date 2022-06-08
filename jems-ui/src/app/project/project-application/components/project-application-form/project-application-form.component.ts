@@ -24,9 +24,10 @@ import {ProjectStore} from '../../containers/project-application-detail/services
 import {LanguageStore} from '@common/services/language-store.service';
 import { APPLICATION_FORM } from '@project/common/application-form-model';
 import {Alert} from '@common/components/forms/alert';
+import {ProjectUtil} from '@project/common/project-util';
 
 @Component({
-  selector: 'app-project-application-form',
+  selector: 'jems-project-application-form',
   templateUrl: './project-application-form.component.html',
   styleUrls: ['./project-application-form.component.scss'],
   providers: [FormService],
@@ -52,6 +53,7 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
   currentPriority?: string;
   previousObjective: InputProjectData.SpecificObjectiveEnum;
   selectedSpecificObjective: InputProjectData.SpecificObjectiveEnum;
+  projectContracted: boolean;
 
   applicationForm: FormGroup = this.formBuilder.group({
     projectId: [''],
@@ -118,6 +120,10 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
         this.applicationForm.controls.projectPeriodLength.disable();
         this.applicationForm.controls.projectPeriodCount.disable();
       });
+
+    this.projectStore.currentVersionOfProjectStatus$
+      .pipe(take(1))
+      .subscribe(status => this.projectContracted = ProjectUtil.isContractedOrAnyStatusAfterContracted(status));
   }
 
   ngOnChanges(changes: SimpleChanges): void {

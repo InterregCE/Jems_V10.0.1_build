@@ -4,7 +4,7 @@ import {LocaleDatePipe} from './locale-date.pipe';
 @Pipe({name: 'dateFormatInfo'})
 export class DateFormatInfoPipe implements PipeTransform {
 
-  transform(label: string, withTime?: boolean): string {
+  transform(label: string, withTime = false): string {
     if (withTime) {
       return `${label} (${LocaleDatePipe.DEFAULT_DATETIME_FORMAT})`;
     }

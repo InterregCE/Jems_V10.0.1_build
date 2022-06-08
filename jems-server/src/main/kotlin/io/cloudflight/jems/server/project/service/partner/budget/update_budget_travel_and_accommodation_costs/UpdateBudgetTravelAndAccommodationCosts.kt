@@ -30,15 +30,24 @@ class UpdateBudgetTravelAndAccommodationCosts(
         partnerId: Long,
         travelCosts: List<BudgetTravelAndAccommodationCostEntry>
     ): List<BudgetTravelAndAccommodationCostEntry> {
+        val projectId = partnerPersistence.getProjectIdForPartnerId(partnerId)
+        val callId = projectPersistence.getCallIdOfProject(projectId)
+        val periods = travelCosts.map { it.budgetPeriods }.flatten().toSet()
+        budgetCostValidator.validateAgainstAFConfig(
+            callId,
+            periods,
+            BudgetCategory.TravelAndAccommodationCosts,
+            travelCosts.map { it.numberOfUnits },
+            travelCosts.map { Pair(it.unitCostId, it.unitType) }
+        )
 
         budgetCostValidator.validateBaseEntries(travelCosts)
         budgetCostValidator.validatePricePerUnits(travelCosts.map { it.pricePerUnit })
 
         throwIfTravelOrOtherCostFlatRateAreSet(optionsPersistence.getBudgetOptions(partnerId))
 
-        val projectId = partnerPersistence.getProjectIdForPartnerId(partnerId)
         budgetCostValidator.validateAllowedRealCosts(
-            projectPersistence.getCallIdOfProject(projectId),
+            callId,
             travelCosts,
             BudgetCategory.TravelAndAccommodationCosts
         )

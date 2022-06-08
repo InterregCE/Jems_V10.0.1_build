@@ -3,6 +3,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {
   InputTranslation,
   ProgrammeLegalStatusService,
+  ProjectCallSettingsDTO,
   ProjectPartnerDetailDTO,
   ProjectPartnerDTO,
   ProjectPartnerSummaryDTO,
@@ -20,9 +21,11 @@ import {RoutingService} from '@common/services/routing.service';
 import {ProjectApplicationFormPartnerEditConstants} from '@project/project-application/components/project-application-form/project-application-form-partner-edit/constants/project-application-form-partner-edit.constants';
 import {ProjectPartnerRoleEnum} from '@project/model/ProjectPartnerRoleEnum';
 import {ProjectPartner} from '@project/model/ProjectPartner';
+import {TranslateService} from '@ngx-translate/core';
+import CallTypeEnum = ProjectCallSettingsDTO.CallTypeEnum;
 
 @Component({
-  selector: 'app-project-application-form-partner-edit',
+  selector: 'jems-project-application-form-partner-edit',
   templateUrl: './project-application-form-partner-edit.component.html',
   styleUrls: ['./project-application-form-partner-edit.component.scss'],
   providers: [FormService],
@@ -38,11 +41,14 @@ export class ProjectApplicationFormPartnerEditComponent implements OnInit {
 
   partnerId = this.router.getParameter(this.activatedRoute, 'partnerId');
   legalStatuses$ = this.programmeLegalStatusService.getProgrammeLegalStatusList();
-  filteredNace: Observable<string[]>;
+  filteredNace$: Observable<string[]>;
+  isSpfCallType:  boolean;
 
   data$: Observable<{
     partner: ProjectPartnerDetailDTO;
     partners: ProjectPartner[];
+    projectCallType: CallTypeEnum;
+    isSpf: boolean;
   }>;
 
   partnerForm: FormGroup = this.formBuilder.group({
@@ -58,6 +64,7 @@ export class ProjectApplicationFormPartnerEditComponent implements OnInit {
     nameInEnglish: [[], Validators.maxLength(100)],
     department: [],
     partnerType: [''],
+    spfBeneficiaryType: [''],
     partnerSubType: [],
     nace: [],
     otherIdentifierNumber: ['', Validators.maxLength(50)],
@@ -81,17 +88,27 @@ export class ProjectApplicationFormPartnerEditComponent implements OnInit {
               private partnerStore: ProjectPartnerStore,
               private router: RoutingService,
               private activatedRoute: ActivatedRoute,
-              private programmeLegalStatusService: ProgrammeLegalStatusService) {
+              private programmeLegalStatusService: ProgrammeLegalStatusService,
+              private translate: TranslateService) {
     this.formService.init(this.partnerForm, this.partnerStore.isProjectEditable$);
-    this.data$ = combineLatest([this.partnerStore.partners$, this.partnerStore.partner$])
+    this.data$ = combineLatest([this.partnerStore.partners$, this.partnerStore.partner$, this.partnerStore.projectCallType$])
       .pipe(
-        map(([partners, partner]) => ({partners, partner})),
-        tap((data: any) => this.resetForm(data.partner))
+        map(([partners, partner, callType]) => {
+            this.isSpfCallType = callType === CallTypeEnum.SPF;
+            return {
+              partners,
+              partner,
+              projectCallType: callType,
+              isSpf: this.isSpfCallType
+            };
+          }
+        ),
+        tap((data: any) => this.resetForm(data.projectCallType, data.partner))
       );
   }
 
   ngOnInit(): void {
-    this.filteredNace = this.partnerForm.controls.nace.valueChanges
+    this.filteredNace$ = this.partnerForm.controls.nace.valueChanges
       .pipe(
         startWith(''),
         map(value => this.filter(value))
@@ -170,27 +187,34 @@ export class ProjectApplicationFormPartnerEditComponent implements OnInit {
   }
 
   private confirmLeadPartnerChange(partners: ProjectPartner[]): Observable<boolean>{
-        const leadPartner = partners.find(it => it.role === ProjectPartnerRoleEnum.LEAD_PARTNER);
-        if (leadPartner === undefined || leadPartner === null || leadPartner.id === this.controls.id.value || this.controls.role.value === ProjectPartnerRoleEnum.PARTNER){
-          return of(true);
-        }else {
-          return Forms.confirmDialog(
-            this.dialog,
-            'project.partner.role.lead.already.existing.title',
-            'project.partner.role.lead.already.existing',
-            {
-              old_name: leadPartner.abbreviation,
-              new_name: this.controls.abbreviation.value
-            }
-          );
+    const leadPartner = partners.find(it => it.role === ProjectPartnerRoleEnum.LEAD_PARTNER);
+    if (
+      leadPartner === undefined ||
+      leadPartner === null ||
+      !leadPartner.active ||
+      leadPartner.id === this.controls.id.value ||
+      this.controls.role.value === ProjectPartnerRoleEnum.PARTNER ||
+      this.isSpfCallType
+    ) {
+      return of(true);
+    } else {
+      return Forms.confirmDialog(
+        this.dialog,
+        'project.partner.role.lead.already.existing.title',
+        'project.partner.role.lead.already.existing',
+        {
+          old_name: leadPartner.abbreviation,
+          new_name: this.controls.abbreviation.value
         }
+      );
+    }
   }
 
-  discard(partner?: ProjectPartnerDetailDTO): void {
+  discard(callType: CallTypeEnum, partner?: ProjectPartnerDetailDTO): void {
     if (!this.partnerId) {
       this.redirectToPartnerOverview();
     } else {
-      this.resetForm(partner);
+      this.resetForm(callType, partner);
     }
   }
 
@@ -198,13 +222,13 @@ export class ProjectApplicationFormPartnerEditComponent implements OnInit {
     return nace ? nace.split('_').join('.') : '';
   }
 
-  private resetForm(partner?: ProjectPartnerDetailDTO): void {
+  private resetForm(callType: CallTypeEnum, partner?: ProjectPartnerDetailDTO): void {
     if (!this.partnerId) {
       this.formService.setCreation(true);
     }
     this.controls.id.setValue(partner?.id);
     this.controls.abbreviation.setValue(partner?.abbreviation);
-    this.controls.role.setValue(partner?.role);
+    this.controls.role.setValue(callType === CallTypeEnum.STANDARD ? partner?.role : ProjectPartnerDetailDTO.RoleEnum.LEADPARTNER);
     this.controls.nameInOriginalLanguage.setValue(partner?.nameInOriginalLanguage);
     this.controls.nameInEnglish.setValue([{
       language: this.LANGUAGE.EN,
@@ -221,6 +245,7 @@ export class ProjectApplicationFormPartnerEditComponent implements OnInit {
     this.controls.otherIdentifierDescription.setValue(partner?.otherIdentifierDescription);
     this.controls.pic.setValue(partner?.pic);
     this.controls.sortNumber.setValue(partner?.sortNumber);
+    this.setSpfBeneficiaryTypeValue(partner?.partnerType ? partner.partnerType: '');
   }
 
   selectionUnfocused(event: FocusEvent): void {
@@ -257,6 +282,26 @@ export class ProjectApplicationFormPartnerEditComponent implements OnInit {
 
   private findByNace(value: string): string | undefined {
     return this.ProjectApplicationFormPartnerEditConstants.naceEnums.find(nace => value === nace);
+  }
+
+  setSpfBeneficiaryTypeValue(partnerType: string) {
+    const spfBeneficiaryTypeValue = this.getSpfBeneficiaryTypeTranslationKey(partnerType);
+    const value = (spfBeneficiaryTypeValue !== '') ? this.translate.instant(spfBeneficiaryTypeValue) : '';
+    this.controls.spfBeneficiaryType.setValue(value);
+  }
+
+
+  private getSpfBeneficiaryTypeTranslationKey(partnerType: string): string {
+    const partnerTypeTranslationPrefix = 'project.application.form.relevance.target.group.';
+    if (partnerType === ProjectPartnerDetailDTO.PartnerTypeEnum.Egtc) {
+      return  partnerTypeTranslationPrefix.concat(ProjectPartnerDetailDTO.PartnerTypeEnum.Egtc);
+    } else if (partnerType === ProjectPartnerDetailDTO.PartnerTypeEnum.CrossBorderLegalBody) {
+      return  partnerTypeTranslationPrefix.concat(ProjectPartnerDetailDTO.PartnerTypeEnum.CrossBorderLegalBody);
+    } else if (partnerType !== ProjectPartnerDetailDTO.PartnerTypeEnum.Egtc &&
+      partnerType !== ProjectPartnerDetailDTO.PartnerTypeEnum.CrossBorderLegalBody && partnerType !== '') {
+      return 'spf.beneficiary.type.input.option';
+    }
+    return '';
   }
 
 }

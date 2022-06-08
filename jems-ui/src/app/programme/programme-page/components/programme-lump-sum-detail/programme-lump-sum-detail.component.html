@@ -1,5 +1,5 @@
-<form appFormLayout [formGroup]="lumpSumForm">
-    <div appMultiColumnRow>
+<form jemsFormLayout [formGroup]="lumpSumForm">
+    <div jemsMultiColumnRow>
         <h3 class="mb-0">{{'lump.sum.title' | translate}}</h3>
         <button mat-raised-button color="primary"
                 *ngIf="formState === FormState.VIEW && (programmeEditableStateStore.hasEditPermission$ | async)"
@@ -8,21 +8,21 @@
         </button>
     </div>
 
-    <app-multi-language-container [switchButtonsVisible]="formState === FormState.EDIT">
-        <app-multi-language-form-field
+    <jems-multi-language-container [switchButtonsVisible]="formState === FormState.EDIT">
+        <jems-multi-language-form-field
                 formControlName="name"
                 label="lump.sum.form.field.name"
                 [maxLength]="50">
-        </app-multi-language-form-field>
-    </app-multi-language-container>
+        </jems-multi-language-form-field>
+    </jems-multi-language-container>
 
-    <app-multi-language-container [switchButtonsVisible]="formState === FormState.EDIT">
-        <app-multi-language-form-field
+    <jems-multi-language-container [switchButtonsVisible]="formState === FormState.EDIT">
+        <jems-multi-language-form-field
                 formControlName="description"
                 label="lump.sum.form.field.description"
                 [maxLength]="255">
-        </app-multi-language-form-field>
-    </app-multi-language-container>
+        </jems-multi-language-form-field>
+    </jems-multi-language-container>
 
     <mat-form-field>
         <mat-label>{{'lump.sum.form.field.cost' | translate}}</mat-label>
@@ -30,15 +30,15 @@
                [options]="{nullable: true}"
                name="cost" formControlName="cost" matInput required>
         <mat-error>
-            <app-form-field-errors
+            <jems-form-field-errors
                     [errors]="lumpSumForm?.controls?.cost?.errors"
                     [messages]="costErrors">
-            </app-form-field-errors>
+            </jems-form-field-errors>
         </mat-error>
     </mat-form-field>
 
     <div>
-        <div appLabel class="mat-required-marker"
+        <div jemsLabel class="mat-required-marker"
              [ngClass]="{'empty': lumpSumForm?.controls?.allowSplitting?.errors}">
             {{'lump.sum.allow.splitting' | translate}}
         </div>
@@ -48,20 +48,20 @@
                     value="Yes"
                     [checked]="previousSplitting === 'Yes'"
                     (change)="changeSplitting($event.value)">
-                <span appText maxWidth="230">{{'common.yes' | translate}}</span>
+                <span jemsText maxWidth="230">{{'common.yes' | translate}}</span>
             </mat-button-toggle>
             <mat-button-toggle
                     value="No"
                     [checked]="previousSplitting === 'No'"
                     (change)="changeSplitting($event.value)">
-                <span appText maxWidth="230">{{'common.no' | translate}}</span>
+                <span jemsText maxWidth="230">{{'common.no' | translate}}</span>
             </mat-button-toggle>
         </mat-button-toggle-group>
     </div>
     <br>
 
     <div>
-        <div appLabel class="mat-required-marker"
+        <div jemsLabel class="mat-required-marker"
              [ngClass]="{'empty': lumpSumForm?.controls?.phase?.errors}">
             {{'lump.sum.related.phase' | translate}}
         </div>
@@ -71,26 +71,26 @@
                     value="{{ProgrammeLumpSumDTO.PhaseEnum.Preparation}}"
                     [checked]="previousPhase === ProgrammeLumpSumDTO.PhaseEnum.Preparation"
                     (change)="changePhase($event.value)">
-                <span appText maxWidth="230">{{'lump.sum.phase.preparation' | translate}}</span>
+                <span jemsText maxWidth="230">{{'lump.sum.phase.preparation' | translate}}</span>
             </mat-button-toggle>
             <mat-button-toggle
                     value="{{ProgrammeLumpSumDTO.PhaseEnum.Implementation}}"
                     [checked]="previousPhase === ProgrammeLumpSumDTO.PhaseEnum.Implementation"
                     (change)="changePhase($event.value)">
-                <span appText maxWidth="230">{{'lump.sum.phase.implementation' | translate}}</span>
+                <span jemsText maxWidth="230">{{'lump.sum.phase.implementation' | translate}}</span>
             </mat-button-toggle>
             <mat-button-toggle
                     value="{{ProgrammeLumpSumDTO.PhaseEnum.Closure}}"
                     [checked]="previousPhase === ProgrammeLumpSumDTO.PhaseEnum.Closure"
                     (change)="changePhase($event.value)">
-                <span appText maxWidth="230">{{'lump.sum.phase.closure' | translate}}</span>
+                <span jemsText maxWidth="230">{{'lump.sum.phase.closure' | translate}}</span>
             </mat-button-toggle>
         </mat-button-toggle-group>
     </div>
     <br>
 
     <div>
-        <h4 appLabel class="mat-required-marker"
+        <h4 jemsLabel class="mat-required-marker"
              [ngClass]="{'empty': lumpSumForm?.controls?.categories?.errors}">
             {{'lump.sum.cost.categories' | translate}}
         </h4>
@@ -107,7 +107,7 @@
     </div>
     <br><br>
 
-    <div appMultiColumnRow *ngIf="formState === FormState.EDIT">
+    <div jemsMultiColumnRow *ngIf="formState === FormState.EDIT">
         <button mat-stroked-button
                 type="button"
                 (click)="onCancel()">
@@ -121,16 +121,16 @@
             {{'lump.sum.new.button.save' | translate}}
         </button>
     </div>
-    <app-alert
+    <jems-alert
             [show]="!submitted && (showSuccessMessage$ | async)"
             [type]="Alert.SUCCESS">
         <p>{{'lump.sum.new.message.successful' | translate}}</p>
-    </app-alert>
-    <app-alert *ngIf="error$ | async as error"
+    </jems-alert>
+    <jems-alert *ngIf="error$ | async as error"
                [show]="!!error.i18nMessage?.i18nKey"
                [type]="Alert.ERROR">
-        <app-api-error-content [error]="error"></app-api-error-content>
-    </app-alert>
+        <jems-api-error-content [error]="error"></jems-api-error-content>
+    </jems-alert>
 </form>
 
 

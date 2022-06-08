@@ -1,13 +1,13 @@
 <ng-container *ngIf="data$ | async as data">
     <h3>{{ 'project.application.form.budgetFundPerPeriod.title' | translate }}</h3>
 
-    <app-multi-language-container>
-        <div appNoWidthLimit
-             [appTableConfig]="tableConfig"
-             *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_BUDGET_PERIODS">
+    <jems-multi-language-container>
+        <div jemsNoWidthLimit
+             [jemsTableConfig]="tableConfig"
+             *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_BUDGET_PERIODS">
             <div>
-                <span>{{ 'Fund' | translate}}</span>
-                <span><!--blank cell--></span>
+                <span>{{ 'project.partner.budget.table.fund' | translate}}</span>
+                <span>{{(data.isCallTypeSpf ? 'project.partner.spf.cost' : '') | translate}}</span>
                 <span *ngFor="let periodNumber of projectPeriodNumbers">
                 {{(periodNumber !== PERIOD_PREPARATION && periodNumber !== PERIOD_CLOSURE)
                   ? (getPeriodTranslation(periodNumber) | translate) + ' ' + periodNumber
@@ -16,39 +16,65 @@
                 <span>{{'project.partner.budget.table.total' | translate}}</span>
             </div>
 
-            <ng-container *ngFor="let euFundDetail of data.euFundsDetails">
+            <ng-container *ngFor="let euFundDetail of data.managementEuFundsDetails; let i = index">
+                <div *ngIf="data.isCallTypeSpf">
+                    <span>{{data.spfEuFundsDetails[i].fund.abbreviation | translateByInputLanguage | async}}</span>
+                    <span>{{'project.partner.spf.cost.type.spf' | translate}}</span>
+                    <span *ngFor="let periodFund of data.spfEuFundsDetails[i].periodFunds">{{periodFund.totalFundsPerPeriod | asMoney}}</span>
+                    <span>{{data.spfEuFundsDetails[i].totalFundBudget | asMoney}}</span>
+                </div>
                 <div>
                     <span>{{euFundDetail.fund.abbreviation | translateByInputLanguage | async}}</span>
-                    <span><!--blank cell--></span>
+                    <span>{{(data.isCallTypeSpf ? 'project.partner.spf.cost.type.management' : '') | translate}}</span>
                     <span *ngFor="let periodFund of euFundDetail.periodFunds">{{periodFund.totalFundsPerPeriod | asMoney}}</span>
                     <span>{{euFundDetail.totalFundBudget | asMoney}}</span>
                 </div>
             </ng-container>
 
+            <div class="table-footer-total" *ngIf="data.isCallTypeSpf">
+                <span>{{'project.application.form.budgetFundPerPeriod.totalEuFunds' | translate}}</span>
+                <span>{{'project.partner.spf.cost.type.spf' | translate}}</span>
+                <span *ngFor="let periodTotalEuFunds of data.totalSpfEuFundsPerPeriod"> {{periodTotalEuFunds | asMoney}}</span>
+                <span>{{data.totalSpfEuFunds | asMoney}}</span>
+            </div>
             <div class="table-footer-total">
                 <span>{{'project.application.form.budgetFundPerPeriod.totalEuFunds' | translate}}</span>
-                <span><!--blank cell--></span>
-                <span *ngFor="let periodTotalEuFunds of data.totalEuFundsPerPeriod"> {{periodTotalEuFunds | asMoney}}</span>
-                <span>{{data.totalEuFunds | asMoney}}</span>
+                <span>{{(data.isCallTypeSpf ? 'project.partner.spf.cost.type.management': '') | translate}}</span>
+                <span *ngFor="let periodTotalEuFunds of data.totalManagementEuFundsPerPeriod"> {{periodTotalEuFunds | asMoney}}</span>
+                <span>{{data.totalManagementEuFunds | asMoney}}</span>
             </div>
 
-            <ng-container *ngFor="let nonEuFundDetail of data.nonEuFundsDetails">
+
+            <ng-container *ngFor="let nonEuFundDetail of data.managementNonEuFundsDetails; let i = index">
+                <div class="mat-row" *ngIf="data.isCallTypeSpf">
+                    <span>{{data.spfNonEuFundsDetails[i].fund.abbreviation | translateByInputLanguage | async}}</span>
+                    <span>{{'project.partner.spf.cost.type.spf' | translate}}</span>
+                    <span *ngFor="let periodFund of data.spfNonEuFundsDetails[i].periodFunds">{{periodFund.totalFundsPerPeriod | asMoney}}</span>
+                    <span>{{data.spfNonEuFundsDetails[i].totalFundBudget | asMoney}}</span>
+                </div>
                 <div class="mat-row">
                     <span>{{nonEuFundDetail.fund.abbreviation | translateByInputLanguage | async}}</span>
-                    <span><!--blank cell--></span>
+                    <span>{{(data.isCallTypeSpf ? 'project.partner.spf.cost.type.management' : '') | translate}}</span>
                     <span *ngFor="let periodFund of nonEuFundDetail.periodFunds">{{periodFund.totalFundsPerPeriod | asMoney}}</span>
                     <span>{{nonEuFundDetail.totalFundBudget | asMoney}}</span>
                 </div>
             </ng-container>
 
-            <div class="footer" *ngIf="data.nonEuFundsDetails.length > 0">
+            <div class="footer" *ngIf="data.isCallTypeSpf && data.spfNonEuFundsDetails.length > 0">
                 <span>{{'project.application.form.budgetFundPerPeriod.totalFunds' | translate}}</span>
-                <span><!--blank cell--></span>
-                <span *ngFor="let periodTotalFunds of data.totalFundsPerPeriod"> {{periodTotalFunds | asMoney}}</span>
-                <span>{{data.totalFunds | asMoney}}</span>
+                <span>{{'project.partner.spf.cost.type.spf' | translate}}</span>
+                <span *ngFor="let periodTotalFunds of data.totalSpfFundsPerPeriod"> {{periodTotalFunds | asMoney}}</span>
+                <span>{{data.totalSpfFunds | asMoney}}</span>
+            </div>
+            <div class="footer" *ngIf="data.managementNonEuFundsDetails.length > 0">
+                <span>{{'project.application.form.budgetFundPerPeriod.totalFunds' | translate}}</span>
+                <span>{{(data.isCallTypeSpf ? 'project.partner.spf.cost.type.management': '') | translate}}</span>
+                <span *ngFor="let periodTotalFunds of data.totalManagementFundsPerPeriod"> {{periodTotalFunds | asMoney}}</span>
+                <span>{{data.totalManagementFunds | asMoney}}</span>
             </div>
 
+
         </div>
-    </app-multi-language-container>
+    </jems-multi-language-container>
 
 </ng-container>

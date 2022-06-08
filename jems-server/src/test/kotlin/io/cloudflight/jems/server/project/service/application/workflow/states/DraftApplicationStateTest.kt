@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.service.application.workflow.states
 
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.project.service.ProjectPersistence
@@ -39,6 +40,7 @@ class DraftApplicationStateTest : UnitTest() {
         private val projectCallSettings = ProjectCallSettings(
             callId = CALL_ID,
             callName = "dummy call",
+            callType = CallType.STANDARD,
             startDate = ZonedDateTime.now().minusDays(1),
             endDate = ZonedDateTime.now().plusDays(1),
             endDateStep1 = null,
@@ -48,7 +50,9 @@ class DraftApplicationStateTest : UnitTest() {
             lumpSums = emptyList(),
             unitCosts = emptyList(),
             stateAids = emptyList(),
-            applicationFormFieldConfigurations = mutableSetOf()
+            applicationFormFieldConfigurations = mutableSetOf(),
+            preSubmissionCheckPluginKey = null,
+            firstStepPreSubmissionCheckPluginKey = null
         )
 
         private val actionInfo = ApplicationActionInfo(

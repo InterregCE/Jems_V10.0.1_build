@@ -1,30 +1,23 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {Tools} from '@common/utils/tools';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
-import {
-  CallDetailDTO,
-  CallDTO,
-  CallUpdateRequestDTO,
-  OutputProgrammeStrategy,
-  ProgrammeStateAidDTO
-} from '@cat/api';
+import {CallDetailDTO, CallDTO, CallUpdateRequestDTO, OutputProgrammeStrategy, ProgrammeStateAidDTO} from '@cat/api';
 import {CallPriorityCheckbox} from '../containers/model/call-priority-checkbox';
 import {FormBuilder, Validators} from '@angular/forms';
 import {ActivatedRoute, Router} from '@angular/router';
 import {FormService} from '@common/components/section/form/form.service';
 import {CallPageSidenavService} from '../services/call-page-sidenav.service';
-import {catchError, map, take, tap, withLatestFrom} from 'rxjs/operators';
+import {catchError, filter, finalize, map, take, tap, withLatestFrom} from 'rxjs/operators';
 import moment from 'moment';
 import {Alert} from '@common/components/forms/alert';
 import {CallDetailPageStore} from './call-detail-page-store.service';
 import {Forms} from '@common/utils/forms';
 import {MatDialog} from '@angular/material/dialog';
-import {filter} from 'rxjs/internal/operators';
 import {CallStateAidDTO} from './call-state-aids/CallStateAidDTO';
 import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.data';
 
 @Component({
-  selector: 'app-call-detail-page',
+  selector: 'jems-call-detail-page',
   templateUrl: './call-detail-page.component.html',
   styleUrls: ['./call-detail-page.component.scss'],
   providers: [CallDetailPageStore, FormService],
@@ -39,10 +32,12 @@ export class CallDetailPageComponent {
   tools = Tools;
 
   callId = this.activatedRoute?.snapshot?.params?.callId;
+
   publishPending = false;
   published = false;
   data$: Observable<{
     call: CallDetailDTO;
+    callType: CallDetailDTO.TypeEnum;
     userCanApply: boolean;
     callIsEditable: boolean;
     priorityCheckboxes: CallPriorityCheckbox[];
@@ -98,6 +93,7 @@ export class CallDetailPageComponent {
 
     this.data$ = combineLatest([
       this.pageStore.call$,
+      this.pageStore.callType$,
       this.pageStore.userCanApply$,
       this.pageStore.callIsEditable$,
       this.pageStore.allPriorities$,
@@ -106,8 +102,9 @@ export class CallDetailPageComponent {
       this.resetEvent$
     ])
       .pipe(
-        map(([call, userCanApply, callIsEditable, allPriorities, allActiveStrategies, allStateAids]: any) => ({
+        map(([call, callType, userCanApply, callIsEditable, allPriorities, allActiveStrategies, allStateAids]: any) => ({
           call,
+          callType,
           userCanApply,
           callIsEditable,
           priorityCheckboxes: this.getPriorities(allPriorities, call),
@@ -124,6 +121,7 @@ export class CallDetailPageComponent {
   }
 
   onSubmit(savedCall: CallDetailDTO,
+           callType: CallDetailDTO.TypeEnum,
            priorityCheckboxes: CallPriorityCheckbox[],
            strategies: OutputProgrammeStrategy[],
            stateAids: CallStateAidDTO[]): void {
@@ -133,16 +131,30 @@ export class CallDetailPageComponent {
     call.strategies = strategies.filter(strategy => strategy.active).map(strategy => strategy.strategy);
     call.funds = call.funds.filter((fund: any) => !!fund.selected);
     call.stateAidIds = stateAids.filter(stateAid => stateAid.selected).map(stateAid => stateAid.id);
+
+    const startDate = new Date(call.startDateTime);
+    startDate.setSeconds(0, 0);
+    call.startDateTime = startDate;
+
+    const endDate = new Date(call.endDateTime);
+    endDate.setSeconds(0, 0);
+    call.endDateTime = endDate;
+
     if (!this.callForm.controls.is2Step.value) {
       call.endDateTimeStep1 = null;
       call.is2Step = null;
+    } else {
+      const endDateStep1 = new Date(call.endDateTimeStep1);
+      endDateStep1.setSeconds(0, 0);
+      call.endDateTimeStep1 = endDateStep1;
     }
 
     if (!this.callId) {
+      call.type = callType;
       this.createCall(call);
       return;
     }
-
+    call.type = savedCall.type;
     if (savedCall.endDateTimeStep1 && !this.callForm.controls.is2Step.value) {
       Forms.confirm(this.dialog, {
         title: 'call.detail.save.confirm.step.switch.title',
@@ -155,7 +167,6 @@ export class CallDetailPageComponent {
       ).subscribe();
       return;
     }
-
     this.updateCall(call);
   }
 
@@ -172,21 +183,22 @@ export class CallDetailPageComponent {
     this.pageStore.publishCall(this.callId)
       .pipe(
         take(1),
-        tap(() => this.publishPending = false),
         tap(published => this.callNavService.redirectToCallOverview(
           {
             i18nKey: 'call.detail.publish.success',
             i18nArguments: {name: published.name}
           })
         ),
-        catchError(err => this.formService.setError(err))
+        catchError(err => this.formService.setError(err)),
+        finalize(() => this.publishPending = false)
       ).subscribe();
   }
 
   isPublishDisabled(call: CallDetailDTO): Observable<boolean> {
     return of(true).pipe(
       withLatestFrom(this.formService.dirty$, this.formService.pending$),
-      map(([, dirty, pending]) => pending || dirty || call.funds.length <= 0 || call.objectives.length <= 0)
+      map(([, dirty, pending]) => pending || dirty || call.funds.length <= 0 || call.objectives.length <= 0
+        || call.preSubmissionCheckPluginKey === null || call.preSubmissionCheckPluginKey.length <= 0)
     );
   }
 
@@ -252,6 +264,7 @@ export class CallDetailPageComponent {
         take(1),
         tap(created => this.callNavService.redirectToCallDetail(
           created.id,
+          created.type,
           {
             i18nKey: 'call.detail.created.success',
             i18nArguments: {name: created.name}
@@ -319,3 +332,4 @@ export class CallDetailPageComponent {
     return strategies.filter(strategy => strategy.active).length;
   }
 }
+

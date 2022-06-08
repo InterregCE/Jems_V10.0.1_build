@@ -4,7 +4,7 @@ import {UserRoleDTO} from '@cat/api';
 import Permissions = UserRoleDTO.PermissionsEnum;
 
 @Component({
-  selector: 'app-dashboard-page',
+  selector: 'jems-dashboard-page',
   templateUrl: './dashboard-page.component.html',
   styleUrls: ['./dashboard-page.component.scss'],
   providers: [DashboardPageStore],

@@ -1,10 +1,12 @@
 package io.cloudflight.jems.server.utils.partner
 
 import io.cloudflight.jems.api.call.dto.CallStatus
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.programme.dto.stateaid.ProgrammeStateAidMeasure
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.call.entity.CallEntity
+import io.cloudflight.jems.server.call.defaultAllowedRealCostsByCallType
 import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.programme.entity.stateaid.ProgrammeStateAidEntity
@@ -48,10 +50,15 @@ import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.user.service.model.UserSummary
 import io.cloudflight.jems.server.utils.partner.ProjectPartnerTestUtil.Companion.project
 import java.math.BigDecimal
+import java.sql.Timestamp
+import java.time.LocalDateTime
+import java.time.ZoneOffset
 import java.time.ZonedDateTime
 
 const val PROJECT_ID = 1L
 const val PARTNER_ID = 2L
+val CREATED_AT: ZonedDateTime = ZonedDateTime.of(2020,1,10,10,10,10,10, ZoneOffset.UTC)
+val CREATED_AT_TIMESTAMP: Timestamp = Timestamp.valueOf(LocalDateTime.of(2020,1,10,10,10,10,10))
 
 fun projectSummary(status: ApplicationStatus = ApplicationStatus.DRAFT) = ProjectSummary(
     id = PROJECT_ID,
@@ -122,6 +129,7 @@ fun projectPartnerDetail(
         role = role,
         nameInOriginalLanguage = "test",
         nameInEnglish = "test",
+        createdAt = CREATED_AT,
         partnerType = ProjectTargetGroup.BusinessSupportOrganisation,
         partnerSubType = PartnerSubType.LARGE_ENTERPRISE,
         nace = NaceGroupLevel.A,
@@ -158,6 +166,7 @@ fun projectPartnerEntity(
     abbreviation = abbreviation,
     role = role,
     nameInOriginalLanguage = "test",
+    createdAt = CREATED_AT,
     nameInEnglish = "test",
     translatedValues = mutableSetOf(),
     partnerType = ProjectTargetGroup.BusinessSupportOrganisation,
@@ -179,6 +188,15 @@ fun projectPartnerEntity(
     sortNumber = sortNumber
 )
 
+fun userSummary(id: Long, roleId: Long) = UserSummary(
+    id = id,
+    email = "user@email.com",
+    name = "",
+    surname = "",
+    userRole = UserRoleSummary(roleId, "", false),
+    userStatus = UserStatus.ACTIVE,
+)
+
 fun partnerDetailRows(): List<PartnerDetailRow> =
         listOf(
             object : PartnerDetailRow {
@@ -188,6 +206,7 @@ fun partnerDetailRows(): List<PartnerDetailRow> =
                 override val active = true
                 override val role = ProjectPartnerRole.LEAD_PARTNER
                 override val sortNumber = 0
+                override val createdAt = CREATED_AT_TIMESTAMP
                 override val nameInOriginalLanguage = "test"
                 override val nameInEnglish = "test"
                 override val partnerType = ProjectTargetGroup.BusinessSupportOrganisation
@@ -205,8 +224,11 @@ fun partnerDetailRows(): List<PartnerDetailRow> =
 
                 override val addressType = ProjectPartnerAddressType.Organization
                 override val country = "AT"
+                override val countryCode = "AT"
                 override val nutsRegion2: String? = null
+                override val nutsRegion2Code: String? = null
                 override val nutsRegion3: String? = null
+                override val nutsRegion3Code: String? = null
                 override val street: String? = null
                 override val houseNumber: String? = null
                 override val postalCode: String? = null
@@ -347,6 +369,7 @@ class ProjectPartnerTestUtil {
             creator = user,
             name = "call",
             status = CallStatus.DRAFT,
+            type = CallType.STANDARD,
             startDate = ZonedDateTime.now(),
             endDateStep1 = null,
             endDate = ZonedDateTime.now(),
@@ -354,7 +377,10 @@ class ProjectPartnerTestUtil {
             strategies = mutableSetOf(),
             isAdditionalFundAllowed = false,
             funds = mutableSetOf(),
-            lengthOfPeriod = 1
+            lengthOfPeriod = 1,
+            allowedRealCosts = defaultAllowedRealCostsByCallType(CallType.STANDARD),
+            preSubmissionCheckPluginKey = null,
+            firstStepPreSubmissionCheckPluginKey = null
         )
         val projectStatus = ProjectStatusHistoryEntity(
             status = ApplicationStatus.APPROVED,

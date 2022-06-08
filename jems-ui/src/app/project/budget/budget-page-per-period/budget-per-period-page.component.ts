@@ -6,7 +6,7 @@ import {ProjectBudgetPeriodPageStore} from '@project/budget/budget-page-per-peri
 import {Alert} from '@common/components/forms/alert';
 
 @Component({
-  selector: 'app-budget-per-period-page',
+  selector: 'jems-budget-per-period-page',
   templateUrl: './budget-per-period-page.component.html',
   styleUrls: ['./budget-per-period-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

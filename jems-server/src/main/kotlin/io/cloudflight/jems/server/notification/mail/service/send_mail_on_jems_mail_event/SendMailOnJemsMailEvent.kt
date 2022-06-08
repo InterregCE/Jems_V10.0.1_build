@@ -12,6 +12,7 @@ import io.cloudflight.jems.server.notification.mail.service.MailNotificationPers
 import io.cloudflight.jems.server.notification.mail.service.mail_sender_service.MailSenderService
 import io.cloudflight.jems.server.notification.mail.service.model.MailNotification
 import io.cloudflight.jems.server.programme.service.userrole.ProgrammeDataPersistence
+import org.springframework.boot.actuate.info.InfoEndpoint
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.context.event.EventListener
 import org.springframework.stereotype.Service
@@ -23,6 +24,7 @@ import org.springframework.transaction.annotation.Transactional
 class SendMailOnJemsMailEvent(
     private val persistence: MailNotificationPersistence,
     private val programmeDataPersistence: ProgrammeDataPersistence,
+    private val infoEndpoint: InfoEndpoint,
     private val mailBodyGenerator: MailBodyGeneratorService,
     private val mailService: MailSenderService,
     private val configs: MailConfigProperties
@@ -56,7 +58,8 @@ class SendMailOnJemsMailEvent(
 
     private fun getGlobalTemplateVariables(): List<Variable> =
         listOf(
-            Variable("programmeName", programmeDataPersistence.getProgrammeName())
+            Variable("programmeName", programmeDataPersistence.getProgrammeName()),
+            Variable("helpdeskLink",  infoEndpoint.info()["helpdesk-url"]?.toString() ?: "")
         )
 
 }

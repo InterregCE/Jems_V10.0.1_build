@@ -1,10 +1,12 @@
 package io.cloudflight.jems.server.plugin.services
 
 import io.cloudflight.jems.api.call.dto.CallStatus
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.plugin.contract.models.call.CallDetailData
 import io.cloudflight.jems.plugin.contract.models.call.CallStatusData
+import io.cloudflight.jems.plugin.contract.models.call.CallTypeData
 import io.cloudflight.jems.plugin.contract.models.call.flatrate.FlatRateSetupData
 import io.cloudflight.jems.plugin.contract.models.common.InputTranslationData
 import io.cloudflight.jems.plugin.contract.models.common.SystemLanguageData
@@ -58,6 +60,7 @@ internal class CallDataProviderImplTest : UnitTest() {
             id = CALL_ID,
             name = "call name",
             status = CallStatus.DRAFT,
+            type = CallType.STANDARD,
             startDate = ZonedDateTime.now().minusDays(1),
             endDateStep1 = null,
             endDate = ZonedDateTime.now().plusDays(1),
@@ -70,7 +73,9 @@ internal class CallDataProviderImplTest : UnitTest() {
             flatRates = sortedSetOf(),
             lumpSums = listOf(),
             unitCosts = listOf(),
-            applicationFormFieldConfigurations = applicationFormFieldConfigurations
+            applicationFormFieldConfigurations = applicationFormFieldConfigurations,
+            preSubmissionCheckPluginKey = null,
+            firstStepPreSubmissionCheckPluginKey = null
         )
 
         private val programmeLanguages = listOf(
@@ -103,7 +108,8 @@ internal class CallDataProviderImplTest : UnitTest() {
                 lumpSums = listOf(),
                 unitCosts = listOf(),
                 applicationFormFieldConfigurations = applicationFormFieldConfigurations.toDataModel(),
-                inputLanguages = setOf(SystemLanguageData.EN, SystemLanguageData.DE)
+                inputLanguages = setOf(SystemLanguageData.EN, SystemLanguageData.DE),
+                type = CallTypeData.STANDARD
             )
         )
     }
@@ -131,7 +137,8 @@ internal class CallDataProviderImplTest : UnitTest() {
                 lumpSums = listOf(),
                 unitCosts = listOf(),
                 applicationFormFieldConfigurations = applicationFormFieldConfigurations.toDataModel(),
-                inputLanguages = setOf(SystemLanguageData.EN, SystemLanguageData.DE)
+                inputLanguages = setOf(SystemLanguageData.EN, SystemLanguageData.DE),
+                type = CallTypeData.STANDARD
             )
         )
     }

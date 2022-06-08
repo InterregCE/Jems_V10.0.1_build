@@ -1,12 +1,12 @@
-<app-main-page-template [needsCard]="true"
+<jems-main-page-template [needsCard]="true"
                         titleKey="programme.data.page.title"
                         subTitleKey="programme.legal.status.list.title">
-    <app-programme-legal-status-list
+    <jems-programme-legal-status-list
             class="margin-before"
             *ngIf="legalStatuses$ | async as statuses"
             [success$]="success$"
             [error$]="error$"
             [legalStatuses]="statuses"
             (saveLegalStatuses)="saveStatuses$.next($event)">
-    </app-programme-legal-status-list>
-</app-main-page-template>
+    </jems-programme-legal-status-list>
+</jems-main-page-template>

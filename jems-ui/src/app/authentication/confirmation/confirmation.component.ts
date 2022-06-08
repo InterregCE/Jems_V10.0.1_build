@@ -5,7 +5,7 @@ import {ActivatedRoute} from '@angular/router';
 import {Observable} from 'rxjs';
 
 @Component({
-  selector: 'app-confirmation',
+  selector: 'jems-confirmation',
   templateUrl: './confirmation.component.html',
   styleUrls: ['./confirmation.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

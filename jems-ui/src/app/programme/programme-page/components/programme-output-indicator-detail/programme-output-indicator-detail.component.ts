@@ -13,7 +13,7 @@ import {
   OutputIndicatorCreateRequestDTO,
   OutputIndicatorDetailDTO,
   OutputIndicatorUpdateRequestDTO,
-  ProgrammeIndicatorService,
+  ProgrammeIndicatorResultService,
   ProgrammePriorityDTO,
   ResultIndicatorDetailDTO,
 } from '@cat/api';
@@ -35,7 +35,7 @@ import {LanguageStore} from '../../../../common/services/language-store.service'
 
 @UntilDestroy()
 @Component({
-  selector: 'app-programme-output-indicator-detail',
+  selector: 'jems-programme-output-indicator-detail',
   templateUrl: './programme-output-indicator-detail.component.html',
   styleUrls: ['./programme-output-indicator-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -87,7 +87,7 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditFormCompone
               protected changeDetectorRef: ChangeDetectorRef,
               protected translationService: TranslateService,
               private languageStore: LanguageStore,
-              private programmeIndicatorService: ProgrammeIndicatorService,
+              private programmeIndicatorService: ProgrammeIndicatorResultService,
               public programmeEditableStateStore: ProgrammeEditableStateStore,
   ) {
     super(changeDetectorRef, translationService);

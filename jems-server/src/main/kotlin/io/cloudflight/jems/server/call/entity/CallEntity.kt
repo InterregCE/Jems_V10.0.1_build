@@ -1,11 +1,11 @@
 package io.cloudflight.jems.server.call.entity
 
 import io.cloudflight.jems.api.call.dto.CallStatus
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.programme.entity.ProgrammeStrategyEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostEntity
-import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.user.entity.UserEntity
 import java.time.ZonedDateTime
 import javax.persistence.CascadeType
@@ -43,6 +43,10 @@ class CallEntity(
     @Enumerated(EnumType.STRING)
     @field:NotNull
     var status: CallStatus = CallStatus.DRAFT,
+
+    @Enumerated(EnumType.STRING)
+    @field: NotNull
+    var type: CallType,
 
     @field:NotNull
     var startDate: ZonedDateTime,
@@ -100,26 +104,11 @@ class CallEntity(
     val unitCosts: MutableSet<ProgrammeUnitCostEntity> = mutableSetOf(),
 
     @Embedded
-    var allowedRealCosts: AllowedRealCostsEntity = AllowedRealCostsEntity()
-) {
-    fun updateFlatRateSetup(flatRates: Set<ProjectCallFlatRateEntity>) {
-        val groupedByType = flatRates.associateBy { it.setupId.type }.toMutableMap()
-        // update existing
-        this.flatRates.forEach {
-            if (groupedByType.keys.contains(it.setupId.type)) {
-                val newValue = groupedByType.getValue(it.setupId.type)
-                it.rate = newValue.rate
-                it.isAdjustable = newValue.isAdjustable
-            }
-        }
-        // remove those that needs to be removed
-        this.flatRates.removeIf { !groupedByType.keys.contains(it.setupId.type) }
+    var allowedRealCosts: AllowedRealCostsEntity,
 
-        // add those that are not yet there
-        val existingTypes = this.flatRates.associateBy { it.setupId.type }.keys
-        groupedByType.filterKeys { !existingTypes.contains(it) }
-            .forEach {
-                this.flatRates.add(it.value)
-            }
-    }
-}
+    @Column
+    var preSubmissionCheckPluginKey: String?,
+
+    @Column
+    var firstStepPreSubmissionCheckPluginKey: String?
+)

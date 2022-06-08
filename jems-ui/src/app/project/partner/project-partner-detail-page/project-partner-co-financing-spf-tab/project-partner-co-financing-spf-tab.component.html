@@ -1,0 +1,223 @@
+<ng-container *ngIf="data$ | async as data">
+    <jems-form (save)="updateCoFinancingSpf()">
+        <form [formGroup]="coFinancingSpfForm" jemsFormLayout>
+            <h3>{{ 'partner.partner.coFinancing.spf.header' | translate }}</h3>
+            <p>{{ 'project.partner.coFinancing.intro' | translate }}</p>
+            <div [jemsTableConfig]="[{minInRem:5},{maxInRem:10},{maxInRem:10}, {maxInRem: 2}]" jemsNoWidthLimit>
+                <div>
+                    <span>{{ 'project.partner.coFinancing.source' | translate }}</span>
+                    <span class="text-right">{{ 'project.partner.coFinancing.amount' | translate }}</span>
+                    <span class="text-right">{{ 'project.partner.coFinancing.percentage' | translate }}</span>
+                    <div></div>
+                </div>
+
+                <div *ngFor="let fund of finances.controls; let i=index let first=first">
+                    <ng-container [formArrayName]="constants.FORM_CONTROL_NAMES.finances">
+                        <ng-container [formGroupName]="i">
+                            <mat-form-field>
+                                <mat-select (ngModelChange)="callFundChanged(fund, data.callFunds)"
+                                            [disabled]="coFinancingSpfForm.disabled"
+                                            [formControlName]="constants.FORM_CONTROL_NAMES.fundId"
+                                            class="placeholder-required"
+                                            placeholder="{{'project.partner.coFinancing.source.label' | translate}}">
+                                    <mat-option *ngFor="let callFund of notSelectedFunds(data.callFunds, fund)"
+                                                [value]="callFund.id">
+                                        {{callFund.abbreviation | translateBySystemLanguage | async}}
+                                    </mat-option>
+                                </mat-select>
+                                <mat-error>
+                                    <jems-form-field-errors
+                                            [errors]="fund.get(constants.FORM_CONTROL_NAMES.fundId)?.errors"
+                                            [messages]="constants.FORM_ERRORS.fundIdErrors">
+                                    </jems-form-field-errors>
+                                </mat-error>
+                            </mat-form-field>
+                            <div class="text-right">{{getFundAmount(fund, data.totalSpfBudget) | asMoney }}</div>
+                            <mat-form-field class="text-right">
+                                <input (ngModelChange)="financesPercentsChanged(data.totalSpfBudget)"
+                                       [formControlName]="constants.FORM_CONTROL_NAMES.fundPercentage"
+                                       [options]="{min: 0, max: getMaxRate(fund, data.callFunds), align: 'right'}"
+                                       currencyMask matInput name="percentage"
+                                       type="decimal">
+                                <div class="pl-1" matSuffix>%</div>
+                            </mat-form-field>
+                            <div>
+                                <button (click)="deleteAdditionalFund(i, data.totalSpfBudget)"
+                                        *ngIf="data.editable && !first" color="accent" mat-icon-button type="button">
+                                    <mat-icon>delete</mat-icon>
+                                </button>
+                            </div>
+                        </ng-container>
+                    </ng-container>
+                </div>
+                <div *ngIf="partnerPercentage?.errors" class="text-right">
+                    <mat-error>
+                        <jems-form-field-errors
+                                [errors]="partnerPercentage?.errors"
+                                [messages]="constants.FORM_ERRORS.fundRateTotalErrors">
+                        </jems-form-field-errors>
+                    </mat-error>
+                </div>
+                <button (click)="addAdditionalFund(data.callFunds, undefined)"
+                        *ngIf="canAddFund(data.callFunds, data.editable)" class="mt-2 co-financing-button"
+                        mat-icon-button type="button">
+                    <mat-icon>add</mat-icon>
+                </button>
+
+                <div>
+                    <div>{{ 'project.partner.coFinancing.spf.partnerContribution' | translate }}</div>
+                    <div class="text-right">{{ partnerAmount.value | asMoney }}</div>
+                    <div class="text-right">{{ partnerPercentage.value | asMoney}} %</div>
+                    <div></div>
+                </div>
+                <div class="footer">
+                    <div>{{ 'project.partner.coFinancing.spf.total' | translate }}</div>
+                    <div class="text-right">{{ data.totalSpfBudget | asMoney }}</div>
+                    <div class="text-right">{{100 | asMoney}} %</div>
+                    <div></div>
+                </div>
+            </div>
+
+                <h3>{{ 'project.partner.coFinancing.spf.contribution.title' | translate }}</h3>
+
+                <jems-alert
+                        [show]="data.showTotalContributionWarning"
+                        [type]="Alert.WARNING">
+                    <p>{{'project.partner.coFinancing.contribution.total.warning' | translate}}</p>
+                </jems-alert>
+
+                <div [jemsTableConfig]="[{minInRem:5},{maxInRem:10},{maxInRem:10},{maxInRem:10},{maxInRem:2}]" jemsNoWidthLimit>
+                    <div>
+                        <span>{{ 'project.partner.coFinancing.spf.contribution.source.name' | translate }}</span>
+                        <span>{{ 'project.partner.coFinancing.contribution.legal.status' | translate }}</span>
+                        <span class="text-right">{{ 'project.partner.coFinancing.contribution.amount' | translate }}</span>
+                        <div>{{ 'project.partner.coFinancing.spf.contribution.total.partner.contribution.percentage' | translate }}
+                            <jems-context-info
+                                    infoPosition="right"
+                                    infoText="{{ 'project.partner.coFinancing.spf.contribution.total.partner.contribution.percentage.contextinfo' | translate }}">
+                            </jems-context-info>
+                        </div>
+                        <div></div>
+                    </div>
+
+                    <div *ngFor="let partnerContribution of partnerContributions.controls;let i=index">
+                        <ng-container [formArrayName]="constants.FORM_CONTROL_NAMES.partnerContributions">
+                            <ng-container [formGroupName]="i">
+                                <mat-form-field class="pt-2"
+                                        *ngIf="!partnerContribution.get(constants.FORM_CONTROL_NAMES.partner)?.value">
+                                    <mat-label>{{ 'project.partner.coFinancing.spf.contribution.source.name' | translate }}</mat-label>
+                                    <input [formControlName]="constants.FORM_CONTROL_NAMES.name" matInput required>
+                                    <mat-error>
+                                        <jems-form-field-errors
+                                                [errors]="partnerContribution.get(constants.FORM_CONTROL_NAMES.name)?.errors"
+                                                [messages]="constants.FORM_ERRORS.partnerContributionNameErrors"></jems-form-field-errors>
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <mat-form-field>
+                                    <mat-select [formControlName]="constants.FORM_CONTROL_NAMES.status"
+                                                class="placeholder-required empty"
+                                                placeholder="{{'project.partner.coFinancing.contribution.legal.status.label' | translate}}">
+                                        <mat-option
+                                                [value]="partnerContributionStatus.Public">{{partnerContributionStatus.Public}}</mat-option>
+                                        <mat-option
+                                                [value]="partnerContributionStatus.Private">{{partnerContributionStatus.Private}}</mat-option>
+                                        <mat-option
+                                                *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_ADD_NEW_CONTRIBUTION_ORIGIN"
+                                                [value]="partnerContributionStatus.AutomaticPublic">{{partnerContributionStatus.AutomaticPublic}}</mat-option>
+                                    </mat-select>
+                                    <mat-error>
+                                        <jems-form-field-errors
+                                                [errors]="partnerContribution.get(constants.FORM_CONTROL_NAMES.status)?.errors"
+                                                [messages]="constants.FORM_ERRORS.partnerContributionStatusErrors"></jems-form-field-errors>
+                                    </mat-error>
+                                </mat-form-field>
+
+                                <mat-form-field>
+                                    <input [formControlName]="constants.FORM_CONTROL_NAMES.amount"
+                                           [options]="{min: 0, align: 'right'}" currencyMask
+                                           matInput type="decimal">
+                                    <mat-error>
+                                        <jems-form-field-errors
+                                                [errors]="partnerContribution.get(constants.FORM_CONTROL_NAMES.amount)?.errors"
+                                                [messages]="constants.FORM_ERRORS.partnerContributionAmountErrors"></jems-form-field-errors>
+                                    </mat-error>
+                                </mat-form-field>
+                                <div class="text-right">
+                                    {{partnerContribution.value.amount  | percentage: data.totalSpfBudget : 2 | asMoney}} %
+                                </div>
+                                <div>
+                                    <button (click)="deletePartnerContribution(i)"
+                                            *ngIf="i > 0 && coFinancingSpfForm.enabled"
+                                            color="accent"
+                                            mat-icon-button
+                                            type="button">
+                                        <mat-icon>delete</mat-icon>
+                                    </button>
+                                </div>
+                            </ng-container>
+                        </ng-container>
+                    </div>
+                </div>
+                <mat-error *ngIf="(formService.dirty$ | async)">
+                    <jems-form-field-errors
+                            [args]="data.partnerContributionErrorsArgs"
+                            [errors]="partnerContributions.errors"
+                            [messages]="constants.FORM_ERRORS.partnerContributionErrors">
+                    </jems-form-field-errors>
+                </mat-error>
+
+            <ng-container
+                    *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_ADD_NEW_CONTRIBUTION_ORIGIN">
+                <button jemsText (click)="addNewPartnerContribution()"
+                        *ngIf="partnerContributions.length < 10 && coFinancingSpfForm.enabled"
+                        mat-stroked-button
+                        type="button">
+                    <mat-icon>add</mat-icon>
+                    <span>{{ 'project.partner.coFinancing.contribution.add.contribution.origin' | translate }}</span>
+                </button>
+
+                <div [jemsTableConfig]="[{minInRem:5},{maxInRem:10},{maxInRem:10}, {maxInRem:2}]"
+                     jemsNoWidthLimit>
+                    <div class="hidden"></div>
+                    <div>
+                        <span>{{ 'project.partner.coFinancing.contribution.sub.total.public.contribution' | translate }}</span>
+                        <div class="text-right">{{ data.publicContributionSubTotal | asMoney}}</div>
+                        <span class="text-right">
+                        {{ data.publicContributionSubTotal | percentage:data.totalSpfBudget : 2 | asMoney}} %
+                        </span>
+                        <span></span>
+                    </div>
+                    <div>
+                        <div>{{ 'project.partner.coFinancing.contribution.sub.total.automatic.public.contribution' | translate }}</div>
+                        <div class="text-right">{{ data.automaticPublicContributionSubTotal | asMoney}}</div>
+                        <span class="text-right">
+                        {{ data.automaticPublicContributionSubTotal | percentage:data.totalSpfBudget : 2 | asMoney}} %<span></span>
+                        </span>
+                        <span></span>
+                    </div>
+                    <div>
+                        <div>{{ 'project.partner.coFinancing.contribution.sub.total.private.contribution' | translate }}</div>
+                        <div class="text-right">{{ data.privateContributionSubTotal | asMoney}}</div>
+                        <span class="text-right">
+                        {{ data.privateContributionSubTotal | percentage:data.totalSpfBudget : 2 | asMoney}} %
+                        </span>
+                        <span></span>
+                    </div>
+                    <div class="footer">
+                        <div>{{ 'project.partner.coFinancing.spf.contribution.total' | translate }}
+                            <jems-context-info
+                                    infoPosition="right"
+                                    infoText="{{ 'project.partner.coFinancing.contribution.total.contextinfo' | translate }}">
+                            </jems-context-info>
+                        </div>
+                        <div class="text-right">{{ data.contributionTotal | asMoney}}</div>
+                        <div class="text-right">{{ partnerPercentage.value | asMoney}} %</div>
+                        <span></span>
+                    </div>
+                </div>
+            </ng-container>
+
+        </form>
+    </jems-form>
+</ng-container>

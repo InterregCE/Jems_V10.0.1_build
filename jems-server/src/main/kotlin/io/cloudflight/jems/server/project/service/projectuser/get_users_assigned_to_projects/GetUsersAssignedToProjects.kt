@@ -20,7 +20,7 @@ class GetUsersAssignedToProjects(
     @Transactional
     @ExceptionWrapper(GetUsersAssignedToProjectsException::class)
     override fun getProjectsWithAssignedUsers(pageable: Pageable): Page<ProjectWithUsers> =
-        projectPersistence.getProjects(pageable).map { ProjectWithUsers(
+        projectPersistence.getProjects(pageable, null).map { ProjectWithUsers(
             id = it.id,
             customIdentifier = it.customIdentifier,
             acronym = it.acronym,

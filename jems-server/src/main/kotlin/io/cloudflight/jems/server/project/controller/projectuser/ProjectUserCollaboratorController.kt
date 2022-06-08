@@ -1,11 +1,9 @@
 package io.cloudflight.jems.server.project.controller.projectuser
 
 import io.cloudflight.jems.api.project.ProjectUserCollaboratorApi
-import io.cloudflight.jems.api.project.dto.assignment.CollaboratorLevelDTO
+import io.cloudflight.jems.api.project.dto.assignment.ProjectCollaboratorLevelDTO
 import io.cloudflight.jems.api.project.dto.assignment.ProjectUserCollaboratorDTO
 import io.cloudflight.jems.api.project.dto.assignment.UpdateProjectUserCollaboratorDTO
-import io.cloudflight.jems.server.project.controller.toDto
-import io.cloudflight.jems.server.project.controller.toModel
 import io.cloudflight.jems.server.project.service.projectuser.assign_user_collaborator_to_project.AssignUserCollaboratorToProjectInteractor
 import io.cloudflight.jems.server.project.service.projectuser.get_my_collaborator_level.GetMyCollaboratorLevelInteractor
 import io.cloudflight.jems.server.project.service.projectuser.get_user_collaborators_assigned_to_projects.GetUserCollaboratorsAssignedToProjectsInteractor
@@ -27,10 +25,10 @@ class ProjectUserCollaboratorController(
     ): List<ProjectUserCollaboratorDTO> =
         assignUserCollaboratorToProject.updateUserAssignmentsOnProject(projectId, users.toModel()).toDto()
 
-    override fun checkMyProjectLevel(projectId: Long): CollaboratorLevelDTO? =
+    override fun checkMyProjectLevel(projectId: Long): ProjectCollaboratorLevelDTO? =
         getMyCollaboratorLevel.getMyCollaboratorLevel(projectId).let {
             return if (it != null)
-                CollaboratorLevelDTO.valueOf(it.name)
+                ProjectCollaboratorLevelDTO.valueOf(it.name)
             else
                 null
         }

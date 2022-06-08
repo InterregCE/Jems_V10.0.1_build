@@ -8,6 +8,7 @@ enum class ApplicationStatus {
     STEP1_APPROVED,
     STEP1_APPROVED_WITH_CONDITIONS,
     STEP1_NOT_APPROVED,
+
     DRAFT,
     SUBMITTED,
     CONDITIONS_SUBMITTED,
@@ -15,13 +16,18 @@ enum class ApplicationStatus {
     RETURNED_TO_APPLICANT_FOR_CONDITIONS,
     ELIGIBLE,
     INELIGIBLE,
-    APPROVED,
     APPROVED_WITH_CONDITIONS,
+    NOT_APPROVED,
+    APPROVED,
+
     MODIFICATION_PRECONTRACTING,
     MODIFICATION_PRECONTRACTING_SUBMITTED,
-    MODIFICATION_REJECTED,
-    NOT_APPROVED,
-    CONTRACTED;
+
+    CONTRACTED,
+
+    IN_MODIFICATION,
+    MODIFICATION_SUBMITTED,
+    MODIFICATION_REJECTED;
 
     fun canBeModified() =
         isModifiableStatusBeforeApproved() || isModifiableStatusAfterApproved()
@@ -31,11 +37,16 @@ enum class ApplicationStatus {
             || this == RETURNED_TO_APPLICANT || this == RETURNED_TO_APPLICANT_FOR_CONDITIONS
 
     fun isModifiableStatusAfterApproved() =
-        this == MODIFICATION_PRECONTRACTING
+        this == MODIFICATION_PRECONTRACTING || this == IN_MODIFICATION
 
-    fun isSubmitted() = this == SUBMITTED || this == STEP1_SUBMITTED
+    fun isApproved() = this == APPROVED || this == CONTRACTED
 
-    fun isDraftOrReturned() = canBeModified()
+    fun isAlreadyContracted() = setOf(
+        CONTRACTED,
+        IN_MODIFICATION,
+        MODIFICATION_SUBMITTED,
+        MODIFICATION_REJECTED,
+    ).contains(this)
 
     fun isInStep2() =
         this == DRAFT
@@ -46,6 +57,10 @@ enum class ApplicationStatus {
             || this == MODIFICATION_PRECONTRACTING
             || this == MODIFICATION_REJECTED
             || this == CONTRACTED
+            || this == IN_MODIFICATION
+            || this == MODIFICATION_SUBMITTED
+
+    fun isInStep1() = !isInStep2()
 
     fun isEligible() = this == STEP1_ELIGIBLE || this == ELIGIBLE
 

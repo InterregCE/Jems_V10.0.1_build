@@ -21,7 +21,7 @@ import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 
 @UntilDestroy()
 @Component({
-  selector: 'app-project-application-list-user-assignments',
+  selector: 'jems-project-application-list-user-assignments',
   templateUrl: './project-application-list-user-assignments.component.html',
   styleUrls: ['./project-application-list-user-assignments.component.scss'],
   providers: [FormService, ProjectApplicationListUserAssignmentsStore],
@@ -67,7 +67,7 @@ export class ProjectApplicationListUserAssignmentsComponent implements OnInit {
     private projectUserService: ProjectUserService,
     public projectUserStore: ProjectApplicationListUserAssignmentsStore,
     private userService: UserService,
-    private formService: FormService,
+    public formService: FormService,
   ) {
     this.formService.init(this.form);
     this.data$ = combineLatest([

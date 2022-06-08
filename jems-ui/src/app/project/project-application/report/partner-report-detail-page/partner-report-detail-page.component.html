@@ -1,0 +1,60 @@
+<ng-container *ngIf="pageStore.partnerSummary$ | async as partnerReportSummary">
+    <ng-container *ngIf="data$ | async as data">
+        <jems-project-page-template *ngIf="pageStore.partnerReport$ | async as partnerReport"
+                                    [titleKey]="'project.application.partner.reports.title.number' | translate : {reportNumber: partnerReport?.reportNumber}"
+                                    [subTitleText]="'common.label.project.partner.role.shortcut.' + partnerReport?.identification?.partnerRole | adaptTranslationKeyByCallType | async | translate : {partner: partnerReport?.identification?.partnerNumber + ' ' + partnerReportSummary.abbreviation}"
+                                    [isVersionedData]="false">
+            <nav mat-tab-nav-bar>
+                <a [active]="activeTab('identification')" mat-tab-link
+                   (click)="routeTo('identification')">
+                    <span jemsText maxWidth="230">
+                        {{'project.application.partner.report.tab.identification' | translate}}
+                    </span>
+                </a>
+
+                <a *ngIf="data.workPackages.length > 0" [active]="activeTab('workplan')" mat-tab-link
+                   (click)="routeTo('workplan')">
+                    <span jemsText maxWidth="230">
+                        {{'project.application.partner.report.tab.workplan' | translate}}
+                    </span>
+                </a>
+
+                <a [active]="activeTab('expenditures')" mat-tab-link
+                   (click)="routeTo('expenditures')">
+                    <span jemsText maxWidth="230">
+                        {{'project.application.partner.report.expenditures.title' | translate}}
+                    </span>
+                </a>
+
+                <a [active]="activeTab('procurements')" mat-tab-link
+                   (click)="routeTo('procurements')">
+                    <span jemsText maxWidth="230">
+                        {{'project.application.partner.report.procurements.title' | translate}}
+                    </span>
+                </a>
+
+                <a [active]="activeTab('contribution')" mat-tab-link
+                   (click)="routeTo('contribution')">
+                    <span jemsText maxWidth="230">
+                        {{'project.application.partner.report.contribution.tab.title' | translate}}
+                    </span>
+                </a>
+
+                <a [active]="activeTab('annexes')" mat-tab-link
+                   (click)="routeTo('annexes')">
+                    <span jemsText maxWidth="230">
+                        {{'project.application.partner.report.tab.annexes' | translate}}
+                    </span>
+                </a>
+
+                <a [active]="activeTab('submission')" mat-tab-link
+                   (click)="routeTo('submission')">
+                    <span jemsText maxWidth="230">
+                        {{'project.application.partner.report.tab.submission' | translate}}
+                    </span>
+                </a>
+            </nav>
+            <router-outlet></router-outlet>
+        </jems-project-page-template>
+    </ng-container>
+</ng-container>

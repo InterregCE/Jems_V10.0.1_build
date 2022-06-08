@@ -8,7 +8,7 @@ import {ProjectPartnerDetailPageComponent} from './partner/project-partner-detai
 import {ProjectAcronymResolver} from './project-application/containers/project-application-detail/services/project-acronym.resolver';
 import {PermissionGuard} from '../security/permission.guard';
 import {ProjectApplyToCallComponent} from './project-application/containers/project-application-page/project-apply-to-call.component';
-import {ProjectApplicationPartnerIdentityComponent} from './project-application/containers/project-application-form-page/project-application-form-partner-section/project-application-partner-identity/project-application-partner-identity.component';
+import {ProjectApplicationPartnerIdentityComponent} from '@project/project-application/containers/project-application-form-page/project-application-form-partner-section/project-application-partner-identity/project-application-partner-identity.component';
 import {ProjectApplicationFormAssociatedOrgDetailComponent} from './project-application/containers/project-application-form-page/project-application-form-partner-section/project-application-form-associated-org-detail/project-application-form-associated-org-detail.component';
 import {ProjectApplicationFormIdentificationPageComponent} from './project-application/containers/project-application-form-page/project-application-form-identification-page/project-application-form-identification-page.component';
 import {ProjectApplicationFormPartnerSectionComponent} from './project-application/containers/project-application-form-page/project-application-form-partner-section/project-application-form-partner-section.component';
@@ -53,6 +53,35 @@ import {ModificationPageComponent} from './project-application/modification-page
 import {ProjectUnitCostsPageComponent} from '@project/unit-costs/project-unit-costs-page/project-unit-costs-page.component';
 import {PrivilegesPageComponent} from './project-application/privileges-page/privileges-page.component';
 import {ContractMonitoringComponent} from '@project/project-application/contract-monitoring/contract-monitoring.component';
+import {PartnerReportComponent} from '@project/project-application/report/partner-report.component';
+import { PartnerReportDetailPageComponent } from './project-application/report/partner-report-detail-page/partner-report-detail-page.component';
+import {
+  PartnerReportIdentificationTabComponent
+} from '@project/project-application/report/partner-report-detail-page/partner-report-identification-tab/partner-report-identification-tab.component';
+
+import {
+  ReportDetailPageBreadcrumbResolver
+} from '@project/project-application/report/partner-report-detail-page/report-detail-page-breadcrumb-resolver.service';
+import {
+  ReportPageBreadcrumbResolver
+} from '@project/project-application/report/report-page-breadcrumb-resolver.service';
+import {
+  PartnerReportExpendituresTabComponent
+} from '@project/project-application/report/partner-report-detail-page/partner-report-expenditures-tab/partner-report-expenditures-tab.component';
+import { PartnerReportWorkPlanProgressTabComponent } from './project-application/report/partner-report-detail-page/partner-report-work-plan-progress-tab/partner-report-work-plan-progress-tab.component';
+import { PartnerReportSubmitTabComponent } from './project-application/report/partner-report-detail-page/partner-report-submit-tab/partner-report-submit-tab.component';
+import {ProjectPartnerCoFinancingSpfTabComponent} from '@project/partner/project-partner-detail-page/project-partner-co-financing-spf-tab/project-partner-co-financing-spf-tab.component';
+import {
+  PartnerReportContributionTabComponent
+} from '@project/project-application/report/partner-report-detail-page/partner-report-contribution-tab/partner-report-contribution-tab.component';
+import {
+  PartnerReportProcurementsTabComponent
+} from '@project/project-application/report/partner-report-detail-page/partner-report-procurements-tab/partner-report-procurements-tab.component';
+import {APPLICATION_FORM} from '@project/common/application-form-model';
+import {
+  AssessmentAndDecisionChecklistPageComponent
+} from '@project/project-application/assessment-and-decision/assessment-and-decision-checklist-page/assessment-and-decision-checklist-page.component';
+import { PartnerReportAnnexesTabComponent } from './project-application/report/partner-report-detail-page/partner-report-annexes-tab/partner-report-annexes-tab.component';
 
 export const routes: Routes = [
   {
@@ -80,6 +109,62 @@ export const routes: Routes = [
             component: ProjectDetailPageComponent,
           },
           {
+            path: 'reporting/:partnerId/reports',
+            data: {dynamicBreadcrumb: true},
+            resolve: {breadcrumb$: ReportPageBreadcrumbResolver},
+            children: [
+              {
+                path: '',
+                component: PartnerReportComponent,
+              },
+              {
+                path: ':reportId',
+                redirectTo: ':reportId/identification',
+              },
+              {
+                path: ':reportId',
+                data: {dynamicBreadcrumb: true},
+                resolve: {breadcrumb$: ReportDetailPageBreadcrumbResolver},
+                children: [
+                  {
+                    path: '',
+                    component: PartnerReportDetailPageComponent,
+                    children: [
+                      {
+                        path: 'identification',
+                        component: PartnerReportIdentificationTabComponent,
+                      },
+                      {
+                        path: 'workplan',
+                        component: PartnerReportWorkPlanProgressTabComponent,
+                      },
+                      {
+                        path: 'expenditures',
+                        component: PartnerReportExpendituresTabComponent
+                      },
+                      {
+                        path: 'procurements',
+                        component: PartnerReportProcurementsTabComponent,
+                      },
+                      {
+                        path: 'contribution',
+                        component: PartnerReportContributionTabComponent,
+                      },
+                      {
+                        path: 'annexes',
+                        component: PartnerReportAnnexesTabComponent,
+                      },
+                      {
+                        path: 'submission',
+                        component: PartnerReportSubmitTabComponent,
+                      }
+                    ],
+                  }
+                ]
+              }
+            ]
+          },
+          {
             path: 'contractMonitoring',
             component: ContractMonitoringComponent,
             data: {breadcrumb: 'project.breadcrumb.applicationForm.contract.monitoring'},
@@ -101,38 +186,34 @@ export const routes: Routes = [
               {
                 path: '',
                 component: AssessmentAndDecisionComponent,
+                canActivate: [PermissionGuard],
               },
               {
-                path: 'assessment',
-                data: {
-                  skipBreadcrumb: true,
-                  permissionsOnly: [PermissionsEnum.ProjectAssessmentView],
-                },
-                canActivate: [PermissionGuard],
-                children: [
-                  {
-                    path: 'eligibilityDecision/:step',
-                    component: ProjectApplicationEligibilityDecisionPageComponent,
-                    data: {breadcrumb: 'project.breadcrumb.eligibilityDecision'},
-                  },
-                  {
-                    path: 'qualityCheck/:step',
-                    component: ProjectApplicationQualityCheckComponent,
-                    data: {breadcrumb: 'project.breadcrumb.qualityCheck'},
-                  },
-                  {
-                    path: 'eligibilityCheck/:step',
-                    component: ProjectApplicationEligibilityCheckComponent,
-                    data: {breadcrumb: 'project.breadcrumb.eligibilityCheck'},
-                  },
-                  {
-                    path: 'fundingDecision/:step',
-                    component: ProjectApplicationFundingPageComponent,
-                    data: {breadcrumb: 'project.breadcrumb.fundingDecision'},
-                  },
-                ],
+                path: 'checklist/:checklistId',
+                component: AssessmentAndDecisionChecklistPageComponent,
+                data: {breadcrumb: 'checklists.instance.title'},
               },
-            ]
+              {
+                path: 'eligibilityDecision/:step',
+                component: ProjectApplicationEligibilityDecisionPageComponent,
+                data: {breadcrumb: 'project.breadcrumb.eligibilityDecision'},
+              },
+              {
+                path: 'qualityCheck/:step',
+                component: ProjectApplicationQualityCheckComponent,
+                data: {breadcrumb: 'project.breadcrumb.qualityCheck'},
+              },
+              {
+                path: 'eligibilityCheck/:step',
+                component: ProjectApplicationEligibilityCheckComponent,
+                data: {breadcrumb: 'project.breadcrumb.eligibilityCheck'},
+              },
+              {
+                path: 'fundingDecision/:step',
+                component: ProjectApplicationFundingPageComponent,
+                data: {breadcrumb: 'project.breadcrumb.fundingDecision'},
+              },
+            ],
           },
           {
             path: 'modification',
@@ -156,7 +237,10 @@ export const routes: Routes = [
           },
           {
             path: 'applicationFormOverviewTables',
-            data: {breadcrumb: 'project.breadcrumb.applicationForm.overview.tables'},
+            data: {
+              breadcrumb: 'project.breadcrumb.applicationForm.overview.tables',
+              visibleOnly: [APPLICATION_FORM.SECTION_A.PROJECT_OVERVIEW_TABLES]
+            },
             component: ProjectOverviewTablesPageComponent,
           },
           {
@@ -207,6 +291,10 @@ export const routes: Routes = [
                     component: ProjectPartnerCoFinancingTabComponent,
                   },
                   {
+                    path: 'spfCoFinancing',
+                    component: ProjectPartnerCoFinancingSpfTabComponent,
+                  },
+                  {
                     path: 'stateAid',
                     component: ProjectPartnerStateAidTabComponent,
                   }
@@ -216,7 +304,10 @@ export const routes: Routes = [
           },
           {
             path: 'applicationFormAssociatedOrganization',
-            data: {breadcrumb: 'project.breadcrumb.applicationForm.associated.org'},
+            data: {
+              breadcrumb: 'project.breadcrumb.applicationForm.associated.org',
+              visibleOnly: [APPLICATION_FORM.SECTION_B.PARTNER_ASSOCIATED_ORGANIZATIONS]
+            },
             children: [
               {
                 path: '',
@@ -237,21 +328,32 @@ export const routes: Routes = [
           {
             path: 'applicationFormOverallObjective',
             component: ProjectApplicationFormOverallObjectiveSectionComponent,
-            data: {breadcrumb: 'project.breadcrumb.applicationForm.overallObjective'},
+            data: {
+              breadcrumb: 'project.breadcrumb.applicationForm.overallObjective',
+            },
           },
           {
             path: 'applicationFormRelevanceAndContext',
             component: ProjectApplicationFormProjectRelevanceAndContextSectionComponent,
-            data: {breadcrumb: 'project.breadcrumb.applicationForm.relevanceAndContext'},
+            data: {
+              breadcrumb: 'project.breadcrumb.applicationForm.relevanceAndContext',
+              visibleOnly: [APPLICATION_FORM.SECTION_C.PROJECT_RELEVANCE_AND_CONTEXT]
+            },
           },
           {
             path: 'applicationFormPartnership',
             component: ProjectApplicationFormProjectPartnershipSectionComponent,
-            data: {breadcrumb: 'project.breadcrumb.applicationForm.partnership'},
+            data: {
+              breadcrumb: 'project.breadcrumb.applicationForm.partnership',
+              visibleOnly: [APPLICATION_FORM.SECTION_C.PROJECT_PARTNERSHIP]
+            },
           },
           {
             path: 'applicationFormWorkPackage',
-            data: {breadcrumb: 'project.breadcrumb.applicationForm.workPackage'},
+            data: {
+              breadcrumb: 'project.breadcrumb.applicationForm.workPackage',
+              visibleOnly: [APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN]
+            },
             children: [
               {
                 path: '',
@@ -313,41 +415,74 @@ export const routes: Routes = [
           {
             path: 'applicationFormResults',
             component: ProjectResultsPageComponent,
-            data: {breadcrumb: 'project.breadcrumb.applicationForm.results'},
+            data: {
+              breadcrumb: 'project.breadcrumb.applicationForm.results',
+              visibleOnly: [APPLICATION_FORM.SECTION_C.PROJECT_RESULT]
+            },
           },
           {
             path: 'applicationTimePlan',
             component: ProjectTimeplanPageComponent,
-            data: {breadcrumb: 'project.breadcrumb.applicationForm.timePlan'},
+            data: {
+              breadcrumb: 'project.breadcrumb.applicationForm.timePlan',
+              visibleOnly: [
+                APPLICATION_FORM.SECTION_C.PROJECT_RESULT,
+                APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN
+              ]
+            },
           },
           {
             path: 'applicationFormFuturePlans',
             component: ProjectApplicationFormFuturePlansSectionComponent,
-            data: {breadcrumb: 'project.breadcrumb.applicationForm.futurePlans'},
+            data: {
+              breadcrumb: 'project.breadcrumb.applicationForm.futurePlans',
+              visibleOnly: [APPLICATION_FORM.SECTION_C.PROJECT_LONG_TERM_PLANS]
+            },
           },
           {
             path: 'applicationFormManagement',
             component: ProjectApplicationFormManagementSectionComponent,
-            data: {breadcrumb: 'project.breadcrumb.applicationForm.management'},
+            data: {
+              breadcrumb: 'project.breadcrumb.applicationForm.management',
+              visibleOnly: [APPLICATION_FORM.SECTION_C.PROJECT_MANAGEMENT]
+            },
           },
           {
             path: 'applicationFormBudgetPerPartner',
-            data: {breadcrumb: 'project.breadcrumb.applicationForm.budgetPerPartner'},
+            data: {
+              breadcrumb: 'project.breadcrumb.applicationForm.budgetPerPartner',
+              visibleOnly: [APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING]
+            },
             component: BudgetPagePerPartnerComponent,
           },
           {
             path: 'applicationFormBudget',
-            data: {breadcrumb: 'project.breadcrumb.applicationForm.budget'},
+            data: {
+              breadcrumb: 'project.breadcrumb.applicationForm.budget',
+              visibleOnly: [
+                APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING,
+                APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_BUDGET_PERIODS
+              ]
+            },
             component: BudgetPageComponent,
           },
           {
             path: 'applicationFormBudgetPerPeriod',
-            data: {breadcrumb: 'project.breadcrumb.applicationForm.budget'},
+            data: {
+              breadcrumb: 'project.breadcrumb.applicationForm.budget',
+              visibleOnly: [
+                APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING,
+                APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_BUDGET_PERIODS
+              ]
+            },
             component: BudgetPerPeriodPageComponent,
           },
           {
             path: 'applicationFormLumpSums',
-            data: {breadcrumb: 'project.breadcrumb.applicationForm.lump.sums'},
+            data: {
+              breadcrumb: 'project.breadcrumb.applicationForm.lump.sums',
+              visibleOnly: [APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING]
+            },
             component: ProjectLumpSumsPageComponent,
           },
           {

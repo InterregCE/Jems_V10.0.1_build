@@ -1,0 +1,80 @@
+<jems-main-page-template [needsCard]="true"
+                         *ngIf="data$ | async as data"
+                         titleKey="programme.data.export.title"
+                         descriptionKey="programme.data.export.info">
+    <div jemsFormLayout>
+        <h3>{{'programme.data.export.table.header' | translate}}</h3>
+        <div jemsNoWidthLimit class="mb-4"
+             [jemsTableConfig]="[{minInRem: 25}, {minInRem: 20}, {minInRem:3}, {minInRem:3}, {minInRem: 15}, {minInRem: 8}, {minInRem: 3, maxInRem: 3}]">
+            <div>
+                <span>{{ 'programme.data.export.table.plugin.name' | translate}}</span>
+                <span>{{ 'programme.data.export.table.filename' | translate}}</span>
+                <span>{{ 'programme.data.export.label.input.language' | translate}}</span>
+                <span>{{ 'programme.data.export.label.export.language' | translate}}</span>
+                <span>{{ 'programme.data.export.table.request.time' | translate}}</span>
+                <span>{{ 'programme.data.export.table.exportation.time' | translate}}</span>
+                <span class="justify-center">{{ 'programme.data.export.table.download' | translate}}</span>
+            </div>
+
+            <div *ngIf="!data.programmeDataExportMetadata.length">{{'programme.data.export.no.data.info' | translate}}</div>
+
+            <ng-container *ngFor="let exportedFileData of data.programmeDataExportMetadata">
+                <div>
+                    <span>{{getPluginName(data.plugins, exportedFileData.pluginKey)}}</span>
+                    <span>{{exportedFileData.fileName}}</span>
+                    <span>{{exportedFileData.inputLanguage}}</span>
+                    <span>{{exportedFileData.exportLanguage}}</span>
+                    <span>{{exportedFileData.requestTime | localeDate : 'L' : 'LT'}}</span>
+                    <span>{{exportedFileData.exportationTimeInSeconds | secondsToTimePipe | async}}</span>
+                    <span class="justify-center">
+                        <button *ngIf="exportedFileData.readyToDownload"
+                                (click)="downloadData(exportedFileData.pluginKey)" color="accent"
+                                mat-icon-button>
+                            <mat-icon>download</mat-icon>
+                        </button>
+                        <mat-icon color="warn" *ngIf="exportedFileData.failed">report_problem</mat-icon>
+                        <mat-spinner *ngIf="!exportedFileData.readyToDownload && !exportedFileData.failed" [strokeWidth]="2"
+                                     [diameter]="24"></mat-spinner>
+                    </span>
+                </div>
+            </ng-container>
+        </div>
+
+        <h3>{{'programme.data.export.section.header' | translate}}</h3>
+        <form jemsFormLayout [formGroup]="exportForm">
+            <mat-form-field>
+                <mat-label>{{'programme.data.export.label.plugins' | translate}}</mat-label>
+                <mat-select formControlName="pluginKey">
+                    <mat-option *ngFor="let plugin of data.plugins" [value]="plugin.key" role="option">
+                        {{plugin.name}} - {{plugin.version}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field jemsFormFieldWidth="xx-large">
+                <mat-label>{{'programme.data.export.label.export.language' | translate}}</mat-label>
+                <mat-select formControlName="exportLanguage">
+                    <mat-option *ngFor="let exportLanguage of data.exportLanguages" [value]="exportLanguage"
+                                role="option">
+                        <mat-label>{{'language.' + exportLanguage.toLowerCase() | translate}}</mat-label>
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <mat-form-field jemsFormFieldWidth="xx-large">
+                <mat-label>{{'programme.data.export.label.input.language' | translate}}</mat-label>
+                <mat-select formControlName="inputLanguage">
+                    <mat-option *ngFor="let inputLanguage of data.inputLanguages" [value]="inputLanguage"
+                                role="option">
+                        <mat-label>{{'language.' + inputLanguage.toLowerCase() | translate}}</mat-label>
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+            <jems-pending-button jemsText
+                                 [disabled]="data.isExportDisabled"
+                                 (click)="exportData(pluginKey, exportLanguage, inputLanguage)">
+                {{'programme.data.export.label.export.button' | translate}}
+            </jems-pending-button>
+        </form>
+    </div>
+</jems-main-page-template>

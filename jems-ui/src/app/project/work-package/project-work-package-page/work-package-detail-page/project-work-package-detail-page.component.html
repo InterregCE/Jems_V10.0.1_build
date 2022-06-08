@@ -1,27 +1,28 @@
-<app-project-page-template *ngIf="workPackageStore.workPackage$ | async as workPackage"
+<jems-project-page-template *ngIf="workPackageStore.workPackage$ | async as workPackage"
                            titleKey="project.application.form.section.part.c"
                            subTitleText="{{'project.application.form.workpackage.form.header' | translate}}{{workPackage.number}}">
     <nav mat-tab-nav-bar
          *ngIf="workPackageId">
         <a [active]="activeTab('objectives')" mat-tab-link
            (click)="routeTo('objectives')">
-            <span appText maxWidth="230">{{'workpackage.tab.objectives' | translate}}</span>
+            <span jemsText maxWidth="230">{{'workpackage.tab.objectives' | translate}}</span>
         </a>
-        <a *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS"
+        <a *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS"
            [active]="activeTab('investments')" mat-tab-link
            (click)="routeTo('investments')">
-            <span appText maxWidth="230">{{'workpackage.tab.investments' | translate}}</span>
+            <span jemsText maxWidth="230">{{'workpackage.tab.investments' | translate}}</span>
         </a>
-        <a *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.ACTIVITIES"
+        <a *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.ACTIVITIES"
            [active]="activeTab('activities')" mat-tab-link
            (click)="routeTo('activities')">
-            <span appText maxWidth="230">{{'workpackage.tab.activities' | translate}}</span>
+            <span jemsText maxWidth="230">{{'workpackage.tab.activities' | translate}}</span>
         </a>
-        <a *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS"
+        <a *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS"
            [active]="activeTab('outputs')" mat-tab-link
            (click)="routeTo('outputs')">
-            <span appText maxWidth="230">{{'workpackage.tab.outputs' | translate}}</span>
+            <span jemsText maxWidth="230">{{'workpackage.tab.outputs' | translate}}</span>
         </a>
     </nav>
+
     <router-outlet></router-outlet>
-</app-project-page-template>
+</jems-project-page-template>

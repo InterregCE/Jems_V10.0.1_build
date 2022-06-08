@@ -5,10 +5,13 @@ import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCon
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO.Public
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
+import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
 import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPartnerCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContributionSpf
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionSpf
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -76,4 +79,33 @@ internal class GetCoFinancingInteractorTest: UnitTest() {
             )
     }
 
+    @Test
+    fun getSpfCoFinancing() {
+        val partnerCoFinContributionSpf = ProjectPartnerCoFinancingAndContributionSpf(
+            finances = listOf(
+                ProjectPartnerCoFinancing(
+                    fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
+                    percentage = BigDecimal.valueOf(20.5),
+                    fund = ProgrammeFund(id = 10, selected = true, type = ProgrammeFundType.ERDF)
+                ),
+                ProjectPartnerCoFinancing(
+                    fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution,
+                    percentage = BigDecimal.valueOf(30.5),
+                    fund = ProgrammeFund(id = 2, selected = true, type = ProgrammeFundType.INTERREG_FUNDS)
+                )
+            ),
+            partnerContributions = listOf(
+                ProjectPartnerContributionSpf(
+                    id = 1,
+                    name = "name",
+                    status = Public,
+                    amount = BigDecimal.TEN
+                )
+            )
+        )
+        every { persistence.getSpfCoFinancingAndContributions(1, null) } returns partnerCoFinContributionSpf
+
+        assertThat(getInteractor.getSpfCoFinancing(1, null))
+            .isEqualTo(partnerCoFinContributionSpf)
+    }
 }

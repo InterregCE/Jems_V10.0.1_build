@@ -1,11 +1,11 @@
 import {Directive, ElementRef, Input, OnChanges, OnDestroy, OnInit, SimpleChanges} from '@angular/core';
 
 @Directive({
-  selector: '[appHintFor]',
+  selector: '[jemsHintFor]',
 })
 export class HintDirective implements OnInit, OnChanges, OnDestroy {
 
-  @Input('appHintFor')
+  @Input('jemsHintFor')
   inputElement: HTMLInputElement | HTMLTextAreaElement;
 
   @Input()

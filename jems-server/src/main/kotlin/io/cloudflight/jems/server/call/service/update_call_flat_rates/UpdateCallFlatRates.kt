@@ -34,7 +34,7 @@ class UpdateCallFlatRates(
         existingCall: CallDetail,
         newFlatRates: Set<ProjectCallFlatRate>,
     ) {
-        val removed = existingCall.flatRates.filterTo(HashSet()) { !newFlatRates.contains(it) }
+        val removed = existingCall.flatRates.filterTo(HashSet()) { it !in newFlatRates }
         if(existingCall.isPublished() && removed.isNotEmpty())
             throw FlatRatesRemovedAfterCallPublished(removed.mapTo(HashSet()) { it.type })
     }

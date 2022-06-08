@@ -4,6 +4,7 @@ import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.plugin.contract.pre_condition_check.PreConditionCheckPlugin
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
+import io.cloudflight.jems.server.common.event.JemsAuditEvent
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.RelaxedMockK
@@ -44,7 +45,7 @@ internal class PluginAspectsTest : UnitTest() {
         every { joinPoint.target } returns preConditionCheckPlugin
         every { joinPoint.proceed() } returns Unit
 
-        val pluginAudits = mutableListOf<AuditCandidateEvent>()
+        val pluginAudits = mutableListOf<JemsAuditEvent>()
         pluginAspects.audit(joinPoint)
         verify {
             auditPublisher.publishEvent(capture(pluginAudits))

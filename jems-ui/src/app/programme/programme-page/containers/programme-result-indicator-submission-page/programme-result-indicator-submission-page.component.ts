@@ -7,13 +7,13 @@ import {Log} from '@common/utils/log';
 import {ActivatedRoute} from '@angular/router';
 import {HttpErrorResponse} from '@angular/common/http';
 import {
-  ProgrammeIndicatorService,
+  ProgrammeIndicatorResultService,
   ProgrammePriorityService, ResultIndicatorCreateRequestDTO, ResultIndicatorUpdateRequestDTO
 } from '@cat/api';
 import {ProgrammePageSidenavService} from '../../services/programme-page-sidenav.service';
 
 @Component({
-  selector: 'app-programme-result-indicator-submission-page',
+  selector: 'jems-programme-result-indicator-submission-page',
   templateUrl: './programme-result-indicator-submission-page.component.html',
   styleUrls: ['./programme-result-indicator-submission-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -36,7 +36,7 @@ export class ProgrammeResultIndicatorSubmissionPageComponent extends BaseCompone
       tap(page => Log.info('Fetched the priorities:', this, page)),
     );
 
-  constructor(private programmeIndicatorService: ProgrammeIndicatorService,
+  constructor(private programmeIndicatorService: ProgrammeIndicatorResultService,
               private activatedRoute: ActivatedRoute,
               private programmePriorityService: ProgrammePriorityService,
               private programmePageSidenavService: ProgrammePageSidenavService) {

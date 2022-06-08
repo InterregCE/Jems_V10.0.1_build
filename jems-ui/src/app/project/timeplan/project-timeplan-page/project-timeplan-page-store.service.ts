@@ -2,8 +2,7 @@ import {Injectable} from '@angular/core';
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
 import {combineLatest, Observable} from 'rxjs';
 import {ProjectPeriodDTO, ProjectResultDTO, ProjectResultService, WorkPackageService} from '@cat/api';
-import {map, switchMap, tap} from 'rxjs/operators';
-import {filter} from 'rxjs/internal/operators';
+import {filter, map, switchMap, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 

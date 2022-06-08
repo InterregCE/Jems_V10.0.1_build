@@ -1,42 +1,42 @@
-<app-project-page-template *ngIf="data$ | async as data" [needsCard]="true"
+<jems-project-page-template *ngIf="data$ | async as data" [needsCard]="true"
                            [titleText]="'project.application.form.acronym' | translate : {projectTitle: data.currentVersionOfProjectTitle} "
                            subTitleKey="project.application.form.section.check.and.submit"
                            [isVersionedData]="false">
-    <div appFormLayout>
+    <div jemsFormLayout>
         <div>
             {{'project.application.form.section.check.and.submit.info.line.1' | translate : {projectAcronym: data.currentVersionOfProjectTitle} }}
         </div>
         <div>{{'project.application.form.section.check.and.submit.info.line.2' | translate }}</div>
 
-        <ng-container *hasPermission="[PermissionsEnum.ProjectCheckApplicationForm, PermissionsEnum.ProjectSubmission]; alternativeCondition data.isThisUserOwner">
+        <ng-container *jemsHasPermission="[PermissionsEnum.ProjectCheckApplicationForm, PermissionsEnum.ProjectSubmission]; alternativeCondition data.isThisUserOwner">
             <ng-container *ngIf="data.currentVersionOfProjectStatus === STATUS.DRAFT || ProjectUtil.isReturnedToApplicant(data.currentVersionOfProjectStatus)">
                 <h3>{{'project.detail.pre.condition.check.result.title' | translate}}</h3>
                 <p>{{'project.detail.pre.condition.check.result.description' | translate}}</p>
             </ng-container>
 
-            <div appNoWidthLimit>
-                <ng-container *hasPermission="PermissionsEnum.ProjectCheckApplicationForm; alternativeCondition data.isThisUserOwner">
-                    <app-pending-button
+            <div jemsNoWidthLimit>
+                <ng-container *jemsHasPermission="PermissionsEnum.ProjectCheckApplicationForm; alternativeCondition data.isThisUserOwner">
+                    <jems-pending-button
                             class="mr-2 mt-2"
-                            *ngIf="data.currentVersionOfProjectStatus === STATUS.DRAFT || ProjectUtil.isReturnedToApplicant(data.currentVersionOfProjectStatus)"
+                            *ngIf="data.currentVersionOfProjectStatus === STATUS.DRAFT || data.currentVersionOfProjectStatus === STATUS.STEP1DRAFT || ProjectUtil.isReturnedToApplicant(data.currentVersionOfProjectStatus)"
                             [pending]="preConditionCheckInProgress"
                             (clicked)="preConditionCheck(data.projectId)">
                         {{'project.detail.button.pre.condition.check' | translate}}
-                    </app-pending-button>
+                    </jems-pending-button>
                 </ng-container>
 
-                <ng-container *hasPermission="PermissionsEnum.ProjectSubmission; alternativeCondition data.userIsProjectOwnerOrEditCollaborator">
-                    <app-pending-button
+                <ng-container *jemsHasPermission="PermissionsEnum.ProjectSubmission; alternativeCondition data.userIsProjectOwnerOrEditCollaborator">
+                    <jems-pending-button
                             class="mr-2 mt-2"
-                            *ngIf="ProjectUtil.isDraft(data.currentVersionOfProjectStatus)"
+                            *ngIf="ProjectUtil.isDraft(data.currentVersionOfProjectStatus) || ProjectUtil.isStep1Draft(data.currentVersionOfProjectStatus)"
                             [confirm]="{title: 'project.detail.submit.dialog.title', message: 'project.detail.submit.dialog.message'}"
                             [disabled]="isSubmitDisabled(data.projectCallEndDate, data.hasPreConditionCheckSucceed, data.currentVersionOfProjectStatus)"
                             [pending]="actionPending"
                             (clicked)="submitProject(data.projectId)">
                         {{'project.detail.button.submit' | translate}}
-                    </app-pending-button>
+                    </jems-pending-button>
 
-                    <app-pending-button
+                    <jems-pending-button
                             class="mr-2 mt-2"
                             *ngIf="ProjectUtil.isReturnedToApplicant(data.currentVersionOfProjectStatus)"
                             [confirm]="{title: 'project.detail.resubmit.dialog.title', message: 'project.detail.resubmit.dialog.message'}"
@@ -44,21 +44,29 @@
                             [pending]="actionPending"
                             (clicked)="submitProject(data.projectId)">
                         {{'project.detail.button.resubmit' | translate}}
-                    </app-pending-button>
+                    </jems-pending-button>
                 </ng-container>
 
-                <app-project-application-pre-condition-check-result
+                <jems-alert [closable]="false" [show]="showCallEndedMessage(data.projectCallEndDateStep1, data.projectCallEndDate, data.currentVersionOfProjectStatus)" [type]="Alert.INFO">
+                    <span>{{'project.application.check.and.submit.call.ended' | translate}}</span>
+                </jems-alert>
+
+                <jems-alert [closable]="false" [show]="showPreSubmissionCheckMessage(data.isCall2Step, data.hasPreConditionCheckSucceed, data.projectCallEndDateStep1, data.projectCallEndDate, data.currentVersionOfProjectStatus)" [type]="Alert.INFO">
+                    <span>{{'project.application.check.and.submit.pre.condition.failed' | translate}}</span>
+                </jems-alert>
+
+                <jems-project-application-pre-condition-check-result
                         *ngIf="data.preConditionCheckResults"
                         [preConditionCheckResult]="data.preConditionCheckResults"
-                        appNoWidthLimit>
-                </app-project-application-pre-condition-check-result>
+                        jemsNoWidthLimit>
+                </jems-project-application-pre-condition-check-result>
 
             </div>
         </ng-container>
-        <app-alert *ngIf="error$ | async as error"
+        <jems-alert *ngIf="error$ | async as error"
                    [show]="!!error.i18nMessage?.i18nKey"
                    [type]="Alert.ERROR">
-            <app-api-error-content [error]="error"></app-api-error-content>
-        </app-alert>
+            <jems-api-error-content [error]="error"></jems-api-error-content>
+        </jems-alert>
     </div>
-</app-project-page-template>
+</jems-project-page-template>

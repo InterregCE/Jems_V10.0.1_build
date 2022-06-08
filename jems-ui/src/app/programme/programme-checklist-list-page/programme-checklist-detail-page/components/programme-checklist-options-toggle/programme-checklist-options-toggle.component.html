@@ -1,0 +1,52 @@
+<div [formGroup]="form">
+    <mat-form-field jemsFormFieldWidth="full">
+        <mat-label>{{'programme.checklists.component.options.toggle.question' | translate}}</mat-label>
+        <textarea formControlName="question" matInput required
+                  #autosize="cdkTextareaAutosize"
+                  [cdkTextareaAutosize]
+                  [cdkAutosizeMinRows]="3"
+                  [cdkAutosizeMaxRows]="5"
+                  #question>
+        </textarea>
+        <mat-hint [jemsHintFor]="question">
+            <jems-text-hint [currentLength]="question.value.length" [maxLength]="1000"></jems-text-hint>
+        </mat-hint>
+        <mat-error>
+            <jems-form-field-errors [errors]="form.get('question')?.errors"></jems-form-field-errors>
+        </mat-error>
+    </mat-form-field>
+    <div jemsMultiColumnRow stretch>
+        <mat-form-field>
+            <mat-label>{{'programme.checklists.component.options.toggle.o1' | translate}}</mat-label>
+            <input #firstOption formControlName="firstOption" matInput required>
+            <mat-hint [jemsHintFor]="firstOption" [hide]="form.controls?.firstOption?.errors !== null">
+                <jems-text-hint [currentLength]="firstOption?.value?.length" [maxLength]="100"></jems-text-hint>
+            </mat-hint>
+            <mat-error>
+                <jems-form-field-errors [errors]="form.get('firstOption')?.errors"></jems-form-field-errors>
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>{{'programme.checklists.component.options.toggle.o2' | translate}}</mat-label>
+            <input #secondOption formControlName="secondOption" matInput required>
+            <mat-hint [jemsHintFor]="secondOption" [hide]="form.controls?.secondOption?.errors !== null">
+                <jems-text-hint [currentLength]="secondOption?.value?.length" [maxLength]="100"></jems-text-hint>
+            </mat-hint>
+            <mat-error>
+                <jems-form-field-errors [errors]="form.get('secondOption')?.errors"></jems-form-field-errors>
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field>
+            <mat-label>{{'programme.checklists.component.options.toggle.o3' | translate}}</mat-label>
+            <input #thirdOption formControlName="thirdOption" matInput>
+            <mat-hint [jemsHintFor]="thirdOption" [hide]="form.controls?.thirdOption?.errors !== null">
+                <jems-text-hint [currentLength]="thirdOption?.value?.length" [maxLength]="100"></jems-text-hint>
+            </mat-hint>
+            <mat-error>
+                <jems-form-field-errors [errors]="form.get('thirdOption')?.errors"></jems-form-field-errors>
+            </mat-error>
+        </mat-form-field>
+    </div>
+</div>

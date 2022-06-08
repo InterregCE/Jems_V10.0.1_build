@@ -1,7 +1,6 @@
 package io.cloudflight.jems.server.project.service.get_project
 
 import io.cloudflight.jems.server.authentication.service.SecurityService
-import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.authorization.CanRetrieveProject
 import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectForm
 import io.cloudflight.jems.server.project.authorization.CanRetrieveProjects
@@ -9,9 +8,12 @@ import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectsWithO
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.getOnlyFormRelatedData
 import io.cloudflight.jems.server.project.service.getProjectWithoutFormData
+import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectDetail
 import io.cloudflight.jems.server.project.service.model.ProjectForm
+import io.cloudflight.jems.server.project.service.model.ProjectSearchRequest
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
+import io.cloudflight.jems.server.project.service.partner.UserPartnerCollaboratorPersistence
 import io.cloudflight.jems.server.project.service.projectuser.UserProjectCollaboratorPersistence
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import org.springframework.data.domain.Page
@@ -21,7 +23,8 @@ import org.springframework.stereotype.Service
 @Service
 class GetProject(
     private val persistence: ProjectPersistence,
-    private val collaboratorPersistence: UserProjectCollaboratorPersistence,
+    private val projectCollaboratorPersistence: UserProjectCollaboratorPersistence,
+    private val partnerCollaboratorPersistence: UserPartnerCollaboratorPersistence,
     private val securityService: SecurityService,
 ) : GetProjectInteractor {
 
@@ -49,19 +52,24 @@ class GetProject(
         persistence.getProject(projectId, version).getOnlyFormRelatedData()
 
     @CanRetrieveProjects
-    override fun getAllProjects(pageable: Pageable): Page<ProjectSummary> =
-        persistence.getProjects(pageable)
+    override fun getAllProjects(pageable: Pageable, searchRequest: ProjectSearchRequest?): Page<ProjectSummary> =
+        persistence.getProjects(pageable, searchRequest)
 
     @CanRetrieveProjectsWithOwnership
     override fun getMyProjects(pageable: Pageable): Page<ProjectSummary> =
         persistence.getProjectsOfUserPlusExtra(
             pageable = pageable,
-            extraProjectIds = getAssignedProjectIdsForMonitorUsers() union getProjectIdsForCollaborators(),
+            extraProjectIds = getAssignedProjectIdsForMonitorUsers()
+                union getProjectIdsForProjectCollaborators()
+                union getProjectIdsForPartnerCollaborators()
         )
 
     private fun getAssignedProjectIdsForMonitorUsers() = securityService.currentUser?.user?.assignedProjects ?: emptySet()
 
-    private fun getProjectIdsForCollaborators() = collaboratorPersistence
+    private fun getProjectIdsForProjectCollaborators() = projectCollaboratorPersistence
+        .getProjectIdsForUser(userId = securityService.getUserIdOrThrow())
+
+    private fun getProjectIdsForPartnerCollaborators() = partnerCollaboratorPersistence
         .getProjectIdsForUser(userId = securityService.getUserIdOrThrow())
 
 }

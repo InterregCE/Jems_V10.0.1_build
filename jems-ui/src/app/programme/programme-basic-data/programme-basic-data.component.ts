@@ -4,7 +4,7 @@ import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {Forms} from '@common/utils/forms';
 import {catchError, filter, map, mergeMap, shareReplay, startWith, take, tap} from 'rxjs/operators';
-import {OutputProgrammeData, ProgrammeDataService} from '@cat/api';
+import {ProgrammeDataDTO, ProgrammeDataService} from '@cat/api';
 import {Tools} from '@common/utils/tools';
 import {TranslateService} from '@ngx-translate/core';
 import {combineLatest, merge, Observable, Subject} from 'rxjs';
@@ -20,19 +20,20 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
 @UntilDestroy()
 @Component({
-  selector: 'app-programme-basic-data',
+  selector: 'jems-programme-basic-data',
   templateUrl: './programme-basic-data.component.html',
   styleUrls: ['./programme-basic-data.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ProgrammeBasicDataComponent extends ViewEditFormComponent implements OnInit {
   private static readonly DATE_SHOULD_BE_VALID = 'common.date.should.be.valid';
+  private static readonly NUMBER_OUT_OF_RANGE_ERROR = 'common.error.field.number.out.of.range';
   Permission = Permission;
   tools = Tools;
 
   programmeSaveError$ = new Subject<APIError | null>();
   programmeSaveSuccess$ = new Subject<boolean>();
-  saveProgrammeData$ = new Subject<OutputProgrammeData>();
+  saveProgrammeData$ = new Subject<ProgrammeDataDTO>();
 
   newPageSize$ = new Subject<number>();
   newPageIndex$ = new Subject<number>();
@@ -73,8 +74,8 @@ export class ProgrammeBasicDataComponent extends ViewEditFormComponent implement
     programmeAmendingDecisionDate: [''],
     projectIdProgrammeAbbreviation: ['', Validators.maxLength(12)],
     projectIdUseCallId: false,
-  },                                     {
-    validator: this.firstYearBeforeLastYear
+  },{
+    validators: [this.firstYearBeforeLastYear],
   });
 
   projectIdExample$: Observable<string>;
@@ -85,13 +86,13 @@ export class ProgrammeBasicDataComponent extends ViewEditFormComponent implement
   };
 
   firstYearErrors = {
-    max: 'common.error.field.number.out.of.range',
-    min: 'common.error.field.number.out.of.range',
+    max: ProgrammeBasicDataComponent.NUMBER_OUT_OF_RANGE_ERROR,
+    min: ProgrammeBasicDataComponent.NUMBER_OUT_OF_RANGE_ERROR,
   };
 
   lastYearErrors = {
-    max: 'common.error.field.number.out.of.range',
-    min: 'common.error.field.number.out.of.range',
+    max: ProgrammeBasicDataComponent.NUMBER_OUT_OF_RANGE_ERROR,
+    min: ProgrammeBasicDataComponent.NUMBER_OUT_OF_RANGE_ERROR,
   };
 
   dateErrors = {
@@ -118,7 +119,7 @@ export class ProgrammeBasicDataComponent extends ViewEditFormComponent implement
   ) {
     super(changeDetectorRef, translationService);
 
-    // todo remove after switching to app-form
+    // todo remove after switching to jems-form
     this.success$ = this.programmeSaveSuccess$.asObservable();
     this.error$ = this.programmeSaveError$.asObservable();
     combineLatest([this.changeFormState$, this.programme$])
@@ -152,7 +153,7 @@ export class ProgrammeBasicDataComponent extends ViewEditFormComponent implement
     return this.programmeForm;
   }
 
-  resetForm(programme: OutputProgrammeData): void {
+  resetForm(programme: ProgrammeDataDTO): void {
     const controls = this.programmeForm.controls;
     controls.cci.setValue(programme.cci);
     controls.title.setValue(this.getSizedValue(programme.title));
@@ -169,7 +170,7 @@ export class ProgrammeBasicDataComponent extends ViewEditFormComponent implement
     controls.projectIdUseCallId.setValue(programme.projectIdUseCallId);
   }
 
-  protected resetSizedValues(programme: OutputProgrammeData): void {
+  protected resetSizedValues(programme: ProgrammeDataDTO): void {
     const controls = this.programmeForm.controls;
     controls.title.setValue(programme.title);
     controls.version.setValue(programme.version);
@@ -195,7 +196,7 @@ export class ProgrammeBasicDataComponent extends ViewEditFormComponent implement
       programmeAmendingDecisionDate: controls?.programmeAmendingDecisionDate?.value,
       projectIdProgrammeAbbreviation: controls?.projectIdProgrammeAbbreviation?.value,
       projectIdUseCallId: controls?.projectIdUseCallId?.value,
-    } as OutputProgrammeData);
+    } as ProgrammeDataDTO);
   }
 
   onSubmit(): void {

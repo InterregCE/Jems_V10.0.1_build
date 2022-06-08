@@ -1,0 +1,15 @@
+<jems-form (save)="save()"
+           (discard)="resetForm()">
+    <h2 class="mb-2">{{'checklists.instance.consolidator.options.title' | translate}}</h2>
+    <form [formGroup]="form" jemsFormLayout>
+        <span>
+            <mat-slide-toggle color="primary"
+                              formControlName="consolidated">
+            </mat-slide-toggle>
+        {{'checklists.instance.consolidator.options.consolidated' | translate}}
+        </span>
+        <jems-alert [closable]="false" [show]="isChecklistFinished(checklistStatus)" [type]="Alert.INFO" disableMargins="true">
+            <span>{{ 'checklist.instance.consolidated.info' | translate }}</span>
+        </jems-alert>
+    </form>
+</jems-form>

@@ -1,5 +1,4 @@
 import { ComponentFixture, fakeAsync, TestBed, waitForAsync } from '@angular/core/testing';
-import {InputProjectManagement} from '@cat/api';
 import {ProjectApplicationFormManagementSectionComponent} from './project-application-form-management-section.component';
 import {HttpTestingController} from '@angular/common/http/testing';
 import {TestModule} from '@common/test-module';
@@ -34,13 +33,4 @@ describe('ProjectApplicationFormManagementSectionComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
-
-  it('should update project management', fakeAsync(() => {
-    component.updateManagement$.next({} as InputProjectManagement);
-
-    httpTestingController.expectOne({
-      method: 'PUT',
-      url: '//api/project/1/description/c7'
-    });
-  }));
 });

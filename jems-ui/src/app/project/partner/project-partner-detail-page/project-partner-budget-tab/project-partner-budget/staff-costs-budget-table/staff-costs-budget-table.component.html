@@ -1,22 +1,22 @@
 <ng-container *ngIf="(numberOfItems$ | async) as numberOfItems; else addTableButton">
     <ng-container [formGroup]="budgetForm">
-        <app-alert [closable]="true"
+        <jems-alert [closable]="true"
                    [show]="warnOpenForPeriods"
                    [type]="Alert.WARNING">
             <p>{{'project.partner.budget.table.period.warning' | translate}}</p>
-        </app-alert>
+        </jems-alert>
         <ng-container [formGroup]="staff">
-            <app-multi-language-container>
-                <mat-table [appTableConfig]="tableConfig"
+            <jems-multi-language-container>
+                <mat-table [jemsTableConfig]="tableConfig"
                            [dataSource]="dataSource" [formArrayName]="constants.FORM_CONTROL_NAMES.items"
-                           class="staff-budget-table">
+                           class="staff-budget-table table-condensed">
 
                     <ng-container matColumnDef="unitCost" sticky>
                         <mat-header-cell *matHeaderCellDef>
-                            <span appText maxLines="2">{{'project.partner.budget.table.unitcosts.selection' | translate}}</span>
+                            <span jemsText maxLines="2">{{'project.partner.budget.table.unitcosts.selection' | translate}}</span>
                         </mat-header-cell>
                         <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                            <mat-form-field appFormFieldWidth="full">
+                            <mat-form-field jemsFormFieldWidth="full">
                                 <mat-select
                                     #unitCostSelect
                                     (selectionChange)="onUnitCostChange($event, control, i)"
@@ -31,10 +31,11 @@
                                     </mat-option>
                                 </mat-select>
                                 <mat-error>
-                                    <app-form-field-errors
+                                    <jems-form-field-errors
                                             [errors]="getUnitCost(control)?.errors"
-                                            [messages]="constants.FORM_ERRORS.unitCost">
-                                    </app-form-field-errors>
+                                            [messages]="constants.FORM_ERRORS.unitCost"
+                                            condensed="true">
+                                    </jems-form-field-errors>
                                 </mat-error>
                             </mat-form-field>
                         </mat-cell>
@@ -47,16 +48,17 @@
 
                     <ng-container matColumnDef="description" sticky>
                         <mat-header-cell *matHeaderCellDef>
-                            <span appText maxLines="2">{{'project.partner.budget.table.staff.description' | translate}}</span>
+                            <span jemsText maxLines="2">{{'project.partner.budget.table.staff.description' | translate}}</span>
                         </mat-header-cell>
                         <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                             <ng-container *ngIf="fieldEnabled(control)">
                                 <div *ngIf="getUnitCost(control).value"
                                      class="text-overflow-ellipsis"> {{getUnitCost(control).value.description | translateByInputLanguage | async}}</div>
-                                <app-multi-language-form-field
+                                <jems-multi-language-form-field
                                         *ngIf="!getUnitCost(control).value"
-                                        [formControlName]="constants.FORM_CONTROL_NAMES.description">
-                                </app-multi-language-form-field>
+                                        [formControlName]="constants.FORM_CONTROL_NAMES.description"
+                                        condensed="true">
+                                </jems-multi-language-form-field>
                             </ng-container>
                         </mat-cell>
                         <mat-footer-cell *matFooterCellDef>
@@ -68,14 +70,15 @@
 
                     <ng-container matColumnDef="comments">
                         <mat-header-cell *matHeaderCellDef>
-                            <span appText maxLines="2">{{'project.partner.budget.table.staff.comments' | translate}}</span>
+                            <span jemsText maxLines="2">{{'project.partner.budget.table.staff.comments' | translate}}</span>
                         </mat-header-cell>
                         <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                            <app-multi-language-form-field
+                            <jems-multi-language-form-field
                                     *ngIf="fieldEnabled(control)"
                                     [formControlName]="constants.FORM_CONTROL_NAMES.comments"
-                                    [maxLength]="constants.MAX_STAFF_COMMENTS_TEXT_LENGTH">
-                            </app-multi-language-form-field>
+                                    [maxLength]="constants.MAX_STAFF_COMMENTS_TEXT_LENGTH"
+                                    condensed="true">
+                            </jems-multi-language-form-field>
                         </mat-cell>
                         <mat-footer-cell *matFooterCellDef>
                             <ng-container *ngIf="columnsToDisplay[0]==='comments'">
@@ -86,19 +89,19 @@
 
                     <ng-container matColumnDef="unitType">
                         <mat-header-cell *matHeaderCellDef>
-                            <span appText maxLines="2">{{'project.partner.budget.table.unit.type' | translate}}</span>
+                            <span jemsText maxLines="2">{{'project.partner.budget.table.unit.type' | translate}}</span>
                         </mat-header-cell>
                         <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                             <ng-container *ngIf="fieldEnabled(control)">
                                 <div *ngIf="getUnitCost(control).value" class="text-overflow-ellipsis">
                                     {{getUnitCost(control).value.type | translateByInputLanguage | async}}
                                 </div>
-                                <app-multi-language-form-field
+                                <jems-multi-language-form-field
                                         *ngIf="!getUnitCost(control)?.value"
                                         [formControlName]="constants.FORM_CONTROL_NAMES.unitType"
                                         [maxLength]="constants.MAX_UNIT_TYPE_TEXT_LENGTH"
-                                        appFormFieldWidth="full">
-                                </app-multi-language-form-field>
+                                        jemsFormFieldWidth="full">
+                                </jems-multi-language-form-field>
                             </ng-container>
                         </mat-cell>
                         <mat-footer-cell *matFooterCellDef>
@@ -109,11 +112,11 @@
                     </ng-container>
 
                     <ng-container matColumnDef="numberOfUnits">
-                        <mat-header-cell *matHeaderCellDef>
-                            <span appText maxLines="2">{{'project.partner.budget.table.number.of.units' | translate}}</span>
+                        <mat-header-cell *matHeaderCellDef class="justify-end">
+                            <span jemsText maxLines="2">{{'project.partner.budget.table.number.of.units' | translate}}</span>
                         </mat-header-cell>
                         <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                            <mat-form-field *ngIf="fieldEnabled(control)" appFormFieldWidth="full">
+                            <mat-form-field *ngIf="fieldEnabled(control)" jemsFormFieldWidth="full">
                                 <input [formControlName]="constants.FORM_CONTROL_NAMES.numberOfUnits"
                                        [options]="{min: constants.MIN_VALUE, max: constants.MAX_VALUE, align: 'right'}"
                                        currencyMask matInput
@@ -124,14 +127,14 @@
                     </ng-container>
 
                     <ng-container matColumnDef="pricePerUnit">
-                        <mat-header-cell *matHeaderCellDef>
-                            <span appText maxLines="2">{{'project.partner.budget.table.price.per.unit' | translate}}</span>
+                        <mat-header-cell *matHeaderCellDef class="justify-end">
+                            <span jemsText maxLines="2">{{'project.partner.budget.table.price.per.unit' | translate}}</span>
                         </mat-header-cell>
                         <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                             <mat-form-field
                                     *ngIf="fieldEnabled(control)"
                                     [class.mat-form-field-disabled]="getUnitCost(control).value"
-                                    appFormFieldWidth="full">
+                                    jemsFormFieldWidth="full">
                                 <input [formControlName]="constants.FORM_CONTROL_NAMES.pricePerUnit"
                                        [options]="{min: constants.MIN_VALUE, max: constants.MAX_VALUE, align: 'right'}"
                                        [readonly]="getUnitCost(control).value"
@@ -148,7 +151,7 @@
 
                     <ng-container matColumnDef="total" stickyEnd>
                         <mat-header-cell *matHeaderCellDef class="justify-end">
-                            <span appText maxLines="2">{{'project.partner.budget.table.total' | translate}}</span>
+                            <span jemsText maxLines="2">{{'project.partner.budget.table.total' | translate}}</span>
                         </mat-header-cell>
                         <mat-cell *matCellDef="let control;"
                                   [class.invalid]="control.get(constants.FORM_CONTROL_NAMES.rowSum).invalid"
@@ -167,13 +170,13 @@
                     <ng-container *ngFor="let period of projectPeriods; let j = index"
                                   matColumnDef="{{'period' + period.number}}">
                         <mat-header-cell *matHeaderCellDef class="justify-end">
-                            <span appText maxLines="2">{{'project.partner.budget.table.period' | translate }} {{period.number}}</span>
+                            <span jemsText maxLines="2">{{'project.partner.budget.table.period' | translate }} {{period.number}}</span>
                         </mat-header-cell>
                         <mat-cell *matCellDef="let control; let k = index" [formArrayName]="k">
                             <mat-form-field
                                     *ngIf="fieldEnabled(control)"
                                     [formArrayName]="constants.FORM_CONTROL_NAMES.budgetPeriods"
-                                    appFormFieldWidth="full">
+                                    jemsFormFieldWidth="full">
                                 <ng-container [formGroupName]="j">
                                     <input [formControlName]="constants.FORM_CONTROL_NAMES.amount"
                                            [options]="{min: constants.MIN_VALUE, max: constants.MAX_VALUE, align: 'right'}"
@@ -190,7 +193,7 @@
 
                     <ng-container matColumnDef="openForPeriods">
                         <mat-header-cell *matHeaderCellDef class="justify-end">
-                            <span appText maxLines="2">{{'project.partner.budget.table.gap' | translate}}</span>
+                            <span jemsText maxLines="2">{{'project.partner.budget.table.gap' | translate}}</span>
                         </mat-header-cell>
                         <mat-cell *matCellDef="let control; let k = index"
                                   [class.allocation-warn]="openForPeriods(k).value !== 0" [formArrayName]="k"
@@ -221,20 +224,20 @@
                     <mat-footer-row *matFooterRowDef="columnsToDisplay"></mat-footer-row>
 
                 </mat-table>
-            </app-multi-language-container>
+            </jems-multi-language-container>
             <mat-error *ngIf="total.errors" class="mt-3">
-                <app-form-field-errors
+                <jems-form-field-errors
                         [args]="constants.FORM_ERRORS_ARGS.total"
                         [errors]="total.errors"
                         [messages]="constants.FORM_ERRORS.total">
-                </app-form-field-errors>
+                </jems-form-field-errors>
             </mat-error>
         </ng-container>
     </ng-container>
 </ng-container>
 <ng-template #addTableButton>
     <p *ngIf="editable">
-        <button appText (click)="addNewItem()" color="primary"
+        <button jemsText (click)="addNewItem()" color="primary"
                 mat-raised-button>+ {{'project.partner.budget.button.add' | translate}}
         </button>
     </p>

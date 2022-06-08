@@ -5,11 +5,10 @@ import {MatDialog} from '@angular/material/dialog';
 import {TranslateService} from '@ngx-translate/core';
 import {Log} from '@common/utils/log';
 import {Forms} from '@common/utils/forms';
-import {take} from 'rxjs/internal/operators';
 import {OutputCurrentUser, UserDTO, UserRoleDTO, UserRoleSummaryDTO} from '@cat/api';
 import {UserDetailPageStore} from './user-detail-page-store.service';
 import {combineLatest, Observable} from 'rxjs';
-import {map, tap} from 'rxjs/operators';
+import {map, take, tap} from 'rxjs/operators';
 import {SystemPageSidenavService} from '../../services/system-page-sidenav.service';
 import {FormState} from '@common/components/forms/form-state';
 import {RoutingService} from '@common/services/routing.service';
@@ -18,7 +17,7 @@ import {PermissionService} from '../../../security/permissions/permission.servic
 import UserStatusEnum = UserDTO.UserStatusEnum;
 
 @Component({
-  selector: 'app-user-detail-page',
+  selector: 'jems-user-detail-page',
   templateUrl: './user-detail-page.component.html',
   styleUrls: ['./user-detail-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.call.service.model
 
 import io.cloudflight.jems.api.call.dto.CallStatus
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
@@ -15,6 +16,7 @@ data class CallDetail(
     val id: Long,
     val name: String,
     val status: CallStatus,
+    val type: CallType,
     val startDate: ZonedDateTime,
     val endDateStep1: ZonedDateTime?,
     val endDate: ZonedDateTime,
@@ -28,7 +30,9 @@ data class CallDetail(
     val flatRates: SortedSet<ProjectCallFlatRate> = sortedSetOf(),
     val lumpSums: List<ProgrammeLumpSum> = emptyList(),
     val unitCosts: List<ProgrammeUnitCost> = emptyList(),
-    val applicationFormFieldConfigurations: MutableSet<ApplicationFormFieldConfiguration>
+    val applicationFormFieldConfigurations: MutableSet<ApplicationFormFieldConfiguration>,
+    val preSubmissionCheckPluginKey: String?,
+    val firstStepPreSubmissionCheckPluginKey: String?
 ) {
     fun isPublished() = status == CallStatus.PUBLISHED
 
@@ -98,6 +102,9 @@ data class CallDetail(
         val newUnitCostIds = unitCosts.mapTo(TreeSet()) { it.id }
         if (newUnitCostIds != oldUnitCostIds)
             changes["unitCostIds"] = Pair(oldUnitCostIds, newUnitCostIds)
+
+        if (old == null || preSubmissionCheckPluginKey != old.preSubmissionCheckPluginKey)
+            changes["preSubmissionCheckPluginKey"] = Pair(old?.preSubmissionCheckPluginKey, preSubmissionCheckPluginKey)
 
         return changes
     }

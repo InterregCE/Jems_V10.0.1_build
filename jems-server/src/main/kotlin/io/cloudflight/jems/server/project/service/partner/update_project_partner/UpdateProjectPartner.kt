@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.service.partner.update_project_partner
 
+import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroupDTO
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.nuts.service.NutsService
@@ -65,6 +66,7 @@ class UpdateProjectPartner(
 
     private fun ifProjectPartnerIsValid(partner: ProjectPartner) =
         generalValidator.throwIfAnyIsInvalid(
+            generalValidator.notEqualTo(partner.partnerType.toString(), ProjectTargetGroupDTO.GeneralPublic.toString(), "partnerType"),
             generalValidator.notNull(partner.id, "id"),
             generalValidator.notNull(partner.role, "role"),
             generalValidator.notBlank(partner.abbreviation, "abbreviation"),

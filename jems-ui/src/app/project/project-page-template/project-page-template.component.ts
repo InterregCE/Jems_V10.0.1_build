@@ -8,10 +8,13 @@ import {ProjectPageTemplateStore} from './project-page-template-store.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import ProjectStatusEnum = ProjectUserDTO.ProjectStatusEnum;
+import {
+  ProjectApplicationFormVisibilityService
+} from '@project/project-application/containers/project-application-form-page/services/project-application-form-visibility.service';
 
 @UntilDestroy()
 @Component({
-  selector: 'app-project-page-template',
+  selector: 'jems-project-page-template',
   templateUrl: './project-page-template.component.html',
   styleUrls: ['./project-page-template.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -44,12 +47,17 @@ export class ProjectPageTemplateComponent implements AfterViewInit {
   }>;
 
   versionSelectData$: Observable<{
-    versions: ProjectVersionDTO[];
+    versions: {
+      currentVersion: ProjectVersionDTO;
+      lastApprovedVersion: ProjectVersionDTO;
+      pastVersions: ProjectVersionDTO[];
+    };
     selectedVersion: ProjectVersionDTO | undefined;
   }>;
 
   constructor(public projectSidenavService: ProjectApplicationFormSidenavService,
-              public pageStore: ProjectPageTemplateStore) {
+              public pageStore: ProjectPageTemplateStore,
+              private projectApplicationFormVisibilityService: ProjectApplicationFormVisibilityService) {
     this.versionWarnData$ = combineLatest([
       this.pageStore.selectedVersion$,
       this.pageStore.currentVersion$,
@@ -60,7 +68,7 @@ export class ProjectPageTemplateComponent implements AfterViewInit {
     );
 
     this.versionSelectData$ = combineLatest([
-      this.pageStore.versions$,
+      this.versions(),
       this.pageStore.selectedVersion$
     ]).pipe(
       map(([versions, selectedVersion]) => ({versions, selectedVersion})),
@@ -71,5 +79,26 @@ export class ProjectPageTemplateComponent implements AfterViewInit {
     this.pageStore.versions$.pipe(untilDestroyed(this)).subscribe(() =>
       this.projectSidenavService.versionSelectTemplate$.next(this.sidenavVersionSelect)
     );
+  }
+
+  versions(): Observable<any> {
+    return this.pageStore.versions$
+      .pipe(
+        map(versions => ({
+            currentVersion: versions.find(version => version.current),
+            lastApprovedVersion: versions.find(version => this.isStatusApprovedOrContracted(version)),
+            pastVersions: versions.filter(version => !version.current &&
+              (version !== versions.find((approvedVersion) => this.isStatusApprovedOrContracted(approvedVersion))))
+          }
+        ))
+      );
+  }
+
+  isStatusApprovedOrContracted(currentVersion: ProjectVersionDTO): boolean {
+    return currentVersion.status === 'APPROVED' || currentVersion.status === 'CONTRACTED';
+  }
+
+  noDecisionTaken(currentVersion: ProjectVersionDTO): boolean {
+    return currentVersion.status !== ProjectStatusEnum.MODIFICATIONREJECTED && currentVersion.status !== ProjectStatusEnum.APPROVED && currentVersion.status !== ProjectStatusEnum.CONTRACTED;
   }
 }

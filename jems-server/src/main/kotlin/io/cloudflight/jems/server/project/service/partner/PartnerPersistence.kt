@@ -19,6 +19,8 @@ interface PartnerPersistence {
 
     fun countByProjectId(projectId: Long): Long
 
+    fun countByProjectIdActive(projectId: Long): Long
+
     fun findTop30ByProjectId(projectId: Long, version: String? = null): Iterable<ProjectPartnerDetail>
 
     fun changeRoleOfLeadPartnerToPartnerIfItExists(projectId: Long)

@@ -1,20 +1,21 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {combineLatest, Subject} from 'rxjs';
+import {combineLatest, Observable, Subject} from 'rxjs';
 import {MatSort} from '@angular/material/sort';
 import {map, mergeMap, startWith, take, tap} from 'rxjs/operators';
 import {Tables} from '@common/utils/tables';
 import {Log} from '@common/utils/log';
-import {ProjectBudgetPartnerSummaryDTO, ProjectPartnerService} from '@cat/api';
+import {ProjectBudgetPartnerSummaryDTO, ProjectCallSettingsDTO, ProjectPartnerService} from '@cat/api';
 import {Permission} from '../../../../../security/permissions/permission';
 import {ProjectApplicationFormSidenavService} from '../services/project-application-form-sidenav.service';
 import {ActivatedRoute} from '@angular/router';
 import {ProjectStore} from '../../project-application-detail/services/project-store.service';
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 import {ProjectPartnerStore} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
-import { Alert } from '@common/components/forms/alert';
+import {Alert} from '@common/components/forms/alert';
+import CallTypeEnum = ProjectCallSettingsDTO.CallTypeEnum;
 
 @Component({
-  selector: 'app-project-application-form-partner-section',
+  selector: 'jems-project-application-form-partner-section',
   templateUrl: './project-application-form-partner-section.component.html',
   styleUrls: ['./project-application-form-partner-section.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -82,5 +83,12 @@ export class ProjectApplicationFormPartnerSectionComponent {
         }),
         tap(() => this.projectApplicationFormSidenavService.refreshPartners(this.projectId)),
       ).subscribe();
+  }
+
+  isAddPartnerDisabled(): Observable<boolean> {
+    return combineLatest([this.projectStore.projectCallType$, this.partnerStore.partners$])
+      .pipe(map(([callType, partners]) => callType === CallTypeEnum.SPF
+        ? partners.some(partner => partner.active) : false)
+    );
   }
 }

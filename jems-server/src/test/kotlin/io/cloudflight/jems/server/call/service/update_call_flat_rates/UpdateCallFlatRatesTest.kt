@@ -4,6 +4,7 @@ import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType
 import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.api.audit.dto.AuditAction
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.call.service.CallPersistence
@@ -30,12 +31,15 @@ class UpdateCallFlatRatesTest {
             id = id,
             name = "",
             status = status,
+            type = CallType.STANDARD,
             startDate = ZonedDateTime.now().minusDays(1),
             endDateStep1 = null,
             endDate = ZonedDateTime.now().plusDays(1),
             isAdditionalFundAllowed = true,
             lengthOfPeriod = 7,
-            applicationFormFieldConfigurations = mutableSetOf()
+            applicationFormFieldConfigurations = mutableSetOf(),
+            preSubmissionCheckPluginKey = null,
+            firstStepPreSubmissionCheckPluginKey = null
         )
 
     }
@@ -193,27 +197,27 @@ class UpdateCallFlatRatesTest {
         val toBeSet = setOf(
             ProjectCallFlatRate(
                 type = FlatRateType.STAFF_COSTS,
-                rate = 21,
+                rate = 101,
                 adjustable = true,
             ),
             ProjectCallFlatRate(
                 type = FlatRateType.OFFICE_AND_ADMINISTRATION_ON_STAFF_COSTS,
-                rate = 16,
+                rate = 110,
                 adjustable = true,
             ),
             ProjectCallFlatRate(
                 type = FlatRateType.OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS,
-                rate = 26,
+                rate = 120,
                 adjustable = true,
             ),
             ProjectCallFlatRate(
                 type = FlatRateType.TRAVEL_AND_ACCOMMODATION_ON_STAFF_COSTS,
-                rate = 16,
+                rate = 115,
                 adjustable = true,
             ),
             ProjectCallFlatRate(
                 type = FlatRateType.OTHER_COSTS_ON_STAFF_COSTS,
-                rate = 41,
+                rate = 140,
                 adjustable = true,
             )
         )

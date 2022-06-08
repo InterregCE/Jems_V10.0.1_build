@@ -1,14 +1,13 @@
 import {Injectable} from '@angular/core';
 import {OutputNuts, WorkPackageInvestmentDTO, WorkPackageInvestmentService} from '@cat/api';
 import {combineLatest, merge, Observable, of, Subject} from 'rxjs';
-import {catchError, map, shareReplay, switchMap, tap} from 'rxjs/operators';
+import {catchError, filter, map, shareReplay, switchMap, take, tap} from 'rxjs/operators';
 import {WorkPackagePageStore} from '../../work-package-page-store.service';
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {Log} from '@common/utils/log';
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 import {RoutingService} from '@common/services/routing.service';
 import {NutsStore} from '@common/services/nuts.store';
-import {filter, take} from 'rxjs/internal/operators';
 import {ProjectPaths} from '@project/common/project-util';
 
 @Injectable()

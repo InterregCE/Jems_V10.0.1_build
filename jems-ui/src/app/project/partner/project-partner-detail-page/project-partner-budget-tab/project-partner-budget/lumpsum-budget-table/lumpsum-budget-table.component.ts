@@ -3,7 +3,7 @@ import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {ProjectPartnerDetailPageStore} from '@project/partner/project-partner-detail-page/project-partner-detail-page.store';
 
 @Component({
-  selector: 'app-lumpsum-budget-table',
+  selector: 'jems-lumpsum-budget-table',
   templateUrl: './lumpsum-budget-table.component.html',
   styleUrls: ['./lumpsum-budget-table.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

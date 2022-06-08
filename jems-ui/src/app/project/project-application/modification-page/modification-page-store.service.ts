@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {combineLatest, Observable, of, Subject} from 'rxjs';
 import {ApplicationActionInfoDTO, ProjectStatusDTO, ProjectStatusService, UserRoleCreateDTO} from '@cat/api';
@@ -9,6 +9,7 @@ import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 
 @Injectable()
 export class ModificationPageStore {
+  private static readonly LOG_INFO_CHANGE_STATUS_PROJECT = 'Changed status for project';
 
   modificationDecisions$: Observable<ProjectStatusDTO[]>;
   currentVersionOfProjectStatus$: Observable<ProjectStatusDTO.StatusEnum>;
@@ -35,7 +36,7 @@ export class ModificationPageStore {
         take(1),
         switchMap(projectId => this.projectStatusService.startModification(projectId)),
         tap(() => this.projectStore.projectStatusChanged$.next()),
-        tap(status => Log.info('Changed status for project', this, status))
+        tap(status => Log.info(ModificationPageStore.LOG_INFO_CHANGE_STATUS_PROJECT, this, status))
       );
   }
 
@@ -45,7 +46,7 @@ export class ModificationPageStore {
         take(1),
         switchMap(projectId => this.projectStatusService.handBackToApplicant(projectId)),
         tap(() => this.projectStore.projectStatusChanged$.next()),
-        tap(status => Log.info('Changed status for project', this, status))
+        tap(status => Log.info(ModificationPageStore.LOG_INFO_CHANGE_STATUS_PROJECT, this, status))
       );
   }
 
@@ -56,7 +57,7 @@ export class ModificationPageStore {
         switchMap(projectId => this.projectStatusService.approveModification(projectId, info)),
         tap(() => this.projectStore.projectStatusChanged$.next()),
         tap(() => this.modificationDecisionSubmitted$.next()),
-        tap(status => Log.info('Changed status for project', this, status))
+        tap(status => Log.info(ModificationPageStore.LOG_INFO_CHANGE_STATUS_PROJECT, this, status))
       );
   }
 
@@ -67,7 +68,7 @@ export class ModificationPageStore {
         switchMap(projectId => this.projectStatusService.rejectModification(projectId, info)),
         tap(() => this.projectStore.projectStatusChanged$.next()),
         tap(() => this.modificationDecisionSubmitted$.next()),
-        tap(status => Log.info('Changed status for project', this, status))
+        tap(status => Log.info(ModificationPageStore.LOG_INFO_CHANGE_STATUS_PROJECT, this, status))
       );
   }
 

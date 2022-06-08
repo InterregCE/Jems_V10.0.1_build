@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.service.partner.budget.get_budget_cos
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetCostsPersistence
 import io.cloudflight.jems.server.project.service.partner.model.BudgetGeneralCostEntry
+import io.cloudflight.jems.server.project.service.partner.model.BudgetSpfCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetStaffCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetTravelAndAccommodationCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetUnitCostEntry
@@ -30,6 +31,7 @@ internal class GetBudgetCostsTest : UnitTest() {
         val budgetTravelAndAccommodationCostEntries = budgetTravelAndAccommodationCostEntries()
         val budgetGeneralCostEntries = budgetGeneralCostEntries()
         val budgetUnitCostEntries = budgetUnitCostEntries()
+        val budgetSpfCostEntries = budgetSpfCostEntries()
 
         every { budgetCostsPersistence.getBudgetEquipmentCosts(partnerId) } returns budgetGeneralCostEntries
         every { budgetCostsPersistence.getBudgetExternalExpertiseAndServicesCosts(partnerId) } returns budgetGeneralCostEntries
@@ -37,6 +39,7 @@ internal class GetBudgetCostsTest : UnitTest() {
         every { budgetCostsPersistence.getBudgetTravelAndAccommodationCosts(partnerId) } returns budgetTravelAndAccommodationCostEntries
         every { budgetCostsPersistence.getBudgetStaffCosts(partnerId) } returns budgetStaffCostEntries
         every { budgetCostsPersistence.getBudgetUnitCosts(partnerId) } returns budgetUnitCostEntries
+        every { budgetCostsPersistence.getBudgetSpfCosts(partnerId) } returns budgetSpfCostEntries
 
         val result = getBudgetCosts.getBudgetCosts(partnerId)
 
@@ -46,6 +49,7 @@ internal class GetBudgetCostsTest : UnitTest() {
         verify(atLeast = 1) { budgetCostsPersistence.getBudgetTravelAndAccommodationCosts(partnerId) }
         verify(atLeast = 1) { budgetCostsPersistence.getBudgetStaffCosts(partnerId) }
         verify(atLeast = 1) { budgetCostsPersistence.getBudgetUnitCosts(partnerId) }
+        verify(atLeast = 1) { budgetCostsPersistence.getBudgetSpfCosts(partnerId) }
         confirmVerified(budgetCostsPersistence)
 
         assertEquals(budgetStaffCostEntries, result.staffCosts)
@@ -54,6 +58,7 @@ internal class GetBudgetCostsTest : UnitTest() {
         assertEquals(budgetGeneralCostEntries, result.externalCosts)
         assertEquals(budgetGeneralCostEntries, result.infrastructureCosts)
         assertEquals(budgetUnitCostEntries, result.unitCosts)
+        assertEquals(budgetSpfCostEntries, result.spfCosts)
     }
 
 
@@ -94,6 +99,29 @@ internal class GetBudgetCostsTest : UnitTest() {
             emptySet()
         ),
         BudgetTravelAndAccommodationCostEntry(
+            2,
+            BigDecimal.ONE,
+            BigDecimal.ONE,
+            mutableSetOf(),
+            2,
+            BigDecimal.ONE,
+            emptySet(),
+            emptySet(),
+        )
+    )
+
+    private fun budgetSpfCostEntries() = listOf(
+        BudgetSpfCostEntry(
+            1,
+            BigDecimal.ONE,
+            BigDecimal.ONE,
+            mutableSetOf(),
+            null,
+            BigDecimal.ONE,
+            emptySet(),
+            emptySet()
+        ),
+        BudgetSpfCostEntry(
             2,
             BigDecimal.ONE,
             BigDecimal.ONE,

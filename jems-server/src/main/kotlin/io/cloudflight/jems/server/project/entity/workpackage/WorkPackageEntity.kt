@@ -2,7 +2,6 @@ package io.cloudflight.jems.server.project.entity.workpackage
 
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.workpackage.activity.WorkPackageActivityEntity
-import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageOutputEntity
 import javax.persistence.CascadeType
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -42,9 +41,6 @@ class WorkPackageEntity(
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.sourceEntity", fetch = FetchType.EAGER)
     val translatedValues: MutableSet<WorkPackageTransl> = mutableSetOf(),
 
-    @OneToMany(mappedBy = "outputId.workPackageId", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val outputs: MutableList<WorkPackageOutputEntity> = mutableListOf(),
-
     @OneToMany(mappedBy = "workPackage", cascade = [CascadeType.ALL], orphanRemoval = true)
     val activities: MutableList<WorkPackageActivityEntity> = mutableListOf(),
 ){
@@ -55,7 +51,6 @@ class WorkPackageEntity(
             project = this.project,
             number = this.number,
             translatedValues = translatedValues ?: this.translatedValues,
-            outputs = this.outputs,
             activities = this.activities
         )
 

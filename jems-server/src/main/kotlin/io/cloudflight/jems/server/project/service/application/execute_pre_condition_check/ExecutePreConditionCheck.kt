@@ -10,7 +10,6 @@ import io.cloudflight.jems.server.project.service.ProjectPersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
-const val pluginKey = "standard-pre-condition-check-plugin"
 
 @Service
 class ExecutePreConditionCheck(
@@ -24,24 +23,29 @@ class ExecutePreConditionCheck(
     @Transactional(readOnly = true)
     @CanCheckApplicationForm
     override fun execute(projectId: Long): PreConditionCheckResult =
-        if (isPluginEnabled())
-            projectPersistence.getProjectCallSettings(projectId).let { callSettings ->
+        projectPersistence.getProjectCallSettings(projectId).let { callSettings ->
+            if (isPluginEnabled(callSettings.preSubmissionCheckPluginKey))
                 projectPersistence.getProjectSummary(projectId).let { projectSummary ->
                     when {
-                        // todo pluginKey should be fetched from call settings for the project when it is added
-                        callSettings.endDateStep1 == null || projectSummary.status.isInStep2() ->
+                       projectSummary.status.isInStep1() ->
                             jemsPluginRegistry.get(
-                                PreConditionCheckPlugin::class, key = pluginKey
+                                PreConditionCheckPlugin::class, key = callSettings.firstStepPreSubmissionCheckPluginKey
                             ).check(projectId)
-                        else -> throw PreConditionCheckCannotBeExecutedException()
+
+                       projectSummary.status.isInStep2() ->
+                            jemsPluginRegistry.get(
+                                PreConditionCheckPlugin::class, key = callSettings.preSubmissionCheckPluginKey
+                            ).check(projectId)
+                    else -> throw PreConditionCheckCannotBeExecutedException()
                     }
                 }
-            }
-        else PreConditionCheckResult(emptyList(), true)
+            else PreConditionCheckResult(emptyList(), true)
+        }
 
 
-    private fun isPluginEnabled(): Boolean =
-        pluginStatusRepository.findById(pluginKey).let {
+    private fun isPluginEnabled(pluginKey: String?): Boolean =
+        if (pluginKey.isNullOrBlank()) false
+        else pluginStatusRepository.findById(pluginKey).let {
             when {
                 it.isPresent -> it.get().enabled
                 else -> true

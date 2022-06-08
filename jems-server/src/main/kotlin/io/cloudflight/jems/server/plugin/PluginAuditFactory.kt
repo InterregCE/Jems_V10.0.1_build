@@ -1,22 +1,21 @@
 package io.cloudflight.jems.server.plugin
 
 import io.cloudflight.jems.api.audit.dto.AuditAction
-import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditBuilder
+import io.cloudflight.jems.server.common.event.JemsAuditEvent
 
 
-fun pluginCalled(
-    context: Any, name: String, key: String,methodName: String
-): AuditCandidateEvent =
-    AuditCandidateEvent(context,
-        AuditBuilder(AuditAction.PLUGIN_CALLED).description("plugin with name:'$name' and key: '$key' was called. (method name: $methodName)")
+fun pluginCalled(name: String, key: String, methodName: String) =
+    JemsAuditEvent(
+        auditCandidate = AuditBuilder(AuditAction.PLUGIN_CALLED)
+            .description("plugin with name:'$name' and key: '$key' was called. (method name: $methodName)")
             .build()
     )
 
-fun pluginExecuted(
-    context: Any, name: String, key: String, methodName: String
-): AuditCandidateEvent =
-    AuditCandidateEvent(context,
-        AuditBuilder(AuditAction.PLUGIN_EXECUTED).description("plugin with name:'$name' and key: '$key' was executed. (method name: $methodName)")
+
+fun pluginExecuted(name: String, key: String, methodName: String) =
+    JemsAuditEvent(
+        auditCandidate = AuditBuilder(AuditAction.PLUGIN_EXECUTED)
+            .description("plugin with name:'$name' and key: '$key' was executed. (method name: $methodName)")
             .build()
     )

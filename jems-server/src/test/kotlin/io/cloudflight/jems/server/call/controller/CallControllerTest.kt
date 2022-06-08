@@ -4,7 +4,9 @@ import io.cloudflight.jems.api.call.dto.CallDTO
 import io.cloudflight.jems.api.call.dto.CallDetailDTO
 import io.cloudflight.jems.api.call.dto.CallFundRateDTO
 import io.cloudflight.jems.api.call.dto.CallStatus
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.api.call.dto.CallUpdateRequestDTO
+import io.cloudflight.jems.api.call.dto.PreSubmissionPluginsDTO
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateDTO
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateSetupDTO
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType
@@ -34,6 +36,7 @@ import io.cloudflight.jems.server.call.service.model.Call
 import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.call.service.model.CallSummary
 import io.cloudflight.jems.server.call.service.model.IdNamePair
+import io.cloudflight.jems.server.call.service.model.PreSubmissionPlugins
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.call.service.publish_call.PublishCallInteractor
 import io.cloudflight.jems.server.call.service.update_allow_real_costs.UpdateAllowedRealCostsInteractor
@@ -41,6 +44,7 @@ import io.cloudflight.jems.server.call.service.update_call.UpdateCallInteractor
 import io.cloudflight.jems.server.call.service.update_call_flat_rates.UpdateCallFlatRatesInteractor
 import io.cloudflight.jems.server.call.service.update_call_lump_sums.UpdateCallLumpSumsInteractor
 import io.cloudflight.jems.server.call.service.update_call_unit_costs.UpdateCallUnitCostsInteractor
+import io.cloudflight.jems.server.call.service.update_pre_submission_check_configuration.UpdatePreSubmissionCheckSettingsInteractor
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
@@ -62,6 +66,7 @@ class CallControllerTest : UnitTest() {
     companion object {
 
         private const val ID = 1L
+        private const val PLUGIN_KEY = "pluginKey"
 
         private val call = CallSummary(
             id = ID,
@@ -84,6 +89,7 @@ class CallControllerTest : UnitTest() {
             id = ID,
             name = "call name",
             status = CallStatus.DRAFT,
+            type = CallType.STANDARD,
             startDate = call.startDate,
             endDateStep1 = null,
             endDate = call.endDate,
@@ -114,7 +120,9 @@ class CallControllerTest : UnitTest() {
             unitCosts = listOf(
                 ProgrammeUnitCost(isOneCostCategory = true),
             ),
-            applicationFormFieldConfigurations = mutableSetOf()
+            applicationFormFieldConfigurations = mutableSetOf(),
+            preSubmissionCheckPluginKey = PLUGIN_KEY,
+            firstStepPreSubmissionCheckPluginKey = PLUGIN_KEY
         )
 
         private val callDto = CallDTO(
@@ -130,6 +138,7 @@ class CallControllerTest : UnitTest() {
             id = ID,
             name = "call name",
             status = CallStatus.DRAFT,
+            type = CallType.STANDARD,
             startDateTime = call.startDate,
             endDateTimeStep1 = null,
             endDateTime = call.endDate,
@@ -160,12 +169,15 @@ class CallControllerTest : UnitTest() {
             unitCosts = listOf(
                 ProgrammeUnitCostListDTO(id = 0L),
             ),
-            applicationFormFieldConfigurations = mutableSetOf()
+            applicationFormFieldConfigurations = mutableSetOf(),
+            preSubmissionCheckPluginKey = PLUGIN_KEY,
+            firstStepPreSubmissionCheckPluginKey = PLUGIN_KEY
         )
 
         private val callUpdateDto = CallUpdateRequestDTO(
             id = ID,
             name = "call name",
+            type = CallType.STANDARD,
             startDateTime = call.startDate,
             endDateTime = call.endDate,
             additionalFundAllowed = true,
@@ -183,6 +195,7 @@ class CallControllerTest : UnitTest() {
             id = ID,
             name = "call name",
             status = null,
+            type = CallType.STANDARD,
             startDate = call.startDate,
             endDate = call.endDate,
             isAdditionalFundAllowed = true,
@@ -228,6 +241,9 @@ class CallControllerTest : UnitTest() {
     @MockK
     lateinit var updateAllowedRealCostsInteractor: UpdateAllowedRealCostsInteractor
 
+    @MockK
+    lateinit var updatePreSubmissionCheckSettings: UpdatePreSubmissionCheckSettingsInteractor
+
     @InjectMockKs
     private lateinit var controller: CallController
 
@@ -241,15 +257,15 @@ class CallControllerTest : UnitTest() {
     fun `list calls`() {
         val idNamePair = IdNamePair(id = ID, name = "name")
         val idNamePairDTO = IdNamePairDTO(id = ID, name = "name")
-        every { listCalls.list() } returns listOf(idNamePair)
-        assertThat(controller.listCalls()).containsExactly(idNamePairDTO)
+        every { listCalls.list(CallStatus.PUBLISHED) } returns listOf(idNamePair)
+        assertThat(controller.listCalls(CallStatus.PUBLISHED)).containsExactly(idNamePairDTO)
     }
 
     @Test
     fun `list calls fails on list exception`() {
         val exception = ListCallsException(Exception())
-        every { listCalls.list() } throws exception
-        assertThrows<ListCallsException> { controller.listCalls() }
+        every { listCalls.list(null) } throws exception
+        assertThrows<ListCallsException> { controller.listCalls(null) }
     }
 
     @Test
@@ -310,6 +326,28 @@ class CallControllerTest : UnitTest() {
         every { updateCallUnitCosts.updateUnitCosts(40L, capture(slotUnitCostIds)) } returns callDetail
         controller.updateCallUnitCosts(40L, setOf(259, 337))
         assertThat(slotUnitCostIds.captured).containsExactlyInAnyOrder(259, 337)
+    }
+
+    @Test
+    fun `update call's pre-submission check settings`() {
+        val pluginKey = slot<PreSubmissionPlugins>()
+        every { updatePreSubmissionCheckSettings.update(40L, capture(pluginKey)) } returns callDetail
+
+        assertThat(
+            controller.updatePreSubmissionCheckSettings(
+                40L, PreSubmissionPluginsDTO(
+                    pluginKey = PLUGIN_KEY,
+                    firstStepPluginKey = PLUGIN_KEY,
+                )
+            )
+        ).isEqualTo(callDetailDto)
+
+        assertThat(pluginKey.captured).isEqualTo(
+            PreSubmissionPlugins(
+                pluginKey = PLUGIN_KEY,
+                firstStepPluginKey = PLUGIN_KEY,
+            )
+        )
     }
 
 }

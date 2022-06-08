@@ -10,11 +10,12 @@ import io.minio.MakeBucketArgs
 import io.minio.MinioClient
 import io.minio.PutObjectArgs
 import io.minio.RemoveObjectArgs
+import io.minio.errors.ErrorResponseException
 import io.minio.messages.Item
-import java.io.InputStream
 import org.apache.commons.io.IOUtils
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import java.io.InputStream
 
 @Service
 class MinioStorageImpl(
@@ -25,9 +26,13 @@ class MinioStorageImpl(
         private val logger = LoggerFactory.getLogger(MinioStorageImpl::class.java)
     }
 
-    override fun saveFile(bucket: String, filePath: String, size: Long, stream: InputStream) {
+    override fun saveFile(
+        bucket: String, filePath: String, size: Long, stream: InputStream, overwriteIfExists: Boolean
+    ) {
         makeBucketIfNotExists(bucket)
-        throwIfObjectAlreadyExists(bucket, filePath)
+
+        if (!overwriteIfExists)
+            throwIfObjectAlreadyExists(bucket, filePath)
 
         val arguments = PutObjectArgs.builder().bucket(bucket).`object`(filePath).stream(stream, size, -1).build()
         minioClient.putObject(arguments)
@@ -53,9 +58,18 @@ class MinioStorageImpl(
     }
 
     override fun getFile(bucket: String, filePath: String): ByteArray {
-        return IOUtils.toByteArray(
-            minioClient.getObject(GetObjectArgs.builder().bucket(bucket).`object`(filePath).build())
-        )
+        val objectResponse =
+            try {
+                minioClient.getObject(GetObjectArgs.builder().bucket(bucket).`object`(filePath).build())
+            } catch (exception: ErrorResponseException) {
+                if (exception.errorResponse().code().equals("NoSuchKey")) {
+                    logger.error("Template '$filePath' not found in Minio bucket '$bucket'!")
+                } else if (exception.errorResponse().code().equals("NoSuchBucket")) {
+                    logger.error("Bucket '$bucket' not found in Minio!")
+                }
+                throw exception
+            }
+        return IOUtils.toByteArray(objectResponse)
     }
 
     override fun deleteFile(bucket: String, filePath: String) {

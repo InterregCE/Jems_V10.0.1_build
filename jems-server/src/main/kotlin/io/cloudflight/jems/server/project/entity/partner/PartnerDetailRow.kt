@@ -9,6 +9,7 @@ import io.cloudflight.jems.server.project.service.partner.model.PartnerSubType
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAddressType
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVatRecovery
+import java.sql.Timestamp
 
 interface PartnerDetailRow : TranslationView {
     val id: Long
@@ -17,6 +18,7 @@ interface PartnerDetailRow : TranslationView {
     val abbreviation: String
     val role: ProjectPartnerRole
     val sortNumber: Int
+    val createdAt: Timestamp
     val nameInOriginalLanguage: String?
     val nameInEnglish: String?
     val partnerType: ProjectTargetGroup?
@@ -33,8 +35,11 @@ interface PartnerDetailRow : TranslationView {
     //address
     val addressType: ProjectPartnerAddressType?
     val country: String?
+    val countryCode: String?
     val nutsRegion2: String?
+    val nutsRegion2Code: String?
     val nutsRegion3: String?
+    val nutsRegion3Code: String?
     val street: String?
     val houseNumber: String?
     val postalCode: String?

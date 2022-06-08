@@ -51,16 +51,22 @@ class ProjectPartnerControllerTest {
 
     @MockK
     lateinit var getProjectPartnerInteractor: GetProjectPartnerInteractor
+
     @MockK
     lateinit var createProjectPartnerInteractor: CreateProjectPartnerInteractor
+
     @MockK
     lateinit var updateProjectPartnerInteractor: UpdateProjectPartnerInteractor
+
     @MockK
     lateinit var getProjectPartnerStateAidInteractor: GetProjectPartnerStateAidInteractor
+
     @MockK
     lateinit var updateProjectPartnerStateAidInteractor: UpdateProjectPartnerStateAidInteractor
+
     @MockK
     lateinit var deleteProjectPartnerInteractor: DeleteProjectPartnerInteractor
+
     @MockK
     lateinit var deactivateProjectPartner: DeactivateProjectPartnerInteractor
 
@@ -78,5 +84,4 @@ class ProjectPartnerControllerTest {
         every { updateProjectPartnerStateAidInteractor.updatePartnerStateAid(PARTNER_ID, any()) } returnsArgument 1
         assertThat(controller.updateProjectPartnerStateAid(PARTNER_ID, stateAidDto)).isEqualTo(stateAidDto)
     }
-
 }

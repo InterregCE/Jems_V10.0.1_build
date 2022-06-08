@@ -8,7 +8,7 @@ import {map} from 'rxjs/operators';
 import {Observable} from 'rxjs';
 
 @Component({
-  selector: 'app-login',
+  selector: 'jems-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
 })
@@ -24,6 +24,7 @@ export class LoginComponent extends AbstractFormComponent {
   });
 
   registerLink = '/no-auth/register';
+  forgotPasswordLink = '/no-auth/forgotPassword';
 
   largeLogo$ = this.resourceStore.largeLogo$;
 

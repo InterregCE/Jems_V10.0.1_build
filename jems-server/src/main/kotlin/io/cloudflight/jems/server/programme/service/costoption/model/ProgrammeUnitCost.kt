@@ -10,6 +10,8 @@ data class ProgrammeUnitCost(
     val description: Set<InputTranslation> = emptySet(),
     val type: Set<InputTranslation> = emptySet(),
     val costPerUnit: BigDecimal? = null,
+    val costPerUnitForeignCurrency: BigDecimal? = null,
+    val foreignCurrencyCode: String? = null,
     val isOneCostCategory: Boolean,
     val categories: Set<BudgetCategory> = emptySet()
 ): Comparable<ProgrammeUnitCost> {
@@ -19,5 +21,7 @@ data class ProgrammeUnitCost(
         categories.first() != other.categories.first() -> categories.first().compareTo(other.categories.first())
         else -> if (id > other.id) 1 else if (id < other.id) -1 else 0
     }
+
+    fun isMultipleCategoryUnitCost() = !isOneCostCategory
 
 }

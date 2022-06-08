@@ -7,6 +7,8 @@ import io.cloudflight.jems.server.project.service.projectuser.UserProjectPersist
 import io.cloudflight.jems.server.user.service.UserRolePersistence
 import io.cloudflight.jems.server.user.service.authorization.CanAssignUsersToProjects
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectContractingView
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectReportingView
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectReportingEdit
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectSetToContracted
 import io.cloudflight.jems.server.user.service.model.assignment.UpdateProjectUser
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectRetrieve
@@ -51,6 +53,8 @@ class AssignUserToProject(
             ProjectFileAssessmentRetrieve,
             ProjectContractingView,
             ProjectSetToContracted,
+            ProjectReportingView,
+            ProjectReportingEdit,
             ProjectModificationView,
             ProjectOpenModification,
             ProjectModificationFileAssessmentRetrieve

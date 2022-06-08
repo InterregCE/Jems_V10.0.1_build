@@ -15,7 +15,7 @@ import {DownloadService} from '@common/services/download.service';
 
 @UntilDestroy()
 @Component({
-  selector: 'app-translation-management-page',
+  selector: 'jems-translation-management-page',
   templateUrl: './translation-management-page.component.html',
   styleUrls: ['./translation-management-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -126,7 +126,7 @@ export class TranslationManagementPageComponent {
     return `${fileType}_${language.toLowerCase()}.properties`;
   }
 
-  getInProgressSubjectByFileType(fileType: FileTypeEnum): BehaviorSubject<Boolean> {
+  getInProgressSubjectByFileType(fileType: FileTypeEnum): BehaviorSubject<boolean> {
     return fileType === FileTypeEnum.Application ? this.isApplicationTranslationDownloadInProgress$ : this.isSystemTranslationDownloadInProgress$;
   }
 }

@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component, forwardRef, Input} from '@angular/co
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 
 @Component({
-  selector: 'app-filter-text-input',
+  selector: 'jems-filter-text-input',
   templateUrl: './filter-text-input.component.html',
   styleUrls: ['./filter-text-input.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

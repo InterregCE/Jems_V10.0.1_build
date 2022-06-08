@@ -7,7 +7,7 @@ import {UserRoleDTO} from '@cat/api';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @Component({
-  selector: 'app-programme-priority-list-page',
+  selector: 'jems-programme-priority-list-page',
   templateUrl: './programme-priority-list-page.component.html',
   styleUrls: ['./programme-priority-list-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

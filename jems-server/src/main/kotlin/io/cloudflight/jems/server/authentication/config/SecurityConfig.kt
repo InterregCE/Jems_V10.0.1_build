@@ -1,8 +1,12 @@
 package io.cloudflight.jems.server.authentication.config
 
 import io.cloudflight.jems.server.authentication.service.EmsUserDetailsService
+import io.cloudflight.platform.context.ApplicationContextProfiles
+import org.springframework.boot.autoconfigure.security.servlet.PathRequest
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.core.env.Environment
+import org.springframework.core.env.Profiles
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.BeanIds
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder
@@ -12,6 +16,13 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository
+import org.springframework.security.web.header.writers.HstsHeaderWriter
+import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter
+import org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter.ReferrerPolicy
+import org.springframework.security.web.header.writers.XContentTypeOptionsHeaderWriter
+import org.springframework.security.web.header.writers.XXssProtectionHeaderWriter
+import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
@@ -21,7 +32,11 @@ import javax.servlet.http.HttpServletResponse
 
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true, securedEnabled = true)
-class SecurityConfig(val emsUserDetailsService: EmsUserDetailsService, val passwordEncoder: PasswordEncoder) :
+class SecurityConfig(
+    val emsUserDetailsService: EmsUserDetailsService,
+    val passwordEncoder: PasswordEncoder,
+    private val environment: Environment,
+) :
     WebSecurityConfigurerAdapter() {
 
     companion object {
@@ -29,15 +44,23 @@ class SecurityConfig(val emsUserDetailsService: EmsUserDetailsService, val passw
             "/api/auth/**",
             "/api/_info/**",
             "/api/programmeLanguage/available/**",
-            "/api/resources/logo/**"
+            "/api/resources/logo/**",
+            "/api/i18n/**",
+            "/api/registration",
         )
     }
 
     override fun configure(http: HttpSecurity) {
+        if (!environment.acceptsProfiles(Profiles.of(ApplicationContextProfiles.TEST_CONTAINER))) {
+            http.csrf().disable()
+                // discuss enabling this to prevent CSRF attack
+                //.csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()).and()
+                .cors()
+        } else {
+            http.csrf().ignoringAntMatchers("/api/**")
+        }
+
         http
-            .csrf().disable()
-            .cors()
-            .and()
             .authorizeRequests()
             .antMatchers(*WHITELIST).permitAll()
             .antMatchers("/api/**").fullyAuthenticated()
@@ -53,6 +76,13 @@ class SecurityConfig(val emsUserDetailsService: EmsUserDetailsService, val passw
             .logout()
             .invalidateHttpSession(true)
             .deleteCookies("JSESSIONID")
+
+        http.headers()
+            .addHeaderWriter(XContentTypeOptionsHeaderWriter())
+            .addHeaderWriter(XFrameOptionsHeaderWriter())
+            .addHeaderWriter(ReferrerPolicyHeaderWriter(ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN))
+            .addHeaderWriter(XXssProtectionHeaderWriter())
+            .addHeaderWriter(HstsHeaderWriter())
     }
 
     override fun configure(authenticationManagerBuilder: AuthenticationManagerBuilder) {
@@ -68,12 +98,7 @@ class SecurityConfig(val emsUserDetailsService: EmsUserDetailsService, val passw
     }
 
     override fun configure(webSecurity: WebSecurity) {
-        // permit all static resources
-        webSecurity.ignoring()
-            .antMatchers("/**/*.{js|css|html}")
-            .antMatchers("/api/i18n/**")
-            .antMatchers("/favicon.ico")
-            .antMatchers("/api/registration")
+        webSecurity.ignoring().requestMatchers(PathRequest.toStaticResources().atCommonLocations())
     }
 
     @Bean

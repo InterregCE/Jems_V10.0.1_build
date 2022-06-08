@@ -8,14 +8,14 @@
             <mat-icon (click)="removeFromFilters(value)" matChipRemove>cancel</mat-icon>
         </mat-chip>
         <input #filterInput
-               (keyup.enter)="addToFilters($event.target.value); filterInput.value = ''"
+               (keyup.enter)="$event.target.value.toString().length > 1 && addToFilters($event.target.value); filterInput.value = ''"
                *ngIf="type === 'text'"
                [matChipInputFor]="filterChip"
                [placeholder]="placeholder | translate"
                matInput>
 
         <input #filterInput
-               (keyup.enter)="addToFilters($event.target.value); filterInput.value = ''"
+               (keyup.enter)="$event.target.value.toString().length > 0 && addToFilters($event.target.value); filterInput.value = ''"
                *ngIf="type === 'number'"
                [(ngModel)]="currentValue"
                [matChipInputFor]="filterChip"

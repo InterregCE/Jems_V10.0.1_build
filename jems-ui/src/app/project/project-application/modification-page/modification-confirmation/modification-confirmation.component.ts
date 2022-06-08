@@ -9,7 +9,7 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
 @UntilDestroy()
 @Component({
-  selector: 'app-modification-confirmation',
+  selector: 'jems-modification-confirmation',
   templateUrl: './modification-confirmation.component.html',
   styleUrls: ['./modification-confirmation.component.scss'],
   providers: [FormService],
@@ -46,7 +46,7 @@ export class ModificationConfirmationComponent implements OnInit {
 
   ngOnInit(): void {
     this.formService.init(this.decisionForm, of(!this.decision &&
-      this.projectStatus === ProjectStatusDTO.StatusEnum.MODIFICATIONPRECONTRACTINGSUBMITTED));
+      ((this.projectStatus === ProjectStatusDTO.StatusEnum.MODIFICATIONPRECONTRACTINGSUBMITTED) || this.projectStatus === ProjectStatusDTO.StatusEnum.MODIFICATIONSUBMITTED)));
     if (this.decision) {
       this.decisionForm.patchValue({
         ...this.decision,
@@ -98,6 +98,10 @@ export class ModificationConfirmationComponent implements OnInit {
   }
 
   isStatusAccepted(): boolean {
-    return this.decision?.status === ProjectStatusDTO.StatusEnum.APPROVED;
+    return this.decision?.status === ProjectStatusDTO.StatusEnum.APPROVED || this.decision?.status === ProjectStatusDTO.StatusEnum.CONTRACTED;
+  }
+
+  getSwitchValue() {
+    return this.decision ? this.decision?.status : this.ProjectStatus.APPROVED;
   }
 }

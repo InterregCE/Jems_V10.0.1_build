@@ -6,6 +6,7 @@ import io.cloudflight.jems.server.project.service.model.ProjectManagement
 import io.cloudflight.jems.server.project.service.model.ProjectOverallObjective
 import io.cloudflight.jems.server.project.service.model.ProjectPartnership
 import io.cloudflight.jems.server.project.service.model.ProjectRelevance
+import io.cloudflight.jems.server.project.service.model.ProjectRelevanceBenefit
 
 interface ProjectDescriptionPersistence {
 
@@ -20,4 +21,6 @@ interface ProjectDescriptionPersistence {
     fun updateProjectManagement(id: Long, projectManagement: ProjectManagement): ProjectManagement
 
     fun updateProjectLongTermPlans(id: Long, projectLongTermPlans: ProjectLongTermPlans): ProjectLongTermPlans
+
+    fun getBenefits(projectId: Long, version: String?): List<ProjectRelevanceBenefit>?
 }

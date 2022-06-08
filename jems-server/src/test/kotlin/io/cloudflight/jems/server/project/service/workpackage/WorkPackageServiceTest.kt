@@ -1,11 +1,13 @@
 package io.cloudflight.jems.server.project.service.workpackage
 
 import io.cloudflight.jems.api.call.dto.CallStatus
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.workpackage.InputWorkPackageCreate
 import io.cloudflight.jems.api.project.dto.workpackage.InputWorkPackageUpdate
 import io.cloudflight.jems.api.project.dto.workpackage.OutputWorkPackage
+import io.cloudflight.jems.server.call.defaultAllowedRealCostsByCallType
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.call.entity.CallTranslEntity
 import io.cloudflight.jems.server.common.entity.TranslationId
@@ -15,6 +17,7 @@ import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageTransl
 import io.cloudflight.jems.server.project.repository.ProjectRepository
+import io.cloudflight.jems.server.project.repository.partneruser.UserPartnerCollaboratorRepository
 import io.cloudflight.jems.server.project.repository.workpackage.WorkPackageRepository
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.user.entity.UserEntity
@@ -24,6 +27,8 @@ import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
+import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -64,8 +69,12 @@ class WorkPackageServiceTest {
         endDateStep1 = null,
         endDate = ZonedDateTime.now().plusDays(5L),
         status = CallStatus.DRAFT,
+        type = CallType.STANDARD,
         translatedValues = mutableSetOf(),
-        lengthOfPeriod = 1
+        lengthOfPeriod = 1,
+        allowedRealCosts = defaultAllowedRealCostsByCallType(CallType.STANDARD),
+        preSubmissionCheckPluginKey = null,
+        firstStepPreSubmissionCheckPluginKey = null
     ).apply { translatedValues.add(CallTranslEntity(TranslationId(this, SystemLanguage.EN), "This is a dummy call")) }
 
     private val statusDraft = ProjectStatusHistoryEntity(
@@ -109,8 +118,11 @@ class WorkPackageServiceTest {
     @MockK
     lateinit var projectRepository: ProjectRepository
 
-    @MockK
-    lateinit var collaboratorRepository: UserProjectCollaboratorRepository
+    @RelaxedMockK
+    lateinit var projectCollaboratorRepository: UserProjectCollaboratorRepository
+
+    @RelaxedMockK
+    lateinit var partnerCollaboratorRepository: UserPartnerCollaboratorRepository
 
     lateinit var workPackageService: WorkPackageService
 
@@ -120,7 +132,8 @@ class WorkPackageServiceTest {
         workPackageService = WorkPackageServiceImpl(
             workPackageRepository,
             projectRepository,
-            collaboratorRepository,
+            projectCollaboratorRepository,
+            partnerCollaboratorRepository
         )
     }
 
@@ -195,6 +208,17 @@ class WorkPackageServiceTest {
         every { workPackageRepository.saveAll(emptyList()) } returns emptySet()
 
         assertDoesNotThrow { workPackageService.deleteWorkPackage(1L, 1) }
+    }
+
+    @Test
+    fun `getting project for work package should fetch collaborators`() {
+        every { workPackageRepository.findById(1) } returns Optional.of(mockWorkPackage)
+
+        workPackageService.getProjectForWorkPackageId(mockWorkPackage.id)
+
+        verify { projectRepository.findById(project.id) }
+        verify { partnerCollaboratorRepository.findAllByProjectId(project.id) }
+        verify { projectCollaboratorRepository.findAllByIdProjectId(project.id) }
     }
 
 }

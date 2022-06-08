@@ -7,6 +7,7 @@ import {CallBudgetSettingsPageComponent} from './call-budget-settings-page/call-
 import {CallDetailPageComponent} from './call-detail-page/call-detail-page.component';
 import {UserRoleDTO} from '@cat/api';
 import {ApplicationFormConfigurationPageComponent} from './application-form-configuration-page/application-form-configuration-page.component';
+import {PreSubmissionCheckSettingsPageComponent} from './pre-submission-check-settings-page/pre-submission-check-settings-page.component';
 
 export const routes: Routes = [
   {
@@ -66,6 +67,15 @@ export const routes: Routes = [
             },
             canActivate: [PermissionGuard],
             component: ApplicationFormConfigurationPageComponent,
+          },
+          {
+            path: 'preSubmissionCheckSettings',
+            data: {
+              breadcrumb: 'call.detail.pre.submission.check.config.title',
+              permissionsOnly: [UserRoleDTO.PermissionsEnum.CallRetrieve],
+            },
+            canActivate: [PermissionGuard],
+            component: PreSubmissionCheckSettingsPageComponent,
           },
         ],
       },

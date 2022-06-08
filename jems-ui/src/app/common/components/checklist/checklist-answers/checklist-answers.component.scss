@@ -1,0 +1,23 @@
+.score-input {
+  width: 4rem;
+}
+
+.error {
+  width: 4rem;
+}
+
+.rating-main {
+  font-size: 1.33em;
+  font-weight: var(--body-strong-font-weight);
+}
+
+.score-weight {
+  font-size: .675rem;
+  font-weight: 350;
+}
+
+.score-calculation {
+  margin-top: 2.5rem;
+  border-top: 1px solid var(--table-border-color);
+  padding-top: 1rem;
+}

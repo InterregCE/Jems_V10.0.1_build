@@ -11,6 +11,7 @@ export class CallBudgetSettingsPageStore {
   allowedRealCosts$: Observable<AllowedRealCostsDTO>;
   callIsEditable$: Observable<boolean>;
   callIsPublished$: Observable<boolean>;
+  isSPFCall$: Observable<boolean>;
 
   private allowedRealCostsSaved$ = new Subject<AllowedRealCostsDTO>();
 
@@ -19,6 +20,7 @@ export class CallBudgetSettingsPageStore {
     this.allowedRealCosts$ = this.allowedRealCosts();
     this.callIsEditable$ = this.callStore.callIsEditable$;
     this.callIsPublished$ = this.callStore.callIsPublished$;
+    this.isSPFCall$ = this.callStore.isSPFCall();
   }
 
   updateAllowedRealCosts(allowedRealCosts: AllowedRealCostsDTO): Observable<AllowedRealCostsDTO> {

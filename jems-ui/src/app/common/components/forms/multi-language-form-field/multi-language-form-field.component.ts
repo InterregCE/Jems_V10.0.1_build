@@ -23,7 +23,7 @@ import {LanguageStore} from '@common/services/language-store.service';
 
 @UntilDestroy()
 @Component({
-  selector: 'app-multi-language-form-field',
+  selector: 'jems-multi-language-form-field',
   templateUrl: './multi-language-form-field.component.html',
   styleUrls: ['./multi-language-form-field.component.scss'],
   providers: [
@@ -41,7 +41,6 @@ import {LanguageStore} from '@common/services/language-store.service';
 })
 export class MultiLanguageFormFieldComponent implements OnInit, ControlValueAccessor, Validator {
 
-  disabled = false;
   constants = MultiLanguageFormFieldConstants;
 
   @Input()
@@ -60,6 +59,10 @@ export class MultiLanguageFormFieldComponent implements OnInit, ControlValueAcce
   useFallBackLanguage = false;
   @Input()
   isFallBackLanguageReadonly = false;
+  @Input()
+  disabled = false;
+  @Input()
+  condensed = false;
 
   multiLanguageFormGroup: FormGroup;
   currentLanguage$: Observable<string>;
@@ -106,7 +109,7 @@ export class MultiLanguageFormFieldComponent implements OnInit, ControlValueAcce
           });
           this.inputs.setValue(inputTranslations, {emitEvent: false});
         } else {
-          this.inputs.setValue(newValue, {emitEvent: false});
+          this.inputs.patchValue(newValue, {emitEvent: false});
         }
       } else {
         this.inputs.setValue(this.multiLanguageContainerService.multiLanguageFormFieldDefaultValue(this.useFallBackLanguage), {emitEvent: false});
@@ -193,7 +196,7 @@ export class MultiLanguageFormFieldComponent implements OnInit, ControlValueAcce
           if (translation?.invalid) {
             return [language, INPUT_STATE.INVALID];
           }
-          return [language, translation?.value ? INPUT_STATE.VALID : INPUT_STATE.EMPTY];
+          return [language, translation?.value || this.disabled ? INPUT_STATE.VALID : INPUT_STATE.EMPTY];
         })
       ));
   }

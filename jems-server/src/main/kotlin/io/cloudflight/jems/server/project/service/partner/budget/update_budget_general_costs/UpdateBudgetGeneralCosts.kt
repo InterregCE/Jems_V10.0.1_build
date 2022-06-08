@@ -29,21 +29,29 @@ abstract class UpdateBudgetGeneralCosts(
         budgetGeneralCosts: List<BudgetGeneralCostEntry>,
         budgetCategory: BudgetCategory
     ): List<BudgetGeneralCostEntry> {
+        val projectId = partnerPersistence.getProjectIdForPartnerId(partnerId)
+        val callId = projectPersistence.getCallIdOfProject(projectId)
+        val periods = budgetGeneralCosts.map { it.budgetPeriods }.flatten().toSet()
+        budgetCostValidator.validateAgainstAFConfig(
+            callId,
+            periods,
+            budgetCategory,
+            budgetGeneralCosts.map { it.numberOfUnits },
+            budgetGeneralCosts.map { Pair(it.unitCostId, it.unitType) }
+        )
 
         budgetCostValidator.validateBaseEntries(budgetGeneralCosts)
         budgetCostValidator.validatePricePerUnits(budgetGeneralCosts.map { it.pricePerUnit })
 
         budgetCostValidator.validateBudgetPeriods(
-            budgetGeneralCosts.map { it.budgetPeriods }.flatten().toSet(),
-            projectPersistence.getProjectPeriods(
-                partnerPersistence.getProjectIdForPartnerId(partnerId)
-            ).map { it.number }.toSet()
+            periods,
+            projectPersistence.getProjectPeriods(projectId).map { it.number }.toSet()
         )
 
         throwIfOtherCostFlatRateIsSet(budgetOptionsPersistence.getBudgetOptions(partnerId))
 
         budgetCostValidator.validateAllowedRealCosts(
-            projectPersistence.getCallIdOfProject(partnerPersistence.getProjectIdForPartnerId(partnerId)),
+            callId,
             budgetGeneralCosts,
             budgetCategory
         )

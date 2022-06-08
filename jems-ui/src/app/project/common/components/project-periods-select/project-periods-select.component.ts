@@ -4,7 +4,7 @@ import {AbstractControl} from '@angular/forms';
 import {Alert} from '@common/components/forms/alert';
 
 @Component({
-  selector: 'app-project-periods-select',
+  selector: 'jems-project-periods-select',
   templateUrl: './project-periods-select.component.html',
   styleUrls: ['./project-periods-select.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

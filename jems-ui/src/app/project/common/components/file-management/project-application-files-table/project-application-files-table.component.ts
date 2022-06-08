@@ -10,10 +10,11 @@ import {combineLatest, Observable, Subject} from 'rxjs';
 import {Forms} from '@common/utils/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {AcceptedFileTypesConstants} from '@project/common/components/file-management/accepted-file-types.constants';
 
 @UntilDestroy()
 @Component({
-  selector: 'app-project-application-files-table',
+  selector: 'jems-project-application-files-table',
   templateUrl: './project-application-files-table.component.html',
   styleUrls: ['./project-application-files-table.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -22,7 +23,7 @@ export class ProjectApplicationFilesTableComponent {
   Alert = Alert;
   Tables = Tables;
 
-  acceptedFilesTypes = ['.csv', '.dat', '.db', '.dbf', '.log', '.mdb', '.xml', '.email', '.eml', '.emlx', '.msg', '.oft', '.ost', '.pst', '.vcf', '.bmp', '.gif', '.jpeg', '.jpg', '.png', '.psd', '.svg', '.tif', '.tiff', '.htm', '.html', '.key', '.odp', '.pps', '.ppt', '.ppt', '.pptx', '.ods', '.xls', '.xlsm', '.xlsx', '.doc', '.docx', '.odt', '.pdf', '.rtf', '.tex', '.txt', '.wpd', '.mov', '.avi', '.mp4', '.zip', '.rar', '.ace', '.7z', '.url'];
+  acceptedFilesTypes = AcceptedFileTypesConstants.acceptedFilesTypes;
   displayedColumns: string[] = ['name', 'uploadDate', 'user', 'description', 'actions'];
   dataSource = new MatTableDataSource<ProjectFileMetadataDTO>();
   maximumAllowedFileSizeInMB: number;

@@ -1,14 +1,14 @@
-<app-project-page-template
+<jems-project-page-template
         *ngIf="details$ | async as details"
         [titleText]="'project.application.form.acronym' | translate : {projectTitle: projectStore.projectTitle$ | async}"
         subTitleKey="project.application.form.section.part.a">
-    <app-project-application-form
+    <jems-project-application-form
             *ngIf="details$ | async as details"
             [project]="details.project"
             [projectForm]="details.projectForm"
             [leadPartner]="details.leadPartner"
             [priorities]="details.callObjectives.priorities"
             [objectivesWithPolicies]="details.callObjectives.objectivesWithPolicies">
-    </app-project-application-form>
-</app-project-page-template>
+    </jems-project-application-form>
+</jems-project-page-template>
 

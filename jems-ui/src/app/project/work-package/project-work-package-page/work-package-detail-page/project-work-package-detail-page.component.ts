@@ -6,7 +6,7 @@ import {RoutingService} from '@common/services/routing.service';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
 
 @Component({
-  selector: 'app-project-work-package-detail-page',
+  selector: 'jems-project-work-package-detail-page',
   templateUrl: './project-work-package-detail-page.component.html',
   styleUrls: ['./project-work-package-detail-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

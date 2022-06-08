@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.service.partner.budget.update_budget_travel_and_accommodation_costs
 
+import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.project.service.ProjectPersistence
@@ -69,6 +70,13 @@ internal class UpdateBudgetTravelAndAccommodationCostsTest : UnitTest() {
     fun `should update and return budget travel and accommodation cost entries for the specified partner when there isn't any validation error`() {
         val periods = budgetTravelCostEntries.map { it.budgetPeriods }.flatten().toSet()
         val pricePerUnits = budgetTravelCostEntries.map { it.pricePerUnit }
+        every { budgetCostValidator.validateAgainstAFConfig(
+            callId,
+            periods,
+            BudgetCategory.TravelAndAccommodationCosts,
+            budgetTravelCostEntries.map { it.numberOfUnits }.toList(),
+            budgetTravelCostEntries.map { Pair(it.unitCostId, it.unitType) }.toList()
+        ) } returns Unit
         every { budgetCostValidator.validateBaseEntries(budgetTravelCostEntries) } returns Unit
         every { budgetCostValidator.validatePricePerUnits(pricePerUnits) } returns Unit
         every { budgetCostValidator.validateBudgetPeriods(periods, validPeriodNumbers) } returns Unit
@@ -94,35 +102,42 @@ internal class UpdateBudgetTravelAndAccommodationCostsTest : UnitTest() {
             budgetTravelCostEntries
         )
 
-        verify(atLeast = 1) { budgetCostValidator.validateBaseEntries(budgetTravelCostEntries) }
-        verify(atLeast = 1) { budgetCostValidator.validatePricePerUnits(pricePerUnits) }
-        verify(atLeast = 1) { budgetCostValidator.validateBudgetPeriods(periods, validPeriodNumbers) }
-        verify(atLeast = 1) { budgetCostValidator.validateAllowedRealCosts(callId, any(), any()) }
-        verify(atLeast = 1) { projectPersistence.getCallIdOfProject(projectId) }
-        verify(atLeast = 1) { budgetOptionsPersistence.getBudgetOptions(partnerId) }
-        verify(atLeast = 1) { projectPersistence.getProjectPeriods(projectId) }
-        verify(atLeast = 1) { partnerPersistence.getProjectIdForPartnerId(partnerId) }
-        verify(atLeast = 1) {
+        verify { partnerPersistence.getProjectIdForPartnerId(partnerId) }
+        verify { projectPersistence.getCallIdOfProject(projectId) }
+        verify { budgetCostValidator.validateAgainstAFConfig(callId, periods, any(), any(), any()) }
+        verify { budgetCostValidator.validateBaseEntries(budgetTravelCostEntries) }
+        verify { budgetCostValidator.validatePricePerUnits(pricePerUnits) }
+        verify { budgetCostValidator.validateBudgetPeriods(periods, validPeriodNumbers) }
+        verify { budgetCostValidator.validateAllowedRealCosts(callId, any(), any()) }
+        verify { budgetOptionsPersistence.getBudgetOptions(partnerId) }
+        verify { projectPersistence.getProjectPeriods(projectId) }
+        verify {
             persistence.deleteAllBudgetTravelAndAccommodationCostsExceptFor(
                 partnerId,
                 listBudgetEntriesIds
             )
         }
-        verify(atLeast = 1) {
+        verify {
             persistence.createOrUpdateBudgetTravelAndAccommodationCosts(
                 projectId,
                 partnerId,
                 budgetTravelCostEntries.toList()
             )
         }
-        confirmVerified(persistence, budgetCostValidator, budgetOptionsPersistence, projectPersistence)
-
+        confirmVerified(persistence, budgetCostValidator, budgetOptionsPersistence, projectPersistence, partnerPersistence)
 
         assertEquals(budgetTravelCostEntries, result)
     }
 
     @Test
     fun `should throw I18nValidationException when there is a base validation error`() {
+        every { budgetCostValidator.validateAgainstAFConfig(
+            callId,
+            budgetTravelCostEntries.map { it.budgetPeriods }.flatten().toSet(),
+            BudgetCategory.TravelAndAccommodationCosts,
+            budgetTravelCostEntries.map { it.numberOfUnits }.toList(),
+            budgetTravelCostEntries.map { Pair(it.unitCostId, it.unitType) }.toList()
+        ) } returns Unit
         every { budgetCostValidator.validateBaseEntries(budgetTravelCostEntries) } throws I18nValidationException()
 
         assertThrows<I18nValidationException> {
@@ -132,12 +147,22 @@ internal class UpdateBudgetTravelAndAccommodationCostsTest : UnitTest() {
             )
         }
 
-        verify(atLeast = 1) { budgetCostValidator.validateBaseEntries(budgetTravelCostEntries) }
-        confirmVerified(budgetCostValidator)
+        verify { partnerPersistence.getProjectIdForPartnerId(partnerId) }
+        verify { projectPersistence.getCallIdOfProject(projectId) }
+        verify { budgetCostValidator.validateAgainstAFConfig(callId, any(), any(), any(), any()) }
+        verify { budgetCostValidator.validateBaseEntries(budgetTravelCostEntries) }
+        confirmVerified(budgetCostValidator, partnerPersistence, projectPersistence)
     }
 
     @Test
     fun `should throw I18nValidationException when there is validation error in pricePerUnits`() {
+        every { budgetCostValidator.validateAgainstAFConfig(
+            callId,
+            budgetTravelCostEntries.map { it.budgetPeriods }.flatten().toSet(),
+            BudgetCategory.TravelAndAccommodationCosts,
+            budgetTravelCostEntries.map { it.numberOfUnits }.toList(),
+            budgetTravelCostEntries.map { Pair(it.unitCostId, it.unitType) }.toList()
+        ) } returns Unit
         val pricePerUnits = budgetTravelCostEntries.map { it.pricePerUnit }
         every { budgetCostValidator.validateBaseEntries(budgetTravelCostEntries) } returns Unit
         every { budgetCostValidator.validatePricePerUnits(pricePerUnits) } throws I18nValidationException()
@@ -149,16 +174,24 @@ internal class UpdateBudgetTravelAndAccommodationCostsTest : UnitTest() {
             )
         }
 
-        verify(atLeast = 1) { budgetCostValidator.validateBaseEntries(budgetTravelCostEntries) }
-        verify(atLeast = 1) { budgetCostValidator.validatePricePerUnits(pricePerUnits) }
-        verify(atLeast = 1) { budgetCostValidator.validateAllowedRealCosts(callId, any(), any()) }
-        verify(atLeast = 1) { projectPersistence.getCallIdOfProject(projectId) }
-        confirmVerified(budgetCostValidator)
+        verify { partnerPersistence.getProjectIdForPartnerId(partnerId) }
+        verify { projectPersistence.getCallIdOfProject(projectId) }
+        verify { budgetCostValidator.validateAgainstAFConfig(callId, any(), any(), any(), any()) }
+        verify { budgetCostValidator.validateBaseEntries(budgetTravelCostEntries) }
+        verify { budgetCostValidator.validatePricePerUnits(pricePerUnits) }
+        verify { budgetCostValidator.validateAllowedRealCosts(callId, any(), any()) }
+        confirmVerified(budgetCostValidator, partnerPersistence, projectPersistence)
     }
 
     @Test
     fun `should throw I18nValidationException when travelAndAccommodationOnStaffCostsFlatRate is set in the budget options`() {
-
+        every { budgetCostValidator.validateAgainstAFConfig(
+            callId,
+            budgetTravelCostEntries.map { it.budgetPeriods }.flatten().toSet(),
+            BudgetCategory.TravelAndAccommodationCosts,
+            budgetTravelCostEntries.map { it.numberOfUnits }.toList(),
+            budgetTravelCostEntries.map { Pair(it.unitCostId, it.unitType) }.toList()
+        ) } returns Unit
         every { budgetCostValidator.validateBaseEntries(budgetTravelCostEntries) } returns Unit
         every { budgetCostValidator.validatePricePerUnits(budgetTravelCostEntries.map { it.pricePerUnit }) } returns Unit
         every { budgetOptionsPersistence.getBudgetOptions(partnerId) } returns ProjectPartnerBudgetOptions(
@@ -173,15 +206,24 @@ internal class UpdateBudgetTravelAndAccommodationCostsTest : UnitTest() {
             )
         }
 
-        verify(atLeast = 1) { budgetCostValidator.validateBaseEntries(budgetTravelCostEntries) }
-        verify(atLeast = 1) { budgetCostValidator.validatePricePerUnits(budgetTravelCostEntries.map { it.pricePerUnit }) }
-        verify(atLeast = 1) { budgetOptionsPersistence.getBudgetOptions(partnerId) }
-        confirmVerified(budgetCostValidator, budgetOptionsPersistence)
+        verify { partnerPersistence.getProjectIdForPartnerId(partnerId) }
+        verify { projectPersistence.getCallIdOfProject(projectId) }
+        verify { budgetCostValidator.validateAgainstAFConfig(callId, any(), any(), any(), any()) }
+        verify { budgetCostValidator.validateBaseEntries(budgetTravelCostEntries) }
+        verify { budgetCostValidator.validatePricePerUnits(budgetTravelCostEntries.map { it.pricePerUnit }) }
+        verify { budgetOptionsPersistence.getBudgetOptions(partnerId) }
+        confirmVerified(budgetCostValidator, budgetOptionsPersistence, partnerPersistence, projectPersistence)
     }
 
     @Test
     fun `should throw I18nValidationException when otherCostsOnStaffCostsFlatRate is set in the budget options`() {
-
+        every { budgetCostValidator.validateAgainstAFConfig(
+            callId,
+            budgetTravelCostEntries.map { it.budgetPeriods }.flatten().toSet(),
+            BudgetCategory.TravelAndAccommodationCosts,
+            budgetTravelCostEntries.map { it.numberOfUnits }.toList(),
+            budgetTravelCostEntries.map { Pair(it.unitCostId, it.unitType) }.toList()
+        ) } returns Unit
         every { budgetCostValidator.validateBaseEntries(budgetTravelCostEntries) } returns Unit
         every { budgetCostValidator.validatePricePerUnits(budgetTravelCostEntries.map { it.pricePerUnit }) } returns Unit
         every { budgetOptionsPersistence.getBudgetOptions(partnerId) } returns ProjectPartnerBudgetOptions(
@@ -196,15 +238,25 @@ internal class UpdateBudgetTravelAndAccommodationCostsTest : UnitTest() {
             )
         }
 
-        verify(atLeast = 1) { budgetCostValidator.validateBaseEntries(budgetTravelCostEntries) }
-        verify(atLeast = 1) { budgetCostValidator.validatePricePerUnits(budgetTravelCostEntries.map { it.pricePerUnit }) }
-        verify(atLeast = 1) { budgetOptionsPersistence.getBudgetOptions(partnerId) }
-        confirmVerified(budgetCostValidator, budgetOptionsPersistence)
+        verify { partnerPersistence.getProjectIdForPartnerId(partnerId) }
+        verify { projectPersistence.getCallIdOfProject(projectId) }
+        verify { budgetCostValidator.validateAgainstAFConfig(callId, any(), any(), any(), any()) }
+        verify { budgetCostValidator.validateBaseEntries(budgetTravelCostEntries) }
+        verify { budgetCostValidator.validatePricePerUnits(budgetTravelCostEntries.map { it.pricePerUnit }) }
+        verify { budgetOptionsPersistence.getBudgetOptions(partnerId) }
+        confirmVerified(budgetCostValidator, budgetOptionsPersistence, partnerPersistence, projectPersistence)
     }
 
     @Test
     fun `should throw I18nValidationException when there is a validation error in budgetPeriods`() {
         val budgetPeriods = budgetTravelCostEntriesWithInvalidPeriods.map { it.budgetPeriods }.flatten().toSet()
+        every { budgetCostValidator.validateAgainstAFConfig(
+            callId,
+            budgetPeriods,
+            BudgetCategory.TravelAndAccommodationCosts,
+            budgetTravelCostEntries.map { it.numberOfUnits }.toList(),
+            budgetTravelCostEntries.map { Pair(it.unitCostId, it.unitType) }.toList()
+        ) } returns Unit
         every { budgetCostValidator.validateBaseEntries(budgetTravelCostEntriesWithInvalidPeriods) } returns Unit
         every { budgetCostValidator.validatePricePerUnits(budgetTravelCostEntriesWithInvalidPeriods.map { it.pricePerUnit }) } returns Unit
         every {
@@ -225,15 +277,16 @@ internal class UpdateBudgetTravelAndAccommodationCostsTest : UnitTest() {
             )
         }
 
-        verify(atLeast = 1) { budgetCostValidator.validateBaseEntries(budgetTravelCostEntriesWithInvalidPeriods) }
-        verify(atLeast = 1) { budgetCostValidator.validatePricePerUnits(budgetTravelCostEntriesWithInvalidPeriods.map { it.pricePerUnit }) }
-        verify(atLeast = 1) { budgetCostValidator.validateBudgetPeriods(budgetPeriods, validPeriodNumbers) }
-        verify(atLeast = 1) { budgetCostValidator.validateAllowedRealCosts(callId, any(), any()) }
-        verify(atLeast = 1) { projectPersistence.getCallIdOfProject(projectId) }
-        verify(atLeast = 1) { budgetOptionsPersistence.getBudgetOptions(partnerId) }
-        verify(atLeast = 1) { projectPersistence.getProjectPeriods(projectId) }
-        verify(atLeast = 1) { partnerPersistence.getProjectIdForPartnerId(partnerId) }
-        confirmVerified(budgetCostValidator, budgetOptionsPersistence, projectPersistence)
+        verify { partnerPersistence.getProjectIdForPartnerId(partnerId) }
+        verify { projectPersistence.getCallIdOfProject(projectId) }
+        verify { budgetCostValidator.validateAgainstAFConfig(callId, any(), any(), any(), any()) }
+        verify { budgetCostValidator.validateBaseEntries(budgetTravelCostEntriesWithInvalidPeriods) }
+        verify { budgetCostValidator.validatePricePerUnits(budgetTravelCostEntriesWithInvalidPeriods.map { it.pricePerUnit }) }
+        verify { budgetCostValidator.validateBudgetPeriods(budgetPeriods, validPeriodNumbers) }
+        verify { budgetCostValidator.validateAllowedRealCosts(callId, any(), any()) }
+        verify { budgetOptionsPersistence.getBudgetOptions(partnerId) }
+        verify { projectPersistence.getProjectPeriods(projectId) }
+        confirmVerified(budgetCostValidator, budgetOptionsPersistence, projectPersistence, partnerPersistence)
     }
 
     private fun budgetTravelCostEntries(listBudgetEntriesIds: Set<Long>, budgetPeriods: MutableSet<BudgetPeriod>) =

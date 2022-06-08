@@ -12,6 +12,7 @@ import io.cloudflight.jems.server.project.service.model.ProjectManagement
 import io.cloudflight.jems.server.project.service.model.ProjectOverallObjective
 import io.cloudflight.jems.server.project.service.model.ProjectPartnership
 import io.cloudflight.jems.server.project.service.model.ProjectRelevance
+import io.cloudflight.jems.server.project.service.model.ProjectRelevanceBenefit
 import io.cloudflight.jems.server.project.service.toEntity
 import io.cloudflight.jems.server.project.service.toProjectLongTermPlans
 import io.cloudflight.jems.server.project.service.toProjectManagement
@@ -19,6 +20,7 @@ import io.cloudflight.jems.server.project.service.toProjectOverallObjective
 import io.cloudflight.jems.server.project.service.toProjectPartnership
 import io.cloudflight.jems.server.project.service.toProjectRelevance
 import io.cloudflight.jems.server.project.service.toRelevanceBenefits
+import io.cloudflight.jems.server.project.service.toRelevanceSpfRecipients
 import io.cloudflight.jems.server.project.service.toRelevanceStrategies
 import io.cloudflight.jems.server.project.service.toRelevanceSynergies
 import org.springframework.stereotype.Repository
@@ -72,6 +74,7 @@ class ProjectDescriptionPersistenceProvider(
             projectRelevance = projectRelevanceRepository
                 .findByProjectIdAsOfTimestamp(projectId, timestamp).toProjectRelevance(
                     projectRelevanceRepository.findBenefitsByProjectIdAsOfTimestamp(projectId, timestamp).toRelevanceBenefits(),
+                    projectRelevanceRepository.findSpfRecipientsByProjectIdAsOfTimestamp(projectId, timestamp).toRelevanceSpfRecipients(),
                     projectRelevanceRepository.findStrategiesByProjectIdAsOfTimestamp(projectId, timestamp).toRelevanceStrategies(),
                     projectRelevanceRepository.findSynergiesByProjectIdAsOfTimestamp(projectId, timestamp).toRelevanceSynergies()
                 ),
@@ -111,4 +114,15 @@ class ProjectDescriptionPersistenceProvider(
     override fun updateProjectLongTermPlans(id: Long, projectLongTermPlans: ProjectLongTermPlans): ProjectLongTermPlans {
         return projectLongTermPlansRepository.save(projectLongTermPlans.toEntity(id)).toProjectLongTermPlans()
     }
+
+    @Transactional(readOnly = true)
+    override fun getBenefits(projectId: Long, version: String?): List<ProjectRelevanceBenefit>? =
+        projectVersionUtils.fetch(version, projectId,
+            currentVersionFetcher = {
+                projectRelevanceRepository.findFirstByProjectId(projectId)?.toProjectRelevance()?.projectBenefits
+            },
+            previousVersionFetcher = { timestamp ->
+                projectRelevanceRepository.findBenefitsByProjectIdAsOfTimestamp(projectId, timestamp).toRelevanceBenefits()
+            }
+        )
 }

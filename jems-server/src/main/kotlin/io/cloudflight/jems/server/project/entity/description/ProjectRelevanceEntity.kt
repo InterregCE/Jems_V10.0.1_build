@@ -26,6 +26,11 @@ class ProjectRelevanceEntity(
     @JoinColumn(name = "project_relevance_id", nullable = false, insertable = true)
     val projectBenefits: Set<ProjectRelevanceBenefitEntity> = emptySet(),
 
+    // C2.4a
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true)
+    @JoinColumn(name = "project_relevance_id", nullable = false, insertable = true)
+    val projectSpfRecipients: Set<ProjectRelevanceSpfRecipientEntity> = emptySet(),
+
     // C2.5
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true)
     @JoinColumn(name = "project_relevance_id", nullable = false, insertable = true)

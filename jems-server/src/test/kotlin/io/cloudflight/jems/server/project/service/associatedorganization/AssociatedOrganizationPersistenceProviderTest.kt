@@ -63,8 +63,11 @@ class AssociatedOrganizationPersistenceProviderTest {
         )
         private val address = AddressEntity(
             country = "country",
+            countryCode = "AT",
             nutsRegion2 = "nutsRegion2",
+            nutsRegion2Code = "AT02",
             nutsRegion3 = "nutsRegion3",
+            nutsRegion3Code = "AT023",
             street = "street",
             houseNumber = "houseNumber",
             postalCode = "postalCode",
@@ -127,8 +130,11 @@ class AssociatedOrganizationPersistenceProviderTest {
             sortNumber = 1,
             address = OutputProjectAssociatedOrganizationAddress(
                 country = "country",
+                countryCode = "AT",
                 nutsRegion2 = "nutsRegion2",
+                nutsRegion2Code = "AT02",
                 nutsRegion3 = "nutsRegion3",
+                nutsRegion3Code = "AT023",
                 street = "street",
                 houseNumber = "houseNumber",
                 postalCode = "postalCode",
@@ -198,8 +204,11 @@ class AssociatedOrganizationPersistenceProviderTest {
         val mockAOARow: AssociatedOrganizationAddressRow = mockk()
         every { mockAOARow.id } returns projectAssociatedOrganization.id
         every { mockAOARow.country } returns "country"
+        every { mockAOARow.countryCode } returns "AT"
         every { mockAOARow.nutsRegion2 } returns "nutsRegion2"
+        every { mockAOARow.nutsRegion2Code } returns "AT02"
         every { mockAOARow.nutsRegion3 } returns "nutsRegion3"
+        every { mockAOARow.nutsRegion3Code } returns "AT023"
         every { mockAOARow.street } returns "street"
         every { mockAOARow.houseNumber } returns "houseNumber"
         every { mockAOARow.postalCode } returns "postalCode"
@@ -297,8 +306,11 @@ class AssociatedOrganizationPersistenceProviderTest {
                 override val partnerNutsRegion3 = "nutsRegion3"
 
                 override val country = "country"
+                override val countryCode = "AT"
                 override val nutsRegion2 = "nutsRegion2"
+                override val nutsRegion2Code = "AT02"
                 override val nutsRegion3 = "nutsRegion3"
+                override val nutsRegion3Code = "AT023"
                 override val street = "street"
                 override val houseNumber = "houseNumber"
                 override val postalCode = "postalCode"
@@ -331,8 +343,11 @@ class AssociatedOrganizationPersistenceProviderTest {
                 override val partnerNutsRegion3 = "nutsRegion3"
 
                 override val country: String? = null
+                override val countryCode: String? = null
                 override val nutsRegion2: String? = null
+                override val nutsRegion2Code: String? = null
                 override val nutsRegion3: String? = null
+                override val nutsRegion3Code: String? = null
                 override val street: String? = null
                 override val houseNumber: String? = null
                 override val postalCode: String? = null

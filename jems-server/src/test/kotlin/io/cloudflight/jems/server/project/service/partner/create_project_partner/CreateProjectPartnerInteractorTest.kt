@@ -1,9 +1,11 @@
 package io.cloudflight.jems.server.project.service.partner.create_project_partner
 
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.utils.partner.PROJECT_ID
@@ -24,6 +26,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestFactory
 import org.junit.jupiter.api.assertThrows
 import org.springframework.http.HttpStatus
+import java.time.ZonedDateTime
 
 internal class CreateProjectPartnerInteractorTest : UnitTest() {
     @MockK
@@ -38,17 +41,38 @@ internal class CreateProjectPartnerInteractorTest : UnitTest() {
     @InjectMockKs
     lateinit var createProjectPartner: CreateProjectPartner
 
-    private val projectPartner = projectPartner(id = 0)
-    private val projectPartnerDetail = projectPartnerDetail()
+    companion object {
+        private val projectPartner = projectPartner(id = 0)
+        private val projectPartnerDetail = projectPartnerDetail()
+        private val projectCallSettings =
+            ProjectCallSettings(
+                callId = 2L,
+                callName = "call",
+                callType = CallType.STANDARD,
+                startDate = ZonedDateTime.now().minusDays(2),
+                endDate = ZonedDateTime.now().plusDays(2),
+                lengthOfPeriod = 2,
+                endDateStep1 = ZonedDateTime.now().plusDays(2),
+                flatRates = emptySet(),
+                lumpSums = emptyList(),
+                unitCosts = emptyList(),
+                stateAids = emptyList(),
+                isAdditionalFundAllowed = false,
+                applicationFormFieldConfigurations = mutableSetOf(),
+                preSubmissionCheckPluginKey = null,
+                firstStepPreSubmissionCheckPluginKey = null
+            )
+    }
 
     @BeforeEach
     fun reset() {
         clearMocks(generalValidator, persistence)
+        every { projectPersistence.getProjectCallSettings(PROJECT_ID) } returns projectCallSettings
     }
 
     @Test
     fun `should validate input when creating the partner`() {
-        every { persistence.create(PROJECT_ID, projectPartner, true) } returns this.projectPartnerDetail
+        every { persistence.create(PROJECT_ID, projectPartner, true) } returns projectPartnerDetail
         every { persistence.countByProjectId(PROJECT_ID) } returns 0
         every { persistence.changeRoleOfLeadPartnerToPartnerIfItExists(PROJECT_ID) } returns Unit
         every { projectPersistence.getProjectSummary(PROJECT_ID) } returns projectSummary()
@@ -76,6 +100,30 @@ internal class CreateProjectPartnerInteractorTest : UnitTest() {
         verify(exactly = 1) { generalValidator.exactLength(projectPartner.pic, 9, "pic") }
         verify(exactly = 1) { generalValidator.onlyDigits(projectPartner.pic, "pic") }
         verify(exactly = 1) { generalValidator.maxLength(projectPartner.vat, 50, "vat") }
+    }
+
+    @Test
+    fun `creating the partner fails if existing active for SPF`() {
+        every { projectPersistence.getProjectCallSettings(PROJECT_ID) } returns projectCallSettings.copy(callType = CallType.SPF)
+        every { persistence.countByProjectIdActive(PROJECT_ID) } returns 1
+
+        assertThrows<MaximumNumberOfActivePartnersReached> { createProjectPartner.create(PROJECT_ID, projectPartner) }
+    }
+
+    @Test
+    fun `creating the partner successful if no existing active for SPF`() {
+        every { projectPersistence.getProjectCallSettings(PROJECT_ID) } returns projectCallSettings.copy(callType = CallType.SPF)
+        every { persistence.countByProjectIdActive(PROJECT_ID) } returns 0
+
+        every { persistence.countByProjectId(PROJECT_ID) } returns 0
+        every { persistence.changeRoleOfLeadPartnerToPartnerIfItExists(PROJECT_ID) } returns Unit
+        every { persistence.create(PROJECT_ID, projectPartner, true) } returns projectPartnerDetail
+        every {
+            persistence.throwIfPartnerAbbreviationAlreadyExists(PROJECT_ID, projectPartner.abbreviation!!)
+        } returns Unit
+        every { projectPersistence.getProjectSummary(PROJECT_ID) } returns projectSummary()
+
+        assertThat(createProjectPartner.create(PROJECT_ID, projectPartner)).isEqualTo(projectPartnerDetail)
     }
 
     @Test

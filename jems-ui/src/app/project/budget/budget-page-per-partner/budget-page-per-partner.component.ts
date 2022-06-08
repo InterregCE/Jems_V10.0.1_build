@@ -1,6 +1,11 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {PartnerBudgetPerFundDTO, ProgrammeFundDTO, ProjectPartnerBudgetPerFundDTO} from '@cat/api';
-import {map, tap} from 'rxjs/operators';
+import {
+  PartnerBudgetPerFundDTO,
+  ProgrammeFundDTO,
+  ProjectCallSettingsDTO,
+  ProjectPartnerBudgetPerFundDTO
+} from '@cat/api';
+import {map, startWith, tap} from 'rxjs/operators';
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
 import {ActivatedRoute} from '@angular/router';
 import {NumberService} from '@common/services/number.service';
@@ -10,28 +15,33 @@ import {ProjectPartnerBudgetAndContribution} from './models/ProjectPartnerBudget
 import {FormVisibilityStatusService} from '@project/common/services/form-visibility-status.service';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {TableConfig} from '@common/directives/table-config/TableConfig';
+import {combineLatest, Observable} from 'rxjs';
+import CallTypeEnum = ProjectCallSettingsDTO.CallTypeEnum;
 
 @Component({
-  selector: 'app-budget-page-per-partner',
+  selector: 'jems-budget-page-per-partner',
   templateUrl: './budget-page-per-partner.component.html',
   styleUrls: ['./budget-page-per-partner.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BudgetPagePerPartnerComponent {
-  displayedColumns: string[] = [];
-  tableConfig: TableConfig[];
+  APPLICATION_FORM = APPLICATION_FORM;
+  tableConfig$: Observable<TableConfig[]>;
+  isCallTypeSpf$: Observable<boolean> = this.projectStore.projectCallType$.pipe(
+    map(callType => callType === CallTypeEnum.SPF)
+  );
 
   chosenProjectFunds$ = this.pageStore.callFunds$
     .pipe(
-      map(funds => [...funds.values()].map(fund => fund.programmeFund)),
-      tap(funds => this.getColumnsToDisplay(funds)),
+      startWith([]),
+      map(funds => [...funds.values()].map(fund => fund.programmeFund))
     );
   budgetColumns: ProjectPartnerBudgetAndContribution[] = [];
 
   budgets$ = this.projectStore.getProjectBudgetPerFund()
     .pipe(
       tap((data: ProjectPartnerBudgetPerFundDTO[]) => this.constructBudgetColumns(data)),
-      tap(() => this.setTotalValue(this.budgetColumns)),
+      tap(() => this.setTotalValue(this.budgetColumns))
     );
 
 
@@ -46,6 +56,21 @@ export class BudgetPagePerPartnerComponent {
               private activatedRoute: ActivatedRoute,
               private pageStore: ProjectPartnerDetailPageStore,
               private visibilityStatusService: FormVisibilityStatusService) {
+    this.tableConfig$ = combineLatest([this.chosenProjectFunds$, this.isCallTypeSpf$])
+      .pipe(map( ([funds, isSpf]) => [
+        {minInRem: 2},
+        {minInRem: 2},
+        ...isSpf ? [{minInRem: 3}] : [],
+        ...funds.flatMap(() => [{minInRem: 7}, {minInRem: 7}]),
+        {minInRem: 5},
+        {minInRem: 5},
+        {minInRem: 5},
+        ...this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_ADD_NEW_CONTRIBUTION_ORIGIN)
+          ? [{minInRem: 5}] : [],
+        {minInRem: 9, maxInRem: 9}, // total eligible budget
+        {minInRem: 4, maxInRem: 4}, // % of total eligible budget
+        {minInRem: 5}
+      ]));
   }
 
   getBudgetAmountForFund(fund: ProgrammeFundDTO, budgets: ProjectPartnerBudgetModel[]): number {
@@ -83,18 +108,19 @@ export class BudgetPagePerPartnerComponent {
   private constructBudgetColumns(budgets: ProjectPartnerBudgetPerFundDTO[]): void {
     this.budgetColumns = [];
     budgets.forEach((budget: ProjectPartnerBudgetPerFundDTO) => {
-        this.budgetColumns.push({
-          partnerSortNumber: budget?.partner?.sortNumber,
-          partnerRole: budget?.partner?.role,
-          partnerCountry: budget?.partner?.country,
-          budgets: this.getPartnerBudgetList(budget.budgetPerFund, budget.totalEligibleBudget),
-          publicContribution: budget.publicContribution,
-          autoPublicContribution: budget.autoPublicContribution,
-          privateContribution: budget.privateContribution,
-          totalContribution: budget.totalPartnerContribution,
-          totalEligibleBudget: NumberService.truncateNumber(budget.totalEligibleBudget),
-          percentOfTotalBudget: budget.percentageOfTotalEligibleBudget
-        });
+      this.budgetColumns.push({
+        partnerSortNumber: budget?.partner?.sortNumber,
+        partnerRole: budget?.partner?.role,
+        partnerCountry: budget?.partner?.country,
+        costType: budget.costType,
+        budgets: this.getPartnerBudgetList(budget.budgetPerFund, budget.totalEligibleBudget),
+        publicContribution: budget.publicContribution,
+        autoPublicContribution: budget.autoPublicContribution,
+        privateContribution: budget.privateContribution,
+        totalContribution: budget.totalPartnerContribution,
+        totalEligibleBudget: NumberService.truncateNumber(budget.totalEligibleBudget),
+        percentOfTotalBudget: budget.percentageOfTotalEligibleBudget
+      });
     });
   }
 
@@ -121,27 +147,4 @@ export class BudgetPagePerPartnerComponent {
     this.totalEligibleBudget = budgets[budgets.length - 1]?.totalEligibleBudget;
   }
 
-  private getColumnsToDisplay(funds: ProgrammeFundDTO[]): void {
-    this.displayedColumns = ['partner', 'country'];
-
-    this.tableConfig = [{minInRem: 2}, {minInRem:2}];
-    funds.forEach(fund => {
-      this.displayedColumns.push('budget' + fund.id, 'percentage' + fund.id);
-      this.tableConfig.push({minInRem:7}, {minInRem:7});
-    });
-    this.displayedColumns.push('publicContribution');
-    if (this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_ADD_NEW_CONTRIBUTION_ORIGIN)) {
-      this.displayedColumns.push('autoPublicContribution');
-    }
-    this.displayedColumns.push('privateContribution', 'totalContribution', 'totalEligibleBudget', 'percentOfTotalBudget');
-    this.tableConfig.push(
-      {minInRem: 5},
-      {minInRem: 5},
-      {minInRem: 5},
-      {minInRem: 5},
-      {minInRem: 4},
-      {minInRem: 4},
-      {minInRem: 5}
-    );
-  }
 }

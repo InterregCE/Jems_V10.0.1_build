@@ -12,7 +12,7 @@ import {FilterListInputComponent} from '@common/components/filter/filter-list-in
 
 @UntilDestroy()
 @Component({
-  selector: 'app-audit-log',
+  selector: 'jems-audit-log',
   templateUrl: './audit-log.component.html',
   styleUrls: ['./audit-log.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

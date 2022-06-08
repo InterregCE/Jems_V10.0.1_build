@@ -3,9 +3,13 @@ package io.cloudflight.jems.server.common.validator
 import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import org.springframework.stereotype.Service
+import java.lang.IllegalArgumentException
 import java.math.BigDecimal
+import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneOffset
 import java.time.ZonedDateTime
+import java.util.Currency
 import java.util.regex.Pattern
 
 // password should have: at least 10 characters, one upper case letter, one lower case letter and one digit
@@ -138,11 +142,23 @@ class GeneralValidatorDefaultImpl : GeneralValidatorService {
         }
 
     override fun onlyDigits(input: String?, fieldName: String): Map<String, I18nMessage> =
-        if (input == null) emptyMap() else matches(input, ONLY_DIGITS_REGEX, fieldName, "common.error.only.digits")
+        if (input.isNullOrBlank()) emptyMap() else matches(input, ONLY_DIGITS_REGEX, fieldName, "common.error.only.digits")
 
     override fun startDateBeforeEndDate(
         start: ZonedDateTime?,
         end: ZonedDateTime?,
+        startDateFieldName: String,
+        endDateFieldName: String
+    ): Map<String, I18nMessage> = startDateBeforeEndDate(
+        start = start?.toInstant(),
+        end = end?.toInstant(),
+        startDateFieldName,
+        endDateFieldName,
+    )
+
+    private fun startDateBeforeEndDate(
+        start: Instant?,
+        end: Instant?,
         startDateFieldName: String,
         endDateFieldName: String
     ): Map<String, I18nMessage> =
@@ -158,6 +174,18 @@ class GeneralValidatorDefaultImpl : GeneralValidatorService {
                 )
             }
         }
+
+    override fun startDateBeforeEndDate(
+        start: LocalDate?,
+        end: LocalDate?,
+        startDateFieldName: String,
+        endDateFieldName: String
+    ): Map<String, I18nMessage> = startDateBeforeEndDate(
+        start = start?.atStartOfDay()?.toInstant(ZoneOffset.UTC),
+        end = end?.atStartOfDay()?.toInstant(ZoneOffset.UTC),
+        startDateFieldName,
+        endDateFieldName,
+    )
 
     override fun dateNotInFuture(date: LocalDate, fieldName: String): Map<String, I18nMessage> =
         mutableMapOf<String, I18nMessage>().apply {
@@ -188,6 +216,36 @@ class GeneralValidatorDefaultImpl : GeneralValidatorService {
                 this[fieldName] = I18nMessage(
                     i18nKey = "common.error.field.min.size",
                     i18nArguments = mapOf("minSize" to minSize.toString())
+                )
+            }
+        }
+
+    override fun notEqualTo(item: String?, compareTo: String, fieldName: String): Map<String, I18nMessage> =
+        mutableMapOf<String, I18nMessage>().apply {
+            if (item != null && item.equals(compareTo)) {
+                this[fieldName] = I18nMessage(
+                    i18nKey = "common.error.key.invalid",
+                    i18nArguments = mapOf("key" to item.toString())
+                )
+            }
+        }
+
+    override fun onlyValidCurrencies(currencyCodes: Set<String>, fieldName: String): Map<String, I18nMessage> =
+        mutableMapOf<String, I18nMessage>().apply {
+            val invalidCurrencyCodes = mutableSetOf<String>()
+            currencyCodes.forEach {
+                try {
+                    Currency.getAvailableCurrencies()
+                    Currency.getInstance(it)
+                } catch (e: IllegalArgumentException) {
+                    invalidCurrencyCodes.add(it)
+                }
+            }
+            if (invalidCurrencyCodes.isNotEmpty()) {
+                this[fieldName] = I18nMessage(
+                    i18nKey = "common.error.currency.code.invalid",
+                    i18nArguments = invalidCurrencyCodes.associateWith { "invalid.currency.code" }
+                        .plus("currencyCodes" to invalidCurrencyCodes.joinToString(", ")),
                 )
             }
         }

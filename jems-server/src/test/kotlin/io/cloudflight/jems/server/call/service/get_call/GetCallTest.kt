@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.call.service.get_call
 
 import io.cloudflight.jems.api.call.dto.CallStatus
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjective.PO1
@@ -38,6 +39,7 @@ class GetCallTest : UnitTest() {
             id = 569L,
             name = "existing call",
             status = CallStatus.PUBLISHED,
+            type = CallType.STANDARD,
             startDate = ZonedDateTime.now().minusDays(1),
             endDateStep1 = null,
             endDate = ZonedDateTime.now().plusDays(1),
@@ -72,7 +74,9 @@ class GetCallTest : UnitTest() {
             unitCosts = listOf(
                 ProgrammeUnitCost(isOneCostCategory = true),
             ),
-            applicationFormFieldConfigurations = mutableSetOf()
+            applicationFormFieldConfigurations = mutableSetOf(),
+            preSubmissionCheckPluginKey = null,
+            firstStepPreSubmissionCheckPluginKey = null
         )
 
         private val call = CallSummary(

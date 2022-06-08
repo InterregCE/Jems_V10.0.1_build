@@ -1,0 +1,448 @@
+<div *ngIf="data$ | async as data">
+    <jems-form (save)="updateReportExpenditures()"
+               (discard)="refreshListOfExpenditures()">
+        <form jemsFormLayout [formGroup]="reportExpendituresForm">
+            <h3>{{'project.application.partner.report.expenditures.title' | translate}}</h3>
+            <span> {{'project.application.partner.report.expenditures.currencies.info.message' | translate}}</span>
+            <div id="table-container" jemsNoWidthLimit *ngIf="tableData.length > 0">
+                <jems-multi-language-container>
+                    <mat-table jemsNoWidthLimit
+                               id="expenditure-costs-table"
+                               class="table-condensed"
+                               [jemsTableConfig]="data.withConfigs"
+                               [dataSource]="tableData"
+                               [formArrayName]="constants.FORM_CONTROL_NAMES.items">
+                        <ng-container matColumnDef="costItemID" stickyEnd>
+                            <mat-header-cell *matHeaderCellDef>
+                                        <span jemsText
+                                              maxLines="2">{{'project.application.partner.report.expenditures.tab.cost.ID' | translate}}</span>
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                                <ng-container>
+                                    <div class="text-overflow-ellipsis">
+                                        {{i + 1}}
+                                    </div>
+                                </ng-container>
+                            </mat-cell>
+                            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="costOptions">
+
+                            <mat-header-cell *matHeaderCellDef>
+                                        <span jemsText
+                                              maxLines="2">{{'project.application.partner.report.expenditures.tab.cost.lump.sum' | translate}}</span>
+                            </mat-header-cell>
+
+                            <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                                <mat-form-field jemsFormFieldWidth="full">
+                                    <mat-select #costOptionsSelect
+                                                (selectionChange)="onCostOptionChange($event, control, i)"
+                                                [formControlName]="constants.FORM_CONTROL_NAMES.costOptions"
+                                                [matTooltip]="costOptionsSelect.triggerValue"
+                                                [placeholder]="'common.not.applicable.option' | translate">
+                                        <mat-option
+                                                [value]="null">{{'common.not.applicable.option' | translate}}</mat-option>
+                                        <mat-optgroup *ngIf="data.lumpSums.length" [label]="'lump.sums.table.title' | translate">
+                                            <mat-option *ngFor="let lumpSum of data.lumpSums"
+                                                        [value]="lumpSum">
+                                                <span>{{ (lumpSum.name | translateBySystemLanguage | async) }}</span>
+                                                <span *ngIf="lumpSum.period !== null && lumpSum.period !== undefined">
+                                                    - {{ lumpSum.period === PERIOD_PREPARATION ? ('project.application.form.section.part.e.period.preparation' | translate) :
+                                                    (lumpSum.period === PERIOD_CLOSURE ? ('project.application.form.section.part.e.period.closure' | translate) :
+                                                        ('project.partner.budget.table.period' | translate) + ' ' + lumpSum.period) }}
+                                            </span>
+                                            </mat-option>
+                                        </mat-optgroup>
+                                        <mat-optgroup *ngIf="data.unitCosts.length" [label]="'unit.cost.table.title' | translate">
+                                            <mat-option *ngFor="let unitCost of data.unitCosts"
+                                                        [value]="unitCost">
+                                                <span>{{ (unitCost.name | translateBySystemLanguage | async) }}</span>
+                                            </mat-option>
+                                        </mat-optgroup>
+                                    </mat-select>
+                                </mat-form-field>
+                            </mat-cell>
+                            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="costCategory">
+                            <mat-header-cell *matHeaderCellDef>
+                                        <span jemsText
+                                              maxLines="2">{{'project.application.partner.report.expenditures.tab.cost.category' | translate}}</span>
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                                <mat-form-field jemsFormFieldWidth="full">
+                                    <mat-select class="placeholder-required" required
+                                                #costCategorySelect
+                                                (selectionChange)="onCostCategoryChange($event, control)"
+                                                [formControlName]="constants.FORM_CONTROL_NAMES.costCategory"
+                                                [matTooltip]="costCategorySelect.triggerValue"
+                                                [placeholder]="'project.application.partner.report.expenditures.cost.category.placeholder' | translate">
+                                        <mat-option *ngIf="isCostOptionSelectedInCurrentFormGroup(i)"
+                                                [value]="CostCategoryEnum.Multiple">{{'project.application.partner.report.expenditures.cost.category.multiple' | translate}}</mat-option>
+                                        <mat-option *ngFor="let costCategory of data.costCategories"
+                                                    [value]="costCategory">
+                                            {{ ('project.application.partner.report.expenditures.cost.category.' + costCategory) | translate}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </mat-cell>
+                            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                        </ng-container>
+                        <ng-container *ngIf="data.investmentsSummary.length > 0" matColumnDef="investmentId">
+                            <mat-header-cell *matHeaderCellDef>
+                                        <span jemsText
+                                              maxLines="2">{{'project.application.partner.report.expenditures.tab.investment.number' | translate}}</span>
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                                <mat-form-field jemsFormFieldWidth="full">
+                                    <mat-select
+                                        #investmentNumber
+                                        (selectionChange)="onInvestmentNumberChange($event, control)"
+                                        [formControlName]="constants.FORM_CONTROL_NAMES.investmentId"
+                                        [matTooltip]="investmentNumber.triggerValue"
+                                        [placeholder]="'common.not.applicable.option' | translate">
+                                        <mat-option
+                                                [value]="null">{{'common.not.applicable.option' | translate}}</mat-option>
+                                        <mat-option *ngFor="let investment of data.investmentsSummary"
+                                                    [value]="investment.id">
+                                            {{investment.toString()}}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </mat-cell>
+                            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="contractId">
+                            <mat-header-cell *matHeaderCellDef>
+                                        <span jemsText
+                                              maxLines="2">{{'project.application.partner.report.expenditures.tab.contract.ID' | translate}}</span>
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                                <mat-form-field jemsFormFieldWidth="full">
+                                    <mat-select
+                                        #contractId
+                                        [formControlName]="constants.FORM_CONTROL_NAMES.contractId"
+                                        [matTooltip]="contractId.triggerValue"
+                                        [placeholder]="'common.not.applicable.option' | translate">
+                                        <mat-option
+                                                [value]="null">{{'common.not.applicable.option' | translate}}</mat-option>
+                                        <mat-option *ngFor="let contractID of data.contractIDs"
+                                                    [value]="contractID.id">
+                                            {{ contractID.name }}
+                                        </mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </mat-cell>
+                            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="internalReferenceNumber">
+                            <mat-header-cell *matHeaderCellDef>
+                                        <span jemsText
+                                              maxLines="2">{{'project.application.partner.report.expenditures.tab.internal.reference.number' | translate}}</span>
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                                <mat-form-field jemsFormFieldWidth="full">
+                                    <input #internalReferenceNumber
+                                              [formControlName]="constants.FORM_CONTROL_NAMES.internalReferenceNumber"
+                                              [matTooltip]="internalReferenceNumber.value + ' (' + lengthOfForm(control, constants.FORM_CONTROL_NAMES.internalReferenceNumber) + '/' + constants.MAX_LENGTH_INVOICE + ')'"
+                                              matInput>
+                                    <mat-hint [jemsHintFor]="internalReferenceNumber">
+                                        <jems-text-hint
+                                                [currentLength]="lengthOfForm(control, constants.FORM_CONTROL_NAMES.internalReferenceNumber)"
+                                                [maxLength]="constants.MAX_LENGTH_INVOICE"></jems-text-hint>
+                                    </mat-hint>
+                                    <mat-error>
+                                        <jems-form-field-errors
+                                                [errors]="control.errors"
+                                                [messages]="constants.FORM_ERRORS.invoiceNumber"
+                                                condensed="true">
+                                        </jems-form-field-errors>
+                                    </mat-error>
+                                </mat-form-field>
+                            </mat-cell>
+                            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="invoiceNumber">
+                            <mat-header-cell *matHeaderCellDef>
+                                        <span jemsText
+                                              maxLines="2">{{'project.application.partner.report.expenditures.tab.invoice.number' | translate}}</span>
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                                <mat-form-field jemsFormFieldWidth="full">
+                                    <input #invoiceNumberInput
+                                              [matTooltip]="invoiceNumberInput.value + ' (' + lengthOfForm(control, constants.FORM_CONTROL_NAMES.invoiceNumber) + '/' + constants.MAX_LENGTH_INVOICE + ')'"
+                                              [formControlName]="constants.FORM_CONTROL_NAMES.invoiceNumber"
+                                              matInput>
+                                    <mat-hint [jemsHintFor]="invoiceNumberInput">
+                                        <jems-text-hint
+                                                [currentLength]="lengthOfForm(control, constants.FORM_CONTROL_NAMES.invoiceNumber)"
+                                                [maxLength]="constants.MAX_LENGTH_INVOICE"></jems-text-hint>
+                                    </mat-hint>
+                                    <mat-error>
+                                        <jems-form-field-errors
+                                                [errors]="control.errors"
+                                                [messages]="constants.FORM_ERRORS.invoiceNumber"
+                                                condensed="true">
+                                        </jems-form-field-errors>
+                                    </mat-error>
+                                </mat-form-field>
+                            </mat-cell>
+                            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="invoiceDate">
+                            <mat-header-cell *matHeaderCellDef>
+                                        <span jemsText
+                                              maxLines="2">{{'project.application.partner.report.expenditures.tab.invoice.date' | translate}}</span>
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                                <mat-form-field jemsFormFieldWidth="full">
+                                    <input name="invoiceDateForm"
+                                           [formControlName]="constants.FORM_CONTROL_NAMES.invoiceDate"
+                                           matInput [matDatepicker]="invoiceDatePicker">
+                                    <mat-datepicker-toggle matSuffix
+                                                           [for]="invoiceDatePicker"></mat-datepicker-toggle>
+                                    <mat-datepicker #invoiceDatePicker></mat-datepicker>
+                                </mat-form-field>
+                            </mat-cell>
+                            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="dateOfPayment">
+                            <mat-header-cell *matHeaderCellDef>
+                                        <span jemsText
+                                              maxLines="2">{{'project.application.partner.report.expenditures.tab.date.of.payment' | translate}}</span>
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                                <mat-form-field jemsFormFieldWidth="full">
+                                    <input name="dateOfPaymentForm"
+                                           [formControlName]="constants.FORM_CONTROL_NAMES.dateOfPayment"
+                                           matInput [matDatepicker]="dateOfPaymentPicker">
+                                    <mat-datepicker-toggle matSuffix
+                                                           [for]="dateOfPaymentPicker"></mat-datepicker-toggle>
+                                    <mat-datepicker #dateOfPaymentPicker></mat-datepicker>
+                                </mat-form-field>
+                            </mat-cell>
+                            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="description">
+                            <mat-header-cell *matHeaderCellDef>
+                                        <span jemsText
+                                              maxLines="2">{{'project.application.partner.report.expenditures.tab.description' | translate}}</span>
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                                <ng-container>
+                                    <jems-multi-language-form-field
+                                            #descriptionInput
+                                            type="input"
+                                            condensed="true"
+                                            [formControlName]="constants.FORM_CONTROL_NAMES.description"
+                                            [maxLength]="constants.MAX_LENGTH">
+                                    </jems-multi-language-form-field>
+                                </ng-container>
+                            </mat-cell>
+                            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="comment">
+                            <mat-header-cell *matHeaderCellDef>
+                                        <span jemsText
+                                              maxLines="2">{{'project.application.partner.report.expenditures.tab.comment' | translate}}</span>
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                                <ng-container>
+                                    <jems-multi-language-form-field
+                                            #commentInput
+                                            type="input"
+                                            condensed="true"
+                                            [title]="commentInput.label"
+                                            [formControlName]="constants.FORM_CONTROL_NAMES.comment"
+                                            [maxLength]="constants.MAX_LENGTH">
+                                    </jems-multi-language-form-field>
+                                </ng-container>
+                            </mat-cell>
+                            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="totalValueInvoice">
+                            <mat-header-cell class="end-flex-header-table" *matHeaderCellDef>
+                                        <span jemsText
+                                              maxLines="2">{{'project.application.partner.report.expenditures.tab.total.value.invoice' | translate}}</span>
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                                <mat-form-field jemsFormFieldWidth="full">
+                                    <input [formControlName]="constants.FORM_CONTROL_NAMES.totalValueInvoice"
+                                           [options]="{min: constants.MIN_VALUE, max: constants.MAX_VALUE, align: 'right'}"
+                                           currencyMask matInput
+                                           type="decimal">
+                                </mat-form-field>
+                            </mat-cell>
+                            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="vat">
+                            <mat-header-cell class="end-flex-header-table" *matHeaderCellDef>
+                                        <span jemsText
+                                              maxLines="2">{{'project.application.partner.report.expenditures.tab.vat' | translate}}</span>
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                                <mat-form-field jemsFormFieldWidth="full">
+                                    <input [formControlName]="constants.FORM_CONTROL_NAMES.vat"
+                                           [options]="{min: constants.MIN_VALUE, max: constants.MAX_VALUE, align: 'right'}"
+                                           currencyMask matInput
+                                           type="decimal">
+                                </mat-form-field>
+                            </mat-cell>
+                            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="numberOfUnits">
+                            <mat-header-cell class="end-flex-header-table" *matHeaderCellDef>
+                                        <span jemsText
+                                              maxLines="2">{{'project.application.partner.report.expenditures.tab.number.of.units' | translate}}</span>
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                                <mat-form-field jemsFormFieldWidth="full" *ngIf="control.value.costOptions" (keyup)="onUpdateNumberOfUnits(i)">
+                                    <input [formControlName]="constants.FORM_CONTROL_NAMES.numberOfUnits"
+                                           matInput
+                                           currencyMask
+                                           type="decimal">
+                                </mat-form-field>
+                            </mat-cell>
+                            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="pricePerUnit">
+                            <mat-header-cell class="end-flex-header-table" *matHeaderCellDef>
+                                        <span jemsText
+                                              maxLines="2">{{'project.application.partner.report.expenditures.tab.price.per.unit' | translate}}</span>
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                                <mat-form-field jemsFormFieldWidth="full" *ngIf="control.value.costOptions">
+                                    <input [formControlName]="constants.FORM_CONTROL_NAMES.pricePerUnit"
+                                           [options]="{min: constants.MIN_VALUE, max: constants.MAX_VALUE, align: 'right'}"
+                                           currencyMask matInput
+                                           type="decimal">
+                                </mat-form-field>
+                            </mat-cell>
+                            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="declaredAmount">
+                            <mat-header-cell class="end-flex-header-table" *matHeaderCellDef>
+                                        <span jemsText
+                                              maxLines="2">{{'project.application.partner.report.expenditures.declared.amount' | translate}}</span>
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                                <mat-form-field jemsFormFieldWidth="full">
+                                    <input [formControlName]="constants.FORM_CONTROL_NAMES.declaredAmount"
+                                           [options]="{min: constants.MIN_VALUE, max: constants.MAX_VALUE, align: 'right'}"
+                                           (keyup)="updateAmountInEur(i, control.value.declaredAmount)"
+                                           currencyMask matInput
+                                           type="decimal">
+                                </mat-form-field>
+                            </mat-cell>
+                            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                        </ng-container>
+
+                        <ng-container matColumnDef="currencyCode">
+                            <mat-header-cell *matHeaderCellDef>
+                                        <span jemsText
+                                              maxLines="2">{{'project.application.partner.report.expenditures.currency' | translate}}</span>
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                                <mat-form-field jemsFormFieldWidth="full">
+                                    <mat-select class="placeholder-required"
+                                                [disabled]="currentReport.identification.currency === CurrencyCodesEnum.EUR"
+                                                [formControlName]="constants.FORM_CONTROL_NAMES.currencyCode"
+                                                [required]="true"
+                                                placeholder="{{'project.application.partner.report.expenditures.currency.placeholder' | translate}}"
+                                                (selectionChange)="onCurrencyChange(i, $event)">
+                                        <mat-option *ngFor="let currency of availableCurrenciesPerRow[i]" [value]="currency.code">{{currency.code}}</mat-option>
+                                    </mat-select>
+                                </mat-form-field>
+                            </mat-cell>
+                            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                        </ng-container>
+
+                        <ng-container matColumnDef="currencyConversionRate">
+                            <mat-header-cell class="end-flex-header-table justify-end" *matHeaderCellDef>
+                                        <span jemsText
+                                              maxLines="2">{{'project.application.partner.report.expenditures.conversion.rate' | translate}}</span>
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                                <mat-form-field jemsFormFieldWidth="full" [class.mat-form-field-disabled]="true">
+                                    <input class="text-right" [formControlName]="constants.FORM_CONTROL_NAMES.currencyConversionRate"
+                                           [readonly]="true"
+                                           matInput>
+                                </mat-form-field>
+                            </mat-cell>
+                            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                        </ng-container>
+
+                        <ng-container matColumnDef="declaredAmountInEur" >
+                            <mat-header-cell class="justify-end" *matHeaderCellDef>
+                                <span jemsText maxLines="2">
+                                    {{'project.application.partner.report.expenditures.declared.amount.eur' | translate}}
+                                    <jems-context-info infoPosition="right"
+                                                       infoText="{{'project.application.partner.report.expenditures.amount.in.euro.info' | translate}}">
+                                    </jems-context-info>
+                                </span>
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                                <mat-form-field jemsFormFieldWidth="full" [class.mat-form-field-disabled]="true">
+                                    <input [formControlName]="constants.FORM_CONTROL_NAMES.declaredAmountInEur"
+                                           [readonly]="true"
+                                           [options]="{align: 'right'}"
+                                           currencyMask matInput
+                                           type="decimal">
+                                </mat-form-field>
+
+                            </mat-cell>
+                            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                        </ng-container>
+
+                        <ng-container matColumnDef="uploadFunction">
+                            <mat-header-cell *matHeaderCellDef>{{'project.application.partner.report.attachments' | translate}}</mat-header-cell>
+                            <mat-cell class="justify-start" *matCellDef="let control;let expenditureIndex=index" [formGroupName]="expenditureIndex" >
+                                <jems-partner-actions-cell
+                                        *ngIf="control.get('id').value"
+                                        [formControlName]="constants.FORM_CONTROL_NAMES.attachment"
+                                        [isReportEditable]="isReportEditable$ | async"
+                                        (upload)="onUploadFileToExpenditure($event, control.get('id').value, expenditureIndex)"
+                                        (download)="onDownloadFile($event)"
+                                        (delete)="onDeleteFile($event, expenditureIndex)">
+                                </jems-partner-actions-cell>
+                            </mat-cell>
+                            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                        </ng-container>
+
+                        <ng-container matColumnDef="actions" stickyEnd>
+                            <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                            <mat-cell *matCellDef="let control;let index=index" class="justify-end">
+                                <button mat-icon-button *ngIf="reportExpendituresForm.enabled"
+                                        [disabled]="!!control.get(constants.FORM_CONTROL_NAMES.attachment).value"
+                                        (click)="removeItem(index)"
+                                        class="delete-button"
+                                        color="accent"
+                                        tabindex="-1"
+                                        type="button">
+                                    <mat-icon
+                                            matTooltip="{{ (attachment(index).value ? 'project.application.partner.report.attachment.delete.file.first' : null) | translate }}">
+                                        {{ attachment(index).value ? 'delete_forever' : 'delete'}}
+                                    </mat-icon>
+                                </button>
+                            </mat-cell>
+                            <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                        </ng-container>
+
+                        <mat-header-row *matHeaderRowDef="data.columnsToDisplay"></mat-header-row>
+                        <mat-row *matRowDef="let myRowData; columns: data.columnsToDisplay; let rowIndex =index"
+                                 [class.row-has-error]="items.controls[rowIndex]?.invalid"></mat-row>
+
+                    </mat-table>
+                </jems-multi-language-container>
+            </div>
+            <button *ngIf="reportExpendituresForm.enabled"
+                    mat-stroked-button type="button" class="mt-2"
+                    [disabled]="items.length >= constants.MAX_NUMBER_OF_ITEMS"
+                    (click)="addNewItem()">
+                <mat-icon>add</mat-icon>
+                <span>&nbsp;{{'project.application.partner.report.expenditures.tab.button.add' | translate}}</span>
+            </button>
+        </form>
+    </jems-form>
+</div>
+

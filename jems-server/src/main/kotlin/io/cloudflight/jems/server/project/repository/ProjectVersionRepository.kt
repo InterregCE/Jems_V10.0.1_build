@@ -67,4 +67,34 @@ interface ProjectVersionRepository : JpaRepository<ProjectVersionEntity, Project
         ORDER BY projectVersion.created_at DESC
     """, nativeQuery = true)
     fun findAllVersionsByProjectId(projectId: Long): List<ProjectVersionRow>
+
+    @Query(
+        """
+        SELECT
+        projectVersion.version,
+        projectVersion.project_id as projectId,
+        projectVersion.row_end as rowEnd,
+        projectVersion.created_at as createdAt,
+        account.id as userId,
+        account.email,
+        account.name,
+        account.surname,
+        account.user_status as userStatus,
+        account_role.id as roleId,
+        account_role.name as roleName,
+
+        (
+            SELECT ps.status
+            FROM project FOR SYSTEM_TIME AS OF ( IF(projectVersion.row_end IS NULL, localtimestamp(6), projectVersion.row_end)) AS p
+            LEFT JOIN project_status as ps on p.project_status_id = ps.id
+            WHERE p.id= projectVersion.project_id
+       ) as status
+
+        FROM #{#entityName} as projectVersion
+        LEFT JOIN account on account.id = projectVersion.account_id
+        LEFT JOIN account_role on account_role.id = account.account_role_id
+        ORDER BY projectVersion.created_at DESC
+    """, nativeQuery = true
+    )
+    fun findAllVersions(): List<ProjectVersionRow>
 }

@@ -26,7 +26,7 @@ import {AllowedBudgetCategory} from '@project/model/allowed-budget-category';
 
 @UntilDestroy()
 @Component({
-  selector: 'app-travel-and-accommodation-costs-budget-table',
+  selector: 'jems-travel-and-accommodation-costs-budget-table',
   templateUrl: './travel-and-accommodation-costs-budget-table.component.html',
   styleUrls: ['./travel-and-accommodation-costs-budget-table.component.scss']
 })
@@ -92,7 +92,7 @@ export class TravelAndAccommodationCostsBudgetTableComponent implements OnInit, 
       ...this.budgetTabService.addIfItsVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.TRAVEL_AND_ACCOMMODATION.UNIT_TYPE_AND_NUMBER_OF_UNITS, ['unitType', 'numberOfUnits']),
       'pricePerUnit', 'total',
       ...this.budgetTabService.getPeriodTableColumns(this.projectPeriods),
-      'action'
+      ...this.editable ? ['action'] : []
     ];
 
     this.tableConfig = [
@@ -102,9 +102,10 @@ export class TravelAndAccommodationCostsBudgetTableComponent implements OnInit, 
         minInRem: 5,
         maxInRem: 5
       }]),
-      {minInRem: 8, maxInRem: 8}, {minInRem: 8},
+      {minInRem: 8, maxInRem: 8},
+      {minInRem: 9}, // totals
       ...this.budgetTabService.getPeriodsWidthConfigs(this.projectPeriods),
-      {minInRem: 3, maxInRem: 3}
+      ...this.editable ? [{minInRem: 3, maxInRem: 3}] : []
     ];
 
     if (this.availableUnitCosts.length > 0) {

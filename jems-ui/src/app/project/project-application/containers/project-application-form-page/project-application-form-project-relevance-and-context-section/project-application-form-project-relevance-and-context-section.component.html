@@ -1,14 +1,11 @@
-<app-project-page-template
+<jems-project-page-template
         [titleText]="'project.application.form.acronym' | translate : {projectTitle: projectStore.projectTitle$ | async} "
         subTitleKey="project.application.form.section.part.c">
-    <app-project-application-form-project-relevance-and-context-detail
+    <jems-project-application-form-project-relevance-and-context-detail
             *ngIf="details$ | async as details"
-            [success$]="saveSuccess$"
-            [project]="details.relevance"
+            [projectId]="projectId"
+            [inputProjectRelevance]="details.relevance"
             [editable]="projectStore.projectEditable$ | async"
-            [strategiesFromCall]="details.strategies"
-            [error$]="saveError$"
-            (updateData)="updateProjectRelevance$.next($event)"
-            (deleteData)="deleteEntriesFromTables$.next($event)">
-    </app-project-application-form-project-relevance-and-context-detail>
-</app-project-page-template>
+            [strategiesFromCall]="details.callStrategies">
+    </jems-project-application-form-project-relevance-and-context-detail>
+</jems-project-page-template>

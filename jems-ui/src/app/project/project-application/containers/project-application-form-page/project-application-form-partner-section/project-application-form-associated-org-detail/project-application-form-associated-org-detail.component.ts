@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {combineLatest} from 'rxjs';
-import {map, tap} from 'rxjs/operators';
+import {map, take, tap} from 'rxjs/operators';
 import {ActivatedRoute} from '@angular/router';
 import {
   InputProjectAssociatedOrganizationAddress,
@@ -11,14 +11,13 @@ import {
 import {ProjectAssociatedOrganizationStore} from '../../services/project-associated-organization-store.service';
 import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {FormService} from '@common/components/section/form/form.service';
-import {take} from 'rxjs/internal/operators';
 import {RoutingService} from '@common/services/routing.service';
 import {Permission} from '../../../../../../security/permissions/permission';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
 import { Alert } from '@common/components/forms/alert';
 
 @Component({
-  selector: 'app-project-application-form-associated-org-detail',
+  selector: 'jems-project-application-form-associated-org-detail',
   templateUrl: './project-application-form-associated-org-detail.component.html',
   styleUrls: ['./project-application-form-associated-org-detail.component.scss'],
   providers: [FormService, ProjectAssociatedOrganizationStore],
@@ -50,8 +49,11 @@ export class ProjectApplicationFormAssociatedOrgDetailComponent implements OnIni
     nameInEnglish: [[], [Validators.maxLength(100), Validators.required]],
     partnerId: [null, Validators.required],
     country: [''],
+    countryCode: [''],
     region2: [''],
+    region2Code: [''],
     region3: [''],
+    region3Code: [''],
     street: ['', Validators.maxLength(50)],
     houseNumber: ['', Validators.maxLength(20)],
     postalCode: ['', Validators.maxLength(20)],
@@ -97,8 +99,11 @@ export class ProjectApplicationFormAssociatedOrgDetailComponent implements OnIni
       nameInEnglish: this.controls?.nameInEnglish.value[0].translation,
       address: {
         country: this.controls?.country.value,
+        countryCode: this.controls?.countryCode.value,
         nutsRegion2: this.controls?.region2.value,
+        nutsRegion2Code: this.controls?.region2Code.value,
         nutsRegion3: this.controls?.region3.value,
+        nutsRegion3Code: this.controls?.region3Code.value,
         street: this.controls?.street.value,
         houseNumber: this.controls?.houseNumber.value,
         postalCode: this.controls?.postalCode.value,
@@ -168,8 +173,11 @@ export class ProjectApplicationFormAssociatedOrgDetailComponent implements OnIni
     }]);
     this.controls?.partnerId.setValue(organization?.partner?.id);
     this.controls?.country.setValue(organization?.address?.country);
+    this.controls?.countryCode.setValue(organization?.address?.countryCode);
     this.controls?.region2.setValue(organization?.address?.nutsRegion2);
+    this.controls?.region2Code.setValue(organization?.address?.nutsRegion2Code);
     this.controls?.region3.setValue(organization?.address?.nutsRegion3);
+    this.controls?.region3Code.setValue(organization?.address?.nutsRegion3Code);
     this.controls?.street.setValue(organization?.address?.street);
     this.controls?.houseNumber.setValue(organization?.address?.houseNumber);
     this.controls?.postalCode.setValue(organization?.address?.postalCode);

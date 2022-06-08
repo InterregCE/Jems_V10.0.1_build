@@ -1,28 +1,29 @@
-<nav class="navbar navbar-expand-lg">
+<nav class="navbar navbar-expand-lg" [ngClass]="{'no-user' : !currentUser}">
         <div class="navbar-logos">
             <div class="programme-logo-container show-pointer"
                  (click)="router.navigate(['app'])">
-                    <img *ngIf="largeLogo$ | async as logo; else defaultLogo" class="logo fill" src="data:image/png;base64,{{logo.value}}" alt="">
+                    <img *ngIf="largeLogo$ | async as logo; else defaultLogo" class="logo fill" src="data:image/png;base64,{{logo.value}}" alt="Logo interreg programme">
                     <ng-template #defaultLogo>
-                        <img class="logo fill" src="assets/logos/InterregProgrammeLogo_96.png" alt="">
+                        <img class="logo fill" src="assets/logos/InterregProgrammeLogo_96.png" alt="Logo interreg programme">
                     </ng-template>
                 <div class="vertical-splitter"></div>
             </div>
-            <img class="logo half-size" src="assets/logos/JemsLogo_96.png" alt="">
+            <img class="logo half-size" src="assets/logos/JemsLogo_96.png" alt="Logo Jems">
         </div>
     <!--Hamburger Menu-->
-    <button appText mat-stroked-button class="navbar-toggler" [ngClass]="{'collapsed': isNavBarCollapsed}" type="button"
+    <button jemsText mat-stroked-button class="navbar-toggler" [ngClass]="{'collapsed': isNavBarCollapsed}" type="button"
             data-toggle="collapse"
             data-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation"
+            name="toggle navigation"
             (click)="isNavBarCollapsed = !isNavBarCollapsed">
         <mat-icon>menu</mat-icon>
     </button>
 
     <!-- Content -->
     <div class="navbar-collapse collapse" [ngClass]="{'show': !isNavBarCollapsed}" id="navbarSupportedContent">
-        <ul class="navbar-nav left-side-menu">
-            <ng-container *ngIf="currentUser">
+        <ul class="navbar-nav left-side-menu" *ngIf="currentUser">
+            <ng-container>
                 <li class="nav-item show-pointer" *ngFor="let item of menuItems$ | async"
                     (click)="isNavBarCollapsed = true; router.navigate([item.route], {queryParams: {version: null}, queryParamsHandling: 'merge'})"
                     [ngClass]="{
@@ -31,7 +32,7 @@
                        }">
                     <a class="nav-link">
                         <mat-icon  *ngIf="item.icon">{{item.icon}}</mat-icon>
-                        <span class="nav-text" appText maxLines="2">{{item.name | translate}}</span>
+                        <span class="nav-text" jemsText maxLines="2">{{item.name | translate}}</span>
                     </a>
                 </li>
             </ng-container>
@@ -47,12 +48,12 @@
                        }">
                 <a class="nav-link">
                     <mat-icon  *ngIf="item.icon">{{item.icon}}</mat-icon>
-                    <span class="nav-text" appText maxLines="2">{{item.name | translate}}</span>
+                    <span class="nav-text" jemsText maxLines="2">{{item.name | translate}}</span>
                 </a>
             </li>
             <!-- Logout -->
             <li class="nav-item" *ngIf="currentUser">
-                <button appText mat-flat-button class="logout-button" color="primary"
+                <button jemsText mat-flat-button class="logout-button" color="primary"
                         (click)="logout()" [ngClass]="{'not-collapsed': !isNavBarCollapsed}">
                     {{'topbar.main.button.logout' | translate}}
                 </button>
@@ -78,7 +79,7 @@
             </li>
             <!-- Help -->
             <li class="nav-item" [ngClass]="{'mt-2': !isNavBarCollapsed}">
-                <app-help-menu></app-help-menu>
+                <jems-help-menu></jems-help-menu>
             </li>
 
         </ul>

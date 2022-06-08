@@ -1,11 +1,10 @@
 import {ChangeDetectionStrategy, Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {Permission} from 'src/app/security/permissions/permission';
 import {Forms} from '@common/utils/forms';
-import {map, switchMap, tap} from 'rxjs/operators';
+import {filter, map, switchMap, take, tap} from 'rxjs/operators';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
 import {OutputWorkPackageSimple} from '@cat/api';
 import {combineLatest, Observable} from 'rxjs';
-import {filter, take} from 'rxjs/internal/operators';
 import {MatDialog} from '@angular/material/dialog';
 import {ActivatedRoute} from '@angular/router';
 import {ProjectWorkPackagePageStore} from './project-work-package-page-store.service';
@@ -16,7 +15,7 @@ import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {ColumnWidth} from '@common/components/table/model/column-width';
 
 @Component({
-  selector: 'app-project-work-package-page',
+  selector: 'jems-project-work-package-page',
   templateUrl: './project-work-package-page.component.html',
   styleUrls: ['./project-work-package-page.component.scss'],
   providers: [ProjectWorkPackagePageStore],

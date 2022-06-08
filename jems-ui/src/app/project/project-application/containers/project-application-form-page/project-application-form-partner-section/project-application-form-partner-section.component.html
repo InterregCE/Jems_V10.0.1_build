@@ -1,18 +1,17 @@
-<app-project-page-template
+<jems-project-page-template
         [needsCard]="true"
         [titleText]="'project.application.form.acronym' | translate : {projectTitle: projectStore.projectTitle$ | async} "
         subTitleKey="project.application.form.section.part.b">
 
     <h3>{{'project.application.form.section.part.b.partners' | translate}}</h3>
-    <ng-container *ngxPermissionsExcept="Permission.PROGRAMME_USER">
-        <button *ngIf="(projectStore.projectEditable$ | async) === true"
-                mat-stroked-button color="primary"
-                [routerLink]="'/app/project/detail/' + projectId + '/applicationFormPartner/create'">
-            + {{'project.application.form.partner.add' | translate}}
-        </button>
-    </ng-container>
+    <button *ngIf="(projectStore.projectEditable$ | async) === true"
+            [disabled]="isAddPartnerDisabled() | async"
+            mat-stroked-button color="primary"
+            [routerLink]="'/app/project/detail/' + projectId + '/applicationFormPartner/create'">
+        + {{'project.application.form.partner.add' | translate}}
+    </button>
 
-    <app-project-application-form-partner-list
+    <jems-project-application-form-partner-list
             *ngIf="partnerPage$ | async as partnerPage"
             [projectId]="projectId"
             [projectStatus]="projectStore.projectStatus$ | async"
@@ -24,14 +23,14 @@
             (newSort)="newSort$.next($event)"
             (deletePartner)="deletePartner($event)"
             (deactivatePartner) = "deactivatePartner($event, partnerPage.content)">
-    </app-project-application-form-partner-list>
+    </jems-project-application-form-partner-list>
 
     <ng-container *ngIf="showSuccessMessage$ | async as successMessageArg">
-        <app-alert
+        <jems-alert
                 [show]="successMessageArg"
                 [type]="Alert.SUCCESS">
             <p>{{'project.application.form.section.part.b.partner.deactivated.success.message' | translate : {name:successMessageArg} }}</p>
-        </app-alert>
+        </jems-alert>
     </ng-container>
 
-</app-project-page-template>
+</jems-project-page-template>

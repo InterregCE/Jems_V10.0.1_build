@@ -1,10 +1,9 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
 import {MatDialog} from '@angular/material/dialog';
-import {take} from 'rxjs/internal/operators';
 import {UserRoleDTO} from '@cat/api';
 import {combineLatest, Observable, of} from 'rxjs';
-import {catchError, map, tap} from 'rxjs/operators';
+import {catchError, map, take, tap} from 'rxjs/operators';
 import {SystemPageSidenavService} from '../../services/system-page-sidenav.service';
 import {RoutingService} from '@common/services/routing.service';
 import {UserRoleDetailPageStore} from './user-role-detail-page-store.service';
@@ -19,7 +18,7 @@ import {PermissionService} from '../../../security/permissions/permission.servic
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @Component({
-  selector: 'app-user-role-detail-page',
+  selector: 'jems-user-role-detail-page',
   templateUrl: './user-role-detail-page.component.html',
   styleUrls: ['./user-role-detail-page.component.scss'],
   providers: [FormService],
@@ -210,6 +209,7 @@ export class UserRoleDetailPageComponent {
     } else {
       this.state(permission)?.setValue(PermissionState.EDIT);
     }
+    this.adaptDependentPermissions(permission);
     this.formChanged();
   }
 
@@ -239,6 +239,10 @@ export class UserRoleDetailPageComponent {
     return control.get('editTooltip') as AbstractControl;
   }
 
+  infoMessage(control: AbstractControl): AbstractControl {
+    return control.get('infoMessage') as AbstractControl;
+  }
+
   formChanged(): void {
     this.formService.setDirty(true);
   }
@@ -263,7 +267,7 @@ export class UserRoleDetailPageComponent {
                                         currentRolePermissions: PermissionsEnum[],
                                         parentIndex: number): FormGroup {
     if (!perm.children?.length) {
-      return this.formBuilder.group({
+      const formGroup = this.formBuilder.group({
         name: perm.name,
         parentIndex,
         mode: perm.mode,
@@ -273,8 +277,10 @@ export class UserRoleDetailPageComponent {
         hideTooltip: perm.hideTooltip,
         viewTooltip: perm.viewTooltip,
         editTooltip: perm.editTooltip,
+        infoMessage: perm.infoMessage,
         icon: perm.icon
       });
+      return formGroup;
     } else {
       return this.formBuilder.group({
         name: perm.name,
@@ -357,5 +363,19 @@ export class UserRoleDetailPageComponent {
 
     return permissionNode.children.flatMap((node: PermissionNode, index: number) =>
       this.hasAnyStateNotHidden(this.subtree(nodeForm).at(index), node));
+  }
+
+  private adaptDependentPermissions(permission: AbstractControl): void {
+    if (!(permission.get('name')?.value === 'permission.assessment.instantiate')) {
+      return;
+    }
+    const consolidateGroup = this.treeControlInspect.dataNodes
+      .find(node => node.name === 'permission.assessment.consolidate') as any;
+    if (this.state(permission)?.value === PermissionState.HIDDEN) {
+      this.state(consolidateGroup.form)?.setValue(PermissionState.HIDDEN);
+      consolidateGroup.disabled = true;
+    } else {
+      consolidateGroup.disabled = false;
+    }
   }
 }

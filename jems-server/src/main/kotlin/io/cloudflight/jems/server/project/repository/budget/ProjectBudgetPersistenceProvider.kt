@@ -13,11 +13,13 @@ import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toPr
 import io.cloudflight.jems.server.project.repository.partner.toProjectPartner
 import io.cloudflight.jems.server.project.repository.partner.toProjectPartnerBudgetPerPeriod
 import io.cloudflight.jems.server.project.repository.partner.toProjectPartnerHistoricalData
+import io.cloudflight.jems.server.project.repository.partner.toProjectPartnerSpfBudgetPerPeriod
 import io.cloudflight.jems.server.project.service.budget.ProjectBudgetPersistence
 import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerBudget
 import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerCost
+import io.cloudflight.jems.server.project.service.budget.model.ProjectSpfBudgetPerPeriod
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
-import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerTotalBudget
+import io.cloudflight.jems.server.project.service.partner.model.PartnerTotalBudgetPerCostCategory
 import io.cloudflight.jems.server.project.service.unitcost.model.ProjectUnitCost
 import java.math.BigDecimal
 import org.springframework.data.domain.Sort
@@ -131,7 +133,11 @@ class ProjectBudgetPersistenceProvider(
     override fun getPartnersForProjectId(projectId: Long, version: String?): List<ProjectPartnerSummary> =
         projectVersionUtils.fetch(version, projectId,
             currentVersionFetcher = {
-                projectPartnerRepository.findTop30ByProjectId(projectId, Sort.unsorted()).toProjectPartner()
+                projectPartnerRepository.findTop30ByProjectId(
+                    projectId, Sort.by(
+                        Sort.Order(Sort.Direction.ASC, "sortNumber"),
+                    )
+                ).toProjectPartner()
             },
             previousVersionFetcher = { timestamp ->
                 projectPartnerRepository.findTop30ByProjectIdSortBySortNumberAsOfTimestamp(projectId, timestamp)
@@ -159,7 +165,7 @@ class ProjectBudgetPersistenceProvider(
         partnerIds: Set<Long>,
         projectId: Long,
         version: String?
-    ): Map<Long, ProjectPartnerTotalBudget> =
+    ): Map<Long, PartnerTotalBudgetPerCostCategory> =
         projectVersionUtils.fetch(version, projectId,
             currentVersionFetcher = {
                 projectPartnerRepository.getAllPartnerTotalBudgetData(partnerIds)
@@ -188,5 +194,18 @@ class ProjectBudgetPersistenceProvider(
                     .toProjectUnitCostsGrouped()
             }
         ) ?: emptyList()
+
+    @Transactional(readOnly = true)
+    override fun getSpfBudgetPerPeriod(partnerId: Long, projectId: Long, version: String?): List<ProjectSpfBudgetPerPeriod> =
+        projectVersionUtils.fetch(
+            version, projectId,
+            currentVersionFetcher = {
+                projectPartnerRepository.getSpfBudgetByBeneficiaryId(partnerId)
+                    .toProjectPartnerSpfBudgetPerPeriod()
+            },
+            previousVersionFetcher = { timestamp ->
+                projectPartnerRepository.getSpfBudgetByBeneficiaryIdAsOfTimestamp(partnerId, timestamp)
+                    .toProjectPartnerSpfBudgetPerPeriod()
+            }) ?: emptyList()
 
 }

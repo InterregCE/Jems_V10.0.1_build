@@ -2,7 +2,6 @@ package io.cloudflight.jems.server.programme.authorization
 
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.authentication.authorization.Authorization
-import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Component
 
@@ -21,6 +20,10 @@ annotation class CanRetrieveProgrammeSetup
 @Retention(AnnotationRetention.RUNTIME)
 @PreAuthorize("@programmeSetupAuthorization.canReadProgrammeSetup()")
 annotation class CanRetrieveNuts
+
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("hasAuthority('ProgrammeDataExportRetrieve')")
+annotation class CanExportProgrammeData
 
 @Component
 class ProgrammeSetupAuthorization(

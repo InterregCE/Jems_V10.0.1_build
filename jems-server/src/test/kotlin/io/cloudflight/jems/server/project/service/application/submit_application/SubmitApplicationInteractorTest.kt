@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.application.submit_application
 
 import io.cloudflight.jems.api.audit.dto.AuditAction
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.plugin.contract.pre_condition_check.PreConditionCheckPlugin
 import io.cloudflight.jems.plugin.contract.pre_condition_check.models.PreConditionCheckResult
 import io.cloudflight.jems.server.UnitTest
@@ -43,8 +44,8 @@ class SubmitApplicationInteractorTest : UnitTest() {
     private val projectInStepTwo = buildProjectSummary(status = ApplicationStatus.DRAFT)
     private val projectInStepOne = buildProjectSummary(status = ApplicationStatus.STEP1_DRAFT)
     private val projectInStepTwoReturnedForConditions = buildProjectSummary(status = ApplicationStatus.RETURNED_TO_APPLICANT_FOR_CONDITIONS)
-    private val twoStepCallSetting = buildCallSetting()
-    private val oneStepCallSetting = buildCallSetting(endDateStep1 = null)
+    private val twoStepCallSetting = buildCallSetting(preSubmissionCheckPluginKey = pluginKey)
+    private val oneStepCallSetting = buildCallSetting(preSubmissionCheckPluginKey = pluginKey)
 
     @MockK
     lateinit var projectPersistence: ProjectPersistence
@@ -137,7 +138,19 @@ class SubmitApplicationInteractorTest : UnitTest() {
     @Test
     fun `should not execute pre condition check when application belongs to two-step call and application is not in step two`() {
         every { projectPersistence.getProjectSummary(projectId) } returns projectInStepOne
+        every { projectPersistence.getProjectCallSettings(projectId) } returns oneStepCallSetting
+        every { applicationStateFactory.getInstance(any()) } returns draftState
+        every { draftState.submit() } returns ApplicationStatus.SUBMITTED
+
+        submitApplication.submit(projectId)
+        verify(exactly = 0) { preConditionCheckPlugin.check(projectId) }
+    }
+
+    @Test
+    fun `should not execute pre condition check when plugin is disabled`() {
+        every { projectPersistence.getProjectSummary(projectId) } returns projectInStepTwo
         every { projectPersistence.getProjectCallSettings(projectId) } returns twoStepCallSetting
+        every { pluginStatusRepository.findById(pluginKey) } returns Optional.of(PluginStatusEntity(pluginKey, false))
         every { applicationStateFactory.getInstance(any()) } returns draftState
         every { draftState.submit() } returns ApplicationStatus.SUBMITTED
 
@@ -172,6 +185,7 @@ class SubmitApplicationInteractorTest : UnitTest() {
     private fun buildCallSetting(
         callId: Long = 1L,
         callName: String = "call",
+        callType: CallType = CallType.STANDARD,
         startDate: ZonedDateTime = ZonedDateTime.now().minusDays(4),
         endDate: ZonedDateTime = ZonedDateTime.now().plusDays(4),
         endDateStep1: ZonedDateTime? = ZonedDateTime.now().plusDays(2),
@@ -181,11 +195,15 @@ class SubmitApplicationInteractorTest : UnitTest() {
         lumpSums: List<ProgrammeLumpSum> = emptyList(),
         unitCosts: List<ProgrammeUnitCost> = emptyList(),
         stateAids : List<ProgrammeStateAid> = emptyList(),
+        preSubmissionCheckPluginKey : String? = null,
+        firstStepPreSubmissionCheckPluginKey : String? = null
     ) =
         ProjectCallSettings(
-            callId, callName, startDate, endDate, endDateStep1,
+            callId, callName, callType, startDate, endDate, endDateStep1,
             lengthOfPeriod, isAdditionalFundAllowed, flatRates, lumpSums, unitCosts, stateAids,
-            applicationFormFieldConfigurations = mutableSetOf()
+            applicationFormFieldConfigurations = mutableSetOf(),
+            preSubmissionCheckPluginKey = preSubmissionCheckPluginKey,
+            firstStepPreSubmissionCheckPluginKey = firstStepPreSubmissionCheckPluginKey
         )
 
     private fun buildProjectSummary(

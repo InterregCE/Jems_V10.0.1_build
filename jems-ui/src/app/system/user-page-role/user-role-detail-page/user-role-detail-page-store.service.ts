@@ -1,11 +1,10 @@
 import {Injectable} from '@angular/core';
 import {merge, Observable, of, Subject} from 'rxjs';
 import {OutputCurrentUser, UserRoleCreateDTO, UserRoleDTO, UserRoleService} from '@cat/api';
-import {map, shareReplay, switchMap, tap} from 'rxjs/operators';
+import {filter, map, shareReplay, switchMap, take, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 import {SecurityService} from '../../../security/security.service';
 import {RoutingService} from '@common/services/routing.service';
-import {filter, take} from 'rxjs/internal/operators';
 import {RoleStore} from '../../services/role-store.service';
 
 @Injectable()

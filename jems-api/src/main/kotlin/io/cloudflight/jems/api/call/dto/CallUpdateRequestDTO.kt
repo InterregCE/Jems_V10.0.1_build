@@ -8,6 +8,7 @@ import java.time.ZonedDateTime
 data class CallUpdateRequestDTO(
     val id: Long? = null,
     val name: String,
+    val type: CallType,
     val startDateTime: ZonedDateTime,
     val endDateTimeStep1: ZonedDateTime? = null,
     val endDateTime: ZonedDateTime,

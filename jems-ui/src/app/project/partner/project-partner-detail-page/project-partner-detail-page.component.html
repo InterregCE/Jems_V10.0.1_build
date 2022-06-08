@@ -1,54 +1,62 @@
-<app-project-page-template *ngIf="partnerStore.partner$ | async as partner"
+<jems-project-page-template *ngIf="partnerStore.partner$ | async as partner"
                            [titleText]="'project.application.form.acronym' | translate : {projectTitle: projectStore.projectTitle$ | async} ">
     <ng-container page-sub-title *ngIf="partner.abbreviation else defaultSubTitle">
-        <h2>{{'common.label.project.partner.role.' + partner.role | translate}} {{partner.abbreviation}}</h2>
+        <h2>{{'common.label.project.partner.role.' + partner.role | adaptTranslationKeyByCallType | async | translate}} {{partner.abbreviation}}</h2>
     </ng-container>
 
-    <app-alert [type]="Alert.WARNING"
+    <jems-alert [type]="Alert.WARNING"
                [closable]="false"
                [show]="!partner.active">
         <div>{{'project.application.form.section.part.b.deactivated.partner.warning' | translate}}</div>
-    </app-alert>
+    </jems-alert>
 
     <nav mat-tab-nav-bar>
         <a [active]="activeTab('identity')" mat-tab-link
            (click)="routeTo('identity')">
-            <span appText maxWidth="230">{{'partner.tab.identity' | translate}}</span>
+            <span jemsText maxWidth="230">{{'partner.tab.identity' | translate}}</span>
         </a>
-        <a *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.ADDRESS"
+        <a *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.ADDRESS"
            [active]="activeTab('region')" mat-tab-link
            (click)="routeTo('region')">
-            <span appText maxWidth="230">{{'partner.tab.address' | translate}}</span>
+            <span jemsText maxWidth="230">{{'partner.tab.address' | translate}}</span>
         </a>
-        <a *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.CONTACT"
+        <a *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.CONTACT"
            [active]="activeTab('contact')" mat-tab-link
            (click)="routeTo('contact')">
-            <span appText maxWidth="230">{{'partner.tab.contact' | translate}}</span>
+            <span jemsText maxWidth="230">{{'partner.tab.contact' | translate}}</span>
         </a>
-        <a *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.MOTIVATION"
+        <a *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.MOTIVATION"
            [active]="activeTab('motivation')" mat-tab-link
            (click)="routeTo('motivation')">
-            <span appText maxWidth="230">{{'partner.tab.motivation' | translate}}</span>
+            <span jemsText maxWidth="230">{{'partner.tab.motivation' | translate}}</span>
         </a>
-        <ng-container *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING">
+        <ng-container *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING">
             <a [active]="activeTab('budget')" mat-tab-link
                (click)="routeTo('budget')">
-                <span appText maxWidth="230">{{'partner.tab.budget' | translate}}</span>
+                <span jemsText maxWidth="230">{{'partner.tab.budget' | translate}}</span>
             </a>
             <a [active]="activeTab('coFinancing')" mat-tab-link
                (click)="routeTo('coFinancing')">
-                <span appText maxWidth="230">{{'partner.tab.coFinancing' | translate}}</span>
+                <span jemsText maxWidth="230">{{'partner.tab.coFinancing' | adaptTranslationKeyByCallType | async | translate}}</span>
             </a>
         </ng-container>
-        <ng-container *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.STATE_AID">
+        <ng-container *ngIf="partnerStore.isProjectCallTypeSpf$ | async">
+            <ng-container *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING">
+                <a [active]="activeTab('spfCoFinancing')" mat-tab-link
+                   (click)="routeTo('spfCoFinancing')">
+                    <span jemsText maxWidth="230">{{'partner.tab.coFinancing.spf' | translate}}</span>
+                </a>
+            </ng-container>
+        </ng-container>
+        <ng-container *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.STATE_AID">
             <a [active]="activeTab('stateAid')" mat-tab-link
                (click)="routeTo('stateAid')">
-                <span appText maxWidth="230">{{'partner.tab.state.aid' | translate}}</span>
+                <span jemsText maxWidth="230">{{'partner.tab.state.aid' | translate}}</span>
             </a>
         </ng-container>
     </nav>
     <router-outlet></router-outlet>
-</app-project-page-template>
+</jems-project-page-template>
 
 <ng-template #defaultSubTitle>
     <h2>{{'project.application.form.section.part.b.partners' | translate}}</h2>

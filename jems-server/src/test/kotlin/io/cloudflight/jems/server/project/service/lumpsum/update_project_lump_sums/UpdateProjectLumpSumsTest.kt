@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.service.lumpsum.update_project_lump_sums
 
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
@@ -36,6 +37,7 @@ internal class UpdateProjectLumpSumsTest : UnitTest() {
         private fun callSettings(lumpSums: List<ProgrammeLumpSum>) = ProjectCallSettings(
             callId = 7,
             callName = "call 7",
+            callType = CallType.STANDARD,
             startDate = ZonedDateTime.now(),
             endDate = ZonedDateTime.now(),
             endDateStep1 = null,
@@ -45,7 +47,9 @@ internal class UpdateProjectLumpSumsTest : UnitTest() {
             lumpSums = lumpSums,
             unitCosts = listOf(),
             stateAids = emptyList(),
-            applicationFormFieldConfigurations = mutableSetOf()
+            applicationFormFieldConfigurations = mutableSetOf(),
+            preSubmissionCheckPluginKey = null,
+            firstStepPreSubmissionCheckPluginKey = null
         )
 
         private val periods = listOf(

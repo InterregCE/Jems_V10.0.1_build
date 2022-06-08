@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.call.service.list_calls
 
+import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.server.call.authorization.CanRetrieveCalls
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.call.service.model.IdNamePair
@@ -14,6 +15,6 @@ class ListCalls(private val persistence: CallPersistence) :
     @CanRetrieveCalls
     @Transactional(readOnly = true)
     @ExceptionWrapper(ListCallsException::class)
-    override fun list(): List<IdNamePair> =
-        persistence.listCalls()
+    override fun list(status: CallStatus?): List<IdNamePair> =
+        persistence.listCalls(status)
 }

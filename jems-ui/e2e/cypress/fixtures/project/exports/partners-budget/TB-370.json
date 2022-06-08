@@ -1,0 +1,134 @@
+{
+  "secondStep": {
+    "partnerAbbreviation": "PP v2"
+  },
+  "approvedModificationData": {
+    "identification": {
+      "acronym": "tb-370 v3",
+      "title": [
+        {
+          "language": "DE",
+          "translation": "Approved version title DE"
+        },
+        {
+          "language": "EN",
+          "translation": "Approved version title EN"
+        }
+      ],
+      "duration": 24,
+      "specificObjective": "AdvancedTechnologies",
+      "intro": [
+        {
+          "language": "DE",
+          "translation": "Approved version summary DE"
+        },
+        {
+          "language": "EN",
+          "translation": "Approved version summary EN"
+        }
+      ]
+    },
+    "partnerAbbreviation": "PP v3",
+    "modifiedUnitCosts": [
+      {
+        "unitCostId": 4,
+        "numberOfUnits": 1,
+        "rowSum": 55.56,
+        "budgetPeriods": [
+          {
+            "amount": 55.56,
+            "number": 1
+          },
+          {
+            "amount": 0,
+            "number": 2
+          },
+          {
+            "amount": 0,
+            "number": 3
+          },
+          {
+            "amount": 0,
+            "number": 4
+          },
+          {
+            "amount": 0,
+            "number": 5
+          },
+          {
+            "amount": 0,
+            "number": 6
+          },
+          {
+            "amount": 0,
+            "number": 7
+          },
+          {
+            "amount": 0,
+            "number": 8
+          }
+        ]
+      }
+    ],
+    "modifiedCofinancing": {
+      "finances": [
+        {
+          "fundId": 1,
+          "fundType": "MainFund",
+          "percentage": 60
+        },
+        {
+          "percentage": 40,
+          "fundType": "PartnerContribution"
+        }
+      ],
+      "partnerContributions": [
+        {
+          "id": null,
+          "name": "Lead Partner",
+          "status": "Public",
+          "amount": 487.44,
+          "partner": true
+        }
+      ]
+    }
+  },
+  "rejectedModificationData": {
+    "identification": {
+      "acronym": "tb-370 v4",
+      "title": [
+        {
+          "language": "DE",
+          "translation": "Rejected version title DE"
+        },
+        {
+          "language": "EN",
+          "translation": "Rejected version title EN"
+        }
+      ],
+      "duration": 27,
+      "specificObjective": "AdvancedTechnologies",
+      "intro": [
+        {
+          "language": "DE",
+          "translation": "Rejected version summary DE"
+        },
+        {
+          "language": "EN",
+          "translation": "Rejected version summary EN"
+        }
+      ]
+    },
+    "partnerAbbreviation": "PP v4"
+  },
+  "approvalInfo": {
+    "note": "API modification approved",
+    "date": "2022-04-01",
+    "entryIntoForceDate": "2022-04-01"
+  },
+  "rejectionInfo": {
+    "note": "API modification rejected",
+    "date": "2022-04-01",
+    "entryIntoForceDate": "2022-04-01"
+  }
+}

@@ -5,13 +5,13 @@ import {mergeMap, map, startWith, tap} from 'rxjs/operators';
 import {Tables} from '../../../../common/utils/tables';
 import {Log} from '../../../../common/utils/log';
 import {IndicatorsStore} from '../../services/indicators-store.service';
-import {ProgrammeIndicatorService, UserRoleDTO} from '@cat/api';
+import {ProgrammeIndicatorOutputService, ProgrammeIndicatorResultService, UserRoleDTO} from '@cat/api';
 import {BaseComponent} from '@common/components/base-component';
 import {ProgrammePageSidenavService} from '../../services/programme-page-sidenav.service';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @Component({
-  selector: 'app-programme-indicators-overview-page',
+  selector: 'jems-programme-indicators-overview-page',
   templateUrl: './programme-indicators-overview-page.component.html',
   styleUrls: ['./programme-indicators-overview-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -42,7 +42,7 @@ export class ProgrammeIndicatorsOverviewPageComponent extends BaseComponent {
     ])
       .pipe(
         mergeMap(([pageIndex, pageSize, sort]) =>
-          this.programmeIndicatorService.getOutputIndicatorDetails(pageIndex, pageSize, sort)),
+          this.programmeIndicatorOutputService.getOutputIndicatorDetails(pageIndex, pageSize, sort)),
         tap(page => Log.info('Fetched the Final Indicators:', this, page.content)),
       );
 
@@ -58,12 +58,13 @@ export class ProgrammeIndicatorsOverviewPageComponent extends BaseComponent {
     ])
       .pipe(
         mergeMap(([pageIndex, pageSize, sort]) =>
-          this.programmeIndicatorService.getResultIndicatorDetails(pageIndex, pageSize, sort)),
+          this.programmeIndicatorResultService.getResultIndicatorDetails(pageIndex, pageSize, sort)),
         tap(page => Log.info('Fetched the Result Indicators:', this, page.content)),
       );
 
   constructor(private indicatorsStore: IndicatorsStore,
-              private programmeIndicatorService: ProgrammeIndicatorService,
+              private programmeIndicatorOutputService: ProgrammeIndicatorOutputService,
+              private programmeIndicatorResultService: ProgrammeIndicatorResultService,
               private programmePageSidenavService: ProgrammePageSidenavService) {
     super();
   }

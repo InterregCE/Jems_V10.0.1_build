@@ -8,11 +8,13 @@ import io.cloudflight.jems.api.project.dto.description.InputProjectOverallObject
 import io.cloudflight.jems.api.project.dto.description.InputProjectPartnership
 import io.cloudflight.jems.api.project.dto.description.InputProjectRelevance
 import io.cloudflight.jems.api.project.dto.description.InputProjectRelevanceBenefit
+import io.cloudflight.jems.api.project.dto.description.ProjectRelevanceSpfRecipientDTO
 import io.cloudflight.jems.api.project.dto.description.InputProjectRelevanceStrategy
 import io.cloudflight.jems.api.project.dto.description.InputProjectRelevanceSynergy
 import io.cloudflight.jems.api.project.dto.description.OutputProjectDescription
 import io.cloudflight.jems.api.project.dto.description.OutputProjectLongTermPlans
 import io.cloudflight.jems.api.project.dto.description.OutputProjectManagement
+import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroupDTO
 import io.cloudflight.jems.server.project.service.model.ProjectCooperationCriteria
 import io.cloudflight.jems.server.project.service.model.ProjectDescription
 import io.cloudflight.jems.server.project.service.model.ProjectHorizontalPrinciples
@@ -22,8 +24,10 @@ import io.cloudflight.jems.server.project.service.model.ProjectOverallObjective
 import io.cloudflight.jems.server.project.service.model.ProjectPartnership
 import io.cloudflight.jems.server.project.service.model.ProjectRelevance
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceBenefit
+import io.cloudflight.jems.server.project.service.model.ProjectRelevanceSpfRecipient
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceStrategy
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceSynergy
+import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
 
 // map for get (model) to DTOs for API
 
@@ -36,11 +40,19 @@ fun ProjectRelevance.toDto() = InputProjectRelevance(
     transnationalCooperation = transnationalCooperation,
     availableKnowledge = availableKnowledge,
     projectBenefits = projectBenefits?.map { it.toProjectBenefit() },
+    projectSpfRecipients = projectSpfRecipients?.map { it.toProjectSpfRecipient() },
     projectStrategies = projectStrategies?.map { it.toProjectStrategy() },
     projectSynergies = projectSynergies?.map { it.toProjectSynergy() }
 )
 fun ProjectRelevanceBenefit.toProjectBenefit() = InputProjectRelevanceBenefit(
     group = group,
+    specification = specification
+)
+fun ProjectTargetGroup.toDto() =
+    ProjectTargetGroupDTO.valueOf(this.name)
+
+fun ProjectRelevanceSpfRecipient.toProjectSpfRecipient() = ProjectRelevanceSpfRecipientDTO(
+    recipientGroup = recipientGroup.toDto(),
     specification = specification
 )
 fun ProjectRelevanceStrategy.toProjectStrategy() = InputProjectRelevanceStrategy(
@@ -107,11 +119,20 @@ fun InputProjectRelevance.toModel() =
         transnationalCooperation = transnationalCooperation,
         availableKnowledge = availableKnowledge,
         projectBenefits = projectBenefits?.map { it.toProjectBenefit() },
+        projectSpfRecipients = projectSpfRecipients?.map { it.toProjectSpfRecipient() },
         projectStrategies = projectStrategies?.map { it.toProjectStrategy() },
         projectSynergies = projectSynergies?.map { it.toProjectSynergy() }
     )
 fun InputProjectRelevanceBenefit.toProjectBenefit() = ProjectRelevanceBenefit(
     group = group,
+    specification = specification
+)
+
+fun ProjectTargetGroupDTO.toModel() =
+    ProjectTargetGroup.valueOf(this.name)
+
+fun ProjectRelevanceSpfRecipientDTO.toProjectSpfRecipient() = ProjectRelevanceSpfRecipient(
+    recipientGroup = recipientGroup.toModel(),
     specification = specification
 )
 fun InputProjectRelevanceStrategy.toProjectStrategy() = ProjectRelevanceStrategy(

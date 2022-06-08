@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {TableConfiguration} from './model/table.configuration';
 import {ColumnConfiguration} from './model/column.configuration';
 import {ColumnType} from './model/column-type.enum';
@@ -11,9 +11,11 @@ import {LanguageStore} from '../../services/language-store.service';
 import {InputTranslation} from '@cat/api';
 import {ColumnWidth} from './model/column-width';
 import {LocaleDatePipe} from '../../pipe/locale-date.pipe';
+import {RoutingService} from '@common/services/routing.service';
+import {ActivatedRoute} from '@angular/router';
 
 @Component({
-  selector: 'app-table',
+  selector: 'jems-table',
   templateUrl: './table.component.html',
   styleUrls: ['./table.component.scss']
 })
@@ -30,7 +32,7 @@ export class TableComponent implements OnInit {
   @Input()
   pageIndex: number;
   @Input()
-  temporarilyHidePagination = false;
+  confirmPageChange: boolean = false;
 
   @Output()
   sortRows = new EventEmitter<Partial<MatSort>>();
@@ -39,12 +41,16 @@ export class TableComponent implements OnInit {
   @Output()
   newPageIndex: EventEmitter<number> = new EventEmitter<number>();
 
+  @ViewChild(MatSort) matSort: MatSort;
+
   columnsToDisplay: string[] = [];
   currentPageSize = Tables.DEFAULT_INITIAL_PAGE_SIZE;
 
   constructor(private moneyPipe: MoneyPipe,
               private localeDatePipe: LocaleDatePipe,
-              public languageStore: LanguageStore) {
+              public languageStore: LanguageStore,
+              private routingService: RoutingService,
+              private activatedRoute: ActivatedRoute) {
   }
 
   ngOnInit(): void {
@@ -76,6 +82,9 @@ export class TableComponent implements OnInit {
     }
     if (column.alternativeValueCondition && column.alternativeValueCondition(elementValue)) {
       return column.alternativeValue;
+    }
+    if (column.columnType === ColumnType.DateOnlyColumn) {
+      return this.localeDatePipe.transform(elementValue, 'L');
     }
     if (column.columnType === ColumnType.DateColumn) {
       return this.localeDatePipe.transform(elementValue, 'L', 'LT');
@@ -111,5 +120,12 @@ export class TableComponent implements OnInit {
       return `${column.tooltip.tooltipTranslationKey}.${elementTitle}`;
     }
     return elementTitle;
+  }
+
+  cellClicked(row: any, column: ColumnConfiguration): void {
+    if (column.clickable === false || !this.configuration.isTableClickable) {
+      return;
+    }
+    this.routingService.navigate([this.configuration.routerLink, row.id], {relativeTo: this.activatedRoute});
   }
 }

@@ -20,8 +20,8 @@ import io.cloudflight.jems.server.project.service.file.model.ProjectFileCategory
 import io.cloudflight.jems.server.utils.projectFileCategoryDTO
 import io.cloudflight.jems.server.project.service.file.set_project_file_description.SetProjectFileDescriptionExceptions
 import io.cloudflight.jems.server.project.service.file.set_project_file_description.SetProjectFileDescriptionInteractor
-import io.cloudflight.jems.server.project.service.file.upload_project_file.UploadFileExceptions
-import io.cloudflight.jems.server.project.service.file.upload_project_file.UploadProjectFileInteractor
+import io.cloudflight.jems.server.project.service.file.uploadProjectFile.UploadFileExceptions
+import io.cloudflight.jems.server.project.service.file.uploadProjectFile.UploadProjectFileInteractor
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -78,7 +78,7 @@ internal class ProjectFileControllerTest : UnitTest() {
                 .isEqualTo(fileMetadata.toDTO())
             assertThat(categorySlot.captured.type).isEqualTo(ProjectFileCategoryType.PARTNER)
             assertThat(categorySlot.captured.id).isEqualTo(PARTNER_ID)
-            assertThat(projectFileSlot.captured.name).isEqualTo(file.originalFilename ?: file.name)
+            assertThat(projectFileSlot.captured.name).isEqualTo(file.originalFilename)
             assertThat(projectFileSlot.captured.size).isEqualTo(file.size)
         }
 

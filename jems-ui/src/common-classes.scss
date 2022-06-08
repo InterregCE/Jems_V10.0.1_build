@@ -37,12 +37,20 @@
 
 .justify-center {
   justify-content: center !important;
+  text-align: center !important;
+}
+
+.justify-start {
+  justify-content: start !important;
 }
 
 .no-bullets {
   list-style-type: none;
 }
 
+.text-primary{
+  color: var(--primary-color)
+}
 
 .m-0 {
   margin: 0 !important;
@@ -476,57 +484,57 @@
   margin-left: auto !important;
 }
 
-.app-alert-success {
+.jems-alert-success {
   color: #155724;
   background-color: #d4edda;
   border-color: #c3e6cb;
 }
 
-.app-alert-success hr {
+.jems-alert-success hr {
   border-top-color: #b1dfbb;
 }
 
-.app-alert-success .app-alert-link {
+.jems-alert-success .jems-alert-link {
   color: #0b2e13;
 }
 
 
-.app-alert-danger {
+.jems-alert-danger {
   color: #721c24;
   background-color: #f8d7da;
   border-color: #f5c6cb;
 }
 
-.app-alert-danger hr {
+.jems-alert-danger hr {
   border-top-color: #f1b0b7;
 }
 
-.app-alert-danger .app-alert-link {
+.jems-alert-danger .jems-alert-link {
   color: #491217;
 }
 
-.app-alert-warning {
+.jems-alert-warning {
   color: #322200;
   background-color: #F6D15E;
   border-color: #997200;
 }
 
-.app-alert-warning hr {
+.jems-alert-warning hr {
   border-top-color: #997200;
 }
 
-.app-alert-warning .app-alert-link {
+.jems-alert-warning .jems-alert-link {
   color: #322200;
 }
 
-.app-alert-info {
+.jems-alert-info {
   color: #322200;
   font-style: italic;
   background-color: var(--light-blue-gray);
   border-color: var(--table-border-color);
 }
 
-.app-alert-icon {
+.jems-alert-icon {
   display: block;
   margin-right: 0.75em;
 }

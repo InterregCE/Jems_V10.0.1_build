@@ -8,6 +8,7 @@ import io.cloudflight.jems.server.project.entity.partner.PartnerMotivationRow
 import io.cloudflight.jems.server.project.entity.partner.PartnerSimpleRow
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetPerPeriodRow
+import io.cloudflight.jems.server.project.entity.partner.budget.spf.ProjectSpfBeneficiaryBudgetPerPeriodRow
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.PartnerContributionRow
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerTotalBudgetEntry
@@ -163,6 +164,8 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
 
     fun countByProjectId(projectId: Long): Long
 
+    fun countByProjectIdAndActive(projectId: Long, active: Boolean): Long
+
     @Query("SELECT e.project.id FROM project_partner e WHERE e.id = :partnerId")
     fun getProjectIdForPartner(partnerId: Long): Long?
 
@@ -204,6 +207,7 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
              entity.partner_sub_type AS partnerSubType,
              entity.other_identifier_number AS otherIdentifierNumber,
              entity.vat_recovery AS vatRecovery,
+             entity.created_at AS createdAt,
              translation.*,
              translation.other_identifier_description AS otherIdentifierDescription
              FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
@@ -221,8 +225,11 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
         """
             SELECT
              addresses.*,
+             addresses.country_code AS countryCode,
              addresses.nuts_region2 AS nutsRegion2,
+             addresses.nuts_region2_code AS nutsRegion2Code,
              addresses.nuts_region3 AS nutsRegion3,
+             addresses.nuts_region3_code AS nutsRegion3Code,
              addresses.house_number AS houseNumber,
              addresses.postal_code AS postalCode
              FROM #{#entityName}_address FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS addresses
@@ -345,14 +352,18 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
              entity.legal_status_id as legalStatusId,
              entity.vat_recovery as vatRecovery,
              entity.other_identifier_number as otherIdentifierNumber,
+             entity.created_at as createdAt,
              translation.language,
              translation.department,
              translation.other_identifier_description as otherIdentifierDescription,
 
              address.type as addressType,
              address.country,
+             address.country_code as countryCode,
              address.nuts_region2 as nutsRegion2,
+             address.nuts_region2_code as nutsRegion2Code,
              address.nuts_region3 as nutsRegion3,
+             address.nuts_region3_code as nutsRegion3Code,
              address.street,
              address.house_number as houseNumber,
              address.postal_code as postalCode,
@@ -377,11 +388,10 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
              LEFT JOIN #{#entityName}_motivation_transl FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS motivationTranslation ON entity.id = motivationTranslation.partner_id
              WHERE entity.project_id = :projectId
              ORDER BY entity.sort_number ASC
-             LIMIT 30
              """,
         nativeQuery = true
     )
-    fun findTop30ByProjectIdAsOfTimestamp(projectId: Long, timestamp: Timestamp): List<PartnerDetailRow>
+    fun findByProjectIdAsOfTimestamp(projectId: Long, timestamp: Timestamp): List<PartnerDetailRow>
 
 
     @Query(
@@ -504,4 +514,32 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
         nativeQuery = true
     )
     fun getAllPartnerTotalBudgetDataAsOfTimestamp(partnerIds: Set<Long>, timestamp: Timestamp): List<ProjectPartnerTotalBudgetEntry>
+
+
+    @Query(
+        """
+        SELECT spfCosts.partner_id as partnerId, spfCostsPeriod.period_number as periodNumber,
+            sum(spfCostsPeriod.amount) as spfCostPerPeriod
+        FROM project_partner_budget_spfcost_period AS spfCostsPeriod
+                 LEFT JOIN project_partner_budget_spfcost AS spfCosts ON spfCosts.id = spfCostsPeriod.budget_id
+        WHERE partner_id = :partnerId
+        GROUP BY partner_id, period_number
+    """,
+        nativeQuery = true
+    )
+    fun getSpfBudgetByBeneficiaryId(partnerId: Long): List<ProjectSpfBeneficiaryBudgetPerPeriodRow>
+
+
+    @Query(
+        """
+        SELECT spfCosts.partner_id as partnerId, spfCostsPeriod.period_number as periodNumber,
+            sum(spfCostsPeriod.amount) as spfCostPerPeriod
+        FROM project_partner_budget_spfcost_period FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS spfCostsPeriod
+                 LEFT JOIN project_partner_budget_spfcost FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS spfCosts ON spfCosts.id = spfCostsPeriod.budget_id
+        WHERE partner_id = :partnerId
+        GROUP BY partner_id, period_number
+    """,
+        nativeQuery = true
+    )
+    fun getSpfBudgetByBeneficiaryIdAsOfTimestamp(partnerId: Long, timestamp: Timestamp):  List<ProjectSpfBeneficiaryBudgetPerPeriodRow>
 }

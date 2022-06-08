@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.controller.partner.budget
 
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory
 import io.cloudflight.jems.api.project.dto.partner.budget.BudgetGeneralCostEntryDTO
+import io.cloudflight.jems.api.project.dto.partner.budget.BudgetSpfCostEntryDTO
 import io.cloudflight.jems.api.project.dto.partner.budget.BudgetStaffCostEntryDTO
 import io.cloudflight.jems.api.project.dto.partner.budget.BudgetTravelAndAccommodationCostEntryDTO
 import io.cloudflight.jems.api.project.dto.partner.budget.BudgetUnitCostEntryDTO
@@ -12,15 +13,17 @@ import io.cloudflight.jems.api.project.partner.ProjectPartnerBudgetApi
 import io.cloudflight.jems.server.project.service.partner.budget.get_budget_costs.GetBudgetCostsInteractor
 import io.cloudflight.jems.server.project.service.partner.budget.get_budget_options.GetBudgetOptionsInteractor
 import io.cloudflight.jems.server.project.service.partner.budget.get_budget_total_cost.GetBudgetTotalCostInteractor
+import io.cloudflight.jems.server.project.service.partner.budget.updateBudgetSpfCosts.UpdateBudgetSpfCostsInteractor
 import io.cloudflight.jems.server.project.service.partner.budget.update_budge_staff_costs.UpdateBudgetStaffCostsInteractor
 import io.cloudflight.jems.server.project.service.partner.budget.update_budget_general_costs.update_budget_equipment_costs.UpdateBudgetEquipmentCosts
 import io.cloudflight.jems.server.project.service.partner.budget.update_budget_general_costs.update_budget_external_expertise_and_services.UpdateBudgetExternalExpertiseAndServicesCostsInteractor
 import io.cloudflight.jems.server.project.service.partner.budget.update_budget_general_costs.update_budget_infrastructure_and_works_costs.UpdateBudgetInfrastructureAndWorksCostsInteractor
 import io.cloudflight.jems.server.project.service.partner.budget.update_budget_options.UpdateBudgetOptionsInteractor
 import io.cloudflight.jems.server.project.service.partner.budget.update_budget_travel_and_accommodation_costs.UpdateBudgetTravelAndAccommodationCostsInteractor
-import io.cloudflight.jems.server.project.service.partner.budget.update_budget_unit_costs.UpdateBudgetUnitCostsInteractor
+import io.cloudflight.jems.server.project.service.partner.budget.updateBudgetUnitCosts.UpdateBudgetUnitCostsInteractor
 import io.cloudflight.jems.server.project.service.partner.cofinancing.get_cofinancing.GetCoFinancingInteractor
 import io.cloudflight.jems.server.project.service.partner.cofinancing.toContributionModel
+import io.cloudflight.jems.server.project.service.partner.cofinancing.toContributionSpfModel
 import io.cloudflight.jems.server.project.service.partner.cofinancing.toDto
 import io.cloudflight.jems.server.project.service.partner.cofinancing.toFinancingModel
 import io.cloudflight.jems.server.project.service.partner.cofinancing.update_cofinancing.UpdateCoFinancingInteractor
@@ -39,6 +42,7 @@ class ProjectPartnerBudgetController(
     private val updateBudgetInfrastructureAndWorksCosts: UpdateBudgetInfrastructureAndWorksCostsInteractor,
     private val updateBudgetStaffCosts: UpdateBudgetStaffCostsInteractor,
     private val updateBudgetUnitCosts: UpdateBudgetUnitCostsInteractor,
+    private val updateBudgeSpfCosts: UpdateBudgetSpfCostsInteractor,
     private val getBudgetTotalCost: GetBudgetTotalCostInteractor
 ) : ProjectPartnerBudgetApi {
 
@@ -92,8 +96,15 @@ class ProjectPartnerBudgetController(
         updateBudgetUnitCosts.updateBudgetUnitCosts(partnerId, unitCosts.toBudgetUnitCostEntryList())
             .toBudgetUnitCostEntryDTOList()
 
+    override fun updateBudgetSpfCosts(partnerId: Long, spfCosts: List<BudgetSpfCostEntryDTO>) =
+        updateBudgeSpfCosts.updateBudgetSpfCosts(partnerId, spfCosts.toBudgetSpfCostEntryList()
+        ).toBudgetSpfCostEntryDTOList()
+
     override fun getTotal(partnerId: Long, version: String?) =
         getBudgetTotalCost.getBudgetTotalCost(partnerId, version)
+
+    override fun getSpfTotal(partnerId: Long, version: String?) =
+        getBudgetTotalCost.getBudgetTotalSpfCost(partnerId, version)
 
     override fun getProjectPartnerCoFinancing(
         partnerId: Long,
@@ -109,6 +120,22 @@ class ProjectPartnerBudgetController(
             partnerId,
             partnerCoFinancing.finances.toFinancingModel(),
             partnerCoFinancing.partnerContributions.toContributionModel()
+        ).toDto()
+
+    override fun getProjectPartnerSpfCoFinancing(
+        partnerId: Long,
+        version: String?
+    ): ProjectPartnerCoFinancingAndContributionOutputDTO =
+        getCoFinancing.getSpfCoFinancing(partnerId, version).toDto()
+
+    override fun updateProjectPartnerSpfCoFinancing(
+        partnerId: Long,
+        partnerCoFinancing: ProjectPartnerCoFinancingAndContributionInputDTO
+    ) =
+        updateCoFinancing.updateSpfCoFinancing(
+            partnerId,
+            partnerCoFinancing.finances.toFinancingModel(),
+            partnerCoFinancing.partnerContributions.toContributionSpfModel()
         ).toDto()
 
 }

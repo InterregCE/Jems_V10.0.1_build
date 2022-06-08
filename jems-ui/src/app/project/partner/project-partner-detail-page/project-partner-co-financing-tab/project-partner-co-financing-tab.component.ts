@@ -42,7 +42,7 @@ const totalContributionValidator = (expectedAmount: number): ValidatorFn => (for
 
 @UntilDestroy()
 @Component({
-  selector: 'app-project-partner-co-financing-tab',
+  selector: 'jems-project-partner-co-financing-tab',
   templateUrl: './project-partner-co-financing-tab.component.html',
   styleUrls: ['./project-partner-co-financing-tab.component.scss'],
   providers: [FormService],
@@ -153,6 +153,7 @@ export class ProjectPartnerCoFinancingTabComponent implements OnInit {
 
   addNewPartnerContribution(initialValue?: ProjectPartnerContributionDTO): void {
     this.partnerContributions.push(this.formBuilder.group({
+      id: [initialValue ? initialValue.id : null, []],
       name: [initialValue ? initialValue.name : '', [Validators.required, Validators.maxLength(255)]],
       status: [initialValue ? initialValue.status : null, [Validators.required]],
       amount: [initialValue?.amount || 0, [Validators.required, Validators.min(0)]],

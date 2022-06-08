@@ -1,0 +1,34 @@
+
+
+1
+A - Project identification
+A.1 Project identification
+Project id (automatically created){{applicationId}}
+Project acronym{{acronym}}
+Programme priorityPO1 Innovation EN
+Specific objectiveSO1.1: Developing and enhancing research and 
+innovation capacities and the uptake of advanced 
+technologies
+Project duration in months12
+
+2
+B - Project partners
+Partners overview
+NumberStatusOrganisation abbreviationPartner role
+1ActiveLead Partner v1LP
+
+3
+B.1 Lead partner
+Partner number1
+Partner roleLP
+Organisation abbreviationLead Partner v1
+Legal and financial information
+Legal statusPublic
+
+4
+C - Project description
+C.1 Project overall objective
+Below, you can see the Programme priority specific objective your project will contribute to (chosen in 
+section A.1.).
+SO1.1: Developing and enhancing research and innovation capacities and the uptake of advanced 
+technologies

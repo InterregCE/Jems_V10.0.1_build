@@ -8,7 +8,7 @@ import {ProjectBudgetPeriodPageStore} from '@project/budget/budget-page-per-peri
 
 
 @Component({
-  selector: 'app-budget-page-partner-per-period',
+  selector: 'jems-budget-page-partner-per-period',
   templateUrl: './budget-page-partner-per-period.component.html',
   styleUrls: ['./budget-page-partner-per-period.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -30,15 +30,22 @@ export class BudgetPagePartnerPerPeriodComponent {
     periodsAvailable: boolean;
   }>;
 
+  private static sortByNumber(a: ProjectPartnerBudgetPerPeriodDTO, b: ProjectPartnerBudgetPerPeriodDTO): number {
+    return a.partner.sortNumber - b.partner.sortNumber;
+  }
+
+
   constructor(
     private budgetPeriodStore: ProjectBudgetPeriodPageStore,
   ) {
     this.data$ = this.budgetPeriodStore.projectBudgetOverviewPerPartnerPerPeriods$
       .pipe(
         map((projectBudgetOverviewPerPartnerPerPeriod) => {
+          const perPeriodSorted = [...projectBudgetOverviewPerPartnerPerPeriod.partnersBudgetPerPeriod]
+            .sort(BudgetPagePartnerPerPeriodComponent.sortByNumber);
           return {
-            partnersBudgetPerPeriod : projectBudgetOverviewPerPartnerPerPeriod.partnersBudgetPerPeriod.sort((a, b) => a.partner.sortNumber - b.partner.sortNumber),
-            totals: projectBudgetOverviewPerPartnerPerPeriod.totals ,
+            partnersBudgetPerPeriod: perPeriodSorted,
+            totals: projectBudgetOverviewPerPartnerPerPeriod.totals,
             totalsPercentage: projectBudgetOverviewPerPartnerPerPeriod.totalsPercentage,
             periodsAvailable: this.projectPeriodNumbers.length > 0
           };

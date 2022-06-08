@@ -34,8 +34,9 @@ class JemsPluginRegistryMapImpl : JemsPluginRegistry {
         }
     }
 
-    override fun <T : JemsPlugin> get(type: KClass<T>, key: String): T =
-        registry[key]?.let {
+    override fun <T : JemsPlugin> get(type: KClass<T>, key: String?): T =
+        if(key.isNullOrBlank()) throw PluginKeyIsNullOrBlankException()
+        else registry[key]?.let {
             try {
                 type.javaObjectType.cast(it)
             } catch (e: Throwable) {

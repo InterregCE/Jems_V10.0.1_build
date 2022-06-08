@@ -4,16 +4,15 @@ import {ProjectResultsPageStore} from './project-results-page-store.service';
 import {ProjectResultsPageConstants} from './project-results-page.constants';
 import {combineLatest, Observable} from 'rxjs';
 import {FormArray, FormBuilder} from '@angular/forms';
-import {catchError, map, tap} from 'rxjs/operators';
+import {catchError, map, take,tap} from 'rxjs/operators';
 import {InputTranslation, ProjectPeriodDTO, ProjectResultDTO, ResultIndicatorSummaryDTO} from '@cat/api';
-import {take} from 'rxjs/internal/operators';
 import {ActivatedRoute} from '@angular/router';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {MatSelectChange} from '@angular/material/select/select';
 import {Alert} from '@common/components/forms/alert';
 
 @Component({
-  selector: 'app-project-results-page',
+  selector: 'jems-project-results-page',
   templateUrl: './project-results-page.component.html',
   styleUrls: ['./project-results-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

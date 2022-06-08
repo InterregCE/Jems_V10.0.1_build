@@ -1,0 +1,14 @@
+{
+  "legalRepresentative": {
+      "title": "Mr",
+      "firstName": "Automated",
+      "lastName": "Test"
+    },
+  "contactPerson": {
+    "title": "Ms",
+    "firstName": "Cypress",
+    "lastName": "Automation",
+    "email": "jems@jems.eu",
+    "number": "+4366778899001"
+    }
+}

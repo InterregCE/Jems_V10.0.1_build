@@ -20,6 +20,8 @@ import io.cloudflight.jems.server.project.entity.description.ProjectRelevanceBen
 import io.cloudflight.jems.server.project.entity.description.ProjectRelevanceBenefitRow
 import io.cloudflight.jems.server.project.entity.description.ProjectRelevanceEntity
 import io.cloudflight.jems.server.project.entity.description.ProjectRelevanceRow
+import io.cloudflight.jems.server.project.entity.description.ProjectRelevanceSpfRecipientEntity
+import io.cloudflight.jems.server.project.entity.description.ProjectRelevanceSpfRecipientRow
 import io.cloudflight.jems.server.project.entity.description.ProjectRelevanceStrategyEntity
 import io.cloudflight.jems.server.project.entity.description.ProjectRelevanceStrategyRow
 import io.cloudflight.jems.server.project.entity.description.ProjectRelevanceSynergyEntity
@@ -35,6 +37,7 @@ import io.cloudflight.jems.server.project.service.combineTranslatedValuesManagem
 import io.cloudflight.jems.server.project.service.combineTranslatedValuesOverallObjective
 import io.cloudflight.jems.server.project.service.combineTranslatedValuesPartnership
 import io.cloudflight.jems.server.project.service.combineTranslatedValuesRelevance
+import io.cloudflight.jems.server.project.service.combineTranslatedValuesSpfRecipient
 import io.cloudflight.jems.server.project.service.combineTranslatedValuesStrategy
 import io.cloudflight.jems.server.project.service.combineTranslatedValuesSynergy
 import io.cloudflight.jems.server.project.service.model.ProjectCooperationCriteria
@@ -46,8 +49,10 @@ import io.cloudflight.jems.server.project.service.model.ProjectOverallObjective
 import io.cloudflight.jems.server.project.service.model.ProjectPartnership
 import io.cloudflight.jems.server.project.service.model.ProjectRelevance
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceBenefit
+import io.cloudflight.jems.server.project.service.model.ProjectRelevanceSpfRecipient
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceStrategy
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceSynergy
+import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
 import io.mockk.MockKAnnotations
 import io.mockk.every
 import io.mockk.impl.annotations.MockK
@@ -68,6 +73,7 @@ internal class ProjectDescriptionPersistenceTest : UnitTest() {
     companion object {
         private const val PROJECT_ID = 1L
         private val projectBenefitUuid = UUID.randomUUID()
+        private val projectSpfRecipientUuid = UUID.randomUUID()
         private val projectStrategyUuid = UUID.randomUUID()
         private val projectSynergyUuid = UUID.randomUUID()
 
@@ -97,6 +103,20 @@ internal class ProjectDescriptionPersistenceTest : UnitTest() {
                 ).apply {
                     translatedValues.addAll(
                         combineTranslatedValuesBenefit(
+                            this,
+                            specification = setOf(InputTranslation(SystemLanguage.EN, "specification"))
+                        )
+                    )
+                }
+            ),
+            projectSpfRecipients = setOf(
+                ProjectRelevanceSpfRecipientEntity(
+                    id = projectSpfRecipientUuid,
+                    sortNumber = 1,
+                    recipientGroup = ProjectTargetGroup.Egtc,
+                ).apply {
+                    translatedValues.addAll(
+                        combineTranslatedValuesSpfRecipient(
                             this,
                             specification = setOf(InputTranslation(SystemLanguage.EN, "specification"))
                         )
@@ -190,6 +210,11 @@ internal class ProjectDescriptionPersistenceTest : UnitTest() {
                     group = ProjectTargetGroupDTO.LocalPublicAuthority,
                     specification = setOf(InputTranslation(SystemLanguage.EN, "specification"))
                 )),
+                projectSpfRecipients = listOf(
+                    ProjectRelevanceSpfRecipient(
+                        recipientGroup = ProjectTargetGroup.Egtc,
+                        specification = setOf(InputTranslation(SystemLanguage.EN, "specification"))
+                    )),
                 projectStrategies = listOf(ProjectRelevanceStrategy(
                     strategy = ProgrammeStrategy.AtlanticStrategy,
                     specification = setOf(InputTranslation(SystemLanguage.EN, "specification"))
@@ -299,6 +324,12 @@ internal class ProjectDescriptionPersistenceTest : UnitTest() {
         every { mockRBeRow.language } returns SystemLanguage.EN
         every { mockRBeRow.targetGroup } returns ProjectTargetGroupDTO.LocalPublicAuthority
         every { mockRBeRow.specification } returns "specification"
+        val mockRelevanceSpfRecipientRow: ProjectRelevanceSpfRecipientRow = mockk()
+        every { mockRelevanceSpfRecipientRow.id } returns projectSpfRecipientUuid.toString()
+        every { mockRelevanceSpfRecipientRow.projectId } returns PROJECT_ID
+        every { mockRelevanceSpfRecipientRow.language } returns SystemLanguage.EN
+        every { mockRelevanceSpfRecipientRow.recipientGroup } returns ProjectTargetGroupDTO.Egtc
+        every { mockRelevanceSpfRecipientRow.specification } returns "specification"
         val mockRStRow: ProjectRelevanceStrategyRow = mockk()
         every { mockRStRow.id } returns projectStrategyUuid.toString()
         every { mockRStRow.projectId } returns PROJECT_ID
@@ -348,6 +379,7 @@ internal class ProjectDescriptionPersistenceTest : UnitTest() {
         every { projectOverallObjectiveRepository.findByProjectIdAsOfTimestamp(PROJECT_ID, timestamp) } returns listOf(mockOORow)
         every { projectRelevanceRepository.findByProjectIdAsOfTimestamp(PROJECT_ID, timestamp) } returns listOf(mockRRow)
         every { projectRelevanceRepository.findBenefitsByProjectIdAsOfTimestamp(PROJECT_ID, timestamp) } returns listOf(mockRBeRow)
+        every { projectRelevanceRepository.findSpfRecipientsByProjectIdAsOfTimestamp(PROJECT_ID, timestamp) } returns listOf(mockRelevanceSpfRecipientRow)
         every { projectRelevanceRepository.findStrategiesByProjectIdAsOfTimestamp(PROJECT_ID, timestamp) } returns listOf(mockRStRow)
         every { projectRelevanceRepository.findSynergiesByProjectIdAsOfTimestamp(PROJECT_ID, timestamp) } returns listOf(mockRSyRow)
         every { projectPartnershipRepository.findByProjectIdAsOfTimestamp(PROJECT_ID, timestamp) } returns listOf(mockPRow)
@@ -367,6 +399,7 @@ internal class ProjectDescriptionPersistenceTest : UnitTest() {
                 commonChallenge = emptySet(),
                 transnationalCooperation = emptySet(),
                 projectBenefits = emptyList(),
+                projectSpfRecipients = emptyList(),
                 projectStrategies = emptyList(),
                 projectSynergies = emptyList(),
                 availableKnowledge = emptySet()
@@ -458,5 +491,36 @@ internal class ProjectDescriptionPersistenceTest : UnitTest() {
         every { projectLongTermPlansRepository.save(longTermPlansEntity) } returns longTermPlansEntity
 
         assertThat(persistence.updateProjectLongTermPlans(PROJECT_ID, projectLongTermPlans)).isEqualTo(projectLongTermPlans)
+    }
+
+    @Test
+    fun `getBenefits - latest`() {
+        every { projectRelevanceRepository.findFirstByProjectId(PROJECT_ID) } returns dummyProjectRelevance()
+        assertThat(persistence.getBenefits(PROJECT_ID, null)).containsExactly(
+            ProjectRelevanceBenefit(
+                group = ProjectTargetGroupDTO.LocalPublicAuthority,
+                specification = setOf(InputTranslation(SystemLanguage.EN, "specification")),
+            ),
+        )
+    }
+
+    @Test
+    fun `getBenefits - old version`() {
+        val timestamp = Timestamp.valueOf(LocalDateTime.now())
+
+        val mockRow: ProjectRelevanceBenefitRow = mockk()
+        every { mockRow.projectId } returns PROJECT_ID
+        every { mockRow.targetGroup } returns ProjectTargetGroupDTO.LocalPublicAuthority
+        every { mockRow.language } returns SystemLanguage.EN
+        every { mockRow.specification } returns "specification"
+
+        every { projectRelevanceRepository.findBenefitsByProjectIdAsOfTimestamp(PROJECT_ID, timestamp) } returns listOf(mockRow)
+
+        assertThat(persistence.getBenefits(PROJECT_ID, null)).containsExactly(
+            ProjectRelevanceBenefit(
+                group = ProjectTargetGroupDTO.LocalPublicAuthority,
+                specification = setOf(InputTranslation(SystemLanguage.EN, "specification")),
+            ),
+        )
     }
 }

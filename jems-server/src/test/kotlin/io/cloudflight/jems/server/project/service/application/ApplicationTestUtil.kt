@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.service.application
 
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.server.project.service.application.workflow.states.ApprovedApplicationState
 import io.cloudflight.jems.server.project.service.application.workflow.states.ApprovedApplicationWithConditionsState
 import io.cloudflight.jems.server.project.service.application.workflow.states.ConditionsSubmittedApplicationState
@@ -33,6 +34,7 @@ import java.time.ZonedDateTime
 val callSettings = ProjectCallSettings(
     callId = 2L,
     callName = "call",
+    callType = CallType.STANDARD,
     startDate = ZonedDateTime.now(),
     endDate = ZonedDateTime.now(),
     lengthOfPeriod = 2,
@@ -42,7 +44,9 @@ val callSettings = ProjectCallSettings(
     lumpSums = emptyList(),
     unitCosts = emptyList(),
     stateAids = emptyList(),
-    applicationFormFieldConfigurations = mutableSetOf()
+    applicationFormFieldConfigurations = mutableSetOf(),
+    preSubmissionCheckPluginKey = null,
+    firstStepPreSubmissionCheckPluginKey = null
 )
 
 fun projectWithId(id: Long, status: ApplicationStatus = ApplicationStatus.SUBMITTED) = ProjectFull(

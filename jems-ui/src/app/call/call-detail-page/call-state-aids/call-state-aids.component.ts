@@ -5,7 +5,7 @@ import {map} from 'rxjs/operators';
 import {CallStateAidDTO} from './CallStateAidDTO';
 
 @Component({
-  selector: 'app-call-state-aids',
+  selector: 'jems-call-state-aids',
   templateUrl: './call-state-aids.component.html',
   styleUrls: ['./call-state-aids.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

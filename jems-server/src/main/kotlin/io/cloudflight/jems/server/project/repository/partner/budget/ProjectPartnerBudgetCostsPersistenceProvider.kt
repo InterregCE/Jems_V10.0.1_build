@@ -1,8 +1,8 @@
 package io.cloudflight.jems.server.project.repository.partner.budget
 
-import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetBase
 import io.cloudflight.jems.server.project.entity.partner.budget.general.ProjectPartnerBudgetGeneralRow
+import io.cloudflight.jems.server.project.entity.partner.budget.spf.ProjectPartnerBudgetSpfCostRow
 import io.cloudflight.jems.server.project.entity.partner.budget.staff_cost.ProjectPartnerBudgetStaffCostRow
 import io.cloudflight.jems.server.project.entity.partner.budget.travel.ProjectPartnerBudgetTravelCostRow
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
@@ -10,6 +10,8 @@ import io.cloudflight.jems.server.project.repository.budget.ProjectPartnerLumpSu
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toBudgetGeneralCostEntryList
 import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toBudgetGeneralEntryList
+import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toBudgetSpfCostEntries
+import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toBudgetSpfCostEntryList
 import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toBudgetStaffCostEntries
 import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toBudgetStaffCostEntryList
 import io.cloudflight.jems.server.project.repository.partner.budget.mappers.toBudgetTravelAndAccommodationCostEntries
@@ -33,6 +35,7 @@ class ProjectPartnerBudgetCostsPersistenceProvider(
     private val budgetEquipmentRepository: ProjectPartnerBudgetEquipmentRepository,
     private val budgetInfrastructureRepository: ProjectPartnerBudgetInfrastructureRepository,
     private val budgetUnitCostRepository: ProjectPartnerBudgetUnitCostRepository,
+    private val budgetSpfCostRepository: ProjectPartnerBudgetSpfCostRepository,
     private val budgetPartnerLumpSumRepository: ProjectPartnerLumpSumRepository
 ) : ProjectPartnerBudgetCostsPersistence {
 
@@ -119,6 +122,20 @@ class ProjectPartnerBudgetCostsPersistenceProvider(
         ) ?: emptyList()
 
     @Transactional(readOnly = true)
+    override fun getBudgetSpfCosts(partnerId: Long, version: String?) =
+        projectVersionUtils.fetch(version, getProjectIdForPartner(partnerId, version),
+            currentVersionFetcher = {
+                budgetSpfCostRepository.findAllByBasePropertiesPartnerIdOrderByIdAsc(partnerId)
+                    .toBudgetSpfCostEntries()
+            },
+            previousVersionFetcher = { timestamp ->
+                budgetSpfCostRepository.findAllByPartnerIdAsOfTimestamp(
+                    partnerId, timestamp, ProjectPartnerBudgetSpfCostRow::class.java
+                ).toBudgetSpfCostEntryList()
+            }
+        ) ?: emptyList()
+
+    @Transactional(readOnly = true)
     override fun getBudgetStaffCostTotal(partnerId: Long, version: String?): BigDecimal =
         getCostTotal(partnerId, version, budgetStaffCostRepository)
 
@@ -141,6 +158,10 @@ class ProjectPartnerBudgetCostsPersistenceProvider(
     @Transactional(readOnly = true)
     override fun getBudgetUnitCostTotal(partnerId: Long, version: String?): BigDecimal =
         getCostTotal(partnerId, version, budgetUnitCostRepository)
+
+    @Transactional(readOnly = true)
+    override fun getBudgetSpfCostTotal(partnerId: Long, version: String?): BigDecimal =
+        getCostTotal(partnerId, version, budgetSpfCostRepository)
 
     @Transactional(readOnly = true)
     override fun getBudgetLumpSumsCostTotal(partnerId: Long, version: String?): BigDecimal =

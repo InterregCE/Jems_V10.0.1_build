@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.controller
 
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateDTO
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateSetupDTO
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType
@@ -26,7 +27,7 @@ import io.cloudflight.jems.api.project.dto.status.OutputProjectQualityAssessment
 import io.cloudflight.jems.api.project.dto.status.ProjectDecisionDTO
 import io.cloudflight.jems.api.project.dto.status.ProjectStatusDTO
 import io.cloudflight.jems.api.project.dto.workpackage.activity.WorkPackageActivitySummaryDTO
-import io.cloudflight.jems.server.call.controller.toDTO
+import io.cloudflight.jems.server.call.controller.toDto
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
@@ -82,6 +83,7 @@ class ProjectControllerTest {
         val callSettings = ProjectCallSettings(
             callId = 2L,
             callName = "call",
+            callType = CallType.STANDARD,
             startDate = startDate,
             endDate = endDate,
             lengthOfPeriod = 2,
@@ -91,7 +93,9 @@ class ProjectControllerTest {
             unitCosts = emptyList(),
             stateAids = emptyList(),
             isAdditionalFundAllowed = false,
-            applicationFormFieldConfigurations = mutableSetOf()
+            applicationFormFieldConfigurations = mutableSetOf(),
+            preSubmissionCheckPluginKey = null,
+            firstStepPreSubmissionCheckPluginKey = null
         )
 
         private val partner1 = ProjectPartnerSummary(
@@ -202,8 +206,8 @@ class ProjectControllerTest {
 
     @Test
     fun getAllProjects() {
-        every { getProjectInteractor.getAllProjects(any()) } returns PageImpl(listOf(projectSummary))
-        assertThat(controller.getAllProjects(Pageable.unpaged()).content).containsExactly(outputProjectSimple)
+        every { getProjectInteractor.getAllProjects(any(), any()) } returns PageImpl(listOf(projectSummary))
+        assertThat(controller.getAllProjects(null,null, "id", "desc", null).content).containsExactly(outputProjectSimple)
     }
 
     @Test
@@ -217,6 +221,7 @@ class ProjectControllerTest {
         val callSettings = ProjectCallSettings(
             callId = 10,
             callName = "call for applications",
+            callType = CallType.STANDARD,
             startDate = startDate,
             endDate = endDate,
             endDateStep1 = null,
@@ -248,13 +253,16 @@ class ProjectControllerTest {
                 ),
             ),
             stateAids = emptyList(),
-            applicationFormFieldConfigurations = mutableSetOf()
+            applicationFormFieldConfigurations = mutableSetOf(),
+            preSubmissionCheckPluginKey = null,
+            firstStepPreSubmissionCheckPluginKey = null
         )
         every { getProjectInteractor.getProjectCallSettings(1L) } returns callSettings
         assertThat(controller.getProjectCallSettingsById(1L)).isEqualTo(
             ProjectCallSettingsDTO(
                 callId = 10,
                 callName = "call for applications",
+                callType = CallType.STANDARD,
                 startDate = startDate,
                 endDate = endDate,
                 endDateStep1 = null,
@@ -351,6 +359,7 @@ class ProjectControllerTest {
                 callSettings = ProjectCallSettingsDTO(
                     callSettings.callId,
                     callSettings.callName,
+                    callSettings.callType,
                     callSettings.startDate,
                     callSettings.endDate,
                     callSettings.endDateStep1,
@@ -360,7 +369,7 @@ class ProjectControllerTest {
                     emptyList(),
                     emptyList(),
                     emptyList(),
-                    callSettings.applicationFormFieldConfigurations.toDTO()
+                    callSettings.applicationFormFieldConfigurations.toDto(callSettings.callType)
                 ),
                 acronym = project.acronym,
                 title = project.title,

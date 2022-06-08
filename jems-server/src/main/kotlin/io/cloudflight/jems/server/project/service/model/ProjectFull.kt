@@ -13,7 +13,9 @@ data class ProjectFull(
     val applicant: UserSummary,
     val projectStatus: ProjectStatus,
     val firstSubmission: ProjectStatus? = null,
+    val firstSubmissionStep1: ProjectStatus? = null,
     val lastResubmission: ProjectStatus? = null,
+    val contractedDecision: ProjectStatus? = null,
     var assessmentStep1: ProjectAssessment? = null,
     var assessmentStep2: ProjectAssessment? = null,
 

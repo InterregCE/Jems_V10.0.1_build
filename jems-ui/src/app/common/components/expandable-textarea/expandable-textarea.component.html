@@ -7,13 +7,13 @@
               (ngModelChange)="changed.emit()"
               #inputText [readonly]="disabled">
     </textarea>
-    <app-context-info *ngIf="contextInfoText"
+    <jems-context-info *ngIf="contextInfoText"
                       [infoText]="contextInfoText">
-    </app-context-info>
-    <mat-hint *ngIf="!disabled" [appHintFor]="inputText" [hide]="errors != null">
-        <app-text-hint [currentLength]="inputText.value.length" [maxLength]="characterLimit"></app-text-hint>
+    </jems-context-info>
+    <mat-hint *ngIf="!disabled" [jemsHintFor]="inputText" [hide]="errors !== null">
+        <jems-text-hint [currentLength]="inputText.value.length" [maxLength]="characterLimit"></jems-text-hint>
     </mat-hint>
     <mat-error>
-        <app-form-field-errors [errors]="errors"></app-form-field-errors>
+        <jems-form-field-errors [errors]="errors"></jems-form-field-errors>
     </mat-error>
 </mat-form-field>

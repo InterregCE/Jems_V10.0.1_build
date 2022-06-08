@@ -1,15 +1,14 @@
 import {Injectable} from '@angular/core';
 import {
   ProjectPeriodDTO,
-  ProgrammeIndicatorService,
+  ProgrammeIndicatorResultService,
   ProjectResultDTO,
   ProjectResultService, ResultIndicatorSummaryDTO
 } from '@cat/api';
 import {combineLatest, merge, Observable, of, Subject} from 'rxjs';
-import {map, shareReplay, switchMap, tap} from 'rxjs/operators';
+import {map, shareReplay, switchMap, take, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
-import {take} from 'rxjs/internal/operators';
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 
 @Injectable()
@@ -26,7 +25,7 @@ export class ProjectResultsPageStore {
 
   constructor(private projectResultService: ProjectResultService,
               private projectStore: ProjectStore,
-              private programmeIndicatorService: ProgrammeIndicatorService,
+              private programmeIndicatorService: ProgrammeIndicatorResultService,
               private projectVersionStore: ProjectVersionStore) {
     this.isProjectEditable$ = this.projectStore.projectEditable$;
     this.results$ = this.results();

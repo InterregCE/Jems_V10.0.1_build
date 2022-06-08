@@ -1,0 +1,14 @@
+[
+  {
+    "ui":true,
+    "input":true,
+    "code":"DE",
+    "language": "Deutsch"
+  },
+  {
+    "ui":true,
+    "input":true,
+    "code":"EN",
+    "language": "English"
+  }
+]

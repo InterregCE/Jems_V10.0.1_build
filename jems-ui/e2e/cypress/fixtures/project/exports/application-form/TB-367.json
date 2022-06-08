@@ -1,0 +1,68 @@
+{
+  "approvedModificationData": {
+    "identification": {
+      "acronym": "tb-367 v3",
+      "title": [
+        {
+          "language": "DE",
+          "translation": "Approved version title DE"
+        },
+        {
+          "language": "EN",
+          "translation": "Approved version title EN"
+        }
+      ],
+      "duration": 24,
+      "specificObjective": "AdvancedTechnologies",
+      "intro": [
+        {
+          "language": "DE",
+          "translation": "Approved version summary DE"
+        },
+        {
+          "language": "EN",
+          "translation": "Approved version summary EN"
+        }
+      ]
+    },
+    "partnerAbbreviation": "PP v3"
+  },
+  "rejectedModificationData": {
+    "identification": {
+      "acronym": "tb-367 v4",
+      "title": [
+        {
+          "language": "DE",
+          "translation": "Rejected version title DE"
+        },
+        {
+          "language": "EN",
+          "translation": "Rejected version title EN"
+        }
+      ],
+      "duration": 27,
+      "specificObjective": "AdvancedTechnologies",
+      "intro": [
+        {
+          "language": "DE",
+          "translation": "Rejected version summary DE"
+        },
+        {
+          "language": "EN",
+          "translation": "Rejected version summary EN"
+        }
+      ]
+    },
+    "partnerAbbreviation": "PP v4"
+  },
+  "approvalInfo": {
+    "note": "API modification approved",
+    "date": "2022-04-01",
+    "entryIntoForceDate": "2022-04-01"
+  },
+  "rejectionInfo": {
+    "note": "API modification rejected",
+    "date": "2022-04-01",
+    "entryIntoForceDate": "2022-04-01"
+  }
+}

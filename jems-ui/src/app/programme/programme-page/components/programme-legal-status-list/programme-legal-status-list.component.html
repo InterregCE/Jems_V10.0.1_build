@@ -1,5 +1,5 @@
-<form id="legalStatuses" appFormLayout [formGroup]="statusForm">
-    <div appMultiColumnRow>
+<form id="legalStatuses" jemsFormLayout [formGroup]="statusForm">
+    <div jemsMultiColumnRow>
         <h3 class="mb-0">{{'programme.legal.status.list.title' | translate}}</h3>
         <button color="primary" mat-raised-button
                 *ngIf="(changeFormState$ | async) === FormState.VIEW && (programmeEditableStateStore.hasEditPermission$ | async)"
@@ -7,9 +7,9 @@
             {{'common.edit.label' | translate}}
         </button>
     </div>
-    <app-multi-language-container [useSystemLanguages]="true"
+    <jems-multi-language-container [useSystemLanguages]="true"
                                   [switchButtonsVisible]="(changeFormState$ | async) === FormState.EDIT">
-        <div [appTableConfig]="[{maxInRem: 4},{},{maxInRem: 5}]">
+        <div [jemsTableConfig]="[{maxInRem: 4},{},{maxInRem: 5}]">
             <div>
                 <span class="mat-body-strong">{{ 'programme.legal.status.list.type' | translate }}</span>
                 <span class="mat-body-strong">{{ 'programme.legal.status.list.description' | translate }}</span>
@@ -22,12 +22,12 @@
                     <ng-container [formGroupName]="i">
 
                         <div>{{legalStatus?.value?.type}}</div>
-                        <app-multi-language-form-field
+                        <jems-multi-language-form-field
                                 formControlName="description"
                                 [useFallBackLanguage]="true"
                                 [isFallBackLanguageReadonly]="isPublicOrPrivate(legalStatus)"
                                 maxLength="50">
-                        </app-multi-language-form-field>
+                        </jems-multi-language-form-field>
 
                         <div *ngIf="(changeFormState$ | async) === FormState.EDIT">
                             <button mat-icon-button color="accent"
@@ -53,8 +53,8 @@
                 </div>
             </div>
         </div>
-    </app-multi-language-container>
-    <div appMultiColumnRow *ngIf="(changeFormState$ | async) === FormState.EDIT">
+    </jems-multi-language-container>
+    <div jemsMultiColumnRow *ngIf="(changeFormState$ | async) === FormState.EDIT">
         <button mat-stroked-button type="button"
                 (click)="resetForm()">
             {{'common.cancel.label' | translate}}
@@ -65,15 +65,15 @@
             {{'common.save.label' | translate}}
         </button>
     </div>
-    <app-alert
+    <jems-alert
             [show]="!submitted && (showSuccessMessage$ | async)"
             [type]="Alert.SUCCESS">
         <p *ngIf="success$ | async as successMessage">{{successMessage | translate}}</p>
-    </app-alert>
-    <app-alert *ngIf="error$ | async as error"
+    </jems-alert>
+    <jems-alert *ngIf="error$ | async as error"
                [show]="!submitted && !!error.i18nMessage?.i18nKey"
                [type]="Alert.ERROR">
-        <app-api-error-content [error]="error"></app-api-error-content>
-    </app-alert>
+        <jems-api-error-content [error]="error"></jems-api-error-content>
+    </jems-alert>
 
 </form>

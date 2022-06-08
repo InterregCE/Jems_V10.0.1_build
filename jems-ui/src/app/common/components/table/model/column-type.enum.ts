@@ -4,5 +4,6 @@ export enum ColumnType {
   DateColumnWithSeconds,
   CustomComponent,
   Decimal,
-  InputTranslation
+  InputTranslation,
+  DateOnlyColumn
 }

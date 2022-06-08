@@ -1,4 +1,4 @@
-<mat-form-field *ngIf="!value" appFormFieldWidth="xx-large" appearance="fill">
+<mat-form-field *ngIf="!value" jemsFormFieldWidth="xx-large" appearance="fill">
     <mat-label>{{label | translate | dateFormatInfo : true}}</mat-label>
     <input (dateChange)="changeValue($event.target.value)"
            [ngxMatDatetimePicker]="dateFilter"
@@ -7,7 +7,7 @@
     <ngx-mat-datetime-picker #dateFilter [enableMeridian]="true"></ngx-mat-datetime-picker>
 </mat-form-field>
 
-<mat-form-field *ngIf="value" appFormFieldWidth="xx-large" appearance="fill">
+<mat-form-field *ngIf="value" jemsFormFieldWidth="xx-large" appearance="fill">
     <mat-label>{{label | translate | dateFormatInfo : true}}</mat-label>
     <input [hidden]="true" matInput>
     <mat-chip [removable]="true" [selectable]="false" class="mt-3">

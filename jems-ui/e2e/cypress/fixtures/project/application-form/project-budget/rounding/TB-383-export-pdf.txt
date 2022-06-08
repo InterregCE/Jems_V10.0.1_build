@@ -1,0 +1,103 @@
+A.3 Project budget overview
+Programme fundingContribution
+Total project
+budget
+Funding sourceFunding
+amount
+Co-financing
+rate (%)
+Automatic public
+contribution
+Other public
+contribution
+Total public
+contribution
+Private
+contribution
+Total contri
+bution
+ERDF0.000.00 %0.000.000.000.000.000.00
+Neighbourhood 
+CBC
+1,191.6323.26 %0.000.000.003,931.493,931.495,123.12
+Total EU funds1,191.6323.26 %0.000.000.003,931.493,931.495,123.12
+Total project 
+budget
+1,191.6323.26 %0.000.000.003,931.493,931.495,123.12
+
+3
+A.4 Project outputs and result overview
+
+4
+B - Project partners
+Partners overview
+NumberStatusName of the organisation in 
+english
+CountryOrganisation 
+abbreviation
+Partner 
+role
+Associated 
+organisations
+Partner total eligible 
+budget
+1ActiveLead Partner in englishLead PartnerLP5,123.12
+
+5
+B.1 Lead partner
+Partner number1
+Partner roleLP
+Name of the organisation in original languageLead Partner in original language
+Name of the organisation in englishLead Partner in english
+Organisation abbreviationLead Partner
+Department / unit / divisionAPI generated department / unit / division EN
+Partner main address
+Country
+NUTS 2
+NUTS 3
+Street, House number, Postal code, City
+Homepage
+Address of department / unit / division (if applicable)
+Country
+NUTS 2
+NUTS 3
+Street, House number, Postal code, City
+Legal and financial information
+Type of partnerOther
+Subtype of partnerMedium sized enterprise
+Legal statusInternal EN
+Sector of activity at NACE group levelB
+VAT number (if applicable)vat_number
+Is your organisation entitled to recover VAT 
+based on national legislation for the activities 
+implemented in the project?
+Partly
+Other identifier numberother_identifier_number
+
+6
+Legal and financial information
+Other identifier descriptionAPI generated other identifier description EN
+PIC (from EC Participant Register)000000000
+Contact
+Legal representative
+Contact person
+Email
+Telephone no.
+Motivation
+Which of the organisation's thematic competences and experiences are relevant for the project?
+What is the role (contribution and main activities) of your organisation in the project?
+If applicable, describe the organisation's experience in participating in and/or managing EU co-
+financed projects or other international projects.
+Co-financing
+SourceAmountPercentage
+Neighbourhood CBC1,191.6323.26 %
+Partner contribution3,931.4976.74 %
+Partner total eligible budget5,123.12100.00 %
+Origin of partner contribution
+Source of contributionLegal status of contributionAmount% of total partner budget
+Lead PartnerPrivate3,931.4976.74 %
+Total
+Sub-total public contribution0.000.00 %
+Sub-total automatic public contribution0.000.00 %
+Sub-total private contribution3,931.4976.74 %
+Total3,931.4976.74 %

@@ -1,15 +1,17 @@
 import {Injectable} from '@angular/core';
 import {
+  ProjectCallSettingsDTO,
   ProjectContactDTO,
   ProjectPartnerAddressDTO,
   ProjectPartnerDetailDTO,
   ProjectPartnerDTO,
   ProjectPartnerMotivationDTO,
   ProjectPartnerService,
-  ProjectPartnerSummaryDTO,
+  ProjectReportService,
+  ProjectPartnerSummaryDTO, ProjectStatusDTO, ProjectVersionDTO
 } from '@cat/api';
-import {BehaviorSubject, combineLatest, merge, Observable, of, Subject} from 'rxjs';
-import {catchError, map, shareReplay, switchMap, tap} from 'rxjs/operators';
+import {BehaviorSubject, combineLatest, merge, Observable, of, ReplaySubject, Subject} from 'rxjs';
+import {catchError, filter, map, shareReplay, switchMap, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 import {ProjectStore} from '../../project-application-detail/services/project-store.service';
 import {ProjectPartner} from '@project/model/ProjectPartner';
@@ -17,38 +19,66 @@ import {ProjectPartnerRoleEnum, ProjectPartnerRoleEnumUtil} from '@project/model
 import {RoutingService} from '@common/services/routing.service';
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 import {ProjectPaths} from '@project/common/project-util';
+import StatusEnum = ProjectStatusDTO.StatusEnum;
+import {Tools} from '@common/utils/tools';
+import CallTypeEnum = ProjectCallSettingsDTO.CallTypeEnum;
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProjectPartnerStore {
   public static PARTNER_DETAIL_PATH = '/applicationFormPartner/';
+
   isProjectEditable$: Observable<boolean>;
+  projectCallType$: Observable<CallTypeEnum>;
+  isProjectCallTypeSpf$: Observable<boolean>;
   partner$: Observable<ProjectPartnerDetailDTO>;
   partners$: Observable<ProjectPartner[]>;
   leadPartner$: Observable<ProjectPartnerDetailDTO | null>;
   partnerSummaries$: Observable<ProjectPartnerSummaryDTO[]>;
-  partnerSummariesForFiles$: Observable<ProjectPartnerSummaryDTO[]>;
+  partnerReportSummaries$: Observable<ProjectPartnerSummaryDTO[]>;
+  latestPartnerSummaries$: Observable<ProjectPartnerSummaryDTO[]>;
   private partnerId: number;
   private projectId: number;
+  private lastContractedVersion$ = new ReplaySubject<string>(1);
   private partnerUpdateEvent$ = new BehaviorSubject(null);
   private updatedPartner$ = new Subject<ProjectPartnerDetailDTO>();
 
   constructor(private partnerService: ProjectPartnerService,
               private projectStore: ProjectStore,
               private routingService: RoutingService,
-              private projectVersionStore: ProjectVersionStore) {
+              private projectVersionStore: ProjectVersionStore,
+              private projectReportService: ProjectReportService) {
     this.isProjectEditable$ = this.projectStore.projectEditable$;
+    this.projectCallType$ = this.projectStore.projectCallType$;
+    this.isProjectCallTypeSpf$ = this.projectCallType$.pipe(map(type => type === CallTypeEnum.SPF));
     this.partnerSummaries$ = this.partnerSummaries();
-    this.partnerSummariesForFiles$ = this.partnerSummariesForFiles();
+    this.latestPartnerSummaries$ = this.partnerSummariesFromVersion();
+    this.partnerReportSummaries$ = this.partnerReportSummaries();
     this.partners$ = combineLatest([
       this.projectStore.project$,
       this.projectVersionStore.selectedVersionParam$,
       this.partnerUpdateEvent$
     ]).pipe(
-      switchMap(([project, version]) => this.partnerService.getProjectPartnersForDropdown(project.id, ['sortNumber'], version)),
-      map(projectPartners => projectPartners.map((projectPartner, index) =>
-        new ProjectPartner(projectPartner.id, projectPartner.abbreviation, ProjectPartnerRoleEnumUtil.toProjectPartnerRoleEnum(projectPartner.role), projectPartner.sortNumber, projectPartner.country))),
+      switchMap(([project, version]) =>
+        this.partnerService.getProjectPartnersForDropdown(project.id, ['sortNumber'], version)
+            .pipe(map(projectPartners => {
+              return {
+                projectPartners,
+                projectCallType: project.callSettings.callType
+              };
+            }))
+      ),
+      map(data => data.projectPartners.map(projectPartner =>
+        new ProjectPartner(
+          projectPartner.id,
+          projectPartner.active,
+          projectPartner.abbreviation,
+          ProjectPartnerRoleEnumUtil.toProjectPartnerRoleEnum(projectPartner.role),
+          projectPartner.sortNumber,
+          projectPartner.country,
+          ProjectPartnerStore.getPartnerNumber(data.projectCallType, projectPartner.role, projectPartner.sortNumber)
+        ))),
       shareReplay(1)
     );
     this.partner$ = this.partner();
@@ -119,6 +149,17 @@ export class ProjectPartnerStore {
       );
   }
 
+  partnerSummariesFromVersion(version?: string): Observable<ProjectPartnerSummaryDTO[]> {
+    return this.projectStore.projectId$
+      .pipe(
+        switchMap(projectId => this.partnerService.getProjectPartnersForDropdown(projectId, ['sortNumber'], version))
+      );
+  }
+
+  lastContractedVersionASObservable(): Observable<string> {
+    return this.lastContractedVersion$.asObservable();
+  }
+
   private partner(): Observable<ProjectPartnerDetailDTO> {
     const initialPartner$ = combineLatest([
       this.routingService.routeParameterChanges(ProjectPartnerStore.PARTNER_DETAIL_PATH, 'partnerId'),
@@ -155,10 +196,38 @@ export class ProjectPartnerStore {
       );
   }
 
-  private partnerSummariesForFiles(): Observable<ProjectPartnerSummaryDTO[]> {
-    return combineLatest([this.projectStore.projectId$, this.partnerUpdateEvent$])
+  private partnerReportSummaries(): Observable<ProjectPartnerSummaryDTO[]> {
+    return combineLatest([this.projectStore.projectId$, this.projectVersionStore.versions$])
       .pipe(
-        switchMap(([projectId]) => this.partnerService.getProjectPartnersForDropdown(projectId, ['sortNumber']))
+        filter(([projectId, version]) => !!projectId),
+        switchMap(([projectId, versions]) => {
+            const contractedVersion = this.getLastContractedVersion(versions);
+            this.lastContractedVersion$.next(contractedVersion);
+            return contractedVersion ? this.projectReportService.getProjectPartnersForReporting(projectId, ['sortNumber'], contractedVersion)
+              : of([]);
+          }
+        ),
+        shareReplay(1),
+        catchError(() => {
+          return of([]);
+        })
       );
+  }
+
+  private getLastContractedVersion(versions: ProjectVersionDTO[]): string {
+    return Tools.first(versions.filter(version => version.status === StatusEnum.CONTRACTED)
+      .sort((a, b) => a.createdAt > b.createdAt ? -1 : 1))?.version;
+  }
+
+  static getPartnerTranslationKey(role: ProjectPartnerDTO.RoleEnum, callType: CallTypeEnum) {
+    const prefix = (callType === CallTypeEnum.STANDARD) ? '' : callType.toLocaleLowerCase() + '.';
+    return `${prefix}common.label.project.partner.role.shortcut.${role}`;
+  }
+
+  static getPartnerNumber(callType: CallTypeEnum, role: ProjectPartnerSummaryDTO.RoleEnum, sortNumber: number): string {
+    if (callType === undefined || callType === CallTypeEnum.STANDARD) {
+      return role === ProjectPartnerRoleEnum.LEAD_PARTNER ? 'LP1' : 'PP'.concat(sortNumber.toString());
+    }
+    return 'PP1 SPF';
   }
 }

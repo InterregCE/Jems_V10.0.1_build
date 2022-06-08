@@ -1,0 +1,21 @@
+.move-buttons {
+  flex-direction: column;
+  margin-top: 0.5rem;
+
+  .move-button {
+    opacity: 0.33;
+
+    &:hover {
+      opacity: 1
+    }
+  }
+}
+
+.top-cell {
+  margin-top: 0.5rem;
+  align-items: flex-start;
+}
+
+.line-bottom-padding {
+ padding-bottom: 0.5rem;
+}

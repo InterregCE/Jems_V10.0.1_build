@@ -7,6 +7,7 @@ import {Log} from '@common/utils/log';
 
 @Injectable()
 export class ProjectFundingDecisionStore {
+  private static readonly LOG_INFO_CHANGE_STATUS_PROJECT = 'Changed status for project';
 
   currentVersionOfProject$: Observable<ProjectDetailDTO>;
   currentVersionOfProjectTitle$: Observable<string>;
@@ -42,7 +43,7 @@ export class ProjectFundingDecisionStore {
     return this.projectStatusService.approveApplication(projectId, info)
       .pipe(
         tap(status => this.projectStore.projectStatusChanged$.next()),
-        tap(status => Log.info('Changed status for project', projectId, status))
+        tap(status => Log.info(ProjectFundingDecisionStore.LOG_INFO_CHANGE_STATUS_PROJECT, projectId, status))
       );
   }
 
@@ -50,7 +51,7 @@ export class ProjectFundingDecisionStore {
     return this.projectStatusService.approveApplicationWithCondition(projectId, info)
       .pipe(
         tap(status => this.projectStore.projectStatusChanged$.next()),
-        tap(status => Log.info('Changed status for project', projectId, status))
+        tap(status => Log.info(ProjectFundingDecisionStore.LOG_INFO_CHANGE_STATUS_PROJECT, projectId, status))
       );
   }
 
@@ -58,7 +59,7 @@ export class ProjectFundingDecisionStore {
     return this.projectStatusService.refuseApplication(projectId, info)
       .pipe(
         tap(status => this.projectStore.projectStatusChanged$.next()),
-        tap(status => Log.info('Changed status for project', projectId, status))
+        tap(status => Log.info(ProjectFundingDecisionStore.LOG_INFO_CHANGE_STATUS_PROJECT, projectId, status))
       );
   }
 }

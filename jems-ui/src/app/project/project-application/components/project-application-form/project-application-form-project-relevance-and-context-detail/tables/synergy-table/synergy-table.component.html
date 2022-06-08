@@ -1,6 +1,6 @@
-<div appFormLayout [formGroup]="formGroup">
-    <app-multi-language-container appNoWidthLimit *ngIf="synergiesForm.controls.length > 0">
-        <div [appTableConfig]="[{},{}, {maxInRem:2}]">
+<div jemsFormLayout [formGroup]="formGroup">
+    <jems-multi-language-container jemsNoWidthLimit *ngIf="synergiesForm.controls.length > 0">
+        <div [jemsTableConfig]="[{},{}, {maxInRem:2}]">
             <div>
                 <span class="mat-body-strong">{{'project.application.form.relevance.project.or.initiative' | translate}}</span>
                 <span class="mat-body-strong">{{'project.application.form.relevance.synergy' | translate}}</span>
@@ -10,23 +10,23 @@
                 <ng-container formArrayName="synergies">
                     <ng-container [formGroupName]="i">
                         <div>
-                            <app-multi-language-form-field
+                            <jems-multi-language-form-field
                                     type="textarea"
                                     formControlName="initiative"
                                     maxLength="2000"
                                     minRows="1"
                                     label="project.application.form.relevance.project.or.initiative">
-                            </app-multi-language-form-field>
+                            </jems-multi-language-form-field>
                         </div>
 
                         <div>
-                            <app-multi-language-form-field
+                            <jems-multi-language-form-field
                                     type="textarea"
                                     formControlName="synergy"
                                     maxLength="2000"
                                     minRows="1"
                                     label="project.application.form.relevance.synergy">
-                            </app-multi-language-form-field>
+                            </jems-multi-language-form-field>
                         </div>
 
                         <div>
@@ -38,8 +38,8 @@
                 </ng-container>
             </div>
         </div>
-    </app-multi-language-container>
-    <button appText *ngIf="editable && synergiesForm.controls?.length < 20" mat-stroked-button type="button"
+    </jems-multi-language-container>
+    <button jemsText *ngIf="editable && synergiesForm.controls?.length < 20" mat-stroked-button type="button"
             (click)="addNewSynergy()">
         <mat-icon>add</mat-icon>
     </button>

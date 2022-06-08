@@ -12,11 +12,13 @@ import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
 
 @Api("Project User")
-@RequestMapping("/api/projectUser")
 interface ProjectUserApi {
+
+    companion object {
+        private const val ENDPOINT_API_PROJECT_USER = "/api/projectUser"
+    }
 
     @ApiOperation("Retrieves projects with already assigned users")
     @ApiImplicitParams(
@@ -24,11 +26,11 @@ interface ProjectUserApi {
         ApiImplicitParam(paramType = "query", name = "size", dataType = "integer"),
         ApiImplicitParam(paramType = "query", name = "sort", dataType = "string")
     )
-    @GetMapping("/list")
+    @GetMapping("$ENDPOINT_API_PROJECT_USER/list")
     fun listProjectsWithAssignedUsers(pageable: Pageable): Page<ProjectUserDTO>
 
     @ApiOperation("Assigns a list of Users for monitoring to Projects")
-    @PutMapping("/updateProjectUserAssignments", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PutMapping("$ENDPOINT_API_PROJECT_USER/updateProjectUserAssignments", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateProjectUserAssignments(@RequestBody projectUsers: Set<UpdateProjectUserDTO>)
 
 }

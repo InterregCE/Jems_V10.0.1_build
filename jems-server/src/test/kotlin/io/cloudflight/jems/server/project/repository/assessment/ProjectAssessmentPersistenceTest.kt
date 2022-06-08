@@ -62,8 +62,8 @@ internal class ProjectAssessmentPersistenceTest : UnitTest() {
     fun setEligibility() {
         val ID = 87L
         val project = projectWithId(ID)
-        every { projectRepository.getOne(ID) } returns project
-        every { userRepository.getOne(call.creator.id) } returns call.creator
+        every { projectRepository.getById(ID) } returns project
+        every { userRepository.getById(call.creator.id) } returns call.creator
 
         val eligibilitySlot = slot<ProjectAssessmentEligibilityEntity>()
         every { eligibilityRepository.save(capture(eligibilitySlot)) } returnsArgument 0
@@ -93,8 +93,8 @@ internal class ProjectAssessmentPersistenceTest : UnitTest() {
     fun setQuality() {
         val ID = 92L
         val project = projectWithId(ID)
-        every { projectRepository.getOne(ID) } returns project
-        every { userRepository.getOne(call.creator.id) } returns call.creator
+        every { projectRepository.getById(ID) } returns project
+        every { userRepository.getById(call.creator.id) } returns call.creator
 
         val qualitySlot = slot<ProjectAssessmentQualityEntity>()
         every { qualityRepository.save(capture(qualitySlot)) } returnsArgument 0

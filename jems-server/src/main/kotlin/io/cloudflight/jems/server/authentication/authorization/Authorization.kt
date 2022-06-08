@@ -34,7 +34,7 @@ class Authorization(
     /**
      * will ignore project-user assignment rules
      */
-    fun hasNonProjectAuthority(permission: UserRolePermission): Boolean =
+    private fun hasNonProjectAuthority(permission: UserRolePermission): Boolean =
         securityService.currentUser?.hasPermission(permission)!!
 
     protected fun isActiveUserIdEqualToOneOf(userIds: Set<Long>): Boolean =

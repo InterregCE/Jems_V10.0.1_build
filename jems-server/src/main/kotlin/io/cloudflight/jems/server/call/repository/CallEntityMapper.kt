@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.call.repository
 
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
 import io.cloudflight.jems.api.project.dto.InputTranslation
@@ -25,23 +26,19 @@ import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.common.entity.extractField
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.programme.entity.ProgrammeStrategyEntity
-import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.entity.stateaid.ProgrammeStateAidEntity
 import io.cloudflight.jems.server.programme.repository.costoption.toModel
 import io.cloudflight.jems.server.programme.repository.fund.toModel
 import io.cloudflight.jems.server.programme.repository.priority.toModel
 import io.cloudflight.jems.server.programme.repository.stateaid.toModel
-import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
 import io.cloudflight.jems.server.project.repository.toModel
 import io.cloudflight.jems.server.user.entity.UserEntity
-import io.swagger.models.properties.PropertyBuilder.toModel
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping
 import org.mapstruct.factory.Mappers
 import org.springframework.data.domain.Page
 import java.util.*
-import kotlin.collections.HashSet
 
 fun CallEntity.toModel() = CallSummary(
     id = id,
@@ -61,6 +58,7 @@ fun CallEntity.toDetailModel(
     id = id,
     name = name,
     status = status,
+    type = type,
     startDate = startDate,
     endDateStep1 = endDateStep1,
     endDate = endDate,
@@ -74,7 +72,9 @@ fun CallEntity.toDetailModel(
     flatRates = flatRates.toModel(),
     lumpSums = lumpSums.toModel(),
     unitCosts = unitCosts.toModel(),
-    applicationFormFieldConfigurations = applicationFormFieldConfigurationEntities.toModel()
+    applicationFormFieldConfigurations = applicationFormFieldConfigurationEntities.toModel(),
+    preSubmissionCheckPluginKey = preSubmissionCheckPluginKey,
+    firstStepPreSubmissionCheckPluginKey = firstStepPreSubmissionCheckPluginKey
 )
 
 private fun Set<ProgrammeSpecificObjectiveEntity>.groupSpecificObjectives() =
@@ -103,6 +103,7 @@ fun Call.toEntity(
     creator = user,
     name = name,
     status = status!!,
+    type = type,
     startDate = startDate,
     endDateStep1 = endDateStep1,
     endDate = endDate,
@@ -115,7 +116,9 @@ fun Call.toEntity(
     flatRates = existingEntity?.flatRates ?: mutableSetOf(),
     lumpSums = existingEntity?.lumpSums ?: mutableSetOf(),
     unitCosts = existingEntity?.unitCosts ?: mutableSetOf(),
-    allowedRealCosts = existingEntity?.allowedRealCosts ?: AllowedRealCostsEntity()
+    allowedRealCosts = existingEntity?.allowedRealCosts ?: getDefaultAllowedRealCosts(type),
+    preSubmissionCheckPluginKey = existingEntity?.preSubmissionCheckPluginKey,
+    firstStepPreSubmissionCheckPluginKey = existingEntity?.firstStepPreSubmissionCheckPluginKey
 ).apply {
     translatedValues.addAll(description.combineDescriptionsToTranslations(this))
 }
@@ -180,6 +183,14 @@ fun MutableSet<ProjectCallStateAidEntity>.toModel() = map { it.setupId.stateAid.
 fun List<CallEntity>.toIdNamePair() =
     callEntityMapper.map(this)
 
+private fun getDefaultAllowedRealCosts(callType: CallType) : AllowedRealCostsEntity {
+    return when (callType) {
+        CallType.STANDARD -> AllowedRealCostsEntity()
+        CallType.SPF -> AllowedRealCostsEntity(
+            allowRealInfrastructureCosts = false
+        )
+    }
+}
 
 private val callEntityMapper = Mappers.getMapper(CallEntityMapper::class.java)
 
@@ -192,8 +203,6 @@ abstract class CallEntityMapper {
     abstract fun map(applicationFormFieldConfigurationEntity: ApplicationFormFieldConfigurationEntity): ApplicationFormFieldConfiguration
 
     abstract fun map(applicationFormFieldConfigurationEntities: MutableSet<ApplicationFormFieldConfigurationEntity>): MutableSet<ApplicationFormFieldConfiguration>
-
-
     fun map(
         call: CallEntity,
         fieldConfiguration: ApplicationFormFieldConfiguration

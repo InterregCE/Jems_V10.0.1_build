@@ -10,7 +10,7 @@ import {ProjectUnitCostsStore} from '@project/unit-costs/project-unit-costs-page
 import {APPLICATION_FORM} from '@project/common/application-form-model';
 
 @Component({
-  selector: 'app-project-unit-costs-page',
+  selector: 'jems-project-unit-costs-page',
   templateUrl: './project-unit-costs-page.component.html',
   styleUrls: ['./project-unit-costs-page.component.scss']
 })

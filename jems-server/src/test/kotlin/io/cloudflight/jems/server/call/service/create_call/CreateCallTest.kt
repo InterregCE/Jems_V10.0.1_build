@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.call.service.create_call
 
 import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.api.call.dto.CallStatus
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjective
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.AdvancedTechnologies
@@ -41,6 +42,7 @@ class CreateCallTest : UnitTest() {
         private const val FUND_ID = 54L
         private val callToCreate = Call(
             name = "call to create",
+            type = CallType.STANDARD,
             startDate = ZonedDateTime.now().minusDays(1),
             endDate = ZonedDateTime.now().plusDays(1),
             isAdditionalFundAllowed = true,
@@ -58,6 +60,7 @@ class CreateCallTest : UnitTest() {
             id = 0L,
             name = "call to create",
             status = CallStatus.DRAFT,
+            type = CallType.STANDARD,
             startDate = ZonedDateTime.now().minusDays(1),
             endDateStep1 = null,
             endDate = ZonedDateTime.now().plusDays(1),
@@ -79,7 +82,9 @@ class CreateCallTest : UnitTest() {
             ),
             strategies = sortedSetOf(EUStrategyBalticSeaRegion, AtlanticStrategy),
             funds = sortedSetOf(callFundRate(FUND_ID)),
-            applicationFormFieldConfigurations = ApplicationFormFieldSetting.getDefaultApplicationFormFieldConfigurations()
+            applicationFormFieldConfigurations = ApplicationFormFieldSetting.getDefaultApplicationFormFieldConfigurations(CallType.STANDARD),
+            preSubmissionCheckPluginKey = null,
+            firstStepPreSubmissionCheckPluginKey = null
         )
     }
 
@@ -118,7 +123,7 @@ class CreateCallTest : UnitTest() {
         every {
             persistence.saveApplicationFormFieldConfigurations(
                 expectedCallDetail.id,
-                ApplicationFormFieldSetting.getDefaultApplicationFormFieldConfigurations()
+                ApplicationFormFieldSetting.getDefaultApplicationFormFieldConfigurations(expectedCallDetail.type)
             )
         } returns expectedCallDetail
         every {
@@ -137,13 +142,13 @@ class CreateCallTest : UnitTest() {
         verify(exactly = 1) {
             persistence.saveApplicationFormFieldConfigurations(
                 expectedCallDetail.id,
-                ApplicationFormFieldSetting.getDefaultApplicationFormFieldConfigurations()
+                ApplicationFormFieldSetting.getDefaultApplicationFormFieldConfigurations(expectedCallDetail.type)
             )
         }
         with(slotAudit.captured.auditCandidate) {
             assertThat(action).isEqualTo(AuditAction.CALL_ADDED)
             assertThat(description).startsWith(
-                "A new call id=0 name='call to create' was created as:\n" +
+                "A new call id=0 name='call to create' for type='STANDARD' project was created as:\n" +
                     "name set to 'call to create',\n" +
                     "status set to DRAFT,\n" +
                     "startDate set to "
@@ -168,7 +173,8 @@ class CreateCallTest : UnitTest() {
                     "  CallFundRate(" +
                     "programmeFund=ProgrammeFund(id=54, selected=true, type=OTHER, abbreviation=[], description=[]), " +
                     "rate=10, adjustable=true)\n" +
-                    "]"
+                    "],\n"+
+                    "preSubmissionCheckPluginKey set to null"
             )
         }
     }
@@ -204,7 +210,7 @@ class CreateCallTest : UnitTest() {
         every {
             persistence.saveApplicationFormFieldConfigurations(
                 expectedCallDetail.id,
-                ApplicationFormFieldSetting.getDefaultApplicationFormFieldConfigurations()
+                ApplicationFormFieldSetting.getDefaultApplicationFormFieldConfigurations(expectedCallDetail.type)
             )
         } returns expectedCallDetail
         every {
@@ -230,7 +236,7 @@ class CreateCallTest : UnitTest() {
         verify(exactly = 1) {
             persistence.saveApplicationFormFieldConfigurations(
                 expectedCallDetail.id,
-                ApplicationFormFieldSetting.getDefaultApplicationFormFieldConfigurations()
+                ApplicationFormFieldSetting.getDefaultApplicationFormFieldConfigurations(expectedCallDetail.type)
             )
         }
     }

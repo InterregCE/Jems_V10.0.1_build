@@ -20,11 +20,11 @@ data class ProjectResultEntity (
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.resultId")
     val translatedValues: Set<ProjectResultTransl> = emptySet(),
 
-    val periodNumber: Int? = null,
+    var periodNumber: Int? = null,
 
     @ManyToOne
     @JoinColumn(name = "indicator_result_id")
-    val programmeResultIndicatorEntity: ResultIndicatorEntity? = null,
+    var programmeResultIndicatorEntity: ResultIndicatorEntity? = null,
 
     @Column
     @field:NotNull

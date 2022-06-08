@@ -12,12 +12,12 @@ class CreateLumpSumException(cause: Throwable) : ApplicationException(
     i18nMessage = I18nMessage("$CREATE_LUMP_SUM_ERROR_KEY_PREFIX.failed"), cause = cause
 )
 
-class IdHasToBeNull() : ApplicationUnprocessableException(
+class IdHasToBeNull : ApplicationUnprocessableException(
     code = "$CREATE_LUMP_SUM_ERROR_CODE_PREFIX-001",
     i18nMessage = I18nMessage("$CREATE_LUMP_SUM_ERROR_KEY_PREFIX.id.not.allowed"),
 )
 
-class MaxAllowedLumpSumsReached() : ApplicationUnprocessableException(
+class MaxAllowedLumpSumsReached : ApplicationUnprocessableException(
     code = "$CREATE_LUMP_SUM_ERROR_CODE_PREFIX-002",
     i18nMessage = I18nMessage("$CREATE_LUMP_SUM_ERROR_KEY_PREFIX.max.allowed.reached"),
 )

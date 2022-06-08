@@ -42,9 +42,10 @@ import io.cloudflight.jems.server.project.service.workpackage.toOutputWorkPackag
 import io.cloudflight.jems.server.project.service.workpackage.toTimePlanWorkPackageHistoricalData
 import io.cloudflight.jems.server.project.service.workpackage.toTimePlanWorkPackageOutputHistoricalData
 import io.cloudflight.jems.server.project.service.workpackage.toWorkPackageOutputsHistoricalData
-import io.cloudflight.jems.server.project.entity.projectuser.CollaboratorLevel.EDIT
-import io.cloudflight.jems.server.project.entity.projectuser.CollaboratorLevel.MANAGE
-import io.cloudflight.jems.server.project.entity.projectuser.CollaboratorLevel.VIEW
+import io.cloudflight.jems.server.project.entity.projectuser.ProjectCollaboratorLevel.EDIT
+import io.cloudflight.jems.server.project.entity.projectuser.ProjectCollaboratorLevel.MANAGE
+import io.cloudflight.jems.server.project.entity.projectuser.ProjectCollaboratorLevel.VIEW
+import io.cloudflight.jems.server.project.repository.partneruser.UserPartnerCollaboratorRepository
 import io.cloudflight.jems.server.project.repository.projectuser.UserProjectCollaboratorRepository
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Repository
@@ -61,7 +62,8 @@ class WorkPackagePersistenceProvider(
     private val outputIndicatorRepository: OutputIndicatorRepository,
     private val projectVersionUtils: ProjectVersionUtils,
     private val projectRepository: ProjectRepository,
-    private val collaboratorRepository: UserProjectCollaboratorRepository,
+    private val projectCollaboratorRepository: UserProjectCollaboratorRepository,
+    private val partnerCollaboratorRepository: UserPartnerCollaboratorRepository
 ) : WorkPackagePersistence {
 
     @Transactional(readOnly = true)
@@ -155,7 +157,7 @@ class WorkPackagePersistenceProvider(
             workPackageId = workPackageId,
             resolveProgrammeIndicatorEntity = { getIndicatorOrThrow(it) }
         )
-        val currentOutputs = workPackageOutputRepository.findAllByOutputIdWorkPackageId(workPackageId)
+        val currentOutputs = workPackageOutputRepository.findAllByOutputIdWorkPackageIdOrderByOutputIdOutputNumber(workPackageId)
 
         workPackageOutputRepository.deleteAll(currentOutputs.filter {
             !outputsToBeSaved.map { it.outputId }.contains(it.outputId)
@@ -172,7 +174,7 @@ class WorkPackagePersistenceProvider(
     ): List<WorkPackageOutput> {
         return projectVersionUtils.fetch(version, projectId,
             currentVersionFetcher = {
-                getWorkPackageOrThrow(workPackageId).outputs.toModel()
+                workPackageOutputRepository.findAllByOutputIdWorkPackageIdOrderByOutputIdOutputNumber(workPackageId).toModel()
             },
             previousVersionFetcher = { timestamp ->
                 workPackageRepository.findOutputsByWorkPackageIdAsOfTimestamp(workPackageId, timestamp)
@@ -287,12 +289,11 @@ class WorkPackagePersistenceProvider(
     override fun updateWorkPackageActivities(
         workPackageId: Long,
         workPackageActivities: List<WorkPackageActivity>
-    ): List<WorkPackageActivity> {
-        val workPackage = getWorkPackageOrThrow(workPackageId)
-        return workPackage.also {
-            it.updateActivities(workPackageActivities.toIndexedEntity(workPackage = workPackage))
+    ): List<WorkPackageActivity> =
+        getWorkPackageOrThrow(workPackageId).also {
+            it.updateActivities(workPackageActivities.toIndexedEntity(workPackage = it))
+            workPackageActivityRepository.flush()
         }.activities.toModel()
-    }
 
 
     @Transactional(readOnly = true)
@@ -312,9 +313,13 @@ class WorkPackagePersistenceProvider(
     @Transactional(readOnly = true)
     override fun getProjectFromWorkPackageInvestment(workPackageInvestmentId: Long): ProjectApplicantAndStatus =
         getWorkPackageInvestmentOrThrow(workPackageInvestmentId).workPackage.project.let {
-            val collaboratorsByLevel = collaboratorRepository.findAllByIdProjectId(it.id).groupBy { it.level }
+            val partnerCollaborators = partnerCollaboratorRepository.findAllByProjectId(it.id)
+                .map { collaborator -> collaborator.id.userId }
+            val collaboratorsByLevel = projectCollaboratorRepository.findAllByIdProjectId(it.id)
+                .groupBy { collaborator -> collaborator.level }
+                .mapValues { entity -> entity.value.map { collaborator -> collaborator.id.userId }.toSet() }
             return it.toApplicantAndStatus(
-                collaboratorViewIds = collaboratorsByLevel[VIEW] ?: emptySet(),
+                collaboratorViewIds = (collaboratorsByLevel[VIEW] ?: emptySet()) union partnerCollaborators,
                 collaboratorEditIds = collaboratorsByLevel[EDIT] ?: emptySet(),
                 collaboratorManageIds = collaboratorsByLevel[MANAGE] ?: emptySet(),
             )

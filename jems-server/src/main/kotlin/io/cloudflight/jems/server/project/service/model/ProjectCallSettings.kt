@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.service.model
 
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
@@ -10,6 +11,7 @@ import java.time.ZonedDateTime
 data class ProjectCallSettings(
     val callId: Long,
     val callName: String,
+    val callType: CallType,
     val startDate: ZonedDateTime,
     val endDate: ZonedDateTime,
     val endDateStep1: ZonedDateTime?,
@@ -19,7 +21,9 @@ data class ProjectCallSettings(
     val lumpSums: List<ProgrammeLumpSum>,
     val unitCosts: List<ProgrammeUnitCost>,
     val stateAids: List<ProgrammeStateAid>,
-    var applicationFormFieldConfigurations: MutableSet<ApplicationFormFieldConfiguration>
+    var applicationFormFieldConfigurations: MutableSet<ApplicationFormFieldConfiguration>,
+    val preSubmissionCheckPluginKey: String?,
+    val firstStepPreSubmissionCheckPluginKey: String?
 ) {
     fun isCallStep1Closed(): Boolean {
         return if (endDateStep1 == null) {

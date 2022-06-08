@@ -1,17 +1,17 @@
-<form appFormLayout>
-    <div appMultiColumnRow>
+<form jemsFormLayout>
+    <div jemsMultiColumnRow>
         <h3 class="mb-0">{{'programme.languages.header' | translate}}</h3>
-        <button appText color="primary"
+        <button jemsText color="primary"
                 *ngIf="formState === FormState.VIEW && (programmeEditableStateStore.hasEditPermission$ | async)" mat-raised-button
                 (click)="changeFormState$.next(FormState.EDIT)"
                 [disabled]="(programmeEditableStateStore.isProgrammeEditableDependingOnCall$ | async)">
             {{'common.edit.label' | translate}}
         </button>
     </div>
-    <table appNoWidthLimit mat-table [dataSource]="dataSource"
+    <table jemsNoWidthLimit mat-table [dataSource]="dataSource"
            aria-describedby="programme language setup">
         <ng-container matColumnDef="system">
-            <th mat-header-cell appFormFieldWidth="small" id="programmeLangHeaderSystem"
+            <th mat-header-cell jemsFormFieldWidth="small" id="programmeLangHeaderSystem"
                 *matHeaderCellDef>{{'programme.languages.list.select.system' | translate}}</th>
             <td mat-cell *matCellDef="let element">
                 <mat-checkbox (click)="$event.stopPropagation()"
@@ -23,7 +23,7 @@
         </ng-container>
 
         <ng-container matColumnDef="input">
-            <th mat-header-cell appFormFieldWidth="small" id="programmeLangHeaderInput"
+            <th mat-header-cell jemsFormFieldWidth="small" id="programmeLangHeaderInput"
                 *matHeaderCellDef>{{'programme.languages.list.select.input' | translate}}</th>
             <td mat-cell *matCellDef="let element">
                 <mat-checkbox (click)="$event.stopPropagation()"
@@ -55,7 +55,7 @@
     </table>
 
 
-    <div appMultiColumnRow *ngIf="formState === FormState.EDIT">
+    <div jemsMultiColumnRow *ngIf="formState === FormState.EDIT">
         <button mat-stroked-button type="button"
                 (click)="changeFormState$.next(FormState.VIEW)">
             {{'common.cancel.label' | translate}}
@@ -66,14 +66,14 @@
             {{'common.save.label' | translate}}
         </button>
     </div>
-    <app-alert
+    <jems-alert
             [show]="!submitted && (showSuccessMessage$ | async)"
             [type]="Alert.SUCCESS">
         <p>{{'programme.data.save.success' | translate}}</p>
-    </app-alert>
-    <app-alert *ngIf="error$ | async as error"
+    </jems-alert>
+    <jems-alert *ngIf="error$ | async as error"
                [show]="!submitted && !!error.i18nMessage?.i18nKey"
                [type]="Alert.ERROR">
-        <app-api-error-content [error]="error"></app-api-error-content>
-    </app-alert>
+        <jems-api-error-content [error]="error"></jems-api-error-content>
+    </jems-alert>
 </form>

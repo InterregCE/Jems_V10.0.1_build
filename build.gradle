@@ -1,5 +1,5 @@
 plugins {
-    id "cloudflight-gradle-plugin" version "6.0.0"
+    id "cloudflight-gradle-plugin" version "6.5.11"
 }
 
 // add version-postfix if build was triggered by customer
@@ -12,7 +12,7 @@ if (!(System.getenv("TEAMCITY_BUILD") != null && System.getenv("TEAMCITY_BUILD")
 
 description "Jems Project"
 group "io.cloudflight.jems"
-version "4.0.2$customerPostfix"
+version "5.0.0$customerPostfix"
 
 cloudflight {
     softwareProjectKey = "interact/ems"
@@ -20,6 +20,13 @@ cloudflight {
 
 subprojects {
     if (isKotlinProject(it)) {
+
+        tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+            kotlinOptions {
+                freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
+            }
+        }
+
         dependencies {
             implementation platform("io.cloudflight.platform:platform-bom:$cloudflightPlatformVersion")
             annotationProcessor platform("io.cloudflight.platform:platform-bom:$cloudflightPlatformVersion")
@@ -53,7 +60,7 @@ sonarqube {
         // exclude certain big enums from code duplication checks
         property "sonar.cpd.exclusions", "**/NaceGroupLevel.kt, **/NaceGroupLevelDTO.kt"
 
-        property "sonar.issue.ignore.multicriteria", "e1,e2,e3"
+        property "sonar.issue.ignore.multicriteria", "e1,e2,e3,e4"
         // ignore rule: readonly was decided to provide no big advantage
         property "sonar.issue.ignore.multicriteria.e1.ruleKey", "typescript:S2933"
         property "sonar.issue.ignore.multicriteria.e1.resourceKey", "**/*.ts"
@@ -63,5 +70,8 @@ sonarqube {
         // ignore rule: empty css files do not matter
         property "sonar.issue.ignore.multicriteria.e3.ruleKey", "css:S4667"
         property "sonar.issue.ignore.multicriteria.e3.resourceKey", "**/*.scss"
+        // ignore rule: at-rule "@use" in scss
+        property "sonar.issue.ignore.multicriteria.e4.ruleKey", "css:S4662"
+        property "sonar.issue.ignore.multicriteria.e4.resourceKey", "**/*.scss"
     }
 }

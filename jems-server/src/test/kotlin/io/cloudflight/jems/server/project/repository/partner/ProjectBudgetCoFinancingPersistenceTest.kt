@@ -4,9 +4,8 @@ import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoF
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO.Private
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO.Public
 import io.cloudflight.jems.server.call.callFundRateEntity
-import io.cloudflight.jems.server.call.callWithId
+import io.cloudflight.jems.server.call.createTestCallEntity
 import io.cloudflight.jems.server.call.entity.CallEntity
-import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.project.entity.ProjectEntity
@@ -19,6 +18,8 @@ import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.repository.budget.cofinancing.ProjectPartnerCoFinancingRepository
+import io.cloudflight.jems.server.project.repository.budget.cofinancing.ProjectPartnerContributionSpfRepository
+import io.cloudflight.jems.server.project.repository.budget.cofinancing.ProjectPartnerSpfCoFinancingRepository
 import io.cloudflight.jems.server.project.repository.partner.cofinancing.ProjectPartnerCoFinancingPersistenceProvider
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
@@ -37,20 +38,20 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.math.BigDecimal
-import java.util.Optional
+import java.util.*
 
 class ProjectBudgetCoFinancingPersistenceTest {
 
     companion object {
         private const val PARTNER_ID = 1L
 
-        private val fund1 = callFundRateEntity(callWithId(10), 10L)
-        private val fund2 = callFundRateEntity(callWithId(10), 11L)
+        private val fund1 = callFundRateEntity(createTestCallEntity(10), 10L)
+        private val fund2 = callFundRateEntity(createTestCallEntity(10), 11L)
 
         private val fund1Model = ProgrammeFund(id = fund1.setupId.programmeFund.id, selected = true)
 
         private fun dummyCall(): CallEntity {
-            val call = callWithId(10)
+            val call = createTestCallEntity(10)
             call.funds.clear()
             call.funds.addAll(setOf(fund1, fund2))
             return call
@@ -86,6 +87,12 @@ class ProjectBudgetCoFinancingPersistenceTest {
     @MockK
     lateinit var projectPartnerCoFinancingRepository: ProjectPartnerCoFinancingRepository
 
+    @MockK
+    lateinit var projectPartnerSpfCoFinancingRepository: ProjectPartnerSpfCoFinancingRepository
+
+    @MockK
+    lateinit var  projectPartnerContributionSpfRepository: ProjectPartnerContributionSpfRepository
+
     @RelaxedMockK
     lateinit var projectPersistence: ProjectPersistence
 
@@ -106,6 +113,8 @@ class ProjectBudgetCoFinancingPersistenceTest {
         persistence = ProjectPartnerCoFinancingPersistenceProvider(
             projectPartnerRepository,
             projectPartnerCoFinancingRepository,
+            projectPartnerSpfCoFinancingRepository,
+            projectPartnerContributionSpfRepository,
             projectVersionUtils,
             projectRepository
         )
@@ -179,7 +188,7 @@ class ProjectBudgetCoFinancingPersistenceTest {
             )
         )
         assertThat(result.partnerContributions).containsExactlyInAnyOrder(
-            ProjectPartnerContribution(id = 1, name = null, status = Public, amount = BigDecimal.TEN, isPartner = true),
+            ProjectPartnerContribution(id = 1, name = "test abbr", status = Public, amount = BigDecimal.TEN, isPartner = true),
             ProjectPartnerContribution(
                 id = 2,
                 name = "source01",
@@ -221,7 +230,7 @@ class ProjectBudgetCoFinancingPersistenceTest {
             partnerContributions = toBeSavedContributions
         )
 
-        assertThat(result.partnerAbbreviation).isEqualTo(dummyPartner.abbreviation)
+        assertThat(result.partnerAbbreviation).isEqualTo("test abbr")
         assertThat(result.finances).containsExactlyInAnyOrder(
             ProjectPartnerCoFinancing(
                 fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
@@ -235,7 +244,7 @@ class ProjectBudgetCoFinancingPersistenceTest {
             )
         )
         assertThat(result.partnerContributions).containsExactlyInAnyOrder(
-            ProjectPartnerContribution(id = 0, name = null, status = Public, amount = BigDecimal.TEN, isPartner = true),
+            ProjectPartnerContribution(id = 0, name = "test abbr", status = Public, amount = BigDecimal.TEN, isPartner = true),
             ProjectPartnerContribution(
                 id = 0,
                 name = "source",

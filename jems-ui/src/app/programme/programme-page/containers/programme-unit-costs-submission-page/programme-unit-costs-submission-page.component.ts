@@ -8,9 +8,10 @@ import {ActivatedRoute} from '@angular/router';
 import {ProgrammePageSidenavService} from '../../services/programme-page-sidenav.service';
 import {HttpErrorResponse} from '@angular/common/http';
 import {ProgrammeCostOptionService, ProgrammeUnitCostDTO} from '@cat/api';
+import {CurrencyStore} from '@common/services/currency.store';
 
 @Component({
-  selector: 'app-programme-unit-costs-submission-page',
+  selector: 'jems-programme-unit-costs-submission-page',
   templateUrl: './programme-unit-costs-submission-page.component.html',
   styleUrls: ['./programme-unit-costs-submission-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -28,9 +29,12 @@ export class ProgrammeUnitCostsSubmissionPageComponent extends BaseComponent {
       tap(unitCostData => Log.info('Fetched output Unit Cost data:', this, unitCostData)))
     : of({});
 
+  currencies$ = this.currencyStore.currencies$;
+
   constructor(private programmeCostOptionService: ProgrammeCostOptionService,
               private activatedRoute: ActivatedRoute,
-              private programmePageSidenavService: ProgrammePageSidenavService) {
+              private programmePageSidenavService: ProgrammePageSidenavService,
+              private currencyStore: CurrencyStore) {
     super();
   }
 

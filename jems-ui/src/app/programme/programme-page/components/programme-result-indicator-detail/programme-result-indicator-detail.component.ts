@@ -30,7 +30,7 @@ import {ProgrammeEditableStateStore} from '../../services/programme-editable-sta
 import {LanguageStore} from '@common/services/language-store.service';
 @UntilDestroy()
 @Component({
-  selector: 'app-programme-result-indicator-detail',
+  selector: 'jems-programme-result-indicator-detail',
   templateUrl: './programme-result-indicator-detail.component.html',
   styleUrls: ['./programme-result-indicator-detail.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

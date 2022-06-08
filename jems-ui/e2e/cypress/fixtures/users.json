@@ -1,0 +1,19 @@
+{
+  "admin": {
+    "email": "admin@jems.eu"
+  },
+  "applicantUser": {
+    "email": "applicant.user@jems.eu",
+    "name": "Applicant",
+    "surname": "User",
+    "userRoleId": 3,
+    "userStatus": "ACTIVE"
+  },
+  "programmeUser": {
+    "email": "programme.user@jems.eu",
+    "name": "Programme",
+    "surname": "User",
+    "userRoleId": 2,
+    "userStatus": "ACTIVE"
+  }
+}

@@ -53,6 +53,19 @@ import {FilterTextInputComponent} from '@common/components/filter/filter-text-in
 import {FilterListInputComponent} from '@common/components/filter/filter-list-input/filter-list-input.component';
 import {FilterDateInputComponent} from '@common/components/filter/filter-date-input/filter-date-input.component';
 import {TextDirective} from '@common/directives/text.directive';
+import {AdaptTranslationKeyByCallTypePipe} from '@common/pipe/adapt-translation-by-call-type.pipe';
+import {SecondsToTimePipePipe} from '@common/pipe/seconds-to-time-pipe.pipe';
+import {ChecklistAnswersComponent} from '@common/components/checklist/checklist-answers/checklist-answers.component';
+import {
+  PublicPageTemplateComponent
+} from '@common/components/page-templates/public-page-template/public-page-template.component';
+import {
+  ChecklistInstanceListComponent
+} from '@common/components/checklist/checklist-instance-list/checklist-instance-list.component';
+import {
+  ChecklistConsolidatorOptionsComponent
+} from '@common/components/checklist/checklist-consolidator-options/checklist-consolidator-options.component';
+import {MatSliderModule} from '@angular/material/slider';
 
 const modules = [
   CommonModule,
@@ -64,7 +77,8 @@ const modules = [
   MaterialModule,
   NgxCurrencyModule,
   MatBadgeModule,
-  MatProgressSpinnerModule
+  MatProgressSpinnerModule,
+  MatSliderModule
 ];
 
 const declarations = [
@@ -77,6 +91,7 @@ const declarations = [
   TranslateBySystemLanguagePipe,
   TranslateByInputLanguagePipe,
   TranslateContainerLessInputsBySystemLanguagePipe,
+  AdaptTranslationKeyByCallTypePipe,
   MoneyPipe,
   PercentagePipe,
   LocaleDatePipe,
@@ -112,7 +127,12 @@ const declarations = [
   FilterTextInputComponent,
   FilterDateInputComponent,
   FilterListInputComponent,
-  FilterAutocompleteInputComponent
+  FilterAutocompleteInputComponent,
+  SecondsToTimePipePipe,
+  ChecklistAnswersComponent,
+  ChecklistInstanceListComponent,
+  ChecklistConsolidatorOptionsComponent,
+  PublicPageTemplateComponent
 ];
 
 const providers = [

@@ -1,5 +1,4 @@
 import { ComponentFixture, fakeAsync, TestBed, waitForAsync } from '@angular/core/testing';
-import {InputProjectLongTermPlans} from '@cat/api';
 import {ProjectApplicationFormFuturePlansSectionComponent} from './project-application-form-future-plans-section.component';
 import {HttpTestingController} from '@angular/common/http/testing';
 import {TestModule} from '../../../../../common/test-module';
@@ -34,13 +33,4 @@ describe('ProjectApplicationFormFuturePlansSectionComponent', () => {
   it('should create', () => {
     expect(component).toBeTruthy();
   });
-
-  it('should update project long-term plans', fakeAsync(() => {
-    component.updateFuturePlans$.next({} as InputProjectLongTermPlans);
-
-    httpTestingController.expectOne({
-      method: 'PUT',
-      url: '//api/project/1/description/c8'
-    });
-  }));
 });

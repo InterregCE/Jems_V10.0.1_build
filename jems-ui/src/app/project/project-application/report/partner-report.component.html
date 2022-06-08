@@ -1,0 +1,46 @@
+<jems-project-page-template *ngIf="data$ | async as data"
+                            [needsCard]="true"
+                            titleKey="project.application.partner.reports.title"
+                            [subTitleText]="'common.label.project.partner.role.shortcut.' + data.partner.role | adaptTranslationKeyByCallType | async | translate
+            : {partner: getPartnerTranslationString(data.partner)}"
+                            [isVersionedData]="false">
+    <jems-alert [type]="Alert.WARNING"
+                [closable]="false"
+                [show]="!data.partner.active">
+        <div>{{'project.application.form.section.part.b.deactivated.partner.warning' | translate}}</div>
+    </jems-alert>
+
+    <ng-container *ngIf="pageStore.userCanEditReports$ | async">
+        <jems-pending-button jemsText class="mb-3"
+                             [disabled]="true" matTooltip="Feature is not yet supported 😞 You can check it out on our testing environment and/or stay tuned for next release 🎉🍸"
+                             (click)="createPartnerReport()"
+                             [pending]="actionPending">
+            + {{'project.application.partner.reports.add' | translate}}
+        </jems-pending-button>
+    </ng-container>
+
+    <jems-alert *ngIf="error$ | async as error"
+                [show]="!!error.i18nMessage?.i18nKey"
+                [type]="Alert.ERROR">
+        <jems-api-error-content [error]="error"></jems-api-error-content>
+    </jems-alert>
+
+    <ng-container *ngIf="data.partnerReports as partnerReports">
+        <jems-table *ngIf="partnerReports.length > 0"
+                    [configuration]="tableConfiguration"
+                    [rows]="partnerReports"
+                    [totalElements]="partnerReports.length"
+                    [pageIndex]="pageStore.newPageIndex$ | async"
+                    (newPageIndex)="pageStore.newPageIndex$.next($event)"
+                    (newPageSize)="pageStore.newPageSize$.next($event)">
+        </jems-table>
+        <p *ngIf="!partnerReports?.length">{{'project.application.partner.reports.table.empty' | translate}}</p>
+    </ng-container>
+
+
+</jems-project-page-template>
+
+<ng-template #numberingCell let-partnerReport>
+    <span *ngIf="partnerReport.reportNumber">
+        R.{{partnerReport.reportNumber}}</span>
+</ng-template>

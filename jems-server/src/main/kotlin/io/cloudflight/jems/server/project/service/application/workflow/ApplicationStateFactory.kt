@@ -13,9 +13,11 @@ import io.cloudflight.jems.server.project.service.application.workflow.states.Co
 import io.cloudflight.jems.server.project.service.application.workflow.states.DraftApplicationState
 import io.cloudflight.jems.server.project.service.application.workflow.states.EligibleApplicationState
 import io.cloudflight.jems.server.project.service.application.workflow.states.InEligibleApplicationState
+import io.cloudflight.jems.server.project.service.application.workflow.states.InModificationApplicationState
 import io.cloudflight.jems.server.project.service.application.workflow.states.ModificationPreContractingApplicationState
 import io.cloudflight.jems.server.project.service.application.workflow.states.ModificationPreContractingSubmittedApplicationState
 import io.cloudflight.jems.server.project.service.application.workflow.states.ModificationRejectedApplicationState
+import io.cloudflight.jems.server.project.service.application.workflow.states.ModificationSubmittedApplicationState
 import io.cloudflight.jems.server.project.service.application.workflow.states.NotApprovedApplicationState
 import io.cloudflight.jems.server.project.service.application.workflow.states.ReturnedToApplicantApplicationState
 import io.cloudflight.jems.server.project.service.application.workflow.states.ReturnedToApplicantForConditionsApplicationState
@@ -43,26 +45,171 @@ class ApplicationStateFactory(
 
     fun getInstance(projectSummary: ProjectSummary) =
         when (projectSummary.status) {
-            STEP1_DRAFT -> FirstStepDraftApplicationState(projectSummary,projectWorkflowPersistence, auditPublisher,securityService, projectPersistence)
-            STEP1_SUBMITTED -> FirstStepSubmittedApplicationState(projectSummary,projectWorkflowPersistence, auditPublisher,securityService, projectPersistence)
-            STEP1_ELIGIBLE -> FirstStepEligibleApplicationState(projectSummary,projectWorkflowPersistence, auditPublisher,securityService, projectPersistence, projectAssessmentPersistence)
-            STEP1_INELIGIBLE -> FirstStepIneligibleApplicationState(projectSummary,projectWorkflowPersistence, auditPublisher,securityService, projectPersistence)
-            STEP1_APPROVED -> FirstStepApprovedApplicationState(projectSummary,projectWorkflowPersistence, auditPublisher,securityService, projectPersistence)
-            STEP1_APPROVED_WITH_CONDITIONS -> FirstStepApprovedApplicationWithConditionsState(projectSummary,projectWorkflowPersistence, auditPublisher,securityService, projectPersistence)
-            STEP1_NOT_APPROVED -> FirstStepNotApprovedApplicationState(projectSummary,projectWorkflowPersistence, auditPublisher,securityService, projectPersistence)
-            APPROVED -> ApprovedApplicationState(projectSummary,projectWorkflowPersistence, auditPublisher,securityService, projectPersistence)
-            APPROVED_WITH_CONDITIONS -> ApprovedApplicationWithConditionsState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence)
-            DRAFT -> DraftApplicationState(projectSummary,projectWorkflowPersistence,  auditPublisher,securityService, projectPersistence)
-            ELIGIBLE -> EligibleApplicationState(projectSummary, projectWorkflowPersistence,  auditPublisher, securityService, projectPersistence, projectAssessmentPersistence)
-            INELIGIBLE -> InEligibleApplicationState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence)
-            NOT_APPROVED -> NotApprovedApplicationState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence)
-            RETURNED_TO_APPLICANT -> ReturnedToApplicantApplicationState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence)
-            RETURNED_TO_APPLICANT_FOR_CONDITIONS -> ReturnedToApplicantForConditionsApplicationState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence)
-            SUBMITTED -> SubmittedApplicationState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence)
-            CONDITIONS_SUBMITTED ->  ConditionsSubmittedApplicationState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence, projectAuthorization)
-            MODIFICATION_PRECONTRACTING ->  ModificationPreContractingApplicationState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence)
-            MODIFICATION_PRECONTRACTING_SUBMITTED ->  ModificationPreContractingSubmittedApplicationState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence, projectAuthorization)
-            MODIFICATION_REJECTED ->  ModificationRejectedApplicationState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence)
-            CONTRACTED -> ContractedApplicationState(projectSummary, projectWorkflowPersistence, auditPublisher, securityService, projectPersistence)
+            STEP1_DRAFT -> FirstStepDraftApplicationState(
+                projectSummary,
+                projectWorkflowPersistence,
+                auditPublisher,
+                securityService,
+                projectPersistence,
+            )
+            STEP1_SUBMITTED -> FirstStepSubmittedApplicationState(
+                projectSummary,
+                projectWorkflowPersistence,
+                auditPublisher,
+                securityService,
+                projectPersistence,
+            )
+            STEP1_ELIGIBLE -> FirstStepEligibleApplicationState(
+                projectSummary,
+                projectWorkflowPersistence,
+                auditPublisher,
+                securityService,
+                projectPersistence,
+                projectAssessmentPersistence,
+            )
+            STEP1_INELIGIBLE -> FirstStepIneligibleApplicationState(
+                projectSummary,
+                projectWorkflowPersistence,
+                auditPublisher,
+                securityService,
+                projectPersistence,
+            )
+            STEP1_APPROVED -> FirstStepApprovedApplicationState(
+                projectSummary,
+                projectWorkflowPersistence,
+                auditPublisher,
+                securityService,
+                projectPersistence,
+            )
+            STEP1_APPROVED_WITH_CONDITIONS -> FirstStepApprovedApplicationWithConditionsState(
+                projectSummary,
+                projectWorkflowPersistence,
+                auditPublisher,
+                securityService,
+                projectPersistence,
+            )
+            STEP1_NOT_APPROVED -> FirstStepNotApprovedApplicationState(
+                projectSummary,
+                projectWorkflowPersistence,
+                auditPublisher,
+                securityService,
+                projectPersistence,
+            )
+            APPROVED -> ApprovedApplicationState(
+                projectSummary,
+                projectWorkflowPersistence,
+                auditPublisher,
+                securityService,
+                projectPersistence,
+            )
+            APPROVED_WITH_CONDITIONS -> ApprovedApplicationWithConditionsState(
+                projectSummary,
+                projectWorkflowPersistence,
+                auditPublisher,
+                securityService,
+                projectPersistence,
+            )
+            DRAFT -> DraftApplicationState(
+                projectSummary,
+                projectWorkflowPersistence,
+                auditPublisher,
+                securityService,
+                projectPersistence,
+            )
+            ELIGIBLE -> EligibleApplicationState(
+                projectSummary,
+                projectWorkflowPersistence,
+                auditPublisher,
+                securityService,
+                projectPersistence,
+                projectAssessmentPersistence,
+            )
+            INELIGIBLE -> InEligibleApplicationState(
+                projectSummary,
+                projectWorkflowPersistence,
+                auditPublisher,
+                securityService,
+                projectPersistence,
+            )
+            NOT_APPROVED -> NotApprovedApplicationState(
+                projectSummary,
+                projectWorkflowPersistence,
+                auditPublisher,
+                securityService,
+                projectPersistence,
+            )
+            RETURNED_TO_APPLICANT -> ReturnedToApplicantApplicationState(
+                projectSummary,
+                projectWorkflowPersistence,
+                auditPublisher,
+                securityService,
+                projectPersistence,
+            )
+            RETURNED_TO_APPLICANT_FOR_CONDITIONS -> ReturnedToApplicantForConditionsApplicationState(
+                projectSummary,
+                projectWorkflowPersistence,
+                auditPublisher,
+                securityService,
+                projectPersistence,
+            )
+            SUBMITTED -> SubmittedApplicationState(
+                projectSummary,
+                projectWorkflowPersistence,
+                auditPublisher,
+                securityService,
+                projectPersistence,
+            )
+            CONDITIONS_SUBMITTED -> ConditionsSubmittedApplicationState(
+                projectSummary,
+                projectWorkflowPersistence,
+                auditPublisher,
+                securityService,
+                projectPersistence,
+                projectAuthorization,
+            )
+            MODIFICATION_PRECONTRACTING -> ModificationPreContractingApplicationState(
+                projectSummary,
+                projectWorkflowPersistence,
+                auditPublisher,
+                securityService,
+                projectPersistence,
+            )
+            MODIFICATION_PRECONTRACTING_SUBMITTED -> ModificationPreContractingSubmittedApplicationState(
+                projectSummary,
+                projectWorkflowPersistence,
+                auditPublisher,
+                securityService,
+                projectPersistence,
+                projectAuthorization,
+            )
+            IN_MODIFICATION -> InModificationApplicationState(
+                projectSummary,
+                projectWorkflowPersistence,
+                auditPublisher,
+                securityService,
+                projectPersistence,
+            )
+            MODIFICATION_SUBMITTED -> ModificationSubmittedApplicationState(
+                projectSummary,
+                projectWorkflowPersistence,
+                auditPublisher,
+                securityService,
+                projectPersistence,
+                projectAuthorization,
+            )
+            MODIFICATION_REJECTED -> ModificationRejectedApplicationState(
+                projectSummary,
+                projectWorkflowPersistence,
+                auditPublisher,
+                securityService,
+                projectPersistence,
+            )
+            CONTRACTED -> ContractedApplicationState(
+                projectSummary,
+                projectWorkflowPersistence,
+                auditPublisher,
+                securityService,
+                projectPersistence,
+            )
     }
 }

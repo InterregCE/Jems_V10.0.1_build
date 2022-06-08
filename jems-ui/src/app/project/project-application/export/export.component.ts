@@ -4,11 +4,11 @@ import {finalize, map, tap} from 'rxjs/operators';
 import {ExportPageStore} from '@project/project-application/export/export-page-store';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {CategoryInfo, CategoryNode} from '@project/common/components/category-tree/categoryModels';
-import {ProjectVersionDTO} from '@cat/api';
+import {ProjectCallSettingsDTO, ProjectVersionDTO} from '@cat/api';
 import {DownloadService} from '@common/services/download.service';
 
 @Component({
-  selector: 'app-export',
+  selector: 'jems-export',
   templateUrl: './export.component.html',
   styleUrls: ['./export.component.scss'],
   providers: [ExportPageStore],
@@ -27,6 +27,7 @@ export class ExportComponent {
     exportLanguages: string[];
     versions: ProjectVersionDTO[];
     categories: CategoryNode;
+    isSPFProjectCallType: boolean;
   }>;
 
   constructor(private exportPageStore: ExportPageStore, private formBuilder: FormBuilder, private downloadService: DownloadService) {
@@ -37,16 +38,19 @@ export class ExportComponent {
       this.exportPageStore.exportLanguages$,
       this.exportPageStore.projectVersions$,
       this.exportPageStore.exportCategories$,
+      this.exportPageStore.projectCallType$
     ]).pipe(
-      map(([projectId, projectTitle, inputLanguages, exportLanguages, projectVersions, categories]) => ({
+      map(([projectId, projectTitle, inputLanguages, exportLanguages, projectVersions, categories, projectCallType]:
+             [number, string, string[], string[], ProjectVersionDTO[],CategoryNode,ProjectCallSettingsDTO.CallTypeEnum]) => ({
         projectId,
         projectTitle,
         inputLanguages,
         exportLanguages,
         versions: projectVersions,
-        categories
+        categories,
+        isSPFProjectCallType: projectCallType === ProjectCallSettingsDTO.CallTypeEnum.SPF
       })),
-      tap((data) => this.resetForm(data.versions))
+      tap((data) => this.resetForm(data.versions, data.inputLanguages, data.exportLanguages))
     );
   }
 
@@ -61,10 +65,10 @@ export class ExportComponent {
     }
   }
 
-  resetForm(versions: ProjectVersionDTO[]): void {
+  resetForm(versions: ProjectVersionDTO[], inputLanguages: string[], exportLanguages: string[]): void {
     this.exportForm = this.formBuilder.group({
-      inputLanguage: [this.exportPageStore.fallBackLanguage],
-      exportLanguage: [this.exportPageStore.fallBackLanguage],
+      inputLanguage: [this.setFallBackLanguageIfInLanguageList(inputLanguages)],
+      exportLanguage: [this.setFallBackLanguageIfInLanguageList(exportLanguages)],
       version: [versions.find(it => it.current)?.version || versions[0].version],
     });
   }
@@ -79,10 +83,14 @@ export class ExportComponent {
   }
 
   get inputLanguage(): string {
-    return this.exportForm.get('inputLanguage')?.value || this.exportPageStore.fallBackLanguage;
+    return this.exportForm.get('inputLanguage')?.value;
   }
 
   get exportLanguage(): string {
-    return this.exportForm.get('exportLanguage')?.value || this.exportPageStore.fallBackLanguage;
+    return this.exportForm.get('exportLanguage')?.value;
+  }
+
+  setFallBackLanguageIfInLanguageList(languagesList: string[]): string {
+    return languagesList.includes(this.exportPageStore.fallBackLanguage) ? this.exportPageStore.fallBackLanguage : '';
   }
 }

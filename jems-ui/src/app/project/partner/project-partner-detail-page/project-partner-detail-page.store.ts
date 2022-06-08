@@ -3,7 +3,9 @@ import {combineLatest, Observable} from 'rxjs';
 import {BudgetOptions} from '../../model/budget/budget-options';
 import {CallFlatRateSetting} from '../../model/call-flat-rate-setting';
 import {filter, map, shareReplay, startWith, switchMap} from 'rxjs/operators';
-import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
+import {
+  ProjectStore
+} from '../../project-application/containers/project-application-detail/services/project-store.service';
 import {
   CallFundRateDTO,
   CallService,
@@ -14,22 +16,36 @@ import {
   ProjectPartnerDetailDTO,
   ProjectPartnerService,
   ProjectPartnerStateAidDTO,
-  ProjectPeriodDTO
+  ProjectPeriodDTO,
+  ProjectStatusDTO
 } from '@cat/api';
-import {ProjectPartnerStore} from '../../project-application/containers/project-application-form-page/services/project-partner-store.service';
+import {
+  ProjectPartnerStore
+} from '../../project-application/containers/project-application-form-page/services/project-partner-store.service';
 import {NumberService} from '@common/services/number.service';
 import {PartnerBudgetTables} from '../../model/budget/partner-budget-tables';
-import {WorkPackagePageStore} from '../../work-package/project-work-package-page/work-package-detail-page/work-package-page-store.service';
-import {InvestmentSummary} from '../../work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
+import {
+  WorkPackagePageStore
+} from '../../work-package/project-work-package-page/work-package-detail-page/work-package-page-store.service';
+import {
+  InvestmentSummary
+} from '../../work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
 import {ProgrammeUnitCost} from '../../model/programmeUnitCost';
 import {ProjectVersionStore} from '../../common/services/project-version-store.service';
 import {AllowedBudgetCategories} from '@project/model/allowed-budget-category';
 import {ProjectPartnerBudgetStore} from '@project/budget/services/project-partner-budget.store';
-import {ProjectPartnerCoFinancingStore} from '@project/partner/project-partner-detail-page/project-partner-co-financing-tab/services/project-partner-co-financing.store';
+import {
+  ProjectPartnerCoFinancingStore
+} from '@project/partner/project-partner-detail-page/project-partner-co-financing-tab/services/project-partner-co-financing.store';
 import {ProjectPartnerStateAidsStore} from '@project/partner/services/project-partner-state-aids.store';
 import {PartnerLumpSum} from '@project/model/lump-sums/partnerLumpSum';
 import {ProjectLumpSumsStore} from '@project/lump-sums/project-lump-sums-page/project-lump-sums-store.service';
 import {ProgrammeLumpSum} from '@project/model/lump-sums/programmeLumpSum';
+import {PartnerBudgetSpfTables} from '@project/model/budget/partner-budget-spf-tables';
+import {ProjectUtil} from '@project/common/project-util';
+import {
+  ProjectPartnerCoFinancingSpfStore
+} from './project-partner-co-financing-spf-tab/project-partner-co-financing-spf.store';
 
 @Injectable()
 export class ProjectPartnerDetailPageStore {
@@ -39,17 +55,21 @@ export class ProjectPartnerDetailPageStore {
   partnerLumpSums$: Observable<PartnerLumpSum[]>;
   partnerTotalLumpSum$: Observable<number>;
   budgets$: Observable<PartnerBudgetTables>;
+  spfBudgets$: Observable<PartnerBudgetSpfTables>;
   totalBudget$: Observable<number>;
+  totalSpfBudget$: Observable<number>;
   isProjectEditable$: Observable<boolean>;
   investmentSummaries$: Observable<InvestmentSummary[]>;
   unitCosts$: Observable<ProgrammeUnitCost[]>;
   financingAndContribution$: Observable<ProjectPartnerCoFinancingAndContributionOutputDTO>;
+  coFinancingSpf$: Observable<ProjectPartnerCoFinancingAndContributionOutputDTO>;
   callFunds$: Observable<Map<number, CallFundRateDTO>>;
   periods$: Observable<ProjectPeriodDTO[]>;
   multipleFundsAllowed$: Observable<boolean>;
   stateAid$: Observable<ProjectPartnerStateAidDTO>;
   partner$: Observable<ProjectPartnerDetailDTO>;
   allowedBudgetCategories$: Observable<AllowedBudgetCategories>;
+  canChangeContractedFlatRates$: Observable<boolean>;
 
   constructor(private projectStore: ProjectStore,
               private partnerStore: ProjectPartnerStore,
@@ -62,6 +82,7 @@ export class ProjectPartnerDetailPageStore {
               private projectPartnerBudgetStore: ProjectPartnerBudgetStore,
               private projectLumpSumsStore: ProjectLumpSumsStore,
               private projectPartnerCoFinancingStore: ProjectPartnerCoFinancingStore,
+              private projectPartnerCoFinancingSpfStore: ProjectPartnerCoFinancingSpfStore,
               private projectPartnerStateAidsStore: ProjectPartnerStateAidsStore) {
     this.investmentSummaries$ = this.projectStore.investmentSummaries$;
     this.unitCosts$ = this.projectStore.projectCall$.pipe(
@@ -69,10 +90,13 @@ export class ProjectPartnerDetailPageStore {
       shareReplay(1)
     );
     this.budgets$ = this.projectPartnerBudgetStore.budgets$;
+    this.spfBudgets$ = this.projectPartnerBudgetStore.spfBudgets$;
     this.budgetOptions$ = this.projectPartnerBudgetStore.budgetOptions$;
     this.callFlatRatesSettings$ = this.callFlatRateSettings();
     this.totalBudget$ = this.projectPartnerBudgetStore.totalBudget$;
+    this.totalSpfBudget$ = this.projectPartnerBudgetStore.totalSpfBudget$;
     this.financingAndContribution$ = this.projectPartnerCoFinancingStore.financingAndContribution$;
+    this.coFinancingSpf$ = this.projectPartnerCoFinancingSpfStore.financingAndContribution$;
     this.callFunds$ = this.callFunds();
     this.isProjectEditable$ = this.projectStore.projectEditable$;
     this.periods$ = this.projectStore.projectPeriods$;
@@ -83,6 +107,7 @@ export class ProjectPartnerDetailPageStore {
     this.projectCallLumpSums$ = this.projectLumpSumsStore.projectCallLumpSums$;
     this.partnerLumpSums$ = this.partnerLumpSums();
     this.partnerTotalLumpSum$ = this.partnerTotalLumpSum();
+    this.canChangeContractedFlatRates$ = this.canChangeContractedFlatRates();
   }
 
   public static calculateOfficeAndAdministrationFlatRateTotal(
@@ -147,12 +172,24 @@ export class ProjectPartnerDetailPageStore {
     return this.projectPartnerBudgetStore.updateBudgets(budgets);
   }
 
+  updateSpfBudgets(budgets: PartnerBudgetSpfTables): Observable<any> {
+    return this.projectPartnerBudgetStore.updateSpfBudgets(budgets);
+  }
+
   updateCoFinancingAndContributions(model: ProjectPartnerCoFinancingAndContributionInputDTO): Observable<any> {
     return this.projectPartnerCoFinancingStore.updateCoFinancingAndContributions(model);
   }
 
+  updateCoFinancingSpf(model: ProjectPartnerCoFinancingAndContributionInputDTO): Observable<any> {
+    return this.projectPartnerCoFinancingSpfStore.updateCoFinancingAndContributions(model);
+  }
+
   updateStateAid(partnerId: number, stateAid: ProjectPartnerStateAidDTO): Observable<ProjectPartnerStateAidDTO> {
     return this.projectPartnerStateAidsStore.updateStateAid(partnerId, stateAid);
+  }
+
+  private static sortById(a: CallFundRateDTO, b: CallFundRateDTO): number {
+    return (a.programmeFund.id > b.programmeFund.id) ? 1 : -1;
   }
 
   private callFunds(): Observable<Map<number, CallFundRateDTO>> {
@@ -161,7 +198,7 @@ export class ProjectPartnerDetailPageStore {
         map(project => project.callSettings.callId),
         switchMap(callId => this.callService.getCallById(callId)),
         map(call => new Map(call.funds
-            .sort((a, b) => (a.programmeFund.id > b.programmeFund.id) ? 1 : -1)
+            .sort(ProjectPartnerDetailPageStore.sortById)
             .map(fund => [fund.programmeFund.id, fund])
           )
         ),
@@ -186,7 +223,7 @@ export class ProjectPartnerDetailPageStore {
               callLumpSum?.description || [],
               callLumpSum?.cost,
               lumpSum.period,
-              lumpSum.lumpSumContributions.find(it=> it.partnerId === partner.id)?.amount || 0
+              lumpSum.lumpSumContributions.find(it => it.partnerId === partner.id)?.amount || 0
             );
           })
       ),
@@ -206,5 +243,22 @@ export class ProjectPartnerDetailPageStore {
         switchMap(([partner, version, projectId]) => this.projectLumpSumService.getProjectLumpSumsTotalForPartner(partner.id, projectId, version)),
         shareReplay(1)
       );
+  }
+
+  private canChangeContractedFlatRates(): Observable<boolean> {
+    return combineLatest([
+      this.partnerStore.partner$,
+      this.projectStore.currentVersionOfProjectStatus$,
+      this.projectVersionStore.versions$
+    ]).pipe(
+      map(([partner, status, versions]) => {
+        const isContracted = versions.find(version => version.status === ProjectStatusDTO.StatusEnum.CONTRACTED);
+        if (!isContracted) {
+          return true;
+        }
+        const latestContracted = versions.find(version => ProjectUtil.isContractedOrAnyStatusAfterContracted(version.status));
+        return !latestContracted || partner.createdAt > latestContracted.createdAt;
+      }),
+    );
   }
 }

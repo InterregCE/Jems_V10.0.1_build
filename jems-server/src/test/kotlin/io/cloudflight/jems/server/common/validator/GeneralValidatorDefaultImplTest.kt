@@ -33,6 +33,20 @@ internal class GeneralValidatorDefaultImplTest : UnitTest() {
             )
     }
 
+    @Test
+    fun `should return correct validation result when input is equal to given parameter`() {
+        val input = "input text"
+        val validationResult = generalValidator.notEqualTo(input, input, "input")
+
+        assertThat(validationResult["input"])
+            .isEqualTo(
+                I18nMessage(
+                    "common.error.key.invalid",
+                    mapOf("key" to input)
+                )
+            )
+    }
+
     @Nested
     inner class MaxLength {
         @Test
@@ -254,6 +268,13 @@ internal class GeneralValidatorDefaultImplTest : UnitTest() {
         }
 
         @Test
+        fun `should return empty map as validation result when input is blank`() {
+            val validationResult = generalValidator.onlyDigits("", "input")
+
+            assertThat(validationResult["input"]).isNull()
+        }
+
+        @Test
         fun `should return correct validation result when input contains characters other that digits`() {
             val validationResult = generalValidator.onlyDigits("3823g76", "input")
 
@@ -342,6 +363,27 @@ internal class GeneralValidatorDefaultImplTest : UnitTest() {
                     )
             }
         }
+
+    @Test
+    fun `should return correct validation result when currency is not valid`() {
+        assertThat(generalValidator.onlyValidCurrencies(setOf("AAA", "AAB", "AAC"), "inputName")["inputName"])
+            .isEqualTo(
+                I18nMessage(
+                    i18nKey = "common.error.currency.code.invalid",
+                    i18nArguments = mapOf(
+                        "AAA" to "invalid.currency.code",
+                        "AAB" to "invalid.currency.code",
+                        "AAC" to "invalid.currency.code",
+                        "currencyCodes" to "AAA, AAB, AAC",
+                    ),
+                )
+            )
+    }
+
+    @Test
+    fun `should return correct validation result when currency is valid`() {
+        assertThat(generalValidator.onlyValidCurrencies(setOf("EUR", "PLN", "HUF"), "inputName")).isEmpty()
+    }
 
     @Test
     fun `should throw AppInputValidationException when there is at least one validation error`() {

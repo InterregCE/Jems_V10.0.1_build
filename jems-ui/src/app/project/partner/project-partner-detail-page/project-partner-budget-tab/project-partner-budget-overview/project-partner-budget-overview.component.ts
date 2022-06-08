@@ -13,7 +13,7 @@ import {BudgetOptions} from '@project/model/budget/budget-options';
 
 @UntilDestroy()
 @Component({
-  selector: 'app-project-partner-budget-overview',
+  selector: 'jems-project-partner-budget-overview',
   templateUrl: './project-partner-budget-overview.component.html',
   styleUrls: ['./project-partner-budget-overview.component.scss'],
   providers: [FormService],

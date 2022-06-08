@@ -1,0 +1,7 @@
+<?xml version="1.0" ?>
+<SmellBaseline>
+  <ManuallySuppressedIssues></ManuallySuppressedIssues>
+  <CurrentIssues>
+    <ID>LongParameterList:ProjectPartnerReportWorkPlanApi.kt$ProjectPartnerReportWorkPlanApi$( @PathVariable partnerId: Long, @PathVariable reportId: Long, @PathVariable workPackageId: Long, @PathVariable activityId: Long, @PathVariable deliverableId: Long, @RequestPart("file") file: MultipartFile )</ID>
+  </CurrentIssues>
+</SmellBaseline>

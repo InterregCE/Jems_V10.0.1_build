@@ -117,6 +117,12 @@ export const APPLICATION_FORM = {
         DESCRIPTION: 'application.config.project.partner.budget.unit.costs.description',
         UNIT_TYPE_AND_NUMBER_OF_UNITS: 'application.config.project.partner.budget.unit.costs.unit.type.and.number.of.units',
         PRICE_PER_UNIT: 'application.config.project.partner.budget.unit.costs.price.per.unit'
+      },
+      SPF_COST: {
+        DESCRIPTION: 'application.config.project.partner.budget.spf.description',
+        COMMENTS: 'application.config.project.partner.budget.spf.comments',
+        UNIT_TYPE_AND_NUMBER_OF_UNITS: 'application.config.project.partner.budget.spf.unit.type.and.number.of.units',
+        PRICE_PER_UNIT: 'application.config.project.partner.budget.spf.price.per.unit',
       }
     },
     STATE_AID: {
@@ -135,6 +141,7 @@ export const APPLICATION_FORM = {
       HOW_ARE_CHALLENGES_AND_OPPORTUNITIES_TACKLED: 'application.config.project.how.are.challenges.and.opportunities.tackled',
       WHY_IS_COOPERATION_NEEDED: 'application.config.project.why.is.cooperation.needed',
       TARGET_GROUP: 'application.config.project.target.group',
+      SPF_RECIPIENT_GROUP: 'application.config.project.spf.recipient.group',
       STRATEGY_CONTRIBUTION: 'application.config.project.strategy.contribution',
       SYNERGIES: 'application.config.project.synergies',
       HOW_BUILDS_PROJECT_ON_AVAILABLE_KNOWLEDGE: 'application.config.project.how.builds.project.on.available.knowledge',

@@ -1,7 +1,6 @@
-.app-layout {
-  &.app-layout-row {
-    &.app-multi-column-row {
-      display: flex;
+.jems-layout  {
+  &.jems-layout-row {
+    &.jems-multi-column-row {
       flex-direction: row;
       align-items: var(--alignItems);
       justify-content: var(--justifyContent);

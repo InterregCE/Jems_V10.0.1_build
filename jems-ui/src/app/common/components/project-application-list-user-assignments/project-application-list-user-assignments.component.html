@@ -1,17 +1,17 @@
 <ng-container *ngIf="data$ | async as data">
-    <app-form (discard)="resetForm(data.rows)" (save)="saveForm()">
+    <jems-form (discard)="resetForm(data.rows)" (save)="saveForm()">
         <p *ngIf="!data.rows.length">{{'project.list.empty' | translate}}</p>
-        <app-table *ngIf="data.rows.length"
+        <jems-table *ngIf="data.rows.length"
                    [configuration]="tableConfiguration"
                    [rows]="data.rows"
                    [totalElements]="data.totalElements"
                    [pageIndex]="projectUserStore.newPageIndex$ | async"
-                   [temporarilyHidePagination]="!!changes.length"
+                   [confirmPageChange]="formService.dirty$ | async"
                    (newPageIndex)="projectUserStore.newPageIndex$.next($event)"
                    (newPageSize)="projectUserStore.newPageSize$.next($event)"
                    (sortRows)="projectUserStore.newSort$.next($event)">
-        </app-table>
-    </app-form>
+        </jems-table>
+    </jems-form>
 </ng-container>
 
 <ng-template #userAssignment let-project>

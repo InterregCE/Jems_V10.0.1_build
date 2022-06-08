@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 
 @Component({
-  selector: 'app-text-hint',
+  selector: 'jems-text-hint',
   templateUrl: './text-hint.component.html',
   styleUrls: ['./text-hint.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

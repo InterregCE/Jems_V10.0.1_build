@@ -1,7 +1,11 @@
-api:
-  base-path: /api
-
 spring:
+  jpa:
+    open-in-view: false
+    properties:
+      hibernate:
+        types:
+          print:
+            banner: false
   flyway:
     out-of-order: true
   messages:
@@ -13,10 +17,8 @@ spring:
     driver-class-name: org.mariadb.jdbc.Driver
     jpa:
       database: mariadb
-      open-in-view: false
       hibernate:
         ddl-auto: update
-      show-sql: false
   servlet:
     multipart:
       enabled: true
@@ -36,6 +38,10 @@ spring:
           writetimeout: 5000
           starttls:
             enable: false
+  mvc:
+    pathmatch:
+      # needed for resolving /swagger-ui.html
+      matching-strategy: ant_path_matcher
 
 audit-service:
   enabled: "${AUDIT_ENABLED:true}"

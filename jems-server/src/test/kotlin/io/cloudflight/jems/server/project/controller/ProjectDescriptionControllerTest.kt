@@ -11,6 +11,7 @@ import io.cloudflight.jems.api.project.dto.description.InputProjectOverallObject
 import io.cloudflight.jems.api.project.dto.description.InputProjectPartnership
 import io.cloudflight.jems.api.project.dto.description.InputProjectRelevance
 import io.cloudflight.jems.api.project.dto.description.InputProjectRelevanceBenefit
+import io.cloudflight.jems.api.project.dto.description.ProjectRelevanceSpfRecipientDTO
 import io.cloudflight.jems.api.project.dto.description.InputProjectRelevanceStrategy
 import io.cloudflight.jems.api.project.dto.description.InputProjectRelevanceSynergy
 import io.cloudflight.jems.api.project.dto.description.OutputProjectDescription
@@ -28,8 +29,10 @@ import io.cloudflight.jems.server.project.service.model.ProjectOverallObjective
 import io.cloudflight.jems.server.project.service.model.ProjectPartnership
 import io.cloudflight.jems.server.project.service.model.ProjectRelevance
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceBenefit
+import io.cloudflight.jems.server.project.service.model.ProjectRelevanceSpfRecipient
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceStrategy
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceSynergy
+import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
 import io.cloudflight.jems.server.project.service.update_project_description.UpdateProjectDescriptionInteractor
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -55,6 +58,12 @@ class ProjectDescriptionControllerTest {
                     ProjectRelevanceBenefit(
                     group = ProjectTargetGroupDTO.LocalPublicAuthority,
                     specification = setOf(InputTranslation(SystemLanguage.EN, "specification")))
+                ),
+                projectSpfRecipients = listOf(
+                    ProjectRelevanceSpfRecipient(
+                        recipientGroup = ProjectTargetGroup.Egtc,
+                        specification = setOf(InputTranslation(SystemLanguage.EN, "specification"))
+                    )
                 ),
                 projectStrategies = listOf(
                     ProjectRelevanceStrategy(
@@ -114,6 +123,12 @@ class ProjectDescriptionControllerTest {
                     InputProjectRelevanceBenefit(
                         group = ProjectTargetGroupDTO.LocalPublicAuthority,
                         specification = setOf(InputTranslation(SystemLanguage.EN, "specification")))
+                ),
+                projectSpfRecipients = listOf(
+                    ProjectRelevanceSpfRecipientDTO(
+                        recipientGroup = ProjectTargetGroupDTO.Egtc,
+                        specification = setOf(InputTranslation(SystemLanguage.EN, "specification"))
+                    )
                 ),
                 projectStrategies = listOf(
                     InputProjectRelevanceStrategy(

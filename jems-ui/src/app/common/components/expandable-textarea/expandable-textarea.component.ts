@@ -2,7 +2,7 @@ import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@
 import {FormControl, ValidationErrors} from '@angular/forms';
 
 @Component({
-  selector: 'app-expandable-textarea',
+  selector: 'jems-expandable-textarea',
   templateUrl: './expandable-textarea.component.html',
   styleUrls: ['./expandable-textarea.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

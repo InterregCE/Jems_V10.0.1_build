@@ -3,14 +3,15 @@ import {
   InputWorkPackageUpdate,
   OutputIndicatorSummaryDTO,
   OutputWorkPackage,
-  ProgrammeIndicatorService,
+  ProgrammeIndicatorOutputService,
   ProjectDetailFormDTO,
   WorkPackageActivityDTO,
   WorkPackageActivityService,
+  WorkPackageInvestmentDTO,
   WorkPackageInvestmentService,
   WorkPackageOutputDTO,
   WorkPackageOutputService,
-  WorkPackageService, WorkPackageInvestmentDTO,
+  WorkPackageService,
 } from '@cat/api';
 import {combineLatest, merge, Observable, of, Subject} from 'rxjs';
 import {catchError, filter, map, mergeMap, shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
@@ -44,7 +45,7 @@ export class WorkPackagePageStore {
 
   constructor(private workPackageService: WorkPackageService,
               private projectStore: ProjectStore,
-              private programmeIndicatorService: ProgrammeIndicatorService,
+              private programmeIndicatorService: ProgrammeIndicatorOutputService,
               private workPackageActivityService: WorkPackageActivityService,
               private workPackageInvestmentService: WorkPackageInvestmentService,
               private workPackageOutputService: WorkPackageOutputService,

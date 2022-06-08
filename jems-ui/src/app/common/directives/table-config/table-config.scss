@@ -9,13 +9,49 @@
   }
 }
 
-.app-table-config {
+.jems-table-config {
 
   margin: 0;
   display: block;
   overflow-x: auto;
   overflow-y: hidden;
   width: 100%;
+
+  &.table-condensed {
+    > * {
+      > * {
+        padding-right:  0.5em;
+        padding-left:  0.5em;
+      }
+    }
+
+    .mat-form-field-wrapper {
+      padding-top: 0.25em !important;
+      padding-bottom: 0.25em;
+
+      .mat-form-field-underline {
+        bottom: 0.25em;
+      }
+      .mat-form-field-subscript-wrapper {
+        width: auto;
+        margin-top: 0;
+        top: 0em;
+        right: 0;
+        padding: 0 0.5em;
+
+        .mat-form-field-hint-wrapper {
+          mat-hint {
+            display: none;
+          }
+        }
+        .error-icon {
+            font-size: 1rem;
+            font-weight: 800;
+            color: var(--error-color);
+        }
+      }
+    }
+  }
 
   > * {
     min-height: 72px;

@@ -6,7 +6,7 @@ import {TranslateService} from '@ngx-translate/core';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @Component({
-  selector: 'app-programme-nuts-info',
+  selector: 'jems-programme-nuts-info',
   templateUrl: './programme-nuts-info.component.html',
   styleUrls: ['./programme-nuts-info.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

@@ -1,0 +1,8 @@
+{
+  "privilegedUser": {
+    "name": "Privileged",
+    "surname": "User",
+    "userRoleId": 2,
+    "userStatus": "ACTIVE"
+  }
+}

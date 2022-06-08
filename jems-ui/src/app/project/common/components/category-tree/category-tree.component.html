@@ -4,7 +4,7 @@
 
     <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding matTreeNodePaddingIndent="20">
         <button disabled mat-icon-button></button>
-        <button appText [disabled]="node.data.disabled" (click)="selectCategory(node.data)"
+        <button jemsText [disabled]="node.data.disabled" (click)="selectCategory(node.data)"
                 [class.selected-category]="node.data?.info && node.data.info.type === selectedCategory?.type  && node.data.info.id === selectedCategory?.id"
                 mat-button>
             {{node.data.name?.i18nKey | translate : node.data.name?.i18nArguments}}
@@ -17,7 +17,7 @@
                 {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
             </mat-icon>
         </button>
-        <button appText [disabled]="node.data.disabled" (click)="selectCategory(node.data)"
+        <button jemsText [disabled]="node.data.disabled" (click)="selectCategory(node.data)"
                 [class.selected-category]="node.data?.info && node.data.info.type === selectedCategory?.type && node.data.info.id === selectedCategory?.id"
                 mat-button>
             {{node.data.name?.i18nKey | translate : node.data.name?.i18nArguments}}

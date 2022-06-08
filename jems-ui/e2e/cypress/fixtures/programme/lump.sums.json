@@ -1,0 +1,101 @@
+[
+  {
+    "name": [
+      {
+        "language": "EN",
+        "translation": "Preparation Lump sum EN"
+      },
+      {
+        "language": "DE",
+        "translation": "Preparation Lump sum DE"
+      }
+    ],
+    "description": [
+      {
+        "language": "EN",
+        "translation": "Preparation Lump sum EN"
+      },
+      {
+        "language": "DE",
+        "translation": "Preparation Lump sum DE"
+      }
+    ],
+    "cost": "55555,56",
+    "splittingAllowed": "Yes",
+    "phase": "Preparation",
+    "categories": [
+      "Staff Costs",
+      "Office and administrative costs",
+      "Travel and accommodation",
+      "External expertise and services",
+      "Equipment",
+      "Infrastructure and works"
+    ]
+  },
+  {
+    "name": [
+      {
+        "language": "EN",
+        "translation": "Implementation Lump sum EN"
+      },
+      {
+        "language": "DE",
+        "translation": "Implementation Lump sum DE"
+      }
+    ],
+    "description": [
+      {
+        "language": "EN",
+        "translation": "Implementation Lump sum EN"
+      },
+      {
+        "language": "DE",
+        "translation": "Implementation Lump sum DE"
+      }
+    ],
+    "cost": "55555,56",
+    "splittingAllowed": "Yes",
+    "phase": "Implementation",
+    "categories": [
+      "Staff Costs",
+      "Office and administrative costs",
+      "Travel and accommodation",
+      "External expertise and services",
+      "Equipment",
+      "Infrastructure and works"
+    ]
+  },
+  {
+    "name": [
+      {
+        "language": "EN",
+        "translation": "Closure Lump sum EN"
+      },
+      {
+        "language": "DE",
+        "translation": "Closure Lump sum DE"
+      }
+    ],
+    "description": [
+      {
+        "language": "EN",
+        "translation": "Closure Lump sum EN"
+      },
+      {
+        "language": "DE",
+        "translation": "Closure Lump sum DE"
+      }
+    ],
+    "cost": "5555,56",
+    "splittingAllowed": "No",
+    "phase": "Closure",
+    "categories": [
+      "Staff Costs",
+      "Office and administrative costs",
+      "Travel and accommodation",
+      "External expertise and services",
+      "Equipment",
+      "Infrastructure and works"
+    ]
+  }
+]

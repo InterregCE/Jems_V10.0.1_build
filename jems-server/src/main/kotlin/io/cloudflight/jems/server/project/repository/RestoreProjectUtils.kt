@@ -57,8 +57,11 @@ class RestoreProjectUtils(private val entityManager: EntityManager, private val 
                 FROM information_schema.tables
                 WHERE TABLE_TYPE = 'SYSTEM VERSIONED' AND UPDATE_TIME > :timestamp
             """
+        // we need to decrease one second, so we could be sure that we will get list of all changed tables
+        // after the timestamp considering the fact that the precision of 'UPDATE_TIME' column in the 'information_schema.tables' is in seconds
+        val timestampMinusOneSecond = Timestamp.valueOf(timestamp?.toLocalDateTime()?.minusSeconds(1))
         return entityManager.createNativeQuery(changedTablesQuery)
-            .setParameter("timestamp", timestamp)
+            .setParameter("timestamp", timestampMinusOneSecond)
             .resultStream.toList().map { it as String }
     }
 

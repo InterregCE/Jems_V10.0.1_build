@@ -1,48 +1,48 @@
-<app-main-page-template [needsCard]="true"
+<jems-main-page-template [needsCard]="true"
                         *ngIf="data$ | async as data"
                         titleKey="programme.data.page.title"
                         subTitleKey="programme.tab.translation.management">
     <input class="file-input" accept=".properties" type="file" #fileInput onclick="this.value=null;"
            (change)="uploadFile($event)">
 
-    <div appMultiColumnRow stretch>
+    <div jemsMultiColumnRow stretch>
         <ng-container
                 *ngTemplateOutlet="table; context:{$implicit: systemTranslationFileDataSource, data:data, fileInput: fileInput, fileType: FileTypeEnum.System}"></ng-container>
         <ng-container
                 *ngTemplateOutlet="table; context:{$implicit: applicationTranslationFileDataSource, data:data, fileInput:fileInput , fileType: FileTypeEnum.Application}"></ng-container>
     </div>
-    <app-alert class="alert"
+    <jems-alert class="alert"
                *ngIf="data.error"
                [show]="!!data.error.i18nMessage?.i18nKey"
                [type]="Alert.ERROR">
-        <app-api-error-content [error]="data.error"></app-api-error-content>
-    </app-alert>
+        <jems-api-error-content [error]="data.error"></jems-api-error-content>
+    </jems-alert>
 
-    <app-alert
+    <jems-alert
             class="alert"
             *ngIf="data.fileNameWarning"
             [show]="data.fileNameWarning"
             [type]="Alert.WARNING">
         {{'programme.translation.management.file.name.warning' | translate : {expectedFileName: data.fileNameWarning} }}
-    </app-alert>
-</app-main-page-template>
+    </jems-alert>
+</jems-main-page-template>
 
 <ng-template #table let-dataSource let-data="data" let-fileType="fileType" let-fileInput="fileInput">
 
-    <div appFormLayout>
+    <div jemsFormLayout>
         <h3> {{'programme.translation.management.' + fileType.toLowerCase() + '.translations' | translate}}</h3>
-        <app-pending-button *ngIf="(programmeEditableStateStore.hasEditPermission$ | async)"
+        <jems-pending-button *ngIf="(programmeEditableStateStore.hasEditPermission$ | async)"
                             (click)="downloadDefaultTranslationFile(fileType)"
                             [pending]="this.getInProgressSubjectByFileType(fileType) | async"
         >
             {{'programme.translation.management.get.default.translations' | translate}}
-        </app-pending-button>
+        </jems-pending-button>
 
-        <mat-table [appTableConfig]="[{minInRem:8},{minInRem:10},{},{minInRem:5, maxInRem:5}]" [dataSource]="dataSource"
+        <mat-table [jemsTableConfig]="[{minInRem:8},{minInRem:10},{},{minInRem:5, maxInRem:5}]" [dataSource]="dataSource"
                    matSort>
             <ng-container matColumnDef="language">
                 <mat-header-cell *matHeaderCellDef>
-                    <span appText maxLines="2">{{ 'programme.translation.management.language' | translate }}</span>
+                    <span jemsText maxLines="2">{{ 'programme.translation.management.language' | translate }}</span>
                 </mat-header-cell>
                 <mat-cell *matCellDef="let element">
                     {{ element?.language ? ('language.' + element?.language.toLowerCase() | translate) : ''}}
@@ -51,14 +51,14 @@
 
             <ng-container matColumnDef="fileName">
                 <mat-header-cell mat-sort-header="language" *matHeaderCellDef>
-                    <span appText maxLines="2">{{ 'programme.translation.management.file.name' | translate }}</span>
+                    <span jemsText maxLines="2">{{ 'programme.translation.management.file.name' | translate }}</span>
                 </mat-header-cell>
                 <mat-cell *matCellDef="let element"> {{getFileName(element?.fileType, element?.language)}}</mat-cell>
             </ng-container>
 
             <ng-container matColumnDef="lastModified">
                 <mat-header-cell mat-sort-header *matHeaderCellDef>
-                    <span appText maxLines="2">{{ 'programme.translation.management.date' | translate }}</span>
+                    <span jemsText maxLines="2">{{ 'programme.translation.management.date' | translate }}</span>
                 </mat-header-cell>
                 <mat-cell *matCellDef="let element">{{ element?.lastModified | localeDate : 'L' :'LT' }}</mat-cell>
             </ng-container>

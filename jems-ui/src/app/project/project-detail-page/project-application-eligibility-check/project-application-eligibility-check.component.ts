@@ -9,7 +9,7 @@ import {ProjectStepStatus} from '../project-step-status';
 import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.data';
 
 @Component({
-  selector: 'app-project-application-eligibility-check',
+  selector: 'jems-project-application-eligibility-check',
   templateUrl: './project-application-eligibility-check.component.html',
   styleUrls: ['./project-application-eligibility-check.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,

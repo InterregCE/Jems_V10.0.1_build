@@ -1,14 +1,15 @@
-<app-project-page-template [needsCard]="true"
+<jems-project-page-template [needsCard]="true"
                            [titleText]="'project.application.form.acronym' | translate : {projectTitle: projectStore.projectTitle$ | async} "
                            subTitleKey="project.application.form.section.part.d">
-    <h3>{{'project.application.form.budgetPerPartner.title' | translate}}</h3>
+    <h3>{{'project.application.form.budgetPerPartner.title' | adaptTranslationKeyByCallType | async | translate}}</h3>
 
-    <div appNoWidthLimit
-         [appTableConfig]="tableConfig"
+    <div jemsNoWidthLimit
+         [jemsTableConfig]="tableConfig$ | async"
          *ngIf="budgets$ | async as budgets">
         <div>
-            <span>{{ 'project.breadcrumb.partnerName' | translate}}</span>
+            <span>{{'project.breadcrumb.partnerName' | translate}}</span>
             <span>{{'project.partner.main-address.country' | translate}}</span>
+            <span *ngIf="isCallTypeSpf$ | async">{{'project.partner.spf.cost' | translate}}</span>
             <ng-container *ngFor="let fund of chosenProjectFunds$ | async">
                  <span class="justify-end">
                     {{ fund.abbreviation | translateBySystemLanguage | async }}
@@ -18,32 +19,37 @@
                 </span>
             </ng-container>
             <span class="justify-end">{{ 'project.partner.public.contribution' | translate }}</span>
-            <span class="justify-end">{{ 'project.partner.auto.public.contribution' | translate }}</span>
+            <span *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_ADD_NEW_CONTRIBUTION_ORIGIN"
+                  class="justify-end">{{ 'project.partner.auto.public.contribution' | translate }}</span>
             <span class="justify-end">{{ 'project.partner.private.contribution' | translate }}</span>
-            <span class="justify-end">{{ 'project.partner.total.contribution' | translate }}</span>
+            <span class="justify-end">{{ 'project.partner.total.contribution' | adaptTranslationKeyByCallType | async | translate }}</span>
             <span class="justify-end">{{ 'project.partner.total.eligible.budget' | translate }}</span>
             <span class="justify-end">{{ 'project.partner.percent.total.budget' | translate }}
-                <app-context-info    infoText="{{ 'project.partner.percent.total.budget.contextinfo' | translate }}"
+                <jems-context-info    infoText="{{ 'project.partner.percent.total.budget.contextinfo' | translate }}"
                                      infoPosition="right">
-                </app-context-info>
+                </jems-context-info>
             </span>
         </div>
 
         <ng-container *ngFor="let budget of budgetColumns; let index = index;">
             <div *ngIf="index < budgetColumns.length - 1">
-                <span>{{ 'common.label.project.partner.role.shortcut.' + budget.partnerRole | translate : {partner: budget.partnerSortNumber} }}</span>
+                <span>{{ 'common.label.project.partner.role.shortcut.' + budget.partnerRole | adaptTranslationKeyByCallType | async | translate : {partner: budget.partnerSortNumber} }}</span>
                 <span>{{ budget.partnerCountry }}</span>
+                <span *ngIf="isCallTypeSpf$ | async">{{ 'project.partner.spf.cost.type.' + budget.costType.toLowerCase() | translate }}</span>
                 <ng-container *ngFor="let fund of chosenProjectFunds$ | async">
                     <div class="justify-end" [ngClass]="getBudgetPercentageByFund(fund, budget.budgets) > 0 ? 'percentage-of-total-container' : ''">
                         <div>{{ getBudgetAmountForFund(fund, budget.budgets) | asMoney }}</div>
-                        <div *ngIf="getBudgetPercentageByFund(fund, budget.budgets) > 0" class="font-color-grey mat-small">{{getBudgetPercentageByFund(fund, budget.budgets)}} % of total</div>
+                        <div *ngIf="getBudgetPercentageByFund(fund, budget.budgets) > 0" class="font-color-grey mat-small">
+                            {{getBudgetPercentageByFund(fund, budget.budgets)}} % of total
+                        </div>
                     </div>
                     <span class="justify-end"> {{getPercentageAmountForFund(fund, budget.budgets) | asMoney}}
                         <div matSuffix class="pl-1">%</div>
                     </span>
                 </ng-container>
                 <span class="justify-end">{{ budget.publicContribution | asMoney }}</span>
-                <span class="justify-end">{{ budget.autoPublicContribution | asMoney }}</span>
+                <span *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_ADD_NEW_CONTRIBUTION_ORIGIN"
+                      class="justify-end">{{ budget.autoPublicContribution | asMoney }}</span>
                 <span class="justify-end">{{ budget.privateContribution | asMoney }}</span>
                 <span class="justify-end">{{ budget.totalContribution | asMoney }}</span>
                 <span class="justify-end">{{ budget.totalEligibleBudget | asMoney }}</span>
@@ -55,18 +61,20 @@
 
         <div class="footer" *ngIf="budgetColumns[budgetColumns.length - 1] as total">
             <span> {{ 'project.partner.budget.table.total' | translate }}
-                <app-context-info
+                <jems-context-info
                         infoText="{{ 'project.partner.percent.total.partner.contextinfo' | translate }}"
                         infoPosition="right">
-                </app-context-info>
+                </jems-context-info>
             </span>
             <span><!--blank cell--></span>
+            <span *ngIf="isCallTypeSpf$ | async"><!--blank cell--></span>
             <ng-container *ngFor="let fund of chosenProjectFunds$ | async">
                 <span class="justify-end">{{ getBudgetAmountForFund(fund, total.budgets) | asMoney }}</span>
                 <span class="justify-end">{{getTotalBudgetPercentageByFund(fund, total.budgets) | asMoney}} %</span>
             </ng-container>
             <span class="justify-end">{{ totalPublicContribution | asMoney }}</span>
-            <span class="justify-end">{{ totalAutoPublicContribution | asMoney }}</span>
+            <span *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_ADD_NEW_CONTRIBUTION_ORIGIN"
+                  class="justify-end">{{ totalAutoPublicContribution | asMoney }}</span>
             <span class="justify-end">{{ totalPrivateContribution | asMoney }}</span>
             <span class="justify-end">{{ totalPartnerContribution | asMoney }}</span>
             <span class="justify-end">{{ totalEligibleBudget | asMoney }}</span>
@@ -75,4 +83,4 @@
             </span>
         </div>
     </div>
-</app-project-page-template>
+</jems-project-page-template>

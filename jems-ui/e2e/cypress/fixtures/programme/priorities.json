@@ -1,0 +1,138 @@
+[
+  {
+    "code":"PO1",
+    "title":[
+      {
+        "translation":"PO1 Innovation DE",
+        "language":"DE"
+      },
+      {
+        "translation":"PO1 Innovation EN",
+        "language":"EN"
+      }
+    ],
+    "objective":"PO1 - A more competitive and smarter Europe",
+    "specificObjectives":[
+      {
+        "code":"SO1.1",
+        "programmeObjectivePolicy":"Developing and enhancing research and innovation capacities and the uptake of advanced technologies"
+      },
+      {
+        "code":"SO1.2",
+        "programmeObjectivePolicy":"Reaping the benefits of digitisation for citizens, companies, research organisations and public authorities"
+      },
+      {
+        "code":"SO1.3",
+        "programmeObjectivePolicy":"Enhancing digital connectivity"
+      }
+    ]
+  },
+  {
+    "code":"PO2",
+    "title":[
+      {
+        "translation":"PO2 Environment DE",
+        "language":"DE"
+      },
+      {
+        "translation":"PO2 Environment EN",
+        "language":"EN"
+      }
+    ],
+    "objective":"PO2 - A greener, low-carbon transitioning towards a net zero carbon economy and resilient Europe",
+    "specificObjectives":[
+      {
+        "code":"SO2.1",
+        "programmeObjectivePolicy":"Promoting energy efficiency and reducing greenhouse gas emissions"
+      },
+      {
+        "code":"SO2.2",
+        "programmeObjectivePolicy":"Promoting access to water and sustainable water management"
+      }
+    ]
+  },
+  {
+    "code":"PO4",
+    "title":[
+      {
+        "translation":"PO4 Social DE",
+        "language":"DE"
+      },
+      {
+        "translation":"PO4 Social EN",
+        "language":"EN"
+      }
+    ],
+    "objective":"PO4 - A more social and inclusive Europe implementing the European Pillar of Social Rights",
+    "specificObjectives":[
+      {
+        "code":"SO4.1",
+        "programmeObjectivePolicy":"Enhancing the effectiveness and inclusiveness of labour markets and access to quality employment through developing social infrastructure and promoting social economy"
+      },
+      {
+        "code":"SO4.2",
+        "programmeObjectivePolicy":"Enhancing the role of culture and sustainable tourism in economic development, social inclusion and social innovation"
+      },
+      {
+        "code":"SO4.3",
+        "programmeObjectivePolicy":"PEACE PLUS Empowering Communities"
+      },
+      {
+        "code":"SO4.4",
+        "programmeObjectivePolicy":"PEACE PLUS Victims and Survivors"
+      }
+    ]
+  },
+  {
+    "code":"PO5",
+    "title":[
+      {
+        "translation":"PO5 Citizens DE",
+        "language":"DE"
+      },
+      {
+        "translation":"PO5 Citizens EN",
+        "language":"EN"
+      }
+    ],
+    "objective":"PO5 - A Europe closer to citizens",
+    "specificObjectives":[
+      {
+        "code":"SO5.1",
+        "programmeObjectivePolicy":"Fostering the integrated and inclusive social, economic and environmental development, culture, natural heritage, sustainable tourism, and security in urban areas"
+      },
+      {
+        "code":"SO5.2",
+        "programmeObjectivePolicy":"Fostering the integrated and inclusive social, economic and environmental local development, culture, natural heritage, sustainable tourism and security, in areas other than urban areas"
+      }
+    ]
+  },
+  {
+    "code":"ISO12",
+    "title":[
+      {
+        "translation":"ISO12 Security DE",
+        "language":"DE"
+      },
+      {
+        "translation":"ISO12 Security EN",
+        "language":"EN"
+      }
+    ],
+    "objective":"ISO12 - A better cooperation governance and a safer and more secure Europe",
+    "specificObjectives":[
+      {
+        "code":"SO6.1",
+        "programmeObjectivePolicy":"Building up mutual trust, in particular by encouraging people-to-people actions"
+      },
+      {
+        "code":"SO6.2",
+        "programmeObjectivePolicy":"Other actions to support a better cooperation governance"
+      },
+      {
+        "code":"SO6.3",
+        "programmeObjectivePolicy":"Border crossing management"
+      }
+    ]
+  }
+]

@@ -8,7 +8,9 @@ import {APPLICATION_FORM, ApplicationFormModel} from '@project/common/applicatio
 import {BudgetPeriodDTO, ProjectPeriodDTO} from '@cat/api';
 import {TableConfig} from '@common/directives/table-config/TableConfig';
 import {FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
-import {ProjectPartnerBudgetConstants} from '@project/partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/project-partner-budget.constants';
+import {
+  ProjectPartnerBudgetConstants
+} from '@project/partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/project-partner-budget.constants';
 import {NumberService} from '@common/services/number.service';
 import {RoutingService} from '@common/services/routing.service';
 
@@ -18,8 +20,10 @@ export class ProjectPartnerBudgetTabService {
 
   private isBudgetOptionsFormInEditModeSubject = new Subject<boolean>();
   private isBudgetFormInEditModeSubject = new Subject<boolean>();
+  private isSPFBudgetFormInEditModeSubject = new Subject<boolean>();
   isBudgetOptionsFormInEditMode$ = this.isBudgetOptionsFormInEditModeSubject.asObservable();
   isBudgetFormInEditMode$ = this.isBudgetFormInEditModeSubject.asObservable();
+  isSPFBudgetFormInEditMode$ = this.isSPFBudgetFormInEditModeSubject.asObservable();
 
   constructor(private formVisibilityStatusService: FormVisibilityStatusService, private formBuilder: FormBuilder, private routingService: RoutingService) {
     combineLatest([this.isBudgetOptionsFormInEditMode$, this.isBudgetFormInEditMode$]).pipe(
@@ -38,6 +42,13 @@ export class ProjectPartnerBudgetTabService {
   trackBudgetFormState(formService: FormService): void {
     formService.dirty$.pipe(
       tap(dirty => this.isBudgetFormInEditModeSubject.next(dirty)),
+      untilDestroyed(this)
+    ).subscribe();
+  }
+
+  trackSPFBudgetFormState(formService: FormService): void {
+    formService.dirty$.pipe(
+      tap(dirty => this.isSPFBudgetFormInEditModeSubject.next(dirty)),
       untilDestroyed(this)
     ).subscribe();
   }
@@ -96,15 +107,19 @@ export class ProjectPartnerBudgetTabService {
   }
 
   getPeriodsWidthConfigs(projectPeriods: ProjectPeriodDTO[]): TableConfig[] {
-    return this.formVisibilityStatusService.isVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_BUDGET_PERIODS) ?
-      (projectPeriods?.length ? [...projectPeriods?.map(() => ({minInRem: 8, maxInRem: 8})), {minInRem: 8, maxInRem: 8}] : [])
-      : [];
+    if (this.formVisibilityStatusService.isVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_BUDGET_PERIODS)
+      && projectPeriods?.length) {
+      return [...projectPeriods?.map(() => ({minInRem: 8, maxInRem: 8})), {minInRem: 8, maxInRem: 8}];
+    }
+    return [];
   }
 
   getPeriodTableColumns(projectPeriods: ProjectPeriodDTO[]): string[] {
-    return this.formVisibilityStatusService.isVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_BUDGET_PERIODS) ?
-      (projectPeriods?.length ? [...projectPeriods?.map(period => 'period' + period.number), 'openForPeriods'] : [])
-      : [];
+    if (this.formVisibilityStatusService.isVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_BUDGET_PERIODS)
+      && projectPeriods?.length) {
+      return [...projectPeriods?.map(period => 'period' + period.number), 'openForPeriods'];
+    }
+    return [];
   }
 
   addIfItsVisible(field: ApplicationFormModel | string, result: any[]): any[] {

@@ -1,7 +1,7 @@
 <div id="main-page-container">
-    <app-breadcrumb></app-breadcrumb>
-    <div appFormLayout (scroll)="onScroll()" #container id="main-page-content">
-        <ng-container *ngIf="headerTemplate != null">
+    <jems-breadcrumb></jems-breadcrumb>
+    <div jemsFormLayout (scroll)="onScroll()" #container id="main-page-content">
+        <ng-container *ngIf="headerTemplate !== null">
             <ng-container *ngTemplateOutlet="headerTemplate"></ng-container>
         </ng-container>
 
@@ -17,12 +17,12 @@
         <p *ngIf="!descriptionText && descriptionKey">{{descriptionKey | translate}}</p>
         <ng-content select="[page-description]"></ng-content>
 
-        <mat-card class="page-content-container" *ngIf="needsCard" appNoWidthLimit>
+        <mat-card class="page-content-container" *ngIf="needsCard" jemsNoWidthLimit>
             <mat-card-content>
                 <ng-container [ngTemplateOutlet]="content"></ng-container>
             </mat-card-content>
         </mat-card>
-        <div class="page-content-container" *ngIf="!needsCard" appNoWidthLimit>
+        <div class="page-content-container" *ngIf="!needsCard" jemsNoWidthLimit>
             <ng-container [ngTemplateOutlet]="content"></ng-container>
         </div>
         <button *ngIf="isScrollButtonVisible" id="scroll-button" mat-icon-button (click)="scrollToTop()">

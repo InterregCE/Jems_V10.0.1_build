@@ -1,0 +1,64 @@
+<mat-tab-group>
+    <mat-tab *jemsHasPermission="PermissionEnum.ProjectAssessmentChecklistUpdate"
+             label="{{'checklists.instance.list.tab' | translate}}">
+        <span jemsMultiColumnRow>
+            <mat-form-field jemsFormFieldWidth="xx-large">
+                <mat-select placeholder="{{'checklists.instance.list.new.select' | translate}}"
+                            [(ngModel)]="selectedTemplate">
+                    <mat-option *ngFor="let template of checklistTemplates$ | async"
+                                [value]="template">
+                        <span jemsText>{{template.name}}</span>
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+            <button [disabled]="!selectedTemplate"
+                    jemsText mat-raised-button color="primary" class="mb-3 mt-3"
+                    (click)="createInstance()">
+                + {{'checklists.instance.list.new.button' | translate}}
+            </button>
+        </span>
+
+        <ng-container *ngIf="checklistInstancesSorted$ | async as instances">
+            <jems-table #tableInstances *ngIf="instances.length"
+                        [configuration]="instancesTableConfiguration"
+                        (sortRows)="onInstancesSortChange($event)"
+                        [rows]="instances">
+            </jems-table>
+        </ng-container>
+    </mat-tab>
+
+    <mat-tab *jemsHasPermission="PermissionEnum.ProjectAssessmentChecklistSelectedRetrieve"
+             label="{{'checklists.instance.selected.tab' | translate}}">
+        <jems-form *ngIf="selectedChecklistsSorted$ | async as selections"
+                   (save)="save(selections)"
+                   (discard)="resetForm(selections)">
+            <form [formGroup]="form">
+                <jems-table #tableSelected *ngIf="selections.length"
+                            [configuration]="selectionTableConfiguration"
+                            (sortRows)="onSelectedSortChange($event)"
+                            [rows]="selections">
+                </jems-table>
+            </form>
+        </jems-form>
+    </mat-tab>
+</mat-tab-group>
+
+<ng-template #deleteCell let-checklist>
+    <button *ngIf="checklist.status === Status.DRAFT && (pageStore.currentUserEmail$ | async) === checklist.creatorEmail"
+            mat-icon-button color="accent"
+            (click)="delete(checklist);$event.stopPropagation();"
+            matTooltip="{{'common.delete.entry.tooltip' | translate}}">
+        <mat-icon>delete</mat-icon>
+    </button>
+</ng-template>
+
+<ng-template #visibleCell let-checklist>
+    <mat-checkbox class="text-right"
+                  [checked]="visibilities.value.includes(checklist.id)"
+                  (change)="onVisibilityChange($event, checklist.id)">
+    </mat-checkbox>
+</ng-template>
+
+<ng-template #consolidateCell let-checklist>
+    <mat-icon *ngIf="checklist.consolidated">done_all</mat-icon>
+</ng-template>

@@ -1,22 +1,27 @@
 <ng-container *ngIf="(multipleFundsAllowed$ | async) === false">
     <h3>{{'application.config.project.section.a.3' | translate}}</h3>
 
-    <ng-container *ngIf="projectCoFinancingOverview$ | async as overview">
-        <app-alert [closable]="false" [show]="!overview.fundOverviews?.length"
+    <ng-container *ngIf="projectCoFinancingOverview$ | async as data">
+        <jems-alert [closable]="false" [show]="!data.overview.projectManagementCoFinancing.fundOverviews?.length && !data.overview.projectSpfCoFinancing.fundOverviews?.length"
                    [type]="Alert.WARNING">
             <p>{{'project.application.form.overview.budget.table.not.available' | translate}}</p>
-        </app-alert>
+        </jems-alert>
 
-        <app-multi-language-container *ngIf="overview.fundOverviews?.length">
+        <jems-multi-language-container *ngIf="data.overview.projectManagementCoFinancing.fundOverviews?.length || data.overview.projectSpfCoFinancing.fundOverviews?.length">
             <table [dataSource]="dataSource" mat-table>
 
                 <ng-container matColumnDef="fundingSource">
                     <th *matHeaderCellDef mat-header-cell>
-                        <span appText maxLines="2">{{'project.application.form.overview.budget.table.funding.source' | translate}}</span>
+                        <span jemsText maxLines="2">{{'project.application.form.overview.budget.table.funding.source' | translate}}</span>
                     </th>
-                    <td *matCellDef="let element" [class.total]="!!element.label" mat-cell>
+                    <td *matCellDef="let element"
+                        [class.total]="!!element.label && !element.extended"
+                        [class.border-cell-bottom]="element.extended"
+                        [class.header-cell]="element.extended"
+                        [attr.colspan]="element.extended ? (element.allowedAutoContribution ? 9 : 8) : 1"
+                        mat-cell>
                         <ng-container *ngIf="element.label">{{element.label | translate}}</ng-container>
-                        <ng-container *ngIf="element.fundAbbreviation">
+                        <ng-container *ngIf="element.fundAbbreviation && !element.extended">
                             {{element.fundAbbreviation | translateByInputLanguage | async}}
                         </ng-container>
                     </td>
@@ -24,93 +29,109 @@
 
                 <ng-container matColumnDef="fundingAmount">
                     <th *matHeaderCellDef mat-header-cell>
-                        <span appText maxLines="2">{{'project.application.form.overview.budget.table.funding.amount' | translate}}</span>
+                        <span jemsText maxLines="2">{{'project.application.form.overview.budget.table.funding.amount' | translate}}</span>
                     </th>
                     <td *matCellDef="let element" [class.total]="!!element.label" mat-cell>
-                        {{element.fundingAmount | asMoney}}
+                        <ng-container *ngIf="!element.extended">
+                            {{element.fundingAmount | asMoney}}
+                        </ng-container>
                     </td>
                 </ng-container>
 
                 <ng-container matColumnDef="coFinancingRate">
-                    <th *matHeaderCellDef mat-header-cell>
-                        <span appText maxLines="2">{{'project.application.form.overview.budget.table.cofinancing.rate' | translate}}</span>
+                    <th *matHeaderCellDef mat-header-cell class="percentage-spacing" scope="col">
+                        <span jemsText maxLines="2">{{'project.application.form.overview.budget.table.cofinancing.rate' | translate}}</span>
                     </th>
-                    <td *matCellDef="let element" [class.total]="!!element.label" mat-cell>
-                        {{element.coFinancingRate | asMoney}}
-                        <span matSuffix>%</span>
+                    <td *matCellDef="let element" [class.total]="!!element.label" [class.percentage-spacing]="!element.extended" mat-cell>
+                        <ng-container *ngIf="!element.extended">
+                            {{element.coFinancingRate | asMoney}}
+                            <span matSuffix>%</span>
+                        </ng-container>
                     </td>
                 </ng-container>
 
-                <ng-container matColumnDef="autoPublicContribution">
+                <ng-container *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_ADD_NEW_CONTRIBUTION_ORIGIN" matColumnDef="autoPublicContribution">
                     <th *matHeaderCellDef class="border-cell-left" mat-header-cell>
-                        <span appText maxLines="2">{{'project.application.form.overview.budget.table.auto.public' | translate}}</span>
+                        <span jemsText maxLines="2">{{'project.application.form.overview.budget.table.auto.public' | translate}}</span>
                     </th>
-                    <td *matCellDef="let element" [class.total]="!!element.label" class="border-cell-left" mat-cell>
-                        {{element.autoPublicContribution | asMoney}}
+                    <td *matCellDef="let element" [class.total]="!!element.label" [class.border-cell-left]="!element.extended" mat-cell>
+                        <ng-container *ngIf="!element.extended">
+                            {{element.autoPublicContribution | asMoney}}
+                        </ng-container>
                     </td>
                 </ng-container>
 
                 <ng-container matColumnDef="otherPublicContribution">
                     <th *matHeaderCellDef mat-header-cell>
-                        <span appText maxLines="2">{{'project.application.form.overview.budget.table.other.public' | translate}}</span>
+                        <span jemsText maxLines="2">{{'project.application.form.overview.budget.table.other.public' | translate}}</span>
                     </th>
                     <td *matCellDef="let element" [class.total]="!!element.label" mat-cell>
-                        {{element.otherPublicContribution | asMoney}}
+                        <ng-container *ngIf="!element.extended">
+                            {{element.otherPublicContribution | asMoney}}
+                        </ng-container>
                     </td>
                 </ng-container>
 
                 <ng-container matColumnDef="totalPublicContribution">
                     <th *matHeaderCellDef mat-header-cell>
-                        <span appText maxLines="2">{{'project.application.form.overview.budget.table.total.public' | translate}}</span>
+                        <span jemsText maxLines="2">{{'project.application.form.overview.budget.table.total.public' | translate}}</span>
                     </th>
                     <td *matCellDef="let element" [class.total]="!!element.label" mat-cell>
-                        {{element.totalPublicContribution | asMoney}}
+                        <ng-container *ngIf="!element.extended">
+                            {{element.totalPublicContribution | asMoney}}
+                        </ng-container>
                     </td>
                 </ng-container>
 
                 <ng-container matColumnDef="privateContribution">
                     <th *matHeaderCellDef mat-header-cell>
-                        <span appText maxLines="2">{{'project.application.form.overview.budget.table.private' | translate}}</span>
+                        <span jemsText maxLines="2">{{'project.application.form.overview.budget.table.private' | translate}}</span>
                     </th>
                     <td *matCellDef="let element" [class.total]="!!element.label" mat-cell>
-                        {{element.privateContribution | asMoney}}
+                        <ng-container *ngIf="!element.extended">
+                            {{element.privateContribution | asMoney}}
+                        </ng-container>
                     </td>
                 </ng-container>
 
                 <ng-container matColumnDef="totalContribution">
-                    <th *matHeaderCellDef mat-header-cell>
-                        <span appText maxLines="2">{{'project.application.form.overview.budget.table.total.contribution' | translate}}</span>
+                    <th *matHeaderCellDef mat-header-cell class="percentage-spacing" scope="col">
+                        <span jemsText maxLines="2">{{'project.application.form.overview.budget.table.total.contribution' | translate}}</span>
                     </th>
-                    <td *matCellDef="let element" [class.total]="!!element.label" mat-cell>
-                        {{element.totalContribution | asMoney}}
+                    <td *matCellDef="let element" [class.total]="!!element.label" [class.percentage-spacing]="!element.extended" mat-cell>
+                        <ng-container *ngIf="!element.extended">
+                            {{element.totalContribution | asMoney}}
+                        </ng-container>
                     </td>
                 </ng-container>
 
                 <ng-container matColumnDef="programmeFunding">
                     <th *matHeaderCellDef [attr.colspan]="3" class="justify-center" mat-header-cell>
-                        <span appText maxLines="2">{{'project.application.form.overview.budget.table.programme.funding' | translate}}</span>
+                        <span jemsText maxLines="2">{{'project.application.form.overview.budget.table.programme.funding' | translate}}</span>
                     </th>
                 </ng-container>
 
                 <ng-container matColumnDef="contribution">
-                    <th *matHeaderCellDef [attr.colspan]="5" class="border-cell-left" mat-header-cell>
-                        <span appText maxLines="2">{{'project.application.form.overview.budget.table.contribution' | translate}}</span>
+                    <th *matHeaderCellDef [attr.colspan]="isAutomaticPublicContributionAllowed() ? 5 : 4" class="border-cell-left" mat-header-cell>
+                        <span jemsText maxLines="2">{{'project.application.form.overview.budget.table.contribution' | translate}}</span>
                     </th>
                 </ng-container>
 
                 <ng-container matColumnDef="total">
                     <th *matHeaderCellDef [attr.rowspan]="2" class="border-cell-left" mat-header-cell>
-                        <span appText maxLines="2">{{'project.application.form.overview.budget.table.total' | translate}}</span>
+                        <span jemsText maxLines="2">{{'project.application.form.overview.budget.table.total.header' | translate}}</span>
                     </th>
-                    <td *matCellDef="let element" [class.total]="!!element.label" class="border-cell-left" mat-cell>
-                        {{element.totalFundAndContribution | asMoney}}
-                    </td>
+                    <td *matCellDef="let element" [class.total]="!!element.label" [class.border-cell-left]="!element.extended" [class.total-padding-on-extended-row]="element.extended" mat-cell>
+                        <ng-container *ngIf="!element.extended">
+                            {{element.totalFundAndContribution | asMoney}}
+                        </ng-container>
+                    </td>   
                 </ng-container>
 
                 <tr *matHeaderRowDef="headerColumns" mat-header-row></tr>
                 <tr *matHeaderRowDef="displayedColumns" mat-header-row></tr>
                 <tr *matRowDef="let row; columns: allColumns" mat-row></tr>
             </table>
-        </app-multi-language-container>
+        </jems-multi-language-container>
     </ng-container>
 </ng-container>

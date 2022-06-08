@@ -15,7 +15,7 @@ import {Alert} from '@common/components/forms/alert';
 import {ApplyToCallPageStore} from './apply-to-call-page-store.service';
 
 @Component({
-  selector: 'app-project-apply-to-call',
+  selector: 'jems-project-apply-to-call',
   templateUrl: 'project-apply-to-call.component.html',
   styleUrls: ['project-apply-to-call.component.scss'],
   providers: [ApplyToCallPageStore],
@@ -38,14 +38,6 @@ export class ProjectApplyToCallComponent {
               private activatedRoute: ActivatedRoute,
               private localeDatePipe: LocaleDatePipe,
               protected projectService: ProjectService) {
-  }
-
-  onCancel(): void {
-    this.router.navigate(['/app/call']);
-  }
-
-  navigateToCallDetails(): void {
-    this.router.navigate(['app/call/detail/' + this.callId]);
   }
 
   getFormattedTimeLeft(dateToFormat: Date): { [key: string]: string | number } {
@@ -71,7 +63,7 @@ export class ProjectApplyToCallComponent {
       .pipe(
         take(1),
         tap(saved => Log.info('Created project application:', this, saved)),
-        tap(() => this.router.navigate(['app', 'dashboard'])),
+        tap((data) => this.router.navigate(['app/project/detail', data.id, 'applicationFormIdentification'])),
         catchError((error: HttpErrorResponse) => {
           this.saveError$.next(error.error);
           throw error;

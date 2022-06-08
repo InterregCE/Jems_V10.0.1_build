@@ -2,6 +2,7 @@ import {Injectable} from '@angular/core';
 import {combineLatest, Observable, of, ReplaySubject, Subject} from 'rxjs';
 import {
   PageProjectFileMetadataDTO,
+  ProjectCallSettingsDTO,
   ProjectFileMetadataDTO,
   ProjectFileService,
   ProjectPartnerSummaryDTO,
@@ -24,6 +25,7 @@ import {FormVisibilityStatusService} from '@project/common/services/form-visibil
 import {APPLICATION_FORM} from '@project/common/application-form-model';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import {DownloadService} from '@common/services/download.service';
+import CallTypeEnum = ProjectCallSettingsDTO.CallTypeEnum;
 
 @Injectable({
   providedIn: 'root'
@@ -201,13 +203,14 @@ export class FileManagementStore {
   private fileCategories(section: CategoryInfo): Observable<CategoryNode> {
     return combineLatest([
       this.projectStore.projectTitle$,
-      this.canReadApplicationFile$.pipe(switchMap(canReadApplicationFile => this.shouldFetchApplicationCategories(section, canReadApplicationFile) ? this.projectPartnerStore.partnerSummariesForFiles$ : of([]))),
+      this.projectStore.projectCallType$,
+      this.canReadApplicationFile$.pipe(switchMap(canReadApplicationFile => this.shouldFetchApplicationCategories(section, canReadApplicationFile) ? this.projectPartnerStore.latestPartnerSummaries$ : of([]))),
       this.canReadApplicationFile$.pipe(switchMap(canReadApplicationFile => this.shouldFetchApplicationCategories(section, canReadApplicationFile) ? this.projectStore.investmentSummariesForFiles$ : of([]))),
       this.canReadApplicationFile$,
       this.canReadAssessmentFile$
     ]).pipe(
-      map(([projectTitle, partners, investments, canReadApplicationFiles, canReadAssessmentFiles]) =>
-        this.getCategories(section, projectTitle, partners, investments, canReadApplicationFiles, canReadAssessmentFiles)
+      map(([projectTitle, callType, partners, investments, canReadApplicationFiles, canReadAssessmentFiles]) =>
+        this.getCategories(section, projectTitle, partners, investments, canReadApplicationFiles, canReadAssessmentFiles, callType)
       ),
       tap(filters => this.setParent(filters)),
     );
@@ -218,7 +221,8 @@ export class FileManagementStore {
                         partners: ProjectPartnerSummaryDTO[],
                         investments: InvestmentSummary[],
                         canReadApplicationFiles: boolean,
-                        canReadAssessmentFiles: boolean): CategoryNode {
+                        canReadAssessmentFiles: boolean,
+                        callType: CallTypeEnum): CategoryNode {
     const fullTree: CategoryNode = {
       name: {i18nKey: projectTitle},
       info: {type: FileCategoryTypeEnum.ALL},
@@ -236,7 +240,7 @@ export class FileManagementStore {
           info: {type: FileCategoryTypeEnum.PARTNER},
           children: partners.map(partner => ({
             name: {
-              i18nKey: 'common.label.project.partner.role.shortcut.' + partner.role,
+              i18nKey: ProjectPartnerStore.getPartnerTranslationKey(partner.role, callType),
               i18nArguments: {partner: `${partner.sortNumber || ''} ${partner.abbreviation}`}
             },
             info: {type: FileCategoryTypeEnum.PARTNER, id: partner.id}
@@ -271,7 +275,7 @@ export class FileManagementStore {
     return this.findRootForSection(fullTree, section) || {};
   }
 
-  private findRootForSection(root: CategoryNode, section: CategoryInfo): CategoryNode | null {
+  public findRootForSection(root: CategoryNode, section: CategoryInfo): CategoryNode | null {
     if (root.info?.type === section.type && root.info?.id === section.id) {
       return root;
     }
@@ -305,7 +309,7 @@ export class FileManagementStore {
       );
   }
 
-  private getPath(selectedCategory: CategoryInfo, node: CategoryNode): I18nMessage[] {
+  public getPath(selectedCategory: CategoryInfo, node: CategoryNode): I18nMessage[] {
     if (node.info?.type === selectedCategory?.type && (!selectedCategory?.id || selectedCategory.id === node.info?.id)) {
       return [node.name as any];
     }

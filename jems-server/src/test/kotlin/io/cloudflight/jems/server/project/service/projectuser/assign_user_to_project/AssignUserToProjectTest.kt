@@ -10,6 +10,8 @@ import io.cloudflight.jems.server.user.service.UserRolePersistence
 import io.cloudflight.jems.server.user.service.model.assignment.UpdateProjectUser
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectRetrieve
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectReportingView
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectReportingEdit
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectRetrieveEditUserAssignments
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectFormRetrieve
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectFileApplicationRetrieve
@@ -142,7 +144,8 @@ internal class AssignUserToProjectTest : UnitTest() {
         assertThat(permisisonsToHave[1]).containsExactlyInAnyOrder(
             ProjectFormRetrieve, ProjectFileApplicationRetrieve, ProjectCheckApplicationForm, ProjectAssessmentView,
             ProjectStatusDecisionRevert, ProjectStatusReturnToApplicant, ProjectStartStepTwo, ProjectFileAssessmentRetrieve,
-            ProjectModificationView, ProjectOpenModification, ProjectModificationFileAssessmentRetrieve, ProjectSetToContracted, ProjectContractingView
+            ProjectModificationView, ProjectOpenModification, ProjectModificationFileAssessmentRetrieve,
+            ProjectSetToContracted, ProjectContractingView, ProjectReportingView, ProjectReportingEdit
         )
         assertThat(permissionsNotToHave[1]).containsExactlyInAnyOrder(ProjectRetrieve, ProjectRetrieveEditUserAssignments)
     }

@@ -1,8 +1,8 @@
-import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output} from '@angular/core';
 import {Alert} from '@common/components/forms/alert';
 
 @Component({
-  selector: 'app-alert',
+  selector: 'jems-alert',
   templateUrl: './alert.component.html',
   styleUrls: ['./alert.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -18,5 +18,11 @@ export class AlertComponent {
 
   @Input()
   type: Alert;
+
+  @Input()
+  disableMargins = false;
+
+  @Output()
+  closed = new EventEmitter<void>();
 
 }

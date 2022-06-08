@@ -12,9 +12,10 @@ import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.workpackage.WorkPackageRepository
 import io.cloudflight.jems.server.project.service.model.ProjectApplicantAndStatus
 import io.cloudflight.jems.server.project.service.toApplicantAndStatus
-import io.cloudflight.jems.server.project.entity.projectuser.CollaboratorLevel.EDIT
-import io.cloudflight.jems.server.project.entity.projectuser.CollaboratorLevel.MANAGE
-import io.cloudflight.jems.server.project.entity.projectuser.CollaboratorLevel.VIEW
+import io.cloudflight.jems.server.project.entity.projectuser.ProjectCollaboratorLevel.EDIT
+import io.cloudflight.jems.server.project.entity.projectuser.ProjectCollaboratorLevel.MANAGE
+import io.cloudflight.jems.server.project.entity.projectuser.ProjectCollaboratorLevel.VIEW
+import io.cloudflight.jems.server.project.repository.partneruser.UserPartnerCollaboratorRepository
 import io.cloudflight.jems.server.project.repository.projectuser.UserProjectCollaboratorRepository
 import org.springframework.data.domain.Sort
 import org.springframework.security.access.prepost.PreAuthorize
@@ -25,7 +26,8 @@ import org.springframework.transaction.annotation.Transactional
 class WorkPackageServiceImpl(
     private val workPackageRepository: WorkPackageRepository,
     private val projectRepository: ProjectRepository,
-    private val collaboratorRepository: UserProjectCollaboratorRepository,
+    private val projectCollaboratorRepository: UserProjectCollaboratorRepository,
+    private val partnerCollaboratorRepository: UserPartnerCollaboratorRepository
 ) : WorkPackageService {
 
     companion object {
@@ -35,9 +37,12 @@ class WorkPackageServiceImpl(
     @Transactional(readOnly = true)
     override fun getProjectForWorkPackageId(id: Long): ProjectApplicantAndStatus =
         getWorkPackageOrThrow(id).project.let {
-            val collaboratorsByLevel = collaboratorRepository.findAllByIdProjectId(it.id).groupBy { it.level }
+            val partnerCollaborators = partnerCollaboratorRepository.findAllByProjectId(it.id).map { collaborator -> collaborator.id.userId }
+            val collaboratorsByLevel = projectCollaboratorRepository.findAllByIdProjectId(it.id)
+                .groupBy { collaborator -> collaborator.level }
+                .mapValues { entity -> entity.value.map { collaborator -> collaborator.id.userId }.toSet() }
             return it.toApplicantAndStatus(
-                collaboratorViewIds = collaboratorsByLevel[VIEW] ?: emptySet(),
+                collaboratorViewIds = (collaboratorsByLevel[VIEW] ?: emptySet()) union partnerCollaborators,
                 collaboratorEditIds = collaboratorsByLevel[EDIT] ?: emptySet(),
                 collaboratorManageIds = collaboratorsByLevel[MANAGE] ?: emptySet(),
             )

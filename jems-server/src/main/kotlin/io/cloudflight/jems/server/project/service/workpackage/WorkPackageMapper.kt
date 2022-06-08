@@ -10,7 +10,6 @@ import io.cloudflight.jems.server.common.entity.addTranslationEntities
 import io.cloudflight.jems.server.common.entity.extractField
 import io.cloudflight.jems.server.common.entity.extractTranslation
 import io.cloudflight.jems.server.project.entity.ProjectEntity
-import io.cloudflight.jems.server.project.entity.ProjectPeriodEntity
 import io.cloudflight.jems.server.project.entity.ProjectPeriodRow
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageDetailRow
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageEntity
@@ -18,7 +17,6 @@ import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageRow
 import io.cloudflight.jems.server.project.entity.workpackage.WorkPackageTransl
 import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageOutputRow
 import io.cloudflight.jems.server.project.service.model.Address
-import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityDeliverable
 import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackage
@@ -90,7 +88,7 @@ fun List<WorkPackageRow>.toOutputWorkPackageHistoricalData() =
             objectiveAndAudience = groupedRows.value.extractField { it.objectiveAndAudience },
             number = groupedRows.value.first().number,
         )
-    }.first()
+    }.firstOrNull()
 
 fun List<WorkPackageRow>.toOutputWorkPackageSimpleHistoricalData() =
     this.groupBy { it.id }.map { groupedRows ->
@@ -197,8 +195,11 @@ fun List<WorkPackageDetailRow>.toModel(periods: List<ProjectPeriodRow>)=
                     justificationPilot = groupedInvestmentRow.value.extractField ({it.investmentLanguage}) { it.justificationPilot},
                     address = Address(
                         country = groupedInvestmentRow.value.first().investmentCountry,
+                        countryCode = groupedInvestmentRow.value.first().investmentCountryCode,
                         nutsRegion2 = groupedInvestmentRow.value.first().investmentNutsRegion2,
+                        nutsRegion2Code = groupedInvestmentRow.value.first().investmentNutsRegion2Code,
                         nutsRegion3 = groupedInvestmentRow.value.first().investmentNutsRegion3,
+                        nutsRegion3Code = groupedInvestmentRow.value.first().investmentNutsRegion3Code,
                         street = groupedInvestmentRow.value.first().investmentStreet,
                         houseNumber = groupedInvestmentRow.value.first().investmentHouseNumber,
                         postalCode = groupedInvestmentRow.value.first().investmentPostalCode,

@@ -6,9 +6,10 @@ import {map, tap} from 'rxjs/operators';
 import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
 import {NumberService} from '@common/services/number.service';
 import {AllowedBudgetCategories} from '@project/model/allowed-budget-category';
+import {TableConfig} from '@common/directives/table-config/TableConfig';
 
 @Component({
-  selector: 'app-budget-table',
+  selector: 'jems-budget-table',
   templateUrl: './budget-table.component.html',
   styleUrls: ['./budget-table.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
@@ -39,6 +40,7 @@ export class BudgetTableComponent implements OnInit, OnChanges {
   totalLumpSums: number;
   totalUnitCosts: number;
   total: number;
+  tableConfig: TableConfig[];
 
   budget$: Observable<ProjectPartnerBudgetDTO[]>;
   dataSourceChanged$: BehaviorSubject<ProjectPartnerBudgetDTO[]>;
@@ -48,10 +50,10 @@ export class BudgetTableComponent implements OnInit, OnChanges {
     private activatedRoute: ActivatedRoute,
     private projectService: ProjectService,
   ) {
+    this.dataSourceChanged$ = new BehaviorSubject<ProjectPartnerBudgetDTO[]>(this.dataSource);
   }
 
   ngOnInit(): void {
-    this.dataSourceChanged$ = new BehaviorSubject<ProjectPartnerBudgetDTO[]>(this.dataSource);
     this.budget$ = combineLatest([
       this.dataSourceChanged$,
       this.projectStore.allowedBudgetCategories$,
@@ -89,37 +91,49 @@ export class BudgetTableComponent implements OnInit, OnChanges {
   private getDisplayedColumns(allowedBudgetCategories: AllowedBudgetCategories,
                               callSettings: ProjectCallSettingsDTO): string[] {
     const columns: string[] = ['partner'];
+    this.tableConfig = [{minInRem: 3}];
     if (!this.hideCountry) {
       columns.push('country');
+      this.tableConfig.push({minInRem: 7});
     }
     if (allowedBudgetCategories.staff.realOrUnitCosts() || callSettings.flatRates?.staffCostFlatRateSetup) {
       columns.push('staffCosts');
+      this.tableConfig.push({minInRem: 7});
     }
     if (callSettings.flatRates?.officeAndAdministrationOnDirectCostsFlatRateSetup || callSettings.flatRates?.officeAndAdministrationOnStaffCostsFlatRateSetup) {
       columns.push('officeAndAdministrationCosts');
+      this.tableConfig.push({minInRem: 7});
     }
     if (allowedBudgetCategories.travel.realOrUnitCosts() || callSettings.flatRates?.travelAndAccommodationOnStaffCostsFlatRateSetup) {
       columns.push('travelCosts');
+      this.tableConfig.push({minInRem: 7});
     }
     if (allowedBudgetCategories.external.realOrUnitCosts()) {
       columns.push('externalCosts');
+      this.tableConfig.push({minInRem: 7});
     }
     if (allowedBudgetCategories.equipment.realOrUnitCosts()) {
       columns.push('equipmentCosts');
+      this.tableConfig.push({minInRem: 7});
     }
     if (allowedBudgetCategories.infrastructure.realOrUnitCosts()) {
       columns.push('infrastructureCosts');
+      this.tableConfig.push({minInRem: 7});
     }
     if (callSettings.flatRates?.otherCostsOnStaffCostsFlatRateSetup) {
       columns.push('otherCosts');
+      this.tableConfig.push({minInRem: 7});
     }
     if (callSettings.lumpSums?.length) {
       columns.push('lumpSums');
+      this.tableConfig.push({minInRem: 7});
     }
     if (callSettings.unitCosts?.find(cost => !cost.oneCostCategory)) {
       columns.push('unitCosts');
+      this.tableConfig.push({minInRem: 7});
     }
     columns.push('total');
+    this.tableConfig.push({minInRem: 7});
     return columns;
   }
 

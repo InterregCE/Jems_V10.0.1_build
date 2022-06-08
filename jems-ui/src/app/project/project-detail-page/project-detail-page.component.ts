@@ -5,7 +5,7 @@ import {combineLatest, Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 
 @Component({
-  selector: 'app-project-detail-page',
+  selector: 'jems-project-detail-page',
   templateUrl: './project-detail-page.component.html',
   styleUrls: ['./project-detail-page.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

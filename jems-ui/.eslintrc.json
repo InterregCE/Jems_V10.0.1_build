@@ -14,6 +14,21 @@
         "*.ts"
       ],
       "rules": {
+        "@angular-eslint/component-selector": [
+          "error",
+          {
+            "prefix": "jems",
+            "style": "kebab-case",
+            "type": "element"
+          }
+        ],
+        "@angular-eslint/directive-selector": [
+          "error",
+          {
+            "style": "camelCase",
+            "type": "attribute"
+          }
+        ],
         "no-restricted-imports": [
           "error",
           {
@@ -28,6 +43,10 @@
         "@typescript-eslint/ban-types": "off",
         "max-classes-per-file": "off"
       }
+    },
+    {
+      "files": ["*.html"],
+      "extends": ["plugin:@angular-eslint/template/recommended"]
     }
   ]
 }

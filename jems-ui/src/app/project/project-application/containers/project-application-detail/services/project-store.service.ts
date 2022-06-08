@@ -3,7 +3,8 @@ import {combineLatest, merge, Observable, of, ReplaySubject, Subject} from 'rxjs
 import {
   CallService,
   InputProjectData,
-  InvestmentSummaryDTO, ProjectBudgetService,
+  InvestmentSummaryDTO,
+  ProjectBudgetService,
   ProjectCallSettingsDTO,
   ProjectDecisionDTO,
   ProjectDetailDTO,
@@ -17,15 +18,7 @@ import {
   UserRoleCreateDTO,
   WorkPackageActivitySummaryDTO
 } from '@cat/api';
-import {
-  filter,
-  map,
-  shareReplay,
-  startWith,
-  switchMap,
-  tap,
-  withLatestFrom
-} from 'rxjs/operators';
+import {filter, map, shareReplay, startWith, switchMap, tap, withLatestFrom} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 import {PermissionService} from '../../../../../security/permissions/permission.service';
 import {ProjectCallSettings} from '@project/model/projectCallSettings';
@@ -38,9 +31,12 @@ import {RoutingService} from '@common/services/routing.service';
 import {ProjectPaths, ProjectUtil} from '@project/common/project-util';
 import {SecurityService} from '../../../../../security/security.service';
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
-import {InvestmentSummary} from '@project/work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
+import {
+  InvestmentSummary
+} from '@project/work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
 import {AllowedBudgetCategories, AllowedBudgetCategory} from '@project/model/allowed-budget-category';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
+import CallTypeEnum = ProjectCallSettingsDTO.CallTypeEnum;
 
 /**
  * Stores project related information.
@@ -59,6 +55,7 @@ export class ProjectStore {
 
   projectStatus$: Observable<ProjectStatusDTO>;
   project$: Observable<ProjectDetailDTO>;
+  projectCallType$: Observable<CallTypeEnum>;
   projectForm$: Observable<ProjectDetailFormDTO>;
   project: ProjectDetailDTO;
   projectEditable$: Observable<boolean>;
@@ -102,8 +99,9 @@ export class ProjectStore {
     this.projectForm$ = this.projectForm();
     this.collaboratorLevel$ = this.collaboratorLevel();
     this.projectEditable$ = this.projectEditable();
-    this.projectStatus$ = this.projectStatus(this.project$);
-    this.currentVersionOfProjectStatus$ = this.projectStatus(this.currentVersionOfProject$);
+    this.projectStatus$ = ProjectStore.projectStatus(this.project$);
+    this.projectCallType$ = ProjectStore.projectCallType(this.project$);
+    this.currentVersionOfProjectStatus$ = ProjectStore.projectStatus(this.currentVersionOfProject$);
     this.projectCall$ = this.projectCallSettings();
     this.currentVersionOfProjectTitle$ = this.currentVersionOfProject$
       .pipe(
@@ -151,11 +149,18 @@ export class ProjectStore {
       );
   }
 
-  private projectStatus(project: Observable<ProjectDetailDTO>): Observable<ProjectStatusDTO> {
+  private static projectStatus(project: Observable<ProjectDetailDTO>): Observable<ProjectStatusDTO> {
     return project
       .pipe(
         map(it => it.projectStatus),
         shareReplay(1)
+      );
+  }
+
+  private static projectCallType(project: Observable<ProjectDetailDTO>): Observable<CallTypeEnum> {
+    return project
+      .pipe(
+        map(proj => proj.callSettings.callType)
       );
   }
 
@@ -253,6 +258,7 @@ export class ProjectStore {
         map((callSetting: ProjectCallSettingsDTO) => new ProjectCallSettings(
           callSetting.callId,
           callSetting.callName,
+          callSetting.callType,
           callSetting.startDate,
           callSetting.endDate,
           callSetting.endDateStep1,
@@ -325,10 +331,15 @@ export class ProjectStore {
       this.projectVersionStore.selectedVersionParam$,
       this.investmentChangeEvent$.pipe(startWith(null))])
       .pipe(
-        switchMap(([project, version]) => this.projectService.getProjectInvestmentSummaries(project.id, version)),
-        map((investmentSummeryDTOs: InvestmentSummaryDTO[]) => investmentSummeryDTOs.map(it => new InvestmentSummary(it.id, it.investmentNumber, it.workPackageNumber))),
+        switchMap(([project, selectedVersion]) => this.getProjectInvestmentSummaries(project, selectedVersion as string)),
+        map((investmentSummeryDTOs: InvestmentSummaryDTO[]) => investmentSummeryDTOs
+          .map(it => new InvestmentSummary(it.id, it.investmentNumber, it.workPackageNumber))),
         shareReplay(1)
       );
+  }
+
+  getProjectInvestmentSummaries(project: ProjectDetailDTO, version: string): Observable<InvestmentSummaryDTO[]> {
+    return this.projectService.getProjectInvestmentSummaries(project.id, version);
   }
 
   private investmentSummariesForFiles(): Observable<InvestmentSummary[]> {
@@ -359,7 +370,7 @@ export class ProjectStore {
       this.collaboratorLevel$,
     ])
       .pipe(
-        map(([project, currentUser, collaboratorLevel]) => project?.applicant?.id === currentUser?.id || collaboratorLevel === ProjectUserCollaboratorDTO.LevelEnum.EDIT  || collaboratorLevel === ProjectUserCollaboratorDTO.LevelEnum.MANAGE)
+        map(([project, currentUser, collaboratorLevel]) => project?.applicant?.id === currentUser?.id || collaboratorLevel === ProjectUserCollaboratorDTO.LevelEnum.EDIT || collaboratorLevel === ProjectUserCollaboratorDTO.LevelEnum.MANAGE)
       );
   }
 
@@ -372,4 +383,5 @@ export class ProjectStore {
         tap(activities => Log.info('Fetched project activities', activities))
       );
   }
+
 }

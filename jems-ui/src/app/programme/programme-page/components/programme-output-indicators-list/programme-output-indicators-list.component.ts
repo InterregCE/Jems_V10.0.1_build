@@ -7,7 +7,7 @@ import {Alert} from '@common/components/forms/alert';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
 
 @Component({
-  selector: 'app-programme-output-indicators-list',
+  selector: 'jems-programme-output-indicators-list',
   templateUrl: './programme-output-indicators-list.component.html',
   styleUrls: ['./programme-output-indicators-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

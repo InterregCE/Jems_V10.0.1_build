@@ -1,12 +1,17 @@
 package io.cloudflight.jems.server.project.service.update_project_description
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.service.ProjectDescriptionPersistence
 import io.cloudflight.jems.server.project.service.model.ProjectLongTermPlans
 import io.cloudflight.jems.server.project.service.model.ProjectManagement
 import io.cloudflight.jems.server.project.service.model.ProjectOverallObjective
 import io.cloudflight.jems.server.project.service.model.ProjectPartnership
 import io.cloudflight.jems.server.project.service.model.ProjectRelevance
+import io.cloudflight.jems.server.project.service.model.ProjectRelevanceBenefit
+import io.cloudflight.jems.server.project.service.model.ProjectRelevanceSpfRecipient
+import io.cloudflight.jems.server.project.service.model.ProjectRelevanceStrategy
+import io.cloudflight.jems.server.project.service.model.ProjectRelevanceSynergy
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -27,6 +32,9 @@ internal class UpdateProjectDescriptionTest : UnitTest() {
     @MockK
     lateinit var persistence: ProjectDescriptionPersistence
 
+    @MockK
+    lateinit var generalValidator: GeneralValidatorService
+
     @InjectMockKs
     lateinit var updateProjectDescription: UpdateProjectDescription
 
@@ -38,6 +46,28 @@ internal class UpdateProjectDescriptionTest : UnitTest() {
 
     @Test
     fun updateProjectRelevance() {
+        val projectBenefits: List<ProjectRelevanceBenefit> = emptyList()
+        val projectSpfRecipients: List<ProjectRelevanceSpfRecipient> = emptyList()
+        val projectStrategies: List<ProjectRelevanceStrategy> = emptyList()
+        val projectSynergy: List<ProjectRelevanceSynergy> = emptyList()
+
+        every { projectRelevance.projectBenefits } returns projectBenefits
+        every { projectRelevance.projectSpfRecipients } returns projectSpfRecipients
+        every { projectRelevance.projectStrategies } returns projectStrategies
+        every { projectRelevance.projectSynergies } returns projectSynergy
+
+        every { generalValidator.maxSize(projectBenefits, 20, "benefits") } returns emptyMap()
+        every { generalValidator.maxSize(projectSpfRecipients, 20, "spfRecipients") } returns emptyMap()
+        every { generalValidator.maxSize(projectStrategies, 20, "strategies") } returns emptyMap()
+        every { generalValidator.maxSize(projectSynergy, 20, "synergies") } returns emptyMap()
+
+        every { generalValidator.throwIfAnyIsInvalid(
+            generalValidator.maxSize(projectBenefits, 20, "benefits"),
+            generalValidator.maxSize(projectSpfRecipients, 20, "spfRecipients"),
+            generalValidator.maxSize(projectStrategies, 20, "strategies"),
+            generalValidator.maxSize(projectSynergy, 20, "synergies")
+        ) } returns Unit
+
         every { persistence.updateProjectRelevance(1L, projectRelevance) } returns projectRelevance
         assertThat(updateProjectDescription.updateProjectRelevance(1L, projectRelevance)).isEqualTo(projectRelevance)
     }

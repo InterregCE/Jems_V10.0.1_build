@@ -1,0 +1,120 @@
+{
+  "application": {
+    "details": {
+      "acronym": "randomize",
+      "projectCallId": null
+    },
+    "identification": {
+      "acronym": "randomize",
+      "duration": 9,
+      "specificObjective": "AdvancedTechnologies"
+    },
+    "partners": [
+      {
+        "details": {
+          "id": null,
+          "abbreviation": "Lead Partner",
+          "role": "LEAD_PARTNER",
+          "nameInOriginalLanguage": "Lead Partner in original language",
+          "nameInEnglish": "Lead Partner in english",
+          "department": [
+            {
+              "translation": "API generated department / unit / division DE",
+              "language": "DE"
+            },
+            {
+              "translation": "API generated department / unit / division EN",
+              "language": "EN"
+            }
+          ],
+          "partnerType": "Other",
+          "partnerSubType": "MEDIUM_SIZED_ENTERPRISE",
+          "nace": "B",
+          "otherIdentifierNumber": "other_identifier_number",
+          "otherIdentifierDescription": [
+            {
+              "translation": "API generated other identifier description DE",
+              "language": "DE"
+            },
+            {
+              "translation": "API generated other identifier description EN",
+              "language": "EN"
+            },
+            {
+              "translation": "",
+              "language": "PL"
+            }
+          ],
+          "pic": "000000000",
+          "legalStatusId": 3,
+          "vat": "vat_number",
+          "vatRecovery": "Partly"
+        },
+        "budget": {
+          "travel": [
+            {
+              "description": [
+                {
+                  "translation": "API generated travel cost item description DE",
+                  "language": "DE"
+                },
+                {
+                  "translation": "API generated travel cost item description EN",
+                  "language": "EN"
+                }
+              ],
+              "comments": [
+                {
+                  "translation": "API generated travel cost item comments DE",
+                  "language": "DE"
+                },
+                {
+                  "translation": "API generated travel cost item comments EN",
+                  "language": "EN"
+                }
+              ],
+              "unitType": [
+                {
+                  "translation": "API generated travel cost item unit type DE",
+                  "language": "DE"
+                },
+                {
+                  "translation": "API generated travel cost item unit type EN",
+                  "language": "EN"
+                }
+              ],
+              "numberOfUnits": 1,
+              "pricePerUnit": 5123.12,
+              "rowSum": 5123.12,
+              "budgetPeriods": []
+            }
+          ]
+        },
+        "cofinancing": {
+          "finances": [
+            {
+              "fundType": "Neighbourhood CBC",
+              "percentage": 23.26
+            }
+          ],
+          "partnerContributions": [
+            {
+              "name": "Lead Partner",
+              "status": "Private",
+              "amount": 3931.49,
+              "partner": true
+            }
+          ]
+        }
+      }
+    ]
+  },
+  "fundSource": "Neighbourhood CBC",
+  "fundPercentage": "23,26",
+  "contributionStatus": "Private",
+  "contributionAmount": "3931,49",
+  "roundedDownAmount": "1.191,63",
+  "roundedUpAmount": "3.931,49",
+  "percentageDifference": "76,74",
+  "partnerTotalEligibleBudget": "5.123,12"
+}

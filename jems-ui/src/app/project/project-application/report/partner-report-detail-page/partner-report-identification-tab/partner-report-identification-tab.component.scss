@@ -1,0 +1,35 @@
+#report-info {
+  border: 1px solid;
+  border-color: var(--table-border-color);
+
+  .project-row {
+    display: flex;
+  }
+
+  .header {
+    background-color: var(--light-blue-gray);
+    min-width: 24rem;
+    background-clip: padding-box;
+    text-align: right;
+    font-weight: 500;
+  }
+
+  .expiration {
+    color: var(--error-color);
+  }
+
+  a {
+    text-decoration: none;
+  }
+
+  a:hover {
+    text-decoration: underline;
+  }
+
+  .fund-list {
+    list-style-type: none;
+    padding-inline-start: 0;
+    margin-top: 0;
+    min-width: 100%;
+  }
+}

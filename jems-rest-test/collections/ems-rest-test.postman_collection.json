@@ -1,9 +1,10 @@
 {
 	"info": {
-		"_postman_id": "4be9682e-85f5-4fb4-845c-0f2c2a939bf4",
+		"_postman_id": "b8e1d763-86fc-441f-984e-e8b5fe6911d4",
 		"name": "ems-rest-test",
 		"description": "Check JEMS application for common use-cases",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "1630872"
 	},
 	"item": [
 		{
@@ -915,6 +916,248 @@
 					"response": []
 				},
 				{
+					"name": "retrieve some existing result indicators",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('we can retrieve indicators', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('we have result indicator for this SO or we need to create one', function() {\r",
+									"    const response = pm.response.json();\r",
+									"    if (response.length > 0) {\r",
+									"        console.log('There is already indicator ' + response[0].code + ' with id=' + response[0].id + ', which we will use for applciations during this test');\r",
+									"        pm.environment.set('resultIndicatorId', response[0].id);\r",
+									"    } else {\r",
+									"        console.log('There are no any indicators for this SO yet. We need to create one.');\r",
+									"        pm.environment.set('resultIndicatorId', null);\r",
+									"    }\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/programmeindicator/result/summary/{{programmePriorityPolicy}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"programmeindicator",
+								"result",
+								"summary",
+								"{{programmePriorityPolicy}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[IF] not exists, then create result indicator",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"if (pm.environment.get('resultIndicatorId') == null) {\r",
+									"    console.log('There is no result indicator we can use, so we need to create one.');\r",
+									"    pm.variables.set('resultIndicatorCode', \"RI.1 (API)\");\r",
+									"} else {\r",
+									"    console.log('There is already a result indicator we will use that one.');\r",
+									"    pm.variables.set('resultIndicatorCode', \"!!!This name is so long that it needs to fail and it should never be created!!!\");\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('programme result indicator has been created (as if was needed)', function() {\r",
+									"    if (pm.environment.get('resultIndicatorId') == null) {\r",
+									"        const response = pm.response.json();\r",
+									"        pm.response.to.have.status(200);\r",
+									"        console.log('We created new result indicator with id=' + response.id);\r",
+									"        pm.environment.set('resultIndicatorId', response.id);\r",
+									"    } else {\r",
+									"        pm.expect(pm.response.code).to.be.oneOf([400, 422]);\r",
+									"        console.log('We did an invalid POST to NOT create new result indicator.');\r",
+									"    }\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"identifier\": \"{{resultIndicatorCode}}\",\r\n    \"code\": \"RCR73\",\r\n    \"name\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"Annual users of new or modernised health care facilities\"\r\n        }\r\n    ],\r\n    \"measurementUnit\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"users/year\"\r\n        }\r\n    ],\r\n    \"type\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"type translated to {{inputLanguage}}\"\r\n        }\r\n    ],\r\n    \"finalTarget\": 8000000,\r\n    \"referenceYear\": \"2027\",\r\n    \"programmeObjectivePolicy\": \"{{programmePriorityPolicy}}\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/programmeindicator/result",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"programmeindicator",
+								"result"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "retrieve some existing output indicators",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('we can retrieve SOs', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('we have output indicator for this SO or we need to create one', function() {\r",
+									"    const response = pm.response.json();\r",
+									"    if (response.length > 0) {\r",
+									"        console.log('There is already indicator ' + response[0].code + ' with id=' + response[0].id + ', which we will use for applciations during this test');\r",
+									"        pm.environment.set('outputIndicatorId', response[0].id);\r",
+									"    } else {\r",
+									"        console.log('There are no any indicators for this SO yet. We need to create one.');\r",
+									"        pm.environment.set('outputIndicatorId', null);\r",
+									"    }\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/programmeindicator/output/summary/{{programmePriorityPolicy}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"programmeindicator",
+								"output",
+								"summary",
+								"{{programmePriorityPolicy}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[IF] not exists, then create output indicator",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"if (pm.environment.get('outputIndicatorId') == null) {\r",
+									"    console.log('There is no output indicator we can use, so we need to create one.');\r",
+									"    pm.variables.set('outputIndicatorCode', \"OI.1 (API)\");\r",
+									"} else {\r",
+									"    console.log('There is already an output indicator we will use that one.');\r",
+									"    pm.variables.set('outputIndicatorCode', \"!!!This name is so long that it needs to fail and it should never be created!!!\");\r",
+									"}\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('programme output indicator has been created (as if was needed)', function() {\r",
+									"    if (pm.environment.get('outputIndicatorId') == null) {\r",
+									"        const response = pm.response.json();\r",
+									"        pm.response.to.have.status(200);\r",
+									"        console.log('We created new output indicator with id=' + response.id);\r",
+									"        pm.environment.set('outputIndicatorId', response.id);\r",
+									"    } else {\r",
+									"        pm.expect(pm.response.code).to.be.oneOf([400, 422]);\r",
+									"        console.log('We did an invalid POST to NOT create new output indicator.');\r",
+									"    }\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"identifier\": \"{{outputIndicatorCode}}\",\r\n    \"code\": \"RCO52\",\r\n    \"name\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"Length of new, upgraded or modernised inland waterways - non-TEN-T\"\r\n        }\r\n    ],\r\n    \"measurementUnit\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"km\"\r\n        }\r\n    ],\r\n    \"type\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"type translated to {{inputLanguage}}\"\r\n        }\r\n    ],\r\n    \"finalTarget\": 200000,\r\n    \"programmeObjectivePolicy\": \"{{programmePriorityPolicy}}\",\r\n    \"resultIndicatorId\": {{resultIndicatorId}}\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/programmeindicator/output",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"programmeindicator",
+								"output"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "create call",
 					"event": [
 						{
@@ -984,7 +1227,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"name\": \"{{call_name_to_create}}\",\n\t\"startDateTime\": \"{{callDateStart}}\",\n\t\"endDateTime\": \"{{callDateEnd}}\",\n    \"isAdditionalFundAllowed\": true,\n    \"lengthOfPeriod\": 12,\n    \"description\": [\n        {\n            \"language\": \"{{inputLanguage}}\",\n            \"translation\": \"{{inputLanguage}} description\"\n        }\n    ],\n\t\"priorityPolicies\": [ \"{{programmePriorityPolicy}}\" ],\n    \"strategies\": [\"EUStrategyDanubeRegion\", \"SeaBasinStrategyOutermostRegions\"],\n    \"funds\": [ {\n        \"programmeFund\": {\n            \"id\": \"{{programmeFundId}}\"\n        },\n        \"rate\": 100,\n        \"isAdjustable\": true\n    }]\n}\n"
+							"raw": "{\n\t\"name\": \"{{call_name_to_create}}\",\n    \"type\": \"STANDARD\",\n\t\"startDateTime\": \"{{callDateStart}}\",\n\t\"endDateTime\": \"{{callDateEnd}}\",\n    \"isAdditionalFundAllowed\": true,\n    \"lengthOfPeriod\": 12,\n    \"description\": [\n        {\n            \"language\": \"{{inputLanguage}}\",\n            \"translation\": \"{{inputLanguage}} description\"\n        }\n    ],\n\t\"priorityPolicies\": [ \"{{programmePriorityPolicy}}\" ],\n    \"strategies\": [\"EUStrategyDanubeRegion\", \"SeaBasinStrategyOutermostRegions\"],\n    \"funds\": [ {\n        \"programmeFund\": {\n            \"id\": \"{{programmeFundId}}\"\n        },\n        \"rate\": 100,\n        \"isAdjustable\": true\n    }]\n}\n"
 						},
 						"url": {
 							"raw": "{{url}}/api/call",
@@ -1216,6 +1459,153 @@
 								"byId",
 								"{{callId}}",
 								"unitCost"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "setup AF config to call",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('call unit cost is saved successfully', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{programme_user_password}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{programme_user_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\r\n        \"id\": \"application.config.project.partner.budget.and.co.financing\",\r\n        \"visible\": \"true\",\r\n        \"availableInStep\": \"STEP_ONE_AND_TWO\"\r\n    },\r\n    {\r\n        \"id\": \"application.config.project.partner.co.financing.add.new.contribution.origin\",\r\n        \"visible\": \"true\",\r\n        \"availableInStep\": \"STEP_ONE_AND_TWO\"\r\n    },\r\n    {\r\n        \"id\": \"application.config.project.partner.budget.staff.cost.unit.type.and.number.of.units\",\r\n        \"visible\": \"true\",\r\n        \"availableInStep\": \"STEP_ONE_AND_TWO\"\r\n    },\r\n    {\r\n        \"id\": \"application.config.project.partner.budget.travel.and.accommodation.unit.type.and.number.of.units\",\r\n        \"visible\": \"true\",\r\n        \"availableInStep\": \"STEP_ONE_AND_TWO\"\r\n    },\r\n    {\r\n        \"id\": \"application.config.project.partner.budget.infrastructure.and.works.unit.type.and.number.of.units\",\r\n        \"visible\": \"true\",\r\n        \"availableInStep\": \"STEP_ONE_AND_TWO\"\r\n    },\r\n        {\r\n        \"id\": \"application.config.project.activities.deliverables\",\r\n        \"visible\": \"true\",\r\n        \"availableInStep\": \"STEP_ONE_AND_TWO\"\r\n    }\r\n]\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/call/{{callId}}/applicationFormFieldConfigurations",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"call",
+								"{{callId}}",
+								"applicationFormFieldConfigurations"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "set 'off' pre-submission check plugin for the call",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('off pre-submission check plugin is set for the call successfully', function () {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{programme_user_password}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{programme_user_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"pluginKey\": \"jems-pre-condition-check-off\"\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/call/byId/{{callId}}/preSubmissionCheck",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"call",
+								"byId",
+								"{{callId}}",
+								"preSubmissionCheck"
 							]
 						}
 					},
@@ -1649,33 +2039,30 @@
 							}
 						}
 					],
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
 					"request": {
 						"auth": {
 							"type": "noauth"
 						},
-						"method": "GET",
+						"method": "POST",
 						"header": [],
 						"body": {
-							"mode": "urlencoded",
-							"urlencoded": []
+							"mode": "raw",
+							"raw": "{}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
 						},
 						"url": {
-							"raw": "{{url}}/api/project?sort=id,desc",
+							"raw": "{{url}}/api/project/list",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
-								"project"
-							],
-							"query": [
-								{
-									"key": "sort",
-									"value": "id,desc"
-								}
+								"project",
+								"list"
 							]
 						}
 					},
@@ -1733,27 +2120,30 @@
 							}
 						}
 					],
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
 					"request": {
 						"auth": {
 							"type": "noauth"
 						},
-						"method": "GET",
+						"method": "POST",
 						"header": [],
 						"body": {
-							"mode": "urlencoded",
-							"urlencoded": []
+							"mode": "raw",
+							"raw": "{}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
 						},
 						"url": {
-							"raw": "{{url}}/api/project?sort=id,desc",
+							"raw": "{{url}}/api/project/list?sort=id,desc",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
-								"project"
+								"project",
+								"list"
 							],
 							"query": [
 								{
@@ -2093,11 +2483,8 @@
 							}
 						}
 					],
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
 					"request": {
-						"method": "GET",
+						"method": "POST",
 						"header": [
 							{
 								"key": "Content-Type",
@@ -2110,13 +2497,20 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{url}}/api/project",
+							"raw": "{{url}}/api/project/list?sort=id,desc",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
-								"project"
+								"project",
+								"list"
+							],
+							"query": [
+								{
+									"key": "sort",
+									"value": "id,desc"
+								}
 							]
 						}
 					},
@@ -2398,11 +2792,8 @@
 							}
 						}
 					],
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
 					"request": {
-						"method": "GET",
+						"method": "POST",
 						"header": [
 							{
 								"key": "Content-Type",
@@ -2415,13 +2806,20 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{url}}/api/project",
+							"raw": "{{url}}/api/project/list?sort=id,desc",
 							"host": [
 								"{{url}}"
 							],
 							"path": [
 								"api",
-								"project"
+								"project",
+								"list"
+							],
+							"query": [
+								{
+									"key": "sort",
+									"value": "id,desc"
+								}
 							]
 						}
 					},
@@ -10287,7 +10685,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"acronym\": \"{{application_acronym}}\",\n\t\"specificObjective\": \"{{programmePriorityPolicy}}\",\n    \"title\": [\n        {\n            \"language\": \"{{inputLanguage}}\",\n            \"translation\": \"{{project_title}}\"\n        }\n    ],\n\t\"duration\": 50,\n    \"introProgrammeLanguage\": \"{{$randomLoremParagraph}}\\n{{$randomLoremParagraph}}\\n\\n{{$randomLoremParagraph}}\"\n}\n"
+									"raw": "{\n\t\"acronym\": \"{{application_acronym}}\",\n\t\"specificObjective\": \"{{programmePriorityPolicy}}\",\n    \"title\": [\n        {\n            \"language\": \"{{inputLanguage}}\",\n            \"translation\": \"{{project_title}}\"\n        }\n    ],\n\t\"duration\": 50,\n    \"intro\": [\n        {\n            \"language\": \"{{inputLanguage}}\",\n            \"translation\": \"{{$randomLoremParagraph}}\\n{{$randomLoremParagraph}}\\n\\n{{$randomLoremParagraph}}\"\n        }\n    ]\n}\n"
 								},
 								"url": {
 									"raw": "{{url}}/api/project/{{application_id}}",
@@ -10356,7 +10754,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"abbreviation\": \"{{$randomAbbreviation}} {{$randomCompanySuffix}}\",\r\n    \"role\": \"PARTNER\",\r\n    \"legalStatusId\": 1,\r\n    \"nameInOriginalLanguage\": \"{{$randomCatchPhrase}}\",\r\n    \"nameInEnglish\": \"{{$randomPhrase}}\",\r\n    \"otherIdentifierNumber\": \"{{$randomBankAccount}}\",\r\n    \"otherIdentifierDescription\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"{{$randomBankAccountIban}}\"\r\n        }\r\n    ],\r\n    \"partnerType\": \"NationalPublicAuthority\"\r\n}\r\n",
+									"raw": "{\r\n    \"abbreviation\": \"{{$randomAbbreviation}} {{$randomCompanySuffix}}\",\r\n    \"role\": \"PARTNER\",\r\n    \"legalStatusId\": 1,\r\n    \"nameInOriginalLanguage\": \"{{$randomCatchPhrase}}\",\r\n    \"nameInEnglish\": \"{{$randomPhrase}}\",\r\n    \"otherIdentifierNumber\": \"{{$randomBankAccount}}\",\r\n    \"otherIdentifierDescription\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"{{$randomBankAccountIban}}\"\r\n        }\r\n    ],\r\n    \"partnerType\": \"NationalPublicAuthority\",\r\n    \"vat\": \"{{$randomPhoneNumber}}\"\r\n}\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -10482,7 +10880,7 @@
 											"pm.test('address is saved correctly', function() {\r",
 											"    const addr = partner.addresses[0];\r",
 											"    pm.expect(addr.type).to.eql(\"Organization\");\r",
-											"    pm.expect(addr.country).to.eql(\"\");\r",
+											"    pm.expect(addr.country).to.eql(\"Burundi (BI)\");\r",
 											"    pm.expect(addr.street).to.eql(\"Pennsylvania Avenue\");\r",
 											"    pm.expect(addr.houseNumber).to.eql(\"1600\");\r",
 											"    pm.expect(addr.postalCode).to.eql(\"20500\");\r",
@@ -10515,7 +10913,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "[\r\n    {\r\n        \"type\": \"Organization\",\r\n        \"country\": \"\",\r\n        \"street\": \"Pennsylvania Avenue\",\r\n        \"houseNumber\": \"1600\",\r\n        \"postalCode\": \"20500\",\r\n        \"city\": \"Washington, DC\",\r\n        \"homepage\": \"https://www.whitehouse.gov/\"\r\n    }\r\n]\r\n",
+									"raw": "[\r\n    {\r\n        \"type\": \"Organization\",\r\n        \"country\":\"Burundi (BI)\",\r\n        \"nutsRegion2\":\"Burundi (BI00)\",\r\n        \"nutsRegion3\":\"Burundi (BI000)\",\r\n        \"street\": \"Pennsylvania Avenue\",\r\n        \"houseNumber\": \"1600\",\r\n        \"postalCode\": \"20500\",\r\n        \"city\": \"Washington, DC\",\r\n        \"homepage\": \"https://www.whitehouse.gov/\"\r\n    }\r\n]\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -10842,7 +11240,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"abbreviation\": \"{{$randomAbbreviation}} {{$randomCompanySuffix}}\",\r\n    \"role\": \"PARTNER\",\r\n    \"legalStatusId\": 1,\r\n    \"nameInOriginalLanguage\": \"{{$randomCatchPhrase}}\",\r\n    \"nameInEnglish\": \"{{$randomPhrase}}\",\r\n    \"otherIdentifierNumber\": \"{{$randomBankAccount}}\",\r\n    \"otherIdentifierDescription\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"{{$randomBankAccountIban}}\"\r\n        }\r\n    ],\r\n    \"partnerType\": \"NationalPublicAuthority\"\r\n}\r\n",
+									"raw": "{\r\n    \"abbreviation\": \"{{$randomAbbreviation}} {{$randomCompanySuffix}}\",\r\n    \"role\": \"PARTNER\",\r\n    \"legalStatusId\": 1,\r\n    \"nameInOriginalLanguage\": \"{{$randomCatchPhrase}}\",\r\n    \"nameInEnglish\": \"{{$randomPhrase}}\",\r\n    \"otherIdentifierNumber\": \"{{$randomBankAccount}}\",\r\n    \"otherIdentifierDescription\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"{{$randomBankAccountIban}}\"\r\n        }\r\n    ],\r\n    \"partnerType\": \"NationalPublicAuthority\",\r\n    \"vat\": \"{{$randomPhoneNumber}}\"\r\n}\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -10860,6 +11258,91 @@
 										"partner",
 										"toProjectId",
 										"{{application_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "fill in address",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const partner = pm.response.json();\r",
+											"\r",
+											"pm.test('applicant can remove addresses from partner', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test('just one address is now returned', function() {\r",
+											"    pm.expect(partner.addresses.length).to.eql(1);\r",
+											"});\r",
+											"\r",
+											"pm.test('address is saved correctly', function() {\r",
+											"    const addr = partner.addresses[0];\r",
+											"    pm.expect(addr.type).to.eql(\"Organization\");\r",
+											"    pm.expect(addr.country).to.eql(\"Honduras (HN)\");\r",
+											"    pm.expect(addr.street).to.eql(\"Pennsylvania Avenue\");\r",
+											"    pm.expect(addr.houseNumber).to.eql(\"1600\");\r",
+											"    pm.expect(addr.postalCode).to.eql(\"20500\");\r",
+											"    pm.expect(addr.city).to.eql(\"Washington, DC\");\r",
+											"    pm.expect(addr.homepage).to.eql(\"https://www.whitehouse.gov/\");\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "[\r\n    {\r\n        \"type\": \"Organization\",\r\n        \"country\":\"Honduras (HN)\",\r\n        \"nutsRegion2\":\"Honduras (HN00)\",\r\n        \"nutsRegion3\":\"Honduras (HN000)\",\r\n        \"street\": \"Pennsylvania Avenue\",\r\n        \"houseNumber\": \"1600\",\r\n        \"postalCode\": \"20500\",\r\n        \"city\": \"Washington, DC\",\r\n        \"homepage\": \"https://www.whitehouse.gov/\"\r\n    }\r\n]\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project/partner/{{partner_id_2}}/address",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"partner",
+										"{{partner_id_2}}",
+										"address"
 									]
 								}
 							},
@@ -11662,7 +12145,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"abbreviation\": \"{{partner_abbreviation}}\",\r\n    \"role\": \"LEAD_PARTNER\",\r\n    \"legalStatusId\": 1,\r\n    \"nameInOriginalLanguage\": \"{{$randomCatchPhrase}}\",\r\n    \"nameInEnglish\": \"{{$randomPhrase}}\",\r\n    \"otherIdentifierNumber\": \"{{$randomBankAccount}}\",\r\n    \"otherIdentifierDescription\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"{{$randomBankAccountIban}}\"\r\n        }\r\n    ],\r\n    \"partnerType\": \"NationalPublicAuthority\"\r\n}\r\n",
+									"raw": "{\r\n    \"abbreviation\": \"{{partner_abbreviation}}\",\r\n    \"role\": \"LEAD_PARTNER\",\r\n    \"legalStatusId\": 1,\r\n    \"nameInOriginalLanguage\": \"{{$randomCatchPhrase}}\",\r\n    \"nameInEnglish\": \"{{$randomPhrase}}\",\r\n    \"otherIdentifierNumber\": \"{{$randomBankAccount}}\",\r\n    \"otherIdentifierDescription\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"{{$randomBankAccountIban}}\"\r\n        }\r\n    ],\r\n    \"partnerType\": \"NationalPublicAuthority\",\r\n    \"vat\": \"{{$randomPhoneNumber}}\"\r\n}\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -11680,6 +12163,91 @@
 										"partner",
 										"toProjectId",
 										"{{application_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "fill in address",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const partner = pm.response.json();\r",
+											"\r",
+											"pm.test('applicant can remove addresses from partner', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test('just one address is now returned', function() {\r",
+											"    pm.expect(partner.addresses.length).to.eql(1);\r",
+											"});\r",
+											"\r",
+											"pm.test('address is saved correctly', function() {\r",
+											"    const addr = partner.addresses[0];\r",
+											"    pm.expect(addr.type).to.eql(\"Organization\");\r",
+											"    pm.expect(addr.country).to.eql(\"Somalia (SO)\");\r",
+											"    pm.expect(addr.street).to.eql(\"Pennsylvania Avenue\");\r",
+											"    pm.expect(addr.houseNumber).to.eql(\"1600\");\r",
+											"    pm.expect(addr.postalCode).to.eql(\"20500\");\r",
+											"    pm.expect(addr.city).to.eql(\"Washington, DC\");\r",
+											"    pm.expect(addr.homepage).to.eql(\"https://www.whitehouse.gov/\");\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "[\r\n    {\r\n        \"type\": \"Organization\",\r\n        \"country\":\"Somalia (SO)\",\r\n        \"nutsRegion2\":\"Somalia (SO00)\",\r\n        \"nutsRegion3\":\"Somalia (SO000)\",\r\n        \"street\": \"Pennsylvania Avenue\",\r\n        \"houseNumber\": \"1600\",\r\n        \"postalCode\": \"20500\",\r\n        \"city\": \"Washington, DC\",\r\n        \"homepage\": \"https://www.whitehouse.gov/\"\r\n    }\r\n]\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project/partner/{{partner_id_lead}}/address",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"partner",
+										"{{partner_id_lead}}",
+										"address"
 									]
 								}
 							},
@@ -11893,6 +12461,74 @@
 								}
 							},
 							"response": []
+						},
+						{
+							"name": "fill in contacts",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('applicant fill in contacts', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "[\r\n    {\r\n        \"type\": \"LegalRepresentative\",\r\n        \"title\": \"{{$randomNamePrefix}}\",\r\n        \"firstName\": \"{{$randomFirstName}}\",\r\n        \"lastName\": \"{{$randomLastName}}\",\r\n        \"email\": \"{{$randomEmail}}\",\r\n        \"telephone\": \"{{$randomPhoneNumber}}\"\r\n    },\r\n    {\r\n        \"type\": \"ContactPerson\",\r\n        \"title\": \"{{$randomNamePrefix}}\",\r\n        \"firstName\": \"{{$randomFirstName}}\",\r\n        \"lastName\": \"{{$randomLastName}}\",\r\n        \"email\": \"{{$randomEmail}}\",\r\n        \"telephone\": \"{{$randomPhoneNumber}}\"\r\n    }\r\n]",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project/partner/{{partner_id_lead}}/contact",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"partner",
+										"{{partner_id_lead}}",
+										"contact"
+									]
+								}
+							},
+							"response": []
 						}
 					],
 					"event": [
@@ -12034,7 +12670,7 @@
 									"    pm.expect(res[0].officeAndAdministrationCosts).to.eql(2200.0);\r",
 									"    pm.expect(res[0].totalSum).to.eql(24200);\r",
 									"\r",
-									"    pm.expect(res[1].partner.country).to.eql('');\r",
+									"    pm.expect(res[1].partner.country).to.eql('Burundi (BI)');\r",
 									"    pm.expect(res[1].totalSum).to.eql(6044);\r",
 									"    pm.expect(res[1].lumpSumContribution).to.eql(6044);\r",
 									"\r",
@@ -12218,7 +12854,7 @@
 			]
 		},
 		{
-			"name": "Project Work Package",
+			"name": "Project Work Package and Result",
 			"item": [
 				{
 					"name": "just create project application",
@@ -12247,6 +12883,7 @@
 											"pm.test('applicant can create project application', function() {\r",
 											"    pm.response.to.have.status(200);\r",
 											"    pm.variables.set('application_id', pm.response.json().id);\r",
+											"    pm.environment.set('application_id', pm.response.json().id);\r",
 											"});\r",
 											""
 										],
@@ -13056,6 +13693,1879 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "add project results",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('applicant can add results to project', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('results has been created', function() {\r",
+									"    const results = pm.response.json();\r",
+									"    pm.expect(results).to.have.length(3);\r",
+									"});\r",
+									"\r",
+									"pm.test('results has correct numbers', function() {\r",
+									"    const results = pm.response.json();\r",
+									"    pm.expect(results[0].resultNumber).to.be.eql(1);\r",
+									"    pm.expect(results[1].resultNumber).to.be.eql(2);\r",
+									"    pm.expect(results[2].resultNumber).to.be.eql(3);\r",
+									"});\r",
+									"\r",
+									"pm.test('results has correct periods and baselines', function() {\r",
+									"    const results = pm.response.json();\r",
+									"\r",
+									"    pm.expect(results[0].periodNumber).to.be.eql(6);\r",
+									"    pm.expect(results[1].periodNumber).to.be.eql(7);\r",
+									"    pm.expect(results[2].periodNumber).to.be.eql(7);\r",
+									"\r",
+									"    pm.expect(results[0].baseline).to.be.eql(4500);\r",
+									"    pm.expect(results[1].baseline).to.be.eql(80000);\r",
+									"    pm.expect(results[2].baseline).to.be.eql(10500);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\r\n        \"baseline\": 4500,\r\n        \"periodNumber\": 6,\r\n        \"description\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"{{$randomJobTitle}}\"\r\n            }\r\n        ]\r\n    },\r\n    {\r\n        \"baseline\": 80000,\r\n        \"periodNumber\": 7,\r\n        \"description\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"{{$randomJobTitle}}\"\r\n            }\r\n        ]\r\n    },\r\n    {\r\n        \"baseline\": 10500,\r\n        \"periodNumber\": 7,\r\n        \"description\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"{{$randomJobTitle}}\"\r\n            }\r\n        ]\r\n    }\r\n]\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/project/{{application_id}}/result",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"{{application_id}}",
+								"result"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "test timeplan data",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('applicant can retrieve data for timeplan', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('2 work packages are returned', function() {\r",
+									"    const wps = pm.response.json();\r",
+									"    pm.expect(wps).to.have.length(2);\r",
+									"});\r",
+									"\r",
+									"pm.test('assert first work package data', function() {\r",
+									"    const wp = pm.response.json()[0];\r",
+									"\r",
+									"    pm.expect(wp.workPackageNumber).to.eql(1);\r",
+									"    pm.expect(wp.activities).to.have.length(3);\r",
+									"    pm.expect(wp.outputs).to.have.length(1);\r",
+									"});\r",
+									"\r",
+									"pm.test('assert second work package data', function() {\r",
+									"    const wp = pm.response.json()[1];\r",
+									"\r",
+									"    pm.expect(wp.workPackageNumber).to.eql(2);\r",
+									"    pm.expect(wp.activities).to.have.length(3);\r",
+									"    pm.expect(wp.outputs).to.have.length(2);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{applicant_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/project/{{application_id}}/workPackage/withOutputsAndActivities",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"{{application_id}}",
+								"workPackage",
+								"withOutputsAndActivities"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Project Report - add partner and contract previous project",
+			"item": [
+				{
+					"name": "Partner 2 + budget",
+					"item": [
+						{
+							"name": "create project partner",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('applicant can create project partner', function() {\r",
+											"    const partner = pm.response.json();\r",
+											"    pm.response.to.have.status(200);\r",
+											"    pm.variables.set('partner_id_2', partner.id);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"abbreviation\": \"{{$randomAbbreviation}} {{$randomCompanySuffix}}\",\r\n    \"role\": \"PARTNER\",\r\n    \"legalStatusId\": 1,\r\n    \"nameInOriginalLanguage\": \"{{$randomCatchPhrase}}\",\r\n    \"nameInEnglish\": \"{{$randomPhrase}}\",\r\n    \"otherIdentifierNumber\": \"{{$randomBankAccount}}\",\r\n    \"otherIdentifierDescription\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"{{$randomBankAccountIban}}\"\r\n        }\r\n    ],\r\n    \"partnerType\": \"NationalPublicAuthority\",\r\n    \"vat\": \"{{$randomPhoneNumber}}\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project/partner/toProjectId/{{application_id}}",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"partner",
+										"toProjectId",
+										"{{application_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "fill in address",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const partner = pm.response.json();\r",
+											"\r",
+											"pm.test('applicant can remove addresses from partner', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test('just one address is now returned', function() {\r",
+											"    pm.expect(partner.addresses.length).to.eql(1);\r",
+											"});\r",
+											"\r",
+											"pm.test('address is saved correctly', function() {\r",
+											"    const addr = partner.addresses[0];\r",
+											"    pm.expect(addr.type).to.eql(\"Organization\");\r",
+											"    pm.expect(addr.country).to.eql(\"Honduras (HN)\");\r",
+											"    pm.expect(addr.street).to.eql(\"Pennsylvania Avenue\");\r",
+											"    pm.expect(addr.houseNumber).to.eql(\"1600\");\r",
+											"    pm.expect(addr.postalCode).to.eql(\"20500\");\r",
+											"    pm.expect(addr.city).to.eql(\"Washington, DC\");\r",
+											"    pm.expect(addr.homepage).to.eql(\"https://www.whitehouse.gov/\");\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "[\r\n    {\r\n        \"type\": \"Organization\",\r\n        \"country\":\"Honduras (HN)\",\r\n        \"nutsRegion2\":\"Honduras (HN00)\",\r\n        \"nutsRegion3\":\"Honduras (HN000)\",\r\n        \"street\": \"Pennsylvania Avenue\",\r\n        \"houseNumber\": \"1600\",\r\n        \"postalCode\": \"20500\",\r\n        \"city\": \"Washington, DC\",\r\n        \"homepage\": \"https://www.whitehouse.gov/\"\r\n    }\r\n]\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project/partner/{{partner_id_2}}/address",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"partner",
+										"{{partner_id_2}}",
+										"address"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "set budget - staff costs",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('applicant can set budget staff costs', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test('staffcosts are set correctly', function() {\r",
+											"    const staffCosts = pm.response.json();\r",
+											"    pm.expect(staffCosts.length).to.eql(2);\r",
+											"});\r",
+											"\r",
+											"pm.test('staffcosts sums are calculated correctly', function() {\r",
+											"    const staffCosts = pm.response.json();\r",
+											"    pm.expect(staffCosts[0].rowSum + staffCosts[1].rowSum).to.eql(48800);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "[\r\n    {\r\n        \"description\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"Project Manager\"\r\n            }\r\n        ],\r\n        \"numberOfUnits\": 10,\r\n        \"pricePerUnit\": 4500,\r\n        \"rowSum\": 45000\r\n    },\r\n    {\r\n        \"description\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"Doctor\"\r\n            }\r\n        ],\r\n        \"numberOfUnits\": 1,\r\n        \"pricePerUnit\": 3800,\r\n        \"rowSum\": 3800\r\n    }\r\n]\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project/partner/{{partner_id_2}}/budget/staffcosts",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"partner",
+										"{{partner_id_2}}",
+										"budget",
+										"staffcosts"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "set budget - travel",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('applicant can set budgettravel', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test('travel is set correctly', function() {\r",
+											"    const travel = pm.response.json();\r",
+											"    pm.expect(travel.length).to.eql(1);\r",
+											"    pm.expect(travel[0].numberOfUnits).to.eql(0.19);\r",
+											"    pm.expect(travel[0].pricePerUnit).to.eql(0.99);\r",
+											"    pm.expect(travel[0].rowSum).to.eql(0.18);\r",
+											"});\r",
+											"\r",
+											"pm.test('description translation is persisted correctly', function() {\r",
+											"    const description = pm.response.json()[0].description.find(desc => desc.language === pm.variables.get('inputLanguage')).translation;\r",
+											"    pm.expect(description).to.eql('Gran Canaria');\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "[\r\n    {\r\n        \"description\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"Gran Canaria\"\r\n            }\r\n        ],\r\n        \"numberOfUnits\": 0.19,\r\n        \"pricePerUnit\": 0.99,\r\n        \"rowSum\": 0.18\r\n    }\r\n]\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project/partner/{{partner_id_2}}/budget/travel",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"partner",
+										"{{partner_id_2}}",
+										"budget",
+										"travel"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "set budget - infrastructure",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('applicant can set infrastructure budget', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test('infrastructure budget is set correctly', function() {\r",
+											"    const infrastructure = pm.response.json();\r",
+											"    pm.expect(infrastructure.length).to.eql(1);\r",
+											"    pm.expect(infrastructure[0].numberOfUnits).to.eql(2);\r",
+											"    pm.expect(infrastructure[0].pricePerUnit).to.eql(0.5);\r",
+											"    pm.expect(infrastructure[0].rowSum).to.eql(1);\r",
+											"});\r",
+											"\r",
+											"pm.test('description translation is persisted correctly', function() {\r",
+											"    const description = pm.response.json()[0].description.find(desc => desc.language === pm.variables.get('inputLanguage')).translation;\r",
+											"    pm.expect(description).to.eql('Dell Aspiron');\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "[\r\n    {\r\n        \"description\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"Dell Aspiron\"\r\n            }\r\n        ],\r\n        \"numberOfUnits\": 2,\r\n        \"pricePerUnit\": 0.5,\r\n        \"rowSum\": 1\r\n    }\r\n]\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project/partner/{{partner_id_2}}/budget/infrastructure",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"partner",
+										"{{partner_id_2}}",
+										"budget",
+										"infrastructure"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "set staff costs flatRate",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('applicant can set staffCosts flatRate', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"staffCostsFlatRate\": 10\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project/partner/{{partner_id_2}}/budget/options",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"partner",
+										"{{partner_id_2}}",
+										"budget",
+										"options"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "calculate total",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('total is calculated correctly', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    pm.expect(pm.response.json()).to.eql(1.29);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/api/project/partner/{{partner_id_2}}/budget/total",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"partner",
+										"{{partner_id_2}}",
+										"budget",
+										"total"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "Partner 1 + budget",
+					"item": [
+						{
+							"name": "create project Lead partner",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const partnerAbbr = pm.variables.replaceIn('{{$randomAbbreviation}}') + ' ' + pm.variables.replaceIn('{{$randomCompanySuffix}}')\r",
+											"pm.variables.set(\r",
+											"    'partner_abbreviation',\r",
+											"    partnerAbbr.substr(0, 15)\r",
+											");\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('applicant can create project partner', function() {\r",
+											"    const partner = pm.response.json();\r",
+											"    pm.response.to.have.status(200);\r",
+											"    pm.variables.set('partner_id_lead', partner.id);\r",
+											"});\r",
+											"\r",
+											"pm.test('project partner has correct abbreviation', function() {\r",
+											"    const partner = pm.response.json();\r",
+											"    pm.expect(partner.abbreviation).to.eql(pm.variables.get('partner_abbreviation'));\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"abbreviation\": \"{{partner_abbreviation}}\",\r\n    \"role\": \"LEAD_PARTNER\",\r\n    \"legalStatusId\": 1,\r\n    \"nameInOriginalLanguage\": \"{{$randomCatchPhrase}}\",\r\n    \"nameInEnglish\": \"{{$randomPhrase}}\",\r\n    \"otherIdentifierNumber\": \"{{$randomBankAccount}}\",\r\n    \"otherIdentifierDescription\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"{{$randomBankAccountIban}}\"\r\n        }\r\n    ],\r\n    \"partnerType\": \"NationalPublicAuthority\",\r\n    \"vat\": \"{{$randomPhoneNumber}}\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project/partner/toProjectId/{{application_id}}",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"partner",
+										"toProjectId",
+										"{{application_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "fill in address",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const partner = pm.response.json();\r",
+											"\r",
+											"pm.test('applicant can remove addresses from partner', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test('just one address is now returned', function() {\r",
+											"    pm.expect(partner.addresses.length).to.eql(1);\r",
+											"});\r",
+											"\r",
+											"pm.test('address is saved correctly', function() {\r",
+											"    const addr = partner.addresses[0];\r",
+											"    pm.expect(addr.type).to.eql(\"Organization\");\r",
+											"    pm.expect(addr.country).to.eql(\"Somalia (SO)\");\r",
+											"    pm.expect(addr.street).to.eql(\"Pennsylvania Avenue\");\r",
+											"    pm.expect(addr.houseNumber).to.eql(\"1600\");\r",
+											"    pm.expect(addr.postalCode).to.eql(\"20500\");\r",
+											"    pm.expect(addr.city).to.eql(\"Washington, DC\");\r",
+											"    pm.expect(addr.homepage).to.eql(\"https://www.whitehouse.gov/\");\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "[\r\n    {\r\n        \"type\": \"Organization\",\r\n        \"country\":\"Somalia (SO)\",\r\n        \"nutsRegion2\":\"Somalia (SO00)\",\r\n        \"nutsRegion3\":\"Somalia (SO000)\",\r\n        \"street\": \"Pennsylvania Avenue\",\r\n        \"houseNumber\": \"1600\",\r\n        \"postalCode\": \"20500\",\r\n        \"city\": \"Washington, DC\",\r\n        \"homepage\": \"https://www.whitehouse.gov/\"\r\n    }\r\n]\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project/partner/{{partner_id_lead}}/address",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"partner",
+										"{{partner_id_lead}}",
+										"address"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "set budget - staff costs to Lead",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const staffCosts = pm.response.json();\r",
+											"\r",
+											"pm.test('applicant can set budget staff costs', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test('staffcosts are set correctly', function() {\r",
+											"    pm.expect(staffCosts.length).to.eql(2);\r",
+											"});\r",
+											"\r",
+											"pm.test('staffcosts sums are calculated correctly', function() {\r",
+											"    pm.expect(staffCosts[0].rowSum + staffCosts[1].rowSum).to.eql(22000);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "[\r\n    {\r\n        \"description\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"Teachers\"\r\n            }\r\n        ],\r\n        \"numberOfUnits\": 2,\r\n        \"pricePerUnit\": 8800,\r\n        \"rowSum\": 17600\r\n    },\r\n    {\r\n        \"description\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"Students\"\r\n            }\r\n        ],\r\n        \"numberOfUnits\": 22,\r\n        \"pricePerUnit\": 200,\r\n        \"rowSum\": 4400\r\n    }\r\n]\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project/partner/{{partner_id_lead}}/budget/staffcosts",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"partner",
+										"{{partner_id_lead}}",
+										"budget",
+										"staffcosts"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "set office and administration flatRate to Lead Partner",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('applicant can set officeadministration flatRate', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"officeAndAdministrationOnStaffCostsFlatRate\": 10\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project/partner/{{partner_id_lead}}/budget/options",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"partner",
+										"{{partner_id_lead}}",
+										"budget",
+										"options"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "calculate total for Lead",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('total is calculated correctly', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"    pm.expect(pm.response.json()).to.eql(24200);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/api/project/partner/{{partner_id_lead}}/budget/total",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"partner",
+										"{{partner_id_lead}}",
+										"budget",
+										"total"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "fill in contacts",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('applicant fill in contacts', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "[\r\n    {\r\n        \"type\": \"LegalRepresentative\",\r\n        \"title\": \"{{$randomNamePrefix}}\",\r\n        \"firstName\": \"{{$randomFirstName}}\",\r\n        \"lastName\": \"{{$randomLastName}}\",\r\n        \"email\": \"{{$randomEmail}}\",\r\n        \"telephone\": \"{{$randomPhoneNumber}}\"\r\n    },\r\n    {\r\n        \"type\": \"ContactPerson\",\r\n        \"title\": \"{{$randomNamePrefix}}\",\r\n        \"firstName\": \"{{$randomFirstName}}\",\r\n        \"lastName\": \"{{$randomLastName}}\",\r\n        \"email\": \"{{$randomEmail}}\",\r\n        \"telephone\": \"{{$randomPhoneNumber}}\"\r\n    }\r\n]",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project/partner/{{partner_id_lead}}/contact",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"partner",
+										"{{partner_id_lead}}",
+										"contact"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "set co-financing to Lead Partner",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('applicant can set Co-Finaning', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test('financing and funds are correct', function() {\r",
+											"    const finances = pm.response.json().finances;\r",
+											"    pm.expect(finances[0].percentage).to.eql(25);\r",
+											"    pm.expect(finances[0].fund).to.not.be.empty;\r",
+											"    pm.expect(finances[1].percentage).to.eql(75);\r",
+											"    pm.expect(finances[1].fund).to.be.null;\r",
+											"});\r",
+											"\r",
+											"pm.test('1st contribution is correct', function() {\r",
+											"    const contributions = pm.response.json().partnerContributions;\r",
+											"    pm.expect(contributions[0].name).to.eql(pm.variables.get('partner_abbreviation'));\r",
+											"    pm.expect(contributions[0].status).to.eql('Private');\r",
+											"    pm.expect(contributions[0].partner).to.be.true;\r",
+											"    pm.expect(contributions[0].amount).to.eql(5100);\r",
+											"});\r",
+											"\r",
+											"pm.test('2nd contribution is correct', function() {\r",
+											"    const contributions = pm.response.json().partnerContributions;\r",
+											"    pm.expect(contributions[1].name).to.eql('Source of money 01');\r",
+											"    pm.expect(contributions[1].status).to.eql('Public');\r",
+											"    pm.expect(contributions[1].partner).to.be.false;\r",
+											"    pm.expect(contributions[1].amount).to.eql(8000);\r",
+											"});\r",
+											"\r",
+											"pm.test('3rd contribution is correct', function() {\r",
+											"    const contributions = pm.response.json().partnerContributions;\r",
+											"    pm.expect(contributions[2].name).to.eql('Source of money 02');\r",
+											"    pm.expect(contributions[2].status).to.eql('AutomaticPublic');\r",
+											"    pm.expect(contributions[2].partner).to.be.false;\r",
+											"    pm.expect(contributions[2].amount).to.eql(3000);\r",
+											"});\r",
+											"\r",
+											"pm.test('4th contribution is correct', function() {\r",
+											"    const contributions = pm.response.json().partnerContributions;\r",
+											"    pm.expect(contributions[3].name).to.eql('Source of money 03');\r",
+											"    pm.expect(contributions[3].status).to.eql('Private');\r",
+											"    pm.expect(contributions[3].partner).to.be.false;\r",
+											"    pm.expect(contributions[3].amount).to.eql(2050);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"finances\": [\r\n        {\r\n            \"percentage\": 25,\r\n            \"fundType\": \"MainFund\",\r\n            \"fundId\": {{programmeFundId}}\r\n        },\r\n        {\r\n            \"percentage\": 75,\r\n            \"fundType\": \"PartnerContribution\"\r\n        }\r\n    ],\r\n    \"partnerContributions\": [\r\n        {\r\n            \"partner\": false,\r\n            \"name\": \"Source of money 01\",\r\n            \"status\": \"Public\",\r\n            \"amount\": 8000\r\n        },\r\n        {\r\n            \"partner\": true,\r\n            \"name\": \"THIS NAME SHOULD BE IGNORED\",\r\n            \"status\": \"Private\",\r\n            \"amount\": 5100\r\n        },\r\n        {\r\n            \"partner\": false,\r\n            \"name\": \"Source of money 02\",\r\n            \"status\": \"AutomaticPublic\",\r\n            \"amount\": 3000\r\n        },\r\n        {\r\n            \"partner\": false,\r\n            \"name\": \"Source of money 03\",\r\n            \"status\": \"Private\",\r\n            \"amount\": 2050\r\n        }\r\n    ]\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project/partner/{{partner_id_lead}}/budget/cofinancing",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"partner",
+										"{{partner_id_lead}}",
+										"budget",
+										"cofinancing"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					]
+				},
+				{
+					"name": "set to contracted",
+					"item": [
+						{
+							"name": "submit application",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('applicant can submit his application', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test('application has correct status', function() {\r",
+											"    pm.expect(pm.response.json()).to.eql('SUBMITTED');\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/api/project/{{application_id}}/submit",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"{{application_id}}",
+										"submit"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "enter QA",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('program user can enter QA', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{programme_user_password}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"result\": \"RECOMMENDED_FOR_FUNDING\",\r\n    \"note\": \"status set to recommended for funding\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project/{{application_id}}/assessment/quality",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"{{application_id}}",
+										"assessment",
+										"quality"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "enter EA",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('program user can enter EA', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{programme_user_password}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"result\": \"PASSED\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project/{{application_id}}/assessment/eligibility",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"{{application_id}}",
+										"assessment",
+										"eligibility"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "set ELIGIBLE",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"var date = new Date();\r",
+											"date.setDate(date.getDate() - 5);\r",
+											"pm.variables.set('eligibility_decision_date_minus_5', date.toISOString().split('T')[0]);\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('program user can change status to ELIGIBLE', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{programme_user_password}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"date\": \"{{eligibility_decision_date_minus_5}}\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project/{{application_id}}/set-as-eligible",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"{{application_id}}",
+										"set-as-eligible"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "set to APPROVED",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"var date = new Date();\r",
+											"date.setDate(date.getDate() - 2);\r",
+											"pm.variables.set('funding_decision_date_minus_2', date.toISOString().split('T')[0]);\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('programm user should be able to change final funding to APPROVED', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test('status should be set to APPROVED', function() {\r",
+											"    pm.expect(pm.response.json()).to.eql('APPROVED');\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{programme_user_password}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"date\": \"{{funding_decision_date_minus_2}}\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project/{{application_id}}/approve",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"{{application_id}}",
+										"approve"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "set to CONTRACTED",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('programm user should be able to set to CONTRACTED', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test('status should be set to CONTRACTED', function() {\r",
+											"    pm.expect(pm.response.json()).to.eql('CONTRACTED');\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{programme_user_password}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{programme_user_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"url": {
+									"raw": "{{url}}/api/project/{{application_id}}/set-to-contracted",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"{{application_id}}",
+										"set-to-contracted"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "create report for partner #1",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('programm user should be able to create partner report', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"    pm.variables.set('report_id_1', pm.response.json().id);\r",
+									"});\r",
+									"\r",
+									"pm.test('report should have number 1', function() {\r",
+									"    const report = pm.response.json();\r",
+									"    pm.expect(report.reportNumber).to.eql(1);\r",
+									"});\r",
+									"\r",
+									"pm.test('report should have status draft', function() {\r",
+									"    const report = pm.response.json();\r",
+									"    pm.expect(report.status).to.eql('Draft');\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{programme_user_password}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{programme_user_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/project/report/partner/create/{{partner_id_lead}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"report",
+								"partner",
+								"create",
+								"{{partner_id_lead}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get contribution",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('programm user should be able to retrieve partner report contribution', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('assert total amount', function() {\r",
+									"    const report = pm.response.json();\r",
+									"    pm.expect(report.overview.total.amount).to.eql(18150);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{programme_user_password}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{programme_user_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/project/report/partner/contribution/byPartnerId/{{partner_id_lead}}/byReportId/{{report_id_1}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"report",
+								"partner",
+								"contribution",
+								"byPartnerId",
+								"{{partner_id_lead}}",
+								"byReportId",
+								"{{report_id_1}}"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
 				}
 			]
 		},

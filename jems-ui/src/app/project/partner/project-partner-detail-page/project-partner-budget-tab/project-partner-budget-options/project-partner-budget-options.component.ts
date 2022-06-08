@@ -14,6 +14,7 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ProjectPartnerBudgetTabService} from '../project-partner-budget-tab.service';
 import {PartnerBudgetTables} from '@project/model/budget/partner-budget-tables';
 import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.data';
+import {Alert} from '@common/components/forms/alert';
 
 const flatRateValidator: (control: FormControl) => ValidatorFn = (checkBoxControl: FormControl) => (valueControl: FormControl): ValidationErrors | null => {
   if (checkBoxControl?.value && valueControl === null) {
@@ -24,7 +25,7 @@ const flatRateValidator: (control: FormControl) => ValidatorFn = (checkBoxContro
 
 @UntilDestroy()
 @Component({
-  selector: 'app-project-partner-budget-options',
+  selector: 'jems-project-partner-budget-options',
   templateUrl: './project-partner-budget-options.component.html',
   styleUrls: ['./project-partner-budget-options.component.scss'],
   providers: [FormService],
@@ -34,6 +35,7 @@ export class ProjectPartnerBudgetOptionsComponent implements OnInit {
 
   constants = ProjectPartnerBudgetOptionsConstants;
   Tools = Tools;
+  Alert = Alert;
 
   budgetOptionForm: FormGroup;
   data$: Observable<{
@@ -53,9 +55,9 @@ export class ProjectPartnerBudgetOptionsComponent implements OnInit {
   constructor(private formBuilder: FormBuilder,
               private formService: FormService,
               private tabService: ProjectPartnerBudgetTabService,
-              private pageStore: ProjectPartnerDetailPageStore
-  ) {
+              public pageStore: ProjectPartnerDetailPageStore) {
   }
+
 
   ngOnInit(): void {
     this.initForm();
@@ -247,12 +249,19 @@ export class ProjectPartnerBudgetOptionsComponent implements OnInit {
   private handleStaffCostsAndTravelCostsOptionsState(): void {
     combineLatest([
       this.tabService.isBudgetFormInEditMode$.pipe(startWith(false)),
+      this.tabService.isSPFBudgetFormInEditMode$.pipe(startWith(false)),
       this.pageStore.isProjectEditable$,
       this.isOtherCostsOnStaffCostsSelected.valueChanges.pipe(startWith(null)),
+      this.pageStore.canChangeContractedFlatRates$,
       this.formService.reset$.pipe(startWith(null))
     ]).pipe(
-      map(([isBudgetFormInEditMode, isProjectEditable, isOtherCostSelected]) => isBudgetFormInEditMode || !isProjectEditable || isOtherCostSelected),
-      tap(isDisabled => this.setControlsState(isDisabled, [this.isStaffCostsFlatRateSelected, this.staffCostsFlatRate, this.isTravelOnStaffCostsSelected, this.travelOnStaffCostsFlatRate])),
+      tap(([isBudgetFormInEditMode, isSPFBudgetFormInEditMode,  isProjectEditable, isOtherCostSelected, canChangeContractedFlatRates]) => {
+        const isDisabled = !isProjectEditable || isBudgetFormInEditMode || isSPFBudgetFormInEditMode || isOtherCostSelected;
+        this.setControlsState(isDisabled, [this.isStaffCostsFlatRateSelected, this.staffCostsFlatRate, this.isTravelOnStaffCostsSelected, this.travelOnStaffCostsFlatRate]);
+        if (!canChangeContractedFlatRates) {
+          this.disableCheckboxes();
+        }
+      }),
       untilDestroyed(this)
     ).subscribe();
   }
@@ -260,29 +269,42 @@ export class ProjectPartnerBudgetOptionsComponent implements OnInit {
   private handleOtherCostsOptionState(): void {
     combineLatest([
       this.tabService.isBudgetFormInEditMode$.pipe(startWith(false)),
+      this.tabService.isSPFBudgetFormInEditMode$.pipe(startWith(false)),
       this.pageStore.isProjectEditable$,
       this.isStaffCostsFlatRateSelected.valueChanges.pipe(startWith(null)),
       this.isOfficeOnDirectCostsSelected.valueChanges.pipe(startWith(null)),
       this.isOfficeOnStaffSelected.valueChanges.pipe(startWith(null)),
       this.isTravelOnStaffCostsSelected.valueChanges.pipe(startWith(null)),
+      this.pageStore.canChangeContractedFlatRates$,
       this.formService.reset$.pipe(startWith(null))
     ]).pipe(
-      map(([isBudgetFormInEditMode, isProjectEditable, isStaffCostsFlatRateSelected, isOfficeOnDirectCostsSelected, isOfficeOnStaffSelected, isTravelOnStaffCostsSelected]) => isBudgetFormInEditMode || !isProjectEditable || isStaffCostsFlatRateSelected || isOfficeOnDirectCostsSelected || isOfficeOnStaffSelected || isTravelOnStaffCostsSelected),
-      tap(isDisabled => this.setControlsState(isDisabled, [this.isOtherCostsOnStaffCostsSelected, this.otherCostsOnStaffCostsFlatRate])),
-      untilDestroyed(this)
+      tap(([isBudgetFormInEditMode, isSPFBudgetFormInEditMode, isProjectEditable, isStaffCostsFlatRateSelected, isOfficeOnDirectCostsSelected, isOfficeOnStaffSelected, isTravelOnStaffCostsSelected, canChangeContractedFlatRates]) => {
+        const isDisabled = !isProjectEditable || isBudgetFormInEditMode || isSPFBudgetFormInEditMode || isStaffCostsFlatRateSelected || isOfficeOnDirectCostsSelected || isOfficeOnStaffSelected || isTravelOnStaffCostsSelected;
+        this.setControlsState(isDisabled, [this.isOtherCostsOnStaffCostsSelected, this.otherCostsOnStaffCostsFlatRate]);
+        if (!canChangeContractedFlatRates) {
+          this.disableCheckboxes();
+        }
+      })
     ).subscribe();
   }
 
   private handleOfficeOnStaffCostsOptionState(): void {
     combineLatest([
       this.tabService.isBudgetFormInEditMode$.pipe(startWith(false)),
+      this.tabService.isSPFBudgetFormInEditMode$.pipe(startWith(false)),
       this.pageStore.isProjectEditable$,
       this.isOtherCostsOnStaffCostsSelected.valueChanges.pipe(startWith(null)),
       this.isOfficeOnDirectCostsSelected.valueChanges.pipe(startWith(null)),
+      this.pageStore.canChangeContractedFlatRates$,
       this.formService.reset$.pipe(startWith(null))
     ]).pipe(
-      map(([isBudgetFormInEditMode, isProjectEditable, isOtherCostSelected, isOfficeOnDirectCostSelected]) => isBudgetFormInEditMode || !isProjectEditable || isOtherCostSelected || isOfficeOnDirectCostSelected),
-      tap(isDisabled => this.setControlsState(isDisabled, [this.isOfficeOnStaffSelected, this.officeOnStaffCostsFlatRate])),
+      tap(([isBudgetFormInEditMode, isSPFBudgetFormInEditMode, isProjectEditable, isOtherCostSelected, isOfficeOnDirectCostSelected, canChangeContractedFlatRates]) => {
+        const isDisabled =  !isProjectEditable || isBudgetFormInEditMode || isSPFBudgetFormInEditMode || isOtherCostSelected || isOfficeOnDirectCostSelected;
+        this.setControlsState(isDisabled, [this.isOfficeOnStaffSelected, this.officeOnStaffCostsFlatRate]);
+        if (!canChangeContractedFlatRates) {
+          this.disableCheckboxes();
+        }
+      }),
       untilDestroyed(this)
     ).subscribe();
   }
@@ -290,13 +312,20 @@ export class ProjectPartnerBudgetOptionsComponent implements OnInit {
   private handleOfficeOnDirectCostsOptionState(): void {
     combineLatest([
       this.tabService.isBudgetFormInEditMode$.pipe(startWith(false)),
+      this.tabService.isSPFBudgetFormInEditMode$.pipe(startWith(false)),
       this.pageStore.isProjectEditable$,
       this.isOtherCostsOnStaffCostsSelected.valueChanges.pipe(startWith(null)),
       this.isOfficeOnStaffSelected.valueChanges.pipe(startWith(null)),
-      this.formService.reset$.pipe(startWith(null))
+      this.pageStore.canChangeContractedFlatRates$,
+      this.formService.reset$.pipe(startWith(null)),
     ]).pipe(
-      map(([isBudgetFormInEditMode, isProjectEditable, isOtherCostSelected, isOfficeOnStaffCostSelected]) => isBudgetFormInEditMode || !isProjectEditable || isOtherCostSelected || isOfficeOnStaffCostSelected),
-      tap(isDisabled => this.setControlsState(isDisabled, [this.isOfficeOnDirectCostsSelected, this.officeOnDirectCostsFlatRate])),
+      tap(([isBudgetFormInEditMode, isSPFBudgetFormInEditMode, isProjectEditable, isOtherCostSelected, isOfficeOnStaffCostSelected, canChangeContractedFlatRates]) => {
+        const isDisabled = !isProjectEditable || isBudgetFormInEditMode || isSPFBudgetFormInEditMode ||  isOtherCostSelected || isOfficeOnStaffCostSelected;
+        this.setControlsState(isDisabled, [this.isOfficeOnDirectCostsSelected, this.officeOnDirectCostsFlatRate]);
+        if (!canChangeContractedFlatRates) {
+          this.disableCheckboxes();
+        }
+      }),
       untilDestroyed(this)
     ).subscribe();
   }
@@ -319,6 +348,16 @@ export class ProjectPartnerBudgetOptionsComponent implements OnInit {
     for (const control of controls) {
       control.disable({emitEvent: false});
     }
+  }
+
+  private disableCheckboxes(): void {
+    this.setControlsState(true, [
+      this.isStaffCostsFlatRateSelected,
+      this.isTravelOnStaffCostsSelected,
+      this.isOtherCostsOnStaffCostsSelected,
+      this.isOfficeOnStaffSelected,
+      this.isOfficeOnDirectCostsSelected
+    ]);
   }
 
   get staffCostsFlatRate(): FormControl {

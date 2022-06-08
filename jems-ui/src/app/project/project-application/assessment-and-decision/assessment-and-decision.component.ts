@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
 import {Permission} from '../../../security/permissions/permission';
-import {ProjectDetailDTO, ProjectStatusDTO, UserRoleDTO} from '@cat/api';
+import {ProgrammeChecklistDetailDTO, ProjectDetailDTO, ProjectStatusDTO, UserRoleDTO} from '@cat/api';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {APIError} from '@common/models/APIError';
 import {TranslateService} from '@ngx-translate/core';
@@ -13,10 +13,11 @@ import {AssessmentAndDecisionStore} from '@project/project-application/assessmen
 import {ConfirmDialogData} from '@common/components/modals/confirm-dialog/confirm-dialog.data';
 
 @Component({
-  selector: 'app-assessment-and-decision',
+  selector: 'jems-assessment-and-decision',
   templateUrl: './assessment-and-decision.component.html',
   styleUrls: ['./assessment-and-decision.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [AssessmentAndDecisionStore]
 })
 export class AssessmentAndDecisionComponent {
 
@@ -24,6 +25,7 @@ export class AssessmentAndDecisionComponent {
   Permission = Permission;
   PermissionsEnum = UserRoleDTO.PermissionsEnum;
   STATUS = ProjectStatusDTO.StatusEnum;
+  ChecklistType = ProgrammeChecklistDetailDTO.TypeEnum;
   fileManagementSection = {type: FileCategoryTypeEnum.ASSESSMENT} as CategoryInfo;
 
   data$: Observable<{

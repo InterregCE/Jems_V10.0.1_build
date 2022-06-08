@@ -1,13 +1,11 @@
 {
-  "extends": "../tsconfig.json",
   "compilerOptions": {
-    "outDir": "../out-tsc/e2e",
-    "module": "commonjs",
     "target": "es5",
-    "types": [
-      "jasmine",
-      "jasminewd2",
-      "node"
-    ]
-  }
+    "lib": ["es2021", "dom"],
+    "types": ["cypress"],
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "resolveJsonModule": true
+  },
+  "include": ["**/*.ts"]
 }

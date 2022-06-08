@@ -3,7 +3,7 @@
         <mat-expansion-panel-header>
             <mat-panel-title>{{'project.assessment.check.header' | translate}}</mat-panel-title>
         </mat-expansion-panel-header>
-        <div appMultiColumnRow stretch class="mb-4">
+        <div jemsMultiColumnRow stretch class="mb-4">
             <div>{{'project.assessment.eligibilityCheck.title' | translate}}</div>
             <div>
                 <span *ngIf="decisions?.eligibilityAssessment">
@@ -11,22 +11,22 @@
                 </span>
             </div>
             <ng-container *ngIf="isAssessmentEditable(decisions?.eligibilityAssessment)">
-                <a *hasPermission="Permissions.ProjectAssessmentEligibilityEnter"
+                <a *jemsHasPermission="Permissions.ProjectAssessmentEligibilityEnter"
                    mat-stroked-button
-                   [routerLink]="['./assessment/eligibilityCheck', step]" queryParamsHandling="merge">
+                   [routerLink]="['./eligibilityCheck', step]" queryParamsHandling="merge">
                     {{'project.assessment.eligibilityCheck.assessment' | translate}}
                 </a>
             </ng-container>
             <ng-container *ngIf="!isAssessmentEditable(decisions?.eligibilityAssessment)">
-                <a *hasPermission="Permissions.ProjectAssessmentView"
+                <a *jemsHasPermission="Permissions.ProjectAssessmentView"
                    [disabled]="!decisions?.eligibilityAssessment"
                    mat-stroked-button
-                   [routerLink]="decisions?.eligibilityAssessment ? ['./assessment/eligibilityCheck', step] : []" queryParamsHandling="merge">
+                   [routerLink]="decisions?.eligibilityAssessment ? ['./eligibilityCheck', step] : []" queryParamsHandling="merge">
                     {{'project.assessment.eligibilityCheck.assessment.view' | translate}}
                 </a>
             </ng-container>
         </div>
-        <div appMultiColumnRow stretch>
+        <div jemsMultiColumnRow stretch>
             <div>{{'project.assessment.qualityCheck.title' | translate}}</div>
             <div>
                 <span *ngIf="decisions?.qualityAssessment">
@@ -34,18 +34,18 @@
                 </span>
             </div>
             <ng-container *ngIf="isAssessmentEditable(decisions?.qualityAssessment)">
-                <a *hasPermission="Permissions.ProjectAssessmentQualityEnter"
+                <a *jemsHasPermission="Permissions.ProjectAssessmentQualityEnter"
                    mat-stroked-button
                    [disabled]="currentVersionOfProjectStatus.status === stepStatus.ineligible"
-                   [routerLink]="currentVersionOfProjectStatus.status !== stepStatus.ineligible ? ['./assessment/qualityCheck', step] : []" queryParamsHandling="merge">
+                   [routerLink]="currentVersionOfProjectStatus.status !== stepStatus.ineligible ? ['./qualityCheck', step] : []" queryParamsHandling="merge">
                     {{'project.assessment.qualityCheck.assessment' | translate}}
                 </a>
             </ng-container>
             <ng-container *ngIf="!isAssessmentEditable(decisions?.qualityAssessment)">
-                <a *hasPermission="Permissions.ProjectAssessmentView"
+                <a *jemsHasPermission="Permissions.ProjectAssessmentView"
                    [disabled]="!decisions?.qualityAssessment"
                    mat-stroked-button
-                   [routerLink]="decisions?.qualityAssessment ? ['./assessment/qualityCheck', step] : []" queryParamsHandling="merge">
+                   [routerLink]="decisions?.qualityAssessment ? ['./qualityCheck', step] : []" queryParamsHandling="merge">
                     {{'project.assessment.qualityCheck.assessment.view' | translate}}
                 </a>
             </ng-container>

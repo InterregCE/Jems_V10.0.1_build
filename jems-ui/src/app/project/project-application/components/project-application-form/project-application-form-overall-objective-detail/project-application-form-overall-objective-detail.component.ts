@@ -1,27 +1,29 @@
 import {
   ChangeDetectionStrategy,
   Component,
-  EventEmitter,
   Input,
   OnChanges,
   OnInit,
-  Output,
   SimpleChanges
 } from '@angular/core';
-import {InputProjectOverallObjective, OutputProgrammePriorityPolicySimpleDTO} from '@cat/api';
+import {
+  InputProjectOverallObjective,
+  OutputProgrammePriorityPolicySimpleDTO,
+  ProjectDescriptionService
+} from '@cat/api';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {ActivatedRoute} from '@angular/router';
 import {TranslateService} from '@ngx-translate/core';
 import {BaseComponent} from '@common/components/base-component';
-import {HttpErrorResponse} from '@angular/common/http';
-import {Observable} from 'rxjs';
 import {FormService} from '@common/components/section/form/form.service';
-import {takeUntil, tap} from 'rxjs/operators';
+import {catchError, tap} from 'rxjs/operators';
 import {ProjectStore} from '../../../containers/project-application-detail/services/project-store.service';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {Alert} from '@common/components/forms/alert';
+import {Log} from '@common/utils/log';
 
 @Component({
-  selector: 'app-project-application-form-overall-objective-detail',
+  selector: 'jems-project-application-form-overall-objective-detail',
   templateUrl: './project-application-form-overall-objective-detail.component.html',
   styleUrls: ['./project-application-form-overall-objective-detail.component.scss'],
   providers: [FormService],
@@ -30,22 +32,16 @@ import {Alert} from '@common/components/forms/alert';
 export class ProjectApplicationFormOverallObjectiveDetailComponent extends BaseComponent implements OnInit, OnChanges {
 
   Alert = Alert;
-
   APPLICATION_FORM = APPLICATION_FORM;
-  // TODO: remove these and adapt the component to save independently
-  @Input()
-  error$: Observable<HttpErrorResponse | null>;
-  @Input()
-  success$: Observable<any>;
 
+  @Input()
+  projectId: number;
   @Input()
   editable: boolean;
   @Input()
-  project: InputProjectOverallObjective;
+  inputProjectOverallObjective: InputProjectOverallObjective;
   @Input()
   specificObjective: OutputProgrammePriorityPolicySimpleDTO;
-  @Output()
-  updateData = new EventEmitter<InputProjectOverallObjective>();
 
   overallObjectiveForm: FormGroup = this.formBuilder.group({
     projectSpecificObjective: ['', Validators.required],
@@ -55,36 +51,32 @@ export class ProjectApplicationFormOverallObjectiveDetailComponent extends BaseC
   constructor(private formBuilder: FormBuilder,
               private formService: FormService,
               private translate: TranslateService,
-              private projectStore: ProjectStore) {
+              private projectStore: ProjectStore,
+              private activatedRoute: ActivatedRoute,
+              private projectDescriptionService: ProjectDescriptionService) {
     super();
   }
 
   ngOnInit(): void {
     this.formService.init(this.overallObjectiveForm, this.projectStore.projectEditable$);
-    this.error$
-      .pipe(
-        takeUntil(this.destroyed$),
-        tap(err => this.formService.setError(err))
-      )
-      .subscribe();
-    this.success$
-      .pipe(
-        takeUntil(this.destroyed$),
-        tap(() => this.formService.setSuccess('project.application.form.overall.objective.save.success'))
-      )
-      .subscribe();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes.project || changes.specificObjective) {
+    if (changes.inputProjectOverallObjective || changes.specificObjective) {
       this.resetForm();
     }
   }
 
   onSubmit(): void {
-    this.updateData.emit({
-      overallObjective: this.overallObjectiveForm.get('projectOverallObjective')?.value
-    });
+    this.projectDescriptionService.updateProjectOverallObjective(this.projectId,
+      <InputProjectOverallObjective>{
+        overallObjective: this.overallObjectiveForm.get('projectOverallObjective')?.value
+      })
+      .pipe(
+        tap(saved => Log.info('Updated project overall objective:', this, saved)),
+        tap(() => this.formService.setSuccess('project.application.form.save.success')),
+        catchError(error => this.formService.setError(error))
+      ).subscribe();
   }
 
   resetForm(): void {
@@ -95,6 +87,7 @@ export class ProjectApplicationFormOverallObjectiveDetailComponent extends BaseC
           .concat(this.translate.instant('programme.policy.' + this.specificObjective.programmeObjectivePolicy))
       );
     }
-    this.overallObjectiveForm.get('projectOverallObjective')?.setValue(this.project?.overallObjective || []);
+    this.overallObjectiveForm.get('projectOverallObjective')?.setValue(
+      this.inputProjectOverallObjective?.overallObjective || []);
   }
 }

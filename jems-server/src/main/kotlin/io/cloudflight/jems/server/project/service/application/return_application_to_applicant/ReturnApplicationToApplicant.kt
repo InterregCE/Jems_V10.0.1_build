@@ -26,7 +26,7 @@ class ReturnApplicationToApplicant(
     @Transactional
     @ExceptionWrapper(ReturnApplicationToApplicantException::class)
     override fun returnToApplicant(projectId: Long): ApplicationStatus =
-        createNewProjectVersion.create(projectId, ApplicationStatus.RETURNED_TO_APPLICANT).let { newProjectVersion ->
+        createNewProjectVersion.create(projectId).let { newProjectVersion ->
             projectPersistence.getProjectSummary(projectId).let { projectSummary ->
                 applicationStateFactory.getInstance(projectSummary).returnToApplicant().also {
                     auditPublisher.publishEvent(projectStatusChanged(this, projectSummary, newStatus = it))

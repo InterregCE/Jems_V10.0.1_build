@@ -1,40 +1,40 @@
-<form id="stateAids" appFormLayout [formGroup]="stateAidForm">
+<form id="stateAids" jemsFormLayout [formGroup]="stateAidForm">
     <div>
         <h3 class="mb-2">{{'programme.state.aid.list.title' | translate}}</h3>
-        <button appText color="primary" mat-raised-button
+        <button jemsText color="primary" mat-raised-button
                 *ngIf="(changeFormState$ | async) === FormState.VIEW && (programmeEditableStateStore.hasEditPermission$ | async) && stateAids.length > 0"
                 (click)="changeFormState$.next(FormState.EDIT)">
             {{'common.edit.label' | translate}}
         </button>
-        <button appText mat-stroked-button
-                *ngIf="(changeFormState$ | async) === FormState.VIEW && (programmeEditableStateStore.hasEditPermission$ | async) && stateAids.length == 0"
+        <button jemsText mat-stroked-button
+                *ngIf="(changeFormState$ | async) === FormState.VIEW && (programmeEditableStateStore.hasEditPermission$ | async) && stateAids.length === 0"
                 (click)="addNewStateAidAndChangeFormState()">
             <mat-icon>add</mat-icon>&nbsp;{{ 'programme.state.aid.add' | translate }}
         </button>
     </div>
-    <app-multi-language-container
+    <jems-multi-language-container
                 *ngIf="stateAids.length > 0 || (changeFormState$ | async) !== FormState.VIEW"
-                appNoWidthLimit [useSystemLanguages]="true"
+                jemsNoWidthLimit [useSystemLanguages]="true"
                 [switchButtonsVisible]="(changeFormState$ | async) === FormState.EDIT">
-        <div [appTableConfig]="tableConfig">
+        <div [jemsTableConfig]="tableConfig">
             <div>
                 <span class="mat-body-strong">{{ 'programme.state.aid.list.measure' | translate }}</span>
                 <span class="mat-body-strong">{{ 'programme.state.aid.list.name' | translate }}</span>
                 <div class="mat-body-strong">
                     {{ 'programme.state.aid.list.abbreviated.name' | translate }}
-                    <app-context-info
+                    <jems-context-info
                             infoText="{{'programme.state.aid.list.abbreviated.name.info' | translate}}"
                             infoPosition="right">
-                    </app-context-info>
+                    </jems-context-info>
                 </div>
                 <span class="mat-body-strong">{{ 'programme.state.aid.list.gber.scheme.number' | translate }}</span>
                 <span class="mat-body-strong">{{ 'programme.state.aid.list.maximum.intensity' | translate }}</span>
                 <div class="mat-body-strong">
                     {{ 'programme.state.aid.list.threshold' | translate }}
-                    <app-context-info
+                    <jems-context-info
                             infoText="{{'programme.state.aid.list.threshold.info' | translate}}"
                             infoPosition="right">
-                    </app-context-info>
+                    </jems-context-info>
                     <div class="context-info-space-for-tooltip"></div>
                 </div>
 
@@ -58,36 +58,36 @@
                                 </mat-option>
                             </mat-autocomplete>
                             <mat-error>
-                                <app-form-field-errors
+                                <jems-form-field-errors
                                         [errors]="stateAid.get('measure')?.errors">
-                                </app-form-field-errors>
+                                </jems-form-field-errors>
                             </mat-error>
                         </mat-form-field>
 
-                        <app-multi-language-form-field
+                        <jems-multi-language-form-field
                                 formControlName="name"
                                 maxLength="250"
                                 minRows="6"
                                 maxRows="6"
                                 type="textarea"
                                 [useFallBackLanguage]="true">
-                        </app-multi-language-form-field>
+                        </jems-multi-language-form-field>
 
-                        <app-multi-language-form-field
+                        <jems-multi-language-form-field
                                 formControlName="abbreviatedName"
                                 maxLength="50"
                                 [useFallBackLanguage]="true">
-                        </app-multi-language-form-field>
+                        </jems-multi-language-form-field>
 
                         <mat-form-field>
                             <input #schemeNumberInput name="schemeNumber" formControlName="schemeNumber" matInput>
-                            <mat-hint [appHintFor]="schemeNumberInput" [hide]="stateAid.get('schemeNumber')?.errors !== null">
-                                <app-text-hint [currentLength]="schemeNumberInput?.value?.length" [maxLength]="25"></app-text-hint>
+                            <mat-hint [jemsHintFor]="schemeNumberInput" [hide]="stateAid.get('schemeNumber')?.errors !== null">
+                                <jems-text-hint [currentLength]="schemeNumberInput?.value?.length" [maxLength]="25"></jems-text-hint>
                             </mat-hint>
                             <mat-error>
-                                <app-form-field-errors
+                                <jems-form-field-errors
                                         [errors]="stateAid.get('schemeNumber')?.errors">
-                                </app-form-field-errors>
+                                </jems-form-field-errors>
                             </mat-error>
                         </mat-form-field>
 
@@ -97,9 +97,9 @@
                                    matInput>
                             <div matSuffix class="pl-1">%</div>
                             <mat-error>
-                                <app-form-field-errors
+                                <jems-form-field-errors
                                         [errors]="stateAid.get('maxIntensity')?.errors">
-                                </app-form-field-errors>
+                                </jems-form-field-errors>
                             </mat-error>
                         </mat-form-field>
 
@@ -107,20 +107,20 @@
                             <input currencyMask type="decimal" [options]="{nullable: true, align: 'right'}"
                                    name="threshold" formControlName="threshold" matInput>
                             <mat-error>
-                                <app-form-field-errors
+                                <jems-form-field-errors
                                         [errors]="stateAid.get('threshold')?.errors">
-                                </app-form-field-errors>
+                                </jems-form-field-errors>
                             </mat-error>
                         </mat-form-field>
 
-                        <app-multi-language-form-field
+                        <jems-multi-language-form-field
                                 formControlName="comments"
                                 maxLength="500"
                                 minRows="6"
                                 maxRows="6"
                                 type="textarea"
                                 [useFallBackLanguage]="true">
-                        </app-multi-language-form-field>
+                        </jems-multi-language-form-field>
 
                         <div *ngIf="(changeFormState$ | async) === FormState.EDIT">
                             <button mat-icon-button color="accent"
@@ -146,8 +146,8 @@
                 </div>
             </div>
         </div>
-    </app-multi-language-container>
-    <div appMultiColumnRow *ngIf="(changeFormState$ | async) === FormState.EDIT">
+    </jems-multi-language-container>
+    <div jemsMultiColumnRow *ngIf="(changeFormState$ | async) === FormState.EDIT">
         <button mat-stroked-button type="button"
                 (click)="resetForm()">
             {{'common.cancel.label' | translate}}
@@ -158,15 +158,15 @@
             {{'common.save.label' | translate}}
         </button>
     </div>
-    <app-alert
+    <jems-alert
             [show]="!submitted && (showSuccessMessage$ | async)"
             [type]="Alert.SUCCESS">
         <p *ngIf="success$ | async as successMessage">{{successMessage | translate}}</p>
-    </app-alert>
-    <app-alert *ngIf="error$ | async as error"
+    </jems-alert>
+    <jems-alert *ngIf="error$ | async as error"
                [show]="!submitted && !!error.i18nMessage?.i18nKey"
                [type]="Alert.ERROR">
-        <app-api-error-content [error]="error"></app-api-error-content>
-    </app-alert>
+        <jems-api-error-content [error]="error"></jems-api-error-content>
+    </jems-alert>
 
 </form>

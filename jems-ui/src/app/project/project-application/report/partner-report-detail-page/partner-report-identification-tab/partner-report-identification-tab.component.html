@@ -1,0 +1,169 @@
+<jems-form *ngIf="data$ | async as data"
+           (discard)="resetForm(data.identification)"
+           (save)="saveIdentification()">
+
+    <h3>{{'project.application.partner.report.sub.title' | translate}}</h3>
+
+    <div id="report-info" class="mb-5">
+        <div class="project-row">
+            <span class="header p-1 pr-3">{{'project.detail.table.id.application' | translate}}</span>
+            <span class="p-1">{{data.partnerReport?.identification?.projectIdentifier}} - {{data.partnerReport?.identification?.projectAcronym}}</span>
+        </div>
+        <div class="project-row">
+            <span class="header p-1 pr-3">{{'project.application.partner.report.id' | translate}}</span>
+            <span class="p-1">R.{{data.partnerReport.reportNumber}}</span>
+        </div>
+        <div class="project-row">
+            <span class="header p-1 pr-3">{{'project.application.partner.report.status' | translate}}</span>
+            <span class="p-1">{{'project.application.partner.report.table.status.' + data.partnerReport.status.toLowerCase() | translate}}</span>
+        </div>
+        <div class="project-row">
+            <span class="header p-1 pr-3">{{'project.application.form.partner.table.number' | translate}}</span>
+            <span class="p-1">{{'common.label.project.partner.role.shortcut.' + data.partnerReport?.identification?.partnerRole | adaptTranslationKeyByCallType | async | translate : {partner: data.partnerReport?.identification?.partnerNumber} }}</span>
+        </div>
+        <div class="project-row">
+            <span class="header p-1 pr-3">{{'project.organization.original.name.label' | translate}}</span>
+            <span class="p-1">{{data.partnerReport.identification?.nameInOriginalLanguage}}</span>
+        </div>
+        <div class="project-row">
+            <span class="header p-1 pr-3">{{'project.organization.english.name.label' | translate}}</span>
+            <span class="p-1">{{data.partnerReport.identification?.nameInEnglish}}</span>
+        </div>
+        <div class="project-row">
+            <span class="header p-1 pr-3">{{'project.partner.legal.status' | translate}}</span>
+            <span class="p-1">{{data.partnerReport.identification?.legalStatus.description | translateBySystemLanguage | async}}</span>
+            </div>
+        <div class="project-row">
+            <span class="header p-1 pr-3">{{'project.partner.type' | translate}}</span>
+            <span class="p-1" *ngIf="data.partnerReport.identification?.partnerType">
+                {{'project.application.form.relevance.target.group.' + data.partnerReport.identification?.partnerType | translate}}
+            </span>
+        </div>
+        <div class="project-row" *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.VAT_RECOVERY">
+            <span class="header p-1 pr-3">{{'project.application.partner.report.organisation.vat.recovery' | translate}}</span>
+            <span class="p-1">{{data.partnerReport.identification?.vatRecovery}}</span>
+        </div>
+        <div class="project-row">
+            <span class="header p-1 pr-3">{{'project.application.partner.report.co.financing.source.and.rate' | translate}}</span>
+            <ul class="fund-list">
+                <li *ngFor="let cofinancing of data.partnerReport.identification?.coFinancing" class="p-1">{{(cofinancing?.fund.abbreviation | translateBySystemLanguage | async) + ' ' + (cofinancing?.percentage | asMoney) + '%' }}</li>
+            </ul>
+        </div>
+        <div class="project-row">
+            <span class="header p-1 pr-3">{{'project.application.partner.report.partner.country' | translate}}</span>
+            <span class="p-1">{{data.partnerReport.identification?.country}}</span>
+        </div>
+        <div class="project-row">
+            <span class="header p-1 pr-3">{{'project.application.partner.report.local.currency' | translate}}</span>
+            <span class="p-1">{{ data.partnerReport.identification?.currency ? data.partnerReport.identification.currency : ('project.application.partner.report.local.currency.not.found' | translate)}}</span>
+        </div>
+    </div>
+
+    <form [formGroup]="form" jemsFormLayout>
+        <div jemsMultiColumnRow>
+            <mat-form-field jemsFormFieldWidth="half">
+                <mat-label>{{'project.application.partner.report.start.date' | translate | dateFormatInfo : false}}</mat-label>
+                <input [max]="form?.controls?.endDate?.value"
+                       formControlName="startDate"
+                       [matDatepicker]="start"
+                       matInput
+                       name="startDate">
+                <mat-datepicker-toggle [for]="start" matSuffix>
+                </mat-datepicker-toggle>
+                <mat-datepicker #start></mat-datepicker>
+                <mat-error>
+                    <jems-form-field-errors
+                            [args]="dateNameArgs"
+                            [errors]="form?.controls?.startDate?.errors"
+                            [messages]="inputErrorMessages"
+                    >
+                    </jems-form-field-errors>
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field jemsFormFieldWidth="half">
+                <mat-label>{{'project.application.partner.report.end.date' | translate | dateFormatInfo : false}}</mat-label>
+                <input [min]="form?.controls?.startDate?.value"
+                       formControlName="endDate" matInput
+                       [matDatepicker]="end"
+                       name="endDate">
+                <mat-datepicker-toggle [for]="end" matSuffix>
+                </mat-datepicker-toggle>
+                <mat-datepicker #end ></mat-datepicker>
+                <mat-error>
+                    <jems-form-field-errors
+                            [args]="dateNameArgs"
+                            [errors]="form?.controls?.endDate?.errors"
+                            [messages]="inputErrorMessages"
+                    >
+                    </jems-form-field-errors>
+                </mat-error>
+            </mat-form-field>
+        </div>
+
+        <div jemsFormFieldWidth="xxx-large">
+            <jems-project-periods-select
+                    [periods]="data.periods"
+                    [control]="form?.controls?.period"
+                    label='project.application.partner.report.reporting.period'
+                    (selectionChanged)="formService.setDirty(true)">
+            </jems-project-periods-select>
+        </div>
+
+        <h3 >{{'project.application.partner.report.sub.title.two' | translate}}</h3>
+        <p>{{'project.application.partner.report.sub.title.two.description' | translate}}</p>
+        <div jemsFormFieldWidth="full">
+            <jems-multi-language-container>
+                <jems-multi-language-form-field
+                        [maxLength]="2000"
+                        label="common.textarea.enter.text"
+                        formControlName="summary"
+                        type="textarea">
+                </jems-multi-language-form-field>
+            </jems-multi-language-container>
+        </div>
+
+        <h3>{{'project.application.partner.report.sub.title.three' | translate}}</h3>
+        <p>{{'project.application.partner.report.sub.title.three.description' | translate}}</p>
+        <div jemsFormFieldWidth="full">
+            <jems-multi-language-container>
+                <jems-multi-language-form-field
+                        [maxLength]="2000"
+                        label="common.textarea.enter.text"
+                        formControlName="problemsAndDeviations"
+                        type="textarea">
+                </jems-multi-language-form-field>
+            </jems-multi-language-container>
+        </div>
+
+        <ng-container *ngIf="data.identification.targetGroups.length>0">
+            <h3>{{'project.application.partner.report.sub.title.four' | translate}}</h3>
+            <p>{{'project.application.partner.report.sub.title.four.description' | translate}}</p>
+
+            <jems-multi-language-container jemsNoWidthLimit >
+                <div formArrayName="targetGroups" [jemsTableConfig]="[{maxInRem: 20},{}]">
+                    <div>
+                        <span class="mat-body-strong">{{ 'project.application.form.relevance.target.group' | translate }}</span>
+                        <span class="mat-body-strong">{{ 'project.application.partner.report.target.group.description' | translate }}</span>
+                    </div>
+                    <div *ngFor="let targetGroup of data.identification.targetGroups;let i=index">
+                        <ng-container >
+                            <ng-container [formGroupName]="i">
+                                <span>{{'project.application.form.relevance.target.group.' + targetGroup.type | translate}}</span>
+                                <div>
+                                    <jems-multi-language-form-field
+                                            label="common.textarea.enter.text"
+                                            type="textarea"
+                                            formControlName="description"
+                                            maxLength="2000"
+                                            minRows="1">
+                                    </jems-multi-language-form-field>
+                                </div>
+                            </ng-container>
+                        </ng-container>
+                    </div>
+                </div>
+            </jems-multi-language-container>
+        </ng-container>
+    </form>
+</jems-form>

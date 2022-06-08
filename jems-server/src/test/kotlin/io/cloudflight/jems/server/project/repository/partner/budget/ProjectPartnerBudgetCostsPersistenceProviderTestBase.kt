@@ -11,6 +11,7 @@ import io.cloudflight.jems.server.project.entity.partner.budget.general.ProjectP
 import io.cloudflight.jems.server.project.entity.partner.budget.general.equipment.ProjectPartnerBudgetEquipmentEntity
 import io.cloudflight.jems.server.project.entity.partner.budget.general.external.ProjectPartnerBudgetExternalEntity
 import io.cloudflight.jems.server.project.entity.partner.budget.general.infrastructure.ProjectPartnerBudgetInfrastructureEntity
+import io.cloudflight.jems.server.project.entity.partner.budget.spf.ProjectPartnerBudgetSpfCostEntity
 import io.cloudflight.jems.server.project.entity.partner.budget.staff_cost.ProjectPartnerBudgetStaffCostEntity
 import io.cloudflight.jems.server.project.entity.partner.budget.staff_cost.ProjectPartnerBudgetStaffCostRow
 import io.cloudflight.jems.server.project.entity.partner.budget.travel.ProjectPartnerBudgetTravelCostRow
@@ -24,6 +25,7 @@ import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepos
 import io.cloudflight.jems.server.project.service.partner.model.BaseBudgetEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetGeneralCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetPeriod
+import io.cloudflight.jems.server.project.service.partner.model.BudgetSpfCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetStaffCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetTravelAndAccommodationCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetUnitCostEntry
@@ -81,6 +83,9 @@ open class ProjectPartnerBudgetCostsPersistenceProviderTestBase : UnitTest() {
     lateinit var budgetUnitCostRepository: ProjectPartnerBudgetUnitCostRepository
 
     @MockK
+    lateinit var budgetSpfCostRepository: ProjectPartnerBudgetSpfCostRepository
+
+    @MockK
     lateinit var budgetPartnerLumpSumRepository: ProjectPartnerLumpSumRepository
 
     @InjectMockKs
@@ -134,6 +139,7 @@ open class ProjectPartnerBudgetCostsPersistenceProviderTestBase : UnitTest() {
         val externalEntity = projectPartnerBudgetExternalEntity()
         val equipmentEntity = projectPartnerBudgetEquipmentEntity()
         val unitCostEntity = projectPartnerBudgetUnitCostEntity()
+        val spfCostEntity = projectPartnerBudgetSpfCostEntity()
         return listOf(
             CurrentVersionOfBudgetCostTestInput(
                 "staff costs", staffCostEntity, budgetStaffCostRepository,
@@ -158,6 +164,10 @@ open class ProjectPartnerBudgetCostsPersistenceProviderTestBase : UnitTest() {
             CurrentVersionOfBudgetCostTestInput(
                 "unit costs", unitCostEntity, budgetUnitCostRepository,
                 persistence::getBudgetUnitCosts, budgetUnitCostEntry(unitCostEntity)
+            ),
+            CurrentVersionOfBudgetCostTestInput(
+                "spf costs", spfCostEntity, budgetSpfCostRepository,
+                persistence::getBudgetSpfCosts, budgetSpfCostEntry(spfCostEntity)
             )
         )
     }
@@ -337,6 +347,29 @@ open class ProjectPartnerBudgetCostsPersistenceProviderTestBase : UnitTest() {
         return mockRow
     }
 
+    private fun projectPartnerBudgetSpfCostEntity() =
+        ProjectPartnerBudgetSpfCostEntity(
+            id = entityId,
+            baseProperties = BaseBudgetProperties(
+                partnerId = partnerId,
+                numberOfUnits = BigDecimal.ONE,
+                rowSum = BigDecimal.TEN
+            ),
+            pricePerUnit = BigDecimal.TEN,
+            budgetPeriodEntities = mutableSetOf(),
+            unitCostId = unitCostId
+        )
+
+    private fun budgetSpfCostEntry(entity: ProjectPartnerBudgetSpfCostEntity) =
+        BudgetSpfCostEntry(
+            id = entity.id,
+            budgetPeriods = mutableSetOf(),
+            unitCostId = entity.unitCostId,
+            numberOfUnits = entity.baseProperties.numberOfUnits,
+            pricePerUnit = entity.pricePerUnit,
+            rowSum = entity.baseProperties.rowSum
+        )
+
     private fun projectPartnerBudgetInfrastructureEntity() =
         ProjectPartnerBudgetInfrastructureEntity(
             id = entityId,
@@ -438,7 +471,13 @@ open class ProjectPartnerBudgetCostsPersistenceProviderTestBase : UnitTest() {
                 rowSum = BigDecimal.TEN
             ),
             budgetPeriodEntities = mutableSetOf(),
-            unitCost = ProgrammeUnitCostEntity(id = entityId, costPerUnit = BigDecimal.TEN, isOneCostCategory = true)
+            unitCost = ProgrammeUnitCostEntity(
+                id = entityId,
+                costPerUnit = BigDecimal.TEN,
+                isOneCostCategory = true,
+                costPerUnitForeignCurrency = BigDecimal.ZERO,
+                foreignCurrencyCode = null
+            )
         )
 
     private fun budgetUnitCostEntry(entity: ProjectPartnerBudgetUnitCostEntity) =

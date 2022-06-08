@@ -2,7 +2,7 @@ import {Component, forwardRef, Input} from '@angular/core';
 import {NG_VALUE_ACCESSOR, ControlValueAccessor} from '@angular/forms';
 
 @Component({
-  selector: 'app-filter-list-input',
+  selector: 'jems-filter-list-input',
   templateUrl: './filter-list-input.component.html',
   styleUrls: ['./filter-list-input.component.scss'],
   providers: [{

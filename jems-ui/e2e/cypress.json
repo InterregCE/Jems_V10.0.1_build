@@ -1,0 +1,22 @@
+{
+  "baseUrl": "http://localhost:4200",
+  "projectId": "JEMS",
+  "viewportHeight": 1080,
+  "viewportWidth": 1920,
+  "watchForFileChanges": false,
+  "chromeWebSecurity": false,
+  "retries": {
+    "runMode": 1,
+    "openMode": 0
+  },
+  "env": {
+    "authenticationUrl": "/api/auth/login",
+    "defaultPassword": "<change-me>"
+  },
+  "testFiles": [
+    "login/**",
+    "programme/**",
+    "call/**",
+    "project/**"
+  ]
+}

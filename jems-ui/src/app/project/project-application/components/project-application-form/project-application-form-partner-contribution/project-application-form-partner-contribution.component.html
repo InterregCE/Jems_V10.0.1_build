@@ -1,40 +1,40 @@
-<app-form *ngIf="partner$ | async as partner"
+<jems-form *ngIf="partner$ | async as partner"
           (save)="onSubmit()"
           (discard)="resetForm(partner)">
-    <form appFormLayout [formGroup]="partnerContributionForm">
+    <form jemsFormLayout [formGroup]="partnerContributionForm">
         <h3>{{'project.partner.motivation.header' | translate}}</h3>
 
-        <ng-container *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.MOTIVATION.COMPETENCES">
+        <ng-container *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.MOTIVATION.COMPETENCES">
             <p>{{'project.partner.motivation.organization.relevance' | translate}}</p>
-            <app-multi-language-container>
-                <app-multi-language-form-field type="textarea"
+            <jems-multi-language-container>
+                <jems-multi-language-form-field type="textarea"
                                                [label]="'common.textarea.enter.text'"
                                                formControlName="organizationRelevance"
                                                [maxLength]="2000">
-                </app-multi-language-form-field>
-            </app-multi-language-container>
+                </jems-multi-language-form-field>
+            </jems-multi-language-container>
         </ng-container>
 
-        <ng-container *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.MOTIVATION.ROLE">
+        <ng-container *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.MOTIVATION.ROLE">
             <p>{{'project.partner.motivation.organization.role' | translate}}</p>
-            <app-multi-language-container>
-                <app-multi-language-form-field type="textarea"
+            <jems-multi-language-container>
+                <jems-multi-language-form-field type="textarea"
                                                [label]="'common.textarea.enter.text'"
                                                formControlName="organizationRole"
                                                [maxLength]="2000">
-                </app-multi-language-form-field>
-            </app-multi-language-container>
+                </jems-multi-language-form-field>
+            </jems-multi-language-container>
         </ng-container>
 
-        <ng-container *appFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.MOTIVATION.ROLE_EXPERIENCE">
-            <p>{{'project.partner.motivation.organization.experience' | translate}}</p>
-            <app-multi-language-container>
-                <app-multi-language-form-field type="textarea"
+        <ng-container *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.MOTIVATION.ROLE_EXPERIENCE">
+            <p>{{'project.partner.motivation.organization.experience' | adaptTranslationKeyByCallType | async | translate}}</p>
+            <jems-multi-language-container>
+                <jems-multi-language-form-field type="textarea"
                                                [label]="'common.textarea.enter.text'"
                                                formControlName="organizationExperience"
                                                [maxLength]="2000">
-                </app-multi-language-form-field>
-            </app-multi-language-container>
+                </jems-multi-language-form-field>
+            </jems-multi-language-container>
         </ng-container>
     </form>
-</app-form>
+</jems-form>

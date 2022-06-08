@@ -1,12 +1,14 @@
 package io.cloudflight.jems.server.project.service.associatedorganization.get_associated_organization
 
 import io.cloudflight.jems.api.call.dto.CallStatus
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganization
 import io.cloudflight.jems.api.project.dto.associatedorganization.OutputProjectAssociatedOrganizationDetail
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerSummaryDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.entity.CallEntity
+import io.cloudflight.jems.server.call.defaultAllowedRealCostsByCallType
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.project.entity.ProjectEntity
@@ -57,6 +59,7 @@ internal class GetAssociatedOrganizationInteractorTest : UnitTest() {
         creator = user,
         name = "call",
         status = CallStatus.DRAFT,
+        type = CallType.STANDARD,
         startDate = ZonedDateTime.now(),
         endDateStep1 = null,
         endDate = ZonedDateTime.now(),
@@ -64,7 +67,10 @@ internal class GetAssociatedOrganizationInteractorTest : UnitTest() {
         strategies = mutableSetOf(),
         isAdditionalFundAllowed = false,
         funds = mutableSetOf(),
-        lengthOfPeriod = 1
+        lengthOfPeriod = 1,
+        allowedRealCosts = defaultAllowedRealCostsByCallType(CallType.STANDARD),
+        preSubmissionCheckPluginKey = null,
+        firstStepPreSubmissionCheckPluginKey = null
     )
     private val projectStatus = ProjectStatusHistoryEntity(
         status = ApplicationStatus.APPROVED,

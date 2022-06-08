@@ -2,6 +2,7 @@ package io.cloudflight.jems.api.project.partner
 
 import io.cloudflight.jems.api.project.dto.partner.budget.BudgetCostsDTO
 import io.cloudflight.jems.api.project.dto.partner.budget.BudgetGeneralCostEntryDTO
+import io.cloudflight.jems.api.project.dto.partner.budget.BudgetSpfCostEntryDTO
 import io.cloudflight.jems.api.project.dto.partner.budget.BudgetStaffCostEntryDTO
 import io.cloudflight.jems.api.project.dto.partner.budget.BudgetTravelAndAccommodationCostEntryDTO
 import io.cloudflight.jems.api.project.dto.partner.budget.BudgetUnitCostEntryDTO
@@ -15,30 +16,32 @@ import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import java.math.BigDecimal
 
 @Api("Project Partner Budget")
-@RequestMapping("/api/project/partner/{partnerId}/budget/")
 interface ProjectPartnerBudgetApi {
 
+    companion object {
+        private const val ENDPOINT_API_PROJECT_PARTNER_BUDGET = "/api/project/partner/{partnerId}/budget"
+    }
+
     @ApiOperation("Get project partner Budget Options")
-    @GetMapping("/options")
+    @GetMapping("$ENDPOINT_API_PROJECT_PARTNER_BUDGET/options")
     fun getBudgetOptions(
         @PathVariable partnerId: Long,
         @RequestParam(required = false) version: String? = null
     ): ProjectPartnerBudgetOptionsDto?
 
     @ApiOperation("Update project partner Budget Options")
-    @PutMapping("/options", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PutMapping("$ENDPOINT_API_PROJECT_PARTNER_BUDGET/options", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateBudgetOptions(
         @PathVariable partnerId: Long,
         @RequestBody budgetOptionsDto: ProjectPartnerBudgetOptionsDto
     )
 
     @ApiOperation("Get project partner budget costs")
-    @GetMapping("/costs")
+    @GetMapping("$ENDPOINT_API_PROJECT_PARTNER_BUDGET/costs")
     fun getBudgetCosts(
         @PathVariable partnerId: Long,
         @RequestParam(required = false) version: String? = null
@@ -46,7 +49,7 @@ interface ProjectPartnerBudgetApi {
 
 
     @ApiOperation("Update project partner Budget: Staff Costs")
-    @PutMapping("/staffcosts", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PutMapping("$ENDPOINT_API_PROJECT_PARTNER_BUDGET/staffcosts", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateBudgetStaffCosts(
         @PathVariable partnerId: Long,
         @RequestBody budgetStaffCostEntryDTOList: List<BudgetStaffCostEntryDTO>
@@ -54,7 +57,7 @@ interface ProjectPartnerBudgetApi {
 
 
     @ApiOperation("Update project partner Budget: Travel")
-    @PutMapping("/travel", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PutMapping("$ENDPOINT_API_PROJECT_PARTNER_BUDGET/travel", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateBudgetTravel(
         @PathVariable partnerId: Long,
         @RequestBody travelAndAccommodationCosts: List<BudgetTravelAndAccommodationCostEntryDTO>
@@ -62,7 +65,7 @@ interface ProjectPartnerBudgetApi {
 
 
     @ApiOperation("Update project partner Budget: External")
-    @PutMapping("/external", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PutMapping("$ENDPOINT_API_PROJECT_PARTNER_BUDGET/external", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateBudgetExternal(
         @PathVariable partnerId: Long,
         @RequestBody externals: List<BudgetGeneralCostEntryDTO>
@@ -70,7 +73,7 @@ interface ProjectPartnerBudgetApi {
 
 
     @ApiOperation("Update project partner Budget: Equipment")
-    @PutMapping("/equipment", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PutMapping("$ENDPOINT_API_PROJECT_PARTNER_BUDGET/equipment", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateBudgetEquipment(
         @PathVariable partnerId: Long,
         @RequestBody equipment: List<BudgetGeneralCostEntryDTO>
@@ -78,7 +81,7 @@ interface ProjectPartnerBudgetApi {
 
 
     @ApiOperation("Update project partner Budget: Infrastructure")
-    @PutMapping("/infrastructure", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PutMapping("$ENDPOINT_API_PROJECT_PARTNER_BUDGET/infrastructure", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateBudgetInfrastructure(
         @PathVariable partnerId: Long,
         @RequestBody infrastructures: List<BudgetGeneralCostEntryDTO>
@@ -86,30 +89,59 @@ interface ProjectPartnerBudgetApi {
 
 
     @ApiOperation("Update project partner Budget: Unit Costs")
-    @PutMapping("/unitcosts", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PutMapping("$ENDPOINT_API_PROJECT_PARTNER_BUDGET/unitcosts", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateBudgetUnitCosts(
         @PathVariable partnerId: Long,
         @RequestBody unitCosts: List<BudgetUnitCostEntryDTO>
     ): List<BudgetUnitCostEntryDTO>
 
 
+    @ApiOperation("Update project partner Budget: SPF Costs")
+    @PutMapping("$ENDPOINT_API_PROJECT_PARTNER_BUDGET/spf", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun updateBudgetSpfCosts(
+        @PathVariable partnerId: Long,
+        @RequestBody spfCosts: List<BudgetSpfCostEntryDTO>
+    ): List<BudgetSpfCostEntryDTO>
+
+
     @ApiOperation("Get project partner Budget: total")
-    @GetMapping("/total")
+    @GetMapping("$ENDPOINT_API_PROJECT_PARTNER_BUDGET/total")
     fun getTotal(
         @PathVariable partnerId: Long,
         @RequestParam(required = false) version: String? = null
     ): BigDecimal
 
+    @ApiOperation("Get project partner Budget: total SPF")
+    @GetMapping("$ENDPOINT_API_PROJECT_PARTNER_BUDGET/spf/total")
+    fun getSpfTotal(
+        @PathVariable partnerId: Long,
+        @RequestParam(required = false) version: String? = null
+    ): BigDecimal
+
     @ApiOperation("Get project partner Co-Financing")
-    @GetMapping("/cofinancing")
+    @GetMapping("$ENDPOINT_API_PROJECT_PARTNER_BUDGET/cofinancing")
     fun getProjectPartnerCoFinancing(
         @PathVariable partnerId: Long,
         @RequestParam(required = false) version: String? = null
     ): ProjectPartnerCoFinancingAndContributionOutputDTO
 
     @ApiOperation("Update project partner co-financing")
-    @PutMapping("/cofinancing", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @PutMapping("$ENDPOINT_API_PROJECT_PARTNER_BUDGET/cofinancing", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateProjectPartnerCoFinancing(
+        @PathVariable partnerId: Long,
+        @RequestBody partnerCoFinancing: ProjectPartnerCoFinancingAndContributionInputDTO
+    ): ProjectPartnerCoFinancingAndContributionOutputDTO
+
+    @ApiOperation("Get project partner Co-Financing SPF")
+    @GetMapping("$ENDPOINT_API_PROJECT_PARTNER_BUDGET/spf/cofinancing")
+    fun getProjectPartnerSpfCoFinancing(
+        @PathVariable partnerId: Long,
+        @RequestParam(required = false) version: String? = null
+    ): ProjectPartnerCoFinancingAndContributionOutputDTO
+
+    @ApiOperation("Update project partner co-financing SPF")
+    @PutMapping("$ENDPOINT_API_PROJECT_PARTNER_BUDGET/spf/cofinancing", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun updateProjectPartnerSpfCoFinancing(
         @PathVariable partnerId: Long,
         @RequestBody partnerCoFinancing: ProjectPartnerCoFinancingAndContributionInputDTO
     ): ProjectPartnerCoFinancingAndContributionOutputDTO

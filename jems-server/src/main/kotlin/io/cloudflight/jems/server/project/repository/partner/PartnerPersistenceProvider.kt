@@ -112,7 +112,7 @@ class PartnerPersistenceProvider(
                 projectPartnerRepository.findTop30ByProjectId(projectId).map { it.toProjectPartnerDetail() }.toSet()
             },
             previousVersionFetcher = { timestamp ->
-                projectPartnerRepository.findTop30ByProjectIdAsOfTimestamp(projectId, timestamp).toModel()
+                projectPartnerRepository.findByProjectIdAsOfTimestamp(projectId, timestamp).toModel()
             }
         ) ?: emptyList()
 
@@ -121,6 +121,10 @@ class PartnerPersistenceProvider(
     @Transactional(readOnly = true)
     override fun countByProjectId(projectId: Long): Long =
         projectPartnerRepository.countByProjectId(projectId)
+
+    @Transactional(readOnly = true)
+    override fun countByProjectIdActive(projectId: Long): Long =
+        projectPartnerRepository.countByProjectIdAndActive(projectId, true)
 
     @Transactional
     override fun changeRoleOfLeadPartnerToPartnerIfItExists(projectId: Long) {
@@ -242,7 +246,7 @@ class PartnerPersistenceProvider(
     private fun getPartnerHistoricalDetail(
         partnerId: Long,
         timestamp: Timestamp,
-    ): ProjectPartnerDetail {
+    ): ProjectPartnerDetail? {
         val addresses = projectPartnerRepository.findPartnerAddressesByIdAsOfTimestamp(partnerId, timestamp)
             .toProjectPartnerAddressHistoricalData()
         val contacts = projectPartnerRepository.findPartnerContactsByIdAsOfTimestamp(partnerId, timestamp)

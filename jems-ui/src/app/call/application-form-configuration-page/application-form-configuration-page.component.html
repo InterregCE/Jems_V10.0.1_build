@@ -1,18 +1,19 @@
-<app-main-page-template [needsCard]="true" *ngIf="data$ | async as data"
-                        titleKey="call.detail.application.form.config.title">
-    <app-form (save)="save()"
+<jems-main-page-template [needsCard]="true" *ngIf="data$ | async as data"
+                        titleKey="{{'call.detail.application.form.config.title' | adaptTranslationKeyByCallType | async}}"
+                        [subTitleKey]="'call.type.subtitle' | adaptTranslationKeyByCallType | async">
+    <jems-form (save)="save()"
               (discard)="resetForm(data.fieldConfigurations)">
-        <app-alert [show]="data.callIsEditable"
+        <jems-alert [show]="data.callIsEditable"
                    [type]="Alert.WARNING">
             <span>{{'call.detail.application.form.config.warning' | translate}}</span>
-        </app-alert>
-        <form appFormLayout [formGroup]="form">
+        </jems-alert>
+        <form jemsFormLayout [formGroup]="form">
             <table mat-table [dataSource]="dataSource"
                    aria-describedby="application form configuration">
 
                 <ng-container matColumnDef="name">
                     <th mat-header-cell *matHeaderCellDef id="appFormConfigHeaderSection">
-                        <span appText maxLines="2">{{'call.detail.application.form.config.section' | translate}}</span>
+                        <span jemsText maxLines="2">{{'call.detail.application.form.config.section' | translate}}</span>
                     </th>
                     <td mat-cell *matCellDef="let node"
                         [ngClass]="node.rooIndex % 2 === 0 ? 'bg-dark' : 'bg-white'">
@@ -30,7 +31,7 @@
 
                 <ng-container matColumnDef="show">
                     <th mat-header-cell *matHeaderCellDef id="appFormConfigHeaderShow">
-                        <span appText maxLines="2">{{'call.detail.application.form.config.show' | translate}}</span>
+                        <span jemsText maxLines="2">{{'call.detail.application.form.config.show' | translate}}</span>
                     </th>
                     <td mat-cell *matCellDef="let node"
                         [ngClass]="node.rooIndex % 2 === 0 ? 'bg-dark' : 'bg-white'">
@@ -44,7 +45,7 @@
 
                 <ng-container matColumnDef="step">
                     <th mat-header-cell *matHeaderCellDef id="appFormConfigHeaderStep">
-                        <span appText maxLines="2">{{'call.detail.application.form.config.step' | translate}}</span>
+                        <span jemsText maxLines="2">{{'call.detail.application.form.config.step' | translate}}</span>
                     </th>
                     <td mat-cell *matCellDef="let node" class="step-toggle"
                         [ngClass]="node.rooIndex % 2 === 0 ? 'bg-dark' : 'bg-white'">
@@ -54,11 +55,11 @@
                                 [formControl]="availableInStep(node.data)">
                             <mat-button-toggle [value]="AvailableInStepEnum.STEPONEANDTWO">
                                 <mat-icon>edit</mat-icon>
-                                <span appText maxWidth="230">{{'call.detail.application.form.config.step.one.and.two' | translate}}</span>
+                                <span jemsText maxWidth="230">{{'call.detail.application.form.config.step.one.and.two' | translate}}</span>
                             </mat-button-toggle>
                             <mat-button-toggle [value]="AvailableInStepEnum.STEPTWOONLY">
                                 <mat-icon>edit</mat-icon>
-                                <span appText maxWidth="230">{{'call.detail.application.form.config.step.two.only' | translate}}</span>
+                                <span jemsText maxWidth="230">{{'call.detail.application.form.config.step.two.only' | translate}}</span>
                             </mat-button-toggle>
                         </mat-button-toggle-group>
                     </td>
@@ -68,5 +69,5 @@
                 <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
             </table>
         </form>
-    </app-form>
-</app-main-page-template>
+    </jems-form>
+</jems-main-page-template>

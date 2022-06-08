@@ -30,7 +30,7 @@ class UserPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getById(id: Long): UserWithPassword =
-        userRepo.getOne(id).let {
+        userRepo.getById(id).let {
             it.toModelWithPassword(permissions = userRolePermissionRepo.findAllByIdUserRoleId(it.userRole.id).toModel())
         }
 
@@ -62,7 +62,7 @@ class UserPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun findAllByEmails(emails: Collection<String>): List<UserSummary> =
-        userRepo.findAllByEmailInOrderByEmail(emails).map { it.toUserSummary() }
+        userRepo.findAllByEmailInIgnoreCaseOrderByEmail(emails).map { it.toUserSummary() }
 
     @Transactional(readOnly = true)
     override fun findAllByIds(ids: Iterable<Long>): List<UserSummary> =
@@ -71,7 +71,7 @@ class UserPersistenceProvider(
     @Transactional
     override fun create(user: UserChange, passwordEncoded: String): User =
         userRepo.save(
-            user.toEntity(passwordEncoded = passwordEncoded, role = userRoleRepo.getOne(user.userRoleId))
+            user.toEntity(passwordEncoded = passwordEncoded, role = userRoleRepo.getById(user.userRoleId))
         ).let {
             it.toModel(
                 permissions = userRolePermissionRepo.findAllByIdUserRoleId(it.userRole.id).toModel(),

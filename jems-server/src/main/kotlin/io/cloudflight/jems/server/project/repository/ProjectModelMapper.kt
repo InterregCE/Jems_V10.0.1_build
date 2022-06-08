@@ -25,7 +25,6 @@ import io.cloudflight.jems.server.project.entity.ProjectVersionRow
 import io.cloudflight.jems.server.project.entity.assessment.ProjectAssessmentEligibilityEntity
 import io.cloudflight.jems.server.project.entity.assessment.ProjectAssessmentEntity
 import io.cloudflight.jems.server.project.entity.assessment.ProjectAssessmentQualityEntity
-import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.ProjectAssessment
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectDetail
@@ -34,6 +33,7 @@ import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectStatus
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.model.ProjectVersion
+import io.cloudflight.jems.server.project.service.model.ProjectVersionSummary
 import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssessmentEligibility
 import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssessmentQuality
 import io.cloudflight.jems.server.user.entity.UserEntity
@@ -42,6 +42,7 @@ import io.cloudflight.jems.server.user.repository.user.toUserSummary
 import io.cloudflight.jems.server.user.service.model.UserRoleSummary
 import io.cloudflight.jems.server.user.service.model.UserSummary
 import org.springframework.data.domain.Page
+import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 
@@ -51,8 +52,8 @@ fun Collection<ProjectPeriodEntity>.toProjectPeriods() = map { it.toProjectPerio
 
 fun ProjectPeriodEntity.toProjectPeriod() = ProjectPeriod(number = id.number, start = start, end = end)
 
-fun ProjectVersionEntity.toProjectVersion(status: ApplicationStatus, current: Boolean) =
-    ProjectVersion(version = id.version, projectId = id.projectId, createdAt = createdAt, user = user, status = status, current = current)
+fun ProjectVersionEntity.toProjectVersionSummary() =
+    ProjectVersionSummary(version = id.version, projectId = id.projectId, createdAt = createdAt, user = user)
 
 fun List<ProjectVersionRow>.toProjectVersion() =
     this.groupBy { ProjectVersionId(it.version, it.projectId) }.map { groupedRows ->
@@ -80,6 +81,7 @@ fun CallEntity.toSettingsModel(
 ) = ProjectCallSettings(
     callId = id,
     callName = name,
+    callType = type,
     startDate = startDate,
     endDate = endDate,
     endDateStep1 = endDateStep1,
@@ -89,7 +91,9 @@ fun CallEntity.toSettingsModel(
     lumpSums = lumpSums.map { it.toModel() }.sortedBy { it.id },
     unitCosts = unitCosts.toProgrammeUnitCost(),
     stateAids = stateAidEntities.toModel(),
-    applicationFormFieldConfigurations = applicationFormFieldConfigurationEntities.toModel()
+    applicationFormFieldConfigurations = applicationFormFieldConfigurationEntities.toModel(),
+    preSubmissionCheckPluginKey = preSubmissionCheckPluginKey,
+    firstStepPreSubmissionCheckPluginKey = firstStepPreSubmissionCheckPluginKey
 )
 
 fun ProjectEntity.toModel(
@@ -105,7 +109,9 @@ fun ProjectEntity.toModel(
     applicant = applicant.toUserSummary(),
     projectStatus = currentStatus.toProjectStatus(),
     firstSubmission = firstSubmission?.toProjectStatus(),
+    firstSubmissionStep1 = firstSubmissionStep1?.toProjectStatus(),
     lastResubmission = lastResubmission?.toProjectStatus(),
+    contractedDecision = contractedDecision?.toProjectStatus(),
     assessmentStep1 = assessmentStep1?.toModel(),
     assessmentStep2 = assessmentStep2?.toModel(),
     title = projectData?.translatedValues?.mapTo(HashSet()) {
@@ -196,13 +202,15 @@ fun List<ProjectRow>.toProjectEntryWithDetailData(
                     ),
                     groupedRows.value.first().userStatus
                 ),
-                ZonedDateTime.of(groupedRows.value.first().updated.toLocalDateTime(), ZoneOffset.UTC),
+                ZonedDateTime.of(groupedRows.value.first().updated.toLocalDateTime(), ZoneId.systemDefault()),
                 groupedRows.value.first().decisionDate,
                 groupedRows.value.first().entryIntoForceDate,
                 groupedRows.value.first().note
             ),
             firstSubmission = project.firstSubmission?.toProjectStatus(),
+            firstSubmissionStep1 = project.firstSubmissionStep1?.toProjectStatus(),
             lastResubmission = project.lastResubmission?.toProjectStatus(),
+            contractedDecision = project.contractedDecision?.toProjectStatus(),
             assessmentStep1 = assessmentStep1.toModel(),
             assessmentStep2 = assessmentStep2.toModel(),
         )

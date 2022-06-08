@@ -1,15 +1,15 @@
- <app-project-page-template
+ <jems-project-page-template
         *ngIf="data$ | async as data"
         [titleText]="'project.application.form.acronym' | translate : {projectTitle: data.projectTitle} "
         subTitleKey="project.application.form.section.part.b">
-     <app-alert [type]="Alert.WARNING"
+     <jems-alert [type]="Alert.WARNING"
                 [closable]="false"
                 [show]="!data.organization.active">
          <div>{{'project.application.form.section.part.b.associatedOrganizations.deactivated.warning' | translate}}</div>
-     </app-alert>
-    <app-form (save)="onSubmit()"
+     </jems-alert>
+    <jems-form (save)="onSubmit()"
               (discard)="onCancel(data.organization)">
-        <form appFormLayout [formGroup]="associatedOrganizationForm">
+        <form jemsFormLayout [formGroup]="associatedOrganizationForm">
             <h3 *ngIf="!data.organization?.sortNumber">{{'project.application.form.associatedOrganization.add' | translate}}</h3>
             <h3 *ngIf="data.organization?.sortNumber">
                 {{'project.breadcrumb.associatedOrganizationName' | translate}}
@@ -20,61 +20,61 @@
                 <mat-label>{{'project.organization.original.name.label' | translate}}</mat-label>
                 <input #nameInOriginalLanguageInput name="nameInOriginalLanguage"
                        formControlName="nameInOriginalLanguage" matInput required>
-                <mat-hint [appHintFor]="nameInOriginalLanguageInput"
+                <mat-hint [jemsHintFor]="nameInOriginalLanguageInput"
                           [hide]="associatedOrganizationForm.controls?.nameInOriginalLanguage?.errors !== null">
-                    <app-text-hint [currentLength]="nameInOriginalLanguageInput?.value?.length"
-                                   [maxLength]="100"></app-text-hint>
+                    <jems-text-hint [currentLength]="nameInOriginalLanguageInput?.value?.length"
+                                   [maxLength]="100"></jems-text-hint>
                 </mat-hint>
                 <mat-error>
-                    <app-form-field-errors
+                    <jems-form-field-errors
                             [errors]="associatedOrganizationForm.controls?.nameInOriginalLanguage?.errors">
-                    </app-form-field-errors>
+                    </jems-form-field-errors>
                 </mat-error>
             </mat-form-field>
-            <app-multi-language-container [staticLanguages]="[LANGUAGE.EN]">
-                <app-multi-language-form-field
+            <jems-multi-language-container [staticLanguages]="[LANGUAGE.EN]">
+                <jems-multi-language-form-field
                         label="project.organization.english.name.label"
                         formControlName="nameInEnglish"
                         maxLength="100"
                         [required]="true">
-                </app-multi-language-form-field>
-            </app-multi-language-container>
+                </jems-multi-language-form-field>
+            </jems-multi-language-container>
 
             <mat-form-field>
                 <mat-label>{{'project.organization.partner' | translate}}</mat-label>
                 <mat-select name="partnerId" formControlName="partnerId" required>
                     <mat-option *ngFor="let partner of data.partners" [value]="partner.id">
-                        {{ 'common.label.project.partner.role.shortcut.' + partner.role | translate : {partner: partner.sortNumber + ' ' + partner.abbreviation} }}
+                        {{ 'common.label.project.partner.role.shortcut.' + partner.role | adaptTranslationKeyByCallType | async | translate : {partner: partner.sortNumber + ' ' + partner.abbreviation} }}
                     </mat-option>
                 </mat-select>
-                <app-context-info
+                <jems-context-info
                         infoText="{{'project.organization.partner.contextinfo' | translate}}">
-                </app-context-info>
+                </jems-context-info>
                 <mat-error>
-                    <app-form-field-errors [errors]="associatedOrganizationForm.controls?.partnerId?.errors">
-                    </app-form-field-errors>
+                    <jems-form-field-errors [errors]="associatedOrganizationForm.controls?.partnerId?.errors">
+                    </jems-form-field-errors>
                 </mat-error>
             </mat-form-field>
 
-            <app-project-application-form-address
+            <jems-project-application-form-address
                     [addressForm]="associatedOrganizationForm"
                     [fieldIds]="APPLICATION_FORM.SECTION_B"
                     [nuts]="data.nuts">
-            </app-project-application-form-address>
+            </jems-project-application-form-address>
 
             <h4>{{'project.partner.representative.header.detail' | translate}}</h4>
             <mat-form-field>
                 <mat-label>{{'project.partner.representative.title' | translate}}</mat-label>
                 <input #representativeTitleInput name="representativeTitle" formControlName="representativeTitle"
                        matInput>
-                <mat-hint [appHintFor]="representativeTitleInput"
+                <mat-hint [jemsHintFor]="representativeTitleInput"
                           [hide]="associatedOrganizationForm?.controls?.representativeTitle?.errors !== null">
-                    <app-text-hint [currentLength]="representativeTitleInput?.value?.length"
-                                   [maxLength]="25"></app-text-hint>
+                    <jems-text-hint [currentLength]="representativeTitleInput?.value?.length"
+                                   [maxLength]="25"></jems-text-hint>
                 </mat-hint>
                 <mat-error>
-                    <app-form-field-errors [errors]="associatedOrganizationForm?.controls?.representativeTitle?.errors">
-                    </app-form-field-errors>
+                    <jems-form-field-errors [errors]="associatedOrganizationForm?.controls?.representativeTitle?.errors">
+                    </jems-form-field-errors>
                 </mat-error>
             </mat-form-field>
 
@@ -82,15 +82,15 @@
                 <mat-label>{{'project.partner.representative.first.name' | translate}}</mat-label>
                 <input #representativeFirstNameInput name="representativeFirstName"
                        formControlName="representativeFirstName" matInput>
-                <mat-hint [appHintFor]="representativeFirstNameInput"
+                <mat-hint [jemsHintFor]="representativeFirstNameInput"
                           [hide]="associatedOrganizationForm?.controls?.representativeFirstName?.errors !== null">
-                    <app-text-hint [currentLength]="representativeFirstNameInput?.value?.length"
-                                   [maxLength]="50"></app-text-hint>
+                    <jems-text-hint [currentLength]="representativeFirstNameInput?.value?.length"
+                                   [maxLength]="50"></jems-text-hint>
                 </mat-hint>
                 <mat-error>
-                    <app-form-field-errors
+                    <jems-form-field-errors
                             [errors]="associatedOrganizationForm?.controls?.representativeFirstName?.errors">
-                    </app-form-field-errors>
+                    </jems-form-field-errors>
                 </mat-error>
             </mat-form-field>
 
@@ -98,15 +98,15 @@
                 <mat-label>{{'project.partner.representative.last.name' | translate}}</mat-label>
                 <input #representativeLastNameInput name="representativeLastName"
                        formControlName="representativeLastName" matInput>
-                <mat-hint [appHintFor]="representativeLastNameInput"
+                <mat-hint [jemsHintFor]="representativeLastNameInput"
                           [hide]="associatedOrganizationForm?.controls?.representativeLastName?.errors !== null">
-                    <app-text-hint [currentLength]="representativeLastNameInput?.value?.length"
-                                   [maxLength]="50"></app-text-hint>
+                    <jems-text-hint [currentLength]="representativeLastNameInput?.value?.length"
+                                   [maxLength]="50"></jems-text-hint>
                 </mat-hint>
                 <mat-error>
-                    <app-form-field-errors
+                    <jems-form-field-errors
                             [errors]="associatedOrganizationForm?.controls?.representativeLastName?.errors">
-                    </app-form-field-errors>
+                    </jems-form-field-errors>
                 </mat-error>
             </mat-form-field>
 
@@ -115,85 +115,85 @@
             <mat-form-field>
                 <mat-label>{{'project.partner.contact.title' | translate}}</mat-label>
                 <input #contactTitleInput name="contactTitle" formControlName="contactTitle" matInput>
-                <mat-hint [appHintFor]="contactTitleInput"
+                <mat-hint [jemsHintFor]="contactTitleInput"
                           [hide]="associatedOrganizationForm?.controls?.contactTitle?.errors !== null">
-                    <app-text-hint [currentLength]="contactTitleInput?.value?.length"
-                                   [maxLength]="25"></app-text-hint>
+                    <jems-text-hint [currentLength]="contactTitleInput?.value?.length"
+                                   [maxLength]="25"></jems-text-hint>
                 </mat-hint>
                 <mat-error>
-                    <app-form-field-errors [errors]="associatedOrganizationForm?.controls?.contactTitle?.errors">
-                    </app-form-field-errors>
+                    <jems-form-field-errors [errors]="associatedOrganizationForm?.controls?.contactTitle?.errors">
+                    </jems-form-field-errors>
                 </mat-error>
             </mat-form-field>
 
             <mat-form-field>
                 <mat-label>{{'project.partner.contact.first.name' | translate}}</mat-label>
                 <input #contactFirstNameInput name="contactFirstName" formControlName="contactFirstName" matInput>
-                <mat-hint [appHintFor]="contactFirstNameInput"
+                <mat-hint [jemsHintFor]="contactFirstNameInput"
                           [hide]="associatedOrganizationForm?.controls?.contactFirstName?.errors !== null">
-                    <app-text-hint [currentLength]="contactFirstNameInput?.value?.length"
-                                   [maxLength]="50"></app-text-hint>
+                    <jems-text-hint [currentLength]="contactFirstNameInput?.value?.length"
+                                   [maxLength]="50"></jems-text-hint>
                 </mat-hint>
                 <mat-error>
-                    <app-form-field-errors [errors]="associatedOrganizationForm?.controls?.contactFirstName?.errors">
-                    </app-form-field-errors>
+                    <jems-form-field-errors [errors]="associatedOrganizationForm?.controls?.contactFirstName?.errors">
+                    </jems-form-field-errors>
                 </mat-error>
             </mat-form-field>
 
             <mat-form-field>
                 <mat-label>{{'project.partner.contact.last.name' | translate}}</mat-label>
                 <input #contactLastNameInput name="contactLastName" formControlName="contactLastName" matInput>
-                <mat-hint [appHintFor]="contactLastNameInput"
+                <mat-hint [jemsHintFor]="contactLastNameInput"
                           [hide]="associatedOrganizationForm?.controls?.contactLastName?.errors !== null">
-                    <app-text-hint [currentLength]="contactLastNameInput?.value?.length"
-                                   [maxLength]="50"></app-text-hint>
+                    <jems-text-hint [currentLength]="contactLastNameInput?.value?.length"
+                                   [maxLength]="50"></jems-text-hint>
                 </mat-hint>
                 <mat-error>
-                    <app-form-field-errors [errors]="associatedOrganizationForm?.controls?.contactLastName?.errors">
-                    </app-form-field-errors>
+                    <jems-form-field-errors [errors]="associatedOrganizationForm?.controls?.contactLastName?.errors">
+                    </jems-form-field-errors>
                 </mat-error>
             </mat-form-field>
 
             <mat-form-field>
                 <mat-label>{{'project.partner.contact.email' | translate}}</mat-label>
                 <input #contactEmailInput name="contactEmail" formControlName="contactEmail" matInput>
-                <mat-hint [appHintFor]="contactEmailInput"
+                <mat-hint [jemsHintFor]="contactEmailInput"
                           [hide]="associatedOrganizationForm?.controls?.contactEmail?.errors !== null">
-                    <app-text-hint [currentLength]="contactEmailInput?.value?.length"
-                                   [maxLength]="255"></app-text-hint>
+                    <jems-text-hint [currentLength]="contactEmailInput?.value?.length"
+                                   [maxLength]="255"></jems-text-hint>
                 </mat-hint>
                 <mat-error>
-                    <app-form-field-errors
+                    <jems-form-field-errors
                             [errors]="associatedOrganizationForm?.controls?.contactEmail?.errors"
                             [messages]="contactEmailErrors">
-                    </app-form-field-errors>
+                    </jems-form-field-errors>
                 </mat-error>
             </mat-form-field>
 
             <mat-form-field>
                 <mat-label>{{'project.partner.contact.telephone' | translate}}</mat-label>
                 <input #contactTelephoneInput name="contactTelephone" formControlName="contactTelephone" matInput>
-                <mat-hint [appHintFor]="contactTelephoneInput"
+                <mat-hint [jemsHintFor]="contactTelephoneInput"
                           [hide]="associatedOrganizationForm?.controls?.contactTelephone?.errors !== null">
-                    <app-text-hint [currentLength]="contactTelephoneInput?.value?.length"
-                                   [maxLength]="25"></app-text-hint>
+                    <jems-text-hint [currentLength]="contactTelephoneInput?.value?.length"
+                                   [maxLength]="25"></jems-text-hint>
                 </mat-hint>
                 <mat-error>
-                    <app-form-field-errors
+                    <jems-form-field-errors
                             [errors]="associatedOrganizationForm?.controls?.contactTelephone?.errors"
                             [messages]="contactTelephoneErrors">
-                    </app-form-field-errors>
+                    </jems-form-field-errors>
                 </mat-error>
             </mat-form-field>
 
-            <app-multi-language-container>
-                <app-multi-language-form-field [label]="'project.organization.roleDescription'"
+            <jems-multi-language-container>
+                <jems-multi-language-form-field [label]="'project.organization.roleDescription'"
                                                type="textarea"
                                                formControlName="roleDescription"
                                                [maxLength]="2000">
-                </app-multi-language-form-field>
-            </app-multi-language-container>
+                </jems-multi-language-form-field>
+            </jems-multi-language-container>
         </form>
-    </app-form>
+    </jems-form>
 
-</app-project-page-template>
+</jems-project-page-template>

@@ -1,10 +1,10 @@
-<app-top-bar
+<jems-top-bar
         [currentUser]="securityService.currentUser | async"
         [isAuthenticated]="false">
-</app-top-bar>
+</jems-top-bar>
 
 <mat-sidenav-container>
-    <mat-sidenav-content>
+    <mat-sidenav-content class="background-floating-stars">
         <div id="main-content" class="main-content" role="main">
             <div class="container">
                 <router-outlet></router-outlet>

@@ -1,16 +1,24 @@
 package io.cloudflight.jems.server.plugin
 
 import io.cloudflight.jems.plugin.contract.JemsPlugin
+import io.cloudflight.jems.plugin.contract.export.ApplicationFormExportPlugin
+import io.cloudflight.jems.plugin.contract.export.ExportResult
+import io.cloudflight.jems.plugin.contract.models.common.SystemLanguageData
+import io.cloudflight.jems.plugin.contract.pre_condition_check.PreConditionCheckPlugin
+import io.cloudflight.jems.plugin.contract.pre_condition_check.models.PreConditionCheckResult
 
-const val samplePluginTypeOneKey= "key-1"
-const val samplePluginTypeTwoKey= "key-2"
+const val PreConditionCheckSamplePluginKey = "key-1"
+const val ApplicationFormExportSamplePluginKey = "key-2"
 
-class SamplePluginTypeOne : JemsPlugin {
+class PreConditionCheckSamplePlugin : PreConditionCheckPlugin {
     override fun getKey(): String =
-        samplePluginTypeOneKey
+        PreConditionCheckSamplePluginKey
+
+    override fun check(projectId: Long) =
+        PreConditionCheckResult(emptyList(), true)
 
     override fun getDescription(): String =
-        "description of type one"
+        "description of PreConditionCheckSamplePlugin"
 
     override fun getName(): String =
         "name-1"
@@ -19,15 +27,34 @@ class SamplePluginTypeOne : JemsPlugin {
         "1.0.0"
 }
 
-class SamplePluginTypeTwo : JemsPlugin {
+class ApplicationFormExportSamplePlugin : ApplicationFormExportPlugin {
     override fun getKey(): String =
-        samplePluginTypeTwoKey
+        ApplicationFormExportSamplePluginKey
+
+    override fun export(
+        projectId: Long, exportLanguage: SystemLanguageData, dataLanguage: SystemLanguageData, version: String?
+    ) =
+        ExportResult("", "", byteArrayOf())
 
     override fun getDescription(): String =
-        "description of type two"
+        "description of ApplicationFormExportSamplePlugin"
 
     override fun getName(): String =
         "name-2"
+
+    override fun getVersion(): String =
+        "1.1.0"
+}
+
+class UnknownSamplePlugin : JemsPlugin {
+    override fun getKey(): String =
+        "unknown"
+
+    override fun getDescription(): String =
+        "description of UnknownSamplePlugin"
+
+    override fun getName(): String =
+        "name-3"
 
     override fun getVersion(): String =
         "1.1.0"

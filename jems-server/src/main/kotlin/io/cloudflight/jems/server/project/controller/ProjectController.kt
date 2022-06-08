@@ -7,6 +7,7 @@ import io.cloudflight.jems.api.project.dto.ProjectCallSettingsDTO
 import io.cloudflight.jems.api.project.dto.ProjectCreateDTO
 import io.cloudflight.jems.api.project.dto.ProjectDetailDTO
 import io.cloudflight.jems.api.project.dto.ProjectDetailFormDTO
+import io.cloudflight.jems.api.project.dto.ProjectSearchRequestDTO
 import io.cloudflight.jems.api.project.dto.ProjectVersionDTO
 import io.cloudflight.jems.api.project.dto.budget.ProjectPartnerBudgetDTO
 import io.cloudflight.jems.api.project.dto.cofinancing.ProjectCoFinancingOverviewDTO
@@ -26,7 +27,9 @@ import io.cloudflight.jems.server.project.service.partner.cofinancing.toProjectP
 import io.cloudflight.jems.server.project.service.workpackage.activity.get_activity.GetActivityInteractor
 import io.cloudflight.jems.server.project.service.workpackage.investment.get_project_investment_summaries.GetProjectInvestmentSummariesInteractor
 import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort.Direction
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
@@ -42,8 +45,15 @@ class ProjectController(
     private val getProjectActivitiesInteractor: GetActivityInteractor
 ) : ProjectApi {
 
-    override fun getAllProjects(pageable: Pageable): Page<OutputProjectSimple> =
-        getProjectInteractor.getAllProjects(pageable).toDto()
+    override fun getAllProjects(
+        page: Int?, size: Int?, sortProperty: String, sortDirection: String, searchRequest: ProjectSearchRequestDTO?
+    ): Page<OutputProjectSimple> {
+        val pageRequest = if (page == null || size == null)
+            Pageable.unpaged()
+        else PageRequest.of(page, size, Direction.valueOf(sortDirection.uppercase()), sortProperty)
+
+        return getProjectInteractor.getAllProjects(pageRequest, searchRequest?.toModel()).toDto()
+    }
 
     override fun getMyProjects(pageable: Pageable): Page<OutputProjectSimple> =
         getProjectInteractor.getMyProjects(pageable).toDto()

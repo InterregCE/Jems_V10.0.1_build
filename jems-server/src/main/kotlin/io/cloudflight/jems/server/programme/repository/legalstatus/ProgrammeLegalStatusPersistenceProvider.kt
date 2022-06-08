@@ -20,7 +20,7 @@ class ProgrammeLegalStatusPersistenceProvider(
         toDeleteIds: Set<Long>,
         toPersist: Collection<ProgrammeLegalStatus>
     ): List<ProgrammeLegalStatus> {
-        repository.deleteInBatch(repository.findAllById(toDeleteIds))
+        repository.deleteAllByIdInBatch(toDeleteIds)
         repository.saveAll(toPersist.toEntity()).toModel()
         return repository.findTop20ByOrderById().toModel()
     }
