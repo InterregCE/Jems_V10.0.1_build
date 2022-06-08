@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEnti
 import java.io.Serializable
 import java.time.LocalDate
 import javax.persistence.CascadeType
+import javax.persistence.Embedded
 import javax.persistence.Entity
 import javax.persistence.Id
 import javax.persistence.JoinColumn
@@ -40,6 +41,9 @@ class ProjectPartnerReportIdentificationEntity(
     var endDate: LocalDate?,
 
     var periodNumber: Int?,
+
+    @Embedded
+    val spendingProfile: ProjectPartnerReportSpendingProfileEntity,
 
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.sourceEntity")
     val translatedValues: MutableSet<ProjectPartnerReportIdentificationTranslEntity> = mutableSetOf(),

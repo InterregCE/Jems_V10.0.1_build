@@ -1,6 +1,7 @@
 package io.cloudflight.jems.api.project.report
 
 import io.cloudflight.jems.api.project.dto.report.partner.identification.ProjectPartnerReportIdentificationDTO
+import io.cloudflight.jems.api.project.dto.report.partner.identification.ProjectPartnerReportPeriodDTO
 import io.cloudflight.jems.api.project.dto.report.partner.identification.UpdateProjectPartnerReportIdentificationDTO
 import io.cloudflight.jems.api.project.report.ProjectPartnerReportApi.Companion.ENDPOINT_API_PROJECT_PARTNER_REPORT
 import io.swagger.annotations.Api
@@ -33,5 +34,12 @@ interface ProjectPartnerReportIdentificationApi {
         @PathVariable reportId: Long,
         @RequestBody identification: UpdateProjectPartnerReportIdentificationDTO
     ): ProjectPartnerReportIdentificationDTO
+
+    @ApiOperation("Returns all periods from AF available for this report")
+    @GetMapping("$ENDPOINT_API_PROJECT_PARTNER_REPORT_IDENTIFICATION/periods")
+    fun getAvailablePeriods(
+        @PathVariable partnerId: Long,
+        @PathVariable reportId: Long,
+    ): List<ProjectPartnerReportPeriodDTO>
 
 }

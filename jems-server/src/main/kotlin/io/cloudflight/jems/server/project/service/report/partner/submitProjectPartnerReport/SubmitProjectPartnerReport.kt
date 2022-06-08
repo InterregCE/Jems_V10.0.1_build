@@ -9,10 +9,12 @@ import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerRep
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSummary
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectReportExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.fillCurrencyRates
+import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectReportIdentificationPersistence
 import io.cloudflight.jems.server.project.service.report.partnerReportSubmitted
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.ZonedDateTime
 
@@ -22,6 +24,7 @@ class SubmitProjectPartnerReport(
     private val reportExpenditurePersistence: ProjectReportExpenditurePersistence,
     private val currencyPersistence: CurrencyPersistence,
     private val partnerPersistence: PartnerPersistence,
+    private val reportIdentificationPersistence: ProjectReportIdentificationPersistence,
     private val auditPublisher: ApplicationEventPublisher,
 ) : SubmitProjectPartnerReportInteractor {
 
@@ -31,6 +34,7 @@ class SubmitProjectPartnerReport(
     override fun submit(partnerId: Long, reportId: Long): ProjectPartnerReportSummary {
         validateReportIsStillDraft(partnerId = partnerId, reportId = reportId)
         validateExpendituresAndSaveCurrencyRates(partnerId = partnerId, reportId = reportId)
+        saveSpendingProfileCalculation(partnerId = partnerId, reportId = reportId)
 
         return reportPersistence.submitReportById(
             partnerId = partnerId,
@@ -70,6 +74,14 @@ class SubmitProjectPartnerReport(
             partnerId = partnerId,
             reportId = reportId,
             expenditureCosts = expenditures.fillCurrencyRates(rates),
+        )
+    }
+
+    private fun saveSpendingProfileCalculation(partnerId: Long, reportId: Long) {
+        reportIdentificationPersistence.updateCurrentReportSpending(
+            partnerId = partnerId,
+            reportId = reportId,
+            currentReport = BigDecimal.ONE, /* TODO calculate and fill in */
         )
     }
 

@@ -11,4 +11,5 @@ class ProjectPartnerReportIdentificationTranslEntity(
     override val translationId: TranslationId<ProjectPartnerReportIdentificationEntity>,
     var summary: String?,
     var problemsAndDeviations: String?,
+    var spendingDeviations: String?,
 ) : TranslationEntity()

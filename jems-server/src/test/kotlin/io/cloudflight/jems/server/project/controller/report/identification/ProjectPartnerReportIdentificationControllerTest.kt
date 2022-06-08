@@ -3,13 +3,10 @@ package io.cloudflight.jems.server.project.controller.report.identification
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.EN
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroupDTO
-import io.cloudflight.jems.api.project.dto.report.partner.identification.ProjectPartnerReportIdentificationDTO
-import io.cloudflight.jems.api.project.dto.report.partner.identification.ProjectPartnerReportIdentificationTargetGroupDTO
-import io.cloudflight.jems.api.project.dto.report.partner.identification.UpdateProjectPartnerReportIdentificationDTO
+import io.cloudflight.jems.api.project.dto.report.partner.identification.*
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
-import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportIdentification
-import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportIdentificationTargetGroup
-import io.cloudflight.jems.server.project.service.report.model.identification.UpdateProjectPartnerReportIdentification
+import io.cloudflight.jems.server.project.service.report.model.identification.*
+import io.cloudflight.jems.server.project.service.report.partner.identification.getProjectPartnerReportAvailablePeriods.GetProjectPartnerReportAvailablePeriodsInteractor
 import io.cloudflight.jems.server.project.service.report.partner.identification.getProjectPartnerReportIdentification.GetProjectPartnerReportIdentificationInteractor
 import io.cloudflight.jems.server.project.service.report.partner.identification.updateProjectPartnerReportIdentification.UpdateProjectPartnerReportIdentificationInteractor
 import io.mockk.every
@@ -20,6 +17,7 @@ import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
+import java.math.BigDecimal
 import java.time.LocalDate
 
 @ExtendWith(MockKExtension::class)
@@ -32,12 +30,14 @@ class ProjectPartnerReportIdentificationControllerTest {
         private val YESTERDAY = LocalDate.now().minusDays(1)
         private val TOMORROW = LocalDate.now().plusDays(1)
 
+        private val dummyPeriod = ProjectPartnerReportPeriod(number = 3, periodBudget = BigDecimal.ONE, BigDecimal.TEN, 7, 9)
+
         private val dummyIdentification = ProjectPartnerReportIdentification(
             startDate = YESTERDAY,
             endDate = TOMORROW,
-            period = null,
             summary = setOf(InputTranslation(EN, "summary EN")),
             problemsAndDeviations = setOf(InputTranslation(EN, "problem EN")),
+            spendingDeviations = setOf(InputTranslation(EN, "spending EN")),
             targetGroups = listOf(
                 ProjectPartnerReportIdentificationTargetGroup(
                     type = ProjectTargetGroup.BusinessSupportOrganisation,
@@ -46,14 +46,24 @@ class ProjectPartnerReportIdentificationControllerTest {
                     description = setOf(InputTranslation(EN, "desc EN")),
                 ),
             ),
+            spendingProfile = ProjectPartnerReportSpendingProfile(
+                periodDetail = dummyPeriod,
+                currentReport = BigDecimal.valueOf(1),
+                previouslyReported = BigDecimal.valueOf(2),
+                differenceFromPlan = BigDecimal.valueOf(3),
+                differenceFromPlanPercentage = BigDecimal.valueOf(4),
+                nextReportForecast = BigDecimal.valueOf(5),
+            ),
         )
+
+        private val expectedDummyPeriod = ProjectPartnerReportPeriodDTO(number = 3, periodBudget = BigDecimal.ONE, BigDecimal.TEN, 7, 9)
 
         private val expectedDummyIdentification = ProjectPartnerReportIdentificationDTO(
             startDate = YESTERDAY,
             endDate = TOMORROW,
-            period = null,
             summary = setOf(InputTranslation(EN, "summary EN")),
             problemsAndDeviations = setOf(InputTranslation(EN, "problem EN")),
+            spendingDeviations = setOf(InputTranslation(EN, "spending EN")),
             targetGroups = listOf(
                 ProjectPartnerReportIdentificationTargetGroupDTO(
                     type = ProjectTargetGroupDTO.BusinessSupportOrganisation,
@@ -61,6 +71,14 @@ class ProjectPartnerReportIdentificationControllerTest {
                     specification = setOf(InputTranslation(EN, "spec EN")),
                     description = setOf(InputTranslation(EN, "desc EN")),
                 ),
+            ),
+            spendingProfile = ProjectPartnerReportSpendingProfileDTO(
+                periodDetail = expectedDummyPeriod,
+                currentReport = BigDecimal.valueOf(1),
+                previouslyReported = BigDecimal.valueOf(2),
+                differenceFromPlan = BigDecimal.valueOf(3),
+                differenceFromPlanPercentage = BigDecimal.valueOf(4),
+                nextReportForecast = BigDecimal.valueOf(5),
             ),
         )
 
@@ -73,6 +91,8 @@ class ProjectPartnerReportIdentificationControllerTest {
             targetGroups = listOf(
                 setOf(InputTranslation(EN, "spec EN")),
             ),
+            nextReportForecast = BigDecimal.valueOf(8),
+            spendingDeviations = setOf(InputTranslation(EN, "spending EN")),
         )
 
         private val expectedDummyUpdateIdentification = UpdateProjectPartnerReportIdentification(
@@ -84,6 +104,8 @@ class ProjectPartnerReportIdentificationControllerTest {
             targetGroups = listOf(
                 setOf(InputTranslation(EN, "spec EN")),
             ),
+            spendingDeviations = setOf(InputTranslation(EN, "spending EN")),
+            nextReportForecast = BigDecimal.valueOf(8)
         )
 
     }
@@ -93,6 +115,9 @@ class ProjectPartnerReportIdentificationControllerTest {
 
     @MockK
     lateinit var updateIdentification: UpdateProjectPartnerReportIdentificationInteractor
+
+    @MockK
+    lateinit var getAvailablePeriods: GetProjectPartnerReportAvailablePeriodsInteractor
 
     @InjectMockKs
     private lateinit var controller: ProjectPartnerReportIdentificationController
@@ -121,6 +146,12 @@ class ProjectPartnerReportIdentificationControllerTest {
         )).isEqualTo(expectedDummyIdentification)
 
         assertThat(slotData.captured).isEqualTo(expectedDummyUpdateIdentification)
+    }
+
+    @Test
+    fun getAvailablePeriods() {
+        every { getAvailablePeriods.get(PARTNER_ID, reportId = REPORT_ID) } returns listOf(dummyPeriod)
+        assertThat(controller.getAvailablePeriods(PARTNER_ID, reportId = REPORT_ID)).containsExactly(expectedDummyPeriod)
     }
 
 }

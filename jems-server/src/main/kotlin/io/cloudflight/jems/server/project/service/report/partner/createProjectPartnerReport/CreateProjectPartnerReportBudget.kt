@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.service.report.partner.createProjectP
 import io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_period.GetPartnerBudgetPerPeriodInteractor
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
+import io.cloudflight.jems.server.project.service.model.ProjectPeriodBudget
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetCostsPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
@@ -14,10 +15,13 @@ import io.cloudflight.jems.server.project.service.report.model.contribution.with
 import io.cloudflight.jems.server.project.service.report.model.create.PartnerReportBudget
 import io.cloudflight.jems.server.project.service.report.model.create.PartnerReportLumpSum
 import io.cloudflight.jems.server.project.service.report.model.create.PartnerReportUnitCostBase
+import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportPeriod
 import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectReportContributionPersistence
+import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectReportIdentificationPersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
+import java.math.BigDecimal.ZERO
 import java.util.UUID
 
 @Service
@@ -28,6 +32,7 @@ class CreateProjectPartnerReportBudget(
     private val partnerBudgetCostsPersistence: ProjectPartnerBudgetCostsPersistence,
     private val getPartnerBudgetPerPeriod: GetPartnerBudgetPerPeriodInteractor,
     private val projectPartnerBudgetOptionsPersistence: ProjectPartnerBudgetOptionsPersistence,
+    private val reportIdentificationPersistence: ProjectReportIdentificationPersistence,
 ) {
 
     @Transactional
@@ -36,34 +41,37 @@ class CreateProjectPartnerReportBudget(
         partnerId: Long,
         version: String?,
         partnerContributions: Collection<ProjectPartnerContribution>,
-    ) = PartnerReportBudget(
-        contributions = generateContributionsFromPreviousReports(
-            partnerId = partnerId,
-            partnerContributionsSorted = partnerContributions.sortedWith(compareBy({ it.isNotPartner() }, { it.id })),
-        ),
-        lumpSums = lumpSumPersistence.getLumpSums(projectId, version = version).toPartnerReportLumpSums(partnerId = partnerId),
-        unitCosts = getSetOfUnitCostsWithTotalAndNumberOfUnits(
-            partnerBudgetCostsPersistence.getBudgetStaffCosts(partnerId, version)
-                .asSequence()
-                .plus(partnerBudgetCostsPersistence.getBudgetTravelAndAccommodationCosts(partnerId, version))
-                .plus(partnerBudgetCostsPersistence.getBudgetExternalExpertiseAndServicesCosts(partnerId, version))
-                .plus(partnerBudgetCostsPersistence.getBudgetEquipmentCosts(partnerId, version))
-                .plus(partnerBudgetCostsPersistence.getBudgetInfrastructureAndWorksCosts(partnerId, version))
-                .plus(partnerBudgetCostsPersistence.getBudgetUnitCosts(partnerId, version))
-                .toList()),
-        budgetPerPeriod = getPartnerBudgetPerPeriod.getPartnerBudgetPerPeriod(projectId = projectId, version)
-            .partnersBudgetPerPeriod.firstOrNull { it.partner.id == partnerId }
-            ?.periodBudgets?.map { Pair(it.periodNumber, it.totalBudgetPerPeriod) }
-            ?: emptyList(),
-        budgetOptions = projectPartnerBudgetOptionsPersistence.getBudgetOptions(partnerId, version),
-    )
-
-    private fun generateContributionsFromPreviousReports(
-        partnerId: Long,
-        partnerContributionsSorted: List<ProjectPartnerContribution>,
-    ): List<CreateProjectPartnerReportContribution> {
+    ): PartnerReportBudget {
         val submittedReportIds = reportPersistence.listSubmittedPartnerReports(partnerId = partnerId).mapTo(HashSet()) { it.id }
 
+        return PartnerReportBudget(
+            contributions = generateContributionsFromPreviousReports(
+                submittedReportIds = submittedReportIds,
+                partnerContributionsSorted = partnerContributions.sortedWith(compareBy({ it.isNotPartner() }, { it.id })),
+            ),
+            lumpSums = lumpSumPersistence.getLumpSums(projectId, version = version).toPartnerReportLumpSums(partnerId = partnerId),
+            unitCosts = getSetOfUnitCostsWithTotalAndNumberOfUnits(
+                partnerBudgetCostsPersistence.getBudgetStaffCosts(partnerId, version)
+                    .asSequence()
+                    .plus(partnerBudgetCostsPersistence.getBudgetTravelAndAccommodationCosts(partnerId, version))
+                    .plus(partnerBudgetCostsPersistence.getBudgetExternalExpertiseAndServicesCosts(partnerId, version))
+                    .plus(partnerBudgetCostsPersistence.getBudgetEquipmentCosts(partnerId, version))
+                    .plus(partnerBudgetCostsPersistence.getBudgetInfrastructureAndWorksCosts(partnerId, version))
+                    .plus(partnerBudgetCostsPersistence.getBudgetUnitCosts(partnerId, version))
+                    .toList()),
+            budgetPerPeriod = (
+                getPartnerBudgetPerPeriod.getPartnerBudgetPerPeriod(projectId = projectId, version)
+                    .partnersBudgetPerPeriod.firstOrNull { it.partner.id == partnerId }?.periodBudgets ?: emptyList()
+                ).getCumulative(),
+            spendingUpUntilNow = getPreviouslyReportedSpending(submittedReportIds = submittedReportIds),
+            budgetOptions = projectPartnerBudgetOptionsPersistence.getBudgetOptions(partnerId, version),
+        )
+    }
+
+    private fun generateContributionsFromPreviousReports(
+        submittedReportIds: Set<Long>,
+        partnerContributionsSorted: List<ProjectPartnerContribution>,
+    ): List<CreateProjectPartnerReportContribution> {
         val mapIdToHistoricalIdentifier: MutableMap<Long, UUID> = mutableMapOf()
         val contributionsNotLinkedToApplicationForm: LinkedHashMap<UUID, Pair<String?, ProjectPartnerContributionStatus?>> = LinkedHashMap()
         val historicalContributions: MutableMap<UUID, MutableList<BigDecimal>> = mutableMapOf()
@@ -139,4 +147,21 @@ class CreateProjectPartnerReportBudget(
             numberOfUnits = mapOfUnitCostsById.value.sumOf { it.numberOfUnits },
         ) }.toSet()
     }
+
+    private fun List<ProjectPeriodBudget>.getCumulative() = sortedBy { it.periodNumber }
+        .fold(emptyList<ProjectPartnerReportPeriod>()) { previous, current ->
+            previous.plus(
+                ProjectPartnerReportPeriod(
+                    number = current.periodNumber,
+                    periodBudget = current.totalBudgetPerPeriod,
+                    periodBudgetCumulative = current.totalBudgetPerPeriod
+                        .plus(previous.lastOrNull()?.periodBudgetCumulative ?: ZERO),
+                    start = current.periodStart,
+                    end = current.periodEnd,
+                )
+            )
+        }
+
+    private fun getPreviouslyReportedSpending(submittedReportIds: Set<Long>) =
+        reportIdentificationPersistence.getPreviousSpendingFor(reportIds = submittedReportIds)
 }

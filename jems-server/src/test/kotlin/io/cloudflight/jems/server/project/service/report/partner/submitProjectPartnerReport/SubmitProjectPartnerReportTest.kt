@@ -15,6 +15,7 @@ import io.cloudflight.jems.server.project.service.report.model.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ReportBudgetCategory
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectReportExpenditurePersistence
+import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectReportIdentificationPersistence
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -88,6 +89,9 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
     lateinit var partnerPersistence: PartnerPersistence
 
     @MockK
+    lateinit var reportIdentificationPersistence: ProjectReportIdentificationPersistence
+
+    @MockK
     lateinit var auditPublisher: ApplicationEventPublisher
 
     @InjectMockKs
@@ -117,6 +121,9 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
         every { reportExpenditurePersistence
             .updatePartnerReportExpenditureCosts(PARTNER_ID, 35L, capture(slotExpenditures)) } returnsArgument 2
 
+        val spendingSlot = slot<BigDecimal>()
+        every { reportIdentificationPersistence.updateCurrentReportSpending(PARTNER_ID, reportId = 35L, capture(spendingSlot)) } answers { }
+
         every { reportPersistence.submitReportById(any(), any(), capture(submissionTime)) } returns mockedResult
         every { partnerPersistence.getProjectIdForPartnerId(PARTNER_ID, "5.6.0") } returns PROJECT_ID
 
@@ -142,6 +149,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
                 declaredAmountAfterSubmission = BigDecimal.valueOf(999, 2),
             ),
         )
+        assertThat(spendingSlot.captured).isEqualTo(BigDecimal.ONE)
     }
 
     @Test
