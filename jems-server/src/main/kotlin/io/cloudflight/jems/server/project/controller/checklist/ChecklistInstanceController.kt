@@ -35,8 +35,8 @@ class ChecklistInstanceController(
     ): List<ChecklistInstanceSelectionDTO> =
         getChecklistInteractor.getChecklistInstancesForSelection(relatedToId, type.toModel()).toSelectionDto()
 
-    override fun getChecklistInstanceDetail(checklistId: Long): ChecklistInstanceDetailDTO =
-        getChecklistDetailInteractor.getChecklistInstanceDetail(checklistId).toDetailDto()
+    override fun getChecklistInstanceDetail(checklistId: Long, relatedToId: Long): ChecklistInstanceDetailDTO =
+        getChecklistDetailInteractor.getChecklistInstanceDetail(checklistId, relatedToId).toDetailDto()
 
     override fun createChecklistInstance(checklist: CreateChecklistInstanceDTO): ChecklistInstanceDetailDTO =
         createInteractor.create(checklist.toModel()).toDetailDto()

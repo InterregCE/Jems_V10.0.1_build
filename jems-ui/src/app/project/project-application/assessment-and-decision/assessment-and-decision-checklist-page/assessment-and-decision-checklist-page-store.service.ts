@@ -6,6 +6,9 @@ import {map, shareReplay, switchMap, take, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 import {PermissionService} from '../../../../security/permissions/permission.service';
 import {SecurityService} from '../../../../security/security.service';
+import {
+  ProjectStore
+} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 
 @Injectable()
 export class AssessmentAndDecisionChecklistPageStore {
@@ -20,7 +23,8 @@ export class AssessmentAndDecisionChecklistPageStore {
   constructor(private routingService: RoutingService,
               private checklistInstanceService: ChecklistInstanceService,
               private securityService: SecurityService,
-              private permissionService: PermissionService) {
+              private permissionService: PermissionService,
+              private projectStore: ProjectStore) {
     this.checklist$ = this.checklist();
     this.userCanConsolidate$ = this.permissionService.hasPermission(UserRoleDTO.PermissionsEnum.ProjectAssessmentChecklistConsolidate);
     this.checklistEditable$ = this.checklistEditable();
@@ -44,9 +48,14 @@ export class AssessmentAndDecisionChecklistPageStore {
   }
 
   private checklist(): Observable<ChecklistInstanceDetailDTO> {
-    const initialChecklist$ = this.routingService.routeParameterChanges(AssessmentAndDecisionChecklistPageStore.CHECKLIST_DETAIL_PATH, 'checklistId')
-      .pipe(
-        switchMap(checklistId => this.checklistInstanceService.getChecklistInstanceDetail(checklistId as number)),
+    const initialChecklist$ = combineLatest([
+      this.routingService.routeParameterChanges(AssessmentAndDecisionChecklistPageStore.CHECKLIST_DETAIL_PATH, 'checklistId'),
+      this.projectStore.projectId$
+      ]
+    ).pipe(
+        switchMap(([checklistId, projectId]) => {
+          return this.checklistInstanceService.getChecklistInstanceDetail(checklistId as number, projectId );
+        }),
         tap(checklist => Log.info('Fetched the checklist instance', this, checklist))
       );
 

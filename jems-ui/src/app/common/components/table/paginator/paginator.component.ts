@@ -1,10 +1,10 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output, ViewChild} from '@angular/core';
 import {Tables} from '../../../utils/tables';
 import {MatPaginator, PageEvent} from '@angular/material/paginator';
-import {Forms} from "@common/utils/forms";
-import {filter, take, tap} from "rxjs/operators";
-import {Log} from "@common/utils/log";
-import {MatDialog} from "@angular/material/dialog";
+import {Forms} from '@common/utils/forms';
+import {filter, take, tap} from 'rxjs/operators';
+import {Log} from '@common/utils/log';
+import {MatDialog} from '@angular/material/dialog';
 
 @Component({
   selector: 'jems-paginator',
@@ -22,7 +22,7 @@ export class PaginatorComponent {
   @Input()
   currentPageSize: number = Tables.DEFAULT_INITIAL_PAGE_SIZE;
   @Input()
-  confirmPageChange: boolean = false;
+  confirmPageChange = false;
 
   @Output()
   pageIndexChanged: EventEmitter<number> = new EventEmitter<number>();

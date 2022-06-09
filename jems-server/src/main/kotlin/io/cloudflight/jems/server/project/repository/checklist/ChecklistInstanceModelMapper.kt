@@ -40,6 +40,7 @@ fun ChecklistInstanceEntity.toDetailModel(): ChecklistInstanceDetail {
         finishedDate = finishedDate,
         relatedToId = relatedToId,
         consolidated = consolidated,
+        visible = visible,
         minScore = programmeChecklist.minScore,
         maxScore = programmeChecklist.maxScore,
         allowsDecimalScore = programmeChecklist.allowsDecimalScore,

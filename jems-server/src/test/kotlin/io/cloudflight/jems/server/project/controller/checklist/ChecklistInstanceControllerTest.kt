@@ -79,6 +79,7 @@ class ChecklistInstanceControllerTest : UnitTest() {
         allowsDecimalScore = false,
         creatorEmail = "a@a",
         consolidated = false,
+        visible = true,
         components = mutableListOf(
             ChecklistComponentInstance(
                 2L,
@@ -281,8 +282,8 @@ class ChecklistInstanceControllerTest : UnitTest() {
 
     @Test
     fun `get checklist detail`() {
-        every { getChecklistDetailInteractor.getChecklistInstanceDetail(CHECKLIST_ID) } returns checkLisDetail
-        assertThat(controller.getChecklistInstanceDetail(CHECKLIST_ID))
+        every { getChecklistDetailInteractor.getChecklistInstanceDetail(CHECKLIST_ID, RELATED_TO_ID) } returns checkLisDetail
+        assertThat(controller.getChecklistInstanceDetail(CHECKLIST_ID, RELATED_TO_ID))
             .usingRecursiveComparison()
             .isEqualTo(checkLisDetailDTO)
     }

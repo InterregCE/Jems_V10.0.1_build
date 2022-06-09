@@ -61,6 +61,7 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
             minScore = BigDecimal(0),
             maxScore = BigDecimal(10),
             consolidated = false,
+            visible = false,
             components = mutableListOf(
                 ChecklistComponentInstance(
                     2L,
@@ -123,6 +124,7 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
         maxScore = BigDecimal(10),
         allowsDecimalScore = false,
         consolidated = false,
+        visible = false,
         components = mutableListOf(textInputComponentInstance)
     )
 
@@ -151,6 +153,7 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
         maxScore = BigDecimal(10),
         allowsDecimalScore = false,
         consolidated = false,
+        visible = true,
         creatorEmail = "a@a",
         components = mutableListOf(scoreComponentInstance)
     )
@@ -166,6 +169,7 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
         minScore = BigDecimal(0),
         maxScore = BigDecimal(10),
         consolidated = false,
+        visible = true,
         creatorEmail = "a@a",
         allowsDecimalScore = false,
         components = mutableListOf(optionsToggleComponentInstance)

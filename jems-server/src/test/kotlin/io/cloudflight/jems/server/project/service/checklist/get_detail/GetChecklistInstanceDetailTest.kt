@@ -7,12 +7,14 @@ import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInsta
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistComponentType
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.*
+import io.cloudflight.jems.server.project.authorization.ProjectChecklistAuthorization
 import io.cloudflight.jems.server.project.service.checklist.ChecklistInstancePersistence
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceStatus
 import io.cloudflight.jems.server.project.service.checklist.model.metadata.TextInputInstanceMetadata
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.impl.annotations.RelaxedMockK
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
@@ -33,6 +35,7 @@ internal class GetChecklistInstanceDetailTest : UnitTest() {
         relatedToId = RELATED_TO_ID,
         finishedDate = null,
         consolidated = false,
+        visible = true,
         minScore = BigDecimal(0),
         maxScore = BigDecimal(10),
         allowsDecimalScore = false,
@@ -65,13 +68,16 @@ internal class GetChecklistInstanceDetailTest : UnitTest() {
     @MockK
     lateinit var persistence: ChecklistInstancePersistence
 
+    @MockK
+    lateinit var checklistAuthorization: ProjectChecklistAuthorization
+
     @InjectMockKs
     lateinit var getChecklistInstance: GetChecklistInstanceDetail
 
     @Test
     fun getChecklistDetail() {
         every { persistence.getChecklistDetail(CHECKLIST_ID) } returns checkLisDetail
-        assertThat(getChecklistInstance.getChecklistInstanceDetail(CHECKLIST_ID))
+        assertThat(getChecklistInstance.getChecklistInstanceDetail(CHECKLIST_ID, RELATED_TO_ID))
             .usingRecursiveComparison()
             .isEqualTo(checkLisDetail)
     }

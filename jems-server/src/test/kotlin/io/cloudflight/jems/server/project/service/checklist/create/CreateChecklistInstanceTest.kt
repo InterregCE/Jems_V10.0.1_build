@@ -53,6 +53,7 @@ internal class CreateChecklistInstanceTest : UnitTest() {
         maxScore = BigDecimal(10),
         allowsDecimalScore = false,
         consolidated = false,
+        visible = true,
         components = mutableListOf(
             ChecklistComponentInstance(
                 2L,

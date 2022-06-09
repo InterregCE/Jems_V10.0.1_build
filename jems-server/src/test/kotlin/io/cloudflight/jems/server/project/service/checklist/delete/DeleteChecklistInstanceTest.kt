@@ -40,6 +40,7 @@ internal class DeleteChecklistInstanceTest : UnitTest() {
         maxScore = BigDecimal(10),
         allowsDecimalScore = false,
         consolidated = false,
+        visible = false,
         components = mutableListOf(
             ChecklistComponentInstance(
                 2L,
@@ -75,6 +76,7 @@ internal class DeleteChecklistInstanceTest : UnitTest() {
         relatedToId = 1L,
         finishedDate = null,
         consolidated = false,
+        visible = true,
         minScore = BigDecimal(0),
         maxScore = BigDecimal(10),
         allowsDecimalScore = false,

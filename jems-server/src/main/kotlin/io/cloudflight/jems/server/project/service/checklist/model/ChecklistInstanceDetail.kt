@@ -15,6 +15,7 @@ class ChecklistInstanceDetail(
     val finishedDate: LocalDate?,
     var relatedToId: Long?,
     val consolidated: Boolean?,
+    val visible: Boolean,
     val minScore: BigDecimal?,
     val maxScore: BigDecimal?,
     val allowsDecimalScore: Boolean? = false,
