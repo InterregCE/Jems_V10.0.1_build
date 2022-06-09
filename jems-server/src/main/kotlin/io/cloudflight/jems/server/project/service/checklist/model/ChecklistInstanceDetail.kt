@@ -11,6 +11,7 @@ class ChecklistInstanceDetail(
     val type: ProgrammeChecklistType?,
     val name: String?,
     val creatorEmail: String?,
+    val creatorId: Long?,
     val status: ChecklistInstanceStatus,
     val finishedDate: LocalDate?,
     var relatedToId: Long?,

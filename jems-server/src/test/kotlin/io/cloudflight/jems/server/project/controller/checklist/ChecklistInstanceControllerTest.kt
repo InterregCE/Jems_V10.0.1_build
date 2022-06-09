@@ -55,6 +55,7 @@ class ChecklistInstanceControllerTest : UnitTest() {
     private val CHECKLIST_ID = 100L
     private val RELATED_TO_ID = 2L
     private val PROGRAMME_CHECKLIST_ID = 4L
+    private val CREATOR_ID = 1L
 
     private val createChecklist = CreateChecklistInstanceModel(
         RELATED_TO_ID,
@@ -78,6 +79,7 @@ class ChecklistInstanceControllerTest : UnitTest() {
         maxScore = BigDecimal(10),
         allowsDecimalScore = false,
         creatorEmail = "a@a",
+        creatorId = CREATOR_ID,
         consolidated = false,
         visible = true,
         components = mutableListOf(

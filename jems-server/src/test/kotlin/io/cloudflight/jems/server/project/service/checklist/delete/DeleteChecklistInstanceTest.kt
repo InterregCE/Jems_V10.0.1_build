@@ -26,6 +26,7 @@ import java.math.BigDecimal
 internal class DeleteChecklistInstanceTest : UnitTest() {
 
     private val CHECKLIST_ID = 100L
+    private val CREATOR_ID = 1L
 
     private val checkLisDetail = ChecklistInstanceDetail(
         id = CHECKLIST_ID,
@@ -34,6 +35,7 @@ internal class DeleteChecklistInstanceTest : UnitTest() {
         type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
         name = "name",
         creatorEmail = "a@a",
+        creatorId = CREATOR_ID,
         relatedToId = 1L,
         finishedDate = null,
         minScore = BigDecimal(0),
@@ -73,6 +75,7 @@ internal class DeleteChecklistInstanceTest : UnitTest() {
         type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
         name = "name",
         creatorEmail = "a@a",
+        creatorId = CREATOR_ID,
         relatedToId = 1L,
         finishedDate = null,
         consolidated = false,

@@ -45,6 +45,7 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
     private val CHECKLIST_ID = 100L
     private val RELATED_TO_ID = 2L
     private val PROGRAMME_CHECKLIST_ID = 4L
+    private val CREATOR_ID = 1L
 
     private val checkLisDetail = checklistInstanceDetail()
 
@@ -57,6 +58,7 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
             name = "name",
             relatedToId = RELATED_TO_ID,
             creatorEmail = "a@a",
+            creatorId = CREATOR_ID,
             finishedDate = null,
             minScore = BigDecimal(0),
             maxScore = BigDecimal(10),
@@ -118,6 +120,7 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
         type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
         name = "name",
         creatorEmail = "a@a",
+        creatorId = CREATOR_ID,
         relatedToId = RELATED_TO_ID,
         finishedDate = null,
         minScore = BigDecimal(0),
@@ -155,6 +158,7 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
         consolidated = false,
         visible = true,
         creatorEmail = "a@a",
+        creatorId = CREATOR_ID,
         components = mutableListOf(scoreComponentInstance)
     )
 
@@ -171,6 +175,7 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
         consolidated = false,
         visible = true,
         creatorEmail = "a@a",
+        creatorId = CREATOR_ID,
         allowsDecimalScore = false,
         components = mutableListOf(optionsToggleComponentInstance)
     )

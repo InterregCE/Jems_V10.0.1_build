@@ -37,6 +37,7 @@ fun ChecklistInstanceEntity.toDetailModel(): ChecklistInstanceDetail {
         type = programmeChecklist.type,
         name = programmeChecklist.name,
         creatorEmail = creator.email,
+        creatorId = creator.id,
         finishedDate = finishedDate,
         relatedToId = relatedToId,
         consolidated = consolidated,
