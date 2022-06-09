@@ -3,12 +3,13 @@ import {
   ProjectPartnerReportDTO,
   ProjectPartnerReportIdentificationDTO,
   ProjectPartnerReportIdentificationService,
+  ProjectPartnerReportPeriodDTO,
   ProjectPartnerReportService,
   ProjectPartnerReportSummaryDTO,
   ProjectPartnerSummaryDTO,
   UpdateProjectPartnerReportIdentificationDTO
 } from '@cat/api';
-import {combineLatest, merge, Observable, of, Subject} from 'rxjs';
+import {BehaviorSubject, combineLatest, merge, Observable, of, Subject} from 'rxjs';
 import {catchError, map, shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
 import {RoutingService} from '@common/services/routing.service';
 import {Log} from '@common/utils/log';
@@ -26,6 +27,8 @@ export class PartnerReportDetailPageStore {
   partnerReportId$: Observable<number>;
   partnerReportLevel$: Observable<string>;
   partnerIdentification$: Observable<ProjectPartnerReportIdentificationDTO>;
+  refreshIdentification$ = new BehaviorSubject<any>(null);
+  availablePeriods$: Observable<ProjectPartnerReportPeriodDTO[]>;
   reportStatus$: Observable<ProjectPartnerReportSummaryDTO.StatusEnum>;
   reportEditable$: Observable<boolean>;
 
@@ -47,6 +50,7 @@ export class PartnerReportDetailPageStore {
     this.partnerSummary$ = this.partnerReportPageStore.partnerSummary$;
     this.partnerReport$ = this.partnerReport();
     this.partnerIdentification$ = this.reportIdentification();
+    this.availablePeriods$ = this.availablePeriods();
     this.reportStatus$ = this.reportStatus();
     this.reportEditable$ = this.reportEditable();
   }
@@ -93,7 +97,8 @@ export class PartnerReportDetailPageStore {
     const initialIdentification$ = combineLatest([
       this.partnerId$,
       this.routingService.routeParameterChanges(PartnerReportDetailPageStore.REPORT_DETAIL_PATH, 'reportId'),
-      this.projectStore.projectId$
+      this.projectStore.projectId$,
+      this.refreshIdentification$,
     ]).pipe(
       switchMap(([partnerId, reportId, projectId]) => !!partnerId && !!projectId && !!reportId
         ? this.reportIdentificationService.getIdentification(Number(partnerId), Number(reportId))
@@ -112,6 +117,27 @@ export class PartnerReportDetailPageStore {
       .pipe(
         shareReplay(1)
       );
+  }
+
+  availablePeriods(): Observable<ProjectPartnerReportPeriodDTO[]> {
+    return combineLatest([
+      this.partnerId$,
+      this.routingService.routeParameterChanges(PartnerReportDetailPageStore.REPORT_DETAIL_PATH, 'reportId'),
+      this.projectStore.projectId$,
+    ]).pipe(
+      switchMap(([partnerId, reportId, projectId]) => !!partnerId && !!projectId && !!reportId
+        ? this.reportIdentificationService.getAvailablePeriods(Number(partnerId), Number(reportId))
+          .pipe(
+            catchError(() => {
+              this.routingService.navigate([ProjectPaths.PROJECT_DETAIL_PATH, projectId, 'reporting']);
+              return of([] as ProjectPartnerReportPeriodDTO[]);
+            })
+          )
+        : of([] as ProjectPartnerReportPeriodDTO[])
+      ),
+      tap(periods => Log.info('Fetched the partner report available periods:', this, periods)),
+      shareReplay(1),
+    );
   }
 
   public saveIdentification(identification: UpdateProjectPartnerReportIdentificationDTO): Observable<ProjectPartnerReportIdentificationDTO> {
