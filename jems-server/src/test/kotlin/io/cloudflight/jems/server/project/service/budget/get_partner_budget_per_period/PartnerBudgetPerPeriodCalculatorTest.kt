@@ -7,11 +7,7 @@ import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerBud
 import io.cloudflight.jems.server.project.service.common.BudgetCostsCalculator
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectPartnerLumpSum
-import io.cloudflight.jems.server.project.service.model.BudgetCostsDetail
-import io.cloudflight.jems.server.project.service.model.ProjectBudgetOverviewPerPartnerPerPeriod
-import io.cloudflight.jems.server.project.service.model.ProjectPartnerBudgetPerPeriod
-import io.cloudflight.jems.server.project.service.model.ProjectPeriod
-import io.cloudflight.jems.server.project.service.model.ProjectPeriodBudget
+import io.cloudflight.jems.server.project.service.model.*
 import io.cloudflight.jems.server.project.service.partner.model.PartnerTotalBudgetPerCostCategory
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import io.cloudflight.jems.server.toScaledBigDecimal
@@ -67,7 +63,9 @@ internal class PartnerBudgetPerPeriodCalculatorTest : UnitTest() {
                 ),
                 lumpSums = emptyList(),
                 projectPeriods = emptyList(),
-
+                spfBudgetPerPeriod = emptyList(),
+                spfTotalBudget = BigDecimal.ZERO,
+                spfBeneficiary = null
                 )
         ).isEqualTo(
             ProjectBudgetOverviewPerPartnerPerPeriod(
@@ -82,7 +80,8 @@ internal class PartnerBudgetPerPeriodCalculatorTest : UnitTest() {
                         totalPartnerBudgetDetail = BudgetCostsDetail(
                             externalCosts = 300.00.toScaledBigDecimal(),
                             equipmentCosts = 200.00.toScaledBigDecimal()
-                        )
+                        ),
+                        costType = ProjectPartnerCostType.Management
                     )
                 ),
                 totals = listOf(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO),
@@ -179,7 +178,9 @@ internal class PartnerBudgetPerPeriodCalculatorTest : UnitTest() {
                     ProjectPeriod(number = 2, start = 7, end = 12),
                     ProjectPeriod(number = 3, start = 13, end = 15)
                 ),
-
+                spfBudgetPerPeriod = emptyList(),
+                spfTotalBudget = BigDecimal.ZERO,
+                spfBeneficiary = null
                 )
         ).isEqualTo(
             ProjectBudgetOverviewPerPartnerPerPeriod(
@@ -230,7 +231,8 @@ internal class PartnerBudgetPerPeriodCalculatorTest : UnitTest() {
                             officeAndAdministrationCosts = 7.50.toScaledBigDecimal(),
                             travelCosts = 5.00.toScaledBigDecimal(),
                             staffCosts = 50.00.toScaledBigDecimal()
-                        )
+                        ),
+                        costType = ProjectPartnerCostType.Management
                     )
                 ),
                 totals = listOf(
@@ -380,6 +382,9 @@ internal class PartnerBudgetPerPeriodCalculatorTest : UnitTest() {
                 ProjectPeriod(number = 1, start = 1, end = 2),
                 ProjectPeriod(number = 2, start = 2, end = 2)
             ),
+            spfBudgetPerPeriod = emptyList(),
+            spfTotalBudget = BigDecimal.ZERO,
+            spfBeneficiary = null
         )
 
         assertThat(result)
@@ -453,7 +458,8 @@ internal class PartnerBudgetPerPeriodCalculatorTest : UnitTest() {
                                 travelCosts = 11.10.toScaledBigDecimal(),
                                 staffCosts = 62.91.toScaledBigDecimal(),
                                 otherCosts = 3.14.toScaledBigDecimal()
-                            )
+                            ),
+                            costType = ProjectPartnerCostType.Management
                         ),
                         ProjectPartnerBudgetPerPeriod(
                             partner = partner2,
@@ -508,7 +514,8 @@ internal class PartnerBudgetPerPeriodCalculatorTest : UnitTest() {
                                 infrastructureCosts = 2.00.toScaledBigDecimal(),
                                 travelCosts = 0.18.toScaledBigDecimal(),
                                 staffCosts = 1.20.toScaledBigDecimal()
-                            )
+                            ),
+                            costType = ProjectPartnerCostType.Management
                         )
                     ),
                     totals = listOf(

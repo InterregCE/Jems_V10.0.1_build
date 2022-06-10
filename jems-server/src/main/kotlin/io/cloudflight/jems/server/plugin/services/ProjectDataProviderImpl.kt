@@ -38,6 +38,7 @@ import io.cloudflight.jems.server.project.service.partner.cofinancing.model.Proj
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContributionSpf
 import io.cloudflight.jems.server.project.service.partner.model.BudgetCosts
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.result.ProjectResultPersistence
 import io.cloudflight.jems.server.project.service.result.get_project_result_indicators_overview.ResultOverviewCalculator
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
@@ -96,6 +97,23 @@ class ProjectDataProviderImpl(
             mutableMapOf()
         val budgetSPFCoFinancingAndContributions: MutableMap<Long, ProjectPartnerCoFinancingAndContributionSpf> =
             mutableMapOf()
+
+        val spfBeneficiary = if (isSpfCall)
+            projectBudgetPersistence.getPartnersForProjectId(projectId, version)
+                .firstOrNull { it.active && it.role == ProjectPartnerRole.LEAD_PARTNER }
+        else
+            null
+
+        val spfTotalCost =
+            if (isSpfCall && spfBeneficiary?.id != null)
+                getBudgetCostsPersistence.getBudgetSpfCostTotal(spfBeneficiary.id, version)
+            else
+                valueOf(0, 2)
+
+        val spfBudgetPerPeriod = if (isSpfCall && spfBeneficiary?.id != null)
+            projectBudgetPersistence.getSpfBudgetPerPeriod(spfBeneficiary.id, projectId, version).toMutableList()
+        else
+            emptyList()
 
         val partnersData = partners.map { partner ->
             val budgetOptions = partnersBudgetOptions.firstOrNull() { it.partnerId == partner.id }
@@ -186,6 +204,9 @@ class ProjectDataProviderImpl(
                 ),
                 lumpSums = lumpSums,
                 projectPeriods = projectPersistence.getProjectPeriods(projectId, version),
+                spfBudgetPerPeriod,
+                spfTotalCost,
+                spfBeneficiary
             ).toProjectBudgetOverviewPerPartnerPerPeriod()
         )
 

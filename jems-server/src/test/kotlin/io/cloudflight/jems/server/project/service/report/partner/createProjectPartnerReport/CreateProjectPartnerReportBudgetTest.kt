@@ -205,6 +205,7 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
                 ),
                 totalPartnerBudget = BigDecimal.ZERO,
                 totalPartnerBudgetDetail = mockk(),
+                costType = ProjectPartnerCostType.Management
             ),
         )
     }

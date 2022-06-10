@@ -1,18 +1,20 @@
 package io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_period
 
+import io.cloudflight.jems.api.call.dto.CallStatus
+import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.call.service.CallPersistence
+import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.budget.ProjectBudgetPersistence
 import io.cloudflight.jems.server.project.service.budget.model.PartnersAggregatedInfo
 import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerBudget
+import io.cloudflight.jems.server.project.service.budget.model.ProjectSpfBudgetPerPeriod
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectPartnerLumpSum
-import io.cloudflight.jems.server.project.service.model.BudgetCostsDetail
-import io.cloudflight.jems.server.project.service.model.ProjectBudgetOverviewPerPartnerPerPeriod
-import io.cloudflight.jems.server.project.service.model.ProjectPartnerBudgetPerPeriod
-import io.cloudflight.jems.server.project.service.model.ProjectPeriod
-import io.cloudflight.jems.server.project.service.model.ProjectPeriodBudget
+import io.cloudflight.jems.server.project.service.model.*
+import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetCostsPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
 import io.cloudflight.jems.server.project.service.partner.model.PartnerTotalBudgetPerCostCategory
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
@@ -25,6 +27,7 @@ import io.mockk.impl.annotations.MockK
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
+import java.time.ZonedDateTime
 
 class GetPartnerBudgetPerPeriodInteractorTest : UnitTest() {
 
@@ -70,6 +73,12 @@ class GetPartnerBudgetPerPeriodInteractorTest : UnitTest() {
 
     @MockK
     lateinit var calculatePartnerBudgetPerPeriod: PartnerBudgetPerPeriodCalculator
+
+    @MockK
+    lateinit var budgetCostsPersistence: ProjectPartnerBudgetCostsPersistence
+
+    @MockK
+    lateinit var callPersistence: CallPersistence
 
     @InjectMockKs
     private lateinit var getPartnerBudgetPerPeriod: GetPartnerBudgetPerPeriod
@@ -144,18 +153,37 @@ class GetPartnerBudgetPerPeriodInteractorTest : UnitTest() {
                     partner = partner1,
                     periodBudgets = getProjectPeriods(170.00.toScaledBigDecimal(), 130.00.toScaledBigDecimal()),
                     totalPartnerBudget = 300.toScaledBigDecimal(),
-                    totalPartnerBudgetDetail = BudgetCostsDetail()
+                    totalPartnerBudgetDetail = BudgetCostsDetail(),
+                    costType = ProjectPartnerCostType.Management
                 ),
                 ProjectPartnerBudgetPerPeriod(
                     partner = partner2,
                     periodBudgets = getProjectPeriods(250.toScaledBigDecimal(), 0.toScaledBigDecimal()),
                     totalPartnerBudget = 250.toScaledBigDecimal(),
-                    totalPartnerBudgetDetail = BudgetCostsDetail()
+                    totalPartnerBudgetDetail = BudgetCostsDetail(),
+                    costType = ProjectPartnerCostType.Management
                 )
             ),
             totals = listOf(),
             totalsPercentage = listOf()
         )
+
+        val call = CallDetail(
+            id = 1,
+            name = "call",
+            status = CallStatus.PUBLISHED,
+            type = CallType.STANDARD,
+            startDate = ZonedDateTime.now(),
+            endDateStep1 = ZonedDateTime.now(),
+            endDate = ZonedDateTime.now(),
+            isAdditionalFundAllowed = true,
+            lengthOfPeriod = null,
+            applicationFormFieldConfigurations = mutableSetOf(),
+            preSubmissionCheckPluginKey = null,
+            firstStepPreSubmissionCheckPluginKey = null
+        )
+
+        every { callPersistence.getCallByProjectId(projectId)} returns call
         every { persistence.getPartnersForProjectId(projectId, version) } returns listOf(partner1, partner2)
         every {
             optionPersistence.getBudgetOptions(
@@ -191,6 +219,129 @@ class GetPartnerBudgetPerPeriodInteractorTest : UnitTest() {
                     lumpSumEntry(partner2Id, 100.toBigDecimal())
                 ),
                 projectPeriods = projectPeriods(),
+                spfBudgetPerPeriod = emptyList(),
+                spfTotalBudget = BigDecimal.ZERO,
+                spfBeneficiary = null
+            )
+        } returns expectedResult
+
+
+        assertThat(getPartnerBudgetPerPeriod.getPartnerBudgetPerPeriod(projectId, version))
+            .isEqualTo(expectedResult)
+    }
+
+    @Test
+    fun `getPartnerBudgetPerPeriod - historic version SPF`() {
+        val projectId = 1L
+        val version = "1.0"
+
+        val partnerTotal2 = PartnerTotalBudgetPerCostCategory(
+            partner2Id,
+            null,
+            null,
+            null,
+            null,
+            null,
+            BigDecimal.ZERO,
+            BigDecimal.ZERO,
+            BigDecimal.ZERO,
+            BigDecimal.ZERO,
+            BigDecimal.ZERO,
+            BigDecimal.ZERO,
+            BigDecimal.ZERO
+        )
+
+        // partner 2
+        val p2budgetPeriod1 = ProjectPartnerBudget(
+            id = partner2Id,
+            periodNumber = 1,
+            staffCostsPerPeriod = 100.toScaledBigDecimal(),
+            externalExpertiseAndServicesCostsPerPeriod = 50.toScaledBigDecimal()
+        )
+
+        val budgetOptions = listOf(
+            ProjectPartnerBudgetOptions(
+                partnerId = partner1Id,
+                officeAndAdministrationOnDirectCostsFlatRate = 10,
+                travelAndAccommodationOnStaffCostsFlatRate = 10
+            )
+        )
+        val expectedResult = ProjectBudgetOverviewPerPartnerPerPeriod(
+            partnersBudgetPerPeriod = listOf(
+                ProjectPartnerBudgetPerPeriod(
+                    partner = partner2,
+                    periodBudgets = getProjectPeriods(250.toScaledBigDecimal(), 0.toScaledBigDecimal()),
+                    totalPartnerBudget = 250.toScaledBigDecimal(),
+                    totalPartnerBudgetDetail = BudgetCostsDetail(),
+                    costType = ProjectPartnerCostType.Management
+                )
+            ),
+            totals = listOf(),
+            totalsPercentage = listOf()
+        )
+
+        val projectSpfBudgetPerPeriod1 = ProjectSpfBudgetPerPeriod(
+            periodNumber = 1,
+            spfCostPerPeriod = BigDecimal.TEN
+        )
+
+        val spfCall = CallDetail(
+            id = 2,
+            name = "spf call",
+            status = CallStatus.PUBLISHED,
+            type = CallType.SPF,
+            startDate = ZonedDateTime.now(),
+            endDateStep1 = ZonedDateTime.now(),
+            endDate = ZonedDateTime.now(),
+            isAdditionalFundAllowed = true,
+            lengthOfPeriod = 2,
+            applicationFormFieldConfigurations = mutableSetOf(),
+            preSubmissionCheckPluginKey = null,
+            firstStepPreSubmissionCheckPluginKey = null
+        )
+        every { callPersistence.getCallByProjectId(projectId)} returns spfCall
+        every { persistence.getPartnersForProjectId(projectId, version) } returns listOf(partner2)
+        every {
+            optionPersistence.getBudgetOptions(
+                setOf(partner2Id),
+                projectId,
+                version
+            )
+        } returns budgetOptions
+        every { lumpSumPersistence.getLumpSums(projectId, version) } returns listOf(
+            lumpSumEntry(partner2Id, 100.toBigDecimal())
+        )
+
+        every {
+            persistence.getBudgetTotalForPartners(
+                setOf(partner2Id),
+                projectId,
+                version
+            )
+        } returns mapOf(Pair(partner2Id, partnerTotal2))
+        every { persistence.getBudgetPerPartner(setOf(partner2Id), projectId, version) } returns
+            listOf(p2budgetPeriod1)
+        every { projectPersistence.getProjectPeriods(projectId, version) } returns projectPeriods()
+
+        every {persistence.getSpfBudgetPerPeriod(partner2Id, projectId, version) } returns listOf(projectSpfBudgetPerPeriod1)
+
+        every {budgetCostsPersistence.getBudgetSpfCostTotal(partner2Id, version) } returns BigDecimal.TEN
+
+        every {
+            calculatePartnerBudgetPerPeriod.calculate(
+                PartnersAggregatedInfo(
+                    listOf(partner2),
+                    budgetOptions,
+                    listOf(p2budgetPeriod1),
+                    mapOf(Pair(partner2Id, partnerTotal2))
+                ),
+                lumpSums = listOf(
+                    lumpSumEntry(partner2Id, 100.toBigDecimal())
+                ),
+                projectPeriods = projectPeriods(),
+                spfBudgetPerPeriod = listOf(projectSpfBudgetPerPeriod1),
+                spfTotalBudget = BigDecimal.TEN,
+                spfBeneficiary = partner2
             )
         } returns expectedResult
 
