@@ -7,6 +7,7 @@
 
         <div>
             <span>{{ 'project.breadcrumb.partnerName' | translate }}</span>
+            <span *ngIf="data.isCallTypeSpf">{{'project.partner.spf.cost' | translate}}</span>
             <span>{{ 'project.partner.main-address.country' | translate }}</span>
             <span *ngFor="let periodNumber of projectPeriodNumbers">
                  {{ periodNumber === PERIOD_PREPARATION ? ('project.application.form.section.part.e.period.preparation' | translate) :
@@ -19,6 +20,10 @@
         <ng-container *ngFor="let partnerBudgetPerPeriod of data.partnersBudgetPerPeriod">
             <div>
                 <span> {{ 'common.label.project.partner.role.shortcut.' + partnerBudgetPerPeriod.partner.role | adaptTranslationKeyByCallType | async | translate : {partner: partnerBudgetPerPeriod.partner.sortNumber} }}</span>
+                <div *ngIf="data.isCallTypeSpf">
+                    <span>{{partnerBudgetPerPeriod.partner.country | translate}}</span>
+                    <span>{{ 'project.partner.spf.cost.type.' + partnerBudgetPerPeriod.costType.toLowerCase() | translate }}</span>
+                </div>
                 <span>{{partnerBudgetPerPeriod.partner.country | translate}}</span>
                 <span *ngFor="let periodBudget of partnerBudgetPerPeriod.periodBudgets">{{ periodBudget.totalBudgetPerPeriod | asMoney }}</span>
                 <span>{{partnerBudgetPerPeriod.totalPartnerBudget | asMoney}}</span>
@@ -28,12 +33,14 @@
         <div class="footer">
             <span>{{ 'project.partner.budget.table.total' | translate }}</span>
             <span></span>
+            <span *ngIf="data.isCallTypeSpf"></span>
             <span *ngFor="let total of data.totals">{{ total | asMoney}}</span>
         </div>
 
         <div class="footer">
             <span>{{ 'project.partner.percent.of.total.budget' | translate }}</span>
             <span></span>
+            <span *ngIf="data.isCallTypeSpf"></span>
             <span *ngFor="let totalPercent of data.totalsPercentage;">{{ totalPercent | asMoney }} %</span>
         </div>
     </div>
