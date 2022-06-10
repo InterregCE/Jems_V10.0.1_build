@@ -57,12 +57,12 @@ export class ApplicationFormPrivilegesExpansionPanelComponent implements OnInit 
   }
 
   ngOnInit(): void {
-      if (this.projectCollaboratorsData) {
-        this.formService.init(this.form, this.pageStore.projectCollaboratorsEditable$);
-        this.resetForm(this.projectCollaboratorsData);
-        this.formService.resetEditable();
-      }
+    if (this.projectCollaboratorsData) {
+      this.formService.init(this.form, this.pageStore.projectCollaboratorsEditable$);
+      this.resetForm(this.projectCollaboratorsData);
+      this.formService.resetEditable();
     }
+  }
 
   saveCollaborators(): void {
     this.pageStore.saveProjectCollaborators(this.projectCollaborators.value)
