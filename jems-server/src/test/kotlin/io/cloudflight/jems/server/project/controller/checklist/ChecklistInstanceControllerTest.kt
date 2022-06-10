@@ -55,6 +55,7 @@ class ChecklistInstanceControllerTest : UnitTest() {
     private val CHECKLIST_ID = 100L
     private val RELATED_TO_ID = 2L
     private val PROGRAMME_CHECKLIST_ID = 4L
+    private val CREATOR_ID = 1L
 
     private val createChecklist = CreateChecklistInstanceModel(
         RELATED_TO_ID,
@@ -78,7 +79,9 @@ class ChecklistInstanceControllerTest : UnitTest() {
         maxScore = BigDecimal(10),
         allowsDecimalScore = false,
         creatorEmail = "a@a",
+        creatorId = CREATOR_ID,
         consolidated = false,
+        visible = true,
         components = mutableListOf(
             ChecklistComponentInstance(
                 2L,
@@ -281,8 +284,8 @@ class ChecklistInstanceControllerTest : UnitTest() {
 
     @Test
     fun `get checklist detail`() {
-        every { getChecklistDetailInteractor.getChecklistInstanceDetail(CHECKLIST_ID) } returns checkLisDetail
-        assertThat(controller.getChecklistInstanceDetail(CHECKLIST_ID))
+        every { getChecklistDetailInteractor.getChecklistInstanceDetail(CHECKLIST_ID, RELATED_TO_ID) } returns checkLisDetail
+        assertThat(controller.getChecklistInstanceDetail(CHECKLIST_ID, RELATED_TO_ID))
             .usingRecursiveComparison()
             .isEqualTo(checkLisDetailDTO)
     }

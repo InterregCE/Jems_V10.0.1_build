@@ -48,11 +48,13 @@ internal class CreateChecklistInstanceTest : UnitTest() {
         name = "name",
         relatedToId = RELATED_TO_ID,
         creatorEmail = "a@a",
+        creatorId = CREATOR_ID,
         finishedDate = null,
         minScore = BigDecimal(0),
         maxScore = BigDecimal(10),
         allowsDecimalScore = false,
         consolidated = false,
+        visible = true,
         components = mutableListOf(
             ChecklistComponentInstance(
                 2L,
