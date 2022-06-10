@@ -24,6 +24,9 @@ class GetChecklistInstanceDetail(
     @ExceptionWrapper(GetChecklistInstanceDetailNotFoundException::class)
     override fun getChecklistInstanceDetail(id: Long, relatedToId: Long): ChecklistInstanceDetail {
         val checklistDetail = persistence.getChecklistDetail(id)
+        // relatedToId corresponds to projectId only if:
+        //   checklistDetail.type == ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT
+        // also when another type was added, use relatedToId of checklistDetail instead of method parameter
         if ((isNotAllowedToUpdate(relatedToId, checklistDetail) &&
                 (checkListIsNotVisible(checklistDetail) || !canViewSelectedAssessmentsList(relatedToId)))  ||
                 checklistDetail.relatedToId != relatedToId

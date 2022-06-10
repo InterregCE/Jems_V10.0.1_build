@@ -5,10 +5,15 @@ import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistComponentInstance
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistComponentType
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
-import io.cloudflight.jems.server.programme.service.checklist.model.metadata.*
+import io.cloudflight.jems.server.programme.service.checklist.model.metadata.HeadlineInstanceMetadata
+import io.cloudflight.jems.server.programme.service.checklist.model.metadata.HeadlineMetadata
+import io.cloudflight.jems.server.programme.service.checklist.model.metadata.OptionsToggleInstanceMetadata
+import io.cloudflight.jems.server.programme.service.checklist.model.metadata.OptionsToggleMetadata
+import io.cloudflight.jems.server.programme.service.checklist.model.metadata.TextInputMetadata
 import io.cloudflight.jems.server.project.authorization.ProjectChecklistAuthorization
 import io.cloudflight.jems.server.project.service.checklist.ChecklistInstancePersistence
 import io.cloudflight.jems.server.project.service.checklist.getDetail.GetChecklistInstanceDetail
+import io.cloudflight.jems.server.project.service.checklist.getInstances.GetChecklistDetailNotAllowedException
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceStatus
 import io.cloudflight.jems.server.project.service.checklist.model.metadata.TextInputInstanceMetadata
@@ -18,6 +23,7 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import java.math.BigDecimal
 
 internal class GetChecklistInstanceDetailTest : UnitTest() {
@@ -91,4 +97,29 @@ internal class GetChecklistInstanceDetailTest : UnitTest() {
             .isEqualTo(checkLisDetail)
     }
 
+    @Test
+    fun `get checklist detail error without permission`() {
+        every { persistence.getChecklistDetail(CHECKLIST_ID) } returns checkLisDetail
+        every { checklistAuthorization.hasPermission(UserRolePermission.ProjectAssessmentChecklistUpdate, RELATED_TO_ID)} returns false
+        every { checklistAuthorization.hasPermission(UserRolePermission.ProjectAssessmentChecklistConsolidate, RELATED_TO_ID)} returns false
+        every { checklistAuthorization.hasPermission(UserRolePermission.ProjectAssessmentChecklistSelectedUpdate)} returns false
+        every { checklistAuthorization.hasPermission(UserRolePermission.ProjectAssessmentChecklistSelectedRetrieve, RELATED_TO_ID)} returns false
+        every { securityService.getUserIdOrThrow()} returns RELATED_TO_ID
+        assertThrows<GetChecklistDetailNotAllowedException> {
+            getChecklistInstance.getChecklistInstanceDetail(CHECKLIST_ID, RELATED_TO_ID)
+        }
+    }
+
+    @Test
+    fun `get checklist detail with selected permission`() {
+        every { persistence.getChecklistDetail(CHECKLIST_ID) } returns checkLisDetail
+        every { checklistAuthorization.hasPermission(UserRolePermission.ProjectAssessmentChecklistUpdate, RELATED_TO_ID)} returns false
+        every { checklistAuthorization.hasPermission(UserRolePermission.ProjectAssessmentChecklistConsolidate, RELATED_TO_ID)} returns false
+        every { checklistAuthorization.hasPermission(UserRolePermission.ProjectAssessmentChecklistSelectedUpdate)} returns false
+        every { checklistAuthorization.hasPermission(UserRolePermission.ProjectAssessmentChecklistSelectedRetrieve, RELATED_TO_ID)} returns true
+        every { securityService.getUserIdOrThrow()} returns RELATED_TO_ID
+        assertThat(getChecklistInstance.getChecklistInstanceDetail(CHECKLIST_ID, RELATED_TO_ID))
+            .usingRecursiveComparison()
+            .isEqualTo(checkLisDetail)
+    }
 }
