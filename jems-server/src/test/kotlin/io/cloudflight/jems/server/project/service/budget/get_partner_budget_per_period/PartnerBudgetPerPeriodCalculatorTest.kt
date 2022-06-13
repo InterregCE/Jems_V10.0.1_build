@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResult
 import io.cloudflight.jems.server.project.service.budget.model.PartnersAggregatedInfo
 import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerBudget
+import io.cloudflight.jems.server.project.service.budget.model.ProjectSpfBudgetPerPeriod
 import io.cloudflight.jems.server.project.service.common.BudgetCostsCalculator
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectPartnerLumpSum
@@ -63,19 +64,14 @@ internal class PartnerBudgetPerPeriodCalculatorTest : UnitTest() {
                 ),
                 lumpSums = emptyList(),
                 projectPeriods = emptyList(),
-                spfBudgetPerPeriod = emptyList(),
-                spfTotalBudget = BigDecimal.ZERO,
-                spfBeneficiary = null
-                )
+                spfPartnerBudgetPerPeriod = emptyList()
+            )
         ).isEqualTo(
             ProjectBudgetOverviewPerPartnerPerPeriod(
                 partnersBudgetPerPeriod = listOf(
                     ProjectPartnerBudgetPerPeriod(
                         partner = partner1,
-                        periodBudgets = mutableListOf(
-                            ProjectPeriodBudget(0, 0, 0, BigDecimal.ZERO, BudgetCostsDetail(), false),
-                            ProjectPeriodBudget(255, 0, 0, BigDecimal.ZERO, BudgetCostsDetail(), true)
-                        ),
+                        periodBudgets = listOfPeriodBudgets(),
                         totalPartnerBudget = BigDecimal.ZERO,
                         totalPartnerBudgetDetail = BudgetCostsDetail(
                             externalCosts = 300.00.toScaledBigDecimal(),
@@ -178,10 +174,8 @@ internal class PartnerBudgetPerPeriodCalculatorTest : UnitTest() {
                     ProjectPeriod(number = 2, start = 7, end = 12),
                     ProjectPeriod(number = 3, start = 13, end = 15)
                 ),
-                spfBudgetPerPeriod = emptyList(),
-                spfTotalBudget = BigDecimal.ZERO,
-                spfBeneficiary = null
-                )
+                spfPartnerBudgetPerPeriod = emptyList()
+            )
         ).isEqualTo(
             ProjectBudgetOverviewPerPartnerPerPeriod(
                 partnersBudgetPerPeriod = listOf(
@@ -293,8 +287,7 @@ internal class PartnerBudgetPerPeriodCalculatorTest : UnitTest() {
             unitCostsPerPeriod = 25.45.toScaledBigDecimal(),
             equipmentCostsPerPeriod = 13.11.toBigDecimal(),
             externalExpertiseAndServicesCostsPerPeriod = 10.30.toScaledBigDecimal(),
-
-            )
+        )
 
 
         val partner2 = projectPartnerSummary(id = partner2Id)
@@ -382,9 +375,7 @@ internal class PartnerBudgetPerPeriodCalculatorTest : UnitTest() {
                 ProjectPeriod(number = 1, start = 1, end = 2),
                 ProjectPeriod(number = 2, start = 2, end = 2)
             ),
-            spfBudgetPerPeriod = emptyList(),
-            spfTotalBudget = BigDecimal.ZERO,
-            spfBeneficiary = null
+            spfPartnerBudgetPerPeriod = emptyList()
         )
 
         assertThat(result)
@@ -536,4 +527,68 @@ internal class PartnerBudgetPerPeriodCalculatorTest : UnitTest() {
             )
     }
 
+    @Test
+    fun `test calculation project budget overview per partner per period of SPF empty`() {
+        val periodBudgets = listOfPeriodBudgets()
+
+        val result = calculatePartnerBudgetPerPeriod.calculateSpfPartnerBudgetPerPeriod(
+            spfBeneficiary = partner1,
+            spfBudgetPerPeriod = emptyList(),
+            spfTotalBudget = BigDecimal.TEN,
+            projectPeriods = emptyList()
+        )
+        assertThat(result).containsExactly(
+            ProjectPartnerBudgetPerPeriod(
+                partner = partner1,
+                periodBudgets = periodBudgets,
+                totalPartnerBudget = BigDecimal.TEN,
+                totalPartnerBudgetDetail = BudgetCostsDetail(),
+                costType = ProjectPartnerCostType.Spf
+            )
+        )
+    }
+
+    @Test
+    fun `test calculation project budget overview per partner per period of SPF values`() {
+        val periodBudgets = listOfPeriodBudgets(2, listOf(BigDecimal.TEN, BigDecimal.ZERO))
+        val budgetPerPeriod1 = ProjectSpfBudgetPerPeriod(1, BigDecimal.TEN)
+        val budgetPerPeriod2 = ProjectSpfBudgetPerPeriod(2, BigDecimal.ZERO)
+
+        val result = calculatePartnerBudgetPerPeriod.calculateSpfPartnerBudgetPerPeriod(
+            spfBeneficiary = partner1,
+            spfBudgetPerPeriod = listOf(budgetPerPeriod1, budgetPerPeriod2),
+            spfTotalBudget = BigDecimal.TEN,
+            projectPeriods = listOfProjectPeriods(2)
+        )
+        assertThat(result).containsExactly(
+            ProjectPartnerBudgetPerPeriod(
+                partner = partner1,
+                periodBudgets = periodBudgets,
+                totalPartnerBudget = BigDecimal.TEN,
+                totalPartnerBudgetDetail = BudgetCostsDetail(),
+                costType = ProjectPartnerCostType.Spf
+            )
+        )
+    }
+
+    private fun listOfProjectPeriods(amount: Long = 0): MutableList<ProjectPeriod> {
+        val periodBudgets = mutableListOf(ProjectPeriod(0, 0, 0))
+        for (i in 1..amount) {
+            val pBtoAdd = ProjectPeriod(i.toInt(), i.toInt(), i.toInt())
+            periodBudgets.add(pBtoAdd)
+        }
+        periodBudgets.add(ProjectPeriod(255, 0, 0))
+        return periodBudgets
+    }
+
+    private fun listOfPeriodBudgets(amount: Long = 0, totalBudgets: List<BigDecimal> = emptyList()): MutableList<ProjectPeriodBudget> {
+        val periodBudgets = mutableListOf(ProjectPeriodBudget(0, 0, 0, BigDecimal.ZERO, BudgetCostsDetail(), false))
+        for (i in 1..amount) {
+            val period = i.toInt()
+            val pBtoAdd = ProjectPeriodBudget(period, period, period, totalBudgets[period-1], BudgetCostsDetail(), false)
+            periodBudgets.add(pBtoAdd)
+        }
+        periodBudgets.add(ProjectPeriodBudget(255, 0, 0, BigDecimal.ZERO, BudgetCostsDetail(), true))
+        return periodBudgets
+    }
 }

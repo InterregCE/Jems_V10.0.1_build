@@ -4,19 +4,25 @@ import io.cloudflight.jems.server.project.service.budget.model.PartnersAggregate
 import io.cloudflight.jems.server.project.service.budget.model.ProjectSpfBudgetPerPeriod
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.model.ProjectBudgetOverviewPerPartnerPerPeriod
+import io.cloudflight.jems.server.project.service.model.ProjectPartnerBudgetPerPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import java.math.BigDecimal
 
 interface PartnerBudgetPerPeriodCalculatorService {
 
-    @Suppress("LongParameterList")
     fun calculate(
         partnersInfo : PartnersAggregatedInfo,
         lumpSums: List<ProjectLumpSum>,
         projectPeriods: List<ProjectPeriod>,
+        spfPartnerBudgetPerPeriod: List<ProjectPartnerBudgetPerPeriod>
+    ): ProjectBudgetOverviewPerPartnerPerPeriod
+
+    fun calculateSpfPartnerBudgetPerPeriod(
+        spfBeneficiary: ProjectPartnerSummary,
         spfBudgetPerPeriod: List<ProjectSpfBudgetPerPeriod>,
         spfTotalBudget: BigDecimal,
-        spfBeneficiary: ProjectPartnerSummary?
-    ): ProjectBudgetOverviewPerPartnerPerPeriod
+        projectPeriods: List<ProjectPeriod>,
+    ): List<ProjectPartnerBudgetPerPeriod>
+
 }

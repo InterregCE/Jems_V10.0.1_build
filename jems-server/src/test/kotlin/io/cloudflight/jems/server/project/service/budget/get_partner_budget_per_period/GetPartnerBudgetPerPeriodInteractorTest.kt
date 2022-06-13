@@ -13,7 +13,12 @@ import io.cloudflight.jems.server.project.service.budget.model.ProjectSpfBudgetP
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectPartnerLumpSum
-import io.cloudflight.jems.server.project.service.model.*
+import io.cloudflight.jems.server.project.service.model.BudgetCostsDetail
+import io.cloudflight.jems.server.project.service.model.ProjectBudgetOverviewPerPartnerPerPeriod
+import io.cloudflight.jems.server.project.service.model.ProjectPartnerBudgetPerPeriod
+import io.cloudflight.jems.server.project.service.model.ProjectPartnerCostType
+import io.cloudflight.jems.server.project.service.model.ProjectPeriod
+import io.cloudflight.jems.server.project.service.model.ProjectPeriodBudget
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetCostsPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
 import io.cloudflight.jems.server.project.service.partner.model.PartnerTotalBudgetPerCostCategory
@@ -219,9 +224,7 @@ class GetPartnerBudgetPerPeriodInteractorTest : UnitTest() {
                     lumpSumEntry(partner2Id, 100.toBigDecimal())
                 ),
                 projectPeriods = projectPeriods(),
-                spfBudgetPerPeriod = emptyList(),
-                spfTotalBudget = BigDecimal.ZERO,
-                spfBeneficiary = null
+                spfPartnerBudgetPerPeriod = emptyList()
             )
         } returns expectedResult
 
@@ -323,9 +326,19 @@ class GetPartnerBudgetPerPeriodInteractorTest : UnitTest() {
             listOf(p2budgetPeriod1)
         every { projectPersistence.getProjectPeriods(projectId, version) } returns projectPeriods()
 
-        every {persistence.getSpfBudgetPerPeriod(partner2Id, projectId, version) } returns listOf(projectSpfBudgetPerPeriod1)
+        every { persistence.getSpfBudgetPerPeriod(partner2Id, projectId, version) } returns listOf(projectSpfBudgetPerPeriod1)
 
-        every {budgetCostsPersistence.getBudgetSpfCostTotal(partner2Id, version) } returns BigDecimal.TEN
+        every { budgetCostsPersistence.getBudgetSpfCostTotal(partner2Id, version) } returns BigDecimal.TEN
+
+        val projectSpfBudgetPerPeriods = emptyList<ProjectPartnerBudgetPerPeriod>()
+        every {
+            calculatePartnerBudgetPerPeriod.calculateSpfPartnerBudgetPerPeriod(
+                spfBeneficiary = partner2,
+                spfBudgetPerPeriod = listOf(projectSpfBudgetPerPeriod1),
+                spfTotalBudget = BigDecimal.TEN,
+                projectPeriods = projectPeriods()
+            )
+        } returns projectSpfBudgetPerPeriods
 
         every {
             calculatePartnerBudgetPerPeriod.calculate(
@@ -339,12 +352,9 @@ class GetPartnerBudgetPerPeriodInteractorTest : UnitTest() {
                     lumpSumEntry(partner2Id, 100.toBigDecimal())
                 ),
                 projectPeriods = projectPeriods(),
-                spfBudgetPerPeriod = listOf(projectSpfBudgetPerPeriod1),
-                spfTotalBudget = BigDecimal.TEN,
-                spfBeneficiary = partner2
+                spfPartnerBudgetPerPeriod = emptyList()
             )
         } returns expectedResult
-
 
         assertThat(getPartnerBudgetPerPeriod.getPartnerBudgetPerPeriod(projectId, version))
             .isEqualTo(expectedResult)

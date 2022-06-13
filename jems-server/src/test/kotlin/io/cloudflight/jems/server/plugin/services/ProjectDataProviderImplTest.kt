@@ -775,8 +775,6 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                 any(),
                 any(),
                 any(),
-                any(),
-                any(),
                 any()
             )
         } returns budgetOverviewPerPartnerPerPeriod

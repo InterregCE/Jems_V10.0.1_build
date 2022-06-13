@@ -7,16 +7,16 @@ import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectForm
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.budget.ProjectBudgetPersistence
 import io.cloudflight.jems.server.project.service.budget.model.PartnersAggregatedInfo
-import io.cloudflight.jems.server.project.service.budget.model.ProjectSpfBudgetPerPeriod
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
 import io.cloudflight.jems.server.project.service.model.ProjectBudgetOverviewPerPartnerPerPeriod
+import io.cloudflight.jems.server.project.service.model.ProjectPartnerBudgetPerPeriod
+import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetCostsPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.math.BigDecimal
 
 @Service
 class GetPartnerBudgetPerPeriod(
@@ -38,10 +38,15 @@ class GetPartnerBudgetPerPeriod(
 
         val callDetail = callPersistence.getCallByProjectId(projectId)
         val projectPartners = persistence.getPartnersForProjectId(projectId, version)
-        val spfBeneficiary = if (callDetail.type == CallType.SPF)
-            projectPartners.firstOrNull { it.active && it.role == ProjectPartnerRole.LEAD_PARTNER }
-        else
-            null
+        val projectPeriods = projectPersistence.getProjectPeriods(projectId, version)
+
+        val spfBudgetPerPeriod = getSpfPartnerBudgetPerPeriod(
+            partnerSummary = projectPartners
+                .firstOrNull { callDetail.type == CallType.SPF && it.active && it.role == ProjectPartnerRole.LEAD_PARTNER },
+            projectPeriods = projectPeriods,
+            projectId = projectId,
+            version = version
+        )
 
         return projectPartners.let { partners ->
             val partnerIds = partners.mapNotNullTo(HashSet()) { it.id }
@@ -52,34 +57,29 @@ class GetPartnerBudgetPerPeriod(
                     persistence.getBudgetTotalForPartners(partnerIds, projectId, version)
                 ),
                 lumpSums = lumpSumPersistence.getLumpSums(projectId, version),
-                projectPeriods = projectPersistence.getProjectPeriods(projectId, version),
-                spfBudgetPerPeriod = getSpfBudgetPerPeriod(projectId, version, callDetail.type, spfBeneficiary),
-                spfTotalBudget = getSpfBudgetTotal(version, callDetail.type, spfBeneficiary),
-                spfBeneficiary = spfBeneficiary
+                projectPeriods = projectPeriods,
+                spfPartnerBudgetPerPeriod = spfBudgetPerPeriod
             )
         }
     }
 
-    private fun getSpfBudgetPerPeriod(
+    private fun getSpfPartnerBudgetPerPeriod(
+        partnerSummary: ProjectPartnerSummary?,
+        projectPeriods: List<ProjectPeriod>,
         projectId: Long,
-        version: String?,
-        callType: CallType,
-        spfBeneficiary: ProjectPartnerSummary?
-    ): List<ProjectSpfBudgetPerPeriod> {
-        if (callType == CallType.SPF && spfBeneficiary?.id != null) {
-            return persistence.getSpfBudgetPerPeriod(spfBeneficiary.id, projectId, version).toMutableList()
+        version: String?
+    ): List<ProjectPartnerBudgetPerPeriod> {
+
+        return if (partnerSummary?.id != null) {
+            calculatePartnerBudgetPerPeriod.calculateSpfPartnerBudgetPerPeriod(
+                spfBeneficiary = partnerSummary,
+                projectPeriods = projectPeriods,
+                spfBudgetPerPeriod = persistence.getSpfBudgetPerPeriod(partnerSummary.id, projectId, version).toMutableList(),
+                spfTotalBudget = budgetCostsPersistence.getBudgetSpfCostTotal(partnerSummary.id, version)
+            )
+        } else {
+            emptyList()
         }
-        return emptyList()
     }
 
-    private fun getSpfBudgetTotal(
-        version: String?,
-        callType: CallType,
-        spfBeneficiary: ProjectPartnerSummary?
-    ): BigDecimal {
-        if (callType == CallType.SPF && spfBeneficiary?.id != null) {
-            return budgetCostsPersistence.getBudgetSpfCostTotal(spfBeneficiary.id, version)
-        }
-        return BigDecimal.ZERO
-    }
 }
