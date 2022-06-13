@@ -25,7 +25,7 @@ import {Alert} from '@common/components/forms/alert';
   providers: [FormService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class PartnerTeamPrivilegesExpansionPanelComponent implements OnInit, OnChanges {
+export class PartnerTeamPrivilegesExpansionPanelComponent implements OnInit {
   @Input()
   partner: ProjectPartnerSummaryDTO;
   @Input()
@@ -54,16 +54,7 @@ export class PartnerTeamPrivilegesExpansionPanelComponent implements OnInit, OnC
   ngOnInit(): void {
     this.formService.init(this.partnerForm, this.pageStore.projectCollaboratorsEditable$);
     this.resetPartnerForm(this.collaborators);
-    if (this.collaborators.length === 0) {
-      this.addPartnerCollaborator();
-    }
     this.formService.resetEditable();
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes.collaborators) {
-      this.resetPartnerForm(this.collaborators);
-    }
   }
 
   savePartnerCollaborators(partnerId: number): void {
@@ -87,6 +78,9 @@ export class PartnerTeamPrivilegesExpansionPanelComponent implements OnInit, OnC
   resetPartnerForm(partnerCollaborators: PartnerUserCollaboratorDTO[]): void {
     this.partnerCollaborators.clear();
     partnerCollaborators.forEach(partnerCollaborator => this.addPartnerCollaborator(partnerCollaborator));
+    if (this.partnerCollaborators.length === 0) {
+      this.addPartnerCollaborator();
+    }
   }
 
   get partnerCollaborators(): FormArray {
