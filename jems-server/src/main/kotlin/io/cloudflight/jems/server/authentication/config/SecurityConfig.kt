@@ -47,6 +47,7 @@ class SecurityConfig(
             "/api/resources/logo/**",
             "/api/i18n/**",
             "/api/registration",
+            "/api/captcha"
         )
     }
 

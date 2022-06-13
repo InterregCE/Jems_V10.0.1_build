@@ -23,3 +23,8 @@ class UserEmailAlreadyTaken : ApplicationUnprocessableException(
     code = "$REGISTER_USER_ERROR_CODE_PREFIX-002",
     i18nMessage = I18nMessage("$REGISTER_USER_ERROR_KEY_PREFIX.email.already.in.use"),
 )
+
+class CaptchaNotValid : ApplicationUnprocessableException(
+    code = "$REGISTER_USER_ERROR_CODE_PREFIX-003",
+    i18nMessage = I18nMessage("$REGISTER_USER_ERROR_KEY_PREFIX.invalid.captcha"),
+)

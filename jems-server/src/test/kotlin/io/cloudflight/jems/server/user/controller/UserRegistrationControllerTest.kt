@@ -72,6 +72,7 @@ class UserRegistrationControllerTest : UnitTest() {
             name = user.name,
             surname = user.surname,
             password = "plain_pass",
+            captcha = "testCaptcha"
         )
 
         val slotUserRegister = slot<UserRegistration>()
@@ -83,6 +84,7 @@ class UserRegistrationControllerTest : UnitTest() {
                 name = "Michael",
                 surname = "Schumacher",
                 password = "plain_pass",
+                captcha = "testCaptcha"
             )
         )
     }

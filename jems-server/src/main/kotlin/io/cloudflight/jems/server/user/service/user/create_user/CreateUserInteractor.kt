@@ -6,5 +6,4 @@ import io.cloudflight.jems.server.user.service.model.UserChange
 interface CreateUserInteractor {
 
     fun createUser(user: UserChange): User
-
 }

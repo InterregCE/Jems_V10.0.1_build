@@ -84,3 +84,5 @@ app:
       enabled: "${MAIL_ENABLED:false}"
       sender: jems@jems.com
       bcc-list:
+  captcha:
+    enabled: true

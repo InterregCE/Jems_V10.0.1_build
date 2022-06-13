@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
-import {Observable, Subject} from 'rxjs';
+import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
-import {catchError, tap} from 'rxjs/operators';
+import {catchError, startWith, switchMap, tap} from 'rxjs/operators';
 import {HttpErrorResponse} from '@angular/common/http';
-import {UserRegistrationService, UserRegistrationDTO} from '@cat/api';
+import {UserRegistrationService, UserRegistrationDTO, CaptchaDTO, CaptchaApiService} from '@cat/api';
 import {Router} from '@angular/router';
 import {AuthenticationStore} from '../../service/authentication-store.service';
 
@@ -13,10 +13,17 @@ export class RegistrationPageService {
   private userSaveError$ = new Subject<I18nValidationError | null>();
   private userSaveSuccess$ = new Subject<boolean>();
   private confirmationSuccess$ = new Subject<boolean>();
+  triggerNewCaptcha$ = new BehaviorSubject<void>(undefined);
+  captcha$: Observable<CaptchaDTO>;
 
   constructor(private userRegistrationService: UserRegistrationService,
               private authenticationStore: AuthenticationStore,
-              private router: Router) {
+              private router: Router,
+              private captchaService: CaptchaApiService) {
+    this.captcha$ = combineLatest([this.triggerNewCaptcha$])
+      .pipe(
+        switchMap(() => this.getCaptcha())
+      );
   }
 
   saveError(): Observable<I18nValidationError | null> {
@@ -34,8 +41,10 @@ export class RegistrationPageService {
   registerApplicant(applicant: UserRegistrationDTO): void {
     this.userRegistrationService.registerApplicant(applicant).pipe(
       tap(() => this.userSaveSuccess$.next(true)),
+      tap(() => this.triggerNewCaptcha$.next()),
       catchError((error: HttpErrorResponse) => {
         this.userSaveError$.next(error.error);
+        this.triggerNewCaptcha$.next();
         throw error;
       })
     ).subscribe(() => this.userSaveError$.next(null));
@@ -55,5 +64,9 @@ export class RegistrationPageService {
         throw error;
       })
     ).subscribe();
+  }
+
+  getCaptcha(): Observable<CaptchaDTO> {
+    return this.captchaService.getCaptcha();
   }
 }

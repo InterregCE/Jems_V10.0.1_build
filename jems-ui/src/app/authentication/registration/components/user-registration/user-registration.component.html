@@ -68,6 +68,19 @@
                     </mat-error>
                     <mat-hint>{{'user.registration.field.password.hint' | translate}}</mat-hint>
                 </mat-form-field>
+                <div *ngIf="captcha$ | async as captcha" class="captcha-container">
+                    <img label="captchaLabel" [src]="'data:image/jpg;base64,'+ captcha.realCaptcha" alt="#" />
+                </div>
+                <mat-form-field>
+                    <mat-label>{{'authentication.create.account.captcha.label' | translate}}</mat-label>
+                    <input type='text' name="captcha" formControlName="captcha" matInput required>
+
+                    <mat-error>
+                        <jems-form-field-errors
+                                [errors]="userForm?.controls?.captcha?.errors">
+                        </jems-form-field-errors>
+                    </mat-error>
+                </mat-form-field>
 
                 <div class="py-3">
                     <mat-checkbox
