@@ -259,7 +259,7 @@ Cypress.Commands.add('rejectModification', (applicationId: number, rejectionInfo
 });
 
 function createApplication(applicationDetails: ProjectCreateDTO) {
-  applicationDetails.acronym = `${faker.hacker.adjective()} ${faker.hacker.noun()}`;
+  applicationDetails.acronym = `${faker.hacker.adjective()} ${faker.hacker.noun()}`.substr(0, 25);
   return cy.request({
     method: 'POST',
     url: 'api/project',
@@ -268,7 +268,7 @@ function createApplication(applicationDetails: ProjectCreateDTO) {
 }
 
 function updateIdentification(applicationId: number, projectIdentification: InputProjectData) {
-  projectIdentification.acronym = `${faker.hacker.adjective()} ${faker.hacker.noun()}`;
+  projectIdentification.acronym = `${faker.hacker.adjective()} ${faker.hacker.noun()}`.substr(0, 25);
   cy.request({
     method: 'PUT',
     url: `api/project/${applicationId}`,
