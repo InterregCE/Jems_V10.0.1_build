@@ -102,4 +102,8 @@ export class UserRegistrationComponent extends AbstractFormComponent implements 
   redirectToLogin(): void {
     this.loginRedirect.emit();
   }
+
+  refreshCaptcha(): void {
+    this.registrationService.triggerNewCaptcha$.next();
+  }
 }

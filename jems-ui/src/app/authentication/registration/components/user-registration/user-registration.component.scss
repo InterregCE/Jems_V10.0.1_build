@@ -54,6 +54,12 @@ mat-card-subtitle, {
 }
 
 .captcha-container {
+  display: flex;
+  align-items: center;
   padding-top: 0.6rem;
-  margin-bottom: -0.6rem;
+  margin-bottom: 0.1rem;
+}
+
+.refresh-captcha-icon {
+  padding-left: 1rem;
 }
