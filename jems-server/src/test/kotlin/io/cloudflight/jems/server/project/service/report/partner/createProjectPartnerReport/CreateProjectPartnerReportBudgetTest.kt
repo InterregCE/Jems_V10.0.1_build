@@ -19,7 +19,9 @@ import io.cloudflight.jems.server.project.service.report.model.contribution.crea
 import io.cloudflight.jems.server.project.service.report.model.contribution.withoutCalculations.ProjectPartnerReportEntityContribution
 import io.cloudflight.jems.server.project.service.report.model.create.*
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportPeriod
 import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectReportContributionPersistence
+import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectReportIdentificationPersistence
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -186,8 +188,8 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
 
     private fun perPeriodBudget(number: Int, value: BigDecimal) = ProjectPeriodBudget(
         periodNumber = number,
-        periodStart = 0,
-        periodEnd = 0,
+        periodStart = number * 3 - 2,
+        periodEnd = number * 3,
         totalBudgetPerPeriod = value,
         budgetPerPeriodDetail = mockk(),
         lastPeriod = false,
@@ -255,6 +257,8 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
     lateinit var getPartnerBudgetPerPeriod: GetPartnerBudgetPerPeriodInteractor
     @MockK
     lateinit var projectPartnerBudgetOptionsPersistence: ProjectPartnerBudgetOptionsPersistence
+    @MockK
+    lateinit var reportIdentificationPersistence: ProjectReportIdentificationPersistence
 
     @InjectMockKs
     lateinit var service: CreateProjectPartnerReportBudget
@@ -279,6 +283,8 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         // budget per period
         every { getPartnerBudgetPerPeriod.getPartnerBudgetPerPeriod(projectId, version) } returns
             ProjectBudgetOverviewPerPartnerPerPeriod(partnersBudgetPerPeriod = perPeriod(partnerId), totals = emptyList(), totalsPercentage = emptyList())
+        // spending profile
+        every { reportIdentificationPersistence.getPreviousSpendingFor(setOf(408L)) } returns BigDecimal.TEN
         // options
         val budgetOptions = mockk<ProjectPartnerBudgetOptions>()
         every { projectPartnerBudgetOptionsPersistence.getBudgetOptions(partnerId, version) } returns budgetOptions
@@ -288,7 +294,11 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         assertThat(result.contributions).hasSize(3)
         assertThat(result.lumpSums).containsExactly(PartnerReportLumpSum(lumpSumId = 44L, period = 3, value = BigDecimal.TEN))
         assertThat(result.unitCosts.map {it.unitCostId}).containsExactly(4, 5, 6, 7, 8, 9, 10)
-        assertThat(result.budgetPerPeriod).containsExactly(Pair(1, BigDecimal.ONE), Pair(2, BigDecimal.TEN))
+        assertThat(result.budgetPerPeriod).containsExactly(
+            ProjectPartnerReportPeriod(1, BigDecimal.ONE, BigDecimal.ONE, 1, 3),
+            ProjectPartnerReportPeriod(2, BigDecimal.TEN, BigDecimal.valueOf(11, 0), 4, 6),
+        )
+        assertThat(result.spendingUpUntilNow).isEqualByComparingTo(BigDecimal.TEN)
         assertThat(result.budgetOptions).isEqualTo(budgetOptions)
 
         // this we cannot mock

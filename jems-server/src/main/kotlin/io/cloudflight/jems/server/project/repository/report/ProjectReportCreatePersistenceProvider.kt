@@ -6,13 +6,17 @@ import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeUnitC
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
 import io.cloudflight.jems.server.programme.repository.legalstatus.ProgrammeLegalStatusRepository
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
+import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportBudgetPerPeriodEntity
+import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportBudgetPerPeriodId
 import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportIdentificationEntity
 import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportIdentificationTargetGroupEntity
 import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportIdentificationTargetGroupTranslEntity
+import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportSpendingProfileEntity
 import io.cloudflight.jems.server.project.repository.report.contribution.ProjectPartnerReportContributionRepository
 import io.cloudflight.jems.server.project.repository.report.contribution.toEntity
 import io.cloudflight.jems.server.project.repository.report.expenditure.ProjectPartnerReportLumpSumRepository
 import io.cloudflight.jems.server.project.repository.report.expenditure.ProjectPartnerReportUnitCostRepository
+import io.cloudflight.jems.server.project.repository.report.identification.ProjectPartnerReportBudgetPerPeriodRepository
 import io.cloudflight.jems.server.project.repository.report.identification.ProjectPartnerReportIdentificationRepository
 import io.cloudflight.jems.server.project.repository.report.identification.ProjectPartnerReportIdentificationTargetGroupRepository
 import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPartnerReportWorkPackageActivityDeliverableRepository
@@ -29,9 +33,11 @@ import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerRep
 import io.cloudflight.jems.server.project.service.report.model.contribution.create.CreateProjectPartnerReportContribution
 import io.cloudflight.jems.server.project.service.report.model.create.PartnerReportLumpSum
 import io.cloudflight.jems.server.project.service.report.model.create.PartnerReportUnitCostBase
+import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportPeriod
 import io.cloudflight.jems.server.project.service.report.model.workPlan.create.CreateProjectPartnerReportWorkPackage
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
+import java.math.BigDecimal
 
 @Repository
 class ProjectReportCreatePersistenceProvider(
@@ -50,6 +56,7 @@ class ProjectReportCreatePersistenceProvider(
     private val contributionRepository: ProjectPartnerReportContributionRepository,
     private val reportLumpSumRepository: ProjectPartnerReportLumpSumRepository,
     private val reportUnitCostRepository: ProjectPartnerReportUnitCostRepository,
+    private val reportBudgetPerPeriodRepository: ProjectPartnerReportBudgetPerPeriodRepository,
 ) : ProjectReportCreatePersistence {
 
     @Transactional
@@ -57,10 +64,11 @@ class ProjectReportCreatePersistenceProvider(
         val reportEntity = persistReport(report)
         persistCoFinancingToReport(report.identification.coFinancing, report = reportEntity)
         persistWorkPlanToReport(report.workPackages, report = reportEntity)
-        persistTargetGroupsToReport(report.targetGroups, report = reportEntity)
+        persistTargetGroupsAndSpendingToReport(report.targetGroups, spending = report.budget.spendingUpUntilNow, report = reportEntity)
         persistContributionsToReport(report.budget.contributions, report = reportEntity)
         persistAvailableLumpSumsToReport(report.budget.lumpSums, report = reportEntity)
         persistAvailableUnitCostsToReport(report.budget.unitCosts, report = reportEntity)
+        persistBudgetPerPeriodToReport(report.budget.budgetPerPeriod, report = reportEntity)
         return reportEntity.toModelSummary()
     }
 
@@ -101,8 +109,9 @@ class ProjectReportCreatePersistenceProvider(
         }
     }
 
-    private fun persistTargetGroupsToReport(
+    private fun persistTargetGroupsAndSpendingToReport(
         targetGroups: List<ProjectRelevanceBenefit>,
+        spending: BigDecimal,
         report: ProjectPartnerReportEntity,
     ) {
         val identification = identificationRepository.save(
@@ -112,6 +121,11 @@ class ProjectReportCreatePersistenceProvider(
                 endDate = null,
                 periodNumber = null,
                 translatedValues = mutableSetOf(),
+                spendingProfile = ProjectPartnerReportSpendingProfileEntity(
+                    currentReport = BigDecimal.ZERO,
+                    previouslyReported = spending,
+                    nextReportForecast = BigDecimal.ZERO,
+                )
             )
         )
         identificationTargetGroupRepository.saveAll(
@@ -158,6 +172,25 @@ class ProjectReportCreatePersistenceProvider(
     ) =
         reportUnitCostRepository.saveAll(
             unitCosts.map { uc -> uc.toEntity(report, unitCostResolver = { programmeUnitCostRepository.getById(it) }) }
+        )
+
+    private fun persistBudgetPerPeriodToReport(
+        budgetPerPeriod: Collection<ProjectPartnerReportPeriod>,
+        report: ProjectPartnerReportEntity,
+    ) =
+        reportBudgetPerPeriodRepository.saveAll(
+            budgetPerPeriod.map {
+                ProjectPartnerReportBudgetPerPeriodEntity(
+                    id = ProjectPartnerReportBudgetPerPeriodId(
+                        report = report,
+                        periodNumber = it.number,
+                    ),
+                    periodBudget = it.periodBudget,
+                    periodBudgetCumulative = it.periodBudgetCumulative,
+                    startMonth = it.start,
+                    endMonth = it.end,
+                )
+            }
         )
 
 }

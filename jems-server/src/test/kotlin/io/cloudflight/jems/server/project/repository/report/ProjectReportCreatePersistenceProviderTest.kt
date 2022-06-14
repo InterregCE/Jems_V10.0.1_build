@@ -22,6 +22,7 @@ import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEnti
 import io.cloudflight.jems.server.project.entity.report.contribution.ProjectPartnerReportContributionEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportLumpSumEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportUnitCostEntity
+import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportBudgetPerPeriodEntity
 import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportIdentificationEntity
 import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportIdentificationTargetGroupEntity
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageActivityDeliverableEntity
@@ -31,6 +32,7 @@ import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerR
 import io.cloudflight.jems.server.project.repository.report.contribution.ProjectPartnerReportContributionRepository
 import io.cloudflight.jems.server.project.repository.report.expenditure.ProjectPartnerReportLumpSumRepository
 import io.cloudflight.jems.server.project.repository.report.expenditure.ProjectPartnerReportUnitCostRepository
+import io.cloudflight.jems.server.project.repository.report.identification.ProjectPartnerReportBudgetPerPeriodRepository
 import io.cloudflight.jems.server.project.repository.report.identification.ProjectPartnerReportIdentificationRepository
 import io.cloudflight.jems.server.project.repository.report.identification.ProjectPartnerReportIdentificationTargetGroupRepository
 import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPartnerReportWorkPackageActivityDeliverableRepository
@@ -47,6 +49,7 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVa
 import io.cloudflight.jems.server.project.service.report.model.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.contribution.create.CreateProjectPartnerReportContribution
 import io.cloudflight.jems.server.project.service.report.model.create.*
+import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportPeriod
 import io.cloudflight.jems.server.project.service.report.model.workPlan.create.CreateProjectPartnerReportWorkPackage
 import io.cloudflight.jems.server.project.service.report.model.workPlan.create.CreateProjectPartnerReportWorkPackageActivity
 import io.cloudflight.jems.server.project.service.report.model.workPlan.create.CreateProjectPartnerReportWorkPackageActivityDeliverable
@@ -60,6 +63,7 @@ import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.ValueSource
+import java.math.BigDecimal
 import java.math.BigDecimal.ONE
 import java.math.BigDecimal.TEN
 import java.math.BigDecimal.ZERO
@@ -200,9 +204,10 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
                     numberOfUnits = ONE
                 )),
                 budgetPerPeriod = listOf(
-                    Pair(1, ONE),
-                    Pair(2, TEN),
+                    ProjectPartnerReportPeriod(1, ONE, ONE, 1, 3),
+                    ProjectPartnerReportPeriod(2, TEN, BigDecimal.valueOf(11L), 4, 6),
                 ),
+                spendingUpUntilNow = TEN,
                 budgetOptions = ProjectPartnerBudgetOptions(
                     partnerId = PARTNER_ID,
                     officeAndAdministrationOnStaffCostsFlatRate = null,
@@ -260,6 +265,9 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
     @MockK
     lateinit var reportUnitCostRepository: ProjectPartnerReportUnitCostRepository
 
+    @MockK
+    lateinit var reportBudgetPerPeriodRepository: ProjectPartnerReportBudgetPerPeriodRepository
+
     @InjectMockKs
     lateinit var persistence: ProjectReportCreatePersistenceProvider
 
@@ -312,6 +320,10 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
         val unitCostSlot = slot<Iterable<PartnerReportUnitCostEntity>>()
         every { reportUnitCostRepository.saveAll(capture(unitCostSlot)) } returnsArgument 0
 
+        // budget per period
+        val budgetPerPeriodSlot = slot<Iterable<ProjectPartnerReportBudgetPerPeriodEntity>>()
+        every { reportBudgetPerPeriodRepository.saveAll(capture(budgetPerPeriodSlot)) } returnsArgument 0
+
         val createdReport = persistence.createPartnerReport(reportToBeCreated.copy(
             identification = reportToBeCreated.identification.removeLegalStatusIf(withoutLegalStatus)
         ))
@@ -362,6 +374,7 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
         assertContribution(contribSlot)
         assertLumpSums(lumpSumSlot)
         assertUnitCosts(unitCostSlot)
+        assertBudgetPerPeriod(budgetPerPeriodSlot)
     }
 
     private fun PartnerReportIdentificationCreate.removeLegalStatusIf(needed: Boolean) =
@@ -415,6 +428,9 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
             assertThat(startDate).isNull()
             assertThat(endDate).isNull()
             assertThat(periodNumber).isNull()
+            assertThat(spendingProfile.currentReport).isEqualByComparingTo(ZERO)
+            assertThat(spendingProfile.previouslyReported).isEqualByComparingTo(TEN)
+            assertThat(spendingProfile.nextReportForecast).isEqualByComparingTo(ZERO)
             assertThat(translatedValues).isEmpty()
         }
         assertThat(idTargetGroupsSlot.captured).hasSize(3)
@@ -475,6 +491,22 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
             assertThat(programmeUnitCost).isNotNull
             assertThat(totalCost).isEqualTo(ONE)
             assertThat(numberOfUnits).isEqualTo(ONE)
+        }
+    }
+
+    private fun assertBudgetPerPeriod(
+        budgetSlot: CapturingSlot<Iterable<ProjectPartnerReportBudgetPerPeriodEntity>>,
+    ) {
+        assertThat(budgetSlot.captured).hasSize(2)
+        with(budgetSlot.captured.first()) {
+            assertThat(id.periodNumber).isEqualTo(1)
+            assertThat(periodBudget).isEqualByComparingTo(ONE)
+            assertThat(periodBudgetCumulative).isEqualByComparingTo(ONE)
+        }
+        with(budgetSlot.captured.last()) {
+            assertThat(id.periodNumber).isEqualTo(2)
+            assertThat(periodBudget).isEqualByComparingTo(TEN)
+            assertThat(periodBudgetCumulative).isEqualByComparingTo(BigDecimal.valueOf(11))
         }
     }
 
