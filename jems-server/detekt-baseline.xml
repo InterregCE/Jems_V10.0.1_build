@@ -200,9 +200,6 @@
     <ID>PackageNaming:CreateUser.kt$package io.cloudflight.jems.server.user.service.user.create_user</ID>
     <ID>PackageNaming:CreateUserExceptions.kt$package io.cloudflight.jems.server.user.service.user.create_user</ID>
     <ID>PackageNaming:CreateUserInteractor.kt$package io.cloudflight.jems.server.user.service.user.create_user</ID>
-    <ID>PackageNaming:CreateUserRole.kt$package io.cloudflight.jems.server.user.service.userrole.create_user_role</ID>
-    <ID>PackageNaming:CreateUserRoleExceptions.kt$package io.cloudflight.jems.server.user.service.userrole.create_user_role</ID>
-    <ID>PackageNaming:CreateUserRoleInteractor.kt$package io.cloudflight.jems.server.user.service.userrole.create_user_role</ID>
     <ID>PackageNaming:DeactivateAssociatedOrganization.kt$package io.cloudflight.jems.server.project.service.associatedorganization.deactivate_associated_organization</ID>
     <ID>PackageNaming:DeactivateAssociatedOrganizationException.kt$package io.cloudflight.jems.server.project.service.associatedorganization.deactivate_associated_organization</ID>
     <ID>PackageNaming:DeactivateAssociatedOrganizationInteractor.kt$package io.cloudflight.jems.server.project.service.associatedorganization.deactivate_associated_organization</ID>
@@ -564,9 +561,6 @@
     <ID>PackageNaming:UpdateUserPassword.kt$package io.cloudflight.jems.server.user.service.user.update_user_password</ID>
     <ID>PackageNaming:UpdateUserPasswordExceptions.kt$package io.cloudflight.jems.server.user.service.user.update_user_password</ID>
     <ID>PackageNaming:UpdateUserPasswordInteractor.kt$package io.cloudflight.jems.server.user.service.user.update_user_password</ID>
-    <ID>PackageNaming:UpdateUserRole.kt$package io.cloudflight.jems.server.user.service.userrole.update_user_role</ID>
-    <ID>PackageNaming:UpdateUserRoleExceptions.kt$package io.cloudflight.jems.server.user.service.userrole.update_user_role</ID>
-    <ID>PackageNaming:UpdateUserRoleInteractor.kt$package io.cloudflight.jems.server.user.service.userrole.update_user_role</ID>
     <ID>PackageNaming:UpdateWorkPackageInvestment.kt$package io.cloudflight.jems.server.project.service.workpackage.investment.update_work_package_investment</ID>
     <ID>PackageNaming:UpdateWorkPackageInvestmentInteractor.kt$package io.cloudflight.jems.server.project.service.workpackage.investment.update_work_package_investment</ID>
     <ID>PackageNaming:UpdateWorkPackageOutput.kt$package io.cloudflight.jems.server.project.service.workpackage.output.update_work_package_output</ID>
