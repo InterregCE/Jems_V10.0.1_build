@@ -30,6 +30,8 @@ import io.cloudflight.jems.server.project.service.cofinancing.model.ProjectCoFin
 import io.cloudflight.jems.server.project.service.common.BudgetCostsCalculatorService
 import io.cloudflight.jems.server.project.service.common.PartnerBudgetPerFundCalculatorService
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
+import io.cloudflight.jems.server.project.service.model.ProjectPartnerBudgetPerPeriod
+import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetCostsPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
@@ -38,6 +40,8 @@ import io.cloudflight.jems.server.project.service.partner.cofinancing.model.Proj
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContributionSpf
 import io.cloudflight.jems.server.project.service.partner.model.BudgetCosts
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import io.cloudflight.jems.server.project.service.result.ProjectResultPersistence
 import io.cloudflight.jems.server.project.service.result.get_project_result_indicators_overview.ResultOverviewCalculator
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
@@ -163,6 +167,16 @@ class ProjectDataProviderImpl(
             workPackages = workPackagePersistence.getWorkPackagesWithAllDataByProjectId(projectId, version),
             results = resultPersistence.getResultsForProject(projectId, version)
         )
+
+        val projectPeriods = projectPersistence.getProjectPeriods(projectId, version)
+        val spfPartnerBudgetPerPeriod = getSpfPartnerBudgetPerPeriod(
+            partnerSummary = partnersSummary
+                .firstOrNull { isSpfCall && it.active && it.role == ProjectPartnerRole.LEAD_PARTNER },
+            projectPeriods = projectPeriods,
+            projectId = projectId,
+            version = version
+        )
+
         val sectionD = ProjectDataSectionD(
             projectPartnerBudgetPerFundData = partnersSummary.let { partnerSummaries ->
                 partnerBudgetPerFundCalculator.calculate(
@@ -185,7 +199,8 @@ class ProjectDataProviderImpl(
                     projectBudgetPersistence.getBudgetTotalForPartners(partnerIds, projectId, version)
                 ),
                 lumpSums = lumpSums,
-                projectPeriods = projectPersistence.getProjectPeriods(projectId, version),
+                projectPeriods = projectPeriods,
+                spfPartnerBudgetPerPeriod = spfPartnerBudgetPerPeriod
             ).toProjectBudgetOverviewPerPartnerPerPeriod()
         )
 
@@ -208,6 +223,25 @@ class ProjectDataProviderImpl(
             ),
             versions = projectVersionPersistence.getAllVersionsByProjectId(projectId).toDataModel()
         )
+    }
+
+    private fun getSpfPartnerBudgetPerPeriod(
+        partnerSummary: ProjectPartnerSummary?,
+        projectPeriods: List<ProjectPeriod>,
+        projectId: Long,
+        version: String?
+    ): List<ProjectPartnerBudgetPerPeriod> {
+
+        return if (partnerSummary?.id != null) {
+            partnerBudgetPerPeriodCalculator.calculateSpfPartnerBudgetPerPeriod(
+                spfBeneficiary = partnerSummary,
+                projectPeriods = projectPeriods,
+                spfBudgetPerPeriod = projectBudgetPersistence.getSpfBudgetPerPeriod(partnerSummary.id, projectId, version).toMutableList(),
+                spfTotalBudget = getBudgetCostsPersistence.getBudgetSpfCostTotal(partnerSummary.id, version)
+            )
+        } else {
+            emptyList()
+        }
     }
 
     private fun getBudgetTotalCosts(

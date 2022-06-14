@@ -1,9 +1,11 @@
 package io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_period
 
+import io.cloudflight.jems.server.project.repository.budget.toProjectPeriodBudget
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResult
 import io.cloudflight.jems.server.project.service.budget.model.PartnerLumpSum
 import io.cloudflight.jems.server.project.service.budget.model.PartnersAggregatedInfo
 import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerBudget
+import io.cloudflight.jems.server.project.service.budget.model.ProjectSpfBudgetPerPeriod
 import io.cloudflight.jems.server.project.service.common.BudgetCostsCalculatorService
 import io.cloudflight.jems.server.project.service.lumpsum.model.CLOSURE_PERIOD_NUMBER
 import io.cloudflight.jems.server.project.service.lumpsum.model.PREPARATION_PERIOD_NUMBER
@@ -12,10 +14,12 @@ import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectPartnerLu
 import io.cloudflight.jems.server.project.service.model.BudgetCostsDetail
 import io.cloudflight.jems.server.project.service.model.ProjectBudgetOverviewPerPartnerPerPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectPartnerBudgetPerPeriod
+import io.cloudflight.jems.server.project.service.model.ProjectPartnerCostType
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectPeriodBudget
 import io.cloudflight.jems.server.project.service.partner.model.PartnerTotalBudgetPerCostCategory
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -28,13 +32,14 @@ class PartnerBudgetPerPeriodCalculator(private val budgetCostsCalculator: Budget
         partnersInfo: PartnersAggregatedInfo,
         lumpSums: List<ProjectLumpSum>,
         projectPeriods: List<ProjectPeriod>,
+        spfPartnerBudgetPerPeriod: List<ProjectPartnerBudgetPerPeriod>
     ): ProjectBudgetOverviewPerPartnerPerPeriod {
 
         val partnerBudgetPerPeriod = calculatePartnersBudgetPerPeriod(partnersInfo, lumpSums, projectPeriods)
-        val totals = calculateTotals(partnerBudgetPerPeriod, projectPeriods)
+        val totals = calculateTotals(spfPartnerBudgetPerPeriod + partnerBudgetPerPeriod, projectPeriods)
 
         return ProjectBudgetOverviewPerPartnerPerPeriod(
-            partnerBudgetPerPeriod, totals, calculateTotalPercentages(totals)
+            spfPartnerBudgetPerPeriod + partnerBudgetPerPeriod, totals, calculateTotalPercentages(totals)
         )
     }
 
@@ -57,7 +62,13 @@ class PartnerBudgetPerPeriodCalculator(private val budgetCostsCalculator: Budget
             ).let { totalBudgetCostsCalculationResult ->
                 ProjectPartnerBudgetPerPeriod(
                     partner = partner,
-                    periodBudgets = getPeriodBudgets(partner.id, lumpSums, projectPeriods,partnersInfo, totalBudgetCostsCalculationResult),
+                    periodBudgets = getPeriodBudgets(
+                        partner.id,
+                        lumpSums,
+                        projectPeriods,
+                        partnersInfo,
+                        totalBudgetCostsCalculationResult
+                    ),
                     totalPartnerBudget = totalBudgetCostsCalculationResult.totalCosts,
                     totalPartnerBudgetDetail = BudgetCostsDetail(
                         unitCosts = totalBudgetPerCostCategory.unitCostTotal,
@@ -69,11 +80,34 @@ class PartnerBudgetPerPeriodCalculator(private val budgetCostsCalculator: Budget
                         travelCosts = totalBudgetCostsCalculationResult.travelCosts,
                         staffCosts = totalBudgetCostsCalculationResult.staffCosts,
                         otherCosts = totalBudgetCostsCalculationResult.otherCosts
-                    )
+                    ),
+                    costType = ProjectPartnerCostType.Management
                 )
             }
 
         }
+
+    override fun calculateSpfPartnerBudgetPerPeriod(
+        spfBeneficiary: ProjectPartnerSummary,
+        spfBudgetPerPeriod: List<ProjectSpfBudgetPerPeriod>,
+        spfTotalBudget: BigDecimal,
+        projectPeriods: List<ProjectPeriod>,
+    ): List<ProjectPartnerBudgetPerPeriod> {
+        val preparationPeriod = getPreparationPeriodBudgets(BigDecimal.ZERO)
+        val closurePeriod = getClosurePeriodBudgets(BigDecimal.ZERO)
+        val periods = spfBudgetPerPeriod.map { it.toProjectPeriodBudget(projectPeriods)}.toMutableList()
+
+        periods.addAll(listOf(preparationPeriod, closurePeriod))
+        periods.sortBy { it.periodNumber}
+
+        return listOf(ProjectPartnerBudgetPerPeriod(
+            partner = spfBeneficiary,
+            periodBudgets = periods,
+            totalPartnerBudget = spfTotalBudget,
+            totalPartnerBudgetDetail = BudgetCostsDetail(),
+            costType = ProjectPartnerCostType.Spf
+        ))
+    }
 
     private fun getPeriodBudgets(
         partnerId: Long,

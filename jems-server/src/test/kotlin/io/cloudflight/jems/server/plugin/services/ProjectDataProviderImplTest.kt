@@ -119,29 +119,7 @@ import io.cloudflight.jems.server.project.service.common.PartnerBudgetPerFundCal
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectPartnerLumpSum
-import io.cloudflight.jems.server.project.service.model.Address
-import io.cloudflight.jems.server.project.service.model.BudgetCostsDetail
-import io.cloudflight.jems.server.project.service.model.ProjectAssessment
-import io.cloudflight.jems.server.project.service.model.ProjectBudgetOverviewPerPartnerPerPeriod
-import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
-import io.cloudflight.jems.server.project.service.model.ProjectCooperationCriteria
-import io.cloudflight.jems.server.project.service.model.ProjectDescription
-import io.cloudflight.jems.server.project.service.model.ProjectFull
-import io.cloudflight.jems.server.project.service.model.ProjectHorizontalPrinciples
-import io.cloudflight.jems.server.project.service.model.ProjectLongTermPlans
-import io.cloudflight.jems.server.project.service.model.ProjectManagement
-import io.cloudflight.jems.server.project.service.model.ProjectOverallObjective
-import io.cloudflight.jems.server.project.service.model.ProjectPartnerBudgetPerPeriod
-import io.cloudflight.jems.server.project.service.model.ProjectPartnership
-import io.cloudflight.jems.server.project.service.model.ProjectPeriod
-import io.cloudflight.jems.server.project.service.model.ProjectPeriodBudget
-import io.cloudflight.jems.server.project.service.model.ProjectRelevance
-import io.cloudflight.jems.server.project.service.model.ProjectRelevanceBenefit
-import io.cloudflight.jems.server.project.service.model.ProjectRelevanceStrategy
-import io.cloudflight.jems.server.project.service.model.ProjectRelevanceSynergy
-import io.cloudflight.jems.server.project.service.model.ProjectStatus
-import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
-import io.cloudflight.jems.server.project.service.model.ProjectVersion
+import io.cloudflight.jems.server.project.service.model.*
 import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssessmentEligibility
 import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssessmentQuality
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
@@ -743,7 +721,8 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                         ProjectPeriodBudget(255, 0, 0, BigDecimal.ZERO, BudgetCostsDetail(), true)
                     ),
                     totalPartnerBudget = BigDecimal.ZERO,
-                    totalPartnerBudgetDetail = BudgetCostsDetail()
+                    totalPartnerBudgetDetail = BudgetCostsDetail(),
+                    costType = ProjectPartnerCostType.Management
                 )
             ),
             totals = listOf(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO),
@@ -793,6 +772,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
         } returns budgetCostsCalculationResult
         every {
             partnerBudgetPerPeriodCalculator.calculate(
+                any(),
                 any(),
                 any(),
                 any()
