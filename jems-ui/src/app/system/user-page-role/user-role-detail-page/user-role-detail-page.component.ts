@@ -267,7 +267,7 @@ export class UserRoleDetailPageComponent {
                                         currentRolePermissions: PermissionsEnum[],
                                         parentIndex: number): FormGroup {
     if (!perm.children?.length) {
-      const formGroup = this.formBuilder.group({
+      return this.formBuilder.group({
         name: perm.name,
         parentIndex,
         mode: perm.mode,
@@ -280,7 +280,6 @@ export class UserRoleDetailPageComponent {
         infoMessage: perm.infoMessage,
         icon: perm.icon
       });
-      return formGroup;
     } else {
       return this.formBuilder.group({
         name: perm.name,
@@ -303,7 +302,7 @@ export class UserRoleDetailPageComponent {
     return PermissionState.HIDDEN;
   }
 
-  private getPermissionsForState(state: PermissionState, permissionNode: PermissionNode): PermissionsEnum[] {
+  private static getPermissionsForState(state: PermissionState, permissionNode: PermissionNode): PermissionsEnum[] {
     if (state === PermissionState.EDIT) {
       return (permissionNode.editPermissions || []).concat(permissionNode.viewPermissions || []);
     }
@@ -343,7 +342,7 @@ export class UserRoleDetailPageComponent {
   private extractChildrenPermissions(nodeForm: AbstractControl, permissionNode: PermissionNode): PermissionsEnum[] {
     if (!permissionNode.children?.length) {
       const state = this.state(nodeForm)?.value;
-      return this.getPermissionsForState(state, permissionNode);
+      return UserRoleDetailPageComponent.getPermissionsForState(state, permissionNode);
     }
 
     return permissionNode.children.flatMap((node: PermissionNode, index: number) =>
@@ -366,7 +365,7 @@ export class UserRoleDetailPageComponent {
   }
 
   private adaptDependentPermissions(permission: AbstractControl): void {
-    if (!(permission.get('name')?.value === 'permission.assessment.instantiate')) {
+    if (permission.get('name')?.value !== 'permission.assessment.instantiate') {
       return;
     }
     const consolidateGroup = this.treeControlInspect.dataNodes

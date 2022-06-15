@@ -1,12 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  Input,
-  OnChanges,
-  OnInit,
-  SimpleChanges
-} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
 import {PrivilegesPageStore} from '@project/project-application/privileges-page/privileges-page-store.service';
 import {FormService} from '@common/components/section/form/form.service';
 import {PartnerUserCollaboratorDTO, ProjectPartnerSummaryDTO} from '@cat/api';

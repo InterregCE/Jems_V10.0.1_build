@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, forwardRef, NgZone, ViewChild} from '@angular/core';
-import {ProgrammeChecklistComponentDTO, ScoreMetadataDTO, TextInputMetadataDTO} from '@cat/api';
+import {ProgrammeChecklistComponentDTO, ScoreMetadataDTO} from '@cat/api';
 import {
   AbstractControl,
   ControlValueAccessor,

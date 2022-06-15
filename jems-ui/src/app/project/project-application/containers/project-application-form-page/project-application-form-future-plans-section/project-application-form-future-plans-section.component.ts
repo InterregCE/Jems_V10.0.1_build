@@ -1,6 +1,6 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {Observable, Subject} from 'rxjs';
-import {InputProjectLongTermPlans, OutputProjectLongTermPlans, ProjectDescriptionService} from '@cat/api';
+import {Observable} from 'rxjs';
+import {OutputProjectLongTermPlans, ProjectDescriptionService} from '@cat/api';
 import {map} from 'rxjs/operators';
 import {ProjectApplicationFormStore} from '../services/project-application-form-store.service';
 import {ActivatedRoute} from '@angular/router';

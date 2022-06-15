@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
-import {catchError, startWith, switchMap, tap} from 'rxjs/operators';
+import {catchError, switchMap, tap} from 'rxjs/operators';
 import {HttpErrorResponse} from '@angular/common/http';
-import {UserRegistrationService, UserRegistrationDTO, CaptchaDTO, CaptchaApiService} from '@cat/api';
+import {CaptchaApiService, CaptchaDTO, UserRegistrationDTO, UserRegistrationService} from '@cat/api';
 import {Router} from '@angular/router';
 import {AuthenticationStore} from '../../service/authentication-store.service';
 

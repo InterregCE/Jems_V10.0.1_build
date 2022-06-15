@@ -1,11 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  Input,
-  OnChanges,
-  OnInit,
-  SimpleChanges
-} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {InputProjectPartnership, ProjectDescriptionService} from '@cat/api';
 import {BaseComponent} from '@common/components/base-component';
@@ -50,11 +43,12 @@ export class ProjectApplicationFormProjectPartnershipDetailComponent extends Bas
   }
 
   onSubmit(): void {
-    this.projectDescriptionService.updateProjectPartnership(this.projectId,
-      <InputProjectPartnership>{
+    this.projectDescriptionService.updateProjectPartnership(
+      this.projectId,
+      {
         partnership: this.projectPartnershipForm.get('partnership')?.value
-      })
-      .pipe(
+      } as InputProjectPartnership
+    ).pipe(
         tap(saved => Log.info('Updated project partnership:', this, saved)),
         tap(() => this.formService.setSuccess('project.application.form.save.success')),
         catchError(error => this.formService.setError(error))

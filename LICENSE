@@ -1,38 +1,38 @@
-Copyright (C) 2020 City of Vienna - All Rights Reserved.
-The use of any part of the code for any purpose is strictly prohibited.
-The modification of any part of the code for any purpose is strictly prohibited.
-The distribution of any part of the code via any medium and for any purpose is strictly prohibited.
+Copyright (C) 2020-2022 City of Vienna - All Rights Reserved.
+The use, modification and distribution must follow the Licensing agreement concluded between the City of Vienna and programme.
 
 Some parts of the software are not property of the City of Vienna. The excluded parts and respective licenses are listed as follows:
 
 1. Back-End
 
-· Spring (Apache 2.0) - version 5.2.11.RELEASE
+· Kotlin - programming language itself - 1.6.10
+· Spring-Boot (Apache 2.0) - version 2.6.6 (wrapping spring 5.3.18 and spring-security 5.6.2)
 · MariaDB (GPL v.2) - version 10.3.13
-· mariadb-java-client (LGPL 2.1) - version 2.7.2
+· mariadb-java-client (LGPL 2.1) - version 2.7.5
 · MinIO (Apache 2.0) - version RELEASE.2021-08-05T22-01-19Z
-· org.apache commons-io (Apache 2.0) - version 2.8.0
-· Flyway (Apache 2.0) - version 6.4.4
-· jackson-module-kotlin (Apache 2.0) - version 2.11.0
-· swagger (Apache 2.0) - version 2.9.2
-· h2database (MPL 2.0) - version 1.4.200
-· ElasticSearch (Apache 2.0 for most of parts) - version 7.16.3
+· org.apache.commons-io (Apache 2.0) - version 2.8.0
+· Flyway (Apache 2.0) - version 8.0.5
+· jackson-module-kotlin (Apache 2.0) - version 2.13.2
+· io.springfox (Apache 2.0) - version 2.9.2/3.0.0
+· io.swagger (Apache 2.0) - version 1.6.2
+· ElasticSearch (Elastic License 2.0 / SSPL) - version 7.16.3
+· doyaaaaaken/kotlin-csv (Apache 2.0) - version 0.15.0
+· Mapstruct (Apache 2.0) - version 1.4.2.Final
 · SimpleCaptcha (BSD) - version 1.3.0
 
 2. Front-End
 
-· Angular (MIT) - now version 9.1.12 includes material design now version 9.2.4
-· bootstrap (MIT) - version 4.5.0
-· moment (MIT) - version 2.27.0
-· RxJS (Apache 2.0)  version 6.5.5
-· Roboto (Apache 2.0) (The copy font in the project)
+· Angular (MIT) - version 12.2.13 includes material icons 1.10.4
+· moment (MIT) - version 2.29.1
+· RxJS (Apache 2.0) version 6.6.3
+· Roboto (Apache 2.0) (The copy font in the project) 0.10.0
 
 (3.) Productivity
 
 It is possible that some Cloudflight proprietary code can be found in the code repository. This code aims for productivity/efficiency of the development process such as deployment or testing, they are not directly part of the Monitoring System application code.
 
-· cloudflight-gradle-plugin 6.0.0 (license below)
-· io.cloudflight.platform 1.6.0 (license below)
+· cloudflight-gradle-plugin 6.5.11 (license below)
+· io.cloudflight.platform 1.8.5 (license below)
 
 Cloudflight license
 
