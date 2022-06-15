@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.user.service.userrole.update_user_role
+package io.cloudflight.jems.server.user.service.userrole.updateUserRole
 
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.user.service.UserRolePersistence
@@ -72,6 +72,20 @@ internal class UpdateUserRoleTest {
 
         assertThat(updateUserRole.updateUserRole(userRoleUpdate)).isEqualTo(userRoleUpdate)
         verify(exactly = 1) { persistence.update(userRoleUpdate) }
+    }
+
+    @Test
+    fun `updateUserRole - invalid permission setup`() {
+        val userRoleUpdateInvalid = userRoleUpdate.copy(permissions = setOf(
+            UserRolePermission.ProjectSubmission,
+            // invalid ones:
+            UserRolePermission.ProjectAssessmentChecklistConsolidate /* this one requires ProjectAssessmentChecklistUpdate */,
+        ))
+
+        every { persistence.findById(ROLE_ID) } returns userRoleSummary
+        every { persistence.findUserRoleByName(userRoleUpdateInvalid.name) } returns Optional.empty()
+
+        assertThrows<UserRolePermissionCombinationInvalid> { updateUserRole.updateUserRole(userRoleUpdateInvalid) }
     }
 
     @Test

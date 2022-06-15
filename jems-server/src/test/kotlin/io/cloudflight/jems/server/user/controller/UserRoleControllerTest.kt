@@ -12,9 +12,9 @@ import io.cloudflight.jems.server.user.service.model.UserRole
 import io.cloudflight.jems.server.user.service.model.UserRoleCreate
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import io.cloudflight.jems.server.user.service.model.UserRoleSummary
-import io.cloudflight.jems.server.user.service.userrole.create_user_role.CreateUserRoleInteractor
+import io.cloudflight.jems.server.user.service.userrole.createUserRole.CreateUserRoleInteractor
 import io.cloudflight.jems.server.user.service.userrole.get_user_role.GetUserRoleInteractor
-import io.cloudflight.jems.server.user.service.userrole.update_user_role.UpdateUserRoleInteractor
+import io.cloudflight.jems.server.user.service.userrole.updateUserRole.UpdateUserRoleInteractor
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK

@@ -6,9 +6,9 @@ import io.cloudflight.jems.api.user.dto.UserRoleDTO
 import io.cloudflight.jems.api.user.dto.UserRoleSummaryDTO
 import io.cloudflight.jems.server.programme.service.userrole.get_role.GetDefaultUserRoleInteractor
 import io.cloudflight.jems.server.programme.service.userrole.update_role.UpdateDefaultUserRoleInteractor
-import io.cloudflight.jems.server.user.service.userrole.create_user_role.CreateUserRoleInteractor
+import io.cloudflight.jems.server.user.service.userrole.createUserRole.CreateUserRoleInteractor
 import io.cloudflight.jems.server.user.service.userrole.get_user_role.GetUserRoleInteractor
-import io.cloudflight.jems.server.user.service.userrole.update_user_role.UpdateUserRoleInteractor
+import io.cloudflight.jems.server.user.service.userrole.updateUserRole.UpdateUserRoleInteractor
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.web.bind.annotation.RestController

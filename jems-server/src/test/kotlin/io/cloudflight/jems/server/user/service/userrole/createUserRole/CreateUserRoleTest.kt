@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.user.service.userrole.create_user_role
+package io.cloudflight.jems.server.user.service.userrole.createUserRole
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
@@ -55,6 +55,17 @@ internal class CreateUserRoleTest : UnitTest() {
         assertThat(createUserRole.createUserRole(userRoleCreate)).isEqualTo(expectedUserRole)
         verify(exactly = 1) { persistence.create(userRoleCreate) }
         verify(exactly = 1) { auditPublisher.publishEvent(any()) }
+    }
+
+    @Test
+    fun `createUserRole - permission combination invalid`() {
+        val userRoleInvalid = userRoleCreate.copy(permissions = setOf(
+            UserRolePermission.ProjectSubmission,
+            UserRolePermission.ProjectAssessmentChecklistConsolidate /* this one requires ProjectAssessmentChecklistUpdate */,
+        ))
+        every { persistence.findUserRoleByName(userRoleInvalid.name) } returns Optional.empty()
+
+        assertThrows<UserRolePermissionCombinationInvalid> { createUserRole.createUserRole(userRoleInvalid) }
     }
 
     @Test

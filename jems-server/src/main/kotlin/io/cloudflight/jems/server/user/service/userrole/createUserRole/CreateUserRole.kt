@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.user.service.userrole.create_user_role
+package io.cloudflight.jems.server.user.service.userrole.createUserRole
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
@@ -25,6 +25,10 @@ class CreateUserRole(
     override fun createUserRole(userRole: UserRoleCreate): UserRole {
         validateUserRoleCommon(generalValidator, userRole.name)
         validateUserRoleNameNotTaken(userRole.name)
+
+        checkForFirstInvalidPermissionCombination(userRole.permissions)?.let {
+            throw UserRolePermissionCombinationInvalid(it)
+        }
 
         return persistence.create(userRole).also {
             auditPublisher.publishEvent(userRoleCreated(this, it))

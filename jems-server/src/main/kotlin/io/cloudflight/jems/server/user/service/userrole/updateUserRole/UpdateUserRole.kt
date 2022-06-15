@@ -1,10 +1,11 @@
-package io.cloudflight.jems.server.user.service.userrole.update_user_role
+package io.cloudflight.jems.server.user.service.userrole.updateUserRole
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.user.service.UserRolePersistence
 import io.cloudflight.jems.server.user.service.authorization.CanUpdateRole
 import io.cloudflight.jems.server.user.service.model.UserRole
+import io.cloudflight.jems.server.user.service.userrole.createUserRole.checkForFirstInvalidPermissionCombination
 import io.cloudflight.jems.server.user.service.userrole.userRoleUpdated
 import io.cloudflight.jems.server.user.service.userrole.validateUserRoleCommon
 import org.springframework.context.ApplicationEventPublisher
@@ -24,6 +25,10 @@ class UpdateUserRole(
     override fun updateUserRole(userRole: UserRole): UserRole {
         validateUserRoleCommon(generalValidator, userRole.name)
         validateUserRoleNameNotTaken(userRole)
+
+        checkForFirstInvalidPermissionCombination(userRole.permissions)?.let {
+            throw UserRolePermissionCombinationInvalid(it)
+        }
 
         return persistence.update(userRole).also {
             val existingRole = persistence.findById(userRole.id)
