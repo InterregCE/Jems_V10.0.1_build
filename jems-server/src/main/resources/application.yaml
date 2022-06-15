@@ -85,4 +85,4 @@ app:
       sender: jems@jems.com
       bcc-list:
   captcha:
-    enabled: true
+    enabled: "${REGISTRATION_CAPTCHA_ENABLED:true}"

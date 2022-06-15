@@ -46,8 +46,14 @@ class RegisterUser(
             throw DefaultUserRoleNotFound()
         val userToBeRegistered = user.toUserChange(userRoleId)
 
-        if(this.appCaptchaProperties.enabled)
-            validateCaptcha(user.captcha)
+        if (this.appCaptchaProperties.enabled) {
+           try {
+               validateCaptcha(user.captcha)
+           }
+           finally {
+               resetCaptcha()
+           }
+        }
         validateUser(userToBeRegistered)
         validatePassword(generalValidator, user.password)
         val createdUser =
@@ -59,6 +65,9 @@ class RegisterUser(
     }
 
     override fun getCaptcha(): Captcha {
+        if(!this.appCaptchaProperties.enabled) {
+            return Captcha("", "", "")
+        }
         val newCaptcha = this.captchaService.createCaptcha(captchaImageWidth, captchaImageHeight)
 
         this.httpSession.setAttribute("captcha", newCaptcha.answer)
@@ -72,9 +81,11 @@ class RegisterUser(
     }
 
     private fun validateCaptcha(userCaptcha: String) {
-        if(this.httpSession.getAttribute("captcha") != userCaptcha )
+        if (this.httpSession.getAttribute("captcha") != userCaptcha)
             throw CaptchaNotValid()
     }
+
+    private fun resetCaptcha() = this.httpSession.setAttribute("captcha", null)
 
     private fun UserRegistration.toUserChange(roleId: Long) = UserChange(
         id = 0,
