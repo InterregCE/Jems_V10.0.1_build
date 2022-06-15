@@ -127,8 +127,8 @@ context('Project management tests', () => {
       cy.visit(`app/project/detail/${this.applicationId}`, {failOnStatusCode: false});
       cy.contains(this.partnerAbbreviation).click();
       cy.contains('a', 'Address').click();
-      
-      cy.get('jems-project-application-form-address').eq(0).then((mainAddressSection)=> {
+
+      cy.get('jems-project-application-form-address').eq(0).then((mainAddressSection) => {
         cy.wrap(mainAddressSection).contains('div', 'Country').find('input').click();
         cy.contains('mat-option', testData.mainAddress.country).click();
         cy.wrap(mainAddressSection).contains('div', 'NUTS 2').find('input').click();
@@ -142,8 +142,8 @@ context('Project management tests', () => {
         cy.wrap(mainAddressSection).contains('div', 'City').find('input').type(testData.mainAddress.city);
         cy.wrap(mainAddressSection).contains('div', 'Homepage').find('input').type(testData.mainAddress.homepage);
       });
-      
-      cy.contains('Address of department').next().then((departmentAddressSection)=> {
+
+      cy.contains('Address of department').next().then((departmentAddressSection) => {
         cy.wrap(departmentAddressSection).contains('div', 'Country').find('input').click();
         cy.contains('mat-option', testData.departmentAddress.country).click();
         cy.wrap(departmentAddressSection).contains('div', 'NUTS 2').find('input').click();
@@ -156,7 +156,7 @@ context('Project management tests', () => {
         cy.wrap(departmentAddressSection).contains('div', 'Postal code').find('input').type(testData.departmentAddress.postalCode);
         cy.wrap(departmentAddressSection).contains('div', 'City').find('input').type(testData.departmentAddress.city);
       });
-      
+
       cy.contains('Save changes').click();
       // TODO add an assertion for successful save as soon as bug MP2-2274 is fixed
     });
@@ -167,7 +167,7 @@ context('Project management tests', () => {
       cy.visit(`app/project/detail/${this.applicationId}`, {failOnStatusCode: false});
       cy.contains(this.partnerAbbreviation).click();
       cy.contains('a', 'Contact').click();
-      
+
       cy.get('input[name="partnerRepresentativeTitle"]').type(testData.legalRepresentative.title)
       cy.get('input[name="partnerRepresentativeFirstName"]').type(testData.legalRepresentative.firstName)
       cy.get('input[name="partnerRepresentativeLastName"]').type(testData.legalRepresentative.lastName);
@@ -177,7 +177,7 @@ context('Project management tests', () => {
       cy.get('input[name="partnerContactLastName"]').type(testData.contactPerson.lastName);
       cy.get('input[name="partnerContactEmail"]').type(testData.contactPerson.email);
       cy.get('input[name="partnerContactTelephone"]').type(testData.contactPerson.number);
-      
+
       cy.contains('Save changes').click();
       cy.contains('Partner contact saved successfully').should('be.visible');
     });
@@ -188,30 +188,167 @@ context('Project management tests', () => {
       cy.visit(`app/project/detail/${this.applicationId}`, {failOnStatusCode: false});
       cy.contains(this.partnerAbbreviation).click();
       cy.contains('a', 'Motivation').click();
-      
+
       testData.motivation.organizationRelevance.forEach(organizationRelevance => {
         cy.get('jems-multi-language-container').eq(0).then(organizationRelevanceSection => {
           cy.wrap(organizationRelevanceSection).contains('button', organizationRelevance.language).click();
           cy.wrap(organizationRelevanceSection).find('textarea').type(organizationRelevance.translation);
         });
       });
-      
+
       testData.motivation.organizationRole.forEach(organizationRole => {
         cy.get('jems-multi-language-container').eq(1).then(organizationRoleSection => {
           cy.wrap(organizationRoleSection).contains('button', organizationRole.language).click();
           cy.wrap(organizationRoleSection).find('textarea').type(organizationRole.translation);
         });
       });
-      
+
       testData.motivation.organizationExperience.forEach(organizationExperience => {
         cy.get('jems-multi-language-container').eq(2).then(organizationExperienceSection => {
           cy.wrap(organizationExperienceSection).contains('button', organizationExperience.language).click();
           cy.wrap(organizationExperienceSection).find('textarea').type(organizationExperience.translation);
         });
       });
-      
+
       cy.contains('Save changes').click();
       cy.contains('Partner motivation and contribution saved successfully.').should('be.visible');
     });
   });
+
+  it('TB-628 Applicant can edit partners budget info', function () {
+    cy.fixture('project/application-form/TB-628').then(testData => {
+      cy.visit(`app/project/detail/${this.applicationId}`, {failOnStatusCode: false});
+      cy.contains(this.partnerAbbreviation).click();
+      cy.contains('a', 'Budget').click();
+
+      cy.contains('h4', 'Staff costs').next().within(() => {
+        cy.contains('Add').click();
+        setTranslatedField(testData.budget.staffCosts[0].staffFunction, 1);
+        setTranslatedField(testData.budget.staffCosts[0].comments, 2);
+        setTranslatedField(testData.budget.staffCosts[0].unitType, 3);
+        setAmountField(testData.budget.staffCosts[0].numberOfUnits, 4);
+        setAmountField(testData.budget.staffCosts[0].pricePerUnit, 5);
+
+        testData.budget.staffCosts[0].budgetPeriods.forEach(budgetPeriods => {
+          setAmountField(budgetPeriods.amount, budgetPeriods.number + 6);
+        });
+
+        cy.get('mat-row').last().get('mat-cell').eq(15).then(gap => {
+          expect(gap).to.contain('0,00');
+        });
+        cy.contains('Please update the budget table: The sum of the amounts per period must match the budget item total.').should('not.exist');
+
+        cy.contains('button', 'add').click();
+        selectUnitCost(testData.budget.staffCosts[1].unitCost);
+        setTranslatedField(testData.budget.staffCosts[1].comments, 2);
+        setAmountField(testData.budget.staffCosts[1].numberOfUnits, 4);
+        testData.budget.staffCosts[1].budgetPeriods.forEach(budgetPeriods => {
+          setAmountField(budgetPeriods.amount, budgetPeriods.number + 6);
+        });
+        cy.get('mat-row').last().find('mat-cell').eq(15).then(gap => {
+          expect(gap).to.contain('0,01');
+        });
+        cy.contains('Please update the budget table: The sum of the amounts per period must match the budget item total.').scrollIntoView().should('be.visible');
+      });
+
+      cy.contains('Save changes').click();
+      cy.contains('Partner budgets were saved successfully').should('be.visible');
+
+      cy.contains('Staff costs flat rate').click();
+      cy.contains('mat-list-item', 'Staff costs flat rate').find('input[type="integer"]').type(testData.staffCostsFlatRate);
+      cy.contains('Save changes').click();
+      cy.contains('Eventual real cost covered by an activated flat rate will be deleted').should('be.visible');
+      cy.get('jems-confirm-dialog').contains('Confirm').click();
+      cy.contains('Partner budget options were saved successfully.').should('be.visible');
+      cy.contains('Partner budget options were saved successfully.').should('not.exist');
+
+      cy.contains('h4', 'Travel and accommodation').next().within(() => {
+        cy.contains('Add').click();
+        setTranslatedField(testData.budget.travelCosts[0].description, 0);
+        setTranslatedField(testData.budget.travelCosts[0].comments, 1);
+        setTranslatedField(testData.budget.travelCosts[0].unitType, 2);
+        setAmountField(testData.budget.travelCosts[0].numberOfUnits, 3);
+        setAmountField(testData.budget.travelCosts[0].pricePerUnit, 4);
+        testData.budget.travelCosts[0].budgetPeriods.forEach(budgetPeriods => {
+          setAmountField(budgetPeriods.amount, budgetPeriods.number + 4);
+        });
+      });
+
+      cy.contains('h4', 'External expertise and services').next().within(() => {
+        cy.contains('Add').click();
+        setTranslatedField(testData.budget.externalCosts[0].description, 0);
+        setTranslatedField(testData.budget.externalCosts[0].comments, 1);
+        setTranslatedField(testData.budget.externalCosts[0].awardProcedures, 2);
+        setTranslatedField(testData.budget.externalCosts[0].unitType, 4);
+        setAmountField(testData.budget.externalCosts[0].numberOfUnits, 5);
+        setAmountField(testData.budget.externalCosts[0].pricePerUnit, 6);
+
+        testData.budget.externalCosts[0].budgetPeriods.forEach(budgetPeriods => {
+          setAmountField(budgetPeriods.amount, budgetPeriods.number + 7);
+        });
+      });
+
+      cy.contains('h4', 'Equipment').next().within(() => {
+        cy.contains('Add').click();
+        cy.get('mat-row').last().find('mat-select').first().click();
+        cy.root().closest('body').find('mat-option').contains(testData.budget.equipmentCosts[0].unitCost).click();
+        setTranslatedField(testData.budget.equipmentCosts[0].comments, 2);
+        setTranslatedField(testData.budget.equipmentCosts[0].awardProcedures, 3);
+        setAmountField(testData.budget.equipmentCosts[0].numberOfUnits, 6);
+
+        testData.budget.equipmentCosts[0].budgetPeriods.forEach(budgetPeriods => {
+          setAmountField(budgetPeriods.amount, budgetPeriods.number + 7);
+        });
+      });
+
+      cy.contains('h4', 'Infrastructure and works').next().within(() => {
+        cy.contains('Add').click();
+        setTranslatedField(testData.budget.infrastructureCosts[0].description, 0);
+        setTranslatedField(testData.budget.infrastructureCosts[0].comments, 1);
+        setTranslatedField(testData.budget.infrastructureCosts[0].awardProcedures, 2);
+        setTranslatedField(testData.budget.infrastructureCosts[0].unitType, 4);
+        setAmountField(testData.budget.infrastructureCosts[0].numberOfUnits, 5);
+        setAmountField(testData.budget.infrastructureCosts[0].pricePerUnit, 6);
+
+        testData.budget.infrastructureCosts[0].budgetPeriods.forEach(budgetPeriods => {
+          setAmountField(budgetPeriods.amount, budgetPeriods.number + 7);
+        });
+      });
+
+      cy.contains('h4', 'Unit costs covering more than one cost category').next().within(() => {
+        cy.contains('Add').click();
+        selectUnitCost(testData.budget.unitCosts[0].unitCost);
+        setAmountField(testData.budget.unitCosts[0].numberOfUnits, 3);
+        testData.budget.unitCosts[0].budgetPeriods.forEach(budgetPeriods => {
+          setAmountField(budgetPeriods.amount, budgetPeriods.number + 5);
+        });
+      });
+
+      cy.contains('Save changes').click();
+      cy.contains('Partner budgets were saved successfully').should('be.visible');
+      
+      cy.contains('Flat rate for Staff costs').parents('jems-budget-flat-rate-table').should('contain', formatAmount(testData.staffCostsFlatRateAmount));
+    });
+  });
+
+  function setTranslatedField(values, index) {
+    values.forEach(value => {
+      cy.contains('button', value.language).click();
+      cy.get('mat-row').last().find('mat-cell').eq(index).type(value.translation);
+    });
+  }
+
+  function setAmountField(amount, index) {
+    const formattedAmount = formatAmount(amount);
+    cy.get('mat-row').last().find('mat-cell').eq(index).find('input').type(formattedAmount, {force: true});
+  }
+  
+  function selectUnitCost(unitCost) {
+    cy.get('mat-row').last().find('mat-select').first().click();
+    cy.root().closest('body').find('mat-option').contains(unitCost).click();
+  }
+  
+  function formatAmount(amount) {
+     return new Intl.NumberFormat('de-DE').format(amount);
+  }
 });
