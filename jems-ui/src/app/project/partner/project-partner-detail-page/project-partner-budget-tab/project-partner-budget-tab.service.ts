@@ -18,6 +18,7 @@ import {RoutingService} from '@common/services/routing.service';
 @Injectable()
 export class ProjectPartnerBudgetTabService {
 
+  private serviceId = Math.random().toString(36);
   private isBudgetOptionsFormInEditModeSubject = new Subject<boolean>();
   private isBudgetFormInEditModeSubject = new Subject<boolean>();
   private isSPFBudgetFormInEditModeSubject = new Subject<boolean>();
@@ -27,7 +28,9 @@ export class ProjectPartnerBudgetTabService {
 
   constructor(private formVisibilityStatusService: FormVisibilityStatusService, private formBuilder: FormBuilder, private routingService: RoutingService) {
     combineLatest([this.isBudgetOptionsFormInEditMode$, this.isBudgetFormInEditMode$]).pipe(
-      tap(([optionsDirty, budgetsDirty]) => this.routingService.confirmLeave = optionsDirty || budgetsDirty),
+      tap(([optionsDirty, budgetsDirty]) =>
+        this.routingService.confirmLeaveMap.set(this.serviceId, optionsDirty || budgetsDirty)
+      ),
       untilDestroyed(this)
     ).subscribe();
   }
