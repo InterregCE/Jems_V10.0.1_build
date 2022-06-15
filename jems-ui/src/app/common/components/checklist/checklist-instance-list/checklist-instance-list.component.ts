@@ -10,16 +10,14 @@ import {
   UserRoleDTO
 } from '@cat/api';
 import {combineLatest, Observable} from 'rxjs';
-import {
-  ChecklistInstanceListStore
-} from '@common/components/checklist/checklist-instance-list/checklist-instance-list-store.service';
+import {ChecklistInstanceListStore} from '@common/components/checklist/checklist-instance-list/checklist-instance-list-store.service';
 import {filter, map, switchMap, take, tap} from 'rxjs/operators';
 import {RoutingService} from '@common/services/routing.service';
 import {ActivatedRoute} from '@angular/router';
 import {MatDialog} from '@angular/material/dialog';
 import {Forms} from '@common/utils/forms';
 import {FormService} from '@common/components/section/form/form.service';
-import {FormArray, FormBuilder, FormControl} from '@angular/forms';
+import {FormArray, FormBuilder} from '@angular/forms';
 import {TableComponent} from '@common/components/table/table.component';
 import {MatSort} from '@angular/material/sort';
 import {MatCheckboxChange} from '@angular/material/checkbox';

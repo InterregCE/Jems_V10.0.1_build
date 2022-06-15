@@ -13,7 +13,8 @@
            mat-table
            id="table"
            [dataSource]="rows"
-           (matSortChange)="sortRows.emit($event)">
+           (matSortChange)="sortRows.emit($event)"
+           aria-describedby="table component">
 
         <ng-container *ngFor="let column of configuration.columns; let i = index"
                       matColumnDef="{{column.displayedColumn}}">

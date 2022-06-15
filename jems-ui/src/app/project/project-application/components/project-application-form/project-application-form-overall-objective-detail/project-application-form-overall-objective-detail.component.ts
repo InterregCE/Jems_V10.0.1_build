@@ -1,11 +1,4 @@
-import {
-  ChangeDetectionStrategy,
-  Component,
-  Input,
-  OnChanges,
-  OnInit,
-  SimpleChanges
-} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {
   InputProjectOverallObjective,
   OutputProgrammePriorityPolicySimpleDTO,
@@ -68,11 +61,12 @@ export class ProjectApplicationFormOverallObjectiveDetailComponent extends BaseC
   }
 
   onSubmit(): void {
-    this.projectDescriptionService.updateProjectOverallObjective(this.projectId,
-      <InputProjectOverallObjective>{
+    this.projectDescriptionService.updateProjectOverallObjective(
+      this.projectId,
+      {
         overallObjective: this.overallObjectiveForm.get('projectOverallObjective')?.value
-      })
-      .pipe(
+      } as InputProjectOverallObjective
+    ).pipe(
         tap(saved => Log.info('Updated project overall objective:', this, saved)),
         tap(() => this.formService.setSuccess('project.application.form.save.success')),
         catchError(error => this.formService.setError(error))

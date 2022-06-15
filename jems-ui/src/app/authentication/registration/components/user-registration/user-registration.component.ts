@@ -1,4 +1,4 @@
-import {ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output} from '@angular/core';
+import {ChangeDetectorRef, Component, EventEmitter, OnInit, Output} from '@angular/core';
 import {AbstractFormComponent} from '@common/components/forms/abstract-form.component';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {CaptchaDTO, InfoService, UserRegistrationDTO} from '@cat/api';
@@ -8,7 +8,7 @@ import {Router} from '@angular/router';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {ResourceStoreService} from '@common/services/resource-store.service';
-import {RegistrationPageService} from "../../services/registration-page.service";
+import {RegistrationPageService} from '../../services/registration-page.service';
 
 
 @Component({
