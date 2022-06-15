@@ -4,13 +4,12 @@ import io.cloudflight.jems.server.project.service.report.model.identification.Pr
 import java.math.BigDecimal
 import java.math.RoundingMode
 
-fun ProjectPartnerReportIdentification.fillInSpendingProfile(
-    isOpen: Boolean,
-    currentReportResolver: () -> BigDecimal,
+fun ProjectPartnerReportIdentification.fillInCurrentAndPreviousReporting(
+    currentReport: BigDecimal,
+    previouslyReported: BigDecimal,
 ) = apply {
-    if (isOpen) {
-        spendingProfile.currentReport = currentReportResolver.invoke()
-    }
+    spendingProfile.currentReport = currentReport
+    spendingProfile.previouslyReported = previouslyReported
     val currentTotal = spendingProfile.previouslyReported.plus(spendingProfile.currentReport)
 
     if (spendingProfile.periodDetail != null && spendingProfile.periodDetail.periodBudgetCumulative > BigDecimal.ZERO) {

@@ -17,6 +17,8 @@ const val PASSWORD_REGEX = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{10,}).+\$"
 const val EMAIL_REGEX = "^(.+)@(.+)\$"
 const val ONLY_DIGITS_REGEX = "\\d+\$"
 
+val EXTRA_VALID_CURRENCIES = setOf("SLE")
+
 @Service
 class GeneralValidatorDefaultImpl : GeneralValidatorService {
 
@@ -241,6 +243,7 @@ class GeneralValidatorDefaultImpl : GeneralValidatorService {
                     invalidCurrencyCodes.add(it)
                 }
             }
+            invalidCurrencyCodes.removeAll(EXTRA_VALID_CURRENCIES)
             if (invalidCurrencyCodes.isNotEmpty()) {
                 this[fieldName] = I18nMessage(
                     i18nKey = "common.error.currency.code.invalid",

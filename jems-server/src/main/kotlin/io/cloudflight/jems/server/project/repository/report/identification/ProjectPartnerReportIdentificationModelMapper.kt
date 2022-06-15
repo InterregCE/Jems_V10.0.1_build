@@ -22,11 +22,11 @@ fun ProjectPartnerReportIdentificationEntity.toModel(
     targetGroups = targetGroups.toModel(),
     spendingProfile = ProjectPartnerReportSpendingProfile(
         periodDetail = periodResolver.invoke(periodNumber)?.toModel(),
-        currentReport = spendingProfile.currentReport,
-        previouslyReported = spendingProfile.previouslyReported,
+        currentReport = BigDecimal.ZERO /* temporarily, is calculated in service */,
+        previouslyReported = BigDecimal.ZERO /* temporarily, is calculated in service */,
         differenceFromPlan = BigDecimal.ZERO,
         differenceFromPlanPercentage = BigDecimal.ZERO,
-        nextReportForecast = spendingProfile.nextReportForecast,
+        nextReportForecast = nextReportForecast,
     )
 )
 

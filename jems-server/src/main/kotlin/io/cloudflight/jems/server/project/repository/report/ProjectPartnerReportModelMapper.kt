@@ -13,6 +13,7 @@ import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportCoFi
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportCoFinancingIdEntity
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
+import io.cloudflight.jems.server.project.entity.report.financialOverview.ReportProjectPartnerExpenditureCostCategoryEntity
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageActivityDeliverableEntity
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageActivityEntity
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageEntity
@@ -24,10 +25,12 @@ import io.cloudflight.jems.server.project.service.report.model.create.ProjectPar
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSummary
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.financialOverview.costCategory.ReportExpenditureCostCategory
 import io.cloudflight.jems.server.project.service.report.model.workPlan.ProjectPartnerReportWorkPackage
 import io.cloudflight.jems.server.project.service.report.model.workPlan.ProjectPartnerReportWorkPackageActivity
 import io.cloudflight.jems.server.project.service.report.model.workPlan.ProjectPartnerReportWorkPackageActivityDeliverable
 import io.cloudflight.jems.server.project.service.report.model.workPlan.ProjectPartnerReportWorkPackageOutput
+import java.math.BigDecimal.ZERO
 
 fun ProjectPartnerReportEntity.toModelSummary() = ProjectPartnerReportSummary(
     id = id,
@@ -192,4 +195,46 @@ fun ReportProjectFileEntity.toModel() = ProjectReportFileMetadata(
     id = id,
     name = name,
     uploaded = uploaded,
+)
+
+fun ReportExpenditureCostCategory.toCreateEntity(report: ProjectPartnerReportEntity) = ReportProjectPartnerExpenditureCostCategoryEntity(
+    reportEntity = report,
+    officeAndAdministrationOnStaffCostsFlatRate = options.officeAndAdministrationOnStaffCostsFlatRate,
+    officeAndAdministrationOnDirectCostsFlatRate = options.officeAndAdministrationOnDirectCostsFlatRate,
+    travelAndAccommodationOnStaffCostsFlatRate = options.travelAndAccommodationOnStaffCostsFlatRate,
+    staffCostsFlatRate = options.staffCostsFlatRate,
+    otherCostsOnStaffCostsFlatRate = options.otherCostsOnStaffCostsFlatRate,
+
+    staffTotal = totalsFromAF.staff,
+    officeTotal = totalsFromAF.office,
+    travelTotal = totalsFromAF.travel,
+    externalTotal = totalsFromAF.external,
+    equipmentTotal = totalsFromAF.equipment,
+    infrastructureTotal = totalsFromAF.infrastructure,
+    otherTotal = totalsFromAF.other,
+    lumpSumTotal = totalsFromAF.lumpSum,
+    unitCostTotal = totalsFromAF.unitCost,
+    sumTotal = totalsFromAF.sum,
+
+    staffCurrent = ZERO,
+    officeCurrent = ZERO,
+    travelCurrent = ZERO,
+    externalCurrent = ZERO,
+    equipmentCurrent = ZERO,
+    infrastructureCurrent = ZERO,
+    otherCurrent = ZERO,
+    lumpSumCurrent = ZERO,
+    unitCostCurrent = ZERO,
+    sumCurrent = ZERO,
+
+    staffPreviouslyReported = previouslyReported.staff,
+    officePreviouslyReported = previouslyReported.office,
+    travelPreviouslyReported = previouslyReported.travel,
+    externalPreviouslyReported = previouslyReported.external,
+    equipmentPreviouslyReported = previouslyReported.equipment,
+    infrastructurePreviouslyReported = previouslyReported.infrastructure,
+    otherPreviouslyReported = previouslyReported.other,
+    lumpSumPreviouslyReported = previouslyReported.lumpSum,
+    unitCostPreviouslyReported = previouslyReported.unitCost,
+    sumPreviouslyReported = previouslyReported.sum,
 )

@@ -1,12 +1,13 @@
 package io.cloudflight.jems.server.project.service.report.partner.submitProjectPartnerReport
 
 import io.cloudflight.jems.api.audit.dto.AuditAction
-import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.currency.repository.CurrencyPersistence
 import io.cloudflight.jems.server.currency.service.model.CurrencyConversion
+import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReport
@@ -14,7 +15,9 @@ import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerRep
 import io.cloudflight.jems.server.project.service.report.model.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ReportBudgetCategory
+import io.cloudflight.jems.server.project.service.report.model.financialOverview.costCategory.ReportExpenditureCostCategory
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectReportExpenditurePersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureCostCategoryPersistence
 import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectReportIdentificationPersistence
 import io.mockk.clearMocks
 import io.mockk.every
@@ -74,6 +77,30 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             declaredAmountAfterSubmission = null,
             attachment = null,
         )
+
+        private val options = mockk<ReportExpenditureCostCategory>().also {
+            every { it.options } returns ProjectPartnerBudgetOptions(
+                partnerId = PARTNER_ID,
+                officeAndAdministrationOnStaffCostsFlatRate = null,
+                officeAndAdministrationOnDirectCostsFlatRate = 10,
+                travelAndAccommodationOnStaffCostsFlatRate = 15,
+                staffCostsFlatRate = null,
+                otherCostsOnStaffCostsFlatRate = null,
+            )
+        }
+
+        private val expectedPersistedExpenditureCostCategory = BudgetCostsCalculationResultFull(
+            staff = BigDecimal.valueOf(999, 2),
+            office = BigDecimal.valueOf(114, 2),
+            travel = BigDecimal.valueOf(149, 2),
+            external = BigDecimal.ZERO,
+            equipment = BigDecimal.ZERO,
+            infrastructure = BigDecimal.ZERO,
+            other = BigDecimal.ZERO,
+            lumpSum = BigDecimal.ZERO,
+            unitCost = BigDecimal.ZERO,
+            sum = BigDecimal.valueOf(1262, 2),
+        )
     }
 
     @MockK
@@ -89,7 +116,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
     lateinit var partnerPersistence: PartnerPersistence
 
     @MockK
-    lateinit var reportIdentificationPersistence: ProjectReportIdentificationPersistence
+    lateinit var reportExpenditureCostCategoryPersistence: ProjectReportExpenditureCostCategoryPersistence
 
     @MockK
     lateinit var auditPublisher: ApplicationEventPublisher
@@ -116,13 +143,19 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
         every { reportExpenditurePersistence.getPartnerReportExpenditureCosts(PARTNER_ID, 35L) } returns
             listOf(expenditure1)
         every { currencyPersistence.findAllByIdYearAndIdMonth(year = YEAR, month = MONTH) } returns
-            listOf(CurrencyConversion("CZK", YEAR, MONTH, "", BigDecimal.valueOf(254855, 4)))
+            listOf(
+                CurrencyConversion("CZK", YEAR, MONTH, "", BigDecimal.valueOf(254855, 4)),
+                CurrencyConversion("PLN", YEAR, MONTH, "", BigDecimal.ONE) /* not used */,
+            )
         val slotExpenditures = slot<List<ProjectPartnerReportExpenditureCost>>()
         every { reportExpenditurePersistence
             .updatePartnerReportExpenditureCosts(PARTNER_ID, 35L, capture(slotExpenditures)) } returnsArgument 2
 
-        val spendingSlot = slot<BigDecimal>()
-        every { reportIdentificationPersistence.updateCurrentReportSpending(PARTNER_ID, reportId = 35L, capture(spendingSlot)) } answers { }
+        every { reportExpenditureCostCategoryPersistence.getCostCategories(PARTNER_ID, reportId = 35L) } returns options
+        val expenditureCcSlot = slot<BudgetCostsCalculationResultFull>()
+        every { reportExpenditureCostCategoryPersistence
+            .updateCurrentlyReportedValues(PARTNER_ID, reportId = 35L, capture(expenditureCcSlot))
+        } answers { }
 
         every { reportPersistence.submitReportById(any(), any(), capture(submissionTime)) } returns mockedResult
         every { partnerPersistence.getProjectIdForPartnerId(PARTNER_ID, "5.6.0") } returns PROJECT_ID
@@ -149,7 +182,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
                 declaredAmountAfterSubmission = BigDecimal.valueOf(999, 2),
             ),
         )
-        assertThat(spendingSlot.captured).isEqualTo(BigDecimal.ONE)
+        assertThat(expenditureCcSlot.captured).isEqualTo(expectedPersistedExpenditureCostCategory)
     }
 
     @Test

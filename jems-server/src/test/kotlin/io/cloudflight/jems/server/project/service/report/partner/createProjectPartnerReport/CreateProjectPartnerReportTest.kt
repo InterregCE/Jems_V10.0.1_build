@@ -24,11 +24,11 @@ import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPar
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
-import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAddress
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAddressType
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVatRecovery
 import io.cloudflight.jems.server.project.service.report.ProjectReportCreatePersistence
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
@@ -63,7 +63,6 @@ import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.context.ApplicationEventPublisher
 import java.math.BigDecimal
 import java.time.ZonedDateTime
-import java.util.UUID
 
 internal class CreateProjectPartnerReportTest : UnitTest() {
 
@@ -113,6 +112,16 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
                 )
             ),
             vatRecovery = ProjectPartnerVatRecovery.Yes,
+        )
+
+        private fun partnerSummary(id: Long) = ProjectPartnerSummary(
+            id = id,
+            active = true,
+            abbreviation = "abbr",
+            role = ProjectPartnerRole.PARTNER,
+            sortNumber = 4,
+            country = "Österreich (AT)",
+            region = null,
         )
 
         private val coFinancing = listOf(
@@ -314,7 +323,8 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
         every { projectWorkPackagePersistence.getWorkPackagesWithOutputsAndActivitiesByProjectId(PROJECT_ID, "14.2.0") } returns workPlan
         // budget
         val budgetMock = mockk<PartnerReportBudget>()
-        every { createProjectPartnerReportBudget.retrieveBudgetDataFor(PROJECT_ID, partnerId, "14.2.0", contributions) } returns budgetMock
+        val partnerSummary = slot<ProjectPartnerSummary>()
+        every { createProjectPartnerReportBudget.retrieveBudgetDataFor(PROJECT_ID, capture(partnerSummary), "14.2.0", contributions) } returns budgetMock
         // identification
         every { projectDescriptionPersistence.getBenefits(PROJECT_ID, "14.2.0") } returns benefits
 
@@ -337,6 +347,8 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
         assertThat(auditSlot.captured.auditCandidate.description).isEqualTo(
             "[XE.1_0001] [PP4] Partner report R.8 added"
         )
+
+        assertThat(partnerSummary.captured).isEqualTo(partnerSummary(partnerId))
     }
 
     @Test
@@ -356,7 +368,8 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
         every { projectWorkPackagePersistence.getWorkPackagesWithOutputsAndActivitiesByProjectId(PROJECT_ID, "14.2.0") } returns emptyList()
         // budget
         val budgetMock = mockk<PartnerReportBudget>()
-        every { createProjectPartnerReportBudget.retrieveBudgetDataFor(PROJECT_ID, partnerId, "14.2.0", emptyList()) } returns budgetMock
+        val partnerSummary = slot<ProjectPartnerSummary>()
+        every { createProjectPartnerReportBudget.retrieveBudgetDataFor(PROJECT_ID, capture(partnerSummary), "14.2.0", emptyList()) } returns budgetMock
         // identification
         every { projectDescriptionPersistence.getBenefits(PROJECT_ID, "14.2.0") } returns null
 
@@ -379,6 +392,8 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
         assertThat(auditSlot.captured.auditCandidate.description).isEqualTo(
             "[XE.1_0001] [PP4] Partner report R.8 added"
         )
+
+        assertThat(partnerSummary.captured).isEqualTo(partnerSummary(partnerId))
     }
 
     @ParameterizedTest(name = "cannot create report when status {0}")

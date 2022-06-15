@@ -1,6 +1,9 @@
 package io.cloudflight.jems.server.project.service.report.partner.createProjectPartnerReport
 
 import io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_period.GetPartnerBudgetPerPeriodInteractor
+import io.cloudflight.jems.server.project.service.budget.get_project_budget.GetProjectBudget
+import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
+import io.cloudflight.jems.server.project.service.budget.model.PartnerBudget
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.model.ProjectPeriodBudget
@@ -9,14 +12,18 @@ import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerB
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
 import io.cloudflight.jems.server.project.service.partner.model.BaseBudgetEntry
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.contribution.create.CreateProjectPartnerReportContribution
 import io.cloudflight.jems.server.project.service.report.model.contribution.withoutCalculations.ProjectPartnerReportEntityContribution
 import io.cloudflight.jems.server.project.service.report.model.create.PartnerReportBudget
 import io.cloudflight.jems.server.project.service.report.model.create.PartnerReportLumpSum
 import io.cloudflight.jems.server.project.service.report.model.create.PartnerReportUnitCostBase
+import io.cloudflight.jems.server.project.service.report.model.financialOverview.costCategory.ReportExpenditureCostCategory
 import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportPeriod
 import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectReportContributionPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureCostCategoryPersistence
 import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectReportIdentificationPersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -32,16 +39,18 @@ class CreateProjectPartnerReportBudget(
     private val partnerBudgetCostsPersistence: ProjectPartnerBudgetCostsPersistence,
     private val getPartnerBudgetPerPeriod: GetPartnerBudgetPerPeriodInteractor,
     private val projectPartnerBudgetOptionsPersistence: ProjectPartnerBudgetOptionsPersistence,
-    private val reportIdentificationPersistence: ProjectReportIdentificationPersistence,
+    private val getProjectBudget: GetProjectBudget,
+    private val reportExpenditureCostCategoryPersistence: ProjectReportExpenditureCostCategoryPersistence,
 ) {
 
     @Transactional
     fun retrieveBudgetDataFor(
         projectId: Long,
-        partnerId: Long,
+        partner: ProjectPartnerSummary,
         version: String?,
         partnerContributions: Collection<ProjectPartnerContribution>,
     ): PartnerReportBudget {
+        val partnerId = partner.id!!
         val submittedReportIds = reportPersistence.listSubmittedPartnerReports(partnerId = partnerId).mapTo(HashSet()) { it.id }
 
         return PartnerReportBudget(
@@ -63,8 +72,11 @@ class CreateProjectPartnerReportBudget(
                 getPartnerBudgetPerPeriod.getPartnerBudgetPerPeriod(projectId = projectId, version)
                     .partnersBudgetPerPeriod.firstOrNull { it.partner.id == partnerId }?.periodBudgets ?: emptyList()
                 ).getCumulative(),
-            spendingUpUntilNow = getPreviouslyReportedSpending(submittedReportIds = submittedReportIds),
-            budgetOptions = projectPartnerBudgetOptionsPersistence.getBudgetOptions(partnerId, version),
+            expenditureSetup = expenditureSetup(
+                options = projectPartnerBudgetOptionsPersistence.getBudgetOptions(partnerId, version) ?: ProjectPartnerBudgetOptions(partnerId),
+                budget = getProjectBudget.getBudget(listOf(partner), projectId, version).first(),
+                previouslyReported = reportExpenditureCostCategoryPersistence.getCostCategoriesCumulative(submittedReportIds),
+            ),
         )
     }
 
@@ -110,9 +122,9 @@ class CreateProjectPartnerReportBudget(
                 idFromApplicationForm = it.id,
                 historyIdentifier = uuid,
                 createdInThisReport = false,
-                amount = it.amount ?: BigDecimal.ZERO,
+                amount = it.amount ?: ZERO,
                 previouslyReported = historicalContributions[uuid]?.sumOf { it } ?: BigDecimal.ZERO,
-                currentlyReported = BigDecimal.ZERO,
+                currentlyReported = ZERO,
             )
         }
     }
@@ -126,9 +138,9 @@ class CreateProjectPartnerReportBudget(
             idFromApplicationForm = null,
             historyIdentifier = uuid,
             createdInThisReport = false,
-            amount = BigDecimal.ZERO,
+            amount = ZERO,
             previouslyReported = historicalContributions[uuid]?.sumOf { it } ?: BigDecimal.ZERO,
-            currentlyReported = BigDecimal.ZERO,
+            currentlyReported = ZERO,
         )
     }
 
@@ -162,6 +174,38 @@ class CreateProjectPartnerReportBudget(
             )
         }
 
-    private fun getPreviouslyReportedSpending(submittedReportIds: Set<Long>) =
-        reportIdentificationPersistence.getPreviousSpendingFor(reportIds = submittedReportIds)
+    private fun expenditureSetup(
+        options: ProjectPartnerBudgetOptions,
+        budget: PartnerBudget,
+        previouslyReported: BudgetCostsCalculationResultFull,
+    ) = ReportExpenditureCostCategory(
+        options = options,
+        totalsFromAF = BudgetCostsCalculationResultFull(
+            staff = budget.staffCosts,
+            office = budget.officeAndAdministrationCosts,
+            travel = budget.travelCosts,
+            external = budget.externalCosts,
+            equipment = budget.equipmentCosts,
+            infrastructure = budget.infrastructureCosts,
+            other = budget.otherCosts,
+            lumpSum = budget.lumpSumContribution,
+            unitCost = budget.unitCosts,
+            sum = budget.totalCosts,
+        ),
+        currentlyReported = fillZeros(),
+        previouslyReported = previouslyReported,
+    )
+
+    private fun fillZeros() = BudgetCostsCalculationResultFull(
+        staff = ZERO,
+        office = ZERO,
+        travel = ZERO,
+        external = ZERO,
+        equipment = ZERO,
+        infrastructure = ZERO,
+        other = ZERO,
+        lumpSum = ZERO,
+        unitCost = ZERO,
+        sum = ZERO,
+    )
 }
