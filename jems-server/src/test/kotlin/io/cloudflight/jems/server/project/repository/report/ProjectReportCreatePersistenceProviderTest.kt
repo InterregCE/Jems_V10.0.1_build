@@ -22,6 +22,7 @@ import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEnti
 import io.cloudflight.jems.server.project.entity.report.contribution.ProjectPartnerReportContributionEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportLumpSumEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportUnitCostEntity
+import io.cloudflight.jems.server.project.entity.report.financialOverview.ReportProjectPartnerExpenditureCostCategoryEntity
 import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportBudgetPerPeriodEntity
 import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportIdentificationEntity
 import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportIdentificationTargetGroupEntity
@@ -32,6 +33,7 @@ import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerR
 import io.cloudflight.jems.server.project.repository.report.contribution.ProjectPartnerReportContributionRepository
 import io.cloudflight.jems.server.project.repository.report.expenditure.ProjectPartnerReportLumpSumRepository
 import io.cloudflight.jems.server.project.repository.report.expenditure.ProjectPartnerReportUnitCostRepository
+import io.cloudflight.jems.server.project.repository.report.financialOverview.ReportProjectPartnerExpenditureCostCategoryRepository
 import io.cloudflight.jems.server.project.repository.report.identification.ProjectPartnerReportBudgetPerPeriodRepository
 import io.cloudflight.jems.server.project.repository.report.identification.ProjectPartnerReportIdentificationRepository
 import io.cloudflight.jems.server.project.repository.report.identification.ProjectPartnerReportIdentificationTargetGroupRepository
@@ -39,6 +41,7 @@ import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPart
 import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPartnerReportWorkPackageActivityRepository
 import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPartnerReportWorkPackageOutputRepository
 import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPartnerReportWorkPackageRepository
+import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceBenefit
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
@@ -49,6 +52,7 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVa
 import io.cloudflight.jems.server.project.service.report.model.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.contribution.create.CreateProjectPartnerReportContribution
 import io.cloudflight.jems.server.project.service.report.model.create.*
+import io.cloudflight.jems.server.project.service.report.model.financialOverview.costCategory.ReportExpenditureCostCategory
 import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportPeriod
 import io.cloudflight.jems.server.project.service.report.model.workPlan.create.CreateProjectPartnerReportWorkPackage
 import io.cloudflight.jems.server.project.service.report.model.workPlan.create.CreateProjectPartnerReportWorkPackageActivity
@@ -207,14 +211,51 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
                     ProjectPartnerReportPeriod(1, ONE, ONE, 1, 3),
                     ProjectPartnerReportPeriod(2, TEN, BigDecimal.valueOf(11L), 4, 6),
                 ),
-                spendingUpUntilNow = TEN,
-                budgetOptions = ProjectPartnerBudgetOptions(
-                    partnerId = PARTNER_ID,
-                    officeAndAdministrationOnStaffCostsFlatRate = null,
-                    officeAndAdministrationOnDirectCostsFlatRate = null,
-                    travelAndAccommodationOnStaffCostsFlatRate = null,
-                    staffCostsFlatRate = null,
-                    otherCostsOnStaffCostsFlatRate = 40
+                expenditureSetup = ReportExpenditureCostCategory(
+                    options = ProjectPartnerBudgetOptions(
+                        partnerId = PARTNER_ID,
+                        officeAndAdministrationOnStaffCostsFlatRate = null,
+                        officeAndAdministrationOnDirectCostsFlatRate = null,
+                        travelAndAccommodationOnStaffCostsFlatRate = null,
+                        staffCostsFlatRate = null,
+                        otherCostsOnStaffCostsFlatRate = 40,
+                    ),
+                    totalsFromAF = BudgetCostsCalculationResultFull(
+                        staff = BigDecimal.valueOf(10),
+                        office = BigDecimal.valueOf(11),
+                        travel = BigDecimal.valueOf(12),
+                        external = BigDecimal.valueOf(13),
+                        equipment = BigDecimal.valueOf(14),
+                        infrastructure = BigDecimal.valueOf(15),
+                        other = BigDecimal.valueOf(16),
+                        lumpSum = BigDecimal.valueOf(17),
+                        unitCost = BigDecimal.valueOf(18),
+                        sum = BigDecimal.valueOf(19),
+                    ),
+                    currentlyReported = BudgetCostsCalculationResultFull(
+                        staff = BigDecimal.valueOf(20),
+                        office = BigDecimal.valueOf(21),
+                        travel = BigDecimal.valueOf(22),
+                        external = BigDecimal.valueOf(23),
+                        equipment = BigDecimal.valueOf(24),
+                        infrastructure = BigDecimal.valueOf(25),
+                        other = BigDecimal.valueOf(26),
+                        lumpSum = BigDecimal.valueOf(27),
+                        unitCost = BigDecimal.valueOf(28),
+                        sum = BigDecimal.valueOf(29),
+                    ),
+                    previouslyReported = BudgetCostsCalculationResultFull(
+                        staff = BigDecimal.valueOf(30),
+                        office = BigDecimal.valueOf(31),
+                        travel = BigDecimal.valueOf(32),
+                        external = BigDecimal.valueOf(33),
+                        equipment = BigDecimal.valueOf(34),
+                        infrastructure = BigDecimal.valueOf(35),
+                        other = BigDecimal.valueOf(36),
+                        lumpSum = BigDecimal.valueOf(37),
+                        unitCost = BigDecimal.valueOf(38),
+                        sum = BigDecimal.valueOf(39),
+                    ),
                 ),
             ),
         )
@@ -267,6 +308,9 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
 
     @MockK
     lateinit var reportBudgetPerPeriodRepository: ProjectPartnerReportBudgetPerPeriodRepository
+
+    @MockK
+    lateinit var reportBudgetExpenditureRepository: ReportProjectPartnerExpenditureCostCategoryRepository
 
     @InjectMockKs
     lateinit var persistence: ProjectReportCreatePersistenceProvider
@@ -324,6 +368,10 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
         val budgetPerPeriodSlot = slot<Iterable<ProjectPartnerReportBudgetPerPeriodEntity>>()
         every { reportBudgetPerPeriodRepository.saveAll(capture(budgetPerPeriodSlot)) } returnsArgument 0
 
+        // expenditureSetup
+        val expenditureSlot = slot<ReportProjectPartnerExpenditureCostCategoryEntity>()
+        every { reportBudgetExpenditureRepository.save(capture(expenditureSlot)) } returnsArgument 0
+
         val createdReport = persistence.createPartnerReport(reportToBeCreated.copy(
             identification = reportToBeCreated.identification.removeLegalStatusIf(withoutLegalStatus)
         ))
@@ -375,6 +423,7 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
         assertLumpSums(lumpSumSlot)
         assertUnitCosts(unitCostSlot)
         assertBudgetPerPeriod(budgetPerPeriodSlot)
+        assertExpenditure(expenditureSlot)
     }
 
     private fun PartnerReportIdentificationCreate.removeLegalStatusIf(needed: Boolean) =
@@ -428,9 +477,7 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
             assertThat(startDate).isNull()
             assertThat(endDate).isNull()
             assertThat(periodNumber).isNull()
-            assertThat(spendingProfile.currentReport).isEqualByComparingTo(ZERO)
-            assertThat(spendingProfile.previouslyReported).isEqualByComparingTo(TEN)
-            assertThat(spendingProfile.nextReportForecast).isEqualByComparingTo(ZERO)
+            assertThat(nextReportForecast).isEqualByComparingTo(ZERO)
             assertThat(translatedValues).isEmpty()
         }
         assertThat(idTargetGroupsSlot.captured).hasSize(3)
@@ -507,6 +554,49 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
             assertThat(id.periodNumber).isEqualTo(2)
             assertThat(periodBudget).isEqualByComparingTo(TEN)
             assertThat(periodBudgetCumulative).isEqualByComparingTo(BigDecimal.valueOf(11))
+        }
+    }
+
+    private fun assertExpenditure(expenditureSlot: CapturingSlot<ReportProjectPartnerExpenditureCostCategoryEntity>) {
+        with(expenditureSlot.captured) {
+            assertThat(officeAndAdministrationOnStaffCostsFlatRate).isNull()
+            assertThat(officeAndAdministrationOnDirectCostsFlatRate).isNull()
+            assertThat(travelAndAccommodationOnStaffCostsFlatRate).isNull()
+            assertThat(staffCostsFlatRate).isNull()
+            assertThat(otherCostsOnStaffCostsFlatRate).isEqualTo(40)
+
+            assertThat(staffTotal).isEqualTo(BigDecimal.valueOf(10))
+            assertThat(officeTotal).isEqualTo(BigDecimal.valueOf(11))
+            assertThat(travelTotal).isEqualTo(BigDecimal.valueOf(12))
+            assertThat(externalTotal).isEqualTo(BigDecimal.valueOf(13))
+            assertThat(equipmentTotal).isEqualTo(BigDecimal.valueOf(14))
+            assertThat(infrastructureTotal).isEqualTo(BigDecimal.valueOf(15))
+            assertThat(otherTotal).isEqualTo(BigDecimal.valueOf(16))
+            assertThat(lumpSumTotal).isEqualTo(BigDecimal.valueOf(17))
+            assertThat(unitCostTotal).isEqualTo(BigDecimal.valueOf(18))
+            assertThat(sumTotal).isEqualTo(BigDecimal.valueOf(19))
+
+            assertThat(staffCurrent).isZero
+            assertThat(officeCurrent).isZero
+            assertThat(travelCurrent).isZero
+            assertThat(externalCurrent).isZero
+            assertThat(equipmentCurrent).isZero
+            assertThat(infrastructureCurrent).isZero
+            assertThat(otherCurrent).isZero
+            assertThat(lumpSumCurrent).isZero
+            assertThat(unitCostCurrent).isZero
+            assertThat(sumCurrent).isZero
+
+            assertThat(staffPreviouslyReported).isEqualTo(BigDecimal.valueOf(30))
+            assertThat(officePreviouslyReported).isEqualTo(BigDecimal.valueOf(31))
+            assertThat(travelPreviouslyReported).isEqualTo(BigDecimal.valueOf(32))
+            assertThat(externalPreviouslyReported).isEqualTo(BigDecimal.valueOf(33))
+            assertThat(equipmentPreviouslyReported).isEqualTo(BigDecimal.valueOf(34))
+            assertThat(infrastructurePreviouslyReported).isEqualTo(BigDecimal.valueOf(35))
+            assertThat(otherPreviouslyReported).isEqualTo(BigDecimal.valueOf(36))
+            assertThat(lumpSumPreviouslyReported).isEqualTo(BigDecimal.valueOf(37))
+            assertThat(unitCostPreviouslyReported).isEqualTo(BigDecimal.valueOf(38))
+            assertThat(sumPreviouslyReported).isEqualTo(BigDecimal.valueOf(39))
         }
     }
 

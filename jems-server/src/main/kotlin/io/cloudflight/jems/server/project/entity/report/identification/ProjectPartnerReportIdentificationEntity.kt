@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.entity.report.identification
 
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
 import java.io.Serializable
+import java.math.BigDecimal
 import java.time.LocalDate
 import javax.persistence.CascadeType
 import javax.persistence.Embedded
@@ -42,8 +43,8 @@ class ProjectPartnerReportIdentificationEntity(
 
     var periodNumber: Int?,
 
-    @Embedded
-    val spendingProfile: ProjectPartnerReportSpendingProfileEntity,
+    @field:NotNull
+    var nextReportForecast: BigDecimal,
 
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.sourceEntity")
     val translatedValues: MutableSet<ProjectPartnerReportIdentificationTranslEntity> = mutableSetOf(),

@@ -3,6 +3,9 @@ package io.cloudflight.jems.server.project.service.report.partner.createProjectP
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_period.GetPartnerBudgetPerPeriodInteractor
+import io.cloudflight.jems.server.project.service.budget.get_project_budget.GetProjectBudget
+import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
+import io.cloudflight.jems.server.project.service.budget.model.PartnerBudget
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectPartnerLumpSum
@@ -21,7 +24,7 @@ import io.cloudflight.jems.server.project.service.report.model.create.*
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
 import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportPeriod
 import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectReportContributionPersistence
-import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectReportIdentificationPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureCostCategoryPersistence
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -245,6 +248,72 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         currentlyReported = BigDecimal.ZERO,
     )
 
+    private fun partnerBudget(partner: ProjectPartnerSummary) = PartnerBudget(
+        partner = partner,
+        staffCosts = BigDecimal.valueOf(10),
+        officeAndAdministrationCosts = BigDecimal.valueOf(11),
+        travelCosts = BigDecimal.valueOf(12),
+        externalCosts = BigDecimal.valueOf(13),
+        equipmentCosts = BigDecimal.valueOf(14),
+        infrastructureCosts = BigDecimal.valueOf(15),
+        otherCosts = BigDecimal.valueOf(16),
+        lumpSumContribution = BigDecimal.valueOf(17),
+        unitCosts = BigDecimal.valueOf(18),
+        totalCosts = BigDecimal.valueOf(19),
+    )
+
+    private val expectedTotal = BudgetCostsCalculationResultFull(
+        staff = BigDecimal.valueOf(10),
+        office = BigDecimal.valueOf(11),
+        travel = BigDecimal.valueOf(12),
+        external = BigDecimal.valueOf(13),
+        equipment = BigDecimal.valueOf(14),
+        infrastructure = BigDecimal.valueOf(15),
+        other = BigDecimal.valueOf(16),
+        lumpSum = BigDecimal.valueOf(17),
+        unitCost = BigDecimal.valueOf(18),
+        sum = BigDecimal.valueOf(19),
+    )
+
+    private val previousExpenditures = BudgetCostsCalculationResultFull(
+        staff = BigDecimal.valueOf(30),
+        office = BigDecimal.valueOf(31),
+        travel = BigDecimal.valueOf(32),
+        external = BigDecimal.valueOf(33),
+        equipment = BigDecimal.valueOf(34),
+        infrastructure = BigDecimal.valueOf(35),
+        other = BigDecimal.valueOf(36),
+        lumpSum = BigDecimal.valueOf(37),
+        unitCost = BigDecimal.valueOf(38),
+        sum = BigDecimal.valueOf(39),
+    )
+
+    private val expectedPrevious = BudgetCostsCalculationResultFull(
+        staff = BigDecimal.valueOf(30),
+        office = BigDecimal.valueOf(31),
+        travel = BigDecimal.valueOf(32),
+        external = BigDecimal.valueOf(33),
+        equipment = BigDecimal.valueOf(34),
+        infrastructure = BigDecimal.valueOf(35),
+        other = BigDecimal.valueOf(36),
+        lumpSum = BigDecimal.valueOf(37),
+        unitCost = BigDecimal.valueOf(38),
+        sum = BigDecimal.valueOf(39),
+    )
+
+    private val zeros = BudgetCostsCalculationResultFull(
+        staff = BigDecimal.ZERO,
+        office = BigDecimal.ZERO,
+        travel = BigDecimal.ZERO,
+        external = BigDecimal.ZERO,
+        equipment = BigDecimal.ZERO,
+        infrastructure = BigDecimal.ZERO,
+        other = BigDecimal.ZERO,
+        lumpSum = BigDecimal.ZERO,
+        unitCost = BigDecimal.ZERO,
+        sum = BigDecimal.ZERO,
+    )
+
     @MockK
     lateinit var reportPersistence: ProjectReportPersistence
     @MockK
@@ -258,14 +327,18 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
     @MockK
     lateinit var projectPartnerBudgetOptionsPersistence: ProjectPartnerBudgetOptionsPersistence
     @MockK
-    lateinit var reportIdentificationPersistence: ProjectReportIdentificationPersistence
+    lateinit var getProjectBudget: GetProjectBudget
+    @MockK
+    lateinit var reportExpenditureCostCategoryPersistence: ProjectReportExpenditureCostCategoryPersistence
 
     @InjectMockKs
     lateinit var service: CreateProjectPartnerReportBudget
 
     @Test
     fun createReportBudget() {
+        val partner = mockk<ProjectPartnerSummary>()
         val partnerId = 76L
+        every { partner.id } returns partnerId
         val projectId = 30L
         val version = "v4.2"
         // contribution
@@ -283,13 +356,13 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         // budget per period
         every { getPartnerBudgetPerPeriod.getPartnerBudgetPerPeriod(projectId, version) } returns
             ProjectBudgetOverviewPerPartnerPerPeriod(partnersBudgetPerPeriod = perPeriod(partnerId), totals = emptyList(), totalsPercentage = emptyList())
-        // spending profile
-        every { reportIdentificationPersistence.getPreviousSpendingFor(setOf(408L)) } returns BigDecimal.TEN
         // options
         val budgetOptions = mockk<ProjectPartnerBudgetOptions>()
         every { projectPartnerBudgetOptionsPersistence.getBudgetOptions(partnerId, version) } returns budgetOptions
+        every { getProjectBudget.getBudget(listOf(partner), projectId, version) } returns listOf(partnerBudget(partner))
+        every { reportExpenditureCostCategoryPersistence.getCostCategoriesCumulative(setOf(408L)) } returns previousExpenditures
 
-        val result = service.retrieveBudgetDataFor(projectId, partnerId, version, contributions)
+        val result = service.retrieveBudgetDataFor(projectId, partner, version, contributions)
 
         assertThat(result.contributions).hasSize(3)
         assertThat(result.lumpSums).containsExactly(PartnerReportLumpSum(lumpSumId = 44L, period = 3, value = BigDecimal.TEN))
@@ -298,8 +371,10 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
             ProjectPartnerReportPeriod(1, BigDecimal.ONE, BigDecimal.ONE, 1, 3),
             ProjectPartnerReportPeriod(2, BigDecimal.TEN, BigDecimal.valueOf(11, 0), 4, 6),
         )
-        assertThat(result.spendingUpUntilNow).isEqualByComparingTo(BigDecimal.TEN)
-        assertThat(result.budgetOptions).isEqualTo(budgetOptions)
+        assertThat(result.expenditureSetup.options).isEqualTo(budgetOptions)
+        assertThat(result.expenditureSetup.totalsFromAF).isEqualTo(expectedTotal)
+        assertThat(result.expenditureSetup.currentlyReported).isEqualTo(zeros)
+        assertThat(result.expenditureSetup.previouslyReported).isEqualTo(expectedPrevious)
 
         // this we cannot mock
         val newUuid = result.contributions[0].historyIdentifier

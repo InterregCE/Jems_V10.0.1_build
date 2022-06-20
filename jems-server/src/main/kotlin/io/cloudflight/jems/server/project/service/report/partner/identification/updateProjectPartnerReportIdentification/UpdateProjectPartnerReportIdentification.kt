@@ -8,8 +8,9 @@ import io.cloudflight.jems.server.project.service.report.model.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportIdentification
 import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportPeriod
 import io.cloudflight.jems.server.project.service.report.model.identification.UpdateProjectPartnerReportIdentification
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown.GetReportExpenditureCostCategoryCalculatorService
 import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectReportIdentificationPersistence
-import io.cloudflight.jems.server.project.service.report.partner.identification.getProjectPartnerReportIdentification.fillInSpendingProfile
+import io.cloudflight.jems.server.project.service.report.partner.identification.getProjectPartnerReportIdentification.fillInCurrentAndPreviousReporting
 import io.cloudflight.jems.server.project.service.report.partner.identification.getProjectPartnerReportAvailablePeriods.filterOutPreparationAndClosure
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -19,6 +20,7 @@ import java.math.BigDecimal
 class UpdateProjectPartnerReportIdentification(
     private val reportPersistence: ProjectReportPersistence,
     private val reportIdentificationPersistence: ProjectReportIdentificationPersistence,
+    private val reportExpenditureCostCategoryCalculatorService: GetReportExpenditureCostCategoryCalculatorService,
     private val generalValidator: GeneralValidatorService,
 ) : UpdateProjectPartnerReportIdentificationInteractor {
 
@@ -50,9 +52,12 @@ class UpdateProjectPartnerReportIdentification(
             data = data,
         )
 
-        return identification.fillInSpendingProfile(
-            isOpen = true, // because validation not-closed already happened
-            currentReportResolver = { BigDecimal.ONE }, /* TODO calculate and fill in */
+        val expendituresCalculated = reportExpenditureCostCategoryCalculatorService
+            .getSubmittedOrCalculateCurrent(partnerId = partnerId, reportId).total
+
+        return identification.fillInCurrentAndPreviousReporting(
+            currentReport = expendituresCalculated.currentReport,
+            previouslyReported = expendituresCalculated.previouslyReported,
         )
     }
 

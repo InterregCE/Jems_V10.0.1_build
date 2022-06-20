@@ -7,14 +7,15 @@ import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSummary
+import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectReportExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.fillCurrencyRates
-import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectReportIdentificationPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureCostCategoryPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown.calculateCurrent
 import io.cloudflight.jems.server.project.service.report.partnerReportSubmitted
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.ZonedDateTime
 
@@ -24,7 +25,7 @@ class SubmitProjectPartnerReport(
     private val reportExpenditurePersistence: ProjectReportExpenditurePersistence,
     private val currencyPersistence: CurrencyPersistence,
     private val partnerPersistence: PartnerPersistence,
-    private val reportIdentificationPersistence: ProjectReportIdentificationPersistence,
+    private val reportExpenditureCostCategoryPersistence: ProjectReportExpenditureCostCategoryPersistence,
     private val auditPublisher: ApplicationEventPublisher,
 ) : SubmitProjectPartnerReportInteractor {
 
@@ -33,8 +34,8 @@ class SubmitProjectPartnerReport(
     @ExceptionWrapper(SubmitProjectPartnerReportException::class)
     override fun submit(partnerId: Long, reportId: Long): ProjectPartnerReportSummary {
         validateReportIsStillDraft(partnerId = partnerId, reportId = reportId)
-        validateExpendituresAndSaveCurrencyRates(partnerId = partnerId, reportId = reportId)
-        saveSpendingProfileCalculation(partnerId = partnerId, reportId = reportId)
+        val expenditures = validateExpendituresAndSaveCurrencyRates(partnerId = partnerId, reportId = reportId)
+        saveExpenditureCostCategory(partnerId = partnerId, reportId, expenditures)
 
         return reportPersistence.submitReportById(
             partnerId = partnerId,
@@ -57,7 +58,7 @@ class SubmitProjectPartnerReport(
             throw ReportAlreadyClosed()
     }
 
-    private fun validateExpendituresAndSaveCurrencyRates(partnerId: Long, reportId: Long) {
+    private fun validateExpendituresAndSaveCurrencyRates(partnerId: Long, reportId: Long): List<ProjectPartnerReportExpenditureCost> {
         val expenditures = reportExpenditurePersistence.getPartnerReportExpenditureCosts(partnerId, reportId = reportId)
         val usedCurrencies = expenditures.mapTo(HashSet()) { it.currencyCode }
 
@@ -70,18 +71,19 @@ class SubmitProjectPartnerReport(
         if (notExistingRates.isNotEmpty())
             throw CurrencyRatesMissing(notExistingRates)
 
-        reportExpenditurePersistence.updatePartnerReportExpenditureCosts(
+        return reportExpenditurePersistence.updatePartnerReportExpenditureCosts(
             partnerId = partnerId,
             reportId = reportId,
             expenditureCosts = expenditures.fillCurrencyRates(rates),
         )
     }
 
-    private fun saveSpendingProfileCalculation(partnerId: Long, reportId: Long) {
-        reportIdentificationPersistence.updateCurrentReportSpending(
+    private fun saveExpenditureCostCategory(partnerId: Long, reportId: Long, expenditures: List<ProjectPartnerReportExpenditureCost>) {
+        val options = reportExpenditureCostCategoryPersistence.getCostCategories(partnerId = partnerId, reportId).options
+        reportExpenditureCostCategoryPersistence.updateCurrentlyReportedValues(
             partnerId = partnerId,
             reportId = reportId,
-            currentReport = BigDecimal.ONE, /* TODO calculate and fill in */
+            currentlyReported = expenditures.calculateCurrent(options),
         )
     }
 

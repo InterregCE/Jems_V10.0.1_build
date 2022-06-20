@@ -15,10 +15,13 @@ import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportStatusAndVersion
 import io.cloudflight.jems.server.project.service.report.model.ReportStatus
+import io.cloudflight.jems.server.project.service.report.model.financialOverview.ExpenditureCostCategoryBreakdown
+import io.cloudflight.jems.server.project.service.report.model.financialOverview.ExpenditureCostCategoryBreakdownLine
 import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportIdentification
 import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportIdentificationTargetGroup
 import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportPeriod
 import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportSpendingProfile
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown.GetReportExpenditureCostCategoryCalculatorService
 import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectReportIdentificationPersistence
 import io.mockk.MockKAnnotations
 import io.mockk.every
@@ -99,6 +102,13 @@ internal class UpdateProjectPartnerReportIdentificationTest : UnitTest() {
             )
         )
 
+        private val totalLine = ExpenditureCostCategoryBreakdownLine(
+            flatRate = null,
+            totalEligibleBudget = BigDecimal.valueOf(1969, 2) /* not important */,
+            previouslyReported = BigDecimal.valueOf(30),
+            currentReport = BigDecimal.ONE,
+        )
+
     }
 
     @MockK
@@ -106,6 +116,9 @@ internal class UpdateProjectPartnerReportIdentificationTest : UnitTest() {
 
     @MockK
     lateinit var reportIdentificationPersistence: ProjectReportIdentificationPersistence
+
+    @MockK
+    lateinit var reportExpenditureCostCategoryCalculatorService: GetReportExpenditureCostCategoryCalculatorService
 
     lateinit var generalValidator: GeneralValidatorService
 
@@ -118,6 +131,7 @@ internal class UpdateProjectPartnerReportIdentificationTest : UnitTest() {
         updateIdentification = UpdateProjectPartnerReportIdentification(
             reportPersistence,
             reportIdentificationPersistence,
+            reportExpenditureCostCategoryCalculatorService,
             generalValidator,
         )
     }
@@ -130,6 +144,10 @@ internal class UpdateProjectPartnerReportIdentificationTest : UnitTest() {
         every { reportIdentificationPersistence.getAvailablePeriods(PARTNER_ID, reportId = reportId) } returns periods
         val slotData = slot<io.cloudflight.jems.server.project.service.report.model.identification.UpdateProjectPartnerReportIdentification>()
         every { reportIdentificationPersistence.updatePartnerReportIdentification(PARTNER_ID, reportId = reportId, capture(slotData)) } returns saveResult()
+
+        val expenditures = mockk<ExpenditureCostCategoryBreakdown>()
+        every { expenditures.total } returns totalLine
+        every { reportExpenditureCostCategoryCalculatorService.getSubmittedOrCalculateCurrent(PARTNER_ID, reportId = reportId) } returns expenditures
 
         assertThat(updateIdentification.updateIdentification(PARTNER_ID, reportId = reportId, updateData)).isEqualTo(
             saveResult(differenceFromPlan = BigDecimal.valueOf(-4), differenceFromPlanPercentage = BigDecimal.valueOf(11481, 2), currentReport = BigDecimal.ONE)

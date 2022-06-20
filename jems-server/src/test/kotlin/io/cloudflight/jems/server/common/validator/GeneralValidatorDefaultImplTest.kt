@@ -382,7 +382,7 @@ internal class GeneralValidatorDefaultImplTest : UnitTest() {
 
     @Test
     fun `should return correct validation result when currency is valid`() {
-        assertThat(generalValidator.onlyValidCurrencies(setOf("EUR", "PLN", "HUF"), "inputName")).isEmpty()
+        assertThat(generalValidator.onlyValidCurrencies(setOf("EUR", "PLN", "HUF", "SLE"), "inputName")).isEmpty()
     }
 
     @Test

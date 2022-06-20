@@ -4,13 +4,13 @@ import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
-import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
-import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReport
-import io.cloudflight.jems.server.project.service.report.model.ReportStatus
+import io.cloudflight.jems.server.project.service.report.model.financialOverview.ExpenditureCostCategoryBreakdown
+import io.cloudflight.jems.server.project.service.report.model.financialOverview.ExpenditureCostCategoryBreakdownLine
 import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportIdentification
 import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportIdentificationTargetGroup
 import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportPeriod
 import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportSpendingProfile
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown.GetReportExpenditureCostCategoryCalculatorService
 import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectReportIdentificationPersistence
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -20,7 +20,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 import java.time.LocalDate
-import java.util.Optional.empty
 import java.util.Optional.of
 
 internal class GetProjectPartnerReportIdentificationTest : UnitTest() {
@@ -28,36 +27,12 @@ internal class GetProjectPartnerReportIdentificationTest : UnitTest() {
     companion object {
         private const val PARTNER_ID = 520L
 
-        private val emptyIdentification = ProjectPartnerReportIdentification(
-            startDate = null,
-            endDate = null,
-            summary = emptySet(),
-            problemsAndDeviations = emptySet(),
-            spendingDeviations = emptySet(),
-            targetGroups = emptyList(),
-            spendingProfile = ProjectPartnerReportSpendingProfile(
-                periodDetail = null,
-                currentReport = BigDecimal.ZERO,
-                previouslyReported = BigDecimal.ZERO,
-                differenceFromPlan = BigDecimal.ZERO,
-                differenceFromPlanPercentage = BigDecimal.ZERO,
-                nextReportForecast = BigDecimal.ZERO,
-            )
-        )
-
-        private fun report(status: ReportStatus) = ProjectPartnerReport(
-            id = 0L,
-            reportNumber = 1,
-            status = status,
-            version = "",
-            identification = mockk(),
-        )
-
         private fun identification(
             periodDetail: ProjectPartnerReportPeriod,
-            differenceFromPlan: BigDecimal,
-            differenceFromPlanPercentage: BigDecimal,
-            current: BigDecimal,
+            differenceFromPlan: BigDecimal = BigDecimal.valueOf(99999, 2),
+            differenceFromPlanPercentage: BigDecimal = BigDecimal.valueOf(99999, 2),
+            current: BigDecimal = BigDecimal.valueOf(99999, 2),
+            previously: BigDecimal = BigDecimal.valueOf(99999, 2),
         ) = ProjectPartnerReportIdentification(
             startDate = LocalDate.now(),
             endDate = LocalDate.now(),
@@ -75,107 +50,76 @@ internal class GetProjectPartnerReportIdentificationTest : UnitTest() {
             spendingProfile = ProjectPartnerReportSpendingProfile(
                 periodDetail = periodDetail,
                 currentReport = current,
-                previouslyReported = BigDecimal.valueOf(40),
+                previouslyReported = previously,
                 differenceFromPlan = differenceFromPlan,
                 differenceFromPlanPercentage = differenceFromPlanPercentage,
                 nextReportForecast = BigDecimal.valueOf(12),
             )
+        )
+
+        private val totalLine = ExpenditureCostCategoryBreakdownLine(
+            flatRate = null,
+            totalEligibleBudget = BigDecimal.valueOf(1969, 2) /* not important */,
+            previouslyReported = BigDecimal.valueOf(40),
+            currentReport = BigDecimal.valueOf(21),
         )
     }
 
     @MockK
     lateinit var identificationPersistence: ProjectReportIdentificationPersistence
     @MockK
-    lateinit var reportPersistence: ProjectReportPersistence
+    lateinit var reportExpenditureCostCategoryCalculatorService: GetReportExpenditureCostCategoryCalculatorService
 
     @InjectMockKs
     lateinit var getReportIdentification: GetProjectPartnerReportIdentification
 
     @Test
-    fun `getForPartner - submitted`() {
-        every { reportPersistence.getPartnerReportById(partnerId = PARTNER_ID, reportId = 225L) } returns report(ReportStatus.Submitted)
-
+    fun getIdentification() {
         val period = ProjectPartnerReportPeriod(number = 3, periodBudget = BigDecimal.valueOf(15), periodBudgetCumulative = BigDecimal.valueOf(75), 7, 9)
         val identification = identification(
             periodDetail = period,
-            differenceFromPlan = BigDecimal.ZERO,
-            differenceFromPlanPercentage = BigDecimal.ZERO,
-            current = BigDecimal.valueOf(20),
+            /* other values from persistence are not filled in */
         )
-
         every { identificationPersistence.getPartnerReportIdentification(PARTNER_ID, reportId = 225L) } returns of(identification)
+
+        val expenditures = mockk<ExpenditureCostCategoryBreakdown>()
+        every { expenditures.total } returns totalLine
+        every { reportExpenditureCostCategoryCalculatorService.getSubmittedOrCalculateCurrent(partnerId = PARTNER_ID, reportId = 225L) } returns expenditures
 
         assertThat(getReportIdentification.getIdentification(PARTNER_ID, reportId = 225L)).isEqualTo(
             identification(
                 periodDetail = period,
-                differenceFromPlan = BigDecimal.valueOf(15),
-                differenceFromPlanPercentage = BigDecimal.valueOf(8000, 2),
-                current = BigDecimal.valueOf(20),
+                differenceFromPlan = BigDecimal.valueOf(14),
+                differenceFromPlanPercentage = BigDecimal.valueOf(8133, 2),
+                current = BigDecimal.valueOf(21),
+                previously = BigDecimal.valueOf(40),
             )
         )
     }
 
     @Test
-    fun `getForPartner - not submitted`() {
-        every { reportPersistence.getPartnerReportById(partnerId = PARTNER_ID, reportId = 227L) } returns report(ReportStatus.Draft)
-
-        val period = ProjectPartnerReportPeriod(number = 2, periodBudget = BigDecimal.valueOf(14), periodBudgetCumulative = BigDecimal.valueOf(40), 7, 9)
-        val identification = identification(
-            periodDetail = period,
-            differenceFromPlan = BigDecimal.ZERO,
-            differenceFromPlanPercentage = BigDecimal.ZERO,
-            current = BigDecimal.valueOf(15),
-        )
-
-        every { identificationPersistence.getPartnerReportIdentification(PARTNER_ID, reportId = 227L) } returns of(identification)
-
-        assertThat(getReportIdentification.getIdentification(PARTNER_ID, reportId = 227L)).isEqualTo(
-            identification(
-                periodDetail = period,
-                differenceFromPlan = BigDecimal.valueOf(-1),
-                differenceFromPlanPercentage = BigDecimal.valueOf(10250, 2),
-                current = BigDecimal.ONE,
-            )
-        )
-    }
-
-    @Test
-    fun `getForPartner - not submitted - period 0 (avoid division)`() {
-        every { reportPersistence.getPartnerReportById(partnerId = PARTNER_ID, reportId = 228L) } returns report(ReportStatus.Draft)
-
+    fun `getIdentification - period 0 (avoid division)`() {
         val period = ProjectPartnerReportPeriod(number = 5, periodBudget = BigDecimal.ZERO, periodBudgetCumulative = BigDecimal.ZERO, 9, 10)
         val identification = identification(
-            periodDetail = period,
             differenceFromPlan = BigDecimal.ZERO,
             differenceFromPlanPercentage = BigDecimal.ZERO,
-            current = BigDecimal.valueOf(15),
+            periodDetail = period,
         )
-
         every { identificationPersistence.getPartnerReportIdentification(PARTNER_ID, reportId = 228L) } returns of(identification)
+
+        val expenditures = mockk<ExpenditureCostCategoryBreakdown>()
+        every { expenditures.total } returns totalLine
+        every { reportExpenditureCostCategoryCalculatorService.getSubmittedOrCalculateCurrent(partnerId = PARTNER_ID, reportId = 228L) } returns expenditures
 
         assertThat(getReportIdentification.getIdentification(PARTNER_ID, reportId = 228L)).isEqualTo(
             identification(
                 periodDetail = period,
                 differenceFromPlan = BigDecimal.ZERO,
                 differenceFromPlanPercentage = BigDecimal.ZERO,
-                current = BigDecimal.ONE,
+                current = BigDecimal.valueOf(21),
+                previously = BigDecimal.valueOf(40),
             )
         )
     }
 
-    @Test
-    fun `getForPartner - empty - submitted`() {
-        every { identificationPersistence.getPartnerReportIdentification(PARTNER_ID, reportId = 230L) } returns empty()
-        every { reportPersistence.getPartnerReportById(partnerId = PARTNER_ID, reportId = 230L) } returns report(ReportStatus.Submitted)
-        assertThat(getReportIdentification.getIdentification(PARTNER_ID, reportId = 230L)).isEqualTo(emptyIdentification)
-    }
-
-    @Test
-    fun `getForPartner - empty - NOT submitted`() {
-        every { identificationPersistence.getPartnerReportIdentification(PARTNER_ID, reportId = 232L) } returns empty()
-        every { reportPersistence.getPartnerReportById(partnerId = PARTNER_ID, reportId = 232L) } returns report(ReportStatus.Draft)
-        assertThat(getReportIdentification.getIdentification(PARTNER_ID, reportId = 232L)).isEqualTo(
-            emptyIdentification.copy(spendingProfile = emptyIdentification.spendingProfile.copy(currentReport = BigDecimal.ONE))
-        )
-    }
 }

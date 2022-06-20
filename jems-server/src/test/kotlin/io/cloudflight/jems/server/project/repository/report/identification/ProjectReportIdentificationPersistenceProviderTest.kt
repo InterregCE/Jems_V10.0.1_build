@@ -36,11 +36,7 @@ class ProjectReportIdentificationPersistenceProviderTest : UnitTest() {
             startDate = YESTERDAY,
             endDate = TOMORROW,
             periodNumber = 7,
-            spendingProfile = ProjectPartnerReportSpendingProfileEntity(
-                currentReport = BigDecimal.valueOf(1),
-                previouslyReported = BigDecimal.valueOf(2),
-                nextReportForecast = BigDecimal.valueOf(3),
-            ),
+            nextReportForecast = BigDecimal.valueOf(3),
             translatedValues = mutableSetOf(),
         ).apply {
             translatedValues.add(
@@ -92,9 +88,9 @@ class ProjectReportIdentificationPersistenceProviderTest : UnitTest() {
             ),
             spendingProfile = ProjectPartnerReportSpendingProfile(
                 periodDetail = ProjectPartnerReportPeriod(7, BigDecimal.valueOf(15), BigDecimal.valueOf(30), 13, 14),
-                currentReport = BigDecimal.valueOf(1),
-                previouslyReported = BigDecimal.valueOf(2),
-                differenceFromPlan = BigDecimal.ZERO,
+                currentReport = BigDecimal.ZERO,
+                previouslyReported = BigDecimal.ZERO /* cannot be fetched, is calculated later */,
+                differenceFromPlan = BigDecimal.ZERO /* cannot be fetched, is calculated later */,
                 differenceFromPlanPercentage = BigDecimal.ZERO,
                 nextReportForecast = BigDecimal.valueOf(3),
             ),
@@ -110,7 +106,7 @@ class ProjectReportIdentificationPersistenceProviderTest : UnitTest() {
                 setOf(InputTranslation(SystemLanguage.EN, "desc new EN")),
             ),
             nextReportForecast = BigDecimal.valueOf(45),
-            spendingDeviations = setOf(InputTranslation(SystemLanguage.EN, "sd new EN")),
+            spendingDeviations = setOf(InputTranslation(SystemLanguage.SK, "sd new SK")),
         )
 
         private val expectedNewData = ProjectPartnerReportIdentification(
@@ -118,7 +114,7 @@ class ProjectReportIdentificationPersistenceProviderTest : UnitTest() {
             endDate = TOMORROW.plusDays(1),
             summary = setOf(InputTranslation(SystemLanguage.EN, "summary new EN")),
             problemsAndDeviations = setOf(InputTranslation(SystemLanguage.EN, "p&d new EN")),
-            spendingDeviations = setOf(InputTranslation(SystemLanguage.EN, "sd new EN")),
+            spendingDeviations = setOf(InputTranslation(SystemLanguage.SK, "sd new SK")),
             targetGroups = emptyList(),
             spendingProfile = ProjectPartnerReportSpendingProfile(
                 periodDetail = ProjectPartnerReportPeriod(3, BigDecimal.valueOf(15), BigDecimal.valueOf(30), 5, 6),
@@ -193,9 +189,11 @@ class ProjectReportIdentificationPersistenceProviderTest : UnitTest() {
         assertThat(identification.endDate).isEqualTo(TOMORROW.plusDays(1))
         assertThat(identification.periodNumber).isEqualTo(3)
         assertThat(identification.translatedValues.map { Pair(it.language(), it.summary) })
-            .containsExactly(Pair(SystemLanguage.EN, "summary new EN"))
+            .containsExactly(Pair(SystemLanguage.EN, "summary new EN"), Pair(SystemLanguage.SK, null))
         assertThat(identification.translatedValues.map { Pair(it.language(), it.problemsAndDeviations) })
-            .containsExactly(Pair(SystemLanguage.EN, "p&d new EN"))
+            .containsExactly(Pair(SystemLanguage.EN, "p&d new EN"), Pair(SystemLanguage.SK, null))
+        assertThat(identification.translatedValues.map { Pair(it.language(), it.spendingDeviations) })
+            .containsExactly(Pair(SystemLanguage.EN, null), Pair(SystemLanguage.SK, "sd new SK"))
 
         assertThat(targetGroup.type).isEqualTo(ProjectTargetGroup.BusinessSupportOrganisation)
         assertThat(targetGroup.translatedValues.map { Pair(it.language(), it.description) })
@@ -219,19 +217,6 @@ class ProjectReportIdentificationPersistenceProviderTest : UnitTest() {
         verify(exactly = 1) { identificationRepository.save(any()) }
 
         assertThat(slotEntity.captured.reportEntity).isEqualTo(report)
-    }
-
-    @Test
-    fun updateCurrentReportSpending() {
-        val report = mockk<ProjectPartnerReportEntity>()
-        val reportIdentification = dummyEntity(report)
-        every { identificationRepository.findByReportEntityIdAndReportEntityPartnerId(reportId = 35L, partnerId = PARTNER_ID) } returns
-            Optional.of(reportIdentification)
-
-        val newValue = BigDecimal.valueOf(45976856, 2)
-        persistence.updateCurrentReportSpending(partnerId = PARTNER_ID, reportId = 35L, currentReport = newValue)
-
-        assertThat(reportIdentification.spendingProfile.currentReport).isEqualTo(newValue)
     }
 
     @Test

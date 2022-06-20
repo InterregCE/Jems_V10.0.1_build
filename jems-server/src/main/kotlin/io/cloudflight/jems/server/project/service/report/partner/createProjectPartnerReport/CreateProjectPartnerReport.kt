@@ -68,8 +68,9 @@ class CreateProjectPartnerReport(
         )
 
         val coFinancing = partnerCoFinancingPersistence.getCoFinancingAndContributions(partnerId, version)
+        val partner = projectPartnerPersistence.getById(partnerId, version)
         val identification = generateReportIdentification(
-            partner = projectPartnerPersistence.getById(partnerId, version),
+            partner = partner,
             project = project,
             finances = coFinancing.finances,
             currencyResolver = { currencyPersistence.getCurrencyForCountry(it) },
@@ -81,7 +82,7 @@ class CreateProjectPartnerReport(
 
         val budget = createProjectPartnerReportBudget.retrieveBudgetDataFor(
             projectId = projectId,
-            partnerId = partnerId,
+            partner = partner.toSummary(),
             version = version,
             partnerContributions = coFinancing.partnerContributions,
         )

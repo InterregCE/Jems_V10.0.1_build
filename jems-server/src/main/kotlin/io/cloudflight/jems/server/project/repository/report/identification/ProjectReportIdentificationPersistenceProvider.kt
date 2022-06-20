@@ -7,7 +7,6 @@ import io.cloudflight.jems.server.project.entity.report.identification.ProjectPa
 import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportIdentificationTargetGroupEntity
 import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportIdentificationTargetGroupTranslEntity
 import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportIdentificationTranslEntity
-import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportSpendingProfileEntity
 import io.cloudflight.jems.server.project.repository.report.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportIdentification
 import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportPeriod
@@ -41,10 +40,6 @@ class ProjectReportIdentificationPersistenceProvider(
             } },
         ) }
 
-    @Transactional(readOnly = true)
-    override fun getPreviousSpendingFor(reportIds: Set<Long>) =
-        identificationRepository.sumCurrentlyReportedFor(reportIds = reportIds)
-
     @Transactional
     override fun updatePartnerReportIdentification(
         partnerId: Long,
@@ -73,14 +68,6 @@ class ProjectReportIdentificationPersistenceProvider(
         )
     }
 
-    @Transactional
-    override fun updateCurrentReportSpending(partnerId: Long, reportId: Long, currentReport: BigDecimal) {
-        identificationRepository.findByReportEntityIdAndReportEntityPartnerId(
-            reportId = reportId,
-            partnerId = partnerId,
-        ).ifPresent { it.spendingProfile.currentReport = currentReport }
-    }
-
     @Transactional(readOnly = true)
     override fun getAvailablePeriods(partnerId: Long, reportId: Long): List<ProjectPartnerReportPeriod> =
         reportBudgetPerPeriodRepository.findAllByIdReportPartnerIdAndIdReportIdOrderByIdPeriodNumber(partnerId = partnerId, reportId)
@@ -93,7 +80,7 @@ class ProjectReportIdentificationPersistenceProvider(
         entity.startDate = data.startDate
         entity.endDate = data.endDate
         entity.periodNumber = data.period
-        entity.spendingProfile.nextReportForecast = data.nextReportForecast
+        entity.nextReportForecast = data.nextReportForecast
     }
 
     private fun updateTranslations(
@@ -104,7 +91,7 @@ class ProjectReportIdentificationPersistenceProvider(
         val problemsAsMap = data.getProblemsAndDeviationsAsMap()
         val spendingAsMap = data.getSpendingDeviationsAsMap()
 
-        entity.addMissingLanguagesIfNeeded(languages = summaryAsMap.keys union problemsAsMap.keys)
+        entity.addMissingLanguagesIfNeeded(languages = summaryAsMap.keys union problemsAsMap.keys union spendingAsMap.keys)
         entity.translatedValues.forEach {
             it.summary = summaryAsMap[it.language()]
             it.problemsAndDeviations = problemsAsMap[it.language()]
@@ -162,11 +149,7 @@ class ProjectReportIdentificationPersistenceProvider(
                 startDate = null,
                 endDate = null,
                 periodNumber = null,
-                spendingProfile = ProjectPartnerReportSpendingProfileEntity(
-                    currentReport = BigDecimal.ZERO,
-                    previouslyReported = BigDecimal.ZERO,
-                    nextReportForecast = BigDecimal.ZERO,
-                ),
+                nextReportForecast = BigDecimal.ZERO,
                 translatedValues = mutableSetOf(),
             )
         )
