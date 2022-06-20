@@ -73,7 +73,8 @@ export class PartnerReportExpendituresStore {
       switchMap(([partnerId, reportId]) =>
         this.partnerReportExpenditureCostsService.updatePartnerReportExpenditures(partnerId as number, reportId, partnerExpenditures)
       ),
-      tap(updatedExpenditureCosts => this.expendituresUpdated$.next(updatedExpenditureCosts))
+      tap(updatedExpenditureCosts => this.expendituresUpdated$.next(updatedExpenditureCosts)),
+      tap(() => this.partnerReportDetailPageStore.refreshIdentification$.next(null)),
     );
   }
 
