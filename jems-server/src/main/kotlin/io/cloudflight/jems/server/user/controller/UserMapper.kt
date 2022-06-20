@@ -33,7 +33,7 @@ fun UserRegistrationDTO.toModel() = UserRegistration(
     name = name,
     surname = surname,
     password = password,
-    captcha = captcha
+    captcha = captcha ?: "",
 )
 
 fun UserSummary.toSummaryDto() = UserSummaryDTO(

@@ -5,5 +5,5 @@ data class UserRegistrationDTO(
     val name: String,
     val surname: String,
     val password: String,
-    val captcha: String
+    val captcha: String? = null,
 )
