@@ -19,6 +19,7 @@ import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldSetting
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldSetting.PARTNER_BUDGET_TRAVEL_AND_ACCOMMODATION_UNIT_TYPE_AND_NUMBER_OF_UNITS
 import io.cloudflight.jems.server.call.service.model.FieldVisibilityStatus
 import io.cloudflight.jems.server.common.exception.I18nValidationException
+import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.partner.model.BaseBudgetEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetPeriod
@@ -36,6 +37,7 @@ const val BUDGET_COST_NUMBER_UNITS_NOT_ENABLED_ERROR_KEY = "project.partner.budg
 const val BUDGET_COST_INVALID_PERIOD_AMOUNT_SCALE_ERROR_KEY = "project.partner.budget.period.amount.invalid.scale"
 const val BUDGET_COST_INVALID_NUMBER_OF_UNITS_SCALE_ERROR_KEY = "project.partner.budget.number.of.units.invalid.scale"
 const val BUDGET_COST_INVALID_PRICE_PER_UNIT_SCALE_ERROR_KEY = "project.partner.budget.price.per.unit.invalid.scale"
+const val BUDGET_COST_INVALID_UNIT_COST_ERROR_KEY = "project.partner.budget.unit.cost.invalid"
 const val BUDGET_COST_REAL_COST_NOT_ALLOWED = "project.partner.budget.real.cost.not.allowed"
 const val BUDGET_COST_SPF_COST_NOT_ALLOWED = "project.partner.budget.spf.cost.not.allowed"
 val MAX_ALLOWED_BUDGET_VALUE: BigDecimal = BigDecimal.valueOf(999_999_999_99L, 2)
@@ -189,4 +191,29 @@ class BudgetCostValidator(private val callPersistence: CallPersistence) {
             )
         }
     }
+
+    fun validateAllowedUnitCosts(
+        availableUnitCosts: List<ProgrammeUnitCost>,
+        unitCostEntries: List<UnitCostEntry>
+    ) {
+        unitCostEntries.forEach { unitCostEntry ->
+            val projectUnitCost = availableUnitCosts.firstOrNull {
+                    avUC -> avUC.id == unitCostEntry.id
+            }
+            if (projectUnitCost == null
+                || projectUnitCost.costPerUnit!!.compareTo(unitCostEntry.pricePerUnit) != 0
+                || !projectUnitCost.type.containsAll(unitCostEntry.unitType)) {
+                throw I18nValidationException(
+                    httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
+                    i18nKey = BUDGET_COST_INVALID_UNIT_COST_ERROR_KEY
+                )
+            }
+        }
+    }
+
+    class UnitCostEntry(
+        val id: Long,
+        val pricePerUnit: BigDecimal,
+        val unitType: Set<InputTranslation>
+    )
 }

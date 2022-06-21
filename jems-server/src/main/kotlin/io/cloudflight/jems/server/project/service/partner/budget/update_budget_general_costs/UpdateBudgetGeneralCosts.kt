@@ -42,6 +42,13 @@ abstract class UpdateBudgetGeneralCosts(
 
         budgetCostValidator.validateBaseEntries(budgetGeneralCosts)
         budgetCostValidator.validatePricePerUnits(budgetGeneralCosts.map { it.pricePerUnit })
+        if (budgetGeneralCosts.any { it.unitCostId != null }) {
+            budgetCostValidator.validateAllowedUnitCosts(
+                availableUnitCosts = projectPersistence.getProjectUnitCosts(projectId),
+                budgetGeneralCosts.filter { it.unitCostId != null }
+                    .map { BudgetCostValidator.UnitCostEntry(it.unitCostId!!, it.pricePerUnit, it.unitType) }
+            )
+        }
 
         budgetCostValidator.validateBudgetPeriods(
             periods,

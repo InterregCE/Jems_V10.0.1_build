@@ -43,6 +43,13 @@ class UpdateBudgetStaffCosts(
 
         budgetCostValidator.validateBaseEntries(staffCosts)
         budgetCostValidator.validatePricePerUnits(staffCosts.map { it.pricePerUnit })
+        if (staffCosts.any { it.unitCostId != null }) {
+            budgetCostValidator.validateAllowedUnitCosts(
+                availableUnitCosts = projectPersistence.getProjectUnitCosts(projectId),
+                staffCosts.filter { it.unitCostId != null }
+                    .map { BudgetCostValidator.UnitCostEntry(it.unitCostId!!, it.pricePerUnit, it.unitType) }
+            )
+        }
 
         throwIfStaffCostFlatRateIsSet(budgetOptionsPersistence.getBudgetOptions(partnerId))
 

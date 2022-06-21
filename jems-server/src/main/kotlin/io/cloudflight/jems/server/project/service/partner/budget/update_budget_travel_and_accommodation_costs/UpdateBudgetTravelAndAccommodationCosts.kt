@@ -43,6 +43,13 @@ class UpdateBudgetTravelAndAccommodationCosts(
 
         budgetCostValidator.validateBaseEntries(travelCosts)
         budgetCostValidator.validatePricePerUnits(travelCosts.map { it.pricePerUnit })
+        if (travelCosts.any { it.unitCostId != null }) {
+            budgetCostValidator.validateAllowedUnitCosts(
+                availableUnitCosts = projectPersistence.getProjectUnitCosts(projectId),
+                travelCosts.filter { it.unitCostId != null }
+                    .map { BudgetCostValidator.UnitCostEntry(it.unitCostId!!, it.pricePerUnit, it.unitType) }
+            )
+        }
 
         throwIfTravelOrOtherCostFlatRateAreSet(optionsPersistence.getBudgetOptions(partnerId))
 
