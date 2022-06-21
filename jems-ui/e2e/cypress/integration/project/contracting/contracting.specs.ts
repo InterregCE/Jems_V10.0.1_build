@@ -20,7 +20,10 @@ context('Application contracting', () => {
     cy.createFullApplication(application, user.programmeUser.email).then(applicationId => {
       cy.loginByRequest(user.programmeUser.email);
       cy.visit(`app/project/detail/${applicationId}`, {failOnStatusCode: false});
-      cy.contains('Contract monitoring').should('be.visible').click();
+
+      cy.wait(1000); // TODO remove after MP2-2391 is fixed
+      
+      cy.contains('Contract monitoring').click();
       cy.contains('Set project to contracted').click();
       cy.contains('button', 'Confirm').click();
       cy.get('jems-alert').should('contain', 'You have successfully contracted project');
@@ -33,7 +36,7 @@ context('Application contracting', () => {
       });
       cy.contains(application.partners[0].details.abbreviation).click();
       cy.contains('Add Partner Report').click();
-      cy.contains('A.1 Partner progress report identification').should('be.visible');
+      cy.contains('Partner progress report identification').should('be.visible');
 
       cy.loginByRequest(user.applicantUser.email);
       cy.visit(`app/project/detail/${applicationId}`, {failOnStatusCode: false});
