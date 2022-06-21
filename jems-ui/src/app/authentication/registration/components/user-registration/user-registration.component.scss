@@ -62,4 +62,8 @@ mat-card-subtitle, {
 
 .refresh-captcha-icon {
   padding-left: 1rem;
+
+  :hover{
+    cursor: pointer;
+  }
 }
