@@ -191,6 +191,8 @@ export class UserRoleDetailPageComponent {
       this.formService.setCreation(true);
     }
 
+    this.adaptDependentPermissions();
+
     if (!isUpdateAllowed) {
       this.userRoleForm.disable();
     }
@@ -209,7 +211,7 @@ export class UserRoleDetailPageComponent {
     } else {
       this.state(permission)?.setValue(PermissionState.EDIT);
     }
-    this.adaptDependentPermissions(permission);
+    this.adaptDependentPermissions();
     this.formChanged();
   }
 
@@ -364,13 +366,15 @@ export class UserRoleDetailPageComponent {
       this.hasAnyStateNotHidden(this.subtree(nodeForm).at(index), node));
   }
 
-  private adaptDependentPermissions(permission: AbstractControl): void {
-    if (permission.get('name')?.value !== 'permission.assessment.instantiate') {
+  private adaptDependentPermissions(): void {
+    const instantiateGroup = this.treeControlInspect?.dataNodes
+      ?.find(node => node.name === 'permission.assessment.instantiate') as any;
+    const consolidateGroup = this.treeControlInspect?.dataNodes
+      ?.find(node => node.name === 'permission.assessment.consolidate') as any;
+    if (!consolidateGroup || !instantiateGroup) {
       return;
     }
-    const consolidateGroup = this.treeControlInspect.dataNodes
-      .find(node => node.name === 'permission.assessment.consolidate') as any;
-    if (this.state(permission)?.value === PermissionState.HIDDEN) {
+    if (this.state(instantiateGroup.form)?.value === PermissionState.HIDDEN) {
       this.state(consolidateGroup.form)?.setValue(PermissionState.HIDDEN);
       consolidateGroup.disabled = true;
     } else {
