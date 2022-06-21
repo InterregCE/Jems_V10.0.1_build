@@ -1,4 +1,4 @@
-import {Injectable} from '@angular/core';
+import {Injectable, OnDestroy, OnInit} from '@angular/core';
 import {BehaviorSubject, Observable, of, ReplaySubject, Subject} from 'rxjs';
 import {FormArray, FormGroup} from '@angular/forms';
 import {I18nLabel} from '@common/i18n/i18n-label';
@@ -15,6 +15,7 @@ import {APIError} from '@common/models/APIError';
 export class FormService {
   private resetSubject = new Subject();
   private editable = true;
+  private serviceId = Math.random().toString(36);
 
   form: FormGroup | FormArray;
   saveLabel = 'common.save.label';
@@ -84,10 +85,10 @@ export class FormService {
         this.form.markAsPristine();
         this.form.markAsUntouched();
       }
-      this.routingService.confirmLeave = false;
+      this.routingService.confirmLeaveMap.set(this.serviceId, false);
     } else if (this.saveLabel !== 'common.create.label') {
       // confirm page leave unless the form is in create mode
-      this.routingService.confirmLeave = true;
+      this.routingService.confirmLeaveMap.set(this.serviceId, true);
     }
     this.setSuccess(null);
     this.setValid(this.form?.valid);
