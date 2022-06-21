@@ -83,6 +83,9 @@ import {
 } from '@project/project-application/assessment-and-decision/assessment-and-decision-checklist-page/assessment-and-decision-checklist-page.component';
 import { PartnerReportAnnexesTabComponent } from './project-application/report/partner-report-detail-page/partner-report-annexes-tab/partner-report-annexes-tab.component';
 import {
+  ProjectManagementComponent
+} from '@project/project-application/project-management/project-management.component';
+import {
   PartnerReportFinancialOverviewTabComponent
 } from "@project/project-application/report/partner-report-detail-page/partner-report-financial-overview-tab/partner-report-financial-overview-tab.component";
 
@@ -175,6 +178,11 @@ export const routes: Routes = [
             path: 'contractMonitoring',
             component: ContractMonitoringComponent,
             data: {breadcrumb: 'project.breadcrumb.applicationForm.contract.monitoring'},
+          },
+          {
+            path: 'projectManagement',
+            component: ProjectManagementComponent,
+            data: {breadcrumb: 'project.breadcrumb.applicationForm.contract.management'},
           },
           {
             path: 'annexes',

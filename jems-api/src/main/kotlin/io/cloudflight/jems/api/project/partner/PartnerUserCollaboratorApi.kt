@@ -35,4 +35,8 @@ interface PartnerUserCollaboratorApi {
     @GetMapping("$ENDPOINT_API_PROJECT_PARTNER_USER_COLLABORATOR/forPartner/{partnerId}/checkMyLevel")
     fun checkMyPartnerLevel(@PathVariable partnerId: Long): PartnerCollaboratorLevelDTO?
 
+    @ApiOperation("Check partner collaborations for current user")
+    @GetMapping("$ENDPOINT_API_PROJECT_PARTNER_USER_COLLABORATOR/forProject/{projectId}/myCollaborations")
+    fun listCurrentUserPartnerCollaborations(@PathVariable projectId: Long): Set<PartnerUserCollaboratorDTO>
+
 }
