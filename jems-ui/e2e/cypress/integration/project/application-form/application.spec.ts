@@ -326,8 +326,102 @@ context('Project management tests', () => {
 
       cy.contains('Save changes').click();
       cy.contains('Partner budgets were saved successfully').should('be.visible');
-      
+
       cy.contains('Flat rate for Staff costs').parents('jems-budget-flat-rate-table').should('contain', formatAmount(testData.staffCostsFlatRateAmount));
+    });
+  });
+
+  it('TB-633 Applicant can edit partners confinancing info', function () {
+    cy.fixture('project/application-form/TB-633').then(testData => {
+      cy.visit(`app/project/detail/${this.applicationId}`, {failOnStatusCode: false});
+      cy.contains(this.partnerAbbreviation).click();
+      cy.contains('a', 'Co-financing').click();
+
+      cy.contains('div.jems-table-config', 'Source').within(() => {
+        cy.contains('Co-financing source').click();
+        cy.root().closest('body').contains(testData.coFinancing.fund).click();
+
+        cy.get('input').type(testData.coFinancing.rate);
+        cy.contains('Partner contribution').next().should('contain.text', testData.coFinancing.partnerContribution.amount)
+          .next().should('contain.text', testData.coFinancing.partnerContribution.rate);
+      });
+
+      let alertMessage = `The total of contribution must match the total partner contribution (difference "${testData.coFinancing.originOfPartnerContributionDifference}")`;
+      cy.contains(alertMessage).should('be.visible');
+
+      cy.contains('Source of contribution').parent().next().within(() => {
+        cy.contains('Legal status').click();
+        cy.root().closest('body').contains(testData.coFinancing.originsOfPartnerContribution[0].legalStatus).click();
+        cy.get('input').type(formatAmount(testData.coFinancing.originsOfPartnerContribution[0].amount));
+      });
+
+      cy.contains('Add new contribution origin').click();
+      cy.contains('Source of contribution').parent().next().next().within(() => {
+        cy.contains('mat-form-field', 'Source of contribution').find('input').type(testData.coFinancing.originsOfPartnerContribution[1].source);
+        cy.contains('Legal status').click();
+        cy.root().closest('body').contains(testData.coFinancing.originsOfPartnerContribution[1].legalStatus).click();
+        cy.get('input').eq(1).type(formatAmount(testData.coFinancing.originsOfPartnerContribution[1].amount));
+      });
+
+      cy.contains('Add new contribution origin').click();
+      cy.contains('Source of contribution').parent().next().next().next().within(() => {
+        cy.contains('mat-form-field', 'Source of contribution').find('input').type(testData.coFinancing.originsOfPartnerContribution[2].source);
+        cy.contains('Legal status').click();
+        cy.root().closest('body').contains(testData.coFinancing.originsOfPartnerContribution[2].legalStatus).click();
+        cy.get('input').eq(1).type(formatAmount(testData.coFinancing.originsOfPartnerContribution[2].amount));
+      });
+
+      alertMessage = 'The total of contribution must match the total partner contribution';
+      cy.contains(alertMessage).should('not.exist');
+
+      cy.contains('Save changes').click();
+      cy.contains('Co-financing and partner contributions saved successfully').should('be.visible');
+    });
+  });
+
+  it('TB-634 Applicant can edit partners state aid info', function () {
+    cy.fixture('project/application-form/TB-634').then(testData => {
+      cy.visit(`app/project/detail/${this.applicationId}`, {failOnStatusCode: false});
+      cy.contains(this.partnerAbbreviation).click();
+      cy.contains('a', 'State Aid').click();
+
+      cy.contains('div', testData.stateAid.question1.text).within(() => {
+        cy.contains(testData.stateAid.question1.answer).click();
+        testData.stateAid.question1.justification.forEach(justification => {
+          cy.root().closest('jems-multi-language-container').contains('button', justification.language).click();
+          cy.get('textarea').type(justification.translation);
+        });
+      });
+
+      cy.contains('div', testData.stateAid.question2.text).within(() => {
+        cy.contains(testData.stateAid.question2.answer).click();
+        testData.stateAid.question2.justification.forEach(justification => {
+          cy.root().closest('jems-multi-language-container').contains('button', justification.language).click();
+          cy.get('textarea').type(justification.translation);
+        });
+      });
+
+      cy.contains('div', testData.stateAid.question3.text).within(() => {
+        cy.contains(testData.stateAid.question3.answer).click();
+        testData.stateAid.question3.justification.forEach(justification => {
+          cy.root().closest('jems-multi-language-container').contains('button', justification.language).click();
+          cy.get('textarea').type(justification.translation);
+        });
+      });
+
+      cy.contains('div', testData.stateAid.question4.text).within(() => {
+        cy.contains(testData.stateAid.question4.answer).click();
+        testData.stateAid.question4.justification.forEach(justification => {
+          cy.root().closest('jems-multi-language-container').contains('button', justification.language).click();
+          cy.get('textarea').type(justification.translation);
+        });
+      });
+      
+      cy.contains('GBER scheme / de minimis').click({force: true});
+      cy.contains('General de minimis').click();
+
+      cy.contains('Save changes').click();
+      cy.contains('Partner state aid was saved successfully.').should('be.visible');
     });
   });
 
@@ -342,13 +436,13 @@ context('Project management tests', () => {
     const formattedAmount = formatAmount(amount);
     cy.get('mat-row').last().find('mat-cell').eq(index).find('input').type(formattedAmount, {force: true});
   }
-  
+
   function selectUnitCost(unitCost) {
     cy.get('mat-row').last().find('mat-select').first().click();
     cy.root().closest('body').find('mat-option').contains(unitCost).click();
   }
-  
+
   function formatAmount(amount) {
-     return new Intl.NumberFormat('de-DE').format(amount);
+    return new Intl.NumberFormat('de-DE').format(amount);
   }
 });

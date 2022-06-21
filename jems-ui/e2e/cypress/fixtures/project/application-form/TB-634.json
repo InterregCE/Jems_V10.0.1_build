@@ -1,0 +1,60 @@
+{
+  "stateAid": {
+    "question1": {
+      "text": "1. Will the project applicant implement activities and/or offer goods/services for which a market exists?",
+      "answer": "Yes",
+      "justification": [
+        {
+          "language": "EN",
+          "translation": "Justification for answer 1 EN"
+        },
+        {
+          "language": "DE",
+          "translation": "Justification for answer 1 DE"
+        }
+      ]
+    },
+    "question2": {
+      "text": "2. Are there activities/goods/services that could have been undertaken by an operator with the view to making profit (even if this is not the applicant’s intention)?",
+      "answer": "No",
+      "justification": [
+        {
+          "language": "EN",
+          "translation": "Justification for answer 2 EN"
+        },
+        {
+          "language": "DE",
+          "translation": "Justification for answer 2 DE"
+        }
+      ]
+    },
+    "question3": {
+      "text": "1. Does the project applicant plan to carry out the economic activities on its own i.e. not to select an external service provider via public procurement procedures for example?",
+      "answer": "Yes",
+      "justification": [
+        {
+          "language": "EN",
+          "translation": "Justification for answer 3 EN"
+        },
+        {
+          "language": "DE",
+          "translation": "Justification for answer 3 DE"
+        }
+      ]
+    },
+    "question4": {
+      "text": "2. Will the project applicant, any other operator not included in the project as a project partner or the target audience gain any benefits from its project economic activities, not received in the normal course of business (i.e. not received in the absence of funding granted through the project)?",
+      "answer": "No",
+      "justification": [
+        {
+          "language": "EN",
+          "translation": "Justification for answer 4 EN"
+        },
+        {
+          "language": "DE",
+          "translation": "Justification for answer 4 DE"
+        }
+      ]
+    }
+  }
+}
