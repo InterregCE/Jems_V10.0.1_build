@@ -11,38 +11,35 @@ context('Application form exports', () => {
   });
 
   it('TB-366 Export application form using two sets of input and export language', () => {
-    cy.fixture('project/exports/application-form/TB-366.json').then(testData => {
-      cy.createCall(call, user.programmeUser.email).then(callId => {
-        application.details.projectCallId = callId;
-        cy.publishCall(callId, user.programmeUser.email);
-        application.identification.intro = testData.intro;
-        cy.createFullApplication(application, user.programmeUser.email).then(applicationId => {
-          cy.visit(`app/project/detail/${applicationId}/export`, {failOnStatusCode: false});
+    cy.createCall(call, user.programmeUser.email).then(callId => {
+      application.details.projectCallId = callId;
+      cy.publishCall(callId, user.programmeUser.email);
+      cy.createFullApplication(application, user.programmeUser.email).then(applicationId => {
+        cy.visit(`app/project/detail/${applicationId}/export`, {failOnStatusCode: false});
 
-          cy.contains('div', 'Input language').find('mat-select').click();
-          cy.contains('mat-option', 'Deutsch').click();
+        cy.contains('div', 'Input language').find('mat-select').click();
+        cy.contains('mat-option', 'Deutsch').click();
 
-          cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/application?exportLanguage=EN&inputLanguage=DE`, 'pdf').then(file => {
-            expect(file.fileName).to.contain(`${application.identification.acronym}_en_de_2022`);
-            cy.fixture('project/exports/application-form/TB-366-export-en-de.txt').then(testDataFile => {
-              const assertionMessage = 'Verify downloaded pdf file';
-              testDataFile = replace(testDataFile, applicationId, application.identification.acronym);
-              expect(file.text === testDataFile, assertionMessage).to.be.true;
-            });
+        cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/application?exportLanguage=EN&inputLanguage=DE`, 'pdf').then(file => {
+          expect(file.fileName).to.contain(`${application.identification.acronym}_en_de_2022`);
+          cy.fixture('project/exports/application-form/TB-366-export-en-de.txt').then(testDataFile => {
+            const assertionMessage = 'Verify downloaded pdf file';
+            testDataFile = replace(testDataFile, applicationId, application.identification.acronym);
+            expect(file.text === testDataFile, assertionMessage).to.be.true;
           });
+        });
 
-          cy.contains('div', 'Export language').find('mat-select').click();
-          cy.contains('mat-option', 'Deutsch').click();
-          cy.contains('div', 'Input language').find('mat-select').click();
-          cy.contains('mat-option', 'English').click();
+        cy.contains('div', 'Export language').find('mat-select').click();
+        cy.contains('mat-option', 'Deutsch').click();
+        cy.contains('div', 'Input language').find('mat-select').click();
+        cy.contains('mat-option', 'English').click();
 
-          cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/application?exportLanguage=DE&inputLanguage=EN`, 'pdf').then(file => {
-            expect(file.fileName).to.contain(`${application.identification.acronym}_de_en_2022`);
-            cy.fixture('project/exports/application-form/TB-366-export-de-en.txt').then(testDataFile => {
-              testDataFile = replace(testDataFile, applicationId, application.identification.acronym);
-              const assertionMessage = 'Verify downloaded pdf file';
-              expect(file.text === testDataFile, assertionMessage).to.be.true;
-            });
+        cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/application?exportLanguage=DE&inputLanguage=EN`, 'pdf').then(file => {
+          expect(file.fileName).to.contain(`${application.identification.acronym}_de_en_2022`);
+          cy.fixture('project/exports/application-form/TB-366-export-de-en.txt').then(testDataFile => {
+            testDataFile = replace(testDataFile, applicationId, application.identification.acronym);
+            const assertionMessage = 'Verify downloaded pdf file';
+            expect(file.text === testDataFile, assertionMessage).to.be.true;
           });
         });
       });
@@ -280,6 +277,48 @@ context('Application form exports', () => {
                 const assertionMessage = 'Verify downloaded pdf file for step 1 version';
                 expect(file.text === fileContent, assertionMessage).to.be.true;
               });
+            });
+          });
+        });
+      });
+    });
+  });
+
+  it('TB-635 Export application form that contains special characters', () => {
+    cy.fixture('project/exports/application-form/TB-635.json').then(testData => {
+      cy.createCall(call, user.programmeUser.email).then(callId => {
+        application.details.projectCallId = callId;
+        cy.publishCall(callId, user.programmeUser.email);
+        cy.createApplication(application).then(applicationId => {
+          cy.updateProjectIdentification(applicationId, application.identification);
+          cy.visit(`app/project/detail/${applicationId}/applicationFormIdentification`, {failOnStatusCode: false});
+
+          cy.contains('div', 'Summary').find('textarea').then(textarea => {
+            cy.wrap(textarea).clear();
+            cy.wrap(textarea).type(testData.special + '{enter}');
+            cy.wrap(textarea).type(testData.cyrillic + '{enter}');
+            cy.wrap(textarea).type(testData.arabic + '{enter}');
+            cy.wrap(textarea).type(testData.ascii, {parseSpecialCharSequences: false});
+            cy.wrap(textarea).type('{enter}' + testData.generic + '{enter}');
+            cy.wrap(textarea).type(testData.isoChars + '{enter}');
+            cy.wrap(textarea).type(testData.isoSymbols + '{enter}');
+            cy.wrap(textarea).type(testData.math + '{enter}');
+            cy.wrap(textarea).type(testData.greek + '{enter}');
+            cy.wrap(textarea).type(testData.miscellaneous + '{enter}');
+            cy.wrap(textarea).type(testData.htmlTags + '{enter}');
+            cy.wrap(textarea).type(testData.lineSeparators);
+          });
+          cy.contains('Save changes').click();
+          
+          cy.contains('Export').click();
+          cy.contains('div', 'Input language').find('mat-select').click();
+          cy.contains('mat-option', 'Deutsch').click();
+
+          cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/application?exportLanguage=EN&inputLanguage=DE`, 'pdf').then(file => {
+            cy.fixture('project/exports/application-form/TB-635-export.txt').then(testDataFile => {
+              const assertionMessage = 'Verify downloaded pdf file';
+              testDataFile = replace(testDataFile, applicationId, application.identification.acronym);
+              expect(file.text === testDataFile, assertionMessage).to.be.true;
             });
           });
         });

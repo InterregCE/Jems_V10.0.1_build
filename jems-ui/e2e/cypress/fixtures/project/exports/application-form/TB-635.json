@@ -1,0 +1,14 @@
+{
+  "special": "∀ ∂ ∃ ∅ ∇ ∈ ∉ ∋ ∏ ∑ − ∗ √ ∝ ∞ ∠ ∧ ∨ ∩ ∪ ∫ ∴ ∼ ≅ ≈ ≠ ≡ ≤ ≥ ⊂ ⊃ ⊄ ⊆ ⊇ ⊕ ⊗ ⊥ ⋅",
+  "cyrillic": "А а (а) Б б В в (в) Г г (г) Д д (ɡ/д)[c] Е е Ж ж З з И и (и) Й й (й) К к Л л (л) М м Н н О о П п (п) Р р С с Т т (т) У у Ф ф Х х Ц ц (ц) Ч ч Ш ш (ш) Щ щ (щ) Ъ ъ Ь ь Ю ю Я я Ђ ђ Ј ј Љ љ Њ њ Ћ ћ Џ џ",
+  "arabic": "ص ش س ز ر ذ د خ ح ج ث ت ب أ ى و ه ن م ل ك ق ف غ ع ظ ط ض",
+  "ascii": "! \" # $ % & ' ( ) * + , - . / 0 1 2 3 4 5 6 7 8 9 : ; < = > ? @ A B C D E F G H I J K L M N O P Q R S T U V W X Y Z [ \\ ] ^ _ ` a b c d e f g h i j k l m n o p q r s t u v w x y z { | } ~",
+  "generic": "&amp; &lt; &gt; &#32; &#126;",
+  "isoChars": "À Á Â Ã Ä Å Æ Ç È É Ê Ë Ì Í Î Ï Ð Ñ Ò Ó Ô Õ Ö Ø Ù Ú Û Ü Ý Þ ß à á â ã ä å æ ç è é ê ë ì í î ï ð ñ ò ó ô õ ö ø ù ú û ü ý þ ÿ",
+  "isoSymbols": "¡ ¢ £ ¤ ¥ ¦ § ¨ © ª « ¬ \u00AD ® ¯ ° ± ² ³ ´ µ ¶ ¸ ¹ º » ¼ ½ ¾ ¿ × ÷",
+  "math": "∀ ∂ ∃ ∅ ∇ ∈ ∉ ∋ ∏ ∑ − ∗ √ ∝ ∞ ∠ ∧ ∨ ∩ ∪ ∫ ∴ ∼ ≅ ≈ ≠ ≡ ≤ ≥ ⊂ ⊃ ⊄ ⊆ ⊇ ⊕ ⊗ ⊥ ⋅",
+  "greek": "Α Β Γ Δ Ε Ζ Η Θ Ι Κ Λ Μ Ν Ξ Ο Π Ρ Σ Τ Υ Φ Χ Ψ Ω α β γ δ ε ζ η θ ι κ λ μ ν ξ ο π ρ ς σ τ υ φ χ ψ ω ϑ ϒ ϖ",
+  "miscellaneous": "Œ œ Š š Ÿ ƒ ˆ ˜       \u200C \u200D \u200E \u200F – — ‘ ’ ‚ “ ” „ † ‡ • … ‰ ′ ″ ‹ › ‾ € ™ ← ↑ → ↓ ↔ ↵ ⌈ ⌉ ⌊ ⌋ ◊ ♠ ♣ ♥ ♦",
+  "htmlTags": "<!--...--> <!DOCTYPE> <a> <abbr> <acronym> <address> <applet> <area> <article> <aside> <audio> <b> <base> <basefont> <bdi> <bdo> <big> <blockquote> <body> <br> <button> <canvas> <caption> <center> <cite> <code> <col> <colgroup> <data> <datalist> <dd> <del> <details> <dfn> <dialog> <dir> <div> <dl> <dt> <em> <embed> <fieldset> <figcaption> <figure> <font> <footer> <form> <frame> <frameset> <h1> to <h6> <head> <header> <hr> <html> <i> <iframe> <img> <input> <ins> <kbd> <label> <legend> <li> <link> <main> <map> <mark> <meta> <meter> <nav> <noframes> <noscript> <object> <ol> <optgroup> <option> <output> <p> <param> <picture> <pre> <progress> <q> <rp> <rt> <ruby> <s> <samp> <script> <section> <select> <small> <source> <span> <strike> <strong> <style> <sub> <summary> <sup> <svg> <table> <tbody> <td> <template> <textarea> <tfoot> <th> <thead> <time> <title> <tr> <track> <tt> <u> <ul> <var> <video> <wbr> </br> </html>",
+  "lineSeparators": "\n \\n \t \\t \r \\r \r\n \\r\\n \\036 \\025"
+}
