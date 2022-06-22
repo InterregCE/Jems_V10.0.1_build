@@ -47,7 +47,7 @@ export class PartnerBreakdownCostCategoryComponent implements OnChanges {
       ...(this.allowedCostCategories.get('LumpSum') ?
         [{ ...this.breakdown.lumpSum, translation: 'project.partner.budget.lumpSum'}] : []),
       ...(this.allowedCostCategories.get('UnitCost') ?
-        [{ ...this.breakdown.unitCost, translation: 'project.partner.budget.unitCost'}] : []),
+        [{ ...this.breakdown.unitCost, translation: 'project.partner.budget.unitCosts'}] : []),
     ];
   }
 

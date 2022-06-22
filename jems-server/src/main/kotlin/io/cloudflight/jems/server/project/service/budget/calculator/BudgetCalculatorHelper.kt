@@ -74,7 +74,7 @@ private fun getOfficeCosts(officeStaffFlatRate: Int?, officeDirectFlatRate: Int?
     val base = if (officeStaffFlatRate != null)
         sums.giveMe(BudgetCostCategory.Staff)
     else
-        setOf(
+        listOf(
             sums.giveMe(BudgetCostCategory.Staff),
             sums.giveMe(BudgetCostCategory.Travel),
             sums.giveMe(BudgetCostCategory.External),
