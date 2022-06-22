@@ -1515,7 +1515,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "[\r\n    {\r\n        \"id\": \"application.config.project.partner.budget.and.co.financing\",\r\n        \"visible\": \"true\",\r\n        \"availableInStep\": \"STEP_ONE_AND_TWO\"\r\n    },\r\n    {\r\n        \"id\": \"application.config.project.partner.co.financing.add.new.contribution.origin\",\r\n        \"visible\": \"true\",\r\n        \"availableInStep\": \"STEP_ONE_AND_TWO\"\r\n    },\r\n    {\r\n        \"id\": \"application.config.project.partner.budget.staff.cost.unit.type.and.number.of.units\",\r\n        \"visible\": \"true\",\r\n        \"availableInStep\": \"STEP_ONE_AND_TWO\"\r\n    },\r\n    {\r\n        \"id\": \"application.config.project.partner.budget.travel.and.accommodation.unit.type.and.number.of.units\",\r\n        \"visible\": \"true\",\r\n        \"availableInStep\": \"STEP_ONE_AND_TWO\"\r\n    },\r\n    {\r\n        \"id\": \"application.config.project.partner.budget.infrastructure.and.works.unit.type.and.number.of.units\",\r\n        \"visible\": \"true\",\r\n        \"availableInStep\": \"STEP_ONE_AND_TWO\"\r\n    },\r\n        {\r\n        \"id\": \"application.config.project.activities.deliverables\",\r\n        \"visible\": \"true\",\r\n        \"availableInStep\": \"STEP_ONE_AND_TWO\"\r\n    }\r\n]\r\n",
+							"raw": "[\r\n    {\r\n        \"id\": \"application.config.project.partner.budget.and.co.financing\",\r\n        \"visible\": \"true\",\r\n        \"availableInStep\": \"STEP_ONE_AND_TWO\"\r\n    },\r\n    {\r\n        \"id\": \"application.config.project.partner.co.financing.add.new.contribution.origin\",\r\n        \"visible\": \"true\",\r\n        \"availableInStep\": \"STEP_ONE_AND_TWO\"\r\n    },\r\n    {\r\n        \"id\": \"application.config.project.partner.budget.staff.cost.unit.type.and.number.of.units\",\r\n        \"visible\": \"true\",\r\n        \"availableInStep\": \"STEP_ONE_AND_TWO\"\r\n    },\r\n    {\r\n        \"id\": \"application.config.project.partner.budget.travel.and.accommodation.unit.type.and.number.of.units\",\r\n        \"visible\": \"true\",\r\n        \"availableInStep\": \"STEP_ONE_AND_TWO\"\r\n    },\r\n    {\r\n        \"id\": \"application.config.project.partner.budget.infrastructure.and.works.unit.type.and.number.of.units\",\r\n        \"visible\": \"true\",\r\n        \"availableInStep\": \"STEP_ONE_AND_TWO\"\r\n    },\r\n    {\r\n        \"id\": \"application.config.project.activities.deliverables\",\r\n        \"visible\": \"true\",\r\n        \"availableInStep\": \"STEP_ONE_AND_TWO\"\r\n    },\r\n    {\r\n        \"id\": \"application.config.project.partner.budget.periods\",\r\n        \"visible\": \"true\",\r\n        \"availableInStep\": \"STEP_ONE_AND_TWO\"\r\n    }\r\n]\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -10754,7 +10754,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"abbreviation\": \"{{$randomAbbreviation}} {{$randomCompanySuffix}}\",\r\n    \"role\": \"PARTNER\",\r\n    \"legalStatusId\": 1,\r\n    \"nameInOriginalLanguage\": \"{{$randomCatchPhrase}}\",\r\n    \"nameInEnglish\": \"{{$randomPhrase}}\",\r\n    \"otherIdentifierNumber\": \"{{$randomBankAccount}}\",\r\n    \"otherIdentifierDescription\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"{{$randomBankAccountIban}}\"\r\n        }\r\n    ],\r\n    \"partnerType\": \"NationalPublicAuthority\",\r\n    \"vat\": \"{{$randomPhoneNumber}}\"\r\n}\r\n",
+									"raw": "{\r\n    \"abbreviation\": \"{{$randomAbbreviation}} {{$randomCompanySuffix}}\",\r\n    \"role\": \"PARTNER\",\r\n    \"legalStatusId\": 1,\r\n    \"nameInOriginalLanguage\": \"{{$randomCatchPhrase}}\",\r\n    \"nameInEnglish\": \"{{$randomWords}}\",\r\n    \"otherIdentifierNumber\": \"{{$randomBankAccount}}\",\r\n    \"otherIdentifierDescription\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"{{$randomBankAccountIban}}\"\r\n        }\r\n    ],\r\n    \"partnerType\": \"NationalPublicAuthority\",\r\n    \"vat\": \"{{$randomPhoneNumber}}\"\r\n}\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -11240,7 +11240,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"abbreviation\": \"{{$randomAbbreviation}} {{$randomCompanySuffix}}\",\r\n    \"role\": \"PARTNER\",\r\n    \"legalStatusId\": 1,\r\n    \"nameInOriginalLanguage\": \"{{$randomCatchPhrase}}\",\r\n    \"nameInEnglish\": \"{{$randomPhrase}}\",\r\n    \"otherIdentifierNumber\": \"{{$randomBankAccount}}\",\r\n    \"otherIdentifierDescription\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"{{$randomBankAccountIban}}\"\r\n        }\r\n    ],\r\n    \"partnerType\": \"NationalPublicAuthority\",\r\n    \"vat\": \"{{$randomPhoneNumber}}\"\r\n}\r\n",
+									"raw": "{\r\n    \"abbreviation\": \"{{$randomAbbreviation}} {{$randomCompanySuffix}}\",\r\n    \"role\": \"PARTNER\",\r\n    \"legalStatusId\": 1,\r\n    \"nameInOriginalLanguage\": \"{{$randomCatchPhrase}}\",\r\n    \"nameInEnglish\": \"{{$randomWords}}\",\r\n    \"otherIdentifierNumber\": \"{{$randomBankAccount}}\",\r\n    \"otherIdentifierDescription\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"{{$randomBankAccountIban}}\"\r\n        }\r\n    ],\r\n    \"partnerType\": \"NationalPublicAuthority\",\r\n    \"vat\": \"{{$randomPhoneNumber}}\"\r\n}\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -12145,7 +12145,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"abbreviation\": \"{{partner_abbreviation}}\",\r\n    \"role\": \"LEAD_PARTNER\",\r\n    \"legalStatusId\": 1,\r\n    \"nameInOriginalLanguage\": \"{{$randomCatchPhrase}}\",\r\n    \"nameInEnglish\": \"{{$randomPhrase}}\",\r\n    \"otherIdentifierNumber\": \"{{$randomBankAccount}}\",\r\n    \"otherIdentifierDescription\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"{{$randomBankAccountIban}}\"\r\n        }\r\n    ],\r\n    \"partnerType\": \"NationalPublicAuthority\",\r\n    \"vat\": \"{{$randomPhoneNumber}}\"\r\n}\r\n",
+									"raw": "{\r\n    \"abbreviation\": \"{{partner_abbreviation}}\",\r\n    \"role\": \"LEAD_PARTNER\",\r\n    \"legalStatusId\": 1,\r\n    \"nameInOriginalLanguage\": \"{{$randomCatchPhrase}}\",\r\n    \"nameInEnglish\": \"{{$randomWords}}\",\r\n    \"otherIdentifierNumber\": \"{{$randomBankAccount}}\",\r\n    \"otherIdentifierDescription\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"{{$randomBankAccountIban}}\"\r\n        }\r\n    ],\r\n    \"partnerType\": \"NationalPublicAuthority\",\r\n    \"vat\": \"{{$randomPhoneNumber}}\"\r\n}\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -13920,7 +13920,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"abbreviation\": \"{{$randomAbbreviation}} {{$randomCompanySuffix}}\",\r\n    \"role\": \"PARTNER\",\r\n    \"legalStatusId\": 1,\r\n    \"nameInOriginalLanguage\": \"{{$randomCatchPhrase}}\",\r\n    \"nameInEnglish\": \"{{$randomPhrase}}\",\r\n    \"otherIdentifierNumber\": \"{{$randomBankAccount}}\",\r\n    \"otherIdentifierDescription\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"{{$randomBankAccountIban}}\"\r\n        }\r\n    ],\r\n    \"partnerType\": \"NationalPublicAuthority\",\r\n    \"vat\": \"{{$randomPhoneNumber}}\"\r\n}\r\n",
+									"raw": "{\r\n    \"abbreviation\": \"{{$randomAbbreviation}} {{$randomCompanySuffix}}\",\r\n    \"role\": \"PARTNER\",\r\n    \"legalStatusId\": 1,\r\n    \"nameInOriginalLanguage\": \"{{$randomCatchPhrase}}\",\r\n    \"nameInEnglish\": \"{{$randomWords}}\",\r\n    \"otherIdentifierNumber\": \"{{$randomBankAccount}}\",\r\n    \"otherIdentifierDescription\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"{{$randomBankAccountIban}}\"\r\n        }\r\n    ],\r\n    \"partnerType\": \"NationalPublicAuthority\",\r\n    \"vat\": \"{{$randomPhoneNumber}}\"\r\n}\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -14483,7 +14483,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\r\n    \"abbreviation\": \"{{partner_abbreviation}}\",\r\n    \"role\": \"LEAD_PARTNER\",\r\n    \"legalStatusId\": 1,\r\n    \"nameInOriginalLanguage\": \"{{$randomCatchPhrase}}\",\r\n    \"nameInEnglish\": \"{{$randomPhrase}}\",\r\n    \"otherIdentifierNumber\": \"{{$randomBankAccount}}\",\r\n    \"otherIdentifierDescription\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"{{$randomBankAccountIban}}\"\r\n        }\r\n    ],\r\n    \"partnerType\": \"NationalPublicAuthority\",\r\n    \"vat\": \"{{$randomPhoneNumber}}\"\r\n}\r\n",
+									"raw": "{\r\n    \"abbreviation\": \"{{partner_abbreviation}}\",\r\n    \"role\": \"LEAD_PARTNER\",\r\n    \"legalStatusId\": 1,\r\n    \"nameInOriginalLanguage\": \"{{$randomCatchPhrase}}\",\r\n    \"nameInEnglish\": \"{{$randomWords}}\",\r\n    \"otherIdentifierNumber\": \"{{$randomBankAccount}}\",\r\n    \"otherIdentifierDescription\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"{{$randomBankAccountIban}}\"\r\n        }\r\n    ],\r\n    \"partnerType\": \"NationalPublicAuthority\",\r\n    \"vat\": \"{{$randomPhoneNumber}}\"\r\n}\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -14646,7 +14646,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "[\r\n    {\r\n        \"description\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"Teachers\"\r\n            }\r\n        ],\r\n        \"numberOfUnits\": 2,\r\n        \"pricePerUnit\": 8800,\r\n        \"rowSum\": 17600\r\n    },\r\n    {\r\n        \"description\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"Students\"\r\n            }\r\n        ],\r\n        \"numberOfUnits\": 22,\r\n        \"pricePerUnit\": 200,\r\n        \"rowSum\": 4400\r\n    }\r\n]\r\n",
+									"raw": "[\r\n    {\r\n        \"description\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"Teachers\"\r\n            }\r\n        ],\r\n        \"numberOfUnits\": 2,\r\n        \"pricePerUnit\": 8800,\r\n        \"rowSum\": 17600,\r\n        \"budgetPeriods\":[\r\n            { \"number\":1, \"amount\":1500},\r\n            { \"number\":2, \"amount\":2000},\r\n            { \"number\":3, \"amount\":1500},\r\n            { \"number\":4, \"amount\":5000},\r\n            { \"number\":5, \"amount\":1200},\r\n            { \"number\":6, \"amount\":3200},\r\n            { \"number\":7, \"amount\":3200}\r\n        ]\r\n    },\r\n    {\r\n        \"description\": [\r\n            {\r\n                \"language\": \"{{inputLanguage}}\",\r\n                \"translation\": \"Students\"\r\n            }\r\n        ],\r\n        \"numberOfUnits\": 22,\r\n        \"pricePerUnit\": 200,\r\n        \"rowSum\": 4400,\r\n        \"budgetPeriods\":[\r\n            { \"number\":1, \"amount\":1000},\r\n            { \"number\":2, \"amount\":100},\r\n            { \"number\":3, \"amount\":1000},\r\n            { \"number\":4, \"amount\":100},\r\n            { \"number\":5, \"amount\":1100},\r\n            { \"number\":6, \"amount\":100},\r\n            { \"number\":7, \"amount\":1000}\r\n        ]\r\n    }\r\n]\r\n",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -14996,6 +14996,78 @@
 									""
 								]
 							}
+						}
+					]
+				},
+				{
+					"name": "fill in lump sums",
+					"item": [
+						{
+							"name": "fill in project lump sums",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('applicant can fill in project lump sum and their respective partner contribution', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "basic",
+									"basic": [
+										{
+											"key": "password",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										},
+										{
+											"key": "username",
+											"value": "{{applicant_email}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "[\r\n    {\r\n        \"programmeLumpSumId\": {{programmeLumpSumId}},\r\n        \"period\": 3,\r\n        \"lumpSumContributions\": [\r\n            {\r\n                \"partnerId\": {{partner_id_lead}},\r\n                \"amount\": 2887.5\r\n            },\r\n            {\r\n                \"partnerId\": {{partner_id_2}},\r\n                \"amount\": 7112.5\r\n            }\r\n        ]\r\n    }\r\n]\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/project/{{application_id}}/lumpSum",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"project",
+										"{{application_id}}",
+										"lumpSum"
+									]
+								}
+							},
+							"response": []
 						}
 					]
 				},
@@ -15474,6 +15546,320 @@
 								"partner",
 								"create",
 								"{{partner_id_lead}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "choose period for report",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('programm user should be able to fill in report identification', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('report should have period 1 selected and report forecast persisted', function() {\r",
+									"    const report = pm.response.json();\r",
+									"    pm.expect(report.spendingProfile.periodDetail.number).to.eql(1);\r",
+									"    pm.expect(report.spendingProfile.periodDetail.periodBudget).to.eql(2750);\r",
+									"    pm.expect(report.spendingProfile.periodDetail.periodBudgetCumulative).to.eql(2750);\r",
+									"    pm.expect(report.spendingProfile.nextReportForecast).to.eql(2415.20);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{programme_user_password}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{programme_user_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"startDate\": null,\r\n    \"endDate\": null,\r\n    \"period\": 1,\r\n    \"summary\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"{{$randomLoremParagraph}}\\n{{$randomLoremParagraph}}\\n\\n{{$randomLoremParagraph}}\"\r\n        }\r\n    ],\r\n    \"problemsAndDeviations\": [\r\n        {\r\n            \"language\": \"{{inputLanguage}}\",\r\n            \"translation\": \"{{$randomPhrase}}\"\r\n        }\r\n    ],\r\n    \"targetGroups\": [],\r\n    \"nextReportForecast\": 2415.20,\r\n    \"spendingDeviations\": []\r\n}\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/project/report/partner/identification/byPartnerId/{{partner_id_lead}}/byReportId/{{report_id_1}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"report",
+								"partner",
+								"identification",
+								"byPartnerId",
+								"{{partner_id_lead}}",
+								"byReportId",
+								"{{report_id_1}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get available lump sums",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('programm user should be able to fetch available lumpsums', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('report should have at least 1 available lump sum', function() {\r",
+									"    const response = pm.response.json();\r",
+									"    pm.expect(response.length).to.be.greaterThan(0);\r",
+									"    pm.variables.set('reportLumpSumId', response[0].id);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{programme_user_password}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{programme_user_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/project/report/partner/expenditure/byPartnerId/{{partner_id_lead}}/byReportId/{{report_id_1}}/lumpSums",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"report",
+								"partner",
+								"expenditure",
+								"byPartnerId",
+								"{{partner_id_lead}}",
+								"byReportId",
+								"{{report_id_1}}",
+								"lumpSums"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "fill in at least 1 expenditure",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('programm user should be able to fill in report expenditure', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('report should have 1 expenditure', function() {\r",
+									"    pm.expect(pm.response.json().length).to.eql(1);\r",
+									"});\r",
+									"\r",
+									"pm.test('report should have 1 lump sum with correct amount', function() {\r",
+									"    const expenditures = pm.response.json();\r",
+									"    pm.expect(expenditures[0].declaredAmount).to.eql(2887.5);\r",
+									"    pm.expect(expenditures[0].pricePerUnit).to.eql(2887.5);\r",
+									"    pm.expect(expenditures[0].numberOfUnits).to.eql(1);\r",
+									"    pm.expect(expenditures[0].currencyConversionRate).to.eql(null);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{programme_user_password}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{programme_user_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "[\r\n    {\r\n        \"id\": null,\r\n        \"lumpSumId\": {{reportLumpSumId}},\r\n        \"unitCostId\": null,\r\n        \"costCategory\": \"Multiple\",\r\n        \"investmentId\": null,\r\n        \"contractId\": null,\r\n        \"internalReferenceNumber\": null,\r\n        \"invoiceNumber\": null,\r\n        \"invoiceDate\": null,\r\n        \"dateOfPayment\": null,\r\n        \"currencyCode\": \"EUR\",\r\n        \"currencyConversionRate\": 1,\r\n        \"declaredAmountInEur\": 0\r\n    }\r\n]\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/project/report/partner/expenditure/byPartnerId/{{partner_id_lead}}/byReportId/{{report_id_1}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"report",
+								"partner",
+								"expenditure",
+								"byPartnerId",
+								"{{partner_id_lead}}",
+								"byReportId",
+								"{{report_id_1}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get report spending profile",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test('programm user should be able to retrieve current spending profile', function() {\r",
+									"    pm.response.to.have.status(200);\r",
+									"});\r",
+									"\r",
+									"pm.test('assert spending profile values are correctly calculated', function() {\r",
+									"    const spendingProfile = pm.response.json().spendingProfile;\r",
+									"    pm.expect(spendingProfile.currentReport).to.eql(2887.5);\r",
+									"    pm.expect(spendingProfile.differenceFromPlan).to.eql(-137.5);\r",
+									"    pm.expect(spendingProfile.differenceFromPlanPercentage).to.eql(105);\r",
+									"    pm.expect(spendingProfile.nextReportForecast).to.eql(2415.2);\r",
+									"});\r",
+									"\r",
+									"pm.test('assert spending profile period is properly calculated', function() {\r",
+									"    const periodDetail = pm.response.json().spendingProfile.periodDetail;\r",
+									"    pm.expect(periodDetail.start).to.eql(1);\r",
+									"    pm.expect(periodDetail.end).to.eql(12);\r",
+									"    pm.expect(periodDetail.number).to.eql(1);\r",
+									"    pm.expect(periodDetail.periodBudget).to.eql(2750);\r",
+									"    pm.expect(periodDetail.periodBudgetCumulative).to.eql(2750);\r",
+									"});\r",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "basic",
+							"basic": [
+								{
+									"key": "password",
+									"value": "{{programme_user_password}}",
+									"type": "string"
+								},
+								{
+									"key": "username",
+									"value": "{{programme_user_email}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/project/report/partner/identification/byPartnerId/{{partner_id_lead}}/byReportId/{{report_id_1}}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"project",
+								"report",
+								"partner",
+								"identification",
+								"byPartnerId",
+								"{{partner_id_lead}}",
+								"byReportId",
+								"{{report_id_1}}"
 							]
 						}
 					},

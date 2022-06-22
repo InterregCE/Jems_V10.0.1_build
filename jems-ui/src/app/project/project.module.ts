@@ -148,6 +148,12 @@ import {
 import {AssessmentAndDecisionChecklistPageComponent} from './project-application/assessment-and-decision/assessment-and-decision-checklist-page/assessment-and-decision-checklist-page.component';
 import { PartnerReportAnnexesTabComponent } from './project-application/report/partner-report-detail-page/partner-report-annexes-tab/partner-report-annexes-tab.component';
 import { ReportAnnexesTableComponent } from './project-application/report/partner-report-detail-page/partner-report-annexes-tab/report-annexes-table/report-annexes-table.component';
+import {
+  PartnerReportFinancialOverviewTabComponent
+} from "@project/project-application/report/partner-report-detail-page/partner-report-financial-overview-tab/partner-report-financial-overview-tab.component";
+import {
+  PartnerBreakdownCostCategoryComponent
+} from "@project/project-application/report/partner-report-detail-page/partner-report-financial-overview-tab/partner-breakdown-cost-category/partner-breakdown-cost-category.component";
 
 @NgModule({
   declarations: [
@@ -265,6 +271,8 @@ import { ReportAnnexesTableComponent } from './project-application/report/partne
     PartnerReportProcurementsTabComponent,
     PartnerReportContributionTabComponent,
     PartnerReportExpendituresTabComponent,
+    PartnerReportFinancialOverviewTabComponent,
+    PartnerBreakdownCostCategoryComponent,
     PartnerActionsCellComponent,
     AssessmentAndDecisionChecklistPageComponent,
     PartnerReportAnnexesTabComponent,

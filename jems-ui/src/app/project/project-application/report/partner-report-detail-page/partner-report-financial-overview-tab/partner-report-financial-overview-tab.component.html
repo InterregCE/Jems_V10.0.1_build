@@ -1,0 +1,9 @@
+<jems-form *ngIf="data$ | async as data">
+
+    <h3>{{ 'project.application.partner.report.financial.breakdown.cost.category' | translate}}</h3>
+    <jems-partner-breakdown-cost-category
+            [breakdown]="data.perCostCategory"
+            [allowedCostCategories]="data.allowedCostCategories">
+    </jems-partner-breakdown-cost-category>
+
+</jems-form>
