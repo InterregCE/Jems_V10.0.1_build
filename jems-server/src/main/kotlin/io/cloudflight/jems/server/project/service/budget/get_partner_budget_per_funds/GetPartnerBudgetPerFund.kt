@@ -58,17 +58,20 @@ class GetPartnerBudgetPerFund(
         callType: CallType,
         partners: List<ProjectPartnerSummary>,
         version: String?
-    ): PartnerBudgetSpfCoFinancing? {
-        val activeBeneficiary = partners.firstOrNull { it.active && it.role == ProjectPartnerRole.LEAD_PARTNER }
-        if (callType == CallType.SPF && activeBeneficiary?.id != null) {
-            return PartnerBudgetSpfCoFinancing(
-                partner = activeBeneficiary,
-                projectPartnerCoFinancingAndContribution =
-                projectPartnerCoFinancingPersistence.getSpfCoFinancingAndContributions(activeBeneficiary.id, version),
-                total = getBudgetTotalCost.getBudgetTotalSpfCost(activeBeneficiary.id, version)
-            )
-        }
-        return null
+    ): List<PartnerBudgetSpfCoFinancing?> {
+        return if (callType == CallType.SPF) {
+            partners.map {
+                if (it.id != null)
+                    PartnerBudgetSpfCoFinancing(
+                        partner = it,
+                        projectPartnerCoFinancingAndContribution =
+                        projectPartnerCoFinancingPersistence.getSpfCoFinancingAndContributions(it.id, version),
+                        total = getBudgetTotalCost.getBudgetTotalSpfCost(it.id, version)
+                    )
+                else
+                    null
+            }
+        } else emptyList()
     }
 
 }

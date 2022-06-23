@@ -17,6 +17,7 @@ import io.cloudflight.jems.server.project.service.model.ProjectPartnerBudgetPerP
 import io.cloudflight.jems.server.project.service.model.ProjectPartnerCostType
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectPeriodBudget
+import io.cloudflight.jems.server.project.service.partner.model.BudgetSpfCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.PartnerTotalBudgetPerCostCategory
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
@@ -91,11 +92,13 @@ class PartnerBudgetPerPeriodCalculator(private val budgetCostsCalculator: Budget
         spfBeneficiary: ProjectPartnerSummary,
         spfBudgetPerPeriod: List<ProjectSpfBudgetPerPeriod>,
         spfTotalBudget: BigDecimal,
-        projectPeriods: List<ProjectPeriod>,
+        projectPeriods: List<ProjectPeriod>
     ): List<ProjectPartnerBudgetPerPeriod> {
         val preparationPeriod = getPreparationPeriodBudgets(BigDecimal.ZERO)
         val closurePeriod = getClosurePeriodBudgets(BigDecimal.ZERO)
-        val periods = spfBudgetPerPeriod.map { it.toProjectPeriodBudget(projectPeriods)}.toMutableList()
+        val maxPeriod = projectPeriods.maxByOrNull { it.number }
+        val totalBudgetPerPeriods = spfBudgetPerPeriod.sumOf { it.spfCostPerPeriod }
+        val periods = projectPeriods.map { it.toProjectPeriodBudget(spfBudgetPerPeriod, spfTotalBudget, totalBudgetPerPeriods, maxPeriod)}.toMutableList()
 
         periods.addAll(listOf(preparationPeriod, closurePeriod))
         periods.sortBy { it.periodNumber}

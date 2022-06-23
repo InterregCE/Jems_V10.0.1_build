@@ -22,7 +22,7 @@ interface PartnerBudgetPerPeriodCalculatorService {
         spfBeneficiary: ProjectPartnerSummary,
         spfBudgetPerPeriod: List<ProjectSpfBudgetPerPeriod>,
         spfTotalBudget: BigDecimal,
-        projectPeriods: List<ProjectPeriod>,
+        projectPeriods: List<ProjectPeriod>
     ): List<ProjectPartnerBudgetPerPeriod>
 
 }

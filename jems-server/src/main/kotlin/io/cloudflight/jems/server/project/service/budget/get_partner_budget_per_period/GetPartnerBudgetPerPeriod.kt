@@ -40,13 +40,19 @@ class GetPartnerBudgetPerPeriod(
         val projectPartners = persistence.getPartnersForProjectId(projectId, version)
         val projectPeriods = projectPersistence.getProjectPeriods(projectId, version)
 
-        val spfBudgetPerPeriod = getSpfPartnerBudgetPerPeriod(
-            partnerSummary = projectPartners
-                .firstOrNull { callDetail.type == CallType.SPF && it.active && it.role == ProjectPartnerRole.LEAD_PARTNER },
-            projectPeriods = projectPeriods,
-            projectId = projectId,
-            version = version
-        )
+        val spfPartnersBudgetPerPeriod =
+            if (callDetail.type == CallType.SPF) {
+                projectPartners.map {
+                    getSpfPartnerBudgetPerPeriod(
+                        partnerSummary = it,
+                        projectPeriods,
+                        projectId,
+                        version
+                    )
+                }
+            }
+            else
+                emptyList()
 
         return projectPartners.let { partners ->
             val partnerIds = partners.mapNotNullTo(HashSet()) { it.id }
@@ -58,7 +64,7 @@ class GetPartnerBudgetPerPeriod(
                 ),
                 lumpSums = lumpSumPersistence.getLumpSums(projectId, version),
                 projectPeriods = projectPeriods,
-                spfPartnerBudgetPerPeriod = spfBudgetPerPeriod
+                spfPartnerBudgetPerPeriod = spfPartnersBudgetPerPeriod.flatten()
             )
         }
     }

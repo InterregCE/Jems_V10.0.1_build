@@ -6,7 +6,7 @@ data class ProjectPeriodBudget(
     val periodNumber: Int,
     val periodStart: Int,
     val periodEnd: Int,
-    val totalBudgetPerPeriod: BigDecimal,
+    var totalBudgetPerPeriod: BigDecimal,
     val budgetPerPeriodDetail: BudgetCostsDetail,
     val lastPeriod: Boolean
 )

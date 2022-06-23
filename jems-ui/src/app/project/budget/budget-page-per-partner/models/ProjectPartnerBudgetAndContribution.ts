@@ -4,6 +4,7 @@ export interface ProjectPartnerBudgetAndContribution {
     partnerSortNumber: number;
     partnerRole: string;
     partnerCountry: string;
+    isPartnerActive: boolean;
     costType: string;
     budgets: ProjectPartnerBudgetModel[];
     publicContribution: number;

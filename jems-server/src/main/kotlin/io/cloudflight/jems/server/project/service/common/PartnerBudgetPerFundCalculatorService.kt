@@ -11,6 +11,6 @@ interface PartnerBudgetPerFundCalculatorService {
         partners: List<ProjectPartnerSummary>,
         projectFunds: List<ProgrammeFund>,
         coFinancing: List<PartnerBudgetCoFinancing>,
-        spfCoFinancing: PartnerBudgetSpfCoFinancing?
+        spfCoFinancing: List<PartnerBudgetSpfCoFinancing?>
     ): List<ProjectPartnerBudgetPerFund>
 }

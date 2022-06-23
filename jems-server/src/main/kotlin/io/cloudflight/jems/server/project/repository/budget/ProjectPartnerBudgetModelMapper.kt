@@ -41,12 +41,29 @@ fun ProjectPartnerTotalBudgetEntry.toModel() = PartnerTotalBudgetPerCostCategory
     lumpSumsTotal ?: BigDecimal.ZERO
 )
 
-fun ProjectSpfBudgetPerPeriod.toProjectPeriodBudget(projectPeriods: List<ProjectPeriod>) =
+fun ProjectPeriod.toProjectPeriodBudget(
+    spfCostPerPeriod: List<ProjectSpfBudgetPerPeriod>,
+    spfTotalBudget: BigDecimal,
+    totalBudgetPerPeriods: BigDecimal,
+    maxPeriod: ProjectPeriod?
+) =
     ProjectPeriodBudget(
-        periodNumber = periodNumber,
-        periodStart = projectPeriods.first { it.number == periodNumber }.start,
-        periodEnd = projectPeriods.first { it.number == periodNumber }.end,
-        totalBudgetPerPeriod = spfCostPerPeriod,
+        periodNumber = number,
+        periodStart = start,
+        periodEnd = end,
+        totalBudgetPerPeriod =
+        if (spfCostPerPeriod.firstOrNull {it.periodNumber == number} == null) {
+            if (maxPeriod != null && number == maxPeriod.number)
+                spfTotalBudget - totalBudgetPerPeriods
+            else
+                BigDecimal.ZERO
+        }
+        else {
+            if (maxPeriod != null && number == maxPeriod.number)
+                spfCostPerPeriod.first {it.periodNumber == number}.spfCostPerPeriod + (spfTotalBudget - totalBudgetPerPeriods)
+            else
+                spfCostPerPeriod.first {it.periodNumber == number}.spfCostPerPeriod
+        },
         budgetPerPeriodDetail = BudgetCostsDetail(),
         lastPeriod = false
     )
