@@ -59,7 +59,7 @@ export class ProjectPartnerStateAidTabComponent {
     answer4: [],
     justification4: [],
     activities: this.formBuilder.array([]),
-    stateAidScheme: [],
+    stateAidScheme: [0],
   });
 
   constructor(private formBuilder: FormBuilder,
@@ -94,7 +94,7 @@ export class ProjectPartnerStateAidTabComponent {
         activities: isEditable ? activities : stateAid.activities,
         project,
         isEditable,
-        stateAidsForDropdown: [{id: null} as any, ...project.callSettings.stateAids]
+        stateAidsForDropdown: project.callSettings.stateAids,
       })),
       tap(stateAid => this.resetForm(stateAid.stateAid)),
     );
@@ -103,7 +103,7 @@ export class ProjectPartnerStateAidTabComponent {
   updateStateAid(stateAids: ProgrammeStateAidDTO[]): void {
     const stateAidToSave = {
       ...this.form.value,
-      stateAidScheme: stateAids.find(stateAid => this.form.controls?.stateAidScheme.value === stateAid.id)
+      stateAidScheme: stateAids.find(stateAid => this.form.controls?.stateAidScheme.value === stateAid.id),
     };
     this.pageStore.partner$
       .pipe(
@@ -124,7 +124,7 @@ export class ProjectPartnerStateAidTabComponent {
     stateAid?.activities?.forEach((activity: WorkPackageActivitySummaryDTO) => {
       this.addActivity(activity);
     });
-    this.form.controls.stateAidScheme.setValue(stateAid.stateAidScheme?.id);
+    this.form.controls.stateAidScheme.setValue(stateAid.stateAidScheme?.id || 0);
     this.formService.setDirty(false);
   }
 
