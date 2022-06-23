@@ -1,3 +1,11 @@
 .border-cell-right {
   border-right: .0625rem solid var(--table-border-color);
 }
+
+.mat-header-row, .mat-footer-row, .mat-row {
+  min-width: 67rem;
+}
+
+.respect-line-break {
+  white-space: pre-wrap;
+}
