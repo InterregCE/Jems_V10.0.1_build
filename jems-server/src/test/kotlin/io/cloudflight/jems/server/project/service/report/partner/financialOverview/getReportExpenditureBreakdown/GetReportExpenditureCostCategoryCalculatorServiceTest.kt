@@ -41,7 +41,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
             identification = mockk(),
         )
 
-        private val data = ReportExpenditureCostCategory(
+        val data = ReportExpenditureCostCategory(
             options = ProjectPartnerBudgetOptions(
                 partnerId = PARTNER_ID,
                 officeAndAdministrationOnStaffCostsFlatRate = null,
@@ -88,7 +88,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
             ),
         )
 
-        private val expenditureLumpSum = ProjectPartnerReportExpenditureCost(
+        val expenditureLumpSum = ProjectPartnerReportExpenditureCost(
             id = 201L,
             lumpSumId = 45L,
             unitCostId = null,
@@ -108,7 +108,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
             attachment = null,
         )
 
-        private val expenditureUnitCost = ProjectPartnerReportExpenditureCost(
+        val expenditureUnitCost = ProjectPartnerReportExpenditureCost(
             id = 202L,
             lumpSumId = null,
             unitCostId = 46L,
@@ -128,7 +128,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
             attachment = null,
         )
 
-        private val expenditureStaffCost = ProjectPartnerReportExpenditureCost(
+        val expenditureStaffCost = ProjectPartnerReportExpenditureCost(
             id = 203L,
             lumpSumId = null,
             unitCostId = null,
@@ -148,7 +148,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
             attachment = null,
         )
 
-        private val expenditureExternalCost = ProjectPartnerReportExpenditureCost(
+        val expenditureExternalCost = ProjectPartnerReportExpenditureCost(
             id = 204L,
             lumpSumId = null,
             unitCostId = null,
@@ -168,7 +168,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
             attachment = null,
         )
 
-        private val expenditureEquipmentCost = ProjectPartnerReportExpenditureCost(
+        val expenditureEquipmentCost = ProjectPartnerReportExpenditureCost(
             id = 205L,
             lumpSumId = null,
             unitCostId = null,
@@ -188,7 +188,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
             attachment = null,
         )
 
-        private val expenditureInfrastructureCost = ProjectPartnerReportExpenditureCost(
+        val expenditureInfrastructureCost = ProjectPartnerReportExpenditureCost(
             id = 206L,
             lumpSumId = null,
             unitCostId = null,
@@ -208,7 +208,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
             attachment = null,
         )
 
-        private val expenditureMultipleCost = ProjectPartnerReportExpenditureCost(
+        val expenditureMultipleCost = ProjectPartnerReportExpenditureCost(
             id = 207L,
             lumpSumId = null,
             unitCostId = null,
@@ -321,7 +321,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
             ),
         )
 
-        private val expectedOnStaffOutput = ExpenditureCostCategoryBreakdown(
+        private val expectedOnDirectOutput = ExpenditureCostCategoryBreakdown(
             staff = ExpenditureCostCategoryBreakdownLine(
                 flatRate = null,
                 totalEligibleBudget = BigDecimal.valueOf(100),
@@ -414,7 +414,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
             ),
         )
 
-        private val expectedOnDirectOutput = ExpenditureCostCategoryBreakdown(
+        private val expectedOnStaffOutput = ExpenditureCostCategoryBreakdown(
             staff = ExpenditureCostCategoryBreakdownLine(
                 flatRate = null,
                 totalEligibleBudget = BigDecimal.valueOf(100),
@@ -628,7 +628,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
             expenditureMultipleCost,
         )
 
-        assertThat(service.getSubmittedOrCalculateCurrent(PARTNER_ID, reportId = 19L)).isEqualTo(expectedOnStaffOutput)
+        assertThat(service.getSubmittedOrCalculateCurrent(PARTNER_ID, reportId = 19L)).isEqualTo(expectedOnDirectOutput)
     }
 
     @Test
@@ -647,7 +647,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
             expenditureMultipleCost,
         )
 
-        assertThat(service.getSubmittedOrCalculateCurrent(PARTNER_ID, reportId = 20L)).isEqualTo(expectedOnDirectOutput)
+        assertThat(service.getSubmittedOrCalculateCurrent(PARTNER_ID, reportId = 20L)).isEqualTo(expectedOnStaffOutput)
     }
 
     @Test
@@ -660,4 +660,5 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
         verify(exactly = 0) { reportExpenditurePersistence.getPartnerReportExpenditureCosts(PARTNER_ID, any()) }
         verify(exactly = 0) { currencyPersistence.findAllByIdYearAndIdMonth(any(), any()) }
     }
+
 }
