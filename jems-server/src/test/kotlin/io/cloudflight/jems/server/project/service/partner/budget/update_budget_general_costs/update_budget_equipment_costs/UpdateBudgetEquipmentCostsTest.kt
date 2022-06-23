@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.service.partner.budget.update_budget_
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.project.service.partner.budget.update_budget_general_costs.UpdateBudgetGeneralCostsTest
+import io.cloudflight.jems.server.project.service.partner.model.BudgetGeneralCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import io.mockk.confirmVerified
 import io.mockk.every
@@ -11,6 +12,7 @@ import io.mockk.verify
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import java.math.BigDecimal
 
 internal class UpdateBudgetEquipmentCostsTest : UpdateBudgetGeneralCostsTest() {
 
@@ -135,6 +137,42 @@ internal class UpdateBudgetEquipmentCostsTest : UpdateBudgetGeneralCostsTest() {
         verify { budgetCostValidator.validateAgainstAFConfig(callId, any(), any(), any(), any()) }
         verify { budgetCostValidator.validateBaseEntries(budgetGeneralCostEntries) }
         verify { budgetCostValidator.validatePricePerUnits(pricePerUnits) }
+        confirmVerified(budgetCostValidator, partnerPersistence, projectPersistence)
+    }
+
+    @Test
+    fun `should throw I18nValidationException when there is validation error in unitCosts`() {
+        val costEntries =  listOf(BudgetGeneralCostEntry(
+            numberOfUnits = BigDecimal.ONE,
+            pricePerUnit = BigDecimal.TEN,
+            unitCostId = 1,
+            budgetPeriods = validBudgetPeriods,
+            rowSum = BigDecimal.TEN
+        ))
+        every { budgetCostValidator.validateAgainstAFConfig(
+            callId,
+            costEntries.map { it.budgetPeriods }.flatten().toSet(),
+            BudgetCategory.EquipmentCosts,
+            costEntries.map { it.numberOfUnits }.toList(),
+            costEntries.map { Pair(it.unitCostId, it.unitType) }.toList()
+        ) } returns Unit
+        val pricePerUnits = costEntries.map { it.pricePerUnit }
+        every { budgetCostValidator.validateBaseEntries(costEntries) } returns Unit
+        every { budgetCostValidator.validatePricePerUnits(pricePerUnits) } returns Unit
+        every { projectPersistence.getProjectUnitCosts(projectId) } returns emptyList()
+        every { budgetCostValidator.validateAllowedUnitCosts(emptyList(), any()) } throws I18nValidationException()
+
+        assertThrows<I18nValidationException> {
+            updateBudgetEquipmentCosts.updateBudgetGeneralCosts(partnerId, costEntries, BudgetCategory.EquipmentCosts)
+        }
+
+        verify { partnerPersistence.getProjectIdForPartnerId(partnerId) }
+        verify { projectPersistence.getCallIdOfProject(projectId) }
+        verify { budgetCostValidator.validateAgainstAFConfig(callId, any(), any(), any(), any()) }
+        verify { budgetCostValidator.validateBaseEntries(costEntries) }
+        verify { budgetCostValidator.validatePricePerUnits(pricePerUnits) }
+        verify { projectPersistence.getProjectUnitCosts(projectId) }
+        verify { budgetCostValidator.validateAllowedUnitCosts(emptyList(), any()) }
         confirmVerified(budgetCostValidator, partnerPersistence, projectPersistence)
     }
 

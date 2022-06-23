@@ -38,6 +38,12 @@ class UpdateBudgetSpfCosts(
 
         budgetCostValidator.validateBaseEntries(spfCosts)
         budgetCostValidator.validatePricePerUnits(spfCosts.map { it.pricePerUnit })
+        // validate no unit costs allowed at SPF
+        budgetCostValidator.validateAllowedUnitCosts(
+            availableUnitCosts = emptyList(),
+            spfCosts.filter { it.unitCostId != null }
+                .map { BudgetCostValidator.UnitCostEntry(it.unitCostId!!, it.pricePerUnit, it.unitType) }
+        )
         budgetCostValidator.validateAllowedSpfCosts(projectPersistence.getProjectCallSettings(projectId))
 
         budgetCostValidator.validateBudgetPeriods(
