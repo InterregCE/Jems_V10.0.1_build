@@ -54,14 +54,18 @@ export class ProjectTimeplanPageComponent {
       this.multiLanguageGlobalService.activeSystemLanguage$
     ])
       .pipe(
-        map(([workPackages, results, periods, inputLanguage, systemLanguage]) => ({
-          workPackages,
-          results,
-          timelineGroups: getGroups(workPackages, results),
-          timelineItems: getItems(workPackages, results, this.translateService),
-          timelineTranslations: getInputTranslations(workPackages)[inputLanguage] || [],
-          periods,
-        })),
+        map(([workPackages, _results, periods, inputLanguage, systemLanguage]) => {
+          const results = _results.map(result => result.periodNumber !== 255 ? result :
+            {...result, periodNumber: periods?.length + 1});
+          return ({
+            workPackages,
+            results: results,
+            timelineGroups: getGroups(workPackages, results),
+            timelineItems: getItems(workPackages, results, this.translateService),
+            timelineTranslations: getInputTranslations(workPackages)[inputLanguage] || [],
+            periods: periods?.length ? [...periods, {projectId: 0, number: periods.length + 1, start: 0, end: 0}] : [],
+          });
+        }),
         tap(data => this.createVisualizationOrUpdateJustTranslations(data.periods, data.timelineItems, data.timelineGroups)),
         tap((data) => this.updateLanguageSelection(data.timelineGroups, data.timelineTranslations)),
         shareReplay(1)
@@ -102,7 +106,7 @@ export class ProjectTimeplanPageComponent {
     }
 
     const endDate = getEndDateFromPeriod(lastPeriodNumber).toISOString();
-    const options = getOptions(this.translateService, {max: endDate});
+    const options = getOptions(this.translateService, lastPeriodNumber,  {max: endDate});
 
     this.timeline = new Timeline(doc, items, options);
     this.timeline.setWindow(START_DATE, endDate);

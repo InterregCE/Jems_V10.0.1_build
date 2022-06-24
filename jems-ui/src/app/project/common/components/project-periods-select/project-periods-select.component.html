@@ -10,7 +10,12 @@
                 [formControl]="control"
                 (selectionChange)="selectionChanged.emit()">
         <mat-option *ngFor="let period of periods" [value]="period.number">
-            {{'project.application.form.work.package.output.delivery.period.entry' | translate : getPeriodArguments(period) }}
+            <ng-container *ngIf="period.number !== 255">
+                {{ 'project.application.form.work.package.output.delivery.period.entry' | translate : getPeriodArguments(period) }}
+            </ng-container>
+            <ng-container *ngIf="period.number === 255">
+                {{ 'project.results.result.delivery.period.last' | translate }}
+            </ng-container>
         </mat-option>
     </mat-select>
 </mat-form-field>

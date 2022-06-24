@@ -15,6 +15,7 @@ import io.cloudflight.jems.server.project.entity.workpackage.output.WorkPackageO
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.workpackage.WorkPackageRepository
 import io.cloudflight.jems.server.project.repository.workpackage.output.WorkPackageOutputRepository
+import io.cloudflight.jems.server.project.service.lumpsum.model.CLOSURE_PERIOD_NUMBER
 import io.cloudflight.jems.server.project.service.model.ProjectForm
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -151,7 +152,7 @@ class ProjectServiceImpl(
 
     private fun ProjectResultEntity.clearPeriodIfBiggerThan(maxPeriod: Int) {
         val periodNumber = this.periodNumber
-        if (periodNumber != null && periodNumber > maxPeriod)
+        if (periodNumber != null && periodNumber > maxPeriod && periodNumber != CLOSURE_PERIOD_NUMBER)
             this.periodNumber = null
     }
 }

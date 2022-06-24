@@ -72,7 +72,10 @@ export class ProjectResultsPageStore {
   private periods(): Observable<ProjectPeriodDTO[]> {
     return this.projectStore.projectForm$
       .pipe(
-        map(projectForm => projectForm.periods),
+        map(projectForm => [
+          ...projectForm.periods,
+          { projectId: projectForm.id, number: 255, start: 0, end: 0 },
+        ]),
       );
   }
 }
