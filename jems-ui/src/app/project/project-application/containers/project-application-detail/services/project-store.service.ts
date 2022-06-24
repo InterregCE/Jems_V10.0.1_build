@@ -10,6 +10,7 @@ import {
   ProjectDetailDTO,
   ProjectDetailFormDTO,
   ProjectPartnerBudgetPerFundDTO,
+  ProjectPartnerUserCollaboratorService,
   ProjectPeriodDTO,
   ProjectService,
   ProjectStatusDTO,
@@ -65,6 +66,7 @@ export class ProjectStore {
   investmentSummaries$: Observable<InvestmentSummary[]>;
   investmentSummariesForFiles$: Observable<InvestmentSummary[]>;
   userIsProjectOwner$: Observable<boolean>;
+  userIsPartnerCollaborator$: Observable<boolean>;
   userIsProjectOwnerOrEditCollaborator$: Observable<boolean>;
   allowedBudgetCategories$: Observable<AllowedBudgetCategories>;
   activities$: Observable<WorkPackageActivitySummaryDTO[]>;
@@ -87,7 +89,8 @@ export class ProjectStore {
               private projectVersionStore: ProjectVersionStore,
               private callService: CallService,
               private projectUserCollaboratorService: ProjectUserCollaboratorService,
-              private projectBudgetService: ProjectBudgetService) {
+              private projectBudgetService: ProjectBudgetService,
+              private partnerUserCollaboratorService: ProjectPartnerUserCollaboratorService) {
     this.router.routeParameterChanges(ProjectPaths.PROJECT_DETAIL_PATH, 'projectId')
       .pipe(
         // TODO: remove init make projectId$ just an observable
@@ -116,6 +119,7 @@ export class ProjectStore {
     this.investmentSummaries$ = this.investmentSummaries();
     this.investmentSummariesForFiles$ = this.investmentSummariesForFiles();
     this.userIsProjectOwner$ = this.userIsProjectOwner();
+    this.userIsPartnerCollaborator$ = this.userIsPartnerCollaborator();
     this.userIsProjectOwnerOrEditCollaborator$ = this.userIsProjectOwnerOrEditCollaborator();
     this.allowedBudgetCategories$ = this.allowedBudgetCategories();
     this.activities$ = this.projectActivities();
@@ -381,6 +385,17 @@ export class ProjectStore {
           this.projectService.getProjectActivities(project.id, '')
         ),
         tap(activities => Log.info('Fetched project activities', activities))
+      );
+  }
+
+  private userIsPartnerCollaborator(): Observable<boolean> {
+    return this.projectId$
+      .pipe(
+        switchMap(projectId => this.partnerUserCollaboratorService.listCurrentUserPartnerCollaborations(projectId)),
+        tap(collaborators => Log.info('Fetched current user partner collaborations', this, collaborators)),
+        map(userPartnerCollaborations => {
+          return userPartnerCollaborations.length > 0;
+        })
       );
   }
 

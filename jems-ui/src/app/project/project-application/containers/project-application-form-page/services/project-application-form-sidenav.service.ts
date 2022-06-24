@@ -24,7 +24,9 @@ import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 import {RoutingService} from '@common/services/routing.service';
 import {FileManagementStore} from '@project/common/components/file-management/file-management-store';
-import {ProjectPartnerStore} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
+import {
+  ProjectPartnerStore
+} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
 import {ProjectPaths, ProjectUtil} from '@project/common/project-util';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import StatusEnum = ProjectStatusDTO.StatusEnum;
@@ -38,15 +40,27 @@ export class ProjectApplicationFormSidenavService {
   private readonly fetchPartners$ = new Subject<number>();
   private readonly fetchPackages$ = new Subject<number>();
 
-  private readonly canSeeContracting$: Observable<boolean> = combineLatest([
-    this.projectStore.currentVersionOfProjectStatus$,
+  private readonly canSeeContractMonitoring$: Observable<boolean> = combineLatest([
     this.permissionService.hasPermission(PermissionsEnum.ProjectContractingView),
     this.permissionService.hasPermission(PermissionsEnum.ProjectSetToContracted),
-    this.projectStore.userIsProjectOwner$,
+    this.projectStore.currentVersionOfProjectStatus$,
   ]).pipe(
-    map(([projectStatus, hasContractingViewPermission, hasSetToContractedPermission, isOwner]) =>
+    map(([hasContractingViewPermission, hasSetToContractedPermission, projectStatus]) =>
       (hasContractingViewPermission || hasSetToContractedPermission) && ProjectUtil.isInApprovedOrAnyStatusAfterApproved(projectStatus)
     ),
+  );
+
+  private readonly canSeeProjectManagement$: Observable<boolean> = combineLatest([
+    this.permissionService.hasPermission(PermissionsEnum.ProjectContractingManagementView),
+    this.permissionService.hasPermission(PermissionsEnum.ProjectContractingManagementEdit),
+    this.projectStore.userIsProjectOwner$,
+    this.projectStore.userIsPartnerCollaborator$,
+    this.projectStore.currentVersionOfProjectStatus$,
+  ]).pipe(
+    map(([hasProjectManagementViewPermission, hasProjectManagementEditPermission, isOwner, isPartnerCollaborator, projectStatus]) =>
+      (hasProjectManagementViewPermission || hasProjectManagementEditPermission || isOwner || isPartnerCollaborator) &&
+      ProjectUtil.isInApprovedOrAnyStatusAfterApproved(projectStatus)
+    )
   );
 
   private readonly canSeeReporting$: Observable<boolean> = combineLatest([
@@ -225,14 +239,15 @@ export class ProjectApplicationFormSidenavService {
               private translate: TranslateService,
               private permissionService: PermissionService,
               private routingService: RoutingService,
-              private visibilityStatusService: FormVisibilityStatusService
+              private visibilityStatusService: FormVisibilityStatusService,
   ) {
 
     const headlines$ = combineLatest([
       this.projectStore.project$,
       this.canSeeReporting$,
       this.reportSectionPartners$,
-      this.canSeeContracting$,
+      this.canSeeContractMonitoring$,
+      this.canSeeProjectManagement$,
       this.canSeeAssessments$,
       this.canSubmitApplication$,
       this.canCheckApplication$,
@@ -251,7 +266,8 @@ export class ProjectApplicationFormSidenavService {
                project,
                canSeeReporting,
                reportSectionPartners,
-               canSeeContracting,
+               canSeeContractMonitoring,
+               canSeeProjectManagement,
                canSeeAssessments,
                canSubmitApplication,
                canCheckApplication,
@@ -266,7 +282,8 @@ export class ProjectApplicationFormSidenavService {
           this.sideNavService.setHeadlines(ProjectPaths.PROJECT_DETAIL_PATH, [
             this.getProjectOverviewHeadline(project.id),
             ...canSeeReporting ? this.getReportingHeadline(reportSectionPartners) : [],
-            ...canSeeContracting ? this.getContractingHeadline(project.id) : [],
+            ...(canSeeProjectManagement || canSeeContractMonitoring) ?
+              this.getContractingHeadlines(project.id, canSeeContractMonitoring, canSeeProjectManagement) : [],
             this.getApplicationFormHeadline(project.id, partners, packages, versionTemplate, canReadApplicationFiles,
               canSeeAssessments, canSubmitApplication || canCheckApplication, canSeeProjectForm, canSeeModificationSection),
             ...canSeeProjectForm ? this.getExportHeadline(project.id) : [],
@@ -301,17 +318,31 @@ export class ProjectApplicationFormSidenavService {
     };
   }
 
-  private getContractingHeadline(projectId: number): HeadlineRoute[] {
+  private getContractingHeadlines(projectId: number, canSeeContractMonitoring: boolean, canSeeProjectManagement: boolean): HeadlineRoute[] {
     return [{
       headline: {i18nKey: 'project.application.contracting.title'},
       bullets: [
-        {
-          headline: {i18nKey: 'project.application.contract.monitoring.title'},
-          route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/contractMonitoring`,
-          scrollToTop: true,
-          scrollRoute: ''
-        }
+        ...canSeeContractMonitoring ? this.getContractMonitoringHeadline(projectId) : [],
+        ...canSeeProjectManagement ? this.getProjectManagementHeadline(projectId) : []
       ]
+    }];
+  }
+
+  private getContractMonitoringHeadline(projectId: number): HeadlineRoute[] {
+    return [{
+      headline: {i18nKey: 'project.application.contract.monitoring.title'},
+      route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/contractMonitoring`,
+      scrollToTop: true,
+      scrollRoute: ''
+    }];
+  }
+
+  private getProjectManagementHeadline(projectId: number): HeadlineRoute[] {
+    return [{
+      headline: {i18nKey: 'project.application.contract.management.title'},
+      route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/projectManagement`,
+      scrollToTop: true,
+      scrollRoute: ''
     }];
   }
 
