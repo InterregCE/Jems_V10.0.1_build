@@ -1,4 +1,4 @@
-<mat-table jemsNoWidthLimit [dataSource]="dataSource">
+<mat-table jemsNoWidthLimit [dataSource]="dataSource" [jemsTableConfig]="widths">
 
     <ng-container matColumnDef="type" sticky>
         <mat-header-cell *matHeaderCellDef>
@@ -18,7 +18,7 @@
 
     <ng-container matColumnDef="totalEligibleBudget">
         <mat-header-cell *matHeaderCellDef class="text-right">
-            <span jemsText maxLines="2">{{ 'project.application.partner.report.financial.total.eligible' | translate }}</span>
+            <span jemsText maxLines="2" class="respect-line-break">{{ 'project.application.partner.report.financial.total.eligible' | translate }}</span>
         </mat-header-cell>
         <mat-cell *matCellDef="let line" class="text-right">{{ line.totalEligibleBudget | asMoney }}</mat-cell>
         <mat-footer-cell *matFooterCellDef class="text-right">{{ breakdown.total.totalEligibleBudget | asMoney }}</mat-footer-cell>

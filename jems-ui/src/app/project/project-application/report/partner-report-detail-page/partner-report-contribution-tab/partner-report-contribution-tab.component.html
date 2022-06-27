@@ -4,7 +4,7 @@
         <form jemsFormLayout [formGroup]="contributionForm">
             <h3 class="mb5">{{'project.application.partner.report.contribution.tab.subtitle' | translate}}</h3>
             <mat-table jemsNoWidthLimit
-                       id="expenditure-costs-table"
+                       id="contributions-table"
                        [dataSource]="tableData"
                        [jemsTableConfig]="widths"
                        [formArrayName]="'contributions'">

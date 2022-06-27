@@ -7,6 +7,7 @@ import {
   ProjectPartnerReportUnitCostDTO,
 } from '@cat/api';
 import {MatTableDataSource} from "@angular/material/table";
+import {TableConfig} from "@common/directives/table-config/TableConfig";
 import CategoryEnum = ProjectPartnerReportUnitCostDTO.CategoryEnum;
 
 @UntilDestroy()
@@ -20,6 +21,7 @@ import CategoryEnum = ProjectPartnerReportUnitCostDTO.CategoryEnum;
 export class PartnerBreakdownCostCategoryComponent implements OnChanges {
 
   displayedColumns = ['type', 'flatRate', 'totalEligibleBudget', 'previouslyReported', 'currentReport', 'totalReportedSoFar', 'totalReportedSoFarPercentage', 'remainingBudget'];
+  widths: TableConfig[] = this.displayedColumns.map(() => ({minInRem: 8}));
 
   @Input()
   breakdown: ExpenditureCostCategoryBreakdownDTO;
