@@ -161,7 +161,7 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditFormCompone
           measurementUnit: this.outputIndicatorForm?.controls?.measurementUnit?.value,
           milestone: this.outputIndicatorForm?.controls?.milestone?.value,
           finalTarget: this.outputIndicatorForm?.controls?.finalTarget?.value,
-          resultIndicatorId: resultIndicatorId,
+          resultIndicatorId,
         });
       } else {
         this.updateOutputIndicator.emit({
@@ -173,7 +173,7 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditFormCompone
           measurementUnit: this.outputIndicatorForm?.controls?.measurementUnit?.value,
           milestone: this.outputIndicatorForm?.controls?.milestone?.value,
           finalTarget: this.outputIndicatorForm?.controls?.finalTarget?.value,
-          resultIndicatorId: resultIndicatorId,
+          resultIndicatorId,
         });
       }
     });

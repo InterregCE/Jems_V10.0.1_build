@@ -151,10 +151,10 @@ import { ReportAnnexesTableComponent } from './project-application/report/partne
 import { ProjectManagementComponent } from './project-application/project-management/project-management.component';
 import {
   PartnerReportFinancialOverviewTabComponent
-} from "@project/project-application/report/partner-report-detail-page/partner-report-financial-overview-tab/partner-report-financial-overview-tab.component";
+} from '@project/project-application/report/partner-report-detail-page/partner-report-financial-overview-tab/partner-report-financial-overview-tab.component';
 import {
   PartnerBreakdownCostCategoryComponent
-} from "@project/project-application/report/partner-report-detail-page/partner-report-financial-overview-tab/partner-breakdown-cost-category/partner-breakdown-cost-category.component";
+} from '@project/project-application/report/partner-report-detail-page/partner-report-financial-overview-tab/partner-breakdown-cost-category/partner-breakdown-cost-category.component';
 
 @NgModule({
   declarations: [
