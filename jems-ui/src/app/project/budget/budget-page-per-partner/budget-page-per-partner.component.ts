@@ -58,7 +58,7 @@ export class BudgetPagePerPartnerComponent {
               private visibilityStatusService: FormVisibilityStatusService) {
     this.tableConfig$ = combineLatest([this.chosenProjectFunds$, this.isCallTypeSpf$])
       .pipe(map( ([funds, isSpf]) => [
-        {minInRem: 2},
+        {minInRem: 4},
         {minInRem: 2},
         ...isSpf ? [{minInRem: 3}] : [],
         ...funds.flatMap(() => [{minInRem: 7}, {minInRem: 7}]),
@@ -112,6 +112,7 @@ export class BudgetPagePerPartnerComponent {
         partnerSortNumber: budget?.partner?.sortNumber,
         partnerRole: budget?.partner?.role,
         partnerCountry: budget?.partner?.country,
+        isPartnerActive: budget?.partner?.active,
         costType: budget.costType,
         budgets: this.getPartnerBudgetList(budget.budgetPerFund, budget.totalEligibleBudget),
         publicContribution: budget.publicContribution,

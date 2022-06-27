@@ -572,12 +572,11 @@ internal class PartnerBudgetPerPeriodCalculatorTest : UnitTest() {
     }
 
     private fun listOfProjectPeriods(amount: Long = 0): MutableList<ProjectPeriod> {
-        val periodBudgets = mutableListOf(ProjectPeriod(0, 0, 0))
+        val periodBudgets = mutableListOf<ProjectPeriod>()
         for (i in 1..amount) {
             val pBtoAdd = ProjectPeriod(i.toInt(), i.toInt(), i.toInt())
             periodBudgets.add(pBtoAdd)
         }
-        periodBudgets.add(ProjectPeriod(255, 0, 0))
         return periodBudgets
     }
 

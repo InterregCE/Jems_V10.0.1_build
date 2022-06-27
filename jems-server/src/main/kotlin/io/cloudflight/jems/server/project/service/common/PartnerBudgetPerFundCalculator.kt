@@ -27,13 +27,17 @@ class PartnerBudgetPerFundCalculator : PartnerBudgetPerFundCalculatorService {
         partners: List<ProjectPartnerSummary>,
         projectFunds: List<ProgrammeFund>,
         coFinancing: List<PartnerBudgetCoFinancing>,
-        spfCoFinancing: PartnerBudgetSpfCoFinancing?
+        spfCoFinancing: List<PartnerBudgetSpfCoFinancing?>
     ): List<ProjectPartnerBudgetPerFund> {
 
         val totalEligibleBudgetManagement = coFinancing.sumOf { it.total!! }
         val totalEligibleBudgetSum =
-            if (spfCoFinancing?.total != null) {
-                totalEligibleBudgetManagement.add(spfCoFinancing.total)
+            if (spfCoFinancing.any { it?.total != null }) {
+                totalEligibleBudgetManagement.add(
+                    spfCoFinancing
+                        .filter { it?.total != null }
+                        .sumOf { it?.total ?: BigDecimal.ZERO }
+                )
             } else {
                 totalEligibleBudgetManagement
             }
@@ -59,27 +63,43 @@ class PartnerBudgetPerFundCalculator : PartnerBudgetPerFundCalculatorService {
             )
         }.toMutableList()
 
-        // add line for SPF costs
-        if (spfCoFinancing != null) {
-            val spfCoFinancingTotal = (spfCoFinancing.total ?: BigDecimal.ZERO).setScale(2, RoundingMode.DOWN)
-            val partnerContributions = spfCoFinancing.projectPartnerCoFinancingAndContribution.partnerContributions
-            tableRowsExceptTotal.add(
-                ProjectPartnerBudgetPerFund(
-                    partner = spfCoFinancing.partner,
-                    costType = ProjectPartnerCostType.Spf,
-                    budgetPerFund = getBudgetPerFundForPartner(
-                        projectFunds,
-                        spfCoFinancing.projectPartnerCoFinancingAndContribution.finances,
-                        spfCoFinancingTotal
-                    ),
-                    publicContribution = getPartnerContribution(partnerContributions, ProjectPartnerContributionStatusDTO.Public),
-                    autoPublicContribution = getPartnerContribution(partnerContributions, ProjectPartnerContributionStatusDTO.AutomaticPublic),
-                    privateContribution = getPartnerContribution(partnerContributions, ProjectPartnerContributionStatusDTO.Private),
-                    totalPartnerContribution = getPartnerContribution(partnerContributions, null),
-                    totalEligibleBudget = spfCoFinancingTotal,
-                    percentageOfTotalEligibleBudget = calculatePercentage(spfCoFinancingTotal, totalEligibleBudgetSum)
-                )
-            )
+        // add lines for SPF costs
+        if (spfCoFinancing.any { it != null }) {
+            spfCoFinancing.forEach {
+                if (it != null) {
+                    val spfCoFinancingTotal = (it.total ?: BigDecimal.ZERO).setScale(2, RoundingMode.DOWN)
+                    val partnerContributions = it.projectPartnerCoFinancingAndContribution.partnerContributions
+                    tableRowsExceptTotal.add(
+                        ProjectPartnerBudgetPerFund(
+                            partner = it.partner,
+                            costType = ProjectPartnerCostType.Spf,
+                            budgetPerFund = getBudgetPerFundForPartner(
+                                projectFunds,
+                                it.projectPartnerCoFinancingAndContribution.finances,
+                                spfCoFinancingTotal
+                            ),
+                            publicContribution = getPartnerContribution(
+                                partnerContributions,
+                                ProjectPartnerContributionStatusDTO.Public
+                            ),
+                            autoPublicContribution = getPartnerContribution(
+                                partnerContributions,
+                                ProjectPartnerContributionStatusDTO.AutomaticPublic
+                            ),
+                            privateContribution = getPartnerContribution(
+                                partnerContributions,
+                                ProjectPartnerContributionStatusDTO.Private
+                            ),
+                            totalPartnerContribution = getPartnerContribution(partnerContributions, null),
+                            totalEligibleBudget = spfCoFinancingTotal,
+                            percentageOfTotalEligibleBudget = calculatePercentage(
+                                spfCoFinancingTotal,
+                                totalEligibleBudgetSum
+                            )
+                        )
+                    )
+                }
+            }
         }
 
         val totalBudgetsPerFundTotal = projectFunds.map { fund ->

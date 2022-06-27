@@ -19,7 +19,10 @@
 
         <ng-container *ngFor="let partnerBudgetPerPeriod of data.partnersBudgetPerPeriod">
             <div>
-                <span> {{ 'common.label.project.partner.role.shortcut.' + partnerBudgetPerPeriod.partner.role | adaptTranslationKeyByCallType | async | translate : {partner: partnerBudgetPerPeriod.partner.sortNumber} }}</span>
+                <span>
+                    <mat-icon *ngIf="!partnerBudgetPerPeriod.partner.active">person_off</mat-icon>
+                    {{ 'common.label.project.partner.role.shortcut.' + partnerBudgetPerPeriod.partner.role | adaptTranslationKeyByCallType | async | translate : {partner: partnerBudgetPerPeriod.partner.sortNumber} }}
+                </span>
                 <div *ngIf="data.isCallTypeSpf">
                     <span>{{partnerBudgetPerPeriod.partner.country | translate}}</span>
                     <span>{{ 'project.partner.spf.cost.type.' + partnerBudgetPerPeriod.costType.toLowerCase() | translate }}</span>

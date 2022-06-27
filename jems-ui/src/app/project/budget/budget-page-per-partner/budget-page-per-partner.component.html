@@ -33,7 +33,10 @@
 
         <ng-container *ngFor="let budget of budgetColumns; let index = index;">
             <div *ngIf="index < budgetColumns.length - 1">
-                <span>{{ 'common.label.project.partner.role.shortcut.' + budget.partnerRole | adaptTranslationKeyByCallType | async | translate : {partner: budget.partnerSortNumber} }}</span>
+                <span>
+                    <mat-icon *ngIf="!budget.isPartnerActive">person_off</mat-icon>
+                    {{ 'common.label.project.partner.role.shortcut.' + budget.partnerRole | adaptTranslationKeyByCallType | async | translate : {partner: budget.partnerSortNumber} }}
+                </span>
                 <span>{{ budget.partnerCountry }}</span>
                 <span *ngIf="isCallTypeSpf$ | async">{{ 'project.partner.spf.cost.type.' + budget.costType.toLowerCase() | translate }}</span>
                 <ng-container *ngFor="let fund of chosenProjectFunds$ | async">

@@ -189,7 +189,7 @@ class ProjectDataProviderImpl(
                             total = partner.budget.projectBudgetCostsCalculationResult.totalCosts
                         )
                     },
-                    spfCoFinancing = null
+                    spfCoFinancing = emptyList()
                 ).toProjectPartnerBudgetPerFundData()
             },
             projectPartnerBudgetPerPeriodData = partnerBudgetPerPeriodCalculator.calculate(
