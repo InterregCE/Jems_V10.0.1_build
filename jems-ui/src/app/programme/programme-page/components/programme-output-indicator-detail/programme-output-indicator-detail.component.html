@@ -62,7 +62,7 @@
         <mat-form-field>
             <mat-label>{{'output.indicator.form.field.result.indicator' | translate}}</mat-label>
             <mat-select formControlName="resultIndicatorId">
-                <mat-option *ngIf="filteredResultIndicators.length>0" [value]="null"></mat-option>
+                <mat-option *ngIf="filteredResultIndicators.length>0" [value]="0">{{ 'common.not.applicable.option' | translate }}</mat-option>
                 <mat-option *ngFor="let resultIndicator of filteredResultIndicators"
                             [value]="resultIndicator.id">
                     {{resultIndicator.identifier}}
@@ -123,4 +123,3 @@
         <jems-api-error-content [error]="error"></jems-api-error-content>
     </jems-alert>
 </form>
-

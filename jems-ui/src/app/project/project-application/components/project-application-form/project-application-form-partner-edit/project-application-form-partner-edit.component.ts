@@ -63,9 +63,9 @@ export class ProjectApplicationFormPartnerEditComponent implements OnInit {
     nameInOriginalLanguage: ['', Validators.maxLength(100)],
     nameInEnglish: [[], Validators.maxLength(100)],
     department: [],
-    partnerType: [''],
+    partnerType: [0],
     spfBeneficiaryType: [''],
-    partnerSubType: [],
+    partnerSubType: [0],
     nace: [],
     otherIdentifierNumber: ['', Validators.maxLength(50)],
     otherIdentifierDescription: [],
@@ -122,6 +122,10 @@ export class ProjectApplicationFormPartnerEditComponent implements OnInit {
   onSubmit(controls: any, partners: ProjectPartner[]): void {
     this.confirmLeadPartnerChange(partners).subscribe(confirmed => {
       if (confirmed) {
+        let partnerSubTypeValue = this.controls.partnerSubType.value;
+        partnerSubTypeValue = partnerSubTypeValue ? partnerSubTypeValue : null;
+        let partnerTypeValue = this.controls.partnerType.value;
+        partnerTypeValue = partnerTypeValue ? partnerTypeValue : null;
         if (!controls.id?.value) {
           const partnerToCreate = {
             abbreviation: this.controls.abbreviation.value,
@@ -129,8 +133,8 @@ export class ProjectApplicationFormPartnerEditComponent implements OnInit {
             nameInOriginalLanguage: this.controls.nameInOriginalLanguage.value,
             nameInEnglish: this.controls.nameInEnglish.value[0].translation,
             department: this.controls.department.value,
-            partnerType: this.controls.partnerType.value,
-            partnerSubType: this.controls.partnerSubType.value,
+            partnerType: partnerTypeValue,
+            partnerSubType: partnerSubTypeValue,
             nace: this.controls.nace.value,
             otherIdentifierNumber: this.controls.otherIdentifierNumber.value,
             otherIdentifierDescription: this.controls.otherIdentifierDescription.value,
@@ -158,8 +162,8 @@ export class ProjectApplicationFormPartnerEditComponent implements OnInit {
             nameInOriginalLanguage: this.controls.nameInOriginalLanguage.value,
             nameInEnglish: this.controls.nameInEnglish.value[0].translation,
             department: this.controls.department.value,
-            partnerType: this.controls.partnerType.value,
-            partnerSubType: this.controls.partnerSubType.value,
+            partnerType: partnerTypeValue,
+            partnerSubType: partnerSubTypeValue,
             nace: this.controls.nace.value,
             otherIdentifierNumber: this.controls.otherIdentifierNumber.value,
             otherIdentifierDescription: this.controls.otherIdentifierDescription.value,
@@ -235,8 +239,8 @@ export class ProjectApplicationFormPartnerEditComponent implements OnInit {
       translation: partner?.nameInEnglish || ''
     }]);
     this.controls.department.setValue(partner?.department);
-    this.controls.partnerType.setValue(partner?.partnerType);
-    this.controls.partnerSubType.setValue(partner?.partnerSubType);
+    this.controls.partnerType.setValue(partner?.partnerType || 0);
+    this.controls.partnerSubType.setValue(partner?.partnerSubType || 0);
     this.controls.legalStatusId.setValue(partner?.legalStatusId);
     this.controls.nace.setValue(partner?.nace);
     this.controls.vat.setValue(partner?.vat);

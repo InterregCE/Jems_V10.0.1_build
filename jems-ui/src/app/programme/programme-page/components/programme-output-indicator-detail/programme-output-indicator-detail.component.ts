@@ -74,7 +74,7 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditFormCompone
     measurementUnit: [[]],
     milestone: [0],
     finalTarget: [0],
-    resultIndicatorId: [null]
+    resultIndicatorId: [0]
   });
 
   inputErrorMessages = {
@@ -114,7 +114,7 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditFormCompone
       withLatestFrom(this.filteredResultIndicators$),
       tap(([, filteredResultIndicators]) => {
         if (filteredResultIndicators.every(it => it.id !== this.outputIndicatorForm.controls.resultIndicatorId.value)) {
-          this.outputIndicatorForm.controls.resultIndicatorId.setValue(null);
+          this.outputIndicatorForm.controls.resultIndicatorId.setValue(0);
         }
       })
     ).subscribe();
@@ -131,7 +131,7 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditFormCompone
       this.outputIndicatorForm.controls.measurementUnit.setValue(this.outputIndicator.measurementUnit);
       this.outputIndicatorForm.controls.milestone.setValue(this.outputIndicator.milestone || 0);
       this.outputIndicatorForm.controls.finalTarget.setValue(this.outputIndicator.finalTarget || 0);
-      this.outputIndicatorForm.controls.resultIndicatorId.setValue(this.outputIndicator.resultIndicatorId);
+      this.outputIndicatorForm.controls.resultIndicatorId.setValue(this.outputIndicator.resultIndicatorId || 0);
       this.changeFormState$.next(FormState.VIEW);
     }
   }
@@ -150,6 +150,8 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditFormCompone
       takeUntil(this.destroyed$),
       filter(yes => !!yes)
     ).subscribe(() => {
+      let resultIndicatorId = this.outputIndicatorForm?.controls?.resultIndicatorId.value;
+      resultIndicatorId = resultIndicatorId ? resultIndicatorId : null;
       if (this.isCreate) {
         this.createOutputIndicator.emit({
           identifier: this.outputIndicatorForm?.controls?.identifier?.value,
@@ -159,7 +161,7 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditFormCompone
           measurementUnit: this.outputIndicatorForm?.controls?.measurementUnit?.value,
           milestone: this.outputIndicatorForm?.controls?.milestone?.value,
           finalTarget: this.outputIndicatorForm?.controls?.finalTarget?.value,
-          resultIndicatorId: this.outputIndicatorForm?.controls?.resultIndicatorId.value
+          resultIndicatorId: resultIndicatorId,
         });
       } else {
         this.updateOutputIndicator.emit({
@@ -171,7 +173,7 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditFormCompone
           measurementUnit: this.outputIndicatorForm?.controls?.measurementUnit?.value,
           milestone: this.outputIndicatorForm?.controls?.milestone?.value,
           finalTarget: this.outputIndicatorForm?.controls?.finalTarget?.value,
-          resultIndicatorId: this.outputIndicatorForm?.controls?.resultIndicatorId.value
+          resultIndicatorId: resultIndicatorId,
         });
       }
     });
