@@ -6,6 +6,7 @@ context('Project description tests', () => {
     cy.loginByRequest(user.applicantUser.email);
     cy.wrap(1).as('applicationId');
     cy.wrap('Lead Partner').as('partnerAbbreviation');
+    cy.wrap('WP1').as('workPlanId');
   });
 
   it('TB-639 Applicant can edit project overall objective', function () {
@@ -145,14 +146,14 @@ context('Project description tests', () => {
       });
 
       cy.contains('jems-multi-language-container', 'Project specific objective').within(() => {
-      testData.specificObjective.forEach(specificObjective => {
+        testData.specificObjective.forEach(specificObjective => {
           cy.contains('button', specificObjective.language).click();
           cy.get('textarea').type(specificObjective.translation);
         });
       });
 
       cy.contains('jems-multi-language-container', 'Communication objective and target audience').within(() => {
-      testData.objectiveAndAudience.forEach(objectiveAndAudience => {
+        testData.objectiveAndAudience.forEach(objectiveAndAudience => {
           cy.contains('button', objectiveAndAudience.language).click();
           cy.get('textarea').type(objectiveAndAudience.translation);
         });
@@ -164,18 +165,17 @@ context('Project description tests', () => {
   });
 
   it('TB-644 Applicant can create investments within work plans', function () {
-    const workplanId = 'WP1';
     cy.fixture('project/application-form/project-description/TB-644').then(testData => {
       cy.visit(`app/project/detail/${this.applicationId}`, {failOnStatusCode: false});
 
-      cy.contains(workplanId).click();
+      cy.contains(this.workPlanId).click();
       cy.contains('Investments').click();
       cy.contains('Add investment').click();
 
       cy.contains('jems-multi-language-container', 'Investment title').within(() => {
-        testData.title.forEach(invetsmentTitle => {
-          cy.contains('button', invetsmentTitle.language).click();
-          cy.get('input').type(invetsmentTitle.translation);
+        testData.title.forEach(item => {
+          cy.contains('button', item.language).click();
+          cy.get('input').type(item.translation);
         });
       });
 
@@ -269,6 +269,102 @@ context('Project description tests', () => {
         expect(investmentItem).to.contain(testData.title[0].translation);
         expect(investmentItem).to.contain(testData.address.region3);
       });
+
+      cy.contains(this.partnerAbbreviation).click();
+      cy.contains('Budget').click();
+      cy.contains('mat-select', 'N/A').click();
+      cy.contains('mat-option', 'I1.1').should('be.visible');
+    });
+  });
+
+  it('TB-647 Applicant can create activities within work plans', function () {
+    cy.fixture('project/application-form/project-description/TB-647').then(testData => {
+      cy.visit(`app/project/detail/${this.applicationId}`, {failOnStatusCode: false});
+
+      cy.contains(this.workPlanId).click();
+      cy.contains('Activities').click();
+      cy.contains('Add activity').click();
+
+      cy.contains('jems-multi-language-container', 'Title').within(() => {
+        testData.title.forEach(item => {
+          cy.contains('button', item.language).click();
+          cy.get('textarea').type(item.translation);
+        });
+      });
+
+      cy.contains('mat-form-field', 'Start period').click();
+      cy.contains(testData.startPeriod).click();
+
+      cy.contains('mat-form-field', 'End period').click();
+      cy.contains(testData.endPeriod).click();
+
+      cy.contains('jems-multi-language-container', 'Description').within(() => {
+        testData.description.forEach(item => {
+          cy.contains('button', item.language).click();
+          cy.get('textarea').type(item.translation);
+        });
+      });
+
+      cy.contains('mat-form-field', 'Partner(s) involved').click();
+      cy.contains('mat-option', testData.partnerInvolved).click();
+
+
+      testData.deliverables.forEach(deliverable => {
+        cy.contains('button', 'add').click();
+        cy.get('div.jems-table-config').children().last().within(() => {
+
+          deliverable.title.forEach(item => {
+            cy.root().closest('jems-multi-language-container').contains('button', item.language).click();
+            cy.contains('div', 'Deliverable title').find('textarea').type(item.translation);
+          });
+
+          deliverable.description.forEach(item => {
+            cy.root().closest('jems-multi-language-container').contains('button', item.language).click();
+            cy.contains('div', 'Description').find('textarea').type(item.translation);
+          });
+
+          cy.contains('mat-form-field', 'Delivery period').click();
+          cy.root().closest('body').contains(deliverable.period).click();
+        });
+      });
+
+      cy.contains('button', 'Save changes').click();
+      cy.contains('The work package activities were saved successfully').should('be.visible');
+    });
+  });
+
+  it('TB-648 Applicant can create outputs within work plans', function () {
+    cy.fixture('project/application-form/project-description/TB-648').then(testData => {
+      cy.visit(`app/project/detail/${this.applicationId}`, {failOnStatusCode: false});
+
+      cy.contains(this.workPlanId).click();
+      cy.contains('Outputs').click();
+      cy.contains('Add Output').click();
+
+      cy.contains('jems-multi-language-container', 'Output Title').within(() => {
+        testData.title.forEach(item => {
+          cy.contains('button', item.language).click();
+          cy.get('textarea').type(item.translation);
+        });
+      });
+
+      cy.contains('mat-form-field', 'Programme Output Indicator').click();
+      cy.contains(testData.programmeOutputIndicator).click();
+
+      cy.contains('div', 'Target Value').find('input').type(testData.targetValue);
+
+      cy.contains('mat-form-field', 'Delivery Period').click();
+      cy.contains(testData.period).click();
+
+      cy.contains('jems-multi-language-container', 'Output Description').within(() => {
+        testData.description.forEach(item => {
+          cy.contains('button', item.language).click();
+          cy.get('textarea').type(item.translation);
+        });
+      });
+
+      cy.contains('button', 'Save changes').click();
+      cy.contains('Work package outputs saved successfully').should('be.visible');
     });
   });
 });

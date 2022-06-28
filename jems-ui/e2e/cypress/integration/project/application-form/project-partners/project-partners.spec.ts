@@ -8,7 +8,7 @@ context('Project partners tests', () => {
     cy.wrap('Lead Partner').as('partnerAbbreviation');
   });
 
-  it('TB-581 Applicant can add lead partner to the project', function() {
+  it('TB-581 Applicant can add lead partner to the project', function () {
     cy.fixture('project/application-form/project-partners/TB-581').then(testData => {
       cy.visit(`app/project/detail/${this.applicationId}`, {failOnStatusCode: false});
       cy.contains('Partners overview').click();
@@ -343,7 +343,7 @@ context('Project partners tests', () => {
           cy.get('textarea').type(justification.translation);
         });
       });
-      
+
       cy.contains('GBER scheme / de minimis').click({force: true});
       cy.contains('General de minimis').click();
 
@@ -352,19 +352,19 @@ context('Project partners tests', () => {
     });
   });
 
-  it('TB-638 Applicant can add associated organisation', function() {
+  it('TB-638 Applicant can add associated organisation', function () {
     cy.fixture('project/application-form/project-partners/TB-638').then(testData => {
       cy.visit(`app/project/detail/${this.applicationId}`, {failOnStatusCode: false});
       cy.contains('Associated organisations').click();
-      
+
       cy.contains('Add new associated organisation').click();
-      
+
       cy.contains('div', 'Name of the organisation in original language').find('input').type(testData.associatedOrganisation.nameInOriginalLanguage);
       cy.contains('div', 'Name of the organisation in english').find('input').type(testData.associatedOrganisation.nameInEnglish);
-      
+
       cy.contains('mat-form-field', 'Partner').click();
       cy.contains('mat-option', this.partnerAbbreviation).click();
-      
+
       cy.contains('div', 'Country').click();
       cy.contains(testData.associatedOrganisation.address.country).click();
       cy.contains('div', 'NUTS 2').click();
@@ -386,7 +386,7 @@ context('Project partners tests', () => {
       cy.get('mat-form-field:contains("Last name")').eq(1).find('input').type(testData.associatedOrganisation.contactPerson.lastName);
       cy.contains('div', 'E-mail address').find('input').type(testData.associatedOrganisation.contactPerson.email);
       cy.contains('div', 'Telephone no.').find('input').type(testData.associatedOrganisation.contactPerson.telephone);
-      
+
       testData.associatedOrganisation.roleDescription.forEach(roleDescription => {
         cy.get('jems-multi-language-container').then(roleDescriptionSection => {
           cy.wrap(roleDescriptionSection).contains('button', roleDescription.language).click();
