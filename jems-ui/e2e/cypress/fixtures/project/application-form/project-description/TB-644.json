@@ -1,0 +1,122 @@
+{
+  "title": [
+    {
+      "translation": "Investment title EN",
+      "language": "EN"
+    },
+    {
+      "translation": "Investment title DE",
+      "language": "DE"
+    }
+  ],
+  "expectedDeliveryPeriod": "Period 1",
+  "justificationExplanation": [
+    {
+      "translation": "Investment justification DE",
+      "language": "DE"
+    },
+    {
+      "translation": "Investment justification EN",
+      "language": "EN"
+    }
+  ],
+  "justificationTransactionalRelevance": [
+    {
+      "translation": "Investment transnational relevance DE",
+      "language": "DE"
+    },
+    {
+      "translation": "Investment transnational relevance EN",
+      "language": "EN"
+    }
+  ],
+  "justificationBenefits": [
+    {
+      "translation": "Investment benefits DE",
+      "language": "DE"
+    },
+    {
+      "translation": "Investment benefits EN",
+      "language": "EN"
+    }
+  ],
+  "justificationPilot": [
+    {
+      "translation": "Investment pilot clarification DE",
+      "language": "DE"
+    },
+    {
+      "translation": "Investment pilot clarification EN",
+      "language": "EN"
+    }
+  ],
+  "address": {
+    "country": "Elláda",
+    "region2": "Peloponnisos",
+    "region3": "Lakonia, Messinia",
+    "street": "Investment street",
+    "houseNumber": "9",
+    "postalCode": "1010",
+    "city": "Investment city"
+  },
+  "risk": [
+    {
+      "translation": "Investment risk DE",
+      "language": "DE"
+    },
+    {
+      "translation": "Investment risk EN",
+      "language": "EN"
+    }
+  ],
+  "documentation": [
+    {
+      "translation": "Investment technical requirements DE",
+      "language": "DE"
+    },
+    {
+      "translation": "Investment technical requirements EN",
+      "language": "EN"
+    }
+  ],
+  "documentationExpectedImpacts": [
+    {
+      "translation": "Investment climate change assessment DE",
+      "language": "DE"
+    },
+    {
+      "translation": "Investment climate change assessment EN",
+      "language": "EN"
+    }
+  ],
+  "ownershipSiteLocation": [
+    {
+      "translation": "Investment ownership DE",
+      "language": "DE"
+    },
+    {
+      "translation": "Investment ownership EN",
+      "language": "EN"
+    }
+  ],
+  "ownershipMaintenance": [
+    {
+      "translation": "Investment maintenance DE",
+      "language": "DE"
+    },
+    {
+      "translation": "Investment maintenance EN",
+      "language": "EN"
+    }
+  ],
+  "ownershipRetain": [
+    {
+      "translation": "Investment ownership retainment DE",
+      "language": "DE"
+    },
+    {
+      "translation": "Investment ownership retainment EN",
+      "language": "EN"
+    }
+  ]
+}
