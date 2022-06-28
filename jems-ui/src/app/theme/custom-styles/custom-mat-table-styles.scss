@@ -22,11 +22,13 @@
     .mat-row {
       border-bottom: 0;
 
-      &:nth-child(even) {
+      &:nth-child(even),
+      &:nth-child(even) .mat-cell { // should be always applied to cell instead of line
         background-color: var(--table-highlight-color);
       }
 
-      &:hover {
+      &:hover,
+      &:hover .mat-cell { // should be always applied to cell instead of line
         background-color: var(--table-hover-color);
       }
     }

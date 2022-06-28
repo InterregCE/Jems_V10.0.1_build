@@ -2,10 +2,53 @@
   border-right: .0625rem solid var(--table-border-color);
 }
 
-.mat-header-row, .mat-footer-row, .mat-row {
-  min-width: 67rem;
+mat-table {
+  overflow: auto;
+}
+
+.mat-column-type {
+  min-width: 10rem;
+}
+
+.mat-column-flatRate {
+  min-width: 5rem;
+}
+
+.mat-column-totalEligibleBudget,
+.mat-column-previouslyReported,
+.mat-column-currentReport,
+.mat-column-totalReportedSoFar,
+.mat-column-totalReportedSoFarPercentage,
+.mat-column-remainingBudget {
+  padding-left: .5rem;
+}
+
+.mat-column-totalEligibleBudget,
+.mat-column-previouslyReported,
+.mat-column-currentReport,
+.mat-column-totalReportedSoFar,
+.mat-column-remainingBudget {
+  min-width: 8rem;
+}
+
+.mat-column-totalReportedSoFarPercentage {
+  min-width: 6rem;
 }
 
 .respect-line-break {
   white-space: pre-wrap;
+}
+
+mat-header-row {
+  border-bottom: none;
+}
+mat-header-cell {
+  border-bottom: 1px solid var(--table-border-color);
+}
+
+mat-footer-row {
+  border-top: none !important;
+}
+mat-footer-cell {
+  border-top: 1px solid var(--table-border-color);
 }
