@@ -11,10 +11,12 @@
 
                 <ng-container matColumnDef="sourceOfContribution">
                     <mat-header-cell *matHeaderCellDef>
-                        <span jemsText maxLines="2" class="respect-line-break">{{'project.application.partner.report.contribution.source.of.contribution' | translate}}</span>
+                        <span jemsText maxLines="2" class="respect-line-break">
+                            {{'project.application.partner.report.contribution.source.of.contribution' | translate}}
+                        </span>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let control; let i = index" [formGroupName]="i">
-                        <mat-form-field *ngIf="control.value.createdInThisReport" class="mt-2">
+                        <mat-form-field *ngIf="control.value.createdInThisReport" jemsFormFieldWidth="full">
                             <mat-label>{{'project.partner.coFinancing.contribution.source.name' | translate}}</mat-label>
                             <input name="sourceOfContribution" [formControlName]="'sourceOfContribution'" matInput>
                             <mat-error>
@@ -23,7 +25,7 @@
                                 </jems-form-field-errors>
                             </mat-error>
                         </mat-form-field>
-                        <mat-form-field *ngIf="!control.value.createdInThisReport">
+                        <mat-form-field *ngIf="!control.value.createdInThisReport" jemsFormFieldWidth="full">
                             <input disabled name="sourceOfContribution" matInput [value]="control.value.sourceOfContribution">
                         </mat-form-field>
                     </mat-cell>

@@ -42,14 +42,14 @@ export class PartnerReportContributionTabComponent {
   toBeDeletedIds: number[] = [];
   columns: string[] = [];
   widths: TableConfig[] = [
-    {},
-    {},
-    {maxInRem: 8, minInRem: 8},
-    {maxInRem: 8, minInRem: 8},
-    {maxInRem: 9, minInRem: 9},
-    {maxInRem: 8, minInRem: 8},
-    {maxInRem: 15, minInRem: 15},
-    {maxInRem: 3, minInRem: 3},
+    {minInRem: 10},  // name of org/contribution
+    {minInRem:  8},  // legal status
+    {minInRem:  8},  // amount in AF
+    {minInRem:  8},  // previously reported
+    {minInRem:  9},  // current report
+    {minInRem:  8},  // total reported
+    {minInRem: 15},  // attachment
+    {minInRem:  3}   // actions
   ];
   tableData: AbstractControl[] = [];
 
@@ -136,7 +136,9 @@ export class PartnerReportContributionTabComponent {
 
     const item = this.formBuilder.group({
       id: this.formBuilder.control(contrib?.id || 0),
-      sourceOfContribution: this.formBuilder.control(contrib?.sourceOfContribution, createdInThisReport ? Validators.required : []),
+      sourceOfContribution: this.formBuilder.control(contrib?.sourceOfContribution, createdInThisReport
+        ? Validators.compose([Validators.maxLength(255), Validators.required])
+        : []),
       legalStatus: this.formBuilder.control(contrib?.legalStatus, createdInThisReport ? Validators.required : []),
       createdInThisReport: this.formBuilder.control(createdInThisReport),
       amount: this.formBuilder.control(contrib?.numbers.amount || 0),
