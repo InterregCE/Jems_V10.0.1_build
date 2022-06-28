@@ -43,6 +43,9 @@ data class ProgrammeLumpSumEntity(
     @field:NotNull
     var splittingAllowed: Boolean,
 
+    @field:NotNull
+    var isFastTrack: Boolean,
+
     @Enumerated(EnumType.STRING)
     @field:NotNull
     var phase: ProgrammeLumpSumPhase,

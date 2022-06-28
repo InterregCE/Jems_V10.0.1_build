@@ -10,6 +10,7 @@ data class ProgrammeLumpSumDTO(
     val description: Set<InputTranslation> = emptySet(),
     val cost: BigDecimal? = null,
     val splittingAllowed: Boolean,
+    val fastTrack: Boolean,
     val phase: ProgrammeLumpSumPhase? = null,
     val categories: Set<BudgetCategory> = emptySet()
 )

@@ -42,6 +42,7 @@ internal class UpdateLumpSumInteractorTest : UnitTest() {
         splittingAllowed = true,
         phase = Implementation,
         categories = setOf(OfficeAndAdministrationCosts, StaffCosts),
+        isFastTrack = false
     )
 
     @MockK
@@ -71,6 +72,7 @@ internal class UpdateLumpSumInteractorTest : UnitTest() {
     @Test
     fun `update lump sum - invalid`() {
         every { isProgrammeSetupLocked.isLocked() } returns false
+        every { isProgrammeSetupLocked.isAnyReportCreated() } returns true
         every { persistence.getLumpSum(any()) } returns initialLumpSum
         val wrongLumpSum = ProgrammeLumpSum(
             id = 4,
@@ -80,12 +82,31 @@ internal class UpdateLumpSumInteractorTest : UnitTest() {
             splittingAllowed = true,
             phase = null,
             categories = setOf(OfficeAndAdministrationCosts),
+            isFastTrack = true
         )
         val ex = assertThrows<LumpSumIsInvalid> { updateLumpSum.updateLumpSum(wrongLumpSum) }
         assertThat(ex.formErrors).containsExactlyInAnyOrderEntriesOf(mapOf(
             "cost" to I18nMessage(i18nKey = "lump.sum.out.of.range"),
             "categories" to I18nMessage(i18nKey = "programme.lumpSum.categories.min.2"),
         ))
+    }
+
+    @Test
+    fun `update lump sum - invalid fast track`() {
+        every { isProgrammeSetupLocked.isLocked() } returns false
+        every { isProgrammeSetupLocked.isAnyReportCreated() } returns true
+        every { persistence.getLumpSum(any()) } returns initialLumpSum
+        val wrongLumpSum = ProgrammeLumpSum(
+            id = 4,
+            name = setOf(InputTranslation(SystemLanguage.EN, " ")),
+            description = setOf(InputTranslation(SystemLanguage.EN, "test lump sum 1")),
+            cost = BigDecimal.ONE,
+            splittingAllowed = true,
+            phase = Implementation,
+            categories = setOf(OfficeAndAdministrationCosts, StaffCosts ),
+            isFastTrack = true
+        )
+        val ex = assertThrows<UpdateLumpSumWhenProgrammeSetupRestricted> { updateLumpSum.updateLumpSum(wrongLumpSum) }
     }
 
     @Test
@@ -127,6 +148,7 @@ internal class UpdateLumpSumInteractorTest : UnitTest() {
     @Test
     fun `update lump sum - OK`() {
         every { isProgrammeSetupLocked.isLocked() } returns false
+        every { isProgrammeSetupLocked.isAnyReportCreated() } returns false
         every { persistence.getLumpSum(any()) } returns initialLumpSum
         every { persistence.updateLumpSum(any()) } returnsArgument 0
         val lumpSum = ProgrammeLumpSum(
@@ -137,6 +159,7 @@ internal class UpdateLumpSumInteractorTest : UnitTest() {
             splittingAllowed = true,
             phase = Implementation,
             categories = setOf(OfficeAndAdministrationCosts, StaffCosts),
+            isFastTrack = false
         )
         val auditSlot = slot<AuditCandidate>()
         every { auditService.logEvent(capture(auditSlot)) } answers {}
@@ -156,6 +179,7 @@ internal class UpdateLumpSumInteractorTest : UnitTest() {
             cost = BigDecimal.ONE,
             splittingAllowed = true,
             phase = Implementation,
+            isFastTrack = false
         )
 
         assertThrows<LumpSumIsInvalid>("when updating id cannot be invalid") {
@@ -165,6 +189,7 @@ internal class UpdateLumpSumInteractorTest : UnitTest() {
     @Test
     fun `update lump sum - not existing`() {
         every { isProgrammeSetupLocked.isLocked() } returns false
+        every { isProgrammeSetupLocked.isAnyReportCreated() } returns false
         every { persistence.getLumpSum(any()) } returns initialLumpSum
         val lumpSum = ProgrammeLumpSum(
             id = 777,
@@ -173,6 +198,7 @@ internal class UpdateLumpSumInteractorTest : UnitTest() {
             splittingAllowed = true,
             phase = Implementation,
             categories = setOf(OfficeAndAdministrationCosts, StaffCosts),
+            isFastTrack = false
         )
         every { persistence.updateLumpSum(any()) } throws ResourceNotFoundException("programmeLumpSum")
 
@@ -185,6 +211,7 @@ internal class UpdateLumpSumInteractorTest : UnitTest() {
         every { persistence.getLumpSum(any()) } returns initialLumpSum
         every { persistence.updateLumpSum(any()) } returnsArgument 0
         every { isProgrammeSetupLocked.isLocked() } returns true
+        every { isProgrammeSetupLocked.isAnyReportCreated() } returns false
         val lumpSum = ProgrammeLumpSum(
             id = 4,
             name = setOf(InputTranslation(SystemLanguage.EN, "LS1 changed")),
@@ -193,6 +220,7 @@ internal class UpdateLumpSumInteractorTest : UnitTest() {
             splittingAllowed = true,
             phase = Implementation,
             categories = setOf(OfficeAndAdministrationCosts, StaffCosts),
+            isFastTrack = false
         )
         val auditSlot = slot<AuditCandidate>()
         every { auditService.logEvent(capture(auditSlot)) } answers {}

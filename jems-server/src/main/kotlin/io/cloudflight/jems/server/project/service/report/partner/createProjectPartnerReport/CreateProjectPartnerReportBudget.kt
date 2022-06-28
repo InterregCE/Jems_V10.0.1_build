@@ -24,7 +24,6 @@ import io.cloudflight.jems.server.project.service.report.model.financialOverview
 import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportPeriod
 import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectReportContributionPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureCostCategoryPersistence
-import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectReportIdentificationPersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
@@ -40,7 +39,7 @@ class CreateProjectPartnerReportBudget(
     private val getPartnerBudgetPerPeriod: GetPartnerBudgetPerPeriodInteractor,
     private val projectPartnerBudgetOptionsPersistence: ProjectPartnerBudgetOptionsPersistence,
     private val getProjectBudget: GetProjectBudget,
-    private val reportExpenditureCostCategoryPersistence: ProjectReportExpenditureCostCategoryPersistence,
+    private val reportExpenditureCostCategoryPersistence: ProjectReportExpenditureCostCategoryPersistence
 ) {
 
     @Transactional
@@ -58,7 +57,9 @@ class CreateProjectPartnerReportBudget(
                 submittedReportIds = submittedReportIds,
                 partnerContributionsSorted = partnerContributions.sortedWith(compareBy({ it.isNotPartner() }, { it.id })),
             ),
-            lumpSums = lumpSumPersistence.getLumpSums(projectId, version = version).toPartnerReportLumpSums(partnerId = partnerId),
+            lumpSums = lumpSumPersistence.getLumpSums(projectId, version = version)
+                .filter { it.isFastTrack != null && !it.isFastTrack }
+                .toPartnerReportLumpSums(partnerId = partnerId),
             unitCosts = getSetOfUnitCostsWithTotalAndNumberOfUnits(
                 partnerBudgetCostsPersistence.getBudgetStaffCosts(partnerId, version)
                     .asSequence()
@@ -144,11 +145,13 @@ class CreateProjectPartnerReportBudget(
         )
     }
 
-    private fun List<ProjectLumpSum>.toPartnerReportLumpSums(partnerId: Long) = map {
+    private fun List<ProjectLumpSum>.toPartnerReportLumpSums(
+        partnerId: Long
+    ) = map {
         PartnerReportLumpSum(
             lumpSumId = it.programmeLumpSumId,
             period = it.period,
-            value = it.lumpSumContributions.firstOrNull { it.partnerId == partnerId }?.amount ?: BigDecimal.ZERO,
+            value = it.lumpSumContributions.firstOrNull { it.partnerId == partnerId }?.amount ?: BigDecimal.ZERO
         )
     }
 

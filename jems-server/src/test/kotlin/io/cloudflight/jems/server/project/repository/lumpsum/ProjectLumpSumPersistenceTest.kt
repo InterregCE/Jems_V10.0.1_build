@@ -72,6 +72,7 @@ internal class ProjectLumpSumPersistenceTest : UnitTest() {
             cost = BigDecimal.TEN,
             splittingAllowed = true,
             phase = ProgrammeLumpSumPhase.Preparation,
+            isFastTrack = false
         )
 
     }

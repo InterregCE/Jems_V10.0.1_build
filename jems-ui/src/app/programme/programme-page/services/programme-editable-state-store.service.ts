@@ -6,14 +6,16 @@ import {ProgrammeDataService, ProjectStatusDTO, UserRoleCreateDTO} from '@cat/ap
 import {PermissionService} from '../../../security/permissions/permission.service';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 
-@Injectable()
+@Injectable({providedIn: 'root'})
 export class ProgrammeEditableStateStore {
   isProgrammeEditableDependingOnCall$: Observable<boolean>;
+  isFastTrackEditableDependingOnReports$: Observable<boolean>;
   hasOnlyViewPermission$: Observable<boolean>;
   hasEditPermission$: Observable<boolean>;
   hasContractedProjects$: Observable<boolean>;
 
   firstCallPublished$ = new Subject<void>();
+  firstReportCreated$ = new Subject<void>();
   firstContractedProject$ = new Subject<void>();
 
   constructor(
@@ -21,9 +23,20 @@ export class ProgrammeEditableStateStore {
     private permissionService: PermissionService,
   ) {
     this.isProgrammeEditableDependingOnCall$ = this.isProgrammeEditable();
+    this.isFastTrackEditableDependingOnReports$ = this.isAnyReportCreated();
     this.hasOnlyViewPermission$ = this.hasUserOnlyViewPermission();
     this.hasEditPermission$ = this.hasUserEditPermission();
     this.hasContractedProjects$ = this.programmeHasContractedProjects();
+  }
+
+  private isAnyReportCreated(): Observable<boolean> {
+    return this.firstReportCreated$
+      .pipe(
+        startWith(null),
+        switchMap(() => this.programmeDataService.isAnyReportCreated()),
+        tap(flag => Log.info('Fetched programme is locked:', flag)),
+        shareReplay(1),
+      );
   }
 
   private isProgrammeEditable(): Observable<boolean> {

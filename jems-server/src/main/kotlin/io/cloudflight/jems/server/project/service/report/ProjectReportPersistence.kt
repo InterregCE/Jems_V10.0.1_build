@@ -1,7 +1,6 @@
 package io.cloudflight.jems.server.project.service.report
 
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReport
-import io.cloudflight.jems.server.project.service.report.model.create.ProjectPartnerReportCreate
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportStatusAndVersion
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSummary
@@ -29,4 +28,5 @@ interface ProjectReportPersistence {
 
     fun countForPartner(partnerId: Long): Int
 
+    fun isAnyReportCreated(): Boolean
 }

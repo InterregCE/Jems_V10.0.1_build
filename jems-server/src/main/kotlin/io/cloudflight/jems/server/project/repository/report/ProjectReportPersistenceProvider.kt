@@ -70,4 +70,8 @@ class ProjectReportPersistenceProvider(
     override fun countForPartner(partnerId: Long): Int =
         partnerReportRepository.countAllByPartnerId(partnerId)
 
+
+    @Transactional(readOnly = true)
+    override fun isAnyReportCreated() =
+        partnerReportRepository.count() > 0
 }

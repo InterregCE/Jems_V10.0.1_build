@@ -8,13 +8,16 @@ import {
   UserRoleCreateDTO
 } from '@cat/api';
 import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
-import {filter, map, shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
+import {filter, map, shareReplay, startWith, switchMap, tap, withLatestFrom} from 'rxjs/operators';
 import {RoutingService} from '@common/services/routing.service';
 import {ProjectPartnerStore} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
 import {Log} from '@common/utils/log';
 import {Tables} from '@common/utils/tables';
 import {PermissionService} from 'src/app/security/permissions/permission.service';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
+import {
+  ProgrammeEditableStateStore
+} from '../../../programme/programme-page/services/programme-editable-state-store.service';
 
 @Injectable({providedIn: 'root'})
 export class PartnerReportPageStore {
@@ -26,6 +29,7 @@ export class PartnerReportPageStore {
   partnerId$: Observable<string | number | null>;
   userCanViewReports$: Observable<boolean>;
   userCanEditReports$: Observable<boolean>;
+  isFirstReport$: Observable<boolean>;
 
   newPageSize$ = new BehaviorSubject<number>(Tables.DEFAULT_INITIAL_PAGE_SIZE);
   newPageIndex$ = new BehaviorSubject<number>(Tables.DEFAULT_INITIAL_PAGE_INDEX);
@@ -36,19 +40,27 @@ export class PartnerReportPageStore {
               private partnerProjectStore: ProjectPartnerStore,
               private projectPartnerReportService: ProjectPartnerReportService,
               private projectPartnerUserCollaboratorService: ProjectPartnerUserCollaboratorService,
-              private permissionService: PermissionService) {
+              private permissionService: PermissionService,
+              private programmeEditableStateStore: ProgrammeEditableStateStore) {
     this.partnerId$ = this.partnerId();
     this.partnerReports$ = this.partnerReports();
     this.partnerSummary$ = this.partnerSummary();
     this.partnerReportLevel$ = this.partnerReportLevel();
     this.userCanViewReports$ = this.userCanViewReports();
     this.userCanEditReports$ = this.userCanEditReports();
+    this.isFirstReport$ = this.isFirstReport();
   }
 
   createPartnerReport(): Observable<ProjectPartnerReportSummaryDTO> {
     return this.partnerId$
       .pipe(
-        switchMap(partnerId => this.projectPartnerReportService.createProjectPartnerReport(partnerId as any)),
+        withLatestFrom(this.isFirstReport$),
+        tap(([partnerId, isFirstReport]) => {
+          if (isFirstReport) {
+            this.programmeEditableStateStore.firstReportCreated$.next();
+          }
+        }),
+        switchMap(([partnerId, isFirstReport]) => this.projectPartnerReportService.createProjectPartnerReport(partnerId as any)),
         tap(() => this.refreshReports$.next()),
         tap(created => Log.info('Created partnerReport:', this, created)),
       );
@@ -114,6 +126,13 @@ export class PartnerReportPageStore {
     ])
       .pipe(
         map(([level, canEdit, canView]) => level === 'VIEW' || canEdit || canView)
+      );
+  }
+
+  private isFirstReport(): Observable<boolean> {
+    return this.programmeEditableStateStore.isFastTrackEditableDependingOnReports$
+      .pipe(
+        map(isFastTrackEditingLocked => !isFastTrackEditingLocked),
       );
   }
 

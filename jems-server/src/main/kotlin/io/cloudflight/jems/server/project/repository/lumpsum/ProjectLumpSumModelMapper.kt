@@ -16,6 +16,7 @@ fun List<ProjectLumpSumEntity>.toModel() = sortedBy { it.id.orderNr }.map {
         period = it.endPeriod,
         programmeLumpSumId = it.programmeLumpSum.id,
         lumpSumContributions = it.lumpSumContributions.toModel(),
+        isFastTrack = it.programmeLumpSum.isFastTrack
     )
 }
 

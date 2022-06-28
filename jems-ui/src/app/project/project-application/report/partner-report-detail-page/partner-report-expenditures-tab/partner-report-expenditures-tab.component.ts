@@ -165,10 +165,10 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
         control.patchValue({
           costCategory: unitCost.category,
           numberOfUnits: 1,
-          pricePerUnit: pricePerUnit,
+          pricePerUnit,
           declaredAmount: pricePerUnit,
-          currencyCode: currencyCode,
-          currencyConversionRate: currencyConversionRate,
+          currencyCode,
+          currencyConversionRate,
           declaredAmountInEur: this.getAmountInEur(currencyConversionRate, pricePerUnit),
         });
         this.disableCostOptionSelectionRelatedFields(control, 'unitCost', index);

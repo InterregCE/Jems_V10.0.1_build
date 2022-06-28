@@ -34,6 +34,7 @@ export class ProgrammeLumpSumDetailComponent extends ViewEditFormComponent imple
 
   ProgrammeLumpSumDTO = ProgrammeLumpSumDTO;
   isProgrammeSetupLocked: boolean;
+  isFastTrackLumpSumLocked: boolean;
   MIN_VALUE = 0.01;
   MAX_VALUE =  999999999.99;
 
@@ -57,6 +58,7 @@ export class ProgrammeLumpSumDetailComponent extends ViewEditFormComponent imple
       Validators.required])
     ],
     allowSplitting: ['', Validators.required],
+    isFastTrack: ['', Validators.required],
     phase: ['', Validators.required],
     categories: ['', Validators.required]
   });
@@ -79,6 +81,7 @@ export class ProgrammeLumpSumDetailComponent extends ViewEditFormComponent imple
   };
 
   previousSplitting = '';
+  isFastTrack = '';
   previousPhase = '';
   selection = new SelectionModel<ProgrammeLumpSumDTO.CategoriesEnum>(true, []);
   categories = [
@@ -103,6 +106,11 @@ export class ProgrammeLumpSumDetailComponent extends ViewEditFormComponent imple
         tap(isProgrammeEditingLimited => this.isProgrammeSetupLocked = isProgrammeEditingLimited),
         untilDestroyed(this)
     ).subscribe();
+
+    this.programmeEditableStateStore.isFastTrackEditableDependingOnReports$.pipe(
+      tap(isFastTrackLocked => this.isFastTrackLumpSumLocked = isFastTrackLocked),
+      untilDestroyed(this)
+    ).subscribe();
   }
 
   ngOnInit(): void {
@@ -120,6 +128,7 @@ export class ProgrammeLumpSumDetailComponent extends ViewEditFormComponent imple
     this.lumpSumForm.controls.description.setValue(this.lumpSum.description);
     this.lumpSumForm.controls.cost.setValue(this.lumpSum.cost);
     this.previousSplitting = this.lumpSum.splittingAllowed ? 'Yes' : 'No';
+    this.isFastTrack = this.lumpSum.fastTrack ? 'Yes' : 'No';
     this.previousPhase = this.lumpSum.phase;
     this.selection.clear();
     this.lumpSum.categories.forEach(category => {
@@ -149,6 +158,7 @@ export class ProgrammeLumpSumDetailComponent extends ViewEditFormComponent imple
           description: this.lumpSumForm?.controls?.description?.value,
           cost: this.lumpSumForm?.controls?.cost?.value,
           splittingAllowed: this.previousSplitting === 'Yes',
+          fastTrack: this.isFastTrack === 'Yes',
           phase: this.getCorrectPhase(this.previousPhase),
           categories: this.selection.selected
         } as ProgrammeLumpSumDTO);
@@ -159,6 +169,7 @@ export class ProgrammeLumpSumDetailComponent extends ViewEditFormComponent imple
           description: this.lumpSumForm?.controls?.description?.value,
           cost: this.lumpSumForm?.controls?.cost?.value,
           splittingAllowed: this.previousSplitting === 'Yes',
+          fastTrack: this.isFastTrack === 'Yes',
           phase: this.getCorrectPhase(this.previousPhase),
           categories: this.selection.selected
         });
@@ -177,6 +188,11 @@ export class ProgrammeLumpSumDetailComponent extends ViewEditFormComponent imple
   changeSplitting(value: string): void {
     this.lumpSumForm.controls.allowSplitting.setValue(value);
     this.previousSplitting = value;
+  }
+
+  changeFastTrack(value: string): void {
+    this.lumpSumForm.controls.isFastTrack.setValue(value);
+    this.isFastTrack = value;
   }
 
   changePhase(value: string): void {
@@ -210,6 +226,7 @@ export class ProgrammeLumpSumDetailComponent extends ViewEditFormComponent imple
       this.lumpSumForm.controls.name.setErrors(null);
       this.lumpSumForm.controls.description.setErrors(null);
       this.lumpSumForm.controls.allowSplitting.setErrors(null);
+      this.lumpSumForm.controls.isFastTrack.setErrors(null);
       this.lumpSumForm.controls.phase.setErrors(null);
       this.lumpSumForm.controls.categories.setErrors(null);
     }

@@ -11,6 +11,7 @@ data class ProgrammeLumpSum(
     val description: Set<InputTranslation> = emptySet(),
     val cost: BigDecimal? = null,
     val splittingAllowed: Boolean,
+    val isFastTrack: Boolean,
     val phase: ProgrammeLumpSumPhase? = null,
     val categories: Set<BudgetCategory> = emptySet(),
 )

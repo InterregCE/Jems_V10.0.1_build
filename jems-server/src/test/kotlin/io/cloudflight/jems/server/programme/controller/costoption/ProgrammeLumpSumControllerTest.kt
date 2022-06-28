@@ -34,6 +34,7 @@ class ProgrammeLumpSumControllerTest {
             splittingAllowed = true,
             phase = Implementation,
             categories = setOf(StaffCosts, OfficeAndAdministrationCosts),
+            isFastTrack = false
         )
 
         private val expectedLumpSumDTO = ProgrammeLumpSumDTO(
@@ -44,6 +45,7 @@ class ProgrammeLumpSumControllerTest {
             splittingAllowed = true,
             phase = Implementation,
             categories = setOf(StaffCosts, OfficeAndAdministrationCosts),
+            fastTrack = false
         )
 
         private val expectedLumpSumListDTO = ProgrammeLumpSumListDTO(
