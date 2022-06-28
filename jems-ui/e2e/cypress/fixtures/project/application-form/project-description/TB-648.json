@@ -1,0 +1,25 @@
+{
+  "title": [
+    {
+      "translation": "Output title DE",
+      "language": "DE"
+    },
+    {
+      "translation": "Output title EN",
+      "language": "EN"
+    }
+  ],
+  "programmeOutputIndicator": "OI1: Enterprises supported (of which: micro, small, medium, large)",
+  "targetValue": 13,
+  "period": "Period 5, month 13 - 15",
+  "description": [
+    {
+      "translation": "Output description DE",
+      "language": "DE"
+    },
+    {
+      "translation": "Output description EN",
+      "language": "EN"
+    }
+  ]
+}

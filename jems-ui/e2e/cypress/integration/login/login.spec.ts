@@ -17,55 +17,51 @@ context('Login tests', () => {
   it('TB-397 Admin can login and logout', () => {
     cy.fixture('users.json').then((user) => {
 
-      cy.intercept('api/project/mine?*').as('applicationList');
+      cy.contains('div', 'Email').type(user.admin.email);
+      cy.contains('div', 'Password').type(Cypress.env('defaultPassword') + '{enter}');
 
-      cy.get('#email').type(user.admin.email);
-      cy.get('#password').type(Cypress.env('defaultPassword') + '{enter}');
+      cy.contains('h2', 'My applications').should('be.visible');
 
-      cy.wait('@applicationList', {timeout: 10000});
-
-      cy.get('h2').should('contain', 'My applications');
-
-      cy.intercept('api/auth/logout').as('logout');
       cy.get('button.logout-button').click();
-      cy.wait('@logout');
 
-      cy.get('span').should('contain', 'Login').and('be.visible');
+      cy.contains('button', 'Login').should('be.visible');
     })
   });
 
-  it('TB-398 Unknown users or users with incorrect password cannot login', () => {
+  it.only('TB-398 Unknown users or users with incorrect password cannot login', () => {
 
-    cy.get('#email').type('random_unknown_username');
-    cy.get('#password').type('random_unknown_password');
+    cy.contains('div', 'Email').find('input').type('random_unknown_username');
+    cy.contains('div', 'Password').find('input').type('random_unknown_password');
 
     cy.get('button').contains('Login').click();
 
-    cy.get('jems-alert').should('be.visible').and('contain', 'Email or password incorrect.');
+    cy.contains('Email or password incorrect.').should('be.visible');
     cy.get('jems-alert').contains('span', '×').click();
+    cy.contains('Email or password incorrect.').should('not.exist');
 
-    cy.get('#email').clear().type(user.admin.email);
-    cy.get('#password').clear().type('random_unknown_password');
+    cy.contains('div', 'Email').find('input').clear().type(user.admin.email);
+    cy.contains('div', 'Password').find('input').clear().type('random_unknown_password');
 
     cy.get('button').contains('Login').click();
-
-    cy.get('jems-alert').should('be.visible').and('contain', 'Email or password incorrect.');
+    cy.contains('Email or password incorrect.').should('be.visible');
   });
 
   it('TB-399 Applicant can register', () => {
 
-    cy.get('a').contains('Create a new account').click();
+    cy.contains('Create a new account').click();
     const id = faker.random.alphaNumeric(5);
     const email = `cypress1.${id}@Applicant.eu`;
 
-    cy.get('input[name="name"]').type('Cypress');
-    cy.get('input[name="surname"]').type(id);
-    cy.get('input[name="email"]').type(email);
-    cy.get('input[name="password"]').type(email);
+    cy.contains('div', 'First name').find('input').type('Cypress');
+    cy.contains('div', 'Last name').find('input').type(id);
+    cy.contains('div', 'Email').find('input').type(email);
+    cy.contains('div', 'Password').find('input').type(email);
     cy.get('mat-checkbox').click("left");
 
-    cy.get('button[color="primary"]').click();
+    cy.contains('button', 'Register').click();
 
-    cy.get('jems-alert').find('span').contains('Go to login').should('be.visible');
+    cy.contains('Please check your Inbox for a confirmation email. Click the link in the email to confirm your email address.').should('be.visible');
+    cy.contains('button', 'Go to login').click();
+    cy.contains('button', 'Login').should('be.visible');
   });
 })

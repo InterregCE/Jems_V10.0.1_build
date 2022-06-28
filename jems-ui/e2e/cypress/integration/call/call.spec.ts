@@ -5,36 +5,36 @@ context('Call management tests', () => {
 
   beforeEach(() => {
     cy.loginByRequest(user.programmeUser.email);
+    cy.wrap(`Automated call ${faker.datatype.uuid()}`).as('callName');
   });
 
-  it('TB-388 Create a new 1-step call', () => {
+  it.only('TB-388 Create a new 1-step call', function () {
 
     cy.visit('app/call', {failOnStatusCode: false});
 
     cy.contains('Add new call').click();
 
     // Call identification
-    const callName = `Automated call ${faker.datatype.uuid()}`;
-    cy.wrap(callName).as('callName');
-    cy.get('input[name="name"]').type(callName);
+    cy.contains('div', 'Call name').find('input').type(this.callName);
 
-    cy.get('button[aria-label="Open Calendar"]').eq(0).click();
-    cy.get('mat-icon').contains('done').click();
+    cy.contains('div', 'Start date').next().click();
+    cy.contains('mat-icon', 'done').click();
 
-    cy.get('button[aria-label="Open Calendar"]').eq(2).click();
+    cy.wait(1000);
+    cy.contains('div', 'End date (MM').next().click();
     cy.get('table.mat-calendar-table').find('tr').last().find('td').last().click();
     cy.get('mat-icon').contains('done').click();
 
-    cy.get('input[name="lengthOfPeriod"]').type('3');
-    cy.get('textarea').type('Automated call description');
+    cy.contains('div', 'Period length').find('input').type('3');
+    cy.contains('div', 'Description').find('textarea').type('Automated call description');
 
     // Programme Priorities
     const priority = 'Developing and enhancing research and innovation capacities and the uptake of advanced technologies';
-    cy.get('jems-call-priority-tree').find('span').contains(priority).click();
+    cy.contains(priority).click();
 
     // Strategies
     const strategy = 'EU Strategy for the Adriatic and Ionian Region';
-    cy.get('jems-call-strategies').find('mat-checkbox').contains(strategy).click();
+    cy.contains(strategy).click();
 
     // Funds
     cy.get('mat-checkbox[name="additionalFundAllowed"]').click();
@@ -42,18 +42,18 @@ context('Call management tests', () => {
       cy.wrap(el).find('input[type="checkbox"]').check({force: true});
       cy.wrap(el).find('input[name="fundRateValue"]').type('60,00');
     });
-    cy.get('div[formarrayname="funds"]').eq(1).then(el => {
-      cy.wrap(el).find('input[type="checkbox"]').check({force: true});
-      cy.wrap(el).find('input[name="fundRateValue"]').type('50,00');
-      cy.wrap(el).find('button').contains('Up To').click();
+    cy.contains('div', 'ERDF').within(() => {
+      cy.get('mat-checkbox').click();
+      cy.get('input[name="fundRateValue"]').type('50,00');
+      cy.contains('Up To').click();
     });
 
     // Strategies
     cy.get('jems-call-state-aids').contains('General de minimis').click();
 
-    cy.get('jems-pending-button').contains('Create').click();
+    cy.contains('button', 'Create').click();
     cy.contains('span', 'General call settings').should('be.visible');
-    cy.get('input[name="name"]').should('have.value', callName);
+    cy.get('input[name="name"]').should('have.value', this.callName);
   });
 
 
