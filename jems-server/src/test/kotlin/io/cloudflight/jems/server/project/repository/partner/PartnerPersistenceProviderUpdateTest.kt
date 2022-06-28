@@ -199,6 +199,49 @@ class PartnerPersistenceProviderUpdateTest {
         assertThat(slotEntity.captured.partnerSubType).isEqualTo(updatedProjectPartner.partnerSubType)
         assertThat(slotEntity.captured.contacts).isEqualTo(setOf(projectPartnerContactUpdate))
     }
+    
+    @Test
+    fun `updatePartner changing partnerType to empty`() {
+        val projectPartner = ProjectPartnerEntity(
+            id = 2L,
+            project = project,
+            abbreviation = "updated",
+            role = ProjectPartnerRole.PARTNER,
+            legalStatus = ProgrammeLegalStatusEntity(id = 1),
+            partnerType = ProjectTargetGroup.EducationTrainingCentreAndSchool,
+            partnerSubType = PartnerSubType.MICRO_ENTERPRISE
+        )
+        val updatedProjectPartner = ProjectPartnerEntity(
+            id = 2L,
+            project = project,
+            abbreviation = "updated",
+            role = ProjectPartnerRole.PARTNER,
+            legalStatus = ProgrammeLegalStatusEntity(id = 1),
+            partnerType = null,
+            partnerSubType = PartnerSubType.MICRO_ENTERPRISE
+        )
+
+        every { projectPartnerRepository.findById(2) } returns Optional.of(projectPartner)
+        every { legalStatusRepo.getById(1) } returns legalStatusEntity
+        val slotEntity = slot<ProjectPartnerEntity>()
+        every { projectPartnerRepository.save(capture(slotEntity)) } returns updatedProjectPartner
+
+        assertThat(persistence.update(
+            projectPartner = ProjectPartner(
+                id = projectPartner.id,
+                abbreviation = projectPartner.abbreviation,
+                role = ProjectPartnerRole.PARTNER,
+                partnerType = null,
+                partnerSubType = PartnerSubType.MICRO_ENTERPRISE,
+                legalStatusId = 1
+            ),
+            resortByRole = false
+        )).isEqualTo(updatedProjectPartner.toProjectPartnerDetail())
+
+        assertThat(slotEntity.captured.id).isEqualTo(projectPartner.id)
+        assertThat(slotEntity.captured.partnerType).isNull()
+    }
+
 
     @Test
     fun `updatePartner changing partnerSubType to empty`() {

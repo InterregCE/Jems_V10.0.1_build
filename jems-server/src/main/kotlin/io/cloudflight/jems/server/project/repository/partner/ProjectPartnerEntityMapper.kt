@@ -131,6 +131,7 @@ fun ProjectPartnerEntity.copy(
 ).apply {
     if(projectPartner != null) {
         partnerSubType = projectPartner.partnerSubType
+        partnerType = projectPartner.partnerType
         translatedValues.addPartnerTranslations(this, projectPartner.department, projectPartner.otherIdentifierDescription)
     }
 }
