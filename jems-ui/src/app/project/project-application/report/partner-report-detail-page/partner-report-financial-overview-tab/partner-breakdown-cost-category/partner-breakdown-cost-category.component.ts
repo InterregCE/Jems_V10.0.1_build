@@ -21,7 +21,6 @@ import CategoryEnum = ProjectPartnerReportUnitCostDTO.CategoryEnum;
 export class PartnerBreakdownCostCategoryComponent implements OnChanges {
 
   displayedColumns = ['type', 'flatRate', 'totalEligibleBudget', 'previouslyReported', 'currentReport', 'totalReportedSoFar', 'totalReportedSoFarPercentage', 'remainingBudget'];
-  widths: TableConfig[] = this.displayedColumns.map(() => ({minInRem: 8}));
 
   @Input()
   breakdown: ExpenditureCostCategoryBreakdownDTO;
