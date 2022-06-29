@@ -28,7 +28,7 @@ context('Login tests', () => {
     })
   });
 
-  it.only('TB-398 Unknown users or users with incorrect password cannot login', () => {
+  it('TB-398 Unknown users or users with incorrect password cannot login', () => {
 
     cy.contains('div', 'Email').find('input').type('random_unknown_username');
     cy.contains('div', 'Password').find('input').type('random_unknown_password');

@@ -262,6 +262,8 @@ context('Project partners tests', () => {
     cy.fixture('project/application-form/project-partners/TB-633').then(testData => {
       cy.visit(`app/project/detail/${this.applicationId}`, {failOnStatusCode: false});
       cy.contains(this.partnerAbbreviation).click();
+      cy.get('.mat-tab-header-pagination-after').click();
+      cy.wait(500);
       cy.contains('a', 'Co-financing').click();
 
       cy.contains('div.jems-table-config', 'Source').within(() => {
@@ -310,6 +312,8 @@ context('Project partners tests', () => {
     cy.fixture('project/application-form/project-partners/TB-634').then(testData => {
       cy.visit(`app/project/detail/${this.applicationId}`, {failOnStatusCode: false});
       cy.contains(this.partnerAbbreviation).click();
+      cy.get('.mat-tab-header-pagination-after').click();
+      cy.wait(500);
       cy.contains('a', 'State Aid').click();
 
       cy.contains('div', testData.stateAid.question1.text).within(() => {
@@ -407,13 +411,13 @@ context('Project partners tests', () => {
   function setTranslatedField(values, index) {
     values.forEach(value => {
       cy.contains('button', value.language).click();
-      cy.get('mat-row').last().find('mat-cell').eq(index).type(value.translation);
+      cy.get('mat-row').last().find('mat-cell').eq(index).scrollIntoView().type(value.translation);
     });
   }
 
   function setAmountField(amount, index) {
     const formattedAmount = formatAmount(amount);
-    cy.get('mat-row').last().find('mat-cell').eq(index).find('input').type(formattedAmount, {force: true});
+    cy.get('mat-row').last().find('mat-cell').eq(index).find('input').scrollIntoView().type(formattedAmount, {force: true});
   }
 
   function selectUnitCost(unitCost) {

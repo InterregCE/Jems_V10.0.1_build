@@ -3,15 +3,16 @@ import user from '../../fixtures/users.json';
 
 context('Call management tests', () => {
 
-  beforeEach(() => {
-    cy.loginByRequest(user.programmeUser.email);
+  before(() => {
     cy.wrap(`Automated call ${faker.datatype.uuid()}`).as('callName');
   });
 
-  it.only('TB-388 Create a new 1-step call', function () {
-
+  beforeEach(() => {
+    cy.loginByRequest(user.programmeUser.email);
     cy.visit('app/call', {failOnStatusCode: false});
+  });
 
+  it('TB-388 Create a new 1-step call', function () {
     cy.contains('Add new call').click();
 
     // Call identification
@@ -20,7 +21,6 @@ context('Call management tests', () => {
     cy.contains('div', 'Start date').next().click();
     cy.contains('mat-icon', 'done').click();
 
-    cy.wait(1000);
     cy.contains('div', 'End date (MM').next().click();
     cy.get('table.mat-calendar-table').find('tr').last().find('td').last().click();
     cy.get('mat-icon').contains('done').click();
@@ -53,15 +53,13 @@ context('Call management tests', () => {
 
     cy.contains('button', 'Create').click();
     cy.contains('span', 'General call settings').should('be.visible');
-    cy.get('input[name="name"]').should('have.value', this.callName);
+
+    cy.contains('button', 'Publish call').should('be.visible').and('be.disabled');
   });
 
 
-  it('TB-389 Edit and publish 1-step call', {scrollBehavior: 'nearest'}, function () {
-
-    cy.visit('/app/call', {failOnStatusCode: false});
+  it('TB-389 Edit and publish 1-step call', function () {
     cy.contains(this.callName).click();
-
     cy.get('input[name="name"]').should('have.value', this.callName);
 
     // Budget settings
