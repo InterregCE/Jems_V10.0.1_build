@@ -385,14 +385,14 @@ export function getInputTranslations(workPackages: ProjectWorkPackageDTO[]): { [
   return languages;
 }
 
-export function getOptions(translateService: TranslateService, custom?: Partial<TimelineOptions>): TimelineOptions {
+export function getOptions(translateService: TranslateService, lastPeriodNumber: number, custom?: Partial<TimelineOptions>): TimelineOptions {
   return Object.assign(
     {
       showCurrentTime: false,
       showMajorLabels: false,
       orientation: 'top',
       timeAxis: {scale: 'month' as TimelineTimeAxisScaleType, step: 1},
-      format: {minorLabels: getMinorLabelsFunction(translateService)},
+      format: {minorLabels: getMinorLabelsFunction(translateService, lastPeriodNumber)},
       margin: {
         axis: 10,
         item: {vertical: 10, horizontal: 0}
@@ -406,12 +406,16 @@ export function getOptions(translateService: TranslateService, custom?: Partial<
   );
 }
 
-function getMinorLabelsFunction(translateService: TranslateService){
+function getMinorLabelsFunction(translateService: TranslateService, lastPeriodNumber: number){
   return function periodLabelFunction(date: Date, scale: string, step: number): string {
     const periodNumber = Math.round(moment(date).diff(
       moment(START_DATE), 'months', true)
     );
-    return translateService.instant(`common.label.period`, {periodNumber});
+    if (periodNumber === lastPeriodNumber) {
+      return translateService.instant('project.application.form.section.part.c.subsection.six.period.last');
+    } else {
+      return translateService.instant(`common.label.period`, {periodNumber});
+    }
   };
 }
 

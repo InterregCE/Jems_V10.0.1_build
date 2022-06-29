@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.service.result.update_project_results
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectForm
+import io.cloudflight.jems.server.project.service.lumpsum.model.CLOSURE_PERIOD_NUMBER
 import io.cloudflight.jems.server.project.service.result.ProjectResultPersistence
 import io.cloudflight.jems.server.project.service.result.model.ProjectResult
 import org.springframework.stereotype.Service
@@ -24,12 +25,19 @@ class UpdateProjectResults(
             projectResultPersistence.updateResultsForProject(projectId, projectResults)
         }
 
-    private fun validatePeriods(projectId: Long, projectResults: List<ProjectResult>) =
-        with(projectResults.mapNotNullTo(HashSet()) { it.periodNumber }) {
-            if (this.isNotEmpty()
-                && !projectResultPersistence.getAvailablePeriodNumbers(projectId).containsAll(this)
-            ) throw PeriodNotFoundException()
-        }
+    private fun validatePeriods(projectId: Long, projectResults: List<ProjectResult>) {
+        if (projectResults.isEmpty())
+            return
+
+        val availablePeriods = projectResultPersistence.getAvailablePeriodNumbers(projectId).toMutableSet()
+        if (availablePeriods.isNotEmpty())
+            availablePeriods.add(CLOSURE_PERIOD_NUMBER)
+
+        val usedPeriodNumbers = projectResults.mapNotNullTo(HashSet()) { it.periodNumber }
+
+        if ((usedPeriodNumbers union availablePeriods) != availablePeriods)
+            throw PeriodNotFoundException()
+    }
 
     private fun ifInputIsValid(projectResults: List<ProjectResult>) {
         if (projectResults.size > 20)

@@ -26,6 +26,8 @@ $color-blue-light: #81D4FA;
     font-size: .875rem;
     line-height: 2.5rem;
     font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .vis-item.vis-background {
