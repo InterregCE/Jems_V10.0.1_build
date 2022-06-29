@@ -12,7 +12,7 @@
                     </span>
                 </a>
 
-                <a *ngIf="data.workPackages.length > 0" [active]="activeTab('workplan')" mat-tab-link
+                <a *ngIf="data.workPackages?.length > 0" [active]="activeTab('workplan')" mat-tab-link
                    (click)="routeTo('workplan')">
                     <span jemsText maxWidth="230">
                         {{'project.application.partner.report.tab.workplan' | translate}}
