@@ -24,91 +24,88 @@
 
 
     <ng-template #managementContact let-controls="controls">
-        <div jemsMultiColumnRow stretch>
-            <mat-form-field class="w-100">
-                <mat-label>{{'project.partner.contact.title' | translate}}</mat-label>
-                <input #managerContactTitleInput name="title" [formControl]="controls?.get('title') || {}"
-                       matInput>
-                <mat-hint [jemsHintFor]="managerContactTitleInput"
-                          [hide]="controls?.get('title')?.errors !== null">
-                    <jems-text-hint [currentLength]="managerContactTitleInput?.value?.length"
-                                    [maxLength]="25"></jems-text-hint>
-                </mat-hint>
-                <mat-error>
-                    <jems-form-field-errors
-                            [errors]="projectManagersForm?.controls?.projectManagerTitle?.errors">
-                    </jems-form-field-errors>
-                </mat-error>
-            </mat-form-field>
+        <mat-form-field class="w-100">
+            <mat-label>{{'project.partner.contact.title' | translate}}</mat-label>
+            <input #managerContactTitleInput name="title"
+                   [formControl]="controls?.get('title') || {}" matInput>
+            <mat-hint [jemsHintFor]="managerContactTitleInput"
+                      [hide]="controls?.get('title')?.errors !== null">
+                <jems-text-hint [currentLength]="managerContactTitleInput?.value?.length"
+                                [maxLength]="25"></jems-text-hint>
+            </mat-hint>
+            <mat-error>
+                <jems-form-field-errors
+                        [errors]="controls?.get('title')?.errors">
+                </jems-form-field-errors>
+            </mat-error>
+        </mat-form-field>
 
-            <mat-form-field class="w-100">
-                <mat-label>{{'project.partner.contact.first.name' | translate}}</mat-label>
-                <input #managerContactFirstNameInput name="firstName"
-                       [formControl]="controls?.get('firstName') || {}" matInput>
-                <mat-hint [jemsHintFor]="managerContactFirstNameInput"
-                          [hide]="controls?.get('firstName')?.errors !== null">
-                    <jems-text-hint [currentLength]="managerContactFirstNameInput?.value?.length"
-                                    [maxLength]="50"></jems-text-hint>
-                </mat-hint>
-                <mat-error>
-                    <jems-form-field-errors
-                            [errors]="projectManagersForm?.controls?.projectManagerFirstName?.errors">
-                    </jems-form-field-errors>
-                </mat-error>
-            </mat-form-field>
+        <mat-form-field class="w-100">
+            <mat-label>{{'project.partner.contact.first.name' | translate}}</mat-label>
+            <input #managerContactFirstNameInput name="firstName"
+                   [formControl]="controls?.get('firstName') || {}" matInput>
+            <mat-hint [jemsHintFor]="managerContactFirstNameInput"
+                      [hide]="controls?.get('firstName')?.errors !== null">
+                <jems-text-hint [currentLength]="managerContactFirstNameInput?.value?.length"
+                                [maxLength]="50"></jems-text-hint>
+            </mat-hint>
+            <mat-error>
+                <jems-form-field-errors
+                        [errors]="controls?.get('firstName')?.errors">
+                </jems-form-field-errors>
+            </mat-error>
+        </mat-form-field>
 
-            <mat-form-field class="w-100">
-                <mat-label>{{'project.partner.contact.last.name' | translate}}</mat-label>
-                <input #managerContactLastNameInput name="lastName"
-                       [formControl]="controls?.get('lastName') || {}"
-                       matInput>
-                <mat-hint [jemsHintFor]="managerContactLastNameInput"
-                          [hide]="controls?.get('lastName')?.errors !== null">
-                    <jems-text-hint [currentLength]="managerContactLastNameInput?.value?.length"
-                                    [maxLength]="50"></jems-text-hint>
-                </mat-hint>
-                <mat-error>
-                    <jems-form-field-errors
-                            [errors]="projectManagersForm?.controls?.projectManagerLastName?.errors">
-                    </jems-form-field-errors>
-                </mat-error>
-            </mat-form-field>
-        </div>
-        <div jemsMultiColumnRow stretch>
-            <mat-form-field class="w-100">
-                <mat-label>{{'project.partner.contact.email' | translate}}</mat-label>
-                <input #managerContactEmailInput name="email" [formControl]="controls?.get('email') || {}"
-                       matInput>
-                <mat-hint [jemsHintFor]="managerContactEmailInput"
-                          [hide]="controls?.get('email')?.errors !== null">
-                    <jems-text-hint [currentLength]="managerContactEmailInput?.value?.length"
-                                    [maxLength]="255"></jems-text-hint>
-                </mat-hint>
-                <mat-error>
-                    <jems-form-field-errors
-                            [errors]="controls?.get('email')?.errors"
-                            [messages]="managerContactEmailErrors">
-                    </jems-form-field-errors>
-                </mat-error>
-            </mat-form-field>
+        <mat-form-field class="w-100">
+            <mat-label>{{'project.partner.contact.last.name' | translate}}</mat-label>
+            <input #managerContactLastNameInput name="lastName"
+                   [formControl]="controls?.get('lastName') || {}"
+                   matInput>
+            <mat-hint [jemsHintFor]="managerContactLastNameInput"
+                      [hide]="controls?.get('lastName')?.errors !== null">
+                <jems-text-hint [currentLength]="managerContactLastNameInput?.value?.length"
+                                [maxLength]="50"></jems-text-hint>
+            </mat-hint>
+            <mat-error>
+                <jems-form-field-errors
+                        [errors]="controls?.get('lastName')?.errors">
+                </jems-form-field-errors>
+            </mat-error>
+        </mat-form-field>
 
-            <mat-form-field class="w-100">
-                <mat-label>{{'project.partner.contact.telephone' | translate}}</mat-label>
-                <input #managerContactTelephoneInput name="telephone"
-                       [formControl]="controls?.get('telephone') || {}" matInput>
-                <mat-hint [jemsHintFor]="managerContactTelephoneInput"
-                          [hide]="controls?.get('telephone')?.errors !== null">
-                    <jems-text-hint [currentLength]="managerContactTelephoneInput?.value?.length"
-                                    [maxLength]="25"></jems-text-hint>
-                </mat-hint>
-                <mat-error>
-                    <jems-form-field-errors
-                            [errors]="controls?.get('telephone')?.errors"
-                            [messages]="managerContactTelephoneErrors">
-                    </jems-form-field-errors>
-                </mat-error>
-            </mat-form-field>
-        </div>
+        <mat-form-field class="w-100">
+            <mat-label>{{'project.partner.contact.email' | translate}}</mat-label>
+            <input #managerContactEmailInput name="email"
+                   [formControl]="controls?.get('email') || {}" matInput>
+            <mat-hint [jemsHintFor]="managerContactEmailInput"
+                      [hide]="controls?.get('email')?.errors !== null">
+                <jems-text-hint [currentLength]="managerContactEmailInput?.value?.length"
+                                [maxLength]="255"></jems-text-hint>
+            </mat-hint>
+            <mat-error>
+                <jems-form-field-errors
+                        [errors]="controls?.get('email')?.errors"
+                        [messages]="managerContactEmailErrors">
+                </jems-form-field-errors>
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field class="w-100">
+            <mat-label>{{'project.partner.contact.telephone' | translate}}</mat-label>
+            <input #managerContactTelephoneInput name="telephone"
+                   [formControl]="controls?.get('telephone') || {}" matInput>
+            <mat-hint [jemsHintFor]="managerContactTelephoneInput"
+                      [hide]="controls?.get('telephone')?.errors !== null">
+                <jems-text-hint [currentLength]="managerContactTelephoneInput?.value?.length"
+                                [maxLength]="25"></jems-text-hint>
+            </mat-hint>
+            <mat-error>
+                <jems-form-field-errors
+                        [errors]="controls?.get('telephone')?.errors"
+                        [messages]="managerContactTelephoneErrors">
+                </jems-form-field-errors>
+            </mat-error>
+        </mat-form-field>
     </ng-template>
 
 </jems-project-page-template>
