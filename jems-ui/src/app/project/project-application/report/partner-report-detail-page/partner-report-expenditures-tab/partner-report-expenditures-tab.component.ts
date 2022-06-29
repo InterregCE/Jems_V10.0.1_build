@@ -156,19 +156,21 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
         this.disableCostOptionSelectionRelatedFields(control, 'lumpSum', index);
       } else {
         const unitCost = this.availableUnitCosts.filter(uc => uc.id === change.value['id'])[0];
-        const unitCostCurrency = this.getUnitCostCurrency(unitCost);
-        const conversionRate = this.getConversionRateByCode(unitCostCurrency);
-        const declaredAmount = this.availableUnitCosts.filter(uc => uc.id === change.value['id'])[0].total;
+        const currencyCode = this.getUnitCostCurrency(unitCost);
+        const currencyConversionRate = this.getConversionRateByCode(currencyCode);
+        const pricePerUnit = this.getUnitCostPricePerUnitByCurrency(unitCost, currencyCode);
         this.availableCurrenciesPerRow[index] = this.getAvailableCurrenciesByType('unitCost', change);
         this.unitCostHasValue = true;
 
-        control.patchValue({costCategory: this.availableUnitCosts.filter(uc => uc.id === change.value['id'])[0].category});
-        control.patchValue({numberOfUnits: 1});
-        control.patchValue({pricePerUnit: this.getUnitCostPricePerUnitByCurrency(unitCost, unitCostCurrency)});
-        control.patchValue({declaredAmount});
-        control.patchValue({currencyCode: unitCostCurrency});
-        control.patchValue({currencyConversionRate: conversionRate});
-        control.patchValue({declaredAmountInEur: this.getAmountInEur(conversionRate, declaredAmount)});
+        control.patchValue({
+          costCategory: unitCost.category,
+          numberOfUnits: 1,
+          pricePerUnit: pricePerUnit,
+          declaredAmount: pricePerUnit,
+          currencyCode: currencyCode,
+          currencyConversionRate: currencyConversionRate,
+          declaredAmountInEur: this.getAmountInEur(currencyConversionRate, pricePerUnit),
+        });
         this.disableCostOptionSelectionRelatedFields(control, 'unitCost', index);
       }
     }
