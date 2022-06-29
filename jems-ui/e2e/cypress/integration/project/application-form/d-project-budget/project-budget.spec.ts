@@ -84,7 +84,7 @@ context('Project budget tests', () => {
             });
             
             cy.contains('a', 'Co-financing').click();
-            cy.contains('a', 'Co-financing').click(); // remove after MP2-2665 is fixed
+            cy.contains('a', 'Co-financing').click(); // TODO remove after MP2-2665 is fixed
 
             cy.contains('div.jems-table-config', 'Source').children().eq(1).find('div').should('contain', partner.cofinancingAmount);
             cy.contains('div.jems-table-config', 'Source').children().eq(3).find('div').eq(1).should('contain', partner.budgetOverview[9]);
