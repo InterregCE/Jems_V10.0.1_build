@@ -37,7 +37,7 @@
                     </mat-header-cell>
                     <mat-cell *matCellDef="let control; let i = index" [formGroupName]="i">
 
-                        <mat-form-field *ngIf="control.value.createdInThisReport">
+                        <mat-form-field *ngIf="control.value.createdInThisReport" jemsFormFieldWidth="full">
                             <mat-select formControlName="legalStatus"
                                         placeholder="{{'project.application.partner.report.contribution.legal.status' | translate}}"
                                         (selectionChange)="totalsChanged()">
@@ -55,7 +55,7 @@
                             </mat-error>
                         </mat-form-field>
 
-                        <mat-form-field *ngIf="!control.value.createdInThisReport">
+                        <mat-form-field *ngIf="!control.value.createdInThisReport" jemsFormFieldWidth="full">
                             <input disabled name="legalStatus" matInput [value]="control.value.legalStatus">
                         </mat-form-field>
                     </mat-cell>
