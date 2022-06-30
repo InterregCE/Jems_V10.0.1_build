@@ -11,7 +11,7 @@ data class ProjectFile(
 ) {
     fun getFileMetadata(
         projectId: Long,
-        partnerId: Long,
+        partnerId: Long?,
         location: String,
         type: ProjectPartnerReportFileType,
         userId: Long,

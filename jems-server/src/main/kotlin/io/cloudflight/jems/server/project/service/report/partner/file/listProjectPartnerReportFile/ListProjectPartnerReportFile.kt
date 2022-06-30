@@ -47,7 +47,7 @@ class ListProjectPartnerReportFile(
         pageable: Pageable,
         searchRequest: ProjectReportFileSearchRequest,
     ): Page<ProjectReportFile> {
-        validateSearchConfiguration(searchRequest = searchRequest)
+        validateConfiguration(searchRequest = searchRequest)
 
         val filePathPrefix = generateSearchString(
             treeNode = searchRequest.treeNode,
@@ -80,15 +80,14 @@ class ListProjectPartnerReportFile(
         }
     }
 
-    private fun validateSearchConfiguration(searchRequest: ProjectReportFileSearchRequest) {
-        if (searchRequest.treeNode !in ALLOWED_FILTERS.keys)
-            throw InvalidSearchConfiguration()
-
-        val allowedFileTypes = ALLOWED_FILTERS[searchRequest.treeNode]!!
-        val invalidFileTypeFilters = searchRequest.filterSubtypes.minus(allowedFileTypes)
-
-        if (invalidFileTypeFilters.isNotEmpty())
-            throw InvalidSearchFilterConfiguration(invalidFilters = invalidFileTypeFilters)
+    private fun validateConfiguration(searchRequest: ProjectReportFileSearchRequest) {
+        validateSearchConfiguration(
+            treeNode = searchRequest.treeNode,
+            filterSubtypes = searchRequest.filterSubtypes,
+            allowedFilters = ALLOWED_FILTERS,
+            { InvalidSearchConfiguration() },
+            { invalidFilters -> InvalidSearchFilterConfiguration(invalidFilters) },
+        )
     }
 
 }

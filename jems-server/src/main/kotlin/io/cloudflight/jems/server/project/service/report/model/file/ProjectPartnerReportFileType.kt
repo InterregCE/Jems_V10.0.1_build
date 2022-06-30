@@ -17,7 +17,15 @@ enum class ProjectPartnerReportFileType(
 
             Expenditure(PartnerReport, true),
             Procurement(PartnerReport, true),
-            Contribution(PartnerReport, true);
+            Contribution(PartnerReport, true),
+
+      Contracting(Project, false),
+        ContractSupport(Contracting, false),
+          Contract(ContractSupport, false),
+          ContractDoc(ContractSupport, false),
+        ContractPartner(Contracting, false),
+          ContractPartnerDoc(ContractPartner, true),
+        ContractInternal(Contracting, false);
 
     fun generatePath(vararg ids: Long): String {
         if (this.parent == null)
