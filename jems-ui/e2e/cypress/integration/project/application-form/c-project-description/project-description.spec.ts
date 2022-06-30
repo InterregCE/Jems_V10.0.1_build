@@ -272,7 +272,7 @@ context('Project description tests', () => {
 
       cy.contains(this.partnerAbbreviation).click();
       cy.contains('Budget').click();
-      cy.contains('mat-select', 'N/A').click();
+      cy.contains('mat-select', 'N/A').scrollIntoView().click();
       cy.contains('mat-option', 'I1.1').should('be.visible');
     });
   });
