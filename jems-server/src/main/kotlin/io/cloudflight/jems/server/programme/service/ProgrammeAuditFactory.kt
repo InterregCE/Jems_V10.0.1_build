@@ -9,13 +9,15 @@ import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUn
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.language.model.ProgrammeLanguage
 import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatus
+import io.cloudflight.jems.server.programme.service.priority.model.ProgrammeObjectiveDimension
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
 import io.cloudflight.jems.server.programme.service.stateaid.model.ProgrammeStateAid
 import java.util.stream.Collectors
 
 fun programmePriorityAdded(programmePriority: ProgrammePriority): AuditCandidate {
     return AuditBuilder(AuditAction.PROGRAMME_PRIORITY_ADDED)
-        .description("New programme priority '${programmePriority.code}' '${programmePriority.title}'\nobjective = ${programmePriority.objective}\nspecificObjectives = ${programmePriority.specificObjectives.map { it.programmeObjectivePolicy }.joinToString(",\n")} was created")
+        .description("New programme priority '${programmePriority.code}' '${programmePriority.title}'\nobjective = ${programmePriority.objective}\nspecificObjectives = " +
+            "${priorityObjectives(programmePriority)} was created")
         .build()
 }
 
@@ -115,3 +117,12 @@ fun unitCostChangedAudit(context: Any, unitCost: ProgrammeUnitCost): AuditCandid
             .build()
     )
 
+private fun priorityObjectives(programmePriority: ProgrammePriority) =
+    programmePriority.specificObjectives.joinToString(",\n") {
+        "${it.programmeObjectivePolicy} - Dimensions: ${dimensions(it.dimensionCodes)}"
+    }
+
+private fun dimensions(dimensionCodes: Map<ProgrammeObjectiveDimension, List<String>>) =
+    dimensionCodes.entries.joinToString(", ") {
+            "${it.key.name} (${it.value.joinToString(" ")})"
+    }

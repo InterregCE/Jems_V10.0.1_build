@@ -14,13 +14,17 @@ import io.cloudflight.jems.server.call.repository.CallRepository
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.ProgrammePriorityEntity
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
+import io.cloudflight.jems.server.programme.service.priority.model.ProgrammeObjectiveDimension
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammeSpecificObjective
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.slot
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.util.Optional
@@ -59,10 +63,15 @@ class ProgrammePriorityPersistenceTest : UnitTest() {
 
     }
 
+    @BeforeEach
+    fun clearMocks() {
+        io.mockk.clearMocks(specificObjectiveRepository)
+    }
+
     @MockK
     lateinit var priorityRepository: ProgrammePriorityRepository
 
-    @MockK
+    @RelaxedMockK
     lateinit var specificObjectiveRepository: ProgrammeSpecificObjectiveRepository
 
     @MockK
@@ -93,6 +102,7 @@ class ProgrammePriorityPersistenceTest : UnitTest() {
     fun create() {
         val entitySentToSave = slot<ProgrammePriorityEntity>()
         every { priorityRepository.save(capture(entitySentToSave)) } returnsArgument 0
+        every { specificObjectiveRepository.save(any())} returnsArgument 0
 
         val toSave = priorityModel.copy(id = null)
         assertThat(persistence.create(toSave)).isEqualTo(priorityModel.copy(id = 0))
@@ -103,6 +113,8 @@ class ProgrammePriorityPersistenceTest : UnitTest() {
                 title = setOf(InputTranslation(SystemLanguage.EN, "10 Title"))
             )
         ))
+
+        verify(exactly = 2) { specificObjectiveRepository.save(any()) }
     }
 
     @Test
@@ -111,6 +123,7 @@ class ProgrammePriorityPersistenceTest : UnitTest() {
         val ID_UPDATED = 15L
         every { priorityRepository.existsById(ID_UPDATED) } returns true
         every { priorityRepository.save(capture(entitySentToSave)) } returnsArgument 0
+        every { specificObjectiveRepository.save(any())} returnsArgument 0
 
         val toSave = ProgrammePriority(
             id = ID_UPDATED,
@@ -137,6 +150,8 @@ class ProgrammePriorityPersistenceTest : UnitTest() {
                 ProgrammeSpecificObjectiveEntity(programmeObjectivePolicy = CrossBorderMobility, code = "CBM"),
             )
         ))
+
+        verify(exactly = 2) { specificObjectiveRepository.save(any()) }
     }
 
     @Test

@@ -2,7 +2,11 @@ package io.cloudflight.jems.server.programme.repository.priority
 
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.programme.entity.ProgrammeObjectiveDimensionCodeEntity
+import io.cloudflight.jems.server.programme.entity.ProgrammePriorityObjectiveDimensionCodeId
+import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.programme.service.priority.ProgrammePriorityPersistence
+import io.cloudflight.jems.server.programme.service.priority.model.ProgrammeObjectiveDimension
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammeSpecificObjective
 import org.springframework.stereotype.Repository
@@ -26,6 +30,15 @@ class ProgrammePriorityPersistenceProvider(
     override fun create(priority: ProgrammePriority): ProgrammePriority {
         val priorityCreated = priorityRepo.save(priority.toEntity())
 
+        priorityCreated.specificObjectives.onEach {
+            specificObjectiveRepo.save(
+                it.copy(
+                    dimensionCodes = priority.specificObjectives
+                        .find { obj -> it.code == obj.code }!!.dimensionCodes.toEntity(it)
+                )
+            )
+        }
+
         return priorityRepo.save(
             priorityCreated.copy(translatedValues = combineTranslatedValues(priorityCreated.id, priority.title))
         ).toModel()
@@ -34,10 +47,21 @@ class ProgrammePriorityPersistenceProvider(
     @Transactional
     override fun update(priority: ProgrammePriority): ProgrammePriority {
         if (priorityRepo.existsById(priority.id!!)) {
-            return priorityRepo.save(
+            val updated = priorityRepo.save(
                 priority.toEntity().copy(
                     translatedValues = combineTranslatedValues(priority.id, priority.title)
-                )).toModel()
+                ))
+
+            updated.specificObjectives.onEach {
+                specificObjectiveRepo.save(
+                    it.copy(
+                        dimensionCodes = priority.specificObjectives
+                            .find { obj -> it.code == obj.code }!!.dimensionCodes.toEntity(it)
+                    )
+                )
+            }
+
+            return updated.toModel()
         }
         else throw ResourceNotFoundException("programmePriority")
     }

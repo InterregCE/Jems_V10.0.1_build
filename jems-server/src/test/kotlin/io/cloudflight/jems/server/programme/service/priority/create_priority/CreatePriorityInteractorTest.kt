@@ -71,9 +71,10 @@ class CreatePriorityInteractorTest {
         assertThat(createPriority.createPriority(testPriority)).isEqualTo(testPriority)
         assertThat(auditSlot.captured).isEqualTo(AuditCandidate(
             action = AuditAction.PROGRAMME_PRIORITY_ADDED,
-            description = "New programme priority 'PO-02' '[EN=PO-02 title]'\nobjective = PO2\n" +
-                "specificObjectives = GreenInfrastructure,\n" +
-                "RenewableEnergy was created",
+            description = "New programme priority 'PO-02' '[EN=PO-02 title]'\n" +
+                "objective = PO2\n" +
+                "specificObjectives = GreenInfrastructure - Dimensions: EconomicActivity (001 002),\n" +
+                "RenewableEnergy - Dimensions: FormOfSupport (003 004) was created",
         ))
     }
 

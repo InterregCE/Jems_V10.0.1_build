@@ -1,6 +1,6 @@
 <jems-main-page-template [needsCard]="true" *ngIf="data$ | async as data"
-                        titleKey="programme.data.page.title"
-                        subTitleKey="programme.priority.add.title">
+                         titleKey="programme.data.page.title"
+                         subTitleKey="programme.priority.add.title">
     <form jemsFormLayout [formGroup]="form">
         <div page-sub-title jemsMultiColumnRow>
             <h2 class="mb-0">{{'programme.priority.add.title' | translate}}</h2>
@@ -64,10 +64,10 @@
                     <div class="mat-body-strong">{{'programme.priority.objective.table.column.title' | translate}}</div>
                     <div class="mat-body-strong">{{'programme.priority.objective.table.column.officialCode' | translate}}</div>
                 </div>
-                <div *ngFor="let control of specificObjectives.controls; let i=index"
+                <div *ngFor="let control of specificObjectives.controls; let i=index" class="top"
                      [formArrayName]="constants.SPECIFIC_OBJECTIVES.name">
                     <ng-container [formGroupName]="i">
-                        <mat-checkbox
+                        <mat-checkbox class="mt-3"
                                 [formControlName]="constants.POLICY_SELECTED.name"
                                 (change)="setCheckedStatus(i, $event.checked)">
                         </mat-checkbox>
@@ -88,8 +88,12 @@
                         </div>
 
                     </ng-container>
-                    <div>{{'programme.policy.' + control.get(constants.POLICY_OBJECTIVE.name).value | translate}}</div>
-                    <div>{{control.get(constants.POLICY_OFFICIAL_CODE.name).value}}</div>
+                    <div>
+                        <ng-container [ngTemplateOutlet]="objectiveDimensions"
+                                      [ngTemplateOutletContext]="{$implicit: control}">
+                        </ng-container>
+                    </div>
+                    <div class="mt-1">{{control.get(constants.POLICY_OFFICIAL_CODE.name).value}}</div>
                 </div>
             </div>
             <mat-error>
@@ -133,3 +137,35 @@
         </jems-alert>
     </form>
 </jems-main-page-template>
+
+<ng-template #objectiveDimensions let-objectiveControl>
+    <mat-expansion-panel [expanded]=false class="w-100 mt-2">
+        <mat-expansion-panel-header>
+            {{'programme.policy.' + objectiveControl.get(constants.POLICY_OBJECTIVE.name).value | translate}}
+        </mat-expansion-panel-header>
+        <div jemsNoWidthLimit [jemsTableConfig]="[{maxInRem: 15}, {}]">
+            <div>
+                <div class=mat-body-strong>{{'programme.priority.dimensions.title' | translate}}</div>
+                <div class=mat-body-strong>{{'programme.priority.dimensions.codes' | translate}}</div>
+            </div>
+            <div *ngFor="let dimension of dimensions">
+                <div>{{'programme.objective.dimension.' + dimension.toLowerCase() | translate}}</div>
+                <div class=dimensions>
+                    <jems-filter-autocomplete-input
+                            [required]=objectiveControl.get(constants.POLICY_SELECTED.name)?.value
+                            [options]=dimensionCodes
+                            [formControl]=objectiveControl.get(constants.DIMENSION_CODES.name).get(dimension)
+                            formFieldWidth=full
+                            label=programme.priority.dimensions.codes>
+                    </jems-filter-autocomplete-input>
+                    <mat-error>
+                        <jems-form-field-errors
+                                [errors]=objectiveControl?.get(constants.DIMENSION_CODES.name)?.get(dimension)?.errors
+                                [messages]=constants.DIMENSION_CODES.errorMessages>
+                        </jems-form-field-errors>
+                    </mat-error>
+                </div>
+            </div>
+        </div>
+    </mat-expansion-panel>
+</ng-template>
