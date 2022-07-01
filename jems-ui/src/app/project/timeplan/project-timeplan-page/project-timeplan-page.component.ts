@@ -59,7 +59,7 @@ export class ProjectTimeplanPageComponent {
             {...result, periodNumber: periods?.length + 1});
           return ({
             workPackages,
-            results: results,
+            results,
             timelineGroups: getGroups(workPackages, results),
             timelineItems: getItems(workPackages, results, this.translateService),
             timelineTranslations: getInputTranslations(workPackages)[inputLanguage] || [],

@@ -62,6 +62,29 @@
 
     <div>
         <div jemsLabel class="mat-required-marker"
+             [ngClass]="{'empty': lumpSumForm?.controls?.isFastTrack?.errors}">
+            {{'lump.sum.is.fast.track' | translate}}
+        </div>
+        <mat-button-toggle-group
+                [disabled]="formState === FormState.VIEW || (isProgrammeSetupLocked && !isCreate && isFastTrackLumpSumLocked)">
+            <mat-button-toggle
+                    value="Yes"
+                    [checked]="isFastTrack === 'Yes'"
+                    (change)="changeFastTrack($event.value)">
+                <span jemsText maxWidth="230">{{'common.yes' | translate}}</span>
+            </mat-button-toggle>
+            <mat-button-toggle
+                    value="No"
+                    [checked]="isFastTrack === 'No'"
+                    (change)="changeFastTrack($event.value)">
+                <span jemsText maxWidth="230">{{'common.no' | translate}}</span>
+            </mat-button-toggle>
+        </mat-button-toggle-group>
+    </div>
+    <br>
+
+    <div>
+        <div jemsLabel class="mat-required-marker"
              [ngClass]="{'empty': lumpSumForm?.controls?.phase?.errors}">
             {{'lump.sum.related.phase' | translate}}
         </div>

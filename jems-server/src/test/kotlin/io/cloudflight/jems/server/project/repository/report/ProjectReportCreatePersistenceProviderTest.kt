@@ -199,7 +199,7 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
                     PartnerReportLumpSum(
                         lumpSumId = 85L,
                         period = 0,
-                        value = ONE,
+                        value = ONE
                     ),
                 ),
                 unitCosts = setOf(PartnerReportUnitCostBase(

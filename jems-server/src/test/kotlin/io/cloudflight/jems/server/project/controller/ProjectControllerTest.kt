@@ -239,6 +239,7 @@ class ProjectControllerTest {
                     splittingAllowed = false,
                     phase = ProgrammeLumpSumPhase.Preparation,
                     categories = setOf(BudgetCategory.EquipmentCosts, BudgetCategory.TravelAndAccommodationCosts),
+                    isFastTrack = false
                 ),
             ),
             unitCosts = listOf(
@@ -280,6 +281,7 @@ class ProjectControllerTest {
                         splittingAllowed = false,
                         phase = ProgrammeLumpSumPhase.Preparation,
                         categories = setOf(BudgetCategory.EquipmentCosts, BudgetCategory.TravelAndAccommodationCosts),
+                        fastTrack = false
                     ),
                 ),
                 unitCosts = listOf(
@@ -290,7 +292,7 @@ class ProjectControllerTest {
                         type = setOf(InputTranslation(SystemLanguage.EN, "type of unit cost")),
                         costPerUnit = BigDecimal.ONE,
                         oneCostCategory = false,
-                        categories = setOf(BudgetCategory.ExternalCosts, BudgetCategory.OfficeAndAdministrationCosts),
+                        categories = setOf(BudgetCategory.ExternalCosts, BudgetCategory.OfficeAndAdministrationCosts)
                     )
                 ),
                 stateAids = emptyList(),

@@ -35,6 +35,9 @@ class UpdateLumpSum(
         if (isProgrammeSetupLocked.isLocked()) {
             lumpSumUpdateRestrictions(existingLumpSum = existingLumpSum, updatedLumpSum = lumpSum)
         }
+        if (isProgrammeSetupLocked.isAnyReportCreated()) {
+            fastTrackLumpSumUpdateRestrictions(existingLumpSum = existingLumpSum, updatedLumpSum = lumpSum)
+        }
         val saved = persistence.updateLumpSum(lumpSum)
 
         lumpSumChangedAudit(saved).logWith(audit)
@@ -53,6 +56,11 @@ class UpdateLumpSum(
             existingLumpSum.phase != updatedLumpSum.phase ||
             existingLumpSum.categories != updatedLumpSum.categories
         )
+            throw UpdateLumpSumWhenProgrammeSetupRestricted()
+    }
+
+    private fun fastTrackLumpSumUpdateRestrictions(existingLumpSum: ProgrammeLumpSum, updatedLumpSum: ProgrammeLumpSum) {
+        if (existingLumpSum.isFastTrack != updatedLumpSum.isFastTrack)
             throw UpdateLumpSumWhenProgrammeSetupRestricted()
     }
 

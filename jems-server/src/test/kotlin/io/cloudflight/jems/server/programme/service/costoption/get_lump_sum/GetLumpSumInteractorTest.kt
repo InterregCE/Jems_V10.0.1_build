@@ -31,6 +31,7 @@ class GetLumpSumInteractorTest {
             splittingAllowed = true,
             phase = Implementation,
             categories = setOf(StaffCosts, OfficeAndAdministrationCosts),
+            isFastTrack = false
         )
 
     }

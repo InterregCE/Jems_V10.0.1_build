@@ -159,6 +159,7 @@ class ProjectReportExpenditurePersistenceProviderTest : UnitTest() {
                 splittingAllowed = true,
                 phase = ProgrammeLumpSumPhase.Implementation,
                 categories = mutableSetOf(),
+                isFastTrack = false
             ),
             period = 2,
             cost = BigDecimal.ONE,

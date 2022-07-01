@@ -10,6 +10,7 @@ fun ProgrammeLumpSum.toDto() = ProgrammeLumpSumDTO(
     description = description,
     cost = cost,
     splittingAllowed = splittingAllowed,
+    fastTrack = isFastTrack,
     phase = phase,
     categories = categories
 )
@@ -29,6 +30,7 @@ fun ProgrammeLumpSumDTO.toModel() = ProgrammeLumpSum(
     description = description,
     cost = cost,
     splittingAllowed = splittingAllowed,
+    isFastTrack = fastTrack,
     phase = phase,
     categories = categories
 )

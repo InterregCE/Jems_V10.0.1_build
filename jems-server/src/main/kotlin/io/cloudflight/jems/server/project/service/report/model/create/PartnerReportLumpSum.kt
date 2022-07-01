@@ -5,5 +5,5 @@ import java.math.BigDecimal
 data class PartnerReportLumpSum(
     val lumpSumId: Long,
     val period: Int?,
-    val value: BigDecimal,
+    val value: BigDecimal
 )

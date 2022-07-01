@@ -139,7 +139,8 @@ class ProgrammeDataGeneratorTest(@LocalServerPort private val port: Int) : DataG
                         BudgetCategory.EquipmentCosts,
                         BudgetCategory.ExternalCosts,
                         BudgetCategory.StaffCosts
-                    )
+                    ),
+                    fastTrack = false
                 )
             )
         )

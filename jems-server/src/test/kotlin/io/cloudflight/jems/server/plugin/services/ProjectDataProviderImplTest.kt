@@ -603,7 +603,8 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             cost = BigDecimal.TEN,
             splittingAllowed = true,
             phase = ProgrammeLumpSumPhase.Preparation,
-            categories = setOf(BudgetCategory.StaffCosts)
+            categories = setOf(BudgetCategory.StaffCosts),
+            isFastTrack = false
         )
 
         // data for tableA4/output-result

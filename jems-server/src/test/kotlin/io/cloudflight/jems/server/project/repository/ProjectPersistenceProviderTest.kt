@@ -164,6 +164,7 @@ internal class ProjectPersistenceProviderTest : UnitTest() {
                             category = BudgetCategory.TravelAndAccommodationCosts
                         ),
                     ),
+                    isFastTrack = false
                 )
             )
             call.unitCosts.clear()

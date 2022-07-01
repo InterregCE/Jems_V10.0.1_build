@@ -155,6 +155,7 @@ internal class CallPersistenceProviderTest {
                             category = BudgetCategory.InfrastructureCosts
                         )
                     ),
+                    isFastTrack = false
                 )
             )
             call.unitCosts.clear()
@@ -240,6 +241,7 @@ internal class CallPersistenceProviderTest {
             cost = BigDecimal.ONE,
             splittingAllowed = true,
             phase = ProgrammeLumpSumPhase.Closure,
+            isFastTrack = false
         )
 
         private val lumpSum3 = ProgrammeLumpSumEntity(
@@ -252,6 +254,7 @@ internal class CallPersistenceProviderTest {
             cost = BigDecimal.TEN,
             splittingAllowed = false,
             phase = ProgrammeLumpSumPhase.Preparation,
+            isFastTrack = false
         )
 
         private val unitCost2 = ProgrammeUnitCostEntity(

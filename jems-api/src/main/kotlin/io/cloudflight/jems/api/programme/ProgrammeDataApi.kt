@@ -40,4 +40,7 @@ interface ProgrammeDataApi {
     @GetMapping("$ENDPOINT_API_PROGRAMME_DATA/hasProjectsInStatus/{projectStatus}")
     fun hasProjectsInStatus(@PathVariable projectStatus: ApplicationStatusDTO): Boolean
 
+    @ApiOperation("Check if Fast Track Lump Sums are still open for changes or not yet")
+    @GetMapping("$ENDPOINT_API_PROGRAMME_DATA/isFastTrackLocked")
+    fun isAnyReportCreated(): Boolean
 }

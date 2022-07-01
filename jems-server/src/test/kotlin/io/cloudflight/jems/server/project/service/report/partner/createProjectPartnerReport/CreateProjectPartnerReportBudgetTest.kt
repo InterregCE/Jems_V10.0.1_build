@@ -365,7 +365,11 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         val result = service.retrieveBudgetDataFor(projectId, partner, version, contributions)
 
         assertThat(result.contributions).hasSize(3)
-        assertThat(result.lumpSums).containsExactly(PartnerReportLumpSum(lumpSumId = 44L, period = 3, value = BigDecimal.TEN))
+        assertThat(result.lumpSums).containsExactly(PartnerReportLumpSum(
+            lumpSumId = 44L,
+            period = 3,
+            value = BigDecimal.TEN
+        ))
         assertThat(result.unitCosts.map {it.unitCostId}).containsExactly(4, 5, 6, 7, 8, 9, 10)
         assertThat(result.budgetPerPeriod).containsExactly(
             ProjectPartnerReportPeriod(1, BigDecimal.ONE, BigDecimal.ONE, 1, 3),
