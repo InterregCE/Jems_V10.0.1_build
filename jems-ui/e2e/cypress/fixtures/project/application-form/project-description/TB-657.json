@@ -1,0 +1,115 @@
+{
+  "projectCoordination": [
+    {
+      "translation": "Project coordination DE",
+      "language": "DE"
+    },
+    {
+      "translation": "Project coordination EN",
+      "language": "EN"
+    }
+  ],
+  "projectQualityAssurance": [
+    {
+      "translation": "Project quality DE",
+      "language": "DE"
+    },
+    {
+      "translation": "Project quality EN",
+      "language": "EN"
+    }
+  ],
+  "projectCommunication": [
+    {
+      "translation": "Project communication DE",
+      "language": "DE"
+    },
+    {
+      "translation": "Project communication EN",
+      "language": "EN"
+    }
+  ],
+  "projectFinancialManagement": [
+    {
+      "translation": "Project financial forecast DE",
+      "language": "DE"
+    },
+    {
+      "translation": "Project financial forecast EN",
+      "language": "EN"
+    }
+  ],
+  "projectJointDevelopmentDescription": [
+    {
+      "translation": "Project joint development DE",
+      "language": "DE"
+    },
+    {
+      "translation": "Project joint development EN",
+      "language": "EN"
+    }
+  ],
+  "projectJointImplementationDescription": [
+    {
+      "translation": "Project joint implementation DE",
+      "language": "DE"
+    },
+    {
+      "translation": "Project joint implementation EN",
+      "language": "EN"
+    }
+  ],
+  "projectJointStaffingDescription": [
+    {
+      "translation": "Project joint staffing DE",
+      "language": "DE"
+    },
+    {
+      "translation": "Project joint staffing EN",
+      "language": "EN"
+    }
+  ],
+  "projectJointFinancingDescription": [
+    {
+      "translation": "Project joint financing DE",
+      "language": "DE"
+    },
+    {
+      "translation": "Project joint financing EN",
+      "language": "EN"
+    }
+  ],
+  "sustainableDevelopmentCriteriaEffect": "negative effects",
+  "sustainableDevelopmentDescription": [
+    {
+      "translation": "Project sustainable development DE",
+      "language": "DE"
+    },
+    {
+      "translation": "Project sustainable development EN",
+      "language": "EN"
+    }
+  ],
+  "equalOpportunitiesEffect": "neutral",
+  "equalOpportunitiesDescription": [
+    {
+      "translation": "Project equal opportunities DE",
+      "language": "DE"
+    },
+    {
+      "translation": "Project equal opportunities EN",
+      "language": "EN"
+    }
+  ],
+  "sexualEqualityEffect": "positive effects",
+  "sexualEqualityDescription": [
+    {
+      "translation": "Project equality DE",
+      "language": "DE"
+    },
+    {
+      "translation": "Project equality EN",
+      "language": "EN"
+    }
+  ]
+}
