@@ -22,6 +22,7 @@
     ],
     "cost": "55555,56",
     "splittingAllowed": "Yes",
+    "fastTrack": "Yes",
     "phase": "Preparation",
     "categories": [
       "Staff Costs",
@@ -55,6 +56,7 @@
     ],
     "cost": "55555,56",
     "splittingAllowed": "Yes",
+    "fastTrack": "No",
     "phase": "Implementation",
     "categories": [
       "Staff Costs",
@@ -88,6 +90,7 @@
     ],
     "cost": "5555,56",
     "splittingAllowed": "No",
+    "fastTrack": "Yes",
     "phase": "Closure",
     "categories": [
       "Staff Costs",
