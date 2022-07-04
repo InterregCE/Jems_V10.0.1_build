@@ -230,7 +230,7 @@ context('Programme management tests', () => {
     cy.get('jems-alert p').should('contain.text', 'Legal status saved successfully');
   });
 
-  it.only('TB-531 Programme Lump Sums can be configured', () => {
+  it('TB-531 Programme Lump Sums can be configured', () => {
 
     cy.visit('/app/programme/costs', {failOnStatusCode: false});
 
