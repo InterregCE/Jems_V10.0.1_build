@@ -253,7 +253,8 @@ context('Programme management tests', () => {
 
       cy.contains('mat-form-field', 'Lump Sum cost').find('input').type(lumpSum.cost);
 
-      cy.contains('button', lumpSum.splittingAllowed).click();
+      cy.contains('Allow splitting of the lump sum between partners:').next().contains(lumpSum.splittingAllowed).click();
+      cy.contains('This is a Fast Track Lump Sum').next().contains(lumpSum.fastTrack).click();
       cy.contains('button', lumpSum.phase).click();
 
       lumpSum.categories.forEach(category => {
