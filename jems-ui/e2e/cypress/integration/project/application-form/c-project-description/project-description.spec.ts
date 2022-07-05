@@ -367,4 +367,158 @@ context('Project description tests', () => {
       cy.contains('Work package outputs saved successfully').should('be.visible');
     });
   });
+
+  it('TB-656 Applicant can create project results', function () {
+    cy.fixture('project/application-form/project-description/TB-656').then(testData => {
+      cy.visit(`app/project/detail/${this.applicationId}`, {failOnStatusCode: false});
+
+      cy.contains('C.5 Project Results').click();
+      cy.contains('Add result').click();
+
+      cy.contains('mat-form-field', 'Programme result indicator').click();
+      cy.contains(testData.programmeResultIndicator).click();
+
+      cy.contains('div', 'Target value').find('input').type(testData.targetValue);
+
+      cy.contains('mat-form-field', 'Delivery period').click();
+      cy.contains(testData.period).click();
+
+      cy.contains('jems-multi-language-container', 'Result description').within(() => {
+        testData.description.forEach(item => {
+          cy.contains('button', item.language).click();
+          cy.get('textarea').type(item.translation);
+        });
+      });
+
+      cy.contains('button', 'Save changes').click();
+      cy.contains('Project results saved successfully').should('be.visible');
+    });
+  });
+
+  it('TB-657 Applicant can edit project management', function () {
+    cy.fixture('project/application-form/project-description/TB-657').then(testData => {
+      cy.visit(`app/project/detail/${this.applicationId}`, {failOnStatusCode: false});
+
+      cy.contains('C.7 Project management').click();
+
+      cy.contains('C.7.1 How will you coordinate your project?').next().next().within(() => {
+        testData.projectCoordination.forEach(item => {
+          cy.contains('button', item.language).click();
+          cy.get('textarea').type(item.translation);
+        });
+      });
+
+      cy.contains('C.7.2 Which measures will you take to ensure quality in your project?').next().next().within(() => {
+        testData.projectQualityAssurance.forEach(item => {
+          cy.contains('button', item.language).click();
+          cy.get('textarea').type(item.translation);
+        });
+      });
+
+      cy.contains('C.7.3 What will be the general approach you will follow to communicate').next().next().within(() => {
+        testData.projectCommunication.forEach(item => {
+          cy.contains('button', item.language).click();
+          cy.get('textarea').type(item.translation);
+        });
+      });
+
+      cy.contains('C.7.4 How do you foresee the financial management of the project').next().next().within(() => {
+        testData.projectFinancialManagement.forEach(item => {
+          cy.contains('button', item.language).click();
+          cy.get('textarea').type(item.translation);
+        });
+      });
+
+      cy.contains('mat-checkbox', 'Joint development').parent().within(() => {
+        cy.get('input').check({force: true});
+        testData.projectJointDevelopmentDescription.forEach(item => {
+          cy.root().closest('jems-multi-language-container').contains('button', item.language).click();
+          cy.get('textarea').type(item.translation);
+        });
+      });
+
+      cy.contains('mat-checkbox', 'Joint implementation').parent().within(() => {
+        cy.get('input').check({force: true});
+        testData.projectJointImplementationDescription.forEach(item => {
+          cy.root().closest('jems-multi-language-container').contains('button', item.language).click();
+          cy.get('textarea').type(item.translation);
+        });
+      });
+
+      cy.contains('mat-checkbox', 'Joint staffing').parent().within(() => {
+        cy.get('input').check({force: true});
+        testData.projectJointStaffingDescription.forEach(item => {
+          cy.root().closest('jems-multi-language-container').contains('button', item.language).click();
+          cy.get('textarea').type(item.translation);
+        });
+      });
+
+      cy.contains('mat-checkbox', 'Joint financing').parent().within(() => {
+        cy.get('input').check({force: true});
+        testData.projectJointFinancingDescription.forEach(item => {
+          cy.root().closest('jems-multi-language-container').contains('button', item.language).click();
+          cy.get('textarea').type(item.translation);
+        });
+      });
+
+      cy.contains('div', 'Sustainable development').within(() => {
+        cy.contains('button', testData.sustainableDevelopmentCriteriaEffect).click();
+        testData.sustainableDevelopmentDescription.forEach(item => {
+          cy.root().closest('jems-multi-language-container').contains('button', item.language).click();
+          cy.get('textarea').type(item.translation);
+        });
+      });
+
+      cy.contains('div', 'Equal opportunities and non-discrimination').within(() => {
+        cy.contains('button', testData.equalOpportunitiesEffect).click();
+        testData.equalOpportunitiesDescription.forEach(item => {
+          cy.root().closest('jems-multi-language-container').contains('button', item.language).click();
+          cy.get('textarea').type(item.translation);
+        });
+      });
+
+      cy.contains('div', 'Equality between men and women').within(() => {
+        cy.contains('button', testData.sexualEqualityEffect).click();
+        testData.sexualEqualityDescription.forEach(item => {
+          cy.root().closest('jems-multi-language-container').contains('button', item.language).click();
+          cy.get('textarea').type(item.translation);
+        });
+      });
+
+      cy.contains('Save changes').click();
+      cy.contains('Project identification saved successfully.').should('be.visible');
+    });
+  });
+
+  it('TB-658 Applicant can edit project long-term plans', function () {
+    cy.fixture('project/application-form/project-description/TB-658').then(testData => {
+      cy.visit(`app/project/detail/${this.applicationId}`, {failOnStatusCode: false});
+
+      cy.contains('C.8 Long-term plans').click();
+
+      cy.contains('C.8.1 Ownership').next().next().within(() => {
+        testData.projectOwnership.forEach(item => {
+          cy.contains('button', item.language).click();
+          cy.get('textarea').type(item.translation);
+        });
+      });
+
+      cy.contains('C.8.2 Durability').next().next().within(() => {
+        testData.projectDurability.forEach(item => {
+          cy.contains('button', item.language).click();
+          cy.get('textarea').type(item.translation);
+        });
+      });
+
+      cy.contains('C.8.3 Transferability').next().next().within(() => {
+        testData.projectTransferability.forEach(item => {
+          cy.contains('button', item.language).click();
+          cy.get('textarea').type(item.translation);
+        });
+      });
+
+      cy.contains('Save changes').click();
+      cy.contains('Project identification saved successfully.').should('be.visible');
+    });
+  });
 });

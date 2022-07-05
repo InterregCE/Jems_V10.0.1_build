@@ -1,0 +1,15 @@
+{
+  "programmeResultIndicator": "RI1: Jobs created in supported entities",
+  "targetValue": 7,
+  "period": "After project implementation",
+  "description": [
+    {
+      "translation": "Output description DE",
+      "language": "DE"
+    },
+    {
+      "translation": "Output description EN",
+      "language": "EN"
+    }
+  ]
+}
