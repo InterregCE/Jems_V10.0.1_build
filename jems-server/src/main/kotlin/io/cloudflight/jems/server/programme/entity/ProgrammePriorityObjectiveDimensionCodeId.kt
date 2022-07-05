@@ -2,24 +2,28 @@ package io.cloudflight.jems.server.programme.entity
 
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammeObjectiveDimension
 import java.io.Serializable
-import java.util.*
-import javax.persistence.*
+import java.util.Objects
+import javax.persistence.Embeddable
+import javax.persistence.EnumType
+import javax.persistence.Enumerated
+import javax.persistence.ManyToOne
+import javax.persistence.FetchType
+import javax.persistence.JoinColumn
 import javax.validation.constraints.NotNull
 
 @Embeddable
 data class ProgrammePriorityObjectiveDimensionCodeId(
 
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     @field:NotNull
     val programmeObjectiveDimension: ProgrammeObjectiveDimension,
 
-    @Column(nullable = false)
     @field:NotNull
     val code: String,
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
     @JoinColumn(name = "objective_code")
+    @field:NotNull
     val specificObjectiveEntity: ProgrammeSpecificObjectiveEntity
 
 ): Serializable {

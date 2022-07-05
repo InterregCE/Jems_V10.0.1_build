@@ -8,6 +8,8 @@ import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePrio
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammeSpecificObjective
 import org.springframework.http.HttpStatus
 
+const val MAX_CODE_VALUE = 182
+
 fun validateCreateProgrammePriority(
     programmePriority: ProgrammePriority,
     getPriorityIdByCode: (String) -> Long?,
@@ -212,7 +214,7 @@ private fun validateDimensionCodes(dimensionCodes: List<List<String>>) {
     if (dimensionCodes.any { it.isEmpty() || it.size > 20}) {
         invalid("programme.priority.dimension.codes.size.invalid")
     }
-    if (dimensionCodes.flatten().any { it.toIntOrNull() == null || it.toInt() < 1 || it.toInt() > 182 }) {
+    if (dimensionCodes.flatten().any { it.toIntOrNull() == null || it.toInt() < 1 || it.toInt() > MAX_CODE_VALUE }) {
         invalid("programme.priority.dimension.codes.value.invalid")
     }
 }

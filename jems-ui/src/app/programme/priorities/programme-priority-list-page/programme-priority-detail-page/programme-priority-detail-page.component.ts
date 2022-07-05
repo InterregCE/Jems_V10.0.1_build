@@ -20,7 +20,6 @@ import {APIError} from '@common/models/APIError';
   selector: 'jems-programme-priority-detail-page',
   templateUrl: './programme-priority-detail-page.component.html',
   styleUrls: ['./programme-priority-detail-page.component.scss'],
-  // changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [ProgrammePriorityDetailPageStore]
 })
 export class ProgrammePriorityDetailPageComponent {
@@ -55,7 +54,7 @@ export class ProgrammePriorityDetailPageComponent {
   dimensionCodes = new Map(
     Array.from({length: 182}, (x, i) => i + 1)
       .map(i => [String(i).padStart(3, '0'), String(i).padStart(3, '0')])
-  )
+  );
 
   // TODO: remove when new edit mode is introduced
   saveSuccess: string;
@@ -212,7 +211,7 @@ export class ProgrammePriorityDetailPageComponent {
       [v]: this.formBuilder.control(
         selected && [...(objective?.dimensionCodes?.[v] || [])] || [],
         this.constants.dimensionCodesSize(group)
-      )}), {})
+      )}), {});
   }
 
 // TODO: remove when new edit mode is introduced
