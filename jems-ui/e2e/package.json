@@ -16,6 +16,7 @@
     "csv-parse": "^5.0.4",
     "cy2": "^2.0.0",
     "cypress": "^9.7.0",
+    "cypress-cloudflight": "^1.0.2",
     "date-and-time": "^2.3.0",
     "node-fetch": "^2.6.7",
     "node-xlsx": "^0.21.0",

@@ -199,14 +199,12 @@
     ],
     "partnerContributions": [
       {
-        "id": null,
         "name": "Project Partner",
         "status": "Private",
         "amount": 51.13,
         "partner": true
       },
       {
-        "id": null,
         "name": "Additional source",
         "status": "Public",
         "amount": 50,

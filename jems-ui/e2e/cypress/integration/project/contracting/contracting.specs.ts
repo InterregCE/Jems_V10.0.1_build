@@ -2,7 +2,7 @@ import user from '../../../fixtures/users.json';
 import application from '../../../fixtures/api/application/application.json';
 import call from "../../../fixtures/api/call/1.step.call.json";
 
-context('Application contracting', () => {
+context('Application contracting tests', () => {
 
   before(() => {
     cy.loginByRequest(user.programmeUser.email);

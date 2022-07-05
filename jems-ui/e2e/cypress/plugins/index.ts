@@ -4,12 +4,14 @@ import {finished} from 'stream/promises';
 import date from 'date-and-time';
 import fetch from 'node-fetch';
 import xlsx from 'node-xlsx';
-import CypressRunResult = CypressCommandLine.CypressRunResult;
+import cloudflightPower from "cypress-cloudflight";
 
 /**
  * @type {Cypress.PluginConfig}
  */
-export default async (on: Cypress.PluginEvents, config: Cypress.PluginConfigOptions) => {
+export default async (on, config) => {
+  cloudflightPower(on);
+  
   on('task', {
     parsePDF(subject) {
       return pdf(subject).catch(function (error) {
@@ -73,7 +75,7 @@ export default async (on: Cypress.PluginEvents, config: Cypress.PluginConfigOpti
     });
   }
 
-  on('after:run', async (results: CypressRunResult) => {
+  on('after:run', async (results) => {
     if (config.env.jiraApiToken) {
       const executionDetails = {
         "result": {

@@ -1,0 +1,138 @@
+{
+  "partnerUser": {
+    "email": "randomize",
+    "name": "Partner",
+    "surname": "User",
+    "userRoleId": 3,
+    "userStatus": "ACTIVE"
+  },
+  "users": [
+    {
+      "userEmail": "randomize",
+      "level": "EDIT"
+    }
+  ],
+  "firstReportInfo": {
+    "partnerReportId": "R.1",
+    "partnerReportStatus": "Draft",
+    "partnerNumber": "PP2",
+    "nameInOriginalLanguage": "Project Partner in original language",
+    "nameInEnglish": "Project Partner in english",
+    "legalStatus": "Internal EN",
+    "typeOfPartner": "National public authority",
+    "vatRecovery": "Partly",
+    "coFinancingSourceAndRate1": "ERDF 60,00%",
+    "coFinancingSourceAndRate2": "Neighbourhood CBC 30,00%",
+    "country": "France (FR)",
+    "localCurrency": "EUR"
+  },
+  "updatedPartnerDetails": {
+    "abbreviation": "Updated Partner",
+    "role": "PARTNER",
+    "nameInOriginalLanguage": "Updated Partner in original language",
+    "nameInEnglish": "Updated Partner in english",
+    "department": [
+      {
+        "translation": "API generated updated department / unit / division DE",
+        "language": "DE"
+      },
+      {
+        "translation": "API generated updated department / unit / division EN",
+        "language": "EN"
+      }
+    ],
+    "partnerType": "Other",
+    "partnerSubType": "LARGE_ENTERPRISE",
+    "nace": "C_10_82",
+    "otherIdentifierNumber": "77777",
+    "otherIdentifierDescription": [
+      {
+        "translation": "API generated updated other identifier description DE",
+        "language": "DE"
+      },
+      {
+        "translation": "API generated updated other identifier description EN",
+        "language": "EN"
+      }
+    ],
+    "pic": "221111122",
+    "legalStatusId": 2,
+    "vat": "555555",
+    "vatRecovery": "No"
+  },
+  "updatedPartnerAddress": [
+    {
+      "type": "Organization",
+      "country": "Nederland (NL)",
+      "nutsRegion2": "Utrecht (NL31)",
+      "nutsRegion3": "Utrecht (NL310)",
+      "street": "Partnerstreet",
+      "houseNumber": "2",
+      "postalCode": "1020",
+      "city": "Partner city",
+      "homepage": "partner@test.com"
+    },
+    {
+      "type": "Department",
+      "country": "España (ES)",
+      "nutsRegion2": "Castilla y León (ES41)",
+      "nutsRegion3": "León (ES413)",
+      "street": "Departmentstreet",
+      "houseNumber": "5",
+      "postalCode": "4020",
+      "city": "Department city",
+      "homepage": ""
+    }
+  ],
+  "updatedPartnerCofinancing": {
+    "finances": [
+      {
+        "fundId": 1,
+        "fundType": "MainFund",
+        "percentage": 60
+      },
+      {
+        "fundId": 3,
+        "fundType": "MainFund",
+        "percentage": 35
+      },
+      {
+        "percentage": 5,
+        "fundType": "PartnerContribution"
+      }
+    ],
+    "partnerContributions": [
+      {
+        "name": "Project Partner",
+        "status": "Public",
+        "amount": 40.13,
+        "partner": true
+      },
+      {
+        "name": "Additional source",
+        "status": "Private",
+        "amount": 10.44,
+        "partner": false
+      }
+    ]
+  },
+  "approvalInfo": {
+    "note": "API modification approved",
+    "date": "2022-04-01",
+    "entryIntoForceDate": "2022-04-01"
+  },
+  "secondReportInfo": {
+    "partnerReportId": "R.2",
+    "partnerReportStatus": "Draft",
+    "partnerNumber": "PP2",
+    "nameInOriginalLanguage": "Updated Partner in original language",
+    "nameInEnglish": "Updated Partner in english",
+    "legalStatus": "Private",
+    "typeOfPartner": "Other",
+    "vatRecovery": "No",
+    "coFinancingSourceAndRate1": "ERDF 60,00%",
+    "coFinancingSourceAndRate2": "Neighbourhood CBC 35,00%",
+    "country": "Nederland (NL)",
+    "localCurrency": "EUR"
+  }
+}

@@ -96,6 +96,10 @@ declare global {
       approveModification(applicationId: number, approvalInfo, userEmail?: string);
 
       rejectModification(applicationId: number, rejectionInfo, userEmail?: string);
+      
+      setProjectToContracted(applicationId: number, userEmail?: string);
+      
+      assignPartnerCollaborators(applicationId: number, partnerId: number, users: string[]);
     }
   }
 }
@@ -245,6 +249,28 @@ Cypress.Commands.add('rejectModification', (applicationId: number, rejectionInfo
       loginByRequest(currentUser.name);
     });
   }
+});
+
+Cypress.Commands.add('setProjectToContracted', (applicationId: number, userEmail?: string) => {
+  if (userEmail)
+    loginByRequest(userEmail);
+  cy.request({
+    method: 'PUT',
+    url: `api/project/${applicationId}/set-to-contracted`
+  });
+  if (userEmail) {
+    cy.get('@currentUser').then((currentUser: any) => {
+      loginByRequest(currentUser.name);
+    });
+  }
+});
+
+Cypress.Commands.add('assignPartnerCollaborators', (applicationId: number, partnerId: number, users: string[]) => {
+  cy.request({
+    method: 'PUT',
+    url: `api/projectPartnerCollaborators/forProject/${applicationId}/forPartner/${partnerId}`,
+    body: users
+  });
 });
 
 function createApplication(applicationDetails: ProjectCreateDTO) {
