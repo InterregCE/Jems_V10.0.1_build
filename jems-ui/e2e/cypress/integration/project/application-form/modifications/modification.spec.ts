@@ -3,7 +3,7 @@ import call from '../../../../fixtures/api/call/1.step.call.json';
 import application from '../../../../fixtures/api/application/application.json';
 import date from 'date-and-time';
 
-context('Application modifications', () => {
+context('Application modification tests', () => {
 
   before(() => {
     cy.loginByRequest(user.programmeUser.email);
@@ -16,7 +16,7 @@ context('Application modifications', () => {
   it('TB-359 Open new modification and approve it', () => {
     cy.fixture('project/application-form/modifications/TB-359.json').then(testData => {
       cy.loginByRequest(user.applicantUser.email);
-      cy.createFullApplication(application, user.programmeUser.email).then(applicationId => {
+      cy.createApprovedApplication(application, user.programmeUser.email).then(applicationId => {
         cy.loginByRequest(user.programmeUser.email);
         cy.visit(`app/project/detail/${applicationId}/modification`, {failOnStatusCode: false});
         cy.contains('Open new modification').click();
@@ -57,7 +57,7 @@ context('Application modifications', () => {
 
   it('TB-357 Reject modification', () => {
     cy.loginByRequest(user.applicantUser.email);
-    cy.createFullApplication(application, user.programmeUser.email).then(applicationId => {
+    cy.createApprovedApplication(application, user.programmeUser.email).then(applicationId => {
       cy.startModification(applicationId, user.programmeUser.email);
       cy.runPreSubmissionCheck(applicationId);
       cy.submitProjectApplication(applicationId);
@@ -89,7 +89,7 @@ context('Application modifications', () => {
 
   it('TB-356 Edit project in modification and resubmit', () => {
     cy.loginByRequest(user.applicantUser.email);
-    cy.createFullApplication(application, user.programmeUser.email).then(applicationId => {
+    cy.createApprovedApplication(application, user.programmeUser.email).then(applicationId => {
       cy.startModification(applicationId, user.programmeUser.email);
 
       cy.loginByRequest(user.applicantUser.email);

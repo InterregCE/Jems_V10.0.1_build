@@ -32,7 +32,7 @@ context('Project privileges tests', () => {
         cy.publishCall(callId);
       });
       cy.loginByRequest(user.applicantUser.email);
-      cy.createFullApplication(application, user.programmeUser.email).then(applicationId => {
+      cy.createApprovedApplication(application, user.programmeUser.email).then(applicationId => {
         testData.projectCollaborator.email = faker.internet.email();
         cy.createUser(testData.projectCollaborator, user.admin.email);
 
