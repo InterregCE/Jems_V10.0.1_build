@@ -8,7 +8,7 @@ import {
   UserRoleCreateDTO
 } from '@cat/api';
 import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
-import {filter, map, shareReplay, startWith, switchMap, tap, withLatestFrom} from 'rxjs/operators';
+import {filter, map, shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
 import {RoutingService} from '@common/services/routing.service';
 import {ProjectPartnerStore} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
 import {Log} from '@common/utils/log';
@@ -52,9 +52,8 @@ export class PartnerReportPageStore {
   }
 
   createPartnerReport(): Observable<ProjectPartnerReportSummaryDTO> {
-    return this.partnerId$
+    return combineLatest([this.partnerId$, this.isFirstReport$])
       .pipe(
-        withLatestFrom(this.isFirstReport$),
         tap(([partnerId, isFirstReport]) => {
           if (isFirstReport) {
             this.programmeEditableStateStore.firstReportCreated$.next();

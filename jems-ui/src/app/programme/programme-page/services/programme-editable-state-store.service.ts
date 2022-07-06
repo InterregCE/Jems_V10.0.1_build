@@ -34,7 +34,7 @@ export class ProgrammeEditableStateStore {
       .pipe(
         startWith(null),
         switchMap(() => this.programmeDataService.isAnyReportCreated()),
-        tap(flag => Log.info('Fetched programme is locked:', flag)),
+        tap(flag => Log.info('Lump Sum fast track is locked:', flag)),
         shareReplay(1),
       );
   }
