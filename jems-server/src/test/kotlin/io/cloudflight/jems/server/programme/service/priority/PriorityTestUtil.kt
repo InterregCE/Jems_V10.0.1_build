@@ -5,6 +5,7 @@ import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjective
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.GreenInfrastructure
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.RenewableEnergy
 import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.server.programme.service.priority.model.ProgrammeObjectiveDimension
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammeSpecificObjective
 import java.util.stream.Collectors
@@ -15,8 +16,16 @@ val testPriority = ProgrammePriority(
     title = setOf(InputTranslation(SystemLanguage.EN, "PO-02 title")),
     objective = ProgrammeObjective.PO2,
     specificObjectives = listOf(
-        ProgrammeSpecificObjective(programmeObjectivePolicy = GreenInfrastructure, code = "GU"),
-        ProgrammeSpecificObjective(programmeObjectivePolicy = RenewableEnergy, code = "RE"),
+        ProgrammeSpecificObjective(
+            programmeObjectivePolicy = GreenInfrastructure,
+            code = "GU",
+            dimensionCodes = mapOf(ProgrammeObjectiveDimension.EconomicActivity to listOf("001", "002"))
+        ),
+        ProgrammeSpecificObjective(
+            programmeObjectivePolicy = RenewableEnergy,
+            code = "RE",
+            dimensionCodes = mapOf(ProgrammeObjectiveDimension.FormOfSupport to listOf("003", "004"))
+        ),
     ),
 )
 

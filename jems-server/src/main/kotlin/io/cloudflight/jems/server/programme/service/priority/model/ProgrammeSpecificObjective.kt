@@ -5,4 +5,5 @@ import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 data class ProgrammeSpecificObjective(
     val programmeObjectivePolicy: ProgrammeObjectivePolicy,
     val code: String,
+    val dimensionCodes: Map<ProgrammeObjectiveDimension, List<String>> = emptyMap()
 )

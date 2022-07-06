@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, forwardRef, Input} from '@angular/core';
+import {Component, forwardRef, Input} from '@angular/core';
 import {FilterListInputComponent} from '@common/components/filter/filter-list-input/filter-list-input.component';
 import {NG_VALUE_ACCESSOR} from '@angular/forms';
 
@@ -6,7 +6,6 @@ import {NG_VALUE_ACCESSOR} from '@angular/forms';
   selector: 'jems-filter-autocomplete-input',
   templateUrl: './filter-autocomplete-input.component.html',
   styleUrls: ['./filter-autocomplete-input.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [{
     provide: NG_VALUE_ACCESSOR,
     useExisting: forwardRef(() => FilterAutocompleteInputComponent),
@@ -19,6 +18,10 @@ export class FilterAutocompleteInputComponent extends FilterListInputComponent {
   options: Map<any, string>;
   @Input()
   filterable = true;
+  @Input()
+  formFieldWidth: any = 'xx-large';
+
+  disabled = false;
 
   getNotSelectedOptions(inputValue: string): any[] {
     const notSelected = [...this.options.keys()]
@@ -26,5 +29,9 @@ export class FilterAutocompleteInputComponent extends FilterListInputComponent {
     return this.filterable
       ? notSelected.filter(option => this.options.get(option)?.toUpperCase().includes(inputValue.toUpperCase()))
       : notSelected;
+  }
+
+  setDisabledState(isDisabled: boolean) {
+    this.disabled = isDisabled;
   }
 }

@@ -8,6 +8,8 @@ import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePrio
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammeSpecificObjective
 import org.springframework.http.HttpStatus
 
+const val MAX_CODE_VALUE = 182
+
 fun validateCreateProgrammePriority(
     programmePriority: ProgrammePriority,
     getPriorityIdByCode: (String) -> Long?,
@@ -28,6 +30,8 @@ fun validateCreateProgrammePriority(
         policyCodes = programmePriority.specificObjectives.mapTo(HashSet()) { it.code },
         getSpecificObjectivesByCodes = getSpecificObjectivesByCodes,
     )
+
+    validateDimensionCodes(programmePriority.specificObjectives.flatMap { it.dimensionCodes.values })
 }
 
 fun validateUpdateProgrammePriority(
@@ -54,6 +58,8 @@ fun validateUpdateProgrammePriority(
         policyCodes = programmePriority.specificObjectives.mapTo(HashSet()) { it.code },
         getPrioritiesBySpecificObjectiveCodes = getPrioritiesBySpecificObjectiveCodes,
     )
+
+    validateDimensionCodes(programmePriority.specificObjectives.flatMap { it.dimensionCodes.values })
 }
 
 private fun validateCommonRestrictions(programmePriority: ProgrammePriority) {
@@ -202,4 +208,13 @@ private fun invalid(message: String? = null, fieldErrors: Map<String, I18nFieldE
         i18nKey = message,
         i18nFieldErrors = fieldErrors
     )
+}
+
+private fun validateDimensionCodes(dimensionCodes: List<List<String>>) {
+    if (dimensionCodes.any { it.isEmpty() || it.size > 20}) {
+        invalid("programme.priority.dimension.codes.size.invalid")
+    }
+    if (dimensionCodes.flatten().any { it.toIntOrNull() == null || it.toInt() < 1 || it.toInt() > MAX_CODE_VALUE }) {
+        invalid("programme.priority.dimension.codes.value.invalid")
+    }
 }

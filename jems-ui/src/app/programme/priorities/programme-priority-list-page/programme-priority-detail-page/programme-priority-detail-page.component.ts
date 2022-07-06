@@ -5,7 +5,7 @@ import {ActivatedRoute} from '@angular/router';
 import {combineLatest, Observable, of} from 'rxjs';
 import {ProgrammePriorityDTO, ProgrammeSpecificObjectiveDTO} from '@cat/api';
 import {catchError, filter, map, take, tap} from 'rxjs/operators';
-import {FormArray, FormBuilder} from '@angular/forms';
+import {FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {ProgrammePriorityDetailPageConstants} from './programme-priority-detail-page.constants';
 import {Alert} from '@common/components/forms/alert';
 import {Forms} from '@common/utils/forms';
@@ -20,7 +20,6 @@ import {APIError} from '@common/models/APIError';
   selector: 'jems-programme-priority-detail-page',
   templateUrl: './programme-priority-detail-page.component.html',
   styleUrls: ['./programme-priority-detail-page.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [ProgrammePriorityDetailPageStore]
 })
 export class ProgrammePriorityDetailPageComponent {
@@ -43,6 +42,19 @@ export class ProgrammePriorityDetailPageComponent {
     objective: this.formBuilder.control('', this.constants.OBJECTIVE.validators),
     specificObjectives: this.formBuilder.array([], {validators: this.constants.mustHaveSpecificObjectiveSelected})
   });
+
+  dimensions = [
+    'TypesOfIntervention',
+    'FormOfSupport',
+    'TerritorialDeliveryMechanism',
+    'EconomicActivity',
+    'GenderEquality',
+    'RegionalAndSeaBasinStrategy'
+  ];
+  dimensionCodes = new Map(
+    Array.from({length: 182}, (x, i) => i + 1)
+      .map(i => [String(i).padStart(3, '0'), String(i).padStart(3, '0')])
+  );
 
   // TODO: remove when new edit mode is introduced
   saveSuccess: string;
@@ -147,14 +159,15 @@ export class ProgrammePriorityDetailPageComponent {
                          selectedSpecificObjectives?: ProgrammeSpecificObjectiveDTO[]): void {
     this.specificObjectives.clear();
     selectedSpecificObjectives?.forEach(
-      selected => this.addSpecificObjective(selected.programmeObjectivePolicy, selected.officialCode, true, selected.code)
+      selected => this.addSpecificObjective(selected, true)
     );
     const freePolicies = freePrioritiesWithPolicies[objective];
-    freePolicies?.forEach(policy => this.addSpecificObjective(policy.programmeObjectivePolicy, policy.officialCode, false, ''));
+    freePolicies?.forEach(policy => this.addSpecificObjective(policy, false));
   }
 
   setCheckedStatus(specificObjectiveIndex: number, checked: boolean): void {
     this.specificObjectives.at(specificObjectiveIndex).get(this.constants.POLICY_SELECTED.name)?.patchValue(checked);
+    this.form.updateValueAndValidity();
   }
 
   specificObjectiveError(): { [key: string]: any } | null {
@@ -171,24 +184,37 @@ export class ProgrammePriorityDetailPageComponent {
     };
   }
 
-  private addSpecificObjective(policy: string, officialCode: string ,selected: boolean, code: string): void {
-    const codeControl = this.formBuilder.control(code);
-    const control = this.formBuilder.group(
-      {
-        selected: this.formBuilder.control(selected),
-        code: codeControl,
-        programmeObjectivePolicy: this.formBuilder.control(policy),
-        officialCode: this.formBuilder.control(officialCode)
-      });
-    codeControl.setValidators([this.constants.selectedSpecificObjectiveCodeRequired(control)].concat(this.constants.POLICY_CODE.validators || []));
-    if (this.objectivePoliciesAlreadyInUse.find(used => used === policy) || (this.isProgrammeSetupLocked && selected)) {
-      control.disable();
+  private addSpecificObjective(objective: ProgrammeSpecificObjectiveDTO, selected: boolean): void {
+    const group = this.formBuilder.group({
+      selected: this.formBuilder.control(selected),
+      code: this.formBuilder.control(selected && objective.code || '', this.constants.POLICY_CODE.validators),
+      programmeObjectivePolicy: this.formBuilder.control(objective.programmeObjectivePolicy),
+      officialCode: this.formBuilder.control(objective.officialCode)
+    });
+
+    group.addControl(this.constants.DIMENSION_CODES.name,
+      this.formBuilder.group(this.addDimensionCodes(objective, group, selected))
+    );
+    group.get(this.constants.POLICY_CODE.name)?.addValidators(this.constants.selectedSpecificObjectiveCodeRequired(group));
+
+    if (this.objectivePoliciesAlreadyInUse.find(used => used === objective.programmeObjectivePolicy) || (this.isProgrammeSetupLocked && selected)) {
+      group.disable();
       this.form.get(this.constants.OBJECTIVE.name)?.disable();
     }
-    this.specificObjectives.push(control);
+
+    this.specificObjectives.push(group);
   }
 
-  // TODO: remove when new edit mode is introduced
+  private addDimensionCodes(objective: ProgrammeSpecificObjectiveDTO, group: FormGroup, selected: boolean): { [p: string]: any } {
+    return this.dimensions.reduce((a, v) => ({
+      ...a,
+      [v]: this.formBuilder.control(
+        selected && [...(objective?.dimensionCodes?.[v] || [])] || [],
+        this.constants.dimensionCodesSize(group)
+      )}), {});
+  }
+
+// TODO: remove when new edit mode is introduced
   private handleSuccess(): void {
     this.saveSuccess = 'programme.priority.save.success';
     this.changeDetectorRef.markForCheck();

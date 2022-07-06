@@ -21,6 +21,7 @@ import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.service.info.isSetupLocked.IsProgrammeSetupLockedInteractor
 import io.cloudflight.jems.server.programme.service.priority.ProgrammePriorityPersistence
 import io.cloudflight.jems.server.programme.service.priority.getStringOfLength
+import io.cloudflight.jems.server.programme.service.priority.model.ProgrammeObjectiveDimension
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammeSpecificObjective
 import io.cloudflight.jems.server.programme.service.priority.testPriority
@@ -58,13 +59,13 @@ class UpdatePriorityInteractorTest {
 
     }
 
-    @MockK
+    @RelaxedMockK
     lateinit var persistence: ProgrammePriorityPersistence
 
-    @MockK
+    @RelaxedMockK
     lateinit var isProgrammeSetupLocked: IsProgrammeSetupLockedInteractor
 
-    @MockK
+    @RelaxedMockK
     lateinit var auditService: AuditService
 
     @RelaxedMockK
@@ -151,6 +152,43 @@ class UpdatePriorityInteractorTest {
     fun `updatePriority - wrong title (long or empty)`() {
         every { persistence.getPriorityById(ID) } returns testPriority.copy(id = ID)
         testWrongTitle(getStringOfLength(301))
+    }
+
+    @Test
+    fun `updatePriority - invalid dimension codes`() {
+        every { persistence.getPriorityIdByCode(any()) } returns null
+        every { persistence.getPriorityIdForPolicyIfExists(RenewableEnergy) } returns ID
+        every { persistence.getPriorityIdForPolicyIfExists(GreenInfrastructure) } returns ID
+        every { persistence.getPriorityIdForPolicyIfExists(CircularEconomy) } returns null
+        every { persistence.getPriorityIdForPolicyIfExists(WaterManagement) } returns null
+
+        val dimensionCodes = mutableMapOf<ProgrammeObjectiveDimension, List<String>>(
+            ProgrammeObjectiveDimension.EconomicActivity to listOf()
+        )
+        val priority = toUpdatePriority.copy(
+            code = "random",
+            specificObjectives = listOf(
+                ProgrammeSpecificObjective(
+                    programmeObjectivePolicy = RenewableEnergy,
+                    code = "code01",
+                    dimensionCodes = dimensionCodes
+                )
+            )
+        )
+        every { persistence.getPriorityById(ID) } returns priority
+        var ex = assertThrows<I18nValidationException> { updatePriority.updatePriority(ID, priority) }
+        assertThat(ex.i18nKey).isEqualTo("programme.priority.dimension.codes.size.invalid")
+
+        dimensionCodes[ProgrammeObjectiveDimension.EconomicActivity] = listOf(
+            "001", "002", "003", "004", "005", "006", "007", "008", "009", "010", "011", "012", "013",
+            "014", "015", "016", "017", "018", "019", "020", "021"
+        )
+        ex = assertThrows { updatePriority.updatePriority(ID, priority) }
+        assertThat(ex.i18nKey).isEqualTo("programme.priority.dimension.codes.size.invalid")
+
+        dimensionCodes[ProgrammeObjectiveDimension.EconomicActivity] = listOf("1d")
+        ex = assertThrows { updatePriority.updatePriority(ID, priority) }
+        assertThat(ex.i18nKey).isEqualTo("programme.priority.dimension.codes.value.invalid")
     }
 
     private fun testWrongTitle(title: String) {

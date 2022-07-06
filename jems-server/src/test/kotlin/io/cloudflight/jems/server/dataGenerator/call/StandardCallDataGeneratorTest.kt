@@ -47,7 +47,7 @@ class StandardCallDataGeneratorTest(@LocalServerPort private val port: Int) : Da
 
     @Test
     @Order(1)
-    @ExpectSelect(156)
+    @ExpectSelect(157)
     @ExpectInsert(148)
     @ExpectUpdate(0)
     @ExpectDelete(1)
@@ -74,7 +74,7 @@ class StandardCallDataGeneratorTest(@LocalServerPort private val port: Int) : Da
 
     @Test
     @Order(2)
-    @ExpectSelect(28)
+    @ExpectSelect(29)
     @ExpectInsert(0)
     @ExpectUpdate(2)
     @ExpectDelete(2)
@@ -104,7 +104,7 @@ class StandardCallDataGeneratorTest(@LocalServerPort private val port: Int) : Da
 
     @Test
     @Order(2)
-    @ExpectSelect(23)
+    @ExpectSelect(24)
     @ExpectInsert(0)
     @ExpectUpdate(1)
     @ExpectDelete(1)
@@ -152,7 +152,7 @@ class StandardCallDataGeneratorTest(@LocalServerPort private val port: Int) : Da
 
     @Test
     @Order(2)
-    @ExpectSelect(23)
+    @ExpectSelect(24)
     @ExpectInsert(5)
     @ExpectUpdate(0)
     @ExpectDelete(1)
@@ -181,7 +181,7 @@ class StandardCallDataGeneratorTest(@LocalServerPort private val port: Int) : Da
 
     @Test
     @Order(2)
-    @ExpectSelect(23)
+    @ExpectSelect(24)
     @ExpectInsert(1)
     @ExpectUpdate(0)
     @ExpectDelete(1)
@@ -195,7 +195,7 @@ class StandardCallDataGeneratorTest(@LocalServerPort private val port: Int) : Da
 
     @Test
     @Order(2)
-    @ExpectSelect(25)
+    @ExpectSelect(26)
     @ExpectInsert(1)
     @ExpectUpdate(0)
     @ExpectDelete(1)
@@ -209,7 +209,7 @@ class StandardCallDataGeneratorTest(@LocalServerPort private val port: Int) : Da
 
     @Test
     @Order(3)
-    @ExpectSelect(21)
+    @ExpectSelect(22)
     @ExpectInsert(0)
     @ExpectUpdate(1)
     @ExpectDelete(1)
@@ -222,7 +222,7 @@ class StandardCallDataGeneratorTest(@LocalServerPort private val port: Int) : Da
 
     @Test
     @Order(Ordered.LOWEST_PRECEDENCE)
-    @ExpectSelect(21)
+    @ExpectSelect(22)
     @ExpectInsert(0)
     @ExpectUpdate(0)
     @ExpectDelete(1)
