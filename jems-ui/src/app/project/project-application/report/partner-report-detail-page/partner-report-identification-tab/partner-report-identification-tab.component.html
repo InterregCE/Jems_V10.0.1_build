@@ -145,7 +145,7 @@
                         {{ 'project.report.partner.spending.periodBudget' | translate }}
                     </th>
                     <td *matCellDef="let data; let i = index" mat-cell class="text-right">
-                        {{ selectedPeriod?.periodBudget | number: '1.2-2' }}
+                        {{ selectedPeriod?.periodBudget | asMoney }}
                     </td>
                 </ng-container>
 
@@ -154,7 +154,7 @@
                         {{ 'project.report.partner.spending.currentReport' | translate }}
                     </th>
                     <td *matCellDef="let data; let i = index" mat-cell class="text-right">
-                        {{ form.get('spendingProfile')?.value?.currentReport | number: '1.2-2' }}
+                        {{ form.get('spendingProfile')?.value?.currentReport | asMoney }}
                     </td>
                 </ng-container>
 
@@ -163,7 +163,7 @@
                         {{ 'project.report.partner.spending.periodBudgetCumulative' | translate }}
                     </th>
                     <td *matCellDef="let data; let i = index" mat-cell class="text-right">
-                        {{ selectedPeriod?.periodBudgetCumulative | number: '1.2-2' }}
+                        {{ selectedPeriod?.periodBudgetCumulative | asMoney }}
                     </td>
                 </ng-container>
 
@@ -172,7 +172,7 @@
                         {{ 'project.report.partner.spending.totalReportedSoFar' | translate }}
                     </th>
                     <td *matCellDef="let data; let i = index" mat-cell  class="text-right">
-                        {{ (form.get('spendingProfile')?.value?.previouslyReported + form.get('spendingProfile')?.value?.currentReport) | number: '1.2-2' }}
+                        {{ (form.get('spendingProfile')?.value?.previouslyReported + form.get('spendingProfile')?.value?.currentReport) | asMoney }}
                     </td>
                 </ng-container>
 
@@ -181,7 +181,7 @@
                         {{ 'project.report.partner.spending.differenceFromPlan' | translate }}
                     </th>
                     <td *matCellDef="let data; let i = index" mat-cell  class="text-right">
-                        {{ form.get('spendingProfile')?.value?.differenceFromPlan | number: '1.2-2' }}
+                        {{ form.get('spendingProfile')?.value?.differenceFromPlan | asMoney }}
                     </td>
                 </ng-container>
 
@@ -190,7 +190,7 @@
                         {{ 'project.report.partner.spending.differenceFromPlanPercentage' | translate }}
                     </th>
                     <td *matCellDef="let data; let i = index" mat-cell  class="text-right respect-line-break">
-                        {{ form.get('spendingProfile')?.value?.differenceFromPlanPercentage | number: '1.2-2' }}%
+                        {{ form.get('spendingProfile')?.value?.differenceFromPlanPercentage | asMoney }}%
                     </td>
                 </ng-container>
 
