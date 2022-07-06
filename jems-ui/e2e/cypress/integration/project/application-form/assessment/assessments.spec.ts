@@ -16,10 +16,9 @@ context('Assessments & decision tests', () => {
   it('TB-360 Approve project with conditions and return to applicant', () => {
     cy.fixture('project/application-form/assessments/TB-360.json').then(testData => {
       cy.loginByRequest(user.applicantUser.email);
-      cy.createSubmittedApplication(application, user.programmeUser.email).then(applicationId => {
+      cy.createSubmittedApplication(application).then(applicationId => {
         cy.loginByRequest(user.programmeUser.email);
         cy.visit(`app/project/detail/${applicationId}`, {failOnStatusCode: false});
-        cy.wait(10000)
         cy.contains('Assessment & Decision').click();
         
         cy.contains('Enter eligibility assessment').click();
