@@ -5,7 +5,7 @@
 
     <h3> {{'project.application.contract.monitoring.title' | translate}}</h3>
     <jems-pending-button
-            [disabled]="data.currentVersionOfProject.projectStatus.status !== STATUS.APPROVED"
+            [disabled]="data.currentVersionOfProject.projectStatus.status !== STATUS.APPROVED || !data.canSetToContracted"
             [pending]="actionPending"
             (clicked)="setToContracted(data.currentVersionOfProject.id, data.currentVersionOfProjectTitle)">
         {{'project.application.set.to.contracted' | translate}}

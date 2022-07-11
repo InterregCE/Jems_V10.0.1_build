@@ -23,6 +23,7 @@ export class ContractMonitoringComponent {
   data$: Observable<{
     currentVersionOfProject: ProjectDetailDTO;
     currentVersionOfProjectTitle: string;
+    canSetToContracted: boolean;
   }>;
 
   showSuccessMessage$ = new Subject<null | string>();
@@ -33,10 +34,12 @@ export class ContractMonitoringComponent {
     this.data$ = combineLatest([
       this.projectStore.currentVersionOfProject$,
       this.projectStore.currentVersionOfProjectTitle$,
+      this.contractMonitoringStore.canSetToContracted$,
     ]).pipe(
-      map(([currentVersionOfProject, currentVersionOfProjectTitle]) => ({
+      map(([currentVersionOfProject, currentVersionOfProjectTitle, canSetToContracted]) => ({
         currentVersionOfProject,
         currentVersionOfProjectTitle,
+        canSetToContracted,
       }))
     );
   }
