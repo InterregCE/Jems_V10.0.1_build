@@ -14,7 +14,7 @@ import {FormService} from '@common/components/section/form/form.service';
 import {RoutingService} from '@common/services/routing.service';
 import {Permission} from '../../../../../../security/permissions/permission';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
-import { Alert } from '@common/components/forms/alert';
+import {Alert} from '@common/components/forms/alert';
 
 @Component({
   selector: 'jems-project-application-form-associated-org-detail',
@@ -39,7 +39,13 @@ export class ProjectApplicationFormAssociatedOrgDetailComponent implements OnIni
     this.associatedOrganizationStore.projectTitle$
   ])
     .pipe(
-      map(([organization, nuts, partners, projectTitle]) => ({organization, nuts, partners, projectTitle})),
+      map(([organization, nuts, partners, projectTitle]) => ({
+        organization,
+        nuts,
+        partners,
+        projectTitle,
+        showAlert: this.associatedOrganizationIsNotActiveAndHasNoId(organization)
+      })),
       tap(details => this.resetForm(details.organization as OutputProjectAssociatedOrganizationDetail))
     );
 
@@ -205,5 +211,9 @@ export class ProjectApplicationFormAssociatedOrgDetailComponent implements OnIni
 
   redirectToAssociatedOrganizationOverview(): void {
     this.router.navigate(['app', 'project', 'detail', this.projectId, 'applicationFormAssociatedOrganization']);
+  }
+
+  associatedOrganizationIsNotActiveAndHasNoId(organization: any): boolean {
+    return !!this.associatedOrganizationId && !organization.active;
   }
 }
