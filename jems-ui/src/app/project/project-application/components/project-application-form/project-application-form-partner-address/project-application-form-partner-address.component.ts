@@ -98,7 +98,6 @@ export class ProjectApplicationFormPartnerAddressComponent implements OnInit, On
   ngOnChanges(changes: SimpleChanges): void {
     if (changes.partnerId || changes.organizationDetails) {
       this.resetForm();
-      this.formService.setDirty(false);
     }
   }
 
