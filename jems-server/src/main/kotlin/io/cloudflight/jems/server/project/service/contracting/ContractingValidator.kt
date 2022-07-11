@@ -22,6 +22,12 @@ class ContractingValidator(private val validator: GeneralValidatorService) {
         }
     }
 
+    fun validateProjectStatusForModification(projectSummary: ProjectSummary) {
+        if (!projectSummary.status.isAlreadyApproved()) {
+            throw ContractingModificationDeniedException()
+        }
+    }
+
     private fun validateContact(managerContact: ProjectContractingManagement) {
         validator.throwIfAnyIsInvalid(
             validator.maxLength(managerContact.title, 25, "title"),
@@ -34,6 +40,7 @@ class ContractingValidator(private val validator: GeneralValidatorService) {
         )
 
     }
+
     fun ProjectSummary.isNotApprovedOrAnyStatusAfterApproved(): Boolean =
         status !in listOf(
             ApplicationStatus.APPROVED,
@@ -45,4 +52,5 @@ class ContractingValidator(private val validator: GeneralValidatorService) {
             ApplicationStatus.MODIFICATION_SUBMITTED,
             ApplicationStatus.MODIFICATION_REJECTED
         )
+
 }

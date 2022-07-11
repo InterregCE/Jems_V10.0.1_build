@@ -1,4 +1,4 @@
-import { ProjectReportFileDTO, UserSimpleDTO } from "@cat/api";
+import { ProjectReportFileDTO, UserSimpleDTO } from '@cat/api';
 
 export interface FileListItem {
   id: number;

@@ -5,9 +5,14 @@ import io.cloudflight.jems.server.common.exception.ApplicationAccessDeniedExcept
 
 private const val CONTRACTING_MANAGEMENT_ERROR_CODE_PREFIX = "S-PCM"
 private const val CONTRACTING_MANAGEMENT_ERROR_KEY_PREFIX = "use.case.project.contracting.management"
-
+private const val CONTRACTING_MONITORING_ERROR_KEY_PREFIX = "use.case.project.contracting.monitoring"
 
 class ContractingDeniedException : ApplicationAccessDeniedException(
     code = "$CONTRACTING_MANAGEMENT_ERROR_CODE_PREFIX-001",
     i18nMessage = I18nMessage("$CONTRACTING_MANAGEMENT_ERROR_KEY_PREFIX.denied"),
+)
+
+class ContractingModificationDeniedException : ApplicationAccessDeniedException(
+    code = "$CONTRACTING_MANAGEMENT_ERROR_CODE_PREFIX-002",
+    i18nMessage = I18nMessage("$CONTRACTING_MONITORING_ERROR_KEY_PREFIX.denied"),
 )

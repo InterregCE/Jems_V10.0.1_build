@@ -8,8 +8,10 @@ import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditBuilder
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.call.service.model.CallDetail
+import io.cloudflight.jems.server.common.audit.fromOldToNewChanges
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoring
 import io.cloudflight.jems.server.project.service.file.model.ProjectFileCategory
 import io.cloudflight.jems.server.project.service.file.model.ProjectFileCategoryType
 import io.cloudflight.jems.server.project.service.file.model.ProjectFileMetadata
@@ -216,3 +218,21 @@ fun projectFileDescriptionChanged(
             description = "description of document ${projectFileMetadata.name} in project application ${projectFileMetadata.projectId} has changed from `$oldValue` to `${projectFileMetadata.description}` by ${projectFileMetadata.uploadedBy.id}"
         )
     )
+
+fun projectContractingMonitoringChanged(
+    context: Any,
+    project: ProjectSummary,
+    oldMonitoring: ProjectContractingMonitoring,
+    newMonitoring: ProjectContractingMonitoring
+): AuditCandidateEvent {
+    val changes = newMonitoring.getDiff(old = oldMonitoring).fromOldToNewChanges()
+
+    return AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditCandidate(
+            action = AuditAction.PROJECT_CONTRACT_MONITORING_CHANGED,
+            project = AuditProject(id = project.id.toString()),
+            description = "Fields changed:\n$changes"
+        )
+    )
+}

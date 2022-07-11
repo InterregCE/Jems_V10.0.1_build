@@ -149,7 +149,7 @@ export class Permission {
           mode: PermissionMode.HIDDEN_VIEW_EDIT,
           viewPermissions: [PermissionsEnum.ProjectContractingManagementView],
           editPermissions: [PermissionsEnum.ProjectContractingManagementEdit],
-          editTooltip: 'permission.inspect.contracting'
+          editTooltip: 'permission.inspect.contracting.management'
         }
       ]
     },

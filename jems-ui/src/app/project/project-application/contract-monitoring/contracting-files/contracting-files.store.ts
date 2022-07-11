@@ -25,8 +25,8 @@ import FileTypeEnum = ProjectReportFileDTO.TypeEnum;
 import {
   ProjectStore
 } from '@project/project-application/containers/project-application-detail/services/project-store.service';
-import {PageFileList} from "@common/components/file-list/page-file-list";
-import {FileListItem} from "@common/components/file-list/file-list-item";
+import {PageFileList} from '@common/components/file-list/page-file-list';
+import {FileListItem} from '@common/components/file-list/file-list-item';
 
 @Injectable({
   providedIn: 'root'
@@ -177,7 +177,7 @@ export class ContractingFilesStore {
   }
 
   private transform(content: ProjectReportFileDTO[]): FileListItem[] {
-    return content.map(file => ({...file, deletable: true} as FileListItem))
+    return content.map(file => ({...file, deletable: true} as FileListItem));
   }
 
   private fileCategories(): Observable<CategoryNode> {

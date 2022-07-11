@@ -2,11 +2,11 @@ package io.cloudflight.jems.server.common.audit
 
 import java.util.stream.Collectors
 
-public fun Map<String, Pair<Any?, Any?>>.onlyNewChanges() = entries.stream()
+fun Map<String, Pair<Any?, Any?>>.onlyNewChanges() = entries.stream()
     .map { "${it.key} set to ${it.changeTo()}" }
     .collect(Collectors.joining(",\n"))
 
-public fun Map<String, Pair<Any?, Any?>>.fromOldToNewChanges(): String {
+fun Map<String, Pair<Any?, Any?>>.fromOldToNewChanges(): String {
     if (isEmpty())
         return "(no-change)"
 

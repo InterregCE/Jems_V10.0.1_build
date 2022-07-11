@@ -66,7 +66,7 @@ import {
   ChecklistConsolidatorOptionsComponent
 } from '@common/components/checklist/checklist-consolidator-options/checklist-consolidator-options.component';
 import {MatSliderModule} from '@angular/material/slider';
-import {FileListComponent} from "@common/components/file-list/file-list.component";
+import {FileListComponent} from '@common/components/file-list/file-list.component';
 
 const modules = [
   CommonModule,
