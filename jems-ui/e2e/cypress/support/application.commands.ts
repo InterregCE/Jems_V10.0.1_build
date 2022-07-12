@@ -51,9 +51,11 @@ declare global {
 
   namespace Cypress {
     interface Chainable {
-      createFullApplication(application, approvingUserEmail?: string);
-
       createApplication(application);
+      
+      createSubmittedApplication(application);
+
+      createApprovedApplication(application, approvingUserEmail?: string);
 
       updateProjectIdentification(applicationId: number, identification);
 
@@ -99,39 +101,26 @@ declare global {
 }
 
 Cypress.Commands.add('createApplication', (application: Application) => {
-  createApplication(application.details).then(response => {
-    application.id = response.body.id;
+  createApplication(application.details).then(applicationId => {
+    application.id = applicationId;
     cy.wrap(application.id).as('applicationId');
   });
 });
 
-Cypress.Commands.add('createFullApplication', (application: Application, approvingUserEmail?: string) => {
-  createApplication(application.details).then(response => {
-    application.id = response.body.id;
-    updateIdentification(application.id, application.identification);
-
-    // C - project description
-    updateOverallObjective(application.id, application.description.overallObjective);
-    updateRelevanceAndContext(application.id, application.description.relevanceAndContext);
-    updatePartnership(application.id, application.description.partnership);
-    createWorkPlan(application.id, application.description.workPlan);
-    createResults(application.id, application.description.results);
-    updateManagement(application.id, application.description.management);
-    updateLongTermPlans(application.id, application.description.longTermPlans);
-
-    // B - project partners
-    createPartners(application.id, application.partners);
-
-    // E - project lump sums
-    cy.get(`@${application.partners[0].details.abbreviation}`).then((partnerId: any) => {
-      application.lumpSums[0].lumpSumContributions[0].partnerId = partnerId;
-      updateLumpSums(application.id, application.lumpSums);
-    });
-
-    runPreSubmissionCheck(application.id);
-    submitProjectApplication(application.id);
-    approveApplication(application.id, application.assessments, approvingUserEmail);
+Cypress.Commands.add('createSubmittedApplication', (application: Application) => {
+  createApplication(application.details).then(applicationId => {
+    application.id = applicationId;
+    submitApplication(application);
     cy.wrap(application.id).as('applicationId');
+  });
+});
+
+Cypress.Commands.add('createApprovedApplication', (application: Application, approvingUserEmail?: string) => {
+  createApplication(application.details).then(applicationId => {
+    application.id = applicationId;
+    submitApplication(application);
+    approveApplication(applicationId, application.assessments, approvingUserEmail);
+    cy.wrap(applicationId).as('applicationId');
   });
 });
 
@@ -264,7 +253,35 @@ function createApplication(applicationDetails: ProjectCreateDTO) {
     method: 'POST',
     url: 'api/project',
     body: applicationDetails
-  })
+  }).then(response => {
+    return response.body.id
+  });
+}
+
+function submitApplication(application) {
+
+  updateIdentification(application.id, application.identification);
+
+  // C - project description
+  updateOverallObjective(application.id, application.description.overallObjective);
+  updateRelevanceAndContext(application.id, application.description.relevanceAndContext);
+  updatePartnership(application.id, application.description.partnership);
+  createWorkPlan(application.id, application.description.workPlan);
+  createResults(application.id, application.description.results);
+  updateManagement(application.id, application.description.management);
+  updateLongTermPlans(application.id, application.description.longTermPlans);
+
+  // B - project partners
+  createPartners(application.id, application.partners);
+
+  // E - project lump sums
+  cy.get(`@${application.partners[0].details.abbreviation}`).then((partnerId: any) => {
+    application.lumpSums[0].lumpSumContributions[0].partnerId = partnerId;
+    updateLumpSums(application.id, application.lumpSums);
+  });
+
+  runPreSubmissionCheck(application.id);
+  submitProjectApplication(application.id);
 }
 
 function updateIdentification(applicationId: number, projectIdentification: InputProjectData) {

@@ -15,7 +15,7 @@ context('Partners budget exports', () => {
     cy.createCall(call, user.programmeUser.email).then(callId => {
       application.details.projectCallId = callId;
       cy.publishCall(callId, user.programmeUser.email);
-      cy.createFullApplication(application, user.programmeUser.email).then(applicationId => {
+      cy.createApprovedApplication(application, user.programmeUser.email).then(applicationId => {
         cy.visit(`app/project/detail/${applicationId}/export`, {failOnStatusCode: false});
 
         cy.contains('Partners budget').click();

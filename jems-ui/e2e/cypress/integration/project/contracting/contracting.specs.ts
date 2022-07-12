@@ -17,7 +17,7 @@ context('Application contracting', () => {
   });
 
   it('TB-519 A project can be set to contracted', () => {
-    cy.createFullApplication(application, user.programmeUser.email).then(applicationId => {
+    cy.createApprovedApplication(application, user.programmeUser.email).then(applicationId => {
       cy.loginByRequest(user.programmeUser.email);
       cy.visit(`app/project/detail/${applicationId}`, {failOnStatusCode: false});
 

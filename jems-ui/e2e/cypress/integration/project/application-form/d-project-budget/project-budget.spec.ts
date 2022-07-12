@@ -6,7 +6,7 @@ import partner from '../../../../fixtures/api/application/partner/partner.json';
 context('Project budget tests', () => {
 
   it('TB-534 Amounts cross-checks within AF', () => {
-    cy.fixture('project/application-form/project-budget/TB-534.json').then(testData => {
+    cy.fixture('project/application-form/d-project-budget/TB-534.json').then(testData => {
 
       cy.loginByRequest(user.programmeUser.email);
       call.budgetSettings.flatRates = testData.call.flatRates;
@@ -27,7 +27,7 @@ context('Project budget tests', () => {
         application.partners.push(tempPartner);
       });
 
-      cy.createFullApplication(application, user.programmeUser.email).then(applicationId => {
+      cy.createApprovedApplication(application, user.programmeUser.email).then(applicationId => {
         cy.visit(`app/project/detail/${applicationId}/applicationFormOverviewTables`, {failOnStatusCode: false});
         cy.loginByRequest(user.applicantUser.email);
 
@@ -96,7 +96,7 @@ context('Project budget tests', () => {
 
 
   it('TB-383 Rounding values in partner co-financing', () => {
-    cy.fixture('project/application-form/project-budget/TB-383.json').then(testData => {
+    cy.fixture('project/application-form/d-project-budget/TB-383.json').then(testData => {
       cy.loginByRequest(user.applicantUser.email);
       call.generalCallSettings.additionalFundAllowed = false;
       cy.createCall(call, user.programmeUser.email).then(callId => {
@@ -162,16 +162,16 @@ context('Project budget tests', () => {
             // verify PDF export
             cy.visit(`app/project/detail/${applicationId}/export`, {failOnStatusCode: false});
             cy.contains('button', 'Export').clickToDownload('**/export/application?*', 'pdf').then(exportFile => {
-              cy.fixture('project/application-form/project-budget/TB-383-export-pdf.txt').then(testDataFile => {
+              cy.fixture('project/application-form/d-project-budget/TB-383-export-pdf.txt').then(testDataFile => {
                 const assertionMessage = 'Verify downloaded pdf file';
-                expect(exportFile.text.includes(testDataFile), assertionMessage).to.be.true;
+                expect(exportFile.text.includes(replace(testDataFile)), assertionMessage).to.be.true;
               });
             });
 
             // verify CSV export
             cy.contains('button', 'Partners budget').click();
             cy.contains('button', 'Export').clickToDownload('**/export/budget?*', 'xlsx').then(exportFile => {
-              cy.fixture('project/application-form/project-budget/TB-383-export.xlsx', null).parseXLSX().then(testDataFile => {
+              cy.fixture('project/application-form/d-project-budget/TB-383-export.xlsx', null).parseXLSX().then(testDataFile => {
                 const assertionMessage = 'Verify downloaded xlsx file';
                 expect(exportFile.content[0].data.slice(1), assertionMessage).to.deep.equal(testDataFile[0].data.slice(1));
                 expect(exportFile.content[1].data.slice(1), assertionMessage).to.deep.equal(testDataFile[1].data.slice(1));
@@ -182,4 +182,8 @@ context('Project budget tests', () => {
       });
     });
   });
+
+  function replace(testDataFile: string) {
+    return testDataFile.replaceAll(/\r/g, '');
+  }
 })

@@ -41,7 +41,7 @@ context('Project identification tests', () => {
   });
 
   it('TB-556 Applicant can open and edit his projects', function () {
-    cy.fixture('project/application-form/TB-556').then(testData => {
+    cy.fixture('project/application-form/a-project-identification/TB-556').then(testData => {
 
       cy.visit('/');
 
