@@ -14,7 +14,7 @@
 <ng-template #callActionsCell let-call>
     <button jemsText mat-raised-button color="primary"
             [disabled]="!isOpen(call)"
-            (click)="applyToCall(call.id)">
+            (click)="$event.stopPropagation();applyToCall(call.id)">
         {{'call.table.column.action.apply' | translate}} <mat-icon>arrow_forward</mat-icon>
     </button>
 </ng-template>
