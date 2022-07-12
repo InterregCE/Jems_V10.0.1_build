@@ -18,9 +18,11 @@ interface ProjectLumpSumRepository : PagingAndSortingRepository<ProjectLumpSumEn
              CONVERT(entity.end_period, INT) as endPeriod,
              entity.programme_lump_sum_id as programmeLumpSumId,
              partnerLumpSum.project_partner_id as projectPartnerId,
-             partnerLumpSum.amount as amount
+             partnerLumpSum.amount as amount,
+             CONVERT(programmeLumpSum.is_fast_track, INT) as fastTrack
              FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
              LEFT JOIN project_partner_lump_sum FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS partnerLumpSum ON partnerLumpSum.project_id = entity.project_id AND partnerLumpSum.order_nr = entity.order_nr
+             LEFT JOIN programme_lump_sum AS programmeLumpSum ON programmeLumpSum.id = entity.programme_lump_sum_id
              WHERE entity.project_id = :projectId
              """,
         nativeQuery = true
