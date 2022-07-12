@@ -4,13 +4,11 @@ import {finished} from 'stream/promises';
 import date from 'date-and-time';
 import fetch from 'node-fetch';
 import xlsx from 'node-xlsx';
-import cloudflightPower from "cypress-cloudflight";
 
 /**
  * @type {Cypress.PluginConfig}
  */
 export default async (on, config) => {
-  cloudflightPower(on);
   
   on('task', {
     parsePDF(subject) {
