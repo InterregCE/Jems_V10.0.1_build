@@ -74,6 +74,7 @@ fun List<ProjectLumpSumRow>.toProjectLumpSumHistoricalData() =
                         partnerId = it.projectPartnerId!!,
                         amount = it.amount
                     )
-                }.toList()
+                }.toList(),
+            isFastTrack = groupedRows.value.first().fastTrack != 0
         )
     }
