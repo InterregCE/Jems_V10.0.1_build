@@ -15,18 +15,21 @@
 
             <jems-filter-autocomplete-input
                     [options]="filterData.objectives"
+                    [hasPartialLockingOfValues]="false"
                     formControlName="objectives"
                     label="project.table.column.name.objective">
             </jems-filter-autocomplete-input>
 
             <jems-filter-autocomplete-input
                     [options]="filterData.statuses"
+                    [hasPartialLockingOfValues]="false"
                     formControlName="statuses"
                     label="project.table.column.name.status">
             </jems-filter-autocomplete-input>
 
             <jems-filter-autocomplete-input
                     [options]="filterData.calls"
+                    [hasPartialLockingOfValues]="false"
                     formControlName="calls"
                     label="project.table.column.name.related">
             </jems-filter-autocomplete-input>

@@ -9,3 +9,69 @@
     margin-top: -1rem;
   }
 }
+
+table {
+  width: 100%;
+}
+
+.table-container {
+  padding-top: 1rem;
+  overflow-x: auto !important;
+  overflow-y: hidden;
+}
+
+tr.detail-row {
+  height: 0;
+}
+
+.extended-row-container {
+  overflow: hidden;
+  display: flex;
+}
+
+.priority-table>td,tr {
+  padding:0.3rem;
+}
+
+.text-field-column {
+  padding: 0 0.3rem;
+}
+
+.extension-content {
+  padding: 0.75rem 5rem;
+  width: 100%;
+
+  jems-multi-language-form-field {
+    width: 40rem !important;
+    display: inline-flex;
+    --widthBasedOnType: unset !important;
+  }
+
+  jems-partner-actions-cell {
+    display: inline-flex;
+  }
+}
+
+.colored-row {
+  background:  var(--table-highlight-color);
+}
+
+.normal-row {
+  background: white !important;
+}
+
+.normal-row:hover {
+  background: var(--table-hover-color) !important;
+}
+
+.width-3 {
+  width: 3.2rem;
+}
+
+.title-column-width {
+  max-width: 25rem;
+}
+
+.official-code-column-width {
+  max-width: 4rem;
+}
