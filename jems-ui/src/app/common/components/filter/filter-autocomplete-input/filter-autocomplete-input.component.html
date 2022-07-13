@@ -1,4 +1,4 @@
-<mat-form-field [jemsFormFieldWidth]=formFieldWidth appearance="fill">
+<mat-form-field *ngIf="!hasPartialLockingOfValues" [jemsFormFieldWidth]=formFieldWidth appearance="fill">
     <mat-label>{{label | translate}}</mat-label>
     <mat-chip-list #filterChip [disabled]="disabled">
         <mat-chip class="chip-option" *ngFor="let value of values"
@@ -18,6 +18,31 @@
                         [value]="option"
                         [title]="options.get(option)">
                 {{options.get(option)}}
+            </mat-option>
+        </mat-autocomplete>
+    </mat-chip-list>
+</mat-form-field>
+
+<mat-form-field *ngIf="hasPartialLockingOfValues" [jemsFormFieldWidth]=formFieldWidth appearance="fill">
+    <mat-label>{{label | translate}}</mat-label>
+    <mat-chip-list #filterChipWithPartiallyLockedData [disabled]="isDisabled">
+        <mat-chip class="chip-option" *ngFor="let value of values"
+                  [removable]="!isDisabled && value.canBeDeleted"
+                  [selectable]="false">
+            {{value.value || '' | translate}}
+            <mat-icon *ngIf="!isDisabled && value.canBeDeleted" (click)="(!isDisabled && value.canBeDeleted) && removeFromFilters(value)" matChipRemove>cancel</mat-icon>
+        </mat-chip>
+        <input #filterInputWithPartiallyLockedData
+               [matAutocomplete]="autoWithPartiallyLockedData"
+               [matChipInputFor]="filterChipWithPartiallyLockedData"
+               [placeholder]="placeholder | translate"
+               matInput>
+        <mat-autocomplete #autoWithPartiallyLockedData="matAutocomplete"
+                          (optionSelected)="addToFiltersForPartiallyLockedData($event.option.value); filterInputWithPartiallyLockedData.value = ''; filterInputWithPartiallyLockedData.blur()">
+            <mat-option *ngFor="let option of getNotSelectedOptionsForPartiallyLockedData(filterInputWithPartiallyLockedData.value)"
+                        [value]="option"
+                        [title]="option">
+                {{option}}
             </mat-option>
         </mat-autocomplete>
     </mat-chip-list>
