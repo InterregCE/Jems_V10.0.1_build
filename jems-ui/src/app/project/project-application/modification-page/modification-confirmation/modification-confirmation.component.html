@@ -54,7 +54,7 @@
                 </mat-form-field>
 
                 <mat-form-field jemsFormFieldWidth="xx-large">
-                    <mat-label>{{'Entry into force' | translate | dateFormatInfo}}</mat-label>
+                    <mat-label>{{ 'project.application.form.section.modification.force' | translate | dateFormatInfo }}</mat-label>
                     <input required formControlName="entryIntoForceDate" matInput
                            [matDatepicker]="forcePicker">
                     <mat-datepicker-toggle matSuffix [for]="forcePicker"></mat-datepicker-toggle>
