@@ -4,7 +4,7 @@
         subTitleKey="project.application.form.section.part.b">
      <jems-alert [type]="Alert.WARNING"
                 [closable]="false"
-                [show]="!data.organization.active">
+                [show]="data.showAlert">
          <div>{{'project.application.form.section.part.b.associatedOrganizations.deactivated.warning' | translate}}</div>
      </jems-alert>
     <jems-form (save)="onSubmit()"
