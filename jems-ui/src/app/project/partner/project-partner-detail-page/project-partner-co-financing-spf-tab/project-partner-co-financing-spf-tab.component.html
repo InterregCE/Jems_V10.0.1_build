@@ -119,12 +119,12 @@
                                                 class="placeholder-required empty"
                                                 placeholder="{{'project.partner.coFinancing.contribution.legal.status.label' | translate}}">
                                         <mat-option
-                                                [value]="partnerContributionStatus.Public">{{partnerContributionStatus.Public}}</mat-option>
+                                                [value]="partnerContributionStatus.Public">{{ 'project.partner.coFinancing.contribution.legal.status.public' | translate }}</mat-option>
                                         <mat-option
-                                                [value]="partnerContributionStatus.Private">{{partnerContributionStatus.Private}}</mat-option>
+                                                [value]="partnerContributionStatus.Private">{{ 'project.partner.coFinancing.contribution.legal.status.private' | translate }}</mat-option>
                                         <mat-option
                                                 *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_ADD_NEW_CONTRIBUTION_ORIGIN"
-                                                [value]="partnerContributionStatus.AutomaticPublic">{{partnerContributionStatus.AutomaticPublic}}</mat-option>
+                                                [value]="partnerContributionStatus.AutomaticPublic">{{ 'project.partner.coFinancing.contribution.legal.status.automaticpublic' | translate }}</mat-option>
                                     </mat-select>
                                     <mat-error>
                                         <jems-form-field-errors

@@ -177,7 +177,7 @@
                 </ng-container>
 
                 <ng-container matColumnDef="differenceFromPlan">
-                    <th *matHeaderCellDef mat-header-cell scope="col" class="text-right">
+                    <th *matHeaderCellDef mat-header-cell scope="col" class="text-right respect-line-break">
                         {{ 'project.report.partner.spending.differenceFromPlan' | translate }}
                     </th>
                     <td *matCellDef="let data; let i = index" mat-cell  class="text-right">
@@ -189,7 +189,7 @@
                     <th *matHeaderCellDef mat-header-cell scope="col" class="text-right respect-line-break">
                         {{ 'project.report.partner.spending.differenceFromPlanPercentage' | translate }}
                     </th>
-                    <td *matCellDef="let data; let i = index" mat-cell  class="text-right respect-line-break">
+                    <td *matCellDef="let data; let i = index" mat-cell  class="text-right">
                         {{ form.get('spendingProfile')?.value?.differenceFromPlanPercentage | asMoney }}%
                     </td>
                 </ng-container>
