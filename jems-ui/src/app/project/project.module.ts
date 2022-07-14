@@ -155,6 +155,9 @@ import {
 import {
   PartnerBreakdownCostCategoryComponent
 } from '@project/project-application/report/partner-report-detail-page/partner-report-financial-overview-tab/partner-breakdown-cost-category/partner-breakdown-cost-category.component';
+import {
+  ContractingFilesComponent
+} from "@project/project-application/contract-monitoring/contracting-files/contracting-files.component";
 
 @NgModule({
   declarations: [
@@ -260,6 +263,7 @@ import {
     ModificationConfirmationComponent,
     PrivilegesPageComponent,
     ContractMonitoringComponent,
+    ContractingFilesComponent,
     LumpsumBudgetTableComponent,
     PartnerReportComponent,
     ApplicationFormPrivilegesExpansionPanelComponent,

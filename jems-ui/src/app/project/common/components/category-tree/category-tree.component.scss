@@ -1,3 +1,9 @@
+:host {
+  position: relative;
+  display: inline-block;
+  box-sizing: border-box;
+}
+
 #category-tree {
   .selected-category {
     background-color: var(--light-blue-gray)

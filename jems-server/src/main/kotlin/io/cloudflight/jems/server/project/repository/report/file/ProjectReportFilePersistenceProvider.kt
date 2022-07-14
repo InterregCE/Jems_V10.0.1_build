@@ -35,7 +35,7 @@ class ProjectReportFilePersistenceProvider(
 ) : ProjectReportFilePersistence {
 
     companion object {
-        private const val BUCKET = "project-report"
+        const val BUCKET = "project-report"
     }
 
     @Transactional(readOnly = true)
@@ -166,8 +166,6 @@ class ProjectReportFilePersistenceProvider(
             )
         )
     }
-
-    private fun ProjectReportFileCreate.getMinioFullPath() = "$path$name"
 
     private fun ReportProjectFileEntity?.deleteIfPresent() {
         if (this != null) {

@@ -17,9 +17,13 @@ interface ProjectReportFileRepository : JpaRepository<ReportProjectFileEntity, L
 
     fun existsByPartnerIdAndId(partnerId: Long, fileId: Long): Boolean
 
+    fun existsByProjectIdAndId(projectId: Long, fileId: Long): Boolean
+
     fun existsByPathAndName(path: String, name: String): Boolean
 
     fun findByPartnerIdAndId(partnerId: Long, fileId: Long): ReportProjectFileEntity?
+
+    fun findByProjectIdAndId(projectId: Long, fileId: Long): ReportProjectFileEntity?
 
     @EntityGraph(value = "ReportProjectFileEntity.user")
     override fun findAll(predicate: Predicate, pageable: Pageable): Page<ReportProjectFileEntity>
