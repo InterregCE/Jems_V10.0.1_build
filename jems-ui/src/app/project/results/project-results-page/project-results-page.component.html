@@ -36,10 +36,11 @@
                             </mat-select>
                         </mat-form-field>
                         <div jemsMultiColumnRow stretch>
-                            <mat-form-field jemsFormFieldWidth="large"
-                                            *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RESULT.PROGRAMME_RESULT_INDICATOR_AMD_MEASUREMENT_UNIT">
+                            <mat-form-field jemsFormFieldWidth="x-large"
+                                            *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RESULT.PROGRAMME_RESULT_INDICATOR_AMD_MEASUREMENT_UNIT"
+                                            [matTooltip]="measurementUnitInput.value">
                                 <mat-label>{{'project.results.result.measurement.unit' | translate}}</mat-label>
-                                <input readonly matInput
+                                <input #measurementUnitInput readonly matInput
                                        value="{{getMeasurementUnit(result.get(constants.RESULT_INDICATOR.name)?.value, data.resultIndicators)
                                                 | translateBySystemLanguage | async}}"
                                        [disabled]="true">
