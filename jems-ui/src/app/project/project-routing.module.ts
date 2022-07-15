@@ -179,7 +179,7 @@ export const routes: Routes = [
             component: ContractMonitoringComponent,
             data: {
               breadcrumb: 'project.breadcrumb.applicationForm.contract.monitoring',
-              permissionsOnly: [PermissionsEnum.ProjectSetToContracted]
+              permissionsOnly: [PermissionsEnum.ProjectContractingView, PermissionsEnum.ProjectSetToContracted]
             },
             canActivate: [PermissionGuard],
           },
