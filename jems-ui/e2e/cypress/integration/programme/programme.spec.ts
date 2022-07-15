@@ -115,11 +115,62 @@ context('Programme management tests', () => {
       cy.contains('div', 'Select policy objective').find('mat-select').click();
       cy.contains(priority.objective).click();
 
-      priority.specificObjectives.forEach(specificObjective => {
-        cy.contains(specificObjective.programmeObjectivePolicy).parent().then(el => {
+      priority.specificObjectives.forEach((specificObjective, index) => {
+        cy.contains(specificObjective.programmeObjectivePolicy).parent().parent().then(el => {
           cy.wrap(el).find('input[type="checkbox"]').check({force: true});
-          cy.wrap(el).contains('div', 'Programme specific objective code').find('input').type(specificObjective.code);
-        });
+          cy.wrap(el).contains('td', 'Programme specific objective code').find('input').type(specificObjective.code);
+          cy.wrap(el).contains('mat-icon', 'expand_more').click();
+          cy.wrap(el).parent()
+              cy.get('tr:contains("Types of intervention")')
+                .each((row, rowIndex) => {
+                      if (specificObjective.index === rowIndex) {
+                        cy.wrap(row).find('input').each((input, inputIndex) => {
+                          if(inputIndex == 0) {
+                            cy.wrap(input).click()
+                            cy.document().its('body').find('mat-option')
+                              .contains(specificObjective.dimensionCodes.TypesOfIntervention.at(0)).click()
+                            cy.wrap(input)
+                          }
+
+                          if(inputIndex == 1) {
+                            cy.wrap(input).click()
+                            cy.document().its('body').find('mat-option')
+                              .contains(specificObjective.dimensionCodes.FormOfSupport.at(0)).click()
+                            cy.wrap(input)
+                          }
+
+                          if(inputIndex == 2) {
+                            cy.wrap(input).click()
+                            cy.document().its('body').find('mat-option')
+                              .contains(specificObjective.dimensionCodes.TerritorialDeliveryMechanism.at(0)).click()
+                            cy.wrap(input)
+                          }
+
+                          if(inputIndex == 3) {
+                            cy.wrap(input).click()
+                            cy.document().its('body').find('mat-option')
+                              .contains(specificObjective.dimensionCodes.EconomicActivity.at(0)).click()
+                            cy.wrap(input)
+                          }
+
+                          if(inputIndex == 4) {
+                            cy.wrap(input).click()
+                            cy.document().its('body').find('mat-option')
+                              .contains(specificObjective.dimensionCodes.GenderEquality.at(0)).click()
+                            cy.wrap(input)
+                          }
+
+                          if(inputIndex == 5) {
+                            cy.wrap(input).click()
+                            cy.document().its('body').find('mat-option')
+                              .contains(specificObjective.dimensionCodes.RegionalAndSeaBasinStrategy.at(0)).click()
+                            cy.wrap(input)
+                          }
+                        })
+                      }
+                    })
+          cy.wrap(el).contains('mat-icon', 'expand_less').click();
+          });
       });
 
       cy.contains('Add priority').click();
