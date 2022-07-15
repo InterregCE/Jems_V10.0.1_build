@@ -181,7 +181,7 @@ export class ContractingFilesStore {
   }
 
   private fileCategories(): Observable<CategoryNode> {
-    return this.partnerStore.partnerSummaries$.pipe(
+    return this.partnerStore.partnerReportSummaries$.pipe(
       map(partners => ({
         info: { type: FileTypeEnum.Contracting },
         name: { i18nKey: 'project.application.contracting.title' },
