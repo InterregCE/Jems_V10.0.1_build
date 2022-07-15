@@ -112,7 +112,7 @@
 
         <h3 >{{'project.application.partner.report.sub.title.two' | translate}}</h3>
         <p>{{'project.application.partner.report.sub.title.two.description' | translate}}</p>
-        <div jemsFormFieldWidth="full">
+        <div>
             <jems-multi-language-container>
                 <jems-multi-language-form-field
                         [maxLength]="2000"
@@ -125,7 +125,7 @@
 
         <h3>{{'project.application.partner.report.sub.title.three' | translate}}</h3>
         <p>{{'project.application.partner.report.sub.title.three.description' | translate}}</p>
-        <div jemsFormFieldWidth="full">
+        <div>
             <jems-multi-language-container>
                 <jems-multi-language-form-field
                         [maxLength]="2000"
@@ -139,7 +139,16 @@
         <ng-container *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_BUDGET_PERIODS">
             <h3>{{ 'project.application.partner.report.sub.title.four' | translate }}</h3>
 
-            <mat-table [dataSource]="[{}]" [jemsTableConfig]="[{}, {}, {}, {}, {}, {}, {minInRem: 16}]" jemsNoWidthLimit>
+            <mat-table [dataSource]="[{}]" [jemsTableConfig]="[{maxInRem: 2},{}, {}, {}, {}, {}, {}, {minInRem: 16}]" jemsNoWidthLimit>
+                <ng-container matColumnDef="partnerNumber">
+                    <th *matHeaderCellDef mat-header-cell scope="col" class="text-left">
+                        {{ 'project.application.form.partner.table.number' | translate }}
+                    </th>
+                    <td *matCellDef mat-cell class="text-left">
+                        {{ 'common.label.project.partner.role.shortcut.' + data.partnerReport?.identification?.partnerRole | adaptTranslationKeyByCallType | async | translate : {partner: data.partnerReport?.identification?.partnerNumber} }}
+                    </td>
+                </ng-container>
+
                 <ng-container matColumnDef="periodBudget">
                     <th *matHeaderCellDef mat-header-cell scope="col" class="text-right">
                         {{ 'project.report.partner.spending.periodBudget' | translate }}
@@ -216,7 +225,7 @@
             </mat-table>
 
             <p class="mt-4">{{ 'project.application.partner.report.sub.title.four.description' | translate }}</p>
-            <div jemsFormFieldWidth="full">
+            <div>
                 <jems-multi-language-container>
                     <jems-multi-language-form-field
                             [maxLength]="2000"
