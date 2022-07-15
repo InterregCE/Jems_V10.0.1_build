@@ -15,8 +15,8 @@ import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalcul
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ReportBudgetCategory
-import io.cloudflight.jems.server.project.service.report.model.financialOverview.ExpenditureCostCategoryBreakdown
-import io.cloudflight.jems.server.project.service.report.model.financialOverview.ExpenditureCostCategoryBreakdownLine
+import io.cloudflight.jems.server.project.service.report.model.financialOverview.costCategory.ExpenditureCostCategoryBreakdown
+import io.cloudflight.jems.server.project.service.report.model.financialOverview.costCategory.ExpenditureCostCategoryBreakdownLine
 import io.cloudflight.jems.server.project.service.report.model.financialOverview.costCategory.ReportExpenditureCostCategory
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -139,6 +139,5 @@ private fun ProjectPartnerReportExpenditureCost.getCategory(): BudgetCostCategor
 fun Collection<ProjectPartnerReportExpenditureCost>.calculateCurrent(options: ProjectPartnerBudgetOptions): BudgetCostsCalculationResultFull {
     val sums = groupBy { it.getCategory() }
         .mapValues { it.value.sumOf { it.declaredAmountAfterSubmission ?: BigDecimal.ZERO } }
-        .toMutableMap()
     return calculateBudget(options, sums)
 }

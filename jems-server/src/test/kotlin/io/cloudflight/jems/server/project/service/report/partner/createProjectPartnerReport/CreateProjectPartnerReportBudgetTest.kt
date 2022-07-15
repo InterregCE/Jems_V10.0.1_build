@@ -1,7 +1,10 @@
 package io.cloudflight.jems.server.project.service.report.partner.createProjectPartnerReport
 
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO.MainFund
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_period.GetPartnerBudgetPerPeriodInteractor
 import io.cloudflight.jems.server.project.service.budget.get_project_budget.GetProjectBudget
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
@@ -12,6 +15,8 @@ import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectPartnerLu
 import io.cloudflight.jems.server.project.service.model.*
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetCostsPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
 import io.cloudflight.jems.server.project.service.partner.model.*
@@ -22,8 +27,10 @@ import io.cloudflight.jems.server.project.service.report.model.contribution.crea
 import io.cloudflight.jems.server.project.service.report.model.contribution.withoutCalculations.ProjectPartnerReportEntityContribution
 import io.cloudflight.jems.server.project.service.report.model.create.*
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportPeriod
 import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectReportContributionPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureCostCategoryPersistence
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -65,7 +72,18 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         isPartner = false,
     )
 
-    private val contributions = listOf(contribNonPartner2, contribPartner, contribNonPartner1)
+    private val fund = mockk<ProgrammeFund>().also {
+        every { it.id } returns 8L
+    }
+
+    private val coFinancing = ProjectPartnerCoFinancingAndContribution(
+        finances = listOf(
+            ProjectPartnerCoFinancing(MainFund, fund, BigDecimal.valueOf(30)),
+            ProjectPartnerCoFinancing(PartnerContribution, null, BigDecimal.valueOf(70)),
+        ),
+        partnerContributions = listOf(contribNonPartner2, contribPartner, contribNonPartner1),
+        partnerAbbreviation = "not needed",
+    )
 
     private val reportsForContribution = listOf(
         ProjectPartnerReportSummary(
@@ -288,6 +306,19 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         sum = BigDecimal.valueOf(39),
     )
 
+    private val previousReportedCoFinancing = ReportExpenditureCoFinancingColumn(
+        funds = mapOf(
+            fund.id to BigDecimal.valueOf(14L) /* original fund */,
+            -1L to BigDecimal.TEN /* fund which has been removed in modification */,
+            null to BigDecimal.valueOf(25L) /* partner contribution */,
+        ),
+        partnerContribution = BigDecimal.valueOf(9),
+        publicContribution = BigDecimal.valueOf(2),
+        automaticPublicContribution = BigDecimal.valueOf(3),
+        privateContribution = BigDecimal.valueOf(4),
+        sum = BigDecimal.valueOf(5),
+    )
+
     private val expectedPrevious = BudgetCostsCalculationResultFull(
         staff = BigDecimal.valueOf(30),
         office = BigDecimal.valueOf(31),
@@ -299,6 +330,27 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         lumpSum = BigDecimal.valueOf(37),
         unitCost = BigDecimal.valueOf(38),
         sum = BigDecimal.valueOf(39),
+    )
+
+    private val expectedPreviouslyReportedCoFinancing = PreviouslyReportedCoFinancing(
+        fundsSorted = listOf(
+            PreviouslyReportedFund(fund.id, percentage = BigDecimal.valueOf(30),
+                total = BigDecimal.valueOf(570, 2), previouslyReported = BigDecimal.valueOf(14)),
+            PreviouslyReportedFund(-1L, percentage = BigDecimal.ZERO,
+                total = BigDecimal.ZERO, previouslyReported = BigDecimal.TEN),
+            PreviouslyReportedFund(null, percentage = BigDecimal.valueOf(70),
+                total = BigDecimal.valueOf(1330, 2), previouslyReported = BigDecimal.valueOf(25)),
+        ),
+        totalPartner = BigDecimal.valueOf(1),
+        totalPublic = BigDecimal.valueOf(0),
+        totalAutoPublic = BigDecimal.valueOf(1),
+        totalPrivate = BigDecimal.valueOf(0),
+        totalSum = BigDecimal.valueOf(19),
+        previouslyReportedPartner = BigDecimal.valueOf(9),
+        previouslyReportedPublic = BigDecimal.valueOf(2),
+        previouslyReportedAutoPublic = BigDecimal.valueOf(3),
+        previouslyReportedPrivate = BigDecimal.valueOf(4),
+        previouslyReportedSum = BigDecimal.valueOf(5),
     )
 
     private val zeros = BudgetCostsCalculationResultFull(
@@ -330,6 +382,8 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
     lateinit var getProjectBudget: GetProjectBudget
     @MockK
     lateinit var reportExpenditureCostCategoryPersistence: ProjectReportExpenditureCostCategoryPersistence
+    @MockK
+    lateinit var reportExpenditureCoFinancingPersistence: ProjectReportExpenditureCoFinancingPersistence
 
     @InjectMockKs
     lateinit var service: CreateProjectPartnerReportBudget
@@ -361,8 +415,10 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         every { projectPartnerBudgetOptionsPersistence.getBudgetOptions(partnerId, version) } returns budgetOptions
         every { getProjectBudget.getBudget(listOf(partner), projectId, version) } returns listOf(partnerBudget(partner))
         every { reportExpenditureCostCategoryPersistence.getCostCategoriesCumulative(setOf(408L)) } returns previousExpenditures
+        // previouslyReportedCoFinancing
+        every { reportExpenditureCoFinancingPersistence.getCoFinancingCumulative(setOf(408L)) } returns previousReportedCoFinancing
 
-        val result = service.retrieveBudgetDataFor(projectId, partner, version, contributions)
+        val result = service.retrieveBudgetDataFor(projectId, partner, version, coFinancing)
 
         assertThat(result.contributions).hasSize(3)
         assertThat(result.lumpSums).containsExactly(PartnerReportLumpSum(
@@ -379,6 +435,8 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         assertThat(result.expenditureSetup.totalsFromAF).isEqualTo(expectedTotal)
         assertThat(result.expenditureSetup.currentlyReported).isEqualTo(zeros)
         assertThat(result.expenditureSetup.previouslyReported).isEqualTo(expectedPrevious)
+
+        assertThat(result.previouslyReportedCoFinancing).isEqualTo(expectedPreviouslyReportedCoFinancing)
 
         // this we cannot mock
         val newUuid = result.contributions[0].historyIdentifier

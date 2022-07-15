@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.repository.report.financialOverview
+package io.cloudflight.jems.server.project.repository.report.financialOverview.costCategory
 
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import io.cloudflight.jems.server.project.service.report.model.financialOverview.costCategory.ReportExpenditureCostCategory

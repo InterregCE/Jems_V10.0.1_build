@@ -3,7 +3,6 @@ package io.cloudflight.jems.server.project.repository.report
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.EN
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroupDTO
-import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostEntity
@@ -13,7 +12,6 @@ import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeLumpS
 import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeUnitCostRepository
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
 import io.cloudflight.jems.server.programme.repository.legalstatus.ProgrammeLegalStatusRepository
-import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
 import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatus
 import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatusType
@@ -22,6 +20,7 @@ import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEnti
 import io.cloudflight.jems.server.project.entity.report.contribution.ProjectPartnerReportContributionEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportLumpSumEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportUnitCostEntity
+import io.cloudflight.jems.server.project.entity.report.financialOverview.ReportProjectPartnerExpenditureCoFinancingEntity
 import io.cloudflight.jems.server.project.entity.report.financialOverview.ReportProjectPartnerExpenditureCostCategoryEntity
 import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportBudgetPerPeriodEntity
 import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportIdentificationEntity
@@ -33,7 +32,8 @@ import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerR
 import io.cloudflight.jems.server.project.repository.report.contribution.ProjectPartnerReportContributionRepository
 import io.cloudflight.jems.server.project.repository.report.expenditure.ProjectPartnerReportLumpSumRepository
 import io.cloudflight.jems.server.project.repository.report.expenditure.ProjectPartnerReportUnitCostRepository
-import io.cloudflight.jems.server.project.repository.report.financialOverview.ReportProjectPartnerExpenditureCostCategoryRepository
+import io.cloudflight.jems.server.project.repository.report.financialOverview.coFinancing.ReportProjectPartnerExpenditureCoFinancingRepository
+import io.cloudflight.jems.server.project.repository.report.financialOverview.costCategory.ReportProjectPartnerExpenditureCostCategoryRepository
 import io.cloudflight.jems.server.project.repository.report.identification.ProjectPartnerReportBudgetPerPeriodRepository
 import io.cloudflight.jems.server.project.repository.report.identification.ProjectPartnerReportIdentificationRepository
 import io.cloudflight.jems.server.project.repository.report.identification.ProjectPartnerReportIdentificationTargetGroupRepository
@@ -44,7 +44,6 @@ import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPart
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceBenefit
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
-import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
@@ -90,12 +89,6 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
             type = ProgrammeFundType.ERDF,
         )
 
-        private val programmeFund = ProgrammeFund(
-            id = programmeFundEntity.id,
-            selected = programmeFundEntity.selected,
-            type = programmeFundEntity.type,
-        )
-
         private val legalStatusEntity = ProgrammeLegalStatusEntity(
             id = 650L,
             type = ProgrammeLegalStatusType.PRIVATE,
@@ -104,19 +97,6 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
         private val legalStatus = ProgrammeLegalStatus(
             id = legalStatusEntity.id,
             type = legalStatusEntity.type,
-        )
-
-        private val coFinancing = listOf(
-            ProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundTypeDTO.MainFund,
-                fund = programmeFund,
-                percentage = ONE,
-            ),
-            ProjectPartnerCoFinancing(
-                fundType = ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution,
-                fund = null,
-                percentage = TEN,
-            ),
         )
 
         private val reportToBeCreated = ProjectPartnerReportCreate(
@@ -140,7 +120,6 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
                 country = "Österreich (AT)",
                 countryCode = "AT",
                 currency = "EUR",
-                coFinancing = coFinancing,
             ),
             workPackages = listOf(
                 CreateProjectPartnerReportWorkPackage(
@@ -257,6 +236,25 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
                         sum = BigDecimal.valueOf(39),
                     ),
                 ),
+                previouslyReportedCoFinancing = PreviouslyReportedCoFinancing(
+                    fundsSorted = listOf(
+                        PreviouslyReportedFund(fundId = programmeFundEntity.id, percentage = TEN,
+                            total = BigDecimal.valueOf(100L), previouslyReported = BigDecimal.valueOf(25)),
+                        PreviouslyReportedFund(fundId = null, percentage = BigDecimal.valueOf(90),
+                            total = BigDecimal.valueOf(900L), previouslyReported = BigDecimal.valueOf(400)),
+                    ),
+                    totalPartner = BigDecimal.valueOf(900L),
+                    totalPublic = BigDecimal.valueOf(200L),
+                    totalAutoPublic = BigDecimal.valueOf(300L),
+                    totalPrivate = BigDecimal.valueOf(400L),
+                    totalSum = BigDecimal.valueOf(5000L),
+
+                    previouslyReportedPartner = BigDecimal.valueOf(400L),
+                    previouslyReportedPublic = BigDecimal.valueOf(100L),
+                    previouslyReportedAutoPublic = BigDecimal.valueOf(130L),
+                    previouslyReportedPrivate = BigDecimal.valueOf(170L),
+                    previouslyReportedSum = BigDecimal.valueOf(7500L),
+                )
             ),
         )
     }
@@ -266,6 +264,9 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
 
     @MockK
     lateinit var partnerReportCoFinancingRepository: ProjectPartnerReportCoFinancingRepository
+
+    @MockK
+    lateinit var reportProjectPartnerExpenditureCoFinancingRepository: ReportProjectPartnerExpenditureCoFinancingRepository
 
     @MockK
     lateinit var legalStatusRepository: ProgrammeLegalStatusRepository
@@ -320,10 +321,12 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
     fun createPartnerReport(withoutLegalStatus: Boolean) {
         val reportSlot = slot<ProjectPartnerReportEntity>()
         val reportCoFinancingSlot = slot<Iterable<ProjectPartnerReportCoFinancingEntity>>()
+        val reportExpenditureCoFinancingSlot = slot<ReportProjectPartnerExpenditureCoFinancingEntity>()
         every { legalStatusRepository.getById(legalStatusEntity.id) } returns legalStatusEntity
         every { partnerReportRepository.save(capture(reportSlot)) } returnsArgument 0
         every { programmeFundRepository.getById(programmeFundEntity.id) } returns programmeFundEntity
         every { partnerReportCoFinancingRepository.saveAll(capture(reportCoFinancingSlot)) } returnsArgument 0
+        every { reportProjectPartnerExpenditureCoFinancingRepository.save(capture(reportExpenditureCoFinancingSlot)) } returnsArgument 0
 
         // work plan
         val wpSlot = slot<ProjectPartnerReportWorkPackageEntity>()
@@ -410,13 +413,14 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
         assertThat(reportCoFinancingSlot.captured).hasSize(2)
         with(reportCoFinancingSlot.captured.find { it.id.fundSortNumber == 1 }!!) {
             assertThat(programmeFund!!.equals(programmeFundEntity)).isTrue
-            assertThat(percentage).isEqualTo(ONE)
+            assertThat(percentage).isEqualByComparingTo(BigDecimal.valueOf(10L))
         }
         with(reportCoFinancingSlot.captured.find { it.id.fundSortNumber == 2 }!!) {
             assertThat(programmeFund).isNull()
-            assertThat(percentage).isEqualTo(TEN)
+            assertThat(percentage).isEqualTo(BigDecimal.valueOf(90L))
         }
 
+        assertExpenditureCoFinancing(reportExpenditureCoFinancingSlot)
         assertWorkPlan(wpSlot, wpActivitySlot, wpActivityDeliverableSlot, wpOutputSlot)
         assertIdentification(idSlot, idTargetGroupsSlot)
         assertContribution(contribSlot)
@@ -428,6 +432,30 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
 
     private fun PartnerReportIdentificationCreate.removeLegalStatusIf(needed: Boolean) =
         this.copy(legalStatusId = if (needed) null else this.legalStatusId)
+
+    private fun assertExpenditureCoFinancing(
+        expenditureCoFinancingSlot: CapturingSlot<ReportProjectPartnerExpenditureCoFinancingEntity>,
+    ) {
+        with(expenditureCoFinancingSlot.captured) {
+            assertThat(partnerContributionTotal).isEqualByComparingTo(BigDecimal.valueOf(900L))
+            assertThat(publicContributionTotal).isEqualByComparingTo(BigDecimal.valueOf(200L))
+            assertThat(automaticPublicContributionTotal).isEqualByComparingTo(BigDecimal.valueOf(300L))
+            assertThat(privateContributionTotal).isEqualByComparingTo(BigDecimal.valueOf(400L))
+            assertThat(sumTotal).isEqualByComparingTo(BigDecimal.valueOf(5000L))
+
+            assertThat(partnerContributionCurrent).isEqualByComparingTo(ZERO)
+            assertThat(publicContributionCurrent).isEqualByComparingTo(ZERO)
+            assertThat(automaticPublicContributionCurrent).isEqualByComparingTo(ZERO)
+            assertThat(privateContributionCurrent).isEqualByComparingTo(ZERO)
+            assertThat(sumCurrent).isEqualByComparingTo(ZERO)
+
+            assertThat(partnerContributionPreviouslyReported).isEqualByComparingTo(BigDecimal.valueOf(400L))
+            assertThat(publicContributionPreviouslyReported).isEqualByComparingTo(BigDecimal.valueOf(100L))
+            assertThat(automaticPublicContributionPreviouslyReported).isEqualByComparingTo(BigDecimal.valueOf(130L))
+            assertThat(privateContributionPreviouslyReported).isEqualByComparingTo(BigDecimal.valueOf(170L))
+            assertThat(sumPreviouslyReported).isEqualByComparingTo(BigDecimal.valueOf(7500L))
+        }
+    }
 
     private fun assertWorkPlan(
         wpSlot: CapturingSlot<ProjectPartnerReportWorkPackageEntity>,

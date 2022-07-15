@@ -1,9 +1,7 @@
+@use '../remove-custom-table-overrides';
+
 .border-cell-right {
   border-right: .0625rem solid var(--table-border-color);
-}
-
-mat-table {
-  overflow: auto;
 }
 
 .mat-column-type {
@@ -37,18 +35,4 @@ mat-table {
 
 .respect-line-break {
   white-space: pre-wrap;
-}
-
-mat-header-row {
-  border-bottom: none;
-}
-mat-header-cell {
-  border-bottom: 1px solid var(--table-border-color);
-}
-
-mat-footer-row {
-  border-top: none !important;
-}
-mat-footer-cell {
-  border-top: 1px solid var(--table-border-color);
 }

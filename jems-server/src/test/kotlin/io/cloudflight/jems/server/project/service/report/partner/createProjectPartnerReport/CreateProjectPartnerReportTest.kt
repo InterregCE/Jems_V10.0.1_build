@@ -172,7 +172,6 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
                 country = "Österreich (AT)",
                 countryCode = "AT",
                 currency = "EUR",
-                coFinancing = coFinancing
             ),
             workPackages = listOf(
                 CreateProjectPartnerReportWorkPackage(
@@ -230,7 +229,6 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
                 country = "Österreich (AT)",
                 countryCode = null,
                 currency = "EUR",
-                coFinancing = coFinancing
             ),
             workPackages = emptyList(),
             targetGroups = emptyList(),
@@ -315,8 +313,8 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
         every { projectPersistence.getProject(PROJECT_ID, "14.2.0") } returns projectSummary(status)
         every { reportPersistence.countForPartner(partnerId) } returns 24
         every { reportPersistence.getCurrentLatestReportNumberForPartner(partnerId) } returns 7
-        every { partnerCoFinancingPersistence.getCoFinancingAndContributions(partnerId, "14.2.0") } returns
-            ProjectPartnerCoFinancingAndContribution(coFinancing, contributions, "")
+        val coFinancingWrapper = ProjectPartnerCoFinancingAndContribution(coFinancing, contributions, "")
+        every { partnerCoFinancingPersistence.getCoFinancingAndContributions(partnerId, "14.2.0") } returns coFinancingWrapper
         every { projectPartnerPersistence.getById(partnerId, "14.2.0") } returns detail
         every { currencyPersistence.getCurrencyForCountry("AT") } returns "EUR"
         // work plan
@@ -324,7 +322,7 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
         // budget
         val budgetMock = mockk<PartnerReportBudget>()
         val partnerSummary = slot<ProjectPartnerSummary>()
-        every { createProjectPartnerReportBudget.retrieveBudgetDataFor(PROJECT_ID, capture(partnerSummary), "14.2.0", contributions) } returns budgetMock
+        every { createProjectPartnerReportBudget.retrieveBudgetDataFor(PROJECT_ID, capture(partnerSummary), "14.2.0", coFinancingWrapper) } returns budgetMock
         // identification
         every { projectDescriptionPersistence.getBenefits(PROJECT_ID, "14.2.0") } returns benefits
 
@@ -369,7 +367,7 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
         // budget
         val budgetMock = mockk<PartnerReportBudget>()
         val partnerSummary = slot<ProjectPartnerSummary>()
-        every { createProjectPartnerReportBudget.retrieveBudgetDataFor(PROJECT_ID, capture(partnerSummary), "14.2.0", emptyList()) } returns budgetMock
+        every { createProjectPartnerReportBudget.retrieveBudgetDataFor(PROJECT_ID, capture(partnerSummary), "14.2.0", any()) } returns budgetMock
         // identification
         every { projectDescriptionPersistence.getBenefits(PROJECT_ID, "14.2.0") } returns null
 

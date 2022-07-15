@@ -38,7 +38,7 @@ private fun List<ProjectPartnerReportEntityContribution>.toCalculatedModel(): Li
     }
 }
 
-private fun List<ProjectPartnerReportEntityContribution>.extractOverview(): ProjectPartnerReportContributionOverview {
+fun List<ProjectPartnerReportEntityContribution>.extractOverview(): ProjectPartnerReportContributionOverview {
     val byLegalStatus = groupBy { it.legalStatus }
 
     return ProjectPartnerReportContributionOverview(
