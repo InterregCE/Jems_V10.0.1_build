@@ -1,5 +1,4 @@
 {
-  "id": null,
   "details": {
     "acronym": "randomize",
     "projectCallId": null
@@ -32,7 +31,6 @@
   "partners": [
     {
       "details": {
-        "id": null,
         "abbreviation": "Lead Partner",
         "role": "LEAD_PARTNER",
         "nameInOriginalLanguage": "Lead Partner in original language",
