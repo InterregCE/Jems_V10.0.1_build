@@ -85,7 +85,7 @@ context('Project partners tests', () => {
       });
 
       cy.contains('Save changes').click();
-      // TODO add an assertion for successful save as soon as bug MP2-2274 is fixed
+      cy.contains('Partner organisation details saved successfully.').should('be.visible');
     });
   });
 
