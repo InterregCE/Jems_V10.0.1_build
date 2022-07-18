@@ -24,7 +24,7 @@ import {NumberService} from '@common/services/number.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PartnerReportIdentificationTabComponent {
-  displayedColumns = ['periodBudget', 'currentReport', 'periodBudgetCumulative', 'totalReportedSoFar', 'differenceFromPlan', 'differenceFromPlanPercentage', 'nextReportForecast'];
+  displayedColumns = ['partnerNumber', 'periodBudget', 'currentReport', 'periodBudgetCumulative', 'totalReportedSoFar', 'differenceFromPlan', 'differenceFromPlanPercentage', 'nextReportForecast'];
   APPLICATION_FORM = APPLICATION_FORM;
 
   dateNameArgs = {
