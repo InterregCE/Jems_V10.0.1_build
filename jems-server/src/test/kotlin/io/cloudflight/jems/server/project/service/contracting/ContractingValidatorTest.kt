@@ -22,6 +22,7 @@ class ContractingValidatorTest : UnitTest() {
         private const val projectID = 12L
         private const val INPUT_ERROR = "common.error.input.invalid"
         private const val CONTRACTING_ERROR = "use.case.project.contracting.management.denied"
+        private const val MONITORING_ERROR = "use.case.project.contracting.monitoring.denied"
 
         private val projectManagers = listOf(
             ProjectContractingManagement(
@@ -195,5 +196,36 @@ class ContractingValidatorTest : UnitTest() {
             validator.validateProjectStepAndStatus(projectSummary)
         }
         assertEquals(CONTRACTING_ERROR, ex.i18nMessage.i18nKey)
+    }
+
+    @Test
+    fun `should succeed on project status approved`() {
+        val projectSummary = ProjectSummary(
+            id = projectID,
+            customIdentifier = "TST",
+            callName = "Test contracting monitoring",
+            acronym = "TCM",
+            status = ApplicationStatus.APPROVED
+        )
+
+        assertDoesNotThrow {
+            validator.validateProjectStatusForModification(projectSummary)
+        }
+    }
+
+    @Test
+    fun `should throw ContractingDeniedException if project status is not approved yet`() {
+        val projectSummary = ProjectSummary(
+            id = projectID,
+            customIdentifier = "TST",
+            callName = "Test contracting monitoring",
+            acronym = "TCM",
+            status = ApplicationStatus.STEP1_DRAFT
+        )
+
+        val ex = assertThrows<ContractingModificationDeniedException> {
+            validator.validateProjectStatusForModification(projectSummary)
+        }
+        assertEquals(MONITORING_ERROR, ex.i18nMessage.i18nKey)
     }
 }
