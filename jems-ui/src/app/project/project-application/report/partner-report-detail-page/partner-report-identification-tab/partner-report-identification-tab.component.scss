@@ -37,3 +37,12 @@
 .respect-line-break {
   white-space: pre-wrap;
 }
+
+.table-padding {
+  > * {
+    > * {
+      padding-right:  0.5em;
+      padding-left:  0.5em;
+    }
+  }
+}
