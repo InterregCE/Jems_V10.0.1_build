@@ -21,7 +21,7 @@ context('Call management tests', () => {
     cy.contains('div', 'Start date').next().click();
     cy.contains('mat-icon', 'done').click();
 
-    cy.contains('div', 'End date (MM').next().click();
+    cy.contains('div', 'End date (').next().click();
     cy.get('table.mat-calendar-table').find('tr').last().find('td').last().click();
     cy.get('mat-icon').contains('done').click();
 

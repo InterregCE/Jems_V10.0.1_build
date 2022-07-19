@@ -1,7 +1,6 @@
 import user from '../../../../fixtures/users.json';
 import call from '../../../../fixtures/api/call/1.step.call.json';
 import application from '../../../../fixtures/api/application/application.json';
-import date from 'date-and-time';
 
 context('Assessments & decision tests', () => {
 
@@ -38,9 +37,8 @@ context('Assessments & decision tests', () => {
         cy.contains('Enter eligibility decision').click();
         cy.contains(testData.eligibility.decision).click();
         cy.contains('div', 'Explanatory notes').find('textarea').type(testData.eligibility.explanatoryNotes);
-        const today = new Date();
-        const formattedToday = date.format(today, 'MM/DD/YYYY');
-        cy.contains('div', 'Decision date').find('input').type(formattedToday)
+        cy.contains('mat-form-field', 'Decision date').find('button').click();
+        cy.get('.mat-calendar-body-today').click();
         cy.contains('Submit eligibility decision').click();
         cy.contains('Confirm').click();
         cy.contains('Eligibility decision:').next().should('contain.text', 'Eligible');
@@ -48,7 +46,8 @@ context('Assessments & decision tests', () => {
         cy.contains('Enter funding decision').click();
         cy.contains(testData.funding.decision).click();
         cy.contains('div', 'Explanatory notes').find('textarea').type(testData.funding.explanatoryNotes);
-        cy.contains('div', 'Decision date').find('input').type(formattedToday)
+        cy.contains('mat-form-field', 'Decision date').find('button').click();
+        cy.get('.mat-calendar-body-today').click();
         cy.contains('Submit funding decision').click();
         cy.contains('Confirm').click();
         cy.contains('Funding decision:').next().should('contain.text', 'Approved with conditions');

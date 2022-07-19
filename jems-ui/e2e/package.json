@@ -1,26 +1,24 @@
 {
   "name": "jems-e2e",
   "version": "1.0.0",
-  "type": "module",
   "description": "Jems E2E Tests",
   "scripts": {
     "run": "cypress run --browser chrome",
-    "open": "cypress open",
+    "open": "cypress open --e2e --browser chrome",
     "pretest": "wait-on $CYPRESS_BASE_URL -t 20000",
     "test": "cy2 run --parallel --record --key xxx --ci-build-id $CI_BUILD_ID"
   },
   "author": "Cloudflight GmbH",
   "devDependencies": {
     "@faker-js/faker": "^6.1.2",
-    "@types/node": "^17.0.23",
-    "csv-parse": "^5.0.4",
+    "@types/node": "^18.0.6",
     "cy2": "^2.0.0",
-    "cypress": "^9.7.0",
-    "date-and-time": "^2.3.0",
+    "cypress": "^10.3.0",
+    "date-and-time": "^2.4.0",
     "node-fetch": "^2.6.7",
     "node-xlsx": "^0.21.0",
     "pdf-parse": "^1.1.1",
-    "typescript": "^4.6.3",
+    "typescript": "^4.7.4",
     "wait-on": "^6.0.1"
   }
 }

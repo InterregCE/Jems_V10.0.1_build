@@ -1,17 +1,30 @@
 import user from '../../../../fixtures/users.json';
+import call from "../../../../fixtures/api/call/1.step.call.json";
+import application from "../../../../fixtures/api/application/application.json";
 
 context('Project description tests', () => {
-
-  beforeEach(() => {
+  
+  before(() => {
     cy.loginByRequest(user.applicantUser.email);
-    cy.wrap(1).as('applicationId');
-    cy.wrap('Lead Partner').as('partnerAbbreviation');
+    cy.createCall(call, user.programmeUser.email).then(callId => {
+      application.details.projectCallId = callId;
+      cy.publishCall(callId, user.programmeUser.email);
+      cy.createApplication(application).then(applicationId => {
+        cy.updateProjectIdentification(applicationId, application.identification);
+        cy.createPartners(applicationId, application.partners);
+      });
+    });
+  });
+
+  beforeEach(function() {
+    cy.loginByRequest(user.applicantUser.email);
+    cy.visit(`app/project/detail/${this.applicationId}`, {failOnStatusCode: false});
     cy.wrap('WP1').as('workPlanId');
+    cy.wrap('Lead Partner').as('partnerAbbreviation');
   });
 
   it('TB-639 Applicant can edit project overall objective', function () {
     cy.fixture('project/application-form/c-project-description/TB-639').then(testData => {
-      cy.visit(`app/project/detail/${this.applicationId}`, {failOnStatusCode: false});
 
       cy.contains('C.1 Project overall objective').click();
 
@@ -31,7 +44,6 @@ context('Project description tests', () => {
 
   it('TB-641 Applicant can edit project relevance and context', function () {
     cy.fixture('project/application-form/c-project-description/TB-641').then(testData => {
-      cy.visit(`app/project/detail/${this.applicationId}`, {failOnStatusCode: false});
 
       cy.contains('C.2 Project relevance and context').click();
 
@@ -114,7 +126,6 @@ context('Project description tests', () => {
 
   it('TB-642 Applicant can edit project partnership', function () {
     cy.fixture('project/application-form/c-project-description/TB-642').then(testData => {
-      cy.visit(`app/project/detail/${this.applicationId}`, {failOnStatusCode: false});
 
       cy.contains('C.3 Project partnership').click();
 
@@ -132,7 +143,6 @@ context('Project description tests', () => {
 
   it('TB-643 Applicant can create project work plans and edit objectives', function () {
     cy.fixture('project/application-form/c-project-description/TB-643').then(testData => {
-      cy.visit(`app/project/detail/${this.applicationId}`, {failOnStatusCode: false});
 
       cy.contains('C.4 Project work plan').click();
       cy.contains('Add new work package').click();
@@ -166,7 +176,6 @@ context('Project description tests', () => {
 
   it('TB-644 Applicant can create investments within work plans', function () {
     cy.fixture('project/application-form/c-project-description/TB-644').then(testData => {
-      cy.visit(`app/project/detail/${this.applicationId}`, {failOnStatusCode: false});
 
       cy.contains(this.workPlanId).click();
       cy.contains('Investments').click();
@@ -279,8 +288,6 @@ context('Project description tests', () => {
 
   it('TB-647 Applicant can create activities within work plans', function () {
     cy.fixture('project/application-form/c-project-description/TB-647').then(testData => {
-      cy.visit(`app/project/detail/${this.applicationId}`, {failOnStatusCode: false});
-
       cy.contains(this.workPlanId).click();
       cy.contains('Activities').click();
       cy.contains('Add activity').click();
@@ -342,7 +349,6 @@ context('Project description tests', () => {
 
   it('TB-648 Applicant can create outputs within work plans', function () {
     cy.fixture('project/application-form/c-project-description/TB-648').then(testData => {
-      cy.visit(`app/project/detail/${this.applicationId}`, {failOnStatusCode: false});
 
       cy.contains(this.workPlanId).click();
       cy.contains('Outputs').click();
@@ -377,7 +383,6 @@ context('Project description tests', () => {
 
   it('TB-656 Applicant can create project results', function () {
     cy.fixture('project/application-form/project-description/TB-656').then(testData => {
-      cy.visit(`app/project/detail/${this.applicationId}`, {failOnStatusCode: false});
 
       cy.contains('C.5 Project Results').click();
       cy.contains('Add result').click();
@@ -404,7 +409,6 @@ context('Project description tests', () => {
 
   it('TB-657 Applicant can edit project management', function () {
     cy.fixture('project/application-form/project-description/TB-657').then(testData => {
-      cy.visit(`app/project/detail/${this.applicationId}`, {failOnStatusCode: false});
 
       cy.contains('C.7 Project management').click();
 
@@ -499,7 +503,6 @@ context('Project description tests', () => {
 
   it('TB-658 Applicant can edit project long-term plans', function () {
     cy.fixture('project/application-form/project-description/TB-658').then(testData => {
-      cy.visit(`app/project/detail/${this.applicationId}`, {failOnStatusCode: false});
 
       cy.contains('C.8 Long-term plans').click();
 
