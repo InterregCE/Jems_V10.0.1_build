@@ -115,62 +115,37 @@ context('Programme management tests', () => {
       cy.contains('div', 'Select policy objective').find('mat-select').click();
       cy.contains(priority.objective).click();
 
-      priority.specificObjectives.forEach((specificObjective, index) => {
-        cy.contains(specificObjective.programmeObjectivePolicy).parent().parent().then(el => {
-          cy.wrap(el).find('input[type="checkbox"]').check({force: true});
-          cy.wrap(el).contains('td', 'Programme specific objective code').find('input').type(specificObjective.code);
-          cy.wrap(el).contains('mat-icon', 'expand_more').click();
-          cy.wrap(el).parent()
-              cy.get('tr:contains("Types of intervention")')
-                .each((row, rowIndex) => {
-                      if (specificObjective.index === rowIndex) {
-                        cy.wrap(row).find('input').each((input, inputIndex) => {
-                          if(inputIndex == 0) {
-                            cy.wrap(input).click()
-                            cy.document().its('body').find('mat-option')
-                              .contains(specificObjective.dimensionCodes.TypesOfIntervention.at(0)).click()
-                            cy.wrap(input)
-                          }
-
-                          if(inputIndex == 1) {
-                            cy.wrap(input).click()
-                            cy.document().its('body').find('mat-option')
-                              .contains(specificObjective.dimensionCodes.FormOfSupport.at(0)).click()
-                            cy.wrap(input)
-                          }
-
-                          if(inputIndex == 2) {
-                            cy.wrap(input).click()
-                            cy.document().its('body').find('mat-option')
-                              .contains(specificObjective.dimensionCodes.TerritorialDeliveryMechanism.at(0)).click()
-                            cy.wrap(input)
-                          }
-
-                          if(inputIndex == 3) {
-                            cy.wrap(input).click()
-                            cy.document().its('body').find('mat-option')
-                              .contains(specificObjective.dimensionCodes.EconomicActivity.at(0)).click()
-                            cy.wrap(input)
-                          }
-
-                          if(inputIndex == 4) {
-                            cy.wrap(input).click()
-                            cy.document().its('body').find('mat-option')
-                              .contains(specificObjective.dimensionCodes.GenderEquality.at(0)).click()
-                            cy.wrap(input)
-                          }
-
-                          if(inputIndex == 5) {
-                            cy.wrap(input).click()
-                            cy.document().its('body').find('mat-option')
-                              .contains(specificObjective.dimensionCodes.RegionalAndSeaBasinStrategy.at(0)).click()
-                            cy.wrap(input)
-                          }
-                        })
-                      }
-                    })
-          cy.wrap(el).contains('mat-icon', 'expand_less').click();
+      priority.specificObjectives.forEach(specificObjective => {
+        cy.contains('tr', specificObjective.programmeObjectivePolicy).within(() => {
+          cy.get('mat-checkbox').click();
+          cy.contains('div', 'Programme specific objective code').find('input').type(specificObjective.code);
+          cy.contains('expand_more').click();
+        }).next().within(() => {
+          specificObjective.dimensionCodes.TypesOfIntervention.forEach(code => {
+            cy.contains('Types of intervention').next().find('input').type(code);
+            cy.root().closest('body').find('mat-option').contains(code).click();
           });
+          specificObjective.dimensionCodes.FormOfSupport.forEach(code => {
+            cy.contains('Form of support').next().find('input').type(code);
+            cy.root().closest('body').find('mat-option').contains(code).click();
+          });
+          specificObjective.dimensionCodes.TerritorialDeliveryMechanism.forEach(code => {
+            cy.contains('Territorial delivery mechanism').next().find('input').type(code);
+            cy.root().closest('body').find('mat-option').contains(code).click();
+          });
+          specificObjective.dimensionCodes.EconomicActivity.forEach(code => {
+            cy.contains('Economic activity').next().find('input').type(code);
+            cy.root().closest('body').find('mat-option').contains(code).click();
+          });
+          specificObjective.dimensionCodes.GenderEquality.forEach(code => {
+            cy.contains('Gender Equality').next().find('input').type(code);
+            cy.root().closest('body').find('mat-option').contains(code).click();
+          });
+          specificObjective.dimensionCodes.RegionalAndSeaBasinStrategy.forEach(code => {
+            cy.contains('Regional and Sea Basin Strategy').next().find('input').type(code);
+            cy.root().closest('body').find('mat-option').contains(code).click();
+          });
+        });
       });
 
       cy.contains('Add priority').click();
@@ -239,7 +214,7 @@ context('Programme management tests', () => {
       cy.contains('Save').click();
       cy.contains('Confirm').should('be.visible').click();
 
-      cy.contains('jems-programme-output-indicators-list div', indicator.code, { timeout: 8000 }).should('exist');
+      cy.contains('jems-programme-output-indicators-list div', indicator.code, {timeout: 8000}).should('exist');
     });
   });
 

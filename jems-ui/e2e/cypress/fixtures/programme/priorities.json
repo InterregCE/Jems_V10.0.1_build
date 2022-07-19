@@ -1,262 +1,421 @@
 [
   {
-    "code":"PO1",
-    "title":[
+    "code": "PO1",
+    "title": [
       {
-        "translation":"PO1 Innovation DE",
-        "language":"DE"
+        "translation": "PO1 Innovation DE",
+        "language": "DE"
       },
       {
-        "translation":"PO1 Innovation EN",
-        "language":"EN"
+        "translation": "PO1 Innovation EN",
+        "language": "EN"
       }
     ],
-    "objective":"PO1 - A more competitive and smarter Europe",
-    "specificObjectives":[
+    "objective": "PO1 - A more competitive and smarter Europe",
+    "specificObjectives": [
       {
-        "index": 0,
-        "code":"SO1.1",
-        "programmeObjectivePolicy":"Developing and enhancing research and innovation capacities and the uptake of advanced technologies",
+        "code": "SO1.1",
+        "programmeObjectivePolicy": "Developing and enhancing research and innovation capacities and the uptake of advanced technologies",
         "dimensionCodes": {
-          "EconomicActivity": ["006"],
-          "FormOfSupport": ["005"],
-          "GenderEquality": ["002"],
-          "RegionalAndSeaBasinStrategy": ["003"],
-          "TerritorialDeliveryMechanism": ["002"],
-          "TypesOfIntervention": ["001"]
+          "EconomicActivity": ["026"],
+          "FormOfSupport": [
+            "006"
+          ],
+          "GenderEquality": [
+            "001",
+            "002",
+            "003"
+          ],
+          "RegionalAndSeaBasinStrategy": [
+            "011"
+          ],
+          "TerritorialDeliveryMechanism": [
+            "001",
+            "033"
+          ],
+          "TypesOfIntervention": [
+            "001",
+            "002",
+            "003",
+            "004",
+            "182"
+          ]
         }
       },
       {
-        "index": 1,
-        "code":"SO1.2",
-        "programmeObjectivePolicy":"Reaping the benefits of digitisation for citizens, companies, research organisations and public authorities",
+        "code": "SO1.2",
+        "programmeObjectivePolicy": "Reaping the benefits of digitisation for citizens, companies, research organisations and public authorities",
         "dimensionCodes": {
-          "EconomicActivity": ["001"],
-          "FormOfSupport": ["001"],
-          "GenderEquality": ["001"],
-          "RegionalAndSeaBasinStrategy": ["001"],
-          "TerritorialDeliveryMechanism": ["001"],
-          "TypesOfIntervention": ["001"]
+          "EconomicActivity": [
+            "001"
+          ],
+          "FormOfSupport": [
+            "001"
+          ],
+          "GenderEquality": [
+            "001"
+          ],
+          "RegionalAndSeaBasinStrategy": [
+            "001"
+          ],
+          "TerritorialDeliveryMechanism": [
+            "001"
+          ],
+          "TypesOfIntervention": [
+            "001"
+          ]
         }
       },
       {
-        "index": 4,
-        "code":"SO1.3",
-        "programmeObjectivePolicy":"Enhancing digital connectivity",
+        "code": "SO1.3",
+        "programmeObjectivePolicy": "Enhancing digital connectivity",
         "dimensionCodes": {
-          "EconomicActivity": ["001"],
-          "FormOfSupport": ["001"],
-          "GenderEquality": ["001"],
-          "RegionalAndSeaBasinStrategy": ["001"],
-          "TerritorialDeliveryMechanism": ["001"],
-          "TypesOfIntervention": ["001"]
+          "EconomicActivity": [
+            "001"
+          ],
+          "FormOfSupport": [
+            "001"
+          ],
+          "GenderEquality": [
+            "001"
+          ],
+          "RegionalAndSeaBasinStrategy": [
+            "001"
+          ],
+          "TerritorialDeliveryMechanism": [
+            "001"
+          ],
+          "TypesOfIntervention": [
+            "001"
+          ]
         }
       }
     ]
   },
   {
-    "code":"PO2",
-    "title":[
+    "code": "PO2",
+    "title": [
       {
-        "translation":"PO2 Environment DE",
-        "language":"DE"
+        "translation": "PO2 Environment DE",
+        "language": "DE"
       },
       {
-        "translation":"PO2 Environment EN",
-        "language":"EN"
+        "translation": "PO2 Environment EN",
+        "language": "EN"
       }
     ],
-    "objective":"PO2 - A greener, low-carbon transitioning towards a net zero carbon economy and resilient Europe",
-    "specificObjectives":[
+    "objective": "PO2 - A greener, low-carbon transitioning towards a net zero carbon economy and resilient Europe",
+    "specificObjectives": [
       {
-        "index": 0,
-        "code":"SO2.1",
-        "programmeObjectivePolicy":"Promoting energy efficiency and reducing greenhouse gas emissions",
+        "code": "SO2.1",
+        "programmeObjectivePolicy": "Promoting energy efficiency and reducing greenhouse gas emissions",
         "dimensionCodes": {
-          "EconomicActivity": ["001"],
-          "FormOfSupport": ["001"],
-          "GenderEquality": ["001"],
-          "RegionalAndSeaBasinStrategy": ["001"],
-          "TerritorialDeliveryMechanism": ["001"],
-          "TypesOfIntervention": ["001"]
+          "EconomicActivity": [
+            "001"
+          ],
+          "FormOfSupport": [
+            "001"
+          ],
+          "GenderEquality": [
+            "001"
+          ],
+          "RegionalAndSeaBasinStrategy": [
+            "001"
+          ],
+          "TerritorialDeliveryMechanism": [
+            "001"
+          ],
+          "TypesOfIntervention": [
+            "001"
+          ]
         }
       },
       {
-        "index": 4,
-        "code":"SO2.2",
-        "programmeObjectivePolicy":"Promoting access to water and sustainable water management",
+        "code": "SO2.2",
+        "programmeObjectivePolicy": "Promoting access to water and sustainable water management",
         "dimensionCodes": {
-          "EconomicActivity": ["001"],
-          "FormOfSupport": ["001"],
-          "GenderEquality": ["001"],
-          "RegionalAndSeaBasinStrategy": ["001"],
-          "TerritorialDeliveryMechanism": ["001"],
-          "TypesOfIntervention": ["001"]
+          "EconomicActivity": [
+            "001"
+          ],
+          "FormOfSupport": [
+            "001"
+          ],
+          "GenderEquality": [
+            "001"
+          ],
+          "RegionalAndSeaBasinStrategy": [
+            "001"
+          ],
+          "TerritorialDeliveryMechanism": [
+            "001"
+          ],
+          "TypesOfIntervention": [
+            "001"
+          ]
         }
       }
     ]
   },
   {
-    "code":"PO4",
-    "title":[
+    "code": "PO4",
+    "title": [
       {
-        "translation":"PO4 Social DE",
-        "language":"DE"
+        "translation": "PO4 Social DE",
+        "language": "DE"
       },
       {
-        "translation":"PO4 Social EN",
-        "language":"EN"
+        "translation": "PO4 Social EN",
+        "language": "EN"
       }
     ],
-    "objective":"PO4 - A more social and inclusive Europe implementing the European Pillar of Social Rights",
-    "specificObjectives":[
+    "objective": "PO4 - A more social and inclusive Europe implementing the European Pillar of Social Rights",
+    "specificObjectives": [
       {
-        "index": 0,
-        "code":"SO4.1",
-        "programmeObjectivePolicy":"Enhancing the effectiveness and inclusiveness of labour markets and access to quality employment through developing social infrastructure and promoting social economy",
+        "code": "SO4.1",
+        "programmeObjectivePolicy": "Enhancing the effectiveness and inclusiveness of labour markets and access to quality employment through developing social infrastructure and promoting social economy",
         "dimensionCodes": {
-          "EconomicActivity": ["001"],
-          "FormOfSupport": ["001"],
-          "GenderEquality": ["001"],
-          "RegionalAndSeaBasinStrategy": ["001"],
-          "TerritorialDeliveryMechanism": ["001"],
-          "TypesOfIntervention": ["001"]
+          "EconomicActivity": [
+            "001"
+          ],
+          "FormOfSupport": [
+            "001"
+          ],
+          "GenderEquality": [
+            "001"
+          ],
+          "RegionalAndSeaBasinStrategy": [
+            "001"
+          ],
+          "TerritorialDeliveryMechanism": [
+            "001"
+          ],
+          "TypesOfIntervention": [
+            "001"
+          ]
         }
       },
       {
-        "index": 5,
-        "code":"SO4.2",
-        "programmeObjectivePolicy":"Enhancing the role of culture and sustainable tourism in economic development, social inclusion and social innovation",
+        "code": "SO4.2",
+        "programmeObjectivePolicy": "Enhancing the role of culture and sustainable tourism in economic development, social inclusion and social innovation",
         "dimensionCodes": {
-          "EconomicActivity": ["001"],
-          "FormOfSupport": ["001"],
-          "GenderEquality": ["001"],
-          "RegionalAndSeaBasinStrategy": ["001"],
-          "TerritorialDeliveryMechanism": ["001"],
-          "TypesOfIntervention": ["001"]
+          "EconomicActivity": [
+            "001"
+          ],
+          "FormOfSupport": [
+            "001"
+          ],
+          "GenderEquality": [
+            "001"
+          ],
+          "RegionalAndSeaBasinStrategy": [
+            "001"
+          ],
+          "TerritorialDeliveryMechanism": [
+            "001"
+          ],
+          "TypesOfIntervention": [
+            "001"
+          ]
         }
       },
       {
-        "index": 7,
-        "code":"SO4.3",
-        "programmeObjectivePolicy":"PEACE PLUS Empowering Communities",
+        "code": "SO4.3",
+        "programmeObjectivePolicy": "PEACE PLUS Empowering Communities",
         "dimensionCodes": {
-          "EconomicActivity": ["001"],
-          "FormOfSupport": ["001"],
-          "GenderEquality": ["001"],
-          "RegionalAndSeaBasinStrategy": ["001"],
-          "TerritorialDeliveryMechanism": ["001"],
-          "TypesOfIntervention": ["001"]
+          "EconomicActivity": [
+            "001"
+          ],
+          "FormOfSupport": [
+            "001"
+          ],
+          "GenderEquality": [
+            "001"
+          ],
+          "RegionalAndSeaBasinStrategy": [
+            "001"
+          ],
+          "TerritorialDeliveryMechanism": [
+            "001"
+          ],
+          "TypesOfIntervention": [
+            "001"
+          ]
         }
       },
       {
-        "index": 14,
-        "code":"SO4.4",
-        "programmeObjectivePolicy":"PEACE PLUS Victims and Survivors",
+        "code": "SO4.4",
+        "programmeObjectivePolicy": "PEACE PLUS Victims and Survivors",
         "dimensionCodes": {
-          "EconomicActivity": ["001"],
-          "FormOfSupport": ["001"],
-          "GenderEquality": ["001"],
-          "RegionalAndSeaBasinStrategy": ["001"],
-          "TerritorialDeliveryMechanism": ["001"],
-          "TypesOfIntervention": ["001"]
+          "EconomicActivity": [
+            "001"
+          ],
+          "FormOfSupport": [
+            "001"
+          ],
+          "GenderEquality": [
+            "001"
+          ],
+          "RegionalAndSeaBasinStrategy": [
+            "001"
+          ],
+          "TerritorialDeliveryMechanism": [
+            "001"
+          ],
+          "TypesOfIntervention": [
+            "001"
+          ]
         }
       }
     ]
   },
   {
-    "code":"PO5",
-    "title":[
+    "code": "PO5",
+    "title": [
       {
-        "translation":"PO5 Citizens DE",
-        "language":"DE"
+        "translation": "PO5 Citizens DE",
+        "language": "DE"
       },
       {
-        "translation":"PO5 Citizens EN",
-        "language":"EN"
+        "translation": "PO5 Citizens EN",
+        "language": "EN"
       }
     ],
-    "objective":"PO5 - A Europe closer to citizens",
-    "specificObjectives":[
+    "objective": "PO5 - A Europe closer to citizens",
+    "specificObjectives": [
       {
-        "index": 0,
-        "code":"SO5.1",
-        "programmeObjectivePolicy":"Fostering the integrated and inclusive social, economic and environmental development, culture, natural heritage, sustainable tourism, and security in urban areas",
+        "code": "SO5.1",
+        "programmeObjectivePolicy": "Fostering the integrated and inclusive social, economic and environmental development, culture, natural heritage, sustainable tourism, and security in urban areas",
         "dimensionCodes": {
-          "EconomicActivity": ["001"],
-          "FormOfSupport": ["001"],
-          "GenderEquality": ["001"],
-          "RegionalAndSeaBasinStrategy": ["001"],
-          "TerritorialDeliveryMechanism": ["001"],
-          "TypesOfIntervention": ["001"]
+          "EconomicActivity": [
+            "001"
+          ],
+          "FormOfSupport": [
+            "001"
+          ],
+          "GenderEquality": [
+            "001"
+          ],
+          "RegionalAndSeaBasinStrategy": [
+            "001"
+          ],
+          "TerritorialDeliveryMechanism": [
+            "001"
+          ],
+          "TypesOfIntervention": [
+            "001"
+          ]
         }
       },
       {
-        "index": 1,
-        "code":"SO5.2",
-        "programmeObjectivePolicy":"Fostering the integrated and inclusive social, economic and environmental local development, culture, natural heritage, sustainable tourism and security, in areas other than urban areas",
+        "code": "SO5.2",
+        "programmeObjectivePolicy": "Fostering the integrated and inclusive social, economic and environmental local development, culture, natural heritage, sustainable tourism and security, in areas other than urban areas",
         "dimensionCodes": {
-          "EconomicActivity": ["001"],
-          "FormOfSupport": ["001"],
-          "GenderEquality": ["001"],
-          "RegionalAndSeaBasinStrategy": ["001"],
-          "TerritorialDeliveryMechanism": ["001"],
-          "TypesOfIntervention": ["001"]
+          "EconomicActivity": [
+            "001"
+          ],
+          "FormOfSupport": [
+            "001"
+          ],
+          "GenderEquality": [
+            "001"
+          ],
+          "RegionalAndSeaBasinStrategy": [
+            "001"
+          ],
+          "TerritorialDeliveryMechanism": [
+            "001"
+          ],
+          "TypesOfIntervention": [
+            "001"
+          ]
         }
       }
     ]
   },
   {
-    "code":"ISO12",
-    "title":[
+    "code": "ISO12",
+    "title": [
       {
-        "translation":"ISO12 Security DE",
-        "language":"DE"
+        "translation": "ISO12 Security DE",
+        "language": "DE"
       },
       {
-        "translation":"ISO12 Security EN",
-        "language":"EN"
+        "translation": "ISO12 Security EN",
+        "language": "EN"
       }
     ],
-    "objective":"ISO12 - A better cooperation governance and a safer and more secure Europe",
-    "specificObjectives":[
+    "objective": "ISO12 - A better cooperation governance and a safer and more secure Europe",
+    "specificObjectives": [
       {
-        "index": 2,
-        "code":"SO6.1",
-        "programmeObjectivePolicy":"Building up mutual trust, in particular by encouraging people-to-people actions",
+        "code": "SO6.1",
+        "programmeObjectivePolicy": "Building up mutual trust, in particular by encouraging people-to-people actions",
         "dimensionCodes": {
-          "EconomicActivity": ["001"],
-          "FormOfSupport": ["001"],
-          "GenderEquality": ["001"],
-          "RegionalAndSeaBasinStrategy": ["001"],
-          "TerritorialDeliveryMechanism": ["001"],
-          "TypesOfIntervention": ["001"]
+          "EconomicActivity": [
+            "001"
+          ],
+          "FormOfSupport": [
+            "001"
+          ],
+          "GenderEquality": [
+            "001"
+          ],
+          "RegionalAndSeaBasinStrategy": [
+            "001"
+          ],
+          "TerritorialDeliveryMechanism": [
+            "001"
+          ],
+          "TypesOfIntervention": [
+            "001"
+          ]
         }
       },
       {
-        "index": 5,
-        "code":"SO6.2",
-        "programmeObjectivePolicy":"Other actions to support a better cooperation governance",
+        "code": "SO6.2",
+        "programmeObjectivePolicy": "Other actions to support a better cooperation governance",
         "dimensionCodes": {
-          "EconomicActivity": ["001"],
-          "FormOfSupport": ["001"],
-          "GenderEquality": ["001"],
-          "RegionalAndSeaBasinStrategy": ["001"],
-          "TerritorialDeliveryMechanism": ["001"],
-          "TypesOfIntervention": ["001"]
+          "EconomicActivity": [
+            "001"
+          ],
+          "FormOfSupport": [
+            "001"
+          ],
+          "GenderEquality": [
+            "001"
+          ],
+          "RegionalAndSeaBasinStrategy": [
+            "001"
+          ],
+          "TerritorialDeliveryMechanism": [
+            "001"
+          ],
+          "TypesOfIntervention": [
+            "001"
+          ]
         }
       },
       {
-        "index": 6,
-        "code":"SO6.3",
-        "programmeObjectivePolicy":"Border crossing management",
+        "code": "SO6.3",
+        "programmeObjectivePolicy": "Border crossing management",
         "dimensionCodes": {
-          "EconomicActivity": ["001"],
-          "FormOfSupport": ["001"],
-          "GenderEquality": ["001"],
-          "RegionalAndSeaBasinStrategy": ["001"],
-          "TerritorialDeliveryMechanism": ["001"],
-          "TypesOfIntervention": ["001"]
+          "EconomicActivity": [
+            "001"
+          ],
+          "FormOfSupport": [
+            "001"
+          ],
+          "GenderEquality": [
+            "001"
+          ],
+          "RegionalAndSeaBasinStrategy": [
+            "001"
+          ],
+          "TerritorialDeliveryMechanism": [
+            "001"
+          ],
+          "TypesOfIntervention": [
+            "001"
+          ]
         }
       }
     ]
