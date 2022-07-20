@@ -7,6 +7,8 @@ import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.contracting.model.ManagementType
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingManagement
+import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoring
+import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoringAddDate
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.mockk.MockKAnnotations
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -14,6 +16,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
+import java.time.LocalDate
 import java.time.ZonedDateTime
 
 class ContractingValidatorTest : UnitTest() {
@@ -227,5 +230,32 @@ class ContractingValidatorTest : UnitTest() {
             validator.validateProjectStatusForModification(projectSummary)
         }
         assertEquals(MONITORING_ERROR, ex.i18nMessage.i18nKey)
+    }
+
+    @Test
+    fun `should throw ContractingDeniedException if too many additional dates were added`() {
+        val monitoring = ProjectContractingMonitoring(
+            projectId = projectID,
+            startDate = LocalDate.parse("2022-07-01"),
+            endDate = null,
+            addDates = listOf(
+                ProjectContractingMonitoringAddDate(projectID, 1, LocalDate.parse("2022-07-21")),
+                ProjectContractingMonitoringAddDate(projectID, 2, LocalDate.parse("2022-07-22")),
+                ProjectContractingMonitoringAddDate(projectID, 3, LocalDate.parse("2022-07-23")),
+                ProjectContractingMonitoringAddDate(projectID, 4, LocalDate.parse("2022-07-24")),
+                ProjectContractingMonitoringAddDate(projectID, 5, LocalDate.parse("2022-07-25")),
+                ProjectContractingMonitoringAddDate(projectID, 6, LocalDate.parse("2022-07-26")),
+                ProjectContractingMonitoringAddDate(projectID, 7, LocalDate.parse("2022-07-27")),
+                ProjectContractingMonitoringAddDate(projectID, 8, LocalDate.parse("2022-07-28")),
+                ProjectContractingMonitoringAddDate(projectID, 9, LocalDate.parse("2022-07-29")),
+                ProjectContractingMonitoringAddDate(projectID, 11, LocalDate.parse("2022-07-30")),
+                ProjectContractingMonitoringAddDate(projectID, 10, LocalDate.parse("2022-07-31"))
+            )
+        )
+
+        val ex = assertThrows<AppInputValidationException> {
+            validator.validateMonitoringInput(monitoring)
+        }
+        assertEquals(INPUT_ERROR, ex.i18nMessage.i18nKey)
     }
 }

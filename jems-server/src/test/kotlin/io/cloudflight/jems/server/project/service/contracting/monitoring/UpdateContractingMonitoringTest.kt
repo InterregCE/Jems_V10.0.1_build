@@ -6,6 +6,7 @@ import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.project.repository.ProjectPersistenceProvider
+import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.contracting.ContractingModificationDeniedException
 import io.cloudflight.jems.server.project.service.contracting.ContractingValidator
@@ -14,12 +15,14 @@ import io.cloudflight.jems.server.project.service.contracting.model.ContractingM
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoring
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoringAddDate
 import io.cloudflight.jems.server.project.service.contracting.monitoring.updateProjectContractingMonitoring.UpdateContractingMonitoring
+import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
@@ -33,7 +36,17 @@ class UpdateContractingMonitoringTest : UnitTest() {
 
     companion object {
         private const val projectId = 1L
+        private const val version = "2.0"
 
+        private val project = ProjectFull(
+            id = projectId,
+            customIdentifier = "identifier",
+            callSettings = mockk(),
+            acronym = "acronym",
+            applicant = mockk(),
+            projectStatus = mockk(),
+            duration = 11
+        )
         private val projectSummary = ProjectSummary(
             id = projectId,
             customIdentifier = "TSTCM",
@@ -47,8 +60,8 @@ class UpdateContractingMonitoringTest : UnitTest() {
         )
         private val monitoring = ProjectContractingMonitoring(
             projectId = projectId,
-            startDate = ZonedDateTime.parse("2022-07-01T10:00:00+02:00").toLocalDate(),
-            endDate = ZonedDateTime.parse("2022-07-10T10:00:00+02:00").toLocalDate(),
+            startDate = null,
+            endDate = null,
             typologyProv94 = ContractingMonitoringExtendedOption.Partly,
             typologyProv94Comment = "typologyProv94Comment",
             typologyProv95 = ContractingMonitoringExtendedOption.Yes,
@@ -72,6 +85,9 @@ class UpdateContractingMonitoringTest : UnitTest() {
     @MockK
     lateinit var projectPersistence: ProjectPersistenceProvider
 
+    @MockK
+    lateinit var versionPersistence: ProjectVersionPersistence
+
     @RelaxedMockK
     lateinit var validator: ContractingValidator
 
@@ -83,7 +99,7 @@ class UpdateContractingMonitoringTest : UnitTest() {
 
     @BeforeEach
     fun setup() {
-        clearMocks(auditPublisher)
+        clearMocks(auditPublisher, validator)
     }
 
     @Test
@@ -98,7 +114,7 @@ class UpdateContractingMonitoringTest : UnitTest() {
     }
 
     @Test
-    fun `add project management to contracted application`() {
+    fun `add project management to contracted application without startDate`() {
         every {
             projectPersistence.getProjectSummary(projectId)
         } returns projectSummary.copy(status = ApplicationStatus.CONTRACTED)
@@ -139,10 +155,35 @@ class UpdateContractingMonitoringTest : UnitTest() {
                 ProjectContractingMonitoringAddDate(projectId, 2, oldDate, "comment2")
             )
         )
-        every { contractingMonitoringPersistence.updateContractingMonitoring(monitoring) } returns monitoring
+        val monitoringNew = monitoring.copy(
+            startDate = ZonedDateTime.parse("2022-07-01T10:00:00+02:00").toLocalDate()
+        )
+        every { contractingMonitoringPersistence.updateContractingMonitoring(monitoringNew) } returns monitoringNew
+        every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns version
+        every { projectPersistence.getProject(projectId, version) } returns project
 
-        assertThat(updateContractingMonitoring.updateContractingMonitoring(projectId, monitoring))
-            .isEqualTo(monitoring)
+        assertThat(updateContractingMonitoring.updateContractingMonitoring(projectId, monitoringNew))
+            .isEqualTo(
+                ProjectContractingMonitoring(
+                    projectId = projectId,
+                    startDate = ZonedDateTime.parse("2022-07-01T10:00:00+02:00").toLocalDate(),
+                    endDate = ZonedDateTime.parse("2023-06-01T10:00:00+02:00").toLocalDate(),
+                    typologyProv94 = ContractingMonitoringExtendedOption.Partly,
+                    typologyProv94Comment = "typologyProv94Comment",
+                    typologyProv95 = ContractingMonitoringExtendedOption.Yes,
+                    typologyProv95Comment = "typologyProv95Comment",
+                    typologyStrategic = ContractingMonitoringOption.No,
+                    typologyStrategicComment = "typologyStrategicComment",
+                    typologyPartnership = ContractingMonitoringOption.Yes,
+                    typologyPartnershipComment = "typologyPartnershipComment",
+                    addDates = listOf(ProjectContractingMonitoringAddDate(
+                        projectId = projectId,
+                        number = 1,
+                        entryIntoForceDate = ZonedDateTime.parse("2022-07-22T10:00:00+02:00").toLocalDate(),
+                        comment = "comment"
+                    ))
+                )
+            )
         val event = slot<AuditCandidateEvent>()
         verify(exactly = 1) { auditPublisher.publishEvent(capture(event)) }
         assertThat(event.captured.auditCandidate).isEqualTo(
@@ -170,6 +211,19 @@ class UpdateContractingMonitoringTest : UnitTest() {
         every { projectPersistence.getProjectSummary(projectId) } returns projectSummary
         every {
             validator.validateProjectStatusForModification(projectSummary)
+        } throws ContractingModificationDeniedException()
+
+        assertThrows<ContractingModificationDeniedException> {
+            updateContractingMonitoring.updateContractingMonitoring(projectId, monitoring)
+        }
+    }
+
+    @Test
+    fun `add project management with too many additional dates`() {
+        every { projectPersistence.getProjectSummary(projectId) } returns projectSummary
+        every { validator.validateProjectStatusForModification(projectSummary) } returns Unit
+        every {
+            validator.validateMonitoringInput(monitoring)
         } throws ContractingModificationDeniedException()
 
         assertThrows<ContractingModificationDeniedException> {

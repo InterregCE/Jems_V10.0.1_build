@@ -5,7 +5,7 @@ import java.time.LocalDate
 data class ProjectContractingMonitoring(
     val projectId: Long,
     val startDate: LocalDate? = null,
-    val endDate: LocalDate? = null,
+    var endDate: LocalDate? = null,
 
     val typologyProv94: ContractingMonitoringExtendedOption? = null,
     val typologyProv94Comment: String? = null,

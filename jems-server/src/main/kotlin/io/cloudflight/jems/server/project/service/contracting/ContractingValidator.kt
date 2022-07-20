@@ -4,11 +4,16 @@ import io.cloudflight.jems.server.common.validator.EMAIL_REGEX
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingManagement
+import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoring
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import org.springframework.stereotype.Service
 
 @Service
 class ContractingValidator(private val validator: GeneralValidatorService) {
+
+    companion object {
+        const val MAX_NUMBER_OF_ADD_DATES = 10
+    }
 
     fun validateManagerContacts(projectManagers: List<ProjectContractingManagement>) {
         projectManagers.forEach { contact -> validateContact(contact) }
@@ -27,6 +32,13 @@ class ContractingValidator(private val validator: GeneralValidatorService) {
             throw ContractingModificationDeniedException()
         }
     }
+
+    fun validateMonitoringInput(monitoring: ProjectContractingMonitoring) =
+        validator.throwIfAnyIsInvalid(
+            validator.maxSize(
+                monitoring.addDates, MAX_NUMBER_OF_ADD_DATES, "addDates"
+            )
+        )
 
     private fun validateContact(managerContact: ProjectContractingManagement) {
         validator.throwIfAnyIsInvalid(

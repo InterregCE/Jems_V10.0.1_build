@@ -3,7 +3,9 @@ package io.cloudflight.jems.server.project.service.contracting.monitoring.update
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanSetProjectToContracted
 import io.cloudflight.jems.server.project.repository.ProjectPersistenceProvider
+import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.contracting.ContractingValidator
+import io.cloudflight.jems.server.project.service.contracting.fillEndDateWithDuration
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoring
 import io.cloudflight.jems.server.project.service.contracting.monitoring.ContractingMonitoringPersistence
 import io.cloudflight.jems.server.project.service.projectContractingMonitoringChanged
@@ -15,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional
 class UpdateContractingMonitoring(
     private val contractingMonitoringPersistence: ContractingMonitoringPersistence,
     private val projectPersistence: ProjectPersistenceProvider,
+    private val versionPersistence: ProjectVersionPersistence,
     private val validator: ContractingValidator,
     private val auditPublisher: ApplicationEventPublisher
 ): UpdateContractingMonitoringInteractor {
@@ -28,12 +31,16 @@ class UpdateContractingMonitoring(
     ): ProjectContractingMonitoring {
         projectPersistence.getProjectSummary(projectId).let { projectSummary ->
             validator.validateProjectStatusForModification(projectSummary)
+            validator.validateMonitoringInput(contractMonitoring)
 
             // load old data for audit once the project is already contracted
             val oldMonitoring = contractingMonitoringPersistence.getContractingMonitoring(projectId)
             val updated = contractingMonitoringPersistence.updateContractingMonitoring(
                 contractMonitoring.copy(projectId = projectId)
-            )
+            ).fillEndDateWithDuration(resolveDuration = {
+                versionPersistence.getLatestApprovedOrCurrent(projectId = projectId)
+                    .let { projectPersistence.getProject(projectId = projectId, version = it).duration }
+            })
 
             if (projectSummary.status.isAlreadyContracted()) {
                 auditPublisher.publishEvent(
