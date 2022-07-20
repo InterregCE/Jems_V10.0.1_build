@@ -1,6 +1,6 @@
 <div>
-    <jems-form (save)="doSomething()"
-               (discard)="resetForm()" jemsFormLayout [formGroup]="decisionForm">
+    <jems-form *ngIf="data$ | async as data" (save)="onSubmit()"
+               (discard)="resetForm(data.projectContractingMonitoring)" jemsFormLayout [formGroup]="decisionForm">
         <div jemsMultiColumnRow>
             <mat-form-field jemsFormFieldWidth="half">
                 <mat-label>{{'project.application.contract.monitoring.project.start.date' | translate | dateFormatInfo}}</mat-label>
@@ -11,7 +11,6 @@
                 <mat-error>
                     <jems-form-field-errors
                             [errors]="decisionForm?.controls?.startDate?.errors">
-    <!--                        [messages]="dateErrors">-->
                     </jems-form-field-errors>
                 </mat-error>
             </mat-form-field>
@@ -25,7 +24,6 @@
                 <mat-error>
                     <jems-form-field-errors
                             [errors]="decisionForm?.controls?.endDate?.errors">
-    <!--                        [messages]="dateErrors">-->
                     </jems-form-field-errors>
                 </mat-error>
             </mat-form-field>
@@ -41,27 +39,17 @@
                 <mat-error>
                     <jems-form-field-errors
                             [errors]="decisionForm?.controls?.entryIntoForceDate?.errors">
-    <!--                        [messages]="dateErrors">-->
                     </jems-form-field-errors>
                 </mat-error>
             </mat-form-field>
 
-            <mat-form-field jemsFormFieldWidth="half">
-                <mat-label>{{'project.application.contract.monitoring.project.entry.into.force.comment' | translate}}</mat-label>
-                <input #entryIntoForceCommentField formControlName="entryIntoForceComment" matInput name="entryIntoForceComment">
-                <mat-hint [jemsHintFor]="entryIntoForceCommentField"
-                          [hide]="decisionForm?.controls?.entryIntoForceComment?.errors !== null">
-                    <jems-text-hint [currentLength]="entryIntoForceCommentField?.value?.length"
-                                    [maxLength]="200"></jems-text-hint>
-                </mat-hint>
-                <mat-error>
-                    <jems-form-field-errors
-                            [errors]="decisionForm?.controls?.entryIntoForceComment?.errors">
-    <!--                        [messages]="inputErrorMessages"-->
-                    >
-                    </jems-form-field-errors>
-                </mat-error>
-            </mat-form-field>
+            <jems-expandable-textarea [control]="decisionForm.controls.entryIntoForceComment"
+                                      [errors]="decisionForm.controls.entryIntoForceComment.errors"
+                                      [minRows]="1"
+                                      [characterLimit]="200"
+                                      [label]="'project.application.contract.monitoring.project.entry.into.force.comment' | translate"
+                                      jemsFormFieldWidth="half">
+            </jems-expandable-textarea>
         </div>
 
         <mat-table *ngIf="tableData.length > 0" jemsNoWidthLimit
@@ -83,7 +71,6 @@
                         <mat-error>
                             <jems-form-field-errors
                                     [errors]="decisionForm?.controls?.decisionDate?.errors">
-                                <!--                            [messages]="dateErrors">-->
                             </jems-form-field-errors>
                         </mat-error>
                     </mat-form-field>
@@ -94,22 +81,14 @@
                 </mat-header-cell>
 
                 <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                    <mat-form-field jemsFormFieldWidth="full">
-                        <mat-label>{{'project.application.contract.monitoring.project.entry.into.force.comment' | translate}}</mat-label>
-                        <input #additionalEntryIntoForceCommentField formControlName="additionalEntryIntoForceComment" matInput name="additionalEntryIntoForceComment">
-                        <mat-hint [jemsHintFor]="additionalEntryIntoForceCommentField"
-                                  [hide]="decisionForm?.controls?.additionalEntryIntoForceComment?.errors !== null">
-                            <jems-text-hint [currentLength]="additionalEntryIntoForceCommentField?.value?.length"
-                                            [maxLength]="200"></jems-text-hint>
-                        </mat-hint>
-                        <mat-error>
-                            <jems-form-field-errors
-                                    [errors]="decisionForm?.controls?.additionalEntryIntoForceComment?.errors">
-                                <!--                            [messages]="inputErrorMessages"-->
-                                >
-                            </jems-form-field-errors>
-                        </mat-error>
-                    </mat-form-field>
+                    <jems-expandable-textarea [control]="control.get('additionalEntryIntoForceComment')"
+                                              [errors]="control.get('additionalEntryIntoForceComment').errors"
+                                              [minRows]="1"
+                                              [characterLimit]="200"
+                                              [label]="'project.application.contract.monitoring.project.entry.into.force.comment' | translate"
+                                              jemsFormFieldWidth="full">
+                    </jems-expandable-textarea>
+
                 </mat-cell>
             </ng-container>
 
@@ -118,7 +97,7 @@
 
         </mat-table>
 
-        <button *ngIf="decisionForm.enabled && !isAdditionalDataActivated && tableData.length < 11"
+        <button *ngIf="decisionForm.enabled && !isAdditionalDataActivated && tableData.length < 10"
                 mat-stroked-button type="button" class="mt-2 mb-2"
                 (click)="addAdditionalEntryIntoForceData()">
             <mat-icon>add</mat-icon>
@@ -137,18 +116,18 @@
             </div>
 
             <div>
-                <span>{{'project.application.contract.monitoring.project.topology.question.one' | translate}}</span>
+                <span>{{'project.application.contract.monitoring.project.topology.question.typologyProv94' | translate}}</span>
                 <div>
-                    <mat-button-toggle-group formControlName="answer1">
-                        <mat-button-toggle [value]="true">{{'common.yes' | translate}}</mat-button-toggle>
-                        <mat-button-toggle [value]="true">{{'common.partly' | translate}}</mat-button-toggle>
-                        <mat-button-toggle [value]="false">{{'common.no' | translate}}</mat-button-toggle>
+                    <mat-button-toggle-group formControlName="typologyProv94">
+                        <mat-button-toggle [value]="TypologyProv94Enum.Yes">{{'common.yes' | translate}}</mat-button-toggle>
+                        <mat-button-toggle [value]="TypologyProv94Enum.Partly">{{'common.partly' | translate}}</mat-button-toggle>
+                        <mat-button-toggle [value]="TypologyProv94Enum.No">{{'common.no' | translate}}</mat-button-toggle>
                     </mat-button-toggle-group>
                 </div>
                 <div>
                     <jems-expandable-textarea jemsMultiColumnRow class="mt-2"
-                                              [control]="decisionForm?.controls?.justification1"
-                                              [errors]="decisionForm?.controls?.justification1?.errors"
+                                              [control]="decisionForm?.controls?.typologyProv94Comment"
+                                              [errors]="decisionForm?.controls?.typologyProv94Comment?.errors"
                                               [characterLimit]="1000"
                                               [minRows]="1"
                                               [maxRows]="30"
@@ -158,18 +137,18 @@
             </div>
 
             <div>
-                <span>{{'project.application.contract.monitoring.project.topology.question.two' | translate}}</span>
+                <span>{{'project.application.contract.monitoring.project.topology.question.typologyProv95' | translate}}</span>
                 <div>
-                    <mat-button-toggle-group formControlName="answer2">
-                        <mat-button-toggle [value]="true">{{'common.yes' | translate}}</mat-button-toggle>
-                        <mat-button-toggle [value]="true">{{'common.partly' | translate}}</mat-button-toggle>
-                        <mat-button-toggle [value]="false">{{'common.no' | translate}}</mat-button-toggle>
+                    <mat-button-toggle-group formControlName="typologyProv95">
+                        <mat-button-toggle [value]="TypologyProv95Enum.Yes">{{'common.yes' | translate}}</mat-button-toggle>
+                        <mat-button-toggle [value]="TypologyProv95Enum.Partly">{{'common.partly' | translate}}</mat-button-toggle>
+                        <mat-button-toggle [value]="TypologyProv95Enum.No">{{'common.no' | translate}}</mat-button-toggle>
                     </mat-button-toggle-group>
                 </div>
                 <div>
                     <jems-expandable-textarea jemsMultiColumnRow class="mt-2"
-                                              [control]="decisionForm?.controls?.justification2"
-                                              [errors]="decisionForm?.controls?.justification2?.errors"
+                                              [control]="decisionForm?.controls?.typologyProv95Comment"
+                                              [errors]="decisionForm?.controls?.typologyProv95Comment?.errors"
                                               [characterLimit]="1000"
                                               [minRows]="1"
                                               [maxRows]="30"
@@ -179,17 +158,17 @@
             </div>
 
             <div>
-                <span>{{'project.application.contract.monitoring.project.topology.question.three' | translate}}</span>
+                <span>{{'project.application.contract.monitoring.project.topology.question.typologyStrategic' | translate}}</span>
                 <div>
-                    <mat-button-toggle-group formControlName="answer3">
-                        <mat-button-toggle [value]="true">{{'common.yes' | translate}}</mat-button-toggle>
-                        <mat-button-toggle [value]="false">{{'common.no' | translate}}</mat-button-toggle>
+                    <mat-button-toggle-group formControlName="typologyStrategic">
+                        <mat-button-toggle [value]="TypologyStrategicEnum.Yes">{{'common.yes' | translate}}</mat-button-toggle>
+                        <mat-button-toggle [value]="TypologyStrategicEnum.No">{{'common.no' | translate}}</mat-button-toggle>
                     </mat-button-toggle-group>
                 </div>
                 <div>
                     <jems-expandable-textarea jemsMultiColumnRow class="mt-2"
-                                              [control]="decisionForm?.controls?.justification3"
-                                              [errors]="decisionForm?.controls?.justification3?.errors"
+                                              [control]="decisionForm?.controls?.typologyStrategicComment"
+                                              [errors]="decisionForm?.controls?.typologyStrategicComment?.errors"
                                               [characterLimit]="1000"
                                               [minRows]="1"
                                               [maxRows]="30"
@@ -199,17 +178,17 @@
             </div>
 
             <div>
-                <span>{{'project.application.contract.monitoring.project.topology.question.four' | translate}}</span>
+                <span>{{'project.application.contract.monitoring.project.topology.question.typologyPartnership' | translate}}</span>
                 <div>
-                    <mat-button-toggle-group formControlName="answer4">
-                        <mat-button-toggle [value]="true">{{'common.yes' | translate}}</mat-button-toggle>
-                        <mat-button-toggle [value]="false">{{'common.no' | translate}}</mat-button-toggle>
+                    <mat-button-toggle-group formControlName="typologyPartnership">
+                        <mat-button-toggle [value]="TypologyPartnershipEnum.Yes">{{'common.yes' | translate}}</mat-button-toggle>
+                        <mat-button-toggle [value]="TypologyPartnershipEnum.No">{{'common.no' | translate}}</mat-button-toggle>
                     </mat-button-toggle-group>
                 </div>
                 <div>
                     <jems-expandable-textarea jemsMultiColumnRow class="mt-2"
-                                              [control]="decisionForm?.controls?.justification4"
-                                              [errors]="decisionForm?.controls?.justification4?.errors"
+                                              [control]="decisionForm?.controls?.typologyPartnershipComment"
+                                              [errors]="decisionForm?.controls?.typologyPartnershipComment?.errors"
                                               [characterLimit]="1000"
                                               [minRows]="1"
                                               [maxRows]="30"
