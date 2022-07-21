@@ -2,7 +2,12 @@ import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {UntilDestroy} from '@ngneat/until-destroy';
 import {FormService} from '@common/components/section/form/form.service';
 import {combineLatest, Observable} from 'rxjs';
-import {ExpenditureCostCategoryBreakdownDTO, ProjectPartnerReportUnitCostDTO} from '@cat/api';
+import {
+  CallFundRateDTO,
+  ExpenditureCoFinancingBreakdownDTO,
+  ExpenditureCostCategoryBreakdownDTO,
+  ProjectPartnerReportUnitCostDTO
+} from '@cat/api';
 import {map} from 'rxjs/operators';
 import {
   PartnerReportFinancialOverviewStoreService
@@ -20,7 +25,9 @@ import CategoryEnum = ProjectPartnerReportUnitCostDTO.CategoryEnum;
 export class PartnerReportFinancialOverviewTabComponent {
 
   data$: Observable<{
+    perCoFinancing: ExpenditureCoFinancingBreakdownDTO;
     perCostCategory: ExpenditureCostCategoryBreakdownDTO;
+    funds: CallFundRateDTO[];
     allowedCostCategories: Map<CategoryEnum | 'LumpSum' | 'UnitCost', boolean>;
   }>;
 
@@ -28,11 +35,15 @@ export class PartnerReportFinancialOverviewTabComponent {
     private financialOverviewStore: PartnerReportFinancialOverviewStoreService,
   ) {
     this.data$ = combineLatest([
+      financialOverviewStore.perCoFinancing$,
       financialOverviewStore.perCostCategory$,
+      financialOverviewStore.callFunds$,
       financialOverviewStore.allowedCostCategories$,
     ]).pipe(
-      map(([perCostCategory, allowedCostCategories]) => ({
+      map(([perCoFinancing, perCostCategory, funds, allowedCostCategories]) => ({
+        perCoFinancing,
         perCostCategory,
+        funds,
         allowedCostCategories,
       })),
     );

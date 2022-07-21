@@ -13,6 +13,7 @@ import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportCoFi
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportCoFinancingIdEntity
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
+import io.cloudflight.jems.server.project.entity.report.financialOverview.ReportProjectPartnerExpenditureCoFinancingEntity
 import io.cloudflight.jems.server.project.entity.report.financialOverview.ReportProjectPartnerExpenditureCostCategoryEntity
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageActivityDeliverableEntity
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageActivityEntity
@@ -24,6 +25,8 @@ import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerRep
 import io.cloudflight.jems.server.project.service.report.model.create.ProjectPartnerReportCreate
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSummary
+import io.cloudflight.jems.server.project.service.report.model.create.PreviouslyReportedCoFinancing
+import io.cloudflight.jems.server.project.service.report.model.create.PreviouslyReportedFund
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
 import io.cloudflight.jems.server.project.service.report.model.financialOverview.costCategory.ReportExpenditureCostCategory
 import io.cloudflight.jems.server.project.service.report.model.workPlan.ProjectPartnerReportWorkPackage
@@ -126,20 +129,46 @@ fun ProjectPartnerReportCreate.toEntity(
     ),
 )
 
-fun List<ProjectPartnerCoFinancing>.toEntity(
+fun List<PreviouslyReportedFund>.toEntity(
     reportEntity: ProjectPartnerReportEntity,
     programmeFundResolver: (Long) -> ProgrammeFundEntity,
 ): List<ProjectPartnerReportCoFinancingEntity> {
-    return this.mapIndexed { index, coFinancing ->
+    return mapIndexed { index, fund ->
         ProjectPartnerReportCoFinancingEntity(
-            id = ProjectPartnerReportCoFinancingIdEntity(
-                report = reportEntity,
-                fundSortNumber = index.plus(1),
-            ),
-            programmeFund = coFinancing.fund?.let { fund -> programmeFundResolver.invoke(fund.id) },
-            percentage = coFinancing.percentage,
+            id = ProjectPartnerReportCoFinancingIdEntity(reportEntity, index.plus(1)),
+            programmeFund = fund.fundId?.let { programmeFundResolver.invoke(it) },
+            percentage = fund.percentage,
+            total = fund.total,
+            current = ZERO,
+            previouslyReported = fund.previouslyReported,
         )
     }
+}
+
+fun PreviouslyReportedCoFinancing.toEntity(
+    reportEntity: ProjectPartnerReportEntity,
+): ReportProjectPartnerExpenditureCoFinancingEntity {
+    return ReportProjectPartnerExpenditureCoFinancingEntity(
+        reportEntity = reportEntity,
+
+        partnerContributionTotal = totalPartner,
+        publicContributionTotal = totalPublic,
+        automaticPublicContributionTotal = totalAutoPublic,
+        privateContributionTotal = totalPrivate,
+        sumTotal = totalSum,
+
+        partnerContributionCurrent = ZERO,
+        publicContributionCurrent = ZERO,
+        automaticPublicContributionCurrent = ZERO,
+        privateContributionCurrent = ZERO,
+        sumCurrent = ZERO,
+
+        partnerContributionPreviouslyReported = previouslyReportedPartner,
+        publicContributionPreviouslyReported = previouslyReportedPublic,
+        automaticPublicContributionPreviouslyReported = previouslyReportedAutoPublic,
+        privateContributionPreviouslyReported = previouslyReportedPrivate,
+        sumPreviouslyReported = previouslyReportedSum,
+    )
 }
 
 fun List<ProjectPartnerReportWorkPackageEntity>.toModel(

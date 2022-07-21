@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.service.report.model.financialOverview
+package io.cloudflight.jems.server.project.service.report.model.financialOverview.costCategory
 
 import java.math.BigDecimal
 

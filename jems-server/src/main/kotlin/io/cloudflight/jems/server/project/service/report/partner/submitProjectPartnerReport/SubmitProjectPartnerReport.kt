@@ -3,19 +3,27 @@ package io.cloudflight.jems.server.project.service.report.partner.submitProjectP
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.currency.repository.CurrencyPersistence
 import io.cloudflight.jems.server.project.authorization.CanEditPartnerReport
+import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
+import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSummary
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportExpenditureCost
+import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectReportContributionPersistence
+import io.cloudflight.jems.server.project.service.report.partner.contribution.extractOverview
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectReportExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.fillCurrencyRates
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureCostCategoryPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.generateCoFinCalculationInputData
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.getCurrentFrom
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown.calculateCurrent
 import io.cloudflight.jems.server.project.service.report.partnerReportSubmitted
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.ZonedDateTime
 
@@ -26,6 +34,8 @@ class SubmitProjectPartnerReport(
     private val currencyPersistence: CurrencyPersistence,
     private val partnerPersistence: PartnerPersistence,
     private val reportExpenditureCostCategoryPersistence: ProjectReportExpenditureCostCategoryPersistence,
+    private val reportExpenditureCoFinancingPersistence: ProjectReportExpenditureCoFinancingPersistence,
+    private val reportContributionPersistence: ProjectReportContributionPersistence,
     private val auditPublisher: ApplicationEventPublisher,
 ) : SubmitProjectPartnerReportInteractor {
 
@@ -33,9 +43,19 @@ class SubmitProjectPartnerReport(
     @Transactional
     @ExceptionWrapper(SubmitProjectPartnerReportException::class)
     override fun submit(partnerId: Long, reportId: Long): ProjectPartnerReportSummary {
-        validateReportIsStillDraft(partnerId = partnerId, reportId = reportId)
+        val report = reportPersistence.getPartnerReportById(partnerId = partnerId, reportId = reportId)
+        validateReportIsStillDraft(report)
+
         val expenditures = validateExpendituresAndSaveCurrencyRates(partnerId = partnerId, reportId = reportId)
-        saveExpenditureCostCategory(partnerId = partnerId, reportId, expenditures)
+        val costCategories = reportExpenditureCostCategoryPersistence.getCostCategories(partnerId = partnerId, reportId)
+        val currentCostCategories = expenditures.calculateCurrent(options = costCategories.options)
+
+        saveCurrentCostCategories(currentCostCategories, partnerId = partnerId, reportId)
+        saveCurrentCoFinancing(
+            currentExpenditure = currentCostCategories.sum,
+            totalEligibleBudget = costCategories.totalsFromAF.sum,
+            report = report, partnerId = partnerId,
+        )
 
         return reportPersistence.submitReportById(
             partnerId = partnerId,
@@ -52,8 +72,7 @@ class SubmitProjectPartnerReport(
         }.toSummary()
     }
 
-    private fun validateReportIsStillDraft(partnerId: Long, reportId: Long) {
-        val report = reportPersistence.getPartnerReportById(partnerId = partnerId, reportId = reportId)
+    private fun validateReportIsStillDraft(report: ProjectPartnerReport) {
         if (report.status.isClosed())
             throw ReportAlreadyClosed()
     }
@@ -78,12 +97,33 @@ class SubmitProjectPartnerReport(
         )
     }
 
-    private fun saveExpenditureCostCategory(partnerId: Long, reportId: Long, expenditures: List<ProjectPartnerReportExpenditureCost>) {
-        val options = reportExpenditureCostCategoryPersistence.getCostCategories(partnerId = partnerId, reportId).options
+    private fun saveCurrentCostCategories(currentCostCategories: BudgetCostsCalculationResultFull, partnerId: Long, reportId: Long) {
         reportExpenditureCostCategoryPersistence.updateCurrentlyReportedValues(
             partnerId = partnerId,
             reportId = reportId,
-            currentlyReported = expenditures.calculateCurrent(options),
+            currentlyReported = currentCostCategories,
+        )
+    }
+
+    private fun saveCurrentCoFinancing(
+        currentExpenditure: BigDecimal,
+        totalEligibleBudget: BigDecimal,
+        report: ProjectPartnerReport,
+        partnerId: Long,
+    ) {
+        val contributions = reportContributionPersistence
+            .getPartnerReportContribution(partnerId, reportId = report.id).extractOverview()
+
+        reportExpenditureCoFinancingPersistence.updateCurrentlyReportedValues(
+            partnerId = partnerId,
+            reportId = report.id,
+            currentlyReported = getCurrentFrom(
+                contributions.generateCoFinCalculationInputData(
+                    totalEligibleBudget = totalEligibleBudget,
+                    currentExpenditure = currentExpenditure,
+                    funds = report.identification.coFinancing,
+                )
+            ),
         )
     }
 

@@ -1,24 +1,35 @@
 package io.cloudflight.jems.server.project.service.report.partner.submitProjectPartnerReport
 
 import io.cloudflight.jems.api.audit.dto.AuditAction
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO.MainFund
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.currency.repository.CurrencyPersistence
 import io.cloudflight.jems.server.currency.service.model.CurrencyConversion
+import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus.AutomaticPublic
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus.Private
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus.Public
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.ReportStatus
+import io.cloudflight.jems.server.project.service.report.model.contribution.withoutCalculations.ProjectPartnerReportEntityContribution
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ReportBudgetCategory
+import io.cloudflight.jems.server.project.service.report.model.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.model.financialOverview.costCategory.ReportExpenditureCostCategory
+import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectReportContributionPersistence
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectReportExpenditurePersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureCostCategoryPersistence
-import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectReportIdentificationPersistence
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -34,6 +45,7 @@ import org.springframework.context.ApplicationEventPublisher
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.ZonedDateTime
+import java.util.*
 
 internal class SubmitProjectPartnerReportTest : UnitTest() {
 
@@ -87,6 +99,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
                 staffCostsFlatRate = null,
                 otherCostsOnStaffCostsFlatRate = null,
             )
+            every { it.totalsFromAF.sum } returns BigDecimal.valueOf(500L)
         }
 
         private val expectedPersistedExpenditureCostCategory = BudgetCostsCalculationResultFull(
@@ -101,6 +114,51 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             unitCost = BigDecimal.ZERO,
             sum = BigDecimal.valueOf(1262, 2),
         )
+
+        private fun fund(id: Long): ProgrammeFund {
+            val fundMock = mockk<ProgrammeFund>()
+            every { fundMock.id } returns id
+            return fundMock
+        }
+
+        private fun contrib(
+            status: ProjectPartnerContributionStatus,
+            amount: BigDecimal,
+            prev: BigDecimal,
+            current: BigDecimal,
+        ) = ProjectPartnerReportEntityContribution(
+            legalStatus = status,
+            amount = amount,
+            previouslyReported = prev,
+            currentlyReported = current,
+            /* not important: */
+            attachment = null,
+            createdInThisReport = true,
+            historyIdentifier = UUID.randomUUID(),
+            id = 0L,
+            idFromApplicationForm = null,
+            sourceOfContribution = null,
+        )
+
+        private val partnerContribution = listOf(
+            contrib(Public, amount = BigDecimal.valueOf(30), prev = BigDecimal.valueOf(3), current = BigDecimal.valueOf(9)),
+            contrib(AutomaticPublic, amount = BigDecimal.valueOf(40), prev = BigDecimal.valueOf(4), current = BigDecimal.valueOf(13)),
+            contrib(Private, amount = BigDecimal.valueOf(50), prev = BigDecimal.valueOf(5), current = BigDecimal.valueOf(20)),
+        )
+
+        private val expectedCoFinancing = ReportExpenditureCoFinancingColumn(
+            funds = mapOf(
+                29L to BigDecimal.valueOf(176, 2),
+                35L to BigDecimal.valueOf(796, 2),
+                null to BigDecimal.valueOf(289, 2),
+            ),
+            partnerContribution = BigDecimal.valueOf(289, 2),
+            publicContribution = BigDecimal.valueOf(75, 2),
+            automaticPublicContribution = BigDecimal.valueOf(100, 2),
+            privateContribution = BigDecimal.valueOf(126, 2),
+            sum = BigDecimal.valueOf(1262, 2),
+        )
+
     }
 
     @MockK
@@ -119,6 +177,12 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
     lateinit var reportExpenditureCostCategoryPersistence: ProjectReportExpenditureCostCategoryPersistence
 
     @MockK
+    lateinit var reportExpenditureCoFinancingPersistence: ProjectReportExpenditureCoFinancingPersistence
+
+    @MockK
+    lateinit var reportContributionPersistence: ProjectReportContributionPersistence
+
+    @MockK
     lateinit var auditPublisher: ApplicationEventPublisher
 
     @InjectMockKs
@@ -135,8 +199,12 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
     fun submit() {
         val report = mockk<ProjectPartnerReport>()
         every { report.status } returns ReportStatus.Draft
-
-        val submissionTime = slot<ZonedDateTime>()
+        every { report.id } returns 35L
+        every { report.identification.coFinancing } returns listOf(
+            ProjectPartnerCoFinancing(MainFund, fund(id = 29L), percentage = BigDecimal.valueOf(1397, 2)),
+            ProjectPartnerCoFinancing(MainFund, fund(id = 35L), percentage = BigDecimal.valueOf(6312, 2)),
+            ProjectPartnerCoFinancing(PartnerContribution, null, percentage = BigDecimal.valueOf(2291, 2)),
+        )
 
         every { reportPersistence.getPartnerReportById(PARTNER_ID, 35L) } returns report
 
@@ -157,6 +225,11 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             .updateCurrentlyReportedValues(PARTNER_ID, reportId = 35L, capture(expenditureCcSlot))
         } answers { }
 
+        every { reportContributionPersistence.getPartnerReportContribution(PARTNER_ID, reportId = 35L) } returns partnerContribution
+        val coFinSlot = slot<ReportExpenditureCoFinancingColumn>()
+        every { reportExpenditureCoFinancingPersistence.updateCurrentlyReportedValues(PARTNER_ID, reportId = 35L, capture(coFinSlot)) } answers { }
+
+        val submissionTime = slot<ZonedDateTime>()
         every { reportPersistence.submitReportById(any(), any(), capture(submissionTime)) } returns mockedResult
         every { partnerPersistence.getProjectIdForPartnerId(PARTNER_ID, "5.6.0") } returns PROJECT_ID
 
@@ -183,6 +256,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             ),
         )
         assertThat(expenditureCcSlot.captured).isEqualTo(expectedPersistedExpenditureCostCategory)
+        assertThat(coFinSlot.captured).isEqualTo(expectedCoFinancing)
     }
 
     @Test

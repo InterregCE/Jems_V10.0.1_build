@@ -1,7 +1,9 @@
 import {Injectable} from '@angular/core';
 import {combineLatest, Observable, of} from 'rxjs';
 import {
+  CallFundRateDTO,
   CallService,
+  ExpenditureCoFinancingBreakdownDTO,
   ExpenditureCostCategoryBreakdownDTO,
   ProjectPartnerReportExpenditureCostsService,
   ProjectPartnerReportFinancialOverviewService,
@@ -17,7 +19,9 @@ import CategoryEnum = ProjectPartnerReportUnitCostDTO.CategoryEnum;
 @Injectable({providedIn: 'root'})
 export class PartnerReportFinancialOverviewStoreService {
 
+  perCoFinancing$: Observable<ExpenditureCoFinancingBreakdownDTO>;
   perCostCategory$: Observable<ExpenditureCostCategoryBreakdownDTO>;
+  callFunds$: Observable<CallFundRateDTO[]>;
   allowedCostCategories$: Observable<Map<ProjectPartnerReportUnitCostDTO.CategoryEnum | 'LumpSum' | 'UnitCost', boolean>>;
 
   constructor(
@@ -27,8 +31,23 @@ export class PartnerReportFinancialOverviewStoreService {
     private callService: CallService,
     private partnerReportExpenditureCostsService: ProjectPartnerReportExpenditureCostsService,
   ) {
+    this.perCoFinancing$ = this.perCoFinancing();
     this.perCostCategory$ = this.perCostCategory();
+    this.callFunds$ = this.callFunds();
     this.allowedCostCategories$ = this.allowedCostCategories();
+  }
+
+  private perCoFinancing(): Observable<ExpenditureCoFinancingBreakdownDTO> {
+    return combineLatest([
+      this.partnerReportDetailPageStore.partnerId$,
+      this.partnerReportDetailPageStore.partnerReportId$,
+    ])
+      .pipe(
+        switchMap(([partnerId, reportId]) =>
+          this.financialOverviewService.getCoFinancingBreakdown(partnerId as number, reportId)
+        ),
+        tap(data => Log.info('Fetched overview breakdown per co-financing', this, data)),
+      );
   }
 
   private perCostCategory(): Observable<ExpenditureCostCategoryBreakdownDTO> {
@@ -41,6 +60,18 @@ export class PartnerReportFinancialOverviewStoreService {
           this.financialOverviewService.getCostCategoriesBreakdown(partnerId as number, reportId)
         ),
         tap(data => Log.info('Fetched overview breakdown per cost category', this, data)),
+      );
+  }
+
+  private callFunds(): Observable<CallFundRateDTO[]> {
+    return combineLatest([
+      this.projectStore.projectCall$,
+    ])
+      .pipe(
+        map(([call]) => call.callId),
+        switchMap(callId => this.callService.getCallById(callId)),
+        map(call => call.funds),
+        tap(data => Log.info('Fetched call funds for financial overview', this, data)),
       );
   }
 

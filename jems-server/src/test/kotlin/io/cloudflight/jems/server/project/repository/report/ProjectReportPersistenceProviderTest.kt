@@ -29,8 +29,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
-import java.math.BigDecimal.ONE
-import java.math.BigDecimal.TEN
+import java.math.BigDecimal.*
 import java.time.ZonedDateTime
 
 class ProjectReportPersistenceProviderTest : UnitTest() {
@@ -137,11 +136,17 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
                 ProjectPartnerReportCoFinancingIdEntity(report = report, fundSortNumber = 1),
                 programmeFund = programmeFundEntity,
                 percentage = ONE,
+                total = ZERO,
+                current = ONE,
+                previouslyReported = TEN,
             ),
             ProjectPartnerReportCoFinancingEntity(
                 ProjectPartnerReportCoFinancingIdEntity(report = report, fundSortNumber = 1),
                 programmeFund = null,
                 percentage = TEN,
+                total = TEN,
+                current = ZERO,
+                previouslyReported = ONE,
             ),
         )
 

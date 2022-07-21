@@ -19,5 +19,4 @@ data class PartnerReportIdentificationCreate(
     val country: String?,
     val countryCode: String?,
     var currency: String? = null,
-    var coFinancing: List<ProjectPartnerCoFinancing>
 )

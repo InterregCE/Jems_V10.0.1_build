@@ -1,0 +1,17 @@
+mat-table {
+  overflow: auto;
+}
+
+mat-header-row {
+  border-bottom: none;
+}
+mat-header-cell {
+  border-bottom: .0625rem solid var(--table-border-color);
+}
+
+mat-footer-row {
+  border-top: none !important;
+}
+mat-footer-cell {
+  border-top: .0625rem solid var(--table-border-color);
+}

@@ -159,6 +159,9 @@ import { ContractMonitoringExtensionComponent } from './project-application/cont
 import {
   ContractingFilesComponent
 } from '@project/project-application/contract-monitoring/contracting-files/contracting-files.component';
+import {
+  PartnerBreakdownCoFinancingComponent
+} from '@project/project-application/report/partner-report-detail-page/partner-report-financial-overview-tab/partner-breakdown-co-financing/partner-breakdown-co-financing.component';
 
 @NgModule({
   declarations: [
@@ -279,6 +282,7 @@ import {
     PartnerReportExpendituresTabComponent,
     PartnerReportFinancialOverviewTabComponent,
     PartnerBreakdownCostCategoryComponent,
+    PartnerBreakdownCoFinancingComponent,
     PartnerActionsCellComponent,
     AssessmentAndDecisionChecklistPageComponent,
     PartnerReportAnnexesTabComponent,

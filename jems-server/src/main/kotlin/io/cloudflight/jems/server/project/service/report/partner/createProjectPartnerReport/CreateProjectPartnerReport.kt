@@ -67,12 +67,10 @@ class CreateProjectPartnerReport(
             version = version,
         )
 
-        val coFinancing = partnerCoFinancingPersistence.getCoFinancingAndContributions(partnerId, version)
         val partner = projectPartnerPersistence.getById(partnerId, version)
         val identification = generateReportIdentification(
             partner = partner,
             project = project,
-            finances = coFinancing.finances,
             currencyResolver = { currencyPersistence.getCurrencyForCountry(it) },
         )
 
@@ -84,7 +82,7 @@ class CreateProjectPartnerReport(
             projectId = projectId,
             partner = partner.toSummary(),
             version = version,
-            partnerContributions = coFinancing.partnerContributions,
+            coFinancing = partnerCoFinancingPersistence.getCoFinancingAndContributions(partnerId, version),
         )
 
         val report = ProjectPartnerReportCreate(
@@ -116,15 +114,8 @@ class CreateProjectPartnerReport(
     private fun generateReportIdentification(
         partner: ProjectPartnerDetail,
         project: ProjectFull,
-        finances: List<ProjectPartnerCoFinancing>,
         currencyResolver: (String) -> String?,
-    ): PartnerReportIdentificationCreate {
-        return partner.toReportIdentification(
-                project = project,
-                finances = finances,
-                currencyResolver = currencyResolver,
-            )
-    }
+    ) = partner.toReportIdentification(project = project, currencyResolver = currencyResolver)
 
     private fun validateMaxAmountOfReports(currentAmount: Int) {
         if (currentAmount >= MAX_REPORTS)
@@ -154,7 +145,6 @@ class CreateProjectPartnerReport(
 
     private fun ProjectPartnerDetail.toReportIdentification(
         project: ProjectFull,
-        finances: List<ProjectPartnerCoFinancing>,
         currencyResolver: (String) -> String?,
     ) = PartnerReportIdentificationCreate(
         projectIdentifier = project.customIdentifier,
@@ -169,7 +159,6 @@ class CreateProjectPartnerReport(
         vatRecovery = vatRecovery,
         country = addresses.firstOrNull { it.type == ProjectPartnerAddressType.Organization }?.country,
         countryCode = addresses.firstOrNull { it.type == ProjectPartnerAddressType.Organization }?.countryCode,
-        coFinancing = finances,
     ).apply {
         currency = getCurrencyCodeForCountry(countryCode, country, currencyResolver)
     }

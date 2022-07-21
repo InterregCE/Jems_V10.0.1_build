@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.repository.report.financialOverview
+package io.cloudflight.jems.server.project.repository.report.financialOverview.costCategory
 
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.financialOverview.ReportProjectPartnerExpenditureCostCategoryEntity
