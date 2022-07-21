@@ -12,9 +12,10 @@
 
     <ng-container *ngIf="pageStore.userCanEditReports$ | async">
         <jems-pending-button jemsText class="mb-3"
-                             (click)="createPartnerReport()"
+                             icon="add"
+                             (clicked)="createPartnerReport()"
                              [pending]="actionPending">
-            + {{'project.application.partner.reports.add' | translate}}
+            {{'project.application.partner.reports.add' | translate}}
         </jems-pending-button>
     </ng-container>
 

@@ -29,7 +29,6 @@ export class PartnerReportPageStore {
   partnerId$: Observable<string | number | null>;
   userCanViewReports$: Observable<boolean>;
   userCanEditReports$: Observable<boolean>;
-  isFirstReport$: Observable<boolean>;
 
   newPageSize$ = new BehaviorSubject<number>(Tables.DEFAULT_INITIAL_PAGE_SIZE);
   newPageIndex$ = new BehaviorSubject<number>(Tables.DEFAULT_INITIAL_PAGE_INDEX);
@@ -48,18 +47,12 @@ export class PartnerReportPageStore {
     this.partnerReportLevel$ = this.partnerReportLevel();
     this.userCanViewReports$ = this.userCanViewReports();
     this.userCanEditReports$ = this.userCanEditReports();
-    this.isFirstReport$ = this.isFirstReport();
   }
 
   createPartnerReport(): Observable<ProjectPartnerReportSummaryDTO> {
-    return combineLatest([this.partnerId$, this.isFirstReport$])
+    return this.partnerId$
       .pipe(
-        tap(([partnerId, isFirstReport]) => {
-          if (isFirstReport) {
-            this.programmeEditableStateStore.firstReportCreated$.next();
-          }
-        }),
-        switchMap(([partnerId, isFirstReport]) => this.projectPartnerReportService.createProjectPartnerReport(partnerId as any)),
+        switchMap((partnerId) => this.projectPartnerReportService.createProjectPartnerReport(partnerId as any)),
         tap(() => this.refreshReports$.next()),
         tap(created => Log.info('Created partnerReport:', this, created)),
       );
@@ -125,13 +118,6 @@ export class PartnerReportPageStore {
     ])
       .pipe(
         map(([level, canEdit, canView]) => level === 'VIEW' || canEdit || canView)
-      );
-  }
-
-  private isFirstReport(): Observable<boolean> {
-    return this.programmeEditableStateStore.isFastTrackEditableDependingOnReports$
-      .pipe(
-        map(isFastTrackEditingLocked => !isFastTrackEditingLocked),
       );
   }
 

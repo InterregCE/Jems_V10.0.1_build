@@ -266,7 +266,7 @@ class CreateProjectPartnerReportBudget(
                 previouslyReported = funds[fundId]!!,
             )
         }
-        currentFunds.addAll(currentFunds.size - 1, removedFunds) /* insert removed funds before partner contribution */
+        currentFunds.addAll(maxOf(currentFunds.size - 1, 0), removedFunds) /* insert removed funds before partner contribution */
 
         val publicTotalAmount = contributions.filter { it.legalStatus == Public }.sumOf { it.amount }
         val autoPublicTotalAmount = contributions.filter { it.legalStatus == AutomaticPublic }.sumOf { it.amount }
