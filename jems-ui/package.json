@@ -3,7 +3,7 @@
   "version": "2.0.0-SNAPSHOT",
   "scripts": {
     "ng": "ng",
-    "serve:local": "ng serve --proxy-config proxy-conf.local.json",
+    "serve:local": "set NODE_OPTIONS=--openssl-legacy-provider && ng serve --proxy-config proxy-conf.local.json",
     "serve:ems-dev": "ng serve --proxy-config proxy-conf.ems-dev.json",
     "build": "ng build --configuration production",
     "build:dev": "ng build",
