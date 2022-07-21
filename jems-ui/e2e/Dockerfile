@@ -1,4 +1,4 @@
-FROM cypress/included:9.7.0
+FROM cypress/included:10.3.0
 
 WORKDIR e2e
 
@@ -8,7 +8,7 @@ COPY jems-ui/e2e/cypress cypress
 COPY jems-ui/e2e/package-lock.json .
 COPY jems-ui/e2e/package.json .
 COPY jems-ui/e2e/tsconfig.json .
-COPY jems-ui/e2e/cypress.json .
+COPY jems-ui/e2e/cypress.config.ts .
 
 ENV NO_COLOR=1
 
