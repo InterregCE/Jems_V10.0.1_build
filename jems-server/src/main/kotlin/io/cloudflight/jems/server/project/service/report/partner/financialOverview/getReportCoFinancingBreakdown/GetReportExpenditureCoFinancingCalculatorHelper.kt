@@ -104,7 +104,7 @@ fun ProjectPartnerReportContributionOverview.generateCoFinCalculationInputData(
     ReportExpenditureCoFinancingCalculationInput(
         currentTotal = currentExpenditure,
         fundsPercentages = funds.getMainFunds().associateBy({ it.fund!!.id }, { it.percentage}),
-        partnerContributionPercentage = funds.getPartnerContribution().percentage,
+        partnerContributionPercentage = funds.getPartnerContributionPercentage(),
         publicPercentage = public.amount.getPercentageOf(totalEligibleBudget),
         automaticPublicPercentage = automaticPublic.amount.getPercentageOf(totalEligibleBudget),
         privatePercentage = private.amount.getPercentageOf(totalEligibleBudget),
@@ -115,4 +115,5 @@ private fun BigDecimal.getPercentageOf(total: BigDecimal) = this.divide(total, 4
 
 private fun List<ProjectPartnerCoFinancing>.getMainFunds() = filter { it.fundType == MainFund }
 
-private fun List<ProjectPartnerCoFinancing>.getPartnerContribution() = first { it.fundType == PartnerContribution }
+private fun List<ProjectPartnerCoFinancing>.getPartnerContributionPercentage() =
+    firstOrNull { it.fundType == PartnerContribution }?.percentage ?: BigDecimal.ZERO
