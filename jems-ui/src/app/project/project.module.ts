@@ -155,6 +155,7 @@ import {
 import {
   PartnerBreakdownCostCategoryComponent
 } from '@project/project-application/report/partner-report-detail-page/partner-report-financial-overview-tab/partner-breakdown-cost-category/partner-breakdown-cost-category.component';
+import { ContractMonitoringExtensionComponent } from './project-application/contract-monitoring/contract-monitoring-extension/contract-monitoring-extension.component';
 import {
   ContractingFilesComponent
 } from '@project/project-application/contract-monitoring/contracting-files/contracting-files.component';
@@ -282,7 +283,8 @@ import {
     AssessmentAndDecisionChecklistPageComponent,
     PartnerReportAnnexesTabComponent,
     ReportAnnexesTableComponent,
-    ProjectManagementComponent
+    ProjectManagementComponent,
+    ContractMonitoringExtensionComponent
   ],
   imports: [
     SharedModule,
