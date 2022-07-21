@@ -37,7 +37,7 @@ export class ProjectWorkPackageInvestmentsTabComponent implements OnInit {
   titleCell: TemplateRef<any>;
 
   investments$: Observable<WorkPackageInvestmentDTO[]>;
-  editable: boolean;
+  projectEditable$: Observable<boolean>;
 
   constructor(private activatedRoute: ActivatedRoute,
               public workPackageStore: WorkPackagePageStore,
@@ -46,14 +46,14 @@ export class ProjectWorkPackageInvestmentsTabComponent implements OnInit {
               public projectStore: ProjectStore,
               private visibilityStatusService: FormVisibilityStatusService,
               private dialog: MatDialog) {
-    this.investments$ = combineLatest([this.workPackageStore.investments$, this.workPackageStore.workPackage$, this.projectStore.projectEditable$])
+    this.investments$ = combineLatest([this.workPackageStore.investments$, this.workPackageStore.workPackage$])
       .pipe(
-        tap(([investments, workPackage, editable]) => {
+        tap(([investments, workPackage]) => {
           this.workPackageNumber = workPackage.number;
-          this.editable = editable;
         }),
         map(([investments]) => investments)
       );
+    this.projectEditable$ = this.workPackageStore.isProjectEditable$;
   }
 
   ngOnInit(): void {
@@ -65,7 +65,8 @@ export class ProjectWorkPackageInvestmentsTabComponent implements OnInit {
           displayedColumn: 'project.application.form.workpackage.investments.number',
           columnType: ColumnType.CustomComponent,
           customCellTemplate: this.numberingCell,
-          sortProperty: 'investmentNumber'
+          sortProperty: 'investmentNumber',
+          columnWidth: ColumnWidth.DateColumn
         },
         ...this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.TITLE) ?
           [{
@@ -79,12 +80,12 @@ export class ProjectWorkPackageInvestmentsTabComponent implements OnInit {
           elementProperty: 'address.region3',
           sortProperty: 'address.region3',
         }] : [],
-        ...this.editable? [{
+        {
           displayedColumn: ' ',
           columnType: ColumnType.CustomComponent,
           customCellTemplate: this.deletionCell,
           columnWidth: ColumnWidth.IdColumn
-        }] : [],
+        },
       ]
     });
   }
