@@ -21,7 +21,6 @@ class ProjectContractingMonitoringEntity(
     val projectId: Long,
 
     val startDate: LocalDate? = null,
-    val endDate: LocalDate? = null,
 
     @Enumerated(EnumType.STRING)
     @Column(name = "typology_prov_94")

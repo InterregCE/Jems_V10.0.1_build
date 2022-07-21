@@ -50,12 +50,16 @@ annotation class CanStartSecondStep
 annotation class CanRevertDecision
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("hasAuthority('ProjectModificationView')")
+@PreAuthorize("@projectAuthorization.hasPermission('ProjectModificationView', #projectId)")
 annotation class CanRetrieveProjectModifications
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("hasAuthority('ProjectSetToContracted')")
+@PreAuthorize("@projectAuthorization.hasPermission('ProjectSetToContracted', #projectId)")
 annotation class CanSetProjectToContracted
+
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("hasAuthority('ProjectContractingView')")
+annotation class CanRetrieveProjectContractingMonitoring
 
 @Retention(AnnotationRetention.RUNTIME)
 @PreAuthorize("hasAuthority('ProjectOpenModification')")

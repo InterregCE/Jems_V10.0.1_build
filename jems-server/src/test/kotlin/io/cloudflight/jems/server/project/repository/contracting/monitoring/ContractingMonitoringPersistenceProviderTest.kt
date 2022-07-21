@@ -25,7 +25,7 @@ internal class ContractingMonitoringPersistenceProviderTest: UnitTest() {
         private val monitoring = ProjectContractingMonitoring(
             projectId = projectId,
             startDate = ZonedDateTime.parse("2022-07-01T10:00:00+02:00").toLocalDate(),
-            endDate = ZonedDateTime.parse("2022-07-10T10:00:00+02:00").toLocalDate(),
+            endDate = null,
             typologyProv94 = ContractingMonitoringExtendedOption.Partly,
             typologyProv94Comment = "typologyProv94Comment",
             typologyProv95 = ContractingMonitoringExtendedOption.Yes,
@@ -44,7 +44,6 @@ internal class ContractingMonitoringPersistenceProviderTest: UnitTest() {
         private val monitoringEntity = ProjectContractingMonitoringEntity(
             projectId = projectId,
             startDate = ZonedDateTime.parse("2022-07-01T10:00:00+02:00").toLocalDate(),
-            endDate = ZonedDateTime.parse("2022-07-10T10:00:00+02:00").toLocalDate(),
             typologyProv94 = ContractingMonitoringExtendedOption.Partly,
             typologyProv94Comment = "typologyProv94Comment",
             typologyProv95 = ContractingMonitoringExtendedOption.Yes,
@@ -93,7 +92,7 @@ internal class ContractingMonitoringPersistenceProviderTest: UnitTest() {
         val monitoringToUpdate = ProjectContractingMonitoring(
             projectId = projectId,
             startDate = ZonedDateTime.parse("2022-07-02T10:00:00+02:00").toLocalDate(),
-            endDate = ZonedDateTime.parse("2022-07-11T10:00:00+02:00").toLocalDate(),
+            endDate = null,
             typologyProv94 = ContractingMonitoringExtendedOption.No,
             typologyProv94Comment = "typologyProv94Comment",
             typologyProv95 = ContractingMonitoringExtendedOption.Partly,
@@ -112,7 +111,6 @@ internal class ContractingMonitoringPersistenceProviderTest: UnitTest() {
         val monitoringEntityToUpdate = ProjectContractingMonitoringEntity(
             projectId = projectId,
             startDate = ZonedDateTime.parse("2022-07-02T10:00:00+02:00").toLocalDate(),
-            endDate = ZonedDateTime.parse("2022-07-11T10:00:00+02:00").toLocalDate(),
             typologyProv94 = ContractingMonitoringExtendedOption.No,
             typologyProv94Comment = "typologyProv94Comment",
             typologyProv95 = ContractingMonitoringExtendedOption.Partly,
