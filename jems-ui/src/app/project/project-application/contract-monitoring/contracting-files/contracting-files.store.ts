@@ -5,7 +5,7 @@ import {
   ProjectContractingFileSearchRequestDTO,
   ProjectReportFileDTO,
   ProjectReportFileMetadataDTO,
-  SettingsService
+  SettingsService, UserRoleDTO
 } from '@cat/api';
 import {catchError, filter, map, startWith, switchMap, take, tap, withLatestFrom} from 'rxjs/operators';
 import {MatSort} from '@angular/material/sort';
@@ -27,6 +27,8 @@ import {
 } from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {PageFileList} from '@common/components/file-list/page-file-list';
 import {FileListItem} from '@common/components/file-list/file-list-item';
+import {PermissionService} from '../../../../security/permissions/permission.service';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @Injectable({
   providedIn: 'root'
@@ -39,6 +41,7 @@ export class ContractingFilesStore {
   selectedCategoryPath$: Observable<I18nMessage[]>;
 
   canUpload$: Observable<boolean>;
+  canDelete: boolean;
 
   deleteSuccess$ = new Subject<boolean>();
   error$ = new Subject<APIError | null>();
@@ -54,7 +57,8 @@ export class ContractingFilesStore {
               private partnerStore: ProjectPartnerStore,
               private projectStore: ProjectStore,
               private contractingFileService: ProjectContractingFileManagementService,
-              private fileManagementStore: FileManagementStore
+              private fileManagementStore: FileManagementStore,
+              private permissionService: PermissionService
   ) {
     this.canUpload$ = this.canUpload();
     this.selectedCategoryPath$ = this.selectedCategoryPath();
@@ -128,11 +132,16 @@ export class ContractingFilesStore {
     });
   }
 
+  private hasDeletionPrivilege(): Observable<boolean> {
+    return this.permissionService.hasPermission(PermissionsEnum.ProjectSetToContracted);
+  }
+
   private canUpload(): Observable<boolean> {
     return combineLatest([
       this.selectedCategory$,
+      this.permissionService.hasPermission(PermissionsEnum.ProjectSetToContracted)
     ]).pipe(
-      map(([selectedCategory]) => FileTypeEnum.ContractInternal === selectedCategory?.type),
+      map(([selectedCategory, hasUserEditPermission]) => hasUserEditPermission && FileTypeEnum.ContractInternal === selectedCategory?.type),
     );
   }
 
@@ -148,10 +157,12 @@ export class ContractingFilesStore {
         map(sort => sort?.direction ? sort : Tables.DEFAULT_INITIAL_SORT),
         map(sort => `${sort.active},${sort.direction}`)
       ),
-      this.filesChanged$.pipe(startWith(null))
+      this.hasDeletionPrivilege(),
+      this.filesChanged$.pipe(startWith(null)),
     ])
       .pipe(
-        filter(([selectedCategory, projectId, partnerId, pageIndex, pageSize, sort]: any) => !!partnerId),
+        filter(([selectedCategory, projectId, partnerId, pageIndex, pageSize, sort, hasDeletionPrivilege]: any) => !!partnerId),
+        tap(data => this.canDelete = data[6]),
         switchMap(([selectedCategory, projectId, partnerId, pageIndex, pageSize, sort]) =>
           this.contractingFileService.listFiles(
             selectedCategory?.id || 0,
@@ -177,7 +188,7 @@ export class ContractingFilesStore {
   }
 
   private transform(content: ProjectReportFileDTO[]): FileListItem[] {
-    return content.map(file => ({...file, deletable: true} as FileListItem));
+    return content.map(file => ({...file, deletable: this.canDelete} as FileListItem));
   }
 
   private fileCategories(): Observable<CategoryNode> {

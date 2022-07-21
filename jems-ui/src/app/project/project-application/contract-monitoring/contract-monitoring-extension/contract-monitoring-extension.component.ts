@@ -1,13 +1,14 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
 import { FormService } from '@common/components/section/form/form.service';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {Observable} from 'rxjs';
+import {combineLatest, Observable} from 'rxjs';
 import {catchError, map, startWith, take, tap} from 'rxjs/operators';
 import {
   ContractMonitoringExtensionStore
 } from '@project/project-application/contract-monitoring/contract-monitoring-extension/contract-monitoring-extension.store';
 import {ProjectContractingMonitoringAddDateDTO, ProjectContractingMonitoringDTO} from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
+import {Log} from "@common/utils/log";
 
 @Component({
   selector: 'jems-contract-monitoring-extension',
@@ -31,6 +32,8 @@ export class ContractMonitoringExtensionComponent {
   ];
   data$: Observable<{
     projectContractingMonitoring: ProjectContractingMonitoringDTO;
+    contractMonitoringViewable: boolean;
+    contractMonitoringEditable: boolean;
   }>;
   isAdditionalDataActivated = false;
 
@@ -40,17 +43,22 @@ export class ContractMonitoringExtensionComponent {
               private activatedRoute: ActivatedRoute,
               private contractMonitoringExtensionStore: ContractMonitoringExtensionStore) {
     this.projectId = this.activatedRoute.snapshot.params.projectId;
-    this.data$ = this.contractMonitoringExtensionStore.projectContractingMonitoring$
-    .pipe(
-      map(projectContractingMonitoring => ({
+    this.data$ = combineLatest([
+      this.contractMonitoringExtensionStore.projectContractingMonitoring$,
+      this.contractMonitoringExtensionStore.contractMonitoringViewable$,
+      this.contractMonitoringExtensionStore.contractMonitoringEditable$
+    ]).pipe(
+      map(([projectContractingMonitoring, contractMonitoringViewable, contractMonitoringEditable]) => ({
         projectContractingMonitoring,
+        contractMonitoringViewable,
+        contractMonitoringEditable
       })),
-      tap(data => this.resetForm(data.projectContractingMonitoring))
+      tap(data => this.initForm(data.contractMonitoringEditable)),
+      tap(data => this.resetForm(data.projectContractingMonitoring, data.contractMonitoringEditable))
     );
-    this.initForm();
   }
 
-  private initForm(): void {
+  private initForm(isEditable: boolean): void {
     this.decisionForm = this.formBuilder.group({
       startDate: [''],
       endDate: [''],
@@ -66,7 +74,7 @@ export class ContractMonitoringExtensionComponent {
       typologyPartnership: [],
       typologyPartnershipComment: [Validators.maxLength(1000)],
     });
-    this.formService.init(this.decisionForm, new Observable<boolean>().pipe(startWith(true)));
+    this.formService.init(this.decisionForm, new Observable<boolean>().pipe(startWith(isEditable)));
     this.decisionForm.controls.endDate.disable();
   }
 
@@ -85,7 +93,7 @@ export class ContractMonitoringExtensionComponent {
     return this.decisionForm.get('additionalEntryIntoForceItems') as FormArray;
   }
 
-  resetForm(projectContractingMonitoring: ProjectContractingMonitoringDTO): void {
+  resetForm(projectContractingMonitoring: ProjectContractingMonitoringDTO, isEditable: boolean): void {
     this.isAdditionalDataActivated = false;
     this.additionalEntryIntoForceItems.clear();
     this.decisionForm.controls.startDate.setValue(projectContractingMonitoring.startDate);
@@ -109,13 +117,16 @@ export class ContractMonitoringExtensionComponent {
         this.additionalEntryIntoForceItems.push(item);
       }
     }
+    if (!isEditable) {
+      this.additionalEntryIntoForceItems.disable();
+    }
     this.tableData = [...this.additionalEntryIntoForceItems.controls];
   }
 
   onSubmit(): void {
     this.contractMonitoringExtensionStore.save(this.getUpdatedProjectContractingMonitoring())
       .pipe(
-        take(1),
+        tap(data => this.decisionForm.controls.endDate.setValue(data.endDate)),
         tap(() => this.formService.setSuccess('project.application.contract.monitoring.project.form')),
         catchError(err => this.formService.setError(err)),
       ).subscribe();
