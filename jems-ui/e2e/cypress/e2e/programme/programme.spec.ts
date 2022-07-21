@@ -148,7 +148,7 @@ context('Programme management tests', () => {
         });
       });
 
-      cy.contains('Add priority').click();
+      cy.contains('Add priority').should('be.visible').click();
       cy.contains('Confirm').should('be.visible').click();
 
       cy.contains('jems-programme-priority-list-page div', priority.code).should('exist');
