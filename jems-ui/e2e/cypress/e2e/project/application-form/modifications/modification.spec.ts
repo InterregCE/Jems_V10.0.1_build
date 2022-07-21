@@ -1,7 +1,6 @@
 import user from '../../../../fixtures/users.json';
 import call from '../../../../fixtures/api/call/1.step.call.json';
 import application from '../../../../fixtures/api/application/application.json';
-import date from 'date-and-time';
 
 context('Application modification tests', () => {
 
@@ -36,8 +35,10 @@ context('Application modification tests', () => {
         cy.get('jems-project-application-information').find('div').should('contain.text', 'Modification precontracted submitted');
         cy.contains('span', 'Modification').click();
         cy.contains('Approve modification').click();
-        cy.get('jems-modification-confirmation').contains('div', 'Decision date (MM/DD/YYYY)').find('input').type(testData.approved.entryIntoForceDate);
-        cy.get('jems-modification-confirmation').contains('div', 'Entry into force (MM/DD/YYYY)').find('input').type(testData.approved.entryIntoForceDate);
+        cy.contains('mat-form-field', 'Decision date').find('button').click();
+        cy.get('.mat-calendar-body-today').click();
+        cy.contains('mat-form-field', 'Entry into force').find('button').click();
+        cy.get('.mat-calendar-body-today').click();
         cy.get('jems-modification-confirmation').contains('div', 'Explanatory notes').find('textarea').type(testData.approved.note);
         cy.get('jems-modification-confirmation').contains('Save changes').click();
         
@@ -65,12 +66,11 @@ context('Application modification tests', () => {
       cy.loginByRequest(user.programmeUser.email);
       cy.visit(`app/project/detail/${applicationId}/modification`, {failOnStatusCode: false});
 
-      const today = new Date();
-      const formattedToday = date.format(today, 'MM/DD/YYYY');
-
       cy.contains('Reject modification').click();
-      cy.contains('div', 'Decision date').find('input').type(formattedToday);
-      cy.contains('div', 'Entry into force').find('input').type(formattedToday);
+      cy.contains('mat-form-field', 'Decision date').find('button').click();
+      cy.get('.mat-calendar-body-today').click();
+      cy.contains('mat-form-field', 'Entry into force').find('button').click();
+      cy.get('.mat-calendar-body-today').click();
       cy.contains('div', 'Explanatory notes').find('textarea').type('Random note text');
 
       cy.contains('Save changes').click();

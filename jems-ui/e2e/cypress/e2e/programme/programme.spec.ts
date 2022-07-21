@@ -37,7 +37,7 @@ context('Programme management tests', () => {
     cy.contains('Save').click();
     cy.contains('Confirm').should('be.visible').click();
 
-    cy.get('jems-alert p').should('contain.text', 'Programme data was successfully saved.');
+    cy.contains('Programme data was successfully saved.').should('be.visible');
   });
 
   it('TB-525 Programme Languages can be configured', () => {

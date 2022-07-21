@@ -1,28 +1,3 @@
-// ***********************************************
-// This example commands.js shows you how to
-// create various custom commands and overwrite
-// existing commands.
-//
-// For more comprehensive examples of custom
-// commands please read more here:
-// https://on.cypress.io/custom-commands
-// ***********************************************
-//
-//
-// -- This is a parent command --
-// Cypress.Commands.add("login", (email, password) => { ... })
-//
-//
-// -- This is a child command --
-// Cypress.Commands.add("drag", { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add("dismiss", { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This will overwrite an existing command --
-// Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 import faker from '@faker-js/faker';
 
 declare global {
@@ -30,8 +5,6 @@ declare global {
   namespace Cypress {
     interface Chainable {
       parsePDF();
-
-      parseCSV();
 
       parseXLSX();
 
@@ -42,10 +15,6 @@ declare global {
 
 Cypress.Commands.add('parsePDF', {prevSubject: true}, (subject) => {
   cy.task('parsePDF', subject);
-});
-
-Cypress.Commands.add('parseCSV', {prevSubject: true}, (subject) => {
-  cy.task('parseCSV', subject);
 });
 
 Cypress.Commands.add('parseXLSX', {prevSubject: true}, (subject) => {
@@ -66,11 +35,6 @@ Cypress.Commands.add('clickToDownload', {prevSubject: true}, (subject, requestTo
     if (fileExtension === 'pdf') {
       cy.readFile('./cypress/downloads/' + fileName, null).parsePDF().then(file => {
         file.fileName = fileName;
-        cy.wrap(file);
-      });
-    } else if (fileExtension === 'csv') {
-      cy.readFile('./cypress/downloads/' + fileName).parseCSV().then(content => {
-        const file = {fileName: fileName, content: content};
         cy.wrap(file);
       });
     } else if (fileExtension === 'xlsx') {
