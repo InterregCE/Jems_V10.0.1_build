@@ -5,15 +5,15 @@
     <div class="header-center">
         <span jemsText maxLines="2" >{{ 'project.breadcrumb.partnerName' | translate }}</span>
         <span jemsText maxLines="2" *ngIf="displayedColumns.includes('country')">{{ 'project.partner.main-address.country' | translate }}</span>
-        <span jemsText maxLines="2" *ngIf="displayedColumns.includes('staffCosts')" class="justify-end">{{ 'project.partner.budget.staff' | translate }}</span>
-        <span jemsText maxLines="2" *ngIf="displayedColumns.includes('officeAndAdministrationCosts')" class="justify-end">{{ 'project.partner.budget.office.and.admin.header' | translate }}</span>
-        <span jemsText maxLines="2" *ngIf="displayedColumns.includes('travelCosts')" class="justify-end">{{ 'project.partner.budget.travel' | translate }}</span>
-        <span jemsText maxLines="2" *ngIf="displayedColumns.includes('externalCosts')" class="justify-end">{{ 'project.partner.budget.external' | translate }}</span>
-        <span jemsText maxLines="2" *ngIf="displayedColumns.includes('equipmentCosts')" class="justify-end">{{ 'project.partner.budget.equipment' | translate }}</span>
-        <span jemsText maxLines="2" *ngIf="displayedColumns.includes('infrastructureCosts')" class="justify-end">{{ 'project.partner.budget.infrastructure' | translate }}</span>
-        <span jemsText maxLines="2" *ngIf="displayedColumns.includes('otherCosts')" class="justify-end">{{ 'project.partner.budget.other' | translate }}</span>
-        <span jemsText maxLines="2" *ngIf="displayedColumns.includes('lumpSums')" class="justify-end">{{ 'project.partner.budget.lumpSum' | translate }}</span>
-        <span jemsText maxLines="2" *ngIf="displayedColumns.includes('unitCosts')" class="justify-end">{{ 'project.partner.budget.unitCosts' | translate }}</span>
+        <span jemsText maxLines="2" *ngIf="displayedColumns.includes('staffCosts')" class="justify-end section-link" (click)="scrollTo('staffCosts')"><a>{{ 'project.partner.budget.staff' | translate }}</a></span>
+        <span jemsText maxLines="2" *ngIf="displayedColumns.includes('officeAndAdministrationCosts')" class="justify-end section-link" (click)="scrollTo('officeAdministrativeCosts')">{{ 'project.partner.budget.office.and.admin.header' | translate }}</span>
+        <span jemsText maxLines="2" *ngIf="displayedColumns.includes('travelCosts')" class="justify-end section-link" (click)="scrollTo('travelAccommodation')">{{ 'project.partner.budget.travel' | translate }}</span>
+        <span jemsText maxLines="2" *ngIf="displayedColumns.includes('externalCosts')" class="justify-end section-link" (click)="scrollTo('externalBudget')">{{ 'project.partner.budget.external' | translate }}</span>
+        <span jemsText maxLines="2" *ngIf="displayedColumns.includes('equipmentCosts')" class="justify-end section-link" (click)="scrollTo('equipment')">{{ 'project.partner.budget.equipment' | translate }}</span>
+        <span jemsText maxLines="2" *ngIf="displayedColumns.includes('infrastructureCosts')" class="justify-end section-link" (click)="scrollTo('infrastructure')">{{ 'project.partner.budget.infrastructure' | translate }}</span>
+        <span jemsText maxLines="2" *ngIf="displayedColumns.includes('otherCosts')" class="justify-end section-link" (click)="scrollTo('otherCosts')">{{ 'project.partner.budget.other' | translate }}</span>
+        <span jemsText maxLines="2" *ngIf="displayedColumns.includes('lumpSums')" class="justify-end section-link" (click)="scrollTo('lumpSums')">{{ 'project.partner.budget.lumpSum' | translate }}</span>
+        <span jemsText maxLines="2" *ngIf="displayedColumns.includes('unitCosts')" class="justify-end section-link" (click)="scrollTo('unitCosts')">{{ 'project.partner.budget.unitCosts' | translate }}</span>
         <span jemsText maxLines="2" class="justify-end">{{ 'project.partner.budget.table.total' | adaptTranslationKeyByCallType | async | translate }}</span>
     </div>
 
