@@ -1,6 +1,6 @@
 <div>
     <jems-form *ngIf="data$ | async as data" (save)="onSubmit()"
-               (discard)="resetForm(data.projectContractingMonitoring)" jemsFormLayout [formGroup]="decisionForm">
+               (discard)="resetForm(data.projectContractingMonitoring, data.contractMonitoringEditable)" jemsFormLayout [formGroup]="decisionForm" >
         <div jemsMultiColumnRow>
             <mat-form-field jemsFormFieldWidth="half">
                 <mat-label>{{'project.application.contract.monitoring.project.start.date' | translate | dateFormatInfo}}</mat-label>
@@ -97,7 +97,7 @@
 
         </mat-table>
 
-        <button *ngIf="decisionForm.enabled && !isAdditionalDataActivated && tableData.length < 10"
+        <button *ngIf="data.contractMonitoringEditable && !isAdditionalDataActivated && tableData.length < 10"
                 mat-stroked-button type="button" class="mt-2 mb-2"
                 (click)="addAdditionalEntryIntoForceData()">
             <mat-icon>add</mat-icon>

@@ -13,10 +13,13 @@ import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 export class ContractMonitoringStore {
 
   canSetToContracted$: Observable<boolean>;
+  canSeeMonitoringExtension$: Observable<boolean>;
+
   constructor(private projectStore: ProjectStore,
               private projectStatusService: ProjectStatusService,
               private permissionService: PermissionService) {
     this.canSetToContracted$ = this.permissionService.hasPermission(PermissionsEnum.ProjectSetToContracted);
+    this.canSeeMonitoringExtension$ = this.permissionService.hasPermission(PermissionsEnum.ProjectContractingView);
   }
 
   setToContracted(projectId: number): Observable<string> {

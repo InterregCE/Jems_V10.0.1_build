@@ -28,7 +28,7 @@
         </jems-alert>
     </ng-container>
 
-    <jems-contract-monitoring-extension></jems-contract-monitoring-extension>
+    <jems-contract-monitoring-extension *ngIf="data.canSeeMonitoringExtension"></jems-contract-monitoring-extension>
 
     <jems-contracting-files class="mt-5"></jems-contracting-files>
 

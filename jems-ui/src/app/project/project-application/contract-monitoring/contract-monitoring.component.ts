@@ -24,6 +24,7 @@ export class ContractMonitoringComponent {
     currentVersionOfProject: ProjectDetailDTO;
     currentVersionOfProjectTitle: string;
     canSetToContracted: boolean;
+    canSeeMonitoringExtension: boolean;
   }>;
 
   showSuccessMessage$ = new Subject<null | string>();
@@ -35,11 +36,13 @@ export class ContractMonitoringComponent {
       this.projectStore.currentVersionOfProject$,
       this.projectStore.currentVersionOfProjectTitle$,
       this.contractMonitoringStore.canSetToContracted$,
+      this.contractMonitoringStore.canSeeMonitoringExtension$
     ]).pipe(
-      map(([currentVersionOfProject, currentVersionOfProjectTitle, canSetToContracted]) => ({
+      map(([currentVersionOfProject, currentVersionOfProjectTitle, canSetToContracted, canSeeMonitoringExtension]) => ({
         currentVersionOfProject,
         currentVersionOfProjectTitle,
         canSetToContracted,
+        canSeeMonitoringExtension
       }))
     );
   }
