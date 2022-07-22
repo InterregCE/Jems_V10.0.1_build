@@ -16,6 +16,7 @@
     <ID>ComplexMethod:ApplicationStateFactory.kt$ApplicationStateFactory$fun getInstance(projectSummary: ProjectSummary)</ID>
     <ID>ComplexMethod:ApplicationStatus.kt$ApplicationStatus$fun isInStep2()</ID>
     <ID>ComplexMethod:CallDetail.kt$CallDetail$fun getDiff(old: CallDetail? = null): Map&lt;String, Pair&lt;Any?, Any?&gt;&gt;</ID>
+    <ID>ComplexMethod:GetReportExpenditureCoFinancingBreakdownTest.kt$GetReportExpenditureCoFinancingBreakdownTest.Companion$private fun expectedSubmittedResult(zeroTotals: Boolean = false)</ID>
     <ID>ComplexMethod:ProjectDataModelMapper.kt$PluginDataMapper$fun map(programmeStrategy: ProgrammeStrategy): ProgrammeStrategyData</ID>
     <ID>ComplexMethod:ProjectPartnerEntityMapper.kt$fun ProjectPartnerEntity.copy( projectPartner: ProjectPartner? = null, legalStatusRef: ProgrammeLegalStatusEntity? = null, newAddresses: Set&lt;ProjectPartnerAddress&gt;? = null, newContacts: Set&lt;ProjectPartnerContact&gt;? = null, newMotivation: ProjectPartnerMotivation? = null, newPartnerContributions: List&lt;ProjectPartnerContribution&gt;? = null, ): ProjectPartnerEntity</ID>
     <ID>FunctionOnlyReturningConstant:MockedMethodSignature.kt$MockedMethodSignature$@ExceptionWrapper(SampleWrapperException::class) fun methodWithAspectWhichReturnsNormally(): String</ID>

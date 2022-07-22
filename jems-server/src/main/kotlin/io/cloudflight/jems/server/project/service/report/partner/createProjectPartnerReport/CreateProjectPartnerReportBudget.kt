@@ -268,6 +268,17 @@ class CreateProjectPartnerReportBudget(
         }
         currentFunds.addAll(maxOf(currentFunds.size - 1, 0), removedFunds) /* insert removed funds before partner contribution */
 
+        // if co-financing has not been filled-in in Application Form, mock Partner contribution line
+        if (currentFunds.isEmpty())
+            currentFunds.add(
+                PreviouslyReportedFund(
+                    fundId = null,
+                    percentage = BigDecimal.valueOf(100),
+                    total = ZERO,
+                    previouslyReported = funds.getOrDefault(null, ZERO),
+                )
+            )
+
         val publicTotalAmount = contributions.filter { it.legalStatus == Public }.sumOf { it.amount }
         val autoPublicTotalAmount = contributions.filter { it.legalStatus == AutomaticPublic }.sumOf { it.amount }
         val privateTotalAmount = contributions.filter { it.legalStatus == Private }.sumOf { it.amount }

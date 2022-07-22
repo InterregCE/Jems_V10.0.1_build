@@ -390,33 +390,11 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
 
     @Test
     fun createReportBudget() {
-        val partner = mockk<ProjectPartnerSummary>()
         val partnerId = 76L
-        every { partner.id } returns partnerId
         val projectId = 30L
         val version = "v4.2"
-        // contribution
-        every { reportPersistence.listSubmittedPartnerReports(partnerId) } returns reportsForContribution
-        every { reportContributionPersistence.getAllContributionsForReportIds(setOf(408L)) } returns previousContributions
-        // lump sums
-        every { lumpSumPersistence.getLumpSums(projectId, version) } returns lumpSums(partnerId)
-        // unit costs
-        every { partnerBudgetCostsPersistence.getBudgetStaffCosts(partnerId, version) } returns staffCosts
-        every { partnerBudgetCostsPersistence.getBudgetTravelAndAccommodationCosts(partnerId, version) } returns travelCosts
-        every { partnerBudgetCostsPersistence.getBudgetExternalExpertiseAndServicesCosts(partnerId, version) } returns externalCosts
-        every { partnerBudgetCostsPersistence.getBudgetEquipmentCosts(partnerId, version) } returns equipmentCosts
-        every { partnerBudgetCostsPersistence.getBudgetInfrastructureAndWorksCosts(partnerId, version) } returns infrastructureCosts
-        every { partnerBudgetCostsPersistence.getBudgetUnitCosts(partnerId, version) } returns unitCosts
-        // budget per period
-        every { getPartnerBudgetPerPeriod.getPartnerBudgetPerPeriod(projectId, version) } returns
-            ProjectBudgetOverviewPerPartnerPerPeriod(partnersBudgetPerPeriod = perPeriod(partnerId), totals = emptyList(), totalsPercentage = emptyList())
-        // options
         val budgetOptions = mockk<ProjectPartnerBudgetOptions>()
-        every { projectPartnerBudgetOptionsPersistence.getBudgetOptions(partnerId, version) } returns budgetOptions
-        every { getProjectBudget.getBudget(listOf(partner), projectId, version) } returns listOf(partnerBudget(partner))
-        every { reportExpenditureCostCategoryPersistence.getCostCategoriesCumulative(setOf(408L)) } returns previousExpenditures
-        // previouslyReportedCoFinancing
-        every { reportExpenditureCoFinancingPersistence.getCoFinancingCumulative(setOf(408L)) } returns previousReportedCoFinancing
+        val partner = mockInputsAndGetPartner(projectId, partnerId = partnerId, version, budgetOptions)
 
         val result = service.retrieveBudgetDataFor(projectId, partner, version, coFinancing)
 
@@ -443,6 +421,57 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         assertThat(result.contributions[0]).isEqualTo(expectedContribution1.copy(historyIdentifier = newUuid))
         assertThat(result.contributions[1]).isEqualTo(expectedContribution2)
         assertThat(result.contributions[2]).isEqualTo(expectedContribution3)
+    }
+
+    @Test
+    fun `createReportBudget - empty co-financing in AF`() {
+        val partnerId = 79L
+        val projectId = 35L
+        val version = "v8.1"
+        val budgetOptions = mockk<ProjectPartnerBudgetOptions>()
+        val partner = mockInputsAndGetPartner(projectId, partnerId = partnerId, version, budgetOptions)
+
+        every { reportExpenditureCoFinancingPersistence.getCoFinancingCumulative(setOf(408L)) } returns previousReportedCoFinancing.copy(funds = emptyMap())
+
+        val result = service.retrieveBudgetDataFor(projectId, partner, version, coFinancing.copy(finances = emptyList()))
+
+        assertThat(result.previouslyReportedCoFinancing)
+            .isEqualTo(expectedPreviouslyReportedCoFinancing.copy(fundsSorted = listOf(
+                PreviouslyReportedFund(
+                    fundId = null,
+                    percentage = BigDecimal.valueOf(100),
+                    total = BigDecimal.ZERO,
+                    previouslyReported = BigDecimal.ZERO,
+                )
+            )))
+    }
+
+    private fun mockInputsAndGetPartner(projectId: Long, partnerId: Long, version: String, budgetOptions: ProjectPartnerBudgetOptions): ProjectPartnerSummary {
+        val partner = mockk<ProjectPartnerSummary>()
+        every { partner.id } returns partnerId
+        // contribution
+        every { reportPersistence.listSubmittedPartnerReports(partnerId) } returns reportsForContribution
+        every { reportContributionPersistence.getAllContributionsForReportIds(setOf(408L)) } returns previousContributions
+        // lump sums
+        every { lumpSumPersistence.getLumpSums(projectId, version) } returns lumpSums(partnerId)
+        // unit costs
+        every { partnerBudgetCostsPersistence.getBudgetStaffCosts(partnerId, version) } returns staffCosts
+        every { partnerBudgetCostsPersistence.getBudgetTravelAndAccommodationCosts(partnerId, version) } returns travelCosts
+        every { partnerBudgetCostsPersistence.getBudgetExternalExpertiseAndServicesCosts(partnerId, version) } returns externalCosts
+        every { partnerBudgetCostsPersistence.getBudgetEquipmentCosts(partnerId, version) } returns equipmentCosts
+        every { partnerBudgetCostsPersistence.getBudgetInfrastructureAndWorksCosts(partnerId, version) } returns infrastructureCosts
+        every { partnerBudgetCostsPersistence.getBudgetUnitCosts(partnerId, version) } returns unitCosts
+        // budget per period
+        every { getPartnerBudgetPerPeriod.getPartnerBudgetPerPeriod(projectId, version) } returns
+            ProjectBudgetOverviewPerPartnerPerPeriod(partnersBudgetPerPeriod = perPeriod(partnerId), totals = emptyList(), totalsPercentage = emptyList())
+        // options
+        every { projectPartnerBudgetOptionsPersistence.getBudgetOptions(partnerId, version) } returns budgetOptions
+        every { getProjectBudget.getBudget(listOf(partner), projectId, version) } returns listOf(partnerBudget(partner))
+        every { reportExpenditureCostCategoryPersistence.getCostCategoriesCumulative(setOf(408L)) } returns previousExpenditures
+        // previouslyReportedCoFinancing
+        every { reportExpenditureCoFinancingPersistence.getCoFinancingCumulative(setOf(408L)) } returns previousReportedCoFinancing
+
+        return partner
     }
 
 }
