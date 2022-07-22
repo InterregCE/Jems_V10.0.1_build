@@ -143,7 +143,7 @@
 
             </mat-table>
 
-            <button *ngIf="contributionForm.enabled"
+            <button *ngIf="contributionForm.enabled && contributions.length <= 24"
                     jemsText mat-stroked-button
                     color="primary"
                     (click)="addContribution(null)">
