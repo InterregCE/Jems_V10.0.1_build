@@ -7,7 +7,7 @@
                    (focusout)="countryUnfocused($event)">
             <mat-autocomplete #country="matAutocomplete"
                               (optionSelected)="countryChanged($event.option?.value)">
-                <mat-option *ngFor="let region of filteredCountry | async" [value]="region">
+                <mat-option *ngFor="let region of filteredCountry | async" [value]="region" class="nuts-text-size">
                     {{region}}
                 </mat-option>
             </mat-autocomplete>
@@ -22,7 +22,7 @@
                    (focusout)="region2Unfocused($event)">
             <mat-autocomplete #region2="matAutocomplete"
                               (optionSelected)="region2Changed($event.option?.value)">
-                <mat-option *ngFor="let region of filteredRegion2 | async" [value]="region">
+                <mat-option *ngFor="let region of filteredRegion2 | async" [value]="region" class="nuts-text-size">
                     {{region}}
                 </mat-option>
             </mat-autocomplete>
@@ -37,7 +37,7 @@
                    (focusout)="region3Unfocused($event)">
             <mat-autocomplete #region3="matAutocomplete"
                               (optionSelected)="region3Changed($event.option?.value)">
-                <mat-option *ngFor="let region of filteredRegion3 | async" [value]="region">
+                <mat-option *ngFor="let region of filteredRegion3 | async" [value]="region" class="nuts-text-size">
                     {{region}}
                 </mat-option>
             </mat-autocomplete>
