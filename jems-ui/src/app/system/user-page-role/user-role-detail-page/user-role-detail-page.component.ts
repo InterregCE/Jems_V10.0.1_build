@@ -192,6 +192,7 @@ export class UserRoleDetailPageComponent {
     }
 
     this.adaptDependentPermissions();
+    this.adaptLimitedControllerInstitutionPermissions();
 
     if (!isUpdateAllowed) {
       this.userRoleForm.disable();
@@ -201,6 +202,7 @@ export class UserRoleDetailPageComponent {
   changeState(permission: AbstractControl, value: PermissionState): void {
     if (this.state(permission).value !== value) {
       this.state(permission)?.setValue(value);
+      this.adaptLimitedControllerInstitutionPermissions();
       this.formChanged();
     }
   }
@@ -379,6 +381,20 @@ export class UserRoleDetailPageComponent {
       consolidateGroup.disabled = true;
     } else {
       consolidateGroup.disabled = false;
+    }
+  }
+
+  private adaptLimitedControllerInstitutionPermissions(): void {
+    const institutionsPermission = this.treeControlTopNavigation?.dataNodes
+      ?.find(node => node.name === 'topbar.main.institutions') as any;
+    const limitInstitutionsPermission = this.treeControlTopNavigation?.dataNodes
+      ?.find(node => node.name === 'permission.top.bar.institutions.limited.edit') as any;
+
+    if(this.state(institutionsPermission.form)?.value === PermissionState.HIDDEN) {
+      this.state(limitInstitutionsPermission.form)?.setValue(PermissionState.HIDDEN);
+      limitInstitutionsPermission.disabled = true;
+    } else {
+      limitInstitutionsPermission.disabled = false;
     }
   }
 }

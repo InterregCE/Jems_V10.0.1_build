@@ -3,10 +3,6 @@ import {RouterModule} from '@angular/router';
 import {routes} from './programme-routing.module';
 import {SharedModule} from '@common/shared-module';
 import {ProgrammeAreaComponent} from './programme-page/containers/programme-area/programme-area.component';
-import {ProgrammeNutsInfoComponent} from './programme-page/components/programme-nuts-info/programme-nuts-info.component';
-import {ProgrammeRegionsTreeComponent} from './programme-page/components/programme-regions-tree/programme-regions-tree.component';
-import {ProgrammeSelectedRegionsComponent} from './programme-page/components/programme-selected-regions/programme-selected-regions.component';
-import {ProgrammeRegionsComponent} from './programme-page/components/programme-regions/programme-regions.component';
 import {ProgrammeIndicatorsOverviewPageComponent} from './programme-page/containers/programme-indicators-overview-page/programme-indicators-overview-page.component';
 import {ProgrammeOutputIndicatorsListComponent} from './programme-page/components/programme-output-indicators-list/programme-output-indicators-list.component';
 import {ProgrammeResultIndicatorsListComponent} from './programme-page/components/programme-result-indicators-list/programme-result-indicators-list.component';
@@ -57,11 +53,6 @@ import {
 @NgModule({
   declarations: [
     ProgrammeAreaComponent,
-    ProgrammeNutsInfoComponent,
-    ProgrammeRegionsComponent,
-    ProgrammeRegionsTreeComponent,
-    ProgrammeSelectedRegionsComponent,
-    ProgrammeNutsInfoComponent,
     ProgrammeIndicatorsOverviewPageComponent,
     ProgrammeOutputIndicatorsListComponent,
     ProgrammeResultIndicatorsListComponent,

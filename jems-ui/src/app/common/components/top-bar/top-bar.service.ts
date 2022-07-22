@@ -39,6 +39,11 @@ export class TopBarService {
     route: '/app/system',
     icon: 'settings'
   };
+  private controllersItem: MenuItemConfiguration = {
+    name: 'topbar.main.controllers',
+    route: '/app/controller',
+    icon: 'rule_folder'
+  };
 
   constructor(private permissionService: PermissionService,
               private securityService: SecurityService) {
@@ -81,6 +86,9 @@ export class TopBarService {
           }
           if (Permission.PROGRAMME_SETUP_MODULE_PERMISSIONS.some(perm => permissions.includes(perm))) {
             menuItems.push(this.programmeItem);
+          }
+          if (Permission.CONTROLLERS_PERMISSIONS.some(perm => permissions.includes(perm))) {
+            menuItems.push(this.controllersItem);
           }
           if (Permission.SYSTEM_MODULE_PERMISSIONS.some(perm => permissions.includes(perm))) {
             if (permissions.includes(PermissionsEnum.AuditRetrieve)) {

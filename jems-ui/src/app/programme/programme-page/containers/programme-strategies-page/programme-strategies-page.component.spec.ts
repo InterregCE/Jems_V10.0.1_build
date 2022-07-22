@@ -43,7 +43,6 @@ describe('ProgrammeStrategiesPageComponent', () => {
     } as OutputProgrammeStrategy]));
 
     tick();
-    console.log(result);
     expect(result.length).toBe(1);
     expect(result[0].strategy).toBe(InputProgrammeStrategy.StrategyEnum.EUStrategyAdriaticIonianRegion);
     expect(result[0].active).toBe(false);

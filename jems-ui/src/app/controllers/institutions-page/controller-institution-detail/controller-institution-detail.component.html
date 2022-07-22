@@ -1,0 +1,109 @@
+<jems-main-page-template *ngIf="data$ | async as data" [needsCard]="true"
+                         titleKey="topbar.main.controllers">
+
+    <jems-form (discard)="resetForm(data.controllerData)" (save)="saveForm()">
+        <form jemsFormLayout [formGroup]="controllerForm">
+            <mat-form-field>
+                <mat-label>
+                    {{'common.name' | translate}}</mat-label>
+                <input name="name" formControlName="name" matInput required>
+                <mat-error>
+                    <jems-form-field-errors
+                            [errors]="controllerForm?.controls?.name?.errors">
+                    </jems-form-field-errors>
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field>
+                <mat-label>{{'controllers.form.description.label' | translate}}</mat-label>
+                <textarea formControlName="description" matInput
+                          #autosize="cdkTextareaAutosize"
+                          [cdkTextareaAutosize]
+                          [cdkAutosizeMinRows]="3"
+                          [cdkAutosizeMaxRows]="5"
+                          #description>
+                </textarea>
+                <mat-hint [jemsHintFor]="description">
+                    <jems-text-hint [currentLength]="description.value.length" [maxLength]="2000"></jems-text-hint>
+                </mat-hint>
+                <mat-error>
+                    <jems-form-field-errors
+                            [errors]="controllerForm?.controls?.description?.errors">
+                    </jems-form-field-errors>
+                </mat-error>
+            </mat-form-field>
+
+            <jems-controller-institution-nuts
+                    [controllerData]="data.controllerData"
+                    (selectedNuts)="updateSelectedRegions($event)"
+                    [isEditable]="formService.isEditable()"
+                    [cancelEdit$]="discardNutsChanges$">
+            </jems-controller-institution-nuts>
+
+            <div id="collaborators-table" [jemsTableConfig]="[{minInRem:22},{maxInRem: 18},{maxInRem:3}]"
+                 jemsNoWidthLimit>
+                <div>
+                    <span>{{'controller.institutions.users.table.user.column.headline' | translate}}</span>
+                    <span class="justify-center">{{'controller.institutions.users.table.permission.column.headline' | translate}}</span>
+                    <span *jemsHasPermission="Permissions.InstitutionsUpdate" class="justify-end">{{'file.table.column.name.action' | translate}}</span>
+                </div>
+                <div id="institution-collaborators-table-content"
+                     *ngFor="let institutionUser of institutionUsers.controls; let i=index"
+                     [formArrayName]="constants.FORM_CONTROL_NAMES.institutionUsers">
+                    <ng-container [formGroupName]="i">
+
+                        <mat-form-field class="pt-2">
+                            <mat-label>{{ 'project.application.form.section.privileges.email' | translate }}</mat-label>
+                            <input [formControlName]="constants.FORM_CONTROL_NAMES.userEmail" matInput required>
+                            <mat-error>
+                                <jems-form-field-errors
+                                        [errors]="institutionUser.get('userEmail').errors "
+                                ></jems-form-field-errors>
+                            </mat-error>
+                        </mat-form-field>
+
+                        <div class="flex-center">
+                            <mat-button-toggle-group [formControlName]="constants.FORM_CONTROL_NAMES.accessLevel"
+                                                     class="small-toggle-group justify-center">
+                                <mat-button-toggle [value]="ACCESS_LEVEL.View">
+                                    <span>
+                                        <mat-icon>visibility</mat-icon>
+                                        {{'common.permission.view' | translate}}
+                                    </span>
+                                </mat-button-toggle>
+                                <mat-button-toggle [value]="ACCESS_LEVEL.Edit">
+                                    <span>
+                                        <mat-icon>edit</mat-icon>
+                                        {{'common.permission.edit' | translate}}
+                                    </span>
+                                </mat-button-toggle>
+                            </mat-button-toggle-group>
+                        </div>
+
+
+                        <div class="justify-end" *jemsHasPermission="[Permissions.InstitutionsUpdate]">
+                            <button mat-icon-button color="accent"
+                                    (click)="deleteUser(i);$event.stopPropagation();"
+                                    matTooltip="{{'common.delete.entry.tooltip' | translate}}">
+                                <mat-icon>delete</mat-icon>
+                            </button>
+                        </div>
+                    </ng-container>
+                </div>
+            </div>
+
+            <mat-error *ngIf="institutionUsers.errors">
+                <jems-form-field-errors [errors]="institutionUsers.errors"
+                                        [messages]="{uniqueEmails: 'project.application.form.section.privileges.unique.emails'}">
+                </jems-form-field-errors>
+            </mat-error>
+
+            <button mat-stroked-button class="mt-2 mb-2"
+                    *jemsHasPermission="Permissions.InstitutionsUpdate"
+                    (click)="addUser()">
+                <mat-icon>add</mat-icon>&nbsp;{{'controllers.add.user' | translate}}
+            </button>
+
+        </form>
+    </jems-form>
+</jems-main-page-template>

@@ -1,0 +1,38 @@
+
+#collaborators-table {
+  margin-top: 2rem;
+
+  ::ng-deep {
+    .small-toggle-group {
+      overflow: visible;
+
+      span.mat-button-toggle-label-content {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 1.25rem;
+      }
+
+
+      mat-icon {
+        vertical-align: middle;
+        font-size: 1.375em;
+        height: 1.25rem;
+      }
+    }
+
+    #institution-collaborators-table-content {
+      padding: 1rem 0;
+
+      > * {
+        ::ng-deep .mat-form-field-wrapper {
+          margin-bottom: -.6em;
+        }
+
+        &:hover {
+          background-color: var(--table-hover-color);
+        }
+      }
+    }
+  }
+}

@@ -25,6 +25,12 @@ export class Permission {
     PermissionsEnum.ProgrammeDataExportRetrieve
   ];
 
+  public static readonly CONTROLLERS_PERMISSIONS = [
+    PermissionsEnum.InstitutionsRetrieve,
+    PermissionsEnum.InstitutionsUpdate,
+    PermissionsEnum.InstitutionsUnlimited,
+  ];
+
   public static readonly DEFAULT_USER_CREATE_AND_COLLABORATE_PERMISSIONS: PermissionNode[] = [
     {
       name: 'project.application.reporting.title',
@@ -337,6 +343,25 @@ export class Permission {
           name: 'topbar.main.programme.data.export',
           mode: PermissionMode.HIDDEN_VIEW,
           viewPermissions: [PermissionsEnum.ProgrammeDataExportRetrieve],
+        },
+      ]
+    },
+    {
+      name: 'topbar.main.controllers',
+      icon: 'rule_folder',
+      children: [
+        {
+          name: 'topbar.main.institutions',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [PermissionsEnum.InstitutionsRetrieve],
+          editPermissions: [PermissionsEnum.InstitutionsUpdate],
+          editTooltip: 'permission.top.bar.institutions.data',
+        },
+        {
+          name: 'permission.top.bar.institutions.limited.edit',
+          mode: PermissionMode.TOGGLE_EDIT,
+          editPermissions: [PermissionsEnum.InstitutionsUnlimited],
+          infoMessage: 'permission.top.bar.institutions.limited.edit.info'
         },
       ]
     },
