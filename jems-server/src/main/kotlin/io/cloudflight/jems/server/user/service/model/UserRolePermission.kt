@@ -75,6 +75,10 @@ enum class UserRolePermission(val key: String, val projectRelated: Boolean = fal
     ProgrammeSetupRetrieve("ProgrammeSetupRetrieve"),
     ProgrammeSetupUpdate("ProgrammeSetupUpdate"),
 
+    InstitutionsRetrieve("InstitutionsRetrieve"),
+    InstitutionsUpdate("InstitutionsUpdate"),
+    InstitutionsUnlimited("InstitutionsUnlimited"),
+
     ProgrammeDataExportRetrieve("ProgrammeDataExportRetrieve"),
 
     UserRetrieve("UserRetrieve"),
@@ -86,7 +90,31 @@ enum class UserRolePermission(val key: String, val projectRelated: Boolean = fal
     RoleCreate("RoleCreate"),
     RoleUpdate("RoleUpdate"),
 
-    AuditRetrieve("AuditRetrieve"),
+    AuditRetrieve("AuditRetrieve");
     // endregion top navigation
 
+    companion object {
+        fun getGlobalProjectRetrievePermissions() = setOf(
+            ProjectRetrieve,
+            ProjectRetrieveEditUserAssignments,
+        )
+
+        fun getProjectMonitorPermissions() = setOf(
+            ProjectFormRetrieve,
+            ProjectFileApplicationRetrieve,
+            ProjectCheckApplicationForm,
+            ProjectAssessmentView,
+            ProjectStatusDecisionRevert,
+            ProjectStatusReturnToApplicant,
+            ProjectStartStepTwo,
+            ProjectFileAssessmentRetrieve,
+            ProjectContractingView,
+            ProjectSetToContracted,
+            ProjectReportingView,
+            ProjectReportingEdit,
+            ProjectModificationView,
+            ProjectOpenModification,
+            ProjectModificationFileAssessmentRetrieve
+        )
+    }
 }

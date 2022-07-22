@@ -67,6 +67,10 @@ import {
 } from '@common/components/checklist/checklist-consolidator-options/checklist-consolidator-options.component';
 import {MatSliderModule} from '@angular/material/slider';
 import {FileListComponent} from '@common/components/file-list/file-list.component';
+import {JemsRegionsComponent} from '@common/components/jems-regions/jems-regions.component';
+import {JemsNutsInfoComponent} from '@common/components/jems-nuts-info/jems-nuts-info.component';
+import {JemsRegionsTreeComponent} from '@common/components/jems-regions-tree/jems-regions-tree.component';
+import {JemsSelectedRegionsComponent} from '@common/components/jems-selected-regions/jems-selected-regions.component';
 
 const modules = [
   CommonModule,
@@ -134,7 +138,11 @@ const declarations = [
   ChecklistAnswersComponent,
   ChecklistInstanceListComponent,
   ChecklistConsolidatorOptionsComponent,
-  PublicPageTemplateComponent
+  PublicPageTemplateComponent,
+  JemsRegionsComponent,
+  JemsNutsInfoComponent,
+  JemsRegionsTreeComponent,
+  JemsSelectedRegionsComponent
 ];
 
 const providers = [

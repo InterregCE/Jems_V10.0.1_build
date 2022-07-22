@@ -113,6 +113,10 @@ export class FormService {
     this.editable = editable;
   }
 
+  isEditable(): boolean {
+    return this.editable;
+  }
+
   resetEditable(): void {
     this.setEditable(this.editable);
     this.setDirty(false);

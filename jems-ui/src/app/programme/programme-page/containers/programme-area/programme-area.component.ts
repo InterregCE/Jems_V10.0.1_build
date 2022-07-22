@@ -1,15 +1,16 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {NutsImportService, ProgrammeDataService, OutputNuts} from '@cat/api';
-import {combineLatest, merge, ReplaySubject, Subject} from 'rxjs';
+import {combineLatest, merge, Observable, ReplaySubject, Subject} from 'rxjs';
 import {catchError, mergeMap, map, startWith, take, takeUntil, tap} from 'rxjs/operators';
 import {BaseComponent} from '@common/components/base-component';
 import {Log} from '@common/utils/log';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {HttpErrorResponse} from '@angular/common/http';
-import {ProgrammeRegionCheckbox} from '../../model/programme-region-checkbox';
 import {MatTreeNestedDataSource} from '@angular/material/tree';
 import {ProgrammePageSidenavService} from '../../services/programme-page-sidenav.service';
 import {Permission} from '../../../../security/permissions/permission';
+import {JemsRegionCheckbox} from '@common/models/jems-region-checkbox';
+import {ProgrammeEditableStateStore} from '../../services/programme-editable-state-store.service';
 
 @Component({
   selector: 'jems-programme-area',
@@ -20,7 +21,7 @@ import {Permission} from '../../../../security/permissions/permission';
 export class ProgrammeAreaComponent extends BaseComponent implements OnInit {
   Permission = Permission;
 
-  regionTreeDataSource = new MatTreeNestedDataSource<ProgrammeRegionCheckbox>();
+  regionTreeDataSource = new MatTreeNestedDataSource<JemsRegionCheckbox>();
 
   downloadLatestNuts$ = new Subject<void>();
   downloadSuccess$ = new Subject<boolean>();
@@ -77,7 +78,7 @@ export class ProgrammeAreaComponent extends BaseComponent implements OnInit {
       tap(() => this.regionSaveSuccess$.next(true)),
       map(programmeData => programmeData.programmeNuts)
     );
-  selectionChanged$ = new ReplaySubject<ProgrammeRegionCheckbox[]>(1);
+  selectionChanged$ = new ReplaySubject<JemsRegionCheckbox[]>(1);
   selectedRegions$ = this.selectionChanged$
     .pipe(
       map(selected => this.getSelected(selected)),
@@ -86,7 +87,7 @@ export class ProgrammeAreaComponent extends BaseComponent implements OnInit {
 
   constructor(private nutsService: NutsImportService,
               private programmeDataService: ProgrammeDataService,
-              private programmePageSidenavService: ProgrammePageSidenavService) {
+              public programmeEditableStateStore: ProgrammeEditableStateStore) {
     super();
   }
 
@@ -101,8 +102,8 @@ export class ProgrammeAreaComponent extends BaseComponent implements OnInit {
       .pipe(
         takeUntil(this.destroyed$),
         map(([saved, nuts]) =>
-          ProgrammeRegionCheckbox.fromSelected(
-            ProgrammeRegionCheckbox.fromNuts(nuts), ProgrammeRegionCheckbox.fromNuts(saved)
+          JemsRegionCheckbox.fromSelected(
+            JemsRegionCheckbox.fromNuts(nuts), JemsRegionCheckbox.fromNuts(saved)
           )
         ),
         tap(regions => this.selectionChanged$.next(regions)),
@@ -111,8 +112,8 @@ export class ProgrammeAreaComponent extends BaseComponent implements OnInit {
       ).subscribe();
   }
 
-  private getSelected(checkboxes: ProgrammeRegionCheckbox[]): Map<string, ProgrammeRegionCheckbox[]> {
-    const selected = new Map<string, ProgrammeRegionCheckbox[]>();
+  private getSelected(checkboxes: JemsRegionCheckbox[]): Map<string, JemsRegionCheckbox[]> {
+    const selected = new Map<string, JemsRegionCheckbox[]>();
     checkboxes
       .filter(checkbox => checkbox.someChecked)
       .forEach(checkbox => {
@@ -120,14 +121,14 @@ export class ProgrammeAreaComponent extends BaseComponent implements OnInit {
           selected.set(checkbox.title, []);
           return;
         }
-        const children: ProgrammeRegionCheckbox[] = [];
+        const children: JemsRegionCheckbox[] = [];
         this.collectSelectedGrouped(checkbox, children);
         selected.set(checkbox.title, children);
       });
     return selected;
   }
 
-  private collectSelectedGrouped(checkbox: ProgrammeRegionCheckbox, results: ProgrammeRegionCheckbox[]): void {
+  private collectSelectedGrouped(checkbox: JemsRegionCheckbox, results: JemsRegionCheckbox[]): void {
     if (checkbox.allChildrenChecked() || (checkbox.code && checkbox.checked)) {
       results.push(checkbox);
       return;
@@ -137,7 +138,7 @@ export class ProgrammeAreaComponent extends BaseComponent implements OnInit {
     });
   }
 
-  private collectSelectedChildren(checkbox: ProgrammeRegionCheckbox, results: string[]): void {
+  private collectSelectedChildren(checkbox: JemsRegionCheckbox, results: string[]): void {
     if (checkbox.code && checkbox.checked) {
       results.push(checkbox.code);
     }
@@ -146,11 +147,21 @@ export class ProgrammeAreaComponent extends BaseComponent implements OnInit {
     });
   }
 
-  private collectSelectedIds(regions: ProgrammeRegionCheckbox[]): string[] {
+  private collectSelectedIds(regions: JemsRegionCheckbox[]): string[] {
     return regions.flatMap(region => {
       const children: string[] = [];
       this.collectSelectedChildren(region, children);
       return children;
     });
+  }
+
+  isEditable(): Observable<boolean> {
+    return combineLatest([
+      this.programmeEditableStateStore.hasOnlyViewPermission$,
+      this.programmeEditableStateStore.isProgrammeEditableDependingOnCall$
+    ])
+      .pipe(
+        map(([hasOnlyViewPermission, isProgrammeEditableDependingOnCall]) => hasOnlyViewPermission || isProgrammeEditableDependingOnCall)
+      );
   }
 }

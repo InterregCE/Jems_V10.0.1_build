@@ -1,0 +1,29 @@
+<jems-main-page-template *ngIf="data$ | async as data"
+        [needsCard]="true"
+         titleKey="topbar.main.controllers"
+                         >
+    <h3>{{'topbar.main.institutions' | translate}}</h3>
+
+    <button mat-stroked-button class="mt-2 mb-2"
+            *ngIf="data.createInstitutionPermission"
+            [routerLink]="'/app/controller/create'">
+        <mat-icon>add</mat-icon>&nbsp;{{'controllers.add.institution' | translate}}
+    </button>
+    <jems-table *ngIf="data.page.content.length"
+                [configuration]="data.tableConfiguration"
+                [rows]="data.page.content"
+                [totalElements]="data.page?.totalElements"
+                [pageIndex]="institutionsPageStore.newPageIndex$ | async"
+                (newPageIndex)="institutionsPageStore.newPageIndex$.next($event)"
+                (newPageSize)="institutionsPageStore.newPageSize$.next($event)"
+                (sortRows)="institutionsPageStore.newSort$.next($event)">
+    </jems-table>
+</jems-main-page-template>
+
+<ng-template #institutionNutsColumn let-institution>
+            <div >{{getSelectedRegionsForInstitution(getSelected(convertToJemsCheckBox(allNuts$ | async, institution.institutionNuts)))}}</div>
+</ng-template>
+
+
+
+

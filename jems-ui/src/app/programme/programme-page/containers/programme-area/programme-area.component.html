@@ -1,19 +1,20 @@
 <jems-main-page-template [needsCard]="true"
                         titleKey="programme.data.page.title"
                         subTitleKey="programme.tab.area">
-    <jems-programme-nuts-info
+    <jems-nuts-info
             [metadata]="metaData$ | async"
             [success$]="downloadSuccess$"
             [error$]="downloadError$"
             (downloadNuts)="downloadLatestNuts$.next()">
-    </jems-programme-nuts-info>
-    <jems-programme-regions class="margin-before"
-                           *ngIf="regionsAvailable$ | async"
-                           [success$]="regionSaveSuccess$"
-                           [dataSource]="regionTreeDataSource"
-                           [selectedRegions]="selectedRegions$ | async"
-                           (selectionChanged)="selectionChanged$.next(regionTreeDataSource.data)"
-                           (saveRegions)="saveSelectedRegions$.next()"
-                           (cancelEdit)="cancelEdit$.next()">
-    </jems-programme-regions>
+    </jems-nuts-info>
+    <jems-regions class="margin-before"
+                  *ngIf="regionsAvailable$ | async"
+                  [success$]="regionSaveSuccess$"
+                  [dataSource]="regionTreeDataSource"
+                  [selectedRegions]="selectedRegions$ | async"
+                  (selectionChanged)="selectionChanged$.next(regionTreeDataSource.data)"
+                  (saveRegions)="saveSelectedRegions$.next()"
+                  (cancelEdit)="cancelEdit$.next()"
+                  [isEditable$]=isEditable()>
+    </jems-regions>
 </jems-main-page-template>

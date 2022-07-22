@@ -7,10 +7,9 @@ import io.cloudflight.jems.server.user.service.authorization.CanAssignUsersToPro
 import io.cloudflight.jems.server.user.service.authorization.CanRetrieveUser
 import io.cloudflight.jems.server.user.service.authorization.CanRetrieveUsers
 import io.cloudflight.jems.server.user.service.model.User
+import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import io.cloudflight.jems.server.user.service.model.UserSearchRequest
 import io.cloudflight.jems.server.user.service.model.UserSummary
-import io.cloudflight.jems.server.project.service.projectuser.assign_user_to_project.AssignUserToProject.Companion.GLOBAL_PROJECT_RETRIEVE_PERMISSIONS
-import io.cloudflight.jems.server.project.service.projectuser.assign_user_to_project.AssignUserToProject.Companion.PROJECT_MONITOR_PERMISSIONS
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -34,7 +33,7 @@ class GetUser(
     override fun getUsersWithProjectRetrievePermissions(): List<UserSummary> =
         persistence.findAllWithRoleIdIn(
             roleIds = userRolePersistence.findRoleIdsHavingAndNotHavingPermissions(
-                needsToHaveAtLeastOneFrom = GLOBAL_PROJECT_RETRIEVE_PERMISSIONS,
+                needsToHaveAtLeastOneFrom = UserRolePermission.getGlobalProjectRetrievePermissions(),
                 needsNotToHaveAnyOf = emptySet(),
             )
         )
@@ -45,8 +44,8 @@ class GetUser(
     override fun getMonitorUsers(): List<UserSummary> =
         persistence.findAllWithRoleIdIn(
             roleIds = userRolePersistence.findRoleIdsHavingAndNotHavingPermissions(
-                needsToHaveAtLeastOneFrom = PROJECT_MONITOR_PERMISSIONS,
-                needsNotToHaveAnyOf = GLOBAL_PROJECT_RETRIEVE_PERMISSIONS,
+                needsToHaveAtLeastOneFrom = UserRolePermission.getProjectMonitorPermissions(),
+                needsNotToHaveAnyOf = UserRolePermission.getGlobalProjectRetrievePermissions(),
             )
         )
 

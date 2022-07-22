@@ -2,28 +2,12 @@ package io.cloudflight.jems.server.project.service.projectuser.assign_user_to_pr
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.service.ProjectPersistence
-import io.cloudflight.jems.server.user.service.UserPersistence
 import io.cloudflight.jems.server.project.service.projectuser.UserProjectPersistence
+import io.cloudflight.jems.server.user.service.UserPersistence
 import io.cloudflight.jems.server.user.service.UserRolePersistence
 import io.cloudflight.jems.server.user.service.authorization.CanAssignUsersToProjects
-import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectContractingView
-import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectReportingView
-import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectReportingEdit
-import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectSetToContracted
+import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import io.cloudflight.jems.server.user.service.model.assignment.UpdateProjectUser
-import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectRetrieve
-import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectRetrieveEditUserAssignments
-import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectFormRetrieve
-import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectFileApplicationRetrieve
-import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectCheckApplicationForm
-import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectAssessmentView
-import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectStatusDecisionRevert
-import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectStatusReturnToApplicant
-import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectStartStepTwo
-import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectFileAssessmentRetrieve
-import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectModificationFileAssessmentRetrieve
-import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectModificationView
-import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectOpenModification
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -36,30 +20,6 @@ class AssignUserToProject(
     private val userProjectPersistence: UserProjectPersistence,
     private val eventPublisher: ApplicationEventPublisher
 ) : AssignUserToProjectInteractor {
-
-    companion object {
-        val GLOBAL_PROJECT_RETRIEVE_PERMISSIONS = setOf(
-            ProjectRetrieve,
-            ProjectRetrieveEditUserAssignments,
-        )
-        val PROJECT_MONITOR_PERMISSIONS = setOf(
-            ProjectFormRetrieve,
-            ProjectFileApplicationRetrieve,
-            ProjectCheckApplicationForm,
-            ProjectAssessmentView,
-            ProjectStatusDecisionRevert,
-            ProjectStatusReturnToApplicant,
-            ProjectStartStepTwo,
-            ProjectFileAssessmentRetrieve,
-            ProjectContractingView,
-            ProjectSetToContracted,
-            ProjectReportingView,
-            ProjectReportingEdit,
-            ProjectModificationView,
-            ProjectOpenModification,
-            ProjectModificationFileAssessmentRetrieve
-        )
-    }
 
     @CanAssignUsersToProjects
     @Transactional
@@ -90,15 +50,15 @@ class AssignUserToProject(
     private fun getAutomaticallyAssignedUsers() =
         userPersistence.findAllWithRoleIdIn(
             roleIds = userRolePersistence.findRoleIdsHavingAndNotHavingPermissions(
-                needsToHaveAtLeastOneFrom = GLOBAL_PROJECT_RETRIEVE_PERMISSIONS,
+                needsToHaveAtLeastOneFrom = UserRolePermission.getGlobalProjectRetrievePermissions(),
                 needsNotToHaveAnyOf = emptySet(),
             )
         )
 
     private fun getAvailableRoleIds() =
         userRolePersistence.findRoleIdsHavingAndNotHavingPermissions(
-            needsToHaveAtLeastOneFrom = PROJECT_MONITOR_PERMISSIONS,
-            needsNotToHaveAnyOf = GLOBAL_PROJECT_RETRIEVE_PERMISSIONS,
+            needsToHaveAtLeastOneFrom = UserRolePermission.getProjectMonitorPermissions(),
+            needsNotToHaveAnyOf = UserRolePermission.getGlobalProjectRetrievePermissions(),
         )
 
     private fun getAvailableUsersByIdsAndRoles(userIds: Set<Long>, userRoleIds: Set<Long>) =

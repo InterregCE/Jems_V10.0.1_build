@@ -56,6 +56,15 @@ export const routes: Routes = [
         },
       },
       {
+        path: 'controller',
+        loadChildren: () => import('./controllers/controllers.module').then(m => m.ControllersModule),
+        canActivate: [PermissionGuard],
+        data: {
+          skipBreadcrumb: true,
+          permissionsOnly: Permission.CONTROLLERS_PERMISSIONS,
+        },
+      },
+      {
         path: 'profile',
         loadChildren: () => import('./user-profile/user-profile.module').then(m => m.UserProfileModule),
         data: {skipBreadcrumb: true},

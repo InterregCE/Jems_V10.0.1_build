@@ -76,7 +76,7 @@ class ProgrammeDataServiceImpl(
         getProgrammeDataOrThrow().programmeNuts.toDto()
 
 
-    private fun getProgrammeDataOrThrow(): ProgrammeDataEntity =
+    fun getProgrammeDataOrThrow(): ProgrammeDataEntity =
         programmeDataRepository.findById(1).orElseThrow { ResourceNotFoundException() }
 
     private fun validateInputData(updateRequestDTO: ProgrammeDataUpdateRequestDTO){

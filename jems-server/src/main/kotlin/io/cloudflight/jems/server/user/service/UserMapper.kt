@@ -37,3 +37,4 @@ fun UserEntity.toOutputUser() = OutputUser(
     name = this.name,
     surname = this.surname
 )
+
