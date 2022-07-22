@@ -51,7 +51,7 @@
                         </ng-container>
                     </ng-container>
                 </div>
-                <div *ngIf="formState === FormState.EDIT">
+                <div *ngIf="formState === FormState.EDIT && fundsForm.controls.length <= 19">
                     <div>
                         <button mat-icon-button type="button"
                                 (click)="addNewFund()">
