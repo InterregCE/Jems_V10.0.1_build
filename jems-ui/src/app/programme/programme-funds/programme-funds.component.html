@@ -12,8 +12,7 @@
                 {{'common.edit.label' | translate}}
             </button>
         </div>
-        <jems-multi-language-container jemsNoWidthLimit [useSystemLanguages]="true"
-                                      [switchButtonsVisible]="formState === FormState.EDIT">
+        <jems-multi-language-container jemsNoWidthLimit [useSystemLanguages]="true">
             <div [jemsTableConfig]="[{maxInRem: 2},{maxInRem: 10},{},{}]">
                 <div>
                     <span class="mat-body-strong">{{ 'programme.fund.list.select' | translate }}</span>
