@@ -28,6 +28,9 @@ export class BudgetTableComponent implements OnInit, OnChanges {
   @Input()
   hideCountry = false;
 
+  @Input()
+  headerLinks: boolean;
+
   displayedColumns: string[];
 
   totalStaffCosts: number;

@@ -3,7 +3,7 @@
                            subTitleKey="project.application.form.section.part.d">
     <h3>{{'project.application.form.budget.title' | translate}}</h3>
 
-    <jems-budget-table *ngIf="!!projectId"
+    <jems-budget-table *ngIf="!!projectId" [headerLinks]="false"
             [projectId]="projectId"
             [dataSource]="dataSource$ | async">
     </jems-budget-table>
