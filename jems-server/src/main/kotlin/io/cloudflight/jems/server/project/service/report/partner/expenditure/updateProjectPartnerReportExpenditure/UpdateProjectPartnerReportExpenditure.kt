@@ -17,6 +17,7 @@ import io.cloudflight.jems.server.project.service.report.partner.expenditure.fil
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.filterInvalidCurrencies
 import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectReportProcurementPersistence
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
@@ -32,6 +33,8 @@ class UpdateProjectPartnerReportExpenditure(
 ) : UpdateProjectPartnerReportExpenditureInteractor {
 
     companion object {
+        private val log = LoggerFactory.getLogger(UpdateProjectPartnerReportExpenditure::class.java)
+
         private val MAX_NUMBER = BigDecimal.valueOf(999_999_999_99, 2)
         private val MIN_NUMBER = BigDecimal.ZERO
 
@@ -81,7 +84,8 @@ class UpdateProjectPartnerReportExpenditure(
     }
 
     private fun validateCostCategories(expenditureCosts: List<ProjectPartnerReportExpenditureCost>) {
-        expenditureCosts.forEach {
+        expenditureCosts.forEachIndexed { index, it ->
+            log.info("Checking if item[$index] can have contractId=${it.contractId}")
             if (it.costCategory == ReportBudgetCategory.StaffCosts || it.costCategory == ReportBudgetCategory.TravelAndAccommodationCosts)
                 it.investmentId = null
 
@@ -90,6 +94,7 @@ class UpdateProjectPartnerReportExpenditure(
                 it.vat = null
                 it.invoiceNumber = null
             }
+            log.info("ContractId after validateCostCategories checking is ${it.contractId}")
         }
     }
 
@@ -128,9 +133,11 @@ class UpdateProjectPartnerReportExpenditure(
         allowedProcurementIds: Set<Long>,
         allowedInvestmentIds: Set<Long>,
     ) {
-        expenditureCosts.forEach {
+        expenditureCosts.forEachIndexed { index, it ->
+            log.info("Checking if item[$index] contractId=${it.contractId} is within allowed procurement ids: $allowedProcurementIds")
             it.contractId = if (it.contractId in allowedProcurementIds) it.contractId else null
             it.investmentId = if (it.investmentId in allowedInvestmentIds) it.investmentId else null
+            log.info("ContractId after validateLinkedProcurements checking is ${it.contractId}")
         }
     }
 
@@ -141,10 +148,12 @@ class UpdateProjectPartnerReportExpenditure(
     ) {
         val lumpSumsById = allowedLumpSums.associateBy { it.id }
         val unitCostsById = allowedUnitCosts.associateBy { it.id }
-        expenditureCosts.forEach {
+        expenditureCosts.forEachIndexed { index, it ->
             if (it.lumpSumId in lumpSumsById.keys) {
+                log.info("Fill in lumpSum for item[$index]")
                 it.fillInLumpSum(lumpSum = lumpSumsById[it.lumpSumId]!!)
             } else if (it.unitCostId in unitCostsById.keys) {
+                log.info("Fill in unitCost for item[$index]")
                 it.fillInUnitCost(unitCost = unitCostsById[it.unitCostId]!!, currencyCodeValue = it.currencyCode)
             } else {
                 it.numberOfUnits = BigDecimal.ZERO
