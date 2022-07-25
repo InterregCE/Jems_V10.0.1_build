@@ -10,6 +10,7 @@ import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.repository.workpackage.activity.WorkPackageActivityRepository
 import io.cloudflight.jems.server.project.repository.workpackage.activity.toActivityHistoricalData
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.associatedorganization.ProjectAssociatedOrganizationService
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
@@ -227,6 +228,14 @@ class PartnerPersistenceProvider(
             active = false
         }
     }
+
+    /**
+     * returns list of PartnerId / ProjectId pair
+     */
+    @Transactional(readOnly = true)
+    override fun getPartnerProjectIdByPartnerIdAndProjectStatusIn(partnerIds: Set<Long>, projectStatuses: Set<ApplicationStatus>): List<Pair<Long, Long>> =
+        projectPartnerRepository.getPartnerProjectIdByPartnerIdAndProjectStatusIn(partnerIds, projectStatuses).toList()
+
 
     /**
      * sets or updates the sort number for all partners for the specified project.
