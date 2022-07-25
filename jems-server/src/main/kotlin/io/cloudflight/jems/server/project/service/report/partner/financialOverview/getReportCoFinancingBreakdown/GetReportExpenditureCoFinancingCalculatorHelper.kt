@@ -110,8 +110,12 @@ fun ProjectPartnerReportContributionOverview.generateCoFinCalculationInputData(
         privatePercentage = private.amount.getPercentageOf(totalEligibleBudget),
     )
 
-private fun BigDecimal.getPercentageOf(total: BigDecimal) = this.divide(total, 4, RoundingMode.DOWN)
-    .multiply(BigDecimal.valueOf(100))
+private fun BigDecimal.getPercentageOf(total: BigDecimal) =
+    if (total.compareTo(BigDecimal.ZERO) == 0)
+        BigDecimal.ZERO
+    else
+        this.divide(total, 4, RoundingMode.DOWN)
+            .multiply(BigDecimal.valueOf(100))
 
 private fun List<ProjectPartnerCoFinancing>.getMainFunds() = filter { it.fundType == MainFund }
 
