@@ -52,7 +52,7 @@
             {{'checklists.instance.return.to.user.button' | translate : {name: data.checklist.creatorEmail} }}
         </jems-pending-button>
 
-        <jems-alert [closable]="false" [show]="isConsolidated" [type]="Alert.INFO" disableMargins="false">
+        <jems-alert [closable]="false" [show]="isConsolidated && data.userCanConsolidate" [type]="Alert.INFO" disableMargins="false">
             <span>{{ 'checklist.instance.consolidated.return.to.assessor.info' | translate }}</span>
         </jems-alert>
 
