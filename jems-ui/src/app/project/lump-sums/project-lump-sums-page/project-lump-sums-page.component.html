@@ -132,7 +132,7 @@
 
                                 <ng-container
                                         *ngFor="let partner of data.partners, let partnerAmountIndex=index"
-                                        [matColumnDef]="partner.partnerNumber">
+                                        [matColumnDef]="partner.id + ''">
                                     <mat-header-cell *matHeaderCellDef class="justify-end">
                                         <span jemsText maxLines="2">{{partner.partnerNumber}}</span>
                                     </mat-header-cell>
