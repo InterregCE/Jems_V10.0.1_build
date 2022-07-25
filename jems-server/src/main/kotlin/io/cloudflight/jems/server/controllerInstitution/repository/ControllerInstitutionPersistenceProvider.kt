@@ -139,6 +139,39 @@ class ControllerInstitutionPersistenceProvider(
         institutionPartnerRepository.getInstitutionPartnerAssignmentsWithUsersByPartnerProjectIdsIn(partnerProjectIds)
 
 
+    @Transactional(readOnly = true)
+    override fun getInstitutionPartnerAssignments(pageable: Pageable): Page<InstitutionPartnerDetails> {
+        return institutionPartnerRepository.getInstitutionPartnerAssignments(pageable, listOf(
+            ApplicationStatus.STEP1_DRAFT,
+            ApplicationStatus.STEP1_SUBMITTED,
+            ApplicationStatus.STEP1_ELIGIBLE,
+            ApplicationStatus.STEP1_INELIGIBLE,
+            ApplicationStatus.STEP1_APPROVED,
+            ApplicationStatus.STEP1_APPROVED_WITH_CONDITIONS,
+            ApplicationStatus.STEP1_NOT_APPROVED,
+            ApplicationStatus.DRAFT,
+            ApplicationStatus.SUBMITTED,
+            ApplicationStatus.CONDITIONS_SUBMITTED,
+            ApplicationStatus.RETURNED_TO_APPLICANT,
+            ApplicationStatus.RETURNED_TO_APPLICANT_FOR_CONDITIONS,
+            ApplicationStatus.ELIGIBLE,
+            ApplicationStatus.INELIGIBLE
+        ))
+    }
+
+    @Transactional
+    override fun assignInstitutionToPartner(newInstitutionPartnerAssignments: List<InstitutionPartnerAssignment>): List<InstitutionPartnerAssignment> {
+        val assignmentsToDelete =
+            newInstitutionPartnerAssignments.filter { it.institutionId == null || it.institutionId == 0L }
+        val assignmentsToSave = newInstitutionPartnerAssignments.toMutableList()
+
+        assignmentsToDelete.takeIf {it.isNotEmpty()}?.run {
+            institutionPartnerRepository.deleteAllByIdInBatch(map { it.partnerId })
+        }
+        assignmentsToSave.removeAll(assignmentsToDelete)
+        return institutionPartnerRepository.saveAll(assignmentsToSave.toEntities()).toModels()
+    }
+
     private fun getControllerInstitutionOrThrow(id: Long): ControllerInstitutionEntity =
         controllerRepo.findById(id).orElseThrow { GetControllerInstitutionException() }
 
