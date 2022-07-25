@@ -49,8 +49,7 @@ context('Partners budget exports', () => {
       });
     });
   });
-
-
+  
   it('TB-370 Export partners budget in version other than the current', () => {
     cy.fixture('project/exports/partners-budget/TB-370.json').then(testData => {
       cy.create2StepCall(call2step, user.programmeUser.email).then(callId => {
@@ -165,6 +164,138 @@ context('Partners budget exports', () => {
             cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/budget?*version=4.0`, 'xlsx').then(exportFile => {
               cy.fixture('project/exports/partners-budget/TB-370-v4.xlsx', null).parseXLSX().then(testDataFile => {
                 const assertionMessage = 'Verify downloaded xlsx file for rejected version';
+                expect(exportFile.content[0].data.slice(1), assertionMessage).to.deep.equal(testDataFile[0].data.slice(1));
+                expect(exportFile.content[1].data.slice(1), assertionMessage).to.deep.equal(testDataFile[1].data.slice(1));
+              });
+            });
+          });
+        });
+      });
+    });
+  });
+
+  it('TB-686 Export partners budget in different steps [step 2 only]', () => {
+    cy.fixture('project/exports/application-form/TB-373.json').then(testData => {
+      call2step.applicationFormConfiguration = testData.call.applicationFormConfiguration;
+      cy.create2StepCall(call2step, user.programmeUser.email).then(callId => {
+        cy.publishCall(callId, user.programmeUser.email);
+        application2step.details.projectCallId = callId;
+        cy.createApplication(application2step).then(applicationId => {
+
+          // 1st step version
+          cy.updateProjectIdentification(applicationId, application2step.firstStep.identification);
+          cy.createPartner(applicationId, application2step.firstStep.partners[0].details).then(partnerId => {
+            cy.runPreSubmissionCheck(applicationId);
+            cy.submitProjectApplication(applicationId);
+
+            cy.loginByRequest(user.programmeUser.email);
+            cy.approveApplication(applicationId, application2step.assessments);
+            cy.startSecondStep(applicationId);
+
+            // 2nd step version
+            cy.loginByRequest(user.applicantUser.email);
+            const updatedPartner = testData.application.partners[0];
+            application2step.secondStep.identification.acronym = testData.application.acronym + ' v2';
+            cy.updateProjectIdentification(applicationId, application2step.secondStep.identification);
+            cy.createProjectWorkPlan(applicationId, testData.application.description.workPlan);
+            cy.updateProjectRelevanceAndContext(applicationId, application2step.secondStep.description.relevanceAndContext);
+            cy.updateProjectPartnership(applicationId, application2step.secondStep.description.partnership);
+            cy.createProjectResults(applicationId, testData.application.description.results);
+            cy.updateProjectManagement(applicationId, application2step.secondStep.description.management);
+            cy.updateProjectLongTermPlans(applicationId, application2step.secondStep.description.longTermPlans);
+            cy.updatePartner(partnerId, updatedPartner.details);
+            cy.updatePartnerAddress(partnerId, updatedPartner.address);
+            cy.updatePartnerContact(partnerId, updatedPartner.contact);
+            cy.updatePartnerBudget(partnerId, updatedPartner.budget);
+            cy.updatePartnerCofinancing(partnerId, updatedPartner.cofinancing);
+            cy.runPreSubmissionCheck(applicationId);
+            cy.submitProjectApplication(applicationId);
+
+            cy.approveApplication(applicationId, application2step.assessments, user.programmeUser.email);
+            cy.visit(`app/project/detail/${applicationId}/export`, {failOnStatusCode: false});
+
+            // export current step 2 (approved) version
+            cy.contains('Partners budget').click();
+            cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/budget?*`, 'xlsx').then(exportFile => {
+              cy.fixture('project/exports/partners-budget/TB-686-v2.xlsx', null).parseXLSX().then(testDataFile => {
+                const assertionMessage = 'Verify downloaded xlsx file for rejected version';
+                expect(exportFile.content[0].data.slice(1), assertionMessage).to.deep.equal(testDataFile[0].data.slice(1));
+                expect(exportFile.content[1].data.slice(1), assertionMessage).to.deep.equal(testDataFile[1].data.slice(1));
+              });
+            });
+
+            // export step 1 version
+            cy.get('div#export-config').contains('div', 'Project version').find('mat-select').click();
+            cy.contains('mat-option', 'V. 1.0').click();
+
+            cy.contains('div#export-config button', 'Export').clickToDownload(`api/project/${applicationId}/export/budget?*version=1.0`, 'xlsx').then(exportFile => {
+              cy.fixture('project/exports/partners-budget/TB-686-v1.xlsx', null).parseXLSX().then(testDataFile => {
+                const assertionMessage = 'Verify downloaded xlsx file for step 1 version';
+                expect(exportFile.content[0].data.slice(1), assertionMessage).to.deep.equal(testDataFile[0].data.slice(1));
+                expect(exportFile.content[1].data.slice(1), assertionMessage).to.deep.equal(testDataFile[1].data.slice(1));
+              });
+            });
+          });
+        });
+      });
+    });
+  });
+
+  it('TB-368 Export partners budget in different steps [step 1&2]', () => {
+    cy.fixture('project/exports/application-form/TB-545.json').then(testData => {
+      call2step.applicationFormConfiguration = testData.call.applicationFormConfiguration;
+      cy.create2StepCall(call2step, user.programmeUser.email).then(callId => {
+        cy.publishCall(callId, user.programmeUser.email);
+        testData.application.details.projectCallId = callId;
+        cy.createApplication(testData.application).then(applicationId => {
+
+          // 1st step version
+          cy.updateProjectIdentification(applicationId, testData.application.identification);
+          const leadPartner = testData.application.partners[0];
+          cy.createPartner(applicationId, leadPartner.details).then(partnerId => {
+            cy.createProjectWorkPlan(applicationId, testData.application.description.workPlan);
+            cy.updateProjectRelevanceAndContext(applicationId, testData.application.description.relevanceAndContext);
+            cy.updateProjectPartnership(applicationId, testData.application.description.partnership);
+            cy.createProjectResults(applicationId, testData.application.description.results);
+            cy.updateProjectManagement(applicationId, testData.application.description.management);
+            cy.updateProjectLongTermPlans(applicationId, testData.application.description.longTermPlans);
+            cy.updatePartnerAddress(partnerId, leadPartner.address);
+            cy.updatePartnerContact(partnerId, leadPartner.contact);
+            cy.updatePartnerBudget(partnerId, leadPartner.budget);
+            cy.updatePartnerCofinancing(partnerId, leadPartner.cofinancing);
+
+            cy.runPreSubmissionCheck(applicationId);
+            cy.submitProjectApplication(applicationId);
+
+            cy.loginByRequest(user.programmeUser.email);
+            cy.approveApplication(applicationId, application2step.assessments);
+            cy.startSecondStep(applicationId);
+
+            // 2nd step version
+            cy.loginByRequest(user.applicantUser.email);
+            cy.runPreSubmissionCheck(applicationId);
+            cy.submitProjectApplication(applicationId);
+
+            cy.approveApplication(applicationId, application2step.assessments, user.programmeUser.email);
+            cy.visit(`app/project/detail/${applicationId}/export`, {failOnStatusCode: false});
+
+            // export current step 2 (approved) version
+            cy.contains('Partners budget').click();
+            cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/budget?*`, 'xlsx').then(exportFile => {
+              cy.fixture('project/exports/partners-budget/TB-368-v2.xlsx', null).parseXLSX().then(testDataFile => {
+                const assertionMessage = 'Verify downloaded xlsx file for step 2 version';
+                expect(exportFile.content[0].data.slice(1), assertionMessage).to.deep.equal(testDataFile[0].data.slice(1));
+                expect(exportFile.content[1].data.slice(1), assertionMessage).to.deep.equal(testDataFile[1].data.slice(1));
+              });
+            });
+
+            // export step 1 version
+            cy.get('div#export-config').contains('div', 'Project version').find('mat-select').click();
+            cy.contains('mat-option', 'V. 1.0').click();
+
+            cy.contains('div#export-config button', 'Export').clickToDownload(`api/project/${applicationId}/export/budget?*version=1.0`, 'xlsx').then(exportFile => {
+              cy.fixture('project/exports/partners-budget/TB-368-v1.xlsx', null).parseXLSX().then(testDataFile => {
+                const assertionMessage = 'Verify downloaded xlsx file for step 1 version';
                 expect(exportFile.content[0].data.slice(1), assertionMessage).to.deep.equal(testDataFile[0].data.slice(1));
                 expect(exportFile.content[1].data.slice(1), assertionMessage).to.deep.equal(testDataFile[1].data.slice(1));
               });
