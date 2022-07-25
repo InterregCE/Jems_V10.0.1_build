@@ -388,7 +388,7 @@ export class UserRoleDetailPageComponent {
     const institutionsPermission = this.treeControlTopNavigation?.dataNodes
       ?.find(node => node.name === 'topbar.main.institutions') as any;
     const limitInstitutionsPermission = this.treeControlTopNavigation?.dataNodes
-      ?.find(node => node.name === 'permission.top.bar.institutions.limited.edit') as any;
+      ?.find(node => node.name === 'permission.top.bar.institutions.all.toggle') as any;
 
     if(this.state(institutionsPermission.form)?.value === PermissionState.HIDDEN) {
       this.state(limitInstitutionsPermission.form)?.setValue(PermissionState.HIDDEN);

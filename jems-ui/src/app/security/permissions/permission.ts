@@ -355,13 +355,13 @@ export class Permission {
           mode: PermissionMode.HIDDEN_VIEW_EDIT,
           viewPermissions: [PermissionsEnum.InstitutionsRetrieve],
           editPermissions: [PermissionsEnum.InstitutionsUpdate],
-          editTooltip: 'permission.top.bar.institutions.data',
+          editTooltip: 'permission.top.bar.institutions.data.edit',
         },
         {
-          name: 'permission.top.bar.institutions.limited.edit',
+          name: 'permission.top.bar.institutions.all.toggle',
           mode: PermissionMode.TOGGLE_EDIT,
           editPermissions: [PermissionsEnum.InstitutionsUnlimited],
-          infoMessage: 'permission.top.bar.institutions.limited.edit.info'
+          infoMessage: 'permission.top.bar.institutions.all.info'
         },
       ]
     },

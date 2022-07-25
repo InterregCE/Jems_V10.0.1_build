@@ -8,7 +8,6 @@ import {
 } from '@project/project-application/contract-monitoring/contract-monitoring-extension/contract-monitoring-extension.store';
 import {ProjectContractingMonitoringAddDateDTO, ProjectContractingMonitoringDTO} from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
-import {Log} from "@common/utils/log";
 
 @Component({
   selector: 'jems-contract-monitoring-extension',

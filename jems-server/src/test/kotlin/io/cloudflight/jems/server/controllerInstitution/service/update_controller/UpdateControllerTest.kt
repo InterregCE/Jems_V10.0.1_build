@@ -2,11 +2,13 @@ package io.cloudflight.jems.server.controllerInstitution.service.update_controll
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.controllerInstitution.ControllerInstitutionPersistence
+import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionValidator
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitution
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionUser
 import io.cloudflight.jems.server.controllerInstitution.service.model.UpdateControllerInstitution
 import io.cloudflight.jems.server.controllerInstitution.service.model.UserInstitutionAccessLevel
 import io.cloudflight.jems.server.controllerInstitution.service.updateControllerInstitution.UpdateController
+import io.cloudflight.jems.server.project.service.projectuser.assign_user_collaborator_to_project.UsersAreNotValid
 import io.cloudflight.jems.server.user.service.UserPersistence
 import io.cloudflight.jems.server.user.service.UserRolePersistence
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
@@ -18,6 +20,7 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.RelaxedMockK
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import java.time.ZonedDateTime
 
 class UpdateControllerTest : UnitTest() {
@@ -30,6 +33,9 @@ class UpdateControllerTest : UnitTest() {
 
     @RelaxedMockK
     lateinit var userPersistence: UserPersistence
+
+    @InjectMockKs
+    lateinit var controllerInstitutionValidator : ControllerInstitutionValidator
 
     @InjectMockKs
     lateinit var updateController: UpdateController
@@ -69,5 +75,18 @@ class UpdateControllerTest : UnitTest() {
         every { userPersistence.findAllByEmails(any()) } returns listOf(userSummary(USER_ID, USER_ROLE_ID))
         Assertions.assertThat(updateController.updateControllerInstitution(INSTITUTION_ID, institutionWithUsers))
             .isEqualTo(institution)
+    }
+
+    @Test
+    fun `updateInstitution throw invalid user exception`() {
+        every { controllerInstitutionPersistence.updateControllerInstitution(institutionWithUsers) } returns institution
+        every {
+            userRolePersistence.findRoleIdsHavingAndNotHavingPermissions(
+                UserRolePermission.getProjectMonitorPermissions(),
+                emptySet()
+            )
+        } returns setOf(1, 2, 4, 6)
+        every { userPersistence.findAllByEmails(any()) } returns listOf(userSummary(USER_ID, 11))
+        assertThrows<UsersAreNotValid> {updateController.updateControllerInstitution(INSTITUTION_ID, institutionWithUsers) }
     }
 }
