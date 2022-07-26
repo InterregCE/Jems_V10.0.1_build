@@ -1,0 +1,55 @@
+<jems-main-page-template *ngIf="data$ | async as data"
+                         [needsCard]="true"
+                         titleKey="topbar.main.controllers">
+
+    <jems-form (discard)="resetForm(data.rows)" (save)="saveForm()">
+            <jems-table class="overflow-auto" *ngIf="data.rows.length"
+                        [configuration]="data.tableConfiguration"
+                        [rows]="data.rows"
+                        [totalElements]="data.totalElements"
+                        [pageIndex]="institutionAssignmentStore.newPageIndex$ | async"
+                        (newPageIndex)="institutionAssignmentStore.newPageIndex$.next($event)"
+                        (newPageSize)="institutionAssignmentStore.newPageSize$.next($event)"
+                        (sortRows)="institutionAssignmentStore.newSort$.next($event)">
+            </jems-table>
+    </jems-form>
+
+</jems-main-page-template>
+
+
+<ng-template #statusCell let-institutionAssignmentEntry>
+    <mat-chip-list>
+        <mat-chip  [removable]="false" [selectable]="false">
+            <ng-container *ngIf="institutionAssignmentEntry.partnerStatus">
+                <mat-icon>person</mat-icon>
+                <span>{{'project.application.form.partner.table.status.active' | translate}}</span>
+            </ng-container>
+
+            <ng-container *ngIf="!institutionAssignmentEntry.partnerStatus">
+                <mat-icon>person_off</mat-icon>
+                <span>{{'project.application.form.partner.table.status.inactive' | translate}}</span>
+            </ng-container>
+        </mat-chip>
+    </mat-chip-list>
+</ng-template>
+
+<ng-template #institutionDropdownCell let-institutionAssignmentEntry>
+    <mat-select #institutionAssignmentSelect *ngIf="data$ | async as data" [disabled]="!data.editAssignmentPermission"
+                placeholder="{{'controller.institutions.assignment.table.institution.column.dropdown.placeholder' | translate}}"
+                (selectionChange)="onInstitutionChange(institutionAssignmentEntry.index, $event)"
+                [value]="institutionAssignmentEntry.institutionId"
+                [matTooltip]="institutionAssignmentSelect.triggerValue">
+        <mat-option [value]="null">{{'common.not.applicable.option' | translate}}</mat-option>
+        <mat-option *ngFor="let institution of data.institutions.content" [value]="institution.id">{{institution.name}}</mat-option>
+    </mat-select>
+</ng-template>
+
+<ng-template #partnerNumberCell let-institutionAssignmentEntry>
+    <p>{{institutionAssignmentEntry.partnerRole == 'LEAD_PARTNER' ? 'LP' : 'PP'}}{{institutionAssignmentEntry.partnerSortNumber}}</p>
+</ng-template>
+
+<ng-template #institutionNutsCell let-institutionAssignmentEntry>
+    <p>{{institutionAssignmentEntry.partnerNuts3 ? institutionAssignmentEntry.partnerNuts3 : institutionAssignmentEntry.partnerAddress}}</p>
+</ng-template>
+
+

@@ -29,6 +29,7 @@ export class Permission {
     PermissionsEnum.InstitutionsRetrieve,
     PermissionsEnum.InstitutionsUpdate,
     PermissionsEnum.InstitutionsUnlimited,
+    PermissionsEnum.InstitutionsAssignmentRetrieve
   ];
 
   public static readonly DEFAULT_USER_CREATE_AND_COLLABORATE_PERMISSIONS: PermissionNode[] = [
@@ -362,6 +363,13 @@ export class Permission {
           mode: PermissionMode.TOGGLE_EDIT,
           editPermissions: [PermissionsEnum.InstitutionsUnlimited],
           infoMessage: 'permission.top.bar.institutions.all.info'
+        },
+        {
+          name: 'topbar.main.institutions.assignment',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [PermissionsEnum.InstitutionsAssignmentRetrieve],
+          editPermissions: [PermissionsEnum.InstitutionsAssignmentUpdate],
+          editTooltip: 'permission.top.bar.institutions.assignment.data',
         },
       ]
     },

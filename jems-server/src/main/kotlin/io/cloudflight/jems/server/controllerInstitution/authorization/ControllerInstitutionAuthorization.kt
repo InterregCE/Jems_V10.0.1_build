@@ -31,7 +31,8 @@ class ControllerInstitutionAuthorization(
 
     fun canRetrieveControllerInstitutions(): Boolean {
         return hasPermission(UserRolePermission.InstitutionsRetrieve) ||
-            hasPermission(UserRolePermission.InstitutionsUpdate)
+            hasPermission(UserRolePermission.InstitutionsUpdate) ||
+            hasPermission(UserRolePermission.InstitutionsAssignmentRetrieve)
     }
 
     fun canViewControllerInstitutionDetails(institutionId: Long): Boolean {
