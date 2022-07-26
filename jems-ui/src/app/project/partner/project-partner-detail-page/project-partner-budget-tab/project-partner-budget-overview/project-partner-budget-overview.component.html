@@ -3,7 +3,7 @@
         <h3>{{'project.partner.budget.overview.header' | translate}}</h3>
 
         <mat-card-content jemsFormLayout jemsNoWidthLimit>
-            <jems-budget-table jemsNoWidthLimit hideFooter="true" hideCountry="true"
+            <jems-budget-table jemsNoWidthLimit hideFooter="true" hideCountry="true" [headerLinks]="true"
                               [projectId]="projectStore.projectId$ | async"
                               [dataSource]="dataSource$ | async">
             </jems-budget-table>
