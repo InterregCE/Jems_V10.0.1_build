@@ -5,10 +5,7 @@ import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeLumpS
 import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeUnitCostRepository
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
 import io.cloudflight.jems.server.programme.repository.legalstatus.ProgrammeLegalStatusRepository
-import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportCoFinancingEntity
-import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportCoFinancingIdEntity
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
-import io.cloudflight.jems.server.project.entity.report.financialOverview.ReportProjectPartnerExpenditureCoFinancingEntity
 import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportBudgetPerPeriodEntity
 import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportBudgetPerPeriodId
 import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportIdentificationEntity
@@ -30,9 +27,6 @@ import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPart
 import io.cloudflight.jems.server.project.repository.report.workPlan.toEntity
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceBenefit
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
-import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus.Public
-import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus.AutomaticPublic
-import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus.Private
 import io.cloudflight.jems.server.project.service.report.ProjectReportCreatePersistence
 import io.cloudflight.jems.server.project.service.report.model.create.ProjectPartnerReportCreate
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSummary
@@ -79,7 +73,7 @@ class ProjectReportCreatePersistenceProvider(
         persistAvailableUnitCostsToReport(report.budget.unitCosts, report = reportEntity)
         persistBudgetPerPeriodToReport(report.budget.budgetPerPeriod, report = reportEntity)
         persistBudgetExpenditureSetupToReport(report.budget.expenditureSetup, report = reportEntity)
-        return reportEntity.toModelSummary()
+        return reportEntity.toCreateModelSummary()
     }
 
     private fun persistReport(report: ProjectPartnerReportCreate): ProjectPartnerReportEntity =

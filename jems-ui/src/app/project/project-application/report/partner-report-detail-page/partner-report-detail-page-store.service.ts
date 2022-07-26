@@ -85,10 +85,11 @@ export class PartnerReportDetailPageStore {
       );
   }
 
-  submitReport(partnerId: number, reportId: number): Observable<ProjectPartnerReportSummaryDTO> {
+  submitReport(partnerId: number, reportId: number): Observable<ProjectPartnerReportSummaryDTO.StatusEnum> {
     return this.projectPartnerReportService.submitProjectPartnerReport(partnerId, reportId)
       .pipe(
-        tap(summary => this.updatedReportStatus$.next(summary.status)),
+        map(status => status as ProjectPartnerReportSummaryDTO.StatusEnum),
+        tap(status => this.updatedReportStatus$.next(status)),
         tap(status => Log.info('Changed status for report', reportId, status))
       );
   }

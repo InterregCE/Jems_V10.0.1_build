@@ -2,6 +2,7 @@ package io.cloudflight.jems.api.project.report
 
 import io.cloudflight.jems.api.project.dto.report.ProjectPartnerReportDTO
 import io.cloudflight.jems.api.project.dto.report.ProjectPartnerReportSummaryDTO
+import io.cloudflight.jems.api.project.dto.report.ReportStatusDTO
 import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileDTO
 import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadataDTO
 import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileSearchRequestDTO
@@ -59,7 +60,7 @@ interface ProjectPartnerReportApi {
     fun submitProjectPartnerReport(
         @PathVariable partnerId: Long,
         @PathVariable reportId: Long,
-    ): ProjectPartnerReportSummaryDTO
+    ): ReportStatusDTO
 
     @ApiOperation("Download file from partner report")
     @GetMapping(

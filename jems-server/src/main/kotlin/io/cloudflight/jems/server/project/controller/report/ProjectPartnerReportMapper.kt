@@ -9,17 +9,20 @@ import io.cloudflight.jems.api.project.dto.report.ReportStatusDTO
 import io.cloudflight.jems.api.project.dto.report.file.*
 import io.cloudflight.jems.api.project.dto.report.partner.PartnerReportIdentificationCoFinancingDTO
 import io.cloudflight.jems.api.project.dto.report.partner.PartnerReportIdentificationDTO
+import io.cloudflight.jems.api.project.dto.report.partner.identification.ProjectPartnerReportPeriodDTO
 import io.cloudflight.jems.server.programme.controller.fund.toDto
 import io.cloudflight.jems.server.programme.controller.legalstatus.toDto
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.report.model.PartnerReportIdentification
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSummary
+import io.cloudflight.jems.server.project.service.report.model.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFile
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileSearchRequest
 import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
+import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportPeriod
 import org.mapstruct.Mapper
 import org.mapstruct.factory.Mappers
 import org.springframework.data.domain.Page
@@ -35,6 +38,17 @@ fun ProjectPartnerReportSummary.toDto() = ProjectPartnerReportSummaryDTO(
     linkedFormVersion = version,
     firstSubmission = firstSubmission,
     createdAt = createdAt,
+    startDate = startDate,
+    endDate = endDate,
+    periodDetail = periodDetail?.toDto(),
+)
+
+fun ProjectPartnerReportPeriod.toDto() = ProjectPartnerReportPeriodDTO(
+    number = number,
+    periodBudget = periodBudget,
+    periodBudgetCumulative = periodBudgetCumulative,
+    start = start,
+    end = end,
 )
 
 fun Page<ProjectPartnerReportSummary>.toDto() = map { it.toDto() }
@@ -47,6 +61,8 @@ fun ProjectPartnerReport.toDto() = ProjectPartnerReportDTO(
 
     identification = identification.toDto()
 )
+
+fun ReportStatus.toDto() = ReportStatusDTO.valueOf(name)
 
 fun PartnerReportIdentification.toDto() = PartnerReportIdentificationDTO(
     projectIdentifier = projectIdentifier,

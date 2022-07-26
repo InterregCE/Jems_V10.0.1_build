@@ -23,7 +23,7 @@ import {
 export class PartnerReportPageStore {
   public static PARTNER_REPORT_DETAIL_PATH = '/reporting/';
 
-  partnerReports$: Observable<ProjectPartnerReportSummaryDTO[]>;
+  partnerReports$: Observable<PageProjectPartnerReportSummaryDTO>;
   partnerSummary$: Observable<ProjectPartnerSummaryDTO>;
   partnerReportLevel$: Observable<string>;
   partnerId$: Observable<string | number | null>;
@@ -58,7 +58,7 @@ export class PartnerReportPageStore {
       );
   }
 
-  private partnerReports(): Observable<ProjectPartnerReportSummaryDTO[]> {
+  private partnerReports(): Observable<PageProjectPartnerReportSummaryDTO> {
     return combineLatest([
       this.partnerId$,
       this.partnerProjectStore.lastContractedVersionASObservable(),
@@ -70,8 +70,7 @@ export class PartnerReportPageStore {
         filter(([partnerId, lastContractedVersion, pageIndex, pageSize]) => !!partnerId),
         switchMap(([partnerId, lastContractedVersion, pageIndex, pageSize]) =>
           this.projectPartnerReportService.getProjectPartnerReports(Number(partnerId), pageIndex, pageSize, `number,desc`)),
-        map((data: PageProjectPartnerReportSummaryDTO) => data.content),
-        tap((data: ProjectPartnerReportSummaryDTO[]) => Log.info('Fetched partner reports for partner:', this, data))
+        tap((data: PageProjectPartnerReportSummaryDTO) => Log.info('Fetched partner reports for partner:', this, data))
       );
   }
 

@@ -29,7 +29,7 @@
         <jems-table *ngIf="partnerReports.length > 0"
                     [configuration]="tableConfiguration"
                     [rows]="partnerReports"
-                    [totalElements]="partnerReports.length"
+                    [totalElements]="data.totalElements"
                     [pageIndex]="pageStore.newPageIndex$ | async"
                     (newPageIndex)="pageStore.newPageIndex$.next($event)"
                     (newPageSize)="pageStore.newPageSize$.next($event)">
@@ -43,4 +43,14 @@
 <ng-template #numberingCell let-partnerReport>
     <span *ngIf="partnerReport.reportNumber">
         R.{{partnerReport.reportNumber}}</span>
+</ng-template>
+
+<ng-template #periodCell let-partnerReport>
+    <span *ngIf="partnerReport.periodDetail"
+          matTooltip="{{ (partnerReport.startDate | localeDate) || 'X' }} - {{ (partnerReport.endDate | localeDate) || 'X' }}">
+        {{ 'project.application.form.work.package.output.delivery.period.entry' | translate : {
+            periodNumber: partnerReport.periodDetail.number,
+            start: partnerReport.periodDetail.start,
+            end: partnerReport.periodDetail.end } }}
+    </span>
 </ng-template>

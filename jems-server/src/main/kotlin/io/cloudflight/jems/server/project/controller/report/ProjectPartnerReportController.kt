@@ -1,8 +1,8 @@
 package io.cloudflight.jems.server.project.controller.report
 
 import io.cloudflight.jems.api.project.dto.report.ProjectPartnerReportSummaryDTO
+import io.cloudflight.jems.api.project.dto.report.ReportStatusDTO
 import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileDTO
-import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadataDTO
 import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileSearchRequestDTO
 import io.cloudflight.jems.api.project.report.ProjectPartnerReportApi
 import io.cloudflight.jems.server.project.service.report.partner.createProjectPartnerReport.CreateProjectPartnerReportInteractor
@@ -44,7 +44,7 @@ class ProjectPartnerReportController(
     override fun createProjectPartnerReport(partnerId: Long) =
         createPartnerReport.createReportFor(partnerId = partnerId).toDto()
 
-    override fun submitProjectPartnerReport(partnerId: Long, reportId: Long): ProjectPartnerReportSummaryDTO =
+    override fun submitProjectPartnerReport(partnerId: Long, reportId: Long): ReportStatusDTO =
         submitPartnerReport.submit(partnerId = partnerId, reportId = reportId).toDto()
 
     override fun downloadAttachment(

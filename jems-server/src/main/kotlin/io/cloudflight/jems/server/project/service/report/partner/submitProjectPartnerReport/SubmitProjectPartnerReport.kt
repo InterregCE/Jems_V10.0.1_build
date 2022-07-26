@@ -7,8 +7,7 @@ import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalcul
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReport
-import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSubmissionSummary
-import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSummary
+import io.cloudflight.jems.server.project.service.report.model.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectReportContributionPersistence
 import io.cloudflight.jems.server.project.service.report.partner.contribution.extractOverview
@@ -42,7 +41,7 @@ class SubmitProjectPartnerReport(
     @CanEditPartnerReport
     @Transactional
     @ExceptionWrapper(SubmitProjectPartnerReportException::class)
-    override fun submit(partnerId: Long, reportId: Long): ProjectPartnerReportSummary {
+    override fun submit(partnerId: Long, reportId: Long): ReportStatus {
         val report = reportPersistence.getPartnerReportById(partnerId = partnerId, reportId = reportId)
         validateReportIsStillDraft(report)
 
@@ -69,7 +68,7 @@ class SubmitProjectPartnerReport(
                     report = it,
                 )
             )
-        }.toSummary()
+        }.status
     }
 
     private fun validateReportIsStillDraft(report: ProjectPartnerReport) {
@@ -127,12 +126,4 @@ class SubmitProjectPartnerReport(
         )
     }
 
-    private fun ProjectPartnerReportSubmissionSummary.toSummary() = ProjectPartnerReportSummary(
-        id = id,
-        reportNumber = reportNumber,
-        status = status,
-        version = version,
-        firstSubmission = firstSubmission,
-        createdAt = createdAt,
-    )
 }

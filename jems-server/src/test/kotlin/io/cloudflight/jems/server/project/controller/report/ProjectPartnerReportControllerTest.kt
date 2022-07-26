@@ -19,6 +19,7 @@ import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileSearchRe
 import io.cloudflight.jems.api.project.dto.report.file.UserSimpleDTO
 import io.cloudflight.jems.api.project.dto.report.partner.PartnerReportIdentificationCoFinancingDTO
 import io.cloudflight.jems.api.project.dto.report.partner.PartnerReportIdentificationDTO
+import io.cloudflight.jems.api.project.dto.report.partner.identification.ProjectPartnerReportPeriodDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
@@ -37,6 +38,7 @@ import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartn
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFile
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileSearchRequest
 import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
+import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportPeriod
 import io.cloudflight.jems.server.project.service.report.partner.createProjectPartnerReport.CreateProjectPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.deleteProjectPartnerReportFile.DeleteProjectPartnerReportFileInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.downloadProjectPartnerReportFile.DownloadProjectPartnerReportFileInteractor
@@ -58,12 +60,15 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import java.math.BigDecimal
+import java.time.LocalDate
 import java.time.ZonedDateTime
 
 internal class ProjectPartnerReportControllerTest : UnitTest() {
 
     companion object {
         private val YESTERDAY = ZonedDateTime.now().minusDays(1)
+        private val LAST_WEEK = LocalDate.now().minusWeeks(1)
+        private val NEXT_WEEK = LocalDate.now().plusWeeks(1)
 
         private val reportSummary = ProjectPartnerReportSummary(
             id = 754,
@@ -72,6 +77,15 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
             version = "6.1",
             firstSubmission = null,
             createdAt = YESTERDAY,
+            startDate = LAST_WEEK,
+            endDate = NEXT_WEEK,
+            periodDetail = ProjectPartnerReportPeriod(
+                number = 2,
+                periodBudget = BigDecimal.ONE,
+                periodBudgetCumulative = BigDecimal.TEN,
+                start = 4,
+                end = 6,
+            )
         )
 
         private val reportSummaryDTO = ProjectPartnerReportSummaryDTO(
@@ -81,6 +95,15 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
             linkedFormVersion = reportSummary.version,
             firstSubmission = null,
             createdAt = reportSummary.createdAt,
+            startDate = reportSummary.startDate,
+            endDate = reportSummary.endDate,
+            periodDetail = ProjectPartnerReportPeriodDTO(
+                number = 2,
+                periodBudget = BigDecimal.ONE,
+                periodBudgetCumulative = BigDecimal.TEN,
+                start = 4,
+                end = 6,
+            )
         )
 
         private val report = ProjectPartnerReport(
@@ -243,17 +266,8 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
 
     @Test
     fun submitProjectPartnerReport() {
-        val thisMoment = ZonedDateTime.now()
-        every { submitPartnerReport.submit(18, 310) } returns reportSummary.copy(
-            status = ReportStatus.Submitted,
-            firstSubmission = thisMoment,
-        )
-        assertThat(controller.submitProjectPartnerReport(18, 310)).isEqualTo(
-            reportSummaryDTO.copy(
-                status = ReportStatusDTO.Submitted,
-                firstSubmission = thisMoment,
-            )
-        )
+        every { submitPartnerReport.submit(18, 310) } returns ReportStatus.Submitted
+        assertThat(controller.submitProjectPartnerReport(18, 310)).isEqualTo(ReportStatusDTO.Submitted)
     }
 
     @Test

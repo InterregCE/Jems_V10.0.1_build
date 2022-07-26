@@ -85,17 +85,6 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         partnerAbbreviation = "not needed",
     )
 
-    private val reportsForContribution = listOf(
-        ProjectPartnerReportSummary(
-            id = 408L,
-            reportNumber = 4,
-            status = ReportStatus.Submitted,
-            version = "10.1",
-            firstSubmission = ZonedDateTime.now().minusDays(10),
-            createdAt = ZonedDateTime.now().minusDays(20),
-        ),
-    )
-
     private val previousContributions = listOf(
         ProjectPartnerReportEntityContribution(
             id = 1L,
@@ -450,7 +439,7 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         val partner = mockk<ProjectPartnerSummary>()
         every { partner.id } returns partnerId
         // contribution
-        every { reportPersistence.listSubmittedPartnerReports(partnerId) } returns reportsForContribution
+        every { reportPersistence.getSubmittedPartnerReportIds(partnerId) } returns setOf(408L)
         every { reportContributionPersistence.getAllContributionsForReportIds(setOf(408L)) } returns previousContributions
         // lump sums
         every { lumpSumPersistence.getLumpSums(projectId, version) } returns lumpSums(partnerId)

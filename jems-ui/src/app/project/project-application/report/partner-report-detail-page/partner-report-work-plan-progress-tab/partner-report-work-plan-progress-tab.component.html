@@ -91,9 +91,6 @@
                                                 <span  class="justify-start">
                                                     {{ 'project.application.partner.report.workplan.output.table.contribution' | translate }}
                                                 </span>
-                                                <span jemsText class="justify-start">
-                                                    {{ 'project.application.partner.report.workplan.output.table.evidence' | translate }}
-                                                </span>
                                                 <span jemsText class="justify-start attachments-header-column">
                                                     {{ 'project.application.partner.report.attachments' | translate }}
                                                 </span>
@@ -125,11 +122,6 @@
                                                             </mat-checkbox>
                                                         </span>
 
-                                                        <span class="justify-center">
-                                                            <mat-checkbox
-                                                                    [formControlName]='constants.DELIVERABLE_EVIDENCE.name'>
-                                                            </mat-checkbox>
-                                                        </span>
                                                         <span class="justify-start attachments-element-deliverable" >
                                                             <jems-partner-actions-cell
                                                                     [formControlName]="constants.DELIVERABLE_FILE.name"
@@ -165,9 +157,6 @@
                                             {{ 'project.application.partner.report.workplan.output.table.contribution' | translate }}
                                         </span>
                                         <span class="justify-center">
-                                            {{ 'project.application.partner.report.workplan.output.table.evidence' | translate }}
-                                        </span>
-                                        <span class="justify-center">
                                             {{ 'project.application.partner.report.attachments' | translate }}
                                         </span>
                                     </div>
@@ -191,12 +180,6 @@
                                             <span class="justify-center">
                                             <mat-checkbox
                                                     [formControlName]="constants.OUTPUT_CONTRIBUTION.name">
-                                            </mat-checkbox>
-                                        </span>
-
-                                            <span class="justify-center">
-                                            <mat-checkbox
-                                                    [formControlName]='constants.OUTPUT_EVIDENCE.name'>
                                             </mat-checkbox>
                                         </span>
 

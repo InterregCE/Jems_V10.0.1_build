@@ -19,6 +19,7 @@ import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerR
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageActivityEntity
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageEntity
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageOutputEntity
+import io.cloudflight.jems.server.project.repository.report.repositoryModel.ReportSummary
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.report.model.PartnerReportIdentification
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReport
@@ -35,13 +36,28 @@ import io.cloudflight.jems.server.project.service.report.model.workPlan.ProjectP
 import io.cloudflight.jems.server.project.service.report.model.workPlan.ProjectPartnerReportWorkPackageOutput
 import java.math.BigDecimal.ZERO
 
-fun ProjectPartnerReportEntity.toModelSummary() = ProjectPartnerReportSummary(
+fun ReportSummary.toModelSummary() = ProjectPartnerReportSummary(
+    id = id,
+    reportNumber = number,
+    status = status,
+    version = version,
+    firstSubmission = firstSubmission,
+    createdAt = createdAt,
+    startDate = startDate,
+    endDate = endDate,
+    periodDetail = getPeriodData(),
+)
+
+fun ProjectPartnerReportEntity.toCreateModelSummary() = ProjectPartnerReportSummary(
     id = id,
     reportNumber = number,
     status = status,
     version = applicationFormVersion,
     firstSubmission = firstSubmission,
     createdAt = createdAt,
+    startDate = null,
+    endDate = null,
+    periodDetail = null,
 )
 
 fun ProjectPartnerReportEntity.toSubmissionSummary() = ProjectPartnerReportSubmissionSummary(
