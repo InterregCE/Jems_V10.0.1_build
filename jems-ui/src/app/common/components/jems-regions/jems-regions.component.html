@@ -6,8 +6,10 @@
             {{'common.edit.label' | translate}}
         </button>
     </h3>
-    <p>{{'programme.area.nuts.explorer.select' | translate}}</p>
-
+    <div [ngSwitch]="isSavedByParent">
+        <p *ngSwitchCase="false">{{'programme.area.nuts.explorer.select' | translate}}</p>
+        <p *ngSwitchCase="true">{{'controller.institutions.nuts.explorer.subheader' | translate}}</p>
+    </div>
     <div id="nuts-explorer-container">
         <div class="scroll-area">
             <div class="pt-3">
@@ -20,8 +22,11 @@
             </div>
         </div>
         <div class="scroll-area selected-areas">
-            <p class="mat-body-strong">{{'programme.area.nuts.explorer.selected' | translate}}</p>
-            <div class="pt-3 pl-3">
+            <div [ngSwitch]="isSavedByParent">
+                <p *ngSwitchCase="false" class="mat-body-strong">{{'programme.area.nuts.explorer.selected' | translate}}</p>
+                <p *ngSwitchCase="true" class="mat-body-strong">{{'controller.institutions.nuts.explorer.selected' | translate}}</p>
+            </div>
+                <div class="pt-3 pl-3">
                 <jems-selected-regions
                         [selectedRegions]="selectedRegions">
                 </jems-selected-regions>
