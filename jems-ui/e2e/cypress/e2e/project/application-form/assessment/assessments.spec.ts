@@ -68,4 +68,54 @@ context('Assessments & decision tests', () => {
       });
     });
   });
+
+  it('TB-361 Revert decision to submitted', () => {
+    cy.fixture('project/application-form/assessments/TB-361.json').then(testData => {
+      cy.loginByRequest(user.applicantUser.email);
+      cy.createSubmittedApplication(application).then(applicationId => {
+        cy.loginByRequest(user.programmeUser.email);
+        cy.enterEligibilityAssessment(applicationId, application.assessments.eligibilityAssessment);
+        cy.enterQualityAssessment(applicationId, application.assessments.qualityAssessment);
+        cy.enterEligibilityDecision(applicationId, application.assessments.eligibilityDecision);
+        cy.visit(`app/project/detail/${applicationId}`, {failOnStatusCode: false});
+        cy.contains('Assessment & Decision').click();
+        cy.contains('Enter eligibility decision').should('not.exist');
+        cy.contains('Revert decision back to Submitted').click();
+        cy.contains('Confirm').click();
+        cy.contains('Enter eligibility decision').should('be.visible');
+        cy.wait(1000); // TODO remove after MP2-2391 is fixed
+        
+        cy.contains('Project overview').click();
+        cy.contains('Submitted').should('be.visible');
+        cy.wait(1000); // TODO remove after MP2-2391 is fixed
+
+        cy.contains('Assessment & Decision').click();
+
+        cy.contains('Enter eligibility decision').click();
+        cy.contains(testData.eligibility.decision).click();
+        cy.contains('div', 'Explanatory notes').find('textarea').type(testData.eligibility.explanatoryNotes);
+        cy.contains('mat-form-field', 'Decision date').find('button').click();
+        cy.get('.mat-calendar-body-today').click();
+        cy.contains('Submit eligibility decision').click();
+        cy.contains('Confirm').click();
+        cy.contains('Eligibility decision:').next().should('contain.text', 'Ineligible');
+        cy.wait(1000); // TODO remove after MP2-2391 is fixed
+        
+        cy.contains('Project overview').click();
+        cy.contains('Ineligible').should('be.visible');
+        cy.wait(1000); // TODO remove after MP2-2391 is fixed
+
+        cy.contains('Assessment & Decision').click();
+        cy.contains('Revert decision back to Submitted').click();
+        cy.contains('Confirm').click();
+        cy.contains('Enter eligibility decision').should('be.visible');
+        cy.contains('Return to applicant').should('be.visible');
+        cy.contains('Reverting the decision is not possible').should('be.visible');
+        cy.wait(1000); // TODO remove after MP2-2391 is fixed
+
+        cy.contains('Project overview').click();
+        cy.contains('Submitted').should('be.visible');
+      });
+    });
+  });
 });
