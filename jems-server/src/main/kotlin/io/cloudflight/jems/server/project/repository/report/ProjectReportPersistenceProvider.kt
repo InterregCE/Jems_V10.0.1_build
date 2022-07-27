@@ -51,8 +51,8 @@ class ProjectReportPersistenceProvider(
             .map { it.toModelSummary() }
 
     @Transactional(readOnly = true)
-    override fun listSubmittedPartnerReports(partnerId: Long): List<ProjectPartnerReportSummary> =
-        partnerReportRepository.findAllByPartnerIdAndStatus(partnerId, ReportStatus.Submitted).map { it.toModelSummary() }
+    override fun getSubmittedPartnerReportIds(partnerId: Long): Set<Long> =
+        partnerReportRepository.findAllIdsByPartnerIdAndStatus(partnerId, ReportStatus.Submitted)
 
     @Transactional(readOnly = true)
     override fun getReportIdsBefore(partnerId: Long, beforeReportId: Long): Set<Long> =

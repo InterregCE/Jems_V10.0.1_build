@@ -63,7 +63,7 @@ class CreateProjectPartnerReportBudget(
         coFinancing: ProjectPartnerCoFinancingAndContribution,
     ): PartnerReportBudget {
         val partnerId = partner.id!!
-        val submittedReportIds = reportPersistence.listSubmittedPartnerReports(partnerId = partnerId).mapTo(HashSet()) { it.id }
+        val submittedReportIds = reportPersistence.getSubmittedPartnerReportIds(partnerId = partnerId)
         val contributions = generateContributionsFromPreviousReports(
             submittedReportIds = submittedReportIds,
             partnerContributionsSorted = coFinancing.partnerContributions.sortedWith(compareBy({ it.isNotPartner() }, { it.id })),

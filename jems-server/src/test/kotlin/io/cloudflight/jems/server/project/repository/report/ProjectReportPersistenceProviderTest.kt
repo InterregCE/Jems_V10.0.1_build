@@ -12,6 +12,7 @@ import io.cloudflight.jems.server.project.entity.report.PartnerReportIdentificat
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportCoFinancingEntity
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportCoFinancingIdEntity
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
+import io.cloudflight.jems.server.project.repository.report.repositoryModel.ReportSummary
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
@@ -22,6 +23,7 @@ import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerRep
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSummary
 import io.cloudflight.jems.server.project.service.report.model.ReportStatus
+import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportPeriod
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -30,12 +32,15 @@ import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import java.math.BigDecimal.*
+import java.time.LocalDate
 import java.time.ZonedDateTime
 
 class ProjectReportPersistenceProviderTest : UnitTest() {
 
     companion object {
         private const val PARTNER_ID = 10L
+        private val LAST_WEEK = LocalDate.now().minusWeeks(1)
+        private val NEXT_WEEK = LocalDate.now().plusWeeks(1)
 
         private fun reportEntity(
             id: Long,
@@ -63,6 +68,26 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
                 currency = "EUR",
             ),
             createdAt = createdAt,
+        )
+
+        private fun reportSummary(
+            id: Long,
+            createdAt: ZonedDateTime = ZonedDateTime.now(),
+            status: ReportStatus = ReportStatus.Draft,
+        ) = ReportSummary(
+            id = id,
+            number = 1,
+            status = status,
+            version = "3.0",
+            firstSubmission = null,
+            createdAt = createdAt,
+            periodNumber = 2,
+            startDate = LAST_WEEK,
+            endDate = NEXT_WEEK,
+            periodStart = 4,
+            periodEnd = 6,
+            periodBudget = ONE,
+            periodBudgetCumulative = TEN,
         )
 
         private fun draftReportSubmissionEntity(id: Long, createdAt: ZonedDateTime = ZonedDateTime.now()) = ProjectPartnerReportSubmissionSummary(
@@ -129,6 +154,15 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
             version = "3.0",
             firstSubmission = null,
             createdAt = createdAt,
+            startDate = LAST_WEEK,
+            endDate = NEXT_WEEK,
+            periodDetail = ProjectPartnerReportPeriod(
+                number = 2,
+                periodBudget = ONE,
+                periodBudgetCumulative = TEN,
+                start = 4,
+                end = 6,
+            )
         )
 
         private fun coFinancingEntities(report: ProjectPartnerReportEntity) = listOf(
@@ -216,7 +250,7 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
         val twoWeeksAgo = ZonedDateTime.now().minusDays(14)
 
         every { partnerReportRepository.findAllByPartnerId(PARTNER_ID, Pageable.unpaged()) } returns
-            PageImpl(listOf(reportEntity(id = 18L, createdAt = twoWeeksAgo)))
+            PageImpl(listOf(reportSummary(id = 18L, createdAt = twoWeeksAgo)))
 
         assertThat(persistence.listPartnerReports(PARTNER_ID, Pageable.unpaged()).content)
             .containsExactly(draftReportSummary(id = 18L, createdAt = twoWeeksAgo))
@@ -224,13 +258,8 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
 
     @Test
     fun listSubmittedPartnerReports() {
-        val twoWeeksAgo = ZonedDateTime.now().minusDays(14)
-
-        every { partnerReportRepository.findAllByPartnerIdAndStatus(PARTNER_ID, ReportStatus.Submitted) } returns
-            listOf(reportEntity(id = 18L, createdAt = twoWeeksAgo, status = ReportStatus.Submitted))
-
-        assertThat(persistence.listSubmittedPartnerReports(PARTNER_ID))
-            .containsExactly(draftReportSummary(id = 18L, createdAt = twoWeeksAgo).copy(status = ReportStatus.Submitted))
+        every { partnerReportRepository.findAllIdsByPartnerIdAndStatus(PARTNER_ID, ReportStatus.Submitted) } returns setOf(18L)
+        assertThat(persistence.getSubmittedPartnerReportIds(PARTNER_ID)).containsExactly(18L)
     }
 
     @Test

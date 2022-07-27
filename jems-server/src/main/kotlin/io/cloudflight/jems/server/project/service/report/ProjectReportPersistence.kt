@@ -18,7 +18,7 @@ interface ProjectReportPersistence {
 
     fun listPartnerReports(partnerId: Long, pageable: Pageable): Page<ProjectPartnerReportSummary>
 
-    fun listSubmittedPartnerReports(partnerId: Long): List<ProjectPartnerReportSummary>
+    fun getSubmittedPartnerReportIds(partnerId: Long): Set<Long>
 
     fun getReportIdsBefore(partnerId: Long, beforeReportId: Long): Set<Long>
 

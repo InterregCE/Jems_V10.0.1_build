@@ -33,6 +33,9 @@ export class PartnerReportComponent implements AfterViewInit {
   @ViewChild('numberingCell', {static: true})
   numberingCell: TemplateRef<any>;
 
+  @ViewChild('periodCell', {static: true})
+  periodCell: TemplateRef<any>;
+
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
   tableConfiguration: TableConfiguration;
   actionPending = false;
@@ -40,6 +43,7 @@ export class PartnerReportComponent implements AfterViewInit {
   Alert = Alert;
 
   data$: Observable<{
+    totalElements: number;
     partnerReports: ProjectPartnerReportSummaryDTO[];
     partner: ProjectPartnerSummaryDTO;
   }>;
@@ -58,7 +62,8 @@ export class PartnerReportComponent implements AfterViewInit {
     ]).pipe(
       map(([partnerReports, partner]) => {
         return {
-            partnerReports: partnerReports.map(partnerReport => this.translatePartnerReportStatus(partnerReport)),
+            totalElements: partnerReports.totalElements,
+            partnerReports: partnerReports.content.map(partnerReport => this.translatePartnerReportStatus(partnerReport)),
             partner
           };
         }
@@ -85,6 +90,11 @@ export class PartnerReportComponent implements AfterViewInit {
           elementProperty: 'linkedFormVersion'
         },
         {
+          displayedColumn: 'project.application.partner.report.reporting.period',
+          columnType: ColumnType.CustomComponent,
+          customCellTemplate: this.periodCell,
+        },
+        {
           displayedColumn: 'project.application.partner.reports.table.created.at',
           elementProperty: 'createdAt',
           columnType: ColumnType.DateColumn
@@ -94,11 +104,6 @@ export class PartnerReportComponent implements AfterViewInit {
           elementProperty: 'firstSubmission',
           columnType: ColumnType.DateColumn
         },
-        {
-          displayedColumn: 'project.application.partner.reports.table.latest.resubmission',
-          elementProperty: 'firstSubmission',
-          columnType: ColumnType.DateColumn
-        }
       ]
     });
 
@@ -140,13 +145,6 @@ export class PartnerReportComponent implements AfterViewInit {
 
   private translatePartnerReportStatus(partnerReport:  ProjectPartnerReportSummaryDTO):  ProjectPartnerReportSummaryDTO{
     const partnerReportStatus = this.translateService.instant(`project.application.partner.report.table.status.${partnerReport.status.toLowerCase()}`);
-    return {
-      id: partnerReport.id,
-      reportNumber: partnerReport.reportNumber,
-      status: partnerReportStatus,
-      linkedFormVersion: partnerReport.linkedFormVersion,
-      firstSubmission: partnerReport.firstSubmission,
-      createdAt: partnerReport.createdAt
-    } as ProjectPartnerReportSummaryDTO;
+    return { ...partnerReport, status: partnerReportStatus };
   }
 }
