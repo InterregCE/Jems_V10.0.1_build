@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.controllerInstitution.service
 
+import io.cloudflight.jems.server.controllerInstitution.service.createControllerInstitution.AssignUsersToInstitutionException
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionUser
-import io.cloudflight.jems.server.project.service.projectuser.assign_user_collaborator_to_project.UsersAreNotValid
 import io.cloudflight.jems.server.user.service.UserPersistence
 import io.cloudflight.jems.server.user.service.UserRolePersistence
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
@@ -18,7 +18,7 @@ class ControllerInstitutionValidator(
         val foundUserEmails = getUsersThatCanBePersisted(newInstitutionUsersEmails)
         newInstitutionUsersEmails.removeAll(foundUserEmails)
         if (newInstitutionUsersEmails.isNotEmpty())
-            throw UsersAreNotValid(emails = newInstitutionUsersEmails)
+            throw AssignUsersToInstitutionException()
     }
 
     private fun getUsersThatCanBePersisted(newInstitutionUsersEmails: List<String>): List<String> {

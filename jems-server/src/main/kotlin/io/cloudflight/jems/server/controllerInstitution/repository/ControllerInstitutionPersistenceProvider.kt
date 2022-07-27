@@ -66,6 +66,7 @@ class ControllerInstitutionPersistenceProvider(
                 controllerInstitutionChanged(
                     context = this,
                     controllerInstitution = it,
+                    nutsRegion3 = controllerInstitution.institutionNuts
                 )
             )
         }
@@ -92,6 +93,7 @@ class ControllerInstitutionPersistenceProvider(
                     controllerInstitutionChanged(
                         context = this,
                         controllerInstitution = it,
+                        nutsRegion3 = controllerInstitution.institutionNuts
                     )
                 )
             }

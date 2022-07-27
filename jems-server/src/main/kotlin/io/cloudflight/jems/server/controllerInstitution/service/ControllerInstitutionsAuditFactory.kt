@@ -8,6 +8,7 @@ import io.cloudflight.jems.server.controllerInstitution.service.model.Controller
 fun controllerInstitutionChanged(
     context: Any,
     controllerInstitution: ControllerInstitution,
+    nutsRegion3: Collection<String>
 ): AuditCandidateEvent =
     AuditCandidateEvent(
         context = context,
@@ -15,6 +16,6 @@ fun controllerInstitutionChanged(
             action = AuditAction.CONTROLLER_INSTITUTION_CHANGED,
             description = "Control Institution created/modified: ID: ${controllerInstitution.id}, " +
                 "NAME:  ${controllerInstitution.name}, " +
-                "NUTS: ${controllerInstitution.institutionNuts}, USERS: ${controllerInstitution.institutionUsers}"
+                "NUTS: ${nutsRegion3}, USERS: ${controllerInstitution.institutionUsers}"
         )
     )

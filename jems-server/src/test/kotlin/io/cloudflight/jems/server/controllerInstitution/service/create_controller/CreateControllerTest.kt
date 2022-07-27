@@ -3,12 +3,12 @@ package io.cloudflight.jems.server.controllerInstitution.service.create_controll
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.controllerInstitution.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionValidator
+import io.cloudflight.jems.server.controllerInstitution.service.createControllerInstitution.AssignUsersToInstitutionException
 import io.cloudflight.jems.server.controllerInstitution.service.createControllerInstitution.CreateController
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitution
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionUser
 import io.cloudflight.jems.server.controllerInstitution.service.model.UpdateControllerInstitution
 import io.cloudflight.jems.server.controllerInstitution.service.model.UserInstitutionAccessLevel
-import io.cloudflight.jems.server.project.service.projectuser.assign_user_collaborator_to_project.UsersAreNotValid
 import io.cloudflight.jems.server.user.service.UserPersistence
 import io.cloudflight.jems.server.user.service.UserRolePersistence
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
@@ -92,6 +92,6 @@ class CreateControllerTest: UnitTest() {
         } returns setOf(1, 2, 4, 6)
         every { userPersistence.findAllByEmails(any()) } returns listOf(userSummary(USER_ID, 11))
 
-        assertThrows<UsersAreNotValid> {createController.createController(updateInstitution) }
+        assertThrows<AssignUsersToInstitutionException> {createController.createController(updateInstitution) }
     }
 }

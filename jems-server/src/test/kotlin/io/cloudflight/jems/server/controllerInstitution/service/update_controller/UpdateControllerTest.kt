@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.controllerInstitution.service.update_controll
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.controllerInstitution.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionValidator
+import io.cloudflight.jems.server.controllerInstitution.service.createControllerInstitution.AssignUsersToInstitutionException
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitution
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionUser
 import io.cloudflight.jems.server.controllerInstitution.service.model.UpdateControllerInstitution
@@ -87,6 +88,6 @@ class UpdateControllerTest : UnitTest() {
             )
         } returns setOf(1, 2, 4, 6)
         every { userPersistence.findAllByEmails(any()) } returns listOf(userSummary(USER_ID, 11))
-        assertThrows<UsersAreNotValid> {updateController.updateControllerInstitution(INSTITUTION_ID, institutionWithUsers) }
+        assertThrows<AssignUsersToInstitutionException> {updateController.updateControllerInstitution(INSTITUTION_ID, institutionWithUsers) }
     }
 }
