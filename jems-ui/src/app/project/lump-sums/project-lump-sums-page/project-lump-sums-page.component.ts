@@ -98,7 +98,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
       'lumpSum',
       ...this.formVisibilityStatusService.isVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_BUDGET_PERIODS) ? ['period'] : [],
       'isSplittingLumpSumAllowed', 'lumpSumCost',
-      ...partners?.map(partner => partner.partnerNumber),
+      ...partners?.map(partner => partner.id + ''),
       'rowSum',
       'gap',
       ...this.formVisibilityStatusService.isVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PROJECT_LUMP_SUMS_DESCRIPTION) ? ['description'] : [],
