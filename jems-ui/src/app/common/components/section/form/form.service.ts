@@ -25,6 +25,7 @@ export class FormService {
   pending$ = new BehaviorSubject<boolean>(false);
   error$ = new Subject<APIError | null>();
   reset$ = this.resetSubject.asObservable();
+  showMenu$ = new BehaviorSubject<boolean>(true);
 
   constructor(private routingService: RoutingService, private translateService: TranslateService) {
   }
@@ -138,5 +139,9 @@ export class FormService {
       (this.form as FormGroup)?.controls[key].setErrors({error: this.translateService.instant(error.formErrors[key].i18nKey, error.formErrors[key].i18nArguments)});
       (this.form as FormGroup)?.controls[key].markAsTouched();
     });
+  }
+
+  setShowMenu(value: boolean): void {
+    this.showMenu$.next(value);
   }
 }

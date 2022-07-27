@@ -7,7 +7,10 @@ import {
 } from './programme-checklist-detail-page/programme-checklist-detail-page-store.service';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
 import {ColumnWidth} from '@common/components/table/model/column-width';
-import {take, tap} from 'rxjs/operators';
+import {filter, switchMap, take, tap} from 'rxjs/operators';
+import {Forms} from '@common/utils/forms';
+import {MatDialog} from '@angular/material/dialog';
+import {ProgrammeChecklistDetailDTO} from '@cat/api';
 
 @Component({
   selector: 'jems-programme-checklist-list-page',
@@ -26,7 +29,8 @@ export class ProgrammeChecklistListPageComponent implements OnInit {
   deleteCell: TemplateRef<any>;
 
   constructor(private programmePageSidenavService: ProgrammePageSidenavService,
-              public pageStore: ProgrammeChecklistListPageStore) { }
+              public pageStore: ProgrammeChecklistListPageStore,
+              private dialog: MatDialog) { }
 
   ngOnInit(): void {
     this.pageStore.canEditProgramme$
@@ -36,8 +40,17 @@ export class ProgrammeChecklistListPageComponent implements OnInit {
       ).subscribe();
   }
 
-  delete(id: number): void {
-    this.pageStore.deleteChecklist(id).subscribe();
+  delete(checklist: ProgrammeChecklistDetailDTO): void {
+    Forms.confirm(
+      this.dialog, {
+        title: 'programme.checklists.delete.dialog.header',
+        message: {i18nKey: 'programme.checklists.delete.confirm', i18nArguments: {name: checklist.name}}
+      })
+      .pipe(
+        take(1),
+        filter(answer => !!answer),
+        switchMap(() => this.pageStore.deleteChecklist(checklist.id)),
+      ).subscribe();
   }
 
   private initializeTableConfiguration(canEditProgramme: boolean): void {

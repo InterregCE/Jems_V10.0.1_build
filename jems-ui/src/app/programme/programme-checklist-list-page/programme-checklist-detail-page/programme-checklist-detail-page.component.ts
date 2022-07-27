@@ -11,6 +11,7 @@ import {ProgrammeChecklistDetailPageStore} from './programme-checklist-detail-pa
 import {ProgrammePageSidenavService} from '../../programme-page/services/programme-page-sidenav.service';
 import {Alert} from '@common/components/forms/alert';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {MatTabChangeEvent} from '@angular/material/tabs';
 
 @UntilDestroy()
 @Component({
@@ -164,6 +165,14 @@ export class ProgrammeChecklistDetailPageComponent implements OnInit {
     if (!this.form.value?.allowsDecimalScore) {
       this.form.get('minScore')?.setValue(parseInt(this.form.get('minScore')?.value, 10));
       this.form.get('maxScore')?.setValue(parseInt(this.form.get('maxScore')?.value, 10));
+    }
+  }
+
+  isTabChanged($event: MatTabChangeEvent): void {
+    if($event.index == 1) {
+      this.formService.setShowMenu(false);
+    } else {
+      this.formService.setShowMenu(true);
     }
   }
 }
