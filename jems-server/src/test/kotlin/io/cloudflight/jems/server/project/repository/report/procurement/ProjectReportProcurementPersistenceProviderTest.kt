@@ -1,29 +1,22 @@
 package io.cloudflight.jems.server.project.repository.report.procurement
 
-import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
-import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.common.entity.TranslationId
-import io.cloudflight.jems.server.common.minio.MinioStorage
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
-import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
 import io.cloudflight.jems.server.project.entity.report.procurement.ProjectPartnerReportProcurementEntity
-import io.cloudflight.jems.server.project.entity.report.procurement.ProjectPartnerReportProcurementTranslEntity
 import io.cloudflight.jems.server.project.repository.report.ProjectPartnerReportRepository
-import io.cloudflight.jems.server.project.repository.report.file.ProjectReportFileRepository
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
 import io.cloudflight.jems.server.project.service.report.model.procurement.ProjectPartnerReportProcurement
-import io.cloudflight.jems.server.project.service.report.model.procurement.ProjectPartnerReportProcurementUpdate
-import io.mockk.clearMocks
-import io.mockk.every
+import io.cloudflight.jems.server.project.service.report.model.procurement.ProjectPartnerReportProcurementChange
+import io.cloudflight.jems.server.project.service.report.model.procurement.ProjectPartnerReportProcurementSummary
+import io.mockk.*
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
-import io.mockk.mockk
-import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.Pageable
 import java.math.BigDecimal
+import java.time.LocalDate
 import java.time.ZonedDateTime
 
 class ProjectReportProcurementPersistenceProviderTest : UnitTest() {
@@ -31,85 +24,101 @@ class ProjectReportProcurementPersistenceProviderTest : UnitTest() {
     companion object {
         private const val PARTNER_ID = 223L
 
-        private const val ID_TO_STAY = 50L
-        private const val ID_TO_DELETE = 51L
-        private const val ID_TO_UPDATE = 52L
-        private const val ID_TO_ADD_1 = -1L
-        private const val ID_TO_ADD_2 = -2L
-
-        private val dummyAttachment = ReportProjectFileEntity(
-            id = 970L,
-            projectId = 4L,
-            partnerId = PARTNER_ID,
-            path = "",
-            minioBucket = "minioBucket",
-            minioLocation = "",
-            name = "some_file.txt",
-            type = mockk(),
-            size = 1475,
-            user = mockk(),
-            uploaded = ZonedDateTime.now(),
-        )
+        private val YESTERDAY = ZonedDateTime.now().minusDays(1)
+        private val NEXT_WEEK = LocalDate.now().plusWeeks(1)
 
         private fun dummyEntity(reportEntity: ProjectPartnerReportEntity) = ProjectPartnerReportProcurementEntity(
             id = 14L,
             reportEntity = reportEntity,
-            contractId = "contractId",
+            contractName = "contractName",
+            referenceNumber = "referenceNumber",
+            contractDate = NEXT_WEEK,
+            contractType = "contractType",
             contractAmount = BigDecimal.TEN,
             currencyCode = "GBP",
             supplierName = "supplierName",
-            attachment = dummyAttachment,
-        ).apply {
-            translatedValues.add(
-                ProjectPartnerReportProcurementTranslEntity(
-                    TranslationId(this, SystemLanguage.EN),
-                    comment = "comment EN",
-                    contractType = "contractType EN",
-                )
-            )
-        }
+            vatNumber = "vatNumber",
+            comment = "comment",
+            lastChanged = YESTERDAY,
+        )
 
-        private fun expectedProcurement(reportId: Long, reportNumber: Int) = ProjectPartnerReportProcurement(
+        private fun expectedProcurement(reportId: Long, reportNumber: Int) = ProjectPartnerReportProcurementSummary(
             id = 14L,
             reportId = reportId,
             reportNumber = reportNumber,
             createdInThisReport = false /* default */,
-            contractId = "contractId",
-            contractType = setOf(InputTranslation(SystemLanguage.EN, "contractType EN")),
+            lastChanged = YESTERDAY,
+            contractName = "contractName",
+            referenceNumber = "referenceNumber",
+            contractDate = NEXT_WEEK,
+            contractType = "contractType",
             contractAmount = BigDecimal.TEN,
             currencyCode = "GBP",
             supplierName = "supplierName",
-            comment = setOf(InputTranslation(SystemLanguage.EN, "comment EN")),
-            attachment = ProjectReportFileMetadata(dummyAttachment.id, dummyAttachment.name, dummyAttachment.uploaded),
+            vatNumber = "vatNumber",
         )
 
-        private fun updateDto(id: Long) = ProjectPartnerReportProcurementUpdate(
+        private fun expectedProcurementDetail(reportId: Long, reportNumber: Int) = ProjectPartnerReportProcurement(
+            id = 14L,
+            reportId = reportId,
+            reportNumber = reportNumber,
+            createdInThisReport = false /* default */,
+            lastChanged = YESTERDAY,
+            contractName = "contractName",
+            referenceNumber = "referenceNumber",
+            contractDate = NEXT_WEEK,
+            contractType = "contractType",
+            contractAmount = BigDecimal.TEN,
+            currencyCode = "GBP",
+            supplierName = "supplierName",
+            vatNumber = "vatNumber",
+            comment = "comment",
+        )
+
+        private fun procurementBeforeChange(id: Long, report: ProjectPartnerReportEntity) = ProjectPartnerReportProcurementEntity(
             id = id,
-            contractId = "contractId NEW",
-            contractType = setOf(InputTranslation(SystemLanguage.EN, "contractType EN NEW")),
+            reportEntity = report,
+            contractName = "contractName",
+            referenceNumber = "referenceNumber",
+            contractDate = NEXT_WEEK,
+            contractType = "contractType",
+            contractAmount = BigDecimal.TEN,
+            currencyCode = "GBP",
+            supplierName = "supplierName",
+            vatNumber = "vatNumber",
+            lastChanged = YESTERDAY,
+            comment = "comment",
+        )
+
+        private fun newData(id: Long) = ProjectPartnerReportProcurementChange(
+            id = id,
+            contractName = "contractName NEW",
+            referenceNumber = "referenceNumber NEW",
+            contractDate = NEXT_WEEK.plusDays(1),
+            contractType = "contractType NEW",
             contractAmount = BigDecimal.ONE,
-            currencyCode = "CZK",
+            currencyCode = "PLN",
             supplierName = "supplierName NEW",
-            comment = setOf(InputTranslation(SystemLanguage.EN, "comment EN NEW")),
+            vatNumber = "vatNumber NEW",
+            comment = "comment NEW",
         )
 
-        private fun entity(id: Long, reportEntity: ProjectPartnerReportEntity) = ProjectPartnerReportProcurementEntity(
+        private fun expectedNewData(id: Long) = ProjectPartnerReportProcurement(
             id = id,
-            reportEntity = reportEntity,
-            contractId = "contractId",
-            contractAmount = BigDecimal.TEN,
-            currencyCode = "GBP",
-            supplierName = "supplierName",
-            attachment = dummyAttachment,
-        ).apply {
-            translatedValues.add(
-                ProjectPartnerReportProcurementTranslEntity(
-                    TranslationId(this, SystemLanguage.EN),
-                    comment = "comment EN",
-                    contractType = "contractType EN",
-                )
-            )
-        }
+            reportId = 30L,
+            reportNumber = 7,
+            createdInThisReport = false,
+            lastChanged = ZonedDateTime.now(),
+            contractName = "contractName NEW",
+            referenceNumber = "referenceNumber NEW",
+            contractDate = NEXT_WEEK.plusDays(1),
+            contractType = "contractType NEW",
+            contractAmount = BigDecimal.ONE,
+            currencyCode = "PLN",
+            supplierName = "supplierName NEW",
+            vatNumber = "vatNumber NEW",
+            comment = "comment NEW",
+        )
 
     }
 
@@ -118,12 +127,6 @@ class ProjectReportProcurementPersistenceProviderTest : UnitTest() {
 
     @MockK
     lateinit var reportProcurementRepository: ProjectPartnerReportProcurementRepository
-
-    @MockK
-    lateinit var reportFileRepository: ProjectReportFileRepository
-
-    @MockK
-    lateinit var minioStorage: MinioStorage
 
     @InjectMockKs
     lateinit var persistence: ProjectReportProcurementPersistenceProvider
@@ -135,82 +138,91 @@ class ProjectReportProcurementPersistenceProviderTest : UnitTest() {
     }
 
     @Test
-    fun getProcurementIdsForReport() {
-        every { reportProcurementRepository.findProcurementIdsForReport(PARTNER_ID, reportId = 18L) } returns setOf(24L)
-        assertThat(persistence.getProcurementIdsForReport(PARTNER_ID, reportId = 18L))
-            .containsExactly(24L)
-    }
+    fun getById() {
+        val report = mockk<ProjectPartnerReportEntity>()
+        every { report.id } returns 74L
+        every { report.number } returns 3
 
-    @Test
-    fun existsByProcurementId() {
-        every { reportProcurementRepository.existsByReportEntityPartnerIdAndReportEntityIdAndId(PARTNER_ID, reportId = 18L, 45L) } returns false
-        assertThat(persistence.existsByProcurementId(PARTNER_ID, reportId = 18L, 45L)).isFalse
+        every { reportProcurementRepository.findByReportEntityPartnerIdAndId(PARTNER_ID, id = 26L) } returns dummyEntity(report)
+
+        assertThat(persistence.getById(PARTNER_ID, procurementId = 26L))
+            .isEqualTo(expectedProcurementDetail(reportId = 74L, reportNumber = 3))
     }
 
     @Test
     fun getProcurementsForReportIds() {
         val report = mockk<ProjectPartnerReportEntity>()
-        every { report.id } returns  75L
+        every { report.id } returns 75L
         every { report.number } returns 1
 
-        every { reportProcurementRepository.findTop50ByReportEntityIdInOrderByReportEntityIdDescIdDesc(setOf(22L)) } returns
-            listOf(dummyEntity(report))
-        assertThat(persistence.getProcurementsForReportIds(setOf(22L)))
+        every { reportProcurementRepository.findByReportEntityIdIn(setOf(5L, 6L, 7L), Pageable.unpaged()) } returns
+            PageImpl(listOf(dummyEntity(report)))
+
+        assertThat(persistence.getProcurementsForReportIds(setOf(5L, 6L, 7L), Pageable.unpaged()).content)
             .containsExactly(expectedProcurement(reportId = 75L, reportNumber = 1))
     }
 
     @Test
-    fun getProcurementContractIdsForReportIds() {
-        every { reportProcurementRepository.findProcurementContractIdsForReportsIn(setOf(25L)) } returns setOf("contractId")
-        assertThat(persistence.getProcurementContractIdsForReportIds(setOf(25L)))
-            .containsExactly("contractId")
+    fun getProcurementContractNamesForReportIds() {
+        val report = mockk<ProjectPartnerReportEntity>()
+        every { report.id } returns  77L
+        every { report.number } returns 1
+
+        every { reportProcurementRepository.findTop50ByReportEntityIdIn(setOf(21L, 22L)) } returns
+            listOf(dummyEntity(report))
+
+        assertThat(persistence.getProcurementContractNamesForReportIds(setOf(21L, 22L)))
+            .containsExactly(Pair(14L, "contractName"))
     }
 
     @Test
-    fun countProcurementsForReportIds() {
-        every { reportProcurementRepository.countByReportEntityIdIn(setOf(27L)) } returns 650L
-        assertThat(persistence.countProcurementsForReportIds(setOf(27L))).isEqualTo(650L)
+    fun countProcurementsForPartner() {
+        every { reportProcurementRepository.countByReportEntityPartnerId(PARTNER_ID) } returns 650L
+        assertThat(persistence.countProcurementsForPartner(PARTNER_ID)).isEqualTo(650L)
     }
 
     @Test
     fun updatePartnerReportProcurement() {
-        val reportId = 30L
         val report = mockk<ProjectPartnerReportEntity>()
-        every { reportRepository.findByIdAndPartnerId(partnerId = PARTNER_ID, id = reportId) } returns report
-        val entityToStay = entity(ID_TO_STAY, report)
-        val entityToDelete = entity(ID_TO_DELETE, report)
-        val entityToUpdate = entity(ID_TO_UPDATE, report)
-        every { reportProcurementRepository.findByReportEntityOrderByIdDesc(report) } returns mutableListOf(
-            entityToStay, entityToDelete, entityToUpdate
-        )
+        every { report.id } returns 30L
+        every { report.number } returns 7
+        every { reportProcurementRepository.findByReportEntityPartnerIdAndReportEntityIdAndId(
+            partnerId = PARTNER_ID,
+            reportId = 30L,
+            id = 18L,
+        ) } returns procurementBeforeChange(18L, report = report)
 
-        every { minioStorage.deleteFile(dummyAttachment.minioBucket, dummyAttachment.minioLocation) } answers { }
-        every { reportFileRepository.delete(dummyAttachment) } answers { }
-        val slotDelete = slot<Iterable<ProjectPartnerReportProcurementEntity>>()
-        every { reportProcurementRepository.deleteAll(capture(slotDelete)) } answers { }
-        val slotSave = mutableListOf<ProjectPartnerReportProcurementEntity>()
-        every { reportProcurementRepository.save(capture(slotSave)) } returnsArgument 0
+        assertThat(
+            persistence
+                .updatePartnerReportProcurement(partnerId = PARTNER_ID, reportId = report.id, newData(18L))
+                .copy(lastChanged = YESTERDAY)
+        ).isEqualTo(expectedNewData(18L).copy(lastChanged = YESTERDAY))
+    }
 
-        persistence.updatePartnerReportProcurement(PARTNER_ID, reportId = reportId, listOf(
-            updateDto(id = ID_TO_STAY),
-            updateDto(id = ID_TO_UPDATE),
-            updateDto(id = ID_TO_ADD_1),
-            updateDto(id = ID_TO_ADD_2),
-        ))
+    @Test
+    fun createPartnerReportProcurement() {
+        val report = mockk<ProjectPartnerReportEntity>()
+        every { report.id } returns 30L
+        every { report.number } returns 7
+        every { reportRepository.findByIdAndPartnerId(30L, PARTNER_ID) } returns report
 
-        assertThat(slotDelete.captured).containsExactly(entityToDelete)
-        assertThat(slotSave.map { it.id }).containsExactly(
-            // order is important, because not-yet-existing elements will get ID based on insertion order
-            ID_TO_ADD_2, ID_TO_ADD_1,
-        )
-        slotSave.plus(listOf(entityToStay, entityToUpdate)).forEach {
-            assertThat(it.reportEntity).isEqualTo(report)
-            assertThat(it.contractId).isEqualTo("contractId NEW")
-            assertThat(it.contractAmount).isEqualByComparingTo(BigDecimal.ONE)
-            assertThat(it.currencyCode).isEqualTo("CZK")
-            assertThat(it.supplierName).isEqualTo("supplierName NEW")
-            assertThat(it.translatedValues.first().comment).isEqualTo("comment EN NEW")
-            assertThat(it.translatedValues.first().contractType).isEqualTo("contractType EN NEW")
+        every { reportProcurementRepository.save(any()) } returnsArgument 0
+
+        assertThat(
+            persistence
+                .createPartnerReportProcurement(partnerId = PARTNER_ID, reportId = report.id, newData(0L))
+                .copy(lastChanged = YESTERDAY)
+        ).isEqualTo(expectedNewData(0L).copy(lastChanged = YESTERDAY))
+    }
+
+    @Test
+    fun deletePartnerReportProcurement() {
+        every { reportProcurementRepository
+            .deleteByReportEntityPartnerIdAndReportEntityIdAndId(partnerId = PARTNER_ID, reportId = 82L, 44795L)
+        } answers { }
+        persistence.deletePartnerReportProcurement(partnerId = PARTNER_ID, reportId = 82L, 44795L)
+        verify(exactly = 1) { reportProcurementRepository
+            .deleteByReportEntityPartnerIdAndReportEntityIdAndId(partnerId = PARTNER_ID, reportId = 82L, 44795L)
         }
     }
 

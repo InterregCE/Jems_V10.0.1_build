@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.service.report.partner.procurement.updateProjectPartnerReportProcurement
+package io.cloudflight.jems.server.project.service.report.partner.procurement.createProjectPartnerReportProcurement
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
@@ -10,41 +10,47 @@ import io.cloudflight.jems.server.project.service.report.partner.procurement.Pro
 import io.cloudflight.jems.server.project.service.report.partner.procurement.getStaticValidationResults
 import io.cloudflight.jems.server.project.service.report.partner.procurement.validateAllowedCurrenciesIfEur
 import io.cloudflight.jems.server.project.service.report.partner.procurement.validateContractNameIsUnique
+import io.cloudflight.jems.server.project.service.report.partner.procurement.validateMaxAmountOfProcurements
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-class UpdateProjectPartnerReportProcurement(
+class CreateProjectPartnerReportProcurement(
     private val reportPersistence: ProjectReportPersistence,
     private val reportProcurementPersistence: ProjectReportProcurementPersistence,
     private val generalValidator: GeneralValidatorService,
-) : UpdateProjectPartnerReportProcurementInteractor {
+) : CreateProjectPartnerReportProcurementInteractor {
 
     @CanEditPartnerReport
     @Transactional
-    @ExceptionWrapper(UpdateProjectPartnerReportProcurementException::class)
-    override fun update(
+    @ExceptionWrapper(CreateProjectPartnerReportProcurementException::class)
+    override fun create(
         partnerId: Long,
         reportId: Long,
         procurementData: ProjectPartnerReportProcurementChange,
     ): ProjectPartnerReportProcurement {
         procurementData.validateInputFields()
 
-        val report = reportPersistence.getPartnerReportById(partnerId = partnerId, reportId = reportId)
+        val report = reportPersistence.getPartnerReportById(partnerId = partnerId, reportId)
         if (report.status.isClosed())
             throw ReportAlreadyClosed()
 
         procurementData.validateAllowedCurrenciesIfEur(report.identification.currency, { InvalidCurrency(it) })
 
+        validateMaxAmountOfProcurements(
+            amount = reportProcurementPersistence.countProcurementsForPartner(partnerId = partnerId),
+            exceptionResolver = { MaxAmountOfProcurementsReachedException(it) },
+        )
+
         val previousReportIds = reportPersistence.getReportIdsBefore(partnerId = partnerId, beforeReportId = report.id)
         procurementData.validateContractNameIsUnique(
-            currentProcurementId = procurementData.id,
+            currentProcurementId = 0L,
             existingContractNames = reportProcurementPersistence
                 .getProcurementContractNamesForReportIds(reportIds = previousReportIds.plus(reportId)),
             exceptionResolver = { ContractNameIsNotUnique(it) },
         )
 
-        return reportProcurementPersistence.updatePartnerReportProcurement(
+        return reportProcurementPersistence.createPartnerReportProcurement(
             partnerId = partnerId,
             reportId = reportId,
             procurement = procurementData,

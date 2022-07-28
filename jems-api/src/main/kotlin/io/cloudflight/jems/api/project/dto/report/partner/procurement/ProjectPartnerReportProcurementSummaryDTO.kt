@@ -4,8 +4,8 @@ import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.ZonedDateTime
 
-data class ProjectPartnerReportProcurementDTO(
-    val id: Long? = null,
+data class ProjectPartnerReportProcurementSummaryDTO(
+    val id: Long,
     val reportId: Long,
     val reportNumber: Int,
     val createdInThisReport: Boolean,
@@ -18,5 +18,4 @@ data class ProjectPartnerReportProcurementDTO(
     val currencyCode: String,
     val supplierName: String,
     val vatNumber: String,
-    val comment: String,
 )

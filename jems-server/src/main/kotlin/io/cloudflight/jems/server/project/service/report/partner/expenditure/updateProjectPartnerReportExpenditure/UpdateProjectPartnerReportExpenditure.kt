@@ -55,7 +55,7 @@ class UpdateProjectPartnerReportExpenditure(
 
         validateLinkedProcurements(
             expenditureCosts = expenditureCosts,
-            allowedProcurementIds = getAvailableProcurements(partnerId, reportId = report.id).mapTo(HashSet()) { it.id },
+            allowedProcurementIds = getAvailableProcurements(partnerId, reportId = report.id).mapTo(HashSet()) { it.first },
             allowedInvestmentIds = workPackagePersistence.getProjectInvestmentSummaries(
                 projectId = partnerPersistence.getProjectIdForPartnerId(partnerId, report.version),
                 version = report.version,
@@ -154,7 +154,7 @@ class UpdateProjectPartnerReportExpenditure(
     }
 
     private fun getAvailableProcurements(partnerId: Long, reportId: Long) =
-        reportProcurementPersistence.getProcurementsForReportIds(
+        reportProcurementPersistence.getProcurementContractNamesForReportIds(
             reportIds = reportPersistence.getReportIdsBefore(partnerId = partnerId, beforeReportId = reportId).plus(reportId),
         )
 

@@ -1,14 +1,11 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup} from '@angular/forms';
-import {catchError, map, take, tap} from 'rxjs/operators';
-import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {filter, map, switchMap, take, tap} from 'rxjs/operators';
+import {UntilDestroy} from '@ngneat/until-destroy';
 import {FormService} from '@common/components/section/form/form.service';
 import {combineLatest, Observable} from 'rxjs';
-import {CurrencyDTO, ProjectPartnerReportDTO, ProjectPartnerReportProcurementDTO} from '@cat/api';
 import {
-  PartnerReportProcurementsTabConstants
-} from '@project/project-application/report/partner-report-detail-page/partner-report-procurements-tab/partner-report-procurements-tab.constants';
-import {animate, state, style, transition, trigger} from '@angular/animations';
+  PageProjectPartnerReportProcurementSummaryDTO, ProjectPartnerReportProcurementSummaryDTO
+} from '@cat/api';
 import {
   PartnerReportProcurementsPageStore
 } from '@project/project-application/report/partner-report-detail-page/partner-report-procurements-tab/partner-report-procurement-page-store.service';
@@ -16,10 +13,10 @@ import {
   PartnerReportDetailPageStore
 } from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
 import {RoutingService} from '@common/services/routing.service';
-import {
-  PartnerFileManagementStore
-} from '@project/project-application/report/partner-report-detail-page/partner-file-management-store';
-import {CurrencyCodesEnum, CurrencyStore} from '@common/services/currency.store';
+import {MatTableDataSource} from "@angular/material/table";
+import {Forms} from "@common/utils/forms";
+import {MatDialog} from "@angular/material/dialog";
+import {Alert} from '@common/components/forms/alert';
 
 @UntilDestroy()
 @Component({
@@ -28,166 +25,58 @@ import {CurrencyCodesEnum, CurrencyStore} from '@common/services/currency.store'
   styleUrls: ['./partner-report-procurements-tab.component.scss'],
   providers: [FormService],
   changeDetection: ChangeDetectionStrategy.OnPush,
-  animations: [
-    trigger('detailExpand', [
-      state('collapsed', style({height: '0px', minHeight: '0'})),
-      state('expanded', style({height: '*'})),
-      transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
-    ]),
-  ],
 })
-
-
 export class PartnerReportProcurementsTabComponent {
+  Alert = Alert;
 
-  columnsToDisplay = ['createdIn', 'contractID', 'contractType', 'contractAmount', 'currencyCode', 'supplierName', 'commentPreview', 'downloadAttachment', 'deleteProcurement', 'expandProcurement'];
-  expandedElement: ProjectPartnerReportProcurementDTO | null;
-  CurrencyCodesEnum = CurrencyCodesEnum;
-  reportProcurementsForm: FormGroup;
-  currentReportNumber: number;
-  isReportEditable: boolean;
-  tableData: AbstractControl[] = [];
-  constants = PartnerReportProcurementsTabConstants;
+  private allColumns = ['reportNumber', 'lastChanged', 'contractName', 'referenceNumber', 'contractDate', 'contractType', 'contractAmount', 'currencyCode', 'supplierName', 'vatNumber', 'delete'];
+  private readonlyColumns = this.allColumns.filter(col => col !== 'delete');
+  displayedColumns: string[] = [];
+
+  dataSource: MatTableDataSource<ProjectPartnerReportProcurementSummaryDTO> = new MatTableDataSource([]);
 
   data$: Observable<{
-    savedProcurements: ProjectPartnerReportProcurementDTO[];
-    currentReport: ProjectPartnerReportDTO;
-    isReportEditable: boolean;
-    currencies: CurrencyDTO[];
+    procurements: PageProjectPartnerReportProcurementSummaryDTO;
+    limitReached: boolean;
   }>;
 
   constructor(
     public pageStore: PartnerReportProcurementsPageStore,
-    private formBuilder: FormBuilder,
-    private formService: FormService,
     private routingService: RoutingService,
     private reportDetailPageStore: PartnerReportDetailPageStore,
-    private partnerFileManagementStore: PartnerFileManagementStore,
-    private currencyStore: CurrencyStore
+    private dialog: MatDialog,
   ) {
-    this.reportProcurementsForm = this.formBuilder.group({
-      procurements: this.formBuilder.array([])
-    });
-
     this.data$ = combineLatest([
-      this.pageStore.procurements$,
-      this.reportDetailPageStore.partnerReport$,
+      this.pageStore.page$,
       this.reportDetailPageStore.reportEditable$,
-      this.currencyStore.currencies$,
-      this.reportDetailPageStore.partnerReport$
     ]).pipe(
-      map(([savedProcurements, currentReport, isReportEditable, currencies, partnerReport]) => ({
-          savedProcurements,
-          currentReport,
-          isReportEditable,
-          currencies,
-          partnerReport
-        })
-      ),
-      tap(data => this.resetForm(data.savedProcurements.reverse(), data.partnerReport)),
-      tap(data => this.currentReportNumber = data.currentReport.reportNumber),
-      tap(data => this.isReportEditable = data.isReportEditable)
+      tap(([procurements, isEditable]) => this.prepareVisibleColumns(isEditable)),
+      tap(([procurements, isEditable]) => this.dataSource.data = procurements.content),
+      map(([procurements]) => ({ procurements, limitReached: procurements.totalElements >= 50 })),
     );
-
-    this.formService.init(this.reportProcurementsForm, this.reportDetailPageStore.reportEditable$);
   }
 
-  get procurements(): FormArray {
-    return this.reportProcurementsForm.get(this.constants.PROCUREMENTS.name) as FormArray;
+  private prepareVisibleColumns(isEditable: boolean) {
+    this.displayedColumns.splice(0);
+    (isEditable ? this.allColumns : this.readonlyColumns).forEach(column => {
+      this.displayedColumns.push(column);
+    });
   }
 
-  fileMetadata(index: number): FormControl {
-    return this.procurements.at(index).get(this.constants.ATTACHMENT.name) as FormControl;
-  }
-
-  resetForm(procurements: ProjectPartnerReportProcurementDTO[], currentReport?: ProjectPartnerReportDTO): void {
-    this.procurements.clear();
-    procurements.forEach((procurement) => this.addNewProcurement(currentReport, procurement));
-    this.tableData = [...this.procurements.controls];
-    this.formService.resetEditable();
-  }
-
-  refreshProcurements(): void {
-    this.pageStore.refreshProcurements$.next(undefined);
-  }
-
-  removeItem(index: number): void {
-    this.procurements.removeAt(index);
-    this.tableData = [...this.procurements.controls];
-    this.formService.setDirty(true);
-  }
-
-  addNewProcurement(currentReport?: ProjectPartnerReportDTO, procurement?: ProjectPartnerReportProcurementDTO): void {
-    if (this.procurements.length <= this.constants.MAX_NUMBER_OF_ITEMS) {
-      const item = this.formBuilder.group({
-        id: procurement?.id || 0,
-        reportNumber: procurement?.reportNumber ? procurement?.reportNumber : this.currentReportNumber,
-        createdInThisReport: procurement?.createdInThisReport,
-        contractId: this.formBuilder.control(procurement?.contractId || '', this.constants.CONTRACT_ID.validators),
-        contractType: this.formBuilder.control(procurement?.contractType || [], this.constants.CONTRACT_TYPE.validators),
-        contractAmount: this.formBuilder.control(procurement?.contractAmount || 0),
-        currencyCode: this.formBuilder.control(procurement ? procurement.currencyCode : currentReport?.identification?.currency),
-        supplierName: this.formBuilder.control(procurement?.supplierName || '', this.constants.SUPPLIER_NAME.validators),
-        comment: this.formBuilder.control(procurement?.comment || [], this.constants.COMMENT.validators),
-        commentPreview: this.formBuilder.control(procurement?.comment || [], this.constants.COMMENT.validators),
-        attachment: this.formBuilder.control(procurement?.attachment, []),
-      });
-      this.procurements.insert(0, item);
-    }
-    this.tableData = [...this.procurements.controls];
-    this.formService.setDirty(true);
-  }
-
-  updateReportProcurements() {
-    this.pageStore.saveProcurements(this.procurements.value.filter(
-      (procurement: ProjectPartnerReportProcurementDTO) => procurement.reportNumber === this.currentReportNumber)
-    ).pipe(
+  deleteProcurement(procurement: ProjectPartnerReportProcurementSummaryDTO): void {
+    Forms.confirm(
+      this.dialog, {
+        title: procurement.contractName,
+        message: {
+          i18nKey: 'project.application.partner.report.procurements.delete.message',
+          i18nArguments: { contractName: procurement.contractName, reportNumber: procurement.reportNumber.toString() },
+        },
+      }).pipe(
         take(1),
-        tap(() => this.formService.setSuccess('project.procurements.tab.saved')),
-        catchError(err => this.formService.setError(err)),
-        untilDestroyed(this)
+        filter(answer => !!answer),
+        switchMap(() => this.pageStore.deleteProcurement(procurement.id)),
+        take(1),
       ).subscribe();
   }
 
-  lengthOfForm(formGroup: FormGroup, formControlName: string): number {
-    return formGroup.get(formControlName)?.value?.length;
-  }
-
-  isProcurementFromCurrentReport(control: AbstractControl): boolean {
-    return control.value.reportNumber === this.currentReportNumber;
-  }
-
-  isProcurementEditable(control: AbstractControl): boolean {
-    return this.isProcurementFromCurrentReport(control) && this.isReportEditable;
-  }
-
-  updateCommentPreview(index: number) {
-    setTimeout(()=> {
-      this.procurements.at(index).get('commentPreview')?.setValue(this.procurements.at(index).get('comment')?.value);
-    }, 1);
-  }
-
-  onUploadFile(target: any, procurementId: number, index: number): void {
-    if (!target || procurementId === 0) {
-      return;
-    }
-    this.pageStore.uploadFile(target?.files[0], procurementId)
-      .pipe(
-        take(1),
-        catchError(err => this.formService.setError(err))
-      )
-      .subscribe(value => this.fileMetadata(index)?.patchValue(value));
-  }
-
-  onDeleteFile(fileId: number, index: number): void {
-    this.partnerFileManagementStore.deleteFile(fileId)
-      .pipe(take(1))
-      .subscribe(_ => this.fileMetadata(index)?.patchValue(null));
-  }
-
-  onDownloadFile(fileId: number): void {
-    this.partnerFileManagementStore.downloadFile(fileId)
-      .pipe(take(1))
-      .subscribe();
-  }
 }

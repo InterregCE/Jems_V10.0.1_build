@@ -1,57 +1,58 @@
 package io.cloudflight.jems.server.project.repository.report.procurement
 
-import io.cloudflight.jems.api.project.dto.InputTranslation
-import io.cloudflight.jems.server.common.entity.TranslationId
-import io.cloudflight.jems.server.common.entity.addTranslationEntities
-import io.cloudflight.jems.server.common.entity.extractField
-import io.cloudflight.jems.server.common.entity.extractTranslation
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.procurement.ProjectPartnerReportProcurementEntity
-import io.cloudflight.jems.server.project.entity.report.procurement.ProjectPartnerReportProcurementTranslEntity
-import io.cloudflight.jems.server.project.repository.report.toModel
 import io.cloudflight.jems.server.project.service.report.model.procurement.ProjectPartnerReportProcurement
-import io.cloudflight.jems.server.project.service.report.model.procurement.ProjectPartnerReportProcurementUpdate
+import io.cloudflight.jems.server.project.service.report.model.procurement.ProjectPartnerReportProcurementChange
+import io.cloudflight.jems.server.project.service.report.model.procurement.ProjectPartnerReportProcurementSummary
+import org.springframework.data.domain.Page
+import java.time.ZonedDateTime
 
-fun List<ProjectPartnerReportProcurementEntity>.toModel() = map {
-    ProjectPartnerReportProcurement(
+fun ProjectPartnerReportProcurementEntity.toModel() = ProjectPartnerReportProcurement(
+    id = id,
+    reportId = reportEntity.id,
+    reportNumber = reportEntity.number,
+    lastChanged = lastChanged,
+    contractName = contractName,
+    referenceNumber = referenceNumber,
+    contractDate = contractDate,
+    contractType = contractType,
+    contractAmount = contractAmount,
+    currencyCode = currencyCode,
+    supplierName = supplierName,
+    vatNumber = vatNumber,
+    comment = comment,
+)
+
+fun Page<ProjectPartnerReportProcurementEntity>.toModel() = map {
+    ProjectPartnerReportProcurementSummary(
         id = it.id,
         reportId = it.reportEntity.id,
         reportNumber = it.reportEntity.number,
-        contractId = it.contractId,
-        contractType = it.translatedValues.extractField { translated -> translated.contractType },
+        lastChanged = it.lastChanged,
+        contractName = it.contractName,
+        referenceNumber = it.referenceNumber,
+        contractDate = it.contractDate,
+        contractType = it.contractType,
         contractAmount = it.contractAmount,
         currencyCode = it.currencyCode,
         supplierName = it.supplierName,
-        comment = it.translatedValues.extractField { translated -> translated.comment },
-        attachment = it.attachment?.toModel(),
+        vatNumber = it.vatNumber,
     )
 }
 
-fun ProjectPartnerReportProcurementUpdate.toEntity(report: ProjectPartnerReportEntity) =
+fun ProjectPartnerReportProcurementChange.toEntity(report: ProjectPartnerReportEntity, lastChanged: ZonedDateTime) =
     ProjectPartnerReportProcurementEntity(
         id = id,
         reportEntity = report,
-        contractId = contractId,
+        contractName = contractName,
+        referenceNumber = referenceNumber,
+        contractDate = contractDate,
+        contractType = contractType,
         contractAmount = contractAmount,
         currencyCode = currencyCode,
         supplierName = supplierName,
-        attachment = null,
-        translatedValues = mutableSetOf(),
-    ).apply {
-        translatedValues.addTranslation(this, contractType, comment)
-    }
-
-fun MutableSet<ProjectPartnerReportProcurementTranslEntity>.addTranslation(
-    sourceEntity: ProjectPartnerReportProcurementEntity,
-    contractType: Set<InputTranslation>,
-    comment: Set<InputTranslation>,
-) =
-    this.addTranslationEntities(
-        { language ->
-            ProjectPartnerReportProcurementTranslEntity(
-                translationId = TranslationId(sourceEntity, language),
-                comment = comment.extractTranslation(language),
-                contractType = contractType.extractTranslation(language),
-            )
-        }, arrayOf(comment, contractType)
+        vatNumber = vatNumber,
+        comment = comment,
+        lastChanged = lastChanged,
     )

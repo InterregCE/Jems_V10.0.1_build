@@ -2,7 +2,6 @@ package io.cloudflight.jems.server.project.repository.report.file
 
 import io.cloudflight.jems.server.common.minio.MinioStorage
 import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
-import io.cloudflight.jems.server.project.repository.report.procurement.ProjectPartnerReportProcurementRepository
 import io.cloudflight.jems.server.project.repository.report.contribution.ProjectPartnerReportContributionRepository
 import io.cloudflight.jems.server.project.repository.report.expenditure.ProjectPartnerReportExpenditureRepository
 import io.cloudflight.jems.server.project.repository.report.toModel
@@ -28,7 +27,6 @@ class ProjectReportFilePersistenceProvider(
     private val workPlanActivityRepository: ProjectPartnerReportWorkPackageActivityRepository,
     private val workPlanActivityDeliverableRepository: ProjectPartnerReportWorkPackageActivityDeliverableRepository,
     private val workPlanOutputRepository: ProjectPartnerReportWorkPackageOutputRepository,
-    private val procurementRepository: ProjectPartnerReportProcurementRepository,
     private val contributionRepository: ProjectPartnerReportContributionRepository,
     private val expenditureRepository: ProjectPartnerReportExpenditureRepository,
     private val userRepository: UserRepository,
@@ -90,17 +88,6 @@ class ProjectReportFilePersistenceProvider(
         output.attachment.deleteIfPresent()
 
         return persistFileAndUpdateLink(file = file) { output.attachment = it }
-    }
-
-    @Transactional
-    override fun updatePartnerReportProcurementAttachment(
-        procurementId: Long,
-        file: ProjectReportFileCreate
-    ): ProjectReportFileMetadata {
-        val procurement = procurementRepository.findById(procurementId).get()
-        procurement.attachment.deleteIfPresent()
-
-        return persistFileAndUpdateLink(file = file) { procurement.attachment = it }
     }
 
     @Transactional

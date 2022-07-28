@@ -1,12 +1,10 @@
 package io.cloudflight.jems.server.project.repository.report.file
 
-import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.minio.MinioStorage
 import io.cloudflight.jems.server.project.entity.report.contribution.ProjectPartnerReportContributionEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportExpenditureCostEntity
 import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
-import io.cloudflight.jems.server.project.entity.report.procurement.ProjectPartnerReportProcurementEntity
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageActivityDeliverableEntity
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageActivityEntity
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageOutputEntity
@@ -89,16 +87,6 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
             number = 1,
             contribution = true,
             evidence = false,
-            attachment = attachment,
-        )
-
-        private fun procurement(id: Long, attachment: ReportProjectFileEntity?) = ProjectPartnerReportProcurementEntity(
-            id = id,
-            reportEntity = mockk(),
-            contractId = "contractId",
-            contractAmount = ONE,
-            currencyCode = "HRK",
-            supplierName = "supplierName",
             attachment = attachment,
         )
 
@@ -303,26 +291,6 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
 
         assertFile(filePathMinio.captured, fileEntity.captured)
         assertThat(fileEntity.captured.type).isEqualTo(ProjectPartnerReportFileType.Deliverable)
-    }
-
-    @Test
-    fun updatePartnerReportProcurementAttachment() {
-        val filePathMinio = slot<String>()
-        val fileEntity = slot<ReportProjectFileEntity>()
-
-        val oldFile = mockk<ReportProjectFileEntity>()
-
-        val procurement = procurement(id = 90L, attachment = oldFile)
-        every { procurementRepository.findById(40L) } returns Optional.of(procurement)
-
-        val fileCreate = fileCreate(type = ProjectPartnerReportFileType.Procurement)
-        mockFileDeletionAndSaving(oldFile, filePathMinio, fileEntity)
-
-        assertThat(persistence.updatePartnerReportProcurementAttachment(40L, file = fileCreate).name)
-            .isEqualTo("new_file.txt")
-
-        assertFile(filePathMinio.captured, fileEntity.captured)
-        assertThat(fileEntity.captured.type).isEqualTo(ProjectPartnerReportFileType.Procurement)
     }
 
     @Test
