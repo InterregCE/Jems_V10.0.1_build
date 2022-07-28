@@ -1,6 +1,6 @@
 <jems-main-page-template subTitleKey="programme.checklists.title"
                          titleKey="{{'programme.checklists.detail.title'}}">
-    <mat-tab-group *ngIf="data$ | async as data">
+    <mat-tab-group *ngIf="data$ | async as data" (selectedTabChange)="isTabChanged($event)">
         <mat-tab label="{{'programme.checklists.tab.create' | translate}}">
             <jems-form (save)="save()"
                        (discard)="discard(data.checklist)">
