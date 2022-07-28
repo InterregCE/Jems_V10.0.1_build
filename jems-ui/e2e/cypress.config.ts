@@ -1,4 +1,4 @@
-import { defineConfig } from 'cypress';
+import {defineConfig} from 'cypress';
 import pdf from 'pdf-parse';
 import date from 'date-and-time';
 import fetch from 'node-fetch';
@@ -21,7 +21,7 @@ export default defineConfig({
   },
   e2e: {
     async setupNodeEvents(on, config) {
-            on('task', {
+      on('task', {
         parsePDF(subject) {
           return pdf(subject);
         },
@@ -89,8 +89,9 @@ export default defineConfig({
       })
 
       console.log('JIRA executionKey set to: ' + config.env.executionKey);
+      return config;
     },
     baseUrl: 'http://localhost:4200',
-    specPattern: ['cypress/e2e/login/**','cypress/e2e/programme/**','cypress/e2e/call/**','cypress/e2e/project/**']
+    specPattern: ['cypress/e2e/login/**', 'cypress/e2e/programme/**', 'cypress/e2e/call/**', 'cypress/e2e/project/**']
   },
 })
