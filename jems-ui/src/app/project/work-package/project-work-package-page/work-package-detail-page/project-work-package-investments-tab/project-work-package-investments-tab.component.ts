@@ -66,7 +66,6 @@ export class ProjectWorkPackageInvestmentsTabComponent implements OnInit {
           columnType: ColumnType.CustomComponent,
           customCellTemplate: this.numberingCell,
           sortProperty: 'investmentNumber',
-          columnWidth: ColumnWidth.DateColumn
         },
         ...this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.INVESTMENTS.TITLE) ?
           [{
