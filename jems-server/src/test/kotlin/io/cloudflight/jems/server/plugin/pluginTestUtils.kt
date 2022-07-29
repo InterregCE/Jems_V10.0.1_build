@@ -32,7 +32,7 @@ class ApplicationFormExportSamplePlugin : ApplicationFormExportPlugin {
         ApplicationFormExportSamplePluginKey
 
     override fun export(
-        projectId: Long, exportLanguage: SystemLanguageData, dataLanguage: SystemLanguageData, version: String?
+        projectId: Long, exportLanguage: SystemLanguageData, dataLanguage: SystemLanguageData, version: String?, logo: String?
     ) =
         ExportResult("", "", byteArrayOf())
 

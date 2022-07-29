@@ -1,11 +1,13 @@
 package io.cloudflight.jems.server.project.service.export.export_application_form
 
+import io.cloudflight.jems.api.common.dto.LogoDTO
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.plugin.contract.export.ApplicationFormExportPlugin
 import io.cloudflight.jems.plugin.contract.export.ExportResult
 import io.cloudflight.jems.plugin.contract.models.common.SystemLanguageData
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.plugin.JemsPluginRegistry
+import io.cloudflight.jems.server.resources.service.get_logos.GetLogosInteractor
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -18,6 +20,9 @@ internal class ExportApplicationFormTest : UnitTest() {
 
     @MockK
     lateinit var jemsPluginRegistry: JemsPluginRegistry
+
+    @MockK
+    lateinit var getLogosInteractor: GetLogosInteractor
 
     @MockK
     lateinit var applicationFormExportPlugin: ApplicationFormExportPlugin
@@ -34,7 +39,10 @@ internal class ExportApplicationFormTest : UnitTest() {
         every {
             applicationFormExportPlugin.export(1L, SystemLanguageData.EN, SystemLanguageData.DE)
         } returns exportResult
-
+        every {
+            getLogosInteractor.getLogos()
+        } returns listOf<LogoDTO>()
+        
         assertThat(exportApplicationForm.export(1L, SystemLanguage.EN, SystemLanguage.DE)).isEqualTo(exportResult)
     }
 }
