@@ -107,7 +107,7 @@ class ProjectReportExpenditurePersistenceProviderTest : UnitTest() {
             unitCostId = unitCostId,
             costCategory = ReportBudgetCategory.InfrastructureCosts,
             investmentId = INVESTMENT_ID,
-            contractId = PROCUREMENT_ID,
+            contractId = PROCUREMENT_ID + 10,
             internalReferenceNumber = "irn",
             invoiceNumber = "invoice",
             invoiceDate = YESTERDAY,
@@ -146,7 +146,7 @@ class ProjectReportExpenditurePersistenceProviderTest : UnitTest() {
             currencyCode = "HUF",
             currencyConversionRate = BigDecimal.valueOf(368),
             declaredAmountAfterSubmission = BigDecimal.valueOf(3680),
-            attachment = ProjectReportFileMetadata(dummyAttachment.id, dummyAttachment.name, dummyAttachment.uploaded),
+            attachment = null,
         )
 
         private fun dummyLumpSumEntity(reportEntity: ProjectPartnerReportEntity) = PartnerReportLumpSumEntity(
@@ -254,7 +254,7 @@ class ProjectReportExpenditurePersistenceProviderTest : UnitTest() {
         ) } returns mutableListOf(expenditure)
 
         assertThat(persistence.getPartnerReportExpenditureCosts(PARTNER_ID, reportId = 44L))
-            .containsExactly(dummyExpectedExpenditure(id = 14L, LUMP_SUM_ID, UNIT_COST_ID))
+            .containsExactly(dummyExpectedExpenditure(id = 14L, LUMP_SUM_ID, UNIT_COST_ID).copy(contractId = PROCUREMENT_ID))
     }
 
     @Test
@@ -292,8 +292,6 @@ class ProjectReportExpenditurePersistenceProviderTest : UnitTest() {
         val entityToDelete = dummyExpenditure(EXPENDITURE_TO_DELETE, report, null, null)
         val entityToUpdate = dummyExpenditure(EXPENDITURE_TO_UPDATE, report, lumpSum, unitCost)
         every { reportRepository.findByIdAndPartnerId(id = 58L, PARTNER_ID) } returns report
-        every { reportExpenditureRepository.findExistingExpenditureIdsFor(report) } returns
-            setOf(EXPENDITURE_TO_UPDATE, EXPENDITURE_TO_DELETE, EXPENDITURE_TO_STAY)
 
         every { reportExpenditureRepository.findByPartnerReportOrderByIdDesc(report) } returns
             mutableListOf(entityToStay, entityToDelete, entityToUpdate)
@@ -312,12 +310,17 @@ class ProjectReportExpenditurePersistenceProviderTest : UnitTest() {
         val slotSavedEntities = mutableListOf<PartnerReportExpenditureCostEntity>()
         every { reportExpenditureRepository.save(capture(slotSavedEntities)) } returnsArgument 0
 
-        persistence.updatePartnerReportExpenditureCosts(PARTNER_ID, reportId = 58L, listOf(
+        assertThat(persistence.updatePartnerReportExpenditureCosts(PARTNER_ID, reportId = 58L, listOf(
             dummyExpectedExpenditure(id = EXPENDITURE_TO_STAY, null, null),
             dummyExpectedExpenditure(id = EXPENDITURE_TO_UPDATE, LUMP_SUM_ID, UNIT_COST_ID),
             dummyExpectedExpenditureNew(id = EXPENDITURE_TO_ADD_1, LUMP_SUM_ID, UNIT_COST_ID),
             dummyExpectedExpenditureNew(id = EXPENDITURE_TO_ADD_2, null, null),
-        ))
+        ))).containsExactly(
+            dummyExpectedExpenditure(id = EXPENDITURE_TO_STAY, null, null),
+            dummyExpectedExpenditure(id = EXPENDITURE_TO_UPDATE, LUMP_SUM_ID, UNIT_COST_ID),
+            dummyExpectedExpenditureNew(id = EXPENDITURE_TO_ADD_1, LUMP_SUM_ID, UNIT_COST_ID),
+            dummyExpectedExpenditureNew(id = EXPENDITURE_TO_ADD_2, null, null),
+        )
 
         assertThat(slotDeleted.captured).containsExactly(entityToDelete)
         assertThat(slotSavedEntities.map { it.id }).containsExactly(

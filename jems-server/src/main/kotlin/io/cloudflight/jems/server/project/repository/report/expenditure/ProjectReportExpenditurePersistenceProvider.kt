@@ -51,14 +51,16 @@ class ProjectReportExpenditurePersistenceProvider(
         reportExpenditureRepository.deleteAll(
             existingIds.minus(toNotBeDeletedIds).values.deleteAttachments()
         )
+
+        val lumpSumsById = reportLumpSumRepository
+            .findByReportEntityPartnerIdAndReportEntityIdOrderByPeriodAscIdAsc(partnerId, reportId)
+            .associateBy { it.id }
+        val unitCostsById = reportUnitCostRepository
+            .findByReportEntityPartnerIdAndReportEntityIdOrderByIdAsc(partnerId, reportId)
+            .associateBy { it.id }
+
         return expenditureCosts.map { newData ->
             existingIds[newData.id].let { existing ->
-                val lumpSumsById = reportLumpSumRepository
-                    .findByReportEntityPartnerIdAndReportEntityIdOrderByPeriodAscIdAsc(partnerId, reportId)
-                    .associateBy { it.id }
-                val unitCostsById = reportUnitCostRepository
-                    .findByReportEntityPartnerIdAndReportEntityIdOrderByIdAsc(partnerId, reportId)
-                    .associateBy { it.id }
                 when {
                     existing != null -> existing.apply { updateWith(newData, lumpSumsById, unitCostsById) }
                     else -> reportExpenditureRepository.save(newData.toEntity(reportEntity, lumpSumsById, unitCostsById))
@@ -95,6 +97,7 @@ class ProjectReportExpenditurePersistenceProvider(
         reportUnitCost = if (newData.unitCostId != null) unitCosts[newData.unitCostId] else null
         costCategory = newData.costCategory
         investmentId = newData.investmentId
+        procurementId = newData.contractId
         internalReferenceNumber = newData.internalReferenceNumber
         invoiceNumber = newData.invoiceNumber
         invoiceDate = newData.invoiceDate
