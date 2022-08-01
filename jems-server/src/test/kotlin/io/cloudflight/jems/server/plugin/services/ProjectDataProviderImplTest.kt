@@ -95,6 +95,7 @@ import io.cloudflight.jems.plugin.contract.models.project.versions.ProjectVersio
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.programme.service.ProgrammeDataService
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeLumpSumPersistence
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
@@ -231,6 +232,9 @@ internal class ProjectDataProviderImplTest : UnitTest() {
 
     @InjectMockKs
     lateinit var projectDataProvider: ProjectDataProviderImpl
+
+    @RelaxedMockK
+    lateinit var programmeDataService: ProgrammeDataService
 
     companion object {
         private val startDate = ZonedDateTime.now().minusDays(2)

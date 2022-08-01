@@ -11,6 +11,7 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionD.ProjectDataSe
 import io.cloudflight.jems.plugin.contract.models.project.versions.ProjectVersionData
 import io.cloudflight.jems.plugin.contract.services.ProjectDataProvider
 import io.cloudflight.jems.server.call.service.CallPersistence
+import io.cloudflight.jems.server.programme.service.ProgrammeDataService
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeLumpSumPersistence
 import io.cloudflight.jems.server.programme.service.indicator.OutputIndicatorPersistence
 import io.cloudflight.jems.server.programme.service.indicator.ResultIndicatorPersistence
@@ -73,7 +74,8 @@ class ProjectDataProviderImpl(
     private val programmeLegalStatusPersistence: ProgrammeLegalStatusPersistence,
     private val projectResultPersistence: ProjectResultPersistence,
     private val listOutputIndicatorsPersistence: OutputIndicatorPersistence,
-    private val listResultIndicatorsPersistence: ResultIndicatorPersistence
+    private val listResultIndicatorsPersistence: ResultIndicatorPersistence,
+    private val programmeDataService: ProgrammeDataService
 ) : ProjectDataProvider {
 
     companion object {
@@ -221,7 +223,8 @@ class ProjectDataProviderImpl(
                 assessmentStep1 = project.assessmentStep1?.toDataModel(),
                 assessmentStep2 = project.assessmentStep2?.toDataModel()
             ),
-            versions = projectVersionPersistence.getAllVersionsByProjectId(projectId).toDataModel()
+            versions = projectVersionPersistence.getAllVersionsByProjectId(projectId).toDataModel(),
+            programmeTitle = programmeDataService.get().title ?: ""
         )
     }
 
