@@ -48,7 +48,9 @@ class DraftProjectSectionEDataGeneratorTest(@LocalServerPort private val port: I
                             DRAFT_PROJECT_PP.id,
                             BigDecimal.valueOf(162591, 2),
                         )
-                    )
+                    ),
+                    readyForPayment = false,
+                    comment = null
                 )
             )
         )

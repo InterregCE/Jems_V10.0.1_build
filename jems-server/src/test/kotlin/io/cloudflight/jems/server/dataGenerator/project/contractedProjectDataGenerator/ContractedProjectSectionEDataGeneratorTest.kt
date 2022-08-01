@@ -48,7 +48,9 @@ class ContractedProjectSectionEDataGeneratorTest(@LocalServerPort private val po
                             CONTRACTED_PROJECT_PP.id,
                             BigDecimal.valueOf(162591, 2),
                         )
-                    )
+                    ),
+                    readyForPayment = false,
+                    comment = null
                 )
             )
         )

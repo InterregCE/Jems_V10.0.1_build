@@ -43,4 +43,8 @@ interface ProgrammeDataApi {
     @ApiOperation("Check if Fast Track Lump Sums are still open for changes or not yet")
     @GetMapping("$ENDPOINT_API_PROGRAMME_DATA/isFastTrackLocked")
     fun isAnyReportCreated(): Boolean
+
+    @ApiOperation("Check if a Fast Track Lump Sum is set to ready for payment")
+    @GetMapping("$ENDPOINT_API_PROGRAMME_DATA/isFastTrackLumpSumReadyForPayment/{programmeLumpSumId}")
+    fun isFastTrackLumpSumReadyForPayment(@PathVariable programmeLumpSumId: Long): Boolean
 }

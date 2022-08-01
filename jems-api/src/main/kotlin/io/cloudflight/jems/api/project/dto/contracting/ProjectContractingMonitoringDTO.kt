@@ -1,5 +1,6 @@
 package io.cloudflight.jems.api.project.dto.contracting
 
+import io.cloudflight.jems.api.project.dto.lumpsum.ProjectLumpSumDTO
 import java.time.LocalDate
 
 data class ProjectContractingMonitoringDTO(
@@ -17,6 +18,6 @@ data class ProjectContractingMonitoringDTO(
     val typologyPartnership: ContractingMonitoringOptionDTO? = null,
     val typologyPartnershipComment: String? = null,
 
-    val addDates: List<ProjectContractingMonitoringAddDateDTO>
-
+    val addDates: List<ProjectContractingMonitoringAddDateDTO>,
+    val fastTrackLumpSums: List<ProjectLumpSumDTO>? = emptyList()
 )

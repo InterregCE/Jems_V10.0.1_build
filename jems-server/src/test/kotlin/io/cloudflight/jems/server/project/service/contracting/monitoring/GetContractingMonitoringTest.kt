@@ -11,6 +11,8 @@ import io.cloudflight.jems.server.project.service.contracting.model.ContractingM
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoring
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoringAddDate
 import io.cloudflight.jems.server.project.service.contracting.monitoring.getProjectContractingMonitoring.GetContractingMonitoring
+import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
+import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.mockk.every
@@ -49,6 +51,18 @@ internal class GetContractingMonitoringTest : UnitTest() {
             specificObjectiveCode = "SO1.1",
             programmePriorityCode = "P1"
         )
+
+        private val lumpSums = listOf(
+            ProjectLumpSum(
+                programmeLumpSumId = 1,
+                period = 1,
+                lumpSumContributions = listOf(),
+                isFastTrack = true,
+                readyForPayment = false,
+                comment = null
+            )
+        )
+
         private val monitoring = ProjectContractingMonitoring(
             projectId = projectId,
             typologyProv94 = ContractingMonitoringExtendedOption.Partly,
@@ -64,7 +78,8 @@ internal class GetContractingMonitoringTest : UnitTest() {
                 number = 1,
                 entryIntoForceDate = ZonedDateTime.parse("2022-07-22T10:00:00+02:00").toLocalDate(),
                 comment = "comment"
-            ))
+            )),
+            fastTrackLumpSums = lumpSums
         )
     }
 
@@ -76,6 +91,9 @@ internal class GetContractingMonitoringTest : UnitTest() {
 
     @MockK
     lateinit var versionPersistence: ProjectVersionPersistence
+
+    @MockK
+    lateinit var projectLumpSumPersistence: ProjectLumpSumPersistence
 
     @RelaxedMockK
     lateinit var validator: ContractingValidator
@@ -90,6 +108,7 @@ internal class GetContractingMonitoringTest : UnitTest() {
         every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns version
         every { projectPersistence.getProject(projectId, version) } returns project
         every { contractingMonitoringPersistence.getContractingMonitoring(projectId) } returns monitoring
+        every { projectLumpSumPersistence.getLumpSums(1, "2.0")} returns lumpSums
 
         assertThat(getContractingMonitoring.getContractingMonitoring(projectId))
             .isEqualTo(
@@ -110,7 +129,8 @@ internal class GetContractingMonitoringTest : UnitTest() {
                         number = 1,
                         entryIntoForceDate = ZonedDateTime.parse("2022-07-22T10:00:00+02:00").toLocalDate(),
                         comment = "comment"
-                    ))
+                    )),
+                    fastTrackLumpSums = lumpSums
                 )
             )
     }
@@ -124,6 +144,7 @@ internal class GetContractingMonitoringTest : UnitTest() {
         every {
             contractingMonitoringPersistence.getContractingMonitoring(projectId)
         } returns monitoring.copy(startDate = ZonedDateTime.parse("2022-07-01T10:00:00+02:00").toLocalDate())
+        every { projectLumpSumPersistence.getLumpSums(1, "2.0")} returns lumpSums
 
         assertThat(getContractingMonitoring.getContractingMonitoring(projectId))
             .isEqualTo(
@@ -144,7 +165,8 @@ internal class GetContractingMonitoringTest : UnitTest() {
                         number = 1,
                         entryIntoForceDate = ZonedDateTime.parse("2022-07-22T10:00:00+02:00").toLocalDate(),
                         comment = "comment"
-                    ))
+                    )),
+                    fastTrackLumpSums = lumpSums
                 )
             )
     }

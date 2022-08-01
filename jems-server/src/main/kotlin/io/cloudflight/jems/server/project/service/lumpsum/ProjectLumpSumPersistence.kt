@@ -6,5 +6,5 @@ interface ProjectLumpSumPersistence {
 
     fun getLumpSums(projectId: Long, version: String? = null): List<ProjectLumpSum>
     fun updateLumpSums(projectId: Long, lumpSums: List<ProjectLumpSum>): List<ProjectLumpSum>
-
+    fun isFastTrackLumpSumReadyForPayment(programmeLumpSumId: Long): Boolean
 }

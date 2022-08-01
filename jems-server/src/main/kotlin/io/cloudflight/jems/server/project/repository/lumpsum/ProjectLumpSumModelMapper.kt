@@ -16,7 +16,9 @@ fun List<ProjectLumpSumEntity>.toModel() = sortedBy { it.id.orderNr }.map {
         period = it.endPeriod,
         programmeLumpSumId = it.programmeLumpSum.id,
         lumpSumContributions = it.lumpSumContributions.toModel(),
-        isFastTrack = it.programmeLumpSum.isFastTrack
+        isFastTrack = it.programmeLumpSum.isFastTrack,
+        readyForPayment = it.isReadyForPayment,
+        comment = it.comment
     )
 }
 
@@ -38,6 +40,8 @@ fun ProjectLumpSum.toEntity(
         programmeLumpSum = getProgrammeLumpSum.invoke(this.programmeLumpSumId),
         endPeriod = period,
         lumpSumContributions = lumpSumContributions.toPartnerLumpSumEntity(projectLumpSumId, getProjectPartner),
+        isReadyForPayment = readyForPayment,
+        comment = comment
     )
 }
 
@@ -75,6 +79,8 @@ fun List<ProjectLumpSumRow>.toProjectLumpSumHistoricalData() =
                         amount = it.amount
                     )
                 }.toList(),
-            isFastTrack = groupedRows.value.first().fastTrack != 0
+            isFastTrack = groupedRows.value.first().fastTrack != 0,
+            readyForPayment = groupedRows.value.first().readyForPayment != 0,
+            comment = groupedRows.value.first().comment
         )
     }

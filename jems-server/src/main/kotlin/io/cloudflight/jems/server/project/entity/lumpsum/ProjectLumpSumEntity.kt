@@ -20,6 +20,11 @@ data class ProjectLumpSumEntity(
 
     val endPeriod: Int? = null,
 
+    @field:NotNull
+    val isReadyForPayment: Boolean = false,
+
+    val comment: String? = null,
+
     @OneToMany(mappedBy = "id.projectLumpSumId", cascade = [CascadeType.ALL], orphanRemoval = true)
     val lumpSumContributions: Set<ProjectPartnerLumpSumEntity> = emptySet(),
 )
