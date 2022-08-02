@@ -88,6 +88,7 @@ import {
 import {
   PartnerReportFinancialOverviewTabComponent
 } from '@project/project-application/report/partner-report-detail-page/partner-report-financial-overview-tab/partner-report-financial-overview-tab.component';
+import {ContractReportingComponent} from '@project/project-application/contract-reporting/contract-reporting.component';
 
 export const routes: Routes = [
   {
@@ -187,6 +188,11 @@ export const routes: Routes = [
             path: 'projectManagement',
             component: ProjectManagementComponent,
             data: {breadcrumb: 'project.breadcrumb.applicationForm.contract.management'},
+          },
+          {
+            path: 'contractReporting',
+            component: ContractReportingComponent,
+            data: {breadcrumb: 'project.breadcrumb.applicationForm.contract.reporting'},
           },
           {
             path: 'annexes',
