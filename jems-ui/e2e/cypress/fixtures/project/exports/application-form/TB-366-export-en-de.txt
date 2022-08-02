@@ -1,6 +1,15 @@
 
 
-1
+{{applicationId}}
+{{acronym}}
+Application Form Export
+ Downloaded on{{dateFormat1}}, {{time}}
+ Version1.0
+ Form language:EN
+ Input language:DE
+
+  Profile#1{{applicationId}} - {{acronym}} Version1.0, {{dateFormat2}}
+2
 A - Project identification
 A.1 Project identification
 Project id (automatically created){{applicationId}}
@@ -27,7 +36,8 @@ what is new/original about the project.
 API generated application summary DE
 API generated application summary EN
 
-2
+  Profile#1{{applicationId}} - {{acronym}} Version1.0, {{dateFormat2}}
+3
 A.3 Project budget overview
 Programme fundingContribution
 Total project
@@ -55,7 +65,8 @@ Total project
 budget
 38,058.4760.00 %0.0025,372.3225,372.320.0025,372.3263,430.79
 
-3
+  Profile#1{{applicationId}} - {{acronym}} Version1.0, {{dateFormat2}}
+4
 A.4 Project outputs and result overview
 Programme Output IndicatorAggregated value per
 Programme output
@@ -105,7 +116,8 @@ output 2 title
 DE
 5.00
 
-4
+  Profile#1{{applicationId}} - {{acronym}} Version1.0, {{dateFormat2}}
+5
 B - Project partners
 Partners overview
 NumberStatusName of the organisation in 
@@ -122,7 +134,8 @@ budget
 (AT)
 Lead PartnerLP63,430.79
 
-5
+  Profile#1{{applicationId}} - {{acronym}} Version1.0, {{dateFormat2}}
+6
 B.1 Lead partner
 Partner number1
 Partner roleLP
@@ -154,7 +167,8 @@ based on national legislation for the activities
 implemented in the project?
 Yes
 
-6
+  Profile#1{{applicationId}} - {{acronym}} Version1.0, {{dateFormat2}}
+7
 Legal and financial information
 Other identifier number654321
 Other identifier descriptionAPI generated other identifier description DE
@@ -184,7 +198,8 @@ Total
 Sub-total public contribution25,372.3240.00 %
 Sub-total automatic public contribution0.000.00 %
 
-7
+  Profile#1{{applicationId}} - {{acronym}} Version1.0, {{dateFormat2}}
+8
 Total
 Sub-total private contribution0.000.00 %
 Total25,372.3240.00 %
@@ -222,14 +237,16 @@ Result of State aid criteria self-check:There is a risk of indirect aid
 State aid relevant activitiesActivity1.1
 GBER scheme / de minimisGeneral de minimis
 
-8
+  Profile#1{{applicationId}} - {{acronym}} Version1.0, {{dateFormat2}}
+9
 Associated organisations
 NumberStatusName of the organisation in original 
 language
 Name of the responsible project 
 partner
 
-9
+  Profile#1{{applicationId}} - {{acronym}} Version1.0, {{dateFormat2}}
+10
 C - Project description
 C.1 Project overall objective
 Below, you can see the Programme priority specific objective your project will contribute to (chosen in 
@@ -245,7 +262,8 @@ specify who needs project results and in which territory;
 be measurable – indicate the change you are aiming for.
 API generated application overall objective DE
 
-10
+  Profile#1{{applicationId}} - {{acronym}} Version1.0, {{dateFormat2}}
+11
 C.2 Project relevance and context
 C.2.1 What are the common territorial challenge(s) that will be tackled by the project?
 Please describe why your project is needed in the programme area and the relevance of your project for 
@@ -279,7 +297,8 @@ Strategy
 API generated application strategy contribution 
 DE
 
-11
+  Profile#1{{applicationId}} - {{acronym}} Version1.0, {{dateFormat2}}
+12
 C.2.6 Which synergies with past or current EU and other projects or initiatives will the project make use 
 of?
 Project or InitiativeSynergy
@@ -289,18 +308,21 @@ Please describe the experiences/lessons learned that the project draws on, and o
 the project capitalises on.
 API generated application available knowledge DE
 
-12
+  Profile#1{{applicationId}} - {{acronym}} Version1.0, {{dateFormat2}}
+13
 C.3 Project partnership
 Describe the structure of your partnership and explain why these partners are needed to implement the 
 project and to achieve project objectives. What is the contribution of each partner to the project?
 API generated project partnership DE
 
-13
+  Profile#1{{applicationId}} - {{acronym}} Version1.0, {{dateFormat2}}
+14
 C.4 Project work plan
 NumberWork package name
 1API generated project work package title DE
 
-14
+  Profile#1{{applicationId}} - {{acronym}} Version1.0, {{dateFormat2}}
+15
 Work package 1
 Work package title
 API generated project work package title DE
@@ -340,7 +362,8 @@ description DE
   Period4, 10
 - 12
 
-15
+  Profile#1{{applicationId}} - {{acronym}} Version1.0, {{dateFormat2}}
+16
 Activity 1.2
 TitleAPI generated activity 2 title DE
 Start period  Period5, 13- 15
@@ -380,7 +403,8 @@ medium, large)
 Measurement Unitenterprises
 Target Value5.00
 
-16
+  Profile#1{{applicationId}} - {{acronym}} Version1.0, {{dateFormat2}}
+17
 Output 1.2
 Delivery period  Period4, 10- 12
 Output DescriptionAPI generated output 2 description DE
@@ -409,7 +433,8 @@ NUTS 3Stuttgart, Stadtkreis (DE111)
    StreetHouse number,Postal code,City   Investmentstreet1,1010,Investment city
 Risk associated with the investment
 
-17
+  Profile#1{{applicationId}} - {{acronym}} Version1.0, {{dateFormat2}}
+18
 Describe the risk associated with the investment, go/no-go decisions, etc. (if any).
 API generated investment risk DE
 Investment documentation
@@ -429,7 +454,8 @@ API generated investment ownership retainment DE
 Who will take care of the maintenance of the investment? How will this be done?
 API generated investment maintenance DE
 
-18
+  Profile#1{{applicationId}} - {{acronym}} Version1.0, {{dateFormat2}}
+19
 C.5 Project Results
 What do you expect to change because of the activities you plan to implement and the outputs you plan to 
 deliver? Please take a look at the programme result indicators and select those that you will contribute to.
@@ -441,10 +467,12 @@ Target value13.00
 Delivery period  Period8, 22- 24
 Result descriptionAPI generated project result description DE
 
-19
+  Profile#1{{applicationId}} - {{acronym}} Version1.0, {{dateFormat2}}
+20
 C.6 Project Time Plan
 
-20
+  Profile#1{{applicationId}} - {{acronym}} Version1.0, {{dateFormat2}}
+21
 C.7 Project management
 In addition to the thematic work you will do in your project, you will need time and resources for 
 coordination and internal communication. Please describe below how you plan to organise yourself to 
@@ -475,7 +503,8 @@ Joint implementationYesAPI generated project joint implementation DE
 Joint staffingYesAPI generated project joint staffing DE
 Joint financingYesAPI generated project joint financing DE
 
-21
+  Profile#1{{applicationId}} - {{acronym}} Version1.0, {{dateFormat2}}
+22
 C.7.6 Horizontal principles
 Please indicate which type of contribution to horizontal principles applies to the project, and justify your 
 choice.
@@ -490,7 +519,8 @@ neutralAPI generated project equal opportunities
 DE
 Equality between men and womenpositive effectsAPI generated project equality DE
 
-22
+  Profile#1{{applicationId}} - {{acronym}} Version1.0, {{dateFormat2}}
+23
 C.8 Long-term plans
 As a programme, we would like to support projects that have a long-lasting effect in the territory and those 
 who will benefit from them. Please describe below what you will do to ensure this.

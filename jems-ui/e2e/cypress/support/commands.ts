@@ -27,6 +27,7 @@ Cypress.Commands.add('clickToDownload', {prevSubject: true}, (subject, requestTo
   cy.wrap(subject).click();
   cy.wait(`@${randomizeDownload}`).then(result => {
     const regex = new RegExp(`filename="(.*\.${fileExtension})"`);
+    const localDateTime = new URLSearchParams(result.request.url).get('localDateTime');
     const fileNameMatch = regex.exec(result.response.headers['content-disposition'].toString());
     if (!fileNameMatch) {
       throw new Error(`Downloaded file does not have ${fileExtension} extension`);
@@ -35,6 +36,7 @@ Cypress.Commands.add('clickToDownload', {prevSubject: true}, (subject, requestTo
     if (fileExtension === 'pdf') {
       cy.readFile('./cypress/downloads/' + fileName, null).parsePDF().then(file => {
         file.fileName = fileName;
+        file.localDateTime = localDateTime;
         cy.wrap(file);
       });
     } else if (fileExtension === 'xlsx') {
