@@ -9,6 +9,8 @@ import strategies from '../../fixtures/programme/strategies.json';
 import lumpSums from '../../fixtures/programme/lump.sums.json';
 import unitCosts from '../../fixtures/programme/unit.costs.json';
 import stateAid from '../../fixtures/programme/state.aid.json';
+import checklists from '../../fixtures/programme/checklists.json';
+import faker from '@faker-js/faker';
 
 context('Programme management tests', () => {
 
@@ -373,5 +375,95 @@ context('Programme management tests', () => {
         cy.contains('mat-icon', 'add').click();
       });
     });
+  });
+
+  it('TB-579 User can create, edit, preview and delete checklists', () => {
+    cy.visit('/app/programme/checklists', {failOnStatusCode: false});
+    checklists.checklistName = faker.word.noun();
+
+    cy.contains('button', 'Create new checklist').click();
+
+    cy.contains('div', 'Checklist type').find('mat-select').click();
+    cy.contains('mat-option', 'Application form assessment').click();
+    cy.contains('div', 'Checklist name (on the system)').find('input').type(checklists.checklistName);
+    cy.contains('button', 'Add component').click();
+    cy.contains('mat-form-field', 'Component type').click();
+    cy.contains('mat-option', 'Headline').click();
+    cy.contains('mat-form-field', 'Headline name').find('input').type(checklists.headlineName);
+    cy.contains('button', 'Add component').click();
+
+    cy.get('.jems-table-config').children().last().within(()=>{
+      cy.contains('mat-form-field', 'Component type').click();
+      cy.root().closest('body').find('mat-option').contains('Options toggle').click();
+      cy.contains('mat-form-field', 'Question text').find('textarea').type(checklists.optionsQuestionText);
+      cy.contains('mat-form-field', 'Option 1').find('input').type(checklists.option1);
+      cy.contains('mat-form-field', 'Option2').find('input').type(checklists.option2);
+      cy.contains('mat-form-field', 'Option3 (optional)').find('input').type(checklists.option3);
+    })
+
+    cy.contains('button', 'Add component').click();
+    cy.get('.jems-table-config').children().last().within(()=>{
+      cy.contains('mat-form-field', 'Component type').click();
+      cy.root().closest('body').find('mat-option').contains('Text input').click();
+      cy.contains('mat-form-field', 'Question text').find('textarea').type(checklists.textInputQuestionText);
+      cy.contains('mat-form-field', 'Input label').find('input').type(checklists.textInputLabel);
+    })
+
+    cy.contains('button', 'Add component').click();
+    cy.get('.jems-table-config').children().last().within(()=>{
+      cy.contains('mat-form-field', 'Component type').click();
+      cy.root().closest('body').find('mat-option').contains('Score').click();
+      cy.contains('mat-form-field', 'Question text').find('textarea').type(checklists.scoreQuestionText);
+    })
+
+    cy.contains('button', 'Create').click();
+    cy.wait(1000);
+    cy.contains('div', 'Preview checklist').click();
+
+    cy.contains('div', 'Score table').should('be.visible');
+    cy.contains('span', checklists.scoreQuestionText).should('be.visible');
+    cy.contains('div', checklists.headlineName).should('be.visible');
+    cy.contains('p', checklists.optionsQuestionText).should('be.visible');
+    cy.get('mat-button-toggle-group').should('be.visible');
+    cy.get('mat-button-toggle-group').find('button').find('span').contains(checklists.option1).should('be.visible');
+    cy.get('mat-button-toggle-group').find('button').find('span').contains(checklists.option2).should('be.visible');
+    cy.get('mat-button-toggle-group').find('button').find('span').contains(checklists.option3).should('be.visible');
+    cy.contains('div', 'Justification').should('be.visible');
+    cy.contains('p', checklists.textInputQuestionText).should('be.visible');
+    cy.contains('div', checklists.textInputLabel).should('be.visible');
+    cy.contains('div', checklists.scoreQuestionText).scrollIntoView().should('be.visible');
+    cy.contains('div', 'Justification').should('be.visible');
+    cy.get('.score-calculation').scrollIntoView().should('be.visible');
+
+    cy.visit('/app/programme/checklists', {failOnStatusCode: false});
+    cy.get('.mat-row').first().click();
+
+    cy.contains('mat-form-field', 'Headline name').find('input').clear().type(checklists.newHeadlineName);
+    cy.contains('mat-form-field', 'Question text').find('textarea').clear().type(checklists.newOptionsQuestionText);
+    cy.contains('mat-form-field', 'Option 1').find('input').clear().type(checklists.newOption1);
+    cy.contains('mat-form-field', 'Option2').find('input').clear().type(checklists.newOption2);
+    cy.contains('mat-form-field', 'Option3 (optional)').find('input').clear().type(checklists.newOption3);
+    cy.contains('mat-form-field', 'Input label').find('input').clear().type(checklists.newTextInputLabel);
+    cy.contains('mat-form-field', 'Characters').find('input').clear().type(checklists.newCharacters);
+    cy.contains('mat-form-field', 'Weight (multiplier)').find('input').type(checklists.newWeight);
+    cy.contains('button', 'Save changes').click();
+
+    cy.contains('div', 'Preview checklist').click();
+    cy.contains('div', checklists.newHeadlineName).should('be.visible');
+    cy.contains('p', checklists.newOptionsQuestionText).should('be.visible');
+    cy.get('mat-button-toggle-group').should('be.visible');
+    cy.get('mat-button-toggle-group').find('button').find('span').contains(checklists.newOption1).should('be.visible');
+    cy.get('mat-button-toggle-group').find('button').find('span').contains(checklists.newOption2).should('be.visible');
+    cy.get('mat-button-toggle-group').find('button').find('span').contains(checklists.newOption3).should('be.visible');
+    cy.contains('div', 'Justification').should('be.visible');
+    cy.contains('p', checklists.textInputQuestionText).should('be.visible');
+    cy.contains('div', checklists.newTextInputLabel).scrollIntoView().should('be.visible');
+    cy.contains('div', 'Justification').should('be.visible');
+    cy.get('.score-calculation').scrollIntoView().should('be.visible');
+
+    cy.visit('/app/programme/checklists', {failOnStatusCode: false});
+    cy.get('.mat-row').first().find('button').click();
+    cy.contains('button', 'Confirm').click();
+    cy.contains('div', checklists.checklistName).should('not.exist');
   });
 })

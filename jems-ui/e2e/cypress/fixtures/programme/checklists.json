@@ -1,0 +1,19 @@
+{
+  "checklistName": "Auto-Checklist",
+  "headlineName": "Auto-Headline",
+  "optionsQuestionText": "Is this a real question?",
+  "option1": "Yes",
+  "option2": "No",
+  "option3": "Maybe",
+  "textInputQuestionText": "Are you kidding me?",
+  "textInputLabel": "Enter your input",
+  "scoreQuestionText": "Again another question?",
+  "newHeadlineName": "New-Auto-Headline",
+  "newOptionsQuestionText": "Did I change this question?",
+  "newOption1": "Sure",
+  "newOption2": "Why not",
+  "newOption3": "I don't care",
+  "newTextInputLabel": "Pls just enter something",
+  "newCharacters": "2500",
+  "newWeight": "2"
+}
