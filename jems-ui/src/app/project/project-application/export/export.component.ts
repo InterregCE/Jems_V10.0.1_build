@@ -6,6 +6,7 @@ import {FormBuilder, FormGroup} from '@angular/forms';
 import {CategoryInfo, CategoryNode} from '@project/common/components/category-tree/categoryModels';
 import {ProjectCallSettingsDTO, ProjectVersionDTO} from '@cat/api';
 import {DownloadService} from '@common/services/download.service';
+import moment from 'moment';
 
 @Component({
   selector: 'jems-export',
@@ -57,7 +58,8 @@ export class ExportComponent {
   exportData(selectedCategory: CategoryInfo, exportLanguage: string, inputLanguage: string, projectId: number, version: string | null): void {
     if (selectedCategory?.type && projectId && exportLanguage && inputLanguage) {
       this.isExportingInProgress$.next(true);
-      let url = `/api/project/${projectId}/export/${selectedCategory.type}?exportLanguage=${exportLanguage}&inputLanguage=${inputLanguage}`;
+      const localDateTime = moment().format('YYYY-MM-DDTHH:mm:ss');
+      let url = `/api/project/${projectId}/export/${selectedCategory.type}?exportLanguage=${exportLanguage}&inputLanguage=${inputLanguage}&localDateTime=${localDateTime}`;
       url = version ? url + `&version=${version}` : url;
       this.downloadService.download(url, selectedCategory.type === 'application' ? 'application-form-export.pdf' : 'budget-export.csv').pipe(
         finalize(() => this.isExportingInProgress$.next(false)),

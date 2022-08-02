@@ -11,6 +11,7 @@ import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectForm
 import io.cloudflight.jems.server.resources.service.get_logos.GetLogoFailed
 import io.cloudflight.jems.server.resources.service.get_logos.GetLogosInteractor
 import org.springframework.stereotype.Service
+import java.time.LocalDateTime
 
 @Service
 class ExportApplicationForm(private val jemsPluginRegistry: JemsPluginRegistry,
@@ -20,12 +21,13 @@ class ExportApplicationForm(private val jemsPluginRegistry: JemsPluginRegistry,
     @ExceptionWrapper(ExportApplicationFormException::class)
     @CanRetrieveProjectForm
     override fun export(
-        projectId: Long, exportLanguage: SystemLanguage, inputLanguage: SystemLanguage, version: String?
+        projectId: Long, exportLanguage: SystemLanguage, inputLanguage: SystemLanguage, localDateTime: LocalDateTime, version: String?
     ): ExportResult =
         jemsPluginRegistry.get(ApplicationFormExportPlugin::class, "standard-application-form-export-plugin").export(
             projectId,
             SystemLanguageData.valueOf(exportLanguage.toString()),
             SystemLanguageData.valueOf(inputLanguage.toString()),
+            localDateTime,
             version,
             getMediumSizedLogo()
         )
