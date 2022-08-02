@@ -435,7 +435,7 @@
                     </mat-table>
                 </jems-multi-language-container>
             </div>
-            <button *ngIf="reportExpendituresForm.enabled"
+            <button *ngIf="isReportEditable$ | async"
                     mat-stroked-button type="button" class="mt-2"
                     [disabled]="items.length >= constants.MAX_NUMBER_OF_ITEMS"
                     (click)="addNewItem()">
