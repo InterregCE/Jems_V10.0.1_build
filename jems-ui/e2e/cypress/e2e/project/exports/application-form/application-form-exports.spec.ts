@@ -285,7 +285,7 @@ context('Application form exports', () => {
     });
   });
 
-  it.only('TB-635 Export application form that contains special characters', () => {
+  it('TB-635 Export application form that contains special characters', () => {
     cy.fixture('project/exports/application-form/TB-635.json').then(testData => {
       cy.createCall(call, user.programmeUser.email).then(callId => {
         application.details.projectCallId = callId;
