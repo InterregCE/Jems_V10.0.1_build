@@ -6,6 +6,7 @@ import io.cloudflight.jems.plugin.contract.export.ExportResult
 import io.cloudflight.jems.plugin.contract.models.common.SystemLanguageData
 import io.cloudflight.jems.plugin.contract.pre_condition_check.PreConditionCheckPlugin
 import io.cloudflight.jems.plugin.contract.pre_condition_check.models.PreConditionCheckResult
+import java.time.LocalDateTime
 
 const val PreConditionCheckSamplePluginKey = "key-1"
 const val ApplicationFormExportSamplePluginKey = "key-2"
@@ -32,7 +33,12 @@ class ApplicationFormExportSamplePlugin : ApplicationFormExportPlugin {
         ApplicationFormExportSamplePluginKey
 
     override fun export(
-        projectId: Long, exportLanguage: SystemLanguageData, dataLanguage: SystemLanguageData, version: String?, logo: String?
+        projectId: Long,
+        exportLanguage: SystemLanguageData,
+        dataLanguage: SystemLanguageData,
+        localDateTime: LocalDateTime,
+        version: String?,
+        logo: String?
     ) =
         ExportResult("", "", byteArrayOf())
 

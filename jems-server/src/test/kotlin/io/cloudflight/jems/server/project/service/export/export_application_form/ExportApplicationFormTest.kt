@@ -13,6 +13,7 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import java.time.LocalDateTime
 
 internal class ExportApplicationFormTest : UnitTest() {
 
@@ -33,16 +34,18 @@ internal class ExportApplicationFormTest : UnitTest() {
     @Test
     fun `should execute export application form plugin when there is no problem`() {
         val exportResult = ExportResult("pdf", "filename", byteArrayOf())
+        val localDateTime = LocalDateTime.now()
         every {
             jemsPluginRegistry.get(ApplicationFormExportPlugin::class, pluginKey)
         } returns applicationFormExportPlugin
         every {
-            applicationFormExportPlugin.export(1L, SystemLanguageData.EN, SystemLanguageData.DE)
+            applicationFormExportPlugin.export(1L, SystemLanguageData.EN, SystemLanguageData.DE, localDateTime)
         } returns exportResult
         every {
             getLogosInteractor.getLogos()
         } returns listOf<LogoDTO>()
-        
-        assertThat(exportApplicationForm.export(1L, SystemLanguage.EN, SystemLanguage.DE)).isEqualTo(exportResult)
+
+        assertThat(exportApplicationForm.export(1L, SystemLanguage.EN, SystemLanguage.DE, localDateTime))
+            .isEqualTo(exportResult)
     }
 }
