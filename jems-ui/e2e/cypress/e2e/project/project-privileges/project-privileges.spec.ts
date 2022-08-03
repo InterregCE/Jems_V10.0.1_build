@@ -229,4 +229,36 @@ context('Project privileges tests', () => {
     cy.get('mat-button-toggle-group:last').contains('span', privilegeLevel).click();
     cy.contains('button', 'Save changes').click();
   }
-})
+
+  it('TB-376 Restricting management of project specific privileges in system roles has priority over project specific privileges in the application', () => {
+    cy.loginByRequest(user.programmeUser.email);
+    cy.createCall(call).then(callId => {
+      application.details.projectCallId = callId;
+      cy.publishCall(callId);
+    });
+    cy.loginByRequest(user.applicantUser.email);
+    cy.createApplication(application).then(applicationId => {
+      cy.visit(`/app/project/detail/${applicationId}/`,{failOnStatusCode: false});
+      cy.contains('Project privileges').should('exist');
+      cy.visit(`/app/project/detail/${applicationId}/privileges`,{failOnStatusCode: false});
+      cy.contains('Application Form users').should('exist');
+      cy.loginByRequest(user.admin.email);
+      cy.visit('/');
+      cy.contains('System').click();
+      cy.contains('applicant user').click();
+      cy.contains('mat-tree-node','Project privileges').contains('button','hide').click();
+      cy.contains('Save changes').click();
+      cy.loginByRequest(user.applicantUser.email);
+      cy.visit(`/app/project/detail/${applicationId}/`,{failOnStatusCode: false});
+      cy.contains('Project privileges').should('not.exist');
+      cy.visit(`/app/project/detail/${applicationId}/privileges`,{failOnStatusCode: false});
+      cy.contains('Application Form users').should('not.exist');
+      cy.loginByRequest(user.admin.email);
+      cy.visit('/');
+      cy.contains('System').click();
+      cy.contains('applicant user').click();
+      cy.contains('mat-tree-node','Project privileges').contains('button','edit').click();
+      cy.contains('Save changes').click();
+    });
+  });
+});
