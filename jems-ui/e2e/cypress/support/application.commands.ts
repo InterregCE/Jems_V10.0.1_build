@@ -19,6 +19,7 @@ import {faker} from '@faker-js/faker';
 import {createPartners} from './partner.commands';
 import user from '../fixtures/users.json';
 import {loginByRequest} from './login.commands';
+import dateTimeISO = CypressCommandLine.dateTimeISO;
 
 declare global {
 
@@ -30,6 +31,37 @@ declare global {
     description?: ProjectDescription,
     lumpSums?: ProjectLumpSumDTO[],
     assessments: {}
+  }
+
+  interface Checklist {
+    id:number,
+    type:string,
+    name:string,
+    minScore:number,
+    maxScore:number,
+    allowsDecimalScore:false,
+    lastModificationDate:dateTimeISO,
+    locked:boolean,
+    components?:ChecklistComponent[],
+  }
+
+  interface ChecklistComponent {
+    id:number,
+    type: string,
+    position: number,
+    metadata: ChecklistMetadata[]
+  }
+
+  interface ChecklistMetadata {
+    type?:string,
+    question?:string,
+    firstOption?:string,
+    secondOption?:string,
+    thirdOption?:string,
+    value?:string,
+    explanationLabel?:string,
+    explanationMaxLength?:string,
+    weight?:string
   }
 
   interface ProjectDescription {
@@ -52,7 +84,7 @@ declare global {
   namespace Cypress {
     interface Chainable {
       createApplication(application);
-      
+
       createSubmittedApplication(application);
 
       createApprovedApplication(application, approvingUserEmail?: string);
@@ -96,10 +128,12 @@ declare global {
       approveModification(applicationId: number, approvalInfo, userEmail?: string);
 
       rejectModification(applicationId: number, rejectionInfo, userEmail?: string);
-      
+
       setProjectToContracted(applicationId: number, userEmail?: string);
-      
+
       assignPartnerCollaborators(applicationId: number, partnerId: number, users: string[]);
+
+      createChecklist(checklist);
     }
   }
 }
@@ -270,6 +304,13 @@ Cypress.Commands.add('assignPartnerCollaborators', (applicationId: number, partn
     method: 'PUT',
     url: `api/projectPartnerCollaborators/forProject/${applicationId}/forPartner/${partnerId}`,
     body: users
+  });
+});
+
+Cypress.Commands.add('createChecklist', (checklist: Checklist) => {
+  createChecklist(checklist).then(checklistId => {
+    checklist.id = checklistId;
+    cy.wrap(checklist.id).as('checklistId');
   });
 });
 
@@ -465,6 +506,17 @@ function approveApplication(applicationId: number, assessments, approvingUserEma
       loginByRequest(currentUser.name);
     });
   }
+}
+
+function createChecklist(checklist: Checklist) {
+  checklist.name = `${faker.hacker.adjective()} ${faker.hacker.noun()}`.substr(0, 25);
+  return cy.request({
+    method: 'POST',
+    url: 'api/programme/checklist/create',
+    body: checklist
+  }).then(response => {
+    return response.body.id
+  });
 }
 
 export {}
