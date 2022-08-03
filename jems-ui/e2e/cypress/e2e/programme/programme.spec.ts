@@ -10,7 +10,7 @@ import lumpSums from '../../fixtures/programme/lump.sums.json';
 import unitCosts from '../../fixtures/programme/unit.costs.json';
 import stateAid from '../../fixtures/programme/state.aid.json';
 import checklists from '../../fixtures/programme/checklists.json';
-import faker from '@faker-js/faker';
+import {faker} from '@faker-js/faker';
 
 context('Programme management tests', () => {
 

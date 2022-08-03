@@ -164,7 +164,8 @@ context('Project budget tests', () => {
             cy.contains('button', 'Export').clickToDownload('**/export/application?*', 'pdf').then(exportFile => {
               cy.fixture('project/application-form/d-project-budget/TB-383-export-pdf.txt').then(testDataFile => {
                 const assertionMessage = 'Verify downloaded pdf file';
-                expect(exportFile.text.includes(replace(testDataFile)), assertionMessage).to.be.true;
+                testDataFile = replace(testDataFile, applicationId, testData.application.identification.acronym, exportFile.localDateTime);
+                expect(exportFile.text.includes(testDataFile), assertionMessage).to.be.true;
               });
             });
 
@@ -183,7 +184,13 @@ context('Project budget tests', () => {
     });
   });
 
-  function replace(testDataFile: string) {
-    return testDataFile.replaceAll(/\r/g, '');
+  function replace(testDataFile: string, applicationId: number, acronym: string, localDateTime: string) {
+    const id = String(applicationId).padStart(5, '0');
+    const date = localDateTime.split('T')[0];
+    return testDataFile
+      .replaceAll('{{acronym}}', acronym)
+      .replaceAll('{{applicationId}}', id)
+      .replaceAll('{{date}}', date)
+      .replaceAll(/\r/g, '');
   }
 })

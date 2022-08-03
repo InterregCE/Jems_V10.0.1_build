@@ -319,8 +319,6 @@ context('Application form exports', () => {
             cy.fixture('project/exports/application-form/TB-635-export.txt').then(testDataFile => {
               const assertionMessage = 'Verify downloaded pdf file';
               testDataFile = replace(testDataFile, applicationId, application.identification.acronym, file.localDateTime);
-              console.log(testDataFile)
-              console.log(file.text)
               expect(file.text === testDataFile, assertionMessage).to.be.true;
             });
           });

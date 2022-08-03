@@ -1,7 +1,6 @@
 import {defineConfig} from 'cypress';
 import pdf from 'pdf-parse';
 import date from 'date-and-time';
-import fetch from 'node-fetch';
 import xlsx from 'node-xlsx';
 import CypressRunResult = CypressCommandLine.CypressRunResult;
 

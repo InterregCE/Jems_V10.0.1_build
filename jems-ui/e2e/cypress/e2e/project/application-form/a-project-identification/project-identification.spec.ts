@@ -1,5 +1,5 @@
 import user from '../../../../fixtures/users.json';
-import faker from '@faker-js/faker';
+import {faker} from '@faker-js/faker';
 import call from '../../../../fixtures/api/call/1.step.call.json';
 import application from '../../../../fixtures/api/application/application.json';
 

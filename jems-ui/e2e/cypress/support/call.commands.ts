@@ -4,7 +4,7 @@ import {FlatRateSetupDTO} from '../../../build/swagger-code-jems-api/model/flatR
 import {
   UpdateApplicationFormFieldConfigurationRequestDTO
 } from '../../../build/swagger-code-jems-api/model/updateApplicationFormFieldConfigurationRequestDTO';
-import faker from '@faker-js/faker';
+import {faker} from '@faker-js/faker';
 import {loginByRequest} from './login.commands';
 
 declare global {
