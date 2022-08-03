@@ -1,6 +1,15 @@
 
 
-1
+{{applicationId}}
+{{acronym}}
+Application Form Export
+ Downloaded on{{dateFormat1}}, {{time}}
+ Version1.0
+ Form language:EN
+ Input language:EN
+
+  Profile#1{{applicationId}} - {{acronym}} Version1.0, {{dateFormat2}}
+2
 A - Project identification
 A.1 Project identification
 Project id (automatically created){{applicationId}}
@@ -26,13 +35,15 @@ needed;
 what is new/original about the project.
 Summary EN
 
-2
+  Profile#1{{applicationId}} - {{acronym}} Version1.0, {{dateFormat2}}
+3
 B - Project partners
 Partners overview
 NumberStatusName of the organisation in englishCountryOrganisation abbreviationPartner rolePartner total eligible budget
 1ActiveName in englishÅland Islands (AX)Lead PartnerLP638.89
 
-3
+  Profile#1{{applicationId}} - {{acronym}} Version1.0, {{dateFormat2}}
+4
 B.1 Lead partner
 Partner number1
 Partner roleLP
@@ -62,7 +73,8 @@ Legal representative  MrLegalRep
 Contact person  MsContactPerson
 Emailcontact@address.com
 
-4
+  Profile#1{{applicationId}} - {{acronym}} Version1.0, {{dateFormat2}}
+5
 Contact
 Telephone no.+009988776655
 Co-financing
@@ -74,7 +86,8 @@ Origin of partner contribution
 Source of contributionLegal status of contributionAmount% of total partner budget
 Lead PartnerPublic255.5640.00 %
 
-5
+  Profile#1{{applicationId}} - {{acronym}} Version1.0, {{dateFormat2}}
+6
 C - Project description
 C.1 Project overall objective
 Below, you can see the Programme priority specific objective your project will contribute to (chosen in 
@@ -82,7 +95,8 @@ section A.1.).
 SO1.1: Developing and enhancing research and innovation capacities and the uptake of advanced 
 technologies
 
-6
+  Profile#1{{applicationId}} - {{acronym}} Version1.0, {{dateFormat2}}
+7
 C.2 Project relevance and context
 C.2.1 What are the common territorial challenge(s) that will be tackled by the project?
 Please describe why your project is needed in the programme area and the relevance of your project for 
@@ -116,7 +130,8 @@ Strategy
 API generated application strategy contribution 
 EN
 
-7
+  Profile#1{{applicationId}} - {{acronym}} Version1.0, {{dateFormat2}}
+8
 C.2.6 Which synergies with past or current EU and other projects or initiatives will the project make use 
 of?
 Project or InitiativeSynergy
@@ -125,18 +140,21 @@ Please describe the experiences/lessons learned that the project draws on, and o
 the project capitalises on.
 API generated application available knowledge EN
 
-8
+  Profile#1{{applicationId}} - {{acronym}} Version1.0, {{dateFormat2}}
+9
 C.3 Project partnership
 Describe the structure of your partnership and explain why these partners are needed to implement the 
 project and to achieve project objectives. What is the contribution of each partner to the project?
 API generated project partnership EN
 
-9
+  Profile#1{{applicationId}} - {{acronym}} Version1.0, {{dateFormat2}}
+10
 C.4 Project work plan
 Number
 1
 
-10
+  Profile#1{{applicationId}} - {{acronym}} Version1.0, {{dateFormat2}}
+11
 Work package 1
 Objectives
 Your objectives should be:
@@ -165,7 +183,8 @@ Target Value3.00
 Delivery period  Period3, 7- 9
 Output DescriptionAPI generated output 1 description EN
 
-11
+  Profile#1{{applicationId}} - {{acronym}} Version1.0, {{dateFormat2}}
+12
 C.5 Project Results
 What do you expect to change because of the activities you plan to implement and the outputs you plan to 
 deliver? Please take a look at the programme result indicators and select those that you will contribute to.
@@ -176,10 +195,12 @@ Baseline0.00
 Target value13.00
 Result descriptionAPI generated project result description EN
 
-12
+  Profile#1{{applicationId}} - {{acronym}} Version1.0, {{dateFormat2}}
+13
 C.6 Project Time Plan
 
-13
+  Profile#1{{applicationId}} - {{acronym}} Version1.0, {{dateFormat2}}
+14
 C.7 Project management
 In addition to the thematic work you will do in your project, you will need time and resources for 
 coordination and internal communication. Please describe below how you plan to organise yourself to 
@@ -210,7 +231,8 @@ Joint implementationYesAPI generated project joint implementation EN
 Joint staffingYesAPI generated project joint staffing EN
 Joint financingYesAPI generated project joint financing EN
 
-14
+  Profile#1{{applicationId}} - {{acronym}} Version1.0, {{dateFormat2}}
+15
 C.7.6 Horizontal principles
 Please indicate which type of contribution to horizontal principles applies to the project, and justify your 
 choice.
@@ -225,7 +247,8 @@ neutralAPI generated project equal opportunities
 EN
 Equality between men and womenpositive effectsAPI generated project equality EN
 
-15
+  Profile#1{{applicationId}} - {{acronym}} Version1.0, {{dateFormat2}}
+16
 C.8 Long-term plans
 As a programme, we would like to support projects that have a long-lasting effect in the territory and those 
 who will benefit from them. Please describe below what you will do to ensure this.

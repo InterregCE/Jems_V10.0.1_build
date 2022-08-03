@@ -4,6 +4,7 @@ import call2step from '../../../../fixtures/api/call/2.step.call.json';
 import application from '../../../../fixtures/api/application/application.json';
 import application2step from '../../../../fixtures/api/application/2.step.application.json';
 import partner from '../../../../fixtures/api/application/partner/partner.json';
+import date from "date-and-time";
 
 context('Application form exports', () => {
   beforeEach(() => {
@@ -20,11 +21,11 @@ context('Application form exports', () => {
         cy.contains('div', 'Input language').find('mat-select').click();
         cy.contains('mat-option', 'Deutsch').click();
 
-        cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/application?exportLanguage=EN&inputLanguage=DE`, 'pdf').then(file => {
+        cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/application?exportLanguage=EN&inputLanguage=DE*`, 'pdf').then(file => {
           expect(file.fileName).to.contain(`${application.identification.acronym}_en_de_2022`);
           cy.fixture('project/exports/application-form/TB-366-export-en-de.txt').then(testDataFile => {
             const assertionMessage = 'Verify downloaded pdf file';
-            testDataFile = replace(testDataFile, applicationId, application.identification.acronym);
+            testDataFile = replace(testDataFile, applicationId, application.identification.acronym, file.localDateTime);
             expect(file.text === testDataFile, assertionMessage).to.be.true;
           });
         });
@@ -34,10 +35,10 @@ context('Application form exports', () => {
         cy.contains('div', 'Input language').find('mat-select').click();
         cy.contains('mat-option', 'English').click();
 
-        cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/application?exportLanguage=DE&inputLanguage=EN`, 'pdf').then(file => {
+        cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/application?exportLanguage=DE&inputLanguage=EN*`, 'pdf').then(file => {
           expect(file.fileName).to.contain(`${application.identification.acronym}_de_en_2022`);
           cy.fixture('project/exports/application-form/TB-366-export-de-en.txt').then(testDataFile => {
-            testDataFile = replace(testDataFile, applicationId, application.identification.acronym);
+            testDataFile = replace(testDataFile, applicationId, application.identification.acronym, file.localDateTime);
             const assertionMessage = 'Verify downloaded pdf file';
             expect(file.text === testDataFile, assertionMessage).to.be.true;
           });
@@ -119,7 +120,7 @@ context('Application form exports', () => {
 
             cy.contains('div#export-config button', 'Export').clickToDownload(`api/project/${applicationId}/export/application?*version=1.0`, 'pdf').then(file => {
               cy.fixture('project/exports/application-form/TB-367-v1.txt').then(testDataFile => {
-                testDataFile = replace(testDataFile, applicationId, application2step.firstStep.identification.acronym);
+                testDataFile = replace(testDataFile, applicationId, application2step.firstStep.identification.acronym, file.localDateTime);
                 const assertionMessage = 'Verify downloaded pdf file for step 1 version';
                 expect(file.text === testDataFile, assertionMessage).to.be.true;
               });
@@ -131,7 +132,7 @@ context('Application form exports', () => {
 
             cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/application?*version=2.0`, 'pdf').then(file => {
               cy.fixture('project/exports/application-form/TB-367-v2.txt').then(testDataFile => {
-                testDataFile = replace(testDataFile, applicationId, application2step.secondStep.identification.acronym);
+                testDataFile = replace(testDataFile, applicationId, application2step.secondStep.identification.acronym, file.localDateTime);
                 const assertionMessage = 'Verify downloaded pdf file for step 2 version';
                 expect(file.text === testDataFile, assertionMessage).to.be.true;
               });
@@ -143,7 +144,7 @@ context('Application form exports', () => {
 
             cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/application?*version=4.0`, 'pdf').then(file => {
               cy.fixture('project/exports/application-form/TB-367-v4.txt').then(testDataFile => {
-                testDataFile = replace(testDataFile, applicationId, testData.rejectedModificationData.identification.acronym);
+                testDataFile = replace(testDataFile, applicationId, testData.rejectedModificationData.identification.acronym, file.localDateTime);
                 const assertionMessage = 'Verify downloaded pdf file for rejected version';
                 expect(file.text === testDataFile, assertionMessage).to.be.true;
               });
@@ -197,7 +198,7 @@ context('Application form exports', () => {
             // export current step 2 (approved) version
             cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/application?*`, 'pdf').then(file => {
               cy.fixture('project/exports/application-form/TB-373-exports-v2.txt').then(fileContent => {
-                fileContent = replace(fileContent, applicationId, application2step.secondStep.identification.acronym);
+                fileContent = replace(fileContent, applicationId, application2step.secondStep.identification.acronym, file.localDateTime);
                 const assertionMessage = 'Verify downloaded pdf file for step 2 version';
                 expect(file.text === fileContent, assertionMessage).to.be.true;
               });
@@ -209,7 +210,7 @@ context('Application form exports', () => {
 
             cy.contains('div#export-config button', 'Export').clickToDownload(`api/project/${applicationId}/export/application?*version=1.0`, 'pdf').then(file => {
               cy.fixture('project/exports/application-form/TB-373-exports-v1.txt').then(fileContent => {
-                fileContent = replace(fileContent, applicationId, application2step.firstStep.identification.acronym);
+                fileContent = replace(fileContent, applicationId, application2step.firstStep.identification.acronym, file.localDateTime);
                 const assertionMessage = 'Verify downloaded pdf file for step 1 version';
                 expect(file.text === fileContent, assertionMessage).to.be.true;
               });
@@ -261,7 +262,7 @@ context('Application form exports', () => {
             // export current step 2 (approved) version
             cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/application?*`, 'pdf').then(file => {
               cy.fixture('project/exports/application-form/TB-545-exports-v2.txt').then(fileContent => {
-                fileContent = replace(fileContent, applicationId, testData.application.identification.acronym);
+                fileContent = replace(fileContent, applicationId, testData.application.identification.acronym, file.localDateTime);
                 const assertionMessage = 'Verify downloaded pdf file for step 2 version';
                 expect(file.text === fileContent, assertionMessage).to.be.true;
               });
@@ -273,7 +274,7 @@ context('Application form exports', () => {
 
             cy.contains('div#export-config button', 'Export').clickToDownload(`api/project/${applicationId}/export/application?*version=1.0`, 'pdf').then(file => {
               cy.fixture('project/exports/application-form/TB-545-exports-v1.txt').then(fileContent => {
-                fileContent = replace(fileContent, applicationId, testData.application.identification.acronym);
+                fileContent = replace(fileContent, applicationId, testData.application.identification.acronym, file.localDateTime);
                 const assertionMessage = 'Verify downloaded pdf file for step 1 version';
                 expect(file.text === fileContent, assertionMessage).to.be.true;
               });
@@ -314,10 +315,12 @@ context('Application form exports', () => {
           cy.contains('div', 'Input language').find('mat-select').click();
           cy.contains('mat-option', 'Deutsch').click();
 
-          cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/application?exportLanguage=EN&inputLanguage=DE`, 'pdf').then(file => {
+          cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/application?exportLanguage=EN&inputLanguage=DE*`, 'pdf').then(file => {
             cy.fixture('project/exports/application-form/TB-635-export.txt').then(testDataFile => {
               const assertionMessage = 'Verify downloaded pdf file';
-              testDataFile = replace(testDataFile, applicationId, application.identification.acronym);
+              testDataFile = replace(testDataFile, applicationId, application.identification.acronym, file.localDateTime);
+              console.log(testDataFile)
+              console.log(file.text)
               expect(file.text === testDataFile, assertionMessage).to.be.true;
             });
           });
@@ -326,11 +329,17 @@ context('Application form exports', () => {
     });
   });
 
-  function replace(testDataFile: string, applicationId: number, acronym: string) {
+  function replace(testDataFile: string, applicationId: number, acronym: string, localDateTime: string) {
     const id = String(applicationId).padStart(5, '0');
+    const dateFormat2 = localDateTime.split('T')[0];
+    const time = localDateTime.split('T')[1].substr(0, 5);
+    const dateFormat1 = date.format(new Date(dateFormat2), 'DD.MM.YYYY');
     return testDataFile
-      .replace('{{acronym}}', acronym)
-      .replace('{{applicationId}}', id)
+      .replaceAll('{{acronym}}', acronym)
+      .replaceAll('{{applicationId}}', id)
+      .replace('{{dateFormat1}}', dateFormat1)
+      .replace('{{time}}', time)
+      .replaceAll('{{dateFormat2}}', dateFormat2)
       .replaceAll(/\r/g, '');
   }
 });
