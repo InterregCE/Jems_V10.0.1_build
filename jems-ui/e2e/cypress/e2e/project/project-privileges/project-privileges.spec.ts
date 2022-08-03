@@ -88,4 +88,117 @@ context('Project privileges tests', () => {
       });
     });
   });
+
+  it('TB-374 Add user to project using project privileges', () => {
+    cy.fixture('project/project-privileges/TB-374.json').then(testData => {
+      // Preparation for the tests
+      cy.loginByRequest(user.admin.email);
+
+      testData.projectOwner.email = faker.internet.email();
+      testData.applicantView.email = faker.internet.email();
+      testData.applicantEdit.email = faker.internet.email();
+      testData.applicantManage.email = faker.internet.email();
+      cy.createUser(testData.applicantView, user.admin.email);
+      cy.createUser(testData.applicantEdit, user.admin.email);
+      cy.createUser(testData.applicantManage, user.admin.email);
+      cy.createUser(testData.projectOwner, user.admin.email);
+
+      cy.createCall(call).then(callId => {
+        application.details.projectCallId = callId;
+        cy.publishCall(callId);
+      });
+      cy.loginByRequest(testData.projectOwner.email);
+      cy.createApplication(application).then(applicationId => {
+        cy.visit(`/app/project/detail/${applicationId}/annexes`);
+        cy.get('input[type=file]').selectFile('cypress\\fixtures\\project\\project-privileges\\TB-374-testFile.txt', {force: true});
+
+
+
+        addNewApplicationPrivilegeUser(applicationId, testData.projectOwner, testData.applicantView, 'view');
+
+        cy.contains('div', 'Project collaborators were saved successfully').should('be.visible');
+
+        //checking whether the user can be added twice
+        cy.contains('button', '+').click();
+        cy.get('input:last').type(testData.applicantView.email);
+        cy.contains('div', 'The user emails must be unique').should('be.visible');
+        cy.contains('button', 'Discard changes').click();
+        cy.logoutByRequest();
+
+        // Testing the view privileges
+        cy.loginByRequest(testData.applicantView.email);
+        cy.visit('/');
+        cy.get('#table:first').contains('div', applicationId).should('be.visible');
+        cy.visit(`/app/project/detail/${applicationId}`);
+        cy.contains('div', 'Project identification').click();
+        cy.get("textarea:first").should('have.attr', 'readonly');
+        cy.contains('Project privileges').click();
+        cy.get('mat-button-toggle-group:last').contains('span', 'view').click();
+        cy.contains('button', 'Save changes').should('not.exist');
+        cy.contains('Export').click();
+        cy.contains('button', 'Export').should('be.visible');
+        cy.contains('Project privileges').click();
+        cy.get('mat-button-toggle-group:last').contains('span', 'view').click();
+        cy.contains('button', 'Save changes').should('not.exist');
+        cy.contains('annexes').click();
+        cy.contains('button', 'Upload').should('not.exist');
+        cy.contains('mat-icon', 'download').should('be.visible');
+        cy.contains('mat-icon', 'edit').should('not.exist');
+        cy.contains('Check & Submit').click();
+        cy.contains('button', 'Run pre-submission check').should('be.visible');
+        cy.contains('button', 'Run pre-submission check').click();
+        cy.get('jems-project-application-pre-condition-check-result').should('be.visible');
+        cy.contains('button', 'Submit project application').should('not.exist');
+
+        addNewApplicationPrivilegeUser(applicationId, testData.projectOwner, testData.applicantEdit, 'edit');
+
+        // Testing the edit privileges
+        cy.loginByRequest(testData.applicantEdit.email);
+        cy.visit('/');
+        testEditPrivileges(applicationId);
+        cy.contains('Project privileges').click();
+        cy.get('mat-button-toggle-group:last').contains('span', 'view').click();
+        cy.contains('button', 'Save changes').should('not.exist');
+
+        addNewApplicationPrivilegeUser(applicationId, testData.projectOwner, testData.applicantManage, 'manage');
+
+        // Testing the manage privileges
+        cy.loginByRequest(testData.applicantManage.email);
+        cy.visit('/');
+        testEditPrivileges(applicationId);
+        cy.contains('Project privileges').click();
+        cy.get('mat-button-toggle-group:last').contains('span', 'view').click();
+        cy.get('mat-button-toggle-group:last').contains('span', 'edit').click();
+        cy.contains('button', 'Save changes').should('be.visible');
+      });
+    });
+  });
+
+  function testEditPrivileges(applicationId) {
+    cy.visit('/');
+    cy.get('#table:first').contains('div', applicationId).should('be.visible');
+    cy.visit(`/app/project/detail/${applicationId}/applicationFormIdentification`);
+    cy.get("textarea:first").should('not.have.attr', 'readonly');
+    cy.visit(`/app/project/detail/${applicationId}/export`);
+    cy.contains('button', 'Export').should('be.visible');
+    cy.contains('Application annexes').click();
+    cy.contains('button', 'Upload file').should('be.visible');
+    cy.contains('mat-icon', 'download').should('be.visible');
+    cy.contains('mat-icon', 'edit').should('be.visible');
+    cy.contains('Check & Submit').click();
+    cy.contains('button', 'Run pre-submission check').should('be.visible');
+    cy.contains('button', 'Run pre-submission check').click();
+    cy.get('jems-project-application-pre-condition-check-result').should('be.visible');
+    cy.contains('button', 'Submit project application').should('be.visible');
+  }
+
+  function addNewApplicationPrivilegeUser(applicationId, applicationOwner, newUser, privilegeLevel) {
+    cy.loginByRequest(applicationOwner.email);
+    cy.visit(`/app/project/detail/${applicationId}`);
+    cy.contains('div', 'Project privileges').click();
+    cy.contains('button', '+').click();
+    cy.get('input:last').type(newUser.email);
+    cy.get('mat-button-toggle-group:last').contains('span', privilegeLevel).click();
+    cy.contains('button', 'Save changes').click();
+  }
 })
