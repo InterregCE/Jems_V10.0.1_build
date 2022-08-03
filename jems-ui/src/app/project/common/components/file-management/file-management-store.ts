@@ -26,6 +26,8 @@ import {APPLICATION_FORM} from '@project/common/application-form-model';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import {DownloadService} from '@common/services/download.service';
 import CallTypeEnum = ProjectCallSettingsDTO.CallTypeEnum;
+import {RoutingService} from "@common/services/routing.service";
+import { v4 as uuid } from 'uuid';
 
 @Injectable({
   providedIn: 'root'
@@ -61,7 +63,8 @@ export class FileManagementStore {
               private projectPartnerStore: ProjectPartnerStore,
               private permissionService: PermissionService,
               private visibilityStatusService: FormVisibilityStatusService,
-              private downloadService: DownloadService
+              private downloadService: DownloadService,
+              private routingService: RoutingService
   ) {
     this.projectStatus$ = this.projectStore.projectStatus$;
     this.userIsProjectOwnerOrEditCollaborator$ = this.projectStore.userIsProjectOwnerOrEditCollaborator$;
@@ -81,6 +84,8 @@ export class FileManagementStore {
   }
 
   uploadFile(file: File): Observable<ProjectFileMetadataDTO> {
+    let serviceId = uuid();
+    this.routingService.confirmLeaveMap.set(serviceId, true);
     return this.selectedCategory$
       .pipe(
         take(1),
@@ -88,6 +93,7 @@ export class FileManagementStore {
         switchMap(([category, projectId]) => this.projectFileService.uploadFileForm(file, projectId, (category as any)?.id, (category as any)?.type)),
         tap(() => this.filesChanged$.next()),
         tap(() => this.error$.next(null)),
+        tap(() => this.routingService.confirmLeaveMap.delete(serviceId)),
         catchError(error => {
           this.error$.next(error.error);
           return of({} as ProjectFileMetadataDTO);

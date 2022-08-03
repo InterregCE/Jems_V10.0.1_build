@@ -33,6 +33,8 @@ import {
 import {
   PartnerReportDetailPageStore
 } from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
+import {RoutingService} from "@common/services/routing.service";
+import {v4 as uuid} from 'uuid';
 
 @UntilDestroy()
 @Component({
@@ -87,7 +89,8 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
               private formBuilder: FormBuilder,
               private formService: FormService,
               private partnerFileManagementStore: PartnerFileManagementStore,
-              private partnerReportDetailPageStore: PartnerReportDetailPageStore) {
+              private partnerReportDetailPageStore: PartnerReportDetailPageStore,
+              private router: RoutingService) {
     this.isReportEditable$ = this.pageStore.isEditable$;
   }
 
@@ -537,12 +540,18 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     if (!target || expenditureId === 0) {
       return;
     }
+
+    let serviceId = uuid();
+    this.router.confirmLeaveMap.set(serviceId, true);
     this.pageStore.uploadFile(target?.files[0], expenditureId)
       .pipe(
         take(1),
         catchError(err => this.formService.setError(err))
       )
-      .subscribe(value => this.attachment(expenditureIndex)?.patchValue(value));
+      .subscribe(value => {
+        this.attachment(expenditureIndex)?.patchValue(value);
+        this.router.confirmLeaveMap.delete(serviceId);
+      });
   }
 
   onDownloadFile(fileId: number) {
