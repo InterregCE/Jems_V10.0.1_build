@@ -15,7 +15,7 @@ import {ProjectAssessmentQualityDTO} from '../../../build/swagger-code-jems-api/
 import {ApplicationActionInfoDTO} from '../../../build/swagger-code-jems-api/model/applicationActionInfoDTO'
 import {InputTranslation} from '../../../build/swagger-code-jems-api/model/inputTranslation'
 import {ProjectLumpSumDTO} from '../../../build/swagger-code-jems-api/model/projectLumpSumDTO'
-import faker from '@faker-js/faker';
+import {faker} from '@faker-js/faker';
 import {createPartners} from './partner.commands';
 import user from '../fixtures/users.json';
 import {loginByRequest} from './login.commands';

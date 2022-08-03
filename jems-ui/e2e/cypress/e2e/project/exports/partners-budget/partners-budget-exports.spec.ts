@@ -22,7 +22,7 @@ context('Partners budget exports', () => {
         cy.contains('div', 'Input language').find('mat-select').click();
         cy.contains('mat-option', 'Deutsch').click();
 
-        cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/budget?exportLanguage=EN&inputLanguage=DE`, 'xlsx').then(exportFile => {
+        cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/budget?exportLanguage=EN&inputLanguage=DE*`, 'xlsx').then(exportFile => {
           const fileNameRegex = generateRegex(applicationId, application.identification.acronym);
           expect(exportFile.fileName).to.match(fileNameRegex);
           cy.fixture('project/exports/partners-budget/TB-369-export-en-de.xlsx', null).parseXLSX().then(testDataFile => {
@@ -37,7 +37,7 @@ context('Partners budget exports', () => {
         cy.contains('div', 'Input language').find('mat-select').click();
         cy.contains('mat-option', 'English').click();
 
-        cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/budget?exportLanguage=DE&inputLanguage=EN`, 'xlsx').then(exportFile => {
+        cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/budget?exportLanguage=DE&inputLanguage=EN*`, 'xlsx').then(exportFile => {
           const fileNameRegex = generateRegex(applicationId, application.identification.acronym);
           expect(exportFile.fileName).to.match(fileNameRegex);
           cy.fixture('project/exports/partners-budget/TB-369-export-de-en.xlsx', null).parseXLSX().then(testDataFile => {

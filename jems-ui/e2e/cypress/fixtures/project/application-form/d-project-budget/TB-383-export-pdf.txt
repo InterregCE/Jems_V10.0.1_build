@@ -25,10 +25,12 @@ Total project
 budget
 1,191.6323.26 %0.000.000.003,931.493,931.495,123.12
 
-3
+  Profile#1{{applicationId}} - {{acronym}} Version1.0, {{date}}
+4
 A.4 Project outputs and result overview
 
-4
+  Profile#1{{applicationId}} - {{acronym}} Version1.0, {{date}}
+5
 B - Project partners
 Partners overview
 NumberStatusName of the organisation in 
@@ -43,7 +45,8 @@ Partner total eligible
 budget
 1ActiveLead Partner in englishLead PartnerLP5,123.12
 
-5
+  Profile#1{{applicationId}} - {{acronym}} Version1.0, {{date}}
+6
 B.1 Lead partner
 Partner number1
 Partner roleLP
@@ -74,7 +77,8 @@ implemented in the project?
 Partly
 Other identifier numberother_identifier_number
 
-6
+  Profile#1{{applicationId}} - {{acronym}} Version1.0, {{date}}
+7
 Legal and financial information
 Other identifier descriptionAPI generated other identifier description EN
 PIC (from EC Participant Register)000000000

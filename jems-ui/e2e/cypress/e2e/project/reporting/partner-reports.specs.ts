@@ -1,4 +1,4 @@
-import faker from '@faker-js/faker';
+import {faker} from '@faker-js/faker';
 import user from '../../../fixtures/users.json';
 import application from '../../../fixtures/api/application/application.json';
 import partner from '../../../fixtures/api/application/partner/partner.json';
