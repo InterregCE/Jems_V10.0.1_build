@@ -19,7 +19,6 @@ import {faker} from '@faker-js/faker';
 import {createPartners} from './partner.commands';
 import user from '../fixtures/users.json';
 import {loginByRequest} from './login.commands';
-import dateTimeISO = CypressCommandLine.dateTimeISO;
 
 declare global {
 
@@ -40,7 +39,7 @@ declare global {
     minScore:number,
     maxScore:number,
     allowsDecimalScore:false,
-    lastModificationDate:dateTimeISO,
+    lastModificationDate:string,
     locked:boolean,
     components?:ChecklistComponent[],
   }
