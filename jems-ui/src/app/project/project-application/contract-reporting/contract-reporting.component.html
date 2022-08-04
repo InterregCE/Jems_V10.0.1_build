@@ -2,4 +2,104 @@
                             titleKey="project.application.contracting.title"
                             [subTitleText]="'project.application.contract.reporting.title' | translate "
                             [isVersionedData]="false">
+
+    <jems-form *ngIf="(data$ | async) as data"
+               (save)="onSubmit()"
+               (discard)="resetForm()">
+        <form jemsFormLayout [formGroup]="reportingDeadlinesForm">
+            <p>{{'project.application.contract.reporting.explanation' | translate}}</p>
+            <h4>{{'project.application.contract.reporting.subheader' | translate}}</h4>
+            <mat-table *ngIf="tableData.length > 0" jemsNoWidthLimit
+                       id="deadline-dates-table"
+                       class="table-condensed mt-3 mb-3"
+                       [jemsTableConfig]="[{maxInRem:20}, {maxInRem:15}, {maxInRem:15}, {maxInRem:20}]"
+                       [dataSource]="tableData"
+                       formArrayName="deadlines">
+
+                <ng-container matColumnDef="deadlineReportType" stickyEnd>
+                    <mat-header-cell *matHeaderCellDef>
+                        <span jemsText>{{'project.application.contract.reporting.column.typeOfReport' | translate}}</span>
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                        <mat-button-toggle-group
+                                (change)="formService.setDirty(true)"
+                                formControlName="deadlineReportType">
+                            <mat-button-toggle
+                                    value="PositiveEffects"
+                                    (change)="formService.setDirty(true)">
+                                <span jemsText minWidth="180">{{'project.application.contract.reporting.toggle.onlyContent' | translate}}</span>
+                            </mat-button-toggle>
+                            <mat-button-toggle
+                                    value="Neutral"
+                                    (change)="formService.setDirty(true)">
+                                <span jemsText minWidth="180">{{'project.application.contract.reporting.toggle.onlyFinance' | translate}}</span>
+                            </mat-button-toggle>
+                            <mat-button-toggle
+                                    value="NegativeEffects"
+                                    (change)="formService.setDirty(true)">
+                                <span jemsText minWidth="180">{{'project.application.contract.reporting.toggle.both' | translate}}</span>
+                            </mat-button-toggle>
+                        </mat-button-toggle-group>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="deadlinePeriod" stickyEnd>
+                    <mat-header-cell *matHeaderCellDef>
+                        <span jemsText>{{'project.application.contract.reporting.column.period' | translate}}</span>
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                        <div jemsFormFieldWidth="x-large">
+                            <jems-project-periods-select
+                                    [periods]="data.periods"
+                                    [control]="control.get('deadlinePeriod')"
+                                    (selectionChanged)="formService.setDirty(true)">
+                            </jems-project-periods-select>
+                        </div>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="deadlineDate" stickyEnd>
+                    <mat-header-cell *matHeaderCellDef>
+                        <span jemsText>{{'project.application.contract.reporting.column.date' | translate}}</span>
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                        <mat-form-field jemsFormFieldWidth="full">
+                            <input formControlName="deadlineDate" matInput
+                                   [matDatepicker]="deadlineDate">
+                            <mat-datepicker-toggle matSuffix [for]="deadlineDate"></mat-datepicker-toggle>
+                            <mat-datepicker #deadlineDate></mat-datepicker>
+                        </mat-form-field>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="deadlineComment">
+                    <mat-header-cell *matHeaderCellDef>
+                        <span jemsText>{{'project.application.contract.reporting.column.comment' | translate}}</span>
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                        <jems-expandable-textarea [control]="control.get('deadlineComment')"
+                                                  [errors]="control.get('deadlineComment').errors"
+                                                  [minRows]="1"
+                                                  [characterLimit]="1000"
+                                                  jemsFormFieldWidth="full">
+                        </jems-expandable-textarea>
+                    </mat-cell>
+                </ng-container>
+
+                <mat-header-row *matHeaderRowDef="columnsToDisplay"></mat-header-row>
+                <mat-row *matRowDef="let myRowData; columns: columnsToDisplay; let rowIndex =index"
+                         [class.row-has-error]="deadlines.controls[rowIndex]?.invalid"></mat-row>
+
+            </mat-table>
+
+            <button *ngIf="tableData.length < 50"
+                    mat-stroked-button type="button" class="mt-2 mb-2"
+                    (click)="addDeadlineData()">
+                <mat-icon>add</mat-icon>
+                <span>{{'project.application.contract.reporting.button.add.deadline' | translate}}</span>
+            </button>
+
+        </form>
+    </jems-form>
+
 </jems-project-page-template>
