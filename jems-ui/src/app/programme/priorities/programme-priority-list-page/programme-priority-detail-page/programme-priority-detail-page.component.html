@@ -11,7 +11,7 @@
             </button>
         </div>
         <div jemsMultiColumnRow stretch>
-            <mat-form-field jemsFormFieldWidth="large">
+            <mat-form-field jemsFormFieldWidth="large" class="pt-3">
                 <mat-label>{{'programme.priority.field.code' | translate}}</mat-label>
                 <input #codeInput [formControlName]="constants.CODE.name" matInput required>
                 <mat-hint [jemsHintFor]="codeInput" [hide]="form.get(constants.CODE.name)?.errors !== null">
@@ -25,8 +25,7 @@
                 </mat-error>
             </mat-form-field>
 
-            <jems-multi-language-container [useSystemLanguages]="true"
-                                          [switchButtonsVisible]="!form.disabled">
+            <jems-multi-language-container [useSystemLanguages]="true">
                 <jems-multi-language-form-field
                         [formControlName]="constants.TITLE.name"
                         label="programme.priority.field.title"
@@ -78,7 +77,7 @@
                         <th  class="text-field-column" mat-header-cell *matHeaderCellDef scope="col">
                             {{'programme.priority.objective.table.column.programmeCode' | translate}}
                         </th>
-                        <td class="text-field-column" mat-cell *matCellDef="let control; let i = dataIndex;" [formGroupName]="i">
+                        <td class="text-field-column pt-2" mat-cell *matCellDef="let control; let i = dataIndex;" [formGroupName]="i">
                             <mat-form-field jemsFormFieldWidth="full" extendError>
                                 <mat-label>{{'programme.priority.objective.table.field.code' | translate}}</mat-label>
                                 <input #policyCode [formControlName]="constants.POLICY_CODE.name" [required]="control.get(constants.POLICY_SELECTED.name).value" matInput>
@@ -204,7 +203,7 @@
         </div>
         <div *ngFor="let dimension of dimensions">
             <div>{{'programme.objective.dimension.' + dimension.toLowerCase() | translate}}</div>
-            <div class=dimensions>
+            <div class="dimensions pt-2">
                 <jems-filter-autocomplete-input
                         [required]=objectiveControl.get(constants.POLICY_SELECTED.name)?.value
                         [options]=getCodesByDimension(dimension)
