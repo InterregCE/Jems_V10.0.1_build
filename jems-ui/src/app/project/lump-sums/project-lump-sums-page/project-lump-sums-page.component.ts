@@ -199,7 +199,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
       rowSum: [0],
       gap: [0],
       readyForPayment: [false],
-      comment: [null]
+      comment: [[]]
     });
     this.addItemToItems(item);
     this.tableData = [...this.items.controls];
@@ -322,6 +322,17 @@ export class ProjectLumpSumsPageComponent implements OnInit {
       this.loading.next(false);
     }, 0);
     this.formService.resetEditable();
+    setTimeout(() => {
+      this.items.controls.forEach((formGroup: FormGroup) => {
+        if (formGroup.get(this.constants.FORM_CONTROL_NAMES.readyForPayment)?.value === true) {
+          this.getLumpSumControl(formGroup)?.disable();
+          formGroup.get(this.constants.FORM_CONTROL_NAMES.periodNumber)?.disable();
+          this.getPartnerContributionFormArray(formGroup)?.controls.forEach((partner: FormGroup) => partner.disable());
+          formGroup.get(this.constants.FORM_CONTROL_NAMES.comment)?.disable();
+          formGroup.get(this.constants.FORM_CONTROL_NAMES.readyForPayment)?.disable();
+        }
+      });
+      }, 0);
   }
 
   private addItemToItems(item: FormGroup): void {

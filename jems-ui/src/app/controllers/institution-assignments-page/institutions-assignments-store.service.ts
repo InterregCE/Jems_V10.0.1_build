@@ -12,7 +12,7 @@ import {map, startWith, switchMap, tap} from 'rxjs/operators';
 import {Tables} from '@common/utils/tables';
 import {Log} from '@common/utils/log';
 import {RoutingService} from '@common/services/routing.service';
-import {UntilDestroy, untilDestroyed} from "@ngneat/until-destroy";
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
 @Injectable()
 @UntilDestroy()

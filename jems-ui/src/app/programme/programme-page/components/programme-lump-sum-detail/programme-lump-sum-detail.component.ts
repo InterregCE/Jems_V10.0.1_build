@@ -21,6 +21,8 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ProgrammeEditableStateStore} from '../../services/programme-editable-state-store.service';
 import {TranslateService} from '@ngx-translate/core';
 import {Forms} from '../../../../common/utils/forms';
+import {combineLatest} from 'rxjs';
+import {ActivatedRoute} from '@angular/router';
 
 @UntilDestroy()
 @Component({
@@ -35,6 +37,7 @@ export class ProgrammeLumpSumDetailComponent extends ViewEditFormComponent imple
   ProgrammeLumpSumDTO = ProgrammeLumpSumDTO;
   isProgrammeSetupLocked: boolean;
   isFastTrackLumpSumLocked: boolean;
+  programmeLumpSumId = this.activatedRoute?.snapshot?.params?.lumpSumId;
   MIN_VALUE = 0.01;
   MAX_VALUE =  999999999.99;
 
@@ -96,6 +99,7 @@ export class ProgrammeLumpSumDetailComponent extends ViewEditFormComponent imple
 
   constructor(private formBuilder: FormBuilder,
               private dialog: MatDialog,
+              private activatedRoute: ActivatedRoute,
               public programmeEditableStateStore: ProgrammeEditableStateStore,
               protected changeDetectorRef: ChangeDetectorRef,
               protected translationService: TranslateService,
@@ -109,6 +113,14 @@ export class ProgrammeLumpSumDetailComponent extends ViewEditFormComponent imple
 
     this.programmeEditableStateStore.isFastTrackEditableDependingOnReports$.pipe(
       tap(isFastTrackLocked => this.isFastTrackLumpSumLocked = isFastTrackLocked),
+      untilDestroyed(this)
+    ).subscribe();
+
+    combineLatest([
+      this.programmeEditableStateStore.isFastTrackEditableDependingOnReports$,
+      this.programmeEditableStateStore.isFastTrackLumpSumReadyForPayment(this.programmeLumpSumId)
+    ]).pipe(
+      tap(([isFastTrackEditableDependingOnReports, isFastTrackLumpSumReadyForPayment]) => this.isFastTrackLumpSumLocked = isFastTrackEditableDependingOnReports || isFastTrackLumpSumReadyForPayment),
       untilDestroyed(this)
     ).subscribe();
   }

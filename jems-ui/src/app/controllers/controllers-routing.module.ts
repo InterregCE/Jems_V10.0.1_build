@@ -6,7 +6,7 @@ import {
   ControllerInstitutionDetailComponent
 } from './institutions-page/controller-institution-detail/controller-institution-detail.component';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
-import {InstitutionsAssignmentsPageComponent} from "./institution-assignments-page/institutions-assignments-page.component";
+import {InstitutionsAssignmentsPageComponent} from './institution-assignments-page/institutions-assignments-page.component';
 
 export const routes: Routes = [
   {

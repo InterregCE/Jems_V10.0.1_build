@@ -15,13 +15,13 @@ import {PartnerReportPageStore} from '@project/project-application/report/partne
 import {
   PartnerReportDetailPageStore
 } from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
-import {CurrencyStore} from "@common/services/currency.store";
+import {CurrencyStore} from '@common/services/currency.store';
 
 @Injectable({providedIn: 'root'})
 export class PartnerReportProcurementStore {
 
   procurementId$ = new BehaviorSubject<number>(0);
-  procurement$: Observable<ProjectPartnerReportProcurementDTO>
+  procurement$: Observable<ProjectPartnerReportProcurementDTO>;
 
   partnerId$: Observable<string | number | null>;
 

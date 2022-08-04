@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Observable, Subject} from 'rxjs';
+import {Observable, of, Subject} from 'rxjs';
 import {map, shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
 import {Log} from '../../../common/utils/log';
 import {ProgrammeDataService, ProjectStatusDTO, UserRoleCreateDTO} from '@cat/api';
@@ -34,9 +34,20 @@ export class ProgrammeEditableStateStore {
       .pipe(
         startWith(null),
         switchMap(() => this.programmeDataService.isAnyReportCreated()),
-        tap(flag => Log.info('Lump Sum fast track is locked:', flag)),
+        tap(flag => Log.info('Lump Sum fast track is locked because of reporting:', flag)),
         shareReplay(1),
       );
+  }
+
+  isFastTrackLumpSumReadyForPayment(programmeLumpSumId: number | null | undefined): Observable<boolean> {
+    if (programmeLumpSumId) {
+      return this.programmeDataService.isFastTrackLumpSumReadyForPayment(programmeLumpSumId)
+        .pipe(
+          tap(flag => Log.info('Lump Sum fast track is locked because of contracting:', flag)),
+          shareReplay(1),
+        );
+    }
+    return of(false);
   }
 
   private isProgrammeEditable(): Observable<boolean> {

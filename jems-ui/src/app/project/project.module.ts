@@ -164,7 +164,7 @@ import {
 } from '@project/project-application/report/partner-report-detail-page/partner-report-financial-overview-tab/partner-breakdown-co-financing/partner-breakdown-co-financing.component';
 import {
   PartnerReportProcurementDetailComponent
-} from "@project/project-application/report/partner-report-detail-page/partner-report-procurements-tab/partner-report-procurement-detail/partner-report-procurement-detail.component";
+} from '@project/project-application/report/partner-report-detail-page/partner-report-procurements-tab/partner-report-procurement-detail/partner-report-procurement-detail.component';
 import {ContractReportingComponent} from '@project/project-application/contract-reporting/contract-reporting.component';
 
 @NgModule({
