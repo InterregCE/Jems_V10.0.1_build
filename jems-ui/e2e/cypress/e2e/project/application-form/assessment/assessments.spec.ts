@@ -1,7 +1,7 @@
 import user from '../../../../fixtures/users.json';
 import call from '../../../../fixtures/api/call/1.step.call.json';
 import application from '../../../../fixtures/api/application/application.json';
-import checklist from '../../../../fixtures/api/checklist/checklist.json';
+import assessmentChecklist from '../../../../fixtures/api/checklist/assessmentChecklist.json';
 
 context('Assessments & decision tests', () => {
 
@@ -124,7 +124,7 @@ context('Assessments & decision tests', () => {
     cy.loginByRequest(user.applicantUser.email);
     cy.createSubmittedApplication(application).then(applicationId => {
       cy.loginByRequest(user.programmeUser.email);
-      cy.createChecklist(checklist)
+      cy.createChecklist(assessmentChecklist)
       cy.visit(`app/project/detail/${applicationId}`, {failOnStatusCode: false});
       cy.contains('Assessment & Decision').click();
       cy.contains('mat-select','Select checklist template').click();
