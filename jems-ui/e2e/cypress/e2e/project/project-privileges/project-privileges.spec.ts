@@ -172,7 +172,7 @@ context('Project privileges tests', () => {
     });
   });
 
-  it.only('TB-375 Add non-valid users to project using project privileges; remove all managers', () => {
+  it('TB-375 Add non-valid users to project using project privileges; remove all managers', () => {
     cy.fixture('project/project-privileges/TB-375.json').then(testData => {
       cy.loginByRequest(user.admin.email);
       testData.programmeUser.email = faker.internet.email();
