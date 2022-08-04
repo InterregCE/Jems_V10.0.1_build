@@ -1,7 +1,7 @@
 <jems-form *ngIf="data$ | async as data">
     <h3>{{ 'project.application.partner.report.procurements.title' | translate }}</h3>
 
-    <a [disabled]="data.limitReached" class="mt-3"
+    <a *ngIf="data.isReportEditable" [disabled]="data.limitReached" class="mt-3"
        mat-raised-button color="primary"
        matTooltip="{{ data.limitReached ? ('project.application.partner.report.procurements.maximum.reached' | translate) : null }}"
        [routerLink]="data.limitReached ? [] : [0]" [class.move-link-into-paginator]="data.procurements.totalElements">
