@@ -81,6 +81,7 @@
 
         <mat-header-row *matHeaderRowDef="columnsToDisplay; sticky: true"></mat-header-row>
         <mat-row [class.clickable-table-row]="configuration.isTableClickable"
+                 (click)="rowClicked(row)"
                  *matRowDef="let row; columns: columnsToDisplay;"
                  queryParamsHandling="merge"></mat-row>
     </table>

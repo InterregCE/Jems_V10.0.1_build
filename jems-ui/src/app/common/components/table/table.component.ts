@@ -130,8 +130,8 @@ export class TableComponent implements OnInit {
     return elementTitle;
   }
 
-  cellClicked(row: any, column: ColumnConfiguration): void {
-    if (column.clickable === false || !this.configuration.isTableClickable) {
+  rowClicked(row: any): void {
+    if(!this.configuration.isTableClickable) {
       return;
     }
 
