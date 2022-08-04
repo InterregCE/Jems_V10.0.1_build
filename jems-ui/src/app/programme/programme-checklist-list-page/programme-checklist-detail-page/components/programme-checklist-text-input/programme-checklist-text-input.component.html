@@ -29,7 +29,7 @@
 
         <mat-form-field jemsFormFieldWidth="medium">
             <mat-label>{{'programme.checklists.component.text.input.characters' | translate}}</mat-label>
-            <input #explanationMaxLength type="number" [min]="1" [max]="5000" formControlName="explanationMaxLength" matInput  required>
+            <input #explanationMaxLength (keypress)="tools.checkDigitsOnInput($event)" (paste)="tools.checkDigitsOnPaste($event)" type="number" [min]="1" [max]="5000" formControlName="explanationMaxLength" matInput required>
             <mat-hint [jemsHintFor]="explanationMaxLength" >
                 {{'programme.checklists.component.text.input.characters.hint' | translate : {maxLengthAllowed: '5000'} }}
             </mat-hint>
