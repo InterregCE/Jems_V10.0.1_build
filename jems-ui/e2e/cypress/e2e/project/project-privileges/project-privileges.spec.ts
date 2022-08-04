@@ -112,8 +112,6 @@ context('Project privileges tests', () => {
         cy.visit(`/app/project/detail/${applicationId}/annexes`);
         cy.get('input[type=file]').selectFile('cypress\\fixtures\\project\\project-privileges\\TB-374-testFile.txt', {force: true});
 
-
-
         addNewApplicationPrivilegeUser(applicationId, testData.projectOwner, testData.applicantView, 'view');
 
         cy.contains('div', 'Project collaborators were saved successfully').should('be.visible');
@@ -171,6 +169,36 @@ context('Project privileges tests', () => {
         cy.get('mat-button-toggle-group:last').contains('span', 'edit').click();
         cy.contains('button', 'Save changes').should('be.visible');
       });
+    });
+  });
+
+  it.only('TB-375 Add non-valid users to project using project privileges; remove all managers', () => {
+    cy.fixture('project/project-privileges/TB-375.json').then(testData => {
+      cy.loginByRequest(user.admin.email);
+      testData.programmeUser.email = faker.internet.email();
+      testData.applicationCreator.email = faker.internet.email();
+      cy.createUser(testData.programmeUser);
+      cy.createUser(testData.applicationCreator);
+      cy.createCall(call).then(callId => {
+        application.details.projectCallId = callId;
+        cy.publishCall(callId);
+      });
+      cy.loginByRequest(testData.applicationCreator.email);
+      cy.createApplication(application).then(applicationId => {
+        cy.visit(`/app/project/detail/${applicationId}/privileges`);
+      });
+      cy.contains('button', '+').click();
+      cy.get('input:last').type(faker.internet.email());
+      cy.contains('button', 'Save changes').click();
+      cy.contains('div', 'Input data are not valid').should('be.visible');
+      cy.get('.jems-layout-row:last').contains('mat-icon', 'delete').click();
+      cy.contains('button', '+').click();
+      cy.get('input:last').type(testData.programmeUser.email);
+      cy.contains('button', 'Save changes').click();
+      cy.contains('div', 'Input data are not valid').should('be.visible');
+      cy.get('.jems-layout-row:first').contains('span', 'edit').click();
+      cy.contains('div', 'At least one user must have the level manage').should('be.visible');
+      cy.contains('button', 'Save changes').should('be.disabled');
     });
   });
 
