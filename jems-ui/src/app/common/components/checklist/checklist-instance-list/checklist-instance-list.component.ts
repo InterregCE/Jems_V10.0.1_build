@@ -256,4 +256,7 @@ export class ChecklistInstanceListComponent implements OnInit {
     return this.form.get('visibilities') as FormArray;
   }
 
+  isEditable(): boolean {
+    return this.formService.isEditable();
+  }
 }

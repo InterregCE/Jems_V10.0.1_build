@@ -55,7 +55,8 @@
 <ng-template #visibleCell let-checklist>
     <mat-checkbox class="text-right"
                   [checked]="visibilities.value.includes(checklist.id)"
-                  (change)="onVisibilityChange($event, checklist.id)">
+                  (change)="onVisibilityChange($event, checklist.id)"
+                  [disabled]="!isEditable()">
     </mat-checkbox>
 </ng-template>
 
