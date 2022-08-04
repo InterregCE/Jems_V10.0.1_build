@@ -1,15 +1,10 @@
-package io.cloudflight.jems.api.project.dto.report.partner.procurement
+package io.cloudflight.jems.server.project.service.report.model.procurement
 
 import java.math.BigDecimal
 import java.time.LocalDate
-import java.time.ZonedDateTime
 
-data class ProjectPartnerReportProcurementDTO(
-    val id: Long? = null,
-    val reportId: Long,
-    val reportNumber: Int,
-    val createdInThisReport: Boolean,
-    val lastChanged: ZonedDateTime,
+data class ProjectPartnerReportProcurementChange(
+    val id: Long,
     val contractName: String,
     val referenceNumber: String,
     val contractDate: LocalDate?,

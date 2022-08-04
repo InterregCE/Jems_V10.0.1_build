@@ -1,105 +1,85 @@
 package io.cloudflight.jems.server.project.repository.report.procurement
 
-import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
-import io.cloudflight.jems.server.common.entity.TranslationId
-import io.cloudflight.jems.server.common.minio.MinioStorage
-import io.cloudflight.jems.server.project.entity.report.procurement.ProjectPartnerReportProcurementEntity
-import io.cloudflight.jems.server.project.entity.report.procurement.ProjectPartnerReportProcurementTranslEntity
 import io.cloudflight.jems.server.project.repository.report.ProjectPartnerReportRepository
-import io.cloudflight.jems.server.project.repository.report.file.ProjectReportFileRepository
-import io.cloudflight.jems.server.project.service.report.model.procurement.ProjectPartnerReportProcurementUpdate
+import io.cloudflight.jems.server.project.service.report.model.procurement.ProjectPartnerReportProcurement
+import io.cloudflight.jems.server.project.service.report.model.procurement.ProjectPartnerReportProcurementChange
 import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectReportProcurementPersistence
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
+import java.time.ZonedDateTime
 
 @Repository
 class ProjectReportProcurementPersistenceProvider(
     private val reportRepository: ProjectPartnerReportRepository,
     private val reportProcurementRepository: ProjectPartnerReportProcurementRepository,
-    private val reportFileRepository: ProjectReportFileRepository,
-    private val minioStorage: MinioStorage,
 ) : ProjectReportProcurementPersistence {
 
     @Transactional(readOnly = true)
-    override fun getProcurementIdsForReport(partnerId: Long, reportId: Long) =
-        reportProcurementRepository.findProcurementIdsForReport(partnerId = partnerId, reportId = reportId)
+    override fun getById(partnerId: Long, procurementId: Long) =
+        reportProcurementRepository.findByReportEntityPartnerIdAndId(
+            partnerId = partnerId,
+            id = procurementId,
+        ).toModel()
 
     @Transactional(readOnly = true)
-    override fun existsByProcurementId(partnerId: Long, reportId: Long, procurementId: Long) =
-        reportProcurementRepository
-            .existsByReportEntityPartnerIdAndReportEntityIdAndId(partnerId, reportId = reportId, procurementId = procurementId)
+    override fun getProcurementsForReportIds(reportIds: Set<Long>, pageable: Pageable) =
+        reportProcurementRepository.findByReportEntityIdIn(reportIds = reportIds, pageable).toModel()
 
     @Transactional(readOnly = true)
-    override fun getProcurementsForReportIds(reportIds: Set<Long>) =
-        reportProcurementRepository.findTop50ByReportEntityIdInOrderByReportEntityIdDescIdDesc(reportIds = reportIds)
-            .toModel()
+    override fun getProcurementContractNamesForReportIds(reportIds: Set<Long>) =
+        reportProcurementRepository.findTop50ByReportEntityIdIn(reportIds = reportIds)
+            .mapTo(HashSet()) { Pair(it.id, it.contractName) }
 
     @Transactional(readOnly = true)
-    override fun getProcurementContractIdsForReportIds(reportIds: Set<Long>) =
-        reportProcurementRepository.findProcurementContractIdsForReportsIn(reportIds = reportIds)
-
-    @Transactional(readOnly = true)
-    override fun countProcurementsForReportIds(reportIds: Set<Long>) =
-        reportProcurementRepository.countByReportEntityIdIn(reportIds = reportIds)
+    override fun countProcurementsForPartner(partnerId: Long) =
+        reportProcurementRepository.countByReportEntityPartnerId(partnerId = partnerId)
 
     @Transactional
     override fun updatePartnerReportProcurement(
         partnerId: Long,
         reportId: Long,
-        procurementNew: List<ProjectPartnerReportProcurementUpdate>
-    ) {
-        val report = reportRepository.findByIdAndPartnerId(id = reportId, partnerId = partnerId)
-        val existingById = reportProcurementRepository.findByReportEntityOrderByIdDesc(report).associateBy { it.id }
-        val toStayIds = procurementNew.filter { it.id > 0 }.mapTo(HashSet()) { it.id }
-
-        reportProcurementRepository.deleteAll(
-            existingById.minus(toStayIds).values.deleteAttachments()
+        procurement: ProjectPartnerReportProcurementChange,
+    ): ProjectPartnerReportProcurement {
+        val entity = reportProcurementRepository.findByReportEntityPartnerIdAndReportEntityIdAndId(
+            partnerId = partnerId,
+            reportId = reportId,
+            id = procurement.id,
         )
-        procurementNew.asReversed().forEach { newData ->
-            existingById[newData.id].let { existing ->
-                when {
-                    existing != null -> existing.updateWith(newData)
-                    else -> reportProcurementRepository.save(newData.toEntity(report))
-                }
-            }
-        }
+
+        entity.contractName = procurement.contractName
+        entity.referenceNumber = procurement.referenceNumber
+        entity.contractDate = procurement.contractDate
+        entity.contractType = procurement.contractType
+        entity.contractAmount = procurement.contractAmount
+        entity.currencyCode = procurement.currencyCode
+        entity.supplierName = procurement.supplierName
+        entity.vatNumber = procurement.vatNumber
+        entity.comment = procurement.comment
+        entity.lastChanged = ZonedDateTime.now()
+
+        return entity.toModel()
     }
 
-    private fun ProjectPartnerReportProcurementEntity.updateWith(newData: ProjectPartnerReportProcurementUpdate) {
-        contractId = newData.contractId
-        contractAmount = newData.contractAmount
-        currencyCode = newData.currencyCode
-        supplierName = newData.supplierName
+    @Transactional
+    override fun createPartnerReportProcurement(
+        partnerId: Long,
+        reportId: Long,
+        procurement: ProjectPartnerReportProcurementChange,
+    ) = reportProcurementRepository.save(
+        procurement.toEntity(
+            report = reportRepository.findByIdAndPartnerId(id = reportId, partnerId = partnerId),
+            lastChanged = ZonedDateTime.now(),
+        )
+    ).toModel()
 
-        // update translations
-        val toBeUpdatedComments = newData.comment.associateBy({ it.language }, { it.translation })
-        val toBeUpdatedContractTypes = newData.contractType.associateBy({ it.language }, { it.translation })
-        addMissingLanguagesIfNeeded(languages = toBeUpdatedComments.keys union toBeUpdatedContractTypes.keys)
-        translatedValues.forEach {
-            it.comment = toBeUpdatedComments[it.language()]
-            it.contractType = toBeUpdatedContractTypes[it.language()]
-        }
-    }
-
-    private fun ProjectPartnerReportProcurementEntity.addMissingLanguagesIfNeeded(languages: Set<SystemLanguage>) {
-        val existingLanguages = translatedValues.mapTo(HashSet()) { it.translationId.language }
-        languages.filter { !existingLanguages.contains(it) }.forEach { language ->
-            translatedValues.add(
-                ProjectPartnerReportProcurementTranslEntity(
-                    translationId = TranslationId(this, language = language),
-                    comment = null,
-                    contractType = null,
-                )
-            )
-        }
-    }
-
-    private fun Collection<ProjectPartnerReportProcurementEntity>.deleteAttachments() = map {
-        it.attachment?.let { file ->
-            minioStorage.deleteFile(bucket = file.minioBucket, filePath = file.minioLocation)
-            reportFileRepository.delete(file)
-        }
-        it
+    @Transactional
+    override fun deletePartnerReportProcurement(partnerId: Long, reportId: Long, procurementId: Long) {
+        reportProcurementRepository.deleteByReportEntityPartnerIdAndReportEntityIdAndId(
+            partnerId = partnerId,
+            reportId = reportId,
+            id = procurementId,
+        )
     }
 
 }

@@ -127,9 +127,7 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
             reportWithCurrency(id = 84L, ReportStatus.Draft, "0.8", "GBP")
         every { reportPersistence.getReportIdsBefore(PARTNER_ID, 84L) } returns setOf(83L)
 
-        val procurement26 = mockk<ProjectPartnerReportProcurement>()
-        every { procurement26.id } returns 26L
-        every { reportProcurementPersistence.getProcurementsForReportIds(setOf(83L, 84L)) } returns listOf(procurement26)
+        every { reportProcurementPersistence.getProcurementContractNamesForReportIds(setOf(83L, 84L)) } returns setOf(Pair(26L, "Proc26"))
 
         val investment50 = mockk<InvestmentSummary>()
         every { investment50.id } returns 50L
@@ -170,9 +168,7 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
             reportWithCurrency(90L, status = ReportStatus.Draft, version = "0.9", currency = "HUF")
         every { reportPersistence.getReportIdsBefore(PARTNER_ID, 90L) } returns setOf(89L)
 
-        val procurement30 = mockk<ProjectPartnerReportProcurement>()
-        every { procurement30.id } returns 30L
-        every { reportProcurementPersistence.getProcurementsForReportIds(setOf(90L, 89L)) } returns listOf(procurement30)
+        every { reportProcurementPersistence.getProcurementContractNamesForReportIds(setOf(90L, 89L)) } returns setOf(Pair(30L, "Proc30"))
 
         val investment60 = mockk<InvestmentSummary>()
         every { investment60.id } returns 60L
@@ -338,9 +334,7 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
             reportWithCurrency(reportId, status = ReportStatus.Draft, version = "1", currency = null)
         every { reportPersistence.getReportIdsBefore(PARTNER_ID, reportId) } returns emptySet()
 
-        val procurement = mockk<ProjectPartnerReportProcurement>()
-        every { procurement.id } returns procurementId
-        every { reportProcurementPersistence.getProcurementsForReportIds(setOf(reportId)) } returns listOf(procurement)
+        every { reportProcurementPersistence.getProcurementContractNamesForReportIds(setOf(reportId)) } returns setOf(Pair(procurementId, "contractName"))
 
         val investment = mockk<InvestmentSummary>()
         every { investment.id } returns investmentId

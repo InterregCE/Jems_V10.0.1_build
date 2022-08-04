@@ -162,6 +162,9 @@ import {
 import {
   PartnerBreakdownCoFinancingComponent
 } from '@project/project-application/report/partner-report-detail-page/partner-report-financial-overview-tab/partner-breakdown-co-financing/partner-breakdown-co-financing.component';
+import {
+  PartnerReportProcurementDetailComponent
+} from "@project/project-application/report/partner-report-detail-page/partner-report-procurements-tab/partner-report-procurement-detail/partner-report-procurement-detail.component";
 import {ContractReportingComponent} from '@project/project-application/contract-reporting/contract-reporting.component';
 
 @NgModule({
@@ -279,6 +282,7 @@ import {ContractReportingComponent} from '@project/project-application/contract-
     SpfRecipientsTableComponent,
     PartnerReportSubmitTabComponent,
     PartnerReportProcurementsTabComponent,
+    PartnerReportProcurementDetailComponent,
     PartnerReportContributionTabComponent,
     PartnerReportExpendituresTabComponent,
     PartnerReportFinancialOverviewTabComponent,
@@ -290,7 +294,7 @@ import {ContractReportingComponent} from '@project/project-application/contract-
     ReportAnnexesTableComponent,
     ProjectManagementComponent,
     ContractMonitoringExtensionComponent,
-    ContractReportingComponent
+    ContractReportingComponent,
   ],
   imports: [
     SharedModule,

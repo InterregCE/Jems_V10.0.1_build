@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.service.report.partner.procurement.updateProjectPartnerReportProcurement
+package io.cloudflight.jems.server.project.service.report.partner.procurement.createProjectPartnerReportProcurement
 
 import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.server.UnitTest
@@ -23,10 +23,10 @@ import org.junit.jupiter.api.assertThrows
 import java.math.BigDecimal
 import java.time.LocalDate
 
-internal class UpdateProjectPartnerReportProcurementTest : UnitTest() {
+internal class CreateProjectPartnerReportProcurementTest : UnitTest() {
 
     companion object {
-        private const val PARTNER_ID = 5922L
+        private const val PARTNER_ID = 5833L
         private val NEXT_WEEK = LocalDate.now().plusWeeks(1)
     }
 
@@ -40,7 +40,7 @@ internal class UpdateProjectPartnerReportProcurementTest : UnitTest() {
     lateinit var generalValidator: GeneralValidatorService
 
     @InjectMockKs
-    lateinit var interactor: UpdateProjectPartnerReportProcurement
+    lateinit var interactor: CreateProjectPartnerReportProcurement
 
     @BeforeEach
     fun setup() {
@@ -53,24 +53,25 @@ internal class UpdateProjectPartnerReportProcurementTest : UnitTest() {
     }
 
     @Test
-    fun `update - successful`() {
+    fun `create - successful`() {
         val report = mockk<ProjectPartnerReport>()
-        every { report.id } returns 18L
+        every { report.id } returns 28L
         every { report.status } returns ReportStatus.Draft
         every { report.identification.currency } returns "PLN"
 
-        every { reportPersistence.getPartnerReportById(PARTNER_ID, reportId = 18L) } returns report
-        every { reportPersistence.getReportIdsBefore(PARTNER_ID, beforeReportId = 18L) } returns setOf(17L)
-        every { reportProcurementPersistence.getProcurementContractNamesForReportIds(setOf(17L, 18L)) } returns
+        every { reportPersistence.getPartnerReportById(PARTNER_ID, reportId = 28L) } returns report
+        every { reportProcurementPersistence.countProcurementsForPartner(PARTNER_ID) } returns 10L
+        every { reportPersistence.getReportIdsBefore(PARTNER_ID, beforeReportId = 28L) } returns setOf(27L)
+        every { reportProcurementPersistence.getProcurementContractNamesForReportIds(setOf(27L, 28L)) } returns
             setOf(Pair(45L, "unique 1"), Pair(46L, "unique 2"))
 
         val mockedResult = mockk<ProjectPartnerReportProcurement>()
-        val updateSlot = slot<ProjectPartnerReportProcurementChange>()
-        every { reportProcurementPersistence.updatePartnerReportProcurement(PARTNER_ID, reportId = 18L, capture(updateSlot)) } returns mockedResult
+        val createSlot = slot<ProjectPartnerReportProcurementChange>()
+        every { reportProcurementPersistence.createPartnerReportProcurement(PARTNER_ID, reportId = 28L, capture(createSlot)) } returns mockedResult
 
         val change = ProjectPartnerReportProcurementChange(
-            id = 47L,
-            contractName = "contractName NEW",
+            id = 0L,
+            contractName = "unique 3",
             referenceNumber = "referenceNumber NEW",
             contractDate = NEXT_WEEK,
             contractType = "contractType NEW",
@@ -81,8 +82,8 @@ internal class UpdateProjectPartnerReportProcurementTest : UnitTest() {
             comment = "comment NEW",
         )
 
-        assertThat(interactor.update(PARTNER_ID, reportId = 18L, change)).isEqualTo(mockedResult)
-        assertThat(updateSlot.captured).isEqualTo(change)
+        assertThat(interactor.create(PARTNER_ID, reportId = 28L, change)).isEqualTo(mockedResult)
+        assertThat(createSlot.captured).isEqualTo(change)
     }
 
     @Test
@@ -108,7 +109,7 @@ internal class UpdateProjectPartnerReportProcurementTest : UnitTest() {
         }
 
         val change = ProjectPartnerReportProcurementChange(
-            id = 51L,
+            id = 0L,
             contractName = "contractName NEW",
             referenceNumber = "referenceNumber NEW",
             contractDate = NEXT_WEEK,
@@ -120,7 +121,7 @@ internal class UpdateProjectPartnerReportProcurementTest : UnitTest() {
             comment = "comment NEW",
         )
 
-        assertThrows<AppInputValidationException> { interactor.update(PARTNER_ID, reportId = 0L, change) }
+        assertThrows<AppInputValidationException> { interactor.create(PARTNER_ID, reportId = 0L, change) }
         assertThat(validationSlot).containsExactly(
             mapOf("contractName" to I18nMessage("contractName NEW---50")),
             mapOf("referenceNumber" to I18nMessage("referenceNumber NEW---30")),
@@ -134,15 +135,15 @@ internal class UpdateProjectPartnerReportProcurementTest : UnitTest() {
     }
 
     @Test
-    fun `update - wrong report status`() {
+    fun `create - wrong report status`() {
         val report = mockk<ProjectPartnerReport>()
-        every { report.id } returns 40L
+        every { report.id } returns 80L
         every { report.status } returns ReportStatus.Submitted
 
-        every { reportPersistence.getPartnerReportById(PARTNER_ID, reportId = 40L) } returns report
+        every { reportPersistence.getPartnerReportById(PARTNER_ID, reportId = 80L) } returns report
 
         val change = ProjectPartnerReportProcurementChange(
-            id = 66358L,
+            id = 0,
             contractName = "",
             referenceNumber = "",
             contractDate = NEXT_WEEK,
@@ -154,62 +155,91 @@ internal class UpdateProjectPartnerReportProcurementTest : UnitTest() {
             comment = "",
         )
 
-        assertThrows<ReportAlreadyClosed> { interactor.update(PARTNER_ID, reportId = 40L, change) }
+        assertThrows<ReportAlreadyClosed> { interactor.create(PARTNER_ID, reportId = 80L, change) }
     }
 
     @Test
-    fun `update - invalid currencies`() {
+    fun `create - invalid currencies`() {
         val report = mockk<ProjectPartnerReport>()
-        every { report.id } returns 45L
+        every { report.id } returns 85L
         every { report.status } returns ReportStatus.Draft
         every { report.identification.currency } returns "EUR"
 
-        every { reportPersistence.getPartnerReportById(PARTNER_ID, reportId = 45L) } returns report
-        every { reportPersistence.getReportIdsBefore(PARTNER_ID, beforeReportId = 45L) } returns emptySet()
-        every { reportProcurementPersistence.getProcurementContractNamesForReportIds(setOf(45L)) } returns emptySet()
+        every { reportPersistence.getPartnerReportById(PARTNER_ID, reportId = 85L) } returns report
+        every { reportPersistence.getReportIdsBefore(PARTNER_ID, beforeReportId = 85L) } returns emptySet()
+        every { reportProcurementPersistence.getProcurementContractNamesForReportIds(setOf(85L)) } returns emptySet()
 
         val change = ProjectPartnerReportProcurementChange(
-            id = 47L,
+            id = 0L,
             contractName = "",
             referenceNumber = "",
             contractDate = NEXT_WEEK,
             contractType = "",
             contractAmount = BigDecimal.ZERO,
-            currencyCode = "HUF",
+            currencyCode = "GBP",
             supplierName = "",
             vatNumber = "",
             comment = "",
         )
 
-        assertThrows<InvalidCurrency> { interactor.update(PARTNER_ID, reportId = 45L, change) }
+        assertThrows<InvalidCurrency> { interactor.create(PARTNER_ID, reportId = 85L, change) }
+    }
+
+    @Test
+    fun `update - reached max amount of procurements`() {
+        val report = mockk<ProjectPartnerReport>()
+        every { report.id } returns 86L
+        every { report.status } returns ReportStatus.Draft
+        every { report.identification.currency } returns "CZK"
+
+        every { reportPersistence.getPartnerReportById(PARTNER_ID, reportId = 86L) } returns report
+        every { reportProcurementPersistence.countProcurementsForPartner(PARTNER_ID) } returns 50L
+        every { reportPersistence.getReportIdsBefore(PARTNER_ID, beforeReportId = 86L) } returns emptySet()
+        every { reportProcurementPersistence.getProcurementContractNamesForReportIds(setOf(86L)) } returns emptySet()
+
+        val change = ProjectPartnerReportProcurementChange(
+            id = 0L,
+            contractName = "",
+            referenceNumber = "",
+            contractDate = NEXT_WEEK,
+            contractType = "",
+            contractAmount = BigDecimal.ZERO,
+            currencyCode = "",
+            supplierName = "",
+            vatNumber = "",
+            comment = "",
+        )
+
+        assertThrows<MaxAmountOfProcurementsReachedException> { interactor.create(PARTNER_ID, reportId = 86L, change) }
     }
 
     @Test
     fun `update - contract name is not unique`() {
         val report = mockk<ProjectPartnerReport>()
-        every { report.id } returns 48L
+        every { report.id } returns 88L
         every { report.status } returns ReportStatus.Draft
         every { report.identification.currency } returns "GBP"
 
-        every { reportPersistence.getPartnerReportById(PARTNER_ID, reportId = 48L) } returns report
-        every { reportPersistence.getReportIdsBefore(PARTNER_ID, beforeReportId = 48L) } returns setOf(47L)
-        every { reportProcurementPersistence.getProcurementContractNamesForReportIds(setOf(47L, 48L)) } returns
-            setOf(Pair(147L, "name 147"), Pair(148L, "name 148"))
+        every { reportPersistence.getPartnerReportById(PARTNER_ID, reportId = 88L) } returns report
+        every { reportProcurementPersistence.countProcurementsForPartner(PARTNER_ID) } returns 10L
+        every { reportPersistence.getReportIdsBefore(PARTNER_ID, beforeReportId = 88L) } returns setOf(87L)
+        every { reportProcurementPersistence.getProcurementContractNamesForReportIds(setOf(87L, 88L)) } returns
+            setOf(Pair(137L, "name 137"), Pair(138L, "name 138"))
 
         val change = ProjectPartnerReportProcurementChange(
-            id = 148L,
-            contractName = "name 147",
+            id = 0L,
+            contractName = "name 137",
             referenceNumber = "",
             contractDate = NEXT_WEEK,
             contractType = "",
             contractAmount = BigDecimal.ZERO,
-            currencyCode = "PLN",
+            currencyCode = "GBP",
             supplierName = "",
             vatNumber = "",
             comment = "",
         )
 
-        assertThrows<ContractNameIsNotUnique> { interactor.update(PARTNER_ID, reportId = 48L, change) }
+        assertThrows<ContractNameIsNotUnique> { interactor.create(PARTNER_ID, reportId = 88L, change) }
     }
 
 }

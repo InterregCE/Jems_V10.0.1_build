@@ -23,8 +23,6 @@ interface ProjectReportFilePersistence {
 
     fun updatePartnerReportOutputAttachment(outputId: Long, file: ProjectReportFileCreate): ProjectReportFileMetadata
 
-    fun updatePartnerReportProcurementAttachment(procurementId: Long, file: ProjectReportFileCreate): ProjectReportFileMetadata
-
     fun updatePartnerReportContributionAttachment(contributionId: Long, file: ProjectReportFileCreate): ProjectReportFileMetadata
 
     fun updatePartnerReportExpenditureAttachment(expenditureId: Long, file: ProjectReportFileCreate): ProjectReportFileMetadata

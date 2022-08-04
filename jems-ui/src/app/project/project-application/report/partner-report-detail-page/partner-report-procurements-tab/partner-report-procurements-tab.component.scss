@@ -1,59 +1,80 @@
-table {
-  width: 100%;
+@use '../partner-report-financial-overview-tab/remove-custom-table-overrides';
+
+.row-link:hover {
+  cursor: pointer;
 }
 
-.table-container {
-  padding-top: 1rem;
-  overflow-x: auto !important;
-  overflow-y: hidden;
+.border-cell-left {
+  border-left: .0625rem solid var(--table-border-color);
 }
 
-tr.detail-row {
-  height: 0;
+.mat-column-delete {
+  min-width: 2.5rem;
+  max-width: 2.5rem;
+}
+.mat-column-currencyCode {
+  min-width: 5rem;
 }
 
-.extended-row-container {
-  overflow: hidden;
-  display: flex;
+.mat-column-lastChanged {
+  min-width: 9rem;
+}
+.mat-column-contractName,
+.mat-column-referenceNumber,
+.mat-column-supplierName,
+.mat-column-vatNumber {
+  min-width: 9rem;
 }
 
-.procurement-table>td,tr {
-  padding:0.3rem;
+.mat-column-contractType {
+  min-width: 7rem;
 }
 
-.text-field-column {
-  padding: 0 0.3rem;
+.mat-column-contractDate {
+  min-width: 5rem;
+}
+.mat-column-contractAmount {
+  min-width: 5rem;
 }
 
-.extension-content {
-  padding: 0.75rem 5rem;
-  width: 100%;
+.mat-column-lastChanged,
+.mat-column-contractName,
+.mat-column-referenceNumber,
+.mat-column-contractDate,
+.mat-column-contractType,
+.mat-column-contractAmount,
+.mat-column-currencyCode,
+.mat-column-supplierName,
+.mat-column-vatNumber,
+.mat-column-delete {
+  padding-left: .5rem;
+  padding-right: .5rem;
+}
 
-  jems-multi-language-form-field {
-    width: 40rem !important;
-    display: inline-flex;
-    --widthBasedOnType: unset !important;
+.mat-column-reportNumber {
+  min-width: 4.5rem;
+  padding-left: 1rem;
+  padding-right: .5rem;
+}
+
+.text-right {
+  span {
+    text-align: right;
   }
-
-  jems-partner-actions-cell {
-    display: inline-flex;
+}
+.text-left {
+  span {
+    text-align: left;
+  }
+}
+.text-center {
+  text-align: center !important;
+  justify-content: center;
+  span {
+    text-align: center;
   }
 }
 
-.colored-row {
-  background:  var(--table-highlight-color);
+.move-link-into-paginator {
+  position: absolute;
 }
-
-.normal-row {
-  background: white !important;
-}
-
-.normal-row:hover {
-    background: var(--table-hover-color) !important;
-}
-
-.width-3 {
-  width: 3.2rem;
-}
-
-

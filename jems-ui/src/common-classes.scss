@@ -16,7 +16,8 @@
 }
 
 .text-left {
-  text-align: left;
+  text-align: left !important;
+  justify-content: flex-start;
 }
 
 .text-overflow-ellipsis {
