@@ -17,7 +17,7 @@ class GetContractingManagement(
     ): GetContractingManagementInteractor {
 
     @CanViewProjectManagement
-    @Transactional
+    @Transactional(readOnly = true)
     @ExceptionWrapper(GetContractingManagementException::class)
     override fun getContractingManagement(projectId: Long): List<ProjectContractingManagement> {
         projectPersistence.getProjectSummary(projectId).let { projectSummary ->

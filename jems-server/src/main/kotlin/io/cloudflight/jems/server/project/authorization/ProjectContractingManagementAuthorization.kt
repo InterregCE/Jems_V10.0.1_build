@@ -19,6 +19,16 @@ annotation class CanViewProjectManagement
 @PreAuthorize("@projectContractingManagementAuthorization.canEditProjectManagement(#projectId)")
 annotation class CanEditProjectManagement
 
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("@projectAuthorization.hasPermission('ProjectContractingReportingView', #projectId) " +
+    "|| @projectContractingManagementAuthorization.canViewReportingAndIsCollaborator(#projectId)")
+annotation class CanRetrieveProjectContractingReporting
+
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("@projectAuthorization.hasPermission('ProjectContractingReportingEdit', #projectId) " +
+    "|| @projectContractingManagementAuthorization.canEditReportingAndIsCollaborator(#projectId)")
+annotation class CanUpdateProjectContractingReporting
+
 @Component
 class ProjectContractingManagementAuthorization(
     override val securityService: SecurityService,
@@ -34,7 +44,7 @@ class ProjectContractingManagementAuthorization(
         return hasPermissionForProject(UserRolePermission.ProjectContractingManagementView, projectId) ||
             hasPermissionForProject(UserRolePermission.ProjectContractingManagementEdit, projectId) ||
             userIsProjectOwnerOrProjectCollaborator(userId = currentUserId, applicantAndStatus = applicantAndStatus) ||
-            userIsPartnerCollaborator(userId = currentUserId, projectId = projectId, )
+            userIsPartnerCollaboratorFor(projectId = projectId, )
     }
 
     fun canEditProjectManagement(projectId: Long): Boolean {
@@ -45,6 +55,12 @@ class ProjectContractingManagementAuthorization(
             userIsProjectCollaboratorWithEditPrivilege(currentUserId, applicantAndStatus)
     }
 
+    fun canEditReportingAndIsCollaborator(projectId: Long): Boolean =
+        hasPermission(UserRolePermission.ProjectCreatorContractingReportingEdit) && userIsPartnerCollaboratorFor(projectId)
+
+    fun canViewReportingAndIsCollaborator(projectId: Long): Boolean =
+        hasPermission(UserRolePermission.ProjectCreatorContractingReportingView) && userIsPartnerCollaboratorFor(projectId)
+
 
     private fun userIsProjectOwnerOrProjectCollaborator(userId: Long, applicantAndStatus: ProjectApplicantAndStatus): Boolean {
         return applicantAndStatus.applicantId == userId || userId in applicantAndStatus.getUserIdsWithViewLevel()
@@ -54,8 +70,8 @@ class ProjectContractingManagementAuthorization(
         return userId in applicantAndStatus.getUserIdsWithEditLevel()
     }
 
-    private fun userIsPartnerCollaborator(userId: Long, projectId: Long): Boolean =
-        getUserPartnerCollaborations(userId = userId, projectId = projectId).isNotEmpty()
+    private fun userIsPartnerCollaboratorFor(projectId: Long): Boolean =
+        getUserPartnerCollaborations(userId = securityService.getUserIdOrThrow(), projectId = projectId).isNotEmpty()
 
     private fun getUserPartnerCollaborations(userId: Long, projectId: Long) =
         partnerCollaboratorPersistence.findPartnersByUserAndProject(
