@@ -38,6 +38,7 @@ export class PartnerReportProcurementsTabComponent {
   data$: Observable<{
     procurements: PageProjectPartnerReportProcurementSummaryDTO;
     limitReached: boolean;
+    isReportEditable: boolean;
   }>;
 
   constructor(
@@ -52,7 +53,11 @@ export class PartnerReportProcurementsTabComponent {
     ]).pipe(
       tap(([procurements, isEditable]) => this.prepareVisibleColumns(isEditable)),
       tap(([procurements, isEditable]) => this.dataSource.data = procurements.content),
-      map(([procurements]) => ({ procurements, limitReached: procurements.totalElements >= 50 })),
+      map(([procurements, isReportEditable]) => ({
+        procurements,
+        limitReached: procurements.totalElements >= 50,
+        isReportEditable,
+      })),
     );
   }
 

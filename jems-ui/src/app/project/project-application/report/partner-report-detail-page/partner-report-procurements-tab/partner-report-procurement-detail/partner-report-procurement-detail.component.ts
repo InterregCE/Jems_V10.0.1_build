@@ -5,7 +5,7 @@ import {ActivatedRoute, Router} from "@angular/router";
 import {
   PartnerReportProcurementStore
 } from "@project/project-application/report/partner-report-detail-page/partner-report-procurements-tab/partner-report-procurement-detail/partner-report-procurement-store.service";
-import {combineLatest, Observable, of} from "rxjs";
+import {combineLatest, Observable} from "rxjs";
 import {CurrencyDTO, ProjectPartnerReportDTO, ProjectPartnerReportProcurementDTO} from "@cat/api";
 import {map, take, tap} from "rxjs/operators";
 import {FormBuilder, Validators} from "@angular/forms";
@@ -64,22 +64,28 @@ export class PartnerReportProcurementDetailComponent {
       this.procurementStore.procurement$,
       this.procurementStore.currencies$,
       this.partnerReportDetailPageStore.partnerReport$,
+      this.partnerReportDetailPageStore.reportEditable$,
     ]).pipe(
-      tap(([procurement, currencies, report]) => this.initializeForm(procurement, report)),
+      tap(([procurement, currencies, report, editable]) =>
+        this.initializeForm(procurement, report, editable)
+      ),
       map(([procurement, currencies, report]) => ({ procurement, currencies, reportNumber: report.reportNumber })),
     );
     this.formService.init(this.form);
   }
 
-  private initializeForm(procurementData: ProjectPartnerReportProcurementDTO, report: ProjectPartnerReportDTO) {
+  private initializeForm(
+    procurementData: ProjectPartnerReportProcurementDTO,
+    report: ProjectPartnerReportDTO,
+    reportEditable: boolean,
+  ) {
     const isCreate = !procurementData.id;
     const procurement = { ...procurementData, currencyCode: isCreate ? (report.identification.currency || 'EUR') : 'EUR' };
 
     this.resetForm(procurement, report.reportNumber);
 
-    if (!isCreate && report.id !== procurement.reportId) { /* disable edit if procurement belongs to different (previous) report */
-      this.formService.setEditable(false);
-    }
+    const procurementIsFromThisReport = report.id === procurement.reportId
+    this.formService.setEditable(reportEditable && (isCreate || procurementIsFromThisReport));
 
     this.formService.setCreation(isCreate);
   }
