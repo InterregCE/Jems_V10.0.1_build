@@ -6,6 +6,7 @@ import fetch from 'node-fetch';
 import CypressRunResult = CypressCommandLine.CypressRunResult;
 
 export default defineConfig({
+  defaultCommandTimeout: 8000,
   projectId: 'JEMS',
   viewportHeight: 720,
   viewportWidth: 1280,
