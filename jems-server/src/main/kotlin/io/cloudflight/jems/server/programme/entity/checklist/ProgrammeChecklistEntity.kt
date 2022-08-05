@@ -24,7 +24,7 @@ class ProgrammeChecklistEntity(
 
     @Enumerated(EnumType.STRING)
     @field:NotNull
-    val type: ProgrammeChecklistType = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
+    val type: ProgrammeChecklistType,
 
     val name: String?,
 

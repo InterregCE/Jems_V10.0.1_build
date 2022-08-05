@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.programme.service.checklist.delete_checklist
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.programme.service.checklist.ProgrammeChecklistPersistence
 import io.cloudflight.jems.server.programme.service.checklist.delete.DeleteProgrammeChecklist
 import io.cloudflight.jems.server.programme.service.checklist.getList.GetProgrammeChecklistDetailNotFoundException
@@ -11,9 +12,12 @@ import io.cloudflight.jems.server.project.service.checklist.ChecklistInstancePer
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.slot
 import io.mockk.verify
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.springframework.context.ApplicationEventPublisher
 import java.math.BigDecimal
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -37,11 +41,14 @@ internal class DeleteChecklistTest : UnitTest() {
         )
     }
 
-    @MockK
+    @RelaxedMockK
     lateinit var persistence: ProgrammeChecklistPersistence
 
     @MockK
     lateinit var checklistInstancePersistence: ChecklistInstancePersistence
+
+    @MockK
+    lateinit var auditPublisher: ApplicationEventPublisher
 
     @InjectMockKs
     lateinit var deleteProgrammeChecklist: DeleteProgrammeChecklist
@@ -50,6 +57,8 @@ internal class DeleteChecklistTest : UnitTest() {
     fun `delete checklist - OK`() {
         val checklist = getChecklist()
         every { checklistInstancePersistence.countAllByChecklistTemplateId(CHECKLIST_ID) } returns 0
+        val auditSlot = slot<AuditCandidateEvent>()
+        every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit
         every { persistence.deleteById(CHECKLIST_ID) } returns Unit
         every { persistence.getChecklistDetail(CHECKLIST_ID) } returns checklist
         deleteProgrammeChecklist.deleteProgrammeChecklist(CHECKLIST_ID)
