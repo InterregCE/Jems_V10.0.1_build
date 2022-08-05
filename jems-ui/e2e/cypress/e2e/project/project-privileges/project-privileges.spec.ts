@@ -91,6 +91,13 @@ context('Project privileges tests', () => {
 
   it('TB-374 Add user to project using project privileges', () => {
     cy.fixture('project/project-privileges/TB-374.json').then(testData => {
+      Cypress.on('uncaught:exception', (err) => {
+        if (err.message.includes('ResizeObserver loop limit exceeded')) {
+          return false;
+        }
+        return true;
+      })
+
       // Preparation for the tests
       cy.loginByRequest(user.admin.email);
 
@@ -109,7 +116,7 @@ context('Project privileges tests', () => {
       });
       cy.loginByRequest(testData.projectOwner.email);
       cy.createApplication(application).then(applicationId => {
-        cy.visit(`/app/project/detail/${applicationId}/annexes`);
+        cy.visit(`/app/project/detail/${applicationId}/annexes`, {failOnStatusCode: false});
         cy.get('input[type=file]').selectFile('cypress\\fixtures\\project\\project-privileges\\TB-374-testFile.txt', {force: true});
 
         addNewApplicationPrivilegeUser(applicationId, testData.projectOwner, testData.applicantView, 'view');
@@ -127,7 +134,7 @@ context('Project privileges tests', () => {
         cy.loginByRequest(testData.applicantView.email);
         cy.visit('/');
         cy.get('#table:first').contains('div', applicationId).should('be.visible');
-        cy.visit(`/app/project/detail/${applicationId}`);
+        cy.visit(`/app/project/detail/${applicationId}`, {failOnStatusCode: false});
         cy.contains('div', 'Project identification').click();
         cy.get("textarea:first").should('have.attr', 'readonly');
         cy.contains('Project privileges').click();
@@ -152,7 +159,7 @@ context('Project privileges tests', () => {
 
         // Testing the edit privileges
         cy.loginByRequest(testData.applicantEdit.email);
-        cy.visit('/');
+        cy.visit('/', {failOnStatusCode: false});
         testEditPrivileges(applicationId);
         cy.contains('Project privileges').click();
         cy.get('mat-button-toggle-group:last').contains('span', 'view').click();
@@ -162,7 +169,7 @@ context('Project privileges tests', () => {
 
         // Testing the manage privileges
         cy.loginByRequest(testData.applicantManage.email);
-        cy.visit('/');
+        cy.visit('/', {failOnStatusCode: false});
         testEditPrivileges(applicationId);
         cy.contains('Project privileges').click();
         cy.get('mat-button-toggle-group:last').contains('span', 'view').click();
@@ -185,7 +192,7 @@ context('Project privileges tests', () => {
       });
       cy.loginByRequest(testData.applicationCreator.email);
       cy.createApplication(application).then(applicationId => {
-        cy.visit(`/app/project/detail/${applicationId}/privileges`);
+        cy.visit(`/app/project/detail/${applicationId}/privileges`, {failOnStatusCode: false});
       });
       cy.contains('button', '+').click();
       cy.get('input:last').type(faker.internet.email());
@@ -205,9 +212,9 @@ context('Project privileges tests', () => {
   function testEditPrivileges(applicationId) {
     cy.visit('/');
     cy.get('#table:first').contains('div', applicationId).should('be.visible');
-    cy.visit(`/app/project/detail/${applicationId}/applicationFormIdentification`);
+    cy.visit(`/app/project/detail/${applicationId}/applicationFormIdentification`, {failOnStatusCode: false});
     cy.get("textarea:first").should('not.have.attr', 'readonly');
-    cy.visit(`/app/project/detail/${applicationId}/export`);
+    cy.visit(`/app/project/detail/${applicationId}/export`, {failOnStatusCode: false});
     cy.contains('button', 'Export').should('be.visible');
     cy.contains('Application annexes').click();
     cy.contains('button', 'Upload file').should('be.visible');
@@ -222,7 +229,7 @@ context('Project privileges tests', () => {
 
   function addNewApplicationPrivilegeUser(applicationId, applicationOwner, newUser, privilegeLevel) {
     cy.loginByRequest(applicationOwner.email);
-    cy.visit(`/app/project/detail/${applicationId}`);
+    cy.visit(`/app/project/detail/${applicationId}`, {failOnStatusCode: false});
     cy.contains('div', 'Project privileges').click();
     cy.contains('button', '+').click();
     cy.get('input:last').type(newUser.email);
