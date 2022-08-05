@@ -5,7 +5,7 @@ import java.time.ZonedDateTime
 
 open class ProgrammeChecklistDTO(
     val id: Long? = null,
-    val type: ProgrammeChecklistTypeDTO = ProgrammeChecklistTypeDTO.APPLICATION_FORM_ASSESSMENT,
+    val type: ProgrammeChecklistTypeDTO,
     val minScore: BigDecimal?,
     val maxScore: BigDecimal?,
     val allowsDecimalScore: Boolean? = false,

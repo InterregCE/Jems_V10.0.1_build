@@ -42,6 +42,7 @@ import java.time.ZonedDateTime
 class ProgrammeChecklistControllerTest : UnitTest() {
 
     private val ID = 1L
+    private val cID = 2L // Separate ID for a "Contracting" checklist
     private val checklist = ProgrammeChecklist(
         id = ID,
         type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
@@ -52,9 +53,28 @@ class ProgrammeChecklistControllerTest : UnitTest() {
         lastModificationDate = ZonedDateTime.of(2020, 1, 10, 10, 10, 10, 10, ZoneId.systemDefault()),
         locked = false
     )
+    private val contractingChecklist = ProgrammeChecklist(
+        id = cID,
+        type = ProgrammeChecklistType.CONTRACTING,
+        name = "test",
+        minScore = BigDecimal(0),
+        maxScore = BigDecimal(10),
+        allowsDecimalScore = false,
+        lastModificationDate = ZonedDateTime.of(2020, 1, 10, 10, 10, 10, 10, ZoneId.systemDefault()),
+        locked = false
+    )
     private val checklistDTO = ProgrammeChecklistDTO(
         id = ID,
         type = ProgrammeChecklistTypeDTO.APPLICATION_FORM_ASSESSMENT,
+        minScore = BigDecimal(0),
+        maxScore = BigDecimal(10),
+        allowsDecimalScore = false,
+        name = "test",
+        lastModificationDate = ZonedDateTime.of(2020, 1, 10, 10, 10, 10, 10, ZoneId.systemDefault()),
+    )
+    private val contractingChecklistDTO = ProgrammeChecklistDTO(
+        id = cID,
+        type = ProgrammeChecklistTypeDTO.CONTRACTING,
         minScore = BigDecimal(0),
         maxScore = BigDecimal(10),
         allowsDecimalScore = false,
@@ -114,6 +134,17 @@ class ProgrammeChecklistControllerTest : UnitTest() {
         locked = false,
         components = components
     )
+    private val contractingChecklistDetail = ProgrammeChecklistDetail(
+        id = cID,
+        type = ProgrammeChecklistType.CONTRACTING,
+        name = "test",
+        minScore = BigDecimal(0),
+        maxScore = BigDecimal(10),
+        allowsDecimalScore = false,
+        lastModificationDate = ZonedDateTime.of(2020, 1, 10, 10, 10, 10, 10, ZoneId.systemDefault()),
+        locked = false,
+        components = components
+    )
 
     private val componentsDTO = mutableListOf(
         ProgrammeChecklistComponentDTO(
@@ -165,6 +196,17 @@ class ProgrammeChecklistControllerTest : UnitTest() {
         components = componentsDTO
     )
 
+    private val contractingChecklistDetailDTO = ProgrammeChecklistDetailDTO(
+        id = cID,
+        type = ProgrammeChecklistTypeDTO.CONTRACTING,
+        name = "test",
+        minScore = BigDecimal(0),
+        maxScore = BigDecimal(10),
+        allowsDecimalScore = false,
+        lastModificationDate = ZonedDateTime.of(2020, 1, 10, 10, 10, 10, 10, ZoneId.systemDefault()),
+        components = componentsDTO
+    )
+
     @MockK
     lateinit var getChecklistInteractor: GetProgrammeChecklistInteractor
 
@@ -185,18 +227,26 @@ class ProgrammeChecklistControllerTest : UnitTest() {
 
     @Test
     fun `get checklists`() {
-        every { getChecklistInteractor.getProgrammeChecklist(Sort.unsorted()) } returns listOf(checklist)
-        assertThat(controller.getProgrammeChecklists(Pageable.unpaged()).get(0))
+        every { getChecklistInteractor.getProgrammeChecklist(Sort.unsorted()) } returns listOf(checklist, contractingChecklist)
+        assertThat(controller.getProgrammeChecklists(Pageable.unpaged()).subList(0, 2))
             .usingRecursiveComparison()
-            .isEqualTo(checklistDTO)
+            .isEqualTo(listOf(checklistDTO, contractingChecklistDTO))
     }
 
     @Test
-    fun `get checklist detail`() {
+    fun `get checklist details`() {
         every { getChecklistDetailInteractor.getProgrammeChecklistDetail(ID) } returns checklistDetail
         assertThat(controller.getProgrammeChecklistDetail(ID))
             .usingRecursiveComparison()
             .isEqualTo(checklistDetailDTO)
+    }
+
+    @Test
+    fun `get contracting checklist details`() {
+        every { getChecklistDetailInteractor.getProgrammeChecklistDetail(cID) } returns contractingChecklistDetail
+        assertThat(controller.getProgrammeChecklistDetail(cID))
+            .usingRecursiveComparison()
+            .isEqualTo(contractingChecklistDetailDTO)
     }
 
     @Test
@@ -209,7 +259,16 @@ class ProgrammeChecklistControllerTest : UnitTest() {
     }
 
     @Test
-    fun `update checklist detail`() {
+    fun `create contracting checklist`() {
+        val checklistSlot = slot<ProgrammeChecklistDetail>()
+        every { createInteractor.create(capture(checklistSlot)) } returnsArgument 0
+        assertThat(controller.createProgrammeChecklist(contractingChecklistDetailDTO))
+            .usingRecursiveComparison()
+            .isEqualTo(contractingChecklistDetailDTO)
+    }
+
+    @Test
+    fun `update checklist details`() {
         val checklistSlot = slot<ProgrammeChecklistDetail>()
         every { updateInteractor.update(capture(checklistSlot)) } returnsArgument 0
         assertThat(controller.updateProgrammeChecklist(checklistDetailDTO))
@@ -218,9 +277,23 @@ class ProgrammeChecklistControllerTest : UnitTest() {
     }
 
     @Test
+    fun `update contracting checklist details`() {
+        val checklistSlot = slot<ProgrammeChecklistDetail>()
+        every { updateInteractor.update(capture(checklistSlot)) } returnsArgument 0
+        assertThat(controller.updateProgrammeChecklist(contractingChecklistDetailDTO))
+            .usingRecursiveComparison()
+            .isEqualTo(contractingChecklistDetailDTO)
+    }
+
+    @Test
     fun `delete checklist`() {
         every { deleteInteractor.deleteProgrammeChecklist(ID) } just Runs
         assertDoesNotThrow { deleteInteractor.deleteProgrammeChecklist(ID) }
     }
 
+    @Test
+    fun `delete contracting checklist`() {
+        every { deleteInteractor.deleteProgrammeChecklist(cID) } just Runs
+        assertDoesNotThrow { deleteInteractor.deleteProgrammeChecklist(cID) }
+    }
 }
