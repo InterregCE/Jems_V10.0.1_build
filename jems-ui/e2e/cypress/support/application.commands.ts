@@ -52,7 +52,7 @@ declare global {
   namespace Cypress {
     interface Chainable {
       createApplication(application);
-      
+
       createSubmittedApplication(application);
 
       createApprovedApplication(application, approvingUserEmail?: string);
@@ -96,9 +96,9 @@ declare global {
       approveModification(applicationId: number, approvalInfo, userEmail?: string);
 
       rejectModification(applicationId: number, rejectionInfo, userEmail?: string);
-      
+
       setProjectToContracted(applicationId: number, userEmail?: string);
-      
+
       assignPartnerCollaborators(applicationId: number, partnerId: number, users: string[]);
     }
   }

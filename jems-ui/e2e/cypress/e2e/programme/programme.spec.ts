@@ -392,7 +392,7 @@ context('Programme management tests', () => {
     cy.contains('mat-form-field', 'Headline name').find('input').type(checklists.headlineName);
     cy.contains('button', 'Add component').click();
 
-    cy.get('.jems-table-config').children().last().within(()=>{
+    cy.get('.jems-table-config').children().last().within(() => {
       cy.contains('mat-form-field', 'Component type').click();
       cy.root().closest('body').find('mat-option').contains('Options toggle').click();
       cy.contains('mat-form-field', 'Question text').find('textarea').type(checklists.optionsQuestionText);
@@ -402,7 +402,7 @@ context('Programme management tests', () => {
     })
 
     cy.contains('button', 'Add component').click();
-    cy.get('.jems-table-config').children().last().within(()=>{
+    cy.get('.jems-table-config').children().last().within(() => {
       cy.contains('mat-form-field', 'Component type').click();
       cy.root().closest('body').find('mat-option').contains('Text input').click();
       cy.contains('mat-form-field', 'Question text').find('textarea').type(checklists.textInputQuestionText);
@@ -410,7 +410,7 @@ context('Programme management tests', () => {
     })
 
     cy.contains('button', 'Add component').click();
-    cy.get('.jems-table-config').children().last().within(()=>{
+    cy.get('.jems-table-config').children().last().within(() => {
       cy.contains('mat-form-field', 'Component type').click();
       cy.root().closest('body').find('mat-option').contains('Score').click();
       cy.contains('mat-form-field', 'Question text').find('textarea').type(checklists.scoreQuestionText);
@@ -466,4 +466,4 @@ context('Programme management tests', () => {
     cy.contains('button', 'Confirm').click();
     cy.contains('div', checklists.checklistName).should('not.exist');
   });
-})
+});

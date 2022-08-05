@@ -1,6 +1,7 @@
 import user from '../../../../fixtures/users.json';
 import call from '../../../../fixtures/api/call/1.step.call.json';
 import application from '../../../../fixtures/api/application/application.json';
+import assessmentChecklist from '../../../../fixtures/api/checklist/assessmentChecklist.json';
 
 context('Assessments & decision tests', () => {
 
@@ -19,21 +20,21 @@ context('Assessments & decision tests', () => {
         cy.loginByRequest(user.programmeUser.email);
         cy.visit(`app/project/detail/${applicationId}`, {failOnStatusCode: false});
         cy.contains('Assessment & Decision').click();
-        
+
         cy.contains('Enter eligibility assessment').click();
         cy.contains(testData.eligibility.assessment).click();
         cy.contains('div', 'Explanatory notes').find('textarea').type(testData.eligibility.explanatoryNotes);
         cy.contains('Submit eligibility assessment').click();
         cy.contains('Confirm').click();
         cy.contains('Eligibility check:').next().should('contain.text', 'Passed');
-        
+
         cy.contains('Enter quality assessment').click();
         cy.contains(testData.quality.assessment).click();
         cy.contains('div', 'Explanatory notes').find('textarea').type(testData.quality.explanatoryNotes);
         cy.contains('Submit quality assessment').click();
         cy.contains('Confirm').click();
         cy.contains('Quality check:').next().should('contain.text', 'Recommended for funding');
-        
+
         cy.contains('Enter eligibility decision').click();
         cy.contains(testData.eligibility.decision).click();
         cy.contains('div', 'Explanatory notes').find('textarea').type(testData.eligibility.explanatoryNotes);
@@ -42,7 +43,7 @@ context('Assessments & decision tests', () => {
         cy.contains('Submit eligibility decision').click();
         cy.contains('Confirm').click();
         cy.contains('Eligibility decision:').next().should('contain.text', 'Eligible');
-        
+
         cy.contains('Enter funding decision').click();
         cy.contains(testData.funding.decision).click();
         cy.contains('div', 'Explanatory notes').find('textarea').type(testData.funding.explanatoryNotes);
@@ -52,7 +53,7 @@ context('Assessments & decision tests', () => {
         cy.contains('Confirm').click();
         cy.contains('Funding decision:').next().should('contain.text', 'Approved with conditions');
         cy.wait(1000); // TODO remove after MP2-2391 is fixed
-        
+
         cy.contains('Project overview').click();
         cy.contains('Approved with conditions').should('be.visible');
 
@@ -61,7 +62,7 @@ context('Assessments & decision tests', () => {
         cy.contains('Confirm').click();
         cy.contains('Project application has been returned to applicant successfully.').scrollIntoView().should('be.visible');
         cy.wait(1000); // TODO remove after MP2-2391 is fixed
-        
+
         cy.contains('Project overview').click();
         cy.contains('Returned for conditions').should('be.visible');
         cy.contains('(current) V. 2.0').should('be.visible');
@@ -84,7 +85,7 @@ context('Assessments & decision tests', () => {
         cy.contains('Confirm').click();
         cy.contains('Enter eligibility decision').should('be.visible');
         cy.wait(1000); // TODO remove after MP2-2391 is fixed
-        
+
         cy.contains('Project overview').click();
         cy.contains('Submitted').should('be.visible');
         cy.wait(1000); // TODO remove after MP2-2391 is fixed
@@ -100,7 +101,7 @@ context('Assessments & decision tests', () => {
         cy.contains('Confirm').click();
         cy.contains('Eligibility decision:').next().should('contain.text', 'Ineligible');
         cy.wait(1000); // TODO remove after MP2-2391 is fixed
-        
+
         cy.contains('Project overview').click();
         cy.contains('Ineligible').should('be.visible');
         cy.wait(1000); // TODO remove after MP2-2391 is fixed
@@ -116,6 +117,39 @@ context('Assessments & decision tests', () => {
         cy.contains('Project overview').click();
         cy.contains('Submitted').should('be.visible');
       });
+    });
+  });
+
+  it('TB-580 User can instantiate, fill out, delete and submit assessments', () => {
+    cy.loginByRequest(user.applicantUser.email);
+    cy.createSubmittedApplication(application).then(applicationId => {
+      cy.loginByRequest(user.programmeUser.email);
+      cy.createChecklist(assessmentChecklist)
+      cy.visit(`app/project/detail/${applicationId}`, {failOnStatusCode: false});
+      cy.contains('Assessment & Decision').click();
+      cy.contains('mat-select','Select checklist template').click();
+      cy.get('mat-option:first-of-type').click();
+      cy.contains('instantiate new assessment').click();
+      cy.contains('Draft').should('be.visible');
+      cy.contains('button','Finish checklist').should('exist');
+      cy.contains('button','Yes?').click();
+      cy.contains('button','Save changes').click();
+      cy.contains('Checklist instance saved successfully').should('be.visible');
+      cy.contains('Assessment & Decision').click();
+      cy.get('jems-table').should('exist');
+      cy.contains('mat-cell','Finished').should('not.exist');
+      cy.contains('button','delete').click();
+      cy.contains('Confirm').click();
+      cy.get('jems-table').should('not.exist');
+      cy.contains('mat-select','Select checklist template').click();
+      cy.get('mat-option:first-of-type').click();
+      cy.contains('instantiate new assessment').click();
+      cy.contains('button','Yes?').click();
+      cy.contains('button','Finish checklist').click();
+      cy.contains('Confirm').click();
+      cy.contains('Assessment checklists').should('exist');
+      cy.contains('mat-cell','Finished').should('exist');
+      cy.contains('button','delete').should('not.exist');
     });
   });
 });
