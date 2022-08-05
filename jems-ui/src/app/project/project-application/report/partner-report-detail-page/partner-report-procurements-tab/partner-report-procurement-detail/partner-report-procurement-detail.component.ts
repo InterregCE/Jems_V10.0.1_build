@@ -86,7 +86,7 @@ export class PartnerReportProcurementDetailComponent {
 
     const procurementIsFromThisReport = report.id === procurement.reportId
     this.formService.setEditable(reportEditable && (isCreate || procurementIsFromThisReport));
-
+    this.form.controls.reportNumber.disable();
     this.formService.setCreation(isCreate);
   }
 
