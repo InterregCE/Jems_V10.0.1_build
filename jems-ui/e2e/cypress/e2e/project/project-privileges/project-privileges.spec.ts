@@ -117,7 +117,7 @@ context('Project privileges tests', () => {
       cy.loginByRequest(testData.projectOwner.email);
       cy.createApplication(application).then(applicationId => {
         cy.visit(`/app/project/detail/${applicationId}/annexes`, {failOnStatusCode: false});
-        cy.get('input[type=file]').selectFile('cypress\\fixtures\\project\\project-privileges\\TB-374-testFile.txt', {force: true});
+        cy.get('input[type=file]').selectFile('cypress/fixtures/project/project-privileges/TB-374-testFile.txt', {force: true});
 
         addNewApplicationPrivilegeUser(applicationId, testData.projectOwner, testData.applicantView, 'view');
 
