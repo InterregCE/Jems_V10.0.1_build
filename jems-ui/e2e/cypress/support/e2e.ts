@@ -2,6 +2,7 @@ import './commands';
 import './login.commands'
 import './call.commands';
 import './application.commands';
+import './programme.commands';
 import './system.commands';
 
 // update test case execution results in Jira
