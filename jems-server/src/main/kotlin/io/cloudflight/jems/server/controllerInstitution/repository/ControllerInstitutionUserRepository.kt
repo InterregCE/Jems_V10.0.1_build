@@ -32,4 +32,14 @@ interface ControllerInstitutionUserRepository: JpaRepository<ControllerInstituti
         """
     )
     fun findAllByControllerInstitutionId(controllerInstitutionId: Long): List<ControllerInstitutionUserEntity>
+
+    @Query(
+        """
+            SELECT e FROM #{#entityName} e
+            WHERE e.id.controllerInstitutionId IN :institutionIds
+        """
+    )
+    fun findAllByControllerInstitutionIdIn(institutionIds: Set<Long>): List<ControllerInstitutionUserEntity>
+
+    fun deleteAllByIdControllerInstitutionIdAndIdUserIdIn(institutionId: Long, userIds: Set<Long>)
 }

@@ -47,14 +47,14 @@ class CreateControllerTest: UnitTest() {
     private val INSTITUTION_ID = 1L
     private val createdAt = ZonedDateTime.now()
     private val userEmail = "user@email.com"
-    private val userList =
-        listOf(ControllerInstitutionUser(INSTITUTION_ID, USER_ID, userEmail, UserInstitutionAccessLevel.View))
+    private val institutionUsers =
+        mutableSetOf(ControllerInstitutionUser(INSTITUTION_ID, USER_ID, userEmail, UserInstitutionAccessLevel.View))
     private val institution = ControllerInstitution(
         id = INSTITUTION_ID,
         name = "INSTITUTION",
         description = "DESCRIPTION",
         institutionNuts = emptyList(),
-        institutionUsers = userList,
+        institutionUsers = institutionUsers,
         createdAt = ZonedDateTime.now()
     )
 
@@ -63,7 +63,7 @@ class CreateControllerTest: UnitTest() {
         name = "INSTITUTION",
         description = "DESCRIPTION",
         institutionNuts = emptyList(),
-        institutionUsers = userList,
+        institutionUsers = institutionUsers.toList(),
         createdAt = createdAt
     )
 

@@ -10,6 +10,7 @@ import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetPerPeriodRow
 import io.cloudflight.jems.server.project.entity.partner.budget.spf.ProjectSpfBeneficiaryBudgetPerPeriodRow
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.PartnerContributionRow
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerTotalBudgetEntry
 import org.springframework.data.domain.Page
@@ -542,4 +543,17 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
         nativeQuery = true
     )
     fun getSpfBudgetByBeneficiaryIdAsOfTimestamp(partnerId: Long, timestamp: Timestamp):  List<ProjectSpfBeneficiaryBudgetPerPeriodRow>
+
+    @Query(
+        """
+        SELECT new kotlin.Pair(pp.id, pp.project.id)
+        FROM project_partner AS pp
+        INNER JOIN project AS p
+            ON pp.project.id = p.id
+        INNER JOIN project_status AS ps
+            ON p.currentStatus.id = ps.id
+        WHERE pp.id IN :partnerIds AND ps.status IN :projectStatuses
+        """
+    )
+    fun getPartnerProjectIdByPartnerIdAndProjectStatusIn(partnerIds: Set<Long>, projectStatuses: Set<ApplicationStatus>): List<Pair<Long, Long>>
 }

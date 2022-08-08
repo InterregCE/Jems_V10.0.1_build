@@ -1,18 +1,12 @@
 package io.cloudflight.jems.server.controllerInstitution.repository
 
 import io.cloudflight.jems.server.controllerInstitution.ControllerInstitutionPersistence
-import io.cloudflight.jems.server.controllerInstitution.entity.ControllerInstitutionUserEntity
-import io.cloudflight.jems.server.controllerInstitution.service.controllerInstitutionChanged
 import io.cloudflight.jems.server.controllerInstitution.service.getControllerInstitution.GetControllerInstitutionException
-import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitution
-import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionList
-import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionUser
-import io.cloudflight.jems.server.controllerInstitution.service.model.UpdateControllerInstitution
+import io.cloudflight.jems.server.controllerInstitution.service.model.*
 import io.cloudflight.jems.server.nuts.repository.NutsRegion3Repository
 import io.cloudflight.jems.server.project.entity.partner.ControllerInstitutionEntity
-import io.cloudflight.jems.server.user.service.UserPersistence
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.user.service.model.UserSummary
-import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
@@ -23,9 +17,8 @@ import java.util.*
 class ControllerInstitutionPersistenceProvider(
     private val controllerRepo: ControllerInstitutionRepository,
     private val nutsRegion3Repository: NutsRegion3Repository,
-    private val userPersistence: UserPersistence,
     private val institutionUserRepository: ControllerInstitutionUserRepository,
-    private val auditPublisher: ApplicationEventPublisher
+    private val institutionPartnerRepository: ControllerInstitutionPartnerRepository,
     ): ControllerInstitutionPersistence {
 
     @Transactional(readOnly = true)
@@ -48,55 +41,40 @@ class ControllerInstitutionPersistenceProvider(
     @Transactional
     override fun createControllerInstitution(controllerInstitution: UpdateControllerInstitution): ControllerInstitution {
         val savedControllerInstitution = controllerRepo.save(controllerInstitution.toEntity())
-        val newUsersSummaries = userPersistence.findAllByEmails(controllerInstitution.institutionUsers.map { it.userEmail })
-
-        updateAssignedUsers(
-            controllerInstitutionInstance = savedControllerInstitution,
-            newInstitutionUsers = controllerInstitution.institutionUsers,
-            newUsersSummaries = newUsersSummaries
-        )
-
         if (controllerInstitution.institutionNuts.isNotEmpty()) {
             savedControllerInstitution.institutionNuts = nutsRegion3Repository.findAllById(controllerInstitution.institutionNuts)
                 .toMutableSet()
         }
-
-        return savedControllerInstitution.toModel(controllerInstitution.institutionUsers.toEntity(savedControllerInstitution, newUsersSummaries)).also {
-            auditPublisher.publishEvent(
-                controllerInstitutionChanged(
-                    context = this,
-                    controllerInstitution = it,
-                    nutsRegion3 = controllerInstitution.institutionNuts
-                )
-            )
-        }
+        return savedControllerInstitution.toModel()
     }
 
     @Transactional
     override fun updateControllerInstitution(controllerInstitution: UpdateControllerInstitution): ControllerInstitution {
         val controllerInstitutionInstance = this.getControllerInstitutionOrThrow(controllerInstitution.id)
-        val newUsersSummaries = userPersistence.findAllByEmails(controllerInstitution.institutionUsers.map { it.userEmail })
 
         controllerInstitutionInstance.description = controllerInstitution.description
         controllerInstitutionInstance.name = controllerInstitution.name
-        updateAssignedUsers(
-            controllerInstitutionInstance = controllerInstitutionInstance,
-            newInstitutionUsers =controllerInstitution.institutionUsers,
-            newUsersSummaries = newUsersSummaries)
-
         controllerInstitutionInstance.institutionNuts = nutsRegion3Repository.findAllById(controllerInstitution.institutionNuts)
             .toMutableSet()
+        return controllerInstitutionInstance.toModel()
+    }
 
-        return controllerInstitutionInstance.toModel(controllerInstitution.institutionUsers.toEntity(controllerInstitution.toEntity(), newUsersSummaries))
-            .also {
-                auditPublisher.publishEvent(
-                    controllerInstitutionChanged(
-                        context = this,
-                        controllerInstitution = it,
-                        nutsRegion3 = controllerInstitution.institutionNuts
-                    )
-                )
-            }
+    @Transactional
+    override fun updateControllerInstitutionUsers(
+        institutionId: Long,
+        userSummaries: List<UserSummary>,
+        usersToUpdate: Set<ControllerInstitutionUser>,
+        usersIdsToDelete: Set<Long>
+    ) {
+        if (usersIdsToDelete.isNotEmpty()) {
+            institutionUserRepository.deleteAllByIdControllerInstitutionIdAndIdUserIdIn(institutionId, usersIdsToDelete)
+        }
+
+        institutionUserRepository.saveAll(usersToUpdate.map { userToSave ->
+            userToSave.toEntity(
+                institutionId,
+                userSummaries.first { userToSave.userEmail == it.email })
+        })
     }
 
     @Transactional(readOnly = true)
@@ -104,34 +82,64 @@ class ControllerInstitutionPersistenceProvider(
         institutionUserRepository.findByInstitutionIdAndUserId(institutionId = institutionId, userId = userId).map { it.toModel() }
 
 
+    @Transactional(readOnly = true)
+    override fun getInstitutionUsersByInstitutionId(institutionId: Long): List<ControllerInstitutionUser> {
+       return institutionUserRepository.findAllByControllerInstitutionId(institutionId).map { it.toModel() }
+    }
+
+    @Transactional(readOnly = true)
+    override fun getControllerInstitutionUsersByInstitutionIds(institutionIds: Set<Long>): List<ControllerInstitutionUser>  =
+        institutionUserRepository.findAllByControllerInstitutionIdIn(institutionIds).map { it.toModel() }
+
+
+    @Transactional(readOnly = true)
+    override fun getInstitutionPartnerAssignments(pageable: Pageable): Page<InstitutionPartnerDetails> {
+        return institutionPartnerRepository.getInstitutionPartnerAssignments(pageable, listOf(
+            ApplicationStatus.STEP1_DRAFT,
+            ApplicationStatus.STEP1_SUBMITTED,
+            ApplicationStatus.STEP1_ELIGIBLE,
+            ApplicationStatus.STEP1_INELIGIBLE,
+            ApplicationStatus.STEP1_APPROVED,
+            ApplicationStatus.STEP1_APPROVED_WITH_CONDITIONS,
+            ApplicationStatus.STEP1_NOT_APPROVED,
+            ApplicationStatus.DRAFT,
+            ApplicationStatus.SUBMITTED,
+            ApplicationStatus.CONDITIONS_SUBMITTED,
+            ApplicationStatus.RETURNED_TO_APPLICANT,
+            ApplicationStatus.RETURNED_TO_APPLICANT_FOR_CONDITIONS,
+            ApplicationStatus.ELIGIBLE,
+            ApplicationStatus.INELIGIBLE,
+            ApplicationStatus.APPROVED_WITH_CONDITIONS,
+            ApplicationStatus.NOT_APPROVED,
+        ))
+    }
+
+    @Transactional
+    override fun assignInstitutionToPartner(
+        assignmentsToRemove:  List<InstitutionPartnerAssignment>,
+        assignmentsToSave: List<InstitutionPartnerAssignment>
+    ): List<InstitutionPartnerAssignment> {
+         if (assignmentsToRemove.isNotEmpty()) {
+             institutionPartnerRepository.deleteAllByIdInBatch(assignmentsToRemove.map { it.partnerId })
+         }
+        return institutionPartnerRepository.saveAll(assignmentsToSave.toEntities()).toModels()
+    }
+
+    @Transactional
+    override fun getInstitutionPartnerAssignmentsByPartnerIdsIn(partnerIds: Set<Long>): List<InstitutionPartnerAssignment> =
+        institutionPartnerRepository.findAllByPartnerIdIn(partnerIds).toModels()
+
+    @Transactional
+    override fun getInstitutionPartnerAssignmentsByInstitutionId(institutionId: Long): List<InstitutionPartnerAssignment> =
+        institutionPartnerRepository.findAllByInstitutionId(institutionId).toModels()
+
+
+    @Transactional(readOnly = true)
+    override fun getInstitutionPartnerAssignmentsWithUsersByPartnerProjectIdsIn(partnerProjectIds: Set<Long>): List<InstitutionPartnerAssignmentWithUsers> =
+        institutionPartnerRepository.getInstitutionPartnerAssignmentsWithUsersByPartnerProjectIdsIn(partnerProjectIds)
+
+
     private fun getControllerInstitutionOrThrow(id: Long): ControllerInstitutionEntity =
         controllerRepo.findById(id).orElseThrow { GetControllerInstitutionException() }
-
-
-    private fun updateAssignedUsers(
-        controllerInstitutionInstance: ControllerInstitutionEntity,
-        newInstitutionUsers: List<ControllerInstitutionUser>,
-        newUsersSummaries: List<UserSummary>
-    ) {
-        val newUsersIds = newUsersSummaries.map { it.id }
-        val existingInstitutionUsers = institutionUserRepository.findAllByControllerInstitutionId(controllerInstitutionInstance.id)
-        val usersIdsToBeDeleted = existingInstitutionUsers.map{it.id.user.id }.minus(newUsersIds.toSet())
-        val usersToBeDeleted = existingInstitutionUsers.filter { it.id.user.id in usersIdsToBeDeleted }
-        val usersToBeSaved: MutableList<ControllerInstitutionUserEntity> = mutableListOf()
-
-        if (usersToBeDeleted.isNotEmpty()) {
-            institutionUserRepository.deleteAll(usersToBeDeleted)
-        }
-        newInstitutionUsers.forEach { newUser ->
-            val userToUpdate = existingInstitutionUsers.find { it.id.user.id == newUser.userId }
-            if (userToUpdate != null) {
-                userToUpdate.accessLevel = newUser.accessLevel
-            } else {
-                val userSummary = newUsersSummaries.find { it.email == newUser.userEmail }
-                usersToBeSaved.add(newUser.toEntity(controllerInstitutionInstance, userSummary!!))
-            }
-            institutionUserRepository.saveAll(usersToBeSaved)
-        }
-    }
 
 }

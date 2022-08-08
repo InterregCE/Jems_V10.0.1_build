@@ -8,6 +8,6 @@ data class ControllerInstitution (
     val name: String,
     val description: String?,
     val institutionNuts: List<OutputNuts>,
-    val institutionUsers: List<ControllerInstitutionUser>,
+    val institutionUsers: MutableSet<ControllerInstitutionUser>,
     val createdAt: ZonedDateTime?
 )

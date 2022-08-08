@@ -21,13 +21,13 @@ fun Page<ControllerInstitutionEntity>.toModel(institutionUsers: List<ControllerI
 
 fun Page<ControllerInstitutionEntity>.toListModel() = map { it.toListModel() }
 
-fun ControllerInstitutionEntity.toModel(institutionUsers: List<ControllerInstitutionUserEntity>) = ControllerInstitution (
+fun ControllerInstitutionEntity.toModel(institutionUsers: List<ControllerInstitutionUserEntity> = emptyList()) = ControllerInstitution (
     id = id,
     name = name,
     description = description,
     createdAt = createdAt,
     institutionNuts = institutionNuts.toDto(),
-    institutionUsers = institutionUsers.map { institutionUserEntityToModel(it) }
+    institutionUsers = institutionUsers.map { institutionUserEntityToModel(it) }.toMutableSet()
 )
 
 fun ControllerInstitutionEntity.toListModel() = ControllerInstitutionList (
@@ -54,16 +54,16 @@ fun UpdateControllerInstitution.toEntity() = ControllerInstitutionEntity(
     )
 
 fun List<ControllerInstitutionUser>.toEntity(
-    controllerInstitution: ControllerInstitutionEntity,
+    institutionId: Long,
     users: List<UserSummary>
-) = map { it.toEntity(controllerInstitution, users.find { user -> user.email == it.userEmail }!!) }
+) = map { it.toEntity(institutionId, users.find { user -> user.email == it.userEmail }!!) }
 
 fun ControllerInstitutionUser.toEntity(
-    institutionEntity: ControllerInstitutionEntity,
+    institutionId: Long,
     userSummary: UserSummary
 ): ControllerInstitutionUserEntity = ControllerInstitutionUserEntity(
     id = ControllerInstitutionUserId(
-        controllerInstitutionId = institutionEntity.id,
+        controllerInstitutionId = institutionId,
         user = userSummary.toEntity()
     ),
     accessLevel = this.accessLevel,

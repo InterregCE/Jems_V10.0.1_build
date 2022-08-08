@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.service.partner
 
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAddress
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerContact
@@ -51,4 +52,6 @@ interface PartnerPersistence {
     fun deletePartner(partnerId: Long)
 
     fun deactivatePartner(partnerId: Long)
+
+    fun getPartnerProjectIdByPartnerIdAndProjectStatusIn(partnerIds: Set<Long>, projectStatuses: Set<ApplicationStatus>): List<Pair<Long, Long>>
 }

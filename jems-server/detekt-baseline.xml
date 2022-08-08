@@ -582,6 +582,7 @@
     <ID>TooManyFunctions:CallPersistenceProvider.kt$CallPersistenceProvider : CallPersistence</ID>
     <ID>TooManyFunctions:GeneralValidatorDefaultImpl.kt$GeneralValidatorDefaultImpl : GeneralValidatorService</ID>
     <ID>TooManyFunctions:GeneralValidatorService.kt$GeneralValidatorService</ID>
+    <ID>TooManyFunctions:PartnerPersistence.kt$PartnerPersistence</ID>
     <ID>TooManyFunctions:PartnerPersistenceProvider.kt$PartnerPersistenceProvider : PartnerPersistence</ID>
     <ID>TooManyFunctions:ProjectDataModelMapper.kt$PluginDataMapper</ID>
     <ID>TooManyFunctions:ProjectDataModelMapper.kt$io.cloudflight.jems.server.plugin.services.ProjectDataModelMapper.kt</ID>

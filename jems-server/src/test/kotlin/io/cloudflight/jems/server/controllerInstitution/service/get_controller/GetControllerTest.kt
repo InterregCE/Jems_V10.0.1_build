@@ -32,22 +32,27 @@ class GetControllerTest: UnitTest() {
     @InjectMockKs
     lateinit var getController: GetController
 
-    private val INSTITUTION_ID = 1L
-    private val controllerInstitutionList = ControllerInstitutionList(
-        id = INSTITUTION_ID,
-        name = "INSTITUTION",
-        description = "DESCRIPTION",
-        institutionNuts = emptyList(),
-        createdAt = ZonedDateTime.now()
-    )
-    private val controllerInstitution = ControllerInstitution(
-        id = INSTITUTION_ID,
-        name = "INSTITUTION",
-        description = "DESCRIPTION",
-        institutionNuts = emptyList(),
-        institutionUsers = emptyList(),
-        createdAt = ZonedDateTime.now()
-    )
+
+    companion object {
+        private const val INSTITUTION_ID = 1L
+        private val controllerInstitutionList = ControllerInstitutionList(
+            id = INSTITUTION_ID,
+            name = "INSTITUTION",
+            description = "DESCRIPTION",
+            institutionNuts = emptyList(),
+            createdAt = ZonedDateTime.now()
+        )
+        private val controllerInstitution = ControllerInstitution(
+            id = INSTITUTION_ID,
+            name = "INSTITUTION",
+            description = "DESCRIPTION",
+            institutionNuts = emptyList(),
+            institutionUsers = mutableSetOf(),
+            createdAt = ZonedDateTime.now()
+        )
+    }
+
+
 
     @Test
     fun getAllInstitutions() {
