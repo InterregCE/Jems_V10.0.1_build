@@ -1,6 +1,11 @@
 package io.cloudflight.jems.api.controllerInstitutions
 
-import io.cloudflight.jems.api.controllerInstitutions.dto.*
+import io.cloudflight.jems.api.controllerInstitutions.dto.ControllerInstitutionDTO
+import io.cloudflight.jems.api.controllerInstitutions.dto.ControllerInstitutionListDTO
+import io.cloudflight.jems.api.controllerInstitutions.dto.InstitutionPartnerDetailsDTO
+import io.cloudflight.jems.api.controllerInstitutions.dto.UpdateControllerInstitutionDTO
+import io.cloudflight.jems.api.controllerInstitutions.dto.ControllerInstitutionAssignmentDTO
+import io.cloudflight.jems.api.controllerInstitutions.dto.InstitutionPartnerAssignmentDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
 import io.swagger.annotations.ApiImplicitParams

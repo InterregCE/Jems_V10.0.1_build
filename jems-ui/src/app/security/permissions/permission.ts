@@ -28,8 +28,12 @@ export class Permission {
   public static readonly CONTROLLERS_PERMISSIONS = [
     PermissionsEnum.InstitutionsRetrieve,
     PermissionsEnum.InstitutionsUpdate,
-    PermissionsEnum.InstitutionsUnlimited,
-    PermissionsEnum.InstitutionsAssignmentRetrieve
+    PermissionsEnum.InstitutionsUnlimited
+  ];
+
+  public static readonly CONTROLLERS_ASSIGNMENT_PERMISSIONS = [
+    PermissionsEnum.InstitutionsAssignmentRetrieve,
+    PermissionsEnum.InstitutionsAssignmentUpdate,
   ];
 
   public static readonly DEFAULT_USER_CREATE_AND_COLLABORATE_PERMISSIONS: PermissionNode[] = [

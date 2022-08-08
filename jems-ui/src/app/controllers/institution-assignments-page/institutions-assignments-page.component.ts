@@ -158,7 +158,7 @@ export class InstitutionsAssignmentsPageComponent{
           displayedColumn: 'controller.institutions.assignment.table.institution.column.headline',
           columnType: ColumnType.CustomComponent,
           customCellTemplate: this.institutionDropdownCell,
-          columnWidth: ColumnWidth.MediumColumn
+          columnWidth: ColumnWidth.ChipColumn
         }
       ]
     });
