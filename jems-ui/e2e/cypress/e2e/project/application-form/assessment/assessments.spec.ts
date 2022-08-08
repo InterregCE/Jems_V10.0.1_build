@@ -145,6 +145,7 @@ context('Assessments & decision tests', () => {
       cy.get('mat-option:first-of-type').click();
       cy.contains('instantiate new assessment').click();
       cy.contains('button','Yes?').click();
+      cy.contains('button','Save changes').click();
       cy.contains('button','Finish checklist').click();
       cy.contains('Confirm').click();
       cy.contains('Assessment checklists').should('exist');
