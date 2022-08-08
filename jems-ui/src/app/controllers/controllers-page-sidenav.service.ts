@@ -45,6 +45,15 @@ export class ControllersPageSidenavService {
       });
     }
 
+    if (permissions.includes(PermissionsEnum.InstitutionsAssignmentRetrieve) ||
+      permissions.includes(PermissionsEnum.InstitutionsAssignmentUpdate)) {
+      bulletsArray.push({
+        headline: {i18nKey: 'topbar.main.institutions.assignment'},
+        route: `${ControllersPageSidenavService.CONTROLLERS_DETAIL_PATH}/assignment`,
+        scrollToTop: true
+      });
+    }
+
     this.sideNavService.setHeadlines(ControllersPageSidenavService.CONTROLLERS_DETAIL_PATH, [
       {
         headline: {i18nKey: 'topbar.main.controllers'},

@@ -11,12 +11,14 @@ import {
   ControllerInstitutionNutsComponent
 } from './institutions-page/controller-institution-detail/controller-institution-nuts/controller-institution-nuts.component';
 import {ProgrammeEditableStateStore} from '../programme/programme-page/services/programme-editable-state-store.service';
+import {InstitutionsAssignmentsPageComponent} from "./institution-assignments-page/institutions-assignments-page.component";
 
 @NgModule({
   declarations: [
     InstitutionsPageComponent,
     ControllerInstitutionDetailComponent,
-    ControllerInstitutionNutsComponent
+    ControllerInstitutionNutsComponent,
+    InstitutionsAssignmentsPageComponent
   ],
   imports: [
     SharedModule,

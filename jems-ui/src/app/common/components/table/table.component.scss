@@ -49,3 +49,17 @@ mat-footer-cell {
 .extra-wide-column-width {
   min-width: 20rem;
 }
+
+.chip-column-width {
+  min-width: 9rem;
+  max-width: 12rem;
+}
+
+.medium-column-width {
+  min-width: 5rem;
+  max-width: 9rem;
+}
+
+.medium-column-no-limit {
+  min-width: 5rem;
+}

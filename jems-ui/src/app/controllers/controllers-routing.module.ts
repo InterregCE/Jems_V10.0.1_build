@@ -6,6 +6,7 @@ import {
   ControllerInstitutionDetailComponent
 } from './institutions-page/controller-institution-detail/controller-institution-detail.component';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
+import {InstitutionsAssignmentsPageComponent} from "./institution-assignments-page/institutions-assignments-page.component";
 
 export const routes: Routes = [
   {
@@ -15,7 +16,8 @@ export const routes: Routes = [
       permissionsOnly: [
         PermissionsEnum.InstitutionsRetrieve,
         PermissionsEnum.InstitutionsUpdate,
-        PermissionsEnum.InstitutionsUnlimited
+        PermissionsEnum.InstitutionsUnlimited,
+        PermissionsEnum.InstitutionsAssignmentRetrieve
       ],
     },
     children: [
@@ -27,10 +29,18 @@ export const routes: Routes = [
           permissionsOnly: [
             PermissionsEnum.InstitutionsRetrieve,
             PermissionsEnum.InstitutionsUpdate,
-            //PermissionsEnum.InstitutionsLimited
+            PermissionsEnum.InstitutionsAssignmentRetrieve
           ],
         },
         component: InstitutionsPageComponent,
+      },
+      {
+        path: 'assignment',
+        component: InstitutionsAssignmentsPageComponent,
+        data: {
+          breadcrumb: 'topbar.main.institutions.assignment',
+          permissionsOnly: [PermissionsEnum.InstitutionsAssignmentRetrieve],
+        },
       },
       {
         path: 'create',
@@ -48,8 +58,6 @@ export const routes: Routes = [
           breadcrumb: 'controller.breadcrumb.update',
           permissionsOnly: [PermissionsEnum.InstitutionsUpdate],
         },
-        // data: {dynamicBreadcrumb: true, permissionsOnly: [PermissionsEnum.InstitutionsUpdate]},
-        // resolve: {breadcrumb$: PartnerBreadcrumbResolver},
         children: [
           {
             path: '',
