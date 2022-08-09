@@ -4,5 +4,7 @@ interface IsProgrammeSetupLockedInteractor {
     fun isLocked(): Boolean
 
     fun isAnyReportCreated(): Boolean
+
+    fun isFastTrackLumpSumReadyForPayment(programmeLumpSumId: Long): Boolean
 }
 

@@ -11,5 +11,6 @@ interface ProjectLumpSumRow {
     val projectPartnerId: Long?
     val amount: BigDecimal
     val fastTrack: Int?
-
+    val readyForPayment: Int?
+    val comment: String?
 }

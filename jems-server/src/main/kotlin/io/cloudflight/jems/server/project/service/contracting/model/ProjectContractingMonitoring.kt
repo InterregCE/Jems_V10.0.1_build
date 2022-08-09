@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.service.contracting.model
 
+import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import java.time.LocalDate
 
 data class ProjectContractingMonitoring(
@@ -17,7 +18,8 @@ data class ProjectContractingMonitoring(
     val typologyPartnership: ContractingMonitoringOption? = null,
     val typologyPartnershipComment: String? = null,
 
-    val addDates: List<ProjectContractingMonitoringAddDate>
+    val addDates: List<ProjectContractingMonitoringAddDate>,
+    var fastTrackLumpSums: List<ProjectLumpSum>? = emptyList()
 
 ) {
     fun getDiff(old: ProjectContractingMonitoring? = null): Map<String, Pair<Any?, Any?>> {
@@ -42,6 +44,20 @@ data class ProjectContractingMonitoring(
                 oldAddDates?.map { it.entryIntoForceDate },
                 newAddDates.map { it.entryIntoForceDate }
             )
+
+        val oldFastTrackLumpSums = old?.fastTrackLumpSums?.sortedBy { it.programmeLumpSumId }
+        val newFastTrackLumpSums = fastTrackLumpSums?.sortedBy { it.programmeLumpSumId }
+        if (oldFastTrackLumpSums != newFastTrackLumpSums) {
+            changes["setReadyForPayment"] = Pair(
+                oldFastTrackLumpSums?.map { it.readyForPayment },
+                newFastTrackLumpSums?.map { it.readyForPayment }
+            )
+
+            changes["setComment"] = Pair(
+                oldFastTrackLumpSums?.map { it.comment },
+                newFastTrackLumpSums?.map { it.comment }
+            )
+        }
 
         return changes
     }

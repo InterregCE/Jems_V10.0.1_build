@@ -54,7 +54,9 @@ export class ProjectLumpSumsStore {
               new PartnerContribution(
                 contribution.partnerId,
                 contribution.amount)
-            )))),
+            ),
+            projectLumpSum.comment,
+            projectLumpSum.readyForPayment))),
       shareReplay(1)
     );
   }

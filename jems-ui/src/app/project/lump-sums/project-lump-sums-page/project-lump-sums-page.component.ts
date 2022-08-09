@@ -198,6 +198,8 @@ export class ProjectLumpSumsPageComponent implements OnInit {
       }))),
       rowSum: [0],
       gap: [0],
+      readyForPayment: [false],
+      comment: [null]
     });
     this.addItemToItems(item);
     this.tableData = [...this.items.controls];
@@ -308,6 +310,8 @@ export class ProjectLumpSumsPageComponent implements OnInit {
         }))),
         rowSum: [rowSum],
         gap: [ProjectLumpSumsPageComponent.calculateGap(lumpSum?.cost || 0, rowSum)],
+        readyForPayment: [projectLumpSum.readyForPayment],
+        comment: [projectLumpSum.comment]
       });
       this.addItemToItems(item);
     });
@@ -334,6 +338,8 @@ export class ProjectLumpSumsPageComponent implements OnInit {
         this.getLumpSumControl(formGroup)?.value?.id,
         formGroup.get(this.constants.FORM_CONTROL_NAMES.periodNumber)?.value,
         this.getPartnerContributionFormArray(formGroup)?.value,
+        formGroup.get(this.constants.FORM_CONTROL_NAMES.comment)?.value,
+        formGroup.get(this.constants.FORM_CONTROL_NAMES.readyForPayment)?.value,
       );
     });
   }

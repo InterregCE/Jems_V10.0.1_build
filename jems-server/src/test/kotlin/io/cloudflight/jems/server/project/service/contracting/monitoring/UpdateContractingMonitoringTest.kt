@@ -15,6 +15,8 @@ import io.cloudflight.jems.server.project.service.contracting.model.ContractingM
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoring
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoringAddDate
 import io.cloudflight.jems.server.project.service.contracting.monitoring.updateProjectContractingMonitoring.UpdateContractingMonitoring
+import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
+import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.mockk.clearMocks
@@ -58,6 +60,27 @@ class UpdateContractingMonitoringTest : UnitTest() {
             specificObjectiveCode = "SO1.1",
             programmePriorityCode = "P1"
         )
+        private val lumpSums = listOf(
+            ProjectLumpSum(
+                programmeLumpSumId = 1,
+                period = 1,
+                lumpSumContributions = listOf(),
+                isFastTrack = true,
+                readyForPayment = false,
+                comment = null
+            )
+        )
+
+        private val lumpSumsUpdated = listOf(
+            ProjectLumpSum(
+                programmeLumpSumId = 1,
+                period = 1,
+                lumpSumContributions = listOf(),
+                isFastTrack = true,
+                readyForPayment = true,
+                comment = "Test"
+            )
+        )
         private val monitoring = ProjectContractingMonitoring(
             projectId = projectId,
             startDate = null,
@@ -75,7 +98,8 @@ class UpdateContractingMonitoringTest : UnitTest() {
                 number = 1,
                 entryIntoForceDate = ZonedDateTime.parse("2022-07-22T10:00:00+02:00").toLocalDate(),
                 comment = "comment"
-            ))
+            )),
+            fastTrackLumpSums = lumpSumsUpdated
         )
     }
 
@@ -87,6 +111,9 @@ class UpdateContractingMonitoringTest : UnitTest() {
 
     @MockK
     lateinit var versionPersistence: ProjectVersionPersistence
+
+    @MockK
+    lateinit var projectLumpSumPersistence: ProjectLumpSumPersistence
 
     @RelaxedMockK
     lateinit var validator: ContractingValidator
@@ -106,8 +133,13 @@ class UpdateContractingMonitoringTest : UnitTest() {
     fun `add project management to approved application`() {
         every { projectPersistence.getProjectSummary(projectId) } returns projectSummary
         every { validator.validateProjectStatusForModification(projectSummary) } returns Unit
-        every { contractingMonitoringPersistence.getContractingMonitoring(projectId) } returns monitoring
+        every { contractingMonitoringPersistence.getContractingMonitoring(projectId) } returns monitoring.copy(
+            fastTrackLumpSums = lumpSums
+        )
+        every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns version
         every { contractingMonitoringPersistence.updateContractingMonitoring(monitoring) } returns monitoring
+        every { projectLumpSumPersistence.getLumpSums(1, "2.0")} returns lumpSums
+        every { projectLumpSumPersistence.updateLumpSums(1, lumpSumsUpdated)} returns lumpSumsUpdated
 
         assertThat(updateContractingMonitoring.updateContractingMonitoring(projectId, monitoring)).isEqualTo(monitoring)
         verify(exactly = 0) { auditPublisher.publishEvent(any()) }
@@ -119,8 +151,13 @@ class UpdateContractingMonitoringTest : UnitTest() {
             projectPersistence.getProjectSummary(projectId)
         } returns projectSummary.copy(status = ApplicationStatus.CONTRACTED)
         every { validator.validateProjectStatusForModification(projectSummary) } returns Unit
-        every { contractingMonitoringPersistence.getContractingMonitoring(projectId) } returns monitoring
+        every { contractingMonitoringPersistence.getContractingMonitoring(projectId) } returns monitoring.copy(
+            fastTrackLumpSums = lumpSumsUpdated
+        )
+        every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns version
         every { contractingMonitoringPersistence.updateContractingMonitoring(monitoring) } returns monitoring
+        every { projectLumpSumPersistence.getLumpSums(1, "2.0")} returns lumpSumsUpdated
+        every { projectLumpSumPersistence.updateLumpSums(1, lumpSumsUpdated)} returns lumpSumsUpdated
 
         assertThat(updateContractingMonitoring.updateContractingMonitoring(projectId, monitoring))
             .isEqualTo(monitoring)
@@ -153,7 +190,8 @@ class UpdateContractingMonitoringTest : UnitTest() {
             addDates = listOf(
                 ProjectContractingMonitoringAddDate(projectId, 1, oldDate, "comment1"),
                 ProjectContractingMonitoringAddDate(projectId, 2, oldDate, "comment2")
-            )
+            ),
+            fastTrackLumpSums = lumpSums
         )
         val monitoringNew = monitoring.copy(
             startDate = ZonedDateTime.parse("2022-07-01T10:00:00+02:00").toLocalDate()
@@ -161,6 +199,8 @@ class UpdateContractingMonitoringTest : UnitTest() {
         every { contractingMonitoringPersistence.updateContractingMonitoring(monitoringNew) } returns monitoringNew
         every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns version
         every { projectPersistence.getProject(projectId, version) } returns project
+        every { projectLumpSumPersistence.getLumpSums(1, "2.0")} returns lumpSums
+        every { projectLumpSumPersistence.updateLumpSums(1, lumpSumsUpdated)} returns lumpSumsUpdated
 
         assertThat(updateContractingMonitoring.updateContractingMonitoring(projectId, monitoringNew))
             .isEqualTo(
@@ -181,7 +221,8 @@ class UpdateContractingMonitoringTest : UnitTest() {
                         number = 1,
                         entryIntoForceDate = ZonedDateTime.parse("2022-07-22T10:00:00+02:00").toLocalDate(),
                         comment = "comment"
-                    ))
+                    )),
+                    fastTrackLumpSums = lumpSumsUpdated
                 )
             )
         val event = slot<AuditCandidateEvent>()
@@ -201,6 +242,16 @@ class UpdateContractingMonitoringTest : UnitTest() {
                     "  2022-06-02\n" +
                     "] to [\n" +
                     "  2022-07-22\n" +
+                    "],\n" +
+                    "setReadyForPayment changed from [\n" +
+                    "  false\n" +
+                    "] to [\n" +
+                    "  true\n" +
+                    "],\n" +
+                    "setComment changed from [\n" +
+                    "  null\n" +
+                    "] to [\n" +
+                    "  Test\n" +
                     "]"
             )
         )

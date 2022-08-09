@@ -11,6 +11,8 @@ fun List<ProjectLumpSum>.toDto() = map {
         programmeLumpSumId = it.programmeLumpSumId,
         period = it.period,
         lumpSumContributions = it.lumpSumContributions.map { it.toDto() },
+        readyForPayment = it.readyForPayment,
+        comment = it.comment
     )
 }
 
@@ -23,7 +25,9 @@ fun List<ProjectLumpSumDTO>.toModel() = map {
     ProjectLumpSum(
         programmeLumpSumId = it.programmeLumpSumId,
         period = it.period,
-        lumpSumContributions = it.lumpSumContributions.toPartnerContributionModel()
+        lumpSumContributions = it.lumpSumContributions.toPartnerContributionModel(),
+        readyForPayment = it.readyForPayment,
+        comment = it.comment
     )
 }
 

@@ -14,6 +14,8 @@ export class ProjectLumSumsConstants {
     rowSum: 'rowSum',
     gap: 'gap',
     items: 'items',
+    readyForPayment: 'readyForPayment',
+    comment: 'comment',
   };
 
   public static FORM_ERRORS = {

@@ -52,11 +52,15 @@ internal class ProjectLumpSumControllerTest : UnitTest() {
                 lumpSumContributions = listOf(
                     ProjectPartnerLumpSumDTO(partnerId = 13, amount = BigDecimal.TEN),
                     ProjectPartnerLumpSumDTO(partnerId = 14, amount = BigDecimal.ONE),
-                )
+                ),
+                readyForPayment = false,
+                comment = null
             ),
             ProjectLumpSumDTO(
                 programmeLumpSumId = 2,
                 period = 4,
+                readyForPayment = false,
+                comment = null
             ),
         )
     }
@@ -80,7 +84,9 @@ internal class ProjectLumpSumControllerTest : UnitTest() {
                 ProjectPartnerLumpSumDTO(partnerId = 23, amount = BigDecimal.valueOf(-1)),
                 ProjectPartnerLumpSumDTO(partnerId = 24, amount = BigDecimal.valueOf(-1, 2)),
                 ProjectPartnerLumpSumDTO(partnerId = 24, amount = BigDecimal.valueOf(-1, 1)),
-            )
+            ),
+            readyForPayment = false,
+            comment = null
         )
         val lumpSumDto2 = ProjectLumpSumDTO(
             programmeLumpSumId = 6,
@@ -89,6 +95,8 @@ internal class ProjectLumpSumControllerTest : UnitTest() {
                 ProjectPartnerLumpSumDTO(partnerId = 23, amount = BigDecimal.ONE),
                 ProjectPartnerLumpSumDTO(partnerId = 24, amount = BigDecimal.TEN),
             ),
+            readyForPayment = false,
+            comment = null
         )
 
         controller.updateProjectLumpSums(2L, listOf(lumpSumDto1, lumpSumDto2))
