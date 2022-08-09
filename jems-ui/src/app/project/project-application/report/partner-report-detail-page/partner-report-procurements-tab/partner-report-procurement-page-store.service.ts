@@ -15,8 +15,8 @@ import {PartnerReportPageStore} from '@project/project-application/report/partne
 import {
   PartnerReportDetailPageStore
 } from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
-import {Tables} from "@common/utils/tables";
-import {MatSort} from "@angular/material/sort";
+import {Tables} from '@common/utils/tables';
+import {MatSort} from '@angular/material/sort';
 
 @Injectable({providedIn: 'root'})
 export class PartnerReportProcurementsPageStore {
@@ -72,7 +72,7 @@ export class PartnerReportProcurementsPageStore {
         this.projectPartnerProcurementService.deleteProcurement(partnerId, procurementId, reportId)
       ),
       tap(() => this.refreshProcurements$.next(undefined)),
-    )
+    );
   }
 
   public getProcurementList(): Observable<IdNamePairDTO[]> {

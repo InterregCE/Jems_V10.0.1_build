@@ -45,7 +45,7 @@
 </ng-template>
 
 <ng-template #partnerNumberCell let-institutionAssignmentEntry>
-    <p>{{institutionAssignmentEntry.partnerRole == 'LEAD_PARTNER' ? 'LP' : 'PP'}}{{institutionAssignmentEntry.partnerSortNumber}}</p>
+    <p>{{institutionAssignmentEntry.partnerRole === 'LEAD_PARTNER' ? 'LP' : 'PP'}}{{institutionAssignmentEntry.partnerSortNumber}}</p>
 </ng-template>
 
 <ng-template #institutionNutsCell let-institutionAssignmentEntry>

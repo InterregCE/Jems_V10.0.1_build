@@ -104,11 +104,7 @@
             <span>&nbsp;{{'project.application.contract.monitoring.project.entry.into.force.add' | translate}}</span>
         </button>
 
-        <div jemsMultiColumnRow>
-
-        </div>
-
-        <div [jemsTableConfig]="[{},{maxInRem:10},{}]">
+        <div class="table-condensed mt-3 mb-3" [jemsTableConfig]="[{},{maxInRem:10},{}]">
             <div class="mat-body-strong">
                 <span>{{'project.application.contract.monitoring.project.topology' | translate }}</span>
                 <span>{{'project.partner.state.aid.answer' | translate }}</span>
@@ -195,6 +191,43 @@
                                               label='common.textarea.enter.text'>
                     </jems-expandable-textarea>
                 </div>
+            </div>
+        </div>
+
+        <h3>{{'project.application.contract.monitoring.project.fast.track.lump.sums.title' | translate}}</h3>
+        <div [jemsTableConfig]="[{maxInRem:7}, {maxInRem:6}, {maxInRem:8}, {maxInRem:6}, {}]">
+            <div class="mat-body-strong">
+                <span>{{'project.application.contract.monitoring.project.fast.track.lump.sum' | translate }}</span>
+                <span>{{'project.application.contract.monitoring.project.total.amount.approved' | translate }}</span>
+                <span>{{'project.application.contract.monitoring.project.period' | translate }}</span>
+                <span>{{'project.application.contract.monitoring.project.ready.for.payment' | translate }}</span>
+                <span>{{'project.application.contract.monitoring.project.topology.comment' | translate }}</span>
+            </div>
+
+            <div *ngFor="let lumpSum of lumpSumsForm.controls;let i=index">
+                <ng-container formArrayName="lumpSums">
+                    <ng-container [formGroupName]="i">
+                        <span>{{getLumpSum(lumpSum?.value?.programmeLumpSumId, data.projectCallLumpSums) | translateBySystemLanguage | async}}</span>
+                        <span>{{getAmount(lumpSum?.value?.lumpSumContributions) | asMoney}}</span>
+                        <span>{{getPeriodLabel(lumpSum?.value?.period, data.periods)}}</span>
+                        <div>
+                            <mat-button-toggle-group formControlName="readyForPayment">
+                                <mat-button-toggle [value]="true">{{'common.yes' | translate}}</mat-button-toggle>
+                                <mat-button-toggle [value]="false">{{'common.no' | translate}}</mat-button-toggle>
+                            </mat-button-toggle-group>
+                        </div>
+                        <div>
+                            <jems-expandable-textarea jemsMultiColumnRow class="mt-2"
+                                                      [control]="lumpSum?.get('comment')"
+                                                      [errors]="lumpSum?.get('comment')?.errors"
+                                                      [characterLimit]="200"
+                                                      [minRows]="1"
+                                                      [maxRows]="30"
+                                                      label='common.textarea.enter.text'>
+                            </jems-expandable-textarea>
+                        </div>
+                    </ng-container>
+                </ng-container>
             </div>
         </div>
     </jems-form>

@@ -13,9 +13,9 @@ import {
   PartnerReportDetailPageStore
 } from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
 import {RoutingService} from '@common/services/routing.service';
-import {MatTableDataSource} from "@angular/material/table";
-import {Forms} from "@common/utils/forms";
-import {MatDialog} from "@angular/material/dialog";
+import {MatTableDataSource} from '@angular/material/table';
+import {Forms} from '@common/utils/forms';
+import {MatDialog} from '@angular/material/dialog';
 import {Alert} from '@common/components/forms/alert';
 
 @UntilDestroy()

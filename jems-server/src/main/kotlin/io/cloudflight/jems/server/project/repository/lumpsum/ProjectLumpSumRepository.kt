@@ -35,12 +35,13 @@ interface ProjectLumpSumRepository : PagingAndSortingRepository<ProjectLumpSumEn
     @Query(
         """
             SELECT new io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumRowForProgrammeLocking(
-             entity.id.projectId,
-             entity.id.orderNr,
-             entity.endPeriod,
-             entity.programmeLumpSum.id,
-             entity.isReadyForPayment,
-             entity.comment)
+                entity.id.projectId,
+                entity.id.orderNr,
+                entity.endPeriod,
+                entity.programmeLumpSum.id,
+                entity.isReadyForPayment,
+                entity.comment
+            )
              FROM #{#entityName} AS entity
              WHERE entity.programmeLumpSum.id = :programmeLumpSumId
              """

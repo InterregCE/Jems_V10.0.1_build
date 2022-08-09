@@ -2,12 +2,21 @@ import {ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/co
 import { FormService } from '@common/components/section/form/form.service';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {combineLatest, Observable} from 'rxjs';
-import {catchError, map, startWith, take, tap} from 'rxjs/operators';
+import {catchError, map, startWith, tap} from 'rxjs/operators';
 import {
   ContractMonitoringExtensionStore
 } from '@project/project-application/contract-monitoring/contract-monitoring-extension/contract-monitoring-extension.store';
-import {ProjectContractingMonitoringAddDateDTO, ProjectContractingMonitoringDTO} from '@cat/api';
+import {
+  InputTranslation,
+  ProjectContractingMonitoringAddDateDTO,
+  ProjectContractingMonitoringDTO,
+  ProjectPartnerLumpSumDTO
+} from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
+import {ProgrammeLumpSum} from '@project/model/lump-sums/programmeLumpSum';
+import {ProjectLumpSumsStore} from '@project/lump-sums/project-lump-sums-page/project-lump-sums-store.service';
+import {ProjectPeriod} from '@project/model/ProjectPeriod';
+import {TranslateService} from '@ngx-translate/core';
 
 @Component({
   selector: 'jems-contract-monitoring-extension',
@@ -33,6 +42,8 @@ export class ContractMonitoringExtensionComponent {
     projectContractingMonitoring: ProjectContractingMonitoringDTO;
     contractMonitoringViewable: boolean;
     contractMonitoringEditable: boolean;
+    projectCallLumpSums: ProgrammeLumpSum[];
+    periods: ProjectPeriod[];
   }>;
   isAdditionalDataActivated = false;
 
@@ -40,17 +51,23 @@ export class ContractMonitoringExtensionComponent {
               private formService: FormService,
               protected changeDetectorRef: ChangeDetectorRef,
               private activatedRoute: ActivatedRoute,
-              private contractMonitoringExtensionStore: ContractMonitoringExtensionStore) {
+              private contractMonitoringExtensionStore: ContractMonitoringExtensionStore,
+              private projectLumpSumsStore: ProjectLumpSumsStore,
+              private translateService: TranslateService,) {
     this.projectId = this.activatedRoute.snapshot.params.projectId;
     this.data$ = combineLatest([
       this.contractMonitoringExtensionStore.projectContractingMonitoring$,
       this.contractMonitoringExtensionStore.contractMonitoringViewable$,
-      this.contractMonitoringExtensionStore.contractMonitoringEditable$
+      this.contractMonitoringExtensionStore.contractMonitoringEditable$,
+      this.projectLumpSumsStore.projectCallLumpSums$,
+      this.projectLumpSumsStore.projectPeriods$,
     ]).pipe(
-      map(([projectContractingMonitoring, contractMonitoringViewable, contractMonitoringEditable]) => ({
+      map(([projectContractingMonitoring, contractMonitoringViewable, contractMonitoringEditable, projectCallLumpSums, periods]) => ({
         projectContractingMonitoring,
         contractMonitoringViewable,
-        contractMonitoringEditable
+        contractMonitoringEditable,
+        projectCallLumpSums,
+        periods
       })),
       tap(data => this.initForm(data.contractMonitoringEditable)),
       tap(data => this.resetForm(data.projectContractingMonitoring, data.contractMonitoringEditable))
@@ -72,6 +89,7 @@ export class ContractMonitoringExtensionComponent {
       typologyStrategicComment: [Validators.maxLength(1000)],
       typologyPartnership: [],
       typologyPartnershipComment: [Validators.maxLength(1000)],
+      lumpSums: this.formBuilder.array([]),
     });
     this.formService.init(this.decisionForm, new Observable<boolean>().pipe(startWith(isEditable)));
     this.decisionForm.controls.endDate.disable();
@@ -105,6 +123,18 @@ export class ContractMonitoringExtensionComponent {
     this.decisionForm.controls.typologyStrategicComment.setValue(projectContractingMonitoring.typologyStrategicComment);
     this.decisionForm.controls.typologyPartnership.setValue(projectContractingMonitoring.typologyPartnership);
     this.decisionForm.controls.typologyPartnershipComment.setValue(projectContractingMonitoring.typologyPartnershipComment);
+
+    this.lumpSumsForm.clear();
+    projectContractingMonitoring.fastTrackLumpSums.forEach(lumpSum => {
+      this.lumpSumsForm.push(this.formBuilder.group({
+        programmeLumpSumId: this.formBuilder.control(lumpSum?.programmeLumpSumId),
+        period: this.formBuilder.control(lumpSum?.period),
+        lumpSumContributions: this.formBuilder.control(lumpSum?.lumpSumContributions),
+        comment: this.formBuilder.control(lumpSum?.comment || [], Validators.maxLength(200)),
+        readyForPayment: this.formBuilder.control(lumpSum?.readyForPayment || false),
+      }));
+    });
+
     if (projectContractingMonitoring.addDates?.length) {
       this.decisionForm.controls.entryIntoForceComment.setValue(projectContractingMonitoring.addDates[0].comment);
       this.decisionForm.controls.entryIntoForceDate.setValue(projectContractingMonitoring.addDates[0].entryIntoForceDate);
@@ -145,6 +175,13 @@ export class ContractMonitoringExtensionComponent {
       typologyStrategicComment: this.decisionForm.controls.typologyStrategicComment.value,
       typologyPartnership: this.decisionForm.controls.typologyPartnership.value,
       typologyPartnershipComment: this.decisionForm.controls.typologyPartnershipComment.value,
+      fastTrackLumpSums: this.decisionForm.controls.lumpSums.value.map((lumpSum: any) => ({
+        programmeLumpSumId: lumpSum.programmeLumpSumId,
+        period: lumpSum.period,
+        lumpSumContributions: lumpSum.lumpSumContributions,
+        comment: lumpSum.comment,
+        readyForPayment: lumpSum.readyForPayment,
+      }))
     } as ProjectContractingMonitoringDTO;
   }
 
@@ -165,5 +202,35 @@ export class ContractMonitoringExtensionComponent {
       }
     }
     return addDatesDTOs;
+  }
+
+  get lumpSumsForm(): FormArray {
+    return this.decisionForm.get('lumpSums') as FormArray;
+  }
+
+  getLumpSum(id: number, lumpSums: ProgrammeLumpSum[]): InputTranslation[] | null {
+    const lumpSum = lumpSums.find(it => it.id === id);
+    return lumpSum ? lumpSum.name : null;
+  }
+
+  getPeriodLabel(periodId: number, periods: ProjectPeriod[]): string {
+    const period = periods.find(it => it.periodNumber === periodId);
+    if (!period && periodId !== 0 && periodId !== 255) {
+      return '';
+    }
+    if (periodId === 0) {
+      return this.translateService.instant('project.application.form.section.part.e.period.preparation');
+    }
+
+    if (periodId === 255) {
+      return this.translateService.instant('project.application.form.section.part.e.period.closure');
+    }
+    return this.translateService.instant('project.application.form.work.package.output.delivery.period.entry', period);
+  }
+
+  getAmount(contributions: ProjectPartnerLumpSumDTO[]): number {
+    return contributions.reduce((accumulator, lumpSumContribution) => {
+      return accumulator + lumpSumContribution.amount;
+    }, 0);
   }
 }

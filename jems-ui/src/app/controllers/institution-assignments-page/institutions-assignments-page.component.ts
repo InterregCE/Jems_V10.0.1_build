@@ -1,21 +1,21 @@
-import {ChangeDetectionStrategy, Component, TemplateRef, ViewChild} from "@angular/core";
-import {combineLatest, Observable} from "rxjs";
+import {ChangeDetectionStrategy, Component, TemplateRef, ViewChild} from '@angular/core';
+import {combineLatest, Observable} from 'rxjs';
 import {
   InstitutionPartnerAssignmentDTO,
   InstitutionPartnerDetailsDTO,
   PageControllerInstitutionListDTO,
   UserRoleCreateDTO
-} from "@cat/api";
-import {TableConfiguration} from "@common/components/table/model/table.configuration";
-import {ColumnWidth} from "@common/components/table/model/column-width";
-import {ColumnType} from "@common/components/table/model/column-type.enum";
-import {InstitutionsAssignmentsStoreService} from "./institutions-assignments-store.service";
-import {map, shareReplay, tap} from "rxjs/operators";
-import {PermissionService} from "../../security/permissions/permission.service";
-import {InstitutionsPageStore} from "../institutions-page/institutions-page-store.service";
-import {FormService} from "@common/components/section/form/form.service";
-import {FormArray, FormBuilder} from "@angular/forms";
-import {UntilDestroy, untilDestroyed} from "@ngneat/until-destroy";
+} from '@cat/api';
+import {TableConfiguration} from '@common/components/table/model/table.configuration';
+import {ColumnWidth} from '@common/components/table/model/column-width';
+import {ColumnType} from '@common/components/table/model/column-type.enum';
+import {InstitutionsAssignmentsStoreService} from './institutions-assignments-store.service';
+import {map, shareReplay, tap} from 'rxjs/operators';
+import {PermissionService} from '../../security/permissions/permission.service';
+import {InstitutionsPageStore} from '../institutions-page/institutions-page-store.service';
+import {FormService} from '@common/components/section/form/form.service';
+import {FormArray, FormBuilder} from '@angular/forms';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 
 @UntilDestroy()
@@ -47,10 +47,10 @@ export class InstitutionsAssignmentsPageComponent{
     tableConfiguration: TableConfiguration;
     institutions: PageControllerInstitutionListDTO;
     editAssignmentPermission: boolean;
-  }>
+  }>;
   institutionAssignmentsChanges: {
-    assignmentsToAdd: InstitutionPartnerAssignmentDTO[],
-    assignmentsToRemove: InstitutionPartnerAssignmentDTO[]
+    assignmentsToAdd: InstitutionPartnerAssignmentDTO[];
+    assignmentsToRemove: InstitutionPartnerAssignmentDTO[];
   } = {assignmentsToAdd: [], assignmentsToRemove: []}; //TODO update with new DTO
 
 
@@ -60,8 +60,8 @@ export class InstitutionsAssignmentsPageComponent{
     institutionsPartnersAssignments: this.formBuilder.array([]),
 });
 
-  institutionsTobeAdded: {partnerId: number, institutionId:number}[] = []
-  institutionsTobeDeleted: {partnerId: number, institutionId:number}[] = []
+  institutionsTobeAdded: {partnerId: number; institutionId: number}[] = [];
+  institutionsTobeDeleted: {partnerId: number; institutionId: number}[] = [];
 
   constructor(public institutionAssignmentStore: InstitutionsAssignmentsStoreService,
               private permissionService: PermissionService,
@@ -99,8 +99,8 @@ export class InstitutionsAssignmentsPageComponent{
         })
       ),
       tap((changes: {
-        assignmentsToAdd: InstitutionPartnerAssignmentDTO[],
-        assignmentsToRemove: InstitutionPartnerAssignmentDTO[]
+        assignmentsToAdd: InstitutionPartnerAssignmentDTO[];
+        assignmentsToRemove: InstitutionPartnerAssignmentDTO[];
       }) => this.institutionAssignmentsChanges = changes),
       tap(changes => this.formService.setDirty(!!(changes.assignmentsToAdd.length || changes.assignmentsToRemove.length))),
       untilDestroyed(this),
@@ -183,8 +183,8 @@ export class InstitutionsAssignmentsPageComponent{
   }
 
   onInstitutionChange(index: number, newInstitution: any) {
-    let initialValue = this.institutionsPartnersAssignmentsValue(index).institutionId;
-    let newInstitutionId = newInstitution.value;
+    const initialValue = this.institutionsPartnersAssignmentsValue(index).institutionId;
+    const newInstitutionId = newInstitution.value;
 
     if(initialValue !== newInstitutionId) {
       if(newInstitutionId !== null) {
@@ -192,14 +192,14 @@ export class InstitutionsAssignmentsPageComponent{
         this.institutionsPartnerAssignmentToAssign().push(this.formBuilder.control({
           partnerId: this.institutionsPartnersAssignmentsValue(index).partnerId,
           institutionId: newInstitution.value
-        }))
+        }));
       } else {
-        this.institutionsTobeDeleted.push({partnerId: this.institutionsPartnersAssignmentsValue(index).partnerId, institutionId: newInstitutionId})
+        this.institutionsTobeDeleted.push({partnerId: this.institutionsPartnersAssignmentsValue(index).partnerId, institutionId: newInstitutionId});
 
         this.institutionsPartnerAssignmentToRemove().push(this.formBuilder.control({
           partnerId: this.institutionsPartnersAssignmentsValue(index).partnerId,
           institutionId: initialValue
-        }))
+        }));
       }
     }
   }

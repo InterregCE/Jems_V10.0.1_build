@@ -1,17 +1,17 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {UntilDestroy} from '@ngneat/until-destroy';
 import {FormService} from '@common/components/section/form/form.service';
-import {ActivatedRoute, Router} from "@angular/router";
+import {ActivatedRoute, Router} from '@angular/router';
 import {
   PartnerReportProcurementStore
-} from "@project/project-application/report/partner-report-detail-page/partner-report-procurements-tab/partner-report-procurement-detail/partner-report-procurement-store.service";
-import {combineLatest, Observable} from "rxjs";
-import {CurrencyDTO, ProjectPartnerReportDTO, ProjectPartnerReportProcurementDTO} from "@cat/api";
-import {map, take, tap} from "rxjs/operators";
-import {FormBuilder, Validators} from "@angular/forms";
+} from '@project/project-application/report/partner-report-detail-page/partner-report-procurements-tab/partner-report-procurement-detail/partner-report-procurement-store.service';
+import {combineLatest, Observable} from 'rxjs';
+import {CurrencyDTO, ProjectPartnerReportDTO, ProjectPartnerReportProcurementDTO} from '@cat/api';
+import {map, take, tap} from 'rxjs/operators';
+import {FormBuilder, Validators} from '@angular/forms';
 import {
   PartnerReportDetailPageStore
-} from "@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service";
+} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
 
 @UntilDestroy()
 @Component({
@@ -84,7 +84,7 @@ export class PartnerReportProcurementDetailComponent {
 
     this.resetForm(procurement, report.reportNumber);
 
-    const procurementIsFromThisReport = report.id === procurement.reportId
+    const procurementIsFromThisReport = report.id === procurement.reportId;
     this.formService.setEditable(reportEditable && (isCreate || procurementIsFromThisReport));
     this.form.controls.reportNumber.disable();
     this.formService.setCreation(isCreate);
