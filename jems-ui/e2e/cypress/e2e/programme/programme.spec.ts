@@ -1,5 +1,4 @@
 import user from '../../fixtures/users.json';
-import {faker} from '@faker-js/faker';
 
 context('Programme management tests', () => {
 
@@ -376,95 +375,115 @@ context('Programme management tests', () => {
     });
   });
 
-  it('TB-579 User can create, edit, preview and delete checklists', () => {
-    cy.fixture('programme/TB-579.json').then((checklists) => {
-      cy.visit('/app/programme/checklists', {failOnStatusCode: false});
-      checklists.checklistName = faker.word.noun();
+  it.only('TB-579 User can create, edit, preview and delete checklists', () => {
+    cy.fixture('programme/TB-579.json').then((testData) => {
+      testData.checklists.forEach(checklist => {
+        createChecklist(checklist);
 
-      cy.contains('button', 'Create new checklist').click();
+        cy.wait(1000);
+        cy.contains('div', 'Preview checklist').click();
+        cy.contains('div', 'Score table').should('be.visible');
+        checklist.Score.forEach(component => cy.contains('div', component.question).scrollIntoView().should('be.visible'))
+        checklist.Headline.forEach(component => cy.contains('div', component.headlineText).should('be.visible'))
+        checklist.OptionsToggle.forEach(component => {
+          cy.contains('p', component.question).should('be.visible');
+          cy.get('mat-button-toggle-group').should('be.visible');
+          cy.get('mat-button-toggle-group').find('button').find('span').contains(component.option1).should('be.visible');
+          cy.get('mat-button-toggle-group').find('button').find('span').contains(component.option2).should('be.visible');
+          cy.get('mat-button-toggle-group').find('button').find('span').contains(component.option3).should('be.visible');
+        })
+        cy.contains('div', 'Justification').should('be.visible');
+        checklist.TextInput.forEach(component => {
+          cy.contains('p', component.question).scrollIntoView().should('be.visible');
+          cy.contains('div', component.inputLabel).scrollIntoView().should('be.visible');
+        })
 
-      cy.contains('div', 'Checklist type').find('mat-select').click();
-      cy.contains('mat-option', 'Application form assessment').click();
-      cy.contains('div', 'Checklist name (on the system)').find('input').type(checklists.checklistName);
-      cy.contains('button', 'Add component').click();
-      cy.contains('mat-form-field', 'Component type').click();
-      cy.contains('mat-option', 'Headline').click();
-      cy.contains('mat-form-field', 'Headline name').find('input').type(checklists.headlineName);
-      cy.contains('button', 'Add component').click();
+        cy.contains('div', 'Justification').scrollIntoView().should('be.visible');
+        cy.get('.score-calculation').scrollIntoView().should('be.visible');
 
-      cy.get('.jems-table-config').children().last().within(()=>{
-        cy.contains('mat-form-field', 'Component type').click();
-        cy.root().closest('body').find('mat-option').contains('Options toggle').click();
-        cy.contains('mat-form-field', 'Question text').find('textarea').type(checklists.optionsQuestionText);
-        cy.contains('mat-form-field', 'Option 1').find('input').type(checklists.option1);
-        cy.contains('mat-form-field', 'Option2').find('input').type(checklists.option2);
-        cy.contains('mat-form-field', 'Option3 (optional)').find('input').type(checklists.option3);
-      })
+        cy.visit('/app/programme/checklists', {failOnStatusCode: false});
+        cy.get('.mat-row').first().click();
 
-      cy.contains('button', 'Add component').click();
-      cy.get('.jems-table-config').children().last().within(()=>{
-        cy.contains('mat-form-field', 'Component type').click();
-        cy.root().closest('body').find('mat-option').contains('Text input').click();
-        cy.contains('mat-form-field', 'Question text').find('textarea').type(checklists.textInputQuestionText);
-        cy.contains('mat-form-field', 'Input label').find('input').type(checklists.textInputLabel);
-      })
+        cy.contains('mat-form-field', 'Headline name').find('input').clear().type(testData.newHeadlineName);
+        cy.contains('mat-form-field', 'Question text').find('textarea').clear().type(testData.newOptionsQuestionText);
+        cy.contains('mat-form-field', 'Option 1').find('input').clear().type(testData.newOption1);
+        cy.contains('mat-form-field', 'Option2').find('input').clear().type(testData.newOption2);
+        cy.contains('mat-form-field', 'Option3 (optional)').find('input').clear().type(testData.newOption3);
+        cy.contains('mat-form-field', 'Input label').find('input').clear().type(testData.newTextInputLabel);
+        cy.contains('mat-form-field', 'Characters').find('input').clear().type(testData.newCharacters);
+        cy.contains('mat-form-field', 'Weight (multiplier)').find('input').type(testData.newWeight);
+        cy.contains('button', 'Save changes').click();
 
-      cy.contains('button', 'Add component').click();
-      cy.get('.jems-table-config').children().last().within(()=>{
-        cy.contains('mat-form-field', 'Component type').click();
-        cy.root().closest('body').find('mat-option').contains('Score').click();
-        cy.contains('mat-form-field', 'Question text').find('textarea').type(checklists.scoreQuestionText);
-      })
+        cy.contains('div', 'Preview checklist').click();
+        cy.contains('div', testData.newHeadlineName).should('be.visible');
+        cy.contains('p', testData.newOptionsQuestionText).should('be.visible');
+        cy.get('mat-button-toggle-group').scrollIntoView().should('be.visible');
+        cy.get('mat-button-toggle-group').find('button').find('span').contains(testData.newOption1).should('be.visible');
+        cy.get('mat-button-toggle-group').find('button').find('span').contains(testData.newOption2).should('be.visible');
+        cy.get('mat-button-toggle-group').find('button').find('span').contains(testData.newOption3).should('be.visible');
+        cy.contains('div', 'Justification').should('be.visible');
+        cy.contains('p', testData.textInputQuestionText).should('be.visible');
+        cy.contains('div', testData.newTextInputLabel).scrollIntoView().should('be.visible');
+        cy.contains('div', 'Justification').should('be.visible');
+        cy.get('.score-calculation').scrollIntoView().should('be.visible');
 
-      cy.contains('button', 'Create').click();
-      cy.wait(1000);
-      cy.contains('div', 'Preview checklist').click();
-
-      cy.contains('div', 'Score table').should('be.visible');
-      cy.contains('span', checklists.scoreQuestionText).should('be.visible');
-      cy.contains('div', checklists.headlineName).should('be.visible');
-      cy.contains('p', checklists.optionsQuestionText).should('be.visible');
-      cy.get('mat-button-toggle-group').should('be.visible');
-      cy.get('mat-button-toggle-group').find('button').find('span').contains(checklists.option1).should('be.visible');
-      cy.get('mat-button-toggle-group').find('button').find('span').contains(checklists.option2).should('be.visible');
-      cy.get('mat-button-toggle-group').find('button').find('span').contains(checklists.option3).should('be.visible');
-      cy.contains('div', 'Justification').should('be.visible');
-      cy.contains('p', checklists.textInputQuestionText).should('be.visible');
-      cy.contains('div', checklists.textInputLabel).should('be.visible');
-      cy.contains('div', checklists.scoreQuestionText).scrollIntoView().should('be.visible');
-      cy.contains('div', 'Justification').should('be.visible');
-      cy.get('.score-calculation').scrollIntoView().should('be.visible');
-
-      cy.visit('/app/programme/checklists', {failOnStatusCode: false});
-      cy.get('.mat-row').first().click();
-
-      cy.contains('mat-form-field', 'Headline name').find('input').clear().type(checklists.newHeadlineName);
-      cy.contains('mat-form-field', 'Question text').find('textarea').clear().type(checklists.newOptionsQuestionText);
-      cy.contains('mat-form-field', 'Option 1').find('input').clear().type(checklists.newOption1);
-      cy.contains('mat-form-field', 'Option2').find('input').clear().type(checklists.newOption2);
-      cy.contains('mat-form-field', 'Option3 (optional)').find('input').clear().type(checklists.newOption3);
-      cy.contains('mat-form-field', 'Input label').find('input').clear().type(checklists.newTextInputLabel);
-      cy.contains('mat-form-field', 'Characters').find('input').clear().type(checklists.newCharacters);
-      cy.contains('mat-form-field', 'Weight (multiplier)').find('input').type(checklists.newWeight);
-      cy.contains('button', 'Save changes').click();
-
-      cy.contains('div', 'Preview checklist').click();
-      cy.contains('div', checklists.newHeadlineName).should('be.visible');
-      cy.contains('p', checklists.newOptionsQuestionText).should('be.visible');
-      cy.get('mat-button-toggle-group').should('be.visible');
-      cy.get('mat-button-toggle-group').find('button').find('span').contains(checklists.newOption1).should('be.visible');
-      cy.get('mat-button-toggle-group').find('button').find('span').contains(checklists.newOption2).should('be.visible');
-      cy.get('mat-button-toggle-group').find('button').find('span').contains(checklists.newOption3).should('be.visible');
-      cy.contains('div', 'Justification').should('be.visible');
-      cy.contains('p', checklists.textInputQuestionText).should('be.visible');
-      cy.contains('div', checklists.newTextInputLabel).scrollIntoView().should('be.visible');
-      cy.contains('div', 'Justification').should('be.visible');
-      cy.get('.score-calculation').scrollIntoView().should('be.visible');
-
-      cy.visit('/app/programme/checklists', {failOnStatusCode: false});
-      cy.get('.mat-row').first().find('button').click();
-      cy.contains('button', 'Confirm').click();
-      cy.contains('div', checklists.checklistName).should('not.exist');
-    })
+        cy.visit('/app/programme/checklists', {failOnStatusCode: false});
+        cy.get('.mat-row').first().find('button').click();
+        cy.contains('button', 'Confirm').click();
+        cy.contains('div', checklist.checklistName).should('not.exist');
+      });
+    });
   });
 });
+
+function createChecklist(checklist) {
+  cy.visit('app/programme/checklists', {failOnStatusCode: false});
+
+  cy.contains('button', 'Create new checklist').click();
+  cy.contains('div', 'Checklist type').find('mat-select').click();
+  cy.contains('mat-option', checklist.type).click();
+  cy.contains('div', 'Checklist name (on the system)').find('input').type(checklist.name);
+
+  checklist.Score.forEach(scoreComponent => {
+    cy.contains('button', 'Add component').click();
+    cy.get('.jems-table-config').children().last().within(()=>{
+      cy.contains('mat-form-field', 'Component type').click();
+      cy.root().closest('body').find('mat-option').contains('Score').click();
+      cy.contains('mat-form-field', 'Weight').find('input').type(scoreComponent.weight);
+      cy.contains('mat-form-field', 'Question text').find('textarea').type(scoreComponent.question);
+    });
+  });
+
+  checklist.Headline.forEach(headlineComponent => {
+    cy.contains('button', 'Add component').click();
+    cy.get('.jems-table-config').children().last().within(()=>{
+      cy.contains('mat-form-field', 'Component type').click();
+      cy.root().closest('body').find('mat-option').contains('Headline').click();
+      cy.contains('mat-form-field', 'Headline name').find('input').type(headlineComponent.headlineText);
+    });
+  });
+
+  checklist.OptionsToggle.forEach(optionsToggleComponent => {
+    cy.contains('button', 'Add component').click();
+    cy.get('.jems-table-config').children().last().within(()=>{
+      cy.contains('mat-form-field', 'Component type').click();
+      cy.root().closest('body').find('mat-option').contains('Options toggle').click();
+      cy.contains('mat-form-field', 'Question text').find('textarea').type(optionsToggleComponent.question);
+      cy.contains('mat-form-field', 'Option 1').find('input').type(optionsToggleComponent.option1);
+      cy.contains('mat-form-field', 'Option2').find('input').type(optionsToggleComponent.option2);
+      if (optionsToggleComponent.hasOwnProperty('option3')) cy.contains('mat-form-field', 'Option3 (optional)').find('input').type(optionsToggleComponent.option3);
+    });
+  });
+
+  checklist.TextInput.forEach(textInputComponent => {
+    cy.contains('button', 'Add component').click();
+    cy.get('.jems-table-config').children().last().within(()=>{
+      cy.contains('mat-form-field', 'Component type').click();
+      cy.root().closest('body').find('mat-option').contains('Text input').click();
+      cy.contains('mat-form-field', 'Question text').find('textarea').type(textInputComponent.question);
+      cy.contains('mat-form-field', 'Input label').find('input').type(textInputComponent.inputLabel);
+      if (textInputComponent.hasOwnProperty('characters')) cy.contains('mat-form-field', 'Characters').find('input').clear().type(textInputComponent.characters);
+    })
+  });
+  cy.contains('button', 'Create').click();
+}
