@@ -375,7 +375,7 @@ context('Programme management tests', () => {
     });
   });
 
-  it.only('TB-579 User can create, edit, preview and delete checklists', () => {
+  it('TB-579 User can create, edit, preview and delete checklists', () => {
     cy.fixture('programme/TB-579.json').then((testData) => {
       testData.checklists.forEach(checklist => {
         createChecklist(checklist);
