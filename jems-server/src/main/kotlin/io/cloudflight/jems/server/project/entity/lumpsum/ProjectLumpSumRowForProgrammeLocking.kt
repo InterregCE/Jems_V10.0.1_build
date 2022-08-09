@@ -1,13 +1,10 @@
 package io.cloudflight.jems.server.project.entity.lumpsum
 
-import java.math.BigDecimal
-
-interface ProjectLumpSumRowForProgrammeLocking {
-    val projectId: Long
-    val endPeriod: Int?
-    val orderNr: Int
-    val programmeLumpSumId: Long
-    val readyForPayment: Int?
+data class ProjectLumpSumRowForProgrammeLocking(
+    val projectId: Long,
+    val orderNr: Int,
+    val endPeriod: Int?,
+    val programmeLumpSumId: Long,
+    val readyForPayment: Boolean,
     val comment: String?
-
-}
+)

@@ -34,17 +34,16 @@ interface ProjectLumpSumRepository : PagingAndSortingRepository<ProjectLumpSumEn
 
     @Query(
         """
-            SELECT
-             entity.project_id as projectId,
-             entity.order_nr as orderNr,
-             CONVERT(entity.end_period, INT) as endPeriod,
-             entity.programme_lump_sum_id as programmeLumpSumId,
-             CONVERT(entity.is_ready_for_payment, INT) as readyForPayment,
-             entity.comment as comment
+            SELECT new io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumRowForProgrammeLocking(
+             entity.id.projectId,
+             entity.id.orderNr,
+             entity.endPeriod,
+             entity.programmeLumpSum.id,
+             entity.isReadyForPayment,
+             entity.comment)
              FROM #{#entityName} AS entity
-             WHERE entity.programme_lump_sum_id = :programmeLumpSumId
-             """,
-        nativeQuery = true
+             WHERE entity.programmeLumpSum.id = :programmeLumpSumId
+             """
     )
     fun findAllByProgrammeLumpSumId(programmeLumpSumId: Long): List<ProjectLumpSumRowForProgrammeLocking>
 }

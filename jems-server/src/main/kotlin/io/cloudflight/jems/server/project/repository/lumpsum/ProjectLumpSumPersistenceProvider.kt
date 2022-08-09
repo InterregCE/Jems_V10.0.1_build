@@ -43,8 +43,7 @@ class ProjectLumpSumPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun isFastTrackLumpSumReadyForPayment(programmeLumpSumId: Long) =
-        projectLumpSumRepository.findAllByProgrammeLumpSumId(programmeLumpSumId)
-            .filter { it.readyForPayment == 1 }.isNotEmpty()
+        projectLumpSumRepository.findAllByProgrammeLumpSumId(programmeLumpSumId).any { it.readyForPayment }
 
     private fun getProjectOrThrow(projectId: Long) =
         projectRepository.findById(projectId).orElseThrow { ResourceNotFoundException("project") }
