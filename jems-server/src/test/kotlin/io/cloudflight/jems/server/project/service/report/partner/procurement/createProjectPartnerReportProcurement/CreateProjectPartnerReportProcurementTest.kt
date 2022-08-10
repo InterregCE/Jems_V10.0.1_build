@@ -48,6 +48,7 @@ internal class CreateProjectPartnerReportProcurementTest : UnitTest() {
         clearMocks(generalValidator)
         every { generalValidator.throwIfAnyIsInvalid(*varargAny { true }) } returns Unit
         every { generalValidator.maxLength(any<String>(), any(), any()) } returns emptyMap()
+        every { generalValidator.notBlank(any<String>(), any()) } returns emptyMap()
         every { generalValidator.numberBetween(any<BigDecimal>(), any(), any(), any()) } returns emptyMap()
         every { generalValidator.onlyValidCurrencies(any(), any()) } returns emptyMap()
     }
@@ -97,6 +98,9 @@ internal class CreateProjectPartnerReportProcurementTest : UnitTest() {
                 to I18nMessage(i18nKey = "${firstArg<String>()}---${secondArg<Int>()}")
             )
         }
+        every { generalValidator.notBlank(any<String>(), any()) } answers {
+            mapOf(secondArg<String>() to I18nMessage(i18nKey = "${firstArg<String>()}---not blank"))
+        }
         every { generalValidator.numberBetween(any<BigDecimal>(), any(), any(), any()) } answers {
             mapOf(lastArg<String>()
                 to I18nMessage(i18nKey = "${firstArg<BigDecimal>()}---${secondArg<BigDecimal>()}-${thirdArg<BigDecimal>()}")
@@ -123,13 +127,16 @@ internal class CreateProjectPartnerReportProcurementTest : UnitTest() {
 
         assertThrows<AppInputValidationException> { interactor.create(PARTNER_ID, reportId = 0L, change) }
         assertThat(validationSlot).containsExactly(
+            mapOf("contractName" to I18nMessage("contractName NEW---not blank")),
             mapOf("contractName" to I18nMessage("contractName NEW---50")),
             mapOf("referenceNumber" to I18nMessage("referenceNumber NEW---30")),
             mapOf("contractType" to I18nMessage("contractType NEW---30")),
             mapOf("supplierName" to I18nMessage("supplierName NEW---30")),
+            mapOf("vatNumber" to I18nMessage("vatNumber NEW---not blank")),
             mapOf("vatNumber" to I18nMessage("vatNumber NEW---30")),
             mapOf("comment" to I18nMessage("comment NEW---2000")),
             mapOf("contractAmount" to I18nMessage("0---0-999999999.99")),
+            mapOf("currencyCode" to I18nMessage("HUF---not blank")),
             mapOf("currencyCode" to I18nMessage("HUF")),
         )
     }
