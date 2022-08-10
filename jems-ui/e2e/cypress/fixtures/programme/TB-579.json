@@ -1,12 +1,4 @@
 {
-  "checklistName": "Auto-Checklist",
-  "headlineName": "Auto-Headline",
-  "optionsQuestionText": "Is this a real question?",
-  "option1": "Yes",
-  "option2": "No",
-  "option3": "Maybe",
-  "textInputQuestionText": "Are you kidding me?",
-  "textInputLabel": "Enter your input",
   "scoreQuestionText": "Again another question?",
   "newHeadlineName": "New-Auto-Headline",
   "newOptionsQuestionText": "Did I change this question?",
@@ -15,5 +7,42 @@
   "newOption3": "I don't care",
   "newTextInputLabel": "Pls just enter something",
   "newCharacters": "2500",
-  "newWeight": "2"
+  "newWeight": "2",
+  "checklists": [
+    {
+      "type": "Application form assessment",
+      "name": "Auto-checklist",
+      "allowDecimalRange": false,
+      "scoreRange": {
+        "min": 0,
+        "max": 10
+      },
+      "Score": [
+        {
+          "question": "This is a question text",
+          "weight": 1
+        }
+      ],
+      "Headline": [
+        {
+          "headlineText": "This is a head line text"
+        }
+      ],
+      "TextInput": [
+        {
+          "question": "This is a question text",
+          "inputLabel": "This is an input label",
+          "characters": 5000
+        }
+      ],
+      "OptionsToggle": [
+        {
+          "question": "This is a question text",
+          "option1": "Yes",
+          "option2": "No",
+          "option3": "Maybe"
+        }
+      ]
+    }
+  ]
 }
