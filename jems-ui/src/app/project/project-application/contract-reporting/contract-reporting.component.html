@@ -11,8 +11,8 @@
             <h4>{{'project.application.contract.reporting.subheader' | translate}}</h4>
             <mat-table *ngIf="tableData.length > 0" jemsNoWidthLimit
                        id="deadline-dates-table"
-                       class="table-condensed mt-3 mb-3"
-                       [jemsTableConfig]="[{maxInRem:20}, {maxInRem:15}, {maxInRem:15}, {maxInRem:20}]"
+                       class="mt-3 mb-3"
+                       [jemsTableConfig]="[{maxInRem:20, minInRem:20}, {maxInRem:15, minInRem:15}, {maxInRem:15,minInRem:15}, {minInRem:15}]"
                        [dataSource]="tableData"
                        formArrayName="deadlines">
 
@@ -25,17 +25,20 @@
                                 (change)="formService.setDirty(true)"
                                 formControlName="deadlineReportType">
                             <mat-button-toggle
-                                    value="PositiveEffects"
+                                    id="content-toggle"
+                                    value="Content"
                                     (change)="formService.setDirty(true)">
                                 <span jemsText minWidth="180">{{'project.application.contract.reporting.toggle.onlyContent' | translate}}</span>
                             </mat-button-toggle>
                             <mat-button-toggle
-                                    value="Neutral"
+                                    id="finance-toggle"
+                                    value="Finance"
                                     (change)="formService.setDirty(true)">
                                 <span jemsText minWidth="180">{{'project.application.contract.reporting.toggle.onlyFinance' | translate}}</span>
                             </mat-button-toggle>
                             <mat-button-toggle
-                                    value="NegativeEffects"
+                                    id="both-toggle"
+                                    value="Both"
                                     (change)="formService.setDirty(true)">
                                 <span jemsText minWidth="180">{{'project.application.contract.reporting.toggle.both' | translate}}</span>
                             </mat-button-toggle>
