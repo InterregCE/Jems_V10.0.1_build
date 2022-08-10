@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.controller.report.procurement
 
 import io.cloudflight.jems.api.project.dto.report.partner.procurement.ProjectPartnerReportProcurementChangeDTO
-import io.cloudflight.jems.api.project.report.ProjectPartnerReportProcurementApi
+import io.cloudflight.jems.api.project.report.procurement.ProjectPartnerReportProcurementApi
 import io.cloudflight.jems.server.common.toIdNamePairDTO
 import io.cloudflight.jems.server.project.service.report.partner.procurement.createProjectPartnerReportProcurement.CreateProjectPartnerReportProcurementInteractor
 import io.cloudflight.jems.server.project.service.report.partner.procurement.deleteProjectPartnerReportProcurement.DeleteProjectPartnerReportProcurementInteractor
