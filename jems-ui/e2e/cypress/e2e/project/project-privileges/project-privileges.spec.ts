@@ -228,10 +228,8 @@ context('Project privileges tests', () => {
 
       cy.visit('/app/system/role', {failOnStatusCode: false});
       cy.contains('div', testData.monitorRole.name).click();
-      ['Applications', 'Programme setup', 'Data export', 'Audit log'].forEach(item => {
-        cy.contains('div.permission-row-wrapper', item).within(() => {
+      cy.contains('div.permission-row-wrapper', 'Applications').within(() => {
           cy.contains('span.mat-button-toggle-label-content', 'hide').click();
-        });
       });
       cy.contains('button', 'Save changes').click();
 
