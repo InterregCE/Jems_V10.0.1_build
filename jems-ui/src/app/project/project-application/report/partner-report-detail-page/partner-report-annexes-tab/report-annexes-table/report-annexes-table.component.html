@@ -79,7 +79,7 @@
     <div *ngIf="fileManagementStore.canUpload$ | async">
         <input #selectFile (change)="uploadFile($event?.target)" onclick="this.value=null;"
                type="file" [accept]="acceptedFilesTypes" [hidden]="true">
-        <button (click)="selectFile.click()"
+        <button *jemsHasPermission="PermissionsEnum.ProjectReportingEdit" (click)="selectFile.click()"
                 mat-stroked-button>+ {{'file.upload.add.new' | translate}}
         </button>
     </div>
