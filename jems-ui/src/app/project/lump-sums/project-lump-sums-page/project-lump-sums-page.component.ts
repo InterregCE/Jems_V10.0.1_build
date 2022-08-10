@@ -199,7 +199,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
       rowSum: [0],
       gap: [0],
       readyForPayment: [false],
-      comment: [[]]
+      comment: ['']
     });
     this.addItemToItems(item);
     this.tableData = [...this.items.controls];
