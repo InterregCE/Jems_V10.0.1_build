@@ -6,6 +6,7 @@ import io.cloudflight.jems.api.controllerInstitutions.dto.InstitutionPartnerDeta
 import io.cloudflight.jems.api.controllerInstitutions.dto.UpdateControllerInstitutionDTO
 import io.cloudflight.jems.api.controllerInstitutions.dto.ControllerInstitutionAssignmentDTO
 import io.cloudflight.jems.api.controllerInstitutions.dto.InstitutionPartnerAssignmentDTO
+import io.cloudflight.jems.api.controllerInstitutions.dto.UserInstitutionAccessLevelDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
 import io.swagger.annotations.ApiImplicitParams
@@ -66,4 +67,11 @@ interface ControllerInstitutionApi {
     fun assignInstitutionToPartner(
         @RequestBody institutionPartnerAssignments: ControllerInstitutionAssignmentDTO
     ): List<InstitutionPartnerAssignmentDTO>
+
+    @ApiOperation("Get access level of the controller institution user over the partner")
+    @GetMapping("$ENDPOINT_API_CONTROLLERS/assignments/{userId}/{partnerId}")
+    fun getControllerUserAccessLevelForPartner(
+        @PathVariable userId: Long,
+        @PathVariable partnerId: Long,
+    ): UserInstitutionAccessLevelDTO?
 }

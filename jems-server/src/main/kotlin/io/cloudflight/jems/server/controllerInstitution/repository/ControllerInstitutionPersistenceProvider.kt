@@ -138,6 +138,9 @@ class ControllerInstitutionPersistenceProvider(
     override fun getInstitutionPartnerAssignmentsWithUsersByPartnerProjectIdsIn(partnerProjectIds: Set<Long>): List<InstitutionPartnerAssignmentWithUsers> =
         institutionPartnerRepository.getInstitutionPartnerAssignmentsWithUsersByPartnerProjectIdsIn(partnerProjectIds)
 
+    @Transactional(readOnly = true)
+    override fun getControllerUserAccessLevelForPartner(userId: Long, partnerId: Long): UserInstitutionAccessLevel? =
+         institutionPartnerRepository.getControllerUserAccessLevelForPartner(userId, partnerId)
 
     private fun getControllerInstitutionOrThrow(id: Long): ControllerInstitutionEntity =
         controllerRepo.findById(id).orElseThrow { GetControllerInstitutionException() }

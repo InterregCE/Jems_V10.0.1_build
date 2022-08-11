@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.controllerInstitution.repository
 import io.cloudflight.jems.server.controllerInstitution.entity.ControllerInstitutionPartnerEntity
 import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerAssignmentWithUsers
 import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerDetails
+import io.cloudflight.jems.server.controllerInstitution.service.model.UserInstitutionAccessLevel
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -59,4 +60,15 @@ interface ControllerInstitutionPartnerRepository: JpaRepository<ControllerInstit
         """
     )
     fun getInstitutionPartnerAssignmentsWithUsersByPartnerProjectIdsIn(partnerProjectIds: Set<Long>): List<InstitutionPartnerAssignmentWithUsers>
+
+    @Query(
+        """
+        SELECT ciu.accessLevel
+        FROM #{#entityName} AS cip
+        INNER JOIN controller_institution_user AS ciu
+            ON cip.institutionId = ciu.id.controllerInstitutionId
+        WHERE cip.partnerId = :partnerId AND ciu.id.user.id = :userId
+        """
+    )
+    fun getControllerUserAccessLevelForPartner(userId: Long, partnerId: Long): UserInstitutionAccessLevel?
 }
