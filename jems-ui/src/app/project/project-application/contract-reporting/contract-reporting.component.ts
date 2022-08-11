@@ -1,11 +1,10 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {FormService} from '@common/components/section/form/form.service';
 import {UntilDestroy} from '@ngneat/until-destroy';
-import {Log} from '@common/utils/log';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {combineLatest, Observable} from 'rxjs';
-import {map, startWith} from 'rxjs/operators';
-import {ProjectPeriodDTO} from '@cat/api';
+import {catchError, map, startWith, tap} from 'rxjs/operators';
+import {ProjectContractingReportingScheduleDTO, ProjectPeriodDTO} from '@cat/api';
 import {ContractReportingStore} from '@project/project-application/contract-reporting/contract-reporting.store';
 
 @UntilDestroy()
@@ -27,22 +26,35 @@ export class ContractReportingComponent implements OnInit {
   ];
   data$: Observable<{
     periods: ProjectPeriodDTO[];
+    reportingDeadlines: ProjectContractingReportingScheduleDTO[];
+    canView: boolean;
+    canEdit: boolean;
   }>;
 
   constructor(private formBuilder: FormBuilder,
               private contractReportingStore: ContractReportingStore,
               public formService: FormService) {
-    this.initForm();
   }
 
   ngOnInit(): void {
     this.data$ = combineLatest([
       this.contractReportingStore.projectForm$,
-    ]).pipe(
-      map(([projectForm]) => ({
-          periods: projectForm.periods,
-        })
-      ));
+      this.contractReportingStore.contractReportingDeadlines$,
+      this.contractReportingStore.userCanViewDeadlines$,
+      this.contractReportingStore.userCanEditDeadlines$,
+    ])
+      .pipe(
+        map(([projectForm, contractReportingDeadlines, userCanViewDeadlines, userCanEditDeadlines]) => ({
+            periods: projectForm.periods,
+            reportingDeadlines: contractReportingDeadlines,
+            canView: userCanViewDeadlines,
+            canEdit: userCanEditDeadlines
+          })
+        ),
+        tap(data => this.initForm(data.canEdit)),
+        tap(data => this.resetForm(data.reportingDeadlines, data.canEdit))
+      );
+
   }
 
   addDeadlineData(): void {
@@ -61,18 +73,51 @@ export class ContractReportingComponent implements OnInit {
     return this.reportingDeadlinesForm.get('deadlines') as FormArray;
   }
 
-  resetForm() {
-    Log.info('Reset pressed');
+  resetForm(reportingDeadlines: ProjectContractingReportingScheduleDTO[], isEditable: boolean) {
+    this.deadlines.clear();
+    for (const reportingDeadline of reportingDeadlines) {
+      const item = this.formBuilder.group({
+        deadlineReportType: [reportingDeadline.type],
+        deadlinePeriod: [reportingDeadline.periodNumber],
+        deadlineDate: [reportingDeadline.date],
+        deadlineComment: [reportingDeadline.comment, Validators.maxLength(1000)],
+      });
+      this.deadlines.push(item);
+    }
+    if (!isEditable) {
+      this.deadlines.disable();
+    }
+    this.tableData = [...this.deadlines.controls];
   }
 
   onSubmit() {
-    Log.info('Onsubmit pressed', this.deadlines);
+    this.contractReportingStore.save(this.convertFormToContractingMonitoringDTOs())
+      .pipe(
+        tap(() => this.formService.setSuccess('project.application.contract.reporting.form.save.successful')),
+        catchError(err => this.formService.setError(err)),
+      ).subscribe();
   }
 
-  private initForm(): void {
+  private initForm(isEditable: boolean): void {
     this.reportingDeadlinesForm = this.formBuilder.group({
       deadlines: this.formBuilder.array([], Validators.maxLength(50)),
     });
-    this.formService.init(this.reportingDeadlinesForm, new Observable<boolean>().pipe(startWith(true)));
+    this.formService.init(this.reportingDeadlinesForm, new Observable<boolean>().pipe(startWith(isEditable)));
   }
+
+  private convertFormToContractingMonitoringDTOs(): ProjectContractingReportingScheduleDTO[] {
+    const contractingMonitoringDTOs = [];
+    for (const item of this.deadlines.controls) {
+      if(item.value.deadlineReportType || item.value.deadlinePeriod || item.value.deadlineDate || item.value.deadlineComment) {
+        contractingMonitoringDTOs.push({
+          date: item.value.deadlineDate,
+          type: item.value.deadlineReportType,
+          periodNumber: item.value.deadlinePeriod,
+          comment: item.value.deadlineComment,
+        } as ProjectContractingReportingScheduleDTO);
+      }
+    }
+    return contractingMonitoringDTOs;
+  }
+
 }
