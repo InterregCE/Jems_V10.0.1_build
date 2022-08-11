@@ -12,18 +12,8 @@ CREATE TABLE project_contracting_reporting
 );
 
 SELECT id INTO @id FROM account_role WHERE `name` = 'administrator' ORDER BY id DESC LIMIT 1;
-INSERT INTO account_role_permission(account_role_id, permission)
+INSERT IGNORE INTO account_role_permission(account_role_id, permission)
 VALUES  (@id, 'ProjectContractingReportingView'),
         (@id, 'ProjectContractingReportingEdit'),
         (@id, 'ProjectCreatorContractingReportingView'),
-        (@id, 'ProjectCreatorContractingReportingEdit');
-
-SELECT id INTO @id FROM account_role WHERE `name` = 'programme user' ORDER BY id DESC LIMIT 1;
-INSERT INTO account_role_permission(account_role_id, permission)
-VALUES  (@id, 'ProjectContractingReportingView'),
-        (@id, 'ProjectContractingReportingEdit');
-
-SELECT id INTO @id FROM account_role WHERE `name` = 'applicant user' ORDER BY id DESC LIMIT 1;
-INSERT INTO account_role_permission(account_role_id, permission)
-VALUES  (@id, 'ProjectCreatorContractingReportingView'),
         (@id, 'ProjectCreatorContractingReportingEdit');
