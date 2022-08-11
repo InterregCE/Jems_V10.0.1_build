@@ -63,12 +63,19 @@ export class ProjectApplicationFormSidenavService {
     )
   );
 
-  // TODO: Implement real behaviour here
   private readonly canSeeContractReporting$: Observable<boolean> = combineLatest([
+    this.permissionService.hasPermission(PermissionsEnum.ProjectContractingReportingView),
+    this.permissionService.hasPermission(PermissionsEnum.ProjectContractingReportingEdit),
+    this.permissionService.hasPermission(PermissionsEnum.ProjectCreatorContractingReportingView),
+    this.permissionService.hasPermission(PermissionsEnum.ProjectCreatorContractingReportingEdit),
+    this.projectStore.userIsProjectOwner$,
+    this.projectStore.userIsPartnerCollaborator$,
     this.projectStore.currentVersionOfProjectStatus$,
   ]).pipe(
-    map(([projectStatus]) =>
-      ProjectUtil.isInApprovedOrAnyStatusAfterApproved(projectStatus)
+    map(([hasViewPermission, hasEditPermission, hasCreatorViewPermission, hasCreatorEditPermission, isOwner, isPartnerCollaborator, projectStatus]:
+           [boolean, boolean, boolean, boolean, boolean, boolean, ProjectStatusDTO]) =>
+      (hasViewPermission || hasEditPermission || isOwner || isPartnerCollaborator || hasCreatorViewPermission || hasCreatorEditPermission) &&
+        ProjectUtil.isInApprovedOrAnyStatusAfterApproved(projectStatus)
     ),
   );
 
