@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.user.service.user.get_user
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.controllerInstitution.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.user.service.UserPersistence
 import io.cloudflight.jems.server.user.service.UserRolePersistence
 import io.cloudflight.jems.server.user.service.model.User
@@ -84,6 +85,9 @@ internal class GetUserTest : UnitTest() {
     @MockK
     lateinit var userRolePersistence: UserRolePersistence
 
+    @MockK
+    lateinit var institutionPersistence: ControllerInstitutionPersistence
+
     @InjectMockKs
     lateinit var getUser: GetUser
 
@@ -134,8 +138,54 @@ internal class GetUserTest : UnitTest() {
         val roleIdsSlot = slot<Set<Long>>()
         every { persistence.findAllWithRoleIdIn(capture(roleIdsSlot)) } returns listOf(userSummary)
 
+        every { institutionPersistence.getAllControllerInstitutionUsersIds() } returns emptySet()
         // TEST
         assertThat(getUser.getMonitorUsers()).containsExactly(userSummary)
+
+        assertThat(toHaveSlot.captured).containsExactlyInAnyOrder(
+            ProjectFormRetrieve, ProjectFileApplicationRetrieve, ProjectCheckApplicationForm, ProjectAssessmentView,
+            ProjectStatusDecisionRevert, ProjectStatusReturnToApplicant, ProjectStartStepTwo, ProjectFileAssessmentRetrieve,
+            ProjectModificationView, ProjectOpenModification, ProjectModificationFileAssessmentRetrieve,
+            ProjectContractingView, ProjectSetToContracted, ProjectReportingView, ProjectReportingEdit
+        )
+        assertThat(toNotHaveSlot.captured).containsExactly(ProjectRetrieve, ProjectRetrieveEditUserAssignments)
+
+        assertThat(roleIdsSlot.captured).containsExactly(941L, 942L, 943L)
+    }
+
+    @Test
+    fun `get monitor users does not contain controller institution users`() {
+        val toHaveSlot = slot<Set<UserRolePermission>>()
+        val toNotHaveSlot = slot<Set<UserRolePermission>>()
+        val institutionUserId = 12L
+        val institutionUserIds = setOf(institutionUserId)
+        val controllerRole = UserRole(
+            id = 23L,
+            name = "controller",
+            permissions = setOf(UserRolePermission.InstitutionsUpdate)
+        )
+        val institutionUserSummary = UserSummary(
+            id = institutionUserId,
+            email = "user@institution.eu",
+            name = "user12",
+            surname = "test user",
+            userRole = UserRoleSummary(id = controllerRole.id, name = controllerRole.name),
+            userStatus = UserStatus.ACTIVE
+        )
+
+        every { userRolePersistence.findRoleIdsHavingAndNotHavingPermissions(
+            needsToHaveAtLeastOneFrom = capture(toHaveSlot),
+            needsNotToHaveAnyOf = capture(toNotHaveSlot),
+        ) } returns setOf(941L, 942L, 943L)
+
+        val roleIdsSlot = slot<Set<Long>>()
+        every { persistence.findAllWithRoleIdIn(capture(roleIdsSlot)) } returns listOf(userSummary, institutionUserSummary)
+
+        every { institutionPersistence.getAllControllerInstitutionUsersIds() } returns institutionUserIds
+
+        // TEST
+        assertThat(getUser.getMonitorUsers()).containsExactly(userSummary)
+        assertThat(getUser.getMonitorUsers()).doesNotContain(institutionUserSummary)
 
         assertThat(toHaveSlot.captured).containsExactlyInAnyOrder(
             ProjectFormRetrieve, ProjectFileApplicationRetrieve, ProjectCheckApplicationForm, ProjectAssessmentView,

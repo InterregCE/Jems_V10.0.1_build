@@ -11,7 +11,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
-import java.util.*
+import java.util.Optional
 
 @Repository
 class ControllerInstitutionPersistenceProvider(
@@ -58,6 +58,12 @@ class ControllerInstitutionPersistenceProvider(
             .toMutableSet()
         return controllerInstitutionInstance.toModel()
     }
+
+
+    @Transactional(readOnly = true)
+    override fun getAllControllerInstitutionUsersIds(): Set<Long>  =
+        institutionUserRepository.getAllInstitutionUsersIds()
+
 
     @Transactional
     override fun updateControllerInstitutionUsers(

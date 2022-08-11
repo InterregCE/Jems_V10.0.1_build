@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.user.service.user.get_user
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
+import io.cloudflight.jems.server.controllerInstitution.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.user.service.UserPersistence
 import io.cloudflight.jems.server.user.service.UserRolePersistence
 import io.cloudflight.jems.server.user.service.authorization.CanAssignUsersToProjects
@@ -19,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional
 class GetUser(
     private val persistence: UserPersistence,
     private val userRolePersistence: UserRolePersistence,
+    private val institutionPersistence: ControllerInstitutionPersistence
 ) : GetUserInteractor {
 
     @CanRetrieveUsers
@@ -41,13 +43,16 @@ class GetUser(
     @CanAssignUsersToProjects
     @Transactional(readOnly = true)
     @ExceptionWrapper(GetUsersFilteredByPermissionsException::class)
-    override fun getMonitorUsers(): List<UserSummary> =
-        persistence.findAllWithRoleIdIn(
+    override fun getMonitorUsers(): List<UserSummary>  {
+        val controllerInstitutionUsersIds = institutionPersistence.getAllControllerInstitutionUsersIds()
+        return persistence.findAllWithRoleIdIn(
             roleIds = userRolePersistence.findRoleIdsHavingAndNotHavingPermissions(
                 needsToHaveAtLeastOneFrom = UserRolePermission.getProjectMonitorPermissions(),
                 needsNotToHaveAnyOf = UserRolePermission.getGlobalProjectRetrievePermissions(),
             )
-        )
+        ).filter { it.id !in controllerInstitutionUsersIds }
+    }
+
 
     @CanRetrieveUser
     @Transactional(readOnly = true)
