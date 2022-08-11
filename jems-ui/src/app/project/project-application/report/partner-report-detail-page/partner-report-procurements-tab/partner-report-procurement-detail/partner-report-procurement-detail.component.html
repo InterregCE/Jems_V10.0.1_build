@@ -84,7 +84,7 @@
 
         <mat-form-field>
             <mat-label>{{ 'project.application.partner.report.procurements.table.vat' | translate }}</mat-label>
-            <input #vatNumberInput name="vatNumber" formControlName="vatNumber" matInput>
+            <input #vatNumberInput name="vatNumber" formControlName="vatNumber" matInput required>
             <mat-hint [jemsHintFor]="vatNumberInput" [hide]="form.controls?.vatNumber?.errors !== null">
                 <jems-text-hint [currentLength]="vatNumberInput?.value?.length" [maxLength]="30"></jems-text-hint>
             </mat-hint>

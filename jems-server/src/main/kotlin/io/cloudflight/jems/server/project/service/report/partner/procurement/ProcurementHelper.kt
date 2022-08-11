@@ -26,13 +26,16 @@ fun ProjectPartnerReportProcurement.fillThisReportFlag(currentReportId: Long) = 
 fun ProjectPartnerReportStatusAndVersion.isClosed() = status.isClosed()
 
 fun ProjectPartnerReportProcurementChange.getStaticValidationResults(validator: GeneralValidatorService) = listOf(
+    validator.notBlank(contractName, "contractName"),
     validator.maxLength(contractName, 50, "contractName"),
     validator.maxLength(referenceNumber, 30, "referenceNumber"),
     validator.maxLength(contractType, 30, "contractType"),
     validator.maxLength(supplierName, 30, "supplierName"),
+    validator.notBlank(vatNumber, "vatNumber"),
     validator.maxLength(vatNumber, 30, "vatNumber"),
     validator.maxLength(comment, 2000, "comment"),
     validator.numberBetween(contractAmount, MIN_NUMBER, MAX_NUMBER, "contractAmount"),
+    validator.notBlank(currencyCode, "currencyCode"),
     validator.onlyValidCurrencies(currencyCodes = setOf(currencyCode).filterNotNullTo(HashSet()), "currencyCode"),
 )
 

@@ -41,7 +41,10 @@ export class PartnerReportProcurementDetailComponent {
     contractAmount: 0,
     currencyCode: ['', Validators.required],
     supplierName: ['', Validators.maxLength(30)],
-    vatNumber: ['', Validators.maxLength(30)],
+    vatNumber: ['', Validators.compose([
+      Validators.required,
+      Validators.maxLength(30),
+    ])],
     comment: ['', Validators.maxLength(2000)],
   });
 
@@ -80,7 +83,10 @@ export class PartnerReportProcurementDetailComponent {
     reportEditable: boolean,
   ) {
     const isCreate = !procurementData.id;
-    const procurement = { ...procurementData, currencyCode: isCreate ? (report.identification.currency || 'EUR') : 'EUR' };
+    const procurement = {
+      ...procurementData,
+      currencyCode: isCreate ? (report.identification.currency || 'EUR') : procurementData.currencyCode,
+    };
 
     this.resetForm(procurement, report.reportNumber);
 
