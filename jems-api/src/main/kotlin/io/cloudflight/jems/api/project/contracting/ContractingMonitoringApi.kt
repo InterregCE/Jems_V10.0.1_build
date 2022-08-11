@@ -1,6 +1,7 @@
 package io.cloudflight.jems.api.project.contracting
 
 import io.cloudflight.jems.api.project.dto.contracting.ProjectContractingMonitoringDTO
+import io.cloudflight.jems.api.project.dto.contracting.ProjectPeriodForMonitoringDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import org.springframework.http.MediaType
@@ -26,5 +27,9 @@ interface ContractingMonitoringApi {
         @PathVariable projectId: Long,
         @RequestBody contractingMonitoring: ProjectContractingMonitoringDTO
     ): ProjectContractingMonitoringDTO
+
+    @ApiOperation("Get Available Periods for Contracting Monitoring (Last Approved)")
+    @GetMapping("$ENDPOINT_API_CONTRACTING_MONITORING/periods")
+    fun getContractingMonitoringPeriods(@PathVariable projectId: Long): List<ProjectPeriodForMonitoringDTO>
 
 }

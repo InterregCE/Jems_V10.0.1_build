@@ -4,12 +4,15 @@ import io.cloudflight.jems.api.project.dto.contracting.ContractingMonitoringExte
 import io.cloudflight.jems.api.project.dto.contracting.ContractingMonitoringOptionDTO
 import io.cloudflight.jems.api.project.dto.contracting.ProjectContractingMonitoringAddDateDTO
 import io.cloudflight.jems.api.project.dto.contracting.ProjectContractingMonitoringDTO
+import io.cloudflight.jems.api.project.dto.contracting.ProjectPeriodForMonitoringDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.contracting.ContractingModificationDeniedException
 import io.cloudflight.jems.server.project.service.contracting.model.ContractingMonitoringExtendedOption
 import io.cloudflight.jems.server.project.service.contracting.model.ContractingMonitoringOption
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoring
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoringAddDate
+import io.cloudflight.jems.server.project.service.contracting.model.ProjectPeriodForMonitoring
+import io.cloudflight.jems.server.project.service.contracting.monitoring.getLastApprovedPeriods.GetLastApprovedPeriodsInteractor
 import io.cloudflight.jems.server.project.service.contracting.monitoring.getProjectContractingMonitoring.GetContractingMonitoringInteractor
 import io.cloudflight.jems.server.project.service.contracting.monitoring.updateProjectContractingMonitoring.UpdateContractingMonitoringException
 import io.cloudflight.jems.server.project.service.contracting.monitoring.updateProjectContractingMonitoring.UpdateContractingMonitoringInteractor
@@ -20,12 +23,15 @@ import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import java.time.LocalDate
 import java.time.ZonedDateTime
 
 internal class ContractingMonitoringControllerTest: UnitTest() {
 
     companion object {
         private const val projectId = 2L
+        private val yesterday = LocalDate.now().minusDays(1)
+        private val tomorrow = LocalDate.now().plusDays(1)
 
         private val monitoring = ProjectContractingMonitoring(
             projectId = projectId,
@@ -66,6 +72,22 @@ internal class ContractingMonitoringControllerTest: UnitTest() {
                 comment = "comment"
             ))
         )
+
+        private val dummyPeriod = ProjectPeriodForMonitoring(
+            number = 1,
+            start = 1,
+            end = 6,
+            startDate = yesterday,
+            endDate = tomorrow,
+        )
+
+        private val dummyPeriodExpected = ProjectPeriodForMonitoringDTO(
+            number = 1,
+            start = 1,
+            end = 6,
+            startDate = yesterday,
+            endDate = tomorrow,
+        )
     }
 
     @MockK
@@ -73,6 +95,9 @@ internal class ContractingMonitoringControllerTest: UnitTest() {
 
     @MockK
     lateinit var updateContractingMonitoringInteractor: UpdateContractingMonitoringInteractor
+
+    @MockK
+    lateinit var getLastApprovedPeriodsInteractor: GetLastApprovedPeriodsInteractor
 
     @InjectMockKs
     lateinit var contractingMonitoringController: ContractingMonitoringController
@@ -106,4 +131,12 @@ internal class ContractingMonitoringControllerTest: UnitTest() {
             contractingMonitoringController.updateContractingMonitoring(projectId, monitoringDTO)
         }
     }
+
+    @Test
+    fun getContractingMonitoringPeriods() {
+        every { getLastApprovedPeriodsInteractor.getPeriods(projectId) } returns listOf(dummyPeriod)
+        assertThat(contractingMonitoringController.getContractingMonitoringPeriods(projectId))
+            .containsExactly(dummyPeriodExpected)
+    }
+
 }

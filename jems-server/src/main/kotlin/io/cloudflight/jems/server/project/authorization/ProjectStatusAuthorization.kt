@@ -58,11 +58,11 @@ annotation class CanRetrieveProjectModifications
 annotation class CanSetProjectToContracted
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("hasAuthority('ProjectContractingView')")
+@PreAuthorize("@projectAuthorization.hasPermission('ProjectContractingView', #projectId)")
 annotation class CanRetrieveProjectContractingMonitoring
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("hasAuthority('ProjectOpenModification')")
+@PreAuthorize("@projectAuthorization.hasPermission('ProjectOpenModification', #projectId)")
 annotation class CanOpenModification
 
 @Retention(AnnotationRetention.RUNTIME)
