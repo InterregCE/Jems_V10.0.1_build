@@ -1,8 +1,8 @@
 import {defineConfig} from 'cypress';
-import pdf from 'pdf-parse';
 import date from 'date-and-time';
 import xlsx from 'node-xlsx';
 import fetch from 'node-fetch';
+import comparePdf from 'compare-pdf';
 import CypressRunResult = CypressCommandLine.CypressRunResult;
 
 export default defineConfig({
@@ -23,15 +23,43 @@ export default defineConfig({
   e2e: {
     async setupNodeEvents(on, config) {
       on('task', {
-        parsePDF(subject) {
-          return pdf(subject);
+        async parseXLSX(subject) {
+          return xlsx.parse(Buffer.from(subject.data));
         },
       });
 
       on('task', {
-        async parseXLSX(subject) {
-          return xlsx.parse(Buffer.from(subject.data));
-        },
+        async comparePdf({templatePdf, actualPdf, masks}) {
+          let config = {
+            paths: {
+              actualPdfRootFolder: process.cwd() + "/cypress/downloads",
+              baselinePdfRootFolder: process.cwd() + "/cypress/fixtures/project/exports/application-form",
+              actualPngRootFolder: process.cwd() + "/cypress/downloads",
+              baselinePngRootFolder: process.cwd() + "/cypress/fixtures/project/exports/application-form",
+              diffPngRootFolder: process.cwd() + "/cypress/fixtures/project/exports/application-form/comparePdfDiffPng"
+            },
+            settings: {
+              imageEngine: 'native',
+              density: 100,
+              quality: 70,
+              tolerance: 0,
+              threshold: 0.05,
+              cleanPngPaths: false,
+              matchPageCount: true
+            }
+          };
+
+          // adding masks to hide the header on every page
+          for (let i = 0; i < 50; i++) {
+            masks.push({ pageIndex: i, coordinates: { x0: 0, y0: 0, x1: 2000, y1: 60 } });
+          }
+
+          return new comparePdf(config)
+            .actualPdfFile(actualPdf)
+            .baselinePdfFile(templatePdf)
+            .addMasks(masks)
+            .compare();
+        }
       });
 
       // setup reporting to JIRA (only in run mode)
