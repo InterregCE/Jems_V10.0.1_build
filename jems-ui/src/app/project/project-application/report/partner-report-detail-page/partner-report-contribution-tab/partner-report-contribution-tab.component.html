@@ -18,7 +18,10 @@
                     <mat-cell *matCellDef="let control; let i = index" [formGroupName]="i">
                         <mat-form-field *ngIf="control.value.createdInThisReport" jemsFormFieldWidth="full">
                             <mat-label>{{'project.partner.coFinancing.contribution.source.name' | translate}}</mat-label>
-                            <input name="sourceOfContribution" [formControlName]="'sourceOfContribution'" matInput>
+                            <input #sourceOfContributionInput name="sourceOfContribution" [formControlName]="'sourceOfContribution'" matInput>
+                            <mat-hint [jemsHintFor]="sourceOfContributionInput" [hide]="contributionForm.controls?.sourceOfContribution?.errors !== null">
+                                <jems-text-hint [currentLength]="sourceOfContributionInput?.value?.length" [maxLength]="255"></jems-text-hint>
+                            </mat-hint>
                             <mat-error>
                                 <jems-form-field-errors
                                         [errors]="control?.get('sourceOfContribution')?.errors">
