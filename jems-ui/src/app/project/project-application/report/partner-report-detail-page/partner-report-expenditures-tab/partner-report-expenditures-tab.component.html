@@ -20,7 +20,7 @@
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                                 <ng-container>
                                     <div class="text-overflow-ellipsis">
-                                        {{i + 1}}
+                                        {{'R' + currentReport.reportNumber + '.' + (i + 1)}}
                                     </div>
                                 </ng-container>
                             </mat-cell>
