@@ -1,18 +1,17 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, combineLatest, Observable, of, Subject} from 'rxjs';
+import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
 import {
   ControllerInstitutionAssignmentDTO,
-  ControllerInstitutionDTO,
   ControllerInstitutionsApiService,
   InstitutionPartnerAssignmentDTO,
   PageInstitutionPartnerDetailsDTO
 } from '@cat/api';
 import {MatSort} from '@angular/material/sort';
-import {map, startWith, switchMap, tap} from 'rxjs/operators';
+import {startWith, switchMap, tap} from 'rxjs/operators';
 import {Tables} from '@common/utils/tables';
 import {Log} from '@common/utils/log';
-import {RoutingService} from '@common/services/routing.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {FormService} from "@common/components/section/form/form.service";
 
 @Injectable()
 @UntilDestroy()
@@ -26,7 +25,8 @@ export class InstitutionsAssignmentsStoreService {
   private controllerInstitutionUpdateEvent$ = new BehaviorSubject(null);
   private initialSort = `${Tables.DEFAULT_INITIAL_SORT.active},${Tables.DEFAULT_INITIAL_SORT.direction}`;
 
-  constructor(private controllerInstitutionsApiService: ControllerInstitutionsApiService) {
+  constructor(private controllerInstitutionsApiService: ControllerInstitutionsApiService,
+              private formService: FormService) {
     this.controllerInstitutionAssignmentPage$ = this.controllerInstitutionAssignmentPage();
   }
 
@@ -47,6 +47,7 @@ export class InstitutionsAssignmentsStoreService {
       .pipe(
         tap(updated => this.updatedControllerInstitutionPartnerAssignment.next(updated)),
         tap(() => this.controllerInstitutionUpdateEvent$.next(null)),
+        tap(() => this.formService.setSuccess('controller.institutions.nuts.assignments.update.success')),
         tap(created => Log.info('Updated controller assignment:', this, created)),
         untilDestroyed(this)
       ).subscribe();

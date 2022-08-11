@@ -61,7 +61,7 @@ export const routes: Routes = [
         canActivate: [PermissionGuard],
         data: {
           skipBreadcrumb: true,
-          permissionsOnly: Permission.CONTROLLERS_PERMISSIONS,
+          permissionsOnly:  Permission.CONTROLLERS_PERMISSIONS.concat(Permission.CONTROLLERS_ASSIGNMENT_PERMISSIONS),
         },
       },
       {

@@ -46,21 +46,19 @@ class UpdateController(
         }
         val institutionUsersToUpdate = controllerInstitution.institutionUsers
         val existingInstitutionUsers = persistence.getInstitutionUsersByInstitutionId(institutionId)
-
-        val userIdsToDelete = institutionUsersToUpdate.getUserIdsToDelete(existingInstitutionUsers)
         val userIdsToAdd = institutionUsersToUpdate.getUserIdsToAdd(existingInstitutionUsers, userSummaries)
 
         persistence.updateControllerInstitutionUsers(
             institutionId,
             userSummaries,
             usersToUpdate = institutionUsersToUpdate.toSet(),
-            usersIdsToDelete = userIdsToDelete
+            usersIdsToDelete = existingInstitutionUsers.map { it.userId }.toSet()
         )
 
         updateInstitutionUsersProjectAssignment(
             institutionId = institutionId,
             userIdsToAdd = userIdsToAdd,
-            userIdsToRemove = userIdsToDelete,
+            userIdsToRemove = existingInstitutionUsers.map { it.userId }.toSet(),
         )
 
         return persistence.updateControllerInstitution(controllerInstitution).also {
@@ -100,10 +98,6 @@ class UpdateController(
             }
         }
     }
-
-
-    private fun List<ControllerInstitutionUser>.getUserIdsToDelete(existingInstitutionUsers: List<ControllerInstitutionUser>) =
-        existingInstitutionUsers.map { it.userId }.toSet().minus(this.map { it.userId }.toSet())
 
     private fun List<ControllerInstitutionUser>.getUserIdsToAdd(
         existingInstitutionUsers: List<ControllerInstitutionUser>,
