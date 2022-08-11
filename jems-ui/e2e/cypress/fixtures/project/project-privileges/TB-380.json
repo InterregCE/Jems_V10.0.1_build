@@ -1,0 +1,61 @@
+{
+  "monitorRole": {
+    "name": "randomize",
+    "permissions": [
+      "ProjectReportingEdit",
+      "ProjectReportingView",
+      "ProjectSetToContracted",
+      "ProjectContractingView",
+      "ProjectFormUpdate",
+      "ProjectFormRetrieve",
+      "ProjectFileApplicationUpdate",
+      "ProjectFileApplicationRetrieve",
+      "ProjectSubmission",
+      "ProjectCheckApplicationForm",
+      "ProjectAssessmentQualityEnter",
+      "ProjectAssessmentEligibilityEnter",
+      "ProjectStatusDecideEligible",
+      "ProjectStatusDecideIneligible",
+      "ProjectStatusDecideApproved",
+      "ProjectStatusDecideApprovedWithConditions",
+      "ProjectStatusDecideNotApproved",
+      "ProjectAssessmentView",
+      "ProjectStatusDecisionRevert",
+      "ProjectStatusReturnToApplicant",
+      "ProjectStartStepTwo",
+      "ProjectFileAssessmentUpdate",
+      "ProjectFileAssessmentRetrieve",
+      "ProjectStatusDecideModificationApproved",
+      "ProjectStatusDecideModificationNotApproved",
+      "ProjectModificationView",
+      "ProjectOpenModification",
+      "ProjectModificationFileAssessmentUpdate",
+      "ProjectModificationFileAssessmentRetrieve",
+      "ProjectsWithOwnershipRetrieve",
+      "CallPublishedRetrieve",
+      "ProjectRetrieveEditUserAssignments",
+      "ProjectRetrieve",
+      "CallUpdate",
+      "CallRetrieve",
+      "ProgrammeSetupUpdate",
+      "ProgrammeSetupRetrieve",
+      "ProgrammeDataExportRetrieve",
+      "AuditRetrieve"
+    ]
+  },
+  "monitorUser1": {
+    "name": "monitor",
+    "surname": "User1",
+    "userStatus": "ACTIVE"
+  },
+  "monitorUser2": {
+    "name": "monitor",
+    "surname": "User2",
+    "userStatus": "ACTIVE"
+  },
+  "monitorUser3": {
+    "name": "monitor",
+    "surname": "User3",
+    "userStatus": "ACTIVE"
+  }
+}
