@@ -7,6 +7,9 @@ enum class UserRolePermissionDTO(val key: String) {
 
     ProjectCreatorCollaboratorsRetrieve("ProjectCreatorCollaboratorsRetrieve"),
     ProjectCreatorCollaboratorsUpdate("ProjectCreatorCollaboratorsUpdate"),
+
+    ProjectCreatorContractingReportingView("ProjectCreatorContractingReportingView"),
+    ProjectCreatorContractingReportingEdit("ProjectCreatorContractingReportingEdit"),
     // endregion Creator
 
     // region Monitor
@@ -18,6 +21,8 @@ enum class UserRolePermissionDTO(val key: String) {
 
     ProjectContractingManagementView("ProjectContractingManagementView"),
     ProjectContractingManagementEdit("ProjectContractingManagementEdit"),
+    ProjectContractingReportingView("ProjectContractingReportingView"),
+    ProjectContractingReportingEdit("ProjectContractingReportingEdit"),
 
     ProjectFormRetrieve("ProjectFormRetrieve"),
     ProjectFormUpdate("ProjectFormUpdate"),

@@ -7,6 +7,9 @@ enum class UserRolePermission(val key: String, val projectRelated: Boolean = fal
 
     ProjectCreatorCollaboratorsRetrieve("ProjectCreatorCollaboratorsRetrieve", false),
     ProjectCreatorCollaboratorsUpdate("ProjectCreatorCollaboratorsUpdate", false),
+
+    ProjectCreatorContractingReportingView("ProjectCreatorContractingReportingView"),
+    ProjectCreatorContractingReportingEdit("ProjectCreatorContractingReportingEdit"),
     // endregion Creator
 
     // region Monitor
@@ -18,6 +21,8 @@ enum class UserRolePermission(val key: String, val projectRelated: Boolean = fal
 
     ProjectContractingManagementView("ProjectContractingManagementView", true),
     ProjectContractingManagementEdit("ProjectContractingManagementEdit", true),
+    ProjectContractingReportingView("ProjectContractingReportingView", true),
+    ProjectContractingReportingEdit("ProjectContractingReportingEdit", true),
 
     ProjectFormRetrieve("ProjectFormRetrieve", true),
     ProjectFormUpdate("ProjectFormUpdate", true),

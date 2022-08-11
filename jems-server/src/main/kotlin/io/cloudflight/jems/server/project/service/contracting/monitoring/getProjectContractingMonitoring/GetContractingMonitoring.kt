@@ -23,7 +23,7 @@ class GetContractingMonitoring(
 ): GetContractingMonitoringInteractor {
 
     @CanRetrieveProjectContractingMonitoring
-    @Transactional
+    @Transactional(readOnly = true)
     @ExceptionWrapper(GetContractingMonitoringException::class)
     override fun getContractingMonitoring(projectId: Long): ProjectContractingMonitoring {
         projectPersistence.getProjectSummary(projectId).let { projectSummary ->
