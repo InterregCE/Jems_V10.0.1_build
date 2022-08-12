@@ -120,7 +120,7 @@ export default defineConfig({
       console.log('JIRA executionKey set to: ' + config.env.executionKey);
       return config;
     },
-    baseUrl: 'http://localhost:8080',
+    baseUrl: 'http://localhost:4200',
     specPattern: ['cypress/e2e/login/**', 'cypress/e2e/programme/**', 'cypress/e2e/call/**', 'cypress/e2e/project/**']
   },
 })
