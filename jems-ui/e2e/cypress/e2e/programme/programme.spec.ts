@@ -434,6 +434,16 @@ context('Programme management tests', () => {
       });
     });
   });
+
+  it.only('TB-746 Programme conversion rates can be loaded in the system', () => {
+    cy.loginByRequest(user.programmeUser.email);
+    cy.visit('/', {failOnStatusCode: false});
+    cy.get('div#navbarSupportedContent').contains('span', 'Programme').click();
+    cy.contains('div', 'Conversion rates').click();
+    cy.contains('button', 'Load conversion rates').click();
+    cy.contains('div', 'Loaded conversion rates successfully').should('be.visible');
+    cy.contains('div', /Conversion rates in the system: Date: [0-9]{1,2} - [0-9]{4}/).should('be.visible');
+  });
 });
 
 function createChecklist(checklist) {
