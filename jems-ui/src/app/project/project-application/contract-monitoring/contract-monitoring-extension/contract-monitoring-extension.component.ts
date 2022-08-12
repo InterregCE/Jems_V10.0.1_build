@@ -130,7 +130,7 @@ export class ContractMonitoringExtensionComponent {
         programmeLumpSumId: this.formBuilder.control(lumpSum?.programmeLumpSumId),
         period: this.formBuilder.control(lumpSum?.period),
         lumpSumContributions: this.formBuilder.control(lumpSum?.lumpSumContributions),
-        comment: this.formBuilder.control(lumpSum?.comment || [], Validators.maxLength(200)),
+        comment: this.formBuilder.control(lumpSum?.comment || '', Validators.maxLength(200)),
         readyForPayment: this.formBuilder.control(lumpSum?.readyForPayment || false),
       }));
     });
