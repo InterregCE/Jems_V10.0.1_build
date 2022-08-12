@@ -4,7 +4,7 @@ import {MatTableDataSource} from '@angular/material/table';
 import {
   PageProjectReportFileDTO,
   ProjectPartnerReportSummaryDTO,
-  ProjectReportFileDTO, ProjectReportFileMetadataDTO
+  ProjectReportFileDTO, ProjectReportFileMetadataDTO, UserRoleDTO
 } from '@cat/api';
 import {combineLatest, Observable, Subject} from 'rxjs';
 import {CategoryInfo} from '@project/common/components/category-tree/categoryModels';
@@ -17,6 +17,7 @@ import { Tables } from '@common/utils/tables';
 import {
   ReportFileManagementStore
 } from '@project/project-application/report/partner-report-detail-page/partner-report-annexes-tab/report-file-management-store';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @UntilDestroy()
 @Component({
@@ -29,6 +30,7 @@ export class ReportAnnexesTableComponent {
 
   Alert = Alert;
   Tables = Tables;
+  PermissionsEnum = PermissionsEnum;
 
   acceptedFilesTypes = AcceptedFileTypesConstants.acceptedFilesTypes;
   displayedColumns: string[] = ['name', 'location', 'uploadDate', 'user', 'size', 'actions'];
