@@ -10,7 +10,7 @@ class ContractingMonitoringPersistenceProvider(
     private val projectContractingMonitoringRepository: ProjectContractingMonitoringRepository
 ): ContractingMonitoringPersistence {
 
-    @Transactional
+    @Transactional(readOnly = true)
     override fun getContractingMonitoring(projectId: Long): ProjectContractingMonitoring {
         return projectContractingMonitoringRepository
             .findByProjectId(projectId)
