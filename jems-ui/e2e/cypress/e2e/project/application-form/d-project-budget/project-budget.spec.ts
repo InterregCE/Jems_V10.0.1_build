@@ -4,6 +4,13 @@ import application from '../../../../fixtures/api/application/application.json';
 import partner from '../../../../fixtures/api/application/partner/partner.json';
 
 const baselinePath = "/project/application-form/d-project-budget/";
+const comparePdfMask = [
+  { pageIndex: 0, coordinates: { x0: 387, x1: 440, y0: 324, y1: 343} },
+  { pageIndex: 1, coordinates: { x0:400, x1: 450, y0: 207, y1: 224} },
+  { pageIndex: 1, coordinates: { x0:400, x1: 580, y0: 370, y1: 390} },
+  { pageIndex: 0, coordinates: { x0:280, x1: 548, y0: 373, y1: 404} },
+  { pageIndex: 0, coordinates: { x0:400, x1: 560, y0: 515, y1: 535} }
+];
 
 context('Project budget tests', () => {
 
@@ -165,14 +172,7 @@ context('Project budget tests', () => {
             cy.visit(`app/project/detail/${applicationId}/export`, {failOnStatusCode: false});
             cy.contains('button', 'Export').clickToDownload('**/export/application?*', 'pdf').then(exportFile => {
               const templateFile = '/project/application-form/d-project-budget/TB-383-export-template.pdf';
-              let masks = [
-                { pageIndex: 0, coordinates: { x0: 387, x1: 440, y0: 324, y1: 343} },
-                { pageIndex: 1, coordinates: { x0:400, x1: 450, y0: 207, y1: 224} },
-                { pageIndex: 1, coordinates: { x0:400, x1: 580, y0: 370, y1: 390} },
-                { pageIndex: 0, coordinates: { x0:280, x1: 548, y0: 373, y1: 404} },
-                { pageIndex: 0, coordinates: { x0:400, x1: 560, y0: 515, y1: 535} }
-              ];
-              cy.comparePdf(templateFile, exportFile, masks, baselinePath).then(x => {
+              cy.comparePdf(templateFile, exportFile, comparePdfMask, baselinePath).then(x => {
                 expect(x.status==="passed").to.be.true;
               });
             });
