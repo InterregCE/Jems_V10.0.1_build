@@ -16,3 +16,12 @@
   background-color: rgba(38, 150, 27, 0.49) !important;
   color: black;
 }
+
+::ng-deep {
+  jems-form {
+    jems-breadcrumb {
+      display: none !important;
+    }
+  }
+}
+

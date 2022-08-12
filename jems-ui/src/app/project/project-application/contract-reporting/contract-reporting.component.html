@@ -12,7 +12,7 @@
             <mat-table *ngIf="data.canView && tableData.length > 0" jemsNoWidthLimit
                        id="deadline-dates-table"
                        class="mt-3 mb-3"
-                       [jemsTableConfig]="[{maxInRem:20, minInRem:20}, {maxInRem:15, minInRem:15}, {maxInRem:15,minInRem:15}, {minInRem:15}]"
+                       [jemsTableConfig]="[{maxInRem:20, minInRem:20}, {maxInRem:15, minInRem:15}, {maxInRem:15,minInRem:15}, {minInRem:15}, {minInRem:3}]"
                        [dataSource]="tableData"
                        formArrayName="deadlines">
 
@@ -89,6 +89,19 @@
                     </mat-cell>
                 </ng-container>
 
+                <ng-container *ngIf="data.canEdit" matColumnDef="deadlineDelete">
+                    <mat-header-cell *matHeaderCellDef>
+                        <span jemsText>{{'project.application.contract.reporting.action' | translate }}</span>
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                        <button mat-icon-button color="accent"
+                                (click)="$event.stopPropagation(); delete(i)"
+                                matTooltip="{{'project.application.form.workpackage.table.action.delete.tooltip' | translate}}">
+                            <mat-icon>delete</mat-icon>
+                        </button>
+                    </mat-cell>
+                </ng-container>
+
                 <mat-header-row *matHeaderRowDef="columnsToDisplay"></mat-header-row>
                 <mat-row *matRowDef="let myRowData; columns: columnsToDisplay; let rowIndex =index"
                          [class.row-has-error]="deadlines.controls[rowIndex]?.invalid"></mat-row>
@@ -101,8 +114,8 @@
                 <mat-icon>add</mat-icon>
                 <span>{{'project.application.contract.reporting.button.add.deadline' | translate}}</span>
             </button>
-
         </form>
+        <h4>{{'project.application.contract.reporting.timeplan' | translate}}</h4>
+        <jems-project-timeplan-page [reportingDeadlines$]="contractReportingStore.contractReportingDeadlines$"></jems-project-timeplan-page>
     </jems-form>
-
 </jems-project-page-template>
