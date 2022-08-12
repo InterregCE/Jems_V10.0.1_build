@@ -18,7 +18,7 @@ export default defineConfig({
   },
   env: {
     authenticationUrl: '/api/auth/login',
-    defaultPassword: 'Jems@2020admin@jems.eu',
+    defaultPassword: '<change-me>',
   },
   e2e: {
     async setupNodeEvents(on, config) {
