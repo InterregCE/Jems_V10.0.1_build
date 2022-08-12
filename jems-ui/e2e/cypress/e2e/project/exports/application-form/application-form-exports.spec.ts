@@ -5,6 +5,8 @@ import application from '../../../../fixtures/api/application/application.json';
 import application2step from '../../../../fixtures/api/application/2.step.application.json';
 import partner from '../../../../fixtures/api/application/partner/partner.json';
 
+const baselinePath = "/project/exports/application-form/";
+
 context('Application form exports', () => {
   beforeEach(() => {
     cy.loginByRequest(user.applicantUser.email);
@@ -29,7 +31,7 @@ context('Application form exports', () => {
             { pageIndex: 0, coordinates: { x0:280, x1: 548, y0: 373, y1: 404} },
             { pageIndex: 0, coordinates: { x0:400, x1: 560, y0: 515, y1: 535} }
           ];
-          cy.comparePdf(templateFile, file, masks).then(x => {
+          cy.comparePdf(templateFile, file, masks, baselinePath).then(x => {
             expect(x.status==="passed").to.be.true;
           });
         });
@@ -48,7 +50,7 @@ context('Application form exports', () => {
             { pageIndex: 0, coordinates: { x0:280, x1: 548, y0: 373, y1: 404} },
             { pageIndex: 0, coordinates: { x0:400, x1: 560, y0: 515, y1: 535} }
           ];
-          cy.comparePdf(templateFile, file, masks).then(x => {
+          cy.comparePdf(templateFile, file, masks, baselinePath).then(x => {
             expect(x.status==="passed").to.be.true;
           });
         });
@@ -136,7 +138,7 @@ context('Application form exports', () => {
                 { pageIndex: 0, coordinates: { x0:280, x1: 548, y0: 373, y1: 404} },
                 { pageIndex: 0, coordinates: { x0:400, x1: 560, y0: 515, y1: 535} }
               ];
-              cy.comparePdf(templateFile, file, masks).then(x => {
+              cy.comparePdf(templateFile, file, masks, baselinePath).then(x => {
                 expect(x.status==="passed").to.be.true;
               });
             });
@@ -154,7 +156,7 @@ context('Application form exports', () => {
                 { pageIndex: 0, coordinates: { x0:280, x1: 548, y0: 373, y1: 404} },
                 { pageIndex: 0, coordinates: { x0:400, x1: 560, y0: 515, y1: 535} }
               ];
-              cy.comparePdf(templateFile, file, masks).then(x => {
+              cy.comparePdf(templateFile, file, masks, baselinePath).then(x => {
                 expect(x.status==="passed").to.be.true;
               });
             });
@@ -172,7 +174,7 @@ context('Application form exports', () => {
                 { pageIndex: 0, coordinates: { x0:280, x1: 548, y0: 373, y1: 404} },
                 { pageIndex: 0, coordinates: { x0:400, x1: 560, y0: 515, y1: 535} }
               ];
-              cy.comparePdf(templateFile, file, masks).then(x => {
+              cy.comparePdf(templateFile, file, masks, baselinePath).then(x => {
                 expect(x.status==="passed").to.be.true;
               });
             });
@@ -232,7 +234,7 @@ context('Application form exports', () => {
                 { pageIndex: 0, coordinates: { x0:280, x1: 548, y0: 373, y1: 404} },
                 { pageIndex: 0, coordinates: { x0:400, x1: 560, y0: 515, y1: 535} }
               ];
-              cy.comparePdf(templateFile, file, masks).then(x => {
+              cy.comparePdf(templateFile, file, masks, baselinePath).then(x => {
                 expect(x.status==="passed").to.be.true;
               });
             });
@@ -250,7 +252,7 @@ context('Application form exports', () => {
                 { pageIndex: 0, coordinates: { x0:280, x1: 548, y0: 373, y1: 404} },
                 { pageIndex: 0, coordinates: { x0:400, x1: 560, y0: 515, y1: 535} }
               ];
-              cy.comparePdf(templateFile, file, masks).then(x => {
+              cy.comparePdf(templateFile, file, masks, baselinePath).then(x => {
                 expect(x.status==="passed").to.be.true;
               });
             });
@@ -308,7 +310,7 @@ context('Application form exports', () => {
                 { pageIndex: 0, coordinates: { x0:280, x1: 548, y0: 373, y1: 404} },
                 { pageIndex: 0, coordinates: { x0:400, x1: 560, y0: 515, y1: 535} }
               ];
-              cy.comparePdf(templateFile, file, masks).then(x => {
+              cy.comparePdf(templateFile, file, masks, baselinePath).then(x => {
                 expect(x.status==="passed").to.be.true;
               });
             });
@@ -326,7 +328,7 @@ context('Application form exports', () => {
                 { pageIndex: 0, coordinates: { x0:280, x1: 548, y0: 373, y1: 404} },
                 { pageIndex: 0, coordinates: { x0:400, x1: 560, y0: 515, y1: 535} }
               ];
-              cy.comparePdf(templateFile, file, masks).then(x => {
+              cy.comparePdf(templateFile, file, masks, baselinePath).then(x => {
                 expect(x.status==="passed").to.be.true;
               });
             });
@@ -375,7 +377,7 @@ context('Application form exports', () => {
               { pageIndex: 0, coordinates: { x0:280, x1: 548, y0: 373, y1: 404} },
               { pageIndex: 0, coordinates: { x0:400, x1: 560, y0: 515, y1: 535} }
             ];
-            cy.comparePdf(templateFile, actualFile, masks).then(x => {
+            cy.comparePdf(templateFile, actualFile, masks, baselinePath).then(x => {
               expect(x.status==="passed").to.be.true;
             });
           });

@@ -18,7 +18,7 @@ export default defineConfig({
   },
   env: {
     authenticationUrl: '/api/auth/login',
-    defaultPassword: '<change-me>',
+    defaultPassword: 'Jems@2020admin@jems.eu',
   },
   e2e: {
     async setupNodeEvents(on, config) {
@@ -29,13 +29,13 @@ export default defineConfig({
       });
 
       on('task', {
-        async comparePdf({templatePdf, actualPdf, masks}) {
+        async comparePdf({templatePdf, actualPdf, masks, baselinePath}) {
           let config = {
             paths: {
               actualPdfRootFolder: process.cwd() + "/cypress/downloads",
-              baselinePdfRootFolder: process.cwd() + "/cypress/fixtures/project/exports/application-form",
+              baselinePdfRootFolder: process.cwd() + "/cypress/fixtures/" +  baselinePath,
               actualPngRootFolder: process.cwd() + "/cypress/downloads",
-              baselinePngRootFolder: process.cwd() + "/cypress/fixtures/project/exports/application-form",
+              baselinePngRootFolder: process.cwd() + "/cypress/fixtures/" + baselinePath,
               diffPngRootFolder: process.cwd() + "/cypress/fixtures/project/exports/application-form/comparePdfDiffPng"
             },
             settings: {
@@ -120,7 +120,7 @@ export default defineConfig({
       console.log('JIRA executionKey set to: ' + config.env.executionKey);
       return config;
     },
-    baseUrl: 'http://localhost:4200',
+    baseUrl: 'http://localhost:8080',
     specPattern: ['cypress/e2e/login/**', 'cypress/e2e/programme/**', 'cypress/e2e/call/**', 'cypress/e2e/project/**']
   },
 })

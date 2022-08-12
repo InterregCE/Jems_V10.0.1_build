@@ -3,6 +3,8 @@ import call from '../../../../fixtures/api/call/1.step.call.json';
 import application from '../../../../fixtures/api/application/application.json';
 import partner from '../../../../fixtures/api/application/partner/partner.json';
 
+const baselinePath = "/project/application-form/d-project-budget/";
+
 context('Project budget tests', () => {
 
   it('TB-534 Amounts cross-checks within AF', () => {
@@ -82,7 +84,7 @@ context('Project budget tests', () => {
               if (index !== 0)
                 expect(partnerBudget.text()).to.be.equal(partner.budgetOverview[index - 1]);
             });
-            
+
             cy.contains('a', 'Co-financing').click();
             cy.contains('a', 'Co-financing').click(); // TODO remove after MP2-2665 is fixed
 
@@ -162,10 +164,16 @@ context('Project budget tests', () => {
             // verify PDF export
             cy.visit(`app/project/detail/${applicationId}/export`, {failOnStatusCode: false});
             cy.contains('button', 'Export').clickToDownload('**/export/application?*', 'pdf').then(exportFile => {
-              cy.fixture('project/application-form/d-project-budget/TB-383-export-pdf.txt').then(testDataFile => {
-                const assertionMessage = 'Verify downloaded pdf file';
-                testDataFile = replace(testDataFile, applicationId, testData.application.identification.acronym, exportFile.localDateTime);
-                expect(exportFile.text.includes(testDataFile), assertionMessage).to.be.true;
+              const templateFile = '/project/application-form/d-project-budget/TB-383-export-template.pdf';
+              let masks = [
+                { pageIndex: 0, coordinates: { x0: 387, x1: 440, y0: 324, y1: 343} },
+                { pageIndex: 1, coordinates: { x0:400, x1: 450, y0: 207, y1: 224} },
+                { pageIndex: 1, coordinates: { x0:400, x1: 580, y0: 370, y1: 390} },
+                { pageIndex: 0, coordinates: { x0:280, x1: 548, y0: 373, y1: 404} },
+                { pageIndex: 0, coordinates: { x0:400, x1: 560, y0: 515, y1: 535} }
+              ];
+              cy.comparePdf(templateFile, exportFile, masks, baselinePath).then(x => {
+                expect(x.status==="passed").to.be.true;
               });
             });
 
@@ -183,14 +191,4 @@ context('Project budget tests', () => {
       });
     });
   });
-
-  function replace(testDataFile: string, applicationId: number, acronym: string, localDateTime: string) {
-    const id = String(applicationId).padStart(5, '0');
-    const date = localDateTime.split('T')[0];
-    return testDataFile
-      .replaceAll('{{acronym}}', acronym)
-      .replaceAll('{{applicationId}}', id)
-      .replaceAll('{{date}}', date)
-      .replaceAll(/\r/g, '');
-  }
 })

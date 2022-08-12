@@ -6,7 +6,7 @@ declare global {
     interface Chainable {
       parseXLSX();
 
-      comparePdf(templatePdf: string, actualPdf: string, masks: any);
+      comparePdf(templatePdf: string, actualPdf: string, masks: any, baselinePath: string);
 
       clickToDownload(requestToIntercept: string, fileExtension: string);
     }
@@ -17,8 +17,8 @@ Cypress.Commands.add('parseXLSX', {prevSubject: true}, (subject) => {
   cy.task('parseXLSX', subject);
 });
 
-Cypress.Commands.add('comparePdf', {prevSubject: false}, (templatePdf, actualPdf, masks) => {
-  cy.task('comparePdf', {templatePdf, actualPdf, masks});
+Cypress.Commands.add('comparePdf', {prevSubject: false}, (templatePdf, actualPdf, masks, baselinePath) => {
+  cy.task('comparePdf', {templatePdf, actualPdf, masks, baselinePath});
 })
 
 Cypress.Commands.add('clickToDownload', {prevSubject: true}, (subject, requestToIntercept, fileExtension) => {
