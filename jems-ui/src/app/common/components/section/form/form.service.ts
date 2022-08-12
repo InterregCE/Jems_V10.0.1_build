@@ -9,13 +9,14 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {TranslateService} from '@ngx-translate/core';
 import {APIError} from '@common/models/APIError';
+import {v4 as uuid} from 'uuid';
 
 @UntilDestroy()
 @Injectable()
 export class FormService {
   private resetSubject = new Subject();
   private editable = true;
-  private serviceId = Math.random().toString(36);
+  private serviceId = uuid();
 
   form: FormGroup | FormArray;
   saveLabel = 'common.save.label';

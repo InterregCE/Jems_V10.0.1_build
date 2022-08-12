@@ -23,6 +23,8 @@ import {
   ReportFileCategoryTypeEnum
 } from '@project/project-application/report/partner-report-detail-page/partner-report-annexes-tab/report-file-category-type';
 import {FileManagementStore} from '@project/common/components/file-management/file-management-store';
+import {RoutingService} from "@common/services/routing.service";
+import {v4 as uuid} from 'uuid';
 
 @Injectable({
   providedIn: 'root'
@@ -51,7 +53,8 @@ export class ReportFileManagementStore {
               private downloadService: DownloadService,
               private partnerReportDetailPageStore: PartnerReportDetailPageStore,
               private projectPartnerReportService: ProjectPartnerReportService,
-              private fileManagementStore: FileManagementStore
+              private fileManagementStore: FileManagementStore,
+              private routingService: RoutingService
   ) {
     this.reportStatus$ = this.partnerReportDetailPageStore.reportStatus$;
     this.canUpload$ = this.canUpload();
@@ -65,6 +68,8 @@ export class ReportFileManagementStore {
   }
 
   uploadFile(file: File): Observable<ProjectReportFileMetadataDTO> {
+    let serviceId = uuid();
+    this.routingService.confirmLeaveMap.set(serviceId, true);
     return this.selectedCategory$
       .pipe(
         take(1),
@@ -73,6 +78,7 @@ export class ReportFileManagementStore {
         switchMap(([category, reportId, partnerId]) => this.projectPartnerReportService.uploadAttachmentForm(file, Number(partnerId), reportId)),
         tap(() => this.reportFilesChanged$.next()),
         tap(() => this.error$.next(null)),
+        tap(() => this.routingService.confirmLeaveMap.delete(serviceId)),
         catchError(error => {
           this.error$.next(error.error);
           return of({} as ProjectReportFileMetadataDTO);
