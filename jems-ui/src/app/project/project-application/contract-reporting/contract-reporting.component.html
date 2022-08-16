@@ -5,7 +5,7 @@
 
     <jems-form *ngIf="(data$ | async) as data"
                (save)="onSubmit()"
-               (discard)="resetForm(data.reportingDeadlines, data.canEdit)">
+               (discard)="resetForm(data.reportingDeadlines, data.canEdit, data.periods)">
         <form jemsFormLayout [formGroup]="reportingDeadlinesForm">
             <p>{{'project.application.contract.reporting.explanation' | translate}}</p>
             <h4>{{'project.application.contract.reporting.subheader' | translate}}</h4>
@@ -55,7 +55,7 @@
                             <jems-project-periods-select
                                     [periods]="data.periods"
                                     [control]="control.get('deadlinePeriod')"
-                                    (selectionChanged)="formService.setDirty(true)">
+                                    (selectionChanged)="updateDatePicker(i, data.periods, control.get('deadlinePeriod').value)">
                             </jems-project-periods-select>
                         </div>
                     </mat-cell>
@@ -68,6 +68,8 @@
                     <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                         <mat-form-field jemsFormFieldWidth="full">
                             <input formControlName="deadlineDate" matInput
+                                   [min]="control.get('deadlinePeriodStartDate').value"
+                                   [max]="control.get('deadlinePeriodEndDate').value"
                                    [matDatepicker]="deadlineDate">
                             <mat-datepicker-toggle matSuffix [for]="deadlineDate"></mat-datepicker-toggle>
                             <mat-datepicker #deadlineDate></mat-datepicker>

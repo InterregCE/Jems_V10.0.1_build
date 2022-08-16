@@ -4,7 +4,7 @@ import {UntilDestroy} from '@ngneat/until-destroy';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {combineLatest, Observable} from 'rxjs';
 import {catchError, filter, map, startWith, switchMap, take, tap} from 'rxjs/operators';
-import {ProjectContractingReportingScheduleDTO, ProjectPeriodDTO} from '@cat/api';
+import {ProjectContractingReportingScheduleDTO, ProjectPeriodForMonitoringDTO} from '@cat/api';
 import {ContractReportingStore} from '@project/project-application/contract-reporting/contract-reporting.store';
 import {Forms} from '@common/utils/forms';
 import {MatDialog} from '@angular/material/dialog';
@@ -22,7 +22,7 @@ export class ContractReportingComponent implements OnInit {
   tableData: AbstractControl[] = [];
   columnsToDisplay: string[] = [];
   data$: Observable<{
-    periods: ProjectPeriodDTO[];
+    periods: ProjectPeriodForMonitoringDTO[];
     reportingDeadlines: ProjectContractingReportingScheduleDTO[];
     canView: boolean;
     canEdit: boolean;
@@ -36,21 +36,21 @@ export class ContractReportingComponent implements OnInit {
 
   ngOnInit(): void {
     this.data$ = combineLatest([
-      this.contractReportingStore.projectForm$,
+      this.contractReportingStore.availablePeriods$,
       this.contractReportingStore.contractReportingDeadlines$,
       this.contractReportingStore.userCanViewDeadlines$,
       this.contractReportingStore.userCanEditDeadlines$,
     ])
       .pipe(
-        map(([projectForm, contractReportingDeadlines, userCanViewDeadlines, userCanEditDeadlines]) => ({
-            periods: projectForm.periods,
+        map(([availablePeriods, contractReportingDeadlines, userCanViewDeadlines, userCanEditDeadlines]) => ({
+            periods: availablePeriods,
             reportingDeadlines: contractReportingDeadlines,
             canView: userCanViewDeadlines,
             canEdit: userCanEditDeadlines
           })
         ),
         tap(data => this.initForm(data.canEdit)),
-        tap(data => this.resetForm(data.reportingDeadlines, data.canEdit))
+        tap(data => this.resetForm(data.reportingDeadlines, data.canEdit, data.periods))
       );
 
   }
@@ -61,6 +61,8 @@ export class ContractReportingComponent implements OnInit {
       deadlinePeriod: [''],
       deadlineDate: [''],
       deadlineComment: ['', Validators.maxLength(1000)],
+      deadlinePeriodStartDate: [''],
+      deadlinePeriodEndDate: [''],
     });
     this.deadlines.push(item);
     this.tableData = [...this.deadlines.controls];
@@ -71,7 +73,7 @@ export class ContractReportingComponent implements OnInit {
     return this.reportingDeadlinesForm.get('deadlines') as FormArray;
   }
 
-  resetForm(reportingDeadlines: ProjectContractingReportingScheduleDTO[], isEditable: boolean) {
+  resetForm(reportingDeadlines: ProjectContractingReportingScheduleDTO[], isEditable: boolean, periods: ProjectPeriodForMonitoringDTO[]) {
     this.deadlines.clear();
     for (const reportingDeadline of reportingDeadlines) {
       const item = this.formBuilder.group({
@@ -79,6 +81,8 @@ export class ContractReportingComponent implements OnInit {
         deadlinePeriod: [reportingDeadline.periodNumber],
         deadlineDate: [reportingDeadline.date],
         deadlineComment: [reportingDeadline.comment, Validators.maxLength(1000)],
+        deadlinePeriodStartDate: [periods.find(p => p.number == reportingDeadline.periodNumber)?.startDate],
+        deadlinePeriodEndDate: [periods.find(p => p.number == reportingDeadline.periodNumber)?.endDate],
       });
       this.deadlines.push(item);
     }
@@ -111,6 +115,13 @@ export class ContractReportingComponent implements OnInit {
       tap(() => this.formService.setSuccess('project.application.contract.reporting.form.save.successful')),
       catchError(err => this.formService.setError(err)),
     ).subscribe();
+  }
+
+  updateDatePicker(index: number, periods: ProjectPeriodForMonitoringDTO[], periodNum: number): void {
+    const period = periods.find(p => p.number == periodNum);
+    this.deadlines.at(index).patchValue({deadlinePeriodStartDate: period?.startDate});
+    this.deadlines.at(index).patchValue({deadlinePeriodEndDate: period?.endDate});
+    this.formService.setDirty(true);
   }
 
   private initForm(isEditable: boolean): void {
