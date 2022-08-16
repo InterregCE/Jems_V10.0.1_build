@@ -26,7 +26,7 @@ import {APPLICATION_FORM} from '@project/common/application-form-model';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import {DownloadService} from '@common/services/download.service';
 import CallTypeEnum = ProjectCallSettingsDTO.CallTypeEnum;
-import {RoutingService} from "@common/services/routing.service";
+import {RoutingService} from '@common/services/routing.service';
 import { v4 as uuid } from 'uuid';
 
 @Injectable({
@@ -84,7 +84,7 @@ export class FileManagementStore {
   }
 
   uploadFile(file: File): Observable<ProjectFileMetadataDTO> {
-    let serviceId = uuid();
+    const serviceId = uuid();
     this.routingService.confirmLeaveMap.set(serviceId, true);
     return this.selectedCategory$
       .pipe(

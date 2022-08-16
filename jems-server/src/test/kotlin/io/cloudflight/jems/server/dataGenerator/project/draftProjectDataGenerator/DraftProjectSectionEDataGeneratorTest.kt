@@ -50,7 +50,8 @@ class DraftProjectSectionEDataGeneratorTest(@LocalServerPort private val port: I
                         )
                     ),
                     readyForPayment = false,
-                    comment = null
+                    comment = null,
+                    fastTrack = false
                 )
             )
         )

@@ -12,7 +12,8 @@ fun List<ProjectLumpSum>.toDto() = map {
         period = it.period,
         lumpSumContributions = it.lumpSumContributions.map { it.toDto() },
         readyForPayment = it.readyForPayment,
-        comment = it.comment
+        comment = it.comment,
+        fastTrack = it.isFastTrack
     )
 }
 

@@ -28,7 +28,9 @@ class ContractingValidator(private val validator: GeneralValidatorService) {
     }
 
     fun validateProjectStatusForModification(projectSummary: ProjectSummary) {
-        if (!projectSummary.status.isAlreadyApproved()) {
+        if (!projectSummary.status.isAlreadyApproved()
+            && !projectSummary.status.isModifiableStatusAfterApproved()
+            && !projectSummary.status.isModificationSubmitted()) {
             throw ContractingModificationDeniedException()
         }
     }

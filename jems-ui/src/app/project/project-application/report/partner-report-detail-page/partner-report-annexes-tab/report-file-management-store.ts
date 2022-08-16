@@ -23,7 +23,7 @@ import {
   ReportFileCategoryTypeEnum
 } from '@project/project-application/report/partner-report-detail-page/partner-report-annexes-tab/report-file-category-type';
 import {FileManagementStore} from '@project/common/components/file-management/file-management-store';
-import {RoutingService} from "@common/services/routing.service";
+import {RoutingService} from '@common/services/routing.service';
 import {v4 as uuid} from 'uuid';
 
 @Injectable({
@@ -68,7 +68,7 @@ export class ReportFileManagementStore {
   }
 
   uploadFile(file: File): Observable<ProjectReportFileMetadataDTO> {
-    let serviceId = uuid();
+    const serviceId = uuid();
     this.routingService.confirmLeaveMap.set(serviceId, true);
     return this.selectedCategory$
       .pipe(

@@ -56,7 +56,8 @@ export class ProjectLumpSumsStore {
                 contribution.amount)
             ),
             projectLumpSum.comment,
-            projectLumpSum.readyForPayment))),
+            projectLumpSum.readyForPayment,
+            projectLumpSum.fastTrack))),
       shareReplay(1)
     );
   }

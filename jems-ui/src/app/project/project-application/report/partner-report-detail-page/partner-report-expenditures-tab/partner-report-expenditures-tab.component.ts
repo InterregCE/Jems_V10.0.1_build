@@ -33,7 +33,7 @@ import {
 import {
   PartnerReportDetailPageStore
 } from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
-import {RoutingService} from "@common/services/routing.service";
+import {RoutingService} from '@common/services/routing.service';
 import {v4 as uuid} from 'uuid';
 
 @UntilDestroy()
@@ -541,7 +541,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       return;
     }
 
-    let serviceId = uuid();
+    const serviceId = uuid();
     this.router.confirmLeaveMap.set(serviceId, true);
     this.pageStore.uploadFile(target?.files[0], expenditureId)
       .pipe(

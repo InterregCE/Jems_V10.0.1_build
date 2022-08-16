@@ -50,7 +50,8 @@ class ContractedProjectSectionEDataGeneratorTest(@LocalServerPort private val po
                         )
                     ),
                     readyForPayment = false,
-                    comment = null
+                    comment = null,
+                    fastTrack = false
                 )
             )
         )

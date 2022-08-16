@@ -37,8 +37,7 @@ class GetContractingMonitoring(
             })
             .fillFTLumpSumsList ( resolveLumpSums = {
                 versionPersistence.getLatestApprovedOrCurrent(projectId = projectId)
-                    .let { projectLumpSumPersistence.getLumpSums(projectId = projectId, version = it)
-                        .filter { lumpSum -> lumpSum.isFastTrack == true } }
+                    .let { projectLumpSumPersistence.getLumpSums(projectId = projectId, version = it) }
             } )
 
     }

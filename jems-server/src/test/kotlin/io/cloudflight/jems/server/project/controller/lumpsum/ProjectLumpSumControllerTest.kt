@@ -54,13 +54,15 @@ internal class ProjectLumpSumControllerTest : UnitTest() {
                     ProjectPartnerLumpSumDTO(partnerId = 14, amount = BigDecimal.ONE),
                 ),
                 readyForPayment = false,
-                comment = null
+                comment = null,
+                fastTrack = false
             ),
             ProjectLumpSumDTO(
                 programmeLumpSumId = 2,
                 period = 4,
                 readyForPayment = false,
-                comment = null
+                comment = null,
+                fastTrack = false
             ),
         )
     }
@@ -86,7 +88,8 @@ internal class ProjectLumpSumControllerTest : UnitTest() {
                 ProjectPartnerLumpSumDTO(partnerId = 24, amount = BigDecimal.valueOf(-1, 1)),
             ),
             readyForPayment = false,
-            comment = null
+            comment = null,
+            fastTrack = false
         )
         val lumpSumDto2 = ProjectLumpSumDTO(
             programmeLumpSumId = 6,
@@ -96,7 +99,8 @@ internal class ProjectLumpSumControllerTest : UnitTest() {
                 ProjectPartnerLumpSumDTO(partnerId = 24, amount = BigDecimal.TEN),
             ),
             readyForPayment = false,
-            comment = null
+            comment = null,
+            fastTrack = false
         )
 
         controller.updateProjectLumpSums(2L, listOf(lumpSumDto1, lumpSumDto2))

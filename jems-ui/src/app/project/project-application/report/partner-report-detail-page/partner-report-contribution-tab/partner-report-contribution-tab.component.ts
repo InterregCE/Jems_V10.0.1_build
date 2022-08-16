@@ -24,7 +24,7 @@ import {NumberService} from '@common/services/number.service';
 import {
   PartnerFileManagementStore
 } from '@project/project-application/report/partner-report-detail-page/partner-file-management-store';
-import {RoutingService} from "@common/services/routing.service";
+import {RoutingService} from '@common/services/routing.service';
 import {v4 as uuid} from 'uuid';
 
 @UntilDestroy()
@@ -205,7 +205,7 @@ export class PartnerReportContributionTabComponent {
 
   onUploadFile(target: any, procurementId: number, index: number): void {
     if (target && procurementId !== 0) {
-      let serviceId = uuid();
+      const serviceId = uuid();
       this.routingService.confirmLeaveMap.set(serviceId, true);
       this.pageStore.uploadFile(target?.files[0], procurementId)
         .pipe(
