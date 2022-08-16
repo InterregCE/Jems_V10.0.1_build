@@ -92,10 +92,7 @@ context('Project privileges tests', () => {
   it('TB-374 Add user to project using project privileges', () => {
     cy.fixture('project/project-privileges/TB-374.json').then(testData => {
       Cypress.on('uncaught:exception', (err) => {
-        if (err.message.includes('ResizeObserver loop limit exceeded')) {
-          return false;
-        }
-        return true;
+        return !err.message.includes('ResizeObserver loop limit exceeded');
       })
 
       // Preparation for the tests
@@ -137,6 +134,7 @@ context('Project privileges tests', () => {
         cy.visit(`/app/project/detail/${applicationId}`, {failOnStatusCode: false});
         cy.contains('div', 'Project identification').click();
         cy.get("textarea:first").should('have.attr', 'readonly');
+        cy.wait(100);
         cy.contains('Project privileges').click();
         cy.get('mat-button-toggle-group:last').contains('span', 'view').click();
         cy.contains('button', 'Save changes').should('not.exist');
@@ -324,6 +322,7 @@ context('Project privileges tests', () => {
     cy.get("textarea:first").should('not.have.attr', 'readonly');
     cy.visit(`/app/project/detail/${applicationId}/export`, {failOnStatusCode: false});
     cy.contains('button', 'Export').should('be.visible');
+    cy.wait(100);
     cy.contains('Application annexes').click();
     cy.contains('button', 'Upload file').should('be.visible');
     cy.contains('mat-icon', 'download').should('be.visible');
@@ -338,6 +337,7 @@ context('Project privileges tests', () => {
   function addNewApplicationPrivilegeUser(applicationId, applicationOwner, newUser, privilegeLevel) {
     cy.loginByRequest(applicationOwner.email);
     cy.visit(`/app/project/detail/${applicationId}`, {failOnStatusCode: false});
+    cy.wait(100);
     cy.contains('div', 'Project privileges').click();
     cy.contains('button', '+').click();
     cy.get('input:last').type(newUser.email);
