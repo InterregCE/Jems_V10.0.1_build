@@ -3,9 +3,11 @@ package io.cloudflight.jems.server.controllerInstitution.controller
 import io.cloudflight.jems.api.controllerInstitutions.dto.ControllerInstitutionAssignmentDTO
 import io.cloudflight.jems.api.controllerInstitutions.dto.InstitutionPartnerAssignmentDTO
 import io.cloudflight.jems.api.controllerInstitutions.dto.InstitutionPartnerDetailsDTO
+import io.cloudflight.jems.api.controllerInstitutions.dto.UserInstitutionAccessLevelDTO
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionAssignment
 import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerAssignment
 import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerDetails
+import io.cloudflight.jems.server.controllerInstitution.service.model.UserInstitutionAccessLevel
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping
 import org.mapstruct.factory.Mappers
@@ -29,6 +31,8 @@ fun InstitutionPartnerAssignmentDTO.toModel() = mapper.map(this)
 
 fun InstitutionPartnerDetails.toDto() =  mapper.map(this)
 
+fun UserInstitutionAccessLevel?.toDto() = mapper.map(this)
+
 @Mapper
 interface InstitutionPartnerDTOMapper {
 
@@ -40,4 +44,5 @@ interface InstitutionPartnerDTOMapper {
     fun map(model: InstitutionPartnerAssignment): InstitutionPartnerAssignmentDTO
 
     fun map(model: InstitutionPartnerDetails): InstitutionPartnerDetailsDTO
+    fun map(model: UserInstitutionAccessLevel?): UserInstitutionAccessLevelDTO
 }
