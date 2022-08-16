@@ -8,6 +8,7 @@ import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ProjectContractingReportingSchedule
 import io.cloudflight.jems.server.project.service.contracting.monitoring.ContractingMonitoringPersistence
 import io.cloudflight.jems.server.project.service.contracting.reporting.ContractingReportingPersistence
+import io.cloudflight.jems.server.project.service.contracting.toLimits
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -79,12 +80,7 @@ class UpdateContractingReporting(
         periods: Map<Int, ProjectPeriod>,
         startDate: LocalDate,
     ) {
-        val periodLimits = periods.mapValues {
-            Pair(
-                startDate.plusMonths(it.value.start.toLong() - 1),
-                startDate.plusMonths(it.value.end.toLong()).minusDays(1),
-            )
-        }
+        val periodLimits = periods.mapValues { it.value.toLimits(startDate) }
         val invalidDates = deadlines.filter {
             it.date.isBefore(periodLimits.startLimit(it.periodNumber)) || it.date.isAfter(periodLimits.endLimit(it.periodNumber))
         }
