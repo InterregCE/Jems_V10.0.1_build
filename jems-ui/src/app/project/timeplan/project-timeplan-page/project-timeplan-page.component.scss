@@ -236,4 +236,20 @@ $color-blue-light: #81D4FA;
     height: 1.25rem;
   }
 
+  .vis-custom-time {
+    pointer-events: none;
+  }
+
+  .vis-custom-time-marker {
+    pointer-events: auto;
+    border-radius: 13px;
+    left: -12px;
+    width: 1rem;
+    text-align: center;
+  }
+
+  .vis-custom-time-marker:hover {
+    cursor: pointer;
+  }
+
 }

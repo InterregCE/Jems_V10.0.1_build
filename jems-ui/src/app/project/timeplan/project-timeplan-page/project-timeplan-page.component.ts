@@ -1,8 +1,15 @@
-import {ChangeDetectionStrategy, Component, ElementRef, ViewChild} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  ElementRef,
+  Input,
+  OnInit,
+  ViewChild
+} from '@angular/core';
 import {ActivatedRoute, Router} from '@angular/router';
 import {Alert} from '@common/components/forms/alert';
 import {TranslateService} from '@ngx-translate/core';
-import {ProjectPeriodDTO} from '@cat/api';
+import {ProjectContractingReportingScheduleDTO, ProjectPeriodDTO} from '@cat/api';
 import {Timeline} from 'vis-timeline';
 import {DataSet} from 'vis-data/peer';
 import {map, shareReplay, tap} from 'rxjs/operators';
@@ -22,7 +29,11 @@ import {
   TRANSLATABLE_GROUP_TYPES,
 } from './project-timeplan.utils';
 import {MultiLanguageGlobalService} from '@common/components/forms/multi-language-container/multi-language-global.service';
+import moment from 'moment/moment';
+import TypeEnum = ProjectContractingReportingScheduleDTO.TypeEnum;
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
+@UntilDestroy()
 @Component({
   selector: 'jems-project-timeplan-page',
   templateUrl: './project-timeplan-page.component.html',
@@ -30,9 +41,12 @@ import {MultiLanguageGlobalService} from '@common/components/forms/multi-languag
   providers: [ProjectTimeplanPageStore],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectTimeplanPageComponent {
+export class ProjectTimeplanPageComponent implements OnInit {
   Alert = Alert;
   timeline: Timeline;
+
+  @Input()
+  reportingDeadlines$: Observable<ProjectContractingReportingScheduleDTO[]>;
 
   @ViewChild('visualization', {static: true})
   visualization: ElementRef;
@@ -40,6 +54,7 @@ export class ProjectTimeplanPageComponent {
   periodsUnavailable$: Observable<boolean>;
   workPackagesUnavailable$: Observable<boolean>;
   dataAvailable$: Observable<boolean>;
+  reportingDeadlines: ProjectContractingReportingScheduleDTO[];
 
   constructor(private translateService: TranslateService,
               private multiLanguageGlobalService: MultiLanguageGlobalService,
@@ -87,6 +102,23 @@ export class ProjectTimeplanPageComponent {
       );
   }
 
+  ngOnInit(): void {
+    if (this.reportingDeadlines$) {
+      combineLatest([
+        this.reportingDeadlines$,
+        this.dataAvailable$
+      ]).pipe(
+        map(([reportingDeadlines, dataAvailable]) => ({
+          reportingDeadlines,
+          dataAvailable,
+        })),
+        tap(data => this.reportingDeadlines = data.reportingDeadlines),
+        tap(data => this.visualizeReportDeadlines()),
+        untilDestroyed(this)
+      ).subscribe();
+    }
+  }
+
   private createVisualizationOrUpdateJustTranslations(periods: ProjectPeriodDTO[], newItems: DataSet<any>, groups: DataSet<any>): void {
     if (!periods.length || !groups.length) {
       return;
@@ -96,6 +128,54 @@ export class ProjectTimeplanPageComponent {
     } else {
       this.timeline.setItems(newItems);
       this.timeline.setGroups(groups);
+    }
+  }
+
+  private visualizeReportDeadlines() {
+    const deadlinesGroupedByPeriod = this.reportingDeadlines.reduce(function(arr, deadline) {
+      arr[deadline.periodNumber] = arr[deadline.periodNumber] || [];
+      arr[deadline.periodNumber].push(deadline);
+      return arr;
+    }, Object.create(null));
+
+    if (this.timeline) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      const timelineCustomTimes = this.timeline.customTimes;
+      this.clearReportDeadlinesVisualisation(timelineCustomTimes);
+
+      for (const [key, value] of Object.entries(deadlinesGroupedByPeriod)) {
+        const randomId = Math.random();
+        const group = value as ProjectContractingReportingScheduleDTO[];
+        this.timeline.addCustomTime(moment(START_DATE).add(key, 'M').endOf('month').toDate(), randomId);
+        const customTimes = timelineCustomTimes.filter((component: { options: { id: number}}) => randomId === component.options.id);
+        const financialReports = group.filter(d => d.type == TypeEnum.Finance);
+        const contentReports = group.filter(d => d.type == TypeEnum.Content);
+        const bothReports = group.filter(d => d.type == TypeEnum.Both);
+        let markerContent = '';
+        let markerType = TypeEnum.Both;
+        if (financialReports.length > 0) {
+          markerContent += 'Financial Deadline\n';
+          for (const deadline of financialReports) {
+            markerContent += deadline.date + '\n';
+          }
+          markerType = contentReports.length == 0 && bothReports.length == 0 ? TypeEnum.Finance : TypeEnum.Both;
+        }
+        if (contentReports.length > 0) {
+          markerContent += '\nContent Deadline\n';
+          for (const deadline of contentReports) {
+            markerContent += deadline.date + '\n';
+          }
+          markerType = financialReports.length == 0 && bothReports.length == 0 ? TypeEnum.Content : TypeEnum.Both;
+        }
+        if (bothReports.length > 0) {
+          markerContent += '\nBoth Deadline\n';
+          for (const deadline of bothReports) {
+            markerContent += deadline.date + '\n';
+          }
+        }
+        this.insertMarkerWithBar(markerType, markerContent.trim(), customTimes[0].bar);
+      }
     }
   }
 
@@ -147,4 +227,38 @@ export class ProjectTimeplanPageComponent {
     }
   }
 
+  private insertMarkerWithBar(type: ProjectContractingReportingScheduleDTO.TypeEnum, content: string, bar: any) {
+    const marker = document.createElement('div');
+    marker.title = content;
+    marker.style.position = 'absolute';
+    if (type == TypeEnum.Finance) {
+      marker.innerHTML = 'FD';
+      marker.className = `vis-custom-time-marker`;
+      marker.style.backgroundColor = '#ef0a0a';
+      bar.appendChild(marker);
+      bar.style.backgroundColor = '#ef0a0a';
+    } else if (type == TypeEnum.Content) {
+      marker.innerHTML = 'CD';
+      marker.className = `vis-custom-time-marker`;
+      marker.style.backgroundColor = '#5380ce';
+      bar.appendChild(marker);
+      bar.style.backgroundColor = '#5380ce';
+    } else {
+      marker.innerHTML = 'BD';
+      marker.className = `vis-custom-time-marker`;
+      marker.style.backgroundColor = '#26961b';
+      bar.appendChild(marker);
+      bar.style.backgroundColor = '#26961b';
+    }
+  }
+
+  private clearReportDeadlinesVisualisation(timelineCustomTimes: any) {
+    const timelineCustomTimesLength = timelineCustomTimes.length;
+    let index = 0;
+    while (index < timelineCustomTimesLength) {
+      const id = timelineCustomTimes[0].options.id;
+      this.timeline.removeCustomTime(id);
+      index++;
+    }
+  }
 }

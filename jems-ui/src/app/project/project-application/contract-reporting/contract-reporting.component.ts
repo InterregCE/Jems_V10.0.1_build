@@ -3,9 +3,11 @@ import {FormService} from '@common/components/section/form/form.service';
 import {UntilDestroy} from '@ngneat/until-destroy';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {combineLatest, Observable} from 'rxjs';
-import {catchError, map, startWith, tap} from 'rxjs/operators';
+import {catchError, filter, map, startWith, switchMap, take, tap} from 'rxjs/operators';
 import {ProjectContractingReportingScheduleDTO, ProjectPeriodDTO} from '@cat/api';
 import {ContractReportingStore} from '@project/project-application/contract-reporting/contract-reporting.store';
+import {Forms} from '@common/utils/forms';
+import {MatDialog} from '@angular/material/dialog';
 
 @UntilDestroy()
 @Component({
@@ -18,12 +20,7 @@ import {ContractReportingStore} from '@project/project-application/contract-repo
 export class ContractReportingComponent implements OnInit {
   reportingDeadlinesForm: FormGroup;
   tableData: AbstractControl[] = [];
-  columnsToDisplay = [
-    'deadlineReportType',
-    'deadlinePeriod',
-    'deadlineDate',
-    'deadlineComment'
-  ];
+  columnsToDisplay: string[] = [];
   data$: Observable<{
     periods: ProjectPeriodDTO[];
     reportingDeadlines: ProjectContractingReportingScheduleDTO[];
@@ -32,8 +29,9 @@ export class ContractReportingComponent implements OnInit {
   }>;
 
   constructor(private formBuilder: FormBuilder,
-              private contractReportingStore: ContractReportingStore,
-              public formService: FormService) {
+              public contractReportingStore: ContractReportingStore,
+              public formService: FormService,
+              private dialog: MatDialog) {
   }
 
   ngOnInit(): void {
@@ -98,7 +96,28 @@ export class ContractReportingComponent implements OnInit {
       ).subscribe();
   }
 
+  delete(index: number): void {
+    Forms.confirm(
+      this.dialog,
+      {
+        title: 'project.application.contract.reporting.action.delete.dialog.header',
+        message: 'project.application.contract.reporting.action.delete.dialog.message',
+      }).pipe(
+      take(1),
+      filter(answer => !!answer),
+      tap(() => this.deadlines.removeAt(index)),
+      tap(() => this.tableData = [...this.deadlines.controls]),
+      switchMap(() => this.contractReportingStore.save(this.convertFormToContractingMonitoringDTOs())),
+      tap(() => this.formService.setSuccess('project.application.contract.reporting.form.save.successful')),
+      catchError(err => this.formService.setError(err)),
+    ).subscribe();
+  }
+
   private initForm(isEditable: boolean): void {
+    this.columnsToDisplay.push('deadlineReportType', 'deadlinePeriod', 'deadlineDate', 'deadlineComment');
+    if (isEditable) {
+      this.columnsToDisplay.push('deadlineDelete');
+    }
     this.reportingDeadlinesForm = this.formBuilder.group({
       deadlines: this.formBuilder.array([], Validators.maxLength(50)),
     });

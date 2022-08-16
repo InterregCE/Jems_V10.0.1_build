@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {combineLatest, Observable} from 'rxjs';
+import {combineLatest, merge, Observable, Subject} from 'rxjs';
 import {
   ProjectContractingReportingScheduleDTO,
   ProjectContractingReportingService,
@@ -10,7 +10,7 @@ import {
 import {
   ProjectStore
 } from '@project/project-application/containers/project-application-detail/services/project-store.service';
-import {map, switchMap, tap} from 'rxjs/operators';
+import {map, shareReplay, switchMap, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 import {PermissionService} from '../../../security/permissions/permission.service';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
@@ -26,7 +26,7 @@ export class ContractReportingStore {
   contractReportingDeadlines$: Observable<ProjectContractingReportingScheduleDTO[]>;
   userCanViewDeadlines$: Observable<boolean>;
   userCanEditDeadlines$: Observable<boolean>;
-
+  savedData$ = new Subject<ProjectContractingReportingScheduleDTO[]>();
 
   constructor(private projectStore: ProjectStore,
               private projectContractingReportingService: ProjectContractingReportingService,
@@ -42,14 +42,19 @@ export class ContractReportingStore {
     return this.projectStore.projectId$
       .pipe(
         switchMap(projectId => this.projectContractingReportingService.updateReportingSchedule(projectId, contractReportingDeadlines)),
-        tap(saved => Log.info('Saved contract reporting', saved))
+        tap(saved => Log.info('Saved contract reporting', saved)),
+        tap(data => this.savedData$.next(data))
       );
   }
 
   private contractReportingDeadlines(): Observable<ProjectContractingReportingScheduleDTO[]> {
-    return this.projectStore.projectId$
+    const initialData$ = this.projectStore.projectId$
       .pipe(
         switchMap(projectId => this.projectContractingReportingService.getReportingSchedule(projectId)),
+      );
+    return merge(initialData$, this.savedData$)
+      .pipe(
+        shareReplay(1)
       );
   }
 
@@ -72,7 +77,7 @@ export class ContractReportingStore {
       this.projectStore.collaboratorLevel$
     ])
       .pipe(
-        map(([canEdit, canCreatorEdit, level]) => canEdit || (canCreatorEdit && (level == LevelEnum.EDIT || level == LevelEnum.MANAGE)))
+        map(([canEdit, canCreatorEdit, level]) => canEdit || (canCreatorEdit && (level === LevelEnum.EDIT || level === LevelEnum.MANAGE)))
       );
   }
 
