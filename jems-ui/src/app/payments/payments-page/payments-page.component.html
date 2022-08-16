@@ -1,0 +1,10 @@
+<jems-main-page-template [needsCard]="true">
+    <mat-tab-group>
+        <mat-tab label="{{'payments.projects.header' | translate}}">
+            <payments-to-projects-page jemsNoWidthLimit></payments-to-projects-page>
+        </mat-tab>
+        <mat-tab label="{{'payments.advanced.header' | translate}}" >
+            <advanced-payments-page jemsNoWidthLimit></advanced-payments-page>
+        </mat-tab>
+    </mat-tab-group>
+</jems-main-page-template>

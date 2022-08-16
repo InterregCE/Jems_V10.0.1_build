@@ -2,7 +2,7 @@ import {Injectable} from '@angular/core';
 import {ProjectStore} from '../../project-application/containers/project-application-detail/services/project-store.service';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {map, share, shareReplay, startWith, switchMap, tap, withLatestFrom} from 'rxjs/operators';
-import {ProjectLumpSumService} from '@cat/api';
+import {ProjectLumpSumDTO, ProjectLumpSumService, ProjectPartnerLumpSumDTO} from '@cat/api';
 import {ProjectLumpSum} from '../../model/lump-sums/projectLumpSum';
 import {PartnerContribution} from '../../model/lump-sums/partnerContribution';
 import {ProjectPartnerStore} from '../../project-application/containers/project-application-form-page/services/project-partner-store.service';
@@ -45,19 +45,21 @@ export class ProjectLumpSumsStore {
       switchMap(([project, version]) =>
         this.projectLumpSumService.getProjectLumpSums(project.id, version)
       ),
-      map(projectLumpSums =>
+      map((projectLumpSums: ProjectLumpSumDTO[]) =>
         projectLumpSums.map(projectLumpSum =>
           new ProjectLumpSum(
             projectLumpSum.programmeLumpSumId,
             projectLumpSum.period,
-            projectLumpSum.lumpSumContributions.map(contribution =>
+            projectLumpSum.lumpSumContributions.map((contribution: ProjectPartnerLumpSumDTO) =>
               new PartnerContribution(
                 contribution.partnerId,
                 contribution.amount)
             ),
             projectLumpSum.comment,
             projectLumpSum.readyForPayment,
-            projectLumpSum.fastTrack))),
+            projectLumpSum.fastTrack,
+            projectLumpSum.paymentEnabledDate,
+            projectLumpSum.lastApprovedVersionBeforeReadyForPayment))),
       shareReplay(1)
     );
   }

@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.repository.lumpsum
 
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeLumpSumRepository
+import io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumEntity
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
@@ -27,6 +28,10 @@ class ProjectLumpSumPersistenceProvider(
                 projectLumpSumRepository.findAllByProjectIdAsOfTimestamp(projectId, timestamp).toProjectLumpSumHistoricalData()
             }
         )?: emptyList()
+
+    @Transactional
+    override fun getByProjectId(projectId: Long): List<ProjectLumpSumEntity> = //TODO: make it return model instead of entity
+        projectLumpSumRepository.getByIdProjectId(projectId)
 
     @Transactional
     override fun updateLumpSums(projectId: Long, lumpSums: List<ProjectLumpSum>): List<ProjectLumpSum> {

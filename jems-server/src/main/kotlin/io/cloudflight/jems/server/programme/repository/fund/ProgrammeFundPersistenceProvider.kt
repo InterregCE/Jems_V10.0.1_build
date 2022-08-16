@@ -15,6 +15,10 @@ class ProgrammeFundPersistenceProvider(
         repository.findTop20ByOrderById().toModel()
 
     @Transactional
+    override fun getById(fundId: Long): ProgrammeFund =
+        repository.getById(fundId).toModel()
+
+    @Transactional
     override fun updateFunds(toDeleteIds: Set<Long>, funds: Set<ProgrammeFund>): List<ProgrammeFund> {
         repository.deleteAllByIdInBatch(toDeleteIds)
         return repository.saveAll(funds.toEntity()).toModel()

@@ -7,6 +7,8 @@ export class ProjectLumpSum {
   comment: string;
   readyForPayment: boolean;
   fastTrack: boolean;
+  paymentEnabledDate: Date; //TODO: might not be necessary
+  lastApprovedVersionBeforeReadyForPayment: string;
 
   constructor(
     programmeLumpSumId: number,
@@ -14,7 +16,9 @@ export class ProjectLumpSum {
     lumpSumContributions: PartnerContribution[],
     comment: string,
     readyForPayment: boolean,
-    fastTrack: boolean
+    fastTrack: boolean,
+    paymentEnabledDate: Date,
+    lastApprovedVersionBeforeReadyForPayment: string
   ) {
     this.programmeLumpSumId = programmeLumpSumId;
     this.period = period;
@@ -22,5 +26,7 @@ export class ProjectLumpSum {
     this.comment = comment;
     this.readyForPayment = readyForPayment;
     this.fastTrack = fastTrack;
+    this.paymentEnabledDate = paymentEnabledDate;
+    this.lastApprovedVersionBeforeReadyForPayment = lastApprovedVersionBeforeReadyForPayment;
   }
 }

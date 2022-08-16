@@ -1,15 +1,12 @@
 package io.cloudflight.jems.server.project.repository.lumpsum
 
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumEntity
-import io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumEntity
-import io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumId
-import io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumRow
-import io.cloudflight.jems.server.project.entity.lumpsum.ProjectPartnerLumpSumEntity
-import io.cloudflight.jems.server.project.entity.lumpsum.ProjectPartnerLumpSumId
+import io.cloudflight.jems.server.project.entity.lumpsum.*
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectPartnerLumpSum
-import kotlin.collections.HashSet
+import java.time.ZoneOffset
+import java.time.ZonedDateTime
 
 fun List<ProjectLumpSumEntity>.toModel() = sortedBy { it.id.orderNr }.map {
     ProjectLumpSum(
@@ -18,9 +15,22 @@ fun List<ProjectLumpSumEntity>.toModel() = sortedBy { it.id.orderNr }.map {
         lumpSumContributions = it.lumpSumContributions.toModel(),
         isFastTrack = it.programmeLumpSum.isFastTrack,
         readyForPayment = it.isReadyForPayment,
-        comment = it.comment
+        comment = it.comment,
+        lastApprovedVersionBeforeReadyForPayment = it.lastApprovedVersionBeforeReadyForPayment,
+        paymentEnabledDate = it.paymentEnabledDate
     )
 }
+
+//fun ProjectLumpSumEntity.toModel() = ProjectLumpSum(
+//    period = endPeriod,
+//    programmeLumpSumId = programmeLumpSum.id,
+//    lumpSumContributions = lumpSumContributions.toModel(),
+//    isFastTrack = programmeLumpSum.isFastTrack,
+//    readyForPayment = isReadyForPayment,
+//    comment = comment,
+//    lastApprovedProjectVersion = lastApprovedProjectVersion,
+//    paymentEnabledDate = paymentEnabledDate
+//)
 
 fun Iterable<ProjectPartnerLumpSumEntity>.toModel() = sortedBy { it.id.projectPartner.sortNumber }
     .map {
@@ -41,7 +51,9 @@ fun ProjectLumpSum.toEntity(
         endPeriod = period,
         lumpSumContributions = lumpSumContributions.toPartnerLumpSumEntity(projectLumpSumId, getProjectPartner),
         isReadyForPayment = readyForPayment,
-        comment = comment
+        comment = comment,
+        lastApprovedVersionBeforeReadyForPayment = lastApprovedVersionBeforeReadyForPayment,
+        paymentEnabledDate = paymentEnabledDate
     )
 }
 
@@ -81,6 +93,8 @@ fun List<ProjectLumpSumRow>.toProjectLumpSumHistoricalData() =
                 }.toList(),
             isFastTrack = groupedRows.value.first().fastTrack != 0,
             readyForPayment = groupedRows.value.first().readyForPayment != 0,
-            comment = groupedRows.value.first().comment
+            comment = groupedRows.value.first().comment,
+            paymentEnabledDate = if(groupedRows.value.first().paymentEnabledDate != null) { ZonedDateTime.of(groupedRows.value.first().paymentEnabledDate!!.toLocalDateTime(), ZoneOffset.UTC)} else null,
+            lastApprovedVersionBeforeReadyForPayment = groupedRows.value.first().lastApprovedVersionBeforeReadyForPayment
         )
     }

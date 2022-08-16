@@ -36,6 +36,11 @@ export class Permission {
     PermissionsEnum.InstitutionsAssignmentUpdate,
   ];
 
+  public static readonly PAYMENTS_PERMISSIONS = [
+    PermissionsEnum.PaymentsRetrieve,
+    PermissionsEnum.PaymentsUpdate
+  ]
+
   public static readonly DEFAULT_USER_CREATE_AND_COLLABORATE_PERMISSIONS: PermissionNode[] = [
     {
       name: 'project.application.reporting.title',
@@ -329,6 +334,21 @@ export class Permission {
             PermissionsEnum.CallPublishedRetrieve,
           ],
           viewTooltip: 'call.list.open.title.view.tooltip'
+        },
+      ],
+    },
+    {
+      name: 'topbar.main.payments',
+      mode: PermissionMode.HIDDEN_VIEW,
+      icon: 'payments',
+      children: [
+        {
+          name: 'permission.payments.projects',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [PermissionsEnum.PaymentsRetrieve],
+          editPermissions: [PermissionsEnum.PaymentsUpdate],
+          viewTooltip: 'permission.payments.view.tooltip',
+          editTooltip: 'permission.payments.edit.tooltip',
         },
       ],
     },

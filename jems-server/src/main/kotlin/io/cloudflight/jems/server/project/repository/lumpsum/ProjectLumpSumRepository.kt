@@ -22,7 +22,9 @@ interface ProjectLumpSumRepository : PagingAndSortingRepository<ProjectLumpSumEn
              partnerLumpSum.amount as amount,
              CONVERT(programmeLumpSum.is_fast_track, INT) as fastTrack,
              CONVERT(entity.is_ready_for_payment, INT) as readyForPayment,
-             entity.comment as comment
+             entity.comment as comment,
+             entity.payment_enabled_date as paymentEnabledDate,
+             entity.last_approved_version_before_ready_for_payment as lastApprovedVersionBeforeReadyForPayment
              FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
              LEFT JOIN project_partner_lump_sum FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS partnerLumpSum ON partnerLumpSum.project_id = entity.project_id AND partnerLumpSum.order_nr = entity.order_nr
              LEFT JOIN programme_lump_sum AS programmeLumpSum ON programmeLumpSum.id = entity.programme_lump_sum_id
@@ -47,4 +49,6 @@ interface ProjectLumpSumRepository : PagingAndSortingRepository<ProjectLumpSumEn
              """
     )
     fun findAllByProgrammeLumpSumId(programmeLumpSumId: Long): List<ProjectLumpSumRowForProgrammeLocking>
+
+    fun getByIdProjectId(projectId: Long): List<ProjectLumpSumEntity>
 }

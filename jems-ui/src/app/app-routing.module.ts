@@ -37,6 +37,15 @@ export const routes: Routes = [
         data: {skipBreadcrumb: true},
       },
       {
+        path: 'payments',
+        loadChildren: () => import('./payments/payments.module').then(m => m.PaymentsModule),
+        canActivate: [PermissionGuard],
+        data: {
+          skipBreadcrumb: true,
+          permissionsOnly:  Permission.PAYMENTS_PERMISSIONS
+        },
+      },
+      {
         path: 'call',
         loadChildren: () => import('./call/call.module').then(m => m.CallModule),
         data: {skipBreadcrumb: true},

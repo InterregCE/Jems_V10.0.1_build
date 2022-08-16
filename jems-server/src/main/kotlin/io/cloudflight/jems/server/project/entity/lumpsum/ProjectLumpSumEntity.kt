@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.entity.lumpsum
 
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumEntity
+import java.time.ZonedDateTime
 import javax.persistence.CascadeType
 import javax.persistence.EmbeddedId
 import javax.persistence.Entity
@@ -27,4 +28,8 @@ data class ProjectLumpSumEntity(
 
     @OneToMany(mappedBy = "id.projectLumpSumId", cascade = [CascadeType.ALL], orphanRemoval = true)
     val lumpSumContributions: Set<ProjectPartnerLumpSumEntity> = emptySet(),
+
+    var paymentEnabledDate: ZonedDateTime?,
+
+    var lastApprovedVersionBeforeReadyForPayment: String?
 )

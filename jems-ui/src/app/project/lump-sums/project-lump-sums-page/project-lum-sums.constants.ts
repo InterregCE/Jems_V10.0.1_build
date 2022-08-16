@@ -17,6 +17,8 @@ export class ProjectLumSumsConstants {
     readyForPayment: 'readyForPayment',
     comment: 'comment',
     fastTrack: 'fastTrack',
+    paymentEnabledDate: 'paymentEnabledDate',
+    lastApprovedVersionBeforeReadyForPayment: 'lastApprovedVersionBeforeReadyForPayment',
   };
 
   public static FORM_ERRORS = {
