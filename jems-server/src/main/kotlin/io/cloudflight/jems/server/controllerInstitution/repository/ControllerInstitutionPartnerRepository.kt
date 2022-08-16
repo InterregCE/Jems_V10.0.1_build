@@ -2,45 +2,64 @@ package io.cloudflight.jems.server.controllerInstitution.repository
 
 import io.cloudflight.jems.server.controllerInstitution.entity.ControllerInstitutionPartnerEntity
 import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerAssignmentWithUsers
-import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerDetails
+import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerDetailsRow
 import io.cloudflight.jems.server.controllerInstitution.service.model.UserInstitutionAccessLevel
-import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Query
+import org.springframework.stereotype.Repository
 
+@Repository
 interface ControllerInstitutionPartnerRepository: JpaRepository<ControllerInstitutionPartnerEntity, Long> {
 
 
+    // outer select is needed because hibernate tries to use the alias of the first table used in the query when it applies the sorting criteria
     @Query(
-        """
-        SELECT new io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerDetails(
-            cip.institutionId,
-            pp.id,
-            pp.abbreviation,
-            pp.active,
-            pp.role,
-            pp.sortNumber,
-            ppa.address.nutsRegion3,
-            concat(ppa.address.street, ', ', ppa.address.houseNumber, ', ', ppa.address.city, ', ', ppa.address.country),
-            p.call.id,
-            p.id,
-            p.acronym
-        )
-        FROM project AS p
-        INNER JOIN project_status AS ps
-            ON p.currentStatus.id = ps.id
-        INNER JOIN project_partner AS pp
-            ON p.id = pp.project.id
-        LEFT JOIN project_partner_address AS ppa
-            ON pp.id = ppa.addressId.partnerId AND ppa.addressId.type = 'Organization'
-        LEFT JOIN controller_institution_partner AS cip
-            ON cip.partnerId = pp.id
-        WHERE ps.status NOT IN :statuses
-        """
+        """SELECT * FROM (
+            SELECT
+            cip.institution_id AS institutionId,
+            projectPartner.id AS partnerId,
+            projectPartner.abbreviation AS partnerName,
+            projectPartner.active AS partnerStatus,
+            projectPartner.sort_number AS partnerSortNumber,
+            projectPartner.role AS partnerRole,
+            partnerAddress.nuts_region3 AS partnerNuts3,
+            partnerAddress.country AS country,
+            partnerAddress.city AS city,
+            partnerAddress.street AS street,
+            partnerAddress.house_number AS houseNumber,
+            project.project_call_id AS callId,
+            project.id AS projectId,
+            project.custom_identifier AS projectCustomIdentifier,
+            project.acronym AS projectAcronym
+            FROM optimization_project_version AS opv
+            INNER JOIN project FOR SYSTEM_TIME AS OF TIMESTAMP opv.last_approved_version AS project
+                ON project.id = opv.project_id
+            INNER JOIN project_partner FOR SYSTEM_TIME AS OF TIMESTAMP opv.last_approved_version AS projectPartner
+                ON project.id = projectPartner.project_id
+            LEFT JOIN project_partner_address FOR SYSTEM_TIME AS OF TIMESTAMP opv.last_approved_version AS partnerAddress
+                ON projectPartner.id = partnerAddress.partner_id AND partnerAddress.type = 'Organization'
+            LEFT JOIN controller_institution_partner AS cip
+                ON cip.partner_id = projectPartner.id
+        ) as assignment
+
+        """,
+        countQuery = """
+            SELECT count(projectPartner.id)
+            FROM optimization_project_version AS opv
+            INNER JOIN project FOR SYSTEM_TIME AS OF TIMESTAMP opv.last_approved_version AS project
+            ON project.id = opv.project_id
+            INNER JOIN project_partner FOR SYSTEM_TIME AS OF TIMESTAMP opv.last_approved_version AS projectPartner
+            ON project.id = projectPartner.project_id
+            LEFT JOIN project_partner_address FOR SYSTEM_TIME AS OF TIMESTAMP opv.last_approved_version AS partnerAddress
+            ON projectPartner.id = partnerAddress.partner_id AND partnerAddress.type = 'Organization'
+            LEFT JOIN controller_institution_partner AS cip
+            ON cip.partner_id = projectPartner.id
+        """,
+        nativeQuery = true
     )
-    fun getInstitutionPartnerAssignments(pageable: Pageable, statuses: List<ApplicationStatus>): Page<InstitutionPartnerDetails>
+    fun getInstitutionPartnerAssignments(pageable: Pageable): Page<InstitutionPartnerDetailsRow>
 
     fun findAllByPartnerIdIn(partnerIds: Set<Long>): List<ControllerInstitutionPartnerEntity>
 

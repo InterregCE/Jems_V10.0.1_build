@@ -51,7 +51,7 @@ export class InstitutionsAssignmentsPageComponent{
   institutionAssignmentsChanges: {
     assignmentsToAdd: InstitutionPartnerAssignmentDTO[];
     assignmentsToRemove: InstitutionPartnerAssignmentDTO[];
-  } = {assignmentsToAdd: [], assignmentsToRemove: []}; //TODO update with new DTO
+  } = {assignmentsToAdd: [], assignmentsToRemove: []};
 
 
   institutionsAssignmentForm = this.formBuilder.group({
@@ -121,7 +121,7 @@ export class InstitutionsAssignmentsPageComponent{
         },
         {
           displayedColumn: 'controller.institutions.assignment.table.project.id.column.headline',
-          elementProperty: 'projectId',
+          elementProperty: 'projectCustomIdentifier',
           columnWidth: ColumnWidth.IdColumn
         },
         {

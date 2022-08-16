@@ -13,5 +13,6 @@ data class InstitutionPartnerDetails(
     val partnerAddress: String?,
     val callId: Long,
     val projectId: Long,
+    val projectCustomIdentifier: String,
     val projectAcronym: String
 )

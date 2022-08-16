@@ -29,6 +29,7 @@ class GetInstitutionPartnerAssignmentTest: UnitTest() {
                 partnerAddress = "",
                 callId = 1L,
                 projectId = 1L,
+                projectCustomIdentifier = "0001",
                 projectAcronym = "Project Test"
            ),
            InstitutionPartnerDetails(
@@ -42,6 +43,7 @@ class GetInstitutionPartnerAssignmentTest: UnitTest() {
                partnerAddress = "",
                callId = 1L,
                projectId = 1L,
+               projectCustomIdentifier = "0001",
                projectAcronym = "Project Test"
            )
        )

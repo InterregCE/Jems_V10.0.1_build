@@ -2,17 +2,30 @@ package io.cloudflight.jems.server.controllerInstitution.service
 
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.controllerInstitution.*
+import io.cloudflight.jems.server.controllerInstitution.ControllerInstitutionPersistence
+import io.cloudflight.jems.server.controllerInstitution.MONITOR_USER_1_EMAIL
+import io.cloudflight.jems.server.controllerInstitution.MONITOR_USER_1_ID
+import io.cloudflight.jems.server.controllerInstitution.MONITOR_USER_2_EMAIL
+import io.cloudflight.jems.server.controllerInstitution.MONITOR_USER_2_ID
 import io.cloudflight.jems.server.controllerInstitution.entity.ControllerInstitutionUserEntity
 import io.cloudflight.jems.server.controllerInstitution.entity.ControllerInstitutionUserId
-import io.cloudflight.jems.server.controllerInstitution.repository.*
+import io.cloudflight.jems.server.controllerInstitution.institutionUsers
+import io.cloudflight.jems.server.controllerInstitution.nutsRegion3Entity
+import io.cloudflight.jems.server.controllerInstitution.repository.ControllerInstitutionPartnerRepository
+import io.cloudflight.jems.server.controllerInstitution.repository.ControllerInstitutionPersistenceProvider
+import io.cloudflight.jems.server.controllerInstitution.repository.ControllerInstitutionRepository
+import io.cloudflight.jems.server.controllerInstitution.repository.ControllerInstitutionUserRepository
+import io.cloudflight.jems.server.controllerInstitution.repository.toDto
+import io.cloudflight.jems.server.controllerInstitution.repository.toEntity
+import io.cloudflight.jems.server.controllerInstitution.repository.toModel
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitution
 import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerDetails
+import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerDetailsRow
 import io.cloudflight.jems.server.controllerInstitution.service.model.UpdateControllerInstitution
 import io.cloudflight.jems.server.controllerInstitution.service.model.UserInstitutionAccessLevel
 import io.cloudflight.jems.server.nuts.repository.NutsRegion3Repository
 import io.cloudflight.jems.server.project.entity.partner.ControllerInstitutionEntity
-import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.project.service.partner.getPartnerAddressOrEmptyString
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
@@ -33,7 +46,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import java.time.ZonedDateTime
-import java.util.*
+import java.util.Optional
 
 
 class ControllerInstitutionPersistenceProviderTest : UnitTest() {
@@ -103,19 +116,37 @@ class ControllerInstitutionPersistenceProviderTest : UnitTest() {
             createdAt = ZonedDateTime.now()
         )
         private val InstitutionPartnerDetail =  InstitutionPartnerDetails(
-            institutionId = io.cloudflight.jems.server.controllerInstitution.INSTITUTION_ID,
+            institutionId = INSTITUTION_ID,
             partnerId = 1L,
             partnerName = "A",
             partnerStatus = true,
             partnerRole = ProjectPartnerRole.LEAD_PARTNER,
             partnerSortNumber = 1,
             partnerNuts3 = "RO113",
-            partnerAddress = "",
+            partnerAddress = "Vienna, Main street, 123A, Austria",
             callId = 1L,
             projectId = 1L,
+            projectCustomIdentifier = "0001",
             projectAcronym = "Project Test"
         )
-        private val institutionPartnerDetailList = listOf(InstitutionPartnerDetail)
+
+        private class InstitutionPartnerDetailsRowImpl(
+            override val institutionId: Long?,
+            override val partnerId: Long,
+            override val partnerName: String,
+            override val partnerStatus: Boolean,
+            override val partnerSortNumber: Int,
+            override val partnerRole: String,
+            override val partnerNuts3: String,
+            override val country: String,
+            override val city: String,
+            override val street: String,
+            override val houseNumber: String,
+            override val callId: Long,
+            override val projectId: Long,
+            override val projectCustomIdentifier: String,
+            override val projectAcronym: String
+        ): InstitutionPartnerDetailsRow
     }
 
     @Test
@@ -245,27 +276,27 @@ class ControllerInstitutionPersistenceProviderTest : UnitTest() {
 
     @Test
     fun `get institution partner assignments`() {
-        val applicationFormStatuses = listOf(
-            ApplicationStatus.STEP1_DRAFT,
-            ApplicationStatus.STEP1_SUBMITTED,
-            ApplicationStatus.STEP1_ELIGIBLE,
-            ApplicationStatus.STEP1_INELIGIBLE,
-            ApplicationStatus.STEP1_APPROVED,
-            ApplicationStatus.STEP1_APPROVED_WITH_CONDITIONS,
-            ApplicationStatus.STEP1_NOT_APPROVED,
-            ApplicationStatus.DRAFT,
-            ApplicationStatus.SUBMITTED,
-            ApplicationStatus.CONDITIONS_SUBMITTED,
-            ApplicationStatus.RETURNED_TO_APPLICANT,
-            ApplicationStatus.RETURNED_TO_APPLICANT_FOR_CONDITIONS,
-            ApplicationStatus.ELIGIBLE,
-            ApplicationStatus.INELIGIBLE,
-            ApplicationStatus.APPROVED_WITH_CONDITIONS,
-            ApplicationStatus.NOT_APPROVED,
-        )
-        every { institutionPartnerRepository.getInstitutionPartnerAssignments(Pageable.unpaged(), applicationFormStatuses) } returns
-            PageImpl(institutionPartnerDetailList)
-
+        val listInstitutionPartnerDetailsRowImpl = listOf(InstitutionPartnerDetailsRowImpl(
+            institutionId = INSTITUTION_ID,
+            partnerId = 1L,
+            partnerName = "A",
+            partnerStatus = true,
+            partnerRole = "LEAD_PARTNER",
+            partnerSortNumber = 1,
+            country = "Austria",
+            city = "Vienna",
+            street = "Main street",
+            houseNumber = "123A",
+            partnerNuts3 = "RO113",
+            callId = 1L,
+            projectId = 1L,
+            projectCustomIdentifier = "0001",
+            projectAcronym = "Project Test"
+        ))
+        every { institutionPartnerRepository.getInstitutionPartnerAssignments(Pageable.unpaged()) } returns PageImpl(listInstitutionPartnerDetailsRowImpl)
+        assertThat(institutionPartnerRepository.getInstitutionPartnerAssignments(Pageable.unpaged()).content[0].toModel()).isEqualTo(InstitutionPartnerDetail)
+        assertThat(getPartnerAddressOrEmptyString("Austria","Vienna", "Main street","123A")).isNotEmpty
+        assertThat(institutionPartnerRepository.getInstitutionPartnerAssignments(Pageable.unpaged()).toModel()).contains(InstitutionPartnerDetail)
         assertThat(controllerInstitutionPersistenceProvider.getInstitutionPartnerAssignments(Pageable.unpaged()).content).containsExactly(
             InstitutionPartnerDetail
         )

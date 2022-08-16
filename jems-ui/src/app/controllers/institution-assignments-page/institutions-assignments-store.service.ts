@@ -23,7 +23,7 @@ export class InstitutionsAssignmentsStoreService {
   newSort$ = new Subject<Partial<MatSort>>();
   updatedControllerInstitutionPartnerAssignment = new Subject<InstitutionPartnerAssignmentDTO[]>();
   private controllerInstitutionUpdateEvent$ = new BehaviorSubject(null);
-  private initialSort = `${Tables.DEFAULT_INITIAL_SORT.active},${Tables.DEFAULT_INITIAL_SORT.direction}`;
+  private initialSort = "partnerId,asc";
 
   constructor(private controllerInstitutionsApiService: ControllerInstitutionsApiService,
               private formService: FormService) {
