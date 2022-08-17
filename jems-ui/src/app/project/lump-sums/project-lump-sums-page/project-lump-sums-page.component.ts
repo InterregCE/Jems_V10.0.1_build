@@ -199,7 +199,8 @@ export class ProjectLumpSumsPageComponent implements OnInit {
       rowSum: [0],
       gap: [0],
       readyForPayment: [false],
-      comment: ['']
+      comment: [''],
+      fastTrack: [false]
     });
     this.addItemToItems(item);
     this.tableData = [...this.items.controls];
@@ -311,7 +312,8 @@ export class ProjectLumpSumsPageComponent implements OnInit {
         rowSum: [rowSum],
         gap: [ProjectLumpSumsPageComponent.calculateGap(lumpSum?.cost || 0, rowSum)],
         readyForPayment: [projectLumpSum.readyForPayment],
-        comment: [projectLumpSum.comment]
+        comment: [projectLumpSum.comment],
+        fastTrack: [projectLumpSum.fastTrack]
       });
       this.addItemToItems(item);
     });
@@ -330,6 +332,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
           this.getPartnerContributionFormArray(formGroup)?.controls.forEach((partner: FormGroup) => partner.disable());
           formGroup.get(this.constants.FORM_CONTROL_NAMES.comment)?.disable();
           formGroup.get(this.constants.FORM_CONTROL_NAMES.readyForPayment)?.disable();
+          formGroup.get(this.constants.FORM_CONTROL_NAMES.fastTrack)?.disable();
         }
       });
       }, 0);
@@ -351,6 +354,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
         this.getPartnerContributionFormArray(formGroup)?.value,
         formGroup.get(this.constants.FORM_CONTROL_NAMES.comment)?.value,
         formGroup.get(this.constants.FORM_CONTROL_NAMES.readyForPayment)?.value,
+        formGroup.get(this.constants.FORM_CONTROL_NAMES.fastTrack)?.value,
       );
     });
   }

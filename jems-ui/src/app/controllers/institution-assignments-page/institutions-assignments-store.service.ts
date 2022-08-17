@@ -11,7 +11,7 @@ import {startWith, switchMap, tap} from 'rxjs/operators';
 import {Tables} from '@common/utils/tables';
 import {Log} from '@common/utils/log';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {FormService} from "@common/components/section/form/form.service";
+import {FormService} from '@common/components/section/form/form.service';
 
 @Injectable()
 @UntilDestroy()

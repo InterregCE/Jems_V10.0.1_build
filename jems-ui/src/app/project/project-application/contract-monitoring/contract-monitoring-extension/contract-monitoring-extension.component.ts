@@ -10,13 +10,14 @@ import {
   InputTranslation,
   ProjectContractingMonitoringAddDateDTO,
   ProjectContractingMonitoringDTO,
-  ProjectPartnerLumpSumDTO
+  ProjectPartnerLumpSumDTO, ProjectStatusDTO
 } from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
 import {ProgrammeLumpSum} from '@project/model/lump-sums/programmeLumpSum';
 import {ProjectLumpSumsStore} from '@project/lump-sums/project-lump-sums-page/project-lump-sums-store.service';
 import {ProjectPeriod} from '@project/model/ProjectPeriod';
 import {TranslateService} from '@ngx-translate/core';
+import { ProjectStore } from '@project/project-application/containers/project-application-detail/services/project-store.service';
 
 @Component({
   selector: 'jems-contract-monitoring-extension',
@@ -44,6 +45,7 @@ export class ContractMonitoringExtensionComponent {
     contractMonitoringEditable: boolean;
     projectCallLumpSums: ProgrammeLumpSum[];
     periods: ProjectPeriod[];
+    status: ProjectStatusDTO;
   }>;
   isAdditionalDataActivated = false;
 
@@ -53,6 +55,7 @@ export class ContractMonitoringExtensionComponent {
               private activatedRoute: ActivatedRoute,
               private contractMonitoringExtensionStore: ContractMonitoringExtensionStore,
               private projectLumpSumsStore: ProjectLumpSumsStore,
+              private projectStore: ProjectStore,
               private translateService: TranslateService,) {
     this.projectId = this.activatedRoute.snapshot.params.projectId;
     this.data$ = combineLatest([
@@ -61,16 +64,18 @@ export class ContractMonitoringExtensionComponent {
       this.contractMonitoringExtensionStore.contractMonitoringEditable$,
       this.projectLumpSumsStore.projectCallLumpSums$,
       this.projectLumpSumsStore.projectPeriods$,
+      this.projectStore.currentVersionOfProjectStatus$
     ]).pipe(
-      map(([projectContractingMonitoring, contractMonitoringViewable, contractMonitoringEditable, projectCallLumpSums, periods]) => ({
+      map(([projectContractingMonitoring, contractMonitoringViewable, contractMonitoringEditable, projectCallLumpSums, periods, status]) => ({
         projectContractingMonitoring,
         contractMonitoringViewable,
         contractMonitoringEditable,
         projectCallLumpSums,
-        periods
+        periods,
+        status
       })),
       tap(data => this.initForm(data.contractMonitoringEditable)),
-      tap(data => this.resetForm(data.projectContractingMonitoring, data.contractMonitoringEditable))
+      tap(data => this.resetForm(data.projectContractingMonitoring, data.contractMonitoringEditable, data.status.status))
     );
   }
 
@@ -110,7 +115,7 @@ export class ContractMonitoringExtensionComponent {
     return this.decisionForm.get('additionalEntryIntoForceItems') as FormArray;
   }
 
-  resetForm(projectContractingMonitoring: ProjectContractingMonitoringDTO, isEditable: boolean): void {
+  resetForm(projectContractingMonitoring: ProjectContractingMonitoringDTO, isEditable: boolean, status: string): void {
     this.isAdditionalDataActivated = false;
     this.additionalEntryIntoForceItems.clear();
     this.decisionForm.controls.startDate.setValue(projectContractingMonitoring.startDate);
@@ -132,6 +137,7 @@ export class ContractMonitoringExtensionComponent {
         lumpSumContributions: this.formBuilder.control(lumpSum?.lumpSumContributions),
         comment: this.formBuilder.control(lumpSum?.comment || '', Validators.maxLength(200)),
         readyForPayment: this.formBuilder.control(lumpSum?.readyForPayment || false),
+        fastTrack: this.formBuilder.control(lumpSum?.fastTrack || false),
       }));
     });
 
@@ -150,6 +156,13 @@ export class ContractMonitoringExtensionComponent {
       this.additionalEntryIntoForceItems.disable();
     }
     this.tableData = [...this.additionalEntryIntoForceItems.controls];
+
+    if (status === ProjectStatusDTO.StatusEnum.MODIFICATIONPRECONTRACTING
+      || status === ProjectStatusDTO.StatusEnum.MODIFICATIONPRECONTRACTINGSUBMITTED
+      || status === ProjectStatusDTO.StatusEnum.INMODIFICATION
+      || status === ProjectStatusDTO.StatusEnum.MODIFICATIONSUBMITTED) {
+      this.lumpSumsForm.disable();
+    }
   }
 
   onSubmit(): void {
@@ -181,6 +194,7 @@ export class ContractMonitoringExtensionComponent {
         lumpSumContributions: lumpSum.lumpSumContributions,
         comment: lumpSum.comment,
         readyForPayment: lumpSum.readyForPayment,
+        fastTrack: lumpSum.fastTrack,
       }))
     } as ProjectContractingMonitoringDTO;
   }
@@ -232,5 +246,9 @@ export class ContractMonitoringExtensionComponent {
     return contributions.reduce((accumulator, lumpSumContribution) => {
       return accumulator + lumpSumContribution.amount;
     }, 0);
+  }
+
+  areThereFastTrackLumpSums(): boolean {
+    return this.lumpSumsForm.controls.filter(control => control.value.fastTrack === true).length > 0;
   }
 }

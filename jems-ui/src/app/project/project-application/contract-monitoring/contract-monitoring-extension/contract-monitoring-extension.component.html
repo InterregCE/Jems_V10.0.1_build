@@ -1,6 +1,6 @@
 <div>
     <jems-form *ngIf="data$ | async as data" (save)="onSubmit()"
-               (discard)="resetForm(data.projectContractingMonitoring, data.contractMonitoringEditable)" jemsFormLayout [formGroup]="decisionForm" >
+               (discard)="resetForm(data.projectContractingMonitoring, data.contractMonitoringEditable, data.status.status)" jemsFormLayout [formGroup]="decisionForm" >
         <div jemsMultiColumnRow>
             <mat-form-field jemsFormFieldWidth="half">
                 <mat-label>{{'project.application.contract.monitoring.project.start.date' | translate | dateFormatInfo}}</mat-label>
@@ -194,41 +194,47 @@
             </div>
         </div>
 
-        <h3>{{'project.application.contract.monitoring.project.fast.track.lump.sums.title' | translate}}</h3>
-        <div [jemsTableConfig]="[{maxInRem:7}, {maxInRem:6}, {maxInRem:8}, {maxInRem:6}, {}]">
-            <div class="mat-body-strong">
-                <span>{{'project.application.contract.monitoring.project.fast.track.lump.sum' | translate }}</span>
-                <span>{{'project.application.contract.monitoring.project.total.amount.approved' | translate }}</span>
-                <span>{{'project.application.contract.monitoring.project.period' | translate }}</span>
-                <span>{{'project.application.contract.monitoring.project.ready.for.payment' | translate }}</span>
-                <span>{{'project.application.contract.monitoring.project.topology.comment' | translate }}</span>
-            </div>
+        <ng-container *ngIf="areThereFastTrackLumpSums()">
+            <h3>{{'project.application.contract.monitoring.project.fast.track.lump.sums.title' | translate}}
+                <jems-context-info    infoText="{{ 'project.application.set.to.contracted.lump.sums.info' | translate }}"
+                                      infoPosition="right">
+                </jems-context-info>
+            </h3>
+            <div [jemsTableConfig]="[{maxInRem:7}, {maxInRem:6}, {maxInRem:8}, {maxInRem:6}, {}]">
+                <div class="mat-body-strong">
+                    <span>{{'project.application.contract.monitoring.project.fast.track.lump.sum' | translate }}</span>
+                    <span>{{'project.application.contract.monitoring.project.total.amount.approved' | translate }}</span>
+                    <span>{{'project.application.contract.monitoring.project.period' | translate }}</span>
+                    <span>{{'project.application.contract.monitoring.project.ready.for.payment' | translate }}</span>
+                    <span>{{'project.application.contract.monitoring.project.topology.comment' | translate }}</span>
+                </div>
 
-            <div *ngFor="let lumpSum of lumpSumsForm.controls;let i=index">
-                <ng-container formArrayName="lumpSums">
-                    <ng-container [formGroupName]="i">
-                        <span>{{getLumpSum(lumpSum?.value?.programmeLumpSumId, data.projectCallLumpSums) | translateBySystemLanguage | async}}</span>
-                        <span>{{getAmount(lumpSum?.value?.lumpSumContributions) | asMoney}}</span>
-                        <span>{{getPeriodLabel(lumpSum?.value?.period, data.periods)}}</span>
-                        <div>
-                            <mat-button-toggle-group formControlName="readyForPayment">
-                                <mat-button-toggle [value]="true">{{'common.yes' | translate}}</mat-button-toggle>
-                                <mat-button-toggle [value]="false">{{'common.no' | translate}}</mat-button-toggle>
-                            </mat-button-toggle-group>
-                        </div>
-                        <div>
-                            <jems-expandable-textarea jemsMultiColumnRow class="mt-2"
-                                                      [control]="lumpSum?.get('comment')"
-                                                      [errors]="lumpSum?.get('comment')?.errors"
-                                                      [characterLimit]="200"
-                                                      [minRows]="1"
-                                                      [maxRows]="30"
-                                                      label='common.textarea.enter.text'>
-                            </jems-expandable-textarea>
-                        </div>
+                <div *ngFor="let lumpSum of lumpSumsForm.controls;let i=index">
+                    <ng-container formArrayName="lumpSums" *ngIf="lumpSum?.value?.fastTrack">
+                        <ng-container [formGroupName]="i">
+                            <span>{{getLumpSum(lumpSum?.value?.programmeLumpSumId, data.projectCallLumpSums) | translateBySystemLanguage | async}}</span>
+                            <span>{{getAmount(lumpSum?.value?.lumpSumContributions) | asMoney}}</span>
+                            <span>{{getPeriodLabel(lumpSum?.value?.period, data.periods)}}</span>
+                            <div>
+                                <mat-button-toggle-group formControlName="readyForPayment">
+                                    <mat-button-toggle [value]="true">{{'common.yes' | translate}}</mat-button-toggle>
+                                    <mat-button-toggle [value]="false">{{'common.no' | translate}}</mat-button-toggle>
+                                </mat-button-toggle-group>
+                            </div>
+                            <div>
+                                <jems-expandable-textarea jemsMultiColumnRow class="mt-2"
+                                                          [control]="lumpSum?.get('comment')"
+                                                          [errors]="lumpSum?.get('comment')?.errors"
+                                                          [characterLimit]="200"
+                                                          [minRows]="1"
+                                                          [maxRows]="30"
+                                                          label='common.textarea.enter.text'>
+                                </jems-expandable-textarea>
+                            </div>
+                        </ng-container>
                     </ng-container>
-                </ng-container>
+                </div>
             </div>
-        </div>
+        </ng-container>
     </jems-form>
 </div>

@@ -16,6 +16,7 @@ export class ProjectLumSumsConstants {
     items: 'items',
     readyForPayment: 'readyForPayment',
     comment: 'comment',
+    fastTrack: 'fastTrack',
   };
 
   public static FORM_ERRORS = {
