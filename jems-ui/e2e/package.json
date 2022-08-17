@@ -17,7 +17,7 @@
     "date-and-time": "^2.4.1",
     "node-fetch": "^2.6.7",
     "node-xlsx": "^0.21.0",
-    "pdf-parse": "^1.1.1",
+    "compare-pdf": "^1.1.8",
     "typescript": "^4.7.4",
     "wait-on": "^6.0.1"
   }
