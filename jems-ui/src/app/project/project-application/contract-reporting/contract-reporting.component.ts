@@ -125,9 +125,11 @@ export class ContractReportingComponent implements OnInit {
   }
 
   private initForm(isEditable: boolean): void {
-    this.columnsToDisplay.push('deadlineReportType', 'deadlinePeriod', 'deadlineDate', 'deadlineComment');
-    if (isEditable) {
-      this.columnsToDisplay.push('deadlineDelete');
+    if (this.columnsToDisplay.length === 0) {
+      this.columnsToDisplay.push('deadlineReportType', 'deadlinePeriod', 'deadlineDate', 'deadlineComment');
+      if (isEditable) {
+        this.columnsToDisplay.push('deadlineDelete');
+      }
     }
     this.reportingDeadlinesForm = this.formBuilder.group({
       deadlines: this.formBuilder.array([], Validators.maxLength(50)),
