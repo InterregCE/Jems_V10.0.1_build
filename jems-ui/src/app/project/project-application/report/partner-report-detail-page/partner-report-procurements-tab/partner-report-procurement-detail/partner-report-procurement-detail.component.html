@@ -1,2 +1,3 @@
 <jems-partner-procurement-identification [procurementId]="procurementId" (onIdChange)="procurementId = $event"></jems-partner-procurement-identification>
 <jems-partner-procurement-beneficial *ngIf="procurementId > 0"></jems-partner-procurement-beneficial>
+<jems-partner-procurement-subcontract *ngIf="procurementId > 0"></jems-partner-procurement-subcontract>
