@@ -1,9 +1,10 @@
 import {Injectable} from '@angular/core';
 import {combineLatest, merge, Observable, Subject} from 'rxjs';
 import {
+  ProjectContractingMonitoringService,
   ProjectContractingReportingScheduleDTO,
   ProjectContractingReportingService,
-  ProjectDetailFormDTO,
+  ProjectDetailFormDTO, ProjectPeriodForMonitoringDTO,
   ProjectUserCollaboratorDTO,
   UserRoleCreateDTO
 } from '@cat/api';
@@ -22,20 +23,21 @@ import LevelEnum = ProjectUserCollaboratorDTO.LevelEnum;
 })
 export class ContractReportingStore {
   projectId$: Observable<number>;
-  projectForm$: Observable<ProjectDetailFormDTO>;
   contractReportingDeadlines$: Observable<ProjectContractingReportingScheduleDTO[]>;
   userCanViewDeadlines$: Observable<boolean>;
   userCanEditDeadlines$: Observable<boolean>;
   savedData$ = new Subject<ProjectContractingReportingScheduleDTO[]>();
+  availablePeriods$: Observable<ProjectPeriodForMonitoringDTO[]>;
 
   constructor(private projectStore: ProjectStore,
               private projectContractingReportingService: ProjectContractingReportingService,
+              private projectContractingMonitoringService: ProjectContractingMonitoringService,
               private permissionService: PermissionService) {
     this.projectId$ = this.projectStore.projectId$;
-    this.projectForm$ = this.projectStore.projectForm$;
     this.contractReportingDeadlines$ = this.contractReportingDeadlines();
     this.userCanViewDeadlines$ = this.userCanViewDeadlines();
     this.userCanEditDeadlines$ = this.userCanEditDeadlines();
+    this.availablePeriods$ = this.contractReportingAvailablePeriods();
   }
 
   save(contractReportingDeadlines: ProjectContractingReportingScheduleDTO[]): Observable<ProjectContractingReportingScheduleDTO[]> {
@@ -81,5 +83,11 @@ export class ContractReportingStore {
       );
   }
 
+  private contractReportingAvailablePeriods(): Observable<ProjectPeriodForMonitoringDTO[]> {
+    return this.projectStore.projectId$
+      .pipe(
+        switchMap(projectId => this.projectContractingMonitoringService.getContractingMonitoringPeriods(projectId)),
+      );
+  }
 
 }
