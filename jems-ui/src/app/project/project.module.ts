@@ -166,6 +166,12 @@ import {
   PartnerReportProcurementDetailComponent
 } from '@project/project-application/report/partner-report-detail-page/partner-report-procurements-tab/partner-report-procurement-detail/partner-report-procurement-detail.component';
 import {ContractReportingComponent} from '@project/project-application/contract-reporting/contract-reporting.component';
+import {
+  PartnerReportProcurementIdentificationComponent
+} from "@project/project-application/report/partner-report-detail-page/partner-report-procurements-tab/partner-report-procurement-detail/partner-report-procurement-identification/partner-report-procurement-identification.component";
+import {
+  PartnerReportProcurementBeneficialComponent
+} from "@project/project-application/report/partner-report-detail-page/partner-report-procurements-tab/partner-report-procurement-detail/partner-report-procurement-beneficial/partner-report-procurement-beneficial.component";
 
 @NgModule({
   declarations: [
@@ -283,6 +289,8 @@ import {ContractReportingComponent} from '@project/project-application/contract-
     PartnerReportSubmitTabComponent,
     PartnerReportProcurementsTabComponent,
     PartnerReportProcurementDetailComponent,
+    PartnerReportProcurementIdentificationComponent,
+    PartnerReportProcurementBeneficialComponent,
     PartnerReportContributionTabComponent,
     PartnerReportExpendituresTabComponent,
     PartnerReportFinancialOverviewTabComponent,

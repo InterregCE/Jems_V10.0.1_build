@@ -1,0 +1,20 @@
+.icon-back {
+  font-size: 2rem;
+  margin-top: -.25rem;
+}
+
+.put-icon-to-header-line {
+  display: inline-block;
+  margin: 0 !important;
+}
+
+#amount {
+  max-width: calc(100% - 11rem);
+  min-width: 10rem;
+  width: 100%;
+}
+#currency {
+  max-width: 10rem;
+  margin-left: 1rem;
+}
+
