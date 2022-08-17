@@ -1,4 +1,4 @@
-package io.cloudflight.jems.api.project.report
+package io.cloudflight.jems.api.project.report.procurement
 
 import io.cloudflight.jems.api.common.dto.IdNamePairDTO
 import io.cloudflight.jems.api.project.dto.report.partner.procurement.ProjectPartnerReportProcurementChangeDTO

@@ -28,10 +28,6 @@ interface ProjectReportProcurementPersistence {
         procurement: ProjectPartnerReportProcurementChange,
     ): ProjectPartnerReportProcurement
 
-    fun deletePartnerReportProcurement(
-        partnerId: Long,
-        reportId: Long,
-        procurementId: Long,
-    )
+    fun deletePartnerReportProcurement(partnerId: Long, reportId: Long, procurementId: Long)
 
 }
