@@ -9,6 +9,10 @@ import java.util.*
 
 @Repository
 interface ControllerInstitutionUserRepository: JpaRepository<ControllerInstitutionUserEntity, ControllerInstitutionUserId> {
+
+    @Query("SELECT e.id.user.id FROM #{#entityName} e")
+    fun getAllInstitutionUsersIds(): Set<Long>
+
     @Query(
         """
             SELECT e FROM #{#entityName} e

@@ -21,6 +21,8 @@ interface ControllerInstitutionPersistence {
 
     fun updateControllerInstitution(controllerInstitution: UpdateControllerInstitution): ControllerInstitution
 
+    fun getAllControllerInstitutionUsersIds(): Set<Long>
+
     fun updateControllerInstitutionUsers(
         institutionId: Long,
         userSummaries: List<UserSummary>,
