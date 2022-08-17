@@ -65,7 +65,7 @@
                       [class.narrow-column-width]="column.columnWidth === ColumnWidth.NarrowColumn"
                       [class.chip-column-width]="column.columnWidth === ColumnWidth.ChipColumn"
                       [class.medium-column-width]="column.columnWidth === ColumnWidth.MediumColumn"
-                      (click)="cellClicked(row, column)"
+                      (click)="column.clickable === false ? $event.stopPropagation() : false"
                       class="cell">
                 <div *ngIf="!column.customCellTemplate; else customCellTemplate"
                      [title]="column.tooltip ? (formatColumnTooltip(column, row) | translate) : ''">
@@ -81,6 +81,7 @@
 
         <mat-header-row *matHeaderRowDef="columnsToDisplay; sticky: true"></mat-header-row>
         <mat-row [class.clickable-table-row]="configuration.isTableClickable"
+                 (click)="rowClicked(row)"
                  *matRowDef="let row; columns: columnsToDisplay;"
                  queryParamsHandling="merge"></mat-row>
     </table>
