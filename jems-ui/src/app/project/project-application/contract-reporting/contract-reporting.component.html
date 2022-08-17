@@ -53,6 +53,8 @@
                     <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                         <div jemsFormFieldWidth="x-large">
                             <jems-project-periods-select
+                                    [required]="true"
+                                    [label]="'project.application.contract.reporting.column.period'"
                                     [periods]="data.periods"
                                     [control]="control.get('deadlinePeriod')"
                                     (selectionChanged)="updateDatePicker(i, data.periods, control.get('deadlinePeriod').value)">
@@ -67,10 +69,12 @@
                     </mat-header-cell>
                     <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                         <mat-form-field jemsFormFieldWidth="full">
+                            <mat-label>{{'project.application.contract.reporting.column.date' | translate}}</mat-label>
                             <input formControlName="deadlineDate" matInput
                                    [min]="control.get('deadlinePeriodStartDate').value"
                                    [max]="control.get('deadlinePeriodEndDate').value"
-                                   [matDatepicker]="deadlineDate">
+                                   [matDatepicker]="deadlineDate"
+                                   required>
                             <mat-datepicker-toggle matSuffix [for]="deadlineDate"></mat-datepicker-toggle>
                             <mat-datepicker #deadlineDate></mat-datepicker>
                         </mat-form-field>
@@ -97,6 +101,7 @@
                     </mat-header-cell>
                     <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                         <button mat-icon-button color="accent"
+                                [disabled] = "deadlines.controls[i].invalid || i >= data.reportingDeadlines.length"
                                 (click)="$event.stopPropagation(); delete(i)"
                                 matTooltip="{{'project.application.form.workpackage.table.action.delete.tooltip' | translate}}">
                             <mat-icon>delete</mat-icon>
@@ -117,7 +122,7 @@
                 <span>{{'project.application.contract.reporting.button.add.deadline' | translate}}</span>
             </button>
         </form>
-        <h4>{{'project.application.contract.reporting.timeplan' | translate}}</h4>
+        <h4 id="timeplanHeader">{{'project.application.contract.reporting.timeplan' | translate}}</h4>
         <jems-project-timeplan-page [reportingDeadlines$]="contractReportingStore.contractReportingDeadlines$"></jems-project-timeplan-page>
     </jems-form>
 </jems-project-page-template>
