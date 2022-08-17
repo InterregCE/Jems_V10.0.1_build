@@ -108,8 +108,11 @@
                             <div *ngIf="partnerContribution?.value?.partner">{{partnerContribution?.value?.name}}</div>
                             <mat-form-field
                                     *ngIf="!partnerContribution.get(constants.FORM_CONTROL_NAMES.partner)?.value">
-                                <input [formControlName]="constants.FORM_CONTROL_NAMES.name" matInput required>
                                 <mat-label>{{ 'project.partner.coFinancing.contribution.source.name' | translate }}</mat-label>
+                                <input #sourceOfContributionInput [formControlName]="constants.FORM_CONTROL_NAMES.name" matInput required>
+                                <mat-hint [jemsHintFor]="sourceOfContributionInput" [hide]="coFinancingForm.get(constants.FORM_CONTROL_NAMES.name)?.errors !== null">
+                                    <jems-text-hint [currentLength]="sourceOfContributionInput?.value?.length" [maxLength]="255"></jems-text-hint>
+                                </mat-hint>
                                 <mat-error>
                                     <jems-form-field-errors
                                             [errors]="partnerContribution.get(constants.FORM_CONTROL_NAMES.name)?.errors"
