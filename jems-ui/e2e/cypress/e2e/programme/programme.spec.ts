@@ -435,7 +435,7 @@ context('Programme management tests', () => {
     });
   });
 
-  it.only('TB-746 Programme conversion rates can be loaded in the system', () => {
+  it('TB-746 Programme conversion rates can be loaded in the system', () => {
     cy.loginByRequest(user.programmeUser.email);
     cy.visit('/', {failOnStatusCode: false});
     cy.get('div#navbarSupportedContent').contains('span', 'Programme').click();
