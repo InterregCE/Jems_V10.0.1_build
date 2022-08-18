@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {UntilDestroy} from '@ngneat/until-destroy';
 import {FormService} from '@common/components/section/form/form.service';
 import {ActivatedRoute} from '@angular/router';
@@ -14,7 +14,7 @@ import {
   CurrencyDTO,
   ProjectPartnerReportProcurementSubcontractDTO,
 } from '@cat/api';
-import {map, take, tap} from 'rxjs/operators';
+import {catchError, map, take, tap} from 'rxjs/operators';
 import {MatTableDataSource} from '@angular/material/table';
 import {Alert} from '@common/components/forms/alert';
 
@@ -45,6 +45,9 @@ export class PartnerReportProcurementSubcontractComponent {
     currencies: CurrencyDTO[];
     procurementCurrency: string;
   }>;
+
+  @Input()
+  private procurementId: number;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -117,8 +120,12 @@ export class PartnerReportProcurementSubcontractComponent {
   }
 
   saveForm() {
-    this.procurementStore.updateSubcontracts(this.subcontracts.value.filter((sub: any) => sub.createdInThisReport))
-      .pipe(take(1))
+    this.procurementStore.updateSubcontracts(this.procurementId, this.subcontracts.value.filter((sub: any) => sub.createdInThisReport))
+      .pipe(
+        take(1),
+        tap(() => this.formService.setSuccess('project.application.partner.report.procurements.subcontract.save.success')),
+        catchError(error => this.formService.setError(error)),
+      )
       .subscribe();
   }
 

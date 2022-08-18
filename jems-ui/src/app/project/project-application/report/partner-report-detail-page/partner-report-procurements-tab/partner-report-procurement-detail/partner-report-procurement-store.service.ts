@@ -142,14 +142,13 @@ export class PartnerReportProcurementStore {
     return merge(initialBeneficials$, this.savedBeneficials$);
   }
 
-  updateBeneficials(payload: ProjectPartnerReportProcurementBeneficialChangeDTO[]): Observable<ProjectPartnerReportProcurementBeneficialDTO[]> {
+  updateBeneficials(procurementId: number, payload: ProjectPartnerReportProcurementBeneficialChangeDTO[]): Observable<ProjectPartnerReportProcurementBeneficialDTO[]> {
     return combineLatest([
       this.partnerId$.pipe(map(id => Number(id))),
       this.routingService.routeParameterChanges(PartnerReportDetailPageStore.REPORT_DETAIL_PATH, 'reportId')
         .pipe(map(id => Number(id))),
-      this.procurementId$,
     ]).pipe(
-      switchMap(([partnerId, reportId, procurementId]) =>
+      switchMap(([partnerId, reportId]) =>
         this.projectPartnerProcurementBeneficialService.updateBeneficialOwners(partnerId, procurementId, reportId, payload)
       ),
       tap(beneficials => this.savedBeneficials$.next(beneficials)),
@@ -177,14 +176,13 @@ export class PartnerReportProcurementStore {
     return merge(initialSubcontracts$, this.savedSubcontracts$);
   }
 
-  updateSubcontracts(payload: ProjectPartnerReportProcurementSubcontractChangeDTO[]): Observable<ProjectPartnerReportProcurementSubcontractDTO[]> {
+  updateSubcontracts(procurementId: number, payload: ProjectPartnerReportProcurementSubcontractChangeDTO[]): Observable<ProjectPartnerReportProcurementSubcontractDTO[]> {
     return combineLatest([
       this.partnerId$.pipe(map(id => Number(id))),
       this.routingService.routeParameterChanges(PartnerReportDetailPageStore.REPORT_DETAIL_PATH, 'reportId')
         .pipe(map(id => Number(id))),
-      this.procurementId$,
     ]).pipe(
-      switchMap(([partnerId, reportId, procurementId]) =>
+      switchMap(([partnerId, reportId]) =>
         this.projectPartnerProcurementSubcontractorService.updateSubcontractors(partnerId, procurementId, reportId, payload)
       ),
       tap(subcontracts => this.savedSubcontracts$.next(subcontracts)),

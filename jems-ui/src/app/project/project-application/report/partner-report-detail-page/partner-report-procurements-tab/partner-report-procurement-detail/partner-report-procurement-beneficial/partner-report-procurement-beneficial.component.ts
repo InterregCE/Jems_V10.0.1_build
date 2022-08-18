@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {UntilDestroy} from '@ngneat/until-destroy';
 import {FormService} from '@common/components/section/form/form.service';
 import {ActivatedRoute} from "@angular/router";
@@ -13,7 +13,7 @@ import {combineLatest, Observable} from "rxjs";
 import {
   ProjectPartnerReportProcurementBeneficialDTO,
 } from "@cat/api";
-import {map, take, tap} from "rxjs/operators";
+import {catchError, map, take, tap} from "rxjs/operators";
 import {MatTableDataSource} from "@angular/material/table";
 import {Alert} from '@common/components/forms/alert';
 
@@ -43,6 +43,9 @@ export class PartnerReportProcurementBeneficialComponent {
     isReportEditable: boolean;
     reportNumber: number;
   }>;
+
+  @Input()
+  private procurementId: number;
 
   constructor(
     private activatedRoute: ActivatedRoute,
@@ -105,8 +108,12 @@ export class PartnerReportProcurementBeneficialComponent {
   }
 
   saveForm() {
-    this.procurementStore.updateBeneficials(this.beneficials.value.filter((ben: any) => ben.createdInThisReport))
-      .pipe(take(1))
+    this.procurementStore.updateBeneficials(this.procurementId, this.beneficials.value.filter((ben: any) => ben.createdInThisReport))
+      .pipe(
+        take(1),
+        tap(() => this.formService.setSuccess('project.application.partner.report.procurements.beneficial.save.success')),
+        catchError(error => this.formService.setError(error)),
+      )
       .subscribe();
   }
 

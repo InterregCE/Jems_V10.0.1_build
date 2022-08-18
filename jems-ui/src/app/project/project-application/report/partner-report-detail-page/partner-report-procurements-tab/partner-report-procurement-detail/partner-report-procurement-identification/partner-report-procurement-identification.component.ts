@@ -7,7 +7,7 @@ import {
 } from '@project/project-application/report/partner-report-detail-page/partner-report-procurements-tab/partner-report-procurement-detail/partner-report-procurement-store.service';
 import {combineLatest, Observable} from 'rxjs';
 import {CurrencyDTO, ProjectPartnerReportDTO, ProjectPartnerReportProcurementDTO} from '@cat/api';
-import {map, take, tap} from 'rxjs/operators';
+import {catchError, map, take, tap} from 'rxjs/operators';
 import {FormBuilder, Validators} from '@angular/forms';
 import {
   PartnerReportDetailPageStore
@@ -135,13 +135,18 @@ export class PartnerReportProcurementIdentificationComponent {
         this.router.navigate(['..', procurement.id], {relativeTo: this.activatedRoute});
         this.onIdChange.emit(procurement.id);
       }),
+      tap(() => this.formService.setSuccess('project.application.partner.report.procurements.save.success')),
+      catchError(error => this.formService.setError(error)),
     ).subscribe();
   }
 
   updateProcurement() {
     this.procurementStore.updateProcurement(this.form.value)
-      .pipe(take(1))
-      .subscribe();
+      .pipe(
+        take(1),
+        tap(() => this.formService.setSuccess('project.application.partner.report.procurements.save.success')),
+        catchError(error => this.formService.setError(error)),
+      ).subscribe();
   }
 
   discardChanges(originalData: ProjectPartnerReportProcurementDTO, currentReportNumber: number) {
