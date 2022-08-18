@@ -1,0 +1,24 @@
+:host {
+  min-width: 10rem;
+}
+mat-chip {
+  min-height: 1.75rem;
+  padding-left: .25rem;
+  margin: 0 .25rem !important;
+}
+.status-Draft {
+  background-color: #FF5800 !important;
+  color: white !important;
+}
+.status-Submitted {
+  background-color: #7CB342 !important;
+  color: white !important;
+}
+.status-InControl {
+  background-color: #0F6DB4 !important;
+  color: white !important;
+}
+.status-Certified {
+  background-color: #FFA726 !important;
+  color: white !important;
+}

@@ -227,6 +227,22 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
     }
 
     @Test
+    fun startControlOnReportById() {
+        val YESTERDAY = ZonedDateTime.now().minusDays(1)
+
+        val report = reportEntity(id = 47L, YESTERDAY, ReportStatus.Submitted)
+        every { partnerReportRepository.findByIdAndPartnerId(47L, 15L) } returns report
+
+        val inControlReport = persistence.startControlOnReportById(15L, 47L)
+
+        assertThat(inControlReport).isEqualTo(
+            draftReportSubmissionEntity(id = 47L, YESTERDAY).copy(
+                status = ReportStatus.InControl,
+            )
+        )
+    }
+
+    @Test
     fun getPartnerReportStatusById() {
         val report = reportEntity(id = 75L)
         every { partnerReportRepository.findByIdAndPartnerId(75L, 20L) } returns report

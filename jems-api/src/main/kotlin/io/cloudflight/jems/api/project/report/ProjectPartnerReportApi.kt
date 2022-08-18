@@ -62,6 +62,13 @@ interface ProjectPartnerReportApi {
         @PathVariable reportId: Long,
     ): ReportStatusDTO
 
+    @ApiOperation("Start control on submitted partner report")
+    @PostMapping("$ENDPOINT_API_PROJECT_PARTNER_REPORT/startControl/{partnerId}/{reportId}")
+    fun startControlOnPartnerReport(
+        @PathVariable partnerId: Long,
+        @PathVariable reportId: Long,
+    ): ReportStatusDTO
+
     @ApiOperation("Download file from partner report")
     @GetMapping(
         "$ENDPOINT_API_PROJECT_PARTNER_REPORT/byPartnerId/{partnerId}/{fileId}",

@@ -45,6 +45,7 @@ import io.cloudflight.jems.server.project.service.report.partner.file.downloadPr
 import io.cloudflight.jems.server.project.service.report.partner.file.listProjectPartnerReportFile.ListProjectPartnerReportFileInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.uploadFileToProjectPartnerReport.UploadFileToProjectPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.getProjectPartnerReport.GetProjectPartnerReportInteractor
+import io.cloudflight.jems.server.project.service.report.partner.workflow.startControlPartnerReport.StartControlPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.workflow.submitProjectPartnerReport.SubmitProjectPartnerReportInteractor
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -204,6 +205,9 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
     lateinit var submitPartnerReport: SubmitProjectPartnerReportInteractor
 
     @MockK
+    lateinit var startControlReport: StartControlPartnerReportInteractor
+
+    @MockK
     lateinit var getPartnerReport: GetProjectPartnerReportInteractor
 
     @MockK
@@ -268,6 +272,12 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
     fun submitProjectPartnerReport() {
         every { submitPartnerReport.submit(18, 310) } returns ReportStatus.Submitted
         assertThat(controller.submitProjectPartnerReport(18, 310)).isEqualTo(ReportStatusDTO.Submitted)
+    }
+
+    @Test
+    fun startControlOnPartnerReport() {
+        every { startControlReport.startControl(19, 320) } returns ReportStatus.InControl
+        assertThat(controller.startControlOnPartnerReport(19, 320)).isEqualTo(ReportStatusDTO.InControl)
     }
 
     @Test

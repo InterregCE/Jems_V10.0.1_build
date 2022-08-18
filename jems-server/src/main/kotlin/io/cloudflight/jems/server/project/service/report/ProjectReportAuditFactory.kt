@@ -50,3 +50,26 @@ fun partnerReportSubmitted(
                 "] Partner report R.${report.reportNumber} submitted")
             .build()
     )
+
+fun partnerReportStartedControl(
+    context: Any,
+    projectId: Long,
+    report: ProjectPartnerReportSubmissionSummary,
+): AuditCandidateEvent =
+    AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditBuilder(AuditAction.CONTROL_ONGOING)
+            .project(
+                projectId = projectId,
+                customIdentifier = report.projectIdentifier,
+                acronym = report.projectAcronym,
+            )
+            .entityRelatedId(entityRelatedId = report.id)
+            .description("[" +
+                report.projectIdentifier +
+                "] [" +
+                (if (report.partnerRole == ProjectPartnerRole.LEAD_PARTNER) "LP" else "PP") +
+                "${report.partnerNumber}" +
+                "] Partner report R.${report.reportNumber} control ongoing")
+            .build()
+    )

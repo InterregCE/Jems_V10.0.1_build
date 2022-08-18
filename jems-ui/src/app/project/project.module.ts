@@ -175,6 +175,9 @@ import {
 import {
   PartnerReportProcurementSubcontractComponent
 } from '@project/project-application/report/partner-report-detail-page/partner-report-procurements-tab/partner-report-procurement-detail/partner-report-procurement-subcontract/partner-report-procurement-subcontract.component';
+import {
+  PartnerReportStatusComponent
+} from '@project/project-application/report/partner-report-status/partner-report-status.component';
 
 @NgModule({
   declarations: [
@@ -286,6 +289,7 @@ import {
     ApplicationFormPrivilegesExpansionPanelComponent,
     PartnerTeamPrivilegesExpansionPanelComponent,
     PartnerReportDetailPageComponent,
+    PartnerReportStatusComponent,
     PartnerReportIdentificationTabComponent,
     PartnerReportWorkPlanProgressTabComponent,
     SpfRecipientsTableComponent,
