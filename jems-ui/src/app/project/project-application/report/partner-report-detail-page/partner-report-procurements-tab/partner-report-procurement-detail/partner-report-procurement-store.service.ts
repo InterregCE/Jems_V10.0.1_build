@@ -2,7 +2,14 @@ import {Injectable} from '@angular/core';
 import {
   ProjectPartnerReportProcurementService,
   ProjectPartnerReportService,
-  ProjectPartnerReportProcurementDTO, ProjectPartnerReportProcurementChangeDTO, CurrencyDTO,
+  ProjectPartnerReportProcurementDTO,
+  ProjectPartnerReportProcurementChangeDTO,
+  CurrencyDTO,
+  ProjectPartnerReportProcurementBeneficialDTO,
+  ProjectPartnerReportProcurementBeneficialOwnerService,
+  ProjectPartnerReportProcurementBeneficialChangeDTO,
+  ProjectPartnerReportProcurementSubcontractDTO,
+  ProjectPartnerReportProcurementSubcontractChangeDTO, ProjectPartnerReportProcurementSubcontractorService,
 } from '@cat/api';
 import {BehaviorSubject, combineLatest, merge, Observable, of, Subject} from 'rxjs';
 import {map, switchMap, tap} from 'rxjs/operators';
@@ -22,20 +29,29 @@ export class PartnerReportProcurementStore {
 
   procurementId$ = new BehaviorSubject<number>(0);
   procurement$: Observable<ProjectPartnerReportProcurementDTO>;
+  beneficials$: Observable<ProjectPartnerReportProcurementBeneficialDTO[]>;
+  subcontracts$: Observable<ProjectPartnerReportProcurementSubcontractDTO[]>;
 
   partnerId$: Observable<string | number | null>;
 
   currencies$: Observable<CurrencyDTO[]>;
   savedProcurement$ = new Subject<ProjectPartnerReportProcurementDTO>();
+  savedBeneficials$ = new Subject<ProjectPartnerReportProcurementBeneficialDTO[]>();
+  savedSubcontracts$ = new Subject<ProjectPartnerReportProcurementSubcontractDTO[]>();
 
-  constructor(private routingService: RoutingService,
-              private partnerReportPageStore: PartnerReportPageStore,
-              private projectPartnerReportService: ProjectPartnerReportService,
-              private projectStore: ProjectStore,
-              private currencyStore: CurrencyStore,
-              private projectPartnerProcurementService: ProjectPartnerReportProcurementService) {
+  constructor(
+    private routingService: RoutingService,
+    private projectPartnerReportService: ProjectPartnerReportService,
+    private projectStore: ProjectStore,
+    private currencyStore: CurrencyStore,
+    private projectPartnerProcurementService: ProjectPartnerReportProcurementService,
+    private projectPartnerProcurementBeneficialService: ProjectPartnerReportProcurementBeneficialOwnerService,
+    private projectPartnerProcurementSubcontractorService: ProjectPartnerReportProcurementSubcontractorService,
+  ) {
     this.partnerId$ = this.partnerId();
     this.procurement$ = this.getProcurement();
+    this.beneficials$ = this.getBeneficials();
+    this.subcontracts$ = this.getSubcontracts();
     this.currencies$ = this.currencyStore.currencies$;
   }
 
@@ -102,6 +118,76 @@ export class PartnerReportProcurementStore {
         this.projectPartnerProcurementService.updateProcurement(partnerId, reportId, payload)
       ),
       tap(procurement => this.savedProcurement$.next(procurement)),
+    );
+  }
+
+  public getBeneficials(): Observable<ProjectPartnerReportProcurementBeneficialDTO[]> {
+    const initialBeneficials$ = combineLatest([
+      this.partnerId$.pipe(map(id => Number(id))),
+      this.routingService.routeParameterChanges(PartnerReportDetailPageStore.REPORT_DETAIL_PATH, 'reportId')
+        .pipe(map(id => Number(id))),
+      this.procurementId$,
+    ]).pipe(
+      switchMap(([partnerId, reportId, procurementId]) => {
+          if (procurementId) {
+            return this.projectPartnerProcurementBeneficialService.getBeneficialOwners(partnerId, procurementId, reportId);
+          } else {
+            return of([]);
+          }
+        }
+      ),
+      tap(data => Log.info('Fetched project procurement beneficials by id', this, data))
+    );
+
+    return merge(initialBeneficials$, this.savedBeneficials$);
+  }
+
+  updateBeneficials(payload: ProjectPartnerReportProcurementBeneficialChangeDTO[]): Observable<ProjectPartnerReportProcurementBeneficialDTO[]> {
+    return combineLatest([
+      this.partnerId$.pipe(map(id => Number(id))),
+      this.routingService.routeParameterChanges(PartnerReportDetailPageStore.REPORT_DETAIL_PATH, 'reportId')
+        .pipe(map(id => Number(id))),
+      this.procurementId$,
+    ]).pipe(
+      switchMap(([partnerId, reportId, procurementId]) =>
+        this.projectPartnerProcurementBeneficialService.updateBeneficialOwners(partnerId, procurementId, reportId, payload)
+      ),
+      tap(beneficials => this.savedBeneficials$.next(beneficials)),
+    );
+  }
+
+  public getSubcontracts(): Observable<ProjectPartnerReportProcurementSubcontractDTO[]> {
+    const initialSubcontracts$ = combineLatest([
+      this.partnerId$.pipe(map(id => Number(id))),
+      this.routingService.routeParameterChanges(PartnerReportDetailPageStore.REPORT_DETAIL_PATH, 'reportId')
+        .pipe(map(id => Number(id))),
+      this.procurementId$,
+    ]).pipe(
+      switchMap(([partnerId, reportId, procurementId]) => {
+          if (procurementId) {
+            return this.projectPartnerProcurementSubcontractorService.getSubcontractors(partnerId, procurementId, reportId);
+          } else {
+            return of([]);
+          }
+        }
+      ),
+      tap(data => Log.info('Fetched project procurement subcontractors by id', this, data))
+    );
+
+    return merge(initialSubcontracts$, this.savedSubcontracts$);
+  }
+
+  updateSubcontracts(payload: ProjectPartnerReportProcurementSubcontractChangeDTO[]): Observable<ProjectPartnerReportProcurementSubcontractDTO[]> {
+    return combineLatest([
+      this.partnerId$.pipe(map(id => Number(id))),
+      this.routingService.routeParameterChanges(PartnerReportDetailPageStore.REPORT_DETAIL_PATH, 'reportId')
+        .pipe(map(id => Number(id))),
+      this.procurementId$,
+    ]).pipe(
+      switchMap(([partnerId, reportId, procurementId]) =>
+        this.projectPartnerProcurementSubcontractorService.updateSubcontractors(partnerId, procurementId, reportId, payload)
+      ),
+      tap(subcontracts => this.savedSubcontracts$.next(subcontracts)),
     );
   }
 

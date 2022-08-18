@@ -1,0 +1,167 @@
+<jems-form *ngIf="data$ | async as data"
+           (save)="saveForm()"
+           (discard)="discardChanges(data.subcontracts)">
+
+    <form jemsFormLayout [formGroup]="form">
+        <h3>{{ 'project.application.partner.report.procurements.subcontract.title' | translate }}</h3>
+
+        <jems-alert *ngIf="!subcontracts.length" [show]="true"
+                    [type]="Alert.INFO">
+            <p>{{ 'project.application.partner.report.procurements.subcontract.no.data' | translate }}</p>
+        </jems-alert>
+
+        <mat-table *ngIf="subcontracts.length" jemsNoWidthLimit [dataSource]="dataSource" formArrayName="subcontracts">
+
+            <ng-container matColumnDef="contractName">
+                <mat-header-cell *matHeaderCellDef>
+                    <span jemsText maxLines="2">{{ 'project.application.partner.report.procurements.subcontract.contractName' | translate }}</span>
+                </mat-header-cell>
+                <mat-cell *matCellDef="let control; let i = index" [class.smaller-input-padding]="control.value?.createdInThisReport">
+                    <mat-form-field *ngIf="control.value?.createdInThisReport" [formGroup]="control" class="w-100">
+                        <mat-label>{{ 'project.application.partner.report.procurements.subcontract.contractName' | translate }}</mat-label>
+                        <input #contractNameInput formControlName="contractName" matInput>
+                        <mat-hint [jemsHintFor]="contractNameInput" [hide]="control.contractName?.errors !== null">
+                            <jems-text-hint [currentLength]="contractNameInput?.value?.length" [maxLength]="50"></jems-text-hint>
+                        </mat-hint>
+                        <mat-error>
+                            <jems-form-field-errors [errors]="control?.get('contractName')?.errors">
+                            </jems-form-field-errors>
+                        </mat-error>
+                    </mat-form-field>
+                    <span *ngIf="!control.value?.createdInThisReport">{{ control.value?.contractName }}</span>
+                </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="referenceNumber">
+                <mat-header-cell *matHeaderCellDef>
+                    <span jemsText maxLines="2">{{ 'project.application.partner.report.procurements.subcontract.referenceNumber' | translate }}</span>
+                </mat-header-cell>
+                <mat-cell *matCellDef="let control;  let i = index">
+                    <mat-form-field *ngIf="control.value?.createdInThisReport" [formGroup]="control" class="w-100">
+                        <mat-label>{{ 'project.application.partner.report.procurements.subcontract.referenceNumber' | translate }}</mat-label>
+                        <input #referenceNumberInput formControlName="referenceNumber" matInput>
+                        <mat-hint [jemsHintFor]="referenceNumberInput" [hide]="control.referenceNumber?.errors !== null">
+                            <jems-text-hint [currentLength]="referenceNumberInput?.value?.length" [maxLength]="30"></jems-text-hint>
+                        </mat-hint>
+                        <mat-error>
+                            <jems-form-field-errors [errors]="control?.get('referenceNumber')?.errors">
+                            </jems-form-field-errors>
+                        </mat-error>
+                    </mat-form-field>
+                    <span *ngIf="!control.value?.createdInThisReport">{{ control.value?.referenceNumber }}</span>
+                </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="contractDate">
+                <mat-header-cell *matHeaderCellDef>
+                    <span jemsText maxLines="2">{{ 'project.application.partner.report.procurements.subcontract.contractDate' | translate }}</span>
+                </mat-header-cell>
+                <mat-cell *matCellDef="let control;  let i = index">
+                    <mat-form-field *ngIf="control.value?.createdInThisReport" [formGroup]="control" class="w-100">
+                        <mat-label>{{ 'project.application.partner.report.procurements.subcontract.contractDate' | translate | dateFormatInfo }}</mat-label>
+                        <input formControlName="contractDate" matInput [matDatepicker]="contractDate">
+                        <mat-datepicker-toggle matSuffix [for]="contractDate"></mat-datepicker-toggle>
+                        <mat-datepicker #contractDate startView="multi-year"></mat-datepicker>
+                    </mat-form-field>
+                    <span *ngIf="!control.value?.createdInThisReport">{{ control.value?.contractDate | localeDate }}</span>
+                </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="supplierName">
+                <mat-header-cell *matHeaderCellDef>
+                    <span jemsText maxLines="2">{{ 'project.application.partner.report.procurements.table.supplier' | translate }}</span>
+                </mat-header-cell>
+                <mat-cell *matCellDef="let control; let i = index">
+                    <mat-form-field *ngIf="control.value?.createdInThisReport" [formGroup]="control" class="w-100">
+                        <mat-label>{{ 'project.application.partner.report.procurements.table.supplier' | translate }}</mat-label>
+                        <input #supplierNameInput formControlName="supplierName" matInput>
+                        <mat-hint [jemsHintFor]="supplierNameInput" [hide]="control.supplierName?.errors !== null">
+                            <jems-text-hint [currentLength]="supplierNameInput?.value?.length" [maxLength]="50"></jems-text-hint>
+                        </mat-hint>
+                        <mat-error>
+                            <jems-form-field-errors [errors]="control?.get('supplierName')?.errors">
+                            </jems-form-field-errors>
+                        </mat-error>
+                    </mat-form-field>
+                    <span *ngIf="!control.value?.createdInThisReport">{{ control.value?.supplierName }}</span>
+                </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="contractAmount">
+                <mat-header-cell *matHeaderCellDef class="text-right">
+                    <span jemsText maxLines="2">{{ 'project.application.partner.report.procurements.table.contract.amount' | translate }}</span>
+                </mat-header-cell>
+                <mat-cell *matCellDef="let control; let i = index" class="text-right" [class.smaller-xxx]="control.value?.createdInThisReport">
+                    <mat-form-field *ngIf="control.value?.createdInThisReport" [formGroup]="control" class="w-100">
+                        <mat-label>{{ 'project.application.partner.report.procurements.table.contract.amount' | translate }}</mat-label>
+                        <input name="contractAmount" formControlName="contractAmount" matInput currencyMask type="decimal"
+                               [options]="{min: 0, max: 999999999.99, align: 'right'}">
+                        <mat-error>
+                            <jems-form-field-errors [errors]="control?.get('contractAmount')?.errors">
+                            </jems-form-field-errors>
+                        </mat-error>
+                    </mat-form-field>
+                    <span *ngIf="!control.value?.createdInThisReport">{{ control.value?.contractAmount | asMoney }}</span>
+                </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="currencyCode">
+                <mat-header-cell *matHeaderCellDef>
+                    <span jemsText maxLines="2">{{ 'project.application.partner.report.procurements.table.currency' | translate }}</span>
+                </mat-header-cell>
+                <mat-cell *matCellDef="let control; let i = index" [class.bigger-amount]="control.value?.createdInThisReport">
+                    <mat-form-field *ngIf="control.value?.createdInThisReport" [formGroup]="control" class="w-100">
+                        <mat-label>{{ 'project.application.partner.report.procurements.table.currency' | translate }}</mat-label>
+                        <mat-select formControlName="currencyCode" required>
+                            <mat-option *ngFor="let currency of data.currencies" [value]="currency.code">{{ currency.code }}</mat-option>
+                        </mat-select>
+                    </mat-form-field>
+                    <span *ngIf="!control.value?.createdInThisReport">{{ control.value?.currencyCode }}</span>
+                </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="vatNumber">
+                <mat-header-cell *matHeaderCellDef>
+                    <span jemsText maxLines="2">{{ 'project.application.partner.report.procurements.table.vat' | translate }}</span>
+                </mat-header-cell>
+                <mat-cell *matCellDef="let control; let i = index">
+                    <mat-form-field *ngIf="control.value?.createdInThisReport" [formGroup]="control" class="w-100">
+                        <mat-label>{{ 'project.application.partner.report.procurements.table.vat' | translate }}</mat-label>
+                        <input #vatNumberInput formControlName="vatNumber" matInput required>
+                        <mat-hint [jemsHintFor]="vatNumberInput" [hide]="control.vatNumber?.errors !== null">
+                            <jems-text-hint [currentLength]="vatNumberInput?.value?.length" [maxLength]="30"></jems-text-hint>
+                        </mat-hint>
+                        <mat-error>
+                            <jems-form-field-errors [errors]="control?.get('vatNumber')?.errors">
+                            </jems-form-field-errors>
+                        </mat-error>
+                    </mat-form-field>
+                    <span *ngIf="!control.value?.createdInThisReport">{{ control.value?.vatNumber }}</span>
+                </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="delete" stickyEnd>
+                <mat-header-cell *matHeaderCellDef class="border-cell-left text-center">
+                    {{ 'common.delete.entry' | translate }}
+                </mat-header-cell>
+                <mat-cell *matCellDef="let control; let i = index" class="border-cell-left text-center" [class.set-height]="control.value?.createdInThisReport">
+                    <button *ngIf="control.value?.createdInThisReport" (click)="deleteSubcontract(i)"
+                            color="accent" mat-icon-button>
+                        <mat-icon>delete</mat-icon>
+                    </button>
+                </mat-cell>
+            </ng-container>
+
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+
+        </mat-table>
+
+        <button mat-raised-button *ngIf="data.isReportEditable" jemsText class="mb-3 mt-3 mat-primary"
+                [disabled]="subcontracts.length >= 50"
+                (click)="addSubcontract(null, data.procurementCurrency)">
+            <mat-icon>add</mat-icon>{{ 'project.application.partner.report.procurements.subcontract.add' | translate }}
+        </button>
+
+    </form>
+</jems-form>
