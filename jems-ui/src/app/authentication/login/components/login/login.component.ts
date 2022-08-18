@@ -19,7 +19,7 @@ export class LoginComponent extends AbstractFormComponent {
 
   hide = true;
   loginForm = this.formBuilder.group({
-    email: ['', Validators.required],
+    email: ['', [Validators.required, Validators.pattern(/(?!^\s+$)^.*$/m)]],
     password: ['', Validators.required]
   });
 

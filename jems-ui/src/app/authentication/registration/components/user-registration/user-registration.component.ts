@@ -34,11 +34,13 @@ export class UserRegistrationComponent extends AbstractFormComponent implements 
   userForm = this.formBuilder.group({
     name: ['', Validators.compose([
       Validators.required,
+      Validators.pattern(/(?!^\s+$)^.*$/m),
       Validators.maxLength(50),
       Validators.minLength(1),
     ])],
     surname: ['', Validators.compose([
       Validators.required,
+      Validators.pattern(/(?!^\s+$)^.*$/m),
       Validators.maxLength(50),
       Validators.minLength(1),
     ])],

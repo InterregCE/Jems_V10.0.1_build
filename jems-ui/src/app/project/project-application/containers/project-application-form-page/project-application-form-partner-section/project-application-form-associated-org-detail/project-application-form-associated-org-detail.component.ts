@@ -51,7 +51,7 @@ export class ProjectApplicationFormAssociatedOrgDetailComponent implements OnIni
 
   associatedOrganizationForm: FormGroup = this.formBuilder.group({
     id: [],
-    nameInOriginalLanguage: ['', [Validators.maxLength(100), Validators.required]],
+    nameInOriginalLanguage: ['', [Validators.maxLength(100), Validators.required, Validators.pattern(/(?!^\s+$)^.*$/m)]],
     nameInEnglish: [[], [Validators.maxLength(100), Validators.required]],
     partnerId: [null, Validators.required],
     country: [''],

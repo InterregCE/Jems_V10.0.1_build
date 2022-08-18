@@ -96,7 +96,7 @@ export class ApplicationFormPrivilegesExpansionPanelComponent implements OnInit 
 
   addCollaborator(projectCollaborator?: ProjectUserCollaboratorDTO): void {
     this.projectCollaborators.push(this.formBuilder.group({
-      userEmail: [projectCollaborator?.userEmail, [Validators.required, Validators.maxLength(255)]],
+      userEmail: [projectCollaborator?.userEmail, [Validators.required, Validators.pattern(/(?!^\s+$)^.*$/m), Validators.maxLength(255)]],
       level: [projectCollaborator?.level || this.PROJECT_LEVEL.VIEW, Validators.required]
     }));
   }

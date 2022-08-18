@@ -81,7 +81,7 @@ export class PartnerTeamPrivilegesExpansionPanelComponent implements OnInit {
 
   addPartnerCollaborator(partnerCollaborator?: PartnerUserCollaboratorDTO): void {
     this.partnerCollaborators.push(this.formBuilder.group({
-      userEmail: [partnerCollaborator?.userEmail, [Validators.required, Validators.maxLength(255)]],
+      userEmail: [partnerCollaborator?.userEmail, [Validators.required, Validators.pattern(/(?!^\s+$)^.*$/m), Validators.maxLength(255)]],
       level: [partnerCollaborator?.level || this.PARTNER_LEVEL.VIEW, Validators.required]
     }));
   }

@@ -53,7 +53,7 @@ export class ProgrammeChecklistHeadlineComponent implements ControlValueAccessor
   writeValue(obj: any[]): void {
     this.metadata = obj as any;
     this.form = this.formBuilder.group({
-      value: [this.metadata?.value, [Validators.required, Validators.maxLength(200)]]
+      value: [this.metadata?.value, [Validators.required, Validators.pattern(/(?!^\s+$)^.*$/m), Validators.maxLength(200)]]
     });
 
     this.form.valueChanges

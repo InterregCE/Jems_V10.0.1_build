@@ -57,7 +57,8 @@ export class ProjectApplicationFormPartnerEditComponent implements OnInit {
     sortNumber: [],
     abbreviation: ['', [
       Validators.maxLength(15),
-      Validators.required]
+      Validators.required,
+      Validators.pattern(/(?!^\s+$)^.*$/m)]
     ],
     role: ['', Validators.required],
     nameInOriginalLanguage: ['', Validators.maxLength(100)],

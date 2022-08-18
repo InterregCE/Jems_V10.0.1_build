@@ -8,7 +8,7 @@ export class ProgrammePriorityDetailPageConstants {
     errorMessages: {
       required: 'programme.priority.code.should.not.be.empty'
     },
-    validators: [Validators.maxLength(50), Validators.required]
+    validators: [Validators.maxLength(50), Validators.required, Validators.pattern(/(?!^\s+$)^.*$/m)]
   };
 
   public static TITLE: AppControl = {
