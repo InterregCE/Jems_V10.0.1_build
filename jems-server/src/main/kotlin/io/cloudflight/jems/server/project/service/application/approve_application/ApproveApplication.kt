@@ -30,7 +30,9 @@ class ApproveApplication(
         actionInfo.ifIsValid(generalValidatorService).let {
             projectPersistence.getProjectSummary(projectId).let { projectSummary ->
                 applicationStateFactory.getInstance(projectSummary).approve(actionInfo).also {
-                    projectVersionPersistence.saveTimestampForApprovedApplication(projectId)
+                    if(projectSummary.isInStep2()) {
+                        projectVersionPersistence.saveTimestampForApprovedApplication(projectId)
+                    }
                     auditPublisher.publishEvent(projectStatusChanged(this, projectSummary, newStatus = it))
                 }
             }
