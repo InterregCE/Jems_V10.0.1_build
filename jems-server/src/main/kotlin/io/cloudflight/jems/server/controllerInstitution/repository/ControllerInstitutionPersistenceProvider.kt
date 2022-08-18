@@ -2,10 +2,16 @@ package io.cloudflight.jems.server.controllerInstitution.repository
 
 import io.cloudflight.jems.server.controllerInstitution.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.controllerInstitution.service.getControllerInstitution.GetControllerInstitutionException
-import io.cloudflight.jems.server.controllerInstitution.service.model.*
+import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitution
+import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionList
+import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionUser
+import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerAssignment
+import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerAssignmentWithUsers
+import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerDetails
+import io.cloudflight.jems.server.controllerInstitution.service.model.UpdateControllerInstitution
+import io.cloudflight.jems.server.controllerInstitution.service.model.UserInstitutionAccessLevel
 import io.cloudflight.jems.server.nuts.repository.NutsRegion3Repository
 import io.cloudflight.jems.server.project.entity.partner.ControllerInstitutionEntity
-import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.user.service.model.UserSummary
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -100,24 +106,7 @@ class ControllerInstitutionPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getInstitutionPartnerAssignments(pageable: Pageable): Page<InstitutionPartnerDetails> {
-        return institutionPartnerRepository.getInstitutionPartnerAssignments(pageable, listOf(
-            ApplicationStatus.STEP1_DRAFT,
-            ApplicationStatus.STEP1_SUBMITTED,
-            ApplicationStatus.STEP1_ELIGIBLE,
-            ApplicationStatus.STEP1_INELIGIBLE,
-            ApplicationStatus.STEP1_APPROVED,
-            ApplicationStatus.STEP1_APPROVED_WITH_CONDITIONS,
-            ApplicationStatus.STEP1_NOT_APPROVED,
-            ApplicationStatus.DRAFT,
-            ApplicationStatus.SUBMITTED,
-            ApplicationStatus.CONDITIONS_SUBMITTED,
-            ApplicationStatus.RETURNED_TO_APPLICANT,
-            ApplicationStatus.RETURNED_TO_APPLICANT_FOR_CONDITIONS,
-            ApplicationStatus.ELIGIBLE,
-            ApplicationStatus.INELIGIBLE,
-            ApplicationStatus.APPROVED_WITH_CONDITIONS,
-            ApplicationStatus.NOT_APPROVED,
-        ))
+        return institutionPartnerRepository.getInstitutionPartnerAssignments(pageable).toModel()
     }
 
     @Transactional

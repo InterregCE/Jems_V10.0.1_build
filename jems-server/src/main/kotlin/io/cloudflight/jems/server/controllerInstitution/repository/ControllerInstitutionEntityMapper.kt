@@ -5,11 +5,15 @@ import io.cloudflight.jems.server.controllerInstitution.entity.ControllerInstitu
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitution
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionList
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionUser
+import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerDetails
+import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerDetailsRow
 import io.cloudflight.jems.server.controllerInstitution.service.model.UpdateControllerInstitution
 import io.cloudflight.jems.server.nuts.entity.NutsRegion3
 import io.cloudflight.jems.server.nuts.service.groupNuts
 import io.cloudflight.jems.server.nuts.service.toOutputNuts
 import io.cloudflight.jems.server.project.entity.partner.ControllerInstitutionEntity
+import io.cloudflight.jems.server.project.service.partner.getPartnerAddressOrEmptyString
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.user.controller.toEntity
 import io.cloudflight.jems.server.user.service.model.UserSummary
 import org.springframework.data.domain.Page
@@ -87,4 +91,20 @@ fun institutionUserEntityToModel(
 fun Set<NutsRegion3>.toDto() = groupNuts(this).toOutputNuts()
 
 
+fun InstitutionPartnerDetailsRow.toModel() = InstitutionPartnerDetails(
+    institutionId = institutionId,
+    partnerId = partnerId,
+    partnerName = partnerName,
+    partnerStatus = partnerStatus,
+    partnerSortNumber = partnerSortNumber,
+    partnerRole = ProjectPartnerRole.valueOf(partnerRole),
+    partnerNuts3 = partnerNuts3,
+    partnerAddress = getPartnerAddressOrEmptyString(country, city, street, houseNumber),
+    callId = callId,
+    projectId = projectId,
+    projectCustomIdentifier = projectCustomIdentifier,
+    projectAcronym = projectAcronym
+)
+
+fun Page<InstitutionPartnerDetailsRow>.toModel() = map { it.toModel() }
 

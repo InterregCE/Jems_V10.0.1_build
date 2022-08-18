@@ -129,7 +129,7 @@ class ContractedProjectWorkflowDataGeneratorTest(@LocalServerPort private val po
     @Test
     @Order(70)
     @ExpectSelect(9)
-    @ExpectInsert(1)
+    @ExpectInsert(2)
     @ExpectUpdate(1)
     @ExpectDelete(1)
     fun `approve application`() {
@@ -219,7 +219,7 @@ class ContractedProjectWorkflowDataGeneratorTest(@LocalServerPort private val po
     @Order(130)
     @ExpectSelect(8)
     @ExpectInsert(1)
-    @ExpectUpdate(1)
+    @ExpectUpdate(2)
     @ExpectDelete(1)
     fun `approve second modification of the application`() {
         assertThat(
@@ -301,7 +301,7 @@ class ContractedProjectWorkflowDataGeneratorTest(@LocalServerPort private val po
     @Order(190)
     @ExpectSelect(8)
     @ExpectInsert(1)
-    @ExpectUpdate(1)
+    @ExpectUpdate(2)
     @ExpectDelete(1)
     fun `approve the third modification after it was handed back to the applicant`() {
         assertThat(

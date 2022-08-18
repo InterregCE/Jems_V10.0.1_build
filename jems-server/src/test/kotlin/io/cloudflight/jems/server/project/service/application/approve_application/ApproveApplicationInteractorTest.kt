@@ -9,6 +9,7 @@ import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.authorization.ProjectAuthorization
 import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationActionInfo
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus.APPROVED
@@ -58,6 +59,9 @@ class ApproveApplicationInteractorTest : UnitTest() {
 
     @RelaxedMockK
     lateinit var projectPersistence: ProjectPersistence
+
+    @RelaxedMockK
+    lateinit var projectVersionPersistence: ProjectVersionPersistence
 
     @RelaxedMockK
     lateinit var applicationStateFactory: ApplicationStateFactory
