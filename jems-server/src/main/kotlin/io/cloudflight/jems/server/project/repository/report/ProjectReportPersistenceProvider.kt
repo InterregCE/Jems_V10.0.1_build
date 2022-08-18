@@ -52,7 +52,7 @@ class ProjectReportPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getSubmittedPartnerReportIds(partnerId: Long): Set<Long> =
-        partnerReportRepository.findAllIdsByPartnerIdAndStatus(partnerId, ReportStatus.Submitted)
+        partnerReportRepository.findAllIdsByPartnerIdAndStatusIn(partnerId, ReportStatus.SUBMITTED_STATUSES)
 
     @Transactional(readOnly = true)
     override fun getReportIdsBefore(partnerId: Long, beforeReportId: Long): Set<Long> =

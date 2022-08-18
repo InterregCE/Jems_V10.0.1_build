@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.service.report.partner.createProjectPartnerReport
+package io.cloudflight.jems.server.project.service.report.partner.workflow.createProjectPartnerReport
 
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO.MainFund
 import io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_period.GetPartnerBudgetPerPeriodInteractor

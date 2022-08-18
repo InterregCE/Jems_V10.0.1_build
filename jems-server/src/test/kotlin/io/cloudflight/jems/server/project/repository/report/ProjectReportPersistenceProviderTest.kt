@@ -258,7 +258,9 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
 
     @Test
     fun listSubmittedPartnerReports() {
-        every { partnerReportRepository.findAllIdsByPartnerIdAndStatus(PARTNER_ID, ReportStatus.Submitted) } returns setOf(18L)
+        every { partnerReportRepository
+            .findAllIdsByPartnerIdAndStatusIn(PARTNER_ID, setOf(ReportStatus.Submitted, ReportStatus.InControl))
+        } returns setOf(18L)
         assertThat(persistence.getSubmittedPartnerReportIds(PARTNER_ID)).containsExactly(18L)
     }
 
