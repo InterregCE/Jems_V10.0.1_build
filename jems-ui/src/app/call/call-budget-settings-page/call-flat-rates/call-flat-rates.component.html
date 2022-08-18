@@ -22,7 +22,7 @@
                 </mat-checkbox>
 
                 <span>{{'call.detail.flat.rate.table.staff.direct.cost' | translate}}</span>
-                <mat-form-field>
+                <mat-form-field [class.mat-form-field-disabled]="disabled(data.call.flatRates.staffCostFlatRateSetup, data) || !isStaffCostFlatRateActive.value">
                     <input [readonly]="!isStaffCostFlatRateActive.value || disabled(data.call.flatRates.staffCostFlatRateSetup, data)"
                            currencyMask type="integer" name="staffCostFlatRate" matInput
                            [formControl]="staffCostFlatRate"
@@ -44,7 +44,7 @@
                         [checked]="isOfficeOnStaffFlatRateActive.value">
                 </mat-checkbox>
                 <span>{{'call.detail.flat.rate.table.office.administration.direct.staff.cost' | translate}}</span>
-                <mat-form-field>
+                <mat-form-field [class.mat-form-field-disabled]="disabled(data.call.flatRates.officeAndAdministrationOnStaffCostsFlatRateSetup, data) || !isOfficeOnStaffFlatRateActive.value">
                     <input [readonly]="!isOfficeOnStaffFlatRateActive.value || disabled(data.call.flatRates.officeAndAdministrationOnStaffCostsFlatRateSetup, data)"
                            currencyMask type="integer" name="officeOnStaffFlatRate" matInput
                            [formControl]="officeOnStaffFlatRate"
@@ -66,7 +66,7 @@
                         [checked]="isOfficeOnOtherFlatRateActive.value">
                 </mat-checkbox>
                 <span>{{'call.detail.flat.rate.table.office.administration.direct.cost' | translate}}</span>
-                <mat-form-field>
+                <mat-form-field [class.mat-form-field-disabled]="disabled(data.call.flatRates.officeAndAdministrationOnDirectCostsFlatRateSetup, data) || !isOfficeOnOtherFlatRateActive.value">
                     <input [readonly]="!isOfficeOnOtherFlatRateActive.value || disabled(data.call.flatRates.officeAndAdministrationOnDirectCostsFlatRateSetup, data)"
                            currencyMask type="integer" name="officeOnOtherFlatRate" matInput
                            [formControl]="officeOnOtherFlatRate"
@@ -88,7 +88,7 @@
                         [checked]="isTravelOnStaffFlatRateActive.value">
                 </mat-checkbox>
                 <span>{{'call.detail.flat.rate.table.travel.accommodation.direct.staff.cost' | translate}}</span>
-                <mat-form-field>
+                <mat-form-field [class.mat-form-field-disabled]="disabled(data.call.flatRates.travelAndAccommodationOnStaffCostsFlatRateSetup, data) || !isTravelOnStaffFlatRateActive.value">
                     <input [readonly]="!isTravelOnStaffFlatRateActive.value || disabled(data.call.flatRates.travelAndAccommodationOnStaffCostsFlatRateSetup, data)"
                            currencyMask type="integer" name="travelOnStaffFlatRate" matInput
                            [formControl]="travelOnStaffFlatRate"
@@ -110,7 +110,7 @@
                         [checked]="isOtherOnStaffFlatRateActive.value">
                 </mat-checkbox>
                 <span> {{'call.detail.flat.rate.table.other.cost' | translate}}</span>
-                <mat-form-field>
+                <mat-form-field [class.mat-form-field-disabled]="disabled(data.call.flatRates.otherCostsOnStaffCostsFlatRateSetup, data) || !isOtherOnStaffFlatRateActive.value">
                     <input [readonly]="!isOtherOnStaffFlatRateActive.value || disabled(data.call.flatRates.otherCostsOnStaffCostsFlatRateSetup, data)"
                            currencyMask type="integer" name="otherOnStaffFlatRate" matInput
                            [formControl]="otherOnStaffFlatRate"
