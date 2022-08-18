@@ -240,10 +240,19 @@ export class CallDetailPageComponent {
       );
   }
 
-  isOpen(call: CallDTO): boolean {
+  hasStarted(call: CallDTO): boolean {
+    const currentDate = moment(new Date());
+    return currentDate.isAfter(call.startDateTime);
+  }
+
+  hasNotExpired(call: CallDTO): boolean {
     const currentDate = moment(new Date());
     const endDateTime = call.endDateTimeStep1 || call.endDateTime;
-    return currentDate.isBefore(endDateTime) && currentDate.isAfter(call.startDateTime);
+    return currentDate.isBefore(endDateTime);
+  }
+
+  isOpen(call: CallDTO): boolean {
+    return this.hasStarted(call) && this.hasNotExpired(call);
   }
 
   applyToCall(callId: number): void {
