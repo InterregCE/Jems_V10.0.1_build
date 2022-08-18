@@ -71,7 +71,7 @@ export class ProjectApplicationFormAssociatedOrgDetailComponent implements OnIni
     contactFirstName: ['', Validators.maxLength(50)],
     contactLastName: ['', Validators.maxLength(50)],
     contactEmail: ['', [Validators.maxLength(255), Validators.email]],
-    contactTelephone: ['', [Validators.maxLength(25), Validators.pattern('^[0-9+()/-]*$')]],
+    contactTelephone: ['', [Validators.maxLength(25), Validators.pattern('^[0-9 +()/-]*$')]],
     roleDescription: [],
   });
 
