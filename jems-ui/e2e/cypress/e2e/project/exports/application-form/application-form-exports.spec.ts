@@ -12,7 +12,7 @@ const comparePdfMask = [
   { pageIndex: 0, coordinates: { x0: 387, x1: 440, y0: 324, y1: 343} },
   { pageIndex: 1, coordinates: { x0:400, x1: 450, y0: 207, y1: 224} },
   { pageIndex: 1, coordinates: { x0:400, x1: 580, y0: 370, y1: 390} },
-  { pageIndex: 0, coordinates: { x0:280, x1: 548, y0: 373, y1: 404} },
+  { pageIndex: 0, coordinates: { x0:260, x1: 580, y0: 373, y1: 404} },
   { pageIndex: 0, coordinates: { x0:400, x1: 560, y0: 515, y1: 535} }
 ];
 
@@ -21,7 +21,7 @@ const comparePdfMaskV1 = [
   { pageIndex: 0, coordinates: { x0: 387, x1: 440, y0: 324, y1: 343} },
   { pageIndex: 1, coordinates: { x0:400, x1: 450, y0: 207, y1: 224} },
   { pageIndex: 1, coordinates: { x0:400, x1: 580, y0: 247, y1: 267} },
-  { pageIndex: 0, coordinates: { x0:280, x1: 548, y0: 373, y1: 404} },
+  { pageIndex: 0, coordinates: { x0:260, x1: 580, y0: 373, y1: 404} },
   { pageIndex: 0, coordinates: { x0:400, x1: 560, y0: 515, y1: 535} }
 ];
 context('Application form exports', () => {
