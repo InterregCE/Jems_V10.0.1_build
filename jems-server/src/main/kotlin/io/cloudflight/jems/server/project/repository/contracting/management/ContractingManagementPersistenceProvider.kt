@@ -10,7 +10,7 @@ class ContractingManagementPersistenceProvider(
     private val projectContractingManagementRepository: ProjectContractingManagementRepository
 ): ContractingManagementPersistence {
 
-    @Transactional
+    @Transactional(readOnly = true)
     override fun getContractingManagement(projectId: Long): List<ProjectContractingManagement> {
         return projectContractingManagementRepository.findByManagementIdProjectId(projectId).toModelList()
     }
