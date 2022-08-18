@@ -9,5 +9,5 @@ interface GetInstitutionPartnerAssignmentInteractor {
 
     fun getInstitutionPartnerAssignments(pageable: Pageable): Page<InstitutionPartnerDetails>
 
-    fun getControllerUserAccessLevelForPartner(userId: Long, partnerId: Long): UserInstitutionAccessLevel?
+    fun getControllerUserAccessLevelForPartner(partnerId: Long): UserInstitutionAccessLevel?
 }

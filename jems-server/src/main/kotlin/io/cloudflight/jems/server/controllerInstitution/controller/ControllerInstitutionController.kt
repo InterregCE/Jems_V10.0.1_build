@@ -42,8 +42,8 @@ class ControllerInstitutionController(
     override fun assignInstitutionToPartner(institutionPartnerAssignments: ControllerInstitutionAssignmentDTO): List<InstitutionPartnerAssignmentDTO>  =
         assignInstitutionToPartnerInteractor.assignInstitutionToPartner(institutionPartnerAssignments.toModel()).toDTOs()
 
-    override fun getControllerUserAccessLevelForPartner(userId: Long, partnerId: Long): UserInstitutionAccessLevelDTO? =
-        getInstitutionPartnerAssignment.getControllerUserAccessLevelForPartner(userId, partnerId).toDto()
+    override fun getControllerUserAccessLevelForPartner(partnerId: Long): UserInstitutionAccessLevelDTO? =
+        getInstitutionPartnerAssignment.getControllerUserAccessLevelForPartner(partnerId).toDto()
 
 }
 

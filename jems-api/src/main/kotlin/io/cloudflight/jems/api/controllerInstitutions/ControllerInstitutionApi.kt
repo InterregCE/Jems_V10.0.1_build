@@ -69,9 +69,8 @@ interface ControllerInstitutionApi {
     ): List<InstitutionPartnerAssignmentDTO>
 
     @ApiOperation("Get access level of the controller institution user over the partner")
-    @GetMapping("$ENDPOINT_API_CONTROLLERS/assignments/{userId}/{partnerId}")
+    @GetMapping("$ENDPOINT_API_CONTROLLERS/assignments/{partnerId}")
     fun getControllerUserAccessLevelForPartner(
-        @PathVariable userId: Long,
         @PathVariable partnerId: Long,
     ): UserInstitutionAccessLevelDTO?
 }
