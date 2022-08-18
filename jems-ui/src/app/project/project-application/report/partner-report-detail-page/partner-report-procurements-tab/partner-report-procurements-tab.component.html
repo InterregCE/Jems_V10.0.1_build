@@ -1,5 +1,6 @@
 <jems-form *ngIf="data$ | async as data">
     <h3>{{ 'project.application.partner.report.procurements.title' | translate }}</h3>
+    <p>{{ 'project.application.partner.report.procurements.subtitle' | translate }}</p>
 
     <a *ngIf="data.isReportEditable" [disabled]="data.limitReached" class="mt-3"
        mat-raised-button color="primary"
