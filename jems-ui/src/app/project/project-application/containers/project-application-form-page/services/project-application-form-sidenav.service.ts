@@ -74,8 +74,8 @@ export class ProjectApplicationFormSidenavService {
   ]).pipe(
     map(([hasViewPermission, hasEditPermission, hasCreatorViewPermission, hasCreatorEditPermission, isOwner, isPartnerCollaborator, projectStatus]:
            [boolean, boolean, boolean, boolean, boolean, boolean, ProjectStatusDTO]) =>
-      (hasViewPermission || hasEditPermission || isOwner || isPartnerCollaborator || hasCreatorViewPermission || hasCreatorEditPermission) &&
-        ProjectUtil.isInApprovedOrAnyStatusAfterApproved(projectStatus)
+      ((hasViewPermission || hasEditPermission) || ((hasCreatorViewPermission || hasCreatorEditPermission) && (isOwner || isPartnerCollaborator))) &&
+        ProjectUtil.isInApprovedOrAnyStatusAfterApproved(projectStatus),
     ),
   );
 
