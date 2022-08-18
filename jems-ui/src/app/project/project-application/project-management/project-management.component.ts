@@ -90,7 +90,7 @@ export class ProjectManagementComponent implements OnInit {
         Validators.maxLength(255)
       ])],
       telephone: ['', Validators.compose([
-        Validators.pattern('^[0-9+()/-]*$'),
+        Validators.pattern('^[0-9 +()/-]*$'),
         Validators.maxLength(25)
       ])]
     };
