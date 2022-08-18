@@ -405,6 +405,8 @@ context('Project partners tests', () => {
       cy.contains('button', 'Create').click();
       cy.contains('Associated organisations').click();
 
+      cy.wait(1000);
+
       cy.get('jems-project-application-form-associated-organizations-list').within(() => {
         cy.contains('AO1').should('be.visible');
         cy.contains('Active').should('be.visible');
