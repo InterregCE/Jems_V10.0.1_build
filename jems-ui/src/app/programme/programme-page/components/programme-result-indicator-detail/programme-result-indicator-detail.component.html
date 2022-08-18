@@ -38,11 +38,15 @@
         <jems-multi-language-form-field label="result.indicator.form.field.name" formControlName="indicatorName">
         </jems-multi-language-form-field>
     </jems-multi-language-container>
-
+    <jems-alert [show]="!(priorities$ | async)?.length"
+                [type]="Alert.WARNING"
+                [closable]="false">
+        <span>{{'indicator.specific.objective.empty.warning' | translate}}</span>
+    </jems-alert>
     <mat-form-field>
         <mat-label>{{'result.indicator.form.field.specific.objective' | translate}}</mat-label>
         <mat-select name="specificObjective" formControlName="specificObjective" required>
-            <mat-optgroup *ngFor="let priority of priorities"
+            <mat-optgroup *ngFor="let priority of priorities$ | async"
                           [label]="priority.title | translateBySystemLanguage | async">
                 <mat-option *ngFor="let objective of priority.specificObjectives"
                             [value]="objective.programmeObjectivePolicy">
