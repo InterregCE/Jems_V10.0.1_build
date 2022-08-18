@@ -12,36 +12,41 @@ context('Application contracting tests', () => {
     });
   });
 
-  beforeEach(() => {
-    cy.loginByRequest(user.applicantUser.email);
-  });
-
-  it('TB-519 A project can be set to contracted', () => {
+  it('TB-519 A project can be set to contracted and partner report created', () => {
     cy.createApprovedApplication(application, user.programmeUser.email).then(applicationId => {
-      cy.loginByRequest(user.programmeUser.email);
+      cy.loginByRequest(user.admin.email);
       cy.visit(`app/project/detail/${applicationId}`, {failOnStatusCode: false});
 
       cy.wait(1000); // TODO remove after MP2-2391 is fixed
-      
-      cy.contains('Contract monitoring').click();
-      cy.contains('Set project to contracted').click();
+
+      cy.contains('Modification ').click();
+      cy.contains('button', 'Open new modification').click();
       cy.contains('button', 'Confirm').click();
-      cy.get('jems-alert').should('contain', 'You have successfully contracted project');
-
+      cy.contains('Contract monitoring').click();
+      cy.contains('button', 'Set project to contracted').should('be.disabled');
+      cy.contains('Check & Submit').click();
+      cy.contains('button', 'Run pre-submission check').click();
+      cy.contains('button', 'Re-submit project application').click();
+      cy.contains('button', 'Confirm').click();
+      cy.contains('Contract monitoring').click();
+      cy.contains('button', 'Set project to contracted').should('be.disabled');
+      cy.contains('Modification').scrollIntoView().click();
+      cy.get('span.mat-button-toggle-label-content').contains('Approve modification').click();
+      cy.get('svg.mat-datepicker-toggle-default-icon:first').click();
+      cy.contains('td', '1').click();
+      cy.get('svg.mat-datepicker-toggle-default-icon:last').click();
+      cy.contains('td', '2').click();
+      cy.contains('button', 'Save changes').click();
+      cy.contains('Contract monitoring').click();
+      cy.contains('button', 'Set project to contracted').should('be.enabled');
+      cy.contains('button', 'Set project to contracted').click();
+      cy.contains('button', 'Confirm').click();
       cy.contains('Project overview').click();
-      cy.get('#status').contains('Contracted').should('be.visible');
-
-      cy.contains('div', 'Partner reports').should(reportingSection => {
-        expect(reportingSection).to.contain(application.partners[0].details.abbreviation);
-      });
-      cy.contains(application.partners[0].details.abbreviation).click();
-      cy.contains('Add Partner Report').click();
+      cy.contains('mat-chip', 'Contracted').should('be.visible');
+      cy.contains('mat-panel-title', 'Reporting').should('be.visible');
+      cy.contains('mat-expansion-panel', 'Partner reports').contains('Lead Partner').click();
+      cy.contains('button', 'Add Partner Report').click();
       cy.contains('Partner progress report identification').should('be.visible');
-
-      cy.loginByRequest(user.applicantUser.email);
-      cy.visit(`app/project/detail/${applicationId}`, {failOnStatusCode: false});
-      cy.contains('.link', 'A - Project identification').click();
-      cy.contains('div', 'Project title').find('textarea').should('have.attr', 'readonly');
     });
   });
 });
