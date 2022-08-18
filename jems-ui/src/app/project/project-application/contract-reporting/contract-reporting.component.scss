@@ -17,11 +17,23 @@
   color: black;
 }
 
+#timeplanHeader {
+  margin-bottom: -0.75rem;
+}
+
 ::ng-deep {
   jems-form {
     jems-breadcrumb {
       display: none !important;
     }
+  }
+  .mat-form-field-wrapper {
+    padding-bottom: 1.15rem;
+    padding-top: 1.15rem;
+  }
+
+  jems-expandable-textarea .mat-form-field-infix {
+    min-height: 1.8rem;
   }
 }
 

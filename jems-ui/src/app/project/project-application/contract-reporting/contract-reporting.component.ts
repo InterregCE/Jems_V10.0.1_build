@@ -57,9 +57,9 @@ export class ContractReportingComponent implements OnInit {
 
   addDeadlineData(): void {
     const item = this.formBuilder.group({
-      deadlineReportType: [''],
-      deadlinePeriod: [''],
-      deadlineDate: [''],
+      deadlineReportType: [ProjectContractingReportingScheduleDTO.TypeEnum.Both, Validators.required],
+      deadlinePeriod: ['', Validators.required],
+      deadlineDate: ['', Validators.required],
       deadlineComment: ['', Validators.maxLength(1000)],
       deadlinePeriodStartDate: [''],
       deadlinePeriodEndDate: [''],
@@ -77,9 +77,9 @@ export class ContractReportingComponent implements OnInit {
     this.deadlines.clear();
     for (const reportingDeadline of reportingDeadlines) {
       const item = this.formBuilder.group({
-        deadlineReportType: [reportingDeadline.type],
-        deadlinePeriod: [reportingDeadline.periodNumber],
-        deadlineDate: [reportingDeadline.date],
+        deadlineReportType: [reportingDeadline.type, Validators.required],
+        deadlinePeriod: [reportingDeadline.periodNumber, Validators.required],
+        deadlineDate: [reportingDeadline.date, Validators.required],
         deadlineComment: [reportingDeadline.comment, Validators.maxLength(1000)],
         deadlinePeriodStartDate: [periods.find(p => p.number == reportingDeadline.periodNumber)?.startDate],
         deadlinePeriodEndDate: [periods.find(p => p.number == reportingDeadline.periodNumber)?.endDate],

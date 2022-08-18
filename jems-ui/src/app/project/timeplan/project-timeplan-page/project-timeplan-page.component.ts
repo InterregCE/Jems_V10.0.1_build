@@ -14,7 +14,6 @@ import {Timeline} from 'vis-timeline';
 import {DataSet} from 'vis-data/peer';
 import {map, shareReplay, tap} from 'rxjs/operators';
 import {combineLatest, Observable} from 'rxjs';
-
 import {ProjectTimeplanPageStore} from './project-timeplan-page-store.service';
 import {
   Content,
@@ -32,6 +31,7 @@ import {MultiLanguageGlobalService} from '@common/components/forms/multi-languag
 import moment from 'moment/moment';
 import TypeEnum = ProjectContractingReportingScheduleDTO.TypeEnum;
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {v4 as uuid} from "uuid";
 
 @UntilDestroy()
 @Component({
@@ -145,10 +145,10 @@ export class ProjectTimeplanPageComponent implements OnInit {
       this.clearReportDeadlinesVisualisation(timelineCustomTimes);
 
       for (const [key, value] of Object.entries(deadlinesGroupedByPeriod)) {
-        const randomId = Math.random();
+        const randomId = uuid();
         const group = value as ProjectContractingReportingScheduleDTO[];
         this.timeline.addCustomTime(moment(START_DATE).add(key, 'M').endOf('month').toDate(), randomId);
-        const customTimes = timelineCustomTimes.filter((component: { options: { id: number}}) => randomId === component.options.id);
+        const customTimes = timelineCustomTimes.filter((component: { options: { id: string}}) => randomId === component.options.id);
         const financialReports = group.filter(d => d.type == TypeEnum.Finance);
         const contentReports = group.filter(d => d.type == TypeEnum.Content);
         const bothReports = group.filter(d => d.type == TypeEnum.Both);

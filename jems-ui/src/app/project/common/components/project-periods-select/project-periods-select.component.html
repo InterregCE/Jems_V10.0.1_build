@@ -8,7 +8,8 @@
     <mat-label *ngIf="label">{{label | translate}}</mat-label>
     <mat-select [disabled]="!periods.length"
                 [formControl]="control"
-                (selectionChange)="selectionChanged.emit()">
+                (selectionChange)="selectionChanged.emit()"
+                [required]="required">
         <mat-option *ngFor="let period of periods" [value]="period.number">
             <ng-container *ngIf="period.number !== 255">
                 {{ 'project.application.form.work.package.output.delivery.period.entry' | translate : getPeriodArguments(period) }}
