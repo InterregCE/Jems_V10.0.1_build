@@ -70,7 +70,7 @@ export class CallDetailPageComponent {
   };
 
   callForm = this.formBuilder.group({
-    name: ['', [Validators.required, Validators.maxLength(250)]],
+    name: ['', [Validators.required, Validators.pattern(/(?!^\s+$)^.*$/m), Validators.maxLength(250)]],
     is2Step: [false, Validators.required],
     startDateTime: ['', Validators.required],
     endDateTimeStep1: [''],

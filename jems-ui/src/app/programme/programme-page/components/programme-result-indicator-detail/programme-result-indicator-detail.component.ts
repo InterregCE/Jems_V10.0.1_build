@@ -59,7 +59,7 @@ export class ProgrammeResultIndicatorDetailComponent extends ViewEditFormCompone
   indicatorCodes = this.programmeResultIndicatorConstants.indicatorCodes;
 
   resultIndicatorForm = this.formBuilder.group({
-    identifier: ['', [Validators.required, Validators.maxLength(10)]],
+    identifier: ['', [Validators.required, Validators.pattern(/(?!^\s+$)^.*$/m), Validators.maxLength(10)]],
     indicatorCode: ['', Validators.maxLength(6)],
     indicatorName: [[]],
     specificObjective: ['', Validators.required],

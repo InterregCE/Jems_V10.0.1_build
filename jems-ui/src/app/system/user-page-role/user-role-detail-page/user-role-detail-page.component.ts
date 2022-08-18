@@ -45,6 +45,7 @@ export class UserRoleDetailPageComponent {
   userRoleForm = this.formBuilder.group({
     name: ['', [
       Validators.required,
+      Validators.pattern(/(?!^\s+$)^.*$/m),
       Validators.maxLength(50),
       Validators.minLength(1),
     ]],

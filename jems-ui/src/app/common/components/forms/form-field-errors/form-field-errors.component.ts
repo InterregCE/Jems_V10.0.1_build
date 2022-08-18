@@ -48,6 +48,9 @@ export class FormFieldErrorsComponent {
           this.args && this.args[error.key] || {maxValue: error.value.max}
         );
       }
+      case 'pattern': {
+        return this.translateService.get(this.getErrorTranslationKey(error, 'common.error.field.whitespace'), error.value);
+      }
       default: {
         return this.translateService.get(
           this.getErrorTranslationKey(error, 'common.error.input.invalid'),

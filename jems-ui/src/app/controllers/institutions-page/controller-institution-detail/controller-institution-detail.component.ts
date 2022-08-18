@@ -46,7 +46,7 @@ export class ControllerInstitutionDetailComponent extends BaseComponent implemen
   Permissions = Permissions;
   controllerForm = this.formBuilder.group({
     id: '',
-    name: ['', Validators.required],
+    name: ['', [Validators.required, Validators.pattern(/(?!^\s+$)^.*$/m)]],
     description: ['', Validators.maxLength(2000)],
     institutionNuts: [],
     institutionUsers: this.formBuilder.array([], uniqueEmails()),

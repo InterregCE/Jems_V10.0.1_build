@@ -61,7 +61,8 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
     nameOfTheLeadPartnerInEnglish: [''],
     acronym: ['', Validators.compose([
       Validators.maxLength(25),
-      Validators.required])
+      Validators.required,
+      Validators.pattern(/(?!^\s+$)^.*$/m)])
     ],
     title: ['', Validators.maxLength(250)],
     duration: ['', Validators.compose([

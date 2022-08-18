@@ -140,7 +140,7 @@ export class PartnerReportContributionTabComponent {
     const item = this.formBuilder.group({
       id: this.formBuilder.control(contrib?.id || 0),
       sourceOfContribution: this.formBuilder.control(contrib?.sourceOfContribution, createdInThisReport
-        ? Validators.compose([Validators.maxLength(255), Validators.required])
+        ? Validators.compose([Validators.maxLength(255), Validators.required, Validators.pattern(/(?!^\s+$)^.*$/m)])
         : []),
       legalStatus: this.formBuilder.control(contrib?.legalStatus, createdInThisReport ? Validators.required : []),
       createdInThisReport: this.formBuilder.control(createdInThisReport),
