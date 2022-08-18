@@ -40,10 +40,15 @@
                 name="indicatorName" formControlName="indicatorName">
         </jems-multi-language-form-field>
     </jems-multi-language-container>
+    <jems-alert [show]="!(priorities$ | async)?.length"
+                [type]="Alert.WARNING"
+                [closable]="false">
+        <span>{{'indicator.specific.objective.empty.warning' | translate}}</span>
+    </jems-alert>
     <mat-form-field>
         <mat-label>{{'output.indicator.form.field.specific.objective' | translate}}</mat-label>
         <mat-select name="specificObjective" formControlName="specificObjective" required>
-            <mat-optgroup *ngFor="let priority of priorities"
+            <mat-optgroup *ngFor="let priority of priorities$ | async"
                           [label]="priority.title | translateBySystemLanguage | async">
                 <mat-option *ngFor="let objective of priority.specificObjectives"
                             [value]="objective.programmeObjectivePolicy">
@@ -59,6 +64,11 @@
         </mat-error>
     </mat-form-field>
     <ng-container *ngIf="filteredResultIndicators$ | async as filteredResultIndicators">
+        <jems-alert [show]="filteredResultIndicators.length < 1 && outputIndicatorForm.get('specificObjective')?.value && formState === FormState.EDIT"
+                    [type]="Alert.WARNING"
+                    [closable]="false">
+            <span>{{'output.indicator.result.indicator.empty.hint' | translate}}</span>
+        </jems-alert>
         <mat-form-field>
             <mat-label>{{'output.indicator.form.field.result.indicator' | translate}}</mat-label>
             <mat-select formControlName="resultIndicatorId">
@@ -68,8 +78,6 @@
                     {{resultIndicator.identifier}}
                 </mat-option>
             </mat-select>
-            <mat-hint
-                    *ngIf="filteredResultIndicators.length===0">{{'output.indicator.result.indicator.empty.hint' | translate}}</mat-hint>
         </mat-form-field>
     </ng-container>
     <jems-multi-language-container [useSystemLanguages]="true" [switchButtonsVisible]="formState === FormState.EDIT">

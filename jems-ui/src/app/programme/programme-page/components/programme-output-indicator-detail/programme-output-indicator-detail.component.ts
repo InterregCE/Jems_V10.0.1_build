@@ -44,11 +44,12 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditFormCompone
 
   programmeOutputIndicatorConstants = ProgrammeOutputIndicatorConstants;
   isProgrammeSetupLocked: boolean;
+  isSpecificObjectivesLocked: boolean;
 
   @Input()
   outputIndicator: OutputIndicatorDetailDTO;
   @Input()
-  priorities: ProgrammePriorityDTO[];
+  priorities$: Observable<ProgrammePriorityDTO[]>;
   @Input()
   isCreate: boolean;
   @Output()
@@ -91,22 +92,26 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditFormCompone
               public programmeEditableStateStore: ProgrammeEditableStateStore,
   ) {
     super(changeDetectorRef, translationService);
+  }
+
+  ngOnInit(): void {
+    super.ngOnInit();
 
     this.programmeEditableStateStore.isProgrammeEditableDependingOnCall$.pipe(
       tap(isProgrammeEditingLimited => this.isProgrammeSetupLocked = isProgrammeEditingLimited),
       untilDestroyed(this)
     ).subscribe();
+
+    this.priorities$.pipe(
+      untilDestroyed(this)
+    ).subscribe(priorities => this.resetForm(priorities.length < 1));
   }
 
-  ngOnInit(): void {
-    super.ngOnInit();
-    this.resetForm();
-  }
-
-  resetForm(): void {
+  resetForm(isProjectSpecificObjectivesLocked: boolean): void {
     this.filteredResultIndicators$ = combineLatest([this.resultIndicators$, this.outputIndicatorForm.controls.specificObjective.valueChanges.pipe(startWith(this.outputIndicator.programmePriorityPolicySpecificObjective))])
       .pipe(
         map(([resultIndicators, specificObjective]) => resultIndicators.filter((it: ResultIndicatorDetailDTO) => it.programmePriorityPolicySpecificObjective === specificObjective) || []),
+        tap(data => data.length < 1 || this.formState === FormState.VIEW ? this.outputIndicatorForm.controls.resultIndicatorId.disable() : this.outputIndicatorForm.controls.resultIndicatorId.enable())
       );
 
     this.outputIndicatorForm.controls.specificObjective.valueChanges.pipe(
@@ -121,6 +126,9 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditFormCompone
 
     if (this.isCreate) {
       this.changeFormState$.next(FormState.EDIT);
+      if(isProjectSpecificObjectivesLocked) {
+        this.outputIndicatorForm.controls.specificObjective.disable();
+      }
     } else {
       this.outputIndicatorForm.controls.identifier.setValue(this.outputIndicator.identifier);
       this.outputIndicatorForm.controls.indicatorCode.setValue(
@@ -183,7 +191,7 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditFormCompone
     if (this.isCreate) {
       this.cancelCreate.emit();
     } else {
-      this.resetForm();
+      this.resetForm(this.isSpecificObjectivesLocked);
     }
   }
 
@@ -214,5 +222,4 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditFormCompone
       translation: extract(codeRelation),
     } as InputTranslation));
   }
-
 }

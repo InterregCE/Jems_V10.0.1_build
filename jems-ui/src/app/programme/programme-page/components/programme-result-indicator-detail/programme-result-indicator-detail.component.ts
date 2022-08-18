@@ -28,6 +28,7 @@ import {TranslateService} from '@ngx-translate/core';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {ProgrammeEditableStateStore} from '../../services/programme-editable-state-store.service';
 import {LanguageStore} from '@common/services/language-store.service';
+import {Observable} from 'rxjs';
 @UntilDestroy()
 @Component({
   selector: 'jems-programme-result-indicator-detail',
@@ -40,11 +41,12 @@ export class ProgrammeResultIndicatorDetailComponent extends ViewEditFormCompone
   programmeResultIndicatorConstants = ProgrammeResultIndicatorConstants;
   isProgrammeSetupLocked: boolean;
   baselineOption = {min: 0};
+  isSpecificObjectivesLocked: boolean;
 
   @Input()
   resultIndicator: ResultIndicatorDetailDTO;
   @Input()
-  priorities: ProgrammePriorityDTO[];
+  priorities$: Observable<ProgrammePriorityDTO[]>;
   @Input()
   isCreate: boolean;
   @Output()
@@ -90,10 +92,13 @@ export class ProgrammeResultIndicatorDetailComponent extends ViewEditFormCompone
 
   ngOnInit(): void {
     super.ngOnInit();
-    this.resetForm();
+
+    this.priorities$.pipe(
+      untilDestroyed(this)
+    ).subscribe(priorities => this.resetForm(priorities.length < 1));
   }
 
-  resetForm(): void {
+  resetForm(isProjectSpecificObjectivesLocked: boolean): void {
     if (!this.isCreate) {
       this.resultIndicatorForm.controls.identifier.setValue(this.resultIndicator.identifier);
       this.resultIndicatorForm.controls.indicatorCode.setValue(
@@ -110,6 +115,9 @@ export class ProgrammeResultIndicatorDetailComponent extends ViewEditFormCompone
       this.changeFormState$.next(FormState.VIEW);
     } else {
       this.changeFormState$.next(FormState.EDIT);
+      if(isProjectSpecificObjectivesLocked) {
+        this.resultIndicatorForm.controls.specificObjective.disable();
+      }
     }
   }
 
@@ -162,7 +170,7 @@ export class ProgrammeResultIndicatorDetailComponent extends ViewEditFormCompone
     if (this.isCreate) {
       this.cancelCreate.emit();
     } else {
-      this.resetForm();
+      this.resetForm(this.isSpecificObjectivesLocked);
     }
   }
 
