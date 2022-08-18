@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.controllerInstitution.service.getInstitutionPartnerAssignment
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.authentication.service.AuthenticationService
 import io.cloudflight.jems.server.controllerInstitution.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.controllerInstitution.INSTITUTION_ID
 import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerDetails
@@ -8,6 +9,7 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRo
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.impl.annotations.RelaxedMockK
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageImpl
@@ -52,6 +54,9 @@ class GetInstitutionPartnerAssignmentTest: UnitTest() {
 
     @MockK
     lateinit var controllerInstitutionPersistence: ControllerInstitutionPersistence
+
+    @RelaxedMockK
+    lateinit var authenticationService: AuthenticationService
 
     @InjectMockKs
     lateinit var getInstitutionPartnerAssignment: GetInstitutionPartnerAssignment

@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.controllerInstitution.service.getInstitutionPartnerAssignment
 
+import io.cloudflight.jems.server.authentication.service.AuthenticationService
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.controllerInstitution.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.controllerInstitution.authorization.CanViewInstitutionAssignments
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class GetInstitutionPartnerAssignment(
     private val controllerInstitutionPersistence: ControllerInstitutionPersistence,
+    private val authenticationService: AuthenticationService
 ): GetInstitutionPartnerAssignmentInteractor {
 
     @CanViewInstitutionAssignments
@@ -22,7 +24,6 @@ class GetInstitutionPartnerAssignment(
         controllerInstitutionPersistence.getInstitutionPartnerAssignments(pageable)
 
     @ExceptionWrapper(GetInstitutionPartnerAssignmentException::class)
-    override fun getControllerUserAccessLevelForPartner(userId: Long, partnerId: Long): UserInstitutionAccessLevel? =
-        controllerInstitutionPersistence.getControllerUserAccessLevelForPartner(userId, partnerId)
-
+    override fun getControllerUserAccessLevelForPartner(partnerId: Long): UserInstitutionAccessLevel? =
+        controllerInstitutionPersistence.getControllerUserAccessLevelForPartner(this.authenticationService.getCurrentUser().id, partnerId)
 }
