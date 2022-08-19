@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanViewPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportIdentification
 import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportSpendingProfile
+import io.cloudflight.jems.server.project.service.report.model.identification.control.ReportType
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown.GetReportExpenditureCostCategoryCalculatorService
 import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectReportIdentificationPersistence
 import org.springframework.stereotype.Service
@@ -17,7 +18,7 @@ class GetProjectPartnerReportIdentification(
 ) : GetProjectPartnerReportIdentificationInteractor {
 
     companion object {
-        private fun emptyIdentification() = ProjectPartnerReportIdentification(
+        fun emptyIdentification() = ProjectPartnerReportIdentification(
             startDate = null,
             endDate = null,
             summary = emptySet(),
@@ -31,7 +32,9 @@ class GetProjectPartnerReportIdentification(
                 differenceFromPlan = BigDecimal.ZERO,
                 differenceFromPlanPercentage = BigDecimal.ZERO,
                 nextReportForecast = BigDecimal.ZERO,
-            )
+            ),
+            controllerFormats = emptySet(),
+            type = ReportType.PartnerReport,
         )
     }
 

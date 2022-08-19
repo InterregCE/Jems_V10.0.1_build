@@ -41,6 +41,7 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
         private const val PARTNER_ID = 10L
         private val LAST_WEEK = LocalDate.now().minusWeeks(1)
         private val NEXT_WEEK = LocalDate.now().plusWeeks(1)
+        private val LAST_YEAR = ZonedDateTime.now().minusYears(1)
 
         private fun reportEntity(
             id: Long,
@@ -52,7 +53,7 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
             number = 1,
             status = status,
             applicationFormVersion = "3.0",
-            firstSubmission = null,
+            firstSubmission = LAST_YEAR,
             identification = PartnerReportIdentificationEntity(
                 projectIdentifier = "projectIdentifier",
                 projectAcronym = "projectAcronym",
@@ -95,7 +96,7 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
             reportNumber = 1,
             status = ReportStatus.Draft,
             version = "3.0",
-            firstSubmission = null,
+            firstSubmission = LAST_YEAR,
             createdAt = createdAt,
             projectIdentifier = "projectIdentifier",
             projectAcronym = "projectAcronym",
@@ -130,6 +131,7 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
             reportNumber = 1,
             status = ReportStatus.Draft,
             version = "3.0",
+            firstSubmission = LAST_YEAR,
             identification = PartnerReportIdentification(
                 projectIdentifier = "projectIdentifier",
                 projectAcronym = "projectAcronym",
@@ -233,9 +235,7 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
         val report = reportEntity(id = 47L, YESTERDAY, ReportStatus.Submitted)
         every { partnerReportRepository.findByIdAndPartnerId(47L, 15L) } returns report
 
-        val inControlReport = persistence.startControlOnReportById(15L, 47L)
-
-        assertThat(inControlReport).isEqualTo(
+        assertThat(persistence.startControlOnReportById(15L, 47L)).isEqualTo(
             draftReportSubmissionEntity(id = 47L, YESTERDAY).copy(
                 status = ReportStatus.InControl,
             )

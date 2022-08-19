@@ -78,6 +78,7 @@ fun ProjectPartnerReportEntity.toModel(coFinancing: List<ProjectPartnerReportCoF
     reportNumber = number,
     status = status,
     version = applicationFormVersion,
+    firstSubmission = firstSubmission,
 
     identification = PartnerReportIdentification(
         projectIdentifier = identification.projectIdentifier,

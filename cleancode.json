@@ -37,6 +37,10 @@
     {
       "hash": "cc26f5aa",
       "reason": "an indirect npm dependency fails because of it"
+    },
+    {
+      "hash": "07ecb7ae",
+      "reason": "No classes should throw generic exceptions, but this one is in mapstruct generated Java class"
     }
   ]
 }

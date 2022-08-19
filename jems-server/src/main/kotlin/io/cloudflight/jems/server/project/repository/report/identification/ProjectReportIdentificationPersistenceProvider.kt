@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.repository.report.identification
 
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.server.common.entity.TranslationId
+import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportIdentificationEntity
 import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportIdentificationTargetGroupEntity
@@ -11,6 +12,9 @@ import io.cloudflight.jems.server.project.repository.report.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportIdentification
 import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportPeriod
 import io.cloudflight.jems.server.project.service.report.model.identification.UpdateProjectPartnerReportIdentification
+import io.cloudflight.jems.server.project.service.report.model.identification.control.ProjectPartnerControlReportChange
+import io.cloudflight.jems.server.project.service.report.model.identification.control.ReportFileFormat
+import io.cloudflight.jems.server.project.service.report.model.identification.control.ReportType
 import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectReportIdentificationPersistence
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -72,6 +76,30 @@ class ProjectReportIdentificationPersistenceProvider(
     override fun getAvailablePeriods(partnerId: Long, reportId: Long): List<ProjectPartnerReportPeriod> =
         reportBudgetPerPeriodRepository.findAllByIdReportPartnerIdAndIdReportIdOrderByIdPeriodNumber(partnerId = partnerId, reportId)
             .toPeriodModel()
+
+    @Transactional
+    override fun updatePartnerControlReportIdentification(
+        partnerId: Long,
+        reportId: Long,
+        data: ProjectPartnerControlReportChange,
+    ): ProjectPartnerReportIdentification {
+        val entity = identificationRepository.findByReportEntityIdAndReportEntityPartnerId(
+            reportId = reportId,
+            partnerId = partnerId,
+        ).orElseThrow { ResourceNotFoundException("controlReport") }
+
+        entity.formatOriginals = data.controllerFormats.contains(ReportFileFormat.Originals)
+        entity.formatCopy = data.controllerFormats.contains(ReportFileFormat.Copy)
+        entity.formatElectronic = data.controllerFormats.contains(ReportFileFormat.Electronic)
+        entity.type = data.type
+
+        return entity.toModel(
+            targetGroups = identificationTargetGroupRepository.findAllByReportIdentificationEntityOrderBySortNumber(entity),
+            periodResolver = { periodNumber -> periodNumber?.let {
+                reportBudgetPerPeriodRepository.findByIdReportIdAndIdPeriodNumber(reportId = reportId, periodNumber = periodNumber)
+            } },
+        )
+    }
 
     private fun updateBaseData(
         entity: ProjectPartnerReportIdentificationEntity,
@@ -150,6 +178,10 @@ class ProjectReportIdentificationPersistenceProvider(
                 endDate = null,
                 periodNumber = null,
                 nextReportForecast = BigDecimal.ZERO,
+                formatOriginals = false,
+                formatCopy = false,
+                formatElectronic = false,
+                type = ReportType.PartnerReport,
                 translatedValues = mutableSetOf(),
             )
         )

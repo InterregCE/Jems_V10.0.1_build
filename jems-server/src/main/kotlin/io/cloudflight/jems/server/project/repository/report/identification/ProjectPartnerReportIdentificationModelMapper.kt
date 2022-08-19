@@ -8,6 +8,7 @@ import io.cloudflight.jems.server.project.service.report.model.identification.Pr
 import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportIdentificationTargetGroup
 import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportPeriod
 import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportSpendingProfile
+import io.cloudflight.jems.server.project.service.report.model.identification.control.ReportFileFormat
 import java.math.BigDecimal
 
 fun ProjectPartnerReportIdentificationEntity.toModel(
@@ -27,7 +28,13 @@ fun ProjectPartnerReportIdentificationEntity.toModel(
         differenceFromPlan = BigDecimal.ZERO,
         differenceFromPlanPercentage = BigDecimal.ZERO,
         nextReportForecast = nextReportForecast,
-    )
+    ),
+    controllerFormats = mapOf(
+        ReportFileFormat.Originals to formatOriginals,
+        ReportFileFormat.Copy to formatCopy,
+        ReportFileFormat.Electronic to formatElectronic,
+    ).filter { it.value }.keys,
+    type = type,
 )
 
 fun ProjectPartnerReportBudgetPerPeriodEntity.toModel() = ProjectPartnerReportPeriod(

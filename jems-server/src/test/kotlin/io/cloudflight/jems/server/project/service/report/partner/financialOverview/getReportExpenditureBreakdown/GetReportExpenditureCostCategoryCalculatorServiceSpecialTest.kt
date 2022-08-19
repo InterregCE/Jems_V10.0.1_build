@@ -41,6 +41,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceSpecialTest : Un
             status = status,
             version = "",
             identification = mockk(),
+            firstSubmission = TODAY,
         )
 
         private val expectedOnDirect2Output = ExpenditureCostCategoryBreakdown(

@@ -53,6 +53,7 @@ import io.cloudflight.jems.server.project.service.report.model.contribution.crea
 import io.cloudflight.jems.server.project.service.report.model.create.*
 import io.cloudflight.jems.server.project.service.report.model.financialOverview.costCategory.ReportExpenditureCostCategory
 import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportPeriod
+import io.cloudflight.jems.server.project.service.report.model.identification.control.ReportType
 import io.cloudflight.jems.server.project.service.report.model.workPlan.create.CreateProjectPartnerReportWorkPackage
 import io.cloudflight.jems.server.project.service.report.model.workPlan.create.CreateProjectPartnerReportWorkPackageActivity
 import io.cloudflight.jems.server.project.service.report.model.workPlan.create.CreateProjectPartnerReportWorkPackageActivityDeliverable
@@ -506,6 +507,10 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
             assertThat(endDate).isNull()
             assertThat(periodNumber).isNull()
             assertThat(nextReportForecast).isEqualByComparingTo(ZERO)
+            assertThat(formatOriginals).isFalse()
+            assertThat(formatCopy).isFalse()
+            assertThat(formatElectronic).isFalse()
+            assertThat(type).isEqualTo(ReportType.PartnerReport)
             assertThat(translatedValues).isEmpty()
         }
         assertThat(idTargetGroupsSlot.captured).hasSize(3)

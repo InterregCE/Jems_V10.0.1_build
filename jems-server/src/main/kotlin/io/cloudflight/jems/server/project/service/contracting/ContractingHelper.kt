@@ -9,11 +9,12 @@ fun ProjectContractingMonitoring.fillEndDateWithDuration(
     resolveDuration: () -> Int?
 ) = this.also {
     if (this.startDate != null) {
-        val duration = resolveDuration.invoke()
-        if (duration != null)
-            this.endDate = this.startDate.plusMonths(duration.toLong())
+        this.endDate = getEndDate(this.startDate, duration = resolveDuration.invoke())
     }
 }
+
+fun getEndDate(startDate: LocalDate, duration: Int?) =
+    if (duration != null) startDate.plusMonths(duration.toLong()) else null
 
 fun ProjectContractingMonitoring.fillFTLumpSumsList(
     resolveLumpSums: () -> List<ProjectLumpSum>?

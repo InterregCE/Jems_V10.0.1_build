@@ -4,11 +4,15 @@ import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.entity.TranslationId
+import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.identification.*
 import io.cloudflight.jems.server.project.repository.report.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
 import io.cloudflight.jems.server.project.service.report.model.identification.*
+import io.cloudflight.jems.server.project.service.report.model.identification.control.ProjectPartnerControlReportChange
+import io.cloudflight.jems.server.project.service.report.model.identification.control.ReportFileFormat
+import io.cloudflight.jems.server.project.service.report.model.identification.control.ReportType
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -19,6 +23,7 @@ import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.util.Optional
@@ -37,6 +42,10 @@ class ProjectReportIdentificationPersistenceProviderTest : UnitTest() {
             endDate = TOMORROW,
             periodNumber = 7,
             nextReportForecast = BigDecimal.valueOf(3),
+            formatOriginals = false,
+            formatCopy = true,
+            formatElectronic = true,
+            type = ReportType.FinalReport,
             translatedValues = mutableSetOf(),
         ).apply {
             translatedValues.add(
@@ -94,6 +103,8 @@ class ProjectReportIdentificationPersistenceProviderTest : UnitTest() {
                 differenceFromPlanPercentage = BigDecimal.ZERO,
                 nextReportForecast = BigDecimal.valueOf(3),
             ),
+            controllerFormats = setOf(ReportFileFormat.Copy, ReportFileFormat.Electronic),
+            type = ReportType.FinalReport,
         )
 
         private val newData = UpdateProjectPartnerReportIdentification(
@@ -124,6 +135,8 @@ class ProjectReportIdentificationPersistenceProviderTest : UnitTest() {
                 differenceFromPlanPercentage = BigDecimal.ZERO,
                 nextReportForecast = BigDecimal.valueOf(45),
             ),
+            controllerFormats = emptySet(),
+            type = ReportType.PartnerReport,
         )
 
     }
@@ -236,6 +249,36 @@ class ProjectReportIdentificationPersistenceProviderTest : UnitTest() {
         assertThat(persistence.getAvailablePeriods(PARTNER_ID, reportId = 38L)).containsExactly(
             ProjectPartnerReportPeriod(number = 1, periodBudget = BigDecimal.ONE, periodBudgetCumulative = BigDecimal.TEN, 1, 3)
         )
+    }
+
+    @Test
+    fun updatePartnerControlReportIdentification() {
+        val reportId = 98L
+        val identification = dummyEntity(mockk())
+        every { identificationRepository.findByReportEntityIdAndReportEntityPartnerId(reportId = reportId, PARTNER_ID) } returns
+            Optional.of(identification)
+        every { identificationTargetGroupRepository.findAllByReportIdentificationEntityOrderBySortNumber(identification) } returns emptyList()
+        every { reportBudgetPerPeriodRepository.findByIdReportIdAndIdPeriodNumber(reportId = reportId, 7) } returns
+            dummyPeriod(identification.reportEntity, 7)
+
+        val change = ProjectPartnerControlReportChange(
+            controllerFormats = setOf(ReportFileFormat.Originals, ReportFileFormat.Copy),
+            type = ReportType.PartnerReport,
+        )
+        val result = persistence.updatePartnerControlReportIdentification(PARTNER_ID, reportId = reportId, change)
+        assertThat(result.controllerFormats).containsExactly(ReportFileFormat.Originals, ReportFileFormat.Copy)
+        assertThat(result.type).isEqualTo(ReportType.PartnerReport)
+    }
+
+    @Test
+    fun `updatePartnerControlReportIdentification - not existing`() {
+        every { identificationRepository.findByReportEntityIdAndReportEntityPartnerId(reportId = -1L, PARTNER_ID) } returns
+            Optional.empty()
+
+        val change = ProjectPartnerControlReportChange(emptySet(), ReportType.PartnerReport)
+        assertThrows<ResourceNotFoundException> {
+            persistence.updatePartnerControlReportIdentification(PARTNER_ID, reportId = -1L, change)
+        }
     }
 
 }

@@ -33,12 +33,14 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
+import java.time.ZonedDateTime
 import java.util.*
 
 internal class GetReportExpenditureCoFinancingBreakdownTest : UnitTest() {
 
     companion object {
         private const val PARTNER_ID = 595L
+        private val LAST_YEAR = ZonedDateTime.now().minusYears(1)
 
         private fun fund(id: Long): ProgrammeFund {
             val fundMock = mockk<ProgrammeFund>()
@@ -60,6 +62,7 @@ internal class GetReportExpenditureCoFinancingBreakdownTest : UnitTest() {
                 status = status,
                 version = "V_4.5",
                 identification = identification,
+                firstSubmission = LAST_YEAR,
             )
         }
 

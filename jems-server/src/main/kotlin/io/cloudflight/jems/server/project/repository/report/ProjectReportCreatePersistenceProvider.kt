@@ -35,6 +35,7 @@ import io.cloudflight.jems.server.project.service.report.model.create.PartnerRep
 import io.cloudflight.jems.server.project.service.report.model.create.PartnerReportUnitCostBase
 import io.cloudflight.jems.server.project.service.report.model.financialOverview.costCategory.ReportExpenditureCostCategory
 import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportPeriod
+import io.cloudflight.jems.server.project.service.report.model.identification.control.ReportType
 import io.cloudflight.jems.server.project.service.report.model.workPlan.create.CreateProjectPartnerReportWorkPackage
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -129,6 +130,10 @@ class ProjectReportCreatePersistenceProvider(
                 periodNumber = null,
                 translatedValues = mutableSetOf(),
                 nextReportForecast = BigDecimal.ZERO,
+                formatOriginals = false,
+                formatCopy = false,
+                formatElectronic = false,
+                type = ReportType.PartnerReport,
             )
         )
         identificationTargetGroupRepository.saveAll(

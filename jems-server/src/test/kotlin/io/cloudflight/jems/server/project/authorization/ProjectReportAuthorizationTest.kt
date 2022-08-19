@@ -3,6 +3,8 @@ package io.cloudflight.jems.server.project.authorization
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.authentication.model.CurrentUser
 import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.controllerInstitution.ControllerInstitutionPersistence
+import io.cloudflight.jems.server.controllerInstitution.service.model.UserInstitutionAccessLevel
 import io.cloudflight.jems.server.project.entity.partneruser.PartnerCollaboratorLevel.EDIT
 import io.cloudflight.jems.server.project.entity.partneruser.PartnerCollaboratorLevel.VIEW
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
@@ -17,6 +19,8 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 import java.util.*
 
 internal class ProjectReportAuthorizationTest : UnitTest() {
@@ -34,6 +38,9 @@ internal class ProjectReportAuthorizationTest : UnitTest() {
 
     @MockK
     lateinit var partnerCollaboratorPersistence: UserPartnerCollaboratorPersistence
+
+    @MockK
+    lateinit var controllerInstitutionPersistence: ControllerInstitutionPersistence
 
     @MockK
     lateinit var currentUser: CurrentUser
@@ -97,6 +104,49 @@ internal class ProjectReportAuthorizationTest : UnitTest() {
         every { securityService.getUserIdOrThrow() } returns 3205L
         every { partnerCollaboratorPersistence.findByUserIdAndPartnerId(userId = 3205L, PARTNER_ID) } returns Optional.empty()
         assertThat(reportAuthorization.canViewPartnerReport(PARTNER_ID)).isFalse
+    }
+
+    @ParameterizedTest(name = "control report - user can view (status {0})")
+    @EnumSource(value = UserInstitutionAccessLevel::class)
+    fun `control report - user can view`(accessLevel: UserInstitutionAccessLevel) {
+        val userId = 10L + accessLevel.ordinal
+        every { securityService.getUserIdOrThrow() } returns userId
+        every { controllerInstitutionPersistence.getControllerUserAccessLevelForPartner(userId, partnerId = 50L) } returns accessLevel
+        assertThat(reportAuthorization.canViewPartnerControlReport(50L)).isTrue()
+    }
+
+    @Test
+    fun `control report - user can not view`() {
+        val userId = 18L
+        every { securityService.getUserIdOrThrow() } returns userId
+        every { controllerInstitutionPersistence.getControllerUserAccessLevelForPartner(userId, partnerId = -1L) } returns null
+        assertThat(reportAuthorization.canViewPartnerControlReport(-1L)).isFalse()
+    }
+
+    @Test
+    fun `control report - user can edit`() {
+        val userId = 26L
+        every { securityService.getUserIdOrThrow() } returns userId
+        every { controllerInstitutionPersistence.getControllerUserAccessLevelForPartner(userId, partnerId = 28L) } returns
+            UserInstitutionAccessLevel.Edit
+        assertThat(reportAuthorization.canEditPartnerControlReport(28L)).isTrue()
+    }
+
+    @Test
+    fun `control report - user can not edit - only view`() {
+        val userId = 28L
+        every { securityService.getUserIdOrThrow() } returns userId
+        every { controllerInstitutionPersistence.getControllerUserAccessLevelForPartner(userId, partnerId = 150L) } returns
+            UserInstitutionAccessLevel.View
+        assertThat(reportAuthorization.canEditPartnerControlReport(150L)).isFalse()
+    }
+
+    @Test
+    fun `control report - user can not edit - not assigned`() {
+        val userId = 30L
+        every { securityService.getUserIdOrThrow() } returns userId
+        every { controllerInstitutionPersistence.getControllerUserAccessLevelForPartner(userId, partnerId = 152L) } returns null
+        assertThat(reportAuthorization.canEditPartnerControlReport(152L)).isFalse()
     }
 
 }

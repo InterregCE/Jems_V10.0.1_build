@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.service.contracting.monitoring
+package io.cloudflight.jems.server.project.service.contracting.monitoring.getProjectContractingMonitoring
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.repository.ProjectPersistenceProvider
@@ -10,7 +10,7 @@ import io.cloudflight.jems.server.project.service.contracting.model.ContractingM
 import io.cloudflight.jems.server.project.service.contracting.model.ContractingMonitoringOption
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoring
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoringAddDate
-import io.cloudflight.jems.server.project.service.contracting.monitoring.getProjectContractingMonitoring.GetContractingMonitoring
+import io.cloudflight.jems.server.project.service.contracting.monitoring.ContractingMonitoringPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.model.ProjectFull
@@ -23,9 +23,10 @@ import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import java.time.LocalDate
 import java.time.ZonedDateTime
 
-internal class GetContractingMonitoringTest : UnitTest() {
+internal class GetContractingMonitoringServiceTest : UnitTest() {
 
     companion object {
         private const val projectId = 1L
@@ -99,7 +100,7 @@ internal class GetContractingMonitoringTest : UnitTest() {
     lateinit var validator: ContractingValidator
 
     @InjectMockKs
-    lateinit var getContractingMonitoring: GetContractingMonitoring
+    lateinit var getContractingMonitoringService: GetContractingMonitoringService
 
     @Test
     fun `get project monitoring for approved application`() {
@@ -110,7 +111,7 @@ internal class GetContractingMonitoringTest : UnitTest() {
         every { contractingMonitoringPersistence.getContractingMonitoring(projectId) } returns monitoring
         every { projectLumpSumPersistence.getLumpSums(1, "2.0")} returns lumpSums
 
-        assertThat(getContractingMonitoring.getContractingMonitoring(projectId))
+        assertThat(getContractingMonitoringService.getContractingMonitoring(projectId))
             .isEqualTo(
                 ProjectContractingMonitoring(
                     projectId = projectId,
@@ -146,7 +147,7 @@ internal class GetContractingMonitoringTest : UnitTest() {
         } returns monitoring.copy(startDate = ZonedDateTime.parse("2022-07-01T10:00:00+02:00").toLocalDate())
         every { projectLumpSumPersistence.getLumpSums(1, "2.0")} returns lumpSums
 
-        assertThat(getContractingMonitoring.getContractingMonitoring(projectId))
+        assertThat(getContractingMonitoringService.getContractingMonitoring(projectId))
             .isEqualTo(
                 ProjectContractingMonitoring(
                     projectId = projectId,
@@ -179,9 +180,39 @@ internal class GetContractingMonitoringTest : UnitTest() {
         } throws ContractingModificationDeniedException()
 
         assertThrows<ContractingModificationDeniedException> {
-            getContractingMonitoring.getContractingMonitoring(projectId)
+            getContractingMonitoringService.getContractingMonitoring(projectId)
         }
     }
 
+    @Test
+    fun getContractMonitoringDates() {
+        val start = LocalDate.of(2022, 1, 31)
+        every { contractingMonitoringPersistence.getContractingMonitoring(51L).startDate } returns start
+        every { versionPersistence.getLatestApprovedOrCurrent(51L) } returns "V1"
+        every { projectPersistence.getProject(51L, "V1").duration } returns 1
+
+        assertThat(getContractingMonitoringService.getContractMonitoringDates(51L))
+            .isEqualTo(Pair(LocalDate.of(2022, 1, 31), LocalDate.of(2022, 2, 28)))
+    }
+
+    @Test
+    fun `getContractMonitoringDates - no start date`() {
+        val start = LocalDate.of(2022, 8, 19)
+        every { contractingMonitoringPersistence.getContractingMonitoring(52L).startDate } returns start
+        every { versionPersistence.getLatestApprovedOrCurrent(52L) } returns "V1"
+        every { projectPersistence.getProject(52L, "V1").duration } returns null
+
+        assertThat(getContractingMonitoringService.getContractMonitoringDates(52L))
+            .isEqualTo(Pair(LocalDate.of(2022, 8, 19), null))
+    }
+
+    @Test
+    fun `getContractMonitoringDates - no duration`() {
+        every { contractingMonitoringPersistence.getContractingMonitoring(50L).startDate } returns null
+        every { versionPersistence.getLatestApprovedOrCurrent(50L) } returns "V1"
+        every { projectPersistence.getProject(50L, "V1").duration } returns 1
+
+        assertThat(getContractingMonitoringService.getContractMonitoringDates(50L)).isNull()
+    }
 
 }
