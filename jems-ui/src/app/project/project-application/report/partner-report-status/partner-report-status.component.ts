@@ -24,7 +24,7 @@ export class PartnerReportStatusComponent {
 
   getIconFromStatus(currentChip: ProjectPartnerReportSummaryDTO.StatusEnum): string {
     if (!this.isEnabled(currentChip)) {
-      return 'cancel'
+      return 'cancel';
     }
     switch (currentChip) {
       case 'Draft':
