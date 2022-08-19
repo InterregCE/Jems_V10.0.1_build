@@ -3,7 +3,12 @@
                          subTitleKey="programme.priority.add.title">
     <form jemsFormLayout [formGroup]="form">
         <div page-sub-title jemsMultiColumnRow>
-            <h2 class="mb-0">{{'programme.priority.add.title' | translate}}</h2>
+            <a color="primary" class="mr-1" mat-icon-button *ngIf="!form.enabled"
+               routerLink=".."
+               matTooltip="{{ 'programme.priority.back.to.list' | translate }}">
+                <mat-icon class="icon-back" fontSet="material-icons-outlined">arrow_circle_left</mat-icon>
+            </a>
+            <h3 class="mb-0 put-icon-to-header-line">{{'programme.priority.add.title' | translate}}</h3>
             <button jemsText color="primary" mat-raised-button
                     *ngIf="form.disabled && (programmeEditableStateStore.hasEditPermission$ | async)"
                     (click)="form.enable(); resetForm(data.priority, data.freePrioritiesWithPolicies)">

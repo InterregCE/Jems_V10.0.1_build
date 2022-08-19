@@ -5,12 +5,18 @@
     <jems-form (save)="onSubmit()"
               (discard)="discard(data.investment, data.workPackageNumber)">
         <form jemsFormLayout [formGroup]="workPackageInvestmentForm">
-
-            <h3>{{'project.application.form.workpackage.investment.form.title' | translate}}
-                <span *ngIf="data.investment.investmentNumber">
-                    {{data.workPackageNumber}}.{{data.investment.investmentNumber}}
+            <span>
+                <a color="primary" class="mr-1" mat-icon-button *ngIf="(formService.dirty$ | async) === false"
+                   routerLink=".."
+                   matTooltip="{{ 'project.application.form.workpackage.investments.back.to.list' | translate }}">
+                    <mat-icon class="icon-back" fontSet="material-icons-outlined">arrow_circle_left</mat-icon>
+                </a>
+                <h3 class="put-icon-to-header-line">{{'project.application.form.workpackage.investment.form.title' | translate}}
+                    <span *ngIf="data.investment.investmentNumber">
+                        {{data.workPackageNumber}}.{{data.investment.investmentNumber}}
+                </span>
+                </h3>
             </span>
-            </h3>
 
             <mat-form-field>
                 <mat-label>{{'project.application.form.workpackage.investment.number' | translate}}</mat-label>
