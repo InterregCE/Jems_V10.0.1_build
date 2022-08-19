@@ -81,9 +81,7 @@ export class ProjectPartnerStateAidTabComponent {
     this.formService.init(this.form, this.pageStore.isProjectEditable$);
     this.data$ = combineLatest([
       this.pageStore.stateAid$,
-      this.projectStore.projectEditable$.pipe(
-        switchMap(isEditable => isEditable ? this.projectStore.activities$ : of([]))
-      ),
+      this.projectStore.activities$,
       this.workPackageProjectStore.workPackages$,
       this.projectStore.project$,
       this.projectStore.projectEditable$
@@ -91,7 +89,7 @@ export class ProjectPartnerStateAidTabComponent {
       map(([stateAid, activities, workpackages, project, isEditable]) => ({
         stateAid,
         displayActivities: this.mapWorkpackagesAndActivities(isEditable ? activities : stateAid.activities, workpackages),
-        activities: isEditable ? activities : stateAid.activities,
+        activities,
         project,
         isEditable,
         stateAidsForDropdown: project.callSettings.stateAids,
