@@ -75,7 +75,7 @@ export class PartnerReportComponent implements AfterViewInit {
       map(([partnerReports, partner, systemLanguage, canUserViewControlReports, canUserEditControlReports]) => {
         return {
             totalElements: partnerReports.totalElements,
-            partnerReports: partnerReports.content.map(partnerReport => this.translatePartnerReportStatus(partnerReport)),
+            partnerReports: partnerReports.content,
             partner,
             canUserViewControlReports,
             canUserEditControlReports
@@ -180,11 +180,6 @@ export class PartnerReportComponent implements AfterViewInit {
       this.error$.next(null);
     },         4000);
     return of(null);
-  }
-
-  private translatePartnerReportStatus(partnerReport:  ProjectPartnerReportSummaryDTO):  ProjectPartnerReportSummaryDTO{
-    const partnerReportStatus = this.translateService.instant(`project.application.partner.report.table.status.${partnerReport.status.toLowerCase()}`);
-    return { ...partnerReport, status: partnerReportStatus };
   }
 
 }
