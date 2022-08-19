@@ -207,7 +207,7 @@ context('Project privileges tests', () => {
     });
   });
 
-  it.only('TB-380 Manually assign/clear users to a project', () => {
+  it('TB-380 Manually assign/clear users to a project', () => {
     cy.fixture('project/project-privileges/TB-380.json').then(testData => {
       cy.loginByRequest(user.admin.email);
 
