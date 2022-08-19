@@ -242,17 +242,11 @@ context('Project privileges tests', () => {
       });
       cy.createApplication(application).then(applicationId1 => {
         cy.visit(`/app/project/detail/${applicationId1}/checkAndSubmit`, {failOnStatusCode: false});
-
-        cy.contains('button', 'Run pre-submission check').click();
-        cy.contains('button', 'Submit project application').click();
-        cy.contains('button', 'Confirm').click();
+        cy.submitProjectApplication(applicationId1);
 
         cy.createApplication(application).then(applicationId2 => {
           cy.visit(`/app/project/detail/${applicationId2}/checkAndSubmit`, {failOnStatusCode: false});
-
-          cy.contains('button', 'Run pre-submission check').click();
-          cy.contains('button', 'Submit project application').click();
-          cy.contains('button', 'Confirm').click();
+          cy.submitProjectApplication(applicationId2);
 
           // Adding users to the projects
           cy.visit('/');
@@ -309,7 +303,7 @@ context('Project privileges tests', () => {
 
           cy.loginByRequest(testData.monitorUser1.email);
           cy.visit('/', {failOnStatusCode: false});
-          cy.get('table.mat-table:first').contains('div', applicationId1).should('not.exist');
+          cy.get('table.mat-table:first').contains('div', ` ${applicationId2.toString().padStart(5, '0')} `).should('not.exist');
         });
       });
     });
