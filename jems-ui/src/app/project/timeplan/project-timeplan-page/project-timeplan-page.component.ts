@@ -31,7 +31,7 @@ import {MultiLanguageGlobalService} from '@common/components/forms/multi-languag
 import moment from 'moment/moment';
 import TypeEnum = ProjectContractingReportingScheduleDTO.TypeEnum;
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {v4 as uuid} from "uuid";
+import {v4 as uuid} from 'uuid';
 
 @UntilDestroy()
 @Component({
