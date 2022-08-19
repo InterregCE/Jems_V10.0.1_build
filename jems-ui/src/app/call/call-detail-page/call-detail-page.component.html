@@ -6,9 +6,13 @@
                    [type]="Alert.WARNING">
             <span>{{'call.detail.edit.published.warning' | translate}}</span>
         </jems-alert>
-        <jems-alert [show]="published && data.userCanApply && !isOpen(data.call)"
+        <jems-alert [show]="published && data.userCanApply && !hasNotExpired(data.call)"
                    [type]="Alert.WARNING">
-            <span>{{'call.table.column.action.apply.inactive.note' | translate}}</span>
+            <span>{{'call.table.column.action.apply.has.ended.note' | translate}}</span>
+        </jems-alert>
+        <jems-alert [show]="published && data.userCanApply && !hasStarted(data.call)"
+                    [type]="Alert.WARNING">
+            <span>{{'call.table.column.action.apply.not.started.note' | translate}}</span>
         </jems-alert>
         <form [formGroup]="callForm" jemsFormLayout>
             <jems-pending-button
