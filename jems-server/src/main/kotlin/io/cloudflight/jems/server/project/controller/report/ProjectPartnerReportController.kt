@@ -5,13 +5,14 @@ import io.cloudflight.jems.api.project.dto.report.ReportStatusDTO
 import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileDTO
 import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileSearchRequestDTO
 import io.cloudflight.jems.api.project.report.ProjectPartnerReportApi
-import io.cloudflight.jems.server.project.service.report.partner.createProjectPartnerReport.CreateProjectPartnerReportInteractor
+import io.cloudflight.jems.server.project.service.report.partner.workflow.createProjectPartnerReport.CreateProjectPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.deleteProjectPartnerReportFile.DeleteProjectPartnerReportFileInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.downloadProjectPartnerReportFile.DownloadProjectPartnerReportFileInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.listProjectPartnerReportFile.ListProjectPartnerReportFileInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.uploadFileToProjectPartnerReport.UploadFileToProjectPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.getProjectPartnerReport.GetProjectPartnerReportInteractor
-import io.cloudflight.jems.server.project.service.report.partner.submitProjectPartnerReport.SubmitProjectPartnerReportInteractor
+import io.cloudflight.jems.server.project.service.report.partner.workflow.startControlPartnerReport.StartControlPartnerReportInteractor
+import io.cloudflight.jems.server.project.service.report.partner.workflow.submitProjectPartnerReport.SubmitProjectPartnerReportInteractor
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -25,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile
 class ProjectPartnerReportController(
     private val createPartnerReport: CreateProjectPartnerReportInteractor,
     private val submitPartnerReport: SubmitProjectPartnerReportInteractor,
+    private val startControlReport: StartControlPartnerReportInteractor,
     private val getPartnerReport: GetProjectPartnerReportInteractor,
     private val downloadPartnerReportFile: DownloadProjectPartnerReportFileInteractor,
     private val deletePartnerReportFile: DeleteProjectPartnerReportFileInteractor,
@@ -46,6 +48,9 @@ class ProjectPartnerReportController(
 
     override fun submitProjectPartnerReport(partnerId: Long, reportId: Long): ReportStatusDTO =
         submitPartnerReport.submit(partnerId = partnerId, reportId = reportId).toDto()
+
+    override fun startControlOnPartnerReport(partnerId: Long, reportId: Long) =
+        startControlReport.startControl(partnerId = partnerId, reportId = reportId).toDto()
 
     override fun downloadAttachment(
         partnerId: Long,

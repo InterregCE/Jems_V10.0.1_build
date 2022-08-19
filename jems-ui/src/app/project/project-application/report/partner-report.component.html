@@ -54,3 +54,7 @@
             end: partnerReport.periodDetail.end } }}
     </span>
 </ng-template>
+
+<ng-template #statusCell let-partnerReport>
+    <jems-partner-report-status [status]="partnerReport.status"></jems-partner-report-status>
+</ng-template>

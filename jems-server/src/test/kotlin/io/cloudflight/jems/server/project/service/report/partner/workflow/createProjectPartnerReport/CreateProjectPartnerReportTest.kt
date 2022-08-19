@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.service.report.partner.createProjectPartnerReport
+package io.cloudflight.jems.server.project.service.report.partner.workflow.createProjectPartnerReport
 
 import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.EN

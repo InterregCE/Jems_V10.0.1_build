@@ -30,6 +30,13 @@ class ProjectReportPersistenceProvider(
                 firstSubmission = submissionTime
             }.toSubmissionSummary()
 
+    @Transactional
+    override fun startControlOnReportById(partnerId: Long, reportId: Long) =
+        partnerReportRepository.findByIdAndPartnerId(id = reportId, partnerId = partnerId)
+            .apply {
+                status = ReportStatus.InControl
+            }.toSubmissionSummary()
+
     @Transactional(readOnly = true)
     override fun getPartnerReportStatusAndVersion(
         partnerId: Long,
@@ -52,7 +59,7 @@ class ProjectReportPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getSubmittedPartnerReportIds(partnerId: Long): Set<Long> =
-        partnerReportRepository.findAllIdsByPartnerIdAndStatus(partnerId, ReportStatus.Submitted)
+        partnerReportRepository.findAllIdsByPartnerIdAndStatusIn(partnerId, ReportStatus.SUBMITTED_STATUSES)
 
     @Transactional(readOnly = true)
     override fun getReportIdsBefore(partnerId: Long, beforeReportId: Long): Set<Long> =

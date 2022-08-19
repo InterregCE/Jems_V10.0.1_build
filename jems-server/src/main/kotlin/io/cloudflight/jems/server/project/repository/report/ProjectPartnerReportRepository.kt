@@ -39,8 +39,8 @@ interface ProjectPartnerReportRepository : JpaRepository<ProjectPartnerReportEnt
 
     fun existsByPartnerIdAndId(partnerId: Long, id: Long): Boolean
 
-    @Query("SELECT e.id FROM #{#entityName} e WHERE e.partnerId = :partnerId AND e.status = :status")
-    fun findAllIdsByPartnerIdAndStatus(partnerId: Long, status: ReportStatus): Set<Long>
+    @Query("SELECT e.id FROM #{#entityName} e WHERE e.partnerId = :partnerId AND e.status IN :statuses")
+    fun findAllIdsByPartnerIdAndStatusIn(partnerId: Long, statuses: Collection<ReportStatus>): Set<Long>
 
     fun findByIdAndPartnerId(id: Long, partnerId: Long): ProjectPartnerReportEntity
 

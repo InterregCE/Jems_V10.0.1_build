@@ -39,13 +39,14 @@ import io.cloudflight.jems.server.project.service.report.model.file.ProjectRepor
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileSearchRequest
 import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
 import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportPeriod
-import io.cloudflight.jems.server.project.service.report.partner.createProjectPartnerReport.CreateProjectPartnerReportInteractor
+import io.cloudflight.jems.server.project.service.report.partner.workflow.createProjectPartnerReport.CreateProjectPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.deleteProjectPartnerReportFile.DeleteProjectPartnerReportFileInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.downloadProjectPartnerReportFile.DownloadProjectPartnerReportFileInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.listProjectPartnerReportFile.ListProjectPartnerReportFileInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.uploadFileToProjectPartnerReport.UploadFileToProjectPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.getProjectPartnerReport.GetProjectPartnerReportInteractor
-import io.cloudflight.jems.server.project.service.report.partner.submitProjectPartnerReport.SubmitProjectPartnerReportInteractor
+import io.cloudflight.jems.server.project.service.report.partner.workflow.startControlPartnerReport.StartControlPartnerReportInteractor
+import io.cloudflight.jems.server.project.service.report.partner.workflow.submitProjectPartnerReport.SubmitProjectPartnerReportInteractor
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -204,6 +205,9 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
     lateinit var submitPartnerReport: SubmitProjectPartnerReportInteractor
 
     @MockK
+    lateinit var startControlReport: StartControlPartnerReportInteractor
+
+    @MockK
     lateinit var getPartnerReport: GetProjectPartnerReportInteractor
 
     @MockK
@@ -268,6 +272,12 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
     fun submitProjectPartnerReport() {
         every { submitPartnerReport.submit(18, 310) } returns ReportStatus.Submitted
         assertThat(controller.submitProjectPartnerReport(18, 310)).isEqualTo(ReportStatusDTO.Submitted)
+    }
+
+    @Test
+    fun startControlOnPartnerReport() {
+        every { startControlReport.startControl(19, 320) } returns ReportStatus.InControl
+        assertThat(controller.startControlOnPartnerReport(19, 320)).isEqualTo(ReportStatusDTO.InControl)
     }
 
     @Test

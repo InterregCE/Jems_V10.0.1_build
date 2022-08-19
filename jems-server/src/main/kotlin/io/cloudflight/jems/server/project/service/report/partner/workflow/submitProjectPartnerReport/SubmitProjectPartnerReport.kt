@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.service.report.partner.submitProjectPartnerReport
+package io.cloudflight.jems.server.project.service.report.partner.workflow.submitProjectPartnerReport
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.currency.repository.CurrencyPersistence
