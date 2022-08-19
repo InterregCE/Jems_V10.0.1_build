@@ -92,6 +92,12 @@ import {
   PartnerReportProcurementDetailComponent
 } from '@project/project-application/report/partner-report-detail-page/partner-report-procurements-tab/partner-report-procurement-detail/partner-report-procurement-detail.component';
 import {ContractReportingComponent} from '@project/project-application/contract-reporting/contract-reporting.component';
+import {
+  PartnerControlReportComponent
+} from '@project/project-application/report/partner-control-report/partner-control-report.component';
+import {
+  PartnerControlReportIdentificationTabComponent
+} from '@project/project-application/report/partner-control-report/partner-control-report-identification-tab/partner-control-report-identification-tab.component';
 
 export const routes: Routes = [
   {
@@ -175,6 +181,21 @@ export const routes: Routes = [
                       {
                         path: 'submission',
                         component: PartnerReportSubmitTabComponent,
+                      },
+                      {
+                        path: 'controlReport',
+                        children: [
+                          {
+                            path: '',
+                            component: PartnerControlReportComponent,
+                            children: [
+                              {
+                                path: 'identification',
+                                component: PartnerControlReportIdentificationTabComponent,
+                              },
+                            ],
+                          }
+                        ]
                       }
                     ],
                   }

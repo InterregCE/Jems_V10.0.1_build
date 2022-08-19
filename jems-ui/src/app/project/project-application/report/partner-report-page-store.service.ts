@@ -1,5 +1,6 @@
 import {Injectable} from '@angular/core';
 import {
+  ControllerInstitutionsApiService,
   PageProjectPartnerReportSummaryDTO,
   ProjectPartnerReportService,
   ProjectPartnerReportSummaryDTO,
@@ -29,6 +30,8 @@ export class PartnerReportPageStore {
   partnerId$: Observable<string | number | null>;
   userCanViewReports$: Observable<boolean>;
   userCanEditReports$: Observable<boolean>;
+  institutionUserCanViewControlReports$: Observable<boolean>;
+  institutionUserCanEditControlReports$: Observable<boolean>;
 
   newPageSize$ = new BehaviorSubject<number>(Tables.DEFAULT_INITIAL_PAGE_SIZE);
   newPageIndex$ = new BehaviorSubject<number>(Tables.DEFAULT_INITIAL_PAGE_INDEX);
@@ -40,13 +43,16 @@ export class PartnerReportPageStore {
               private projectPartnerReportService: ProjectPartnerReportService,
               private projectPartnerUserCollaboratorService: ProjectPartnerUserCollaboratorService,
               private permissionService: PermissionService,
-              private programmeEditableStateStore: ProgrammeEditableStateStore) {
+              private programmeEditableStateStore: ProgrammeEditableStateStore,
+              private controllerInstitutionService: ControllerInstitutionsApiService) {
     this.partnerId$ = this.partnerId();
     this.partnerReports$ = this.partnerReports();
     this.partnerSummary$ = this.partnerSummary();
     this.partnerReportLevel$ = this.partnerReportLevel();
     this.userCanViewReports$ = this.userCanViewReports();
     this.userCanEditReports$ = this.userCanEditReports();
+    this.institutionUserCanViewControlReports$ = this.institutionUserCanViewControlReports();
+    this.institutionUserCanEditControlReports$ = this.institutionUserCanEditControlReports();
   }
 
   createPartnerReport(): Observable<ProjectPartnerReportSummaryDTO> {
@@ -95,8 +101,32 @@ export class PartnerReportPageStore {
       );
   }
 
+  private institutionUserControlReportLevel(): Observable<string> {
+    return this.partnerId$
+      .pipe(
+        filter((partnerId) => !!partnerId),
+        switchMap((partnerId) => this.controllerInstitutionService.getControllerUserAccessLevelForPartner(Number(partnerId))),
+        map((level: string) => level),
+        shareReplay(1)
+      );
+  }
+
   private partnerId(): Observable<number | string | null> {
     return this.routingService.routeParameterChanges(PartnerReportPageStore.PARTNER_REPORT_DETAIL_PATH, 'partnerId');
+  }
+
+  private institutionUserCanViewControlReports(): Observable<boolean> {
+    return this.institutionUserControlReportLevel()
+      .pipe(
+        map((level) => level === 'View')
+      );
+  }
+
+  private institutionUserCanEditControlReports(): Observable<boolean> {
+    return this.institutionUserControlReportLevel()
+      .pipe(
+        map((level) => level === 'Edit')
+      );
   }
 
   private userCanEditReports(): Observable<boolean> {

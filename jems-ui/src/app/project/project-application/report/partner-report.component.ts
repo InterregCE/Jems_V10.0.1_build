@@ -29,6 +29,7 @@ import {
 @UntilDestroy()
 export class PartnerReportComponent implements AfterViewInit {
   PermissionsEnum = PermissionsEnum;
+  ProjectPartnerReportSummaryDTO = ProjectPartnerReportSummaryDTO;
 
   @ViewChild('numberingCell', {static: true})
   numberingCell: TemplateRef<any>;
@@ -39,16 +40,22 @@ export class PartnerReportComponent implements AfterViewInit {
   @ViewChild('periodCell', {static: true})
   periodCell: TemplateRef<any>;
 
+  @ViewChild('actionCell', {static: true})
+  actionCell: TemplateRef<any>;
+
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
   tableConfiguration: TableConfiguration;
   actionPending = false;
   error$ = new BehaviorSubject<APIError | null>(null);
   Alert = Alert;
+  isControlReportStarted = false;
 
   data$: Observable<{
     totalElements: number;
     partnerReports: ProjectPartnerReportSummaryDTO[];
     partner: ProjectPartnerSummaryDTO;
+    canUserViewControlReports: boolean;
+    canUserEditControlReports: boolean;
   }>;
 
   constructor(public pageStore: PartnerReportPageStore,
@@ -61,13 +68,17 @@ export class PartnerReportComponent implements AfterViewInit {
     this.data$ = combineLatest([
       this.pageStore.partnerReports$,
       this.pageStore.partnerSummary$,
-      this.multiLanguageGlobalService.activeSystemLanguage$
+      this.multiLanguageGlobalService.activeSystemLanguage$,
+      this.pageStore.institutionUserCanViewControlReports$,
+      this.pageStore.institutionUserCanEditControlReports$,
     ]).pipe(
-      map(([partnerReports, partner]) => {
+      map(([partnerReports, partner, systemLanguage, canUserViewControlReports, canUserEditControlReports]) => {
         return {
             totalElements: partnerReports.totalElements,
-            partnerReports: partnerReports.content,
-            partner
+            partnerReports: partnerReports.content.map(partnerReport => this.translatePartnerReportStatus(partnerReport)),
+            partner,
+            canUserViewControlReports,
+            canUserEditControlReports
           };
         }
       )
@@ -108,6 +119,12 @@ export class PartnerReportComponent implements AfterViewInit {
           elementProperty: 'firstSubmission',
           columnType: ColumnType.DateColumn
         },
+        {
+          displayedColumn: 'project.application.partner.reports.table.control',
+          columnType: ColumnType.CustomComponent,
+          customCellTemplate: this.actionCell,
+          clickable: false
+        },
       ]
     });
 
@@ -135,6 +152,24 @@ export class PartnerReportComponent implements AfterViewInit {
       ).subscribe();
   }
 
+  isStartControlReportDisabled(canView: boolean | null, canEdit: boolean | null): boolean {
+    if (canView && !canEdit) {
+      return true;
+    }
+
+    return !canEdit;
+  }
+
+  createControlReportForPartnerReport(partnerReport: ProjectPartnerReportSummaryDTO): void {
+    // TODO: functionality added in MP2-2732
+    return ;
+  }
+
+  openControlReportForPartnerReport(partnerReport: ProjectPartnerReportSummaryDTO): void {
+    // TODO: functionality added in MP2-2732
+    return ;
+  }
+
   private initializeTableConfiguration(partnerId: number): void {
     this.tableConfiguration.routerLink = `/app/project/detail/${this.projectId}/reporting/${partnerId}/reports/`;
   }
@@ -145,6 +180,11 @@ export class PartnerReportComponent implements AfterViewInit {
       this.error$.next(null);
     },         4000);
     return of(null);
+  }
+
+  private translatePartnerReportStatus(partnerReport:  ProjectPartnerReportSummaryDTO):  ProjectPartnerReportSummaryDTO{
+    const partnerReportStatus = this.translateService.instant(`project.application.partner.report.table.status.${partnerReport.status.toLowerCase()}`);
+    return { ...partnerReport, status: partnerReportStatus };
   }
 
 }
