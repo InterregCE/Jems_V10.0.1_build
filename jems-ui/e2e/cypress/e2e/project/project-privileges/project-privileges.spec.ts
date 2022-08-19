@@ -207,7 +207,7 @@ context('Project privileges tests', () => {
     });
   });
 
-  it('TB-380 Manually assign/clear users to a project', () => {
+  it.only('TB-380 Manually assign/clear users to a project', () => {
     cy.fixture('project/project-privileges/TB-380.json').then(testData => {
       cy.loginByRequest(user.admin.email);
 
@@ -303,7 +303,7 @@ context('Project privileges tests', () => {
 
           cy.loginByRequest(testData.monitorUser1.email);
           cy.visit('/', {failOnStatusCode: false});
-          cy.get('table.mat-table:first').contains('div', " "+applicationId1+" ").should('not.exist');
+          cy.get('table.mat-table:first').contains('div', ` ${applicationId2.toString().padStart(5, '0')} `).should('not.exist');
         });
       });
     });
