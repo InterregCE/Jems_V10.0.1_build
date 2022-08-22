@@ -40,6 +40,7 @@ export class CallDetailPageComponent {
     callType: CallDetailDTO.TypeEnum;
     userCanApply: boolean;
     callIsEditable: boolean;
+    callHasTwoSteps: boolean;
     priorityCheckboxes: CallPriorityCheckbox[];
     initialPriorityCheckboxes: CallPriorityCheckbox[];
     strategies: OutputProgrammeStrategy[];
@@ -96,17 +97,19 @@ export class CallDetailPageComponent {
       this.pageStore.callType$,
       this.pageStore.userCanApply$,
       this.pageStore.callIsEditable$,
+      this.pageStore.callHasTwoSteps$,
       this.pageStore.allPriorities$,
       this.pageStore.allActiveStrategies$,
       this.pageStore.allStateAids$,
       this.resetEvent$
     ])
       .pipe(
-        map(([call, callType, userCanApply, callIsEditable, allPriorities, allActiveStrategies, allStateAids]: any) => ({
+        map(([call, callType, userCanApply, callIsEditable, callHasTwoSteps, allPriorities, allActiveStrategies, allStateAids]: any) => ({
           call,
           callType,
           userCanApply,
           callIsEditable,
+          callHasTwoSteps,
           priorityCheckboxes: this.getPriorities(allPriorities, call),
           initialPriorityCheckboxes: this.getPriorities(allPriorities, call),
           strategies: this.getStrategies(allActiveStrategies, call),
@@ -194,11 +197,11 @@ export class CallDetailPageComponent {
       ).subscribe();
   }
 
-  isPublishDisabled(call: CallDetailDTO): Observable<boolean> {
+  isPublishDisabled(call: CallDetailDTO, callHasTwoSteps: boolean): Observable<boolean> {
     return of(true).pipe(
       withLatestFrom(this.formService.dirty$, this.formService.pending$),
       map(([, dirty, pending]) => pending || dirty || call.funds.length <= 0 || call.objectives.length <= 0
-        || call.preSubmissionCheckPluginKey === null || call.preSubmissionCheckPluginKey.length <= 0)
+        || call.preSubmissionCheckPluginKey === null || call.preSubmissionCheckPluginKey.length <= 0  || (callHasTwoSteps && (call.firstStepPreSubmissionCheckPluginKey === null || call.firstStepPreSubmissionCheckPluginKey.length <= 0)))
     );
   }
 
