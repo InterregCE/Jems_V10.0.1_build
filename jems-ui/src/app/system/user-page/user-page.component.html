@@ -18,7 +18,7 @@
     <jems-filter-template *ngIf="data$ | async as data"
                          [formGroup]="filterForm"
                          [isThereAnyActiveFilter]="isThereAnyActiveFilter()">
-        <div alignItems="start" jemsMultiColumnRow>
+        <div alignItems="start" jemsMultiColumnRow display="block">
             <jems-filter-text-input
                     formControlName="name"
                     label="user.detail.field.name">
