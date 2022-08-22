@@ -1,0 +1,16 @@
+{
+  "applicationUser": {
+    "email": "randomize",
+    "name": "application",
+    "surname": "user",
+    "userRoleId": 3,
+    "userStatus": "ACTIVE"
+  },
+  "anotherUser": {
+    "email": "randomize",
+    "name": "another",
+    "surname": "user",
+    "userRoleId": 3,
+    "userStatus": "ACTIVE"
+  }
+}
