@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, TemplateRef, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, QueryList, TemplateRef, ViewChild, ViewChildren} from '@angular/core';
 import {combineLatest, Observable} from 'rxjs';
 import {
   InstitutionPartnerAssignmentDTO,
@@ -16,6 +16,7 @@ import {InstitutionsPageStore} from '../institutions-page/institutions-page-stor
 import {FormService} from '@common/components/section/form/form.service';
 import {FormArray, FormBuilder} from '@angular/forms';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {MatSelect} from '@angular/material/select';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 
 @UntilDestroy()
@@ -40,6 +41,8 @@ export class InstitutionsAssignmentsPageComponent{
 
   @ViewChild('institutionDropdownCell', {static: true})
   institutionDropdownCell: TemplateRef<any>;
+
+  @ViewChildren(MatSelect) institutionDropdowns: QueryList<MatSelect>;
 
   data$: Observable<{
     rows: InstitutionPartnerDetailsDTO[];
@@ -77,9 +80,8 @@ export class InstitutionsAssignmentsPageComponent{
     ])
       .pipe(
         map(([page, institutionPage, institutionAssignmentUpdatePermission]) => ({
-          rows: page.content.map((project, index) => ({
-            ...project,
-            index,
+          rows: page.content.map((assignment, index) => ({
+            ...assignment, index,
           })),
           totalElements: page.totalElements,
           tableConfiguration: this.getTableConfig(),
@@ -88,7 +90,7 @@ export class InstitutionsAssignmentsPageComponent{
           })
         ),
         tap(data => this.formService.setEditable(data.editAssignmentPermission)),
-        tap(data => this.resetForm(data.rows)),
+        tap(data => this.resetForm(data.rows, false)),
         shareReplay(1)
       );
 
@@ -117,42 +119,48 @@ export class InstitutionsAssignmentsPageComponent{
         {
           displayedColumn: 'controller.institutions.assignment.table.call.id.column.headline',
           elementProperty: 'callId',
-          columnWidth: ColumnWidth.IdColumn
+          columnWidth: ColumnWidth.IdColumn,
+          sortProperty: 'callId',
         },
         {
           displayedColumn: 'controller.institutions.assignment.table.project.id.column.headline',
           elementProperty: 'projectCustomIdentifier',
-          columnWidth: ColumnWidth.IdColumn
+          columnWidth: ColumnWidth.MediumColumn,
+          sortProperty: 'projectId',
         },
         {
           displayedColumn: 'controller.institutions.assignment.table.acronym.column.headline',
           elementProperty: 'projectAcronym',
           columnType: ColumnType.StringColumn,
-          columnWidth: ColumnWidth.WideColumn
+          columnWidth: ColumnWidth.WideColumn,
+          sortProperty: 'projectAcronym',
         },
         {
           displayedColumn: 'controller.institutions.assignment.table.partner.no.column.headline',
           columnType: ColumnType.CustomComponent,
           customCellTemplate: this.partnerNumberCell,
-          columnWidth: ColumnWidth.MediumColumn
+          columnWidth: ColumnWidth.IdColumn
         },
         {
           displayedColumn: 'controller.institutions.assignment.table.status.column.headline',
           columnType: ColumnType.CustomComponent,
           columnWidth: ColumnWidth.ChipColumn,
-          customCellTemplate: this.statusCell
+          customCellTemplate: this.statusCell,
+          sortProperty: 'partnerStatus'
         },
         {
           displayedColumn: 'controller.institutions.assignment.table.partner.name.column.headline',
           elementProperty: 'partnerName',
           columnType: ColumnType.StringColumn,
-          columnWidth: ColumnWidth.MediumColumn
+          columnWidth: ColumnWidth.MediumColumn,
+          sortProperty: 'partnerName',
         },
         {
           displayedColumn: 'controller.institutions.assignment.table.partner.nuts.column.headline',
           columnType: ColumnType.CustomComponent,
           customCellTemplate: this.institutionNutsCell,
-          columnWidth: ColumnWidth.MediumColumn
+          columnWidth: ColumnWidth.MediumColumn,
+          sortProperty: 'partnerNuts3'
         },
         {
           displayedColumn: 'controller.institutions.assignment.table.institution.column.headline',
@@ -164,7 +172,11 @@ export class InstitutionsAssignmentsPageComponent{
     });
   }
 
-  resetForm(institutionsPartnerAssignments: InstitutionPartnerAssignmentDTO[]): void {
+  resetForm(institutionsPartnerAssignments: InstitutionPartnerAssignmentDTO[], isDiscarded: boolean): void {
+    if (isDiscarded) {
+      this.institutionDropdowns.forEach((select, index) =>
+        select.writeValue(institutionsPartnerAssignments[index].institutionId));
+    }
     this.institutionsPartnerAssignmentToRemove().clear();
     this.institutionsPartnerAssignmentToAssign().clear();
     this.institutionsPartnersAssignmentsArray().clear();

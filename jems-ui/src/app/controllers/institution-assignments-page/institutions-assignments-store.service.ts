@@ -7,7 +7,7 @@ import {
   PageInstitutionPartnerDetailsDTO
 } from '@cat/api';
 import {MatSort} from '@angular/material/sort';
-import {startWith, switchMap, tap} from 'rxjs/operators';
+import {map, startWith, switchMap, tap} from 'rxjs/operators';
 import {Tables} from '@common/utils/tables';
 import {Log} from '@common/utils/log';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
@@ -21,9 +21,9 @@ export class InstitutionsAssignmentsStoreService {
   newPageSize$ = new Subject<number>();
   newPageIndex$ = new Subject<number>();
   newSort$ = new Subject<Partial<MatSort>>();
-  updatedControllerInstitutionPartnerAssignment = new Subject<InstitutionPartnerAssignmentDTO[]>();
+  updatedControllerInstitutionPartnerAssignment$ = new Subject<InstitutionPartnerAssignmentDTO[]>();
   private controllerInstitutionUpdateEvent$ = new BehaviorSubject(null);
-  private initialSort = 'partnerId,asc';
+  private initialSort: Partial<MatSort> = {active: 'projectId', direction: 'asc'};
 
   constructor(private controllerInstitutionsApiService: ControllerInstitutionsApiService,
               private formService: FormService) {
@@ -34,10 +34,14 @@ export class InstitutionsAssignmentsStoreService {
     return combineLatest([
       this.newPageIndex$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
       this.newPageSize$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_SIZE)),
+      this.newSort$.pipe(
+        startWith(this.initialSort),
+        map(sort => sort?.direction ? sort : this.initialSort)),
+      this.updatedControllerInstitutionPartnerAssignment$.pipe(startWith(null))
     ])
       .pipe(
-        switchMap(([pageIndex, pageSize]) =>
-          this.controllerInstitutionsApiService.getInstitutionPartnerAssignments(pageIndex, pageSize, this.initialSort)),
+        switchMap(([pageIndex, pageSize, sort]) =>
+          this.controllerInstitutionsApiService.getInstitutionPartnerAssignments(pageIndex, pageSize, `${sort.active},${sort.direction}`)),
         tap(page => Log.info('Fetched controllers institutions partners:', this, page.content)),
       );
   }
@@ -45,10 +49,10 @@ export class InstitutionsAssignmentsStoreService {
   updateControllerInstitutionAssignments(institutionPartnerAssignments: ControllerInstitutionAssignmentDTO) {
     return this.controllerInstitutionsApiService.assignInstitutionToPartner(institutionPartnerAssignments)
       .pipe(
-        tap(updated => this.updatedControllerInstitutionPartnerAssignment.next(updated)),
-        tap(() => this.controllerInstitutionUpdateEvent$.next(null)),
+        tap(updated => this.updatedControllerInstitutionPartnerAssignment$.next(updated)),
         tap(() => this.formService.setSuccess('controller.institutions.nuts.assignments.update.success')),
-        tap(created => Log.info('Updated controller assignment:', this, created)),
+        tap(() => this.controllerInstitutionUpdateEvent$.next(null)),
+        tap(updated => Log.info('Updated controller assignment:', this, updated)),
         untilDestroyed(this)
       ).subscribe();
   }

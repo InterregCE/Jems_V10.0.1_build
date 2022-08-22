@@ -35,12 +35,11 @@ class CreateController(
             controllerInstitutionValidator.validateInstitutionUsers(controllerInstitution.institutionUsers, getEmailsOfUsersThatCanBePersisted(userSummaries))
         }
         return this.controllerInstitutionPersistence.createControllerInstitution(controllerInstitution).also {
-            controllerInstitutionPersistence.updateControllerInstitutionUsers(
+            val updatedUsers = controllerInstitutionPersistence.updateControllerInstitutionUsers(
                 it.id,
-                userSummaries,
                 usersToUpdate = controllerInstitution.institutionUsers.toSet()
             )
-            it.institutionUsers.addAll(controllerInstitution.institutionUsers)
+            it.institutionUsers.addAll(updatedUsers)
             auditPublisher.publishEvent(
                 controllerInstitutionChanged(
                     context = this,

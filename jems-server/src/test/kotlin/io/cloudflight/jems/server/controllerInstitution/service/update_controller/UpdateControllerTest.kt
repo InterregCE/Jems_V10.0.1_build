@@ -1,11 +1,23 @@
 package io.cloudflight.jems.server.controllerInstitution.service.update_controller
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.controllerInstitution.*
+import io.cloudflight.jems.server.controllerInstitution.ControllerInstitutionPersistence
+import io.cloudflight.jems.server.controllerInstitution.INSTITUTION_ID
+import io.cloudflight.jems.server.controllerInstitution.MONITOR_USER_1_EMAIL
+import io.cloudflight.jems.server.controllerInstitution.MONITOR_USER_1_ID
+import io.cloudflight.jems.server.controllerInstitution.MONITOR_USER_2_EMAIL
+import io.cloudflight.jems.server.controllerInstitution.MONITOR_USER_2_ID
+import io.cloudflight.jems.server.controllerInstitution.institutionUsers
 import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionValidator
 import io.cloudflight.jems.server.controllerInstitution.service.createControllerInstitution.AssignUsersToInstitutionException
-import io.cloudflight.jems.server.controllerInstitution.service.model.*
+import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitution
+import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionUser
+import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerAssignment
+import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerAssignmentWithUsers
+import io.cloudflight.jems.server.controllerInstitution.service.model.UpdateControllerInstitution
+import io.cloudflight.jems.server.controllerInstitution.service.model.UserInstitutionAccessLevel
 import io.cloudflight.jems.server.controllerInstitution.service.updateControllerInstitution.UpdateController
+import io.cloudflight.jems.server.controllerInstitution.userSummaries
 import io.cloudflight.jems.server.project.service.projectuser.UserProjectPersistence
 import io.cloudflight.jems.server.user.service.UserPersistence
 import io.cloudflight.jems.server.user.service.UserRolePersistence
@@ -13,12 +25,10 @@ import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import io.cloudflight.jems.server.user.service.model.UserRoleSummary
 import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.user.service.model.UserSummary
-import io.mockk.Runs
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.RelaxedMockK
-import io.mockk.just
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -93,10 +103,10 @@ class UpdateControllerTest : UnitTest() {
         every { controllerInstitutionPersistence.getInstitutionUsersByInstitutionId(INSTITUTION_ID) } returns institutionUsers.toList()
         every {
             controllerInstitutionPersistence.updateControllerInstitutionUsers(
-                INSTITUTION_ID, userSummaries,
+                INSTITUTION_ID,
                 institutionUsers, emptySet()
             )
-        } returns Unit
+        } returns institutionUsers.toSet()
         every { controllerInstitutionPersistence.updateControllerInstitution(institutionWithUsers) } returns institution
 
         assertThat(updateController.updateControllerInstitution(INSTITUTION_ID, institutionWithUsers))
@@ -196,11 +206,10 @@ class UpdateControllerTest : UnitTest() {
         every {
             controllerInstitutionPersistence.updateControllerInstitutionUsers(
                 institutionId = INSTITUTION_ID,
-                userSummaries = listOf(),
                 usersToUpdate = emptySet(),
                 usersIdsToDelete = setOf(institutionUser2.userId)
             )
-        } just Runs
+        } returns setOf(institutionUser1)
 
         every { controllerInstitutionPersistence.getInstitutionPartnerAssignmentsByInstitutionId(INSTITUTION_ID) } returns listOf(
             institutionPartnerAssignment
@@ -227,7 +236,7 @@ class UpdateControllerTest : UnitTest() {
                 name = updateControllerInstitution.name,
                 description = updateControllerInstitution.description,
                 institutionNuts = emptyList(),
-                institutionUsers = mutableSetOf(),
+                institutionUsers = mutableSetOf(institutionUser1),
                 createdAt = updateControllerInstitution.createdAt
             )
 
@@ -305,11 +314,10 @@ class UpdateControllerTest : UnitTest() {
         every {
             controllerInstitutionPersistence.updateControllerInstitutionUsers(
                 institutionId = 1L,
-                userSummaries = listOf(institution1UserSummary),
                 usersIdsToDelete = setOf(institution1User.userId),
                 usersToUpdate = emptySet()
             )
-        } just Runs
+        } returns institutionUsers.toSet()
 
         every { controllerInstitutionPersistence.getInstitutionPartnerAssignmentsByInstitutionId(INSTITUTION_ID) } returns institutionsPartnerAssignments
         every {
@@ -421,11 +429,10 @@ class UpdateControllerTest : UnitTest() {
         every {
             controllerInstitutionPersistence.updateControllerInstitutionUsers(
                 institutionId = 1L,
-                userSummaries = userSummaries,
                 usersIdsToDelete = emptySet(),
                 usersToUpdate = setOf(institution1User, institution2User)
             )
-        } just Runs
+        } returns institutionUsers.toSet()
 
         every { controllerInstitutionPersistence.getInstitutionPartnerAssignmentsByInstitutionId(INSTITUTION_ID) } returns institutionAssignments
         every {

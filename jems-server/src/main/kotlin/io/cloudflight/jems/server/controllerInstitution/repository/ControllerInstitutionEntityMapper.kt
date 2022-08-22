@@ -14,8 +14,7 @@ import io.cloudflight.jems.server.nuts.service.toOutputNuts
 import io.cloudflight.jems.server.project.entity.partner.ControllerInstitutionEntity
 import io.cloudflight.jems.server.project.service.partner.getPartnerAddressOrEmptyString
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
-import io.cloudflight.jems.server.user.controller.toEntity
-import io.cloudflight.jems.server.user.service.model.UserSummary
+import io.cloudflight.jems.server.user.entity.UserEntity
 import org.springframework.data.domain.Page
 import java.time.ZonedDateTime
 
@@ -59,16 +58,16 @@ fun UpdateControllerInstitution.toEntity() = ControllerInstitutionEntity(
 
 fun List<ControllerInstitutionUser>.toEntity(
     institutionId: Long,
-    users: List<UserSummary>
+    users: List<UserEntity>
 ) = map { it.toEntity(institutionId, users.find { user -> user.email == it.userEmail }!!) }
 
 fun ControllerInstitutionUser.toEntity(
     institutionId: Long,
-    userSummary: UserSummary
+    userEntity: UserEntity
 ): ControllerInstitutionUserEntity = ControllerInstitutionUserEntity(
     id = ControllerInstitutionUserId(
         controllerInstitutionId = institutionId,
-        user = userSummary.toEntity()
+        user = userEntity
     ),
     accessLevel = this.accessLevel,
 )
