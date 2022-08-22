@@ -177,8 +177,8 @@ fun List<WorkPackageDetailRow>.toModel(periods: List<ProjectPeriodRow>)=
                     programmeOutputIndicatorMeasurementUnit = groupedRows.value.extractField({ it.programmeOutputIndicatorLanguage }) { it.programmeOutputIndicatorMeasurementUnit },
                     targetValue = groupedOutputRows.value.first().targetValue,
                     periodNumber = groupedOutputRows.value.first().outputPeriodNumber,
-                    periodStartMonth = periods.find { period -> period.periodNumber == groupedRows.value.first().outputPeriodNumber }?.periodStart,
-                    periodEndMonth = periods.find { period -> period.periodNumber == groupedRows.value.first().outputPeriodNumber }?.periodEnd,
+                    periodStartMonth = periods.find { period -> period.periodNumber == groupedOutputRows.value.first().outputPeriodNumber }?.periodStart,
+                    periodEndMonth = periods.find { period -> period.periodNumber == groupedOutputRows.value.first().outputPeriodNumber }?.periodEnd,
                     title = groupedOutputRows.value.extractField ({it.outputLanguage}){ it.outputTitle },
                     description = groupedOutputRows.value.extractField ({it.outputLanguage}){ it.outputDescription }
                 )
