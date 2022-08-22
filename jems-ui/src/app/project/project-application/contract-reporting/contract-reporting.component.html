@@ -115,9 +115,14 @@
 
             </mat-table>
 
+            <jems-alert [show]="!data.projectStartDate"
+                        [type]="Alert.WARNING">
+                <span>{{'project.application.contract.reporting.project.startDate.not.defined.warning' | translate}}</span>
+            </jems-alert>
             <button *ngIf="tableData.length < 50 && data.canEdit"
                     mat-stroked-button type="button" class="mt-2 mb-2"
-                    (click)="addDeadlineData()">
+                    (click)="addDeadlineData()"
+                    [disabled]="!data.projectStartDate">
                 <mat-icon>add</mat-icon>
                 <span>{{'project.application.contract.reporting.button.add.deadline' | translate}}</span>
             </button>

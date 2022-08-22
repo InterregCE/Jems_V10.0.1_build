@@ -4,10 +4,18 @@ import {UntilDestroy} from '@ngneat/until-destroy';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {combineLatest, Observable} from 'rxjs';
 import {catchError, filter, map, startWith, switchMap, take, tap} from 'rxjs/operators';
-import {ProjectContractingReportingScheduleDTO, ProjectPeriodForMonitoringDTO} from '@cat/api';
+import {
+  ProjectContractingMonitoringDTO,
+  ProjectContractingReportingScheduleDTO,
+  ProjectPeriodForMonitoringDTO
+} from '@cat/api';
 import {ContractReportingStore} from '@project/project-application/contract-reporting/contract-reporting.store';
 import {Forms} from '@common/utils/forms';
 import {MatDialog} from '@angular/material/dialog';
+import {
+  ContractMonitoringExtensionStore
+} from "@project/project-application/contract-monitoring/contract-monitoring-extension/contract-monitoring-extension.store";
+import {Alert} from "@common/components/forms/alert";
 
 @UntilDestroy()
 @Component({
@@ -21,15 +29,18 @@ export class ContractReportingComponent implements OnInit {
   reportingDeadlinesForm: FormGroup;
   tableData: AbstractControl[] = [];
   columnsToDisplay: string[] = [];
+  Alert = Alert;
   data$: Observable<{
     periods: ProjectPeriodForMonitoringDTO[];
     reportingDeadlines: ProjectContractingReportingScheduleDTO[];
     canView: boolean;
     canEdit: boolean;
+    projectStartDate: string;
   }>;
 
   constructor(private formBuilder: FormBuilder,
               public contractReportingStore: ContractReportingStore,
+              private contractMonitoringExtensionStore: ContractMonitoringExtensionStore,
               public formService: FormService,
               private dialog: MatDialog) {
   }
@@ -40,13 +51,15 @@ export class ContractReportingComponent implements OnInit {
       this.contractReportingStore.contractReportingDeadlines$,
       this.contractReportingStore.userCanViewDeadlines$,
       this.contractReportingStore.userCanEditDeadlines$,
+      this.contractMonitoringExtensionStore.projectContractingMonitoring$
     ])
       .pipe(
-        map(([availablePeriods, contractReportingDeadlines, userCanViewDeadlines, userCanEditDeadlines]) => ({
+        map(([availablePeriods, contractReportingDeadlines, userCanViewDeadlines, userCanEditDeadlines, projectContractingMonitoring]) => ({
             periods: availablePeriods,
             reportingDeadlines: contractReportingDeadlines,
             canView: userCanViewDeadlines,
-            canEdit: userCanEditDeadlines
+            canEdit: userCanEditDeadlines,
+            projectStartDate: projectContractingMonitoring.startDate
           })
         ),
         tap(data => this.initForm(data.canEdit)),
