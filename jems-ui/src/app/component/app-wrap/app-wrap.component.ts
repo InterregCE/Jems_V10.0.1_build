@@ -15,5 +15,7 @@ export class AppWrapComponent {
   constructor(public sideNavService: SideNavService,
               public securityService: SecurityService) {
   }
-
+  dispatchResizeEvent(): void{
+    window.dispatchEvent(new Event('resize'));
+  }
 }
