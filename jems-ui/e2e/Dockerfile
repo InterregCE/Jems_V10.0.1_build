@@ -12,6 +12,6 @@ COPY jems-ui/e2e/cypress.config.ts .
 
 ENV NO_COLOR=1
 
-RUN npm ci
+RUN npm i
 
 ENTRYPOINT ["npm", "run", "test"]
