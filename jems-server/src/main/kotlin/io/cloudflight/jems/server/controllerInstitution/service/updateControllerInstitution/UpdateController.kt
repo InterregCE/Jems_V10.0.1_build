@@ -46,23 +46,23 @@ class UpdateController(
         }
         val institutionUsersToUpdate = controllerInstitution.institutionUsers
         val existingInstitutionUsers = persistence.getInstitutionUsersByInstitutionId(institutionId)
+        val userIdsToDelete = institutionUsersToUpdate.getUserIdsToDelete(existingInstitutionUsers)
         val userIdsToAdd = institutionUsersToUpdate.getUserIdsToAdd(existingInstitutionUsers, userSummaries)
 
-        persistence.updateControllerInstitutionUsers(
+        val updatedUsers = persistence.updateControllerInstitutionUsers(
             institutionId,
-            userSummaries,
             usersToUpdate = institutionUsersToUpdate.toSet(),
-            usersIdsToDelete = existingInstitutionUsers.map { it.userId }.toSet()
+            usersIdsToDelete = userIdsToDelete
         )
 
         updateInstitutionUsersProjectAssignment(
             institutionId = institutionId,
             userIdsToAdd = userIdsToAdd,
-            userIdsToRemove = existingInstitutionUsers.map { it.userId }.toSet(),
+            userIdsToRemove = userIdsToDelete,
         )
 
         return persistence.updateControllerInstitution(controllerInstitution).also {
-            it.institutionUsers.addAll(institutionUsersToUpdate)
+            it.institutionUsers.addAll(updatedUsers)
             auditPublisher.publishEvent(
                 controllerInstitutionChanged(
                     context = this,
@@ -98,6 +98,8 @@ class UpdateController(
             }
         }
     }
+    private fun List<ControllerInstitutionUser>.getUserIdsToDelete(existingInstitutionUsers: List<ControllerInstitutionUser>) =
+        existingInstitutionUsers.map { it.userId }.toSet().minus(this.map { it.userId }.toSet())
 
     private fun List<ControllerInstitutionUser>.getUserIdsToAdd(
         existingInstitutionUsers: List<ControllerInstitutionUser>,
@@ -115,5 +117,4 @@ class UpdateController(
         return userSummaries.filter { persistedUserSummary -> persistedUserSummary.userRole.id in monitorRoleIds }
             .map { it.email.lowercase() }
     }
-
 }

@@ -2,7 +2,7 @@
                          [needsCard]="true"
                          titleKey="topbar.main.controllers">
 
-    <jems-form (discard)="resetForm(data.rows)" (save)="saveForm()">
+    <jems-form (discard)="resetForm(data.rows, true)" (save)="saveForm()">
             <jems-table class="overflow-auto" *ngIf="data.rows.length"
                         [configuration]="data.tableConfiguration"
                         [rows]="data.rows"

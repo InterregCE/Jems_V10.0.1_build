@@ -12,7 +12,7 @@ import io.cloudflight.jems.server.controllerInstitution.service.model.UpdateCont
 import io.cloudflight.jems.server.controllerInstitution.service.model.UserInstitutionAccessLevel
 import io.cloudflight.jems.server.nuts.repository.NutsRegion3Repository
 import io.cloudflight.jems.server.project.entity.partner.ControllerInstitutionEntity
-import io.cloudflight.jems.server.user.service.model.UserSummary
+import io.cloudflight.jems.server.user.repository.user.UserRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
@@ -25,6 +25,7 @@ class ControllerInstitutionPersistenceProvider(
     private val nutsRegion3Repository: NutsRegion3Repository,
     private val institutionUserRepository: ControllerInstitutionUserRepository,
     private val institutionPartnerRepository: ControllerInstitutionPartnerRepository,
+    private val userRepository: UserRepository,
     ): ControllerInstitutionPersistence {
 
     @Transactional(readOnly = true)
@@ -74,19 +75,19 @@ class ControllerInstitutionPersistenceProvider(
     @Transactional
     override fun updateControllerInstitutionUsers(
         institutionId: Long,
-        userSummaries: List<UserSummary>,
         usersToUpdate: Set<ControllerInstitutionUser>,
         usersIdsToDelete: Set<Long>
-    ) {
+    ): Set<ControllerInstitutionUser> {
         if (usersIdsToDelete.isNotEmpty()) {
             institutionUserRepository.deleteAllByIdControllerInstitutionIdAndIdUserIdIn(institutionId, usersIdsToDelete)
         }
-
+        val users = userRepository.findAllByEmailInIgnoreCaseOrderByEmail(usersToUpdate.map { it.userEmail })
         institutionUserRepository.saveAll(usersToUpdate.map { userToSave ->
             userToSave.toEntity(
                 institutionId,
-                userSummaries.first { userToSave.userEmail == it.email })
+                users.first { userToSave.userEmail == it.email })
         })
+       return institutionUserRepository.findAllByControllerInstitutionId(institutionId).map { it.toModel() }.toSet()
     }
 
     @Transactional(readOnly = true)

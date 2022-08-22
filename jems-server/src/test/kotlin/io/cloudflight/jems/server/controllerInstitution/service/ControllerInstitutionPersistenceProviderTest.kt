@@ -29,6 +29,7 @@ import io.cloudflight.jems.server.project.service.partner.getPartnerAddressOrEmp
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
+import io.cloudflight.jems.server.user.repository.user.UserRepository
 import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.utils.USER_NAME
 import io.cloudflight.jems.server.utils.USER_SURNAME
@@ -62,6 +63,9 @@ class ControllerInstitutionPersistenceProviderTest : UnitTest() {
 
     @RelaxedMockK
     lateinit var institutionUserRepository: ControllerInstitutionUserRepository
+
+    @RelaxedMockK
+    lateinit var userRepository: UserRepository
 
     @MockK
     lateinit var controllerInstitutionPersistence: ControllerInstitutionPersistence
@@ -168,6 +172,7 @@ class ControllerInstitutionPersistenceProviderTest : UnitTest() {
     fun `update institution nuts and description`() {
         every { controllerRepo.findById(any()) } returns Optional.of(institutionWithUsers.toEntity())
         every { nutsRegion3Repository.findAllById(updateInstitution.institutionNuts) } returns mutableListOf(nutsRegion3Entity)
+
 
         controllerInstitutionPersistenceProvider.updateControllerInstitution(updateInstitution).let {
             assertThat(it.name).isEqualTo(updateInstitution.name)

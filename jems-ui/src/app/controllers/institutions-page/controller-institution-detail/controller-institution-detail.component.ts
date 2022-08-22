@@ -1,9 +1,10 @@
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {AfterContentChecked, ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {
   ControllerInstitutionDTO,
   ControllerInstitutionsApiService,
   ControllerInstitutionUserDTO,
-  NutsImportService, UserRoleCreateDTO,
+  NutsImportService,
+  UserRoleCreateDTO,
   UserRoleDTO
 } from '@cat/api';
 import {InstitutionsPageStore} from '../institutions-page-store.service';
@@ -16,8 +17,8 @@ import {BaseComponent} from '@common/components/base-component';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {Observable, Subject} from 'rxjs';
 import {ControllerInstitutionDetailConstants} from './controller-institution-detail.constants';
-import Permissions = UserRoleDTO.PermissionsEnum;
 import {PermissionService} from '../../../security/permissions/permission.service';
+import Permissions = UserRoleDTO.PermissionsEnum;
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 
 
@@ -34,7 +35,7 @@ const uniqueEmails = (): ValidatorFn => (formArray: FormArray) => {
   providers: [InstitutionsPageStore, FormService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ControllerInstitutionDetailComponent extends BaseComponent implements OnInit{
+export class ControllerInstitutionDetailComponent extends BaseComponent implements OnInit, AfterContentChecked{
   ACCESS_LEVEL = ControllerInstitutionUserDTO.AccessLevelEnum;
 
   constants = ControllerInstitutionDetailConstants;
@@ -77,6 +78,10 @@ export class ControllerInstitutionDetailComponent extends BaseComponent implemen
     );
   }
 
+  ngAfterContentChecked(): void {
+    this.disableNotEmptyUserEmailInput(this.controllerForm.get('institutionUsers') as FormArray);
+  }
+
   resetForm(controllerData: ControllerInstitutionDTO) {
     this.controllerForm.patchValue(controllerData);
     this.discardNutsChanges$.next();
@@ -95,10 +100,11 @@ export class ControllerInstitutionDetailComponent extends BaseComponent implemen
 
   saveForm() {
     if (this.isEdit) {
-      this.controllerInstitutionStore.updateController(this.institutionId, this.controllerForm.value)
+      this.controllerInstitutionStore.updateController(this.institutionId, this.controllerForm.getRawValue())
         .pipe(
           take(1),
           tap(() => this.formService.setDirty(false)),
+          tap(data => this.resetForm(data)),
           tap(() => this.formService.setSuccess('controller.institution.update.success')),
           catchError(error => this.formService.setError(error)),
           untilDestroyed(this)
@@ -157,5 +163,13 @@ export class ControllerInstitutionDetailComponent extends BaseComponent implemen
   private hasEditPermission(): Observable<boolean> {
     return this.permissionService.hasPermission(PermissionsEnum.InstitutionsUpdate) ||
       this.permissionService.hasPermission(PermissionsEnum.InstitutionsUnlimited);
+  }
+
+  private disableNotEmptyUserEmailInput(institutionUsersFormGroup: FormArray) {
+    institutionUsersFormGroup.controls.filter(control =>
+      !!control.get('userEmail')?.value &&
+      control.get('userEmail')?.status == 'VALID' &&
+      control.get('userId')?.value != null)
+      .forEach(control => control.get('userEmail')?.disable());
   }
 }

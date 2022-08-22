@@ -1,10 +1,16 @@
 package io.cloudflight.jems.server.controllerInstitution
 
-import io.cloudflight.jems.server.controllerInstitution.service.model.*
-import io.cloudflight.jems.server.user.service.model.UserSummary
+import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitution
+import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionList
+import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionUser
+import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerAssignment
+import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerAssignmentWithUsers
+import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerDetails
+import io.cloudflight.jems.server.controllerInstitution.service.model.UpdateControllerInstitution
+import io.cloudflight.jems.server.controllerInstitution.service.model.UserInstitutionAccessLevel
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
-import java.util.Optional
+import java.util.*
 
 
 interface ControllerInstitutionPersistence {
@@ -25,10 +31,9 @@ interface ControllerInstitutionPersistence {
 
     fun updateControllerInstitutionUsers(
         institutionId: Long,
-        userSummaries: List<UserSummary>,
         usersToUpdate: Set<ControllerInstitutionUser>,
         usersIdsToDelete: Set<Long> = emptySet()
-    )
+    ): Set<ControllerInstitutionUser>
 
     fun getInstitutionUsersByInstitutionId(institutionId: Long): List<ControllerInstitutionUser>
 
