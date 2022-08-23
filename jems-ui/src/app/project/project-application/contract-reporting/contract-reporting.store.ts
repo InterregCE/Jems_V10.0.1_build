@@ -4,7 +4,7 @@ import {
   ProjectContractingMonitoringService,
   ProjectContractingReportingScheduleDTO,
   ProjectContractingReportingService,
-  ProjectDetailFormDTO, ProjectPeriodForMonitoringDTO,
+  ProjectPeriodForMonitoringDTO,
   ProjectUserCollaboratorDTO,
   UserRoleCreateDTO
 } from '@cat/api';
