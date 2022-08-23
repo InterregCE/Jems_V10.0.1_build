@@ -33,6 +33,8 @@ export class ActionsCellComponent {
   @Input()
   isAllowedToChangeAssessmentFile: boolean;
   @Input()
+  isAllowedToChangeModificationFile: boolean;
+  @Input()
   isThisUserOwner: boolean;
   @Input()
   isReport: boolean;
@@ -47,7 +49,7 @@ export class ActionsCellComponent {
   deleteReportFile = new EventEmitter<ProjectReportFileMetadataDTO>();
 
   canChangeFile(): boolean {
-    if (this.type === FileCategoryTypeEnum.ALL) {
+    if (this.type === FileCategoryTypeEnum.ALL || (this.type === FileCategoryTypeEnum.MODIFICATION && !this.canChangeModificationFile())) {
       return false;
     }
     return this.type === FileCategoryTypeEnum.ASSESSMENT
@@ -55,7 +57,7 @@ export class ActionsCellComponent {
   }
 
   canDeleteFile(): boolean {
-    if (this.type === FileCategoryTypeEnum.ALL) {
+    if (this.type === FileCategoryTypeEnum.ALL || (this.type === FileCategoryTypeEnum.MODIFICATION && !this.canChangeModificationFile())) {
       return false;
     }
     return this.type === FileCategoryTypeEnum.ASSESSMENT
@@ -86,4 +88,7 @@ export class ActionsCellComponent {
     return fileIsNotLocked && userIsAbleToDelete;
   }
 
+  private canChangeModificationFile(): boolean {
+    return this.isAllowedToChangeModificationFile;
+  }
 }
