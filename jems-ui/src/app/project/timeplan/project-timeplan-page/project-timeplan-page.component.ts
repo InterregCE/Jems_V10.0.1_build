@@ -55,6 +55,7 @@ export class ProjectTimeplanPageComponent implements OnInit {
   workPackagesUnavailable$: Observable<boolean>;
   dataAvailable$: Observable<boolean>;
   reportingDeadlines: ProjectContractingReportingScheduleDTO[];
+  periodCount: number;
 
   constructor(private translateService: TranslateService,
               private multiLanguageGlobalService: MultiLanguageGlobalService,
@@ -83,6 +84,7 @@ export class ProjectTimeplanPageComponent implements OnInit {
         }),
         tap(data => this.createVisualizationOrUpdateJustTranslations(data.periods, data.timelineItems, data.timelineGroups)),
         tap((data) => this.updateLanguageSelection(data.timelineGroups, data.timelineTranslations)),
+        tap(data => this.periodCount = data.periods.length),
         shareReplay(1)
       );
 
@@ -145,6 +147,10 @@ export class ProjectTimeplanPageComponent implements OnInit {
       this.clearReportDeadlinesVisualisation(timelineCustomTimes);
 
       for (const [key, value] of Object.entries(deadlinesGroupedByPeriod)) {
+        // To discard pins whose periods are greater than available timeplan periods
+        if (Number(key) >= this.periodCount) {
+          continue;
+        }
         const randomId = uuid();
         const group = value as ProjectContractingReportingScheduleDTO[];
         this.timeline.addCustomTime(moment(START_DATE).add(key, 'M').endOf('month').toDate(), randomId);

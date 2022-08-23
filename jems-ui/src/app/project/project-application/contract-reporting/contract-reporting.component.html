@@ -101,9 +101,9 @@
                     </mat-header-cell>
                     <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                         <button mat-icon-button color="accent"
-                                [disabled] = "deadlines.controls[i].invalid || i >= data.reportingDeadlines.length"
+                                [disabled] = "control.get('isDeadlineApplicable').value && (deadlines.controls[i].invalid || i >= data.reportingDeadlines.length)"
                                 (click)="$event.stopPropagation(); delete(i)"
-                                matTooltip="{{'project.application.form.workpackage.table.action.delete.tooltip' | translate}}">
+                                matTooltip="{{'project.application.contract.reporting.action.delete.tooltip' | translate}}">
                             <mat-icon>delete</mat-icon>
                         </button>
                     </mat-cell>

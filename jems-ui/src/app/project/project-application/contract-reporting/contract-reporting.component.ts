@@ -5,7 +5,6 @@ import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@a
 import {combineLatest, Observable} from 'rxjs';
 import {catchError, filter, map, startWith, switchMap, take, tap} from 'rxjs/operators';
 import {
-  ProjectContractingMonitoringDTO,
   ProjectContractingReportingScheduleDTO,
   ProjectPeriodForMonitoringDTO
 } from '@cat/api';
@@ -14,8 +13,8 @@ import {Forms} from '@common/utils/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {
   ContractMonitoringExtensionStore
-} from "@project/project-application/contract-monitoring/contract-monitoring-extension/contract-monitoring-extension.store";
-import {Alert} from "@common/components/forms/alert";
+} from '@project/project-application/contract-monitoring/contract-monitoring-extension/contract-monitoring-extension.store';
+import {Alert} from '@common/components/forms/alert';
 
 @UntilDestroy()
 @Component({
@@ -76,6 +75,7 @@ export class ContractReportingComponent implements OnInit {
       deadlineComment: ['', Validators.maxLength(1000)],
       deadlinePeriodStartDate: [''],
       deadlinePeriodEndDate: [''],
+      isDeadlineApplicable: [true]
     });
     this.deadlines.push(item);
     this.tableData = [...this.deadlines.controls];
@@ -89,10 +89,12 @@ export class ContractReportingComponent implements OnInit {
   resetForm(reportingDeadlines: ProjectContractingReportingScheduleDTO[], isEditable: boolean, periods: ProjectPeriodForMonitoringDTO[]) {
     this.deadlines.clear();
     for (const reportingDeadline of reportingDeadlines) {
+      const isDeadlineApplicable = periods.some(p => p.number === reportingDeadline.periodNumber);
       const item = this.formBuilder.group({
+        isDeadlineApplicable: [isDeadlineApplicable],
         deadlineReportType: [reportingDeadline.type, Validators.required],
-        deadlinePeriod: [reportingDeadline.periodNumber, Validators.required],
-        deadlineDate: [reportingDeadline.date, Validators.required],
+        deadlinePeriod: [isDeadlineApplicable ? reportingDeadline.periodNumber : '', Validators.required],
+        deadlineDate: [isDeadlineApplicable ? reportingDeadline.date : '', Validators.required],
         deadlineComment: [reportingDeadline.comment, Validators.maxLength(1000)],
         deadlinePeriodStartDate: [periods.find(p => p.number == reportingDeadline.periodNumber)?.startDate],
         deadlinePeriodEndDate: [periods.find(p => p.number == reportingDeadline.periodNumber)?.endDate],
