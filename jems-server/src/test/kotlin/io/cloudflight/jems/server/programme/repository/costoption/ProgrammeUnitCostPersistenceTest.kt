@@ -10,7 +10,6 @@ import io.cloudflight.jems.server.call.repository.CallRepository
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostBudgetCategoryEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostEntity
-import io.cloudflight.jems.server.programme.service.costoption.ProgrammeUnitCostPersistence
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.mockk.MockKAnnotations
 import io.mockk.every
@@ -52,7 +51,7 @@ class ProgrammeUnitCostPersistenceTest {
     @MockK
     lateinit var callRepository: CallRepository
 
-    private lateinit var programmeUnitCostPersistence: ProgrammeUnitCostPersistence
+    private lateinit var programmeUnitCostPersistence: ProgrammeUnitCostPersistenceProvider
 
     @BeforeEach
     fun setup() {
@@ -61,11 +60,13 @@ class ProgrammeUnitCostPersistenceTest {
 
         testUnitCost = ProgrammeUnitCostEntity(
             id = 1,
+            projectId = null,
             translatedValues = combineUnitCostTranslatedValues(
                 programmeUnitCostId = 1,
                 name = setOf(InputTranslation(SystemLanguage.EN, "UC1")),
                 description = setOf(InputTranslation(SystemLanguage.EN, "test unit cost 1")),
-                type = setOf(InputTranslation(SystemLanguage.EN, "type 1"))
+                type = setOf(InputTranslation(SystemLanguage.EN, "type 1")),
+                justification = setOf(InputTranslation(SystemLanguage.EN, "justification 1")),
             ),
             costPerUnit = BigDecimal.ONE,
             isOneCostCategory = false,
@@ -75,9 +76,11 @@ class ProgrammeUnitCostPersistenceTest {
         )
         expectedUnitCost = ProgrammeUnitCost(
             id = testUnitCost.id,
+            projectId = null,
             name = testUnitCost.translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.name) },
             description = testUnitCost.translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.description) },
             type = testUnitCost.translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.type) },
+            justification = testUnitCost.translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.justification) },
             costPerUnit = testUnitCost.costPerUnit,
             costPerUnitForeignCurrency = BigDecimal.ZERO,
             foreignCurrencyCode = null,
@@ -88,19 +91,19 @@ class ProgrammeUnitCostPersistenceTest {
 
     @Test
     fun getUnitCosts() {
-        every { repository.findTop100ByOrderById() } returns listOf(testUnitCost)
+        every { repository.findTop100ByProjectIdNullOrderById() } returns listOf(testUnitCost)
         assertThat(programmeUnitCostPersistence.getUnitCosts()).containsExactly(expectedUnitCost)
     }
 
     @Test
     fun getUnitCost() {
-        every { repository.findById(1L) } returns Optional.of(testUnitCost)
+        every { repository.findByIdAndProjectIdNull(1L) } returns Optional.of(testUnitCost)
         assertThat(programmeUnitCostPersistence.getUnitCost(1L)).isEqualTo(expectedUnitCost)
     }
 
     @Test
     fun `getUnitCost - not existing`() {
-        every { repository.findById(-1L) } returns Optional.empty()
+        every { repository.findByIdAndProjectIdNull(-1L) } returns Optional.empty()
         assertThrows<ResourceNotFoundException> { programmeUnitCostPersistence.getUnitCost(-1L) }
     }
 
@@ -123,7 +126,8 @@ class ProgrammeUnitCostPersistenceTest {
                     programmeUnitCostId = 0,
                     name = setOf(InputTranslation(SystemLanguage.EN, "UC1")),
                     description = setOf(InputTranslation(SystemLanguage.EN, "test unit cost 1")),
-                    type = setOf(InputTranslation(SystemLanguage.EN, "type 1"))
+                    type = setOf(InputTranslation(SystemLanguage.EN, "type 1")),
+                    justification = setOf(InputTranslation(SystemLanguage.EN, "justification 1")),
                 ),
                 categories = mutableSetOf(
                     ProgrammeUnitCostBudgetCategoryEntity(programmeUnitCostId = 0, category = ExternalCosts),
@@ -140,22 +144,28 @@ class ProgrammeUnitCostPersistenceTest {
     fun updateUnitCost() {
         val toBeUpdated = ProgrammeUnitCost(
             id = testUnitCost.id,
+            projectId = null,
             name = setOf(InputTranslation(SystemLanguage.EN, "new name")),
             description = setOf(InputTranslation(SystemLanguage.EN, "new description")),
             type = setOf(InputTranslation(SystemLanguage.EN, "new type")),
+            justification = setOf(InputTranslation(SystemLanguage.EN, "new justification")),
             costPerUnit = BigDecimal.TEN,
             isOneCostCategory = false,
             categories = setOf(ExternalCosts, EquipmentCosts),
         )
         every { repository.existsById(testUnitCost.id) } returns true
-        val translations = combineUnitCostTranslatedValues(toBeUpdated.id, toBeUpdated.name, toBeUpdated.description, toBeUpdated.type)
+        val translations = combineUnitCostTranslatedValues(
+            toBeUpdated.id, toBeUpdated.name, toBeUpdated.description, toBeUpdated.type, toBeUpdated.justification
+        )
         every { repository.save(any()) } returns toBeUpdated.toEntity().copy(translatedValues = translations)
 
         assertThat(programmeUnitCostPersistence.updateUnitCost(toBeUpdated)).isEqualTo(ProgrammeUnitCost(
             id = testUnitCost.id,
+            projectId = null,
             name = setOf(InputTranslation(SystemLanguage.EN, "new name")),
             description = setOf(InputTranslation(SystemLanguage.EN, "new description")),
             type = setOf(InputTranslation(SystemLanguage.EN, "new type")),
+            justification = setOf(InputTranslation(SystemLanguage.EN, "new justification")),
             costPerUnit = BigDecimal.TEN,
             isOneCostCategory = false,
             categories = setOf(ExternalCosts, EquipmentCosts),
@@ -167,6 +177,7 @@ class ProgrammeUnitCostPersistenceTest {
         every { repository.existsById(testUnitCost.id) } returns false
         val toBeUpdated = ProgrammeUnitCost(
             id = testUnitCost.id,
+            projectId = null,
             name = setOf(InputTranslation(SystemLanguage.EN, "new name")),
             description = setOf(InputTranslation(SystemLanguage.EN, "new description")),
             type = setOf(InputTranslation(SystemLanguage.EN, "new type")),
@@ -181,7 +192,7 @@ class ProgrammeUnitCostPersistenceTest {
     @Test
     fun deleteUnitCost() {
         val ID = 555L
-        every { repository.findById(ID) } returns Optional.of(testUnitCost.copy(id = ID))
+        every { repository.findByIdAndProjectIdNull(ID) } returns Optional.of(testUnitCost.copy(id = ID))
         every { repository.delete(any()) } answers {}
         programmeUnitCostPersistence.deleteUnitCost(ID)
         verify { repository.delete(testUnitCost.copy(id = ID)) }
@@ -189,7 +200,7 @@ class ProgrammeUnitCostPersistenceTest {
 
     @Test
     fun `deleteUnitCost - not existing`() {
-        every { repository.findById(-1) } returns Optional.empty()
+        every { repository.findByIdAndProjectIdNull(-1) } returns Optional.empty()
         assertThrows<ResourceNotFoundException> { programmeUnitCostPersistence.deleteUnitCost(-1) }
     }
 

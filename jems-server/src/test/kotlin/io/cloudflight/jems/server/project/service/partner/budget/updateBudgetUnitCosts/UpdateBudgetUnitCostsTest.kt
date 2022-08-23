@@ -6,6 +6,7 @@ import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.project.service.customCostOptions.ProjectUnitCostPersistence
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.BudgetCostValidator
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetCostsUpdatePersistence
@@ -51,6 +52,8 @@ internal class UpdateBudgetUnitCostsTest : UnitTest() {
     @MockK
     lateinit var partnerPersistence: PartnerPersistence
     @MockK
+    lateinit var projectUnitCostPersistence: ProjectUnitCostPersistence
+    @MockK
     lateinit var callPersistence: CallPersistence
     @MockK
     lateinit var budgetOptionsPersistence: ProjectPartnerBudgetOptionsPersistence
@@ -68,11 +71,11 @@ internal class UpdateBudgetUnitCostsTest : UnitTest() {
             ProjectPartnerBudgetOptions(partnerId = PARTNER_ID, otherCostsOnStaffCostsFlatRate = null)
         every { partnerPersistence.getProjectIdForPartnerId(PARTNER_ID) } returns PROJECT_ID
 
-        val unitCost = ProgrammeUnitCost(id = 45L, isOneCostCategory = false, costPerUnit = BigDecimal.TEN)
+        val unitCost = ProgrammeUnitCost(id = 45L, projectId = null, isOneCostCategory = false, costPerUnit = BigDecimal.TEN)
         val call = mockk<CallDetail>()
         every { call.unitCosts } returns listOf(unitCost)
         every { callPersistence.getCallByProjectId(PROJECT_ID) } returns call
-        every { projectPersistence.getProjectUnitCosts(PROJECT_ID) } returns listOf(unitCost)
+        every { projectUnitCostPersistence.getAvailableUnitCostsForProjectId(PROJECT_ID) } returns listOf(unitCost)
         val idsToKeep = slot<Set<Long>>()
         every { persistence.deleteAllUnitCostsExceptFor(PARTNER_ID, capture(idsToKeep)) } answers { }
         every { persistence.createOrUpdateBudgetUnitCosts(PROJECT_ID, PARTNER_ID, any()) } returnsArgument 2
@@ -101,7 +104,7 @@ internal class UpdateBudgetUnitCostsTest : UnitTest() {
             ProjectPartnerBudgetOptions(partnerId = 57L, otherCostsOnStaffCostsFlatRate = null)
         every { partnerPersistence.getProjectIdForPartnerId(57L) } returns 1057L
 
-        val unitCost = ProgrammeUnitCost(id = 1L, isOneCostCategory = true, costPerUnit = BigDecimal.TEN)
+        val unitCost = ProgrammeUnitCost(id = 1L, projectId = null, isOneCostCategory = true, costPerUnit = BigDecimal.TEN)
         val call = mockk<CallDetail>()
         every { call.unitCosts } returns listOf(unitCost)
         every { callPersistence.getCallByProjectId(1057) } returns call
@@ -120,11 +123,11 @@ internal class UpdateBudgetUnitCostsTest : UnitTest() {
             ProjectPartnerBudgetOptions(partnerId = partnerId, otherCostsOnStaffCostsFlatRate = null)
         every { partnerPersistence.getProjectIdForPartnerId(partnerId) } returns projectId
 
-        val unitCost = ProgrammeUnitCost(id = 1L, isOneCostCategory = true, costPerUnit = BigDecimal.TEN)
+        val unitCost = ProgrammeUnitCost(id = 1L, projectId = null, isOneCostCategory = true, costPerUnit = BigDecimal.TEN)
         val call = mockk<CallDetail>()
         every { call.unitCosts } returns listOf(unitCost)
         every { callPersistence.getCallByProjectId(projectId) } returns call
-        every { projectPersistence.getProjectUnitCosts(projectId) } returns listOf(unitCost)
+        every { projectUnitCostPersistence.getAvailableUnitCostsForProjectId(projectId) } returns listOf(unitCost)
         every { persistence.deleteAllUnitCostsExceptFor(partnerId, emptySet()) } returns Unit
         every {
             persistence.createOrUpdateBudgetUnitCosts(projectId, partnerId, emptyList())

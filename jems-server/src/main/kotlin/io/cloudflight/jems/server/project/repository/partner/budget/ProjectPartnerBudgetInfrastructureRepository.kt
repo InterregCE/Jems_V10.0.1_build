@@ -4,5 +4,9 @@ import io.cloudflight.jems.server.project.entity.partner.budget.general.infrastr
 import org.springframework.stereotype.Repository
 
 @Repository
-interface ProjectPartnerBudgetInfrastructureRepository
-    : ProjectPartnerBaseBudgetRepository<ProjectPartnerBudgetInfrastructureEntity>
+interface ProjectPartnerBudgetInfrastructureRepository :
+    ProjectPartnerBaseBudgetRepository<ProjectPartnerBudgetInfrastructureEntity> {
+
+    fun existsByUnitCostId(unitCostId: Long): Boolean
+
+}

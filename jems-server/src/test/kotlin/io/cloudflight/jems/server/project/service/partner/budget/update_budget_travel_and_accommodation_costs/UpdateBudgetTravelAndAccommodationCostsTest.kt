@@ -4,6 +4,7 @@ import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.project.service.customCostOptions.ProjectUnitCostPersistence
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.BudgetCostValidator
@@ -54,6 +55,9 @@ internal class UpdateBudgetTravelAndAccommodationCostsTest : UnitTest() {
 
     @MockK
     lateinit var budgetCostValidator: BudgetCostValidator
+
+    @MockK
+    lateinit var projectUnitCostPersistence: ProjectUnitCostPersistence
 
     @InjectMockKs
     lateinit var updateBudgetTravelAndAccommodationCosts: UpdateBudgetTravelAndAccommodationCosts

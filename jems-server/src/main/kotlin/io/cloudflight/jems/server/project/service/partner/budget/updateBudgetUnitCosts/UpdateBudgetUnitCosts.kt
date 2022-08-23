@@ -4,7 +4,7 @@ import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectPartner
-import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.project.service.customCostOptions.ProjectUnitCostPersistence
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.BudgetCostValidator
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetCostsUpdatePersistence
@@ -20,7 +20,7 @@ import java.math.BigDecimal
 @Service
 class UpdateBudgetUnitCosts(
     private val persistence: ProjectPartnerBudgetCostsUpdatePersistence,
-    private val projectPersistence: ProjectPersistence,
+    private val projectUnitCostPersistence: ProjectUnitCostPersistence,
     private val partnerPersistence: PartnerPersistence,
     private val callPersistence: CallPersistence,
     private val budgetOptionsPersistence: ProjectPartnerBudgetOptionsPersistence,
@@ -42,8 +42,8 @@ class UpdateBudgetUnitCosts(
         if (unitCosts.isNotEmpty())
             validateSectionIsAllowedToBeSet(projectId = projectId)
 
-        val unitCostPerUnitById =
-            projectPersistence.getProjectUnitCosts(projectId).associateBy({ it.id }, { it.costPerUnit })
+        val unitCostPerUnitById = projectUnitCostPersistence.getAvailableUnitCostsForProjectId(projectId)
+            .associateBy({ it.id }, { it.costPerUnit })
 
         persistence.deleteAllUnitCostsExceptFor(
             partnerId = partnerId,
@@ -53,7 +53,10 @@ class UpdateBudgetUnitCosts(
         return persistence.createOrUpdateBudgetUnitCosts(projectId, partnerId,
             unitCosts.map {
                 it.apply {
-                    it.rowSum = calculateRowSum(it.numberOfUnits, unitCostPerUnitById[it.unitCostId])
+                    it.rowSum = calculateRowSum(
+                        numberOfUnits = it.numberOfUnits,
+                        projectUnitCosts = unitCostPerUnitById[it.unitCostId] ?: throw UnitCostCannotBeFound(it.unitCostId),
+                    )
                     it.truncateBaseEntryNumbers()
                 }
             }.toList()

@@ -326,6 +326,7 @@ private val defaultLumpSums = listOf(
 private val defaultUnitCosts = listOf(
     ProgrammeUnitCost(
         id = UNIT_COST_ID,
+        projectId = null,
         costPerUnit = BigDecimal.TEN,
         isOneCostCategory = true,
         categories = setOf(BudgetCategory.InfrastructureCosts),
@@ -340,7 +341,3 @@ private fun applicationFormFieldConfigurationEntities(callEntity: CallEntity) = 
         FieldVisibilityStatus.STEP_ONE_AND_TWO
     )
 )
-
-
-
-

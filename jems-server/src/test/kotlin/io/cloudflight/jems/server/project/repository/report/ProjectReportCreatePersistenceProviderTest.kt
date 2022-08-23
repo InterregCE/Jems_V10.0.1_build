@@ -357,6 +357,7 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
         // available unitCosts
         val unitCostEntity = ProgrammeUnitCostEntity(
             id = 5L,
+            projectId = null,
             isOneCostCategory = false,
             costPerUnit = ONE,
             costPerUnitForeignCurrency = ONE,

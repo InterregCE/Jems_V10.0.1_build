@@ -191,13 +191,13 @@ class CallPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun existsAllProgrammeUnitCostsByIds(ids: Set<Long>): Boolean =
-        programmeUnitCostRepo.findAllById(ids).size == ids.size
+        programmeUnitCostRepo.findAllByIdInAndProjectIdNull(ids).size == ids.size
 
     @Transactional
     override fun updateProjectCallUnitCost(callId: Long, unitCostIds: Set<Long>): CallDetail {
         val call = callRepo.findById(callId).orElseThrow { CallNotFound() }
         call.unitCosts.clear()
-        call.unitCosts.addAll(programmeUnitCostRepo.findAllById(unitCostIds))
+        call.unitCosts.addAll(programmeUnitCostRepo.findAllByIdInAndProjectIdNull(unitCostIds))
         return call.toDetailModel(
             applicationFormFieldConfigurationRepository.findAllByCallId(callId),
             projectCallStateAidRepo.findAllByIdCallId(callId)

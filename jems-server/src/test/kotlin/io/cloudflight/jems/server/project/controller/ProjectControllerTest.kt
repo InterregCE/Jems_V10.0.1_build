@@ -245,6 +245,7 @@ class ProjectControllerTest {
             unitCosts = listOf(
                 ProgrammeUnitCost(
                     id = 4,
+                    projectId = null,
                     name = setOf(InputTranslation(SystemLanguage.EN, "UnitCost")),
                     description = setOf(InputTranslation(SystemLanguage.EN, "pus 4")),
                     type = setOf(InputTranslation(SystemLanguage.EN, "type of unit cost")),

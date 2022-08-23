@@ -39,6 +39,7 @@ class UpdateUnitCostInteractorTest : UnitTest() {
 
     private val initialUnitCost = ProgrammeUnitCost(
         id = 4,
+        projectId = null,
         name = setOf(InputTranslation(SystemLanguage.EN, " ")),
         description = setOf(InputTranslation(SystemLanguage.EN, "test unit cost 1")),
         type = emptySet(),
@@ -78,6 +79,7 @@ class UpdateUnitCostInteractorTest : UnitTest() {
     fun `update unit cost - test if various invalid values will fail`() {
         val wrongUnitCost = ProgrammeUnitCost(
             id = 4,
+            projectId = null,
             name = setOf(InputTranslation(SystemLanguage.EN, " ")),
             description = setOf(InputTranslation(SystemLanguage.EN, "test unit cost 1")),
             type = emptySet(),
@@ -98,6 +100,7 @@ class UpdateUnitCostInteractorTest : UnitTest() {
         every { persistence.getUnitCost(any()) } returns initialUnitCost
         val unitCost = ProgrammeUnitCost(
             id = 4,
+            projectId = null,
             name = setOf(InputTranslation(SystemLanguage.EN, "UC1")),
             description = setOf(InputTranslation(SystemLanguage.EN, "test unit cost 1")),
             type = setOf(InputTranslation(SystemLanguage.EN, "test type 1")),
@@ -117,6 +120,7 @@ class UpdateUnitCostInteractorTest : UnitTest() {
     @Test
     fun `update unit cost - test if validation will fail when wrong ID is filled in`() {
         val unitCost = ProgrammeUnitCost(
+            projectId = null,
             name = setOf(InputTranslation(SystemLanguage.EN, "UC1")),
             costPerUnit = BigDecimal.ONE,
             isOneCostCategory = false,
@@ -130,6 +134,7 @@ class UpdateUnitCostInteractorTest : UnitTest() {
     fun `update unit cost - test if not existing UnitCost will fail with correct exception`() {
         val unitCost = ProgrammeUnitCost(
             id = 777,
+            projectId = null,
             name = setOf(InputTranslation(SystemLanguage.EN, "UC1")),
             type = setOf(InputTranslation(SystemLanguage.EN, "UC1 type")),
             costPerUnit = BigDecimal.ONE,
@@ -150,6 +155,7 @@ class UpdateUnitCostInteractorTest : UnitTest() {
         every { persistence.getUnitCost(any()) } returns initialUnitCost
         val unitCost = ProgrammeUnitCost(
             id = 4,
+            projectId = null,
             name = setOf(InputTranslation(SystemLanguage.EN, "UC1 changed")),
             description = setOf(InputTranslation(SystemLanguage.EN, "test unit cost 1 changed")),
             type = emptySet(),

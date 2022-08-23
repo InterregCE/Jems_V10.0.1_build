@@ -34,4 +34,7 @@ interface ProjectPartnerBudgetCostsPersistence {
     fun getBudgetUnitCostTotal(partnerId: Long, version: String? = null): BigDecimal
 
     fun getBudgetLumpSumsCostTotal(partnerId: Long, version: String? = null): BigDecimal
+
+    fun isUnitCostUsed(unitCostId: Long): Boolean
+
 }

@@ -72,7 +72,7 @@ class GetCallTest : UnitTest() {
                 ProgrammeLumpSum(splittingAllowed = true, isFastTrack = false),
             ),
             unitCosts = listOf(
-                ProgrammeUnitCost(isOneCostCategory = true),
+                ProgrammeUnitCost(projectId = null, isOneCostCategory = true),
             ),
             applicationFormFieldConfigurations = mutableSetOf(),
             preSubmissionCheckPluginKey = null,

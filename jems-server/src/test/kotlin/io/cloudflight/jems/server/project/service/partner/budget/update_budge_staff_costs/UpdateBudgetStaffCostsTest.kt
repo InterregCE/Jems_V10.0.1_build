@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.project.service.customCostOptions.ProjectUnitCostPersistence
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.BudgetCostValidator
@@ -41,7 +42,7 @@ internal class UpdateBudgetStaffCostsTest : UnitTest() {
     private val budgetStaffCostEntries = budgetStaffCostEntries(listBudgetEntriesIds, validBudgetPeriods)
     private val budgetStaffCostEntriesWithInvalidPeriods =
         budgetStaffCostEntries(listBudgetEntriesIds, invalidBudgetPeriods)
-    private val projectUnitCost = ProgrammeUnitCost(id = unitCostId, isOneCostCategory = true)
+    private val projectUnitCost = ProgrammeUnitCost(id = unitCostId, projectId = null, isOneCostCategory = true)
 
     @MockK
     lateinit var persistence: ProjectPartnerBudgetCostsUpdatePersistence
@@ -51,6 +52,9 @@ internal class UpdateBudgetStaffCostsTest : UnitTest() {
 
     @MockK
     lateinit var partnerPersistence: PartnerPersistence
+
+    @MockK
+    lateinit var projectUnitCostPersistence: ProjectUnitCostPersistence
 
     @MockK
     lateinit var budgetCostValidator: BudgetCostValidator
@@ -82,7 +86,7 @@ internal class UpdateBudgetStaffCostsTest : UnitTest() {
         every { budgetCostValidator.validateBaseEntries(budgetStaffCostEntries) } returns Unit
         every { budgetCostValidator.validatePricePerUnits(pricePerUnits) } returns Unit
         every { budgetCostValidator.validateBudgetPeriods(periods, validPeriodNumbers) } returns Unit
-        every { projectPersistence.getProjectUnitCosts(projectId) } returns listOf(projectUnitCost)
+        every { projectUnitCostPersistence.getAvailableUnitCostsForProjectId(projectId) } returns listOf(projectUnitCost)
         every { budgetCostValidator.validateAllowedUnitCosts(listOf(projectUnitCost), any()) } returns Unit
         every { budgetOptionsPersistence.getBudgetOptions(partnerId) } returns null
         every { projectPersistence.getProjectPeriods(projectId) } returns projectPeriods
@@ -107,7 +111,7 @@ internal class UpdateBudgetStaffCostsTest : UnitTest() {
         verify { budgetCostValidator.validateAllowedRealCosts(callId, any(), any()) }
         verify { budgetOptionsPersistence.getBudgetOptions(partnerId) }
         verify { projectPersistence.getProjectPeriods(projectId) }
-        verify { projectPersistence.getProjectUnitCosts(projectId) }
+        verify { projectUnitCostPersistence.getAvailableUnitCostsForProjectId(projectId) }
         verify { budgetCostValidator.validateAllowedUnitCosts(listOf(projectUnitCost), any()) }
         verify { persistence.deleteAllBudgetStaffCostsExceptFor(partnerId, listBudgetEntriesIds) }
         verify {
@@ -179,7 +183,7 @@ internal class UpdateBudgetStaffCostsTest : UnitTest() {
         ) } returns Unit
         every { budgetCostValidator.validateBaseEntries(budgetStaffCostEntries) } returns Unit
         every { budgetCostValidator.validatePricePerUnits(budgetStaffCostEntries.map { it.pricePerUnit }) } returns Unit
-        every { projectPersistence.getProjectUnitCosts(projectId) } returns listOf(projectUnitCost)
+        every { projectUnitCostPersistence.getAvailableUnitCostsForProjectId(projectId) } returns listOf(projectUnitCost)
         every { budgetCostValidator.validateAllowedUnitCosts(listOf(projectUnitCost), any()) } returns Unit
         every { budgetOptionsPersistence.getBudgetOptions(partnerId) } returns ProjectPartnerBudgetOptions(
             partnerId,
@@ -195,7 +199,7 @@ internal class UpdateBudgetStaffCostsTest : UnitTest() {
         verify { budgetCostValidator.validateAgainstAFConfig(callId, any(), any(), any(), any()) }
         verify { budgetCostValidator.validateBaseEntries(budgetStaffCostEntries) }
         verify { budgetCostValidator.validatePricePerUnits(budgetStaffCostEntries.map { it.pricePerUnit }) }
-        verify { projectPersistence.getProjectUnitCosts(projectId) }
+        verify { projectUnitCostPersistence.getAvailableUnitCostsForProjectId(projectId) }
         verify { budgetCostValidator.validateAllowedUnitCosts(listOf(projectUnitCost), any()) }
         verify { budgetOptionsPersistence.getBudgetOptions(partnerId) }
         confirmVerified(budgetCostValidator, budgetOptionsPersistence, partnerPersistence, projectPersistence)
@@ -221,7 +225,7 @@ internal class UpdateBudgetStaffCostsTest : UnitTest() {
         } throws I18nValidationException()
         every { budgetOptionsPersistence.getBudgetOptions(partnerId) } returns ProjectPartnerBudgetOptions(partnerId)
         every { projectPersistence.getProjectPeriods(projectId) } returns projectPeriods
-        every { projectPersistence.getProjectUnitCosts(projectId) } returns listOf(projectUnitCost)
+        every { projectUnitCostPersistence.getAvailableUnitCostsForProjectId(projectId) } returns listOf(projectUnitCost)
         every { budgetCostValidator.validateAllowedUnitCosts(listOf(projectUnitCost), any()) } returns Unit
         every { partnerPersistence.getProjectIdForPartnerId(partnerId) } returns projectId
 
@@ -238,7 +242,7 @@ internal class UpdateBudgetStaffCostsTest : UnitTest() {
         verify { budgetCostValidator.validateAllowedRealCosts(callId, any(), any()) }
         verify { budgetOptionsPersistence.getBudgetOptions(partnerId) }
         verify { projectPersistence.getProjectPeriods(projectId) }
-        verify { projectPersistence.getProjectUnitCosts(projectId) }
+        verify { projectUnitCostPersistence.getAvailableUnitCostsForProjectId(projectId) }
         verify { budgetCostValidator.validateAllowedUnitCosts(listOf(projectUnitCost), any()) }
         confirmVerified(budgetCostValidator, budgetOptionsPersistence, projectPersistence, partnerPersistence)
     }
@@ -266,7 +270,7 @@ internal class UpdateBudgetStaffCostsTest : UnitTest() {
         ) } returns Unit
         every { budgetCostValidator.validateBaseEntries(budgetStaffCostList) } returns Unit
         every { budgetCostValidator.validatePricePerUnits(budgetStaffCostList.map { it.pricePerUnit }) } returns Unit
-        every { projectPersistence.getProjectUnitCosts(projectId) } returns listOf(projectUnitCost)
+        every { projectUnitCostPersistence.getAvailableUnitCostsForProjectId(projectId) } returns listOf(projectUnitCost)
         every { budgetCostValidator.validateAllowedUnitCosts(listOf(projectUnitCost), any()) } throws I18nValidationException()
 
         assertThrows<I18nValidationException> {
@@ -278,7 +282,7 @@ internal class UpdateBudgetStaffCostsTest : UnitTest() {
         verify { budgetCostValidator.validateAgainstAFConfig(callId, any(), any(), any(), any()) }
         verify { budgetCostValidator.validateBaseEntries(budgetStaffCostEntriesWithInvalidPeriods) }
         verify { budgetCostValidator.validatePricePerUnits(budgetStaffCostEntriesWithInvalidPeriods.map { it.pricePerUnit }) }
-        verify { projectPersistence.getProjectUnitCosts(projectId) }
+        verify { projectUnitCostPersistence.getAvailableUnitCostsForProjectId(projectId) }
         verify { budgetCostValidator.validateAllowedUnitCosts(listOf(projectUnitCost), any()) }
         confirmVerified(budgetCostValidator, projectPersistence, partnerPersistence)
     }

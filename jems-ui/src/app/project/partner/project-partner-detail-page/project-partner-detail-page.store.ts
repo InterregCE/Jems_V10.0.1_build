@@ -9,6 +9,8 @@ import {
 import {
   CallFundRateDTO,
   CallService,
+  ProjectBudgetService,
+  ProjectCostOptionService,
   ProjectLumpSumService,
   ProjectPartnerBudgetService,
   ProjectPartnerCoFinancingAndContributionInputDTO,
@@ -46,6 +48,7 @@ import {ProjectUtil} from '@project/common/project-util';
 import {
   ProjectPartnerCoFinancingSpfStore
 } from './project-partner-co-financing-spf-tab/project-partner-co-financing-spf.store';
+import {BudgetCostCategoryEnumUtils} from '@project/model/lump-sums/BudgetCostCategoryEnum';
 
 @Injectable()
 export class ProjectPartnerDetailPageStore {
@@ -71,24 +74,25 @@ export class ProjectPartnerDetailPageStore {
   allowedBudgetCategories$: Observable<AllowedBudgetCategories>;
   canChangeContractedFlatRates$: Observable<boolean>;
 
-  constructor(private projectStore: ProjectStore,
-              private partnerStore: ProjectPartnerStore,
-              private callService: CallService,
-              private projectWorkPackagePageStore: WorkPackagePageStore,
-              private projectPartnerBudgetService: ProjectPartnerBudgetService,
-              private projectPartnerService: ProjectPartnerService,
-              private projectLumpSumService: ProjectLumpSumService,
-              private projectVersionStore: ProjectVersionStore,
-              private projectPartnerBudgetStore: ProjectPartnerBudgetStore,
-              private projectLumpSumsStore: ProjectLumpSumsStore,
-              private projectPartnerCoFinancingStore: ProjectPartnerCoFinancingStore,
-              private projectPartnerCoFinancingSpfStore: ProjectPartnerCoFinancingSpfStore,
-              private projectPartnerStateAidsStore: ProjectPartnerStateAidsStore) {
+  constructor(
+    private projectStore: ProjectStore,
+    private partnerStore: ProjectPartnerStore,
+    private callService: CallService,
+    private projectWorkPackagePageStore: WorkPackagePageStore,
+    private projectPartnerBudgetService: ProjectPartnerBudgetService,
+    private projectPartnerService: ProjectPartnerService,
+    private projectLumpSumService: ProjectLumpSumService,
+    private projectVersionStore: ProjectVersionStore,
+    private projectPartnerBudgetStore: ProjectPartnerBudgetStore,
+    private projectLumpSumsStore: ProjectLumpSumsStore,
+    private projectBudgetService: ProjectBudgetService,
+    private projectCostOptionService: ProjectCostOptionService,
+    private projectPartnerCoFinancingStore: ProjectPartnerCoFinancingStore,
+    private projectPartnerCoFinancingSpfStore: ProjectPartnerCoFinancingSpfStore,
+    private projectPartnerStateAidsStore: ProjectPartnerStateAidsStore,
+  ) {
     this.investmentSummaries$ = this.projectStore.investmentSummaries$;
-    this.unitCosts$ = this.projectStore.projectCall$.pipe(
-      map(projectCall => projectCall.unitCosts),
-      shareReplay(1)
-    );
+    this.unitCosts$ = this.projectUnitCosts();
     this.budgets$ = this.projectPartnerBudgetStore.budgets$;
     this.spfBudgets$ = this.projectPartnerBudgetStore.spfBudgets$;
     this.budgetOptions$ = this.projectPartnerBudgetStore.budgetOptions$;
@@ -209,6 +213,23 @@ export class ProjectPartnerDetailPageStore {
   private callFlatRateSettings(): Observable<CallFlatRateSetting> {
     return this.projectStore.projectCall$.pipe(
       map(call => call.flatRates),
+    );
+  }
+
+  private projectUnitCosts(): Observable<ProgrammeUnitCost[]> {
+    return this.projectStore.projectId$.pipe(
+      switchMap(projectId => this.projectCostOptionService.getProjectAvailableUnitCosts(projectId)),
+      map(unitCosts => unitCosts.map(unitCost =>
+        new ProgrammeUnitCost(
+          unitCost.id,
+          unitCost.name,
+          unitCost.description,
+          unitCost.type,
+          unitCost.costPerUnit,
+          unitCost.oneCostCategory,
+          BudgetCostCategoryEnumUtils.toBudgetCostCategoryEnums(unitCost.categories),
+        )
+      )),
     );
   }
 

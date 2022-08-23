@@ -170,6 +170,7 @@ class ProjectReportExpenditurePersistenceProviderTest : UnitTest() {
             reportEntity = reportEntity,
             programmeUnitCost = ProgrammeUnitCostEntity(
                 id = 400L,
+                projectId = null,
                 translatedValues = mutableSetOf(ProgrammeUnitCostTranslEntity(ProgrammeUnitCostTranslId(400L, SystemLanguage.EN), "name EN", "desc EN")),
                 isOneCostCategory = false,
                 costPerUnit = BigDecimal.ONE,

@@ -29,6 +29,7 @@ class ProgrammeUnitCostControllerTest {
 
         private val testUnitCost = ProgrammeUnitCost(
             id = 1,
+            projectId = null,
             name = setOf(InputTranslation(SystemLanguage.EN, "UC1")),
             description = setOf(InputTranslation(SystemLanguage.EN, "test unit cost 1")),
             type = setOf(InputTranslation(SystemLanguage.EN, "type 1")),

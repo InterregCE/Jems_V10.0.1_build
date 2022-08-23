@@ -6,7 +6,6 @@ import io.cloudflight.jems.server.call.repository.ProjectCallStateAidRepository
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.entity.ProgrammePriorityEntity
 import io.cloudflight.jems.server.programme.repository.priority.ProgrammePriorityRepository
-import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
 import io.cloudflight.jems.server.project.entity.assessment.ProjectAssessmentEntity
@@ -137,10 +136,6 @@ class ProjectPersistenceProvider(
             projectIds = extraProjectIds,
             pageable = pageable,
         ).toModel()
-
-    @Transactional(readOnly = true)
-    override fun getProjectUnitCosts(projectId: Long): List<ProgrammeUnitCost> =
-        getProjectOrThrow(projectId).call.unitCosts.toModel()
 
     @Transactional(readOnly = true)
     override fun getProjectPeriods(projectId: Long, version: String?): List<ProjectPeriod>  {

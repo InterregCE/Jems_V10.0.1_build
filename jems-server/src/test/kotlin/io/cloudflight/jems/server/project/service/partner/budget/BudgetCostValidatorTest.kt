@@ -38,6 +38,7 @@ internal class BudgetCostValidatorTest : UnitTest() {
 
         fun getProgrammeUnitCost(id: Long, price: BigDecimal, type: Set<InputTranslation>) = ProgrammeUnitCost(
             id = id,
+            projectId = null,
             costPerUnit = price,
             isOneCostCategory = true,
             type = type
