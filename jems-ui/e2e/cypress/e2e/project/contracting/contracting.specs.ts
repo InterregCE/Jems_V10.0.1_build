@@ -1,6 +1,7 @@
 import user from '../../../fixtures/users.json';
 import application from '../../../fixtures/api/application/application.json';
 import call from "../../../fixtures/api/call/1.step.call.json";
+import {faker} from "@faker-js/faker";
 
 context('Application contracting tests', () => {
 
@@ -106,6 +107,46 @@ context('Application contracting tests', () => {
       cy.contains('Confirm').click();
       cy.contains('Contract monitoring').click({force: true});
       cy.contains('div', 'Comment').find('textarea').should('not.have.attr', 'readonly');
+    })
+  })
+
+  it('TB-755 Contracting Project management', () => {
+    cy.fixture("project/contracting/TB-755.json").then(testData => {
+      cy.loginByRequest(user.admin.email);
+      testData.applicationUser.email = faker.internet.email();
+      cy.createUser(testData.applicationUser);
+      testData.anotherUser.email = faker.internet.email();
+      cy.createUser(testData.anotherUser);
+      cy.createCall(call).then(callId => {
+        application.details.projectCallId = callId;
+        cy.publishCall(callId);
+      })
+      cy.loginByRequest(testData.applicationUser.email);
+      cy.createApprovedApplication(application, user.admin.email).then(applicationId => {
+        cy.loginByRequest(testData.applicationUser.email);
+        cy.visit(`/app/project/detail/${applicationId}/projectManagement`, {failOnStatusCode: false});
+        cy.get('input[name="title"]').should('not.have.attr', 'disabled');
+        cy.contains('Project manager').should('be.visible');
+        cy.contains('Finance manager').scrollIntoView().should('be.visible');
+        cy.contains('Communication manager').scrollIntoView().should('be.visible');
+        cy.contains('div.mat-form-field-flex', 'Title').type(faker.word.noun());
+        cy.contains('button', 'Save changes').click();
+
+        cy.loginByRequest(user.admin.email);
+        cy.visit(`/app/project/detail/${applicationId}/privileges`, {failOnStatusCode: false});
+
+        cy.get('mat-expansion-panel#partner-collaborators-panel').find('input.mat-input-element').type(testData.anotherUser.email);
+        cy.contains('button', 'Save changes').click();
+
+        cy.loginByRequest(testData.anotherUser.email);
+        cy.visit(`/app/project/detail/${applicationId}/projectManagement`, {failOnStatusCode: false});
+        cy.get('input[name="title"]').should('have.attr', 'disabled');
+
+        cy.loginByRequest(user.programmeUser.email);
+        cy.visit(`/app/project/detail/${applicationId}`, {failOnStatusCode: false});
+        cy.wait(2000);
+        cy.contains('mat-expansion-panel', 'Contracting').contains('Project Monitoring').should('not.exist');
+      })
     })
   })
 });
