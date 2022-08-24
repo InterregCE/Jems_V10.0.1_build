@@ -44,6 +44,9 @@ Cypress.Commands.add('clickToDownload', {prevSubject: true}, (subject, requestTo
         const file = {fileName: fileName, content: content};
         cy.wrap(file);
       });
+    } else if (fileExtension === 'txt') {
+      const returnValue = {fileName: fileName}
+      cy.wrap(returnValue);
     } else {
       throw new Error('No implementation for: ' + fileExtension);
     }
