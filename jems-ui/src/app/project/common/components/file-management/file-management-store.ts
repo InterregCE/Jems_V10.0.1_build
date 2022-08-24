@@ -45,6 +45,7 @@ export class FileManagementStore {
   canUpload$: Observable<boolean>;
   canChangeAssessmentFile$: Observable<boolean>;
   canChangeApplicationFile$: Observable<boolean>;
+  canChangeModificationFile$: Observable<boolean>;
   canReadAssessmentFile$: Observable<boolean>;
   canReadApplicationFile$: Observable<boolean>;
   canReadFiles$: Observable<boolean>;
@@ -70,6 +71,7 @@ export class FileManagementStore {
     this.userIsProjectOwnerOrEditCollaborator$ = this.projectStore.userIsProjectOwnerOrEditCollaborator$;
     this.canChangeAssessmentFile$ = this.permissionService.hasPermission(PermissionsEnum.ProjectFileAssessmentUpdate);
     this.canChangeApplicationFile$ = this.permissionService.hasPermission(PermissionsEnum.ProjectFileApplicationUpdate);
+    this.canChangeModificationFile$ = this.permissionService.hasPermission(PermissionsEnum.ProjectModificationFileAssessmentUpdate);
     this.canReadApplicationFile$ = this.canReadApplicationFile();
     this.canReadAssessmentFile$ = this.permissionService.hasPermission(PermissionsEnum.ProjectFileAssessmentRetrieve);
     this.canUpload$ = this.canUpload();
