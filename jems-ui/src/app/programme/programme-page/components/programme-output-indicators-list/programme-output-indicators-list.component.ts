@@ -49,23 +49,21 @@ export class ProgrammeOutputIndicatorsListComponent extends BaseComponent {
         displayedColumn: 'output.indicator.table.column.name.name',
         columnType: ColumnType.InputTranslation,
         elementProperty: 'name',
-        sortProperty: 'name'
       },
       {
         displayedColumn: 'output.indicator.table.column.name.priority',
         elementProperty: 'programmePriorityCode',
-        sortProperty: 'programmePriorityPolicy.programmePriority.code',
+        sortProperty: 'programmePriorityPolicyEntity.programmePriority.code',
       },
       {
         displayedColumn: 'output.indicator.table.column.name.specific.objective',
         elementProperty: 'programmePriorityPolicyCode',
-        sortProperty: 'programmePriorityPolicy.code',
+        sortProperty: 'programmePriorityPolicyEntity.code',
       },
       {
         displayedColumn: 'output.indicator.table.column.name.measurement.unit',
         columnType: ColumnType.InputTranslation,
         elementProperty: 'measurementUnit',
-        sortProperty: 'measurementUnit'
       },
       {
         displayedColumn: 'output.indicator.table.column.name.milestone',
