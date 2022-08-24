@@ -13,3 +13,9 @@ class GetInstitutionPartnerAssignmentException(cause: Throwable) : ApplicationEx
     i18nMessage = I18nMessage("$GET_INSTITUTION_PARTNER_ASSIGNMENT_ERROR_KEY_PREFIX.failed"),
     cause = cause
 )
+
+class GetControllerUserAccessLevelForPartnerException(cause: Throwable) : ApplicationException(
+    code = "S-GCUALFP",
+    i18nMessage = I18nMessage("use.case.get.controller.user.access.level.for.partner.failed"),
+    cause = cause
+)

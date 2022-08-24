@@ -18,6 +18,8 @@ import io.cloudflight.jems.server.project.service.report.model.identification.Pr
 import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportIdentificationTargetGroup
 import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportPeriod
 import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportSpendingProfile
+import io.cloudflight.jems.server.project.service.report.model.identification.control.ReportFileFormat
+import io.cloudflight.jems.server.project.service.report.model.identification.control.ReportType
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown.GetReportExpenditureCostCategoryCalculatorService
 import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectReportIdentificationPersistence
 import io.mockk.MockKAnnotations
@@ -96,7 +98,9 @@ internal class UpdateProjectPartnerReportIdentificationTest : UnitTest() {
                 differenceFromPlan = differenceFromPlan /* should be ZERO always from persistence */,
                 differenceFromPlanPercentage = differenceFromPlanPercentage /* should be ZERO always from persistence */,
                 nextReportForecast = BigDecimal.TEN,
-            )
+            ),
+            controllerFormats = setOf(ReportFileFormat.Originals, ReportFileFormat.Copy),
+            type = ReportType.FinalReport,
         )
 
         private val totalLine = ExpenditureCostCategoryBreakdownLine(

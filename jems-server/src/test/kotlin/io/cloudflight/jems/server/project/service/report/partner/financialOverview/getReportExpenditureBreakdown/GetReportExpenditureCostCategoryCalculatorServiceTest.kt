@@ -39,6 +39,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceTest : UnitTest(
             status = status,
             version = "",
             identification = mockk(),
+            firstSubmission = TODAY,
         )
 
         val data = ReportExpenditureCostCategory(

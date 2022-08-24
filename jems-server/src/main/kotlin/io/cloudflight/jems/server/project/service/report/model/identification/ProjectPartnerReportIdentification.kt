@@ -1,6 +1,8 @@
 package io.cloudflight.jems.server.project.service.report.model.identification
 
 import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.server.project.service.report.model.identification.control.ReportFileFormat
+import io.cloudflight.jems.server.project.service.report.model.identification.control.ReportType
 import java.time.LocalDate
 
 data class ProjectPartnerReportIdentification(
@@ -11,4 +13,6 @@ data class ProjectPartnerReportIdentification(
     val spendingDeviations: Set<InputTranslation>,
     val targetGroups: List<ProjectPartnerReportIdentificationTargetGroup>,
     val spendingProfile: ProjectPartnerReportSpendingProfile,
+    val controllerFormats: Set<ReportFileFormat>,
+    val type: ReportType,
 )

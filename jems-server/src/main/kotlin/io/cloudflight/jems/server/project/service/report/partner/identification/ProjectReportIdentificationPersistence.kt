@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.project.service.report.partner.identification
 import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportIdentification
 import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportPeriod
 import io.cloudflight.jems.server.project.service.report.model.identification.UpdateProjectPartnerReportIdentification
-import java.math.BigDecimal
+import io.cloudflight.jems.server.project.service.report.model.identification.control.ProjectPartnerControlReportChange
 import java.util.Optional
 
 interface ProjectReportIdentificationPersistence {
@@ -17,5 +17,11 @@ interface ProjectReportIdentificationPersistence {
     ): ProjectPartnerReportIdentification
 
     fun getAvailablePeriods(partnerId: Long, reportId: Long): List<ProjectPartnerReportPeriod>
+
+    fun updatePartnerControlReportIdentification(
+        partnerId: Long,
+        reportId: Long,
+        data: ProjectPartnerControlReportChange,
+    ): ProjectPartnerReportIdentification
 
 }

@@ -1,15 +1,17 @@
 package io.cloudflight.jems.server.controllerInstitution.service.getInstitutionPartnerAssignment
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.authentication.service.AuthenticationService
+import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.controllerInstitution.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.controllerInstitution.INSTITUTION_ID
 import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerDetails
+import io.cloudflight.jems.server.controllerInstitution.service.model.UserInstitutionAccessLevel
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageImpl
@@ -56,7 +58,7 @@ class GetInstitutionPartnerAssignmentTest: UnitTest() {
     lateinit var controllerInstitutionPersistence: ControllerInstitutionPersistence
 
     @RelaxedMockK
-    lateinit var authenticationService: AuthenticationService
+    lateinit var securityService: SecurityService
 
     @InjectMockKs
     lateinit var getInstitutionPartnerAssignment: GetInstitutionPartnerAssignment
@@ -64,9 +66,21 @@ class GetInstitutionPartnerAssignmentTest: UnitTest() {
 
     @Test
     fun `get institutions partners assignments`() {
-        every { controllerInstitutionPersistence.getInstitutionPartnerAssignments(any()) } returns PageImpl(institutionPartnerDetailList)
-        assertThat(getInstitutionPartnerAssignment.getInstitutionPartnerAssignments(Pageable.unpaged()).content).isEqualTo(
-            institutionPartnerDetailList
-        )
+        every { controllerInstitutionPersistence.getInstitutionPartnerAssignments(Pageable.unpaged()) } returns PageImpl(institutionPartnerDetailList)
+        assertThat(getInstitutionPartnerAssignment.getInstitutionPartnerAssignments(Pageable.unpaged()).content)
+            .isEqualTo(institutionPartnerDetailList)
     }
+
+    @Test
+    fun getControllerUserAccessLevelForPartner() {
+        val accessLevel = mockk<UserInstitutionAccessLevel>()
+        every { controllerInstitutionPersistence.getControllerUserAccessLevelForPartner(
+            userId = 20L,
+            partnerId = 497L,
+        ) } returns accessLevel
+        every { securityService.getUserIdOrThrow() } returns 20L
+        assertThat(getInstitutionPartnerAssignment.getControllerUserAccessLevelForPartner(497L))
+            .isEqualTo(accessLevel)
+    }
+
 }

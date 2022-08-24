@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.partner.workflow.startControlPartnerReport
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
-import io.cloudflight.jems.server.project.authorization.CanEditPartnerReport
+import io.cloudflight.jems.server.project.authorization.CanEditPartnerControlReport
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReport
@@ -18,7 +18,7 @@ class StartControlPartnerReport(
     private val auditPublisher: ApplicationEventPublisher,
 ) : StartControlPartnerReportInteractor {
 
-    @CanEditPartnerReport
+    @CanEditPartnerControlReport
     @Transactional
     @ExceptionWrapper(StartControlPartnerReportException::class)
     override fun startControl(partnerId: Long, reportId: Long): ReportStatus {
