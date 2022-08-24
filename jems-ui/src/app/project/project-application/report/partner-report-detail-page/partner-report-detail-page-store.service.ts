@@ -34,13 +34,13 @@ export class PartnerReportDetailPageStore {
 
   newPageSize$ = new Subject<number>();
   newPageIndex$ = new Subject<number>();
+  updatedReportStatus$ = new Subject<ProjectPartnerReportSummaryDTO.StatusEnum>();
 
   private updatedReport$ = new Subject<ProjectPartnerReportDTO>();
   private updatedIdentification$ = new Subject<ProjectPartnerReportIdentificationDTO>();
-  private updatedReportStatus$ = new Subject<ProjectPartnerReportSummaryDTO.StatusEnum>();
 
   constructor(private routingService: RoutingService,
-              private partnerReportPageStore: PartnerReportPageStore,
+              public partnerReportPageStore: PartnerReportPageStore,
               private projectPartnerReportService: ProjectPartnerReportService,
               private projectStore: ProjectStore,
               private reportIdentificationService: ProjectPartnerReportIdentificationService) {
@@ -87,6 +87,15 @@ export class PartnerReportDetailPageStore {
 
   submitReport(partnerId: number, reportId: number): Observable<ProjectPartnerReportSummaryDTO.StatusEnum> {
     return this.projectPartnerReportService.submitProjectPartnerReport(partnerId, reportId)
+      .pipe(
+        map(status => status as ProjectPartnerReportSummaryDTO.StatusEnum),
+        tap(status => this.updatedReportStatus$.next(status)),
+        tap(status => Log.info('Changed status for report', reportId, status))
+      );
+  }
+
+  startControlOnPartnerReport(partnerId: number, reportId: number): Observable<ProjectPartnerReportSummaryDTO.StatusEnum> {
+    return this.projectPartnerReportService.startControlOnPartnerReport(partnerId, reportId)
       .pipe(
         map(status => status as ProjectPartnerReportSummaryDTO.StatusEnum),
         tap(status => this.updatedReportStatus$.next(status)),

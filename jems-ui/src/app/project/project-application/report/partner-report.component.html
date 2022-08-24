@@ -60,16 +60,16 @@
 </ng-template>
 
 <ng-template #actionCell let-partnerReport>
-    <ng-container *ngIf="partnerReport.status === ProjectPartnerReportSummaryDTO.StatusEnum.Submitted">
-        <jems-pending-button *ngIf="!isControlReportStarted" class="ml-1"
+    <ng-container *ngIf="partnerReport.status !== ProjectPartnerReportSummaryDTO.StatusEnum.Draft">
+        <jems-pending-button *ngIf="!(partnerReport.status === ProjectPartnerReportSummaryDTO.StatusEnum.InControl)" class="ml-1"
                 [disabled]="isStartControlReportDisabled((pageStore.institutionUserCanViewControlReports$ | async), (pageStore.institutionUserCanEditControlReports$ | async))"
                 (click)="createControlReportForPartnerReport(partnerReport)"
-                [pending]="actionPending">
+                [pending]="controlActionPending">
             {{'project.application.partner.reports.start.control' | translate}}
         </jems-pending-button>
-        <button *ngIf="isControlReportStarted && ((pageStore.userCanEditReports$ | async) || (pageStore.userCanViewReports$ | async))" mat-stroked-button type="submit" class="ml-1"
+        <button *ngIf="partnerReport.status === ProjectPartnerReportSummaryDTO.StatusEnum.InControl && ((pageStore.userCanEditReports$ | async) || (pageStore.userCanViewReports$ | async))" mat-stroked-button type="submit" class="ml-1"
                 [disabled]="false"
-                (click)="openControlReportForPartnerReport(partnerReport)">
+                [routerLink]="partnerReport.id + '/controlReport/identificationTab'">
             {{'project.application.partner.reports.open.control' | translate}}
         </button>
     </ng-container>

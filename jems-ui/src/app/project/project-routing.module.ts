@@ -98,6 +98,10 @@ import {
 import {
   PartnerControlReportIdentificationTabComponent
 } from '@project/project-application/report/partner-control-report/partner-control-report-identification-tab/partner-control-report-identification-tab.component';
+import {
+  ControlReportPageBreadcrumbResolver
+} from '@project/project-application/report/partner-control-report/controler-report-page-breadcrumb-resolver.service';
+import { PartnerControlReportInformationTabComponent } from './project-application/report/partner-control-report/partner-control-report-information-tab/partner-control-report-information-tab.component';
 
 export const routes: Routes = [
   {
@@ -182,22 +186,27 @@ export const routes: Routes = [
                         path: 'submission',
                         component: PartnerReportSubmitTabComponent,
                       },
+                    ],
+                  },
+                  {
+                    path: 'controlReport',
+                    children: [
                       {
-                        path: 'controlReport',
+                        path: '',
+                        component: PartnerControlReportComponent,
+                        data: {dynamicBreadcrumb: true},
+                        resolve: {breadcrumb$: ControlReportPageBreadcrumbResolver},
                         children: [
                           {
-                            path: '',
-                            component: PartnerControlReportComponent,
-                            children: [
-                              {
-                                path: 'identification',
-                                component: PartnerControlReportIdentificationTabComponent,
-                              },
-                            ],
-                          }
-                        ]
+                            path: 'identificationTab',
+                            component: PartnerControlReportIdentificationTabComponent,
+                          },
+                          {
+                            path: 'informationTab',
+                            component: PartnerControlReportInformationTabComponent,               },
+                        ],
                       }
-                    ],
+                    ]
                   }
                 ]
               }

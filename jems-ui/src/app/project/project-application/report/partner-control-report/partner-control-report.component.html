@@ -1,1 +1,31 @@
-<p>partner-control-report works!</p>
+<ng-container *ngIf="pageStore.partnerSummary$ | async as partnerReportSummary">
+        <jems-project-page-template *ngIf="pageStore.partnerReport$ | async as partnerReport"
+                                    [titleKey]="('project.application.partner.control.report.title' | translate : {reportNumber: partnerReport?.reportNumber})"
+                                    [subTitleText]="('common.label.project.partner.role.shortcut.' + partnerReport?.identification?.partnerRole | adaptTranslationKeyByCallType | async | translate : {partner: partnerReport?.identification?.partnerNumber + ' ' + partnerReportSummary.abbreviation}) + ', ' + (projectStore.project$ | async)?.acronym"
+                                    [isVersionedData]="false">
+            <nav mat-tab-nav-bar *ngIf="pageStore.partnerReportPageStore.userCanEditReports$ | async">
+                <a [active]="activeTab('identificationTab')" mat-tab-link
+                   (click)="routeTo('identificationTab')">
+                    <span jemsText maxWidth="230">
+                        {{'project.application.partner.report.tab.identification' | translate}}
+                    </span>
+                </a>
+                <a mat-tab-link
+                   (click)="routeTo('informationTab')">
+                    <span jemsText maxWidth="230">
+                        {{'project.application.partner.report.tab.information' | translate}}
+                    </span>
+                </a>
+            </nav>
+
+            <nav *ngIf="pageStore.partnerReportPageStore.userCanViewReports$ | async" mat-tab-nav-bar>
+                <a [active]="activeTab('informationTab')" mat-tab-link
+                   (click)="routeTo('informationTab')">
+                    <span jemsText maxWidth="230">
+                        {{'project.application.partner.report.tab.information' | translate}}
+                    </span>
+                </a>
+            </nav>
+            <router-outlet></router-outlet>
+        </jems-project-page-template>
+</ng-container>

@@ -178,6 +178,16 @@ import {
 import {
   PartnerReportStatusComponent
 } from '@project/project-application/report/partner-report-status/partner-report-status.component';
+import {
+  PartnerControlReportComponent
+} from '@project/project-application/report/partner-control-report/partner-control-report.component';
+import {
+  PartnerControlReportIdentificationTabComponent
+} from '@project/project-application/report/partner-control-report/partner-control-report-identification-tab/partner-control-report-identification-tab.component';
+import {
+  PartnerControlReportStore
+} from '@project/project-application/report/partner-control-report/partner-control-report-store.service';
+import { PartnerControlReportInformationTabComponent } from './project-application/report/partner-control-report/partner-control-report-information-tab/partner-control-report-information-tab.component';
 
 @NgModule({
   declarations: [
@@ -311,6 +321,9 @@ import {
     ProjectManagementComponent,
     ContractMonitoringExtensionComponent,
     ContractReportingComponent,
+    PartnerControlReportComponent,
+    PartnerControlReportIdentificationTabComponent,
+    PartnerControlReportInformationTabComponent
   ],
   imports: [
     SharedModule,
@@ -337,7 +350,8 @@ import {
     ProjectPartnerBudgetStore,
     ProjectPartnerCoFinancingStore,
     ProjectPartnerCoFinancingSpfStore,
-    ProjectPartnerStateAidsStore
+    ProjectPartnerStateAidsStore,
+    PartnerControlReportStore
   ]
 })
 export class ProjectModule {

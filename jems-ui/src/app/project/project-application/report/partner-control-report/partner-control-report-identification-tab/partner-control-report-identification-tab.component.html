@@ -1,1 +1,98 @@
-<p>partner-control-report-identification-tab works!</p>
+<jems-form *ngIf="data$ | async as data"
+           (discard)="resetForm(data.partnerControlReport)"
+           (save)="saveIdentification()">
+
+    <h3>{{'project.application.partner.control.report.section.one.part.one' | translate}}</h3>
+    <div id="control-report-info" class="mb-5">
+        <div class="project-row">
+            <span class="header p-1 pr-3">{{'project.application.partner.control.report.programme.title' | translate}}</span>
+            <span class="p-1">{{data.partnerControlReport.programmeTitle}}</span>
+        </div>
+        <div class="project-row">
+            <span class="header p-1 pr-3">{{'project.application.partner.control.report.project.title' | translate}}</span>
+            <span class="p-1">{{data.partnerControlReport.projectTitle | translateBySystemLanguage | async}}</span>
+        </div>
+        <div class="project-row">
+            <span class="header p-1 pr-3">{{'project.application.partner.control.report.project.acronym' | translate}}</span>
+            <span class="p-1">{{data.partnerControlReport.projectAcronym}}</span>
+        </div>
+        <div class="project-row">
+            <span class="header p-1 pr-3">{{'project.application.partner.control.report.project.identification' | translate}}</span>
+            <span class="p-1">{{data.partnerControlReport.projectIdentifier}}</span>
+        </div>
+        <div class="project-row">
+            <span class="header p-1 pr-3">{{'project.application.partner.control.report.application.form.version' | translate}}</span>
+            <span class="p-1">{{data.partnerControlReport.linkedFormVersion}}</span>
+        </div>
+        <div class="project-row">
+            <span class="header p-1 pr-3">{{'project.application.partner.control.report.project.implementation.period' | translate}}</span>
+            <span class="p-1">{{data.partnerControlReport.projectStart}} - {{data.partnerControlReport.projectEnd}}</span>
+        </div>
+        <div class="project-row">
+            <span class="header p-1 pr-3">{{'project.application.partner.control.report.reporting.period' | translate}}</span>
+            <span class="p-1">{{data.partnerControlReport.reportPeriodStart}} - {{data.partnerControlReport.reportPeriodEnd}}</span>
+        </div>
+        <div class="project-row">
+            <span class="header p-1 pr-3">{{'project.application.partner.control.report.report.number' | translate}}</span>
+            <span class="p-1">R.{{data.partnerControlReport.reportNumber}}</span>
+        </div>
+        <div class="project-row">
+            <span class="header p-1 pr-3">{{'project.application.partner.control.report.first.submission' | translate}}</span>
+            <span class="p-1">{{transformData(data.partnerControlReport.reportFirstSubmission)}}</span>
+        </div>
+        <div class="project-row">
+            <span class="header p-1 pr-3">{{'project.application.partner.control.report.latest.resubmission' | translate}}</span>
+            <span class="p-1">{{transformData(data.partnerControlReport.reportFirstSubmission)}}</span>
+        </div>
+    </div>
+
+    <form [formGroup]="form">
+        <h3>{{'project.application.partner.control.report.section.one.part.two' | translate}}</h3>
+        <div id="control-report-format-of-supporting-documents" class="mb-5">
+            <div class="project-row">
+                <span class="header p-1 pr-3">{{'project.application.partner.control.report.documents.availability.part.one' | translate}}</span>
+            </div>
+            <div class="project-row">
+                <span class="header p-1 pr-3">{{'project.application.partner.control.report.documents.availability.part.two' | translate}}</span>
+                <div *ngFor="let element of formats">
+                    <mat-checkbox class="ml-2" (click)="$event.stopPropagation()"
+                                  (change)="checkSelection(element)"
+                                  [checked]="selection.isSelected(element)"
+                                  [disabled]="(store.controlReportEditable$ | async) === false">
+                        {{'project.application.partner.control.report.' + element | translate}}
+                    </mat-checkbox>
+                    <br>
+                </div>
+            </div>
+            <div class="project-row">
+                <span class="header p-1 pr-3">{{'project.application.partner.control.report.report.type' | translate}}</span>
+                <div class="ml-2">
+                    <mat-button-toggle-group formControlName="partnerType">
+                        <mat-button-toggle [value]="ProjectPartnerControlReportDTO.TypeEnum.PartnerReport">{{'project.application.partner.control.report.report.type.partner' | translate}}</mat-button-toggle>
+                        <mat-button-toggle [value]="ProjectPartnerControlReportDTO.TypeEnum.FinalReport">{{'project.application.partner.control.report.report.type.final' | translate}}</mat-button-toggle>
+                    </mat-button-toggle-group>
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <h3>{{'project.application.partner.control.report.section.two' | translate}}</h3>
+    <div id="control-report-partner" class="mb-5">
+        <div class="project-row">
+            <span class="header p-1 pr-3">{{'project.application.partner.control.report.report.partner.name.in.english' | translate}}</span>
+            <span class="p-1">{{data.partner.nameInEnglish}}</span>
+        </div>
+        <div class="project-row">
+            <span class="header p-1 pr-3">{{'project.application.partner.control.report.report.partner.name.in.original' | translate}}</span>
+            <span class="p-1">{{data.partner.nameInOriginalLanguage}}</span>
+        </div>
+        <div class="project-row">
+            <span class="header p-1 pr-3">{{'project.application.partner.control.report.partner.number' | translate}}</span>
+            <span class="p-1">{{data.partner.sortNumber}}</span>
+        </div>
+        <div class="project-row">
+            <span class="header p-1 pr-3">{{'project.application.partner.control.report.partner.role' | translate}}</span>
+            <span class="p-1">{{('common.label.project.partner.role.' + data.partner.role) | translate}}</span>
+        </div>
+    </div>
+</jems-form>
