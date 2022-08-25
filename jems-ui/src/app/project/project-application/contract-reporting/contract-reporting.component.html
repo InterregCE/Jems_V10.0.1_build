@@ -68,7 +68,7 @@
                         <span jemsText>{{'project.application.contract.reporting.column.date' | translate}}</span>
                     </mat-header-cell>
                     <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                        <mat-form-field jemsFormFieldWidth="full">
+                        <mat-form-field jemsFormFieldWidth="full" [ngClass]="{'mat-form-field-invalid': control.get('deadlineDate').errors && control.get('isDeadlineApplicable').value}">
                             <mat-label>{{'project.application.contract.reporting.column.date' | translate}}</mat-label>
                             <input formControlName="deadlineDate" matInput
                                    [min]="control.get('deadlinePeriodStartDate').value"
@@ -101,7 +101,8 @@
                     </mat-header-cell>
                     <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                         <button mat-icon-button color="accent"
-                                [disabled] = "control.get('isDeadlineApplicable').value && (deadlines.controls[i].invalid || i >= data.reportingDeadlines.length)"
+                                type="button"
+                                [disabled] = "i >= data.reportingDeadlines.length"
                                 (click)="$event.stopPropagation(); delete(i)"
                                 matTooltip="{{'project.application.contract.reporting.action.delete.tooltip' | translate}}">
                             <mat-icon>delete</mat-icon>

@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.service.contracting.reporting.updateContractingReporting
 
+import io.cloudflight.jems.server.common.exception.ApplicationUnprocessableException
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectContractingReporting
@@ -52,6 +53,14 @@ class UpdateContractingReporting(
         )
     }
 
+    @Transactional
+    override fun clearNoLongerAvailablePeriodsAndDates(projectId: Long, newMaxDuration: Int) {
+        val schedules = contractingReportingPersistence.getScheduleIdsWhosePeriodsAndDatesNotProper(projectId, newMaxDuration)
+        if (schedules.isNotEmpty()) {
+            contractingReportingPersistence.clearPeriodAndDatesFor(schedules)
+        }
+    }
+
     private fun validateInputData(
         deadlines: Collection<ProjectContractingReportingSchedule>,
         periods: Map<Int, ProjectPeriod>,
@@ -69,7 +78,9 @@ class UpdateContractingReporting(
         deadlines: Collection<ProjectContractingReportingSchedule>,
         periods: Map<Int, ProjectPeriod>,
     ) {
-        val invalidPeriods = deadlines.mapTo(HashSet()) { it.periodNumber }
+        if (deadlines.any { it.periodNumber == null })
+            throw EmptyPeriodNumber()
+        val invalidPeriods = deadlines.mapTo(HashSet()) { it.periodNumber!! }
         invalidPeriods.removeAll(periods.keys)
 
         if (invalidPeriods.isNotEmpty())
@@ -80,12 +91,14 @@ class UpdateContractingReporting(
         periods: Map<Int, ProjectPeriod>,
         startDate: LocalDate,
     ) {
+        if (deadlines.any { it.date == null })
+            throw EmptyDeadlineDate()
         val periodLimits = periods.mapValues { it.value.toLimits(startDate) }
         val invalidDates = deadlines.filter {
-            it.date.isBefore(periodLimits.startLimit(it.periodNumber)) || it.date.isAfter(periodLimits.endLimit(it.periodNumber))
+            it.date!!.isBefore(periodLimits.startLimit(it.periodNumber!!)) || it.date!!.isAfter(periodLimits.endLimit(it.periodNumber))
         }
         if (invalidDates.isNotEmpty())
-            throw DeadlinesDoNotFitPeriod(invalidDates.map { Triple(it, periodLimits.startLimit(it.periodNumber), periodLimits.endLimit(it.periodNumber)) })
+            throw DeadlinesDoNotFitPeriod(invalidDates.map { Triple(it, periodLimits.startLimit(it.periodNumber!!), periodLimits.endLimit(it.periodNumber)) })
     }
 
     fun validateComments(deadlines: Collection<ProjectContractingReportingSchedule>){

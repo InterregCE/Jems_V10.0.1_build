@@ -47,6 +47,18 @@ class ContractingReportingPersistenceProvider(
         return projectContractingReportingRepository.findTop50ByProjectIdOrderByDeadline(projectId).toModel()
     }
 
+    @Transactional
+    override fun clearPeriodAndDatesFor(ids: List<Long>) {
+        projectContractingReportingRepository.updatePeriodAndDatesAsNullFor(ids)
+    }
+
+    @Transactional(readOnly = true)
+    override fun getScheduleIdsWhosePeriodsAndDatesNotProper(projectId: Long, newMaxDuration: Int): List<Long> {
+        return projectContractingReportingRepository.findAllByProjectIdAndPeriodNumberGreaterThan(
+            projectId,
+            newMaxDuration).map { s -> s.id }
+    }
+
     private fun Map<Long, ProjectContractingReportingEntity>.getById(id: Long): Optional<ProjectContractingReportingEntity> {
         val value = this[id]
         return if (value != null)

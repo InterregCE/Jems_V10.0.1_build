@@ -58,3 +58,15 @@ class DeadlinesDoNotFitPeriod(
             "${it.first.date} does not fit into period ${it.first.periodNumber} (${it.second} - ${it.third})"
         },
 )
+
+class EmptyPeriodNumber : ApplicationUnprocessableException(
+    code = "$UPDATE_CONTRACTING_REPORTING_ERROR_CODE_PREFIX-006",
+    i18nMessage = I18nMessage("$UPDATE_CONTRACTING_REPORTING_ERROR_KEY_PREFIX.empty.periodNumber"),
+    message = "Period number can't be empty",
+)
+
+class EmptyDeadlineDate : ApplicationUnprocessableException(
+    code = "$UPDATE_CONTRACTING_REPORTING_ERROR_CODE_PREFIX-007",
+    i18nMessage = I18nMessage("$UPDATE_CONTRACTING_REPORTING_ERROR_KEY_PREFIX.empty.date"),
+    message = "Deadline date can't be empty",
+)
