@@ -1,3 +1,4 @@
+import { faker } from '@faker-js/faker';
 import user from '../../fixtures/users.json';
 
 context('Programme management tests', () => {
@@ -151,6 +152,9 @@ context('Programme management tests', () => {
 
   it('TB-527 Programme result indicators can be configured', () => {
     cy.fixture('programme/TB-527.json').then((resultIndicators) => {
+      resultIndicators.forEach(current => {
+        current.identifier = current.identifier+faker.random.numeric(6);
+      })
       cy.visit('/app/programme/indicators', {failOnStatusCode: false});
 
       resultIndicators.forEach(indicator => {
@@ -186,6 +190,9 @@ context('Programme management tests', () => {
 
   it('TB-528 Programme output indicators can be configured', () => {
     cy.fixture('programme/TB-528.json').then((outputIndicators) => {
+      outputIndicators.forEach(current => {
+        current.identifier = current.identifier+faker.random.numeric(6);
+      })
       cy.visit('/app/programme/indicators', {failOnStatusCode: false});
 
       outputIndicators.forEach(indicator => {
