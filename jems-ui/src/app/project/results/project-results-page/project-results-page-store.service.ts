@@ -3,7 +3,8 @@ import {
   ProjectPeriodDTO,
   ProgrammeIndicatorResultService,
   ProjectResultDTO,
-  ProjectResultService, ResultIndicatorSummaryDTO
+  ProjectResultService, ResultIndicatorSummaryDTO,
+  ProjectDetailFormDTO
 } from '@cat/api';
 import {combineLatest, merge, Observable, of, Subject} from 'rxjs';
 import {map, shareReplay, switchMap, take, tap} from 'rxjs/operators';
@@ -20,6 +21,7 @@ export class ProjectResultsPageStore {
   periods$: Observable<ProjectPeriodDTO[]>;
   projectId$: Observable<number>;
   projectTitle$: Observable<string>;
+  projectForm$: Observable<ProjectDetailFormDTO>;
 
   private savedResults$ = new Subject<ProjectResultDTO[]>();
 
@@ -33,6 +35,7 @@ export class ProjectResultsPageStore {
     this.periods$ = this.periods();
     this.projectTitle$ = this.projectStore.projectTitle$;
     this.projectId$ = this.projectStore.projectId$;
+    this.projectForm$ = this.projectStore.projectForm$;
   }
 
   saveResults(results: ProjectResultDTO[]): Observable<ProjectResultDTO[]> {

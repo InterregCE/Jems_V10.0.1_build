@@ -18,10 +18,16 @@
                         </div>
 
                         <jems-alert
-                            [show]="!data.resultIndicators?.length"
+                            [show]="!data.specificObjective"
                             [type]="Alert.WARNING"
                             [closable]="false">
                             <span>{{'project.application.form.overall.objective.specific.objective.required' | translate}}</span>
+                        </jems-alert>
+                        <jems-alert
+                                [show]="data.specificObjective && !data.resultIndicators?.length"
+                                [type]="Alert.WARNING"
+                                [closable]="false">
+                            <span>{{'project.application.form.overall.objective.specific.objective.no.result.indicator.available' | translate}}</span>
                         </jems-alert>
                         <mat-form-field
                                 *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_RESULT.PROGRAMME_RESULT_INDICATOR_AMD_MEASUREMENT_UNIT">

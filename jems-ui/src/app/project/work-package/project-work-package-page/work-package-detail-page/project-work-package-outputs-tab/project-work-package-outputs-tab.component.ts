@@ -6,7 +6,7 @@ import {combineLatest, Observable} from 'rxjs';
 import {FormArray, FormBuilder} from '@angular/forms';
 import {WorkPackagePageStore} from '../work-package-page-store.service';
 import {catchError, map, startWith, take, tap} from 'rxjs/operators';
-import {InputTranslation, OutputIndicatorSummaryDTO, ProjectPeriodDTO, WorkPackageOutputDTO} from '@cat/api';
+import {InputTranslation, OutputIndicatorSummaryDTO, ProjectPeriodDTO, WorkPackageOutputDTO, OutputProgrammePriorityPolicySimpleDTO} from '@cat/api';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {Alert} from '@common/components/forms/alert';
 
@@ -31,6 +31,7 @@ export class ProjectWorkPackageOutputsTabComponent implements OnInit {
     periods: ProjectPeriodDTO[];
     outputIndicators: OutputIndicatorSummaryDTO[];
     workPackageNumber: number;
+    specificObjective: OutputProgrammePriorityPolicySimpleDTO;
   }>;
   Alert = Alert;
 
@@ -60,6 +61,7 @@ export class ProjectWorkPackageOutputsTabComponent implements OnInit {
           periods: projectForm$.periods,
           outputIndicators: indicators,
           workPackageNumber: workPackage.number,
+          specificObjective: projectForm$.specificObjective,
         })
       ));
   }
