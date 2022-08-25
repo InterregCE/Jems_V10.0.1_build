@@ -111,6 +111,8 @@ context('Call management tests', () => {
 
   it("TB-754 Create a new 2-step call", () => {
     const callName = `${faker.word.adjective()} ${faker.word.noun()}`;
+    cy.intercept('/api/call/byId/*/preSubmissionCheck').as('preSubmissionCheck');
+    cy.intercept('/api/project/*/workPackage').as('workPackage');
 
     cy.loginByRequest(user.programmeUser.email);
     cy.visit('/app/call', {failOnStatusCode: false});
@@ -145,8 +147,9 @@ context('Call management tests', () => {
     cy.contains('button', 'done').click();
     cy.get('jems-call-priority-tree').scrollIntoView().find('mat-checkbox:first').find('input').check({force: true});
     cy.get('jems-call-funds').scrollIntoView().find('mat-checkbox:first').find('input').check({force: true});
+    cy.intercept('/api/programmeFund').as('programmeFund');
     cy.contains('button', 'Create').click();
-    cy.wait(1000);
+    cy.wait('@programmeFund');
     cy.contains('Application form configuration').click();
     cy.contains('span.mat-button-toggle-label-content', '1 & 2').should('be.visible');
     cy.contains('span.mat-button-toggle-label-content', '2 only').should('be.visible');
@@ -168,7 +171,9 @@ context('Call management tests', () => {
     cy.contains('No-Check').click();
     cy.get('div.mat-form-field-flex').first().click();
     cy.contains('Blocked').click();
+    cy.wait(100);
     cy.contains('button', 'Save changes').click();
+    cy.wait('@preSubmissionCheck');
     cy.contains('General call settings').click();
     cy.contains('button', 'Publish call').click();
     cy.contains('button', 'Confirm').click();
@@ -181,6 +186,7 @@ context('Call management tests', () => {
     cy.contains('mat-row', callName).contains('button', 'Apply').click();
     cy.contains('div.mat-form-field-flex', 'Project acronym').type(faker.word.noun());
     cy.contains('button', 'Create project application').click();
+    cy.wait('@workPackage');
     cy.contains('div.mat-form-field-flex', 'Project title').should('be.visible');
     cy.contains('div.mat-form-field-flex', 'Project summary').should('not.exist');
   })
