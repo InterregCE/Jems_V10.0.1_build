@@ -1,13 +1,10 @@
 .chip-option {
-  overflow: hidden;
   height: auto;
   line-height: 1rem;
+  max-width: 95%
 }
 
-.chip-icon-option {
-  position: absolute;
-  right: 0;
-  background-color: #e0e0e0;
-  opacity: 1 !important;
-  color: #929292 !important;
+.chip-span-option {
+  overflow: hidden;
+  max-width: 90%
 }
