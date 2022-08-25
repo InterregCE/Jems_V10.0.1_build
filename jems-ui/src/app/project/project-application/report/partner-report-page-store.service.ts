@@ -142,7 +142,7 @@ export class PartnerReportPageStore {
   private userCanViewReports(): Observable<boolean> {
     return combineLatest([
       this.partnerReportLevel(),
-      this.userCanEditReports$,
+      this.permissionService.hasPermission(PermissionsEnum.ProjectReportingEdit),
       this.permissionService.hasPermission(PermissionsEnum.ProjectReportingView)
     ])
       .pipe(

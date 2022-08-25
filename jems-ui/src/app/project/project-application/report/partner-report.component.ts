@@ -1,9 +1,13 @@
 import {AfterViewInit, ChangeDetectionStrategy, Component, TemplateRef, ViewChild} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
-import {ProjectPartnerReportSummaryDTO, ProjectPartnerSummaryDTO, UserRoleDTO} from '@cat/api';
+import {
+  ProjectPartnerReportSummaryDTO,
+  ProjectPartnerSummaryDTO,
+  UserRoleDTO
+} from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
-import {catchError, distinctUntilChanged, filter, finalize, map, take, tap} from 'rxjs/operators';
+import {catchError, distinctUntilChanged, filter, finalize, map, switchMap, take, tap} from 'rxjs/operators';
 import {ProjectApplicationFormSidenavService} from '../containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {RoutingService} from '@common/services/routing.service';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
@@ -19,6 +23,8 @@ import {TranslateService} from '@ngx-translate/core';
 import {
   MultiLanguageGlobalService
 } from '@common/components/forms/multi-language-container/multi-language-global.service';
+import {Forms} from '@common/utils/forms';
+import {MatDialog} from '@angular/material/dialog';
 
 @Component({
   selector: 'jems-contract-monitoring',
@@ -44,11 +50,12 @@ export class PartnerReportComponent implements AfterViewInit {
   actionCell: TemplateRef<any>;
 
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
+  partnerId = this.activatedRoute?.snapshot?.params?.partnerId;
   tableConfiguration: TableConfiguration;
   actionPending = false;
+  controlActionPending = false;
   error$ = new BehaviorSubject<APIError | null>(null);
   Alert = Alert;
-  isControlReportStarted = false;
 
   data$: Observable<{
     totalElements: number;
@@ -64,7 +71,8 @@ export class PartnerReportComponent implements AfterViewInit {
               private router: RoutingService,
               private partnerReportDetail: PartnerReportDetailPageStore,
               private translateService: TranslateService,
-              private multiLanguageGlobalService: MultiLanguageGlobalService) {
+              private multiLanguageGlobalService: MultiLanguageGlobalService,
+              private dialog: MatDialog) {
     this.data$ = combineLatest([
       this.pageStore.partnerReports$,
       this.pageStore.partnerSummary$,
@@ -81,7 +89,7 @@ export class PartnerReportComponent implements AfterViewInit {
             canUserEditControlReports
           };
         }
-      )
+      ),
     );
   }
 
@@ -161,13 +169,20 @@ export class PartnerReportComponent implements AfterViewInit {
   }
 
   createControlReportForPartnerReport(partnerReport: ProjectPartnerReportSummaryDTO): void {
-    // TODO: functionality added in MP2-2732
-    return ;
-  }
-
-  openControlReportForPartnerReport(partnerReport: ProjectPartnerReportSummaryDTO): void {
-    // TODO: functionality added in MP2-2732
-    return ;
+    this.controlActionPending = true;
+    Forms.confirm(
+      this.dialog,
+      {
+        title: 'project.application.partner.report.confirm.control.start.header',
+        message: {
+          i18nKey: 'project.application.partner.report.confirm.control.start.message'
+        },
+      }).pipe(
+      take(1),
+      filter(answer => !!answer),
+      tap(() => this.changeStatusOfReport(partnerReport)))
+    .subscribe();
+    this.controlActionPending = false;
   }
 
   private initializeTableConfiguration(partnerId: number): void {
@@ -180,6 +195,16 @@ export class PartnerReportComponent implements AfterViewInit {
       this.error$.next(null);
     },         4000);
     return of(null);
+  }
+
+  private changeStatusOfReport(partnerReport: ProjectPartnerReportSummaryDTO): void {
+    this.partnerReportDetail.startControlOnPartnerReport(this.partnerId, partnerReport.id)
+      .pipe(
+        take(1),
+        tap((report) => this.router.navigate([`../${partnerReport.id}/controlReport/identificationTab`], {relativeTo: this.activatedRoute, queryParamsHandling: 'merge'})),
+        catchError((error) => this.showErrorMessage(error.error)),
+        finalize(() => this.controlActionPending = false)
+      ).subscribe();
   }
 
 }
