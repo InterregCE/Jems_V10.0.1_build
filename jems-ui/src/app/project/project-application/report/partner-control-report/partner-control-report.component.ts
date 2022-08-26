@@ -13,6 +13,8 @@ import {
 import {
   PartnerReportDetailPageStore
 } from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
+import {combineLatest} from 'rxjs';
+import {map} from 'rxjs/operators';
 
 @Component({
   selector: 'jems-partner-control-report',
@@ -28,7 +30,6 @@ export class PartnerControlReportComponent {
               public pageStore: PartnerReportDetailPageStore,
               public projectStore: ProjectStore,
               private projectSidenavService: ProjectApplicationFormSidenavService) {
-
   }
 
   activeTab(route: string): boolean {

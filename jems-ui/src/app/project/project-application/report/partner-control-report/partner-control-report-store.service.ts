@@ -30,6 +30,28 @@ export class PartnerControlReportStore {
   private partnerId: number;
   private projectId: number;
 
+  readonly fullControlReportView$ = combineLatest([
+    this.partnerReportDetailPageStore.partnerReportPageStore.userCanViewReports$,
+    this.partnerReportDetailPageStore.partnerReportPageStore.userCanEditReports$,
+    this.partnerReportDetailPageStore.partnerReportPageStore.institutionUserCanViewControlReports$,
+    this.partnerReportDetailPageStore.partnerReportPageStore.institutionUserCanEditControlReports$
+  ]).pipe(
+    map(([viewRightsForReport, editRightsForReport, viewRightsFromInstitution, editRightsFromInstitution]) =>
+      !(editRightsForReport || viewRightsForReport) || viewRightsFromInstitution || editRightsFromInstitution
+    )
+  );
+
+  readonly limitedControlReportView$ = combineLatest([
+    this.partnerReportDetailPageStore.partnerReportPageStore.userCanViewReports$,
+    this.partnerReportDetailPageStore.partnerReportPageStore.userCanEditReports$,
+    this.partnerReportDetailPageStore.partnerReportPageStore.institutionUserCanViewControlReports$,
+    this.partnerReportDetailPageStore.partnerReportPageStore.institutionUserCanEditControlReports$
+  ]).pipe(
+    map(([viewRightsForReport, editRightsForReport, viewRightsFromInstitution, editRightsFromInstitution]) =>
+      (viewRightsForReport || editRightsForReport) && !viewRightsFromInstitution && !editRightsFromInstitution
+    )
+  );
+
   constructor(private routingService: RoutingService,
               private partnerReportDetailPageStore: PartnerReportDetailPageStore,
               private reportPageStore: PartnerReportPageStore,
@@ -56,9 +78,10 @@ export class PartnerControlReportStore {
       this.partnerReportDetailPageStore.partnerId$,
       this.partnerReportDetailPageStore.partnerReportId$,
       this.projectStore.projectId$,
-      this.partnerReportDetailPageStore.reportStatus$
+      this.partnerReportDetailPageStore.reportStatus$,
+      this.fullControlReportView$
     ]).pipe(
-      switchMap(([partnerId, reportId, projectId, status]) => !!partnerId && !!projectId && !!reportId && status !== 'Draft'
+      switchMap(([partnerId, reportId, projectId, status, isAllowed]) => !!partnerId && !!projectId && !!reportId && status !== 'Draft' && isAllowed
         ? this.reportIdentificationService.getControlIdentification(Number(partnerId), Number(reportId))
           .pipe(
             catchError(() => {

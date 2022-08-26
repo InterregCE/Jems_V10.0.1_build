@@ -56,6 +56,7 @@ export class PartnerReportComponent implements AfterViewInit {
   controlActionPending = false;
   error$ = new BehaviorSubject<APIError | null>(null);
   Alert = Alert;
+  isStartControlButtonDisabled = false;
 
   data$: Observable<{
     totalElements: number;
@@ -64,6 +65,20 @@ export class PartnerReportComponent implements AfterViewInit {
     canUserViewControlReports: boolean;
     canUserEditControlReports: boolean;
   }>;
+
+  readonly isControlButtonVisible$: Observable<boolean> = combineLatest([
+    this.pageStore.institutionUserCanViewControlReports$,
+    this.pageStore.institutionUserCanEditControlReports$,
+    this.pageStore.userCanViewReports$,
+    this.pageStore.userCanEditReports$
+  ]).pipe(
+    map(([
+           canViewFromInstitution,
+           canEditFromInstitution,
+           canViewFromProjectPrivileges,
+           canEditFromProjectPrivileges]) => (canViewFromInstitution || canEditFromInstitution) || canViewFromProjectPrivileges || canEditFromProjectPrivileges
+    )
+  );
 
   constructor(public pageStore: PartnerReportPageStore,
               private activatedRoute: ActivatedRoute,
@@ -91,6 +106,19 @@ export class PartnerReportComponent implements AfterViewInit {
         }
       ),
     );
+
+    combineLatest([
+      this.pageStore.institutionUserCanViewControlReports$,
+      this.pageStore.institutionUserCanEditControlReports$,
+    ]).pipe(
+      map(([canViewFromInstitution, canEditFromInstitution]) => {
+          if (canViewFromInstitution && !canEditFromInstitution) {
+            this.isStartControlButtonDisabled = true;
+          }
+          this.isStartControlButtonDisabled = !canEditFromInstitution;
+        }
+      )
+    ).subscribe();
   }
 
   ngAfterViewInit(): void {
@@ -160,15 +188,11 @@ export class PartnerReportComponent implements AfterViewInit {
       ).subscribe();
   }
 
-  isStartControlReportDisabled(canView: boolean | null, canEdit: boolean | null): boolean {
-    if (canView && !canEdit) {
-      return true;
+  createControlReportForPartnerReport(partnerReport: ProjectPartnerReportSummaryDTO): void {
+    if (this.isStartControlButtonDisabled) {
+      return;
     }
 
-    return !canEdit;
-  }
-
-  createControlReportForPartnerReport(partnerReport: ProjectPartnerReportSummaryDTO): void {
     this.controlActionPending = true;
     Forms.confirm(
       this.dialog,
