@@ -2,7 +2,7 @@
     <h3 class="mb-0">{{'audit.list.title' | translate}}</h3>
     <jems-filter-template [formGroup]="filterForm"
                          [isThereAnyActiveFilter]="isThereAnyActiveFilter()">
-        <div jemsMultiColumnRow>
+        <div jemsMultiColumnRow display="block">
             <jems-filter-date-input
                     formControlName="timeFrom"
                     label="audit.start.date">
@@ -13,7 +13,7 @@
                     label="audit.end.date">
             </jems-filter-date-input>
         </div>
-        <div jemsMultiColumnRow>
+        <div jemsMultiColumnRow display="block">
             <jems-filter-list-input
               #userIdFilter
               formControlName="userIds"
