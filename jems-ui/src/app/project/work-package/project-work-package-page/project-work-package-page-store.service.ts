@@ -35,6 +35,7 @@ export class ProjectWorkPackagePageStore {
   createEmptyWorkPackage(projectId: number): Observable<OutputWorkPackage> {
     return this.workPackageService.createWorkPackage(projectId, {} as InputWorkPackageCreate)
       .pipe(
+        tap(() => this.refreshPackages$.next()),
         tap(created => Log.info('Created workPackage:', this, created)),
       );
   }
