@@ -3,8 +3,9 @@
     <mat-chip-list #filterChip>
         <mat-chip *ngFor="let value of values"
                   [removable]="true"
-                  [selectable]="false">
-            {{value}}
+                  [selectable]="false"
+                  class="chip-option" [matTooltip]="value">
+            <span class="chip-span-option"> {{value}} </span>
             <mat-icon (click)="removeFromFilters(value)" matChipRemove>cancel</mat-icon>
         </mat-chip>
         <input #filterInput
