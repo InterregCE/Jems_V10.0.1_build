@@ -52,7 +52,7 @@ context('Assessments & decision tests', () => {
         cy.contains('Submit funding decision').click();
         cy.contains('Confirm').click();
         cy.contains('Funding decision:').next().should('contain.text', 'Approved with conditions');
-        cy.wait(1000); // TODO remove after MP2-2391 is fixed
+        cy.wait(1000);
 
         cy.contains('Project overview').click();
         cy.contains('Approved with conditions').should('be.visible');
@@ -61,7 +61,7 @@ context('Assessments & decision tests', () => {
         cy.contains('Return to applicant').click();
         cy.contains('Confirm').click();
         cy.contains('Project application has been returned to applicant successfully.').scrollIntoView().should('be.visible');
-        cy.wait(1000); // TODO remove after MP2-2391 is fixed
+        cy.wait(1000);
 
         cy.contains('Project overview').click();
         cy.contains('Returned for conditions').should('be.visible');
@@ -84,11 +84,11 @@ context('Assessments & decision tests', () => {
         cy.contains('Revert decision back to Submitted').click();
         cy.contains('Confirm').click();
         cy.contains('Enter eligibility decision').should('be.visible');
-        cy.wait(1000); // TODO remove after MP2-2391 is fixed
+        cy.wait(1000);
 
         cy.contains('Project overview').click();
         cy.contains('Submitted').should('be.visible');
-        cy.wait(1000); // TODO remove after MP2-2391 is fixed
+        cy.wait(1000);
 
         cy.contains('Assessment & Decision').click();
 
@@ -100,11 +100,11 @@ context('Assessments & decision tests', () => {
         cy.contains('Submit eligibility decision').click();
         cy.contains('Confirm').click();
         cy.contains('Eligibility decision:').next().should('contain.text', 'Ineligible');
-        cy.wait(1000); // TODO remove after MP2-2391 is fixed
+        cy.wait(1000);
 
         cy.contains('Project overview').click();
         cy.contains('Ineligible').should('be.visible');
-        cy.wait(1000); // TODO remove after MP2-2391 is fixed
+        cy.wait(1000);
 
         cy.contains('Assessment & Decision').click();
         cy.contains('Revert decision back to Submitted').click();
@@ -112,7 +112,7 @@ context('Assessments & decision tests', () => {
         cy.contains('Enter eligibility decision').should('be.visible');
         cy.contains('Return to applicant').should('be.visible');
         cy.contains('Reverting the decision is not possible').should('be.visible');
-        cy.wait(1000); // TODO remove after MP2-2391 is fixed
+        cy.wait(1000);
 
         cy.contains('Project overview').click();
         cy.contains('Submitted').should('be.visible');

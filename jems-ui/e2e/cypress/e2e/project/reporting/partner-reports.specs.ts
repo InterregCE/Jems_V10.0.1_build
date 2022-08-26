@@ -50,7 +50,7 @@ context('Partner reports tests', () => {
 
         cy.loginByRequest(testData.partnerUser.email);
         cy.visit(`app/project/detail/${applicationId}`, {failOnStatusCode: false});
-        cy.wait(1000); // TODO remove after MP2-2391 is fixed
+        cy.wait(1000);
         cy.contains(testData.updatedPartnerDetails.abbreviation).click();
         cy.contains(testData.secondReportInfo.partnerReportId).should('not.exist');
         cy.contains(testData.firstReportInfo.partnerReportId).click();
