@@ -374,7 +374,7 @@ context('Application form exports', () => {
     });
   });
 
-  it.only('TB-391 Export to pdf shall contain SPF specific data', () => {
+  it('TB-391 Export to pdf shall contain SPF specific data', () => {
     cy.fixture('project/exports/application-form/TB-391.json').then(testData => {
       cy.loginByRequest(user.programmeUser.email);
       testData.spfRequest.name = faker.word.adjective() + " " + faker.word.noun();
