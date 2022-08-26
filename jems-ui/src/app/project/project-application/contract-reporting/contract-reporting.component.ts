@@ -116,20 +116,9 @@ export class ContractReportingComponent implements OnInit {
   }
 
   delete(index: number): void {
-    Forms.confirm(
-      this.dialog,
-      {
-        title: 'project.application.contract.reporting.action.delete.dialog.header',
-        message: 'project.application.contract.reporting.action.delete.dialog.message',
-      }).pipe(
-      take(1),
-      filter(answer => !!answer),
-      tap(() => this.deadlines.removeAt(index)),
-      tap(() => this.tableData = [...this.deadlines.controls]),
-      switchMap(() => this.contractReportingStore.save(this.convertFormToContractingMonitoringDTOs())),
-      tap(() => this.formService.setSuccess('project.application.contract.reporting.form.save.successful')),
-      catchError(err => this.formService.setError(err)),
-    ).subscribe();
+    this.deadlines.removeAt(index);
+    this.tableData = [...this.deadlines.controls];
+    this.formService.setDirty(true);
   }
 
   updateDatePicker(index: number, periods: ProjectPeriodForMonitoringDTO[], periodNum: number): void {

@@ -37,6 +37,14 @@ class UpdateContractingReportingTest : UnitTest() {
             date = date,
             comment = "",
         )
+
+        private fun invalidInput(isPeriodInvalid: Boolean) = ProjectContractingReportingSchedule(
+            id = 10L,
+            type = ContractingDeadlineType.Finance,
+            periodNumber =  if (isPeriodInvalid) null else 1,
+            date = if (isPeriodInvalid) LocalDate.of(2022, 8, 9) else null,
+            comment = "dummy comment",
+        )
     }
 
     @MockK
@@ -55,7 +63,7 @@ class UpdateContractingReportingTest : UnitTest() {
 
     @BeforeEach
     fun setup() {
-        clearMocks(contractingReportingPersistence, contractingMonitoringPersistence, projectPersistence, generalValidator)
+        clearMocks(contractingReportingPersistence, contractingMonitoringPersistence, projectPersistence, generalValidator, versionPersistence)
         every { generalValidator.throwIfAnyIsInvalid(*varargAny { it.isEmpty() }) } returns Unit
         every { generalValidator.throwIfAnyIsInvalid(*varargAny { it.isNotEmpty() }) } throws AppInputValidationException(emptyMap())
         every { generalValidator.maxLength(any<String>(), any(), any()) } returns emptyMap()
@@ -258,6 +266,80 @@ class UpdateContractingReportingTest : UnitTest() {
             "2022-03-31 does not fit into period 2 (2022-02-28 - 2022-03-30), " +
             "2022-03-30 does not fit into period 3 (2022-03-31 - 2022-04-29), " +
             "2022-04-30 does not fit into period 3 (2022-03-31 - 2022-04-29)")
+    }
+
+    @Test
+    fun `updateReportingSchedule - invalid period number`() {
+        val projectId = 305L
+        val version = "V_2"
+        every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns version
+        val project = mockk<ProjectFull>()
+        every { project.projectStatus.status } returns ApplicationStatus.APPROVED
+        every { project.periods } returns listOf(
+            ProjectPeriod(number = 1, start = 1, end = 1),
+            ProjectPeriod(number = 2, start = 2, end = 2),
+            ProjectPeriod(number = 3, start = 3, end = 3),
+        )
+        every { projectPersistence.getProject(projectId, version) } returns project
+
+        val monitoring = mockk<ProjectContractingMonitoring>()
+        every { monitoring.startDate } returns LocalDate.of(2022, 1, 31)
+        every { contractingMonitoringPersistence.getContractingMonitoring(projectId) } returns monitoring
+
+        val inputData = mutableListOf(invalidInput(true))
+        assertThrows<EmptyPeriodNumber> {
+            interactor.updateReportingSchedule(projectId, inputData)
+        }
+    }
+
+    @Test
+    fun `updateReportingSchedule - invalid deadline date`() {
+        val projectId = 306L
+        val version = "V_3"
+        every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns version
+        val project = mockk<ProjectFull>()
+        every { project.projectStatus.status } returns ApplicationStatus.APPROVED
+        every { project.periods } returns listOf(
+            ProjectPeriod(number = 1, start = 1, end = 1),
+            ProjectPeriod(number = 2, start = 2, end = 2),
+            ProjectPeriod(number = 3, start = 3, end = 3),
+        )
+        every { projectPersistence.getProject(projectId, version) } returns project
+
+        val monitoring = mockk<ProjectContractingMonitoring>()
+        every { monitoring.startDate } returns LocalDate.of(2022, 1, 31)
+        every { contractingMonitoringPersistence.getContractingMonitoring(projectId) } returns monitoring
+
+        val inputData = mutableListOf(invalidInput(false))
+        assertThrows<EmptyDeadlineDate> {
+            interactor.updateReportingSchedule(projectId, inputData)
+        }
+    }
+
+    @Test
+    fun `clearNoLongerAvailablePeriodsAndDates`() {
+        val projectId = 307L
+        val version = "V_4"
+        val maxNewDuration = 3;
+        val invalidPeriodNumberList = listOf(4L);
+        every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns version
+        val project = mockk<ProjectFull>()
+        every { project.projectStatus.status } returns ApplicationStatus.APPROVED
+        every { project.periods } returns listOf(
+            ProjectPeriod(number = 1, start = 1, end = 1),
+            ProjectPeriod(number = 2, start = 2, end = 2),
+            ProjectPeriod(number = 3, start = 3, end = 3),
+        )
+        every { projectPersistence.getProject(projectId, version) } returns project
+
+        val monitoring = mockk<ProjectContractingMonitoring>()
+        every { monitoring.startDate } returns LocalDate.of(2022, 1, 31)
+        every { contractingMonitoringPersistence.getContractingMonitoring(projectId) } returns monitoring
+        every { contractingReportingPersistence.getScheduleIdsWhosePeriodsAndDatesNotProper(projectId, maxNewDuration) } returns invalidPeriodNumberList
+        every { contractingReportingPersistence.clearPeriodAndDatesFor(any()) } returns Unit
+
+        interactor.clearNoLongerAvailablePeriodsAndDates(projectId, maxNewDuration)
+        verify(exactly = 1) { contractingReportingPersistence.clearPeriodAndDatesFor(invalidPeriodNumberList) }
     }
 
 }

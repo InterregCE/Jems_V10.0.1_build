@@ -30,11 +30,9 @@ class ProjectContractingReportingEntity(
     @Enumerated(EnumType.STRING)
     var type: ContractingDeadlineType,
 
-    @field:NotNull
-    var periodNumber: Int,
+    var periodNumber: Int?,
 
-    @field:NotNull
-    var deadline: LocalDate,
+    var deadline: LocalDate?,
 
     @field:NotNull
     var comment: String,

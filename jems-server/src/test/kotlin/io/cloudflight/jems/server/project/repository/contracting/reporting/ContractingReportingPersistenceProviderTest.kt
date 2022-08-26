@@ -136,4 +136,14 @@ internal class ContractingReportingPersistenceProviderTest: UnitTest() {
         assertThat(created).hasSize(1)
     }
 
+    @Test
+    fun `getScheduleIdsWhosePeriodsAndDatesNotProper`() {
+        val maxDuration = 2;
+        val deadlines = mutableListOf(entity(1L), entity(5L))
+        every { projectContractingReportingRepository.findAllByProjectIdAndPeriodNumberGreaterThan(PROJECT_ID, maxDuration) } returns
+            deadlines.filter { s -> s.periodNumber!! > maxDuration } as MutableList<ProjectContractingReportingEntity>
+
+        assertThat(persistence.getScheduleIdsWhosePeriodsAndDatesNotProper(PROJECT_ID, maxDuration)).hasSize(1)
+    }
+
 }

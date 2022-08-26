@@ -4,4 +4,6 @@ import io.cloudflight.jems.server.project.service.contracting.model.reporting.Pr
 
 interface UpdateContractingReportingInteractor {
     fun updateReportingSchedule(projectId: Long, deadlines: Collection<ProjectContractingReportingSchedule>): List<ProjectContractingReportingSchedule>
+
+    fun clearNoLongerAvailablePeriodsAndDates(projectId: Long, newMaxDuration: Int)
 }
