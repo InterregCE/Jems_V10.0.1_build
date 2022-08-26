@@ -1,0 +1,48 @@
+{
+  "spfRequest": {
+    "name": "randomize",
+    "is2Step": null,
+    "startDateTime": "randomize",
+    "endDateTimeStep1": null,
+    "endDateTime": "randomize",
+    "description": [],
+    "lengthOfPeriod": 12,
+    "funds": [
+      {
+        "programmeFund": {
+          "abbreviation": [
+            {
+              "language": "EN",
+              "translation": "ERDF"
+            }
+          ],
+          "description": [
+            {
+              "language": "EN",
+              "translation": "Territorial cooperation Goal (Interreg)"
+            }
+          ],
+          "id": 1,
+          "selected": true,
+          "type": "ERDF"
+        },
+        "rate": 60,
+        "adjustable": false
+      }
+    ],
+    "additionalFundAllowed": false,
+    "priorityPolicies": [
+      "ISO12MutualTrust",
+      "ISO12OtherActionsCooperation",
+      "ISO12BorderCrossing"
+    ],
+    "strategies": [],
+    "stateAidIds": [],
+    "preSubmissionCheckSettings": {
+      "pluginKey": "standard-pre-condition-check-plugin",
+      "callHasTwoSteps": false
+    },
+    "type": "SPF"
+  },
+  "organisationAbbreviation": "organisation AG"
+}

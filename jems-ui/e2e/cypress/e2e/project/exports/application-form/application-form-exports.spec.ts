@@ -4,6 +4,7 @@ import call2step from '../../../../fixtures/api/call/2.step.call.json';
 import application from '../../../../fixtures/api/application/application.json';
 import application2step from '../../../../fixtures/api/application/2.step.application.json';
 import partner from '../../../../fixtures/api/application/partner/partner.json';
+import { faker } from '@faker-js/faker';
 
 const baselinePath = "/project/exports/application-form/";
 
@@ -332,4 +333,55 @@ context('Application form exports', () => {
       });
     });
   });
+
+  it.only('TB-391 Export to pdf shall contain SPF specific data', () => {
+    cy.fixture('project/exports/application-form/TB-391.json').then(testData => {
+      cy.loginByRequest(user.programmeUser.email);
+      testData.spfRequest.name = faker.word.adjective() + " " + faker.word.noun();
+      testData.spfRequest.startDateTime = faker.date.recent();
+      testData.spfRequest.endDateTime = faker.date.soon(2);
+      cy.request({
+        method: 'POST',
+        url: '/api/call',
+        body: testData.spfRequest
+      }).then(response => {
+        const callId = response.body.id;
+        cy.visit('/app/call/detail/'+callId, {failOnStatusCode: false});
+        cy.contains('Pre-submission check settings').click();
+        cy.contains('div.mat-form-field-flex', 'Select a pre-submission check plugin').click();
+        cy.contains('No-Check').click();
+        cy.contains('button', 'Save changes').click();
+        cy.contains('General call settings').click();
+        cy.contains('button', 'Publish call').click();
+        cy.contains('Confirm').click();
+        application.details.projectCallId = callId;
+        cy.loginByRequest(user.applicantUser.email);
+        cy.createApplication(application).then(applicationId => {
+          cy.visit('/app/project/detail/'+applicationId, {failOnStatusCode: false});
+
+          cy.contains('Partners overview').click();
+          cy.contains('Add new partner').click();
+          cy.contains('div.mat-form-field-flex', 'Abbreviated name of the organisation').find('input').type(testData.organisationAbbreviation);
+          cy.contains('div.mat-form-field-flex', 'Legal status').click();
+          cy.contains('Public').click();
+          cy.contains('button', 'Create').click();
+          cy.contains('a.mat-tab-link', 'Budget').click();
+          cy.contains('mat-card-content', 'Partner budget - Small project funds').within(() => {
+            cy.contains('button', 'Add').click();
+            cy.get('div.mat-form-field-flex').first().type(faker.word.adjective() + " " + faker.word.noun());
+            cy.get('div.mat-form-field-flex').last().clear().type("100");
+          })
+          cy.contains('button', 'Save changes').click();
+
+          cy.contains('Export').scrollIntoView().click();
+          cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/application?exportLanguage=EN&inputLanguage=EN*`, 'pdf').then(actualFile => {
+            const templateFile = 'TB-391-export-template.pdf';
+            cy.comparePdf(templateFile, actualFile, comparePdfMask, baselinePath).then(x => {
+              expect(x.status==="passed").to.be.true;
+            });
+          });
+        });
+      })
+    });
+  })
 });
