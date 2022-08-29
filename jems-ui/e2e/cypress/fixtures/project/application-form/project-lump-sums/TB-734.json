@@ -1,0 +1,14 @@
+{
+  "firstLumpSum": {
+    "name": "Closure Lump sum DE",
+    "firstPartnerSplitAmount": "2000",
+    "secondPartnerAmount": "3555,56",
+    "firstPartnerTooFewAmount": "5550",
+    "firstPartnerCorrectAmount": "5555,56"
+  },
+  "secondLumpSum": {
+    "name": "Preparation Lump sum DE",
+    "firstPartnerAmount": "20000",
+    "secondPartnerAmount": "35555,56"
+  }
+}
