@@ -193,6 +193,7 @@ import { ProjectProposedUnitCostDetailComponent } from './unit-costs/project-uni
 import {
   ProjectProposedUnitCostBreadcrumbResolver
 } from '@project/project-application/containers/project-application-detail/services/project-proposed-unit-cost.resolver';
+import { ControlChecklistInstanceListComponent } from '@project/project-application/report/partner-control-report/partner-control-report-control-checklists-tab/partner-control-report-control-checklists-tab.component';
 
 @NgModule({
   declarations: [
@@ -331,6 +332,8 @@ import {
     PartnerControlReportInformationTabComponent,
     ProjectProposedUnitCostsComponent,
     ProjectProposedUnitCostDetailComponent
+    PartnerControlReportInformationTabComponent,
+    ControlChecklistInstanceListComponent
   ],
   imports: [
     SharedModule,

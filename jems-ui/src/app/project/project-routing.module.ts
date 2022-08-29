@@ -111,6 +111,7 @@ import {
 import {
   ProjectProposedUnitCostBreadcrumbResolver
 } from '@project/project-application/containers/project-application-detail/services/project-proposed-unit-cost.resolver';
+import { ControlChecklistInstanceListComponent } from '@project/project-application/report/partner-control-report/partner-control-report-control-checklists-tab/partner-control-report-control-checklists-tab.component';
 
 export const routes: Routes = [
   {
@@ -212,7 +213,12 @@ export const routes: Routes = [
                           },
                           {
                             path: 'informationTab',
-                            component: PartnerControlReportInformationTabComponent,               },
+                            component: PartnerControlReportInformationTabComponent,
+                          },
+                          {
+                            path: 'controlChecklistsTab',
+                            component: ControlChecklistInstanceListComponent
+                          }
                         ],
                       }
                     ]
