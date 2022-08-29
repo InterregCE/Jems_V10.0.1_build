@@ -34,10 +34,10 @@ context('Partner reports tests', () => {
           cy.contains(firstPartner).should('not.exist');
           cy.contains(secondPartner).click();
         });
-        
+
         cy.contains('Add Partner Report').click();
         verifyReport(testData.firstReportInfo);
-        
+
         cy.get(`@${partner.details.abbreviation}`).then((partnerId: any) => {
           cy.startModification(applicationId, user.programmeUser.email);
           cy.loginByRequest(user.applicantUser.email);
@@ -55,14 +55,14 @@ context('Partner reports tests', () => {
         cy.contains(testData.secondReportInfo.partnerReportId).should('not.exist');
         cy.contains(testData.firstReportInfo.partnerReportId).click();
         verifyReport(testData.firstReportInfo);
-
+        cy.wait(500);
         cy.contains(testData.updatedPartnerDetails.abbreviation).click();
         cy.contains('Add Partner Report').click();
         verifyReport(testData.secondReportInfo);
       });
     });
   });
-  
+
   function verifyReport(reportInfo) {
     cy.contains('Partner report ID').next().should('contain.text', reportInfo.partnerReportId);
     cy.contains('Partner report status').next().should('contain.text', reportInfo.partnerReportStatus);
