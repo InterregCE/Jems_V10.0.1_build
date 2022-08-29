@@ -19,7 +19,7 @@ context('Application contracting tests', () => {
     cy.createApprovedApplication(application, user.programmeUser.email).then(applicationId => {
       cy.visit(`app/project/detail/${applicationId}`, {failOnStatusCode: false});
 
-      cy.wait(1000); // TODO remove after MP2-2391 is fixed
+      cy.wait(1000);
 
       cy.contains('Modification ').click();
       cy.contains('button', 'Open new modification').click();

@@ -44,7 +44,7 @@ context('Application modification tests', () => {
         cy.get('jems-modification-confirmation').contains('div', 'Explanatory notes').find('textarea').type(testData.approved.note);
         cy.get('jems-modification-confirmation').contains('Save changes').click();
 
-        cy.wait(1000); // TODO remove after MP2-2391 is fixed
+        cy.wait(1000);
 
         cy.contains('Past modifications').next().should(pastModificationsSection => {
           expect(pastModificationsSection).to.contain('Approved');
@@ -77,8 +77,6 @@ context('Application modification tests', () => {
 
       cy.contains('Save changes').click();
 
-      cy.wait(1000); // TODO remove after MP2-2391 is fixed
-
       cy.contains('Past modifications').next().should(pastModificationsSection => {
         expect(pastModificationsSection).to.contain('Rejected');
         expect(pastModificationsSection).to.contain('Modification 1');
@@ -108,11 +106,11 @@ context('Application modification tests', () => {
       cy.get('jems-project-application-information').find('div').should('contain.text', 'Modification precontracted submitted');
 
       cy.contains('.link', 'A - Project identification').click();
-      cy.wait(1000); // TODO remove after MP2-2391 is fixed
+      cy.wait(1000);
       cy.get('textarea').should('have.value', 'New title');
 
       cy.contains('(current) V. 2.0').click();
-      cy.wait(1000); // TODO remove after MP2-2391 is fixed
+      cy.wait(1000);
       cy.contains('V. 1.0').should('be.visible').click();
       cy.contains('You are currently viewing an old version of this application').should('be.visible');
       cy.get('textarea').should('have.value', 'API generated application title DE');
