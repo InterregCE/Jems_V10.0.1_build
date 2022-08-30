@@ -1,8 +1,12 @@
 {
   "partner1": {
-    "abbreviation": "First partner"
+    "role": "LEAD_PARTNER",
+    "abbreviation": "First partner",
+    "legalStatusId": 1
   },
   "partner2": {
-    "abbreviation": "Second partner"
+    "role": "PARTNER",
+    "abbreviation": "Second partner",
+    "legalStatusId": 2
   }
 }
