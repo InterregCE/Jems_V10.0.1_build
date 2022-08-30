@@ -89,7 +89,7 @@ declare global {
 
       approveApplication(applicationId: number, assessment, approvingUserEmail?: string);
 
-      startSecondStep(applicationId: number);
+      startSecondStep(applicationId: number, userEmail?: string);
 
       startModification(applicationId: number, userEmail?: string);
 
@@ -196,15 +196,18 @@ Cypress.Commands.add('enterFundingDecision', (applicationId: number, decision: A
   enterFundingDecision(applicationId, decision);
 });
 
-Cypress.Commands.add('startSecondStep', (applicationId: number) => {
-  loginByRequest(user.programmeUser.email);
+Cypress.Commands.add('startSecondStep', (applicationId: number, userEmail?: string) => {
+  if (userEmail)
+    loginByRequest(userEmail);
   cy.request({
     method: 'PUT',
     url: `api/project/${applicationId}/start-second-step`
   });
-  cy.get('@currentUser').then((currentUser: any) => {
-    loginByRequest(currentUser.name);
-  });
+  if (userEmail) {
+    cy.get('@currentUser').then((currentUser: any) => {
+      loginByRequest(currentUser.name);
+    });
+  }
 });
 
 Cypress.Commands.add('startModification', (applicationId: number, userEmail?: string) => {
