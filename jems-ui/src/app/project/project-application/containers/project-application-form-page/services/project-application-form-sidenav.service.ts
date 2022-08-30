@@ -490,10 +490,11 @@ export class ProjectApplicationFormSidenavService {
 
   private getSectionCHeadlines(projectId: number, packages: HeadlineRoute[]): HeadlineRoute[] {
     return [
-      {
+      ...this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_C.PROJECT_OVERALL_OBJECTIVE) ?
+      [{
         headline: {i18nKey: 'project.application.form.section.part.c.subsection.one'},
         route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormOverallObjective`,
-      },
+      }] : [],
       ...this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_C.PROJECT_RELEVANCE_AND_CONTEXT) ?
         [{
           headline: {i18nKey: 'project.application.form.section.part.c.subsection.two'},
