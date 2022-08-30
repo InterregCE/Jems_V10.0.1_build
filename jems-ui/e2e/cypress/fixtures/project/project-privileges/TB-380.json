@@ -33,8 +33,6 @@
       "ProjectModificationFileAssessmentRetrieve",
       "ProjectsWithOwnershipRetrieve",
       "CallPublishedRetrieve",
-      "ProjectRetrieveEditUserAssignments",
-      "ProjectRetrieve",
       "CallUpdate",
       "CallRetrieve",
       "ProgrammeSetupUpdate",
@@ -51,11 +49,6 @@
   "monitorUser2": {
     "name": "monitor",
     "surname": "User2",
-    "userStatus": "ACTIVE"
-  },
-  "monitorUser3": {
-    "name": "monitor",
-    "surname": "User3",
     "userStatus": "ACTIVE"
   }
 }

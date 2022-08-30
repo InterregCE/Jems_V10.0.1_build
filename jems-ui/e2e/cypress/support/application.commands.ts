@@ -17,7 +17,6 @@ import {InputTranslation} from '../../../build/swagger-code-jems-api/model/input
 import {ProjectLumpSumDTO} from '../../../build/swagger-code-jems-api/model/projectLumpSumDTO'
 import {faker} from '@faker-js/faker';
 import {createPartners} from './partner.commands';
-import user from '../fixtures/users.json';
 import {loginByRequest} from './login.commands';
 
 declare global {
