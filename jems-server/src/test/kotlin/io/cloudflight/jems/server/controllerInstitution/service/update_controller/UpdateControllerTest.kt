@@ -9,6 +9,7 @@ import io.cloudflight.jems.server.controllerInstitution.MONITOR_USER_2_EMAIL
 import io.cloudflight.jems.server.controllerInstitution.MONITOR_USER_2_ID
 import io.cloudflight.jems.server.controllerInstitution.institutionUsers
 import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionValidator
+import io.cloudflight.jems.server.controllerInstitution.service.checkInstitutionPartnerAssignment.CheckInstitutionPartnerAssignments
 import io.cloudflight.jems.server.controllerInstitution.service.createControllerInstitution.AssignUsersToInstitutionException
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitution
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionUser
@@ -25,10 +26,13 @@ import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import io.cloudflight.jems.server.user.service.model.UserRoleSummary
 import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.user.service.model.UserSummary
+import io.mockk.Runs
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
+import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.just
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -79,6 +83,9 @@ class UpdateControllerTest : UnitTest() {
 
     @InjectMockKs
     lateinit var controllerInstitutionValidator: ControllerInstitutionValidator
+
+    @MockK
+    lateinit var checkInstitutionPartnerAssignments: CheckInstitutionPartnerAssignments
 
     @InjectMockKs
     lateinit var updateController: UpdateController
@@ -332,6 +339,7 @@ class UpdateControllerTest : UnitTest() {
                 userIdsToRemove = emptySet()
             )
         } returns setOf(institution1User.userId)
+        every { checkInstitutionPartnerAssignments.checkInstitutionAssignmentsToRemoveForUpdatedInstitution(INSTITUTION_ID) } just Runs
 
         assertThat(updateController.updateControllerInstitution(INSTITUTION_ID, updateControllerInstitution).institutionUsers)
             .isEmpty()
@@ -456,6 +464,8 @@ class UpdateControllerTest : UnitTest() {
                 userIdsToRemove = emptySet()
             )
         } returns setOf(institution1User.userId, institution2User.userId)
+
+        every { checkInstitutionPartnerAssignments.checkInstitutionAssignmentsToRemoveForUpdatedInstitution(INSTITUTION_ID) } just Runs
 
         every { controllerInstitutionPersistence.updateControllerInstitution(updateControllerInstitution) } returns
             ControllerInstitution(

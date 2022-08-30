@@ -12,7 +12,6 @@ import io.cloudflight.jems.server.nuts.entity.NutsRegion3
 import io.cloudflight.jems.server.nuts.service.groupNuts
 import io.cloudflight.jems.server.nuts.service.toOutputNuts
 import io.cloudflight.jems.server.project.entity.partner.ControllerInstitutionEntity
-import io.cloudflight.jems.server.project.service.partner.getPartnerAddressOrEmptyString
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.user.entity.UserEntity
 import org.springframework.data.domain.Page
@@ -98,7 +97,11 @@ fun InstitutionPartnerDetailsRow.toModel() = InstitutionPartnerDetails(
     partnerSortNumber = partnerSortNumber,
     partnerRole = ProjectPartnerRole.valueOf(partnerRole),
     partnerNuts3 = partnerNuts3,
-    partnerAddress = getPartnerAddressOrEmptyString(country, city, street, houseNumber),
+    partnerNuts3Code = partnerNuts3Code,
+    country = country,
+    countryCode = countryCode,
+    city = city,
+    postalCode = postalCode,
     callId = callId,
     projectId = projectId,
     projectCustomIdentifier = projectCustomIdentifier,

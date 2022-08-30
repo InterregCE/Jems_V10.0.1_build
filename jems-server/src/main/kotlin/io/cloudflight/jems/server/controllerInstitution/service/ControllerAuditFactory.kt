@@ -34,12 +34,27 @@ fun institutionPartnerAssignmentsChanged(
     val institutionPartnerAssignmentsRemovedAsString = institutionPartnerRemovedAssignments.asSequence()
         .map { "ProjectID: ${it.partnerProjectId}, Partner:ID ${it.partnerId}, InstitutionID: N/A" }
         .joinToString(",\n")
-    val institutionAssignmentsAsString = "$institutionPartnerAssignmentsUpdatedAsString,\n$institutionPartnerAssignmentsRemovedAsString"
+    val institutionAssignmentsAsString =
+        "$institutionPartnerAssignmentsUpdatedAsString,\n$institutionPartnerAssignmentsRemovedAsString"
     return AuditCandidateEvent(
         context = context,
         AuditBuilder(AuditAction.INSTITUTION_PARTNER_ASSIGNMENT_CHANGED).description(
-            "Assignment of institution to partner changed to : \n${institutionAssignmentsAsString}"
+            "Assignment of institution to partner changed to : $institutionAssignmentsAsString"
         ).build()
+    )
+}
+
+fun institutionPartnerAssignmentRemoved(
+    context: Any,
+    deletedAssignments: List<InstitutionPartnerAssignment>
+): AuditCandidateEvent {
+    val deletedAssignmentsString =
+        deletedAssignments.joinToString("\n") { "InstitutionID: ${it.institutionId} - PartnerID: ${it.partnerId}" }
+    return AuditCandidateEvent(
+        context = context,
+        AuditBuilder(
+            AuditAction.INSTITUTION_PARTNER_ASSIGNMENT_DROPPED
+        ).description("User ID: 0 User email: System \n $deletedAssignmentsString").build()
     )
 }
 

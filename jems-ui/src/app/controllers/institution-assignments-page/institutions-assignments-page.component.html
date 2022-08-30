@@ -35,13 +35,17 @@
 
 <ng-template #institutionDropdownCell let-institutionAssignmentEntry>
     <mat-form-field>
-        <mat-select #institutionAssignmentSelect *ngIf="data$ | async as data" [disabled]="!data.editAssignmentPermission"
+        <mat-select #institutionAssignmentSelect *ngIf="data$ | async as data"
+                    [disabled]="!data.editAssignmentPermission"
                     placeholder="{{'controller.institutions.assignment.table.institution.column.dropdown.placeholder' | translate}}"
                     (selectionChange)="onInstitutionChange(institutionAssignmentEntry.index, $event)"
                     [value]="institutionAssignmentEntry.institutionId"
-                    [matTooltip]="institutionAssignmentSelect.triggerValue">
-            <mat-option [value]="null">{{'common.not.applicable.option' | translate}}</mat-option>
-            <mat-option *ngFor="let institution of data.institutions.content" [value]="institution.id">{{institution.name}}</mat-option>
+                    [matTooltip]="institutionAssignmentSelect.triggerValue"
+                    [ngStyle]="institutionAssignmentEntry.partnerNutsCompatibleInstitutions.length === 0 && {'font-style': 'italic'}">
+            <mat-option *ngIf="institutionAssignmentEntry.partnerNutsCompatibleInstitutions.length > 0"
+                        [value]="null">{{'common.not.applicable.option' | translate}}</mat-option>
+            <mat-option *ngFor="let institution of institutionAssignmentEntry.partnerNutsCompatibleInstitutions"
+                        [value]="institution.id">{{institution.name}}</mat-option>
         </mat-select>
     </mat-form-field>
 </ng-template>
