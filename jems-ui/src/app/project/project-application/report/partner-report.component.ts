@@ -7,7 +7,7 @@ import {
 } from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
-import {catchError, distinctUntilChanged, filter, finalize, map, switchMap, take, tap} from 'rxjs/operators';
+import {catchError, distinctUntilChanged, filter, finalize, map, take, tap} from 'rxjs/operators';
 import {ProjectApplicationFormSidenavService} from '../containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {RoutingService} from '@common/services/routing.service';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
@@ -189,7 +189,7 @@ export class PartnerReportComponent implements AfterViewInit {
   }
 
   createControlReportForPartnerReport(partnerReport: ProjectPartnerReportSummaryDTO): void {
-    if (this.isStartControlButtonDisabled) {
+    if (this.isStartControlButtonDisabled || this.controlActionPending) {
       return;
     }
 
@@ -204,9 +204,9 @@ export class PartnerReportComponent implements AfterViewInit {
       }).pipe(
       take(1),
       filter(answer => !!answer),
-      tap(() => this.changeStatusOfReport(partnerReport)))
+      tap(() => this.changeStatusOfReport(partnerReport)),
+      finalize(() => this.controlActionPending = false))
     .subscribe();
-    this.controlActionPending = false;
   }
 
   private initializeTableConfiguration(partnerId: number): void {
