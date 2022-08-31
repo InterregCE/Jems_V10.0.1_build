@@ -166,7 +166,10 @@
                                               *matCellDef="let control;  let i = index" [formGroupName]="i">
                                         <div *ngIf="isLumpSumSelectedForRow(control)">{{control.get(constants.FORM_CONTROL_NAMES.rowSum).value | asMoney}}</div>
                                     </mat-cell>
-                                    <mat-footer-cell *matFooterCellDef></mat-footer-cell>
+                                    <mat-footer-cell class="justify-end"
+                                                     *matFooterCellDef><span
+                                            *ngIf="!data.loading">{{data.sumColumnTotal | asMoney}}</span>
+                                    </mat-footer-cell>
                                 </ng-container>
 
                                 <ng-container matColumnDef="gap">

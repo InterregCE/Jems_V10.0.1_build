@@ -71,6 +71,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
     showPeriodMissingWarning: boolean;
     costIsNotSplittableError: ValidationErrors | null;
     partnerColumnsTotal: number[];
+    sumColumnTotal: number;
     loading: boolean;
   }>;
   tableConfiguration$: Observable<{
@@ -81,6 +82,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
   private showAddButton$: Observable<boolean>;
   private costIsNotSplittableError$: Observable<ValidationErrors | null>;
   private partnerColumnsTotal$: Observable<number[]>;
+  private sumColumnTotal$: Observable<number>;
   private showGapExistsWarning$: Observable<boolean>;
   private showPeriodMissingWarning$: Observable<boolean>;
   private loading = new BehaviorSubject(false);
@@ -148,6 +150,9 @@ export class ProjectLumpSumsPageComponent implements OnInit {
     this.partnerColumnsTotal$ = combineLatest(
       [this.formService.reset$.pipe(startWith(null)), this.items.valueChanges.pipe(startWith(null))]
     ).pipe(map(() => this.calculatePartnerColumnsTotal()));
+    this.sumColumnTotal$ = this.partnerColumnsTotal$.pipe(
+      map(partnerColumnsTotal => partnerColumnsTotal.reduce((acc, curr) => acc + curr, 0))
+    );
 
     this.data$ = combineLatest([
       this.pageStore.projectTitle$,
@@ -159,10 +164,11 @@ export class ProjectLumpSumsPageComponent implements OnInit {
       this.showPeriodMissingWarning$,
       this.costIsNotSplittableError$,
       this.partnerColumnsTotal$,
+      this.sumColumnTotal$,
       this.loading,
       this.tableConfiguration$,
     ]).pipe(
-      map(([projectTitle, partners, lumpSums, periods, showAddButton, showGapExistsWarning, showPeriodMissingWarning, costIsNotSplittableError, partnerColumnsTotal, loading, tableConfiguration]: any) => {
+      map(([projectTitle, partners, lumpSums, periods, showAddButton, showGapExistsWarning, showPeriodMissingWarning, costIsNotSplittableError, partnerColumnsTotal, sumColumnTotal, loading, tableConfiguration]: any) => {
         return {
           projectTitle,
           partners,
@@ -173,6 +179,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
           showPeriodMissingWarning,
           costIsNotSplittableError,
           partnerColumnsTotal,
+          sumColumnTotal,
           loading,
           ...tableConfiguration
         };
