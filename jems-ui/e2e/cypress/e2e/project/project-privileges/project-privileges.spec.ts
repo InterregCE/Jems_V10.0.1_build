@@ -215,129 +215,94 @@ context('Project privileges tests', () => {
       cy.createRole(testData.monitorRole).then(roleId => {
         testData.monitorUser1.userRoleId = roleId;
         testData.monitorUser2.userRoleId = roleId;
-        testData.monitorUser3.userRoleId = roleId;
         testData.monitorUser1.email = faker.internet.email();
         testData.monitorUser2.email = faker.internet.email();
-        testData.monitorUser3.email = faker.internet.email();
         cy.createUser(testData.monitorUser1);
         cy.createUser(testData.monitorUser2);
-        cy.createUser(testData.monitorUser3);
       });
-
-      cy.visit('/app/system/role', {failOnStatusCode: false});
-      cy.contains('div', testData.monitorRole.name).click();
-      cy.contains('div.permission-row-wrapper', 'Applications').within(() => {
-          cy.contains('span.mat-button-toggle-label-content', 'hide').click();
-      });
-      cy.contains('button', 'Save changes').click();
 
       // Create and submit project
+      cy.loginByRequest(user.programmeUser.email);
+      call.preSubmissionCheckSettings.pluginKey = "jems-pre-condition-check-off";
       cy.createCall(call).then(callId => {
         application.details.projectCallId = callId;
-        cy.visit(`/app/call/detail/${callId}/preSubmissionCheckSettings`, {failOnStatusCode: false});
-        cy.contains('div', 'pre-submission check plugin').click();
-        cy.contains('div', 'No-Check').click();
-        cy.contains('button', 'Save changes').click();
         cy.publishCall(callId);
       });
+      cy.loginByRequest(user.applicantUser.email);
       cy.createApplication(application).then(applicationId1 => {
-        cy.visit(`/app/project/detail/${applicationId1}/checkAndSubmit`, {failOnStatusCode: false});
+        const firstApplicationAcronym = application.details.acronym;
         cy.submitProjectApplication(applicationId1);
 
         cy.createApplication(application).then(applicationId2 => {
-          cy.visit(`/app/project/detail/${applicationId2}/checkAndSubmit`, {failOnStatusCode: false});
+          const secondApplicationAcronym = application.details.acronym;
           cy.submitProjectApplication(applicationId2);
 
           // Adding users to the projects
+          cy.loginByRequest(user.admin.email);
           cy.visit('/');
           cy.contains('span.nav-text', 'Applications').click();
           cy.contains('div.mat-tab-label-content', 'Assignment').click();
 
-          cy.wait(1000);
-          cy.contains('mat-row', applicationId1).find('input').scrollIntoView().click();
+          cy.contains('jems-project-application-list-user-assignments mat-row', applicationId1).find('input').click();
           cy.get('div[role="listbox"]:first').children().within(()=>{
-            cy.contains('mat-option', testData.monitorUser1.email).scrollIntoView().click();
+            cy.contains('mat-option', testData.monitorUser1.email).click();
           })
-          cy.contains('mat-row', applicationId1).find('input').scrollIntoView().click();
+          cy.contains('mat-row', applicationId1).find('input').click();
           cy.get('div[role="listbox"]:first').children().within(()=>{
-            cy.contains('mat-option', testData.monitorUser2.email).scrollIntoView().click();
+            cy.contains('mat-option', testData.monitorUser2.email).click();
           })
-          cy.contains('mat-row', applicationId2).find('input').scrollIntoView().click();
+          cy.contains('mat-row', applicationId2).find('input').click();
           cy.get('div[role="listbox"]:first').children().within(()=>{
-            cy.contains('mat-option', testData.monitorUser3.email).scrollIntoView().click();
+            cy.contains('mat-option', testData.monitorUser1.email).click();
           });
 
-          cy.contains('button', 'Save changes').scrollIntoView().click();
-          cy.wait(3000);
-
+          cy.contains('button', 'Save changes').click();
+          cy.contains('Users has been successfully assigned to project(s).').should('be.visible');
+          cy.contains('Users has been successfully assigned to project(s).').should('not.exist');
+          
           // checking for the added users
           cy.contains('mat-row', applicationId1).within(() => {
             cy.contains('mat-chip.mat-chip-selected-user', testData.monitorUser1.email).should('exist');
             cy.contains('mat-chip.mat-chip-selected-user', testData.monitorUser2.email).should('exist');
           })
           cy.contains('mat-row', applicationId2).within(() => {
-            cy.contains('mat-chip.mat-chip-selected-user', testData.monitorUser3.email).should('exist');
+            cy.contains('mat-chip.mat-chip-selected-user', testData.monitorUser1.email).should('exist');
           })
 
           // removing users from one of the projects
           cy.contains('mat-row', applicationId1).within(() => {
-            cy.contains('mat-icon', 'highlight_off').scrollIntoView().click({force: true});
+            cy.contains('mat-icon', 'highlight_off').click();
           })
-          cy.contains('button', 'Save changes').scrollIntoView().click();
+          cy.contains('button', 'Save changes').click();
+          cy.contains('Users has been successfully assigned to project(s).').should('be.visible');
+          cy.contains('Users has been successfully assigned to project(s).').should('not.exist');
 
           // checking for the removed users
           cy.contains('mat-row', applicationId1).within(() => {
             cy.get('mat-chip.mat-chip-selected-user').should('not.exist');
           })
           cy.contains('mat-row', applicationId2).within(() => {
-            cy.contains('mat-chip.mat-chip-selected-user', testData.monitorUser3.email).should('exist');
+            cy.contains('mat-chip.mat-chip-selected-user', testData.monitorUser1.email).should('exist');
           })
 
           // testing by logging into the users accounts
-          cy.loginByRequest(testData.monitorUser3.email);
+          cy.loginByRequest(testData.monitorUser1.email);
           cy.visit('/', {failOnStatusCode: false});
-          cy.get('table.mat-table:first').contains('div', applicationId2).should('be.visible');
-          cy.get('table.mat-table:first').contains('div', applicationId2).click();
+          cy.contains(firstApplicationAcronym).should('not.exist');
+          cy.contains(secondApplicationAcronym).should('be.visible');
+          cy.contains(secondApplicationAcronym).click();
           cy.contains('div', 'Project identification').click();
           cy.get('textarea.mat-input-element:first').should('have.attr', 'readonly');
 
-          cy.loginByRequest(testData.monitorUser1.email);
+          cy.loginByRequest(testData.monitorUser2.email);
           cy.visit('/', {failOnStatusCode: false});
-          cy.get('table.mat-table:first').contains('div', ` ${applicationId2.toString().padStart(5, '0')} `).should('not.exist');
+          cy.contains(firstApplicationAcronym).should('not.exist');
+          cy.contains(secondApplicationAcronym).should('not.exist');
+          cy.contains('No projects submitted').should('be.visible');
         });
       });
     });
   });
-
-  function testEditPrivileges(applicationId) {
-    cy.visit('/');
-    cy.get('#table:first').contains('div', applicationId).should('be.visible');
-    cy.visit(`/app/project/detail/${applicationId}/applicationFormIdentification`, {failOnStatusCode: false});
-    cy.get("textarea:first").should('not.have.attr', 'readonly');
-    cy.visit(`/app/project/detail/${applicationId}/export`, {failOnStatusCode: false});
-    cy.contains('button', 'Export').should('be.visible');
-    cy.wait(100);
-    cy.contains('Application annexes').click();
-    cy.contains('button', 'Upload file').should('be.visible');
-    cy.contains('mat-icon', 'download').should('be.visible');
-    cy.contains('mat-icon', 'edit').should('be.visible');
-    cy.contains('Check & Submit').click();
-    cy.contains('button', 'Run pre-submission check').should('be.visible');
-    cy.contains('button', 'Run pre-submission check').click();
-    cy.get('jems-project-application-pre-condition-check-result').should('be.visible');
-    cy.contains('button', 'Submit project application').should('be.visible');
-  }
-
-  function addNewApplicationPrivilegeUser(applicationId, applicationOwner, newUser, privilegeLevel) {
-    cy.loginByRequest(applicationOwner.email);
-    cy.visit(`/app/project/detail/${applicationId}`, {failOnStatusCode: false});
-    cy.wait(100);
-    cy.contains('div', 'Project privileges').click();
-    cy.contains('button', '+').click();
-    cy.get('input:last').type(newUser.email);
-    cy.get('mat-button-toggle-group:last').contains('span', privilegeLevel).click();
-    cy.contains('button', 'Save changes').click();
-  }
 
   it('TB-376 Restricting management of project specific privileges in system roles has priority over project specific privileges in the application', () => {
     cy.loginByRequest(user.programmeUser.email);
@@ -370,4 +335,34 @@ context('Project privileges tests', () => {
       cy.contains('Save changes').click();
     });
   });
+
+  function testEditPrivileges(applicationId) {
+    cy.visit('/');
+    cy.get('#table:first').contains('div', applicationId).should('be.visible');
+    cy.visit(`/app/project/detail/${applicationId}/applicationFormIdentification`, {failOnStatusCode: false});
+    cy.get("textarea:first").should('not.have.attr', 'readonly');
+    cy.visit(`/app/project/detail/${applicationId}/export`, {failOnStatusCode: false});
+    cy.contains('button', 'Export').should('be.visible');
+    cy.wait(100);
+    cy.contains('Application annexes').click();
+    cy.contains('button', 'Upload file').should('be.visible');
+    cy.contains('mat-icon', 'download').should('be.visible');
+    cy.contains('mat-icon', 'edit').should('be.visible');
+    cy.contains('Check & Submit').click();
+    cy.contains('button', 'Run pre-submission check').should('be.visible');
+    cy.contains('button', 'Run pre-submission check').click();
+    cy.get('jems-project-application-pre-condition-check-result').should('be.visible');
+    cy.contains('button', 'Submit project application').should('be.visible');
+  }
+
+  function addNewApplicationPrivilegeUser(applicationId, applicationOwner, newUser, privilegeLevel) {
+    cy.loginByRequest(applicationOwner.email);
+    cy.visit(`/app/project/detail/${applicationId}`, {failOnStatusCode: false});
+    cy.wait(100);
+    cy.contains('div', 'Project privileges').click();
+    cy.contains('button', '+').click();
+    cy.get('input:last').type(newUser.email);
+    cy.get('mat-button-toggle-group:last').contains('span', privilegeLevel).click();
+    cy.contains('button', 'Save changes').click();
+  }
 });
