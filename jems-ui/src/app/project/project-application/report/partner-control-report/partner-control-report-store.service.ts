@@ -81,7 +81,7 @@ export class PartnerControlReportStore {
       this.partnerReportDetailPageStore.reportStatus$,
       this.fullControlReportView$
     ]).pipe(
-      switchMap(([partnerId, reportId, projectId, status, isAllowed]) => !!partnerId && !!projectId && !!reportId && status !== 'Draft' && isAllowed
+      switchMap(([partnerId, reportId, projectId, status, isAllowed]) => !!partnerId && !!projectId && !!reportId && status !== 'Draft' && status !== 'Submitted' && isAllowed
         ? this.reportIdentificationService.getControlIdentification(Number(partnerId), Number(reportId))
           .pipe(
             catchError(() => {
