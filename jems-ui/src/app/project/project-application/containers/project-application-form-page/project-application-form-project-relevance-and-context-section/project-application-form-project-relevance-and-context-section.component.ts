@@ -15,10 +15,7 @@ import {ActivatedRoute} from '@angular/router';
 })
 export class ProjectApplicationFormProjectRelevanceAndContextSectionComponent {
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
-  projectRelevance$ = this.projectApplicationFormStore.projectDescription$
-    .pipe(
-      map(project => project.projectRelevance)
-    );
+  projectRelevance$ = this.projectApplicationFormStore.projectRelevance$;
 
   private callStrategies$ = this.projectStore.project$
     .pipe(

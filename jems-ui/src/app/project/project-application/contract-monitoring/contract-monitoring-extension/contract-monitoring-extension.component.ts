@@ -169,6 +169,7 @@ export class ContractMonitoringExtensionComponent {
     this.contractMonitoringExtensionStore.save(this.getUpdatedProjectContractingMonitoring())
       .pipe(
         tap(data => this.decisionForm.controls.endDate.setValue(data.endDate)),
+        tap(data => this.contractMonitoringExtensionStore.savedProjectContractingMonitoring$.next(data)),
         tap(() => this.formService.setSuccess('project.application.contract.monitoring.project.form')),
         catchError(err => this.formService.setError(err)),
       ).subscribe();

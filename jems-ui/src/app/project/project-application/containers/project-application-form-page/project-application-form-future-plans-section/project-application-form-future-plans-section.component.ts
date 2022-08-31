@@ -15,10 +15,7 @@ import {ProjectStore} from '../../project-application-detail/services/project-st
 export class ProjectApplicationFormFuturePlansSectionComponent {
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
 
-  projectLongTermPlans$: Observable<OutputProjectLongTermPlans> = this.projectApplicationFormStore.projectDescription$
-    .pipe(
-      map(project => project.projectLongTermPlans || {})
-    );
+  projectLongTermPlans$ = this.projectApplicationFormStore.projectLongTermPlans$;
 
   constructor(public projectStore: ProjectStore,
               private activatedRoute: ActivatedRoute,

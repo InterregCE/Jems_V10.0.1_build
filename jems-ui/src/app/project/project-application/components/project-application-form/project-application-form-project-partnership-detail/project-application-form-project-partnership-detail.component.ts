@@ -5,6 +5,7 @@ import {BaseComponent} from '@common/components/base-component';
 import {FormService} from '@common/components/section/form/form.service';
 import {catchError, tap} from 'rxjs/operators';
 import {ProjectStore} from '../../../containers/project-application-detail/services/project-store.service';
+import {ProjectApplicationFormStore} from '@project/project-application/containers/project-application-form-page/services/project-application-form-store.service';
 import {Log} from '@common/utils/log';
 
 @Component({
@@ -28,6 +29,7 @@ export class ProjectApplicationFormProjectPartnershipDetailComponent extends Bas
   constructor(private formBuilder: FormBuilder,
               private formService: FormService,
               private projectStore: ProjectStore,
+              private projectApplicationFormStore: ProjectApplicationFormStore,
               private projectDescriptionService: ProjectDescriptionService) {
     super();
   }
@@ -50,6 +52,7 @@ export class ProjectApplicationFormProjectPartnershipDetailComponent extends Bas
       } as InputProjectPartnership
     ).pipe(
         tap(saved => Log.info('Updated project partnership:', this, saved)),
+        tap(saved => this.projectApplicationFormStore.savedProjectPartnership$.next(saved)),
         tap(() => this.formService.setSuccess('project.application.form.save.success')),
         catchError(error => this.formService.setError(error))
       ).subscribe();

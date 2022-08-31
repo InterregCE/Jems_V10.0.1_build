@@ -15,10 +15,7 @@ import {ProjectStore} from '../../project-application-detail/services/project-st
 export class ProjectApplicationFormManagementSectionComponent {
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
 
-  projectManagement$: Observable<OutputProjectManagement> = this.projectApplicationFormStore.getProjectDescription()
-    .pipe(
-      map(project => project.projectManagement || {})
-    );
+  projectManagement$ = this.projectApplicationFormStore.projectManagement$;
 
   constructor(public projectStore: ProjectStore,
               private activatedRoute: ActivatedRoute,

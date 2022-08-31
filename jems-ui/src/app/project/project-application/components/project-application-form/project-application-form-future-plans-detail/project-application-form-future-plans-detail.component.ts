@@ -11,6 +11,7 @@ import {BaseComponent} from '@common/components/base-component';
 import {FormService} from '@common/components/section/form/form.service';
 import {catchError, tap} from 'rxjs/operators';
 import {ProjectStore} from '../../../containers/project-application-detail/services/project-store.service';
+import {ProjectApplicationFormStore} from '@project/project-application/containers/project-application-form-page/services/project-application-form-store.service';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {Log} from '@common/utils/log';
 
@@ -39,6 +40,7 @@ export class ProjectApplicationFormFuturePlansDetailComponent extends BaseCompon
   constructor(private formBuilder: FormBuilder,
               private formService: FormService,
               private projectStore: ProjectStore,
+              private projectApplicationFormStore: ProjectApplicationFormStore,
               private projectDescriptionService: ProjectDescriptionService) {
     super();
   }
@@ -57,6 +59,7 @@ export class ProjectApplicationFormFuturePlansDetailComponent extends BaseCompon
     this.projectDescriptionService.updateProjectLongTermPlans(this.projectId, this.createOutputProjectLongTermPlans())
       .pipe(
         tap(saved => Log.info('Updated project long-term plans:', this, saved)),
+        tap(saved => this.projectApplicationFormStore.savedProjectLongTermPlans$.next(saved)),
         tap(() => this.formService.setSuccess('project.application.form.save.success')),
         catchError(error => this.formService.setError(error))
       ).subscribe();

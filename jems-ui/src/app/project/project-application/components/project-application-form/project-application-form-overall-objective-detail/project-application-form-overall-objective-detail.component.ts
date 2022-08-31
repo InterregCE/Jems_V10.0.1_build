@@ -11,6 +11,7 @@ import {BaseComponent} from '@common/components/base-component';
 import {FormService} from '@common/components/section/form/form.service';
 import {catchError, tap} from 'rxjs/operators';
 import {ProjectStore} from '../../../containers/project-application-detail/services/project-store.service';
+import {ProjectApplicationFormStore} from '@project/project-application/containers/project-application-form-page/services/project-application-form-store.service';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {Alert} from '@common/components/forms/alert';
 import {Log} from '@common/utils/log';
@@ -45,6 +46,7 @@ export class ProjectApplicationFormOverallObjectiveDetailComponent extends BaseC
               private formService: FormService,
               private translate: TranslateService,
               private projectStore: ProjectStore,
+              private projectApplicationFormStore: ProjectApplicationFormStore,
               private activatedRoute: ActivatedRoute,
               private projectDescriptionService: ProjectDescriptionService) {
     super();
@@ -68,6 +70,7 @@ export class ProjectApplicationFormOverallObjectiveDetailComponent extends BaseC
       } as InputProjectOverallObjective
     ).pipe(
         tap(saved => Log.info('Updated project overall objective:', this, saved)),
+        tap(saved => this.projectApplicationFormStore.savedProjectOverallObjective$.next(saved)),
         tap(() => this.formService.setSuccess('project.application.form.save.success')),
         catchError(error => this.formService.setError(error))
       ).subscribe();

@@ -14,10 +14,7 @@ import {ActivatedRoute} from '@angular/router';
 export class ProjectApplicationFormProjectPartnershipSectionComponent {
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
 
-  projectPartnership$ = this.projectApplicationFormStore.projectDescription$
-    .pipe(
-      map(project => project.projectPartnership)
-    );
+  projectPartnership$ = this.projectApplicationFormStore.projectPartnership$;
 
   constructor(public projectStore: ProjectStore,
               private activatedRoute: ActivatedRoute,
