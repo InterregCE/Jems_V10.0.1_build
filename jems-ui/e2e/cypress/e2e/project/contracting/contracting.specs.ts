@@ -1,5 +1,6 @@
 import user from '../../../fixtures/users.json';
 import application from '../../../fixtures/api/application/application.json';
+import approvalInfo from '../../../fixtures/api/application/modification/approval.info.json';
 import call from "../../../fixtures/api/call/1.step.call.json";
 import {faker} from "@faker-js/faker";
 
@@ -15,40 +16,37 @@ context('Application contracting tests', () => {
   });
 
   it('TB-519 A project can be set to contracted and partner report created', () => {
-    cy.loginByRequest(user.admin.email);
+    cy.loginByRequest(user.applicantUser.email);
     cy.createApprovedApplication(application, user.programmeUser.email).then(applicationId => {
-      cy.visit(`app/project/detail/${applicationId}`, {failOnStatusCode: false});
+      cy.loginByRequest(user.programmeUser.email);
+      cy.visit(`app/project/detail/${applicationId}/contractMonitoring`, {failOnStatusCode: false});
+      cy.contains('Add entry into force date').should('be.visible');
 
-      cy.wait(1000);
+      cy.startModification(applicationId);
+      cy.reload();
+      cy.contains('Add entry into force date').should('be.visible');
+      cy.contains('button', 'Set project to contracted').should('be.disabled');
+      cy.loginByRequest(user.applicantUser.email);
+      cy.submitProjectApplication(applicationId);
 
-      cy.contains('Modification ').click();
-      cy.contains('button', 'Open new modification').click();
-      cy.contains('button', 'Confirm').click();
-      cy.contains('Contract monitoring').click();
+      cy.loginByRequest(user.programmeUser.email);
+      cy.visit(`app/project/detail/${applicationId}/contractMonitoring`, {failOnStatusCode: false});
+      cy.contains('Add entry into force date').should('be.visible');
       cy.contains('button', 'Set project to contracted').should('be.disabled');
-      cy.contains('Check & Submit').click();
-      cy.contains('button', 'Run pre-submission check').click();
-      cy.contains('button', 'Re-submit project application').click();
-      cy.contains('button', 'Confirm').click();
-      cy.wait(400);
-      cy.contains('Contract monitoring').click({force: true});
-      cy.contains('button', 'Set project to contracted').should('be.disabled');
-      cy.contains('Modification').click({force: true});
-      cy.get('span.mat-button-toggle-label-content').contains('Approve modification').click();
-      cy.get('svg.mat-datepicker-toggle-default-icon:first').click();
-      cy.contains('td', '1').click({force: true});
-      cy.get('svg.mat-datepicker-toggle-default-icon:last').click();
-      cy.contains('td', '2').click();
-      cy.contains('button', 'Save changes').click();
-      cy.contains('Contract monitoring').click();
+      
+      cy.approveModification(applicationId, approvalInfo);
+      cy.reload();
+      cy.contains('Add entry into force date').should('be.visible');
       cy.contains('button', 'Set project to contracted').should('be.enabled');
       cy.contains('button', 'Set project to contracted').click();
       cy.contains('button', 'Confirm').click();
+      cy.contains('You have successfully contracted project').should('be.visible');
+      
       cy.contains('Project overview').click();
       cy.contains('mat-chip', 'Contracted').should('be.visible');
       cy.contains('mat-panel-title', 'Reporting').should('be.visible');
-      cy.wait(1000);
-      cy.contains('mat-expansion-panel', 'Partner reports').contains('Lead Partner').click();
+      
+      cy.contains('mat-expansion-panel', 'Partner reports').should('contain', 'Lead Partner').contains('Lead Partner').click();
       cy.contains('button', 'Add Partner Report').click();
       cy.contains('Partner progress report identification').should('be.visible');
     });
