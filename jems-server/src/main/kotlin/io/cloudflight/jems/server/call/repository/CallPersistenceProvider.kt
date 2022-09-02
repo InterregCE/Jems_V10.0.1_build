@@ -9,6 +9,7 @@ import io.cloudflight.jems.server.call.service.model.AllowedRealCosts
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.Call
 import io.cloudflight.jems.server.call.service.model.CallApplicationFormFieldsConfiguration
+import io.cloudflight.jems.server.call.service.model.CallCostOption
 import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.call.service.model.CallFundRate
 import io.cloudflight.jems.server.call.service.model.CallSummary
@@ -92,7 +93,7 @@ class CallPersistenceProvider(
 
     @Transactional
     override fun updateCall(call: Call): CallDetail {
-        val existingCall = callRepo.findById(call.id).orElseThrow { CallNotFound() }
+        val existingCall = findOrThrow(call.id)
 
         adjustTimeToLastNanoSec(call)
 
@@ -151,7 +152,7 @@ class CallPersistenceProvider(
 
     @Transactional
     override fun updateProjectCallFlatRate(callId: Long, flatRatesRequest: Set<ProjectCallFlatRate>): CallDetail {
-        val call = callRepo.findById(callId).orElseThrow { CallNotFound() }
+        val call = findOrThrow(callId)
             .apply {
                 val groupedByType = flatRatesRequest.toEntity(this).associateBy { it.setupId.type }.toMutableMap()
                 flatRates.forEach {
@@ -180,7 +181,7 @@ class CallPersistenceProvider(
 
     @Transactional
     override fun updateProjectCallLumpSum(callId: Long, lumpSumIds: Set<Long>): CallDetail {
-        val call = callRepo.findById(callId).orElseThrow { CallNotFound() }
+        val call = findOrThrow(callId)
         call.lumpSums.clear()
         call.lumpSums.addAll(programmeLumpSumRepo.findAllById(lumpSumIds))
         return call.toDetailModel(
@@ -195,7 +196,7 @@ class CallPersistenceProvider(
 
     @Transactional
     override fun updateProjectCallUnitCost(callId: Long, unitCostIds: Set<Long>): CallDetail {
-        val call = callRepo.findById(callId).orElseThrow { CallNotFound() }
+        val call = findOrThrow(callId)
         call.unitCosts.clear()
         call.unitCosts.addAll(programmeUnitCostRepo.findAllByIdInAndProjectIdNull(unitCostIds))
         return call.toDetailModel(
@@ -207,14 +208,14 @@ class CallPersistenceProvider(
 
     @Transactional
     override fun updateAllowedRealCosts(callId: Long, allowedRealCosts: AllowedRealCosts): AllowedRealCosts {
-        val call = callRepo.findById(callId).orElseThrow { CallNotFound() }
+        val call = findOrThrow(callId)
         call.allowedRealCosts = allowedRealCosts.toEntity()
         return allowedRealCosts
     }
 
     @Transactional(readOnly = true)
     override fun getAllowedRealCosts(callId: Long): AllowedRealCosts =
-        callRepo.findById(callId).orElseThrow { CallNotFound() }.allowedRealCosts.toModel()
+        findOrThrow(callId).allowedRealCosts.toModel()
 
     @Transactional
     override fun publishCall(callId: Long) =
@@ -239,7 +240,7 @@ class CallPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getApplicationFormFieldConfigurations(callId: Long): CallApplicationFormFieldsConfiguration {
-        val callType = callRepo.findById(callId).orElseThrow { CallNotFound() }.type
+        val callType = findOrThrow(callId).type
         return CallApplicationFormFieldsConfiguration(
             callType = callType,
             applicationFormFieldConfigurations = applicationFormFieldConfigurationRepository.findAllByCallId(callId).toModel()
@@ -250,7 +251,7 @@ class CallPersistenceProvider(
     override fun saveApplicationFormFieldConfigurations(
         callId: Long, applicationFormFieldConfigurations: MutableSet<ApplicationFormFieldConfiguration>
     ): CallDetail {
-        val callEntity = callRepo.findById(callId).orElseThrow { CallNotFound() }
+        val callEntity = findOrThrow(callId)
 
         val configurations =
             applicationFormFieldConfigurationRepository.saveAll(applicationFormFieldConfigurations.toEntities(callEntity))
@@ -263,7 +264,7 @@ class CallPersistenceProvider(
 
     @Transactional
     override fun updateProjectCallStateAids(callId: Long, stateAids: Set<Long>): CallDetail {
-        val callEntity = callRepo.findById(callId).orElseThrow { CallNotFound() }
+        val callEntity = findOrThrow(callId)
 
         val savedStateAids = projectCallStateAidRepo.saveAll(
             programmeStateAidRepository.findAllById(stateAids).toMutableSet().toEntities(callEntity)
@@ -277,12 +278,43 @@ class CallPersistenceProvider(
 
     @Transactional
     override fun updateProjectCallPreSubmissionCheckPlugin(callId: Long, pluginKeys: PreSubmissionPlugins) =
-        callRepo.findById(callId).orElseThrow { CallNotFound() }
+        findOrThrow(callId)
         .apply { preSubmissionCheckPluginKey = pluginKeys.pluginKey
                   firstStepPreSubmissionCheckPluginKey = pluginKeys.firstStepPluginKey  }.toDetailModel(
                 applicationFormFieldConfigurationRepository.findAllByCallId(callId),
                 projectCallStateAidRepo.findAllByIdCallId(callId)
             )
+
+    @Transactional(readOnly = true)
+    override fun getCallCostOptionForProject(projectId: Long) =
+        findOrThrow(projectPersistence.getCallIdOfProject(projectId)).let {
+            CallCostOption(
+                projectDefinedUnitCostAllowed = it.projectDefinedUnitCostAllowed,
+                projectDefinedLumpSumAllowed = it.projectDefinedLumpSumAllowed,
+            )
+        }
+
+    @Transactional(readOnly = true)
+    override fun getCallCostOption(callId: Long) =
+        findOrThrow(callId).let {
+            CallCostOption(
+                projectDefinedUnitCostAllowed = it.projectDefinedUnitCostAllowed,
+                projectDefinedLumpSumAllowed = it.projectDefinedLumpSumAllowed,
+            )
+        }
+
+    @Transactional
+    override fun updateCallCostOption(callId: Long, costOption: CallCostOption): CallCostOption {
+        val call = findOrThrow(callId)
+        call.projectDefinedUnitCostAllowed = costOption.projectDefinedUnitCostAllowed
+        call.projectDefinedLumpSumAllowed = costOption.projectDefinedLumpSumAllowed
+        return CallCostOption(
+            projectDefinedUnitCostAllowed = call.projectDefinedUnitCostAllowed,
+            projectDefinedLumpSumAllowed = call.projectDefinedLumpSumAllowed,
+        )
+    }
+
+    private fun findOrThrow(callId: Long) = callRepo.findById(callId).orElseThrow { CallNotFound() }
 
     private fun adjustTimeToLastNanoSec(call: Call) {
         call.startDate = call.startDate.withSecond(0).withNano(0)

@@ -109,7 +109,9 @@ fun createTestCallEntity(
         allowedRealCosts = allowedRealCosts,
         preSubmissionCheckPluginKey = null,
         firstStepPreSubmissionCheckPluginKey = null,
-        unitCosts = unitCosts
+        unitCosts = unitCosts,
+        projectDefinedUnitCostAllowed = true,
+        projectDefinedLumpSumAllowed = false,
     ).apply {
         translatedValues.add(CallTranslEntity(TranslationId(this, SystemLanguage.EN), "This is a dummy call"))
         flatRates.add(

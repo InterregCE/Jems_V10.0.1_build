@@ -118,7 +118,9 @@ fun Call.toEntity(
     unitCosts = existingEntity?.unitCosts ?: mutableSetOf(),
     allowedRealCosts = existingEntity?.allowedRealCosts ?: getDefaultAllowedRealCosts(type),
     preSubmissionCheckPluginKey = existingEntity?.preSubmissionCheckPluginKey,
-    firstStepPreSubmissionCheckPluginKey = existingEntity?.firstStepPreSubmissionCheckPluginKey
+    firstStepPreSubmissionCheckPluginKey = existingEntity?.firstStepPreSubmissionCheckPluginKey,
+    projectDefinedUnitCostAllowed = existingEntity?.projectDefinedUnitCostAllowed ?: false,
+    projectDefinedLumpSumAllowed = existingEntity?.projectDefinedLumpSumAllowed ?: false,
 ).apply {
     translatedValues.addAll(description.combineDescriptionsToTranslations(this))
 }

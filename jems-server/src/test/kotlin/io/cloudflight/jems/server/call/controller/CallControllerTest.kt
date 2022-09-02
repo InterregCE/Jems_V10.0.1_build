@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.call.controller
 
+import io.cloudflight.jems.api.call.dto.CallCostOptionDTO
 import io.cloudflight.jems.api.call.dto.CallDTO
 import io.cloudflight.jems.api.call.dto.CallDetailDTO
 import io.cloudflight.jems.api.call.dto.CallFundRateDTO
@@ -27,12 +28,15 @@ import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy.EUStrate
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.callFundRate
+import io.cloudflight.jems.server.call.service.costOption.getCallCostOption.GetCallCostOptionInteractor
+import io.cloudflight.jems.server.call.service.costOption.updateCallCostOption.UpdateCallCostOptionInteractor
 import io.cloudflight.jems.server.call.service.create_call.CreateCallInteractor
 import io.cloudflight.jems.server.call.service.get_allow_real_costs.GetAllowedRealCostsInteractor
 import io.cloudflight.jems.server.call.service.get_call.GetCallInteractor
 import io.cloudflight.jems.server.call.service.list_calls.ListCallsException
 import io.cloudflight.jems.server.call.service.list_calls.ListCallsInteractor
 import io.cloudflight.jems.server.call.service.model.Call
+import io.cloudflight.jems.server.call.service.model.CallCostOption
 import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.call.service.model.CallSummary
 import io.cloudflight.jems.server.call.service.model.IdNamePair
@@ -209,6 +213,15 @@ class CallControllerTest : UnitTest() {
             funds = setOf(callFundRate(10L)),
         )
 
+        val costOption = CallCostOption(
+            projectDefinedUnitCostAllowed = false,
+            projectDefinedLumpSumAllowed = true,
+        )
+
+        val costOptionExpected = CallCostOptionDTO(
+            projectDefinedUnitCostAllowed = false,
+            projectDefinedLumpSumAllowed = true,
+        )
     }
 
     @MockK
@@ -231,6 +244,12 @@ class CallControllerTest : UnitTest() {
 
     @MockK
     lateinit var updateCallUnitCosts: UpdateCallUnitCostsInteractor
+
+    @MockK
+    lateinit var getCallCostOption: GetCallCostOptionInteractor
+
+    @MockK
+    lateinit var updateCallCostOption: UpdateCallCostOptionInteractor
 
     @MockK
     lateinit var publishCall: PublishCallInteractor
@@ -326,6 +345,20 @@ class CallControllerTest : UnitTest() {
         every { updateCallUnitCosts.updateUnitCosts(40L, capture(slotUnitCostIds)) } returns callDetail
         controller.updateCallUnitCosts(40L, setOf(259, 337))
         assertThat(slotUnitCostIds.captured).containsExactlyInAnyOrder(259, 337)
+    }
+
+    @Test
+    fun getAllowedCostOptions() {
+        every { getCallCostOption.getCallCostOption(45L) } returns costOption
+        assertThat(controller.getAllowedCostOptions(45L)).isEqualTo(costOptionExpected)
+    }
+
+    @Test
+    fun updateAllowedCostOptions() {
+        val slotOptions = slot<CallCostOption>()
+        every { updateCallCostOption.updateCallCostOption(48L, capture(slotOptions)) } returns costOption
+        controller.updateAllowedCostOption(48L, costOptionExpected)
+        assertThat(slotOptions.captured).isEqualTo(costOption)
     }
 
     @Test

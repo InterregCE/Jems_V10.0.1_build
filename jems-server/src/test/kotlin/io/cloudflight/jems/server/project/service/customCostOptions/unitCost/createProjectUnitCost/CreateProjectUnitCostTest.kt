@@ -8,6 +8,8 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
+import io.cloudflight.jems.server.call.service.CallPersistence
+import io.cloudflight.jems.server.call.service.model.CallCostOption
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
@@ -59,8 +61,20 @@ internal class CreateProjectUnitCostTest : UnitTest() {
             isOneCostCategory = false,
             categories = setOf(BudgetCategory.StaffCosts, BudgetCategory.OfficeAndAdministrationCosts),
         )
+
+        private val costOptionsAllowed = CallCostOption(
+            projectDefinedUnitCostAllowed = true,
+            projectDefinedLumpSumAllowed = true,
+        )
+
+        private val costOptionsForbidden = CallCostOption(
+            projectDefinedUnitCostAllowed = false,
+            projectDefinedLumpSumAllowed = false,
+        )
     }
 
+    @MockK
+    lateinit var callPersistence: CallPersistence
     @MockK
     lateinit var programmeUnitCostPersistence: ProgrammeUnitCostPersistence
     @MockK
@@ -88,6 +102,7 @@ internal class CreateProjectUnitCostTest : UnitTest() {
     @Test
     fun createProjectUnitCost() {
         val projectId = 75L
+        every { callPersistence.getCallCostOptionForProject(projectId) } returns costOptionsAllowed
         every { projectUnitCostPersistence.getCount(projectId) } returns 4L
         every { programmeUnitCostPersistence.createUnitCost(any()) } returnsArgument 0
         every { projectPersistence.getProjectSummary(projectId) } returns projectSummary(projectId)
@@ -104,8 +119,18 @@ internal class CreateProjectUnitCostTest : UnitTest() {
     }
 
     @Test
+    fun `createProjectUnitCost - project-defined unit cost not allowed`() {
+        val projectId = 76L
+        every { callPersistence.getCallCostOptionForProject(projectId) } returns costOptionsForbidden
+        assertThrows<ProjectDefinedUnitCostAreForbiddenForThisCall> {
+            interactor.createProjectUnitCost(projectId, createUnitCost.copy())
+        }
+    }
+
+    @Test
     fun `createProjectUnitCost - wrong inputs`() {
         val projectId = 77L
+        every { callPersistence.getCallCostOptionForProject(projectId) } returns costOptionsAllowed
         val validationSlot = mutableListOf<Map<String, I18nMessage>?>()
         every { generalValidator.throwIfAnyIsInvalid(*varargAllNullable { validationSlot.add(it) }) } throws
             AppInputValidationException(emptyMap())
@@ -127,6 +152,7 @@ internal class CreateProjectUnitCostTest : UnitTest() {
     @Test
     fun `createProjectUnitCost - wrong id`() {
         val projectId = 80L
+        every { callPersistence.getCallCostOptionForProject(projectId) } returns costOptionsAllowed
         every { projectUnitCostPersistence.getCount(projectId) } returns 0L
 
         assertThrows<I18nValidationException> {
@@ -137,6 +163,7 @@ internal class CreateProjectUnitCostTest : UnitTest() {
     @Test
     fun `createProjectUnitCost - max amount reached`() {
         val projectId = 81L
+        every { callPersistence.getCallCostOptionForProject(projectId) } returns costOptionsAllowed
         every { projectUnitCostPersistence.getCount(projectId) } returns 10L
 
         assertThrows<I18nValidationException> {

@@ -1,6 +1,7 @@
 package io.cloudflight.jems.api.call
 
 import io.cloudflight.jems.api.call.dto.AllowedRealCostsDTO
+import io.cloudflight.jems.api.call.dto.CallCostOptionDTO
 import io.cloudflight.jems.api.call.dto.CallDTO
 import io.cloudflight.jems.api.call.dto.CallDetailDTO
 import io.cloudflight.jems.api.call.dto.CallStatus
@@ -98,6 +99,17 @@ interface CallApi {
         @PathVariable callId: Long,
         @RequestBody unitCostIds: Set<Long>
     ): CallDetailDTO
+
+    @ApiOperation("Returns allowed project-defined cost options")
+    @GetMapping("$ENDPOINT_API_CALL/byId/{callId}/allowedCostOption")
+    fun getAllowedCostOptions(@PathVariable callId: Long): CallCostOptionDTO
+
+    @ApiOperation("Setup project-defined cost options")
+    @PutMapping("$ENDPOINT_API_CALL/byId/{callId}/allowedCostOption", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    fun updateAllowedCostOption(
+        @PathVariable callId: Long,
+        @RequestBody costOption: CallCostOptionDTO,
+    ): CallCostOptionDTO
 
     @ApiOperation("Update pre-submission check settings for Call")
     @PutMapping("$ENDPOINT_API_CALL/byId/{callId}/preSubmissionCheck", consumes = [MediaType.APPLICATION_JSON_VALUE])

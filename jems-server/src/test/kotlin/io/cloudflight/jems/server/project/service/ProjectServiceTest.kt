@@ -102,7 +102,9 @@ class ProjectServiceTest : UnitTest() {
         lengthOfPeriod = 1,
         allowedRealCosts = defaultAllowedRealCostsByCallType(CallType.STANDARD),
         preSubmissionCheckPluginKey = null,
-        firstStepPreSubmissionCheckPluginKey = null
+        firstStepPreSubmissionCheckPluginKey = null,
+        projectDefinedUnitCostAllowed = true,
+        projectDefinedLumpSumAllowed = false,
     )
 
     private fun wpWithActivity(id: Long, project: ProjectEntity, activityStartPeriod: Int, activityEndPeriod: Int, deliverablePeriod: Int) =
@@ -142,7 +144,9 @@ class ProjectServiceTest : UnitTest() {
         lengthOfPeriod = lengthOfPeriod,
         allowedRealCosts = defaultAllowedRealCostsByCallType(CallType.STANDARD),
         preSubmissionCheckPluginKey = null,
-        firstStepPreSubmissionCheckPluginKey = null
+        firstStepPreSubmissionCheckPluginKey = null,
+        projectDefinedUnitCostAllowed = true,
+        projectDefinedLumpSumAllowed = false,
     )
 
     private fun project(call: CallEntity, status: ProjectStatusHistoryEntity, acronym: String, resultPeriodNumber: Int) = ProjectEntity(

@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.service.customCostOptions.unitCost.createProjectUnitCost
 
+import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeUnitCostPersistence
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class CreateProjectUnitCost(
+    private val callPersistence: CallPersistence,
     private val programmeUnitCostPersistence: ProgrammeUnitCostPersistence,
     private val projectUnitCostPersistence: ProjectUnitCostPersistence,
     private val projectPersistence: ProjectPersistence,
@@ -27,7 +29,10 @@ class CreateProjectUnitCost(
     @Transactional
     @ExceptionWrapper(CreateProjectUnitCostException::class)
     override fun createProjectUnitCost(projectId: Long, unitCost: ProgrammeUnitCost): ProgrammeUnitCost {
-        // TODO validate if project-proposed unit costs are allowed in call setup
+        if (!callPersistence.getCallCostOptionForProject(projectId).projectDefinedUnitCostAllowed) {
+            throw ProjectDefinedUnitCostAreForbiddenForThisCall()
+        }
+
         unitCost.validateInputFields()
         validateCreateUnitCost(
             unitCostToValidate = unitCost,

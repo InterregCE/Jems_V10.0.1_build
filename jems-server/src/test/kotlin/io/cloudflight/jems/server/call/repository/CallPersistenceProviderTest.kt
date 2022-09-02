@@ -19,6 +19,7 @@ import io.cloudflight.jems.server.call.callFundRateEntity
 import io.cloudflight.jems.server.call.controller.toDto
 import io.cloudflight.jems.server.call.createCallDetailModel
 import io.cloudflight.jems.server.call.createTestCallEntity
+import io.cloudflight.jems.server.call.defaultAllowedRealCostsByCallType
 import io.cloudflight.jems.server.call.entity.ApplicationFormFieldConfigurationEntity
 import io.cloudflight.jems.server.call.entity.ApplicationFormFieldConfigurationId
 import io.cloudflight.jems.server.call.entity.CallEntity
@@ -32,6 +33,7 @@ import io.cloudflight.jems.server.call.entity.unitCost.ProjectCallUnitCostId
 import io.cloudflight.jems.server.call.service.model.AllowedRealCosts
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.Call
+import io.cloudflight.jems.server.call.service.model.CallCostOption
 import io.cloudflight.jems.server.call.service.model.CallSummary
 import io.cloudflight.jems.server.call.service.model.FieldVisibilityStatus
 import io.cloudflight.jems.server.call.service.model.IdNamePair
@@ -70,6 +72,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import java.math.BigDecimal
+import java.time.ZonedDateTime
 import java.util.*
 
 @ExtendWith(MockKExtension::class)
@@ -292,6 +295,29 @@ internal class CallPersistenceProviderTest {
             costPerUnitForeignCurrency = BigDecimal.ZERO,
             foreignCurrencyCode = null
         )
+
+        private fun callWithCostOption(): CallEntity {
+            return CallEntity(
+                id = 0L,
+                creator = mockk(),
+                name = "call",
+                status = CallStatus.DRAFT,
+                type = CallType.STANDARD,
+                startDate = ZonedDateTime.now(),
+                endDateStep1 = null,
+                endDate = ZonedDateTime.now(),
+                prioritySpecificObjectives = mutableSetOf(),
+                strategies = mutableSetOf(),
+                isAdditionalFundAllowed = false,
+                funds = mutableSetOf(),
+                lengthOfPeriod = 1,
+                allowedRealCosts = defaultAllowedRealCostsByCallType(CallType.STANDARD),
+                preSubmissionCheckPluginKey = null,
+                firstStepPreSubmissionCheckPluginKey = null,
+                projectDefinedUnitCostAllowed = true,
+                projectDefinedLumpSumAllowed = false,
+            )
+        }
     }
 
     @MockK
@@ -787,6 +813,42 @@ internal class CallPersistenceProviderTest {
         verify(exactly = 1) {
             callRepo.findById(1)
         }
+    }
+
+    @Test
+    fun getCallCostOptionForProject() {
+        every { projectPersistence.getCallIdOfProject(48L) } returns 7L
+        every { callRepo.findById(7L) } returns Optional.of(callWithCostOption())
+        assertThat(persistence.getCallCostOption(7L)).isEqualTo(
+            CallCostOption(
+                projectDefinedUnitCostAllowed = true,
+                projectDefinedLumpSumAllowed = false,
+            )
+        )
+    }
+
+    @Test
+    fun getCallCostOption() {
+        every { callRepo.findById(4L) } returns Optional.of(callWithCostOption())
+        assertThat(persistence.getCallCostOption(4L)).isEqualTo(
+            CallCostOption(
+                projectDefinedUnitCostAllowed = true,
+                projectDefinedLumpSumAllowed = false,
+            )
+        )
+    }
+
+    @Test
+    fun updateCallCostOption() {
+        val call = createTestCallEntity(id = 10L)
+        call.projectDefinedUnitCostAllowed = false
+        call.projectDefinedLumpSumAllowed = false
+
+        every { callRepo.findById(10L) } returns Optional.of(call)
+        persistence.updateCallCostOption(10L, CallCostOption(true, true))
+
+        assertThat(call.projectDefinedUnitCostAllowed).isTrue()
+        assertThat(call.projectDefinedLumpSumAllowed).isTrue()
     }
 
     @Test

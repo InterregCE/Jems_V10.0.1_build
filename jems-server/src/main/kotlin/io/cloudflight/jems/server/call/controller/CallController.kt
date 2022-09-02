@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.call.controller
 
 import io.cloudflight.jems.api.call.CallApi
 import io.cloudflight.jems.api.call.dto.AllowedRealCostsDTO
+import io.cloudflight.jems.api.call.dto.CallCostOptionDTO
 import io.cloudflight.jems.api.call.dto.CallDTO
 import io.cloudflight.jems.api.call.dto.CallDetailDTO
 import io.cloudflight.jems.api.call.dto.CallStatus
@@ -9,6 +10,8 @@ import io.cloudflight.jems.api.call.dto.CallUpdateRequestDTO
 import io.cloudflight.jems.api.call.dto.PreSubmissionPluginsDTO
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateSetupDTO
 import io.cloudflight.jems.api.common.dto.IdNamePairDTO
+import io.cloudflight.jems.server.call.service.costOption.getCallCostOption.GetCallCostOptionInteractor
+import io.cloudflight.jems.server.call.service.costOption.updateCallCostOption.UpdateCallCostOptionInteractor
 import io.cloudflight.jems.server.call.service.create_call.CreateCallInteractor
 import io.cloudflight.jems.server.call.service.get_allow_real_costs.GetAllowedRealCostsInteractor
 import io.cloudflight.jems.server.call.service.get_call.GetCallInteractor
@@ -37,6 +40,8 @@ class CallController(
     private val getAllowedRealCosts: GetAllowedRealCostsInteractor,
     private val updateCallLumpSums: UpdateCallLumpSumsInteractor,
     private val updateCallUnitCosts: UpdateCallUnitCostsInteractor,
+    private val getCallCostOption: GetCallCostOptionInteractor,
+    private val updateCallCostOption: UpdateCallCostOptionInteractor,
     private val updatePreSubmissionCheckSettings: UpdatePreSubmissionCheckSettingsInteractor
 ) : CallApi {
 
@@ -75,6 +80,12 @@ class CallController(
 
     override fun updateCallUnitCosts(callId: Long, unitCostIds: Set<Long>) =
         updateCallUnitCosts.updateUnitCosts(callId, unitCostIds).toDto()
+
+    override fun getAllowedCostOptions(callId: Long) =
+        getCallCostOption.getCallCostOption(callId).toDto()
+
+    override fun updateAllowedCostOption(callId: Long, costOption: CallCostOptionDTO) =
+        updateCallCostOption.updateCallCostOption(callId, costOption.toModel()).toDto()
 
     override fun updatePreSubmissionCheckSettings(callId: Long, pluginKeys: PreSubmissionPluginsDTO): CallDetailDTO =
         updatePreSubmissionCheckSettings.update(callId, pluginKeys.toModel()).toDto()
