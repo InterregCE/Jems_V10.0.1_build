@@ -1,56 +1,37 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
-import {Permission} from '../../../../../security/permissions/permission';
-import {ProgrammeChecklistDetailDTO, ProjectDetailDTO, ProjectStatusDTO, UserRoleDTO} from '@cat/api';
+import {
+  ProgrammeChecklistDetailDTO,
+  ProjectPartnerControlReportDTO
+} from '@cat/api';
 import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
 import {APIError} from '@common/models/APIError';
-import {TranslateService} from '@ngx-translate/core';
 import {map} from 'rxjs/operators';
-import {Alert} from '@common/components/forms/alert';
-import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {FormService} from "@common/components/section/form/form.service";
+import {
+  PartnerControlReportStore
+} from '@project/project-application/report/partner-control-report/partner-control-report-store.service';
 
 @Component({
-    selector: 'jems-control-checklist-instance-list',
+    selector: 'jems-partner-control-report-control-checklists-tab-component',
     templateUrl: './partner-control-report-control-checklists-tab.component.html',
     styleUrls: ['./partner-control-report-control-checklists-tab.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
     providers: [FormService]
 })
-export class ControlChecklistInstanceListComponent {
-
-    Alert = Alert;
-    Permission = Permission;
-    PermissionsEnum = UserRoleDTO.PermissionsEnum;
+export class PartnerControlReportControlChecklistsTabComponent {
     ChecklistType = ProgrammeChecklistDetailDTO.TypeEnum;
 
-    @Input()
-    relatedType: ProgrammeChecklistDetailDTO.TypeEnum;
-    @Input()
-    relatedId: number;
-
     data$: Observable<{
-        currentVersionOfProject: ProjectDetailDTO;
-        currentVersionOfProjectTitle: string;
-        currentVersionOfProjectStatus: ProjectStatusDTO.StatusEnum;
-        projectId: number;
+        partnerControlReport: ProjectPartnerControlReportDTO;
     }>;
 
     // TODO: create a component
     error$ = new BehaviorSubject<APIError | null>(null);
     actionPending = false;
 
-    constructor(public translate: TranslateService,
-                private projectStore: ProjectStore) {
-        this.data$ = combineLatest([
-            this.projectStore.currentVersionOfProject$,
-            this.projectStore.currentVersionOfProjectTitle$
-        ]).pipe(
-            map(([currentVersionOfProject, currentVersionOfProjectTitle]) => ({
-                currentVersionOfProject,
-                currentVersionOfProjectTitle,
-                currentVersionOfProjectStatus: currentVersionOfProject.projectStatus.status,
-                projectId: currentVersionOfProject.id,
-            }))
+    constructor(public store: PartnerControlReportStore) {
+        this.data$ = store.partnerControlReport$.pipe(
+            map((partnerControlReport) => ({partnerControlReport}))
         );
     }
 }

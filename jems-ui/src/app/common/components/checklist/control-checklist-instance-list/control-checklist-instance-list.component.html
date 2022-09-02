@@ -1,0 +1,34 @@
+
+<span jemsMultiColumnRow>
+    <mat-form-field jemsFormFieldWidth="xx-large">
+        <mat-select placeholder="{{'checklists.instance.list.new.select' | translate}}"
+                    [(ngModel)]="selectedTemplate">
+            <mat-option *ngFor="let template of checklistTemplates$ | async"
+                        [value]="template">
+                <span jemsText>{{template.name}}</span>
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+    <button [disabled]="!selectedTemplate"
+            jemsText mat-raised-button color="primary" class="mb-3 mt-3"
+            (click)="createInstance()">
+        + {{'control.checklists.instance.list.new.button' | translate}}
+    </button>
+</span>
+
+<ng-container *ngIf="checklistInstancesSorted$ | async as instances">
+    <jems-table #tableInstances *ngIf="instances.length"
+                [configuration]="instancesTableConfiguration"
+                (sortRows)="onInstancesSortChange($event)"
+                [rows]="instances">
+    </jems-table>
+</ng-container>
+
+<ng-template #deleteCell let-checklist>
+    <button *ngIf="checklist.status === Status.DRAFT && (pageStore.currentUserEmail$ | async) === checklist.creatorEmail"
+            mat-icon-button color="accent"
+            (click)="delete(checklist);$event.stopPropagation();"
+            matTooltip="{{'common.delete.entry.tooltip' | translate}}">
+        <mat-icon>delete</mat-icon>
+    </button>
+</ng-template>

@@ -1,0 +1,48 @@
+<ng-container *ngIf="data$ | async as data">
+
+    <div class="mb-3"></div>
+
+    <jems-checklist-answers
+            [components]="data.checklist.components"
+            [status]="data.checklist.status"
+            [minScore]="data.checklist.minScore"
+            [maxScore]="data.checklist.maxScore"
+            [allowsDecimalScore]="data.checklist.allowsDecimalScore"
+            [editable]="data.editable"
+            (save)="save(data.checklist)">
+
+        <div id="status" class="mb-3">
+            {{'common.status' | translate}}:
+            <mat-chip-list class="mr-1 ml-1">
+                <mat-chip selected="true"
+                          [class.draft]="data.checklist.status === Status.DRAFT"
+                          [class.finished]="data.checklist.status === Status.FINISHED">
+                    {{'checklists.instance.status.' + data.checklist.status | translate}}
+                </mat-chip>
+            </mat-chip-list>
+            <span *ngIf="data.checklist.finishedDate">
+                {{'checklists.instance.finished.since' | translate : {date: data.checklist.finishedDate | localeDate} }}
+            </span>
+        </div>
+
+        <h2 class="mb-2">{{data.checklist.name}}</h2>
+
+        <jems-pending-button *ngIf="data.editable"
+                             class="mr-2" type="secondary"
+                             [confirm]="confirmFinish"
+                             (clicked)="updateStatus(data.checklist.id,Status.FINISHED)"
+                             [disabled]="saveDiscardMenuIsActive()"
+                             [matTooltip]="'checklists.instance.button.info' | translate"
+                             [matTooltipDisabled]="!saveDiscardMenuIsActive()">
+            {{'checklists.instance.confirm.finish.title' | translate}}
+        </jems-pending-button>
+
+        <jems-pending-button *ngIf="data.checklist.status === Status.FINISHED"
+                             class="mr-2" type="secondary"
+                             [confirm]="confirmUnfinish"
+                             (clicked)="updateStatus(data.checklist.id, Status.DRAFT)">
+            {{'checklist.instance.unfinish' | translate : {name: data.checklist.creatorEmail} }}
+        </jems-pending-button>
+
+    </jems-checklist-answers>
+</ng-container>
