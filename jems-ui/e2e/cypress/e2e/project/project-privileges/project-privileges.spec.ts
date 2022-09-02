@@ -242,31 +242,30 @@ context('Project privileges tests', () => {
           cy.visit('/');
           cy.contains('span.nav-text', 'Applications').click();
           cy.contains('div.mat-tab-label-content', 'Assignment').click();
+          cy.get('jems-project-application-list-user-assignments').should('exist');
+          cy.get('jems-project-application-list').should('not.exist');
 
-          cy.contains('jems-project-application-list-user-assignments mat-row', applicationId1).find('input').click();
-          cy.get('div[role="listbox"]:first').children().within(()=>{
-            cy.contains('mat-option', testData.monitorUser1.email).click();
-          })
-          cy.contains('mat-row', applicationId1).find('input').click();
-          cy.get('div[role="listbox"]:first').children().within(()=>{
-            cy.contains('mat-option', testData.monitorUser2.email).click();
-          })
-          cy.contains('mat-row', applicationId2).find('input').click();
-          cy.get('div[role="listbox"]:first').children().within(()=>{
-            cy.contains('mat-option', testData.monitorUser1.email).click();
-          });
+          cy.contains('mat-row', firstApplicationAcronym).find('input').click();
+          cy.contains('mat-option', testData.monitorUser1.email).click();
+            
+          cy.contains('mat-row', firstApplicationAcronym).find('input').click();
+          cy.contains('mat-option', testData.monitorUser2.email).click();
+            
+          cy.contains('mat-row', secondApplicationAcronym).find('input').click();
+          cy.contains('mat-option', testData.monitorUser1.email).click();
 
           cy.contains('button', 'Save changes').click();
           cy.contains('Users has been successfully assigned to project(s).').should('be.visible');
           cy.contains('Users has been successfully assigned to project(s).').should('not.exist');
           
           // checking for the added users
-          cy.contains('mat-row', applicationId1).within(() => {
-            cy.contains('mat-chip.mat-chip-selected-user', testData.monitorUser1.email).should('exist');
-            cy.contains('mat-chip.mat-chip-selected-user', testData.monitorUser2.email).should('exist');
+          cy.contains('mat-row', firstApplicationAcronym).scrollIntoView().within(() => {
+            cy.contains('mat-chip[selected]', testData.monitorUser1.email).should('be.visible');
+            cy.contains('mat-chip[selected]', testData.monitorUser2.email).should('be.visible');
           })
-          cy.contains('mat-row', applicationId2).within(() => {
-            cy.contains('mat-chip.mat-chip-selected-user', testData.monitorUser1.email).should('exist');
+          cy.contains('mat-row', secondApplicationAcronym).scrollIntoView().within(() => {
+            cy.contains('mat-chip[selected]', testData.monitorUser1.email).should('be.visible');
+            cy.contains('mat-chip[selected]', testData.monitorUser2.email).should('not.exist');
           })
 
           // removing users from one of the projects
