@@ -2,13 +2,8 @@ package io.cloudflight.jems.server.project.service.contracting.monitoring.update
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.payments.PaymentPersistence
-import io.cloudflight.jems.server.payments.entity.toEntity
-import io.cloudflight.jems.server.payments.repository.PaymentRepository
-import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
-import io.cloudflight.jems.server.programme.service.fund.ProgrammeFundPersistence
 import io.cloudflight.jems.server.project.authorization.CanSetProjectToContracted
 import io.cloudflight.jems.server.project.repository.ProjectPersistenceProvider
-import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.contracting.ContractingValidator
 import io.cloudflight.jems.server.project.service.contracting.fillEndDateWithDuration
@@ -27,15 +22,11 @@ import java.time.ZonedDateTime
 class UpdateContractingMonitoring(
     private val contractingMonitoringPersistence: ContractingMonitoringPersistence,
     private val projectPersistence: ProjectPersistenceProvider,
-    private val projectRepository: ProjectRepository,
     private val versionPersistence: ProjectVersionPersistence,
     private val projectLumpSumPersistence: ProjectLumpSumPersistence,
     private val validator: ContractingValidator,
     private val auditPublisher: ApplicationEventPublisher,
     private val paymentPersistence: PaymentPersistence,
-    private val paymentRepository: PaymentRepository,
-    private val fundsPersistence: ProgrammeFundPersistence,
-    private val fundRepository: ProgrammeFundRepository
 ): UpdateContractingMonitoringInteractor {
 
     @CanSetProjectToContracted
@@ -65,9 +56,10 @@ class UpdateContractingMonitoring(
             val lumpSumsOrderNrTobeAdded: MutableSet<Int> = mutableSetOf()
             val lumpSumsOrderNrToBeDeleted: MutableSet<Int> = mutableSetOf()
 
-            updateReadyForPayment(projectId, contractMonitoring.fastTrackLumpSums!!, oldMonitoring.fastTrackLumpSums!!, lumpSumsOrderNrTobeAdded, lumpSumsOrderNrToBeDeleted)
-            updateApprovedAmountPerFund(projectId, lumpSumsOrderNrTobeAdded, lumpSumsOrderNrToBeDeleted)
+            updateReadyForPayment(projectId, contractMonitoring.fastTrackLumpSums!!, oldMonitoring.fastTrackLumpSums!!,
+                lumpSumsOrderNrTobeAdded, lumpSumsOrderNrToBeDeleted)
             projectLumpSumPersistence.updateLumpSums(projectId, contractMonitoring.fastTrackLumpSums!!)
+            updateApprovedAmountPerFund(projectId, lumpSumsOrderNrTobeAdded, lumpSumsOrderNrToBeDeleted)
 
             if (projectSummary.status.isAlreadyContracted()) {
                 auditPublisher.publishEvent(
@@ -83,10 +75,10 @@ class UpdateContractingMonitoring(
         }
     }
 
-    private fun updateReadyForPayment(projectId: Long, lumpSums: List<ProjectLumpSum>, savedFastTrackLumpSums: List<ProjectLumpSum>, orderNrsToBeAdded: MutableSet<Int>, orderNrsToBeDeleted: MutableSet<Int>) {
-
+    private fun updateReadyForPayment(projectId: Long, lumpSums: List<ProjectLumpSum>, savedFastTrackLumpSums: List<ProjectLumpSum>,
+                                      orderNrsToBeAdded: MutableSet<Int>, orderNrsToBeDeleted: MutableSet<Int>) {
         lumpSums.forEachIndexed { index, it ->
-            val lumpSum = savedFastTrackLumpSums.first { savedLumpSum -> savedLumpSum.programmeLumpSumId == it.programmeLumpSumId }
+            val lumpSum = savedFastTrackLumpSums[index]
             it.lastApprovedVersionBeforeReadyForPayment = lumpSum.lastApprovedVersionBeforeReadyForPayment
             it.paymentEnabledDate = lumpSum.paymentEnabledDate
             if ( lumpSum.readyForPayment != it.readyForPayment) {
@@ -113,18 +105,8 @@ class UpdateContractingMonitoring(
         }
 
         if (orderNrsToBeAdded.isNotEmpty()) {
-            val projectLumpSums = this.projectLumpSumPersistence.getByProjectId(projectId)
-            val projectEntity = projectRepository.getById(projectId)
-
-            val calculatedAmountsToBeAdded =
-                this.paymentRepository.getAmountPerPartnerByProjectIdAndLumpSumOrderNrIn(projectId, orderNrsToBeAdded)
-                    .toEntity(
-                        project = projectEntity,
-                        projectLumpSums = projectLumpSums,
-                        getProgrammeFund = { fundRepository.getById(it) }
-                    )
-            this.paymentRepository.saveAll(calculatedAmountsToBeAdded)
+            val calculatedAmountsToBeAdded = this.paymentPersistence.getAmountPerPartnerByProjectIdAndLumpSumOrderNrIn(projectId, orderNrsToBeAdded)
+            this.paymentPersistence.savePaymentToProjects(projectId, calculatedAmountsToBeAdded)
         }
-
     }
 }

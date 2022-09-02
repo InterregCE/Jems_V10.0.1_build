@@ -19,17 +19,17 @@ class PaymentToProjectEntity (
     @field:NotNull
     val project: ProjectEntity,
 
-    @OneToOne(optional = false, fetch = FetchType.LAZY)
-    @JoinColumns(
-        JoinColumn(name = "project_id", insertable = false, updatable = false),
-        JoinColumn(name = "order_nr", insertable = false, updatable = false),
-    )
-    @field:NotNull
-    val lumpSum: ProjectLumpSumEntity,
-
     @Column(name = "order_nr")
     @field:NotNull
     val orderNr: Int,
+
+    @OneToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumns(
+        JoinColumn(name = "order_nr", insertable = false, updatable = false),
+        JoinColumn(name = "project_id", insertable = false, updatable = false),
+    )
+    @field:NotNull
+    val lumpSum: ProjectLumpSumEntity,
 
     @OneToOne
     @JoinColumn(name = "programme_fund_id")
@@ -49,5 +49,5 @@ class PaymentToProjectEntity (
     val partnerId: Long,
 
     @Column
-    val amountApprovedPerFund: BigDecimal
+    val amountApprovedPerFund: BigDecimal?
 )

@@ -1,9 +1,8 @@
 package io.cloudflight.jems.server.payments.entity
 
-import io.cloudflight.jems.server.payments.service.PaymentType
-import io.cloudflight.jems.server.payments.service.model.ComputedPaymentToProject
-import io.cloudflight.jems.server.payments.service.model.PaymentRow
-import io.cloudflight.jems.server.payments.service.model.PaymentToProject
+import io.cloudflight.jems.api.payments.PaymentToProjectDTO
+import io.cloudflight.jems.api.payments.PaymentType
+import io.cloudflight.jems.server.payments.service.model.*
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumEntity
@@ -11,29 +10,46 @@ import org.springframework.data.domain.Page
 import java.math.BigDecimal
 import java.time.ZonedDateTime
 
+
+fun PaymentToProject.toDTO() = PaymentToProjectDTO(
+    paymentId = paymentId,
+    paymentType = paymentType,
+    projectId = projectId,
+    projectAcronym = projectAcronym,
+    paymentClaimNo = paymentClaimNo,
+    paymentClaimSubmissionDate = paymentClaimSubmissionDate,
+    paymentApprovalDate = paymentApprovalDate,
+    totalEligibleAmount = totalEligibleAmount,
+    fundName = fundName,
+    amountApprovedPerFound = amountApprovedPerFound,
+    amountPaidPerFund = amountPaidPerFund,
+    dateOfLastPayment = dateOfLastPayment
+)
+
 fun Page<PaymentToProjectEntity>.toListModel() = map { it.toModel() }
 
 fun PaymentToProjectEntity.toModel() = PaymentToProject(
     paymentId = id,
     paymentType = PaymentType.FTLS,
-    projectId = project.id,
+    projectId = project.customIdentifier,
     projectAcronym = project.acronym,
     paymentClaimNo = 0,
     paymentClaimSubmissionDate = project.contractedDecision?.updated,
-    paymentApprovalDate = ZonedDateTime.now(),
-    totalEligibleAmount = BigDecimal.ZERO,
+    paymentApprovalDate = lumpSum.paymentEnabledDate,
+    totalEligibleAmount = lumpSum.programmeLumpSum.cost,
     fundName = fund.type.name,
-    amountApprovedPerFound = amountApprovedPerFund,
+    amountApprovedPerFound = amountApprovedPerFund!!,
     amountPaidPerFund = BigDecimal.ZERO,
     dateOfLastPayment = null
 )
 
-fun List<PaymentRow>.toModel() = map { it.toModel() }
+fun List<PaymentRow>.toListModel() = map { it.toModel() }
+
 fun PaymentRow.toModel() = ComputedPaymentToProject(
     projectId, partnerId, orderNr, programmeLumpSumId, programmeFundId, amountApprovedPerFund
 )
 
-fun List<PaymentRow>.toEntity(project: ProjectEntity,
+fun List<ComputedPaymentToProject>.toEntity(project: ProjectEntity,
                               projectLumpSums: List<ProjectLumpSumEntity>,
                               getProgrammeFund: (Long) -> ProgrammeFundEntity,
 ) = this.groupBy { PaymentGrouppingId(it.orderNr, it.partnerId, it.programmeFundId)}.map { groupedRows ->

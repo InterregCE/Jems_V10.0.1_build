@@ -5,6 +5,8 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
+import io.cloudflight.jems.server.payments.PaymentPersistence
+import io.cloudflight.jems.server.payments.service.model.ComputedPaymentToProject
 import io.cloudflight.jems.server.project.repository.ProjectPersistenceProvider
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
@@ -31,7 +33,9 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.mockito.internal.util.collections.Sets
 import org.springframework.context.ApplicationEventPublisher
+import java.math.BigDecimal
 import java.time.ZonedDateTime
 
 class UpdateContractingMonitoringTest : UnitTest() {
@@ -66,8 +70,10 @@ class UpdateContractingMonitoringTest : UnitTest() {
                 period = 1,
                 lumpSumContributions = listOf(),
                 isFastTrack = true,
-                readyForPayment = false,
-                comment = null
+                readyForPayment = true,
+                comment = null,
+                paymentEnabledDate = ZonedDateTime.now(),
+                lastApprovedVersionBeforeReadyForPayment = "v1.0"
             )
         )
 
@@ -78,9 +84,12 @@ class UpdateContractingMonitoringTest : UnitTest() {
                 lumpSumContributions = listOf(),
                 isFastTrack = true,
                 readyForPayment = true,
-                comment = "Test"
+                comment = "Test",
+                paymentEnabledDate = ZonedDateTime.now(),
+                lastApprovedVersionBeforeReadyForPayment = "v1.0"
             )
         )
+
         private val monitoring = ProjectContractingMonitoring(
             projectId = projectId,
             startDate = null,
@@ -101,6 +110,14 @@ class UpdateContractingMonitoringTest : UnitTest() {
             )),
             fastTrackLumpSums = lumpSumsUpdated
         )
+        private val paymentToProjectEntity = ComputedPaymentToProject(
+            projectId = 1,
+            partnerId = 1,
+            orderNr = 1,
+            programmeLumpSumId = 1,
+            programmeFundId = 1,
+            amountApprovedPerFund = BigDecimal(1),
+        )
     }
 
     @MockK
@@ -120,6 +137,9 @@ class UpdateContractingMonitoringTest : UnitTest() {
 
     @RelaxedMockK
     lateinit var auditPublisher: ApplicationEventPublisher
+
+    @MockK
+    lateinit var paymentPersistence: PaymentPersistence
 
     @InjectMockKs
     lateinit var updateContractingMonitoring: UpdateContractingMonitoring
@@ -201,6 +221,8 @@ class UpdateContractingMonitoringTest : UnitTest() {
         every { projectPersistence.getProject(projectId, version) } returns project
         every { projectLumpSumPersistence.getLumpSums(1, "2.0")} returns lumpSums
         every { projectLumpSumPersistence.updateLumpSums(1, lumpSumsUpdated)} returns lumpSumsUpdated
+        every { paymentPersistence.getAmountPerPartnerByProjectIdAndLumpSumOrderNrIn(1, Sets.newSet(1))} returns
+            listOf(paymentToProjectEntity)
 
         assertThat(updateContractingMonitoring.updateContractingMonitoring(projectId, monitoringNew))
             .isEqualTo(
@@ -244,7 +266,7 @@ class UpdateContractingMonitoringTest : UnitTest() {
                     "  2022-07-22\n" +
                     "],\n" +
                     "setReadyForPayment changed from [\n" +
-                    "  false\n" +
+                    "  true\n" +
                     "] to [\n" +
                     "  true\n" +
                     "],\n" +
@@ -280,5 +302,48 @@ class UpdateContractingMonitoringTest : UnitTest() {
         assertThrows<ContractingModificationDeniedException> {
             updateContractingMonitoring.updateContractingMonitoring(projectId, monitoring)
         }
+    }
+
+    @Test
+    fun `set ready for payment to no for lump sum`() {
+        every {
+            projectPersistence.getProjectSummary(projectId)
+        } returns projectSummary.copy(status = ApplicationStatus.CONTRACTED)
+        every { validator.validateProjectStatusForModification(projectSummary) } returns Unit
+        val oldDate = ZonedDateTime.parse("2022-06-02T10:00:00+02:00").toLocalDate()
+        every {
+            contractingMonitoringPersistence.getContractingMonitoring(projectId)
+        } returns monitoring.copy(
+            startDate = oldDate,
+            fastTrackLumpSums = lumpSums
+        )
+        val monitoringNew = monitoring.copy(
+            fastTrackLumpSums = listOf(
+                ProjectLumpSum(
+                    programmeLumpSumId = 1,
+                    period = 1,
+                    lumpSumContributions = listOf(),
+                    isFastTrack = true,
+                    readyForPayment = false,
+                    comment = null,
+                    paymentEnabledDate = ZonedDateTime.now(),
+                    lastApprovedVersionBeforeReadyForPayment = "v1.0"
+                )
+            )
+        )
+        every { contractingMonitoringPersistence.updateContractingMonitoring(monitoringNew) } returns monitoringNew
+        every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns version
+        every { projectPersistence.getProject(projectId, version) } returns project
+        every { projectLumpSumPersistence.getLumpSums(1, "2.0")} returns lumpSums
+        every { projectLumpSumPersistence.updateLumpSums(any(), any())} returns monitoringNew.fastTrackLumpSums!!
+        every { paymentPersistence.getAmountPerPartnerByProjectIdAndLumpSumOrderNrIn(1, Sets.newSet(1))} returns
+            listOf(paymentToProjectEntity)
+        every { paymentPersistence.deleteAllByProjectIdAndOrderNrIn(1, Sets.newSet(1))} returns listOf()
+        val updatedMonitoring = updateContractingMonitoring.updateContractingMonitoring(projectId, monitoringNew)
+
+        assertThat(updatedMonitoring.fastTrackLumpSums)
+            .isEqualTo(
+                    monitoringNew.fastTrackLumpSums
+            )
     }
 }

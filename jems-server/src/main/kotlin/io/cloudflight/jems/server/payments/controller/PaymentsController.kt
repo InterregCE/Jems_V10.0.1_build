@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.payments.controller
 
 import io.cloudflight.jems.api.payments.PaymentToProjectDTO
 import io.cloudflight.jems.api.payments.PaymentsApi
-import io.cloudflight.jems.server.payments.service.get_payments.GetPaymentsInteractor
+import io.cloudflight.jems.server.payments.service.getPayments.GetPaymentsInteractor
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.web.bind.annotation.RestController

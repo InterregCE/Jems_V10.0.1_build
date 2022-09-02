@@ -21,17 +21,6 @@ fun List<ProjectLumpSumEntity>.toModel() = sortedBy { it.id.orderNr }.map {
     )
 }
 
-//fun ProjectLumpSumEntity.toModel() = ProjectLumpSum(
-//    period = endPeriod,
-//    programmeLumpSumId = programmeLumpSum.id,
-//    lumpSumContributions = lumpSumContributions.toModel(),
-//    isFastTrack = programmeLumpSum.isFastTrack,
-//    readyForPayment = isReadyForPayment,
-//    comment = comment,
-//    lastApprovedProjectVersion = lastApprovedProjectVersion,
-//    paymentEnabledDate = paymentEnabledDate
-//)
-
 fun Iterable<ProjectPartnerLumpSumEntity>.toModel() = sortedBy { it.id.projectPartner.sortNumber }
     .map {
         ProjectPartnerLumpSum(
@@ -94,7 +83,9 @@ fun List<ProjectLumpSumRow>.toProjectLumpSumHistoricalData() =
             isFastTrack = groupedRows.value.first().fastTrack != 0,
             readyForPayment = groupedRows.value.first().readyForPayment != 0,
             comment = groupedRows.value.first().comment,
-            paymentEnabledDate = if(groupedRows.value.first().paymentEnabledDate != null) { ZonedDateTime.of(groupedRows.value.first().paymentEnabledDate!!.toLocalDateTime(), ZoneOffset.UTC)} else null,
+            paymentEnabledDate = if (groupedRows.value.first().paymentEnabledDate != null) {
+                ZonedDateTime.of(groupedRows.value.first().paymentEnabledDate!!.toLocalDateTime(), ZoneOffset.UTC)
+            } else null,
             lastApprovedVersionBeforeReadyForPayment = groupedRows.value.first().lastApprovedVersionBeforeReadyForPayment
         )
     }

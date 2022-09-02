@@ -30,10 +30,6 @@ class ProjectLumpSumPersistenceProvider(
         )?: emptyList()
 
     @Transactional
-    override fun getByProjectId(projectId: Long): List<ProjectLumpSumEntity> = //TODO: make it return model instead of entity
-        projectLumpSumRepository.getByIdProjectId(projectId)
-
-    @Transactional
     override fun updateLumpSums(projectId: Long, lumpSums: List<ProjectLumpSum>): List<ProjectLumpSum> {
         return projectRepository.save(
             getProjectOrThrow(projectId).copy(

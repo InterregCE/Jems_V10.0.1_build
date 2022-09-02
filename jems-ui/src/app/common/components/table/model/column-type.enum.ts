@@ -5,5 +5,6 @@ export enum ColumnType {
   CustomComponent,
   Decimal,
   InputTranslation,
-  DateOnlyColumn
+  DateOnlyColumn,
+  DecimalWithJustifiedStart
 }
