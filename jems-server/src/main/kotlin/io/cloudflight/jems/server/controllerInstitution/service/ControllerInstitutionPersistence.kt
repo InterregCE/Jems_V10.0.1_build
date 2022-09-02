@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.controllerInstitution
+package io.cloudflight.jems.server.controllerInstitution.service
 
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionList
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitution

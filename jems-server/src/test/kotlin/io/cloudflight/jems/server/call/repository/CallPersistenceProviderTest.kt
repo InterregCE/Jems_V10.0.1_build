@@ -14,6 +14,8 @@ import io.cloudflight.jems.api.programme.dto.stateaid.ProgrammeStateAidMeasure
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy.AtlanticStrategy
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy.EUStrategyBalticSeaRegion
 import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.server.call.END
+import io.cloudflight.jems.server.call.START
 import io.cloudflight.jems.server.call.callFundRate
 import io.cloudflight.jems.server.call.callFundRateEntity
 import io.cloudflight.jems.server.call.controller.toDto
@@ -34,6 +36,7 @@ import io.cloudflight.jems.server.call.service.model.AllowedRealCosts
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.Call
 import io.cloudflight.jems.server.call.service.model.CallCostOption
+import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.call.service.model.CallSummary
 import io.cloudflight.jems.server.call.service.model.FieldVisibilityStatus
 import io.cloudflight.jems.server.call.service.model.IdNamePair
@@ -56,6 +59,7 @@ import io.cloudflight.jems.server.programme.repository.costoption.combineUnitCos
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
 import io.cloudflight.jems.server.programme.repository.priority.ProgrammeSpecificObjectiveRepository
 import io.cloudflight.jems.server.programme.repository.stateaid.ProgrammeStateAidRepository
+import io.cloudflight.jems.server.programme.service.stateaid.model.ProgrammeStateAid
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.user.repository.user.UserRepository
 import io.mockk.every
@@ -647,8 +651,81 @@ internal class CallPersistenceProviderTest {
             assertThat(lumpSums).isEmpty()
             assertThat(unitCosts).isEmpty()
         }
+    }
 
+    @Test
+    fun updateCall() {
+        val callOld = createTestCallEntity(id = 18L)
+        every { callRepo.findById(18L) } returns Optional.of(callOld)
 
+        val stateAid = mockk<ProgrammeStateAidEntity>()
+        every { stateAid.id } returns 489L
+        val existingStateAid = ProjectCallStateAidEntity(StateAidSetupId(mockk(), stateAid))
+        val stateAidNew = ProgrammeStateAidEntity(
+            id = 254L,
+            measure = ProgrammeStateAidMeasure.GBER_ARTICLE_15,
+            schemeNumber = "254-sc",
+            maxIntensity = BigDecimal.ONE,
+            threshold = BigDecimal.TEN,
+        )
+        val newStateAid = ProjectCallStateAidEntity(StateAidSetupId(mockk(), stateAidNew))
+        every { projectCallStateAidRepository.findAllByIdCallId(18L) } returnsMany listOf(
+            mutableSetOf(existingStateAid),
+            mutableSetOf(newStateAid),
+        )
+
+        every { projectCallStateAidRepository.deleteAllBySetupIdStateAidId(any()) } answers { }
+        every { programmeStateAidRepo.findAllById(setOf(254L)) } returns listOf(stateAidNew)
+
+        val savedStateAids = slot<List<ProjectCallStateAidEntity>>()
+        every { projectCallStateAidRepository.saveAll(capture(savedStateAids)) } returnsArgument 0
+
+        every { programmeFundRepo.getTop20ByIdInAndSelectedTrue(emptySet()) } returns emptyList()
+
+        val formConfig = ApplicationFormFieldConfigurationEntity(ApplicationFormFieldConfigurationId("af-id", callOld), FieldVisibilityStatus.STEP_TWO_ONLY)
+        every { applicationFormFieldConfigurationRepository.findAllByCallId(18L) } returns mutableSetOf(formConfig)
+        every { callRepo.save(any()) } returnsArgument 0
+
+        val call = Call(
+            id = 18L,
+            endDate = END,
+            name = "call NEW",
+            status = CallStatus.DRAFT,
+            type = CallType.STANDARD,
+            startDate = START,
+            isAdditionalFundAllowed = true,
+            lengthOfPeriod = 25,
+            stateAidIds = setOf(254L),
+        )
+        val callDetail = CallDetail(
+            id = 18L,
+            name = "call NEW",
+            status = CallStatus.DRAFT,
+            endDateStep1 = null,
+            endDate = END,
+            type = CallType.STANDARD,
+            startDate = START,
+            isAdditionalFundAllowed = true,
+            lengthOfPeriod = 25,
+            applicationFormFieldConfigurations = mutableSetOf(ApplicationFormFieldConfiguration("af-id", FieldVisibilityStatus.STEP_TWO_ONLY)),
+            preSubmissionCheckPluginKey = null,
+            firstStepPreSubmissionCheckPluginKey = null,
+            stateAids = listOf(
+                ProgrammeStateAid(
+                    id = 254L,
+                    measure = ProgrammeStateAidMeasure.GBER_ARTICLE_15,
+                    schemeNumber = "254-sc",
+                    maxIntensity = BigDecimal.ONE,
+                    threshold = BigDecimal.TEN,
+                ),
+            ),
+            flatRates = sortedSetOf(
+                ProjectCallFlatRate(FlatRateType.STAFF_COSTS, rate = 5, adjustable = true),
+            ),
+        )
+        assertThat(persistence.updateCall(call)).isEqualTo(callDetail)
+        verify(exactly = 1) { projectCallStateAidRepository.deleteAllBySetupIdStateAidId(489L) }
+        assertThat(savedStateAids.captured).hasSize(1)
     }
 
     @Test

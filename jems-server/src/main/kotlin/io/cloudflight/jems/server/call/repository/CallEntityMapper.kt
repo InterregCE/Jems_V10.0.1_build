@@ -53,7 +53,7 @@ fun Page<CallEntity>.toModel() = map { it.toModel() }
 
 fun CallEntity.toDetailModel(
     applicationFormFieldConfigurationEntities: MutableSet<ApplicationFormFieldConfigurationEntity>,
-    stateAids: MutableSet<ProjectCallStateAidEntity>
+    stateAids: Collection<ProjectCallStateAidEntity>
 ) = CallDetail(
     id = id,
     name = name,
@@ -111,7 +111,7 @@ fun Call.toEntity(
     isAdditionalFundAllowed = isAdditionalFundAllowed,
     translatedValues = mutableSetOf(),
     prioritySpecificObjectives = priorityPolicies.mapTo(HashSet()) { retrieveSpecificObjective.invoke(it) },
-    strategies = retrieveStrategies.invoke(strategies).toMutableSet(),
+    strategies = if (strategies.isEmpty()) mutableSetOf() else retrieveStrategies.invoke(strategies).toMutableSet(),
     funds = existingEntity?.funds ?: mutableSetOf(),
     flatRates = existingEntity?.flatRates ?: mutableSetOf(),
     lumpSums = existingEntity?.lumpSums ?: mutableSetOf(),
@@ -177,7 +177,7 @@ fun MutableSet<ApplicationFormFieldConfigurationEntity>.toModel() =
 fun MutableSet<ApplicationFormFieldConfiguration>.toEntities(call: CallEntity) =
     map { callEntityMapper.map(call, it) }.toMutableSet()
 
-fun MutableSet<ProgrammeStateAidEntity>.toEntities(call: CallEntity) =
+fun Collection<ProgrammeStateAidEntity>.toEntities(call: CallEntity) =
     map { ProjectCallStateAidEntity(StateAidSetupId(call, it)) }
 
 fun MutableSet<ProjectCallStateAidEntity>.toModel() = map { it.setupId.stateAid.toModel() }

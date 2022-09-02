@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.controllerInstitution.service.updateInstitutionUsersProjectAssignment
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
-import io.cloudflight.jems.server.controllerInstitution.ControllerInstitutionPersistence
+import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerAssignment
 import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionUsersProjectAssignment
 import io.cloudflight.jems.server.project.service.projectuser.UserProjectPersistence

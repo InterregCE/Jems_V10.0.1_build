@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.controllerInstitution.service.get_controller
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.authentication.service.SecurityService
-import io.cloudflight.jems.server.controllerInstitution.ControllerInstitutionPersistence
+import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.controllerInstitution.authorization.ControllerInstitutionAuthorization
 import io.cloudflight.jems.server.controllerInstitution.service.getControllerInstitution.GetController
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitution

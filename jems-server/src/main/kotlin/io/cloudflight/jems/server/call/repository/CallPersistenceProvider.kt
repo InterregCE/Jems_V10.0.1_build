@@ -104,7 +104,7 @@ class CallPersistenceProvider(
             val stateAidsToDelete = existingStateAidsForCall.filter { !call.stateAidIds.contains(it) }
             stateAidsToDelete.forEach { projectCallStateAidRepo.deleteAllBySetupIdStateAidId(it) }
             projectCallStateAidRepo.saveAll(
-                programmeStateAidRepository.findAllById(call.stateAidIds).toMutableSet().toEntities(existingCall)
+                programmeStateAidRepository.findAllById(call.stateAidIds).toEntities(existingCall)
             )
         }
 
@@ -267,8 +267,8 @@ class CallPersistenceProvider(
         val callEntity = findOrThrow(callId)
 
         val savedStateAids = projectCallStateAidRepo.saveAll(
-            programmeStateAidRepository.findAllById(stateAids).toMutableSet().toEntities(callEntity)
-        ).toMutableSet()
+            programmeStateAidRepository.findAllById(stateAids).toEntities(callEntity)
+        )
 
         return callEntity.toDetailModel(
             applicationFormFieldConfigurationRepository.findAllByCallId(callId),

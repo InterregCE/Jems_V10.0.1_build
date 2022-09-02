@@ -54,8 +54,8 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.util.*
 
-private val START = ZonedDateTime.now().withSecond(0).withNano(0)
-private val END = ZonedDateTime.now().plusDays(5).withSecond(0).withNano(0).plusMinutes(1).minusNanos(1)
+val START = ZonedDateTime.now().withSecond(0).withNano(0)
+val END = ZonedDateTime.now().plusDays(5).withSecond(0).withNano(0).plusMinutes(1).minusNanos(1)
 private const val STATE_AID_ID = 23L
 private const val LUMP_SUM_ID = 4L
 private const val UNIT_COST_ID = 3L

@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.controllerInstitution.service.update_controller
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.controllerInstitution.ControllerInstitutionPersistence
+import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.controllerInstitution.INSTITUTION_ID
 import io.cloudflight.jems.server.controllerInstitution.MONITOR_USER_1_EMAIL
 import io.cloudflight.jems.server.controllerInstitution.MONITOR_USER_1_ID

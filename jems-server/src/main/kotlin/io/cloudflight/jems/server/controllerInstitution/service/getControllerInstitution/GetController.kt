@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.controllerInstitution.service.getControllerIn
 
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
-import io.cloudflight.jems.server.controllerInstitution.ControllerInstitutionPersistence
+import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.controllerInstitution.authorization.CanRetrieveControllerInstitutions
 import io.cloudflight.jems.server.controllerInstitution.authorization.CanViewControllerInstitutionDetails
 import io.cloudflight.jems.server.controllerInstitution.authorization.ControllerInstitutionAuthorization

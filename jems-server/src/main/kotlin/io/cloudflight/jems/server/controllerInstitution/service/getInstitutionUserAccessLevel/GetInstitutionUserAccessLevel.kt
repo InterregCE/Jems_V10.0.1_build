@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.controllerInstitution.service.getInstitutionU
 
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
-import io.cloudflight.jems.server.controllerInstitution.ControllerInstitutionPersistence
+import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.controllerInstitution.service.model.UserInstitutionAccessLevel
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional

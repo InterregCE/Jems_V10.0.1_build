@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.controllerInstitution.service
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.controllerInstitution.*
+import io.cloudflight.jems.server.controllerInstitution.entity.ControllerInstitutionPartnerEntity
 import io.cloudflight.jems.server.controllerInstitution.entity.ControllerInstitutionUserEntity
 import io.cloudflight.jems.server.controllerInstitution.entity.ControllerInstitutionUserId
 import io.cloudflight.jems.server.controllerInstitution.repository.*
@@ -23,6 +24,7 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
@@ -270,23 +272,23 @@ class ControllerInstitutionPersistenceProviderTest : UnitTest() {
 
     @Test
     fun `get institution partner assignments`() {
-       val listInstitutionPartnerDetailsRowImpl = listOf(InstitutionPartnerDetailsRowImpl(
-           institutionId = INSTITUTION_ID,
-           partnerId = 1L,
-           partnerName = "A",
-           partnerStatus = true,
-           partnerRole = "LEAD_PARTNER",
-           partnerSortNumber = 1,
-           partnerNuts3 = "Wien (AT130)",
-           partnerNuts3Code = "AT130",
-           country = "Austria",
-           countryCode = "AT",
-           city = "Wien",
-           postalCode = "299281",
-           callId = 1L,
-           projectId = 1L,
-           projectCustomIdentifier = "0001",
-           projectAcronym = "Project Test"
+        val listInstitutionPartnerDetailsRowImpl = listOf(InstitutionPartnerDetailsRowImpl(
+            institutionId = INSTITUTION_ID,
+            partnerId = 1L,
+            partnerName = "A",
+            partnerStatus = true,
+            partnerRole = "LEAD_PARTNER",
+            partnerSortNumber = 1,
+            partnerNuts3 = "Wien (AT130)",
+            partnerNuts3Code = "AT130",
+            country = "Austria",
+            countryCode = "AT",
+            city = "Wien",
+            postalCode = "299281",
+            callId = 1L,
+            projectId = 1L,
+            projectCustomIdentifier = "0001",
+            projectAcronym = "Project Test"
         ))
 
         every { institutionPartnerRepository.getInstitutionPartnerAssignments(Pageable.unpaged()) } returns PageImpl(listInstitutionPartnerDetailsRowImpl)
@@ -297,4 +299,134 @@ class ControllerInstitutionPersistenceProviderTest : UnitTest() {
             InstitutionPartnerDetail
         )
     }
+
+
+
+    @Test
+    fun `getInstitutionUserByInstitutionIdAndUserId - empty`() {
+        every { institutionUserRepository
+            .findByInstitutionIdAndUserId(institutionId = -1L, userId = -1L)
+        } returns Optional.empty()
+
+        assertThat(controllerInstitutionPersistenceProvider.getInstitutionUserByInstitutionIdAndUserId(-1L, -1L))
+            .isEmpty()
+    }
+
+    @Test
+    fun getInstitutionUserByInstitutionIdAndUserId() {
+        val user = mockk<UserEntity>()
+        every { user.id } returns 25L
+        every { user.email } returns "user25@mail.com"
+
+        val institutionUser = ControllerInstitutionUserEntity(
+            id = ControllerInstitutionUserId(controllerInstitutionId = 96L, user),
+            accessLevel = UserInstitutionAccessLevel.View,
+        )
+        val expectedUser = ControllerInstitutionUser(
+            institutionId = 96L,
+            userId = 25L,
+            userEmail = "user25@mail.com",
+            accessLevel = UserInstitutionAccessLevel.View,
+        )
+
+        every { institutionUserRepository
+            .findByInstitutionIdAndUserId(institutionId = 96L, userId = 25L)
+        } returns Optional.of(institutionUser)
+
+        val result = controllerInstitutionPersistenceProvider
+            .getInstitutionUserByInstitutionIdAndUserId(institutionId = 96L, userId = 25L)
+        assertThat(result).isPresent()
+        assertThat(result.get()).isEqualTo(expectedUser)
+    }
+
+    @Test
+    fun getInstitutionUsersByInstitutionId() {
+        val user = mockk<UserEntity>()
+        every { user.id } returns 702L
+        every { user.email } returns "user702@mail.com"
+
+        val institutionUser = ControllerInstitutionUserEntity(
+            id = ControllerInstitutionUserId(controllerInstitutionId = 18L, user),
+            accessLevel = UserInstitutionAccessLevel.View,
+        )
+        val expectedUser = ControllerInstitutionUser(
+            institutionId = 18L,
+            userId = 702L,
+            userEmail = "user702@mail.com",
+            accessLevel = UserInstitutionAccessLevel.View,
+        )
+
+        every { institutionUserRepository.findAllByControllerInstitutionId(18L) } returns listOf(institutionUser)
+        assertThat(controllerInstitutionPersistenceProvider.getInstitutionUsersByInstitutionId(18L))
+            .containsExactly(expectedUser)
+    }
+
+    @Test
+    fun getControllerInstitutionUsersByInstitutionIds() {
+        val user = mockk<UserEntity>()
+        every { user.id } returns 702L
+        every { user.email } returns "user702@mail.com"
+
+        val institutionUser = ControllerInstitutionUserEntity(
+            id = ControllerInstitutionUserId(controllerInstitutionId = 14L, user),
+            accessLevel = UserInstitutionAccessLevel.View,
+        )
+        val expectedUser = ControllerInstitutionUser(
+            institutionId = 14L,
+            userId = 702L,
+            userEmail = "user702@mail.com",
+            accessLevel = UserInstitutionAccessLevel.View,
+        )
+
+        every { institutionUserRepository.findAllByControllerInstitutionIdIn(setOf(14L)) } returns listOf(institutionUser)
+        assertThat(controllerInstitutionPersistenceProvider.getControllerInstitutionUsersByInstitutionIds(setOf(14L)))
+            .containsExactly(expectedUser)
+    }
+
+    @Test
+    fun getInstitutionPartnerAssignmentsByInstitutionId() {
+        val controllerInstitution = ControllerInstitutionPartnerEntity(
+            partnerId = 520L, institutionId = 500L, partnerProjectId = 20L,
+        )
+        val expectedAssignment = InstitutionPartnerAssignment(
+            partnerId = 520L, institutionId = 500L, partnerProjectId = 20L,
+        )
+
+        every { institutionPartnerRepository.findAllByPartnerIdIn(setOf(520L)) } returns listOf(controllerInstitution)
+        assertThat(controllerInstitutionPersistenceProvider.getInstitutionPartnerAssignmentsByPartnerIdsIn(setOf(520L)))
+            .containsExactly(expectedAssignment)
+    }
+
+    @Test
+    fun getInstitutionPartnerAssignmentsByPartnerIdsIn() {
+        val controllerInstitution = ControllerInstitutionPartnerEntity(
+            partnerId = 480L, institutionId = 400L, partnerProjectId = 80L,
+        )
+        val expectedAssignment = InstitutionPartnerAssignment(
+            partnerId = 480L, institutionId = 400L, partnerProjectId = 80L,
+        )
+
+        every { institutionPartnerRepository.findAllByInstitutionId(400L) } returns listOf(controllerInstitution)
+        assertThat(controllerInstitutionPersistenceProvider.getInstitutionPartnerAssignmentsByInstitutionId(400L))
+            .containsExactly(expectedAssignment)
+    }
+
+    @Test
+    fun getInstitutionPartnerAssignmentsWithUsersByPartnerProjectIdsIn() {
+        val assignment = mockk<InstitutionPartnerAssignmentWithUsers>()
+        every { institutionPartnerRepository.getInstitutionPartnerAssignmentsWithUsersByPartnerProjectIdsIn(setOf(569L)) } returns
+            listOf(assignment)
+        assertThat(controllerInstitutionPersistenceProvider
+            .getInstitutionPartnerAssignmentsWithUsersByPartnerProjectIdsIn(setOf(569L))
+        ).containsExactly(assignment)
+    }
+
+    @Test
+    fun getControllerUserAccessLevelForPartner() {
+        every { institutionPartnerRepository.getControllerUserAccessLevelForPartner(22L, partnerId = 17L) } returns
+            UserInstitutionAccessLevel.View
+        assertThat(controllerInstitutionPersistenceProvider.getControllerUserAccessLevelForPartner(22L, partnerId = 17L))
+            .isEqualTo(UserInstitutionAccessLevel.View)
+    }
+
 }

@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.controllerInstitution.service.getInstitutionP
 
 import io.cloudflight.jems.server.call.service.model.IdNamePair
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
-import io.cloudflight.jems.server.controllerInstitution.ControllerInstitutionPersistence
+import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.controllerInstitution.authorization.CanViewInstitutionAssignments
 import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerDetails
 import org.springframework.data.domain.Page

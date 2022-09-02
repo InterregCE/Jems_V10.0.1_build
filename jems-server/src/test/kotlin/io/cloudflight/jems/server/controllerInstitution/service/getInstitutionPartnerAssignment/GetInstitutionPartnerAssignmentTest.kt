@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.controllerInstitution.service.getInstitutionP
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.service.model.IdNamePair
-import io.cloudflight.jems.server.controllerInstitution.ControllerInstitutionPersistence
+import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.controllerInstitution.INSTITUTION_ID
 import io.cloudflight.jems.server.controllerInstitution.nutsAustria
 import io.cloudflight.jems.server.controllerInstitution.nutsRomania
