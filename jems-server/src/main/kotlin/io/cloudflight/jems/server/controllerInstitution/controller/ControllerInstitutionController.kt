@@ -6,6 +6,7 @@ import io.cloudflight.jems.server.controllerInstitution.service.assignInstitutio
 import io.cloudflight.jems.server.controllerInstitution.service.createControllerInstitution.CreateControllerInteractor
 import io.cloudflight.jems.server.controllerInstitution.service.getControllerInstitution.GetControllerInteractor
 import io.cloudflight.jems.server.controllerInstitution.service.getInstitutionPartnerAssignment.GetInstitutionPartnerAssignmentInteractor
+import io.cloudflight.jems.server.controllerInstitution.service.getInstitutionUserAccessLevel.GetInstitutionUserAccessLevelInteractor
 import io.cloudflight.jems.server.controllerInstitution.service.updateControllerInstitution.UpdateControllerInteractor
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -17,6 +18,7 @@ class ControllerInstitutionController(
     private val createControllerInteractor: CreateControllerInteractor,
     private val updateControllerInstitution: UpdateControllerInteractor,
     private val getInstitutionPartnerAssignment: GetInstitutionPartnerAssignmentInteractor,
+    private val getInstitutionUserAccessLevel: GetInstitutionUserAccessLevelInteractor,
     private val assignInstitutionToPartnerInteractor: AssignInstitutionToPartnerInteractor
 ): ControllerInstitutionApi {
 
@@ -43,7 +45,7 @@ class ControllerInstitutionController(
         assignInstitutionToPartnerInteractor.assignInstitutionToPartner(institutionPartnerAssignments.toModel()).toDTOs()
 
     override fun getControllerUserAccessLevelForPartner(partnerId: Long): UserInstitutionAccessLevelDTO? =
-        getInstitutionPartnerAssignment.getControllerUserAccessLevelForPartner(partnerId).toDto()
+        getInstitutionUserAccessLevel.getControllerUserAccessLevelForPartner(partnerId).toDto()
 
 }
 

@@ -25,10 +25,11 @@ interface ControllerInstitutionPartnerRepository: JpaRepository<ControllerInstit
             projectPartner.sort_number AS partnerSortNumber,
             projectPartner.role AS partnerRole,
             partnerAddress.nuts_region3 AS partnerNuts3,
+            partnerAddress.nuts_region3_code AS partnerNuts3Code,
             partnerAddress.country AS country,
+            partnerAddress.country_code AS countryCode,
             partnerAddress.city AS city,
-            partnerAddress.street AS street,
-            partnerAddress.house_number AS houseNumber,
+            partnerAddress.postal_code AS postalCode,
             project.project_call_id AS callId,
             project.id AS projectId,
             project.custom_identifier AS projectCustomIdentifier,
@@ -90,4 +91,29 @@ interface ControllerInstitutionPartnerRepository: JpaRepository<ControllerInstit
         """
     )
     fun getControllerUserAccessLevelForPartner(userId: Long, partnerId: Long): UserInstitutionAccessLevel?
+
+
+    @Query(
+        """
+            SELECT e FROM #{#entityName} e
+            INNER JOIN project_partner_address ppa
+                ON e.partnerId = ppa.addressId.partnerId AND ppa.addressId.type = 'Organization'
+            WHERE ppa.address.nutsRegion3Code NOT IN
+                (SELECT cin.id.nutsRegion3Id FROM controller_institution_nuts as cin WHERE e.institutionId = cin.id.institutionId)
+            AND e.partnerProjectId = :projectId
+        """
+    )
+    fun getInstitutionPartnerAssignmentsToDeleteByProjectId(projectId: Long): List<ControllerInstitutionPartnerEntity>
+
+    @Query(
+    """
+        SELECT e FROM #{#entityName} e
+        INNER JOIN project_partner_address ppa
+            ON e.partnerId = ppa.addressId.partnerId AND ppa.addressId.type = 'Organization'
+        WHERE ppa.address.nutsRegion3Code NOT IN
+            (SELECT cin.id.nutsRegion3Id FROM controller_institution_nuts as cin WHERE cin.id.institutionId = :institutionId)
+         AND e.institutionId = :institutionId
+    """
+    )
+    fun getInstitutionPartnerAssignmentsToDeleteByInstitutionId(institutionId: Long): List<ControllerInstitutionPartnerEntity>
 }

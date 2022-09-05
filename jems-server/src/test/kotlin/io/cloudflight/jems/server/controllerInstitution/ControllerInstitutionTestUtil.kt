@@ -82,3 +82,27 @@ val approvedAndAfterApprovedApplicationStatuses = setOf(
     ApplicationStatus.MODIFICATION_REJECTED
 )
 
+
+val nutsAustria = NutsRegion3(
+    "AT130",
+    "Wien (AT130)",
+    NutsRegion2(
+        "AT13", "Wien",
+        NutsRegion1(
+            "AT1", "AT",
+            NutsCountry("AT", "Ostösterreich")
+        )
+    )
+)
+val nutsRomania = NutsRegion3(
+    "RO113",
+    "Cluj (RO113)",
+    NutsRegion2(
+        "RO11", "Nord-Vest",
+        NutsRegion1(
+            "RO1", "Macroregiunea Unu",
+            NutsCountry("RO", "România")
+        )
+    )
+)
+

@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.service.application.approve_modificat
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
+import io.cloudflight.jems.server.controllerInstitution.service.checkInstitutionPartnerAssignment.CheckInstitutionPartnerAssignments
 import io.cloudflight.jems.server.project.authorization.CanApproveModification
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
@@ -22,7 +23,8 @@ class ApproveModification(
     private val generalValidatorService: GeneralValidatorService,
     private val applicationStateFactory: ApplicationStateFactory,
     private val auditPublisher: ApplicationEventPublisher,
-    private val updateContractingReportingService: UpdateContractingReportingInteractor
+    private val updateContractingReportingService: UpdateContractingReportingInteractor,
+    private val checkInstitutionPartnerAssignments: CheckInstitutionPartnerAssignments
 ) : ApproveModificationInteractor {
 
     @CanApproveModification
@@ -40,6 +42,7 @@ class ApproveModification(
                     if (newDuration!! < lastDuration!!) {
                         updateContractingReportingService.clearNoLongerAvailablePeriodsAndDates(projectId, newDuration)
                     }
+                    checkInstitutionPartnerAssignments.checkInstitutionAssignmentsToRemoveForUpdatedPartners(projectId)
                 }
             }
         }

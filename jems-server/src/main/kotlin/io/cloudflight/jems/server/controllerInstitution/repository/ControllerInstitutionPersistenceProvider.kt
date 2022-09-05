@@ -2,13 +2,13 @@ package io.cloudflight.jems.server.controllerInstitution.repository
 
 import io.cloudflight.jems.server.controllerInstitution.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.controllerInstitution.service.getControllerInstitution.GetControllerInstitutionException
-import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitution
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionList
+import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitution
+import io.cloudflight.jems.server.controllerInstitution.service.model.UpdateControllerInstitution
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionUser
+import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerDetails
 import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerAssignment
 import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerAssignmentWithUsers
-import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerDetails
-import io.cloudflight.jems.server.controllerInstitution.service.model.UpdateControllerInstitution
 import io.cloudflight.jems.server.controllerInstitution.service.model.UserInstitutionAccessLevel
 import io.cloudflight.jems.server.nuts.repository.NutsRegion3Repository
 import io.cloudflight.jems.server.project.entity.partner.ControllerInstitutionEntity
@@ -31,6 +31,11 @@ class ControllerInstitutionPersistenceProvider(
     @Transactional(readOnly = true)
     override fun getControllerInstitutions(pageable: Pageable): Page<ControllerInstitutionList> =
         controllerRepo.findAll(pageable).toListModel()
+
+    @Transactional(readOnly = true)
+    override fun getAllControllerInstitutions(): List<ControllerInstitutionEntity> {
+        return controllerRepo.findAll()
+    }
 
     @Transactional(readOnly = true)
     override fun getControllerInstitutionsByUserId(userId: Long, pageable: Pageable): Page<ControllerInstitutionList> {
@@ -81,11 +86,12 @@ class ControllerInstitutionPersistenceProvider(
         if (usersIdsToDelete.isNotEmpty()) {
             institutionUserRepository.deleteAllByIdControllerInstitutionIdAndIdUserIdIn(institutionId, usersIdsToDelete)
         }
-        val users = userRepository.findAllByEmailInIgnoreCaseOrderByEmail(usersToUpdate.map { it.userEmail })
+        val users = userRepository.findAllByEmailInIgnoreCaseOrderByEmail(usersToUpdate.map { it.userEmail }).associateBy { it.email }
         institutionUserRepository.saveAll(usersToUpdate.map { userToSave ->
             userToSave.toEntity(
                 institutionId,
-                users.first { userToSave.userEmail == it.email })
+                users[userToSave.userEmail]!!
+            )
         })
        return institutionUserRepository.findAllByControllerInstitutionId(institutionId).map { it.toModel() }.toSet()
     }
@@ -140,5 +146,14 @@ class ControllerInstitutionPersistenceProvider(
 
     private fun getControllerInstitutionOrThrow(id: Long): ControllerInstitutionEntity =
         controllerRepo.findById(id).orElseThrow { GetControllerInstitutionException() }
+
+    @Transactional(readOnly = true)
+    override fun getInstitutionPartnerAssignmentsToDeleteByProjectId(projectId: Long): List<InstitutionPartnerAssignment> =
+        institutionPartnerRepository.getInstitutionPartnerAssignmentsToDeleteByProjectId(projectId).toModels()
+
+    @Transactional(readOnly = true)
+    override fun getInstitutionPartnerAssignmentsToDeleteByInstitutionId(institutionId: Long): List<InstitutionPartnerAssignment> =
+        institutionPartnerRepository.getInstitutionPartnerAssignmentsToDeleteByInstitutionId(institutionId).toModels()
+
 
 }

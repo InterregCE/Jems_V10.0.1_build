@@ -570,6 +570,7 @@
     <ID>PackageNaming:UserUpdatedEventListeners.kt$package io.cloudflight.jems.server.user.service.user.update_user</ID>
     <ID>ProtectedMemberInFinalClass:Authorization.kt$Authorization$protected fun isActiveUserIdEqualToOneOf(userIds: Set&lt;Long&gt;): Boolean</ID>
     <ID>ReturnCount:GetBudgetFundsPerPeriod.kt$GetBudgetFundsPerPeriod$private fun getTotalFundPerPeriodForPartner( partnerBudgetPerPeriod: ProjectPeriodBudget?, partnerCoFinancing: List&lt;ProjectPartnerCoFinancing&gt;?, fund: ProgrammeFund ): BigDecimal</ID>
+    <ID>ReturnCount:GetInstitutionPartnerAssignment.kt$GetInstitutionPartnerAssignment$private fun getAvailableInstitutionsForPartner( partnerDetails: InstitutionPartnerDetails, nuts3CodeToInstitutionsMap: Map&lt;String, List&lt;IdNamePair&gt;&gt;, countryCodeToInstitutionsMap: Map&lt;String, MutableSet&lt;IdNamePair&gt;&gt;, allInstitutions: List&lt;IdNamePair&gt; ): Set&lt;IdNamePair&gt;</ID>
     <ID>ReturnCount:ProjectDescriptionMapper.kt$fun getMappedStrategy(strategy: ProgrammeStrategy?): ProgrammeStrategy?</ID>
     <ID>ReturnCount:UserRoleAuditFactory.kt$private fun getAuditPermissionState(node: UserRolePermissionNode, permissions: Set&lt;UserRolePermission&gt;): String</ID>
     <ID>ThrowsCount:BudgetCostValidator.kt$BudgetCostValidator$final fun validateBaseEntries(budgetEntries: List&lt;BaseBudgetEntry&gt;)</ID>
@@ -580,6 +581,7 @@
     <ID>TooManyFunctions:ApplicationState.kt$ApplicationState</ID>
     <ID>TooManyFunctions:CallPersistence.kt$CallPersistence</ID>
     <ID>TooManyFunctions:CallPersistenceProvider.kt$CallPersistenceProvider : CallPersistence</ID>
+    <ID>TooManyFunctions:ControllerInstitutionPersistenceProvider.kt$ControllerInstitutionPersistenceProvider : ControllerInstitutionPersistence</ID>
     <ID>TooManyFunctions:GeneralValidatorDefaultImpl.kt$GeneralValidatorDefaultImpl : GeneralValidatorService</ID>
     <ID>TooManyFunctions:GeneralValidatorService.kt$GeneralValidatorService</ID>
     <ID>TooManyFunctions:PartnerPersistence.kt$PartnerPersistence</ID>

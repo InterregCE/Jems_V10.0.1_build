@@ -2,27 +2,11 @@ package io.cloudflight.jems.server.controllerInstitution.service
 
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.controllerInstitution.ControllerInstitutionPersistence
-import io.cloudflight.jems.server.controllerInstitution.MONITOR_USER_1_EMAIL
-import io.cloudflight.jems.server.controllerInstitution.MONITOR_USER_1_ID
-import io.cloudflight.jems.server.controllerInstitution.MONITOR_USER_2_EMAIL
-import io.cloudflight.jems.server.controllerInstitution.MONITOR_USER_2_ID
+import io.cloudflight.jems.server.controllerInstitution.*
 import io.cloudflight.jems.server.controllerInstitution.entity.ControllerInstitutionUserEntity
 import io.cloudflight.jems.server.controllerInstitution.entity.ControllerInstitutionUserId
-import io.cloudflight.jems.server.controllerInstitution.institutionUsers
-import io.cloudflight.jems.server.controllerInstitution.nutsRegion3Entity
-import io.cloudflight.jems.server.controllerInstitution.repository.ControllerInstitutionPartnerRepository
-import io.cloudflight.jems.server.controllerInstitution.repository.ControllerInstitutionPersistenceProvider
-import io.cloudflight.jems.server.controllerInstitution.repository.ControllerInstitutionRepository
-import io.cloudflight.jems.server.controllerInstitution.repository.ControllerInstitutionUserRepository
-import io.cloudflight.jems.server.controllerInstitution.repository.toDto
-import io.cloudflight.jems.server.controllerInstitution.repository.toEntity
-import io.cloudflight.jems.server.controllerInstitution.repository.toModel
-import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitution
-import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerDetails
-import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerDetailsRow
-import io.cloudflight.jems.server.controllerInstitution.service.model.UpdateControllerInstitution
-import io.cloudflight.jems.server.controllerInstitution.service.model.UserInstitutionAccessLevel
+import io.cloudflight.jems.server.controllerInstitution.repository.*
+import io.cloudflight.jems.server.controllerInstitution.service.model.*
 import io.cloudflight.jems.server.nuts.repository.NutsRegion3Repository
 import io.cloudflight.jems.server.project.entity.partner.ControllerInstitutionEntity
 import io.cloudflight.jems.server.project.service.partner.getPartnerAddressOrEmptyString
@@ -47,7 +31,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import java.time.ZonedDateTime
-import java.util.Optional
+import java.util.*
 
 
 class ControllerInstitutionPersistenceProviderTest : UnitTest() {
@@ -126,8 +110,12 @@ class ControllerInstitutionPersistenceProviderTest : UnitTest() {
             partnerStatus = true,
             partnerRole = ProjectPartnerRole.LEAD_PARTNER,
             partnerSortNumber = 1,
-            partnerNuts3 = "RO113",
-            partnerAddress = "Vienna, Main street, 123A, Austria",
+            partnerNuts3 = "Wien (AT130)",
+            partnerNuts3Code = "AT130",
+            country = "Austria",
+            countryCode = "AT",
+            city = "Wien",
+            postalCode = "299281",
             callId = 1L,
             projectId = 1L,
             projectCustomIdentifier = "0001",
@@ -141,11 +129,12 @@ class ControllerInstitutionPersistenceProviderTest : UnitTest() {
             override val partnerStatus: Boolean,
             override val partnerSortNumber: Int,
             override val partnerRole: String,
-            override val partnerNuts3: String,
-            override val country: String,
-            override val city: String,
-            override val street: String,
-            override val houseNumber: String,
+            override val partnerNuts3: String?,
+            override val partnerNuts3Code: String?,
+            override val country: String?,
+            override val countryCode: String?,
+            override val city: String?,
+            override val postalCode: String?,
             override val callId: Long,
             override val projectId: Long,
             override val projectCustomIdentifier: String,
@@ -281,23 +270,25 @@ class ControllerInstitutionPersistenceProviderTest : UnitTest() {
 
     @Test
     fun `get institution partner assignments`() {
-        val listInstitutionPartnerDetailsRowImpl = listOf(InstitutionPartnerDetailsRowImpl(
-            institutionId = INSTITUTION_ID,
-            partnerId = 1L,
-            partnerName = "A",
-            partnerStatus = true,
-            partnerRole = "LEAD_PARTNER",
-            partnerSortNumber = 1,
-            country = "Austria",
-            city = "Vienna",
-            street = "Main street",
-            houseNumber = "123A",
-            partnerNuts3 = "RO113",
-            callId = 1L,
-            projectId = 1L,
-            projectCustomIdentifier = "0001",
-            projectAcronym = "Project Test"
+       val listInstitutionPartnerDetailsRowImpl = listOf(InstitutionPartnerDetailsRowImpl(
+           institutionId = INSTITUTION_ID,
+           partnerId = 1L,
+           partnerName = "A",
+           partnerStatus = true,
+           partnerRole = "LEAD_PARTNER",
+           partnerSortNumber = 1,
+           partnerNuts3 = "Wien (AT130)",
+           partnerNuts3Code = "AT130",
+           country = "Austria",
+           countryCode = "AT",
+           city = "Wien",
+           postalCode = "299281",
+           callId = 1L,
+           projectId = 1L,
+           projectCustomIdentifier = "0001",
+           projectAcronym = "Project Test"
         ))
+
         every { institutionPartnerRepository.getInstitutionPartnerAssignments(Pageable.unpaged()) } returns PageImpl(listInstitutionPartnerDetailsRowImpl)
         assertThat(institutionPartnerRepository.getInstitutionPartnerAssignments(Pageable.unpaged()).content[0].toModel()).isEqualTo(InstitutionPartnerDetail)
         assertThat(getPartnerAddressOrEmptyString("Austria","Vienna", "Main street","123A")).isNotEmpty

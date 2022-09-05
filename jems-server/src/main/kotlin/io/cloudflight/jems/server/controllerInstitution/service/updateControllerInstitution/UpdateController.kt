@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.controllerInstitution.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.controllerInstitution.authorization.CanUpdateControllerInstitution
 import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionValidator
+import io.cloudflight.jems.server.controllerInstitution.service.checkInstitutionPartnerAssignment.CheckInstitutionPartnerAssignments
 import io.cloudflight.jems.server.controllerInstitution.service.controllerInstitutionChanged
 import io.cloudflight.jems.server.controllerInstitution.service.createControllerInstitution.UpdateControllerInstitutionException
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitution
@@ -25,7 +26,8 @@ class UpdateController(
     private val userRolePersistence: UserRolePersistence,
     private val userProjectPersistence: UserProjectPersistence,
     private val auditPublisher: ApplicationEventPublisher,
-    private val controllerInstitutionValidator: ControllerInstitutionValidator
+    private val controllerInstitutionValidator: ControllerInstitutionValidator,
+    private val checkInstitutionPartnerAssignments: CheckInstitutionPartnerAssignments
 ): UpdateControllerInteractor {
 
     @CanUpdateControllerInstitution
@@ -63,6 +65,9 @@ class UpdateController(
 
         return persistence.updateControllerInstitution(controllerInstitution).also {
             it.institutionUsers.addAll(updatedUsers)
+            checkInstitutionPartnerAssignments.checkInstitutionAssignmentsToRemoveForUpdatedInstitution(
+                controllerInstitution.id
+            )
             auditPublisher.publishEvent(
                 controllerInstitutionChanged(
                     context = this,
@@ -98,6 +103,7 @@ class UpdateController(
             }
         }
     }
+
     private fun List<ControllerInstitutionUser>.getUserIdsToDelete(existingInstitutionUsers: List<ControllerInstitutionUser>) =
         existingInstitutionUsers.map { it.userId }.toSet().minus(this.map { it.userId }.toSet())
 
