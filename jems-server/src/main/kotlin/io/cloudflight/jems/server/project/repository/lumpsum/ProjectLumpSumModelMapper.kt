@@ -1,7 +1,11 @@
 package io.cloudflight.jems.server.project.repository.lumpsum
 
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumEntity
-import io.cloudflight.jems.server.project.entity.lumpsum.*
+import io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumEntity
+import io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumId
+import io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumRow
+import io.cloudflight.jems.server.project.entity.lumpsum.ProjectPartnerLumpSumEntity
+import io.cloudflight.jems.server.project.entity.lumpsum.ProjectPartnerLumpSumId
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectPartnerLumpSum

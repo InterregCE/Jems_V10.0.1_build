@@ -89,9 +89,9 @@ export class TopBarService {
       .pipe(
         map(([permissions, editUserItem]) => {
           const menuItems: MenuItemConfiguration[] = [this.dashboardItem];
-          if(permissions.includes(PermissionsEnum.PaymentsRetrieve)){
+          if (permissions.includes(PermissionsEnum.PaymentsRetrieve)) {
             menuItems.push(this.paymentsItem);
-       }
+          }
           if (permissions.includes(PermissionsEnum.ProjectRetrieve)) {
             menuItems.push(this.applicationsItem);
           }

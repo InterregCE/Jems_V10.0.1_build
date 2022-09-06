@@ -50,5 +50,5 @@ interface ProjectLumpSumRepository : PagingAndSortingRepository<ProjectLumpSumEn
     )
     fun findAllByProgrammeLumpSumId(programmeLumpSumId: Long): List<ProjectLumpSumRowForProgrammeLocking>
 
-    fun getByIdProjectId(projectId: Long): List<ProjectLumpSumEntity>
+    fun getByIdProjectIdAndIdOrderNr(projectId: Long, orderNr: Int): ProjectLumpSumEntity
 }

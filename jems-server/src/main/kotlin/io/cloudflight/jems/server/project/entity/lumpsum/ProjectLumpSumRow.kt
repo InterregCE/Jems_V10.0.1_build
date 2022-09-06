@@ -2,7 +2,6 @@ package io.cloudflight.jems.server.project.entity.lumpsum
 
 import java.math.BigDecimal
 import java.sql.Timestamp
-import java.time.ZonedDateTime
 
 interface ProjectLumpSumRow {
 

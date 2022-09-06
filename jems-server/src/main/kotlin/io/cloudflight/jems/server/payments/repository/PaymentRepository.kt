@@ -44,7 +44,9 @@ interface PaymentRepository: JpaRepository<PaymentToProjectEntity, Long> {
         nativeQuery = true)
     fun getAllByGrouping(pageable: Pageable): Page<PaymentToProjectEntity>
 
-    fun deleteAllByIdIn(paymentIds: List<Long>): List<PaymentToProjectEntity>
+
+    @Modifying
+    fun deleteAllByProjectId(projectId: Long): List<PaymentToProjectEntity>
 
     @Modifying
     @Query("DELETE FROM #{#entityName} WHERE project_id = :projectId AND order_nr IN :orderNr", nativeQuery = true)

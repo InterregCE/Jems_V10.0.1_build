@@ -31,5 +31,5 @@ data class ProjectLumpSumEntity(
 
     var paymentEnabledDate: ZonedDateTime?,
 
-    var lastApprovedVersionBeforeReadyForPayment: String? // Unused for the moment, might be needed in the future story
+    var lastApprovedVersionBeforeReadyForPayment: String?
 )

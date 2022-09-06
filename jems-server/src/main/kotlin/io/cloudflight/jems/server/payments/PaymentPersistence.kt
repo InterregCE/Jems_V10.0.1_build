@@ -12,6 +12,8 @@ interface PaymentPersistence {
 
     fun deleteAllByProjectIdAndOrderNrIn(projectId: Long, orderNr: Set<Int>): List<PaymentToProjectEntity>
 
+    fun deleteAllByProjectId(projectId: Long): List<PaymentToProjectEntity>
+
     fun getAmountPerPartnerByProjectIdAndLumpSumOrderNrIn(projectId: Long, orderNrsToBeAdded: MutableSet<Int>): List<ComputedPaymentToProject>
 
     fun savePaymentToProjects(projectId: Long, calculatedAmountsToBeAdded: List<ComputedPaymentToProject>)

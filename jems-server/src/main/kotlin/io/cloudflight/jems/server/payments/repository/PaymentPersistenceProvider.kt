@@ -23,7 +23,9 @@ class PaymentPersistenceProvider(private val paymentRepository: PaymentRepositor
 
     @Transactional(readOnly = true)
     override fun getAllPaymentToProject(pageable: Pageable): Page<PaymentToProject> {
-        return this.paymentRepository.getAllByGrouping(pageable).toListModel()
+        return this.paymentRepository.getAllByGrouping(pageable).toListModel(
+            getLumpSum = { projectId, orderNr -> projectLumpSumRepository.getByIdProjectIdAndIdOrderNr(projectId, orderNr) }
+        )
     }
 
     @Transactional
@@ -31,20 +33,22 @@ class PaymentPersistenceProvider(private val paymentRepository: PaymentRepositor
         this.paymentRepository.deleteAllByProjectIdAndOrderNr(projectId, orderNr)
 
     @Transactional
+    override fun deleteAllByProjectId(projectId: Long): List<PaymentToProjectEntity> =
+        this.paymentRepository.deleteAllByProjectId(projectId)
+
+    @Transactional
     override fun getAmountPerPartnerByProjectIdAndLumpSumOrderNrIn(
         projectId: Long,
         orderNrsToBeAdded: MutableSet<Int>
-    ): List<ComputedPaymentToProject> {
-        return this.paymentRepository.getAmountPerPartnerByProjectIdAndLumpSumOrderNrIn(projectId, orderNrsToBeAdded).toListModel()
-    }
+    ): List<ComputedPaymentToProject> =
+        this.paymentRepository.getAmountPerPartnerByProjectIdAndLumpSumOrderNrIn(projectId, orderNrsToBeAdded).toListModel()
+
 
     @Transactional
     override fun savePaymentToProjects(projectId: Long, calculatedAmountsToBeAdded: List<ComputedPaymentToProject>) {
-        val projectLumpSums = this.projectLumpSumRepository.getByIdProjectId(projectId)
         val projectEntity = projectRepository.getById(projectId)
         val entities = calculatedAmountsToBeAdded.toEntity(
             project = projectEntity,
-            projectLumpSums = projectLumpSums,
             getProgrammeFund = { fundRepository.getById(it) }
         )
         this.paymentRepository.saveAll(entities)

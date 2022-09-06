@@ -2,14 +2,14 @@ package io.cloudflight.jems.server.payments.entity
 
 import io.cloudflight.jems.api.payments.PaymentToProjectDTO
 import io.cloudflight.jems.api.payments.PaymentType
-import io.cloudflight.jems.server.payments.service.model.*
+import io.cloudflight.jems.server.payments.service.model.ComputedPaymentToProject
+import io.cloudflight.jems.server.payments.service.model.PaymentRow
+import io.cloudflight.jems.server.payments.service.model.PaymentToProject
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumEntity
 import org.springframework.data.domain.Page
 import java.math.BigDecimal
-import java.time.ZonedDateTime
-
 
 fun PaymentToProject.toDTO() = PaymentToProjectDTO(
     paymentId = paymentId,
@@ -26,9 +26,15 @@ fun PaymentToProject.toDTO() = PaymentToProjectDTO(
     dateOfLastPayment = dateOfLastPayment
 )
 
-fun Page<PaymentToProjectEntity>.toListModel() = map { it.toModel() }
+fun Page<PaymentToProjectEntity>.toListModel(
+    getLumpSum: (Long, Int) -> ProjectLumpSumEntity,
+) = map {
+    it.toModel(
+        getLumpSum.invoke(it.project.id, it.orderNr)
+    )
+}
 
-fun PaymentToProjectEntity.toModel() = PaymentToProject(
+fun PaymentToProjectEntity.toModel(lumpSum: ProjectLumpSumEntity) = PaymentToProject(
     paymentId = id,
     paymentType = PaymentType.FTLS,
     projectId = project.customIdentifier,
@@ -49,24 +55,16 @@ fun PaymentRow.toModel() = ComputedPaymentToProject(
     projectId, partnerId, orderNr, programmeLumpSumId, programmeFundId, amountApprovedPerFund
 )
 
-fun List<ComputedPaymentToProject>.toEntity(project: ProjectEntity,
-                              projectLumpSums: List<ProjectLumpSumEntity>,
-                              getProgrammeFund: (Long) -> ProgrammeFundEntity,
-) = this.groupBy { PaymentGrouppingId(it.orderNr, it.partnerId, it.programmeFundId)}.map { groupedRows ->
+fun List<ComputedPaymentToProject>.toEntity(
+    project: ProjectEntity,
+    getProgrammeFund: (Long) -> ProgrammeFundEntity,
+) = this.associateBy { PaymentGrouppingId(it.orderNr, it.partnerId, it.programmeFundId)}.map { (_, row) ->
     PaymentToProjectEntity(
         project = project,
-        lumpSum =  projectLumpSums.first {
-            groupedRows.value.first().programmeLumpSumId == it.programmeLumpSum.id && groupedRows.value.first().orderNr == it.id.orderNr
-        },
-        orderNr = projectLumpSums.first {
-            groupedRows.value.first().programmeLumpSumId == it.programmeLumpSum.id && groupedRows.value.first().orderNr == it.id.orderNr
-        }.id.orderNr,
-        programmeLumpSumId = projectLumpSums.first {
-            groupedRows.value.first().programmeLumpSumId == it.programmeLumpSum.id && groupedRows.value.first().orderNr == it.id.orderNr
-        }.programmeLumpSum.id,
-        fund = getProgrammeFund.invoke(groupedRows.value.first().programmeFundId),
-        programmeFundId = groupedRows.value.first().programmeFundId,
-        partnerId = groupedRows.value.first().partnerId,
-        amountApprovedPerFund = groupedRows.value.first().amountApprovedPerFund
+        orderNr = row.orderNr,
+        programmeLumpSumId = row.programmeLumpSumId,
+        fund = getProgrammeFund.invoke(row.programmeFundId),
+        partnerId = row.partnerId,
+        amountApprovedPerFund = row.amountApprovedPerFund
     )
 }

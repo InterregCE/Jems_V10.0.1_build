@@ -36,7 +36,7 @@ import org.junit.jupiter.api.assertThrows
 import java.math.BigDecimal
 import java.time.ZoneId
 import java.time.ZonedDateTime
-import java.util.*
+import java.util.Optional
 
 internal class ProjectLumpSumPersistenceTest : UnitTest() {
 

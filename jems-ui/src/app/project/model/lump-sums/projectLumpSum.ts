@@ -7,7 +7,7 @@ export class ProjectLumpSum {
   comment: string;
   readyForPayment: boolean;
   fastTrack: boolean;
-  paymentEnabledDate: Date; //TODO: might not be necessary
+  paymentEnabledDate: Date;
   lastApprovedVersionBeforeReadyForPayment: string;
 
   constructor(

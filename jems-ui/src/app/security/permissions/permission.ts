@@ -39,7 +39,7 @@ export class Permission {
   public static readonly PAYMENTS_PERMISSIONS = [
     PermissionsEnum.PaymentsRetrieve,
     PermissionsEnum.PaymentsUpdate
-  ]
+  ];
 
   public static readonly DEFAULT_USER_CREATE_AND_COLLABORATE_PERMISSIONS: PermissionNode[] = [
     {

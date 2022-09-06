@@ -14,14 +14,9 @@ CREATE TABLE payment
     CONSTRAINT fk_payments_to_projects_to_project FOREIGN KEY (project_id) REFERENCES project (id)
         ON DELETE CASCADE
         ON UPDATE RESTRICT,
-    CONSTRAINT fk_payments_to_project_lump_sum
-        FOREIGN KEY (project_id, order_nr) REFERENCES project_lump_sum (project_id, order_nr)
-            ON DELETE CASCADE
-            ON UPDATE CASCADE,
-    CONSTRAINT fk_payments_to_project_partner
-        FOREIGN KEY (partner_id) REFERENCES project_partner (id)
-            ON DELETE CASCADE
-            ON UPDATE RESTRICT,
+    CONSTRAINT fk_payments_to_project_partner FOREIGN KEY (partner_id) REFERENCES project_partner (id)
+        ON DELETE CASCADE
+        ON UPDATE RESTRICT,
     CONSTRAINT fk_payments_to_projects_to_programme_fund FOREIGN KEY (programme_fund_id) REFERENCES programme_fund (id)
         ON DELETE RESTRICT
         ON UPDATE RESTRICT
