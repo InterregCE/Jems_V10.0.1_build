@@ -47,7 +47,7 @@ class StandardCallDataGeneratorTest(@LocalServerPort private val port: Int) : Da
 
     @Test
     @Order(1)
-    @ExpectSelect(157)
+    @ExpectSelect(156)
     @ExpectInsert(148)
     @ExpectUpdate(0)
     @ExpectDelete(1)

@@ -191,8 +191,8 @@ abstract class ProjectMapper {
             lumpSums = this.mapToLumpSumDTO(projectCallSettings.lumpSums),
             unitCosts = this.mapToUnitCostDTO(projectCallSettings.unitCosts),
             stateAids = this.mapToStateAidsDTO(projectCallSettings.stateAids),
-            applicationFormFieldConfigurations = projectCallSettings.applicationFormFieldConfigurations.toDto(projectCallSettings.callType)
-
+            applicationFormFieldConfigurations = projectCallSettings.applicationFormFieldConfigurations.toDto(projectCallSettings.callType),
+            costOption = projectCallSettings.costOption.toDto(),
         )
     }
 

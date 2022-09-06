@@ -4,17 +4,18 @@ import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
+import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import org.springframework.http.HttpStatus
 import java.math.BigDecimal
 
 private val MAX_COST = BigDecimal.valueOf(999_999_999_99, 2)
-private const val MAX_ALLOWED_UNIT_COSTS = 100
+const val MAX_ALLOWED_UNIT_COSTS = 100
 
-fun validateCreateUnitCost(unitCostToValidate: ProgrammeUnitCost, currentCount: Long) {
+fun validateCreateUnitCost(unitCostToValidate: ProgrammeUnitCost, currentCount: Long, maxAllowed: Int) {
     if (unitCostToValidate.id != 0L)
         throw I18nValidationException(i18nKey = "programme.unitCost.id.not.allowed")
-    if (currentCount >= MAX_ALLOWED_UNIT_COSTS)
+    if (currentCount >= maxAllowed)
         throw I18nValidationException(i18nKey = "programme.unitCost.max.allowed.reached")
     validateCommonUnitCost(unitCost = unitCostToValidate)
 }
@@ -27,6 +28,13 @@ fun validateUpdateUnitCost(unitCost: ProgrammeUnitCost) {
         )
     validateCommonUnitCost(unitCost = unitCost)
 }
+
+fun ProgrammeUnitCost.getStaticValidationResults(validator: GeneralValidatorService) = listOf(
+    validator.maxLength(name, 50, "name"),
+    validator.maxLength(description, 255, "description"),
+    validator.maxLength(type, 25, "type"),
+    validator.maxLength(justification, 5000, "justification"),
+)
 
 private fun validateCommonUnitCost(unitCost: ProgrammeUnitCost) {
     val errors = mutableMapOf<String, I18nMessage>()

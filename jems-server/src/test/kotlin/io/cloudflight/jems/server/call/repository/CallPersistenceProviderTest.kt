@@ -14,11 +14,14 @@ import io.cloudflight.jems.api.programme.dto.stateaid.ProgrammeStateAidMeasure
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy.AtlanticStrategy
 import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy.EUStrategyBalticSeaRegion
 import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.server.call.END
+import io.cloudflight.jems.server.call.START
 import io.cloudflight.jems.server.call.callFundRate
 import io.cloudflight.jems.server.call.callFundRateEntity
 import io.cloudflight.jems.server.call.controller.toDto
 import io.cloudflight.jems.server.call.createCallDetailModel
 import io.cloudflight.jems.server.call.createTestCallEntity
+import io.cloudflight.jems.server.call.defaultAllowedRealCostsByCallType
 import io.cloudflight.jems.server.call.entity.ApplicationFormFieldConfigurationEntity
 import io.cloudflight.jems.server.call.entity.ApplicationFormFieldConfigurationId
 import io.cloudflight.jems.server.call.entity.CallEntity
@@ -27,9 +30,13 @@ import io.cloudflight.jems.server.call.entity.FlatRateSetupId
 import io.cloudflight.jems.server.call.entity.ProjectCallFlatRateEntity
 import io.cloudflight.jems.server.call.entity.ProjectCallStateAidEntity
 import io.cloudflight.jems.server.call.entity.StateAidSetupId
+import io.cloudflight.jems.server.call.entity.unitCost.ProjectCallUnitCostEntity
+import io.cloudflight.jems.server.call.entity.unitCost.ProjectCallUnitCostId
 import io.cloudflight.jems.server.call.service.model.AllowedRealCosts
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.Call
+import io.cloudflight.jems.server.call.service.model.CallCostOption
+import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.call.service.model.CallSummary
 import io.cloudflight.jems.server.call.service.model.FieldVisibilityStatus
 import io.cloudflight.jems.server.call.service.model.IdNamePair
@@ -52,12 +59,14 @@ import io.cloudflight.jems.server.programme.repository.costoption.combineUnitCos
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
 import io.cloudflight.jems.server.programme.repository.priority.ProgrammeSpecificObjectiveRepository
 import io.cloudflight.jems.server.programme.repository.stateaid.ProgrammeStateAidRepository
+import io.cloudflight.jems.server.programme.service.stateaid.model.ProgrammeStateAid
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.user.repository.user.UserRepository
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.junit5.MockKExtension
+import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
@@ -67,6 +76,7 @@ import org.junit.jupiter.api.extension.ExtendWith
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import java.math.BigDecimal
+import java.time.ZonedDateTime
 import java.util.*
 
 @ExtendWith(MockKExtension::class)
@@ -162,6 +172,7 @@ internal class CallPersistenceProviderTest {
             call.unitCosts.add(
                 ProgrammeUnitCostEntity(
                     id = UNIT_COST_ID,
+                    projectId = null,
                     costPerUnit = BigDecimal.TEN,
                     isOneCostCategory = true,
                     categories = mutableSetOf(
@@ -259,11 +270,13 @@ internal class CallPersistenceProviderTest {
 
         private val unitCost2 = ProgrammeUnitCostEntity(
             id = 2,
+            projectId = null,
             translatedValues = combineUnitCostTranslatedValues(
                 programmeUnitCostId = 2,
                 name = setOf(InputTranslation(SystemLanguage.EN, "testName 2")),
                 description = emptySet(),
                 type = setOf(InputTranslation(SystemLanguage.EN, "UC 2")),
+                justification = setOf(InputTranslation(SystemLanguage.EN, "justification 2")),
             ),
             isOneCostCategory = false,
             costPerUnit = BigDecimal.ZERO,
@@ -273,17 +286,42 @@ internal class CallPersistenceProviderTest {
 
         private val unitCost3 = ProgrammeUnitCostEntity(
             id = 3,
+            projectId = null,
             translatedValues = combineUnitCostTranslatedValues(
                 programmeUnitCostId = 3,
                 name = setOf(InputTranslation(SystemLanguage.EN, "testName 3")),
                 description = emptySet(),
                 type = setOf(InputTranslation(SystemLanguage.EN, "UC 3")),
+                justification = setOf(InputTranslation(SystemLanguage.EN, "justification 3")),
             ),
             isOneCostCategory = false,
             costPerUnit = BigDecimal.ONE,
             costPerUnitForeignCurrency = BigDecimal.ZERO,
             foreignCurrencyCode = null
         )
+
+        private fun callWithCostOption(): CallEntity {
+            return CallEntity(
+                id = 0L,
+                creator = mockk(),
+                name = "call",
+                status = CallStatus.DRAFT,
+                type = CallType.STANDARD,
+                startDate = ZonedDateTime.now(),
+                endDateStep1 = null,
+                endDate = ZonedDateTime.now(),
+                prioritySpecificObjectives = mutableSetOf(),
+                strategies = mutableSetOf(),
+                isAdditionalFundAllowed = false,
+                funds = mutableSetOf(),
+                lengthOfPeriod = 1,
+                allowedRealCosts = defaultAllowedRealCostsByCallType(CallType.STANDARD),
+                preSubmissionCheckPluginKey = null,
+                firstStepPreSubmissionCheckPluginKey = null,
+                projectDefinedUnitCostAllowed = true,
+                projectDefinedLumpSumAllowed = false,
+            )
+        }
     }
 
     @MockK
@@ -613,8 +651,81 @@ internal class CallPersistenceProviderTest {
             assertThat(lumpSums).isEmpty()
             assertThat(unitCosts).isEmpty()
         }
+    }
 
+    @Test
+    fun updateCall() {
+        val callOld = createTestCallEntity(id = 18L)
+        every { callRepo.findById(18L) } returns Optional.of(callOld)
 
+        val stateAid = mockk<ProgrammeStateAidEntity>()
+        every { stateAid.id } returns 489L
+        val existingStateAid = ProjectCallStateAidEntity(StateAidSetupId(mockk(), stateAid))
+        val stateAidNew = ProgrammeStateAidEntity(
+            id = 254L,
+            measure = ProgrammeStateAidMeasure.GBER_ARTICLE_15,
+            schemeNumber = "254-sc",
+            maxIntensity = BigDecimal.ONE,
+            threshold = BigDecimal.TEN,
+        )
+        val newStateAid = ProjectCallStateAidEntity(StateAidSetupId(mockk(), stateAidNew))
+        every { projectCallStateAidRepository.findAllByIdCallId(18L) } returnsMany listOf(
+            mutableSetOf(existingStateAid),
+            mutableSetOf(newStateAid),
+        )
+
+        every { projectCallStateAidRepository.deleteAllBySetupIdStateAidId(any()) } answers { }
+        every { programmeStateAidRepo.findAllById(setOf(254L)) } returns listOf(stateAidNew)
+
+        val savedStateAids = slot<List<ProjectCallStateAidEntity>>()
+        every { projectCallStateAidRepository.saveAll(capture(savedStateAids)) } returnsArgument 0
+
+        every { programmeFundRepo.getTop20ByIdInAndSelectedTrue(emptySet()) } returns emptyList()
+
+        val formConfig = ApplicationFormFieldConfigurationEntity(ApplicationFormFieldConfigurationId("af-id", callOld), FieldVisibilityStatus.STEP_TWO_ONLY)
+        every { applicationFormFieldConfigurationRepository.findAllByCallId(18L) } returns mutableSetOf(formConfig)
+        every { callRepo.save(any()) } returnsArgument 0
+
+        val call = Call(
+            id = 18L,
+            endDate = END,
+            name = "call NEW",
+            status = CallStatus.DRAFT,
+            type = CallType.STANDARD,
+            startDate = START,
+            isAdditionalFundAllowed = true,
+            lengthOfPeriod = 25,
+            stateAidIds = setOf(254L),
+        )
+        val callDetail = CallDetail(
+            id = 18L,
+            name = "call NEW",
+            status = CallStatus.DRAFT,
+            endDateStep1 = null,
+            endDate = END,
+            type = CallType.STANDARD,
+            startDate = START,
+            isAdditionalFundAllowed = true,
+            lengthOfPeriod = 25,
+            applicationFormFieldConfigurations = mutableSetOf(ApplicationFormFieldConfiguration("af-id", FieldVisibilityStatus.STEP_TWO_ONLY)),
+            preSubmissionCheckPluginKey = null,
+            firstStepPreSubmissionCheckPluginKey = null,
+            stateAids = listOf(
+                ProgrammeStateAid(
+                    id = 254L,
+                    measure = ProgrammeStateAidMeasure.GBER_ARTICLE_15,
+                    schemeNumber = "254-sc",
+                    maxIntensity = BigDecimal.ONE,
+                    threshold = BigDecimal.TEN,
+                ),
+            ),
+            flatRates = sortedSetOf(
+                ProjectCallFlatRate(FlatRateType.STAFF_COSTS, rate = 5, adjustable = true),
+            ),
+        )
+        assertThat(persistence.updateCall(call)).isEqualTo(callDetail)
+        verify(exactly = 1) { projectCallStateAidRepository.deleteAllBySetupIdStateAidId(489L) }
+        assertThat(savedStateAids.captured).hasSize(1)
     }
 
     @Test
@@ -705,10 +816,10 @@ internal class CallPersistenceProviderTest {
 
     @Test
     fun existsAllProgrammeUnitCostsByIds() {
-        every { programmeUnitCostRepo.findAllById(setOf(32L)) } returns emptyList()
+        every { programmeUnitCostRepo.findAllByIdInAndProjectIdNull(setOf(32L)) } returns mutableListOf()
         assertThat(persistence.existsAllProgrammeUnitCostsByIds(setOf(32L))).isFalse
 
-        every { programmeUnitCostRepo.findAllById(setOf(17L)) } returns listOf(unitCost2.copy(id = 17L))
+        every { programmeUnitCostRepo.findAllByIdInAndProjectIdNull(setOf(17L)) } returns mutableListOf(unitCost2.copy(id = 17L))
         assertThat(persistence.existsAllProgrammeUnitCostsByIds(setOf(17L))).isTrue
     }
 
@@ -722,7 +833,7 @@ internal class CallPersistenceProviderTest {
     fun `update unit cost - OK`() {
         val call = createTestCallEntity(1)
         every { callRepo.findById(1L) } returns Optional.of(call)
-        every { programmeUnitCostRepo.findAllById(setOf(2, 3)) } returns listOf(unitCost2, unitCost3)
+        every { programmeUnitCostRepo.findAllByIdInAndProjectIdNull(setOf(2, 3)) } returns mutableListOf(unitCost2, unitCost3)
         every { applicationFormFieldConfigurationRepository.findAllByCallId(1) } returns applicationFormFieldConfigurationEntities(
             call
         )
@@ -779,6 +890,64 @@ internal class CallPersistenceProviderTest {
         verify(exactly = 1) {
             callRepo.findById(1)
         }
+    }
+
+    @Test
+    fun getCallCostOptionForProject() {
+        every { projectPersistence.getCallIdOfProject(48L) } returns 7L
+        every { callRepo.findById(7L) } returns Optional.of(callWithCostOption())
+        assertThat(persistence.getCallCostOption(7L)).isEqualTo(
+            CallCostOption(
+                projectDefinedUnitCostAllowed = true,
+                projectDefinedLumpSumAllowed = false,
+            )
+        )
+    }
+
+    @Test
+    fun getCallCostOption() {
+        every { callRepo.findById(4L) } returns Optional.of(callWithCostOption())
+        assertThat(persistence.getCallCostOption(4L)).isEqualTo(
+            CallCostOption(
+                projectDefinedUnitCostAllowed = true,
+                projectDefinedLumpSumAllowed = false,
+            )
+        )
+    }
+
+    @Test
+    fun updateCallCostOption() {
+        val call = createTestCallEntity(id = 10L)
+        call.projectDefinedUnitCostAllowed = false
+        call.projectDefinedLumpSumAllowed = false
+
+        every { callRepo.findById(10L) } returns Optional.of(call)
+        persistence.updateCallCostOption(10L, CallCostOption(true, true))
+
+        assertThat(call.projectDefinedUnitCostAllowed).isTrue()
+        assertThat(call.projectDefinedLumpSumAllowed).isTrue()
+    }
+
+    @Test
+    fun `unitCost entities are correctly initialized`() {
+        val projectCall = mockk<CallEntity>()
+        val programmeUnitCost = mockk<ProgrammeUnitCostEntity>()
+
+        val uc1 = ProjectCallUnitCostEntity(
+            ProjectCallUnitCostId(
+                projectCall = projectCall,
+                programmeUnitCost = programmeUnitCost,
+            )
+        )
+
+        val uc2 = ProjectCallUnitCostEntity(
+            ProjectCallUnitCostId(
+                projectCall = projectCall,
+                programmeUnitCost = programmeUnitCost,
+            )
+        )
+
+        assertThat(uc1.id.equals(uc2.id)).isTrue()
     }
 
 }

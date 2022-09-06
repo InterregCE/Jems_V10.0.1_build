@@ -14,14 +14,14 @@ class ProgrammeUnitCostPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getUnitCosts(): List<ProgrammeUnitCost> =
-        repository.findTop100ByOrderById().toProgrammeUnitCost()
+        repository.findTop100ByProjectIdNullOrderById().toProgrammeUnitCost()
 
     @Transactional(readOnly = true)
     override fun getUnitCost(unitCostId: Long): ProgrammeUnitCost =
         getUnitCostOrThrow(unitCostId).toProgrammeUnitCost()
 
     @Transactional(readOnly = true)
-    override fun getCount(): Long = repository.count()
+    override fun getCount(): Long = repository.countAllByProjectIdNull()
 
     @Transactional
     override fun createUnitCost(unitCost: ProgrammeUnitCost): ProgrammeUnitCost {
@@ -29,7 +29,7 @@ class ProgrammeUnitCostPersistenceProvider(
         return repository.save(
             created.copy(
                 translatedValues =
-                combineUnitCostTranslatedValues(created.id, unitCost.name, unitCost.description, unitCost.type),
+                combineUnitCostTranslatedValues(created.id, unitCost.name, unitCost.description, unitCost.type, unitCost.justification),
                 categories = unitCost.categories.toBudgetCategoryEntity(created.id)
             )
         ).toProgrammeUnitCost()
@@ -41,7 +41,7 @@ class ProgrammeUnitCostPersistenceProvider(
             return repository.save(
                 unitCost.toEntity().copy(
                     translatedValues =
-                    combineUnitCostTranslatedValues(unitCost.id, unitCost.name, unitCost.description, unitCost.type),
+                    combineUnitCostTranslatedValues(unitCost.id, unitCost.name, unitCost.description, unitCost.type, unitCost.justification),
                     categories = unitCost.categories.toBudgetCategoryEntity(unitCost.id)
                 )
             ).toProgrammeUnitCost()
@@ -53,6 +53,6 @@ class ProgrammeUnitCostPersistenceProvider(
         repository.delete(getUnitCostOrThrow(unitCostId))
 
     private fun getUnitCostOrThrow(unitCostId: Long): ProgrammeUnitCostEntity =
-        repository.findById(unitCostId).orElseThrow { ResourceNotFoundException("programmeUnitCost") }
+        repository.findByIdAndProjectIdNull(unitCostId).orElseThrow { ResourceNotFoundException("programmeUnitCost") }
 
 }

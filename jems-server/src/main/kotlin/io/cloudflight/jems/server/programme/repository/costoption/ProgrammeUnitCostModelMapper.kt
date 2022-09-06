@@ -10,9 +10,11 @@ import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUn
 
 fun ProgrammeUnitCostEntity.toProgrammeUnitCost() = ProgrammeUnitCost(
     id = id,
+    projectId = projectId,
     name = translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.name) },
     description = translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.description) },
     type = translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.type) },
+    justification = translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.justification) },
     costPerUnit = costPerUnit,
     costPerUnitForeignCurrency = costPerUnitForeignCurrency,
     foreignCurrencyCode = foreignCurrencyCode,
@@ -25,6 +27,7 @@ fun Iterable<ProgrammeUnitCostEntity>.toProgrammeUnitCost() = map { it.toProgram
 fun ProgrammeUnitCost.toEntity() = ProgrammeUnitCostEntity(
     // translatedValues - needs programmeUnitCostId
     id = id,
+    projectId = projectId,
     costPerUnit = costPerUnit!!,
     costPerUnitForeignCurrency = costPerUnitForeignCurrency,
     foreignCurrencyCode = foreignCurrencyCode,
@@ -40,22 +43,26 @@ fun combineUnitCostTranslatedValues(
     programmeUnitCostId: Long,
     name: Set<InputTranslation>,
     description: Set<InputTranslation>,
-    type: Set<InputTranslation>
+    type: Set<InputTranslation>,
+    justification: Set<InputTranslation>,
 ): MutableSet<ProgrammeUnitCostTranslEntity> {
     val nameMap = name.associateBy( { it.language }, { it.translation } )
     val descriptionMap = description.associateBy( { it.language }, { it.translation } )
     val typeMap = type.associateBy( { it.language }, { it.translation } )
+    val justificationMap = justification.associateBy( { it.language }, { it.translation } )
 
     val languages = nameMap.keys.toMutableSet()
     languages.addAll(descriptionMap.keys)
     languages.addAll(typeMap.keys)
+    languages.addAll(justificationMap.keys)
 
     return languages.mapTo(HashSet()) {
         ProgrammeUnitCostTranslEntity(
             ProgrammeUnitCostTranslId(programmeUnitCostId, it),
-            nameMap[it],
-            descriptionMap[it],
-            typeMap[it]
+            name = nameMap[it],
+            description = descriptionMap[it],
+            type = typeMap[it],
+            justification = justificationMap[it],
         )
     }
 }

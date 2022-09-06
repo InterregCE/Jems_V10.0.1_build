@@ -30,8 +30,6 @@ interface ProjectPersistence {
 
     fun getProjectsOfUserPlusExtra(pageable: Pageable, extraProjectIds: Collection<Long>): Page<ProjectSummary>
 
-    fun getProjectUnitCosts(projectId: Long): List<ProgrammeUnitCost>
-
     fun getProjectPeriods(projectId: Long, version: String? = null): List<ProjectPeriod>
 
     fun createProjectWithStatus(acronym: String, status: ApplicationStatus, userId: Long, callId: Long): ProjectDetail

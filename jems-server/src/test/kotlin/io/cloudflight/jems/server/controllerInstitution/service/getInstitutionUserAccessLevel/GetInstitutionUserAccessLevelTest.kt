@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.controllerInstitution.service.getInstitutionU
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.authentication.service.SecurityService
-import io.cloudflight.jems.server.controllerInstitution.ControllerInstitutionPersistence
+import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.controllerInstitution.service.model.UserInstitutionAccessLevel
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs

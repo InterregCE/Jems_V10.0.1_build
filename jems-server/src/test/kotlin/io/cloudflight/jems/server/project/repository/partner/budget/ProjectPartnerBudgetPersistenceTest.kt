@@ -77,11 +77,13 @@ class ProjectPartnerBudgetPersistenceTest: UnitTest() {
         )
         private val programmeUnitCostEntity = ProgrammeUnitCostEntity(
             id = 1,
+            projectId = null,
             translatedValues = combineUnitCostTranslatedValues(
                 programmeUnitCostId = 1,
                 name = setOf(InputTranslation(SystemLanguage.EN, "test")),
                 description = emptySet(),
-                type = setOf(InputTranslation(SystemLanguage.EN, "test"))
+                type = setOf(InputTranslation(SystemLanguage.EN, "test")),
+                justification = setOf(InputTranslation(SystemLanguage.EN, "justification")),
             ),
             costPerUnit = BigDecimal.TEN,
             isOneCostCategory = false,

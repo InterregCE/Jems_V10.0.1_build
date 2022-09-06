@@ -159,7 +159,7 @@ internal class UpdateBudgetEquipmentCostsTest : UpdateBudgetGeneralCostsTest() {
         val pricePerUnits = costEntries.map { it.pricePerUnit }
         every { budgetCostValidator.validateBaseEntries(costEntries) } returns Unit
         every { budgetCostValidator.validatePricePerUnits(pricePerUnits) } returns Unit
-        every { projectPersistence.getProjectUnitCosts(projectId) } returns emptyList()
+        every { projectUnitCostPersistence.getAvailableUnitCostsForProjectId(projectId) } returns emptyList()
         every { budgetCostValidator.validateAllowedUnitCosts(emptyList(), any()) } throws I18nValidationException()
 
         assertThrows<I18nValidationException> {
@@ -171,7 +171,7 @@ internal class UpdateBudgetEquipmentCostsTest : UpdateBudgetGeneralCostsTest() {
         verify { budgetCostValidator.validateAgainstAFConfig(callId, any(), any(), any(), any()) }
         verify { budgetCostValidator.validateBaseEntries(costEntries) }
         verify { budgetCostValidator.validatePricePerUnits(pricePerUnits) }
-        verify { projectPersistence.getProjectUnitCosts(projectId) }
+        verify { projectUnitCostPersistence.getAvailableUnitCostsForProjectId(projectId) }
         verify { budgetCostValidator.validateAllowedUnitCosts(emptyList(), any()) }
         confirmVerified(budgetCostValidator, partnerPersistence, projectPersistence)
     }

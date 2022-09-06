@@ -4,6 +4,7 @@ import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectPartner
 import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.project.service.customCostOptions.ProjectUnitCostPersistence
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.BudgetCostValidator
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
@@ -19,7 +20,8 @@ abstract class UpdateBudgetGeneralCosts(
     private val projectPersistence: ProjectPersistence,
     private val partnerPersistence: PartnerPersistence,
     private val budgetOptionsPersistence: ProjectPartnerBudgetOptionsPersistence,
-    private val budgetCostValidator: BudgetCostValidator
+    private val budgetCostValidator: BudgetCostValidator,
+    private val projectUnitCostPersistence: ProjectUnitCostPersistence,
 ) : UpdateBudgetGeneralCostsInteractor {
 
     @Transactional
@@ -44,7 +46,7 @@ abstract class UpdateBudgetGeneralCosts(
         budgetCostValidator.validatePricePerUnits(budgetGeneralCosts.map { it.pricePerUnit })
         if (budgetGeneralCosts.any { it.unitCostId != null }) {
             budgetCostValidator.validateAllowedUnitCosts(
-                availableUnitCosts = projectPersistence.getProjectUnitCosts(projectId),
+                availableUnitCosts = projectUnitCostPersistence.getAvailableUnitCostsForProjectId(projectId),
                 budgetGeneralCosts.filter { it.unitCostId != null }
                     .map { BudgetCostValidator.UnitCostEntry(it.unitCostId!!, it.pricePerUnit, it.unitType) }
             )

@@ -174,6 +174,15 @@ class ProjectPartnerBudgetCostsPersistenceProvider(
             }
         ) ?: BigDecimal.ZERO
 
+    @Transactional(readOnly = true)
+    override fun isUnitCostUsed(unitCostId: Long): Boolean =
+        budgetStaffCostRepository.existsByUnitCostId(unitCostId)
+            || budgetExternalRepository.existsByUnitCostId(unitCostId)
+            || budgetEquipmentRepository.existsByUnitCostId(unitCostId)
+            || budgetInfrastructureRepository.existsByUnitCostId(unitCostId)
+            || budgetTravelRepository.existsByUnitCostId(unitCostId)
+            || budgetUnitCostRepository.existsByUnitCostId(unitCostId)
+
     private fun <T : ProjectPartnerBudgetBase> getCostTotal(
         partnerId: Long, version: String?, repository: ProjectPartnerBaseBudgetRepository<T>,
     ) =

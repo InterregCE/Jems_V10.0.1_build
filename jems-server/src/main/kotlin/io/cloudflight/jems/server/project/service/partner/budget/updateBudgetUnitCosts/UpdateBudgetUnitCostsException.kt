@@ -13,8 +13,13 @@ class UpdateBudgetUnitCostsException(cause: Throwable) : ApplicationException(
     cause = cause
 )
 
-
 class UnitCostsBudgetSectionIsNotAllowed : ApplicationUnprocessableException(
     code = "$UPDATE_BUDGET_UNIT_COSTS_ERROR_CODE_PREFIX-001",
     i18nMessage = I18nMessage("$UPDATE_BUDGET_UNIT_COSTS_ERROR_KEY_PREFIX.no.any.multiple.categories.unit.cost.allowed"),
+)
+
+class UnitCostCannotBeFound(unitCostId: Long) : ApplicationUnprocessableException(
+    code = "$UPDATE_BUDGET_UNIT_COSTS_ERROR_CODE_PREFIX-002",
+    i18nMessage = I18nMessage("$UPDATE_BUDGET_UNIT_COSTS_ERROR_KEY_PREFIX.unit.cost.cannot.be.found"),
+    message = "Unit cost id=$unitCostId cannot be found"
 )

@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.controllerInstitution.service.assignInstitutionToPartner
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
-import io.cloudflight.jems.server.controllerInstitution.ControllerInstitutionPersistence
+import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.controllerInstitution.authorization.CanAssignInstitutionToPartner
 import io.cloudflight.jems.server.controllerInstitution.service.institutionPartnerAssignmentsChanged
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionAssignment

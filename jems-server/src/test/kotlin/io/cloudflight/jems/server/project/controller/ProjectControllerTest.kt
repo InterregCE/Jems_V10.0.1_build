@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.controller
 
+import io.cloudflight.jems.api.call.dto.CallCostOptionDTO
 import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateDTO
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateSetupDTO
@@ -28,6 +29,7 @@ import io.cloudflight.jems.api.project.dto.status.ProjectDecisionDTO
 import io.cloudflight.jems.api.project.dto.status.ProjectStatusDTO
 import io.cloudflight.jems.api.project.dto.workpackage.activity.WorkPackageActivitySummaryDTO
 import io.cloudflight.jems.server.call.controller.toDto
+import io.cloudflight.jems.server.call.service.model.CallCostOption
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
@@ -95,7 +97,11 @@ class ProjectControllerTest {
             isAdditionalFundAllowed = false,
             applicationFormFieldConfigurations = mutableSetOf(),
             preSubmissionCheckPluginKey = null,
-            firstStepPreSubmissionCheckPluginKey = null
+            firstStepPreSubmissionCheckPluginKey = null,
+            costOption = CallCostOption(
+                projectDefinedUnitCostAllowed = true,
+                projectDefinedLumpSumAllowed = false,
+            ),
         )
 
         private val partner1 = ProjectPartnerSummary(
@@ -245,6 +251,7 @@ class ProjectControllerTest {
             unitCosts = listOf(
                 ProgrammeUnitCost(
                     id = 4,
+                    projectId = null,
                     name = setOf(InputTranslation(SystemLanguage.EN, "UnitCost")),
                     description = setOf(InputTranslation(SystemLanguage.EN, "pus 4")),
                     type = setOf(InputTranslation(SystemLanguage.EN, "type of unit cost")),
@@ -256,7 +263,11 @@ class ProjectControllerTest {
             stateAids = emptyList(),
             applicationFormFieldConfigurations = mutableSetOf(),
             preSubmissionCheckPluginKey = null,
-            firstStepPreSubmissionCheckPluginKey = null
+            firstStepPreSubmissionCheckPluginKey = null,
+            costOption = CallCostOption(
+                projectDefinedUnitCostAllowed = true,
+                projectDefinedLumpSumAllowed = false,
+            ),
         )
         every { getProjectInteractor.getProjectCallSettings(1L) } returns callSettings
         assertThat(controller.getProjectCallSettingsById(1L)).isEqualTo(
@@ -296,7 +307,11 @@ class ProjectControllerTest {
                     )
                 ),
                 stateAids = emptyList(),
-                applicationFormFieldConfigurations = mutableSetOf()
+                applicationFormFieldConfigurations = mutableSetOf(),
+                costOption = CallCostOptionDTO(
+                    projectDefinedUnitCostAllowed = true,
+                    projectDefinedLumpSumAllowed = false,
+                ),
             )
         )
     }
@@ -371,7 +386,11 @@ class ProjectControllerTest {
                     emptyList(),
                     emptyList(),
                     emptyList(),
-                    callSettings.applicationFormFieldConfigurations.toDto(callSettings.callType)
+                    callSettings.applicationFormFieldConfigurations.toDto(callSettings.callType),
+                    costOption = CallCostOptionDTO(
+                        projectDefinedUnitCostAllowed = true,
+                        projectDefinedLumpSumAllowed = false,
+                    ),
                 ),
                 acronym = project.acronym,
                 title = project.title,

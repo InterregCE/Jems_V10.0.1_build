@@ -88,6 +88,7 @@ import java.time.LocalDateTime
 import java.time.ZonedDateTime
 import java.util.Optional
 import com.querydsl.core.types.Predicate
+import io.cloudflight.jems.server.call.service.model.CallCostOption
 import java.time.ZoneId
 
 /**
@@ -171,11 +172,13 @@ internal class ProjectPersistenceProviderTest : UnitTest() {
             call.unitCosts.add(
                 ProgrammeUnitCostEntity(
                     id = 4,
+                    projectId = null,
                     translatedValues = combineUnitCostTranslatedValues(
                         programmeUnitCostId = 32,
                         name = setOf(InputTranslation(SystemLanguage.EN, "UnitCost")),
                         description = setOf(InputTranslation(SystemLanguage.EN, "plus 4")),
-                        type = setOf(InputTranslation(SystemLanguage.EN, "type of unit cost"))
+                        type = setOf(InputTranslation(SystemLanguage.EN, "type of unit cost")),
+                        justification = setOf(InputTranslation(SystemLanguage.EN, "justification of unit cost")),
                     ),
                     costPerUnit = BigDecimal.ONE,
                     isOneCostCategory = false,
@@ -363,17 +366,12 @@ internal class ProjectPersistenceProviderTest : UnitTest() {
                 ),
                 applicationFormFieldConfigurations = applicationFormFieldConfigurationEntities.toModel(),
                 preSubmissionCheckPluginKey = null,
-                firstStepPreSubmissionCheckPluginKey = null
+                firstStepPreSubmissionCheckPluginKey = null,
+                costOption = CallCostOption(
+                    projectDefinedUnitCostAllowed = true,
+                    projectDefinedLumpSumAllowed = false,
+                ),
             )
-        )
-    }
-
-    @Test
-    fun `get Project UnitCosts`() {
-        val project = dummyProject()
-        every { projectRepository.findById(PROJECT_ID) } returns Optional.of(project)
-        assertThat(persistence.getProjectUnitCosts(PROJECT_ID)).isEqualTo(
-            project.call.unitCosts.toModel()
         )
     }
 
