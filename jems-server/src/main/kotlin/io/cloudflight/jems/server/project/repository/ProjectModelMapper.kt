@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.call.entity.ApplicationFormFieldConfigurationE
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.call.entity.ProjectCallStateAidEntity
 import io.cloudflight.jems.server.call.repository.toModel
+import io.cloudflight.jems.server.call.service.model.CallCostOption
 import io.cloudflight.jems.server.common.entity.extractField
 import io.cloudflight.jems.server.programme.entity.ProgrammePriorityEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostEntity
@@ -93,7 +94,11 @@ fun CallEntity.toSettingsModel(
     stateAids = stateAidEntities.toModel(),
     applicationFormFieldConfigurations = applicationFormFieldConfigurationEntities.toModel(),
     preSubmissionCheckPluginKey = preSubmissionCheckPluginKey,
-    firstStepPreSubmissionCheckPluginKey = firstStepPreSubmissionCheckPluginKey
+    firstStepPreSubmissionCheckPluginKey = firstStepPreSubmissionCheckPluginKey,
+    costOption = CallCostOption(
+        projectDefinedUnitCostAllowed = projectDefinedUnitCostAllowed,
+        projectDefinedLumpSumAllowed = projectDefinedLumpSumAllowed,
+    ),
 )
 
 fun ProjectEntity.toModel(

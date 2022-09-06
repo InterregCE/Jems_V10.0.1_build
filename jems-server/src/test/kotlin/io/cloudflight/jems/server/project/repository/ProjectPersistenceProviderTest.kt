@@ -88,6 +88,7 @@ import java.time.LocalDateTime
 import java.time.ZonedDateTime
 import java.util.Optional
 import com.querydsl.core.types.Predicate
+import io.cloudflight.jems.server.call.service.model.CallCostOption
 import java.time.ZoneId
 
 /**
@@ -365,7 +366,11 @@ internal class ProjectPersistenceProviderTest : UnitTest() {
                 ),
                 applicationFormFieldConfigurations = applicationFormFieldConfigurationEntities.toModel(),
                 preSubmissionCheckPluginKey = null,
-                firstStepPreSubmissionCheckPluginKey = null
+                firstStepPreSubmissionCheckPluginKey = null,
+                costOption = CallCostOption(
+                    projectDefinedUnitCostAllowed = true,
+                    projectDefinedLumpSumAllowed = false,
+                ),
             )
         )
     }

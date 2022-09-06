@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.service.model
 
 import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
+import io.cloudflight.jems.server.call.service.model.CallCostOption
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
@@ -23,7 +24,8 @@ data class ProjectCallSettings(
     val stateAids: List<ProgrammeStateAid>,
     var applicationFormFieldConfigurations: MutableSet<ApplicationFormFieldConfiguration>,
     val preSubmissionCheckPluginKey: String?,
-    val firstStepPreSubmissionCheckPluginKey: String?
+    val firstStepPreSubmissionCheckPluginKey: String?,
+    val costOption: CallCostOption,
 ) {
     fun isCallStep1Closed(): Boolean {
         return if (endDateStep1 == null) {

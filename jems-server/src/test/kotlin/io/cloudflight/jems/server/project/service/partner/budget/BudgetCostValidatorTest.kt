@@ -20,6 +20,7 @@ import io.cloudflight.jems.server.project.service.partner.model.BudgetPeriod
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.mockk
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.DynamicTest
 import org.junit.jupiter.api.Test
@@ -503,7 +504,8 @@ internal class BudgetCostValidatorTest : UnitTest() {
             stateAids = emptyList(),
             applicationFormFieldConfigurations = mutableSetOf(),
             preSubmissionCheckPluginKey = null,
-            firstStepPreSubmissionCheckPluginKey = null
+            firstStepPreSubmissionCheckPluginKey = null,
+            costOption = mockk(),
         )
     }
 }

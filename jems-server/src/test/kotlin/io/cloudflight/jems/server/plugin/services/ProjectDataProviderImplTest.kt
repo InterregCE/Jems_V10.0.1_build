@@ -94,6 +94,7 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionE.lumpsum.Proje
 import io.cloudflight.jems.plugin.contract.models.project.versions.ProjectVersionData
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.service.CallPersistence
+import io.cloudflight.jems.server.call.service.model.CallCostOption
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.service.ProgrammeDataService
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeLumpSumPersistence
@@ -266,7 +267,11 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             isAdditionalFundAllowed = false,
             applicationFormFieldConfigurations = mutableSetOf(),
             preSubmissionCheckPluginKey = null,
-            firstStepPreSubmissionCheckPluginKey = null
+            firstStepPreSubmissionCheckPluginKey = null,
+            costOption = CallCostOption(
+                projectDefinedUnitCostAllowed = true,
+                projectDefinedLumpSumAllowed = false,
+            ),
         )
         private val legalStatuse = listOf(
             ProgrammeLegalStatus(
