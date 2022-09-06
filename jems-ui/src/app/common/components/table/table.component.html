@@ -14,6 +14,7 @@
            id="table"
            [dataSource]="rows"
            (matSortChange)="sortRows.emit($event)"
+           [class.multi-languages-table]="isMultiLanguage"
            aria-describedby="table component">
 
         <ng-container *ngFor="let column of configuration.columns; let i = index"

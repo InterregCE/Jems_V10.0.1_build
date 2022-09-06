@@ -188,6 +188,11 @@ import {
   PartnerControlReportStore
 } from '@project/project-application/report/partner-control-report/partner-control-report-store.service';
 import { PartnerControlReportInformationTabComponent } from './project-application/report/partner-control-report/partner-control-report-information-tab/partner-control-report-information-tab.component';
+import { ProjectProposedUnitCostsComponent } from './unit-costs/project-unit-costs-page/project-proposed-unit-costs/project-proposed-unit-costs.component';
+import { ProjectProposedUnitCostDetailComponent } from './unit-costs/project-unit-costs-page/project-proposed-unit-costs/project-proposed-unit-cost-detail/project-proposed-unit-cost-detail.component';
+import {
+  ProjectProposedUnitCostBreadcrumbResolver
+} from '@project/project-application/containers/project-application-detail/services/project-proposed-unit-cost.resolver';
 
 @NgModule({
   declarations: [
@@ -323,7 +328,9 @@ import { PartnerControlReportInformationTabComponent } from './project-applicati
     ContractReportingComponent,
     PartnerControlReportComponent,
     PartnerControlReportIdentificationTabComponent,
-    PartnerControlReportInformationTabComponent
+    PartnerControlReportInformationTabComponent,
+    ProjectProposedUnitCostsComponent,
+    ProjectProposedUnitCostDetailComponent
   ],
   imports: [
     SharedModule,
@@ -351,7 +358,8 @@ import { PartnerControlReportInformationTabComponent } from './project-applicati
     ProjectPartnerCoFinancingStore,
     ProjectPartnerCoFinancingSpfStore,
     ProjectPartnerStateAidsStore,
-    PartnerControlReportStore
+    PartnerControlReportStore,
+    ProjectProposedUnitCostBreadcrumbResolver
   ]
 })
 export class ProjectModule {

@@ -476,10 +476,16 @@ export class ProjectApplicationFormSidenavService {
                 headline: {i18nKey: 'project.application.form.section.part.e.subsection.one'},
                 route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormLumpSums`,
               },
-              ...this.visibilityStatusService.shouldBeVisibleIfUnitCostsSelected() ?
+              ...(this.visibilityStatusService.shouldBeVisibleIfUnitCostsSelected() || this.visibilityStatusService.shouldBeVisibleIfProjectDefinedUnitCostsAllowed()) ?
                 [{
                   headline: {i18nKey: 'project.application.form.section.part.e.subsection.two'},
                   route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormUnitCosts`,
+                  bullets: this.visibilityStatusService.shouldBeVisibleIfProjectDefinedUnitCostsAllowed() ? [
+                    {
+                      headline: {i18nKey: 'project.application.form.section.part.e.subsection.two.subsection.one'},
+                      route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormUnitCosts/projectProposed`,
+                    }
+                  ] : []
                 }] : []
             ],
             versionedSection: true

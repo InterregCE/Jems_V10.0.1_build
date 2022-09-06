@@ -1,0 +1,64 @@
+<jems-project-page-template *ngIf="unitCostDataSource$ | async as unitCostDataSource"
+                            [needsCard]="true"
+                            [titleText]="'project.application.form.acronym' | translate : {projectTitle: projectStore.projectTitle$ | async} "
+                            subTitleKey="project.application.form.section.part.e.subsection.two.subsection.one">
+
+    <h3>{{'project.application.form.section.part.e.subsection.two.subsection.one.table.title' | translate}}</h3>
+    <p>{{'project.application.form.section.part.e.subsection.two.subsection.one.description' | translate}}</p>
+
+    <ng-container *ngIf="projectStore.projectEditable$ | async">
+        <button mat-stroked-button class="mt-1"
+                [disabled]="(projectStore.projectEditable$ | async) === false || unitCostDataSource?.data.length >= 10"
+                [routerLink]="'/app/project/detail/' + projectId + '/applicationFormUnitCosts/projectProposed/create'">
+            <mat-icon>add</mat-icon>&nbsp;{{ 'project.unitCost.add' | translate }}
+        </button>
+
+        <jems-alert [closable]="false" [show]="unitCostDataSource?.data.length >= 10" [type]="Alert.INFO" disableMargins="true">
+            <span>{{ 'project.application.form.section.part.e.subsection.two.subsection.one.unit.cost.notification' | translate }}</span>
+        </jems-alert>
+    </ng-container>
+
+    <jems-alert *ngIf="error$ | async as error"
+                [show]="!!error.i18nMessage?.i18nKey"
+                [type]="Alert.ERROR">
+        <jems-api-error-content [error]="error"></jems-api-error-content>
+    </jems-alert>
+
+    <div jemsFormLayout jemsNoWidthLimit>
+        <jems-multi-language-container class="language-buttons" [switchButtonsVisible]="!!unitCostDataSource?.data.length" jemsNoWidthLimit>
+            <ng-container *ngIf="unitCostDataSource?.data as unitCost">
+                <jems-table *ngIf="unitCost.length > 0"
+                            [configuration]="tableConfiguration"
+                            [rows]="unitCost"
+                            [totalElements]="unitCost.length"
+                            [isMultiLanguage]="true">
+                </jems-table>
+            </ng-container>
+        </jems-multi-language-container>
+    </div>
+</jems-project-page-template>
+
+<ng-template #nameCell let-unitCost>
+    <span>{{ unitCost?.name | translateByInputLanguage | async }}</span>
+</ng-template>
+
+<ng-template #unitTypeCell let-unitCost>
+    <span>{{ unitCost?.type | translateByInputLanguage | async }}</span>
+</ng-template>
+
+<ng-template #categoriesCell let-unitCost>
+    <span>{{ unitCost?.categories?.length > 1 ? ('unit.cost.cost.category.Multiple' | translate) : ('unit.cost.cost.category.' + unitCost?.categories[0] | translate) }}</span>
+</ng-template>
+
+<ng-template #valueCell let-unitCost>
+    <span class="justify-end">{{ unitCost?.costPerUnit | asMoney }}</span>
+</ng-template>
+
+<ng-template #actionCell let-unitCost>
+    <button class="justify-end" (click)="deleteEntry(unitCost)"
+            color="accent" mat-icon-button>
+        <mat-icon>delete</mat-icon>
+    </button>
+</ng-template>
+
+

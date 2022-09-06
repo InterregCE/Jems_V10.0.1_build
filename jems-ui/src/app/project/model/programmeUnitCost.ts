@@ -9,6 +9,7 @@ export class ProgrammeUnitCost {
   costPerUnit: number;
   isOneCostCategory: boolean;
   categories: BudgetCostCategoryEnum[];
+  isProjectUnitCost: boolean;
 
   constructor(
     id: number,
@@ -17,7 +18,8 @@ export class ProgrammeUnitCost {
     type: InputTranslation[],
     costPerUnit: number,
     isOneCostCategory: boolean,
-    categories: BudgetCostCategoryEnum[]
+    categories: BudgetCostCategoryEnum[],
+    isProjectUnitCost: boolean
   ) {
     this.id = id;
     this.name = name;
@@ -26,5 +28,6 @@ export class ProgrammeUnitCost {
     this.costPerUnit = costPerUnit;
     this.isOneCostCategory = isOneCostCategory;
     this.categories = categories;
+    this.isProjectUnitCost = isProjectUnitCost;
   }
 }
