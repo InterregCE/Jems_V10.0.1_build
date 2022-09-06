@@ -4,14 +4,13 @@ import {CategoryInfo} from '@project/common/components/category-tree/categoryMod
 import {I18nMessage} from '@common/models/I18nMessage';
 import {ContractingFilesStore} from '@project/project-application/contract-monitoring/contracting-files/contracting-files.store';
 import {ProjectReportFileDTO} from '@cat/api';
-import {filter, switchMap, take} from 'rxjs/operators';
-import {FileListItem} from '@common/components/file-list/file-list-item';
+import {take} from 'rxjs/operators';
 import {MatDialog} from '@angular/material/dialog';
-import {Forms} from '@common/utils/forms';
 import {AcceptedFileTypesConstants} from '@project/common/components/file-management/accepted-file-types.constants';
 import {Alert} from '@common/components/forms/alert';
 import FileTypeEnum = ProjectReportFileDTO.TypeEnum;
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {FileListItem} from '@common/components/file-list/file-list-item';
 
 @UntilDestroy()
 @Component({
@@ -44,20 +43,11 @@ export class ContractingFilesComponent implements OnInit{
   }
 
   downloadFile(file: FileListItem): void {
-    this.store.downloadFile(file.id)
-      .pipe(take(1))
-      .subscribe();
+    this.store.downloadFile(file.id).pipe(take(1)).subscribe();
   }
 
   deleteFile(file: FileListItem): void {
-    Forms.confirm(this.dialog, {
-      title: file.name,
-      message: { i18nKey: 'file.dialog.message', i18nArguments: { name: file.name } },
-    }).pipe(
-      take(1),
-      filter(answer => !!answer),
-      switchMap(() => this.store.deleteFile(file.id)),
-    ).subscribe();
+    this.store.deleteFile(file.id).pipe(take(1)).subscribe();
   }
 
   uploadFile(target: any): void {

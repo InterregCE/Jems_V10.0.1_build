@@ -2,6 +2,6 @@ package io.cloudflight.jems.server.project.service.report.partner.file.deletePro
 
 interface DeleteProjectPartnerReportFileInteractor {
 
-    fun delete(partnerId: Long, fileId: Long)
+    fun delete(partnerId: Long, reportId: Long, fileId: Long)
 
 }

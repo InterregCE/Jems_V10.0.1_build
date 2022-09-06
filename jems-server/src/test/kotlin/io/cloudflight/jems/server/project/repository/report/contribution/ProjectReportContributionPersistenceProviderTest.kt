@@ -43,6 +43,7 @@ class ProjectReportContributionPersistenceProviderTest : UnitTest() {
             size = 1785,
             user = mockk(),
             uploaded = ZonedDateTime.now(),
+            description = "example description",
         )
 
         private val contributionEntity = ProjectPartnerReportContributionEntity(

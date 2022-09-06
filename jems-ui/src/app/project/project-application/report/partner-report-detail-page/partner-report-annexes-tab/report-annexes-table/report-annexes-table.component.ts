@@ -1,23 +1,27 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {AcceptedFileTypesConstants} from '@project/common/components/file-management/accepted-file-types.constants';
-import {MatTableDataSource} from '@angular/material/table';
 import {
-  PageProjectReportFileDTO,
+  PageProjectReportFileDTO, ProjectPartnerReportService,
   ProjectPartnerReportSummaryDTO,
-  ProjectReportFileDTO, ProjectReportFileMetadataDTO, UserRoleDTO
+  ProjectReportFileDTO,
+  UserRoleDTO,
 } from '@cat/api';
-import {combineLatest, Observable, Subject} from 'rxjs';
+import {BehaviorSubject, combineLatest, Observable, of, Subject} from 'rxjs';
 import {CategoryInfo} from '@project/common/components/category-tree/categoryModels';
-import {MatDialog} from '@angular/material/dialog';
-import {filter, map, switchMap, take, tap} from 'rxjs/operators';
+import {finalize, map, switchMap, take, tap} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {Forms} from '@common/utils/forms';
 import { Alert } from '@common/components/forms/alert';
 import { Tables } from '@common/utils/tables';
 import {
   ReportFileManagementStore
 } from '@project/project-application/report/partner-report-detail-page/partner-report-annexes-tab/report-file-management-store';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
+import {FileListItem} from '@common/components/file-list/file-list-item';
+import {FileDescriptionChange} from '@common/components/file-list/file-list-table/file-description-change';
+import {
+  PartnerReportDetailPageStore
+} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
+import {FileListComponent} from '@common/components/file-list/file-list.component';
 
 @UntilDestroy()
 @Component({
@@ -33,19 +37,21 @@ export class ReportAnnexesTableComponent {
   PermissionsEnum = PermissionsEnum;
 
   acceptedFilesTypes = AcceptedFileTypesConstants.acceptedFilesTypes;
-  displayedColumns: string[] = ['name', 'location', 'uploadDate', 'user', 'size', 'actions'];
-  dataSource = new MatTableDataSource<ProjectReportFileDTO>();
   maximumAllowedFileSizeInMB: number;
   fileSizeOverLimitError$ = new Subject<boolean>();
 
   data$: Observable<{
     files: PageProjectReportFileDTO;
+    fileList: FileListItem[];
     reportStatus: ProjectPartnerReportSummaryDTO.StatusEnum;
     selectedCategory: CategoryInfo | undefined;
   }>;
 
-  constructor(public fileManagementStore: ReportFileManagementStore,
-              private dialog: MatDialog) {
+  constructor(
+    public fileManagementStore: ReportFileManagementStore,
+    private projectPartnerReportService: ProjectPartnerReportService,
+    private partnerReportDetailPageStore: PartnerReportDetailPageStore,
+  ) {
     this.data$ = combineLatest([
       this.fileManagementStore.reportFileList$,
       this.fileManagementStore.reportStatus$,
@@ -54,48 +60,60 @@ export class ReportAnnexesTableComponent {
       .pipe(
         map(([files, reportStatus, selectedCategory]) => ({
           files,
+          fileList: files.content.map((file: ProjectReportFileDTO) => ({
+            id: file.id,
+            name: file.name,
+            type: file.type,
+            uploaded: file.uploaded,
+            author: file.author,
+            sizeString: file.sizeString,
+            description: file.description,
+            editable: reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.Draft,
+            deletable: file.type === ProjectReportFileDTO.TypeEnum.PartnerReport && reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.Draft,
+            tooltipIfNotDeletable: 'file.table.action.delete.disabled.for.tab.tooltip',
+            iconIfNotDeletable: 'delete_forever',
+          })),
           reportStatus,
           selectedCategory
         })),
-        tap(data => this.dataSource.data = data.files?.content)
       );
     this.fileManagementStore.getMaximumAllowedFileSize().pipe(untilDestroyed(this)).subscribe((maxAllowedSize) => this.maximumAllowedFileSizeInMB = maxAllowedSize);
   }
 
   uploadFile(target: any): void {
-    if (!target) {
-      return;
-    }
+    FileListComponent.doFileUploadWithValidation(
+      target,
+      this.fileSizeOverLimitError$,
+      this.fileManagementStore.error$,
+      this.maximumAllowedFileSizeInMB,
+      file => this.fileManagementStore.uploadFile(file),
+    );
+  }
 
-    this.fileSizeOverLimitError$.next(false);
-    this.fileManagementStore.error$.next(null);
-
-    if (target?.files[0].size > this.maximumAllowedFileSizeInMB * 1024 * 1024) {
-      setTimeout(() => this.fileSizeOverLimitError$.next(true), 10);
-      return;
-    }
-
-    this.fileManagementStore.uploadFile(target?.files[0])
+  downloadFile(file: FileListItem): void {
+    this.fileManagementStore.downloadFile(file.id)
       .pipe(take(1))
       .subscribe();
   }
 
-  downloadFile(fileId: number): void {
-    this.fileManagementStore.downloadFile(fileId)
-      .pipe(take(1))
-      .subscribe();
+  deleteFile(file: FileListItem): void {
+    this.fileManagementStore.deleteFile(file.id).pipe(take(1)).subscribe();
   }
 
-  deleteFile(file: ProjectReportFileMetadataDTO): void {
-    Forms.confirm(
-      this.dialog, {
-        title: file.name,
-        message: {i18nKey: 'file.dialog.message', i18nArguments: {name: file.name}}
-      })
-      .pipe(
-        take(1),
-        filter(answer => !!answer),
-        switchMap(() => this.fileManagementStore.deleteFile(file.id)),
-      ).subscribe();
+  savingDescriptionId$ = new BehaviorSubject<number | null>(null);
+  updateDescription(data: FileDescriptionChange) {
+    return combineLatest([
+      this.partnerReportDetailPageStore.partnerId$.pipe(map(id => Number(id))),
+      this.partnerReportDetailPageStore.partnerReportId$.pipe(map(id => Number(id))),
+    ]).pipe(
+      take(1),
+      tap(() => this.savingDescriptionId$.next(data.id)),
+      switchMap(([partnerId, reportId]) =>
+        this.projectPartnerReportService.updateDescription(data.id, partnerId, reportId, data.description)
+      ),
+      tap(() => this.fileManagementStore.reportFilesChanged$.next()),
+      finalize(() => this.savingDescriptionId$.next(null)),
+    ).subscribe();
   }
+
 }

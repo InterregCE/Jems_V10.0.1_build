@@ -27,7 +27,7 @@ export class CategoryTreeComponent implements OnChanges {
   }
 
   hasChild(_: number, node: FlatTreeNode<CategoryNode>): boolean {
-    return !!node.data.children?.length;
+    return !!node.data?.children?.length;
   }
 
   selectCategory(node: CategoryNode): void {

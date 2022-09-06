@@ -9,12 +9,17 @@ import io.cloudflight.jems.server.project.entity.partneruser.PartnerCollaborator
 import io.cloudflight.jems.server.project.entity.partneruser.PartnerCollaboratorLevel.VIEW
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.UserPartnerCollaboratorPersistence
+import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Component
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectReportAuthorization.canEditPartnerReport(#partnerId)")
+@PreAuthorize("@projectReportAuthorization.canEditPartnerReport(#partnerId, #reportId)")
 annotation class CanEditPartnerReport
+
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("@projectReportAuthorization.canEditPartnerReportNotSpecific(#partnerId)")
+annotation class CanEditPartnerReportNotSpecific
 
 @Retention(AnnotationRetention.RUNTIME)
 @PreAuthorize("@projectReportAuthorization.canViewPartnerReport(#partnerId)")
@@ -31,12 +36,19 @@ annotation class CanViewPartnerControlReport
 @Component
 class ProjectReportAuthorization(
     override val securityService: SecurityService,
+    private val reportPersistence: ProjectReportPersistence,
     private val partnerPersistence: PartnerPersistence,
     private val partnerCollaboratorPersistence: UserPartnerCollaboratorPersistence,
     private val controllerInstitutionPersistence: ControllerInstitutionPersistence,
 ) : Authorization(securityService) {
 
-    fun canEditPartnerReport(partnerId: Long): Boolean =
+    fun canEditPartnerReport(partnerId: Long, reportId: Long): Boolean {
+        val report = reportPersistence.getPartnerReportById(partnerId, reportId = reportId)
+
+        return report.status.isOpen() && hasPermissionForPartner(partnerId = partnerId, EDIT)
+    }
+
+    fun canEditPartnerReportNotSpecific(partnerId: Long): Boolean =
         hasPermissionForPartner(partnerId = partnerId, EDIT)
 
     fun canViewPartnerReport(partnerId: Long): Boolean =

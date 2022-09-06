@@ -38,7 +38,7 @@ class ListProjectPartnerReportFileTest : UnitTest() {
             partnerId = 25L,
             reportId = 65L,
             type = ProjectPartnerReportFileType.PartnerReport,
-            filterSubtypes = setOf(ProjectPartnerReportFileType.Activity, ProjectPartnerReportFileType.Procurement),
+            filterSubtypes = setOf(ProjectPartnerReportFileType.Activity, ProjectPartnerReportFileType.ProcurementAttachment),
             expectedIndexSearch = "Project/000640/Report/Partner/000025/PartnerReport/000065/"
         )
     }

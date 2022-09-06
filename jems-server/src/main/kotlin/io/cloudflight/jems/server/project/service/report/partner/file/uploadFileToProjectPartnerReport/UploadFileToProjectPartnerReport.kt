@@ -35,7 +35,7 @@ class UploadFileToProjectPartnerReport(
             val projectId = partnerPersistence.getProjectIdForPartnerId(partnerId)
             val location = generatePath(projectId, partnerId, reportId)
 
-            if (reportFilePersistence.existsFile(location = location, fileName = file.name))
+            if (reportFilePersistence.existsFile(exactPath = location, fileName = file.name))
                 throw FileAlreadyExists()
 
             return reportFilePersistence.addAttachmentToPartnerReport(

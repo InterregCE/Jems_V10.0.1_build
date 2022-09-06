@@ -43,6 +43,7 @@ import io.cloudflight.jems.server.project.service.report.partner.workflow.create
 import io.cloudflight.jems.server.project.service.report.partner.file.deleteProjectPartnerReportFile.DeleteProjectPartnerReportFileInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.downloadProjectPartnerReportFile.DownloadProjectPartnerReportFileInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.listProjectPartnerReportFile.ListProjectPartnerReportFileInteractor
+import io.cloudflight.jems.server.project.service.report.partner.file.setDescriptionToFile.SetDescriptionToProjectPartnerReportFileInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.uploadFileToProjectPartnerReport.UploadFileToProjectPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.getProjectPartnerReport.GetProjectPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.workflow.startControlPartnerReport.StartControlPartnerReportInteractor
@@ -186,6 +187,7 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
             uploaded = YESTERDAY,
             author = UserSimple(45L, email = "admin@cloudflight.io", name = "Admin", surname = "Big"),
             size = 47889L,
+            description = "desc",
         )
 
         private val reportFileDto = ProjectReportFileDTO(
@@ -196,6 +198,7 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
             author = UserSimpleDTO(45L, email = "admin@cloudflight.io", name = "Admin", surname = "Big"),
             size = 47889L,
             sizeString = "46.8\u0020kB",
+            description = "desc",
         )
     }
 
@@ -216,6 +219,9 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
 
     @MockK
     lateinit var deletePartnerReportFile: DeleteProjectPartnerReportFileInteractor
+
+    @MockK
+    lateinit var setDescriptionToFile: SetDescriptionToProjectPartnerReportFileInteractor
 
     @MockK
     lateinit var listPartnerReportFile: ListProjectPartnerReportFileInteractor
@@ -298,9 +304,9 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
 
     @Test
     fun deleteAttachment() {
-        every { deletePartnerReportFile.delete(partnerId = 24L, fileId = 300L) } answers { }
-        controller.deleteAttachment(partnerId = 24L, fileId = 300L)
-        verify(exactly = 1) { deletePartnerReportFile.delete(partnerId = 24L, fileId = 300L) }
+        every { deletePartnerReportFile.delete(partnerId = 24L, reportId = 99L, fileId = 300L) } answers { }
+        controller.deleteAttachment(partnerId = 24L, reportId = 99L, fileId = 300L)
+        verify(exactly = 1) { deletePartnerReportFile.delete(partnerId = 24L, reportId = 99L, fileId = 300L) }
     }
 
     @Test

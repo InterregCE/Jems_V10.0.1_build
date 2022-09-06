@@ -1,0 +1,64 @@
+@use '../../../../project/project-application/report/partner-report-detail-page/partner-report-financial-overview-tab/remove-custom-table-overrides';
+
+.border-cell-left {
+  border-left: .0625rem solid var(--table-border-color);
+}
+
+.reduce-max-width {
+  max-width: 50rem;
+}
+
+.mat-column-action {
+  min-width: 5rem;
+  max-width: 5rem;
+  padding-left: .5rem;
+  padding-right: .5rem;
+}
+
+.mat-column-name {
+  min-width: 7rem;
+}
+.mat-column-location {
+  min-width: 6rem;
+}
+.mat-column-uploadDate {
+  min-width: 4.5rem;
+}
+.mat-column-user {
+  min-width: 7rem;
+}
+.mat-column-size {
+  min-width: 4rem;
+  padding-right: .5rem;
+}
+.mat-column-description {
+  min-width: 15rem;
+  padding-right: .5rem;
+}
+.mat-column-location,
+.mat-column-uploadDate,
+.mat-column-user,
+.mat-column-size,
+.mat-column-description {
+  padding-left: .5rem;
+}
+
+.small-flat-btn {
+  line-height: 1.625rem;
+  padding: 1px 14px 1px 8px;
+}
+.small-stroked-btn {
+  line-height: 1.625rem;
+  padding: 0 12px 0 5px;
+}
+
+mat-spinner {
+  display: inline;
+}
+
+.icon-hidden {
+  color: transparent;
+}
+.fill-space-left-to-button {
+  flex-grow: 1;
+}

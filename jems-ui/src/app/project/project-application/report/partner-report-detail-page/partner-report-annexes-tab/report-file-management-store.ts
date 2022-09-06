@@ -87,11 +87,16 @@ export class ReportFileManagementStore {
   }
 
   deleteFile(fileId: number): Observable<void> {
-    return this.partnerReportDetailPageStore.partnerId$
+    return combineLatest([
+      this.partnerReportDetailPageStore.partnerId$,
+      this.partnerReportDetailPageStore.partnerReportId$,
+    ])
       .pipe(
         take(1),
-        filter(partnerId => !!partnerId),
-        switchMap(partnerId => this.projectPartnerReportService.deleteAttachment(fileId, Number(partnerId))),
+        filter(([partnerId, reportId]) => !!partnerId),
+        switchMap(([partnerId, reportId]) =>
+          this.projectPartnerReportService.deleteAttachment(fileId, Number(partnerId), reportId)
+        ),
         tap(() => this.reportFilesChanged$.next()),
         tap(() => this.deleteSuccess$.next(true)),
         tap(() => setTimeout(() => this.deleteSuccess$.next(false), 3000)),
@@ -207,7 +212,7 @@ export class ReportFileManagementStore {
         info: {type: ReportFileCategoryTypeEnum.CONTRIBUTION},
         children: []
       }
-      );
+    );
 
     return this.fileManagementStore.findRootForSection(reportFiles, section) || {};
   }
@@ -265,7 +270,7 @@ export class ReportFileManagementStore {
       case ReportFileCategoryTypeEnum.EXPENDITURE:
         return [ProjectReportFileSearchRequestDTO.TreeNodeEnum.Expenditure];
       case ReportFileCategoryTypeEnum.PROCUREMENT:
-        return [ProjectReportFileSearchRequestDTO.TreeNodeEnum.Procurement];
+        return [ProjectReportFileSearchRequestDTO.TreeNodeEnum.ProcurementAttachment];
       case ReportFileCategoryTypeEnum.CONTRIBUTION:
         return [ProjectReportFileSearchRequestDTO.TreeNodeEnum.Contribution];
       default:

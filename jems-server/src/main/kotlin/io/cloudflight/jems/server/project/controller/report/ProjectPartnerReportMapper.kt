@@ -90,14 +90,15 @@ fun ProjectReportFile.toDto() = ProjectReportFileDTO(
     name = name,
     type = ProjectPartnerReportFileTypeDTO.valueOf(type.name),
     uploaded = uploaded,
-    author = mapper.map(author),
+    author = partnerReportMapper.map(author),
     size = size,
     sizeString = size.sizeToString(),
+    description = description,
 )
 
 private val sizeUnits = arrayOf("B", "kB", "MB", "GB", "TB")
 private val sizeFormat = DecimalFormat("#,##0.#")
-private fun Long.sizeToString(): String {
+fun Long.sizeToString(): String {
     if (this <= 0)
         return "0"
     val digitGroups = (log10(toDouble()) / log10(1024.0)).toInt()
@@ -112,9 +113,9 @@ fun ProjectReportFileSearchRequestDTO.toModel() = ProjectReportFileSearchRequest
 
 fun MultipartFile.toProjectFile() = ProjectFile(inputStream, originalFilename ?: name, size)
 
-private val mapper = Mappers.getMapper(ProjectPartnerReportMapper::class.java)
+val partnerReportMapper = Mappers.getMapper(ProjectPartnerReportMapper::class.java)
 
-fun ProjectReportFileMetadata.toDto() = mapper.map(this)
+fun ProjectReportFileMetadata.toDto() = partnerReportMapper.map(this)
 
 @Mapper
 interface ProjectPartnerReportMapper {

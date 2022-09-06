@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {Observable, of, Subject} from 'rxjs';
+import {combineLatest, Observable, of, Subject} from 'rxjs';
 import {
   ProjectPartnerReportService,
   ProjectPartnerReportWorkPlanService,
@@ -59,11 +59,15 @@ export class PartnerFileManagementStore {
   }
 
   deleteFile(fileId: number): Observable<any> {
-    return this.partnerReportDetailPageStore.partnerId$
-      .pipe(
-        take(1),
-        switchMap(partnerId => this.projectPartnerReportService.deleteAttachment(fileId, partnerId as number))
-      );
+    return combineLatest([
+      this.partnerReportDetailPageStore.partnerId$,
+      this.partnerReportDetailPageStore.partnerReportId$,
+    ]).pipe(
+      take(1),
+      switchMap(([partnerId, reportId]) =>
+        this.projectPartnerReportService.deleteAttachment(fileId, partnerId as number, reportId)
+      ),
+    );
   }
 
   downloadFile(fileId: number): Observable<any> {

@@ -1,12 +1,15 @@
+$tree-width: 20rem;
+
 #report-files {
   display: flex;
 
   #report-files-tree {
-    width: 20rem;
+    width: $tree-width;
     border: 1px solid var(--table-border-color);
   }
 
   #report-files-table {
+    width: calc(100% - #{$tree-width});
     flex: auto;
   }
 }

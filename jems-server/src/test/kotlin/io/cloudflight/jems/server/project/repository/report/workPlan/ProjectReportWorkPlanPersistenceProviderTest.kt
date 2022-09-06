@@ -46,6 +46,7 @@ class ProjectReportWorkPlanPersistenceProviderTest : UnitTest() {
             size = 1475,
             user = mockk(),
             uploaded = ZonedDateTime.now(),
+            description = "dummy attachment description",
         )
 
         private fun wp(id: Long, report: ProjectPartnerReportEntity) = ProjectPartnerReportWorkPackageEntity(

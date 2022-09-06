@@ -1,0 +1,34 @@
+<jems-form *ngIf="data$ | async as data">
+    <form jemsFormLayout>
+        <h3>{{ 'project.application.partner.report.procurements.attachment.title' | translate }}</h3>
+
+        <jems-file-list-table jemsNoWidthLimit
+                [fileList]="data.attachments"
+                (onDownload)="downloadFile($event)"
+                (onDelete)="deleteFile($event)"
+                (onDescriptionChange)="updateDescription($event)"
+                [savingInProgressForId]="savingDescriptionId$ | async">
+        </jems-file-list-table>
+
+        <div *ngIf="data.isReportEditable">
+            <input #selectFile (change)="uploadFile($event?.target)" onclick="this.value=null;"
+                   type="file" [accept]="acceptedFilesTypes" [hidden]="true">
+            <button *jemsHasPermission="PermissionsEnum.ProjectReportingEdit" mat-stroked-button
+                    (click)="selectFile.click()" [disabled]="data.attachments.length >= 30">
+                <mat-icon fontSet="material-icons-outlined" class="mr-1">file_upload</mat-icon>{{ 'file.upload.add.new' | translate }}
+            </button>
+        </div>
+
+        <jems-alert *ngIf="procurementStore.error$ | async as error"
+                    [show]="!!error"
+                    [type]="Alert.ERROR">
+            <jems-api-error-content [error]="error"></jems-api-error-content>
+        </jems-alert>
+        <jems-alert *ngIf="fileSizeOverLimitError$ | async as showError"
+                    [show]="showError"
+                    [type]="Alert.ERROR">
+            <p>{{'project.file.size.over.limit' | translate}} {{maximumAllowedFileSizeInMB}} MB</p>
+        </jems-alert>
+
+    </form>
+</jems-form>

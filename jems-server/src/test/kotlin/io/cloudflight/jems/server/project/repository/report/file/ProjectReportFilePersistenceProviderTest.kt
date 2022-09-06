@@ -1,16 +1,20 @@
 package io.cloudflight.jems.server.project.repository.report.file
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.common.minio.MinioStorage
 import io.cloudflight.jems.server.project.entity.report.contribution.ProjectPartnerReportContributionEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportExpenditureCostEntity
 import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
+import io.cloudflight.jems.server.project.entity.report.procurement.ProjectPartnerReportProcurementEntity
+import io.cloudflight.jems.server.project.entity.report.procurement.file.ProjectPartnerReportProcurementFileEntity
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageActivityDeliverableEntity
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageActivityEntity
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageOutputEntity
 import io.cloudflight.jems.server.project.repository.report.contribution.ProjectPartnerReportContributionRepository
 import io.cloudflight.jems.server.project.repository.report.expenditure.ProjectPartnerReportExpenditureRepository
 import io.cloudflight.jems.server.project.repository.report.procurement.ProjectPartnerReportProcurementRepository
+import io.cloudflight.jems.server.project.repository.report.procurement.attachment.ProjectPartnerReportProcurementAttachmentRepository
 import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPartnerReportWorkPackageActivityDeliverableRepository
 import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPartnerReportWorkPackageActivityRepository
 import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPartnerReportWorkPackageOutputRepository
@@ -33,6 +37,7 @@ import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import java.math.BigDecimal.ONE
@@ -61,6 +66,7 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
             size = 45L,
             user = mockk(),
             uploaded = LAST_WEEK,
+            description = "desc",
         )
 
         private fun activity(id: Long, attachment: ReportProjectFileEntity?) = ProjectPartnerReportWorkPackageActivityEntity(
@@ -145,6 +151,7 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
             uploaded = LAST_WEEK,
             author = UserSimple(45L, email = "admin@cloudflight.io", name = "Admin", surname = "Big"),
             size = 47889L,
+            description = "desc",
         )
 
         private val dummyReportFileEntity = ReportProjectFileEntity(
@@ -160,6 +167,7 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
             user = UserEntity(id = 45L, email = "admin@cloudflight.io", name = "Admin", surname = "Big",
                 password = "##", userRole = mockk(), userStatus = mockk()),
             uploaded = LAST_WEEK,
+            description = "desc",
         )
 
     }
@@ -180,9 +188,6 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
     lateinit var workPlanOutputRepository: ProjectPartnerReportWorkPackageOutputRepository
 
     @MockK
-    lateinit var procurementRepository: ProjectPartnerReportProcurementRepository
-
-    @MockK
     lateinit var contributionRepository: ProjectPartnerReportContributionRepository
 
     @MockK
@@ -190,6 +195,12 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
 
     @MockK
     lateinit var userRepository: UserRepository
+
+    @MockK
+    lateinit var reportProcurementAttachmentRepository: ProjectPartnerReportProcurementAttachmentRepository
+
+    @MockK
+    lateinit var procurementRepository: ProjectPartnerReportProcurementRepository
 
     @InjectMockKs
     lateinit var persistence: ProjectReportFilePersistenceProvider
@@ -201,15 +212,19 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
     }
 
     @Test
-    fun existsFile() {
-        every { reportFileRepository.existsByPartnerIdAndId(PARTNER_ID, fileId = 14L) } returns true
-        assertThat(persistence.existsFile(PARTNER_ID, fileId = 14L)).isTrue
+    fun existsFileByLocation() {
+        every { reportFileRepository.existsByPathAndName(path = "Project/Report/Partner/", name = "test.xlsx") } returns false
+        assertThat(persistence.existsFile(exactPath = "Project/Report/Partner/", fileName = "test.xlsx")).isFalse
     }
 
     @Test
-    fun existsFileByLocation() {
-        every { reportFileRepository.existsByPathAndName(path = "Project/Report/Partner/", name = "test.xlsx") } returns false
-        assertThat(persistence.existsFile(location = "Project/Report/Partner/", fileName = "test.xlsx")).isFalse
+    fun existsFile() {
+        every { reportFileRepository.existsByPartnerIdAndPathPrefixAndId(
+            partnerId = PARTNER_ID,
+            pathPrefix = "Project/45/Report/21",
+            id = 14L,
+        ) } returns true
+        assertThat(persistence.existsFile(PARTNER_ID, "Project/45/Report/21", fileId = 14L)).isTrue
     }
 
     @Test
@@ -252,6 +267,22 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
 
         verify(exactly = 0) { minioStorage.deleteFile(any(), any()) }
         verify(exactly = 0) { reportFileRepository.delete(any()) }
+    }
+
+    @Test
+    fun setDescription() {
+        val filePathFull = "sample/path/to/file-with-desc.txt"
+        val fileToUpdate = file(id = 20L, name = "file-with-desc.txt", filePathFull = filePathFull)
+        every { reportFileRepository.findByPartnerIdAndId(PARTNER_ID, fileId = 20L) } returns fileToUpdate
+
+        persistence.setDescriptionToFile(PARTNER_ID, fileId = 20L, "description new")
+        assertThat(fileToUpdate.description).isEqualTo("description new")
+    }
+
+    @Test
+    fun `setDescription - not existing`() {
+        every { reportFileRepository.findByPartnerIdAndId(PARTNER_ID, fileId = -1L) } returns null
+        assertThrows<ResourceNotFoundException> { persistence.setDescriptionToFile(PARTNER_ID, fileId = -1L, "") }
     }
 
     @Test
@@ -353,6 +384,32 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
         assertThat(fileEntity.captured.type).isEqualTo(ProjectPartnerReportFileType.Expenditure)
     }
 
+    @Test
+    fun addPartnerReportProcurementAttachment() {
+        val filePathMinio = slot<String>()
+        val fileEntity = slot<ReportProjectFileEntity>()
+        val oldFile = mockk<ReportProjectFileEntity>() // this is not used here
+        mockFileDeletionAndSaving(oldFile, filePathMinio, fileEntity)
+
+        val procurementId = 500L
+        val procurement = mockk<ProjectPartnerReportProcurementEntity>()
+        every { procurementRepository.getById(procurementId) } returns procurement
+        val procurementFile = slot<ProjectPartnerReportProcurementFileEntity>()
+        every { reportProcurementAttachmentRepository.save(capture(procurementFile)) } returnsArgument 0
+
+        val fileCreate = fileCreate(type = ProjectPartnerReportFileType.ProcurementAttachment)
+        assertThat(persistence
+            .addPartnerReportProcurementAttachment(reportId = 48L, file = fileCreate, procurementId = procurementId).name
+        ).isEqualTo("new_file.txt")
+
+        assertFile(filePathMinio.captured, fileEntity.captured)
+        assertThat(fileEntity.captured.type).isEqualTo(ProjectPartnerReportFileType.ProcurementAttachment)
+
+        assertThat(procurementFile.captured.procurement).isEqualTo(procurement)
+        assertThat(procurementFile.captured.file).isEqualTo(fileEntity.captured)
+        assertThat(procurementFile.captured.createdInReportId).isEqualTo(48L)
+    }
+
     private fun mockFileDeletionAndSaving(
         oldFile: ReportProjectFileEntity,
         filePathMinio: CapturingSlot<String>,
@@ -415,6 +472,8 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
         assertThat(fileEntity.captured.minioLocation).isEqualTo("our/indexed/path/new_file_to_partner.txt")
         assertThat(fileEntity.captured.name).isEqualTo("new_file_to_partner.txt")
         assertThat(fileEntity.captured.type).isEqualTo(ProjectPartnerReportFileType.PartnerReport)
+        assertThat(fileEntity.captured.size).isEqualTo(45L)
+        assertThat(fileEntity.captured.description).isEmpty()
     }
 
 }

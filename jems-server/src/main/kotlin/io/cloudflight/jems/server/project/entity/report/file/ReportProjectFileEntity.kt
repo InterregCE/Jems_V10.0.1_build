@@ -62,4 +62,7 @@ class ReportProjectFileEntity(
     @field:NotNull
     val uploaded: ZonedDateTime,
 
+    @field:NotNull
+    var description: String,
+
 )

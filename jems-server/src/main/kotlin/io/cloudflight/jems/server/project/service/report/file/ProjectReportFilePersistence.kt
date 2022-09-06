@@ -9,13 +9,15 @@ import org.springframework.data.domain.Pageable
 
 interface ProjectReportFilePersistence {
 
-    fun existsFile(partnerId: Long, fileId: Long): Boolean
+    fun existsFile(exactPath: String, fileName: String): Boolean
 
-    fun existsFile(location: String, fileName: String): Boolean
+    fun existsFile(partnerId: Long, pathPrefix: String, fileId: Long): Boolean
 
     fun downloadFile(partnerId: Long, fileId: Long): Pair<String, ByteArray>?
 
     fun deleteFile(partnerId: Long, fileId: Long)
+
+    fun setDescriptionToFile(partnerId: Long, fileId: Long, description: String)
 
     fun updatePartnerReportActivityAttachment(activityId: Long, file: ProjectReportFileCreate): ProjectReportFileMetadata
 
@@ -26,6 +28,8 @@ interface ProjectReportFilePersistence {
     fun updatePartnerReportContributionAttachment(contributionId: Long, file: ProjectReportFileCreate): ProjectReportFileMetadata
 
     fun updatePartnerReportExpenditureAttachment(expenditureId: Long, file: ProjectReportFileCreate): ProjectReportFileMetadata
+
+    fun addPartnerReportProcurementAttachment(reportId: Long, procurementId: Long, file: ProjectReportFileCreate): ProjectReportFileMetadata
 
     fun listAttachments(
         pageable: Pageable,

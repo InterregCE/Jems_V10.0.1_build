@@ -144,7 +144,7 @@
                 <mat-header-cell *matHeaderCellDef class="border-cell-left text-center">
                     {{ 'common.delete.entry' | translate }}
                 </mat-header-cell>
-                <mat-cell *matCellDef="let control; let i = index" class="border-cell-left text-center" [class.set-height]="control.value?.createdInThisReport">
+                <mat-cell *matCellDef="let control; let i = index" class="border-cell-left text-center">
                     <button *ngIf="control.value?.createdInThisReport" (click)="deleteSubcontract(i)"
                             color="accent" mat-icon-button>
                         <mat-icon>delete</mat-icon>

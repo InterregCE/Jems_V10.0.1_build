@@ -9,17 +9,23 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.EntityGraph
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Query
 import org.springframework.data.querydsl.QuerydslPredicateExecutor
 import org.springframework.stereotype.Repository
 
 @Repository
 interface ProjectReportFileRepository : JpaRepository<ReportProjectFileEntity, Long>, QuerydslPredicateExecutor<ReportProjectFileEntity> {
 
-    fun existsByPartnerIdAndId(partnerId: Long, fileId: Long): Boolean
-
     fun existsByProjectIdAndId(projectId: Long, fileId: Long): Boolean
 
     fun existsByPathAndName(path: String, name: String): Boolean
+
+    @Query("""
+        SELECT CASE WHEN COUNT(e) > 0 THEN TRUE ELSE FALSE END
+        FROM #{#entityName} e
+        WHERE e.partnerId = :partnerId AND e.path LIKE :pathPrefix% AND e.id = :id
+    """)
+    fun existsByPartnerIdAndPathPrefixAndId(partnerId: Long, pathPrefix: String, id: Long): Boolean
 
     fun findByPartnerIdAndId(partnerId: Long, fileId: Long): ReportProjectFileEntity?
 

@@ -9,6 +9,7 @@ import io.cloudflight.jems.server.project.service.report.partner.workflow.create
 import io.cloudflight.jems.server.project.service.report.partner.file.deleteProjectPartnerReportFile.DeleteProjectPartnerReportFileInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.downloadProjectPartnerReportFile.DownloadProjectPartnerReportFileInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.listProjectPartnerReportFile.ListProjectPartnerReportFileInteractor
+import io.cloudflight.jems.server.project.service.report.partner.file.setDescriptionToFile.SetDescriptionToProjectPartnerReportFileInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.uploadFileToProjectPartnerReport.UploadFileToProjectPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.getProjectPartnerReport.GetProjectPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.workflow.startControlPartnerReport.StartControlPartnerReportInteractor
@@ -30,6 +31,7 @@ class ProjectPartnerReportController(
     private val getPartnerReport: GetProjectPartnerReportInteractor,
     private val downloadPartnerReportFile: DownloadProjectPartnerReportFileInteractor,
     private val deletePartnerReportFile: DeleteProjectPartnerReportFileInteractor,
+    private val setDescriptionToFile: SetDescriptionToProjectPartnerReportFileInteractor,
     private val listPartnerReportFile: ListProjectPartnerReportFileInteractor,
     private val uploadPartnerReportFile: UploadFileToProjectPartnerReportInteractor,
 ) : ProjectPartnerReportApi {
@@ -64,8 +66,11 @@ class ProjectPartnerReportController(
                 .body(ByteArrayResource(this.second))
     }
 
-    override fun deleteAttachment(partnerId: Long, fileId: Long) =
-        deletePartnerReportFile.delete(partnerId = partnerId, fileId = fileId)
+    override fun deleteAttachment(partnerId: Long, reportId: Long, fileId: Long) =
+        deletePartnerReportFile.delete(partnerId = partnerId, reportId = reportId, fileId = fileId)
+
+    override fun updateDescription(partnerId: Long, reportId: Long, fileId: Long, description: String) =
+        setDescriptionToFile.setDescription(partnerId = partnerId, reportId = reportId, fileId = fileId, description)
 
     override fun uploadAttachment(partnerId: Long, reportId: Long, file: MultipartFile) =
         uploadPartnerReportFile

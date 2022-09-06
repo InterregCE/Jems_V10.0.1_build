@@ -48,8 +48,8 @@ class ProjectContractingFilePersistenceProviderTest : UnitTest() {
             size = 45L,
             user = mockk(),
             uploaded = LAST_WEEK,
+            description = "dummy description",
         )
-
 
     }
 
