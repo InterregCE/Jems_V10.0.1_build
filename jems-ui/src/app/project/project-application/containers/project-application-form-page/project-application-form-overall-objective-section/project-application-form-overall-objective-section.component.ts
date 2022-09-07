@@ -18,12 +18,12 @@ export class ProjectApplicationFormOverallObjectiveSectionComponent {
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
 
   details$ = combineLatest([
-    this.projectApplicationFormStore.projectDescription$,
+    this.projectApplicationFormStore.projectOverallObjective$,
     this.projectStore.project$
   ])
     .pipe(
-      map(([projectDescription, project]) => ({
-        projectDescription,
+      map(([projectOverallObjective, project]) => ({
+        projectOverallObjective,
         project
       }))
     );

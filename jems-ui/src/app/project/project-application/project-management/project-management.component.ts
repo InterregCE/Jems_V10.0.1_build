@@ -63,6 +63,7 @@ export class ProjectManagementComponent implements OnInit {
     this.managementService.updateContractingManagement(this.projectId, [projectManager, financeManager, communicationManager]).pipe(
       take(1),
       tap(() => this.formService.setSuccess('project.application.contract.management.contacts.save.success')),
+      tap(projectManagers => this.projectManagers$ = of(projectManagers)),
       catchError(error => this.formService.setError(error)),
       untilDestroyed(this)
     ).subscribe();

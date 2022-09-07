@@ -3,9 +3,9 @@ import {
   ProjectStore
 } from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {ProjectContractingMonitoringDTO, ProjectContractingMonitoringService, UserRoleCreateDTO} from '@cat/api';
-import {switchMap, tap} from 'rxjs/operators';
+import {switchMap, tap, shareReplay} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
-import {Observable} from 'rxjs';
+import {Observable, Subject, merge} from 'rxjs';
 import {PermissionService} from '../../../../security/permissions/permission.service';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 
@@ -18,6 +18,8 @@ export class ContractMonitoringExtensionStore {
   projectContractingMonitoring$: Observable<ProjectContractingMonitoringDTO>;
   contractMonitoringViewable$: Observable<boolean>;
   contractMonitoringEditable$: Observable<boolean>;
+
+  savedProjectContractingMonitoring$ = new Subject<ProjectContractingMonitoringDTO>();
 
   constructor(private projectStore: ProjectStore,
               private projectContractingMonitoringService: ProjectContractingMonitoringService,
@@ -37,10 +39,13 @@ export class ContractMonitoringExtensionStore {
   }
 
   private projectContractingMonitoring(): Observable<ProjectContractingMonitoringDTO> {
-    return this.projectStore.projectId$
+    const initialProjectContractMonitoring$ = this.projectStore.projectId$
       .pipe(
         switchMap(projectId => this.projectContractingMonitoringService.getContractingMonitoring(projectId)),
       );
+    return merge(initialProjectContractMonitoring$, this.savedProjectContractingMonitoring$)
+      .pipe(
+        shareReplay(1)
+      );
   }
-
 }
