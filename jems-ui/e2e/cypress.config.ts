@@ -29,14 +29,14 @@ export default defineConfig({
       });
 
       on('task', {
-        async comparePdf({templatePdf, actualPdf, masks, baselinePath}) {
+        comparePdf({templatePdf, actualPdf, masks, baselinePath}) {
           let config = {
             paths: {
-              actualPdfRootFolder: process.cwd() + "/cypress/downloads",
-              baselinePdfRootFolder: process.cwd() + "/cypress/fixtures/" +  baselinePath,
-              actualPngRootFolder: process.cwd() + "/cypress/downloads",
-              baselinePngRootFolder: process.cwd() + "/cypress/fixtures/" + baselinePath,
-              diffPngRootFolder: process.cwd() + "/cypress/fixtures/project/exports/application-form/comparePdfDiffPng"
+              actualPdfRootFolder: 'cypress/downloads',
+              baselinePdfRootFolder: 'cypress/fixtures/' +  baselinePath,
+              actualPngRootFolder: 'cypress/downloads/compare-pdf/actual-png',
+              baselinePngRootFolder: 'cypress/downloads/compare-pdf/baseline-png',
+              diffPngRootFolder: 'cypress/downloads/compare-pdf/diff-png'
             },
             settings: {
               imageEngine: 'native',
