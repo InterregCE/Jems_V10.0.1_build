@@ -76,7 +76,7 @@ export class ProjectApplicationFormStore {
   private projectManagement(): Observable<OutputProjectManagement> {
     const initialProjectManagement$ = this.projectDescription$
       .pipe(
-        map(project => project.projectManagement)
+        map(project => project.projectManagement || {})
       );
     return merge(initialProjectManagement$, this.savedProjectManagement$)
       .pipe(
@@ -87,7 +87,7 @@ export class ProjectApplicationFormStore {
   private projectLongTermPlans(): Observable<OutputProjectLongTermPlans> {
     const initialProjectLongTermPlans$ = this.projectDescription$
       .pipe(
-        map(project => project.projectLongTermPlans)
+        map(project => project.projectLongTermPlans || {})
       );
     return merge(initialProjectLongTermPlans$, this.savedProjectLongTermPlans$)
       .pipe(
