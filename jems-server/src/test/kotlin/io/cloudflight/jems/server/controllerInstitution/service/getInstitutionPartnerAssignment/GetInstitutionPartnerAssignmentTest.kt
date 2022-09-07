@@ -49,7 +49,7 @@ class GetInstitutionPartnerAssignmentTest: UnitTest() {
                 partnerSortNumber = 1,
                 partnerNuts3 = "Wien (AT130)",
                 partnerNuts3Code = "AT130",
-                country = "Ostösterreich",
+                country = "Österreich",
                 countryCode = "AT",
                 city = "Wien",
                 postalCode = "299281",
@@ -122,7 +122,7 @@ class GetInstitutionPartnerAssignmentTest: UnitTest() {
             partnerSortNumber = 1,
             partnerNuts3 = null,
             partnerNuts3Code = null,
-            country = "Ostösterreich",
+            country = "Österreich",
             countryCode = "AT",
             city = null,
             postalCode = null,
@@ -173,6 +173,64 @@ class GetInstitutionPartnerAssignmentTest: UnitTest() {
         assertThat(getInstitutionPartnerAssignment.getInstitutionPartnerAssignments(Pageable.unpaged()).content).contains(
             assignmentDetails.copy(
                 partnerNutsCompatibleInstitutions = mutableSetOf(IdNamePair(1L, "institution one"), IdNamePair(2L, "institution two"))
+            )
+        )
+
+    }
+
+    @Test
+    fun `partner with missing nuts codes matches correct institution nuts`() {
+
+        val assignmentDetails1 =  InstitutionPartnerDetails(
+            institutionId = INSTITUTION_ID,
+            partnerId = 1L,
+            partnerName = "A",
+            partnerStatus = true,
+            partnerRole = ProjectPartnerRole.LEAD_PARTNER,
+            partnerSortNumber = 1,
+            partnerNuts3 = "Wien (AT130)",
+            partnerNuts3Code = null,
+            country = "Österreich (AT)",
+            countryCode = null,
+            city = "Wien",
+            postalCode = null,
+            callId = 1L,
+            projectId = 1L,
+            projectCustomIdentifier = "0001",
+            projectAcronym = "Project Test"
+        )
+
+        val assignmentDetails2 = InstitutionPartnerDetails(
+            institutionId = INSTITUTION_ID,
+            partnerId = 1L,
+            partnerName = "B",
+            partnerStatus = true,
+            partnerRole = ProjectPartnerRole.PARTNER,
+            partnerSortNumber = 2,
+            partnerNuts3 = "Cluj (RO113)",
+            partnerNuts3Code = null,
+            country = "România (RO)",
+            countryCode = null,
+            city = "Cluj",
+            postalCode = null,
+            callId = 1L,
+            projectId = 1L,
+            projectCustomIdentifier = "0001",
+            projectAcronym = "Project Test"
+        )
+
+        every { controllerInstitutionPersistence.getAllControllerInstitutions() } returns institutionEntities
+        every { controllerInstitutionPersistence.getInstitutionPartnerAssignments(Pageable.unpaged()) } returns PageImpl(
+            listOf(assignmentDetails1, assignmentDetails2)
+        )
+        assertThat(getInstitutionPartnerAssignment.getInstitutionPartnerAssignments(Pageable.unpaged()).content).containsAll(
+            listOf(
+                assignmentDetails1.copy(
+                    partnerNutsCompatibleInstitutions = mutableSetOf(IdNamePair(1L, "institution one"))
+                ),
+                assignmentDetails2.copy(
+                    partnerNutsCompatibleInstitutions = mutableSetOf(IdNamePair(2L, "institution two"))
+                )
             )
         )
 

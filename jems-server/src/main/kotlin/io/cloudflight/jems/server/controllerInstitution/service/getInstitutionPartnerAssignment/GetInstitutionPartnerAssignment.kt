@@ -3,6 +3,8 @@ package io.cloudflight.jems.server.controllerInstitution.service.getInstitutionP
 import io.cloudflight.jems.server.call.service.model.IdNamePair
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
+import io.cloudflight.jems.server.common.getCountryCodeForCountry
+import io.cloudflight.jems.server.common.getNuts3CodeForNuts3Region
 import io.cloudflight.jems.server.controllerInstitution.authorization.CanViewInstitutionAssignments
 import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerDetails
 import org.springframework.data.domain.Page
@@ -56,10 +58,12 @@ class GetInstitutionPartnerAssignment(
         countryCodeToInstitutionsMap: Map<String, MutableSet<IdNamePair>>,
         allInstitutions: List<IdNamePair>
     ): Set<IdNamePair> {
-        if (!partnerDetails.partnerNuts3Code.isNullOrEmpty())
-            return nuts3CodeToInstitutionsMap[partnerDetails.partnerNuts3Code]?.toSet() ?: emptySet()
-        if (!partnerDetails.countryCode.isNullOrEmpty())
-            return countryCodeToInstitutionsMap[partnerDetails.countryCode] ?: emptySet()
+        val nuts3Code = getNuts3Code(partnerDetails.partnerNuts3Code, partnerDetails.partnerNuts3)
+        val countryCode = getCountryCode(partnerDetails.countryCode, partnerDetails.country)
+        if (nuts3Code.isNotEmpty())
+            return nuts3CodeToInstitutionsMap[nuts3Code]?.toSet() ?: emptySet()
+        if (countryCode.isNotEmpty())
+            return countryCodeToInstitutionsMap[countryCode] ?: emptySet()
         return allInstitutions.toSet()
     }
 
@@ -78,5 +82,22 @@ class GetInstitutionPartnerAssignment(
             countryToInstitutionsMap[countryCode] = mutableSetOf(institutionDetails)
         }
     }
+
+    private fun getNuts3Code(partnerNuts3Code: String?, partnerNuts3Region: String?): String =
+        if (partnerNuts3Code.isNullOrEmpty()) {
+            // prevent null when historic data did not map countryCode yet
+            getNuts3CodeForNuts3Region(partnerNuts3Region ?: "")
+        } else {
+            partnerNuts3Code
+        }
+
+    private fun getCountryCode(countryCode: String?, country: String?): String =
+        if (countryCode.isNullOrEmpty()) {
+            // prevent null when historic data did not map countryCode yet
+            getCountryCodeForCountry(country ?: "")
+        } else {
+            countryCode
+        }
+
 
 }
