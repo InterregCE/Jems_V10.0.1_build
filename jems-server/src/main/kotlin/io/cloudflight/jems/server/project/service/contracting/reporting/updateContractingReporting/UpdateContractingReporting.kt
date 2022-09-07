@@ -6,6 +6,7 @@ import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectContractingReporting
 import io.cloudflight.jems.server.project.repository.ProjectPersistenceProvider
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ProjectContractingReportingSchedule
 import io.cloudflight.jems.server.project.service.contracting.monitoring.ContractingMonitoringPersistence
 import io.cloudflight.jems.server.project.service.contracting.reporting.ContractingReportingPersistence
@@ -19,6 +20,7 @@ import java.time.LocalDate
 class UpdateContractingReporting(
     private val contractingReportingPersistence: ContractingReportingPersistence,
     private val contractingMonitoringPersistence: ContractingMonitoringPersistence,
+    private val projectVersionPersistence: ProjectVersionPersistence,
     private val projectPersistence: ProjectPersistenceProvider,
     private val versionPersistence: ProjectVersionPersistence,
     private val generalValidator: GeneralValidatorService,
@@ -54,10 +56,20 @@ class UpdateContractingReporting(
     }
 
     @Transactional
-    override fun clearNoLongerAvailablePeriodsAndDates(projectId: Long, newMaxDuration: Int) {
-        val schedules = contractingReportingPersistence.getScheduleIdsWhosePeriodsAndDatesNotProper(projectId, newMaxDuration)
-        if (schedules.isNotEmpty()) {
-            contractingReportingPersistence.clearPeriodAndDatesFor(schedules)
+    override fun checkNoLongerAvailablePeriodsAndDatesToRemove(projectId: Long) {
+        val allVersions = projectVersionPersistence.getAllVersionsByProjectId(projectId)
+        val allApprovedVersions = allVersions.filter { it.status.isApproved() }
+        if (allApprovedVersions.size > 1) {
+            val previousApprovedVersion = allApprovedVersions[1]
+            val previousDuration = projectPersistence.getProject(projectId, previousApprovedVersion.version).duration
+            val currentDuration = projectPersistence.getProject(projectId).duration
+            if (currentDuration == null || (previousDuration != null &&  currentDuration!! < previousDuration!!)) {
+                val newMaxDuration = if (currentDuration == null) 0 else currentDuration!!
+                val schedules = contractingReportingPersistence.getScheduleIdsWhosePeriodsAndDatesNotProper(projectId, newMaxDuration)
+                if (schedules.isNotEmpty()) {
+                    contractingReportingPersistence.clearPeriodAndDatesFor(schedules)
+                }
+            }
         }
     }
 
