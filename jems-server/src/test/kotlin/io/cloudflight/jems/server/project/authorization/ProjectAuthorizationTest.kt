@@ -101,12 +101,13 @@ internal class ProjectAuthorizationTest : UnitTest() {
         assertThat(user.authorities).doesNotContain(SimpleGrantedAuthority(ProjectFormUpdate.name))
         assertThat(user.authorities).doesNotContain(SimpleGrantedAuthority(ProjectRetrieve.name))
 
-        assertThrows<ResourceNotFoundException> { projectAuthorization.canUpdateProject(PROJECT_ID) }
+        assertThrows<ResourceNotFoundException> { projectAuthorization.canUpdateProject(PROJECT_ID, true) }
+        assertThrows<ResourceNotFoundException> { projectAuthorization.canUpdateProject(PROJECT_ID, false) }
     }
 
-    @ParameterizedTest(name = "can update project - OWNER, isOpen {0}")
+    @ParameterizedTest(name = "can update project - also after approved - OWNER, isOpen {0}")
     @ValueSource(booleans = [true, false])
-    fun `can update project - OWNER`(isOpen: Boolean) {
+    fun `can update project - also after approved - OWNER`(isOpen: Boolean) {
         val projectId = 598L
         val user = applicantUser
         every { mockStatus.canBeModified() } returns isOpen
@@ -127,7 +128,33 @@ internal class ProjectAuthorizationTest : UnitTest() {
         assertThat(user.authorities).doesNotContain(SimpleGrantedAuthority(ProjectFormUpdate.name))
         assertThat(user.authorities).doesNotContain(SimpleGrantedAuthority(ProjectRetrieve.name))
 
-        assertThat(projectAuthorization.canUpdateProject(projectId)).isEqualTo(isOpen)
+        assertThat(projectAuthorization.canUpdateProject(projectId, false)).isEqualTo(isOpen)
+    }
+
+    @ParameterizedTest(name = "can update project - only before approved - OWNER, isOpen {0}")
+    @ValueSource(booleans = [true, false])
+    fun `can update project - only before approved - OWNER`(isOpen: Boolean) {
+        val projectId = 598L
+        val user = applicantUser
+        every { mockStatus.isModifiableStatusBeforeApproved() } returns isOpen
+
+        every { projectPersistence.getApplicantAndStatusById(projectId) } returns
+            ProjectApplicantAndStatus(projectId,
+                applicantId = user.user.id,
+                projectStatus = mockStatus,
+                collaboratorManageIds = setOf(user.user.id),
+                collaboratorEditIds = emptySet(),
+                collaboratorViewIds = emptySet(),
+            )
+        every { securityService.getUserIdOrThrow() } returns user.user.id
+        every { securityService.currentUser } returns user
+
+        // verify test setup
+        assertThat(user.user.assignedProjects).isEmpty()
+        assertThat(user.authorities).doesNotContain(SimpleGrantedAuthority(ProjectFormUpdate.name))
+        assertThat(user.authorities).doesNotContain(SimpleGrantedAuthority(ProjectRetrieve.name))
+
+        assertThat(projectAuthorization.canUpdateProject(projectId, true)).isEqualTo(isOpen)
     }
 
     @ParameterizedTest(name = "can update project - HAS PERMISSION FOR just this PROJECT, no-owner, isOpen {0}")
@@ -151,7 +178,7 @@ internal class ProjectAuthorizationTest : UnitTest() {
         assertThat(user.authorities).contains(SimpleGrantedAuthority(ProjectFormUpdate.name))
         assertThat(user.authorities).doesNotContain(SimpleGrantedAuthority(ProjectRetrieve.name))
 
-        assertThat(projectAuthorization.canUpdateProject(PROJECT_ID)).isEqualTo(isOpen)
+        assertThat(projectAuthorization.canUpdateProject(PROJECT_ID, false)).isEqualTo(isOpen)
         // user permissions for project are OK, so we are not checking ownership
         verify(exactly = 0) { securityService.getUserIdOrThrow() }
     }
@@ -180,7 +207,7 @@ internal class ProjectAuthorizationTest : UnitTest() {
         assertThat(user.authorities).contains(SimpleGrantedAuthority(ProjectFormUpdate.name))
         assertThat(user.authorities).contains(SimpleGrantedAuthority(ProjectRetrieve.name))
 
-        assertThat(projectAuthorization.canUpdateProject(PROJECT_ID)).isEqualTo(isOpen)
+        assertThat(projectAuthorization.canUpdateProject(PROJECT_ID, false)).isEqualTo(isOpen)
         // user permissions for project are OK, so we are not checking ownership
         verify(exactly = 0) { securityService.getUserIdOrThrow() }
     }

@@ -40,6 +40,7 @@ class ProgrammeUnitCostControllerTest {
 
         private val expectedUnitCostDTO = ProgrammeUnitCostDTO(
             id = 1,
+            projectDefined = false,
             name = setOf(InputTranslation(SystemLanguage.EN, "UC1")),
             description = setOf(InputTranslation(SystemLanguage.EN, "test unit cost 1")),
             type = setOf(InputTranslation(SystemLanguage.EN, "type 1")),

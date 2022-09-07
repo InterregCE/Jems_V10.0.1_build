@@ -199,6 +199,7 @@ export class ProgrammeUnitCostDetailComponent extends ViewEditFormComponent impl
       } else {
         this.updateUnitCost.emit({
           id: this.unitCost?.id,
+          projectDefined: false,
           name: this.unitCostForm?.controls?.name?.value,
           description: this.unitCostForm?.controls?.description?.value,
           type: this.unitCostForm?.controls?.type?.value,

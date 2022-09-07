@@ -35,8 +35,12 @@ annotation class CanCreateProject
 annotation class CanRetrieveProjectForm
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectAuthorization.canUpdateProject(#projectId)")
+@PreAuthorize("@projectAuthorization.canUpdateProject(#projectId, false)")
 annotation class CanUpdateProjectForm
+
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("@projectAuthorization.canUpdateProject(#projectId, true)")
+annotation class CanUpdateProjectFormOnlyBeforeApproved
 
 @Component
 class ProjectAuthorization(
@@ -52,12 +56,16 @@ class ProjectAuthorization(
         throw ResourceNotFoundException("project") // should be same exception as if entity not found
     }
 
-    fun canUpdateProject(projectId: Long): Boolean {
+    fun canUpdateProject(projectId: Long, onlyBeforeApproved: Boolean): Boolean {
         val project = projectPersistence.getApplicantAndStatusById(projectId)
         val canSeeProject = hasPermission(UserRolePermission.ProjectFormUpdate, projectId)
             || isActiveUserIdEqualToOneOf(project.getUserIdsWithEditLevel())
-        if (canSeeProject)
-            return project.projectStatus.canBeModified()
+        if (canSeeProject) {
+            return if (onlyBeforeApproved)
+                project.projectStatus.isModifiableStatusBeforeApproved()
+            else
+                project.projectStatus.canBeModified()
+        }
         throw ResourceNotFoundException("project") // should be same exception as if entity not found
     }
 
