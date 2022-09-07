@@ -90,7 +90,7 @@ val nutsAustria = NutsRegion3(
         "AT13", "Wien",
         NutsRegion1(
             "AT1", "AT",
-            NutsCountry("AT", "Ostösterreich")
+            NutsCountry("AT", "Österreich")
         )
     )
 )

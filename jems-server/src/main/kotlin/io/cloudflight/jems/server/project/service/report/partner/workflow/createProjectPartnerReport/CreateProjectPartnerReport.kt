@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.partner.workflow.createProjectPartnerReport
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
+import io.cloudflight.jems.server.common.getCountryCodeForCountry
 import io.cloudflight.jems.server.currency.repository.CurrencyPersistence
 import io.cloudflight.jems.server.project.authorization.CanEditPartnerReport
 import io.cloudflight.jems.server.project.service.ProjectDescriptionPersistence
@@ -138,9 +139,6 @@ class CreateProjectPartnerReport(
             null
         }
     }
-
-    private fun getCountryCodeForCountry(country: String) =
-        Regex("\\(([A-Z]{2})\\)$").find(country)?.value?.substring(1, 3)
 
     private fun ProjectPartnerDetail.toReportIdentification(
         project: ProjectFull,
