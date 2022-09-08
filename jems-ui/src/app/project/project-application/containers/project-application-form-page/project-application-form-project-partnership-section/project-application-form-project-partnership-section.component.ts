@@ -1,5 +1,4 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {map} from 'rxjs/operators';
 import {ProjectDescriptionService} from '@cat/api';
 import {ProjectApplicationFormStore} from '../services/project-application-form-store.service';
 import {ProjectStore} from '../../project-application-detail/services/project-store.service';

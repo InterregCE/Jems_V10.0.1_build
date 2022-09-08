@@ -1,10 +1,12 @@
 import {Injectable} from '@angular/core';
-import {combineLatest, merge, Observable, of, ReplaySubject, Subject} from 'rxjs';
+import {combineLatest, merge, Observable, ReplaySubject, Subject} from 'rxjs';
 import {
   InputProjectOverallObjective,
   InputProjectPartnership,
   InputProjectRelevance,
-  OutputProjectDescription, OutputProjectLongTermPlans, OutputProjectManagement,
+  OutputProjectDescription,
+  OutputProjectLongTermPlans,
+  OutputProjectManagement,
   ProjectDescriptionService
 } from '@cat/api';
 import {map, mergeMap, shareReplay, tap} from 'rxjs/operators';

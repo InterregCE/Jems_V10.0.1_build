@@ -34,7 +34,7 @@ export class PartnerControlReportControlChecklistPageComponent {
 
   confirmUnfinish = {
     title: 'checklists.instance.confirm.unfinish.title',
-    message: 'checklists.instance.confirm.unfinish'
+    message: 'checklists.instance.confirm.unfinish.message'
   };
 
   constructor(private projectSidenavService: ProjectApplicationFormSidenavService,

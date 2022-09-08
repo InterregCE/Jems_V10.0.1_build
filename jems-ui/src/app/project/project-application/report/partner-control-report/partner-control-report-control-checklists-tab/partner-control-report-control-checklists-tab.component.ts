@@ -1,12 +1,9 @@
-import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
-import {
-  ProgrammeChecklistDetailDTO,
-  ProjectPartnerControlReportDTO
-} from '@cat/api';
-import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {ProgrammeChecklistDetailDTO, ProjectPartnerControlReportDTO} from '@cat/api';
+import {BehaviorSubject, Observable} from 'rxjs';
 import {APIError} from '@common/models/APIError';
 import {map} from 'rxjs/operators';
-import {FormService} from "@common/components/section/form/form.service";
+import {FormService} from '@common/components/section/form/form.service';
 import {
   PartnerControlReportStore
 } from '@project/project-application/report/partner-control-report/partner-control-report-store.service';

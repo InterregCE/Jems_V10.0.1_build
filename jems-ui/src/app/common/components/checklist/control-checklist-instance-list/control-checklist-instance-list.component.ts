@@ -17,7 +17,7 @@ import {Forms} from '@common/utils/forms';
 import {FormService} from '@common/components/section/form/form.service';
 import {TableComponent} from '@common/components/table/table.component';
 import {MatSort} from '@angular/material/sort';
-import {ControlChecklistSort} from "@common/components/checklist/control-checklist-instance-list/control-checklist-instance-list-custom-sort";
+import {ControlChecklistSort} from '@common/components/checklist/control-checklist-instance-list/control-checklist-instance-list-custom-sort';
 
 @Component({
   selector: 'jems-control-checklist-instance-list',

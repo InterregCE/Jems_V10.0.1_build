@@ -188,11 +188,10 @@ import {
   PartnerControlReportStore
 } from '@project/project-application/report/partner-control-report/partner-control-report-store.service';
 import { PartnerControlReportInformationTabComponent } from './project-application/report/partner-control-report/partner-control-report-information-tab/partner-control-report-information-tab.component';
-import { ControlChecklistInstanceListComponent } from '@project/project-application/report/partner-control-report/partner-control-report-control-checklists-tab/partner-control-report-control-checklists-tab.component';
 import { PartnerControlReportControlChecklistsTabComponent } from '@project/project-application/report/partner-control-report/partner-control-report-control-checklists-tab/partner-control-report-control-checklists-tab.component';
 import {
   PartnerControlReportControlChecklistPageComponent
-} from "@project/project-application/report/partner-control-report/partner-control-report-control-checklists-tab/partner-control-report-control-checklist-page/partner-control-report-control-checklist-page.component";
+} from '@project/project-application/report/partner-control-report/partner-control-report-control-checklists-tab/partner-control-report-control-checklist-page/partner-control-report-control-checklist-page.component';
 import { ProjectProposedUnitCostsComponent } from './unit-costs/project-unit-costs-page/project-proposed-unit-costs/project-proposed-unit-costs.component';
 import { ProjectProposedUnitCostDetailComponent } from './unit-costs/project-unit-costs-page/project-proposed-unit-costs/project-proposed-unit-cost-detail/project-proposed-unit-cost-detail.component';
 import {
@@ -334,11 +333,10 @@ import {
     PartnerControlReportIdentificationTabComponent,
     PartnerControlReportInformationTabComponent,
     PartnerControlReportControlChecklistsTabComponent,
-    PartnerControlReportControlChecklistPageComponent
+    PartnerControlReportControlChecklistPageComponent,
     ProjectProposedUnitCostsComponent,
-    ProjectProposedUnitCostDetailComponent
+    ProjectProposedUnitCostDetailComponent,
     PartnerControlReportInformationTabComponent,
-    ControlChecklistInstanceListComponent
   ],
   imports: [
     SharedModule,

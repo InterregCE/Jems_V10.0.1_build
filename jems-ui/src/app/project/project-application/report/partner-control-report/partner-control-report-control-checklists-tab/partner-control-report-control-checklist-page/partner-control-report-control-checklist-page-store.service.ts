@@ -1,7 +1,7 @@
 import {Injectable} from '@angular/core';
 import {RoutingService} from '@common/services/routing.service';
 import {combineLatest, merge, Observable, Subject} from 'rxjs';
-import {ChecklistInstanceDetailDTO, ChecklistInstanceDTO, ChecklistInstanceService, UserRoleDTO} from '@cat/api';
+import {ChecklistInstanceDetailDTO, ChecklistInstanceDTO, ChecklistInstanceService} from '@cat/api';
 import {map, shareReplay, switchMap, take, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 import {SecurityService} from '../../../../../../security/security.service';
