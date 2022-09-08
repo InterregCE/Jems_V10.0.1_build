@@ -14,7 +14,8 @@
             <button [disabled]="!selectedTemplate"
                     jemsText mat-raised-button color="primary" class="mb-3 mt-3"
                     (click)="createInstance()">
-                + {{'checklists.instance.list.new.button' | translate}}
+                <mat-icon>add</mat-icon>
+                {{'checklists.instance.list.new.button' | translate}}
             </button>
         </span>
 
