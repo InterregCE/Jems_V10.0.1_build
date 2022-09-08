@@ -5,6 +5,7 @@ import java.math.BigDecimal
 
 data class ProgrammeUnitCostDTO(
     val id: Long? = null,
+    val projectDefined: Boolean,
     val name: Set<InputTranslation> = emptySet(),
     val description: Set<InputTranslation> = emptySet(),
     val type: Set<InputTranslation> = emptySet(),

@@ -59,7 +59,7 @@ interface ProjectCostOptionApi {
 
     @ApiOperation("Delete project-proposed unit cost")
     @DeleteMapping("$ENDPOINT_API_PROJECT_UNIT_COST/{unitCostId}")
-    fun deleteProgrammeUnitCost(
+    fun deleteProjectUnitCost(
         @PathVariable projectId: Long,
         @PathVariable unitCostId: Long,
     )

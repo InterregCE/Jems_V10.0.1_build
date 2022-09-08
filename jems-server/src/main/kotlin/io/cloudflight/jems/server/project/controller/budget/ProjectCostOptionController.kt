@@ -36,7 +36,7 @@ class ProjectCostOptionController(
     override fun updateProjectUnitCost(projectId: Long, unitCost: ProgrammeUnitCostDTO) =
         updateProjectUnitCostInteractor.updateProjectUnitCost(projectId, unitCost.toModel()).toDto()
 
-    override fun deleteProgrammeUnitCost(projectId: Long, unitCostId: Long) =
+    override fun deleteProjectUnitCost(projectId: Long, unitCostId: Long) =
         deleteProjectUnitCostInteractor.deleteProjectUnitCost(projectId = projectId, unitCostId = unitCostId)
 
 }

@@ -154,6 +154,7 @@ class ProgrammeDataGeneratorTest(@LocalServerPort private val port: Int) : DataG
             programmeUnitCostApi.createProgrammeUnitCost(
                 ProgrammeUnitCostDTO(
                     id = null,
+                    projectDefined = false,
                     name = inputTranslation("name"),
                     description = inputTranslation("description"),
                     type = inputTranslation("type"),

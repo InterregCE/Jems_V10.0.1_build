@@ -39,6 +39,7 @@ internal class ProjectCostOptionControllerTest : UnitTest() {
 
         private val unitCostDto = ProgrammeUnitCostDTO(
             id = 84L,
+            projectDefined = true,
             name = setOf(InputTranslation(SystemLanguage.EN, "UC1")),
             description = setOf(InputTranslation(SystemLanguage.EN, "test unit cost 1")),
             type = setOf(InputTranslation(SystemLanguage.EN, "test type 1")),
@@ -75,20 +76,20 @@ internal class ProjectCostOptionControllerTest : UnitTest() {
     @Test
     fun getProjectAvailableUnitCosts() {
         every { getProjectAvailableUnitCostInteractor.getAvailableUnitCost(14L, "2.0") } returns
-            listOf(unitCost)
+            listOf(unitCost.copy(projectId = 14L))
         assertThat(controller.getProjectAvailableUnitCosts(14L, "2.0")).containsExactly(unitCostDto)
     }
 
     @Test
     fun getProjectUnitCostList() {
         every { getProjectUnitCostListInteractor.getUnitCostList(22L) } returns
-            listOf(unitCost)
+            listOf(unitCost.copy(projectId = 22L))
         assertThat(controller.getProjectUnitCostList(22L)).containsExactly(unitCostListDto)
     }
 
     @Test
     fun getProjectUnitCost() {
-        every { getProjectUnitCostListInteractor.getUnitCost(25L, 999L) } returns unitCost
+        every { getProjectUnitCostListInteractor.getUnitCost(25L, 999L) } returns unitCost.copy(projectId = 25L)
         assertThat(controller.getProjectUnitCost(25L, 999L)).isEqualTo(unitCostDto)
     }
 
@@ -97,8 +98,9 @@ internal class ProjectCostOptionControllerTest : UnitTest() {
         val slotUnitCost = slot<ProgrammeUnitCost>()
         every { createProjectUnitCostInteractor.createProjectUnitCost(29L, capture(slotUnitCost)) } returnsArgument 1
 
-        assertThat(controller.createProjectUnitCost(29L, unitCostDto)).isEqualTo(unitCostDto)
-        assertThat(slotUnitCost.captured).isEqualTo(unitCost)
+        // we do not care about projectDefined flag when creating UnitCost
+        assertThat(controller.createProjectUnitCost(29L, unitCostDto)).isEqualTo(unitCostDto.copy(projectDefined = false))
+        assertThat(slotUnitCost.captured).isEqualTo(unitCost.copy())
     }
 
     @Test
@@ -106,14 +108,15 @@ internal class ProjectCostOptionControllerTest : UnitTest() {
         val slotUnitCost = slot<ProgrammeUnitCost>()
         every { updateProjectUnitCostInteractor.updateProjectUnitCost(31L, capture(slotUnitCost)) } returnsArgument 1
 
-        assertThat(controller.updateProjectUnitCost(31L, unitCostDto)).isEqualTo(unitCostDto)
+        // we do not care about projectDefined flag when updating UnitCost
+        assertThat(controller.updateProjectUnitCost(31L, unitCostDto)).isEqualTo(unitCostDto.copy(projectDefined = false))
         assertThat(slotUnitCost.captured).isEqualTo(unitCost)
     }
 
     @Test
-    fun deleteProgrammeUnitCost() {
+    fun deleteProjectUnitCost() {
         every { deleteProjectUnitCostInteractor.deleteProjectUnitCost(35L, unitCostId = 978L) } answers { }
-        controller.deleteProgrammeUnitCost(35L, unitCostId = 978L)
+        controller.deleteProjectUnitCost(35L, unitCostId = 978L)
         verify(exactly = 1) { deleteProjectUnitCostInteractor.deleteProjectUnitCost(35L, 978L) }
     }
 

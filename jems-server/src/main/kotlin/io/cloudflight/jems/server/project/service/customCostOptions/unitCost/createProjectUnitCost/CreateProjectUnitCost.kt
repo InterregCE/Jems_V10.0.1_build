@@ -7,7 +7,7 @@ import io.cloudflight.jems.server.programme.service.costoption.ProgrammeUnitCost
 import io.cloudflight.jems.server.programme.service.costoption.getStaticValidationResults
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.programme.service.costoption.validateCreateUnitCost
-import io.cloudflight.jems.server.project.authorization.CanUpdateProjectForm
+import io.cloudflight.jems.server.project.authorization.CanUpdateProjectFormOnlyBeforeApproved
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.customCostOptions.ProjectUnitCostPersistence
 import io.cloudflight.jems.server.project.service.customCostOptions.unitCost.projectUnitCostCreated
@@ -25,7 +25,7 @@ class CreateProjectUnitCost(
     private val generalValidator: GeneralValidatorService,
 ) : CreateProjectUnitCostInteractor {
 
-    @CanUpdateProjectForm
+    @CanUpdateProjectFormOnlyBeforeApproved
     @Transactional
     @ExceptionWrapper(CreateProjectUnitCostException::class)
     override fun createProjectUnitCost(projectId: Long, unitCost: ProgrammeUnitCost): ProgrammeUnitCost {
