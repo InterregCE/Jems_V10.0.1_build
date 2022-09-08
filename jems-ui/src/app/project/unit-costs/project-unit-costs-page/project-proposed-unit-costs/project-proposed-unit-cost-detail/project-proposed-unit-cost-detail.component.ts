@@ -217,9 +217,12 @@ export class ProjectProposedUnitCostDetailComponent implements OnInit {
             },
           }).pipe(
           take(1),
-          filter(answer => !!answer),
-          tap(() => {
-            this.updateUnitCost(updateValue);
+          tap((answer) => {
+            if (answer) {
+              this.updateUnitCost(updateValue);
+            } else {
+              this.resetForm();
+            }
           }))
           .subscribe();
       } else {
