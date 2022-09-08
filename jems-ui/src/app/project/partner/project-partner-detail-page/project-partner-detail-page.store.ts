@@ -217,8 +217,11 @@ export class ProjectPartnerDetailPageStore {
   }
 
   private projectUnitCosts(): Observable<ProgrammeUnitCost[]> {
-    return this.projectStore.projectId$.pipe(
-      switchMap(projectId => this.projectCostOptionService.getProjectAvailableUnitCosts(projectId)),
+    return combineLatest([
+      this.projectStore.projectId$,
+      this.projectVersionStore.selectedVersion$
+    ]).pipe(
+      switchMap(([projectId, version]) => this.projectCostOptionService.getProjectAvailableUnitCosts(projectId, version?.version)),
       map(unitCosts => unitCosts.map(unitCost =>
         new ProgrammeUnitCost(
           unitCost.id,
@@ -228,6 +231,7 @@ export class ProjectPartnerDetailPageStore {
           unitCost.costPerUnit,
           unitCost.oneCostCategory,
           BudgetCostCategoryEnumUtils.toBudgetCostCategoryEnums(unitCost.categories),
+          unitCost.projectDefined
         )
       )),
     );

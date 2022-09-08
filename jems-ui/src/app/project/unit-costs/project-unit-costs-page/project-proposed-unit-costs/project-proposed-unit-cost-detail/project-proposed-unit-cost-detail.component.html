@@ -1,0 +1,148 @@
+<jems-project-page-template [needsCard]="true"
+                            [titleText]="'project.application.form.acronym' | translate : {projectTitle: projectStore.projectTitle$ | async} "
+                            subTitleKey="project.application.form.section.part.e.subsection.two.subsection.one">
+
+    <jems-form jemsFormLayout
+               [formGroup]="projectUnitCostForm"
+               (save)="onSubmit()"
+               (discard)="onCancel()">
+        <div jemsMultiColumnRow>
+            <h3 class="mb-0 put-icon-to-header-line">{{'project.application.form.section.part.e.subsection.two.subsection.one.unit.cost.title' | translate}}</h3>
+        </div>
+
+        <jems-alert class="mt-2" [closable]="false" [show]="!this.isCreate && this.projectStatus === ProjectStatusDTO.StatusEnum.INMODIFICATION" [type]="Alert.INFO" disableMargins="true">
+            <span>{{ 'project.application.form.section.part.e.subsection.two.subsection.one.unit.cost.notification.not.editable' | translate }}</span>
+        </jems-alert>
+
+        <jems-multi-language-container>
+            <span class="mr-1">E.2.1_</span>
+            <jems-multi-language-form-field
+                    id="nameOfUnitCost"
+                    formControlName="name"
+                    label="unit.cost.form.field.name"
+                    [isRequired]="true"
+                    [maxLength]="50">
+            </jems-multi-language-form-field>
+        </jems-multi-language-container>
+        <jems-multi-language-container>
+            <jems-multi-language-form-field
+                    formControlName="description"
+                    label="unit.cost.form.field.description"
+                    [maxLength]="255">
+            </jems-multi-language-form-field>
+        </jems-multi-language-container>
+        <jems-multi-language-container>
+            <jems-multi-language-form-field
+                    formControlName="type"
+                    label="unit.cost.form.field.unit.type"
+                    [maxLength]="25">
+            </jems-multi-language-form-field>
+        </jems-multi-language-container>
+        <jems-multi-language-container>
+            <jems-multi-language-form-field
+                    formControlName="justification"
+                    label="unit.cost.form.field.justification"
+                    type="textarea"
+                    [maxLength]="5000">
+            </jems-multi-language-form-field>
+        </jems-multi-language-container>
+        <mat-form-field>
+            <mat-label>{{'unit.cost.form.field.cost.currency.euro' | translate}}</mat-label>
+            <input currencyMask type="decimal"
+                   [options]="{nullable: true}"
+                   name="costPerUnit" formControlName="costPerUnit" matInput required>
+            <jems-context-info infoPosition="after" infoText="{{'unit.cost.form.field.cost.info.currency.euro' | translate}}"></jems-context-info>
+            <mat-error>
+                <jems-form-field-errors
+                        [errors]="projectUnitCostForm?.controls?.costPerUnit?.errors"
+                        [messages]="costErrors">
+                </jems-form-field-errors>
+            </mat-error>
+        </mat-form-field>
+
+        <div jemsMultiColumnRow>
+            <mat-form-field jemsFormFieldWidth="two-thirds" class="mr-2" [class.mat-form-field-disabled]="!isForeignCurrencySelected() || (!this.isCreate && this.projectStatus === ProjectStatusDTO.StatusEnum.INMODIFICATION)" >
+                <mat-label>{{'unit.cost.form.field.cost.currency.other' | translate}}</mat-label>
+                <input currencyMask type="decimal"
+                       [required]="isForeignCurrencySelected()"
+                       [readonly]="!isForeignCurrencySelected()"
+                       [options]="{nullable:true}"
+                       name="costPerUnitForeignCurrency" formControlName="costPerUnitForeignCurrency" matInput>
+                <mat-error>
+                    <jems-form-field-errors
+                            [errors]="projectUnitCostForm?.controls?.costPerUnitForeignCurrency?.errors"
+                            [messages]="costForeignCurrencyErrors">
+                    </jems-form-field-errors>
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field jemsFormFieldWidth="one-third">
+                <mat-label>{{'unit.cost.form.field.cost.currencies' | translate}}</mat-label>
+                <mat-select formControlName="foreignCurrencyCode"
+                            placeholder="{{'project.application.partner.report.expenditures.currency.placeholder' | translate}}"
+                            (selectionChange)="onForeignCurrencyChange($event)">
+                    <mat-option [value]="null">{{'common.not.applicable.option' | translate}}</mat-option>
+                    <mat-option *ngFor="let currency of availableCurrencies" [value]="currency.code">{{currency.code}}</mat-option>
+                </mat-select>
+                <jems-context-info infoPosition="after" infoText="{{'unit.cost.form.field.cost.info.currency.other' | translate}}"></jems-context-info>
+                <mat-error>
+                    <jems-form-field-errors [errors]="projectUnitCostForm?.controls?.foreignCurrencyCode?.errors"></jems-form-field-errors>
+                </mat-error>
+            </mat-form-field>
+        </div>
+
+        <h4 jemsLabel class="mat-required-marker"
+            [ngClass]="{'empty': !oneCostToggle.checked && !multiCostToggle.checked}">
+            {{'unit.cost.cost.categories' | translate}}</h4>
+        <div>{{'unit.cost.toggle.row.one' | translate}}</div>
+        <div>{{'unit.cost.toggle.row.two' | translate}}</div>
+        <div class="mt-3">
+            <mat-button-toggle-group [disabled]="!formService.isEditable() || (!this.isCreate && this.projectStatus === ProjectStatusDTO.StatusEnum.INMODIFICATION)">
+                <mat-button-toggle #oneCostToggle
+                                   [value]="true"
+                                   [checked]="projectUnitCostForm.controls.isOneCostCategory.value === true"
+                                   (change)="changeAllowedCategories($event.value)">
+                    <span jemsText maxWidth="230">{{'unit.cost.toggle.allow.single' | translate}}</span>
+                </mat-button-toggle>
+                <mat-button-toggle #multiCostToggle
+                                   [value]="false"
+                                   [checked]="projectUnitCostForm.controls.isOneCostCategory.value === false"
+                                   (change)="changeAllowedCategories($event.value)">
+                    <span jemsText maxWidth="230">{{'unit.cost.toggle.allow.multiple' | translate}}</span>
+                </mat-button-toggle>
+            </mat-button-toggle-group>
+        </div>
+        <br>
+        <div *ngIf="projectUnitCostForm.controls.isOneCostCategory.value !== null">
+            <div *ngIf="projectUnitCostForm.controls.isOneCostCategory.value === false">
+                <p jemsLabel class="mat-required-marker mat-body-strong"
+                   [ngClass]="{'empty': projectUnitCostForm?.controls?.categories?.errors}">
+                    {{'programme.unitCost.categories.min.2' | translate}}:
+                </p>
+                <p *ngFor="let element of multipleCostCategories">
+                    <mat-checkbox (click)="$event.stopPropagation()"
+                                  (change)="checkSelectionMultiple(element)"
+                                  [checked]="selectionMultiple.isSelected(element)"
+                                  [disabled]="!formService.isEditable() || (!this.isCreate && this.projectStatus === ProjectStatusDTO.StatusEnum.INMODIFICATION)">
+                        {{'unit.cost.cost.category.' + element | translate}}
+                    </mat-checkbox>
+                </p>
+            </div>
+
+            <div *ngIf="projectUnitCostForm.controls.isOneCostCategory.value === true">
+                <p jemsLabel class="mat-required-marker mat-body-strong"
+                   [ngClass]="{'empty': projectUnitCostForm?.controls?.categories?.errors}">
+                    {{'unit.cost.categories.should.not.be.empty.single' | translate}}:
+                </p>
+                <p *ngFor="let element of singleCostCategories">
+                    <mat-radio-button (click)="$event.stopPropagation()"
+                                      (change)="checkSelectionSingle(element)"
+                                      [checked]="selectionSingle.isSelected(element)"
+                                      [disabled]="!this.isCreate && this.projectStatus === ProjectStatusDTO.StatusEnum.INMODIFICATION">
+                        {{'unit.cost.cost.category.' + element | translate}}
+                    </mat-radio-button>
+                </p>
+            </div>
+        </div>
+    </jems-form>
+</jems-project-page-template>

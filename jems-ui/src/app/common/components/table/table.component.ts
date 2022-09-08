@@ -37,6 +37,8 @@ export class TableComponent implements OnInit {
   pageIndex: number;
   @Input()
   confirmPageChange = false;
+  @Input()
+  isMultiLanguage = false;
 
   @Output()
   sortRows = new EventEmitter<Partial<MatSort>>();

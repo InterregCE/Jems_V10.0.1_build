@@ -63,6 +63,8 @@ export class MultiLanguageFormFieldComponent implements OnInit, ControlValueAcce
   disabled = false;
   @Input()
   condensed = false;
+  @Input()
+  isRequired = false;
 
   multiLanguageFormGroup: FormGroup;
   currentLanguage$: Observable<string>;
@@ -155,7 +157,7 @@ export class MultiLanguageFormFieldComponent implements OnInit, ControlValueAcce
     languages.forEach(language => {
         this.inputs.push(
           this.formBuilder.group({
-            translation: ['', Validators.maxLength(this.maxLength)],
+            translation: ['', this.isRequired ? Validators.compose([Validators.maxLength(this.maxLength), Validators.required]) : Validators.maxLength(this.maxLength)],
             language: [language]
           }));
       }

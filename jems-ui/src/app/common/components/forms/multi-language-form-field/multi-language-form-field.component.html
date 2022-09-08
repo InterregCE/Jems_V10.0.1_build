@@ -13,6 +13,7 @@
                             [formControlName]="constants.FORM_CONTROL_NAMES.translation"
                             (keydown.enter)="$event.preventDefault()"
                             [matTooltip]="condensed ? input.value + ' (' + getTranslationLength(formGroup) + '/' + maxLength + ')' : ''"
+                            [required]="isRequired"
                             matInput>
                     <jems-context-info *ngIf="contextInfoText"
                                       [infoText]="contextInfoText">
@@ -42,6 +43,7 @@
                               [placeholder]="useFallBackLanguage? (inputs.value | translateBySystemLanguage: true | async) : ''"
                               [readonly]="!isEditable(getLanguageValue(formGroup), languageStore.fallbackLanguage$ | async)"
                               [cdkTextareaAutosize]
+                              [required]="isRequired"
                               [cdkAutosizeMinRows]="minRows"
                               [cdkAutosizeMaxRows]="maxRows">
                     </textarea>

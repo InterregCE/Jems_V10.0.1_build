@@ -20,6 +20,7 @@ import {ApplicationFormConfigurationPageComponent} from './application-form-conf
 import {CallStateAidsComponent} from './call-detail-page/call-state-aids/call-state-aids.component';
 import {CallAllowedRealCostsComponent} from './call-budget-settings-page/call-allow-real-costs/call-allow-real-costs.component';
 import {PreSubmissionCheckSettingsPageComponent} from './pre-submission-check-settings-page/pre-submission-check-settings-page.component';
+import { CallDraftBudgetComponent } from './call-budget-settings-page/call-draft-budget/call-draft-budget.component';
 
 @NgModule({
   declarations: [
@@ -36,7 +37,8 @@ import {PreSubmissionCheckSettingsPageComponent} from './pre-submission-check-se
     ApplicationFormConfigurationPageComponent,
     CallStateAidsComponent,
     CallAllowedRealCostsComponent,
-    PreSubmissionCheckSettingsPageComponent
+    PreSubmissionCheckSettingsPageComponent,
+    CallDraftBudgetComponent
   ],
   imports: [
     SharedModule,

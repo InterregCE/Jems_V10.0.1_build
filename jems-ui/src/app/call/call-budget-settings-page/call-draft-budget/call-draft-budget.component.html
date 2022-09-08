@@ -1,0 +1,11 @@
+<jems-form (discard)="resetForm(data.allowedCostOptions)"
+           (save)="updateAllowedCostOptions()"
+           *ngIf="data$ | async as data">
+    <h3>{{'call.allow.project.proposed.costs' | translate}}</h3>
+    <form [formGroup]="form" jemsFormLayout>
+        <mat-checkbox [disabled]="data.callIsPublished && data.allowedCostOptions.projectDefinedUnitCostAllowed"
+                      formControlName="projectDefinedUnitCostAllowed">
+            {{'call.allow.project.proposed.unit.costs' | translate}}
+        </mat-checkbox>
+    </form>
+</jems-form>

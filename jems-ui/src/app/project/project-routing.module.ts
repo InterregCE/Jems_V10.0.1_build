@@ -102,6 +102,15 @@ import {
   ControlReportPageBreadcrumbResolver
 } from '@project/project-application/report/partner-control-report/controler-report-page-breadcrumb-resolver.service';
 import { PartnerControlReportInformationTabComponent } from './project-application/report/partner-control-report/partner-control-report-information-tab/partner-control-report-information-tab.component';
+import {
+  ProjectProposedUnitCostsComponent
+} from '@project/unit-costs/project-unit-costs-page/project-proposed-unit-costs/project-proposed-unit-costs.component';
+import {
+  ProjectProposedUnitCostDetailComponent
+} from '@project/unit-costs/project-unit-costs-page/project-proposed-unit-costs/project-proposed-unit-cost-detail/project-proposed-unit-cost-detail.component';
+import {
+  ProjectProposedUnitCostBreadcrumbResolver
+} from '@project/project-application/containers/project-application-detail/services/project-proposed-unit-cost.resolver';
 
 export const routes: Routes = [
   {
@@ -551,7 +560,33 @@ export const routes: Routes = [
           {
             path: 'applicationFormUnitCosts',
             data: {breadcrumb: 'project.breadcrumb.applicationForm.unit.costs'},
-            component: ProjectUnitCostsPageComponent,
+            children : [
+              {
+                path: '',
+                component: ProjectUnitCostsPageComponent,
+              },
+              {
+                path: 'projectProposed',
+                data: {breadcrumb: 'project.breadcrumb.proposed.unit.cost'},
+                children: [
+                  {
+                    path: '',
+                    component: ProjectProposedUnitCostsComponent,
+                  },
+                  {
+                    path: 'create',
+                    component: ProjectProposedUnitCostDetailComponent,
+                    data: {breadcrumb: 'project.breadcrumb.unit.cost.create'},
+                  },
+                  {
+                    path: ':unitCostId',
+                    component: ProjectProposedUnitCostDetailComponent,
+                    data: {dynamicBreadcrumb: true},
+                    resolve: {breadcrumb$: ProjectProposedUnitCostBreadcrumbResolver},
+                  }
+                ]
+              }
+            ]
           },
         ]
       },

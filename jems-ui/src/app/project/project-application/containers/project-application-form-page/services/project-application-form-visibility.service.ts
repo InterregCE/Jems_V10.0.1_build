@@ -30,8 +30,8 @@ export class ProjectApplicationFormVisibilityService {
     let allowed = true;
 
     if (childRoute.data.breadcrumb === 'project.breadcrumb.applicationForm.unit.costs') {
-      allowed = this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING) &&
-        this.visibilityStatusService.shouldBeVisibleIfUnitCostsSelected();
+      allowed = (this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING) &&
+        this.visibilityStatusService.shouldBeVisibleIfUnitCostsSelected()) || this.visibilityStatusService.shouldBeVisibleIfProjectDefinedUnitCostsAllowed();
     }
 
     if (childRoute.data.visibleOnly) {

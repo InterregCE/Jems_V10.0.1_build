@@ -35,6 +35,10 @@ export class FormVisibilityStatusService {
     return this.projectStore.project.callSettings.unitCosts.filter(cost => !cost.oneCostCategory).length !== 0;
   }
 
+  shouldBeVisibleIfProjectDefinedUnitCostsAllowed(): boolean {
+    return this.projectStore.project.callSettings.costOption.projectDefinedUnitCostAllowed;
+  }
+
   private shouldBeVisible(fieldIds: string | ApplicationFormModel, applicationFormFieldConfigurations: ApplicationFormFieldConfigurationDTO[], hasCallTwoSteps: boolean, isProjectInStepTwo: boolean): boolean {
     return this.getFieldIdsToCheck(fieldIds).find(fieldId => this.isFieldVisible(fieldId, applicationFormFieldConfigurations, hasCallTwoSteps, isProjectInStepTwo)) !== undefined;
   }
