@@ -1,13 +1,13 @@
-import { faker } from '@faker-js/faker';
+import {faker} from '@faker-js/faker';
 import user from '../../fixtures/users.json';
 
 context('Login tests', () => {
 
   before(() => {
-    // cy.loginByRequest(user.admin.email);
-    // cy.createUser(user.applicantUser);
-    // cy.createUser(user.programmeUser);
-    // cy.logoutByRequest();
+    cy.loginByRequest(user.admin.email);
+    cy.createUser(user.applicantUser);
+    cy.createUser(user.programmeUser);
+    cy.logoutByRequest();
   });
 
   beforeEach(() => {
