@@ -13,6 +13,10 @@ import io.cloudflight.jems.server.project.service.contracting.monitoring.Contrac
 import io.cloudflight.jems.server.project.service.contracting.reporting.ContractingReportingPersistence
 import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
+import io.cloudflight.jems.server.project.service.model.ProjectVersion
+import io.cloudflight.jems.server.user.entity.UserEntity
+import io.cloudflight.jems.server.user.entity.UserRoleEntity
+import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -25,7 +29,9 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
+import org.mockito.ArgumentMatchers.any
 import java.time.LocalDate
+import java.time.ZonedDateTime
 
 class UpdateContractingReportingTest : UnitTest() {
 
@@ -57,6 +63,7 @@ class UpdateContractingReportingTest : UnitTest() {
     lateinit var versionPersistence: ProjectVersionPersistence
     @MockK
     lateinit var generalValidator: GeneralValidatorService
+
 
     @InjectMockKs
     lateinit var interactor: UpdateContractingReporting
@@ -319,18 +326,41 @@ class UpdateContractingReportingTest : UnitTest() {
     @Test
     fun `clearNoLongerAvailablePeriodsAndDates`() {
         val projectId = 307L
-        val version = "V_4"
+        val version = "v4.0"
         val maxNewDuration = 3;
         val invalidPeriodNumberList = listOf(4L);
-        every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns version
-        val project = mockk<ProjectFull>()
-        every { project.projectStatus.status } returns ApplicationStatus.APPROVED
-        every { project.periods } returns listOf(
-            ProjectPeriod(number = 1, start = 1, end = 1),
-            ProjectPeriod(number = 2, start = 2, end = 2),
-            ProjectPeriod(number = 3, start = 3, end = 3),
+        val versions = listOf(
+            ProjectVersion(
+                "v4.0",
+                projectId,
+                ZonedDateTime.now(),
+                mockk(),
+                ApplicationStatus.APPROVED,
+                false
+            ),
+            ProjectVersion(
+                "v3.0",
+                projectId,
+                ZonedDateTime.now().minusDays(1),
+                mockk(),
+                ApplicationStatus.APPROVED,
+                false
+            )
         )
-        every { projectPersistence.getProject(projectId, version) } returns project
+
+        every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns version
+        every { versionPersistence.getAllVersionsByProjectId(projectId) } returns versions
+
+        val currentProject = mockk<ProjectFull>()
+        every { currentProject.projectStatus.status } returns ApplicationStatus.APPROVED
+        every { currentProject.duration } returns 3
+
+        val oldProject = mockk<ProjectFull>()
+        every { oldProject.projectStatus.status } returns ApplicationStatus.APPROVED
+        every { oldProject.duration } returns 4
+
+        every { projectPersistence.getProject(projectId, "v3.0") } returns oldProject
+        every { projectPersistence.getProject(projectId) } returns currentProject
 
         val monitoring = mockk<ProjectContractingMonitoring>()
         every { monitoring.startDate } returns LocalDate.of(2022, 1, 31)
@@ -338,7 +368,7 @@ class UpdateContractingReportingTest : UnitTest() {
         every { contractingReportingPersistence.getScheduleIdsWhosePeriodsAndDatesNotProper(projectId, maxNewDuration) } returns invalidPeriodNumberList
         every { contractingReportingPersistence.clearPeriodAndDatesFor(any()) } returns Unit
 
-        interactor.clearNoLongerAvailablePeriodsAndDates(projectId, maxNewDuration)
+        interactor.checkNoLongerAvailablePeriodsAndDatesToRemove(projectId)
         verify(exactly = 1) { contractingReportingPersistence.clearPeriodAndDatesFor(invalidPeriodNumberList) }
     }
 

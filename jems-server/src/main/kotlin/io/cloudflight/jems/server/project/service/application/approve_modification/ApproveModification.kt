@@ -33,15 +33,10 @@ class ApproveModification(
     override fun approveModification(projectId: Long, actionInfo: ApplicationActionInfo): ApplicationStatus =
         actionInfo.ifIsValid(generalValidatorService).let {
             projectPersistence.getProjectSummary(projectId).let { projectSummary ->
-                val lastVersion = projectVersionPersistence.getLatestApprovedOrCurrent(projectId)
-                val lastDuration = projectPersistence.getProject(projectId, lastVersion).duration
                 applicationStateFactory.getInstance(projectSummary).approveModification(actionInfo).also {
                     projectVersionPersistence.updateTimestampForApprovedModification(projectId)
                     auditPublisher.publishEvent(projectStatusChanged(this, projectSummary, newStatus = it))
-                    val newDuration = projectPersistence.getProject(projectId).duration
-                    if (newDuration!! < lastDuration!!) {
-                        updateContractingReportingService.clearNoLongerAvailablePeriodsAndDates(projectId, newDuration)
-                    }
+                    updateContractingReportingService.checkNoLongerAvailablePeriodsAndDatesToRemove(projectId)
                     checkInstitutionPartnerAssignments.checkInstitutionAssignmentsToRemoveForUpdatedPartners(projectId)
                 }
             }
