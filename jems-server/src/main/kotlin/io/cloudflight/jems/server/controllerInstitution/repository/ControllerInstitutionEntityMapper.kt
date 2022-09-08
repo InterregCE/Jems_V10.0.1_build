@@ -8,6 +8,8 @@ import io.cloudflight.jems.server.controllerInstitution.service.model.Controller
 import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerDetails
 import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerDetailsRow
 import io.cloudflight.jems.server.controllerInstitution.service.model.UpdateControllerInstitution
+import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerAssignmentRow
+import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerAssignment
 import io.cloudflight.jems.server.nuts.entity.NutsRegion3
 import io.cloudflight.jems.server.nuts.service.groupNuts
 import io.cloudflight.jems.server.nuts.service.toOutputNuts
@@ -109,4 +111,12 @@ fun InstitutionPartnerDetailsRow.toModel() = InstitutionPartnerDetails(
 )
 
 fun Page<InstitutionPartnerDetailsRow>.toModel() = map { it.toModel() }
+
+fun List<InstitutionPartnerAssignmentRow>.toModels() = map { it.toModel() }
+
+fun InstitutionPartnerAssignmentRow.toModel() = InstitutionPartnerAssignment(
+    institutionId = institutionId,
+    partnerId = partnerId,
+    partnerProjectId = partnerProjectId
+)
 
