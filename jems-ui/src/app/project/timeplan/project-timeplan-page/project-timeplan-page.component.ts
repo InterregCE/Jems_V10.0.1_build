@@ -238,23 +238,20 @@ export class ProjectTimeplanPageComponent implements OnInit {
     marker.title = content;
     marker.style.position = 'absolute';
     if (type == TypeEnum.Finance) {
-      marker.innerHTML = 'FD';
-      marker.className = `vis-custom-time-marker`;
-      marker.style.backgroundColor = '#ef0a0a';
+      marker.innerHTML = '<span class="material-icons">savings</span>';
+      marker.className = `vis-custom-time-marker finance`;
+      bar.className = 'vis-custom-time finance';
       bar.appendChild(marker);
-      bar.style.backgroundColor = '#ef0a0a';
     } else if (type == TypeEnum.Content) {
-      marker.innerHTML = 'CD';
-      marker.className = `vis-custom-time-marker`;
-      marker.style.backgroundColor = '#5380ce';
+      marker.innerHTML = '<span class="material-icons">description</span>';
+      marker.className = `vis-custom-time-marker content`;
+      bar.className = 'vis-custom-time content';
       bar.appendChild(marker);
-      bar.style.backgroundColor = '#5380ce';
     } else {
-      marker.innerHTML = 'BD';
+      marker.innerHTML = '<span class="material-icons">description</span><span class="material-icons">savings</span>';
       marker.className = `vis-custom-time-marker`;
-      marker.style.backgroundColor = '#26961b';
+      bar.className = 'vis-custom-time';
       bar.appendChild(marker);
-      bar.style.backgroundColor = '#26961b';
     }
   }
 
