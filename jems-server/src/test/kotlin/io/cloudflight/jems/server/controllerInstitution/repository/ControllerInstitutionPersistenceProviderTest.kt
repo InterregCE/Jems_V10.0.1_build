@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.controllerInstitution.entity.ControllerInstitu
 import io.cloudflight.jems.server.controllerInstitution.nutsAustria
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionList
 import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerAssignment
+import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerAssignmentRow
 import io.cloudflight.jems.server.nuts.repository.NutsRegion3Repository
 import io.cloudflight.jems.server.project.entity.partner.ControllerInstitutionEntity
 import io.cloudflight.jems.server.user.repository.user.UserRepository
@@ -55,6 +56,17 @@ class ControllerInstitutionPersistenceProviderTest: UnitTest() {
             partnerProjectId = 1L
         )
 
+        private class InstitutionAssignmentImpl(
+            override val institutionId: Long,
+            override val partnerId: Long,
+            override val partnerProjectId: Long
+        ): InstitutionPartnerAssignmentRow
+
+        private val dummyAssignmentToDelete = InstitutionAssignmentImpl(
+            institutionId = 2L,
+            partnerId = 1L,
+            partnerProjectId = 1L
+        )
     }
 
     @MockK
@@ -116,8 +128,8 @@ class ControllerInstitutionPersistenceProviderTest: UnitTest() {
     @Test
     fun getInstitutionPartnerAssignmentsToDeleteByInstitutionId() {
         every { institutionPartnerRepository.getInstitutionPartnerAssignmentsToDeleteByInstitutionId(1L) } returns
-            listOf(dummyInstitutionAssignmentEntity)
+            listOf(dummyAssignmentToDelete)
         assertThat(controllerInstitutionPersistenceProvider.getInstitutionPartnerAssignmentsToDeleteByInstitutionId(1L))
-            .containsExactly(dummyInstitutionAssignmentEntity.toModel())
+            .containsExactly(dummyAssignmentToDelete.toModel())
     }
 }

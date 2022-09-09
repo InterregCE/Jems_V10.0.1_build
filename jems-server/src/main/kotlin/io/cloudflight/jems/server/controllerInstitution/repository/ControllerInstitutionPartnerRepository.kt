@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.controllerInstitution.repository
 
 import io.cloudflight.jems.server.controllerInstitution.entity.ControllerInstitutionPartnerEntity
+import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerAssignmentRow
 import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerAssignmentWithUsers
 import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerDetailsRow
 import io.cloudflight.jems.server.controllerInstitution.service.model.UserInstitutionAccessLevel
@@ -93,27 +94,55 @@ interface ControllerInstitutionPartnerRepository: JpaRepository<ControllerInstit
     fun getControllerUserAccessLevelForPartner(userId: Long, partnerId: Long): UserInstitutionAccessLevel?
 
 
+    // Returns institution-partner assignments to delete if project partners nuts do not match the institution nuts
     @Query(
         """
             SELECT e FROM #{#entityName} e
             INNER JOIN project_partner_address ppa
                 ON e.partnerId = ppa.addressId.partnerId AND ppa.addressId.type = 'Organization'
-            WHERE ppa.address.nutsRegion3Code NOT IN
-                (SELECT cin.id.nutsRegion3Id FROM controller_institution_nuts as cin WHERE e.institutionId = cin.id.institutionId)
+             WHERE (ppa.address.nutsRegion3Code, ppa.address.countryCode) NOT IN
+                (SELECT cin.id.nutsRegion3Id, nuts1.country.id FROM controller_institution_nuts AS cin
+                  INNER JOIN nuts_region_3 AS nuts3
+                             ON cin.id.nutsRegion3Id = nuts3.id
+                  INNER JOIN nuts_region_2 nuts2
+                             ON nuts3.region2.id = nuts2.id
+                  INNER JOIN nuts_region_1 nuts1
+                             ON nuts2.region1.id = nuts1.id
+                  WHERE e.institutionId = cin.id.institutionId
+                )
             AND e.partnerProjectId = :projectId
         """
     )
     fun getInstitutionPartnerAssignmentsToDeleteByProjectId(projectId: Long): List<ControllerInstitutionPartnerEntity>
 
+
+    /*
+        Returns institution-partner assignments to delete if institution nuts do not match the assigned partner nuts.
+        Only the last approved version of the partner nuts is compared with the institution nuts.
+     */
     @Query(
     """
-        SELECT e FROM #{#entityName} e
-        INNER JOIN project_partner_address ppa
-            ON e.partnerId = ppa.addressId.partnerId AND ppa.addressId.type = 'Organization'
-        WHERE ppa.address.nutsRegion3Code NOT IN
-            (SELECT cin.id.nutsRegion3Id FROM controller_institution_nuts as cin WHERE cin.id.institutionId = :institutionId)
-         AND e.institutionId = :institutionId
-    """
+        SELECT
+        cip.institution_id as institutionId,
+        cip.partner_id as partnerId,
+        cip.partner_project_id as partnerProjectId
+        FROM controller_institution_partner AS cip
+        INNER JOIN optimization_project_version as opv on opv.project_id = cip.partner_project_id
+        INNER JOIN project_partner_address FOR SYSTEM_TIME AS OF TIMESTAMP opv.last_approved_version AS ppa
+            ON cip.partner_id = ppa.partner_id AND ppa.type = 'Organization'
+        WHERE (ppa.nuts_region3_code, ppa.country_code) NOT IN
+                (SELECT cin.nuts_region_3_id, nuts1.nuts_country_id FROM controller_institution_nuts AS cin
+                  INNER JOIN nuts_region_3 AS nuts3
+                             ON cin.nuts_region_3_id = nuts3.id
+                  INNER JOIN nuts_region_2 nuts2
+                             ON nuts3.nuts_region_2_id = nuts2.id
+                  INNER JOIN nuts_region_1 nuts1
+                             ON nuts2.nuts_region_1_id = nuts1.id
+                  WHERE cin.controller_institution_id = :institutionId
+                )
+        AND cip.institution_id = :institutionId
+    """,
+        nativeQuery = true
     )
-    fun getInstitutionPartnerAssignmentsToDeleteByInstitutionId(institutionId: Long): List<ControllerInstitutionPartnerEntity>
+    fun getInstitutionPartnerAssignmentsToDeleteByInstitutionId(institutionId: Long): List<InstitutionPartnerAssignmentRow>
 }
