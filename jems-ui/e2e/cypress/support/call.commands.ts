@@ -68,11 +68,16 @@ function createCall(call: Call, creatingUserEmail?: string) {
     body: call.generalCallSettings
   }).then(function (response) {
     const callId = response.body.id;
-    setCallFlatRates(callId, call.budgetSettings.flatRates);
-    setCallLumpSums(callId, call.budgetSettings.lumpSums);
-    setCallUnitCosts(callId, call.budgetSettings.unitCosts);
-    setCallApplicationFormConfiguration(callId, call.applicationFormConfiguration);
-    setCallPreSubmissionCheckSettings(callId, call.preSubmissionCheckSettings);
+    if (call.budgetSettings?.flatRates)
+      setCallFlatRates(callId, call.budgetSettings.flatRates);
+    if (call.budgetSettings?.lumpSums)
+      setCallLumpSums(callId, call.budgetSettings.lumpSums);
+    if (call.budgetSettings?.unitCosts)
+      setCallUnitCosts(callId, call.budgetSettings.unitCosts);
+    if (call.applicationFormConfiguration)
+      setCallApplicationFormConfiguration(callId, call.applicationFormConfiguration);
+    if (call.preSubmissionCheckSettings)
+      setCallPreSubmissionCheckSettings(callId, call.preSubmissionCheckSettings);
     if (creatingUserEmail) {
       cy.get('@currentUser').then((currentUser: any) => {
         loginByRequest(currentUser.name);

@@ -377,23 +377,8 @@ context('Application form exports', () => {
   it('TB-391 Export to pdf shall contain SPF specific data', () => {
     cy.fixture('project/exports/application-form/TB-391.json').then(testData => {
       cy.loginByRequest(user.programmeUser.email);
-      testData.spfRequest.name = faker.word.adjective() + " " + faker.word.noun();
-      testData.spfRequest.startDateTime = faker.date.recent();
-      testData.spfRequest.endDateTime = faker.date.soon(2);
-      cy.request({
-        method: 'POST',
-        url: '/api/call',
-        body: testData.spfRequest
-      }).then(response => {
-        const callId = response.body.id;
-        cy.visit('/app/call/detail/'+callId, {failOnStatusCode: false});
-        cy.contains('Pre-submission check settings').click();
-        cy.contains('div.mat-form-field-flex', 'Select a pre-submission check plugin').click();
-        cy.contains('No-Check').click();
-        cy.contains('button', 'Save changes').click();
-        cy.contains('General call settings').click();
-        cy.contains('button', 'Publish call').click();
-        cy.contains('Confirm').click();
+      cy.createCall(testData.spfCall).then(callId => {
+        cy.publishCall(callId);
         application.details.projectCallId = callId;
         cy.loginByRequest(user.applicantUser.email);
         cy.createApplication(application).then(applicationId => {
