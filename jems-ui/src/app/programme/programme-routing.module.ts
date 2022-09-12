@@ -22,6 +22,9 @@ import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import { ProgrammeChecklistListPageComponent } from './programme-checklist-list-page/programme-checklist-list-page.component';
 import {ProgrammeChecklistDetailPageComponent} from './programme-checklist-list-page/programme-checklist-detail-page/programme-checklist-detail-page.component';
 import { ProgrammeConversionRatesComponent } from './programme-conversion-rates/programme-conversion-rates.component';
+import {
+  ProgrammeTypologyErrorsComponent
+} from './programme-page/containers/programme-typology-errors/programme-typology-errors.component';
 
 export const routes: Routes = [
   {
@@ -148,6 +151,11 @@ export const routes: Routes = [
             path: 'legalStatus',
             component: ProgrammeLegalStatusComponent,
             data: {breadcrumb: 'programme.breadcrumb.legal.status'},
+          },
+          {
+            path: 'typologyErrors',
+            component: ProgrammeTypologyErrorsComponent,
+            data: {breadcrumb: 'programme.breadcrumb.typology.errors'},
           },
           {
             path: 'costs',

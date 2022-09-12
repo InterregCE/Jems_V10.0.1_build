@@ -1,0 +1,70 @@
+<form id="typologyErrors" jemsFormLayout [formGroup]="formGroup">
+    <div jemsMultiColumnRow>
+        <h3 class="mb-0">{{'programme.typology.errors.list.title' | translate}}</h3>
+        <button color="primary" mat-raised-button
+                *ngIf="(changeFormState$ | async) === FormState.VIEW && (programmeEditableStateStore.hasEditPermission$ | async)"
+                (click)="changeFormState$.next(FormState.EDIT)">
+            {{'common.edit.label' | translate}}
+        </button>
+    </div>
+
+    <div jemsMultiColumnRow>
+        <div [jemsTableConfig]="[{},{maxInRem: 2}]">
+            <div *ngFor="let typologyError of typologyErrorsForm.controls; let i = index">
+                <ng-container formArrayName="typologyErrors">
+                    <ng-container [formGroupName]="i">
+
+                        <mat-form-field>
+                            <input name=i formControlName="description" matInput>
+                            <mat-error>
+                                <jems-form-field-errors [errors]="typologyError.get('description').errors"></jems-form-field-errors>
+                            </mat-error>
+                        </mat-form-field>
+
+                        <div *ngIf="(changeFormState$ | async) === FormState.EDIT">
+                            <button mat-icon-button color="accent"
+                                    type="button"
+                                    [disabled]="isProgrammeSetupRestricted ? !!typologyError.get('id').value : false"
+                                    matTooltip="{{'common.delete.entry.tooltip' | translate}}"
+                                    (click)="deleteTypologyError(i)">
+                                <mat-icon>delete</mat-icon>
+                            </button>
+                        </div>
+                    </ng-container>
+                </ng-container>
+            </div>
+            <div *ngIf="(changeFormState$ | async) === FormState.EDIT">
+                <div>
+                    <button mat-icon-button
+                            type="button"
+                            [disabled]="typologyErrorsForm.controls.length >= 50"
+                            (click)="addNewTypologyError()">
+                        <mat-icon>add</mat-icon>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div jemsMultiColumnRow *ngIf="(changeFormState$ | async) === FormState.EDIT">
+        <button mat-stroked-button type="button"
+                (click)="resetTypologyErrorsForm()">
+            {{'common.cancel.label' | translate}}
+        </button>
+        <button mat-raised-button color="primary" type="button"
+                [disabled]="submitted"
+                (click)="onTypologyErrorsSubmit()">
+            {{'common.save.label' | translate}}
+        </button>
+    </div>
+    <jems-alert
+            [show]="!submitted && (showSuccessMessage$ | async)"
+            [type]="Alert.SUCCESS">
+        <p *ngIf="success$ | async as successMessage">{{successMessage | translate}}</p>
+    </jems-alert>
+    <jems-alert *ngIf="error$ | async as error"
+                [show]="!submitted && !!error.i18nMessage?.i18nKey"
+                [type]="Alert.ERROR">
+        <jems-api-error-content [error]="error"></jems-api-error-content>
+    </jems-alert>
+
+</form>
