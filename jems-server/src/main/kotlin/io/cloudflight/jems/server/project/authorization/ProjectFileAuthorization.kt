@@ -119,7 +119,7 @@ class ProjectFileAuthorization(
 
     private fun canUpdateApplicationAttachments(projectId: Long) =
         hasPermissionForProject(ProjectFileApplicationUpdate, projectId) ||
-            projectAuthorization.canUpdateProject(projectId, onlyBeforeApproved = false)
+            projectAuthorization.canUpdateProject(projectId, onlyBeforeContracted = false)
 
 
 }

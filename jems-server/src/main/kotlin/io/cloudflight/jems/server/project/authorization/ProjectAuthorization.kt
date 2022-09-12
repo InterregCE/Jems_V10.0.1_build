@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.authentication.authorization.Authorization
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Component
@@ -40,7 +41,7 @@ annotation class CanUpdateProjectForm
 
 @Retention(AnnotationRetention.RUNTIME)
 @PreAuthorize("@projectAuthorization.canUpdateProject(#projectId, true)")
-annotation class CanUpdateProjectFormOnlyBeforeApproved
+annotation class CanUpdateProjectFormOnlyBeforeContracted
 
 @Component
 class ProjectAuthorization(
@@ -56,13 +57,13 @@ class ProjectAuthorization(
         throw ResourceNotFoundException("project") // should be same exception as if entity not found
     }
 
-    fun canUpdateProject(projectId: Long, onlyBeforeApproved: Boolean): Boolean {
+    fun canUpdateProject(projectId: Long, onlyBeforeContracted: Boolean): Boolean {
         val project = projectPersistence.getApplicantAndStatusById(projectId)
         val canSeeProject = hasPermission(UserRolePermission.ProjectFormUpdate, projectId)
             || isActiveUserIdEqualToOneOf(project.getUserIdsWithEditLevel())
         if (canSeeProject) {
-            return if (onlyBeforeApproved)
-                project.projectStatus.isModifiableStatusBeforeApproved()
+            return if (onlyBeforeContracted)
+                project.projectStatus.isModifiableStatusBeforeApproved() || project.projectStatus == ApplicationStatus.MODIFICATION_PRECONTRACTING
             else
                 project.projectStatus.canBeModified()
         }

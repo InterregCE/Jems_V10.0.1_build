@@ -75,7 +75,6 @@ internal class UpdateBudgetUnitCostsTest : UnitTest() {
         val call = mockk<CallDetail>()
         every { call.unitCosts } returns listOf(unitCost)
         every { call.projectDefinedUnitCostAllowed } returns false
-        every { call.projectDefinedLumpSumAllowed } returns true
         every { callPersistence.getCallByProjectId(PROJECT_ID) } returns call
         every { projectUnitCostPersistence.getAvailableUnitCostsForProjectId(PROJECT_ID) } returns listOf(unitCost)
         val idsToKeep = slot<Set<Long>>()
@@ -109,6 +108,7 @@ internal class UpdateBudgetUnitCostsTest : UnitTest() {
         val unitCost = ProgrammeUnitCost(id = 1L, projectId = null, isOneCostCategory = true, costPerUnit = BigDecimal.TEN)
         val call = mockk<CallDetail>()
         every { call.unitCosts } returns listOf(unitCost)
+        every { call.projectDefinedUnitCostAllowed } returns false
         every { callPersistence.getCallByProjectId(1057) } returns call
 
         assertThrows<UnitCostsBudgetSectionIsNotAllowed> {
