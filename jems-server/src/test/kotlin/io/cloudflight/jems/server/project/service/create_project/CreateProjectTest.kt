@@ -72,7 +72,9 @@ internal class CreateProjectTest : UnitTest() {
             lengthOfPeriod = 12,
             applicationFormFieldConfigurations = mutableSetOf(),
             preSubmissionCheckPluginKey = null,
-            firstStepPreSubmissionCheckPluginKey = null
+            firstStepPreSubmissionCheckPluginKey = null,
+            projectDefinedUnitCostAllowed = false,
+            projectDefinedLumpSumAllowed = true,
         )
 
         val callSettings = ProjectCallSettings(

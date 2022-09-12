@@ -84,7 +84,9 @@ class ApplicationFormConfigurationControllerTest : UnitTest() {
             ),
             applicationFormFieldConfigurations = mutableSetOf(),
             preSubmissionCheckPluginKey = null,
-            firstStepPreSubmissionCheckPluginKey = null
+            firstStepPreSubmissionCheckPluginKey = null,
+            projectDefinedUnitCostAllowed = false,
+            projectDefinedLumpSumAllowed = true,
         )
 
         private val configDTO = mutableSetOf(

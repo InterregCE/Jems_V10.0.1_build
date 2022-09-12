@@ -136,7 +136,9 @@ class GetBudgetFundsPerPeriodInteractorTest : UnitTest() {
         ),
         applicationFormFieldConfigurations = mutableSetOf(),
         preSubmissionCheckPluginKey = null,
-        firstStepPreSubmissionCheckPluginKey = null
+        firstStepPreSubmissionCheckPluginKey = null,
+        projectDefinedUnitCostAllowed = false,
+        projectDefinedLumpSumAllowed = true,
     )
 
     private val spfCallDetail = CallDetail(
@@ -181,7 +183,9 @@ class GetBudgetFundsPerPeriodInteractorTest : UnitTest() {
         ),
         applicationFormFieldConfigurations = mutableSetOf(),
         preSubmissionCheckPluginKey = null,
-        firstStepPreSubmissionCheckPluginKey = null
+        firstStepPreSubmissionCheckPluginKey = null,
+        projectDefinedUnitCostAllowed = false,
+        projectDefinedLumpSumAllowed = true,
     )
 
     @MockK

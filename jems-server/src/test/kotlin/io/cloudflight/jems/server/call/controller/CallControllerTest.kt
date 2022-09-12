@@ -126,7 +126,9 @@ class CallControllerTest : UnitTest() {
             ),
             applicationFormFieldConfigurations = mutableSetOf(),
             preSubmissionCheckPluginKey = PLUGIN_KEY,
-            firstStepPreSubmissionCheckPluginKey = PLUGIN_KEY
+            firstStepPreSubmissionCheckPluginKey = PLUGIN_KEY,
+            projectDefinedUnitCostAllowed = false,
+            projectDefinedLumpSumAllowed = true,
         )
 
         private val callDto = CallDTO(

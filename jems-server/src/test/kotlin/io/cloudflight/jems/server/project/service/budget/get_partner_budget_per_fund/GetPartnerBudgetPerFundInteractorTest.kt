@@ -68,7 +68,9 @@ class GetPartnerBudgetPerFundInteractorTest : UnitTest() {
         lengthOfPeriod = null,
         applicationFormFieldConfigurations = mutableSetOf(),
         preSubmissionCheckPluginKey = null,
-        firstStepPreSubmissionCheckPluginKey = null
+        firstStepPreSubmissionCheckPluginKey = null,
+        projectDefinedUnitCostAllowed = false,
+        projectDefinedLumpSumAllowed = true,
     )
     private val spfCall = CallDetail(
         id = 2,
@@ -82,7 +84,9 @@ class GetPartnerBudgetPerFundInteractorTest : UnitTest() {
         lengthOfPeriod = 2,
         applicationFormFieldConfigurations = mutableSetOf(),
         preSubmissionCheckPluginKey = null,
-        firstStepPreSubmissionCheckPluginKey = null
+        firstStepPreSubmissionCheckPluginKey = null,
+        projectDefinedUnitCostAllowed = false,
+        projectDefinedLumpSumAllowed = true,
     )
 
     private val totalCostPartner1 = 80.toScaledBigDecimal()

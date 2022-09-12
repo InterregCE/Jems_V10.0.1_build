@@ -722,6 +722,8 @@ internal class CallPersistenceProviderTest {
             flatRates = sortedSetOf(
                 ProjectCallFlatRate(FlatRateType.STAFF_COSTS, rate = 5, adjustable = true),
             ),
+            projectDefinedUnitCostAllowed = true,
+            projectDefinedLumpSumAllowed = false,
         )
         assertThat(persistence.updateCall(call)).isEqualTo(callDetail)
         verify(exactly = 1) { projectCallStateAidRepository.deleteAllBySetupIdStateAidId(489L) }
