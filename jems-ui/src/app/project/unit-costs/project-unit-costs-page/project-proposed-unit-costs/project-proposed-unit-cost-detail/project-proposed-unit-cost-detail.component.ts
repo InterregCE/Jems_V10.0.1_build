@@ -178,6 +178,7 @@ export class ProjectProposedUnitCostDetailComponent implements OnInit {
     } else {
       this.projectUnitCostForm.controls.categories.setValue(null);
     }
+    this.formService.setDirty(false);
   }
 
   onSubmit(): void {
