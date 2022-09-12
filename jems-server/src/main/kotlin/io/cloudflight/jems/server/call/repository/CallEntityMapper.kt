@@ -74,7 +74,9 @@ fun CallEntity.toDetailModel(
     unitCosts = unitCosts.toModel(),
     applicationFormFieldConfigurations = applicationFormFieldConfigurationEntities.toModel(),
     preSubmissionCheckPluginKey = preSubmissionCheckPluginKey,
-    firstStepPreSubmissionCheckPluginKey = firstStepPreSubmissionCheckPluginKey
+    firstStepPreSubmissionCheckPluginKey = firstStepPreSubmissionCheckPluginKey,
+    projectDefinedUnitCostAllowed = projectDefinedUnitCostAllowed,
+    projectDefinedLumpSumAllowed = projectDefinedLumpSumAllowed,
 )
 
 private fun Set<ProgrammeSpecificObjectiveEntity>.groupSpecificObjectives() =

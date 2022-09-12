@@ -169,7 +169,9 @@ fun createCallDetailModel(
         unitCosts = unitCosts,
         applicationFormFieldConfigurations = applicationFormFieldConfigurations,
         preSubmissionCheckPluginKey = preSubmissionCheckPluginKey,
-        firstStepPreSubmissionCheckPluginKey = firstStepPreSubmissionCheckPluginKey
+        firstStepPreSubmissionCheckPluginKey = firstStepPreSubmissionCheckPluginKey,
+        projectDefinedUnitCostAllowed = true,
+        projectDefinedLumpSumAllowed = false,
     )
 }
 
@@ -253,7 +255,9 @@ fun callDetail(
     lengthOfPeriod = lengthOfPeriod,
     applicationFormFieldConfigurations =  applicationFormFieldConfigurations,
     preSubmissionCheckPluginKey = preSubmissionCheckPluginKey,
-    firstStepPreSubmissionCheckPluginKey = firstStepPreSubmissionCheckPluginKey
+    firstStepPreSubmissionCheckPluginKey = firstStepPreSubmissionCheckPluginKey,
+    projectDefinedUnitCostAllowed = false,
+    projectDefinedLumpSumAllowed = true,
 )
 
 fun defaultAllowedRealCostsByCallType(callType: CallType) : AllowedRealCostsEntity {

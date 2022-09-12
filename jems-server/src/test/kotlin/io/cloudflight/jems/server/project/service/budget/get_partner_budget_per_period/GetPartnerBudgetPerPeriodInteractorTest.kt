@@ -185,7 +185,9 @@ class GetPartnerBudgetPerPeriodInteractorTest : UnitTest() {
             lengthOfPeriod = null,
             applicationFormFieldConfigurations = mutableSetOf(),
             preSubmissionCheckPluginKey = null,
-            firstStepPreSubmissionCheckPluginKey = null
+            firstStepPreSubmissionCheckPluginKey = null,
+            projectDefinedUnitCostAllowed = false,
+            projectDefinedLumpSumAllowed = true,
         )
 
         every { callPersistence.getCallByProjectId(projectId)} returns call
@@ -300,7 +302,9 @@ class GetPartnerBudgetPerPeriodInteractorTest : UnitTest() {
             lengthOfPeriod = 2,
             applicationFormFieldConfigurations = mutableSetOf(),
             preSubmissionCheckPluginKey = null,
-            firstStepPreSubmissionCheckPluginKey = null
+            firstStepPreSubmissionCheckPluginKey = null,
+            projectDefinedUnitCostAllowed = false,
+            projectDefinedLumpSumAllowed = true,
         )
         every { callPersistence.getCallByProjectId(projectId)} returns spfCall
         every { persistence.getPartnersForProjectId(projectId, version) } returns listOf(partner2)

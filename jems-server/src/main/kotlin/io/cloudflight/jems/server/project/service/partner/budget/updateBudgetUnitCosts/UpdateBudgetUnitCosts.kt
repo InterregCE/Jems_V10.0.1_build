@@ -64,8 +64,9 @@ class UpdateBudgetUnitCosts(
     }
 
     private fun validateSectionIsAllowedToBeSet(projectId: Long) {
-        val multipleCategoryUnitCosts = callPersistence.getCallByProjectId(projectId).unitCosts.filter { it.isMultipleCategoryUnitCost() }
-        if (multipleCategoryUnitCosts.isEmpty()) {
+        val call = callPersistence.getCallByProjectId(projectId)
+        val multipleCategoryUnitCostsSelected = call.unitCosts.filter { it.isMultipleCategoryUnitCost() }.isEmpty()
+        if (multipleCategoryUnitCostsSelected || call.projectDefinedUnitCostAllowed) {
             throw UnitCostsBudgetSectionIsNotAllowed()
         }
     }
