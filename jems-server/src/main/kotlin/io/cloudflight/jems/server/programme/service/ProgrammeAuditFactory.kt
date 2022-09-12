@@ -14,6 +14,7 @@ import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeL
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammeObjectiveDimension
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
 import io.cloudflight.jems.server.programme.service.stateaid.model.ProgrammeStateAid
+import io.cloudflight.jems.server.programme.service.typologyerrors.model.TypologyErrors
 import java.util.stream.Collectors
 
 fun programmePriorityAdded(programmePriority: ProgrammePriority): AuditCandidate {
@@ -68,6 +69,15 @@ fun programmeLegalStatusesChanged(context: Any, statuses: List<ProgrammeLegalSta
 
     return AuditCandidateEvent(context, AuditBuilder(AuditAction.LEGAL_STATUS_EDITED)
         .description("Values for partner legal status set to:\n$statusesAsString")
+        .build())
+}
+
+fun programmeTypologyErrorsChanged(context: Any, statuses: List<TypologyErrors>): AuditCandidateEvent {
+    val typologyErrorsAsString = statuses.asSequence()
+        .map { typologyError ->  typologyError.description }.joinToString(",\n")
+
+    return AuditCandidateEvent(context, AuditBuilder(AuditAction.PROGRAMME_TYPOLOGY_ERRORS)
+        .description("Values for typology errors set to:\n$typologyErrorsAsString")
         .build())
 }
 
