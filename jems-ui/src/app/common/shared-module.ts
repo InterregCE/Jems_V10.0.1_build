@@ -63,6 +63,9 @@ import {
   ChecklistInstanceListComponent
 } from '@common/components/checklist/checklist-instance-list/checklist-instance-list.component';
 import {
+  ControlChecklistInstanceListComponent
+} from '@common/components/checklist/control-checklist-instance-list/control-checklist-instance-list.component';
+import {
   ChecklistConsolidatorOptionsComponent
 } from '@common/components/checklist/checklist-consolidator-options/checklist-consolidator-options.component';
 import {MatSliderModule} from '@angular/material/slider';
@@ -137,6 +140,7 @@ const declarations = [
   SecondsToTimePipePipe,
   ChecklistAnswersComponent,
   ChecklistInstanceListComponent,
+  ControlChecklistInstanceListComponent,
   ChecklistConsolidatorOptionsComponent,
   PublicPageTemplateComponent,
   JemsRegionsComponent,

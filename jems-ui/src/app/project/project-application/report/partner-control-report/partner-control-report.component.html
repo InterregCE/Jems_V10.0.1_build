@@ -10,10 +10,16 @@
                         {{'project.application.partner.report.tab.identification' | translate}}
                     </span>
                 </a>
-                <a mat-tab-link
+                <a [active]="activeTab('informationTab')" mat-tab-link
                    (click)="routeTo('informationTab')">
                     <span jemsText maxWidth="230">
                         {{'project.application.partner.report.tab.information' | translate}}
+                    </span>
+                </a>
+                <a [active]="activeTab('controlChecklistsTab')" mat-tab-link
+                   (click)="routeTo('controlChecklistsTab')">
+                    <span jemsText maxWidth="230">
+                        {{'project.application.partner.report.tab.controlChecklists' | translate}}
                     </span>
                 </a>
             </nav>

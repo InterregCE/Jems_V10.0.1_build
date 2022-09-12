@@ -111,6 +111,8 @@ import {
 import {
   ProjectProposedUnitCostBreadcrumbResolver
 } from '@project/project-application/containers/project-application-detail/services/project-proposed-unit-cost.resolver';
+import { PartnerControlReportControlChecklistsTabComponent } from '@project/project-application/report/partner-control-report/partner-control-report-control-checklists-tab/partner-control-report-control-checklists-tab.component';
+import { PartnerControlReportControlChecklistPageComponent } from '@project/project-application/report/partner-control-report/partner-control-report-control-checklists-tab/partner-control-report-control-checklist-page/partner-control-report-control-checklist-page.component';
 
 export const routes: Routes = [
   {
@@ -212,7 +214,17 @@ export const routes: Routes = [
                           },
                           {
                             path: 'informationTab',
-                            component: PartnerControlReportInformationTabComponent,               },
+                            component: PartnerControlReportInformationTabComponent,
+                          },
+                          {
+                            path: 'controlChecklistsTab',
+                            component: PartnerControlReportControlChecklistsTabComponent
+                          },
+                          {
+                            path: 'controlChecklistsTab/checklist/:checklistId',
+                            component: PartnerControlReportControlChecklistPageComponent,
+                            data: {breadcrumb: 'checklists.instance.title'}
+                          }
                         ],
                       }
                     ]

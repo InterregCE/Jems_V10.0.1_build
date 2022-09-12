@@ -1,0 +1,24 @@
+.box {
+  --flex: 0;
+}
+
+#status {
+  display: flex;
+  align-items: baseline;
+
+  .mat-chip {
+    color: var(--font-color-primary);
+  }
+
+  .draft {
+    background-color: var(--status-draft);
+  }
+
+  .finished {
+    background-color: var(--status-approved);
+  }
+}
+
+.finish-button {
+  background-color: var(--background-card);
+}

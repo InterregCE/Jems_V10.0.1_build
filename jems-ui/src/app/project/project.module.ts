@@ -188,12 +188,15 @@ import {
   PartnerControlReportStore
 } from '@project/project-application/report/partner-control-report/partner-control-report-store.service';
 import { PartnerControlReportInformationTabComponent } from './project-application/report/partner-control-report/partner-control-report-information-tab/partner-control-report-information-tab.component';
+import { PartnerControlReportControlChecklistsTabComponent } from '@project/project-application/report/partner-control-report/partner-control-report-control-checklists-tab/partner-control-report-control-checklists-tab.component';
+import {
+  PartnerControlReportControlChecklistPageComponent
+} from '@project/project-application/report/partner-control-report/partner-control-report-control-checklists-tab/partner-control-report-control-checklist-page/partner-control-report-control-checklist-page.component';
 import { ProjectProposedUnitCostsComponent } from './unit-costs/project-unit-costs-page/project-proposed-unit-costs/project-proposed-unit-costs.component';
 import { ProjectProposedUnitCostDetailComponent } from './unit-costs/project-unit-costs-page/project-proposed-unit-costs/project-proposed-unit-cost-detail/project-proposed-unit-cost-detail.component';
 import {
   ProjectProposedUnitCostBreadcrumbResolver
 } from '@project/project-application/containers/project-application-detail/services/project-proposed-unit-cost.resolver';
-
 @NgModule({
   declarations: [
     DescriptionCellComponent,
@@ -329,8 +332,11 @@ import {
     PartnerControlReportComponent,
     PartnerControlReportIdentificationTabComponent,
     PartnerControlReportInformationTabComponent,
+    PartnerControlReportControlChecklistsTabComponent,
+    PartnerControlReportControlChecklistPageComponent,
     ProjectProposedUnitCostsComponent,
-    ProjectProposedUnitCostDetailComponent
+    ProjectProposedUnitCostDetailComponent,
+    PartnerControlReportInformationTabComponent,
   ],
   imports: [
     SharedModule,
