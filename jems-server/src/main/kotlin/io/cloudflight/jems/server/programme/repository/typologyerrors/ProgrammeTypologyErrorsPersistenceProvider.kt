@@ -16,7 +16,7 @@ class ProgrammeTypologyErrorsPersistenceProvider(
     }
 
     @Transactional
-    override fun updateLegalStatuses(toDeleteIds: List<Long>, toPersist: List<TypologyErrors>): List<TypologyErrors> {
+    override fun updateTypologyErrors(toDeleteIds: List<Long>, toPersist: List<TypologyErrors>): List<TypologyErrors> {
         programmeTypologyErrorsRepository.deleteAllByIdInBatch(toDeleteIds)
         programmeTypologyErrorsRepository.saveAll(toPersist.toEntity())
         return programmeTypologyErrorsRepository.findAll().toModel()

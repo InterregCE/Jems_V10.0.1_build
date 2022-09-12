@@ -5,13 +5,16 @@ import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.authorization.CanUpdateProgrammeSetup
 import io.cloudflight.jems.server.programme.service.info.isSetupLocked.IsProgrammeSetupLockedInteractor
 import io.cloudflight.jems.server.programme.service.programmeTypologyErrorsChanged
+import io.cloudflight.jems.server.programme.service.typologyerrors.exception.DeletionIsNotAllowedException
+import io.cloudflight.jems.server.programme.service.typologyerrors.exception.MaxAllowedTypologyErrorsReachedException
+import io.cloudflight.jems.server.programme.service.typologyerrors.exception.UpdateTypologyErrorsFailedException
 import io.cloudflight.jems.server.programme.service.typologyerrors.model.TypologyErrors
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-class UpdateTypologyErrorsService(
+class UpdateTypologyErrors(
     private val persistence: ProgrammeTypologyErrorsPersistence,
     private val isProgrammeSetupLocked: IsProgrammeSetupLockedInteractor,
     private val generalValidator: GeneralValidatorService,
@@ -33,7 +36,7 @@ class UpdateTypologyErrorsService(
         if (isProgrammeSetupLocked.isLocked() && toDeleteIds.isNotEmpty())
             throw DeletionIsNotAllowedException()
 
-        return persistence.updateLegalStatuses(toDeleteIds, toPersist).also { typologyErrors ->
+        return persistence.updateTypologyErrors(toDeleteIds, toPersist).also { typologyErrors ->
             auditPublisher.publishEvent(programmeTypologyErrorsChanged(this, typologyErrors))
         }
     }

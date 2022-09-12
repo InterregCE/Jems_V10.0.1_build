@@ -6,7 +6,7 @@ interface ProgrammeTypologyErrorsPersistence {
 
     fun getAllTypologyErrors(): List<TypologyErrors>
 
-    fun updateLegalStatuses(
+    fun updateTypologyErrors(
         toDeleteIds: List<Long>,
         toPersist: List<TypologyErrors>
     ): List<TypologyErrors>

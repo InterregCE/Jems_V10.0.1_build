@@ -1,19 +1,25 @@
 package io.cloudflight.jems.server.programme.service.typologyerrors.update_typology_errors
 
+import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
+import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.service.info.isSetupLocked.IsProgrammeSetupLockedInteractor
-import io.cloudflight.jems.server.programme.service.typologyerrors.DeletionIsNotAllowedException
-import io.cloudflight.jems.server.programme.service.typologyerrors.MaxAllowedTypologyErrorsReachedException
+import io.cloudflight.jems.server.programme.service.typologyerrors.exception.DeletionIsNotAllowedException
+import io.cloudflight.jems.server.programme.service.typologyerrors.exception.MaxAllowedTypologyErrorsReachedException
 import io.cloudflight.jems.server.programme.service.typologyerrors.ProgrammeTypologyErrorsPersistence
-import io.cloudflight.jems.server.programme.service.typologyerrors.UpdateTypologyErrorsService
+import io.cloudflight.jems.server.programme.service.typologyerrors.UpdateTypologyErrors
 import io.cloudflight.jems.server.programme.service.typologyerrors.model.TypologyErrors
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.slot
+import io.mockk.verify
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -32,7 +38,7 @@ internal class UpdateTypologyErrorsTest : UnitTest()  {
     lateinit var persistence: ProgrammeTypologyErrorsPersistence
 
     @InjectMockKs
-    lateinit var updateTypologyErrors: UpdateTypologyErrorsService
+    lateinit var updateTypologyErrors: UpdateTypologyErrors
 
     @RelaxedMockK
     lateinit var generalValidatorService: GeneralValidatorService
@@ -45,7 +51,7 @@ internal class UpdateTypologyErrorsTest : UnitTest()  {
 
     @BeforeEach
     fun reset() {
-        clearMocks(generalValidatorService)
+        clearMocks(generalValidatorService, auditPublisher)
     }
 
     @Test
@@ -90,5 +96,26 @@ internal class UpdateTypologyErrorsTest : UnitTest()  {
                 list
             )
         }
+    }
+
+    @Test
+    fun `should update typology errors`() {
+        every { isProgrammeSetupLocked.isLocked() } returns false
+        every { persistence.updateTypologyErrors(any(), any()) } returns listOf(typologyErrors)
+
+        assertThat(updateTypologyErrors.updateTypologyErrors(
+                emptyList(),
+                listOf(typologyErrors)
+        )).isEqualTo(listOf(typologyErrors))
+
+        val event = slot<AuditCandidateEvent>()
+        verify(exactly = 1) { auditPublisher.publishEvent(capture(event)) }
+        assertThat(event.captured.auditCandidate).isEqualTo(
+            AuditCandidate(
+                action = AuditAction.PROGRAMME_TYPOLOGY_ERRORS,
+                description = "Values for typology errors set to:\n" +
+                    "Sample description"
+            )
+        )
     }
 }
