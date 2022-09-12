@@ -23,14 +23,11 @@ export class PartnerReportStatusComponent {
   longVersion = false;
 
   getIconFromStatus(currentChip: ProjectPartnerReportSummaryDTO.StatusEnum): string {
-    if (!this.isEnabled(currentChip)) {
-      return 'cancel';
-    }
     switch (currentChip) {
       case 'Draft':
         return 'donut_large';
       case 'Submitted':
-        return 'check_circle';
+        return 'send';
       case 'InControl':
         return 'checklist';
       case 'Certified':

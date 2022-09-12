@@ -6,19 +6,20 @@ mat-chip {
   padding-left: .25rem;
   margin: 0 .25rem !important;
 }
+.status-Disabled {
+  border: 1px solid var(--table-border-color);
+  background: white !important;
+  opacity: 0.6;
+}
 .status-Draft {
-  background-color: #FF5800 !important;
-  color: white !important;
+  background-color: var(--status-draft) !important;
 }
 .status-Submitted {
-  background-color: #7CB342 !important;
-  color: white !important;
+  background-color: var(--status-submitted) !important;
 }
 .status-InControl {
-  background-color: #0F6DB4 !important;
-  color: white !important;
+  background-color: var(--status-approved-with-conditions) !important;
 }
 .status-Certified {
-  background-color: #FFA726 !important;
-  color: white !important;
+  background-color: var(--status-approved) !important;
 }
