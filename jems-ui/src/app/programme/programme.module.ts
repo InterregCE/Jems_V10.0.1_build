@@ -49,6 +49,12 @@ import {
 import {
   ProgrammeChecklistScoreComponent
 } from './programme-checklist-list-page/programme-checklist-detail-page/components/programme-checklist-score/programme-checklist-score.component';
+import {
+  ProgrammeTypologyErrorsComponent
+} from './programme-page/containers/programme-typology-errors/programme-typology-errors.component';
+import {
+  ProgrammeTypologyErrorsListComponent
+} from './programme-page/components/programme-typology-errors-list/programme-typology-errors-list-component';
 
 @NgModule({
   declarations: [
@@ -65,7 +71,9 @@ import {
     ProgrammeStrategiesPageComponent,
     ProgrammeStrategiesComponent,
     ProgrammeLegalStatusComponent,
+    ProgrammeTypologyErrorsComponent,
     ProgrammeLegalStatusListComponent,
+    ProgrammeTypologyErrorsListComponent,
     ProgrammeSimplifiedCostOptionsComponent,
     ProgrammeLumpSumsListComponent,
     ProgrammeLumpSumsSubmissionPageComponent,

@@ -1,0 +1,12 @@
+<jems-main-page-template [needsCard]="true"
+                         titleKey="programme.data.page.title"
+                         subTitleKey="programme.typology.errors.list.title">
+    <jems-programme-typology-errors-list
+            class="margin-before"
+            *ngIf="typologyErrors$ | async as typologyErrors"
+            [success$]="success$"
+            [error$]="error$"
+            [typologyErrors]="typologyErrors"
+            (saveTypologyErrors)="saveStatuses$.next($event)">
+    </jems-programme-typology-errors-list>
+</jems-main-page-template>
