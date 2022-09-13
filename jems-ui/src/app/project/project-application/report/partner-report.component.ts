@@ -7,7 +7,7 @@ import {
 } from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
-import {catchError, distinctUntilChanged, filter, finalize, map, take, tap} from 'rxjs/operators';
+import {catchError, distinctUntilChanged, filter, finalize, map, startWith, take, tap} from 'rxjs/operators';
 import {ProjectApplicationFormSidenavService} from '../containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {RoutingService} from '@common/services/routing.service';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
@@ -53,7 +53,7 @@ export class PartnerReportComponent implements AfterViewInit {
   partnerId = this.activatedRoute?.snapshot?.params?.partnerId;
   tableConfiguration: TableConfiguration;
   actionPending = false;
-  controlActionPending = false;
+  controlActionMap = new Map<number, BehaviorSubject<boolean>>();
   error$ = new BehaviorSubject<APIError | null>(null);
   Alert = Alert;
   isStartControlButtonDisabled = false;
@@ -105,6 +105,11 @@ export class PartnerReportComponent implements AfterViewInit {
           };
         }
       ),
+      tap(data => {
+        data.partnerReports.forEach((report) => {
+          this.controlActionMap.set(report.id, new BehaviorSubject<boolean>(false))
+        })
+      })
     );
 
     combineLatest([
@@ -189,11 +194,11 @@ export class PartnerReportComponent implements AfterViewInit {
   }
 
   createControlReportForPartnerReport(partnerReport: ProjectPartnerReportSummaryDTO): void {
-    if (this.isStartControlButtonDisabled || this.controlActionPending) {
+    if (this.isStartControlButtonDisabled) {
       return;
     }
 
-    this.controlActionPending = true;
+    this.getPendingActionStatus(partnerReport.id).next(true);
     Forms.confirm(
       this.dialog,
       {
@@ -203,10 +208,17 @@ export class PartnerReportComponent implements AfterViewInit {
         },
       }).pipe(
       take(1),
-      filter(answer => !!answer),
-      tap(() => this.changeStatusOfReport(partnerReport)),
-      finalize(() => this.controlActionPending = false))
-    .subscribe();
+      tap((answer) => {
+        if (answer) {
+          this.changeStatusOfReport(partnerReport)
+        } else {
+          this.getPendingActionStatus(partnerReport.id).next(false);
+        }
+      })).subscribe();
+  }
+
+  getPendingActionStatus(reportId: number): any {
+    return this.controlActionMap.get(reportId);
   }
 
   private initializeTableConfiguration(partnerId: number): void {
@@ -227,7 +239,7 @@ export class PartnerReportComponent implements AfterViewInit {
         take(1),
         tap((report) => this.router.navigate([`../${partnerReport.id}/controlReport/identificationTab`], {relativeTo: this.activatedRoute, queryParamsHandling: 'merge'})),
         catchError((error) => this.showErrorMessage(error.error)),
-        finalize(() => this.controlActionPending = false)
+        finalize(() => this.getPendingActionStatus(partnerReport.id).next(false))
       ).subscribe();
   }
 
