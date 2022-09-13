@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.customCostOptions.unitCost.deleteProjectUnitCost
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
-import io.cloudflight.jems.server.project.authorization.CanUpdateProjectFormOnlyBeforeApproved
+import io.cloudflight.jems.server.project.authorization.CanUpdateProjectFormOnlyBeforeContracted
 import io.cloudflight.jems.server.project.service.customCostOptions.ProjectUnitCostPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetCostsPersistence
 import org.springframework.stereotype.Service
@@ -13,7 +13,7 @@ class DeleteProjectUnitCost(
     private val projectPartnerBudgetCostsPersistence: ProjectPartnerBudgetCostsPersistence,
 ) : DeleteProjectUnitCostInteractor {
 
-    @CanUpdateProjectFormOnlyBeforeApproved
+    @CanUpdateProjectFormOnlyBeforeContracted
     @Transactional
     @ExceptionWrapper(DeleteProjectUnitCostException::class)
     override fun deleteProjectUnitCost(projectId: Long, unitCostId: Long) {

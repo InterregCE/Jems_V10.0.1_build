@@ -131,17 +131,17 @@ internal class ProjectAuthorizationTest : UnitTest() {
         assertThat(projectAuthorization.canUpdateProject(projectId, false)).isEqualTo(isOpen)
     }
 
-    @ParameterizedTest(name = "can update project - only before approved - OWNER, isOpen {0}")
-    @ValueSource(booleans = [true, false])
-    fun `can update project - only before approved - OWNER`(isOpen: Boolean) {
+    @ParameterizedTest(name = "can update project - only before conracted - OWNER, isOpen {0}")
+    @EnumSource(value = ApplicationStatus::class, names = ["DRAFT", "STEP1_DRAFT", "RETURNED_TO_APPLICANT",
+        "RETURNED_TO_APPLICANT_FOR_CONDITIONS", "MODIFICATION_PRECONTRACTING"])
+    fun `can update project - only before contracted - OWNER`(status: ApplicationStatus) {
         val projectId = 598L
         val user = applicantUser
-        every { mockStatus.isModifiableStatusBeforeApproved() } returns isOpen
 
         every { projectPersistence.getApplicantAndStatusById(projectId) } returns
             ProjectApplicantAndStatus(projectId,
                 applicantId = user.user.id,
-                projectStatus = mockStatus,
+                projectStatus = status,
                 collaboratorManageIds = setOf(user.user.id),
                 collaboratorEditIds = emptySet(),
                 collaboratorViewIds = emptySet(),
@@ -154,7 +154,7 @@ internal class ProjectAuthorizationTest : UnitTest() {
         assertThat(user.authorities).doesNotContain(SimpleGrantedAuthority(ProjectFormUpdate.name))
         assertThat(user.authorities).doesNotContain(SimpleGrantedAuthority(ProjectRetrieve.name))
 
-        assertThat(projectAuthorization.canUpdateProject(projectId, true)).isEqualTo(isOpen)
+        assertThat(projectAuthorization.canUpdateProject(projectId, true)).isTrue()
     }
 
     @ParameterizedTest(name = "can update project - HAS PERMISSION FOR just this PROJECT, no-owner, isOpen {0}")
