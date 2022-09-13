@@ -105,6 +105,9 @@ export class TableComponent implements OnInit {
     if (column.columnType === ColumnType.Decimal) {
       return this.moneyPipe.transform(elementValue);
     }
+    if (column.columnType === ColumnType.DecimalWithJustifiedStart) {
+      return this.moneyPipe.transform(elementValue);
+    }
     return elementValue;
   }
 

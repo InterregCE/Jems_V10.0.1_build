@@ -7,6 +7,10 @@ table {
   width: 100% !important;
 }
 
+#table-wrapper {
+  overflow: auto;
+}
+
 mat-header-cell,
 mat-cell,
 mat-footer-cell {
@@ -53,6 +57,11 @@ mat-footer-cell {
 .chip-column-width {
   min-width: 9rem;
   max-width: 12rem;
+}
+
+.small-column-width {
+  min-width: 4rem;
+  max-width: 7rem;
 }
 
 .medium-column-width {

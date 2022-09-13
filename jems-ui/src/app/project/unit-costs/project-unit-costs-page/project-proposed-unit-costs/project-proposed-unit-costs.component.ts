@@ -16,7 +16,7 @@ import { ActivatedRoute } from '@angular/router';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
 import {APIError} from '@common/models/APIError';
-import {ColumnWidth} from "@common/components/table/model/column-width";
+import {ColumnWidth} from '@common/components/table/model/column-width';
 
 @Component({
   selector: 'jems-project-proposed-unit-costs',

@@ -320,7 +320,9 @@ export class ProjectLumpSumsPageComponent implements OnInit {
         gap: [ProjectLumpSumsPageComponent.calculateGap(lumpSum?.cost || 0, rowSum)],
         readyForPayment: [projectLumpSum.readyForPayment],
         comment: [projectLumpSum.comment],
-        fastTrack: [projectLumpSum.fastTrack]
+        fastTrack: [projectLumpSum.fastTrack],
+        paymentEnabledDate: projectLumpSum.paymentEnabledDate,
+        lastApprovedVersionBeforeReadyForPayment: projectLumpSum.lastApprovedVersionBeforeReadyForPayment
       });
       this.addItemToItems(item);
     });
@@ -362,6 +364,8 @@ export class ProjectLumpSumsPageComponent implements OnInit {
         formGroup.get(this.constants.FORM_CONTROL_NAMES.comment)?.value,
         formGroup.get(this.constants.FORM_CONTROL_NAMES.readyForPayment)?.value,
         formGroup.get(this.constants.FORM_CONTROL_NAMES.fastTrack)?.value,
+        formGroup.get(this.constants.FORM_CONTROL_NAMES.paymentEnabledDate)?.value,
+        formGroup.get(this.constants.FORM_CONTROL_NAMES.lastApprovedVersionBeforeReadyForPayment)?.value
       );
     });
   }

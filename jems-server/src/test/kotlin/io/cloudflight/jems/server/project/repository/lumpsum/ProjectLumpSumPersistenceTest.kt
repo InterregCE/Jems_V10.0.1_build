@@ -34,7 +34,9 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.math.BigDecimal
-import java.util.*
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.util.Optional
 
 internal class ProjectLumpSumPersistenceTest : UnitTest() {
 
@@ -114,6 +116,7 @@ internal class ProjectLumpSumPersistenceTest : UnitTest() {
     fun `lump sums are correctly mapped and sorted`() {
         val programmeLumpSum = programmeLumpSum(id = 50)
         val projectLumpSumId = ProjectLumpSumId(projectId = dummyProject.id, orderNr = 1)
+        val zonedDateTime = ZonedDateTime.of(2020,1,10,10,10,10,10, ZoneId.systemDefault())
         val contribution1 = ProjectPartnerLumpSumEntity(
             id = ProjectPartnerLumpSumId(projectLumpSumId, partner(sortNumber = 1, id = 1)),
             amount = BigDecimal.TEN,
@@ -126,12 +129,16 @@ internal class ProjectLumpSumPersistenceTest : UnitTest() {
             id = projectLumpSumId,
             programmeLumpSum = programmeLumpSum,
             endPeriod = 7,
-            lumpSumContributions = setOf(contribution2, contribution1)
+            lumpSumContributions = setOf(contribution2, contribution1),
+            paymentEnabledDate = zonedDateTime,
+            lastApprovedVersionBeforeReadyForPayment = "v1.0"
         )
         val lumpSum2 = ProjectLumpSumEntity(
             id = ProjectLumpSumId(projectId = dummyProject.id, orderNr = 2),
             programmeLumpSum = programmeLumpSum,
             endPeriod = 8,
+            paymentEnabledDate = null,
+            lastApprovedVersionBeforeReadyForPayment = "v2.0"
         )
 
         every { projectRepository.findById(eq(1)) } returns Optional.of(
@@ -150,11 +157,15 @@ internal class ProjectLumpSumPersistenceTest : UnitTest() {
                 lumpSumContributions = listOf(
                     ProjectPartnerLumpSum(partnerId = 1, amount = BigDecimal.TEN),
                     ProjectPartnerLumpSum(partnerId = 2, amount = BigDecimal.ONE),
-                )
+                ),
+                paymentEnabledDate = zonedDateTime,
+                lastApprovedVersionBeforeReadyForPayment = "v1.0"
             ),
             ProjectLumpSum(
                 programmeLumpSumId = 50,
                 period = 8,
+                paymentEnabledDate = null,
+                lastApprovedVersionBeforeReadyForPayment = "v2.0"
             ),
         )
     }

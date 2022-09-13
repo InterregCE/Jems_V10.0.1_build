@@ -87,6 +87,9 @@ enum class UserRolePermissionDTO(val key: String) {
     InstitutionsAssignmentRetrieve("InstitutionsAssignmentRetrieve"),
     InstitutionsAssignmentUpdate("InstitutionsAssignmentUpdate"),
 
+    PaymentsRetrieve("PaymentsRetrieve"),
+    PaymentsUpdate("PaymentsUpdate"),
+
     ProgrammeDataExportRetrieve("ProgrammeDataExportRetrieve"),
 
     UserRetrieve("UserRetrieve"),

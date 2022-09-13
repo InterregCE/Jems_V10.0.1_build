@@ -1,0 +1,20 @@
+<ng-container *ngIf="data$ | async as data">
+    <div *ngIf="data.userCanView">
+        <h2>{{'payments.payment.to.project.header' | translate}}</h2>
+        <p>{{'payments.payment.to.project.text.1' | translate}}</p>
+        <p>{{'payments.payment.to.project.text.2' | translate}}</p>
+        <p>{{'payments.payment.to.project.text.3' | translate}}</p>
+
+        <ng-container>
+            <jems-table id="paymentToProjectsTable"
+                        [configuration]="tableConfiguration"
+                        [rows]="data.page.content"
+                        [totalElements]="data.page?.totalElements"
+                        [pageIndex]="paymentToProjectsStore.newPageIndex$ | async"
+                        (newPageIndex)="paymentToProjectsStore.newPageIndex$.next($event)"
+                        (newPageSize)="paymentToProjectsStore.newPageSize$.next($event)"
+                        (sortRows)="paymentToProjectsStore.newSort$.next($event)">
+            </jems-table>
+        </ng-container>
+    </div>
+</ng-container>

@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.entity.lumpsum
 
 import java.math.BigDecimal
+import java.sql.Timestamp
 
 interface ProjectLumpSumRow {
 
@@ -13,4 +14,6 @@ interface ProjectLumpSumRow {
     val fastTrack: Int?
     val readyForPayment: Int?
     val comment: String?
+    val paymentEnabledDate: Timestamp?
+    val lastApprovedVersionBeforeReadyForPayment: String?
 }

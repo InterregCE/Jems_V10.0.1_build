@@ -8,7 +8,7 @@
         (pageSizeChanged)="currentPageSize = $event;newPageSize.emit($event)">
 </jems-paginator>
 
-<div class="overflow-auto">
+<div id="table-wrapper">
     <table matSort
            mat-table
            id="table"
@@ -28,6 +28,7 @@
                                  [class.narrow-column-width]="column.columnWidth === ColumnWidth.NarrowColumn"
                                  [class.chip-column-width]="column.columnWidth === ColumnWidth.ChipColumn"
                                  [class.medium-column-width]="column.columnWidth === ColumnWidth.MediumColumn"
+                                 [class.small-column-width]="column.columnWidth === ColumnWidth.SmallColumn"
                                  [mat-sort-header]="column.sortProperty"
                                  [class.justify-end]="column.columnType === ColumnType.Decimal" class="cell"
                                  [arrowPosition]="column.columnType === ColumnType.Decimal ? 'before' : 'after'">
@@ -48,6 +49,7 @@
                         [class.narrow-column-width]="column.columnWidth === ColumnWidth.NarrowColumn"
                         [class.chip-column-width]="column.columnWidth === ColumnWidth.ChipColumn"
                         [class.medium-column-width]="column.columnWidth === ColumnWidth.MediumColumn"
+                        [class.small-column-width]="column.columnWidth === ColumnWidth.SmallColumn"
                         *matHeaderCellDef class="cell">
                     <span jemsText maxLines="2">{{column.displayedColumn | translate}}</span>
                     <jems-context-info *ngIf="column.infoMessage"
@@ -66,6 +68,7 @@
                       [class.narrow-column-width]="column.columnWidth === ColumnWidth.NarrowColumn"
                       [class.chip-column-width]="column.columnWidth === ColumnWidth.ChipColumn"
                       [class.medium-column-width]="column.columnWidth === ColumnWidth.MediumColumn"
+                      [class.small-column-width]="column.columnWidth === ColumnWidth.SmallColumn"
                       (click)="column.clickable === false ? $event.stopPropagation() : false"
                       class="cell">
                 <div *ngIf="!column.customCellTemplate; else customCellTemplate"

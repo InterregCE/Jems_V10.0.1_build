@@ -87,6 +87,9 @@ enum class UserRolePermission(val key: String, val projectRelated: Boolean = fal
     InstitutionsAssignmentRetrieve("InstitutionsAssignmentRetrieve"),
     InstitutionsAssignmentUpdate("InstitutionsAssignmentUpdate"),
 
+    PaymentsRetrieve("PaymentsRetrieve"),
+    PaymentsUpdate("PaymentsUpdate"),
+
     ProgrammeDataExportRetrieve("ProgrammeDataExportRetrieve"),
 
     UserRetrieve("UserRetrieve"),
