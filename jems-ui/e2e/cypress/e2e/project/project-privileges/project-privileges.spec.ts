@@ -255,7 +255,7 @@ context('Project privileges tests', () => {
           cy.contains('mat-option', testData.monitorUser1.email).click();
 
           cy.contains('button', 'Save changes').click();
-          cy.contains('Users has been successfully assigned to project(s).').should('be.visible');
+          cy.contains('Users has been successfully assigned to project(s).').scrollIntoView().should('be.visible');
           cy.contains('Users has been successfully assigned to project(s).').should('not.exist');
           
           // checking for the added users
@@ -273,7 +273,7 @@ context('Project privileges tests', () => {
             cy.contains('mat-icon', 'highlight_off').click();
           })
           cy.contains('button', 'Save changes').click();
-          cy.contains('Users has been successfully assigned to project(s).').should('be.visible');
+          cy.contains('Users has been successfully assigned to project(s).').scrollIntoView().should('be.visible');
           cy.contains('Users has been successfully assigned to project(s).').should('not.exist');
 
           // checking for the removed users
