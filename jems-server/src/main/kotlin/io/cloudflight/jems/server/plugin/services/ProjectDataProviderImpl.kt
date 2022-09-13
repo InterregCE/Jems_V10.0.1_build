@@ -8,6 +8,7 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionB.ProjectDataSe
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.ProjectPartnerData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.PartnerBudgetData
 import io.cloudflight.jems.plugin.contract.models.project.sectionD.ProjectDataSectionD
+import io.cloudflight.jems.plugin.contract.models.project.sectionE.ProjectDataSectionE
 import io.cloudflight.jems.plugin.contract.models.project.versions.ProjectVersionData
 import io.cloudflight.jems.plugin.contract.services.ProjectDataProvider
 import io.cloudflight.jems.server.call.service.CallPersistence
@@ -30,6 +31,7 @@ import io.cloudflight.jems.server.project.service.cofinancing.model.ProjectCoFin
 import io.cloudflight.jems.server.project.service.cofinancing.model.ProjectCoFinancingOverview
 import io.cloudflight.jems.server.project.service.common.BudgetCostsCalculatorService
 import io.cloudflight.jems.server.project.service.common.PartnerBudgetPerFundCalculatorService
+import io.cloudflight.jems.server.project.service.customCostOptions.ProjectUnitCostPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
 import io.cloudflight.jems.server.project.service.model.ProjectPartnerBudgetPerPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
@@ -75,7 +77,8 @@ class ProjectDataProviderImpl(
     private val projectResultPersistence: ProjectResultPersistence,
     private val listOutputIndicatorsPersistence: OutputIndicatorPersistence,
     private val listResultIndicatorsPersistence: ResultIndicatorPersistence,
-    private val programmeDataService: ProgrammeDataService
+    private val programmeDataService: ProgrammeDataService,
+    private val projectUnitCostPersistence: ProjectUnitCostPersistence,
 ) : ProjectDataProvider {
 
     companion object {
@@ -206,9 +209,10 @@ class ProjectDataProviderImpl(
             ).toProjectBudgetOverviewPerPartnerPerPeriod()
         )
 
-        val sectionE = with(lumpSums) {
-            this.toDataModel(programmeLumpSumPersistence.getLumpSums(this.map { it.programmeLumpSumId }))
-        }
+        val sectionE = ProjectDataSectionE(
+            projectLumpSums = lumpSums.toDataModel(programmeLumpSumPersistence.getLumpSums(lumpSums.map { it.programmeLumpSumId })),
+            projectDefinedUnitCosts = projectUnitCostPersistence.getProjectUnitCostList(projectId, version).toListDataModel(),
+        )
 
         logger.info("Retrieved project data for project id=$projectId via plugin.")
 

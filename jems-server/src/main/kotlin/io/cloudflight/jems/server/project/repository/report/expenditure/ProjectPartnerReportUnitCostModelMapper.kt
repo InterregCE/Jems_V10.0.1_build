@@ -10,6 +10,7 @@ fun List<PartnerReportUnitCostEntity>.toModel() = map {
     ProjectPartnerReportUnitCost(
         id = it.id,
         unitCostProgrammeId = it.programmeUnitCost.id,
+        projectDefined = it.programmeUnitCost.projectId != null,
         costPerUnit = it.programmeUnitCost.costPerUnit,
         name = it.programmeUnitCost.translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.name) },
         total = it.totalCost,

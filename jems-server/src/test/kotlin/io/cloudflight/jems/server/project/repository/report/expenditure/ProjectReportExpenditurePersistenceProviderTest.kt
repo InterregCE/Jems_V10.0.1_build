@@ -203,6 +203,7 @@ class ProjectReportExpenditurePersistenceProviderTest : UnitTest() {
         private val dummyUnitCost = ProjectPartnerReportUnitCost(
             id = 4L,
             unitCostProgrammeId = 400L,
+            projectDefined = false,
             total = BigDecimal.ONE,
             numberOfUnits = BigDecimal.ONE,
             name = setOf(InputTranslation(SystemLanguage.EN, "name EN")),

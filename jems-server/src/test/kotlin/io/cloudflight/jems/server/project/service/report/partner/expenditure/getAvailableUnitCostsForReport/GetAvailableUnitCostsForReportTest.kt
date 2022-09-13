@@ -19,6 +19,7 @@ internal class GetAvailableUnitCostsForReportTest : UnitTest() {
     private val unitCostZero = ProjectPartnerReportUnitCost(
         id = 1L,
         unitCostProgrammeId = 45L,
+        projectDefined = false,
         numberOfUnits = BigDecimal.ZERO,
         total = BigDecimal.ZERO,
         name = setOf(InputTranslation(SystemLanguage.EN, "first EN")),
@@ -31,9 +32,10 @@ internal class GetAvailableUnitCostsForReportTest : UnitTest() {
     private val unitCostNonZero = ProjectPartnerReportUnitCost(
         id = 2L,
         unitCostProgrammeId = 45L,
+        projectDefined = true,
         numberOfUnits = BigDecimal.ONE,
         total = BigDecimal.ONE,
-        name = setOf(InputTranslation(SystemLanguage.EN, "first EN")),
+        name = setOf(InputTranslation(SystemLanguage.EN, "second EN")),
         category = ReportBudgetCategory.Multiple,
         foreignCurrencyCode = null,
         costPerUnitForeignCurrency = null,
