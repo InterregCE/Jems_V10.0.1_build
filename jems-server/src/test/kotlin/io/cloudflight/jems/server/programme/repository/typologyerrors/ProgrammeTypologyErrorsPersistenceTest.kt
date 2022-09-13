@@ -44,7 +44,7 @@ class ProgrammeTypologyErrorsPersistenceTest: UnitTest() {
         every { repository.findAll() } returns listOf(typologyErrorsEntity)
 
         assertThat(
-            persistence.updateLegalStatuses(
+            persistence.updateTypologyErrors(
                 toDeleteIds = listOf(2, 3),
                 toPersist = listOf(typologyErrors.copy(id = 0))
             )

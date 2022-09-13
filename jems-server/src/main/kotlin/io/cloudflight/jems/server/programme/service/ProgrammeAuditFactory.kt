@@ -72,9 +72,8 @@ fun programmeLegalStatusesChanged(context: Any, statuses: List<ProgrammeLegalSta
         .build())
 }
 
-fun programmeTypologyErrorsChanged(context: Any, statuses: List<TypologyErrors>): AuditCandidateEvent {
-    val typologyErrorsAsString = statuses.asSequence()
-        .map { typologyError ->  typologyError.description }.joinToString(",\n")
+fun programmeTypologyErrorsChanged(context: Any, errors: List<TypologyErrors>): AuditCandidateEvent {
+    val typologyErrorsAsString = errors.joinToString(",\n") { typologyError -> typologyError.description }
 
     return AuditCandidateEvent(context, AuditBuilder(AuditAction.PROGRAMME_TYPOLOGY_ERRORS)
         .description("Values for typology errors set to:\n$typologyErrorsAsString")

@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.programme.service.typologyerrors.get_typology_errors
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.programme.service.typologyerrors.GetTypologyErrorsService
+import io.cloudflight.jems.server.programme.service.typologyerrors.GetTypologyErrors
 import io.cloudflight.jems.server.programme.service.typologyerrors.ProgrammeTypologyErrorsPersistence
 import io.cloudflight.jems.server.programme.service.typologyerrors.model.TypologyErrors
 import io.mockk.every
@@ -23,7 +23,7 @@ internal class GetTypologyErrorsTest : UnitTest() {
     lateinit var persistence: ProgrammeTypologyErrorsPersistence
 
     @InjectMockKs
-    lateinit var getTypologyErrors: GetTypologyErrorsService
+    lateinit var getTypologyErrors: GetTypologyErrors
 
     @Test
     fun `should get programme typology errors`() {

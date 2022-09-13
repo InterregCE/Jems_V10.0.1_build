@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.programme.service.typologyerrors
+package io.cloudflight.jems.server.programme.service.typologyerrors.exception
 
 import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.server.common.exception.ApplicationException
@@ -15,9 +15,9 @@ class UpdateTypologyErrorsFailedException(cause: Throwable) : ApplicationExcepti
 
 class MaxAllowedTypologyErrorsReachedException(maxAmount: Int) :
     ApplicationUnprocessableException(
-        code = "${UPDATE_TYPOLOGY_ERRORS_ERROR_CODE_PREFIX}-001",
+        code = "$UPDATE_TYPOLOGY_ERRORS_ERROR_CODE_PREFIX-001",
         i18nMessage = I18nMessage(
-            "${UPDATE_TYPOLOGY_ERRORS_ERROR_KEY_PREFIX}.max.allowed.amount.reached",
+            "$UPDATE_TYPOLOGY_ERRORS_ERROR_KEY_PREFIX.max.allowed.amount.reached",
             mapOf("maxSize" to maxAmount.toString())
         ),
         message = "max allowed: $maxAmount",
