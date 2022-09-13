@@ -63,8 +63,8 @@
     <ng-container *ngIf="partnerReport.status !== ProjectPartnerReportSummaryDTO.StatusEnum.Draft && (isControlButtonVisible$ | async)">
         <jems-pending-button *ngIf="!(partnerReport.status === ProjectPartnerReportSummaryDTO.StatusEnum.InControl)" class="ml-1"
                 [disabled]="isStartControlButtonDisabled"
-                (click)="createControlReportForPartnerReport(partnerReport)"
-                [pending]="controlActionPending">
+                (clicked)="createControlReportForPartnerReport(partnerReport)"
+                [pending]="getPendingActionStatus(partnerReport.id) | async">
             {{'project.application.partner.reports.start.control' | translate}}
         </jems-pending-button>
         <button jemsText *ngIf="partnerReport.status === ProjectPartnerReportSummaryDTO.StatusEnum.InControl && ((pageStore.userCanEditReports$ | async) || (pageStore.userCanViewReports$ | async))" mat-stroked-button type="submit" class="ml-1"
