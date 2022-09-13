@@ -13,12 +13,14 @@
             <div *ngFor="let typologyError of typologyErrorsForm.controls; let i = index">
                 <ng-container formArrayName="typologyErrors">
                     <ng-container [formGroupName]="i">
-
                         <mat-form-field>
                             <input name=i formControlName="description" matInput>
                             <mat-error>
                                 <jems-form-field-errors [errors]="typologyError.get('description').errors"></jems-form-field-errors>
                             </mat-error>
+                            <mat-hint>
+                                <jems-text-hint [currentLength]="typologyError.get('description').value.length" [maxLength]=500></jems-text-hint>
+                            </mat-hint>
                         </mat-form-field>
 
                         <div *ngIf="(changeFormState$ | async) === FormState.EDIT">
