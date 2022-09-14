@@ -109,12 +109,15 @@ export class ProgrammePriorityDetailPageComponent {
   }
 
   save(): void {
+    this.form.enable();
+
     const priority: ProgrammePriorityDTO = this.form.value;
     priority.objective = this.form.get(this.constants.OBJECTIVE.name)?.value;
     priority.specificObjectives = this.specificObjectives.controls
       .filter(control => !!control.get(this.constants.POLICY_SELECTED.name)?.value)
       .map(control => this.transformSpecificObjectiveValues(control));
 
+    this.form.disable();
     if (!this.priorityId) {
       this.pageStore.createPriority(priority)
         .pipe(
@@ -231,15 +234,14 @@ export class ProgrammePriorityDetailPageComponent {
       officialCode: this.formBuilder.control(objective.officialCode)
     });
 
-    group.addControl(this.constants.DIMENSION_CODES.name,
-      this.formBuilder.group(this.addDimensionCodes(objective, group, selected))
-    );
-    group.get(this.constants.POLICY_CODE.name)?.addValidators(this.constants.selectedSpecificObjectiveCodeRequired(group));
-
     if (this.objectivePoliciesAlreadyInUse.find(used => used === objective.programmeObjectivePolicy) || (this.isProgrammeSetupLocked && selected)) {
       group.disable();
       this.form.get(this.constants.OBJECTIVE.name)?.disable();
     }
+    group.addControl(this.constants.DIMENSION_CODES.name,
+      this.formBuilder.group(this.addDimensionCodes(objective, group, selected))
+    );
+    group.get(this.constants.POLICY_CODE.name)?.addValidators(this.constants.selectedSpecificObjectiveCodeRequired(group));
 
     this.specificObjectives.push(group);
   }
