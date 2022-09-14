@@ -443,11 +443,12 @@ export class ProjectApplicationFormSidenavService {
         ],
         versionedSection: true
       },
-      {
-        headline: {i18nKey: 'project.application.form.section.part.c'},
-        bullets: this.getSectionCHeadlines(projectId, packages),
-        versionedSection: true
-      },
+      ...this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_C) ?
+        [{
+          headline: {i18nKey: 'project.application.form.section.part.c'},
+          bullets: this.getSectionCHeadlines(projectId, packages),
+          versionedSection: true
+        }] : [],
       ...this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING) ?
         [
           {
