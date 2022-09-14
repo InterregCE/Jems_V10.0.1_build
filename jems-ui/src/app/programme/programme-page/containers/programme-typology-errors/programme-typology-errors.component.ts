@@ -9,6 +9,7 @@ import {
 import {catchError, mergeMap, tap} from 'rxjs/operators';
 import {HttpErrorResponse} from '@angular/common/http';
 import {Log} from '@common/utils/log';
+import {ProgrammePageSidenavService} from '../../services/programme-page-sidenav.service';
 
 @Component({
   selector: 'jems-programme-typology-errors',
@@ -41,7 +42,8 @@ export class ProgrammeTypologyErrorsComponent extends BaseComponent {
 
   typologyErrors$ = merge(this.initialStatus$, this.savedStatus$);
 
-  constructor(private typologyErrorsService: ProgrammeTypologyOfErrorsService) {
+  constructor(private typologyErrorsService: ProgrammeTypologyOfErrorsService,
+              private programmePageSidenavService: ProgrammePageSidenavService) {
     super();
   }
 }

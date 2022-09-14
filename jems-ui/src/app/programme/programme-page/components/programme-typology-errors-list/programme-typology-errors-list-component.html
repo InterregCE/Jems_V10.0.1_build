@@ -28,7 +28,7 @@
                                     type="button"
                                     [disabled]="isProgrammeSetupRestricted ? !!typologyError.get('id').value : false"
                                     matTooltip="{{'common.delete.entry.tooltip' | translate}}"
-                                    (click)="deleteTypologyError(i)">
+                                    (click)="deleteTypologyError(i, typologyError.get('id').value)">
                                 <mat-icon>delete</mat-icon>
                             </button>
                         </div>
