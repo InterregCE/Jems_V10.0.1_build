@@ -53,7 +53,7 @@
             {{'common.cancel.label' | translate}}
         </button>
         <button mat-raised-button color="primary" type="button"
-                [disabled]="submitted"
+                [disabled]="submitted || formGroup.invalid"
                 (click)="onTypologyErrorsSubmit()">
             {{'common.save.label' | translate}}
         </button>
