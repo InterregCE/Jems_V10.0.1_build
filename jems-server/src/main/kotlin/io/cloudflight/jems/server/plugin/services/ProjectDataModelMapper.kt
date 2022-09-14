@@ -62,6 +62,7 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budg
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.BudgetUnitCostEntryData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.PartnerBudgetData
 import io.cloudflight.jems.plugin.contract.models.programme.fund.ProgrammeFundTypeData
+import io.cloudflight.jems.plugin.contract.models.programme.unitcost.ProgrammeUnitCostListData
 import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA3.ProjectCoFinancingCategoryOverviewData
 import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA3.ProjectCoFinancingOverviewData
 import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA3.ProjectCoFinancingByFundOverviewData
@@ -103,6 +104,7 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionE.lumpsum.Proje
 import io.cloudflight.jems.plugin.contract.models.project.sectionE.lumpsum.ProjectPartnerLumpSumData
 import io.cloudflight.jems.plugin.contract.models.project.versions.ProjectVersionData
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
+import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
 import io.cloudflight.jems.server.programme.service.stateaid.model.ProgrammeStateAid
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
@@ -257,9 +259,20 @@ fun ProjectPartnerDetail.toDataModel(stateAid: ProjectPartnerStateAid, budget: P
 fun Iterable<OutputProjectAssociatedOrganizationDetail>.toDataModel() = map { pluginDataMapper.map(it) }.toSet()
 
 fun List<ProjectLumpSum>.toDataModel(lumpSumsDetail: List<ProgrammeLumpSum>) =
-    ProjectDataSectionE(
-        map { projectLumpSum -> pluginDataMapper.map(projectLumpSum, lumpSumsDetail.firstOrNull { it.id == projectLumpSum.programmeLumpSumId }) }
+    map { projectLumpSum -> pluginDataMapper.map(projectLumpSum, lumpSumsDetail.firstOrNull { it.id == projectLumpSum.programmeLumpSumId }) }
+
+fun List<ProgrammeUnitCost>.toListDataModel() = map {
+    ProgrammeUnitCostListData(
+        id = it.id,
+        name = it.name.mapTo(HashSet()) {
+            InputTranslationData(it.language.toDataModel(), "E.2.1_${it.translation}")
+        },
+        type = it.type.toDataModel(),
+        description = it.description.toDataModel(),
+        costPerUnit = it.costPerUnit,
+        categories = it.categories.mapTo(HashSet()) { BudgetCategoryData.valueOf(it.name) },
     )
+}
 
 fun List<ProjectVersion>.toDataModel() =
     map{pluginDataMapper.map(it)}

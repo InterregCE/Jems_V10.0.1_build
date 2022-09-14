@@ -118,6 +118,7 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
     private val dummyUnitCost = ProjectPartnerReportUnitCost(
         id = 18L,
         unitCostProgrammeId = 140L,
+        projectDefined = true,
         costPerUnit = BigDecimal.ONE,
         numberOfUnits = BigDecimal.ONE,
         total = BigDecimal.ONE,
@@ -130,6 +131,7 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
     private val dummyUnitCostDTO = ProjectPartnerReportUnitCostDTO(
         id = 18L,
         unitCostProgrammeId = 140L,
+        projectDefined = true,
         costPerUnit = BigDecimal.ONE,
         numberOfUnits = BigDecimal.ONE,
         total = BigDecimal.ONE,

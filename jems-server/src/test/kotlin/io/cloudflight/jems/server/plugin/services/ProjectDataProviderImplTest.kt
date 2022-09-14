@@ -25,6 +25,7 @@ import io.cloudflight.jems.plugin.contract.models.programme.lumpsum.ProgrammeLum
 import io.cloudflight.jems.plugin.contract.models.programme.lumpsum.ProgrammeLumpSumPhaseData
 import io.cloudflight.jems.plugin.contract.models.programme.strategy.ProgrammeStrategyData
 import io.cloudflight.jems.plugin.contract.models.programme.unitcost.BudgetCategoryData
+import io.cloudflight.jems.plugin.contract.models.programme.unitcost.ProgrammeUnitCostListData
 import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ApplicationStatusData
 import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ProjectAssessmentEligibilityData
 import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ProjectAssessmentEligibilityResultData
@@ -99,6 +100,7 @@ import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.programme.service.ProgrammeDataService
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeLumpSumPersistence
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
+import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
 import io.cloudflight.jems.server.programme.service.indicator.OutputIndicatorPersistence
@@ -118,6 +120,7 @@ import io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResult
 import io.cloudflight.jems.server.project.service.common.BudgetCostsCalculatorService
 import io.cloudflight.jems.server.project.service.common.PartnerBudgetPerFundCalculatorService
+import io.cloudflight.jems.server.project.service.customCostOptions.ProjectUnitCostPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectPartnerLumpSum
@@ -236,6 +239,9 @@ internal class ProjectDataProviderImplTest : UnitTest() {
 
     @RelaxedMockK
     lateinit var programmeDataService: ProgrammeDataService
+
+    @MockK
+    lateinit var projectUnitCostPersistence: ProjectUnitCostPersistence
 
     companion object {
         private val startDate = ZonedDateTime.now().minusDays(2)
@@ -615,6 +621,27 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             categories = setOf(BudgetCategory.StaffCosts),
             isFastTrack = false
         )
+        private val projectDefinedUnitCost = ProgrammeUnitCost(
+            id = 51L,
+            projectId = project.id,
+            name = setOf(InputTranslation(SystemLanguage.ET, "name-ET")),
+            description = setOf(InputTranslation(SystemLanguage.ET, "description-ET")),
+            type = setOf(InputTranslation(SystemLanguage.ET, "type-ET")),
+            justification = emptySet(),
+            costPerUnit = BigDecimal.ONE,
+            costPerUnitForeignCurrency = BigDecimal.TEN,
+            foreignCurrencyCode = "CZK",
+            isOneCostCategory = true,
+            categories = setOf(BudgetCategory.ExternalCosts),
+        )
+        private val projectDefinedUnitCostData = ProgrammeUnitCostListData(
+            id = 51L,
+            name = setOf(InputTranslationData(SystemLanguageData.ET, "E.2.1_name-ET")),
+            type = setOf(InputTranslationData(SystemLanguageData.ET, "type-ET")),
+            description = setOf(InputTranslationData(SystemLanguageData.ET, "description-ET")),
+            costPerUnit = BigDecimal.ONE,
+            categories = setOf(BudgetCategoryData.ExternalCosts),
+        )
 
         // data for tableA4/output-result
         val projectOutputs = listOf(
@@ -794,6 +821,9 @@ internal class ProjectDataProviderImplTest : UnitTest() {
         every { projectLumpSumPersistence.getLumpSums(id) } returns listOf(projectLumpSum)
         every { programmeLumpSumPersistence.getLumpSums(listOf(projectLumpSum.programmeLumpSumId)) } returns listOf(
             programmeLumpSum
+        )
+        every { projectUnitCostPersistence.getProjectUnitCostList(id, null) } returns listOf(
+            projectDefinedUnitCost
         )
         every { partnerPersistence.getPartnerStateAid(partnerId = projectPartner.id) } returns
             ProjectPartnerStateAid(
@@ -1342,7 +1372,8 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                         period = projectLumpSum.period,
                         lumpSumContributions = listOf(ProjectPartnerLumpSumData(3L, BigDecimal.ZERO))
                     )
-                )
+                ),
+                projectDefinedUnitCosts = listOf(projectDefinedUnitCostData),
             )
         )
 
@@ -1579,7 +1610,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             )
         )
         assertThat(projectData.sectionE).isEqualTo(
-            ProjectDataSectionE(projectLumpSums = emptyList())
+            ProjectDataSectionE(projectLumpSums = emptyList(), projectDefinedUnitCosts = listOf(projectDefinedUnitCostData))
         )
 
         assertThat(projectData.versions).isEqualTo(projectVersions.toDataModel())
