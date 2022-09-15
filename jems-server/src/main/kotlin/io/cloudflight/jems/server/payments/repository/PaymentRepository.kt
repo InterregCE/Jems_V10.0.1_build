@@ -39,8 +39,8 @@ interface PaymentRepository: JpaRepository<PaymentToProjectEntity, Long> {
                  JOIN project project on project.id = payment.project_id
                  JOIN project_lump_sum pls on pls.project_id = payment.project_id and pls.order_nr = payment.order_nr
                  JOIN (SELECT max(updated) as submission_date from project_status ps WHERE ps.project_id = project_id and ps.status = 'CONTRACTED') as table1
-            GROUP BY payment.programme_fund_id, payment.order_nr""",
-        countQuery = """SELECT count(*) from (select * from payment GROUP BY payment.programme_fund_id, payment.order_nr) as groupedPayment""",
+            GROUP BY payment.programme_fund_id, payment.order_nr, payment.project_id""",
+        countQuery = """SELECT count(*) from (select * from payment GROUP BY payment.programme_fund_id, payment.order_nr, payment.project_id) as gp""",
         nativeQuery = true)
     fun getAllByGrouping(pageable: Pageable): Page<PaymentToProjectEntity>
 
