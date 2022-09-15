@@ -40,7 +40,7 @@ export class PaymentsToProjectPageComponent implements OnInit {
         displayedColumn: 'payments.payment.to.project.table.column.project.id',
         elementProperty: 'projectId',
         sortProperty: 'project_id',
-        columnWidth: ColumnWidth.SmallColumn,
+        columnWidth: ColumnWidth.DateColumn,
       },
       {
         displayedColumn: 'payments.payment.to.project.table.column.project.acronym',
