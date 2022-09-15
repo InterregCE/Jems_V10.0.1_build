@@ -31,7 +31,7 @@ import {
   ReportFileManagementStore
 } from '@project/project-application/report/partner-report-detail-page/partner-report-annexes-tab/report-file-management-store';
 import {FileDescriptionChange} from '@common/components/file-list/file-list-table/file-description-change';
-import {APIError} from "@common/models/APIError";
+import {APIError} from '@common/models/APIError';
 
 @Injectable({providedIn: 'root'})
 export class PartnerReportProcurementStore {

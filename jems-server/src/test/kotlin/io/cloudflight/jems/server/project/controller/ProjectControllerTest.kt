@@ -245,7 +245,7 @@ class ProjectControllerTest {
                     splittingAllowed = false,
                     phase = ProgrammeLumpSumPhase.Preparation,
                     categories = setOf(BudgetCategory.EquipmentCosts, BudgetCategory.TravelAndAccommodationCosts),
-                    isFastTrack = false
+                    fastTrack = false
                 ),
             ),
             unitCosts = listOf(

@@ -42,7 +42,7 @@ internal class UpdateLumpSumInteractorTest : UnitTest() {
         splittingAllowed = true,
         phase = Implementation,
         categories = setOf(OfficeAndAdministrationCosts, StaffCosts),
-        isFastTrack = false
+        fastTrack = false
     )
 
     @MockK
@@ -82,7 +82,7 @@ internal class UpdateLumpSumInteractorTest : UnitTest() {
             splittingAllowed = true,
             phase = null,
             categories = setOf(OfficeAndAdministrationCosts),
-            isFastTrack = true
+            fastTrack = true
         )
         val ex = assertThrows<LumpSumIsInvalid> { updateLumpSum.updateLumpSum(wrongLumpSum) }
         assertThat(ex.formErrors).containsExactlyInAnyOrderEntriesOf(mapOf(
@@ -104,7 +104,7 @@ internal class UpdateLumpSumInteractorTest : UnitTest() {
             splittingAllowed = true,
             phase = Implementation,
             categories = setOf(OfficeAndAdministrationCosts, StaffCosts ),
-            isFastTrack = true
+            fastTrack = true
         )
         val ex = assertThrows<UpdateLumpSumWhenProgrammeSetupRestricted> { updateLumpSum.updateLumpSum(wrongLumpSum) }
     }
@@ -159,7 +159,7 @@ internal class UpdateLumpSumInteractorTest : UnitTest() {
             splittingAllowed = true,
             phase = Implementation,
             categories = setOf(OfficeAndAdministrationCosts, StaffCosts),
-            isFastTrack = false
+            fastTrack = false
         )
         val auditSlot = slot<AuditCandidate>()
         every { auditService.logEvent(capture(auditSlot)) } answers {}
@@ -179,7 +179,7 @@ internal class UpdateLumpSumInteractorTest : UnitTest() {
             cost = BigDecimal.ONE,
             splittingAllowed = true,
             phase = Implementation,
-            isFastTrack = false
+            fastTrack = false
         )
 
         assertThrows<LumpSumIsInvalid>("when updating id cannot be invalid") {
@@ -198,7 +198,7 @@ internal class UpdateLumpSumInteractorTest : UnitTest() {
             splittingAllowed = true,
             phase = Implementation,
             categories = setOf(OfficeAndAdministrationCosts, StaffCosts),
-            isFastTrack = false
+            fastTrack = false
         )
         every { persistence.updateLumpSum(any()) } throws ResourceNotFoundException("programmeLumpSum")
 
@@ -220,7 +220,7 @@ internal class UpdateLumpSumInteractorTest : UnitTest() {
             splittingAllowed = true,
             phase = Implementation,
             categories = setOf(OfficeAndAdministrationCosts, StaffCosts),
-            isFastTrack = false
+            fastTrack = false
         )
         val auditSlot = slot<AuditCandidate>()
         every { auditService.logEvent(capture(auditSlot)) } answers {}

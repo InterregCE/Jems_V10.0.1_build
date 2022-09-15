@@ -7,7 +7,7 @@ import io.cloudflight.jems.server.project.repository.ProjectPersistenceProvider
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.contracting.ContractingValidator
 import io.cloudflight.jems.server.project.service.contracting.fillEndDateWithDuration
-import io.cloudflight.jems.server.project.service.contracting.fillFTLumpSumsList
+import io.cloudflight.jems.server.project.service.contracting.fillLumpSumsList
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoring
 import io.cloudflight.jems.server.project.service.contracting.monitoring.ContractingMonitoringPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
@@ -42,17 +42,17 @@ class UpdateContractingMonitoring(
 
             // load old data for audit once the project is already contracted
             val oldMonitoring = contractingMonitoringPersistence.getContractingMonitoring(projectId)
-                .fillFTLumpSumsList ( resolveLumpSums = {
+                .fillLumpSumsList ( resolveLumpSums = {
                     versionPersistence.getLatestApprovedOrCurrent(projectId = projectId)
-                        .let { projectLumpSumPersistence.getLumpSums(projectId = projectId, version = it)
-                            .filter { lumpSum -> lumpSum.isFastTrack == true } }
+                        .let { projectLumpSumPersistence.getLumpSums(projectId = projectId, version = it) }
                 } )
             val updated = contractingMonitoringPersistence.updateContractingMonitoring(
                 contractMonitoring.copy(projectId = projectId)
             ).fillEndDateWithDuration(resolveDuration = {
                 versionPersistence.getLatestApprovedOrCurrent(projectId = projectId)
                     .let { projectPersistence.getProject(projectId = projectId, version = it).duration }
-            })
+            }).apply { fastTrackLumpSums = contractMonitoring.fastTrackLumpSums }
+
             val lumpSumsOrderNrTobeAdded: MutableSet<Int> = mutableSetOf()
             val lumpSumsOrderNrToBeDeleted: MutableSet<Int> = mutableSetOf()
 

@@ -58,7 +58,7 @@ internal class GetContractingMonitoringServiceTest : UnitTest() {
                 programmeLumpSumId = 1,
                 period = 1,
                 lumpSumContributions = listOf(),
-                isFastTrack = true,
+                fastTrack = true,
                 readyForPayment = false,
                 comment = null
             )

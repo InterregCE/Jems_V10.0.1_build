@@ -1,12 +1,10 @@
 package io.cloudflight.jems.server.project.service.contracting.monitoring.getProjectContractingMonitoring
 
-import io.cloudflight.jems.server.common.exception.ExceptionWrapper
-import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectContractingMonitoring
 import io.cloudflight.jems.server.project.repository.ProjectPersistenceProvider
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.contracting.ContractingValidator
 import io.cloudflight.jems.server.project.service.contracting.fillEndDateWithDuration
-import io.cloudflight.jems.server.project.service.contracting.fillFTLumpSumsList
+import io.cloudflight.jems.server.project.service.contracting.fillLumpSumsList
 import io.cloudflight.jems.server.project.service.contracting.getEndDate
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoring
 import io.cloudflight.jems.server.project.service.contracting.monitoring.ContractingMonitoringPersistence
@@ -35,7 +33,7 @@ class GetContractingMonitoringService(
                 versionPersistence.getLatestApprovedOrCurrent(projectId = projectId)
                     .let { projectPersistence.getProject(projectId = projectId, version = it).duration }
             })
-            .fillFTLumpSumsList ( resolveLumpSums = {
+            .fillLumpSumsList ( resolveLumpSums = {
                 versionPersistence.getLatestApprovedOrCurrent(projectId = projectId)
                     .let { projectLumpSumPersistence.getLumpSums(projectId = projectId, version = it) }
             } )

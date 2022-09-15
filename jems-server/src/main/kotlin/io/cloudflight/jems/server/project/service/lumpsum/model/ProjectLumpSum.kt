@@ -10,7 +10,7 @@ data class ProjectLumpSum (
     val programmeLumpSumId: Long,
     val period: Int? = null,
     val lumpSumContributions: List<ProjectPartnerLumpSum> = emptyList(),
-    val isFastTrack: Boolean = false,
+    val fastTrack: Boolean = false,
     val readyForPayment: Boolean = false,
     val comment: String? = null,
     var paymentEnabledDate: ZonedDateTime? = null,

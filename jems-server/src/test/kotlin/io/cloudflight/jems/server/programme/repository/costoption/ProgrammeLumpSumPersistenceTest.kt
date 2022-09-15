@@ -82,7 +82,7 @@ class ProgrammeLumpSumPersistenceTest {
             splittingAllowed = testLumpSum.splittingAllowed,
             phase = testLumpSum.phase,
             categories = setOf(categoryStaff.category, categoryOffice.category),
-            isFastTrack = false
+            fastTrack = false
         )
     }
 
@@ -142,7 +142,7 @@ class ProgrammeLumpSumPersistenceTest {
             splittingAllowed = false,
             phase = ProgrammeLumpSumPhase.Closure,
             categories = setOf(ExternalCosts, EquipmentCosts),
-            isFastTrack = false
+            fastTrack = false
         )
         every { repository.existsById(testLumpSum.id) } returns true
         val translations = combineLumpSumTranslatedValues(toBeUpdated.id, toBeUpdated.name, toBeUpdated.description)
@@ -157,7 +157,7 @@ class ProgrammeLumpSumPersistenceTest {
             splittingAllowed = false,
             phase = ProgrammeLumpSumPhase.Closure,
             categories = setOf(ExternalCosts, EquipmentCosts),
-            isFastTrack = false
+            fastTrack = false
         ))
     }
 
@@ -173,7 +173,7 @@ class ProgrammeLumpSumPersistenceTest {
             splittingAllowed = false,
             phase = ProgrammeLumpSumPhase.Closure,
             categories = setOf(ExternalCosts, EquipmentCosts),
-            isFastTrack = false
+            fastTrack = false
         )
 
         assertThrows<ResourceNotFoundException> { programmeLumpSumPersistence.updateLumpSum(toBeUpdated) }

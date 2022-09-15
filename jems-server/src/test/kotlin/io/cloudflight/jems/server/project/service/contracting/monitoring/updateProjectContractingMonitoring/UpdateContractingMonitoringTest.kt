@@ -69,7 +69,7 @@ class UpdateContractingMonitoringTest : UnitTest() {
                 programmeLumpSumId = 1,
                 period = 1,
                 lumpSumContributions = listOf(),
-                isFastTrack = true,
+                fastTrack = true,
                 readyForPayment = true,
                 comment = null,
                 paymentEnabledDate = ZonedDateTime.now(),
@@ -82,7 +82,7 @@ class UpdateContractingMonitoringTest : UnitTest() {
                 programmeLumpSumId = 1,
                 period = 1,
                 lumpSumContributions = listOf(),
-                isFastTrack = true,
+                fastTrack = true,
                 readyForPayment = true,
                 comment = "Test",
                 paymentEnabledDate = ZonedDateTime.now(),
@@ -220,7 +220,7 @@ class UpdateContractingMonitoringTest : UnitTest() {
         every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns version
         every { projectPersistence.getProject(projectId, version) } returns project
         every { projectLumpSumPersistence.getLumpSums(1, "2.0")} returns lumpSums
-        every { projectLumpSumPersistence.updateLumpSums(1, lumpSumsUpdated)} returns lumpSumsUpdated
+        every { projectLumpSumPersistence.updateLumpSums(1, any())} returns lumpSumsUpdated
         every { paymentPersistence.getAmountPerPartnerByProjectIdAndLumpSumOrderNrIn(1, Sets.newSet(1))} returns
             listOf(paymentToProjectEntity)
 
@@ -323,7 +323,7 @@ class UpdateContractingMonitoringTest : UnitTest() {
                     programmeLumpSumId = 1,
                     period = 1,
                     lumpSumContributions = listOf(),
-                    isFastTrack = true,
+                    fastTrack = true,
                     readyForPayment = false,
                     comment = null,
                     paymentEnabledDate = ZonedDateTime.now(),

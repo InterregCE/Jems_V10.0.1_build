@@ -14,7 +14,7 @@ fun ProgrammeLumpSumEntity.toModel() = ProgrammeLumpSum(
     description = translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.description) },
     cost = cost,
     splittingAllowed = splittingAllowed,
-    isFastTrack = isFastTrack,
+    fastTrack = isFastTrack,
     phase = phase,
     categories = categories.mapTo(HashSet()) { it.category }
 )
@@ -26,7 +26,7 @@ fun ProgrammeLumpSum.toEntity() = ProgrammeLumpSumEntity(
     // translatedValues - needs programmeLumpSumId
     cost = cost!!,
     splittingAllowed = splittingAllowed,
-    isFastTrack = isFastTrack,
+    isFastTrack = fastTrack,
     phase = phase!!,
     categories = if (id == 0L) mutableSetOf() else categories.toEntity(id)
 )

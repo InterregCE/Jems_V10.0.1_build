@@ -64,12 +64,12 @@ class UpdateCallLumpSumsTest {
                 ProgrammeLumpSum(
                     id = 2,
                     splittingAllowed = true,
-                    isFastTrack = false
+                    fastTrack = false
                 ),
                 ProgrammeLumpSum(
                     id = 3,
                     splittingAllowed = true,
-                    isFastTrack = false
+                    fastTrack = false
                 )))
         every { persistence.getCallById(ID) } returns call
         updateCallLumpSums.updateLumpSums(ID, setOf(2, 3))
@@ -106,8 +106,8 @@ class UpdateCallLumpSumsTest {
         every { persistence.existsAllProgrammeLumpSumsByIds(setOf(3)) } returns true
         every { persistence.getCallById(ID) } returns callWithStatus(id = ID, CallStatus.PUBLISHED, CallType.STANDARD).copy(
             lumpSums = listOf(
-                ProgrammeLumpSum(id = 2, splittingAllowed = true, isFastTrack = false),
-                ProgrammeLumpSum(id = 3, splittingAllowed = true, isFastTrack = false),
+                ProgrammeLumpSum(id = 2, splittingAllowed = true, fastTrack = false),
+                ProgrammeLumpSum(id = 3, splittingAllowed = true, fastTrack = false),
             )
         )
         assertThrows<LumpSumsRemovedAfterCallPublished> { updateCallLumpSums.updateLumpSums(ID, setOf(3)) }
