@@ -127,7 +127,7 @@ export class FileManagementStore {
         switchMap(projectId => this.projectFileService.setProjectFileDescription(fileId, projectId, description)),
         catchError(error => {
           this.error$.next(error.error);
-          return of({} as ProjectFileMetadataDTO);
+          throw error;
         })
       );
   }

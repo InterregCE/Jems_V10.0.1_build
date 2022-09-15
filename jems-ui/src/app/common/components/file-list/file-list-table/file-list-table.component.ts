@@ -48,7 +48,7 @@ export class FileListTableComponent implements OnChanges {
 
   descriptionForm = this.formBuilder.group({
     id: [null, Validators.required],
-    description: '',
+    description: ['', Validators.maxLength(250)],
   });
 
   constructor(

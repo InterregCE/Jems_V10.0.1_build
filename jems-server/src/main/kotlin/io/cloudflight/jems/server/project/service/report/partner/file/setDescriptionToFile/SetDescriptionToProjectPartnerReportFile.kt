@@ -34,7 +34,7 @@ class SetDescriptionToProjectPartnerReportFile(
 
     private fun validateDescription(text: String) {
         generalValidator.throwIfAnyIsInvalid(
-            generalValidator.maxLength(text, 5000, "description"),
+            generalValidator.maxLength(text, 250, "description"),
         )
     }
 

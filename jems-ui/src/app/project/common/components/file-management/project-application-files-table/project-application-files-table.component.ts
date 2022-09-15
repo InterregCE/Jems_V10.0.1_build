@@ -1,16 +1,22 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {filter, map, switchMap, take, tap} from 'rxjs/operators';
-import {PageProjectFileMetadataDTO, ProjectFileMetadataDTO, ProjectStatusDTO} from '@cat/api';
+import {finalize, map, switchMap, take, tap} from 'rxjs/operators';
+import {
+  PageProjectFileMetadataDTO,
+  ProjectFileMetadataDTO,
+  ProjectStatusDTO
+} from '@cat/api';
 import {FileManagementStore} from '@project/common/components/file-management/file-management-store';
 import {Tables} from '@common/utils/tables';
 import {Alert} from '@common/components/forms/alert';
 import {CategoryInfo} from '@project/common/components/category-tree/categoryModels';
 import {MatTableDataSource} from '@angular/material/table';
-import {combineLatest, Observable, Subject} from 'rxjs';
-import {Forms} from '@common/utils/forms';
-import {MatDialog} from '@angular/material/dialog';
+import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {AcceptedFileTypesConstants} from '@project/common/components/file-management/accepted-file-types.constants';
+import {FileListItem} from '@common/components/file-list/file-list-item';
+import {FileCategoryTypeEnum} from '@project/common/components/file-management/file-category-type';
+import {FileDescriptionChange} from '@common/components/file-list/file-list-table/file-description-change';
+import {ProjectUtil} from '@project/common/project-util';
 
 @UntilDestroy()
 @Component({
@@ -31,28 +37,94 @@ export class ProjectApplicationFilesTableComponent {
 
   data$: Observable<{
     files: PageProjectFileMetadataDTO;
-    projectStatus: ProjectStatusDTO;
+    fileList: FileListItem[];
     selectedCategory: CategoryInfo | undefined;
   }>;
 
-  editableDescriptionFileId: number | null;
-
-  constructor(public fileManagementStore: FileManagementStore,
-              private dialog: MatDialog) {
+  constructor(public fileManagementStore: FileManagementStore) {
     this.data$ = combineLatest([
       this.fileManagementStore.fileList$,
       this.fileManagementStore.projectStatus$,
-      this.fileManagementStore.selectedCategory$
+      this.fileManagementStore.selectedCategory$,
+      this.fileManagementStore.canChangeApplicationFile$,
+      this.fileManagementStore.canChangeAssessmentFile$,
+      this.fileManagementStore.canChangeModificationFile$,
+      this.fileManagementStore.userIsProjectOwnerOrEditCollaborator$,
     ])
       .pipe(
-        map(([files, projectStatus, selectedCategory]) => ({
+        map(([files, projectStatus, selectedCategory,
+               canChangeApplicationFile, canChangeAssessmentFile, canChangeModificationFile, isOwner]: any) => ({
           files,
-          projectStatus,
+          fileList: files.content.map((file: ProjectFileMetadataDTO) => ({
+            id: file.id,
+            name: file.name,
+            type: selectedCategory?.type,
+            uploaded: file.uploadedAt,
+            author: file.uploadedBy,
+            sizeString: file.sizeString,
+            description: file.description,
+            editable: ProjectApplicationFilesTableComponent.isFileEditable(selectedCategory?.type, canChangeApplicationFile, canChangeAssessmentFile, canChangeModificationFile),
+            deletable: ProjectApplicationFilesTableComponent.isFileDeletable(
+              selectedCategory?.type,
+              projectStatus,
+              canChangeApplicationFile,
+              canChangeAssessmentFile,
+              canChangeModificationFile,
+              file.uploadedAt,
+              isOwner,
+            ),
+            tooltipIfNotDeletable: '',
+            iconIfNotDeletable: '',
+          })),
           selectedCategory
         })),
-        tap(data => this.dataSource.data = data.files?.content)
+        tap(data => this.dataSource.data = data.files?.content),
       );
     this.fileManagementStore.getMaximumAllowedFileSize().pipe(untilDestroyed(this)).subscribe((maxAllowedSize) => this.maximumAllowedFileSizeInMB = maxAllowedSize);
+  }
+
+  private static isFileEditable(type: any, canChangeApplicationFile: boolean, canChangeAssessmentFile: boolean, canChangeModificationFile: boolean): boolean {
+    switch (type) {
+      case FileCategoryTypeEnum.MODIFICATION:
+        return canChangeModificationFile;
+      case FileCategoryTypeEnum.ASSESSMENT:
+        return canChangeAssessmentFile;
+      case FileCategoryTypeEnum.APPLICATION:
+        return canChangeApplicationFile;
+      default:
+        return false;
+    }
+  }
+
+  private static isFileDeletable(
+    type: any,
+    status: ProjectStatusDTO,
+    canChangeApplicationFile: boolean,
+    canChangeAssessmentFile: boolean,
+    canChangeModificationFile: boolean,
+    uploadedAt: Date,
+    isOwner: boolean,
+  ): boolean {
+    switch (type) {
+      case FileCategoryTypeEnum.MODIFICATION:
+        return canChangeModificationFile;
+      case FileCategoryTypeEnum.ASSESSMENT:
+        return canChangeAssessmentFile;
+      case FileCategoryTypeEnum.APPLICATION:
+        return ProjectApplicationFilesTableComponent.isApplicationFileDeletable(status, uploadedAt, isOwner, canChangeApplicationFile);
+      default:
+        return false;
+    }
+  }
+
+  private static isApplicationFileDeletable(status: ProjectStatusDTO, uploadedAt: Date, isOwner: boolean, isAllowedToChange: boolean): boolean {
+    // the user can only delete files that are added after a last status change
+    const lastStatusChange = status?.updated;
+    const fileIsNotLocked = uploadedAt > lastStatusChange;
+
+    const userIsAbleToDelete = isAllowedToChange
+      || (isOwner && ProjectUtil.isOpenForModifications(status));
+    return fileIsNotLocked && userIsAbleToDelete;
   }
 
   uploadFile(target: any): void {
@@ -73,28 +145,26 @@ export class ProjectApplicationFilesTableComponent {
       .subscribe();
   }
 
-  downloadFile(fileId: number): void {
-    this.fileManagementStore.downloadFile(fileId)
+  downloadFile(file: FileListItem): void {
+    this.fileManagementStore.downloadFile(file.id)
       .pipe(take(1))
       .subscribe();
   }
 
-  deleteFile(file: ProjectFileMetadataDTO): void {
-    Forms.confirm(
-      this.dialog, {
-        title: file.name,
-        message: {i18nKey: 'file.dialog.message', i18nArguments: {name: file.name}}
-      })
-      .pipe(
-        take(1),
-        filter(answer => !!answer),
-        switchMap(() => this.fileManagementStore.deleteFile(file.id)),
-      ).subscribe();
+  deleteFile(file: FileListItem): void {
+    this.fileManagementStore.deleteFile(file.id).pipe(take(1)).subscribe();
   }
 
-  setFileDescription(file: ProjectFileMetadataDTO): void {
-    this.fileManagementStore.setFileDescription(file.id, file.description)
-      .pipe(take(1))
-      .subscribe();
+  savingDescriptionId$ = new BehaviorSubject<number | null>(null);
+  updateDescription(data: FileDescriptionChange) {
+    return this.fileManagementStore.selectedCategory$.pipe(
+      take(1),
+      tap(() => this.savingDescriptionId$.next(data.id)),
+      switchMap(() =>
+        this.fileManagementStore.setFileDescription(data.id, data.description)
+      ),
+      tap(() => this.fileManagementStore.filesChanged$.next()),
+      finalize(() => this.savingDescriptionId$.next(null)),
+    ).subscribe();
   }
 }

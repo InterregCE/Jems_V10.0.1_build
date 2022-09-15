@@ -90,7 +90,7 @@ interface ProjectPartnerReportApi {
         @PathVariable partnerId: Long,
         @PathVariable reportId: Long,
         @PathVariable fileId: Long,
-        @RequestBody description: String,
+        @RequestBody(required = false) description: String?,
     )
 
     @ApiOperation("Upload file to partner report")
