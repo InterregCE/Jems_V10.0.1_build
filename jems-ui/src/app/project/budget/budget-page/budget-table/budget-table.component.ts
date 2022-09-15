@@ -7,6 +7,8 @@ import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
 import {NumberService} from '@common/services/number.service';
 import {AllowedBudgetCategories} from '@project/model/allowed-budget-category';
 import {TableConfig} from '@common/directives/table-config/TableConfig';
+import { ProjectPartnerDetailPageStore } from '@project/partner/project-partner-detail-page/project-partner-detail-page.store';
+import { ProgrammeUnitCost } from '@project/model/programmeUnitCost';
 
 @Component({
   selector: 'jems-budget-table',
@@ -52,6 +54,7 @@ export class BudgetTableComponent implements OnInit, OnChanges {
     public projectStore: ProjectStore,
     private activatedRoute: ActivatedRoute,
     private projectService: ProjectService,
+    private projectPartnerDetailPageStore: ProjectPartnerDetailPageStore
   ) {
     this.dataSourceChanged$ = new BehaviorSubject<ProjectPartnerBudgetDTO[]>(this.dataSource);
   }
@@ -61,10 +64,11 @@ export class BudgetTableComponent implements OnInit, OnChanges {
       this.dataSourceChanged$,
       this.projectStore.allowedBudgetCategories$,
       this.projectService.getProjectCallSettingsById(this.projectId),
+      this.projectPartnerDetailPageStore.unitCosts$
     ])
       .pipe(
-        tap(([, allowedBudgetCategories, callSettings]) => {
-          this.displayedColumns = this.getDisplayedColumns(allowedBudgetCategories, callSettings);
+        tap(([, allowedBudgetCategories, callSettings, unitCosts]) => {
+          this.displayedColumns = this.getDisplayedColumns(allowedBudgetCategories, callSettings, unitCosts);
         }),
         tap(() => this.calculateFooterSums(this.dataSource || [])),
         map(() => this.dataSource),
@@ -92,7 +96,8 @@ export class BudgetTableComponent implements OnInit, OnChanges {
   }
 
   private getDisplayedColumns(allowedBudgetCategories: AllowedBudgetCategories,
-                              callSettings: ProjectCallSettingsDTO): string[] {
+                              callSettings: ProjectCallSettingsDTO,
+                              unitCosts: ProgrammeUnitCost[]): string[] {
     const columns: string[] = ['partner'];
     this.tableConfig = [{minInRem: 3}];
     if (!this.hideCountry) {
@@ -131,7 +136,7 @@ export class BudgetTableComponent implements OnInit, OnChanges {
       columns.push('lumpSums');
       this.tableConfig.push({minInRem: 7});
     }
-    if (callSettings.unitCosts?.find(cost => !cost.oneCostCategory)) {
+    if (unitCosts?.find(cost => !cost.isOneCostCategory)) {
       columns.push('unitCosts');
       this.tableConfig.push({minInRem: 7});
     }

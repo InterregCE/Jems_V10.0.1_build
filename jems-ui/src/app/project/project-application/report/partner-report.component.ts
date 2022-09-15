@@ -7,7 +7,7 @@ import {
 } from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
-import {catchError, distinctUntilChanged, filter, finalize, map, startWith, take, tap} from 'rxjs/operators';
+import {catchError, distinctUntilChanged, filter, finalize, map, take, tap} from 'rxjs/operators';
 import {ProjectApplicationFormSidenavService} from '../containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {RoutingService} from '@common/services/routing.service';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
@@ -107,8 +107,8 @@ export class PartnerReportComponent implements AfterViewInit {
       ),
       tap(data => {
         data.partnerReports.forEach((report) => {
-          this.controlActionMap.set(report.id, new BehaviorSubject<boolean>(false))
-        })
+          this.controlActionMap.set(report.id, new BehaviorSubject<boolean>(false));
+        });
       })
     );
 
@@ -210,7 +210,7 @@ export class PartnerReportComponent implements AfterViewInit {
       take(1),
       tap((answer) => {
         if (answer) {
-          this.changeStatusOfReport(partnerReport)
+          this.changeStatusOfReport(partnerReport);
         } else {
           this.getPendingActionStatus(partnerReport.id).next(false);
         }
