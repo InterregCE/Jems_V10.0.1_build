@@ -100,7 +100,7 @@
 
                 <span [matTooltip]="((file.deletable ? 'file.table.action.delete.tooltip' : file.tooltipIfNotDeletable) | translate)">
                     <button (click)="deleteFile(file)" [disabled]="!file.deletable" color="accent" mat-icon-button>
-                        <mat-icon [class.icon-hidden]="!file.editable">{{ file.deletable ? 'delete' : file.iconIfNotDeletable }}</mat-icon>
+                        <mat-icon [class.icon-hidden]="!file.deletable && !file.iconIfNotDeletable">{{ file.deletable ? 'delete' : file.iconIfNotDeletable }}</mat-icon>
                     </button>
                 </span>
 

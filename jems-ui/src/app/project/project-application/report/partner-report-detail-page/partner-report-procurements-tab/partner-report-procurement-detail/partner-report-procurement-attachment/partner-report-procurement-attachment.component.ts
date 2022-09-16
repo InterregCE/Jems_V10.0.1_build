@@ -73,7 +73,7 @@ export class PartnerReportProcurementAttachmentComponent {
           editable: file.createdInThisReport && isReportEditable,
           deletable: file.createdInThisReport && isReportEditable,
           tooltipIfNotDeletable: '',
-          iconIfNotDeletable: 'delete',
+          iconIfNotDeletable: '',
         })),
         isReportEditable,
         reportNumber: report.reportNumber,
