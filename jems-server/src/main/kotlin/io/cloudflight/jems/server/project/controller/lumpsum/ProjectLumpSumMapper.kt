@@ -13,7 +13,9 @@ fun List<ProjectLumpSum>.toDto() = map {
         lumpSumContributions = it.lumpSumContributions.map { it.toDto() },
         readyForPayment = it.readyForPayment,
         comment = it.comment,
-        fastTrack = it.isFastTrack
+        fastTrack = it.isFastTrack,
+        paymentEnabledDate = it.paymentEnabledDate,
+        lastApprovedVersionBeforeReadyForPayment = it.lastApprovedVersionBeforeReadyForPayment
     )
 }
 
@@ -28,7 +30,10 @@ fun List<ProjectLumpSumDTO>.toModel() = map {
         period = it.period,
         lumpSumContributions = it.lumpSumContributions.toPartnerContributionModel(),
         readyForPayment = it.readyForPayment,
-        comment = it.comment
+        comment = it.comment,
+        isFastTrack = it.fastTrack,
+        paymentEnabledDate = it.paymentEnabledDate,
+        lastApprovedVersionBeforeReadyForPayment = it.lastApprovedVersionBeforeReadyForPayment
     )
 }
 
