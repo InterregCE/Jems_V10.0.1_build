@@ -115,6 +115,8 @@ class UpdateProjectUnitCost(
                         }
                     }
             }
+        val idsToKeep = staffCosts.mapNotNullTo(HashSet()) { it.id }
+        projectPartnerBudgetCostsUpdatePersistence.deleteAllBudgetStaffCostsExceptFor(partnerId, idsToKeep)
         projectPartnerBudgetCostsUpdatePersistence.createOrUpdateBudgetStaffCosts(projectId, partnerId, staffCosts)
     }
 
@@ -132,6 +134,8 @@ class UpdateProjectUnitCost(
                         }
                     }
             }
+        val idsToKeep = equipmentCosts.mapNotNullTo(HashSet()) { it.id }
+        projectPartnerBudgetCostsUpdatePersistence.deleteAllBudgetEquipmentCostsExceptFor(partnerId, idsToKeep)
         projectPartnerBudgetCostsUpdatePersistence.createOrUpdateBudgetEquipmentCosts(projectId, partnerId, equipmentCosts)
     }
 
@@ -149,6 +153,8 @@ class UpdateProjectUnitCost(
                         }
                     }
             }
+        val idsToKeep = externalCosts.mapNotNullTo(HashSet()) { it.id }
+        projectPartnerBudgetCostsUpdatePersistence.deleteAllBudgetExternalExpertiseAndServicesCostsExceptFor(partnerId, idsToKeep)
         projectPartnerBudgetCostsUpdatePersistence.createOrUpdateBudgetExternalExpertiseAndServicesCosts(projectId, partnerId, externalCosts)
     }
 
@@ -166,6 +172,8 @@ class UpdateProjectUnitCost(
                         }
                     }
             }
+        val idsToKeep = infrastructureCosts.mapNotNullTo(HashSet()) { it.id }
+        projectPartnerBudgetCostsUpdatePersistence.deleteAllBudgetInfrastructureAndWorksCostsExceptFor(partnerId, idsToKeep)
         projectPartnerBudgetCostsUpdatePersistence.createOrUpdateBudgetInfrastructureAndWorksCosts(projectId, partnerId, infrastructureCosts)
     }
 
@@ -183,6 +191,8 @@ class UpdateProjectUnitCost(
                         }
                     }
             }
+        val idsToKeep = travelCosts.mapNotNullTo(HashSet()) { it.id }
+        projectPartnerBudgetCostsUpdatePersistence.deleteAllBudgetTravelAndAccommodationCostsExceptFor(partnerId, idsToKeep)
         projectPartnerBudgetCostsUpdatePersistence.createOrUpdateBudgetTravelAndAccommodationCosts(projectId, partnerId, travelCosts)
     }
 
@@ -198,6 +208,8 @@ class UpdateProjectUnitCost(
                         }
                     }
             }
+        val idsToKeep = multiCatCosts.mapNotNullTo(HashSet()) { it.id }
+        projectPartnerBudgetCostsUpdatePersistence.deleteAllUnitCostsExceptFor(partnerId, idsToKeep)
         projectPartnerBudgetCostsUpdatePersistence.createOrUpdateBudgetUnitCosts(projectId, partnerId, multiCatCosts)
     }
 

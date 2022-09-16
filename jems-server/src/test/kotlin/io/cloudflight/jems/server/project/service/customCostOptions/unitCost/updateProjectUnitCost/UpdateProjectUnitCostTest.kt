@@ -4,6 +4,7 @@ import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.api.project.dto.report.partner.expenditure.BudgetCategoryDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
@@ -23,6 +24,7 @@ import io.cloudflight.jems.server.project.service.partner.model.BudgetStaffCostE
 import io.cloudflight.jems.server.project.service.partner.model.BudgetTravelAndAccommodationCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetUnitCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
+import io.mockk.CapturingSlot
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -30,6 +32,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
+import org.aspectj.weaver.patterns.ConcreteCflowPointcut
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -213,6 +216,8 @@ internal class UpdateProjectUnitCostTest : UnitTest() {
             name = "PROJ_ACR",
         )
 
+        private val categories = BudgetCategoryDTO.values().filter { it != BudgetCategoryDTO.OfficeAndAdministrationCosts }
+
     }
 
     @MockK
@@ -255,7 +260,8 @@ internal class UpdateProjectUnitCostTest : UnitTest() {
         every { partner.id } returns partnerId
         every { partnerPersistence.findTop30ByProjectId(PROJECT_ID) } returns listOf(partner)
 
-        mockBudgetUpdates(partnerId)
+        val deleteSlots = categories.map { Pair(it, slot<Set<Long>>()) }.toMap()
+        mockBudgetUpdates(partnerId, deleteSlots)
 
         every { programmeUnitCostPersistence.updateUnitCost(any()) } returnsArgument 0
         every { projectPersistence.getProjectSummary(PROJECT_ID) } returns projectSummary
@@ -271,35 +277,60 @@ internal class UpdateProjectUnitCostTest : UnitTest() {
         verify(exactly = 1) { auditPublisher.publishEvent(any()) }
         assertThat(auditSlot.captured.auditCandidate.action).isEqualTo(AuditAction.PROGRAMME_UNIT_COST_CHANGED)
         assertThat(auditSlot.captured.auditCandidate.project).isEqualTo(auditProject)
+
+        assertThat(deleteSlots[BudgetCategoryDTO.StaffCosts]!!.captured).containsExactly(97645L)
+        assertThat(deleteSlots[BudgetCategoryDTO.EquipmentCosts]!!.captured).containsExactly(98245L)
+        assertThat(deleteSlots[BudgetCategoryDTO.ExternalCosts]!!.captured).containsExactly(97745L)
+        assertThat(deleteSlots[BudgetCategoryDTO.InfrastructureCosts]!!.captured).containsExactly(97825L)
+        assertThat(deleteSlots[BudgetCategoryDTO.TravelAndAccommodationCosts]!!.captured).containsExactly(97836L)
+        assertThat(deleteSlots[BudgetCategoryDTO.Multiple]!!.captured).containsExactly(97836L)
     }
 
-    private fun mockBudgetUpdates(partnerId: Long) {
+    private fun mockBudgetUpdates(partnerId: Long, slots: Map<BudgetCategoryDTO, CapturingSlot<Set<Long>>>) {
         every { projectPartnerBudgetCostsPersistence.getBudgetStaffCosts(partnerId) } returns listOf(oldStaffCost)
+        every { projectPartnerBudgetCostsUpdatePersistence
+            .deleteAllBudgetStaffCostsExceptFor(partnerId, capture(slots[BudgetCategoryDTO.StaffCosts]!!))
+        } answers { }
         every { projectPartnerBudgetCostsUpdatePersistence
             .createOrUpdateBudgetStaffCosts(PROJECT_ID, partnerId, any())
         } returnsArgument 2
 
         every { projectPartnerBudgetCostsPersistence.getBudgetEquipmentCosts(partnerId) } returns listOf(oldEquipmentCost)
         every { projectPartnerBudgetCostsUpdatePersistence
+            .deleteAllBudgetEquipmentCostsExceptFor(partnerId, capture(slots[BudgetCategoryDTO.EquipmentCosts]!!))
+        } answers { }
+        every { projectPartnerBudgetCostsUpdatePersistence
             .createOrUpdateBudgetEquipmentCosts(PROJECT_ID, partnerId, any())
         } returnsArgument 2
 
         every { projectPartnerBudgetCostsPersistence.getBudgetExternalExpertiseAndServicesCosts(partnerId) } returns listOf(oldExternalCost)
+        every { projectPartnerBudgetCostsUpdatePersistence
+            .deleteAllBudgetExternalExpertiseAndServicesCostsExceptFor(partnerId, capture(slots[BudgetCategoryDTO.ExternalCosts]!!))
+        } answers { }
         every { projectPartnerBudgetCostsUpdatePersistence
             .createOrUpdateBudgetExternalExpertiseAndServicesCosts(PROJECT_ID, partnerId, any())
         } returnsArgument 2
 
         every { projectPartnerBudgetCostsPersistence.getBudgetInfrastructureAndWorksCosts(partnerId) } returns listOf(oldInfraCost)
         every { projectPartnerBudgetCostsUpdatePersistence
+            .deleteAllBudgetInfrastructureAndWorksCostsExceptFor(partnerId, capture(slots[BudgetCategoryDTO.InfrastructureCosts]!!))
+        } answers { }
+        every { projectPartnerBudgetCostsUpdatePersistence
             .createOrUpdateBudgetInfrastructureAndWorksCosts(PROJECT_ID, partnerId, any())
         } returnsArgument 2
 
         every { projectPartnerBudgetCostsPersistence.getBudgetTravelAndAccommodationCosts(partnerId) } returns listOf(oldTravelCost)
         every { projectPartnerBudgetCostsUpdatePersistence
+            .deleteAllBudgetTravelAndAccommodationCostsExceptFor(partnerId, capture(slots[BudgetCategoryDTO.TravelAndAccommodationCosts]!!))
+        } answers { }
+        every { projectPartnerBudgetCostsUpdatePersistence
             .createOrUpdateBudgetTravelAndAccommodationCosts(PROJECT_ID, partnerId, any())
         } returnsArgument 2
 
         every { projectPartnerBudgetCostsPersistence.getBudgetUnitCosts(partnerId) } returns listOf(oldMultiCost)
+        every { projectPartnerBudgetCostsUpdatePersistence
+            .deleteAllUnitCostsExceptFor(partnerId, capture(slots[BudgetCategoryDTO.Multiple]!!))
+        } answers { }
         every { projectPartnerBudgetCostsUpdatePersistence
             .createOrUpdateBudgetUnitCosts(PROJECT_ID, partnerId, any())
         } returnsArgument 2
@@ -336,7 +367,8 @@ internal class UpdateProjectUnitCostTest : UnitTest() {
         every { partner.id } returns partnerId
         every { partnerPersistence.findTop30ByProjectId(PROJECT_ID) } returns listOf(partner)
 
-        mockBudgetUpdates(partnerId)
+        val deleteSlots = categories.map { Pair(it, slot<Set<Long>>()) }.toMap()
+        mockBudgetUpdates(partnerId, deleteSlots)
 
         every { programmeUnitCostPersistence.updateUnitCost(any()) } returnsArgument 0
         every { projectPersistence.getProjectSummary(PROJECT_ID) } returns projectSummary
@@ -359,6 +391,13 @@ internal class UpdateProjectUnitCostTest : UnitTest() {
             .createOrUpdateBudgetTravelAndAccommodationCosts(PROJECT_ID, partnerId, listOf(/* empty */))
         }
         verify(exactly = 1) { auditPublisher.publishEvent(any()) }
+
+        assertThat(deleteSlots[BudgetCategoryDTO.StaffCosts]!!.captured).containsExactly(97645L)
+        assertThat(deleteSlots[BudgetCategoryDTO.EquipmentCosts]!!.captured).containsExactly(98245L)
+        assertThat(deleteSlots[BudgetCategoryDTO.ExternalCosts]!!.captured).isEmpty()
+        assertThat(deleteSlots[BudgetCategoryDTO.InfrastructureCosts]!!.captured).isEmpty()
+        assertThat(deleteSlots[BudgetCategoryDTO.TravelAndAccommodationCosts]!!.captured).isEmpty()
+        assertThat(deleteSlots[BudgetCategoryDTO.Multiple]!!.captured).containsExactly(97836L)
     }
 
     @Test
@@ -370,7 +409,8 @@ internal class UpdateProjectUnitCostTest : UnitTest() {
         every { partner.id } returns partnerId
         every { partnerPersistence.findTop30ByProjectId(PROJECT_ID) } returns listOf(partner)
 
-        mockBudgetUpdates(partnerId)
+        val deleteSlots = categories.map { Pair(it, slot<Set<Long>>()) }.toMap()
+        mockBudgetUpdates(partnerId, deleteSlots)
 
         every { programmeUnitCostPersistence.updateUnitCost(any()) } returnsArgument 0
         every { projectPersistence.getProjectSummary(PROJECT_ID) } returns projectSummary
