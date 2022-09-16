@@ -17,7 +17,7 @@ interface PaymentRepository: JpaRepository<PaymentToProjectEntity, Long> {
                       p.order_nr AS orderNr,
                       ppcf.programme_fund_id AS programmeFundId,
                       p.programme_lump_sum_id AS programmeLumpSumId,
-                      amount*ppcf.percentage/100 as amountApprovedPerFund
+                      TRUNCATE(amount*ppcf.percentage/100, 2) as amountApprovedPerFund
                       FROM project_partner_lump_sum ppls
                       JOIN project_lump_sum p on ppls.project_id = p.project_id AND ppls.order_nr = p.order_nr
                       JOIN project_partner_co_financing ppcf on ppls.project_partner_id = ppcf.partner_id
