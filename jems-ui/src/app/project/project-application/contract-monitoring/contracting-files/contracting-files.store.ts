@@ -188,7 +188,13 @@ export class ContractingFilesStore {
   }
 
   private transform(content: ProjectReportFileDTO[]): FileListItem[] {
-    return content.map(file => ({...file, deletable: this.canDelete} as FileListItem));
+    return content.map(file => ({
+      ...file,
+      deletable: this.canDelete,
+      editable: false,
+      tooltipIfNotDeletable: '',
+      iconIfNotDeletable: 'delete',
+    }));
   }
 
   private fileCategories(): Observable<CategoryNode> {

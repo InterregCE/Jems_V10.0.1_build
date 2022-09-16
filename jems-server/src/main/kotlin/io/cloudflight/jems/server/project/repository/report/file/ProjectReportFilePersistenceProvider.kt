@@ -1,9 +1,13 @@
 package io.cloudflight.jems.server.project.repository.report.file
 
+import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.common.minio.MinioStorage
 import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
+import io.cloudflight.jems.server.project.entity.report.procurement.file.ProjectPartnerReportProcurementFileEntity
 import io.cloudflight.jems.server.project.repository.report.contribution.ProjectPartnerReportContributionRepository
 import io.cloudflight.jems.server.project.repository.report.expenditure.ProjectPartnerReportExpenditureRepository
+import io.cloudflight.jems.server.project.repository.report.procurement.ProjectPartnerReportProcurementRepository
+import io.cloudflight.jems.server.project.repository.report.procurement.attachment.ProjectPartnerReportProcurementAttachmentRepository
 import io.cloudflight.jems.server.project.repository.report.toModel
 import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPartnerReportWorkPackageActivityDeliverableRepository
 import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPartnerReportWorkPackageActivityRepository
@@ -30,6 +34,8 @@ class ProjectReportFilePersistenceProvider(
     private val contributionRepository: ProjectPartnerReportContributionRepository,
     private val expenditureRepository: ProjectPartnerReportExpenditureRepository,
     private val userRepository: UserRepository,
+    private val reportProcurementAttachmentRepository: ProjectPartnerReportProcurementAttachmentRepository,
+    private val procurementRepository: ProjectPartnerReportProcurementRepository,
 ) : ProjectReportFilePersistence {
 
     companion object {
@@ -37,12 +43,12 @@ class ProjectReportFilePersistenceProvider(
     }
 
     @Transactional(readOnly = true)
-    override fun existsFile(partnerId: Long, fileId: Long) =
-        reportFileRepository.existsByPartnerIdAndId(partnerId = partnerId, fileId = fileId)
+    override fun existsFile(exactPath: String, fileName: String) =
+        reportFileRepository.existsByPathAndName(path = exactPath, name = fileName)
 
     @Transactional(readOnly = true)
-    override fun existsFile(location: String, fileName: String) =
-        reportFileRepository.existsByPathAndName(path = location, name = fileName)
+    override fun existsFile(partnerId: Long, pathPrefix: String, fileId: Long) =
+        reportFileRepository.existsByPartnerIdAndPathPrefixAndId(partnerId = partnerId, pathPrefix, id = fileId)
 
     @Transactional(readOnly = true)
     override fun downloadFile(partnerId: Long, fileId: Long) =
@@ -56,6 +62,13 @@ class ProjectReportFilePersistenceProvider(
     override fun deleteFile(partnerId: Long, fileId: Long) =
         reportFileRepository.findByPartnerIdAndId(partnerId = partnerId, fileId = fileId)
             .deleteIfPresent()
+
+    @Transactional
+    override fun setDescriptionToFile(partnerId: Long, fileId: Long, description: String) {
+        val file = reportFileRepository.findByPartnerIdAndId(partnerId = partnerId, fileId = fileId)
+            ?: throw ResourceNotFoundException("file")
+        file.description = description
+    }
 
     @Transactional
     override fun updatePartnerReportActivityAttachment(
@@ -110,6 +123,25 @@ class ProjectReportFilePersistenceProvider(
         expenditure.attachment.deleteIfPresent()
 
         return persistFileAndUpdateLink(file = file) { expenditure.attachment = it }
+    }
+
+    @Transactional
+    override fun addPartnerReportProcurementAttachment(
+        reportId: Long,
+        procurementId: Long,
+        file: ProjectReportFileCreate,
+    ): ProjectReportFileMetadata {
+        val procurement = procurementRepository.getById(procurementId)
+
+        return persistFileAndUpdateLink(file = file) {
+            reportProcurementAttachmentRepository.save(
+                ProjectPartnerReportProcurementFileEntity(
+                    procurement = procurement,
+                    createdInReportId = reportId,
+                    file = it,
+                )
+            )
+        }
     }
 
     @Transactional(readOnly = true)

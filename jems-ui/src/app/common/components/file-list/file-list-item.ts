@@ -6,7 +6,10 @@ export interface FileListItem {
   type: ProjectReportFileDTO.TypeEnum;
   uploaded: Date;
   author: UserSimpleDTO;
-  size: number;
   sizeString: string;
+  description: string;
+  editable: boolean;
   deletable: boolean;
+  tooltipIfNotDeletable: string;
+  iconIfNotDeletable: string;
 }

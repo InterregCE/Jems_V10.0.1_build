@@ -74,6 +74,7 @@ import {JemsRegionsComponent} from '@common/components/jems-regions/jems-regions
 import {JemsNutsInfoComponent} from '@common/components/jems-nuts-info/jems-nuts-info.component';
 import {JemsRegionsTreeComponent} from '@common/components/jems-regions-tree/jems-regions-tree.component';
 import {JemsSelectedRegionsComponent} from '@common/components/jems-selected-regions/jems-selected-regions.component';
+import {FileListTableComponent} from '@common/components/file-list/file-list-table/file-list-table.component';
 
 const modules = [
   CommonModule,
@@ -93,6 +94,7 @@ const declarations = [
   ProjectApplicationListComponent,
   CallListComponent,
   FileListComponent,
+  FileListTableComponent,
   TableComponent,
   PaginatorComponent,
   FormComponent,

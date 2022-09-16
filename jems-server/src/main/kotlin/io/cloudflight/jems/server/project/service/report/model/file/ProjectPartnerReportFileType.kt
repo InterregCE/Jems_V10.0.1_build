@@ -17,6 +17,7 @@ enum class ProjectPartnerReportFileType(
 
             Expenditure(PartnerReport, true),
             Procurement(PartnerReport, true),
+              ProcurementAttachment(Procurement, false),
             Contribution(PartnerReport, true),
 
       Contracting(Project, false),

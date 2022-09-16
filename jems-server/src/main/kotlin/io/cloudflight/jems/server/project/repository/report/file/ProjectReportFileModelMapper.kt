@@ -24,6 +24,7 @@ fun ProjectReportFileCreate.toEntity(
     size = size,
     user = userResolver.invoke(userId),
     uploaded = uploaded,
+    description = "",
 )
 
 fun Page<ReportProjectFileEntity>.toModel() = map {
@@ -34,6 +35,7 @@ fun Page<ReportProjectFileEntity>.toModel() = map {
         uploaded = it.uploaded,
         author = it.user.toModel(),
         size = it.size,
+        description = it.description,
     )
 }
 

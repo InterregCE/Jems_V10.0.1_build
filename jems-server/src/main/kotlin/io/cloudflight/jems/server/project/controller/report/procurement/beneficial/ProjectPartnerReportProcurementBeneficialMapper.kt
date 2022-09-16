@@ -7,7 +7,7 @@ import io.cloudflight.jems.server.project.service.report.model.procurement.benef
 import org.mapstruct.Mapper
 import org.mapstruct.factory.Mappers
 
-private val mapper = Mappers.getMapper(ProjectPartnerReportProcurementMapper::class.java)
+private val mapper = Mappers.getMapper(ProjectPartnerReportProcurementBeneficialMapper::class.java)
 
 fun ProjectPartnerReportProcurementBeneficialOwner.toDto() = mapper.map(this)
 
@@ -24,6 +24,6 @@ fun ProjectPartnerReportProcurementBeneficialChangeDTO.toModel() = ProjectPartne
 fun List<ProjectPartnerReportProcurementBeneficialChangeDTO>.toModel() = map { it.toModel() }
 
 @Mapper
-interface ProjectPartnerReportProcurementMapper {
+interface ProjectPartnerReportProcurementBeneficialMapper {
     fun map(model: ProjectPartnerReportProcurementBeneficialOwner): ProjectPartnerReportProcurementBeneficialDTO
 }

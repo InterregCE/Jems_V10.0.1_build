@@ -197,6 +197,10 @@ import { ProjectProposedUnitCostDetailComponent } from './unit-costs/project-uni
 import {
   ProjectProposedUnitCostBreadcrumbResolver
 } from '@project/project-application/containers/project-application-detail/services/project-proposed-unit-cost.resolver';
+import {
+  PartnerReportProcurementAttachmentComponent
+} from '@project/project-application/report/partner-report-detail-page/partner-report-procurements-tab/partner-report-procurement-detail/partner-report-procurement-attachment/partner-report-procurement-attachment.component';
+
 @NgModule({
   declarations: [
     DescriptionCellComponent,
@@ -317,6 +321,7 @@ import {
     PartnerReportProcurementIdentificationComponent,
     PartnerReportProcurementBeneficialComponent,
     PartnerReportProcurementSubcontractComponent,
+    PartnerReportProcurementAttachmentComponent,
     PartnerReportContributionTabComponent,
     PartnerReportExpendituresTabComponent,
     PartnerReportFinancialOverviewTabComponent,

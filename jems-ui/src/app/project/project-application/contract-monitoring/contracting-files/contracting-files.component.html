@@ -9,7 +9,7 @@
     <p>{{'project.file.size.over.limit' | translate}} {{maximumAllowedFileSizeInMB}} MB</p>
 </jems-alert>
 
-<div jemsNoWidthLimit id="contracting-files" class="overflow-auto">
+<div jemsNoWidthLimit id="contracting-files">
     <jems-category-tree
             [categories]="store.fileCategories$ | async"
             (categorySelected)="store.selectedCategory$.next($event)"

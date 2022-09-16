@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.project.service.report.partner.workflow.creat
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.getCountryCodeForCountry
 import io.cloudflight.jems.server.currency.repository.CurrencyPersistence
-import io.cloudflight.jems.server.project.authorization.CanEditPartnerReport
+import io.cloudflight.jems.server.project.authorization.CanEditPartnerReportNotSpecific
 import io.cloudflight.jems.server.project.service.ProjectDescriptionPersistence
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
@@ -49,7 +49,7 @@ class CreateProjectPartnerReport(
         private const val MAX_REPORTS = 25
     }
 
-    @CanEditPartnerReport
+    @CanEditPartnerReportNotSpecific
     @Transactional
     @ExceptionWrapper(CreateProjectPartnerReportException::class)
     override fun createReportFor(partnerId: Long): ProjectPartnerReportSummary {

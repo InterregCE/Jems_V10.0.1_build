@@ -2,15 +2,17 @@ import {
   ChangeDetectionStrategy,
   Component,
   EventEmitter,
-  Input, OnChanges,
-  Output, SimpleChanges,
+  Input,
+  Output,
 } from '@angular/core';
 import { PageFileList } from '@common/components/file-list/page-file-list';
-import { FileListItem } from '@common/components/file-list/file-list-item';
 import { MatSort } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
-import { Alert } from '@common/components/forms/alert';
 import { Tables } from '@common/utils/tables';
+import { FileListItem } from '@common/components/file-list/file-list-item';
+import {Observable, Subject, Subscription} from 'rxjs';
+import {APIError} from '@common/models/APIError';
+import {take} from 'rxjs/operators';
+import {ProjectReportFileMetadataDTO} from '@cat/api';
 
 @Component({
   selector: 'jems-file-list',
@@ -18,12 +20,8 @@ import { Tables } from '@common/utils/tables';
   styleUrls: ['./file-list.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FileListComponent implements OnChanges {
-  Alert = Alert;
+export class FileListComponent {
   Tables = Tables;
-
-  displayedColumns: string[] = ['name', 'location', 'uploadDate', 'user', 'size', 'actions'];
-  dataSource = new MatTableDataSource<FileListItem>();
 
   @Input()
   fileList: PageFileList;
@@ -43,10 +41,27 @@ export class FileListComponent implements OnChanges {
   @Output()
   onDelete = new EventEmitter<FileListItem>();
 
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes.fileList && this.fileList) {
-      this.dataSource.data = this.fileList.content;
+  static doFileUploadWithValidation(
+    target: any,
+    fileSizeOverLimitError$: Subject<boolean>,
+    error$: Subject<APIError | null>,
+    maximumAllowedFileSizeInMB: number,
+    callback: (file: File) => Observable<ProjectReportFileMetadataDTO>,
+  ): Subscription {
+    if (!target) {
+      return Subscription.EMPTY;
     }
-  }
 
+    fileSizeOverLimitError$.next(false);
+    error$.next(null);
+
+    if (target?.files[0].size > maximumAllowedFileSizeInMB * 1024 * 1024) {
+      setTimeout(() => fileSizeOverLimitError$.next(true), 10);
+      return Subscription.EMPTY;
+    }
+
+    return callback(target?.files[0])
+      .pipe(take(1))
+      .subscribe();
+  }
 }

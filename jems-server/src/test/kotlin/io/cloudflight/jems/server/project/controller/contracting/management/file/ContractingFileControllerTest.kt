@@ -48,6 +48,7 @@ class ContractingFileControllerTest : UnitTest() {
             uploaded = YESTERDAY,
             author = UserSimple(45L, email = "admin@cloudflight.io", name = "Admin", surname = "Big"),
             size = 47889L,
+            description = "example desc",
         )
 
         private val contractingFileDto = ProjectReportFileDTO(
@@ -58,6 +59,7 @@ class ContractingFileControllerTest : UnitTest() {
             author = UserSimpleDTO(45L, email = "admin@cloudflight.io", name = "Admin", surname = "Big"),
             size = 47889L,
             sizeString = "46.8\u0020kB",
+            description = "example desc",
         )
 
     }

@@ -62,6 +62,7 @@ class ProjectReportExpenditurePersistenceProviderTest : UnitTest() {
             size = 1475,
             user = mockk(),
             uploaded = ZonedDateTime.now(),
+            description = "dummy description of attachment",
         )
 
         private fun dummyExpenditure(

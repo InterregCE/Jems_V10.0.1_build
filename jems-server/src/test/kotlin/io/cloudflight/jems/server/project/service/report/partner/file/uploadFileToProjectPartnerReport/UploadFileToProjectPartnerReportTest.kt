@@ -99,7 +99,7 @@ class UploadFileToProjectPartnerReportTest : UnitTest() {
         every { reportPersistence.exists(45L, 902L) } returns true
         every { partnerPersistence.getProjectIdForPartnerId(45L) } returns PROJECT_ID
         every { reportFilePersistence.existsFile(
-            location = "Project/000642/Report/Partner/000045/PartnerReport/000902/",
+            exactPath = "Project/000642/Report/Partner/000045/PartnerReport/000902/",
             fileName = "duplicate-file.docx"
         ) } returns true
 

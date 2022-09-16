@@ -14,6 +14,7 @@ import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartn
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType.Expenditure
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType.Procurement
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType.Contribution
+import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType.ProcurementAttachment
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFile
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileSearchRequest
 import org.springframework.data.domain.Page
@@ -31,10 +32,10 @@ class ListProjectPartnerReportFile(
         private val REMOVE_LAST_ID_REGEX = Regex("\\d+\\/\$")
 
         private val ALLOWED_FILTERS = mapOf(
-            PartnerReport to setOf(WorkPackage, Activity, Deliverable, Output, Expenditure, Procurement, Contribution),
+            PartnerReport to setOf(WorkPackage, Activity, Deliverable, Output, Expenditure, ProcurementAttachment, Contribution),
             WorkPlan to setOf(WorkPackage, Activity, Deliverable, Output),
             Expenditure to setOf(Expenditure),
-            Procurement to setOf(Procurement),
+            Procurement to setOf(ProcurementAttachment),
             Contribution to setOf(Contribution),
         )
     }

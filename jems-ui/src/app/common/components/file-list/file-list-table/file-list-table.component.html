@@ -1,0 +1,120 @@
+<div [class.reduce-max-width]="!fileList.length">
+    <mat-table matSort (matSortChange)="onSortChange.emit($event)"
+            *ngIf="fileList.length; else noFiles"
+            [dataSource]="dataSource">
+
+        <ng-container matColumnDef="name">
+            <mat-header-cell *matHeaderCellDef [mat-sort-header]="sortingEnabled ? 'name' : null" [disabled]="!sortingEnabled">
+                <span jemsText maxLines="2">{{'file.table.column.name.name' | translate }}</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let file">
+                <div class="text-overflow-ellipsis" [matTooltip]="file?.name"> {{ file?.name }}</div>
+            </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="location">
+            <mat-header-cell *matHeaderCellDef [mat-sort-header]="sortingEnabled ? 'type' : null" [disabled]="!sortingEnabled">
+                <span jemsText maxLines="2">{{'file.table.column.name.location' | translate }}</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let file">
+                <span class="text-overflow-ellipsis" [matTooltip]="'file.table.column.name.location.' + file?.type | translate"> {{'file.table.column.name.location.' + file?.type | translate}}</span>
+            </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="uploadDate">
+            <mat-header-cell *matHeaderCellDef [mat-sort-header]="sortingEnabled ? 'uploaded' : null" [disabled]="!sortingEnabled">
+                <span jemsText maxLines="2">{{'file.table.column.name.timestamp' | translate }}</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let file">
+                {{ file?.uploaded | localeDate: 'L' : 'LT'}}
+            </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="user">
+            <mat-header-cell *matHeaderCellDef>
+                <span jemsText maxLines="2">{{'file.table.column.name.username' | translate }}</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let file">{{ file?.author?.email }}</mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="size">
+            <mat-header-cell *matHeaderCellDef [mat-sort-header]="sortingEnabled ? 'size' : null" [disabled]="!sortingEnabled" class="justify-end">
+                <span jemsText maxWidth="60" maxLines="2">{{'file.table.column.name.size' | translate }}</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let file" class="justify-end">{{ file?.sizeString }}</mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="description">
+            <mat-header-cell *matHeaderCellDef>
+                <span jemsText maxLines="2">{{ 'file.table.column.name.description' | translate }}</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let file" class="justify-end">
+
+                <ng-container *ngIf="descriptionForm.value.id !== file.id">
+                    <span *ngIf="file.description" jemsText maxLines="2"
+                          class="mr-1 text-left fill-space-left-to-button" [matTooltip]="file.description">{{ file.description }}</span>
+                    <button (click)="editDescription(file)" *ngIf="file.editable"
+                            [disabled]="descriptionForm.value.id && descriptionForm.value.id !== file.id"
+                            color="primary" mat-icon-button matTooltip="{{ 'file.table.action.description.tooltip' | translate }}" class="my-fab">
+                        <mat-icon>edit</mat-icon>
+                    </button>
+                </ng-container>
+
+                <form [formGroup]="descriptionForm" *ngIf="descriptionForm.value.id === file.id" class="w-100">
+                    <jems-expandable-textarea class="w-100"
+                            label="file.table.column.name.description"
+                            [control]="descriptionForm.controls.description"
+                            [errors]="descriptionForm.controls.description.errors"
+                            characterLimit="5000">
+                    </jems-expandable-textarea>
+                    <div class="mb-2 mt-2">
+                        <button (click)="resetDescription()" mat-stroked-button class="small-stroked-btn"
+                                [disabled]="savingInProgressForId === file.id">
+                            <mat-icon class="mr-1">close</mat-icon>{{'project.file.description.button.cancel' | translate}}
+                        </button>
+
+                        <button (click)="saveDescription()" mat-flat-button type="submit"
+                                [disabled]="descriptionForm.invalid || savingInProgressForId === file.id" class="ml-2 small-flat-btn" color="primary">
+                            <mat-icon class="mr-1" *ngIf="savingInProgressForId !== file.id">check</mat-icon>
+                            <mat-spinner *ngIf="savingInProgressForId === file.id" class="mr-4" color="primary" [diameter]="17"></mat-spinner>
+                            {{'project.file.description.button.save' | translate}}
+                        </button>
+                    </div>
+                </form>
+
+            </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="action" stickyEnd>
+            <mat-header-cell *matHeaderCellDef class="text-center border-cell-left">
+                <span jemsText maxLines="2">{{'file.table.column.name.action' | translate }}</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let file" class="text-center border-cell-left">
+
+                <button (click)="onDownload.emit(file)"
+                        color="primary"
+                        mat-icon-button
+                        matTooltip="{{'file.table.action.download.tooltip' | translate}}">
+                    <mat-icon fontSet="material-icons-outlined">file_download</mat-icon>
+                </button>
+
+                <span [matTooltip]="((file.deletable ? 'file.table.action.delete.tooltip' : file.tooltipIfNotDeletable) | translate)">
+                    <button (click)="deleteFile(file)" [disabled]="!file.deletable" color="accent" mat-icon-button>
+                        <mat-icon [class.icon-hidden]="!file.editable">{{ file.deletable ? 'delete' : file.iconIfNotDeletable }}</mat-icon>
+                    </button>
+                </span>
+
+            </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+
+    </mat-table>
+
+    <ng-template #noFiles>
+        <jems-alert [show]="true" [type]="Alert.INFO">
+            <p>{{ 'file.table.no.files' | translate }}</p>
+        </jems-alert>
+    </ng-template>
+</div>

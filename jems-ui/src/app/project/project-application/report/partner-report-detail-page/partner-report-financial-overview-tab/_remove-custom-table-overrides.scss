@@ -2,6 +2,10 @@ mat-table {
   overflow: auto;
 }
 
+mat-row {
+  align-items: stretch;
+}
+
 mat-header-row {
   border-bottom: none;
 }
@@ -14,4 +18,12 @@ mat-footer-row {
 }
 mat-footer-cell {
   border-top: .0625rem solid var(--table-border-color);
+}
+
+.text-center {
+  text-align: center !important;
+  justify-content: center;
+  span {
+    text-align: center;
+  }
 }

@@ -9,18 +9,22 @@ import io.cloudflight.jems.server.project.entity.partneruser.PartnerCollaborator
 import io.cloudflight.jems.server.project.entity.partneruser.PartnerCollaboratorLevel.VIEW
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.UserPartnerCollaboratorPersistence
+import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
+import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReport
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectReportingEdit
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectReportingView
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
+import org.junit.jupiter.params.provider.ValueSource
 import java.util.*
 
 internal class ProjectReportAuthorizationTest : UnitTest() {
@@ -32,6 +36,9 @@ internal class ProjectReportAuthorizationTest : UnitTest() {
 
     @MockK
     lateinit var securityService: SecurityService
+
+    @MockK
+    lateinit var reportPersistence: ProjectReportPersistence
 
     @MockK
     lateinit var partnerPersistence: PartnerPersistence
@@ -61,26 +68,38 @@ internal class ProjectReportAuthorizationTest : UnitTest() {
     }
 
     @Test
-    fun `assigned monitor user with permission can edit`() {
+    fun `assigned monitor user with permission can edit not specific`() {
         every { currentUser.hasPermission(ProjectReportingEdit) } returns true
         every { currentUser.user.assignedProjects } returns setOf(PROJECT_ID)
-        assertThat(reportAuthorization.canEditPartnerReport(PARTNER_ID)).isTrue
+        assertThat(reportAuthorization.canEditPartnerReportNotSpecific(PARTNER_ID)).isTrue
     }
 
     @Test
-    fun `creator + collaborator with permission can edit`() {
+    fun `creator + collaborator with permission can edit not specific`() {
         every { currentUser.hasPermission(ProjectReportingEdit) } returns false
         every { securityService.getUserIdOrThrow() } returns 4590L
         every { partnerCollaboratorPersistence.findByUserIdAndPartnerId(userId = 4590L, PARTNER_ID) } returns Optional.of(EDIT)
-        assertThat(reportAuthorization.canEditPartnerReport(PARTNER_ID)).isTrue
+        assertThat(reportAuthorization.canEditPartnerReportNotSpecific(PARTNER_ID)).isTrue
     }
 
     @Test
-    fun `user can NOT edit`() {
+    fun `user can NOT edit not specific`() {
         every { currentUser.hasPermission(ProjectReportingEdit) } returns false
         every { securityService.getUserIdOrThrow() } returns 3205L
         every { partnerCollaboratorPersistence.findByUserIdAndPartnerId(userId = 3205L, PARTNER_ID) } returns Optional.empty()
-        assertThat(reportAuthorization.canEditPartnerReport(PARTNER_ID)).isFalse
+        assertThat(reportAuthorization.canEditPartnerReportNotSpecific(PARTNER_ID)).isFalse
+    }
+
+    @ParameterizedTest(name = "assigned monitor user with permission can edit (isOpen {0})")
+    @ValueSource(booleans = [true, false])
+    fun `assigned monitor user with permission can edit`(isOpen: Boolean) {
+        val report = mockk<ProjectPartnerReport>()
+        every { report.status.isOpen() } returns isOpen
+        every { reportPersistence.getPartnerReportById(PARTNER_ID, 17L) } returns report
+
+        every { currentUser.hasPermission(ProjectReportingEdit) } returns true
+        every { currentUser.user.assignedProjects } returns setOf(PROJECT_ID)
+        assertThat(reportAuthorization.canEditPartnerReport(PARTNER_ID, 17L)).isEqualTo(isOpen)
     }
 
     @Test

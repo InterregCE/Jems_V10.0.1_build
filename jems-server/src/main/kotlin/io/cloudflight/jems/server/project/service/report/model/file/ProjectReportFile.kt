@@ -9,4 +9,5 @@ data class ProjectReportFile(
     val uploaded: ZonedDateTime,
     val author: UserSimple,
     val size: Long,
+    val description: String,
 )
