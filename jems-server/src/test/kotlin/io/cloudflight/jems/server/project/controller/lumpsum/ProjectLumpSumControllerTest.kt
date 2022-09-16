@@ -14,10 +14,15 @@ import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
+import java.time.ZoneId
+import java.time.ZonedDateTime
 
 internal class ProjectLumpSumControllerTest : UnitTest() {
 
     companion object {
+        private val paymentEnabledDate = ZonedDateTime.of(2022, 1, 1, 0, 0, 0, 0, ZoneId.of("UTC").normalized())
+        private const val version = "v2.0"
+
         private val lumpSum1 = ProjectLumpSum(
             programmeLumpSumId = 1,
             period = 3,
@@ -29,6 +34,13 @@ internal class ProjectLumpSumControllerTest : UnitTest() {
         private val lumpSum2 = ProjectLumpSum(
             programmeLumpSumId = 2,
             period = 4,
+        )
+        private val lumpSum3 = ProjectLumpSum(
+            programmeLumpSumId = 3,
+            period = 4,
+            readyForPayment = true,
+            lastApprovedVersionBeforeReadyForPayment = version,
+            paymentEnabledDate = paymentEnabledDate
         )
     }
 
@@ -43,7 +55,7 @@ internal class ProjectLumpSumControllerTest : UnitTest() {
 
     @Test
     fun getLumpSums() {
-        every { getLumpSumInteractor.getLumpSums(1L) } returns listOf(lumpSum1, lumpSum2)
+        every { getLumpSumInteractor.getLumpSums(1L) } returns listOf(lumpSum1, lumpSum2, lumpSum3)
 
         assertThat(controller.getProjectLumpSums(1L)).containsExactly(
             ProjectLumpSumDTO(
@@ -63,6 +75,15 @@ internal class ProjectLumpSumControllerTest : UnitTest() {
                 readyForPayment = false,
                 comment = null,
                 fastTrack = false
+            ),
+            ProjectLumpSumDTO(
+                programmeLumpSumId = 3,
+                period = 4,
+                readyForPayment = true,
+                comment = null,
+                fastTrack = false,
+                paymentEnabledDate = paymentEnabledDate,
+                lastApprovedVersionBeforeReadyForPayment = version
             ),
         )
     }
@@ -89,7 +110,7 @@ internal class ProjectLumpSumControllerTest : UnitTest() {
             ),
             readyForPayment = false,
             comment = null,
-            fastTrack = false
+            fastTrack = false,
         )
         val lumpSumDto2 = ProjectLumpSumDTO(
             programmeLumpSumId = 6,
@@ -100,10 +121,23 @@ internal class ProjectLumpSumControllerTest : UnitTest() {
             ),
             readyForPayment = false,
             comment = null,
-            fastTrack = false
+            fastTrack = false,
+        )
+        val lumpSumDto3 = ProjectLumpSumDTO(
+            programmeLumpSumId = 7,
+            period = 2,
+            lumpSumContributions = listOf(
+                ProjectPartnerLumpSumDTO(partnerId = 23, amount = BigDecimal.ONE),
+                ProjectPartnerLumpSumDTO(partnerId = 24, amount = BigDecimal.TEN),
+            ),
+            readyForPayment = true,
+            comment = null,
+            fastTrack = false,
+            paymentEnabledDate = paymentEnabledDate,
+            lastApprovedVersionBeforeReadyForPayment = version
         )
 
-        controller.updateProjectLumpSums(2L, listOf(lumpSumDto1, lumpSumDto2))
+        controller.updateProjectLumpSums(2L, listOf(lumpSumDto1, lumpSumDto2, lumpSumDto3))
 
         assertThat(lumpSumsSlot.captured).containsExactly(
             ProjectLumpSum(
@@ -118,6 +152,17 @@ internal class ProjectLumpSumControllerTest : UnitTest() {
                     ProjectPartnerLumpSum(partnerId = 23, amount = BigDecimal.ONE),
                     ProjectPartnerLumpSum(partnerId = 24, amount = BigDecimal.TEN),
                 ),
+            ),
+            ProjectLumpSum(
+                programmeLumpSumId = 7,
+                period = 2,
+                lumpSumContributions = listOf(
+                    ProjectPartnerLumpSum(partnerId = 23, amount = BigDecimal.ONE),
+                    ProjectPartnerLumpSum(partnerId = 24, amount = BigDecimal.TEN),
+                ),
+                paymentEnabledDate = paymentEnabledDate,
+                lastApprovedVersionBeforeReadyForPayment = version,
+                readyForPayment = true
             ),
         )
     }
