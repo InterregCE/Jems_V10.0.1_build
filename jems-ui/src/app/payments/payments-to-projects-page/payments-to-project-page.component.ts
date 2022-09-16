@@ -6,6 +6,7 @@ import {PagePaymentToProjectDTO} from '@cat/api';
 import {ColumnWidth} from '@common/components/table/model/column-width';
 import {PaymentsToProjectPageStore} from './payments-to-projects-page.store';
 import {map} from 'rxjs/operators';
+import {NumberService} from '@common/services/number.service';
 
 @Component({
   selector: 'jems-payments-to-projects-page',
@@ -119,7 +120,16 @@ export class PaymentsToProjectPageComponent implements OnInit {
       this.paymentToProjectsStore.userCanView$
     ])
       .pipe(
-        map(([page, userCanView]) => ({page, userCanView, tableConfiguration: this.tableConfiguration})),
+        map(([page, userCanView]) => ({page: this.truncateAmounts(page), userCanView, tableConfiguration: this.tableConfiguration})),
       );
+  }
+
+  truncateAmounts(dto: PagePaymentToProjectDTO): PagePaymentToProjectDTO {
+    for (const paymentToProject of dto.content) {
+      paymentToProject.totalEligibleAmount = NumberService.truncateNumber(paymentToProject.totalEligibleAmount);
+      paymentToProject.amountPaidPerFund = NumberService.truncateNumber(paymentToProject.amountPaidPerFund);
+      paymentToProject.amountApprovedPerFound = NumberService.truncateNumber(paymentToProject.amountApprovedPerFound);
+    }
+    return dto;
   }
 }
