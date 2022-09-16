@@ -144,7 +144,7 @@
                     <mat-radio-button (click)="$event.stopPropagation()"
                                       (change)="checkSelectionSingle(element)"
                                       [checked]="selectionSingle.isSelected(element)"
-                                      [disabled]="!this.isCreate && this.projectStatus === ProjectStatusDTO.StatusEnum.INMODIFICATION">
+                                      [disabled]="!formService.isEditable() || (!this.isCreate && this.projectStatus === ProjectStatusDTO.StatusEnum.INMODIFICATION)">
                         {{'unit.cost.cost.category.' + element | translate}}
                     </mat-radio-button>
                 </p>
