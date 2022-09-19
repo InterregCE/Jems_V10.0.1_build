@@ -4,10 +4,10 @@ import io.cloudflight.jems.api.project.contracting.ContractingFileApi
 import io.cloudflight.jems.api.project.dto.contracting.file.ProjectContractingFileSearchRequestDTO
 import io.cloudflight.jems.server.project.controller.report.toDto
 import io.cloudflight.jems.server.project.controller.report.toProjectFile
-import io.cloudflight.jems.server.project.service.contracting.management.file.deleteContractingFile.DeleteContractingFileInteractor
-import io.cloudflight.jems.server.project.service.contracting.management.file.downloadContractingFile.DownloadContractingFileInteractor
-import io.cloudflight.jems.server.project.service.contracting.management.file.listContractingFiles.ListContractingFilesInteractor
-import io.cloudflight.jems.server.project.service.contracting.management.file.uploadFileToContracting.UploadFileToContractingInteractor
+import io.cloudflight.jems.server.project.service.contracting.fileManagement.deleteContractingFile.DeleteContractingFileInteractor
+import io.cloudflight.jems.server.project.service.contracting.fileManagement.downloadContractingFile.DownloadContractingFileInteractor
+import io.cloudflight.jems.server.project.service.contracting.fileManagement.listContractingFiles.ListContractingFilesInteractor
+import io.cloudflight.jems.server.project.service.contracting.fileManagement.uploadFileToContracting.UploadFileToContractingInteractor
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpHeaders

@@ -113,6 +113,9 @@ import {
 } from '@project/project-application/containers/project-application-detail/services/project-proposed-unit-cost.resolver';
 import { PartnerControlReportControlChecklistsTabComponent } from '@project/project-application/report/partner-control-report/partner-control-report-control-checklists-tab/partner-control-report-control-checklists-tab.component';
 import { PartnerControlReportControlChecklistPageComponent } from '@project/project-application/report/partner-control-report/partner-control-report-control-checklists-tab/partner-control-report-control-checklist-page/partner-control-report-control-checklist-page.component';
+import {
+  ContractingContractComponent
+} from '@project/project-application/contracting-contract/contracting-contract.component';
 
 export const routes: Routes = [
   {
@@ -240,6 +243,12 @@ export const routes: Routes = [
               breadcrumb: 'project.breadcrumb.applicationForm.contract.monitoring',
               permissionsOnly: [PermissionsEnum.ProjectContractingView, PermissionsEnum.ProjectSetToContracted]
             },
+            canActivate: [PermissionGuard],
+          },
+          {
+            path: 'contract',
+            component: ContractingContractComponent,
+            data: {breadcrumb: 'project.breadcrumb.applicationForm.contract.contracts'},
             canActivate: [PermissionGuard],
           },
           {

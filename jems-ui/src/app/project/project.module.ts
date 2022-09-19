@@ -197,6 +197,8 @@ import { ProjectProposedUnitCostDetailComponent } from './unit-costs/project-uni
 import {
   ProjectProposedUnitCostBreadcrumbResolver
 } from '@project/project-application/containers/project-application-detail/services/project-proposed-unit-cost.resolver';
+import { ContractingContractComponent } from './project-application/contracting-contract/contracting-contract.component';
+import { ContractFilesComponent } from './project-application/contracting-contract/contract-files/contract-files.component';
 import {
   PartnerReportProcurementAttachmentComponent
 } from '@project/project-application/report/partner-report-detail-page/partner-report-procurements-tab/partner-report-procurement-detail/partner-report-procurement-attachment/partner-report-procurement-attachment.component';
@@ -342,6 +344,8 @@ import {
     ProjectProposedUnitCostsComponent,
     ProjectProposedUnitCostDetailComponent,
     PartnerControlReportInformationTabComponent,
+    ContractingContractComponent,
+    ContractFilesComponent,
   ],
   imports: [
     SharedModule,

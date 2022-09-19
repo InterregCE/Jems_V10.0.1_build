@@ -69,6 +69,15 @@ export class Permission {
           hideTooltip: 'permission.create.contracting'
         },
         {
+          name: 'project.application.contract.contracts.title',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [],
+          editPermissions: [],
+          disabled: true,
+          state: PermissionState.EDIT,
+          editTooltip: 'permission.inspect.contracting.contracts'
+        },
+        {
           name: 'project.application.contract.management.title',
           mode: PermissionMode.HIDDEN_VIEW_EDIT,
           viewPermissions: [],
@@ -167,6 +176,13 @@ export class Permission {
           viewPermissions: [PermissionsEnum.ProjectContractingView],
           editPermissions: [PermissionsEnum.ProjectSetToContracted],
           editTooltip: 'permission.inspect.contracting'
+        },
+        {
+          name: 'project.application.contract.contracts.title',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [PermissionsEnum.ProjectContractsView],
+          editPermissions: [PermissionsEnum.ProjectContractsEdit],
+          editTooltip: 'permission.inspect.contracting.contracts'
         },
         {
           name: 'project.application.contract.management.title',

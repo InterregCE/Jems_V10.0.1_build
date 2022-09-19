@@ -341,6 +341,7 @@ export class ProjectApplicationFormSidenavService {
       headline: {i18nKey: 'project.application.contracting.title'},
       bullets: [
         ...canSeeContractMonitoring ? this.getContractMonitoringHeadline(projectId) : [],
+        ...canSeeProjectManagement ? this.getProjectContractsHeadline(projectId) : [],
         ...canSeeProjectManagement ? this.getProjectManagementHeadline(projectId) : [],
         ...canSeeContractReporting ? this.getContractReportingHeadline(projectId) : []
       ]
@@ -351,6 +352,15 @@ export class ProjectApplicationFormSidenavService {
     return [{
       headline: {i18nKey: 'project.application.contract.monitoring.title'},
       route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/contractMonitoring`,
+      scrollToTop: true,
+      scrollRoute: ''
+    }];
+  }
+
+  private getProjectContractsHeadline(projectId: number): HeadlineRoute[] {
+    return [{
+      headline: {i18nKey: 'project.application.contract.contracts.title'},
+      route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/contract`,
       scrollToTop: true,
       scrollRoute: ''
     }];

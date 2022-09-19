@@ -23,6 +23,8 @@ enum class UserRolePermissionDTO(val key: String) {
     ProjectContractingManagementEdit("ProjectContractingManagementEdit"),
     ProjectContractingReportingView("ProjectContractingReportingView"),
     ProjectContractingReportingEdit("ProjectContractingReportingEdit"),
+    ProjectContractsView("ProjectContractsView"),
+    ProjectContractsEdit("ProjectContractsEdit"),
 
     ProjectFormRetrieve("ProjectFormRetrieve"),
     ProjectFormUpdate("ProjectFormUpdate"),
