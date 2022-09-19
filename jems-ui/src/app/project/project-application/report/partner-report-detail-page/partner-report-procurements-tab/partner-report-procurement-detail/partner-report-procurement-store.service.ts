@@ -1,20 +1,22 @@
 import {Injectable} from '@angular/core';
 import {
-  ProjectPartnerReportProcurementService,
-  ProjectPartnerReportService,
-  ProjectPartnerReportProcurementDTO,
-  ProjectPartnerReportProcurementChangeDTO,
   CurrencyDTO,
+  ProjectPartnerReportProcurementAttachmentService,
+  ProjectPartnerReportProcurementBeneficialChangeDTO,
   ProjectPartnerReportProcurementBeneficialDTO,
   ProjectPartnerReportProcurementBeneficialOwnerService,
-  ProjectPartnerReportProcurementBeneficialChangeDTO,
-  ProjectPartnerReportProcurementSubcontractDTO,
+  ProjectPartnerReportProcurementChangeDTO,
+  ProjectPartnerReportProcurementDTO,
+  ProjectPartnerReportProcurementService,
   ProjectPartnerReportProcurementSubcontractChangeDTO,
+  ProjectPartnerReportProcurementSubcontractDTO,
   ProjectPartnerReportProcurementSubcontractorService,
-  ProjectReportProcurementFileDTO, ProjectPartnerReportProcurementAttachmentService, ProjectReportFileMetadataDTO,
+  ProjectPartnerReportService,
+  ProjectReportFileMetadataDTO,
+  ProjectReportProcurementFileDTO,
 } from '@cat/api';
 import {BehaviorSubject, combineLatest, merge, Observable, of, Subject} from 'rxjs';
-import {catchError, filter, map, startWith, switchMap, take, tap, withLatestFrom} from 'rxjs/operators';
+import {catchError, map, startWith, switchMap, take, tap} from 'rxjs/operators';
 import {RoutingService} from '@common/services/routing.service';
 import {Log} from '@common/utils/log';
 import {

@@ -5,7 +5,6 @@ import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.contracting.ContractingValidator
 import io.cloudflight.jems.server.project.service.contracting.fillEndDateWithDuration
 import io.cloudflight.jems.server.project.service.contracting.fillLumpSumsList
-import io.cloudflight.jems.server.project.service.contracting.getEndDate
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoring
 import io.cloudflight.jems.server.project.service.contracting.monitoring.ContractingMonitoringPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
@@ -28,11 +27,7 @@ class GetContractingMonitoringService(
             validator.validateProjectStatusForModification(projectSummary)
         }
 
-        return contractingMonitoringPersistence.getContractingMonitoring(projectId)
-            .fillEndDateWithDuration(resolveDuration = {
-                versionPersistence.getLatestApprovedOrCurrent(projectId = projectId)
-                    .let { projectPersistence.getProject(projectId = projectId, version = it).duration }
-            })
+        return getProjectContractingMonitoring(projectId)
             .fillLumpSumsList ( resolveLumpSums = {
                 versionPersistence.getLatestApprovedOrCurrent(projectId = projectId)
                     .let { projectLumpSumPersistence.getLumpSums(projectId = projectId, version = it) }
@@ -41,13 +36,23 @@ class GetContractingMonitoringService(
     }
 
     @Transactional(readOnly = true)
-    fun getContractMonitoringDates(projectId: Long): Pair<LocalDate, LocalDate?>? {
-        val startDate = contractingMonitoringPersistence.getContractingMonitoring(projectId).startDate
-        val duration = projectPersistence.getProject(
-            projectId = projectId,
-            version = versionPersistence.getLatestApprovedOrCurrent(projectId),
-        ).duration
-        return startDate?.let { Pair(it, getEndDate(it, duration)) }
-    }
+    fun getContractMonitoringDates(projectId: Long): Pair<LocalDate, LocalDate?>? =
+        getProjectContractingMonitoring(projectId).let { contractMonitoring ->
+            contractMonitoring.startDate?.let {
+                Pair(
+                    contractMonitoring.startDate,
+                    contractMonitoring.endDate
+                )
+            }
+        }
+
+    @Transactional(readOnly = true)
+    fun getProjectContractingMonitoring(projectId: Long): ProjectContractingMonitoring =
+        contractingMonitoringPersistence.getContractingMonitoring(projectId)
+            .fillEndDateWithDuration(resolveDuration = {
+                versionPersistence.getLatestApprovedOrCurrent(projectId = projectId)
+                    .let { projectPersistence.getProject(projectId = projectId, version = it).duration }
+            })
+
 
 }

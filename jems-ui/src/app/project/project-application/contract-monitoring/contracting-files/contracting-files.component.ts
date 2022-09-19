@@ -1,16 +1,19 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {Observable, Subject} from 'rxjs';
-import {CategoryInfo} from '@project/common/components/category-tree/categoryModels';
+import {CategoryInfo, CategoryNode} from '@project/common/components/category-tree/categoryModels';
 import {I18nMessage} from '@common/models/I18nMessage';
-import {ContractingFilesStore} from '@project/project-application/contract-monitoring/contracting-files/contracting-files.store';
+import {ContractingFilesStoreService} from '@project/project-application/services/contracting-files-store.service';
 import {ProjectReportFileDTO} from '@cat/api';
-import {take} from 'rxjs/operators';
+import {map, take, tap} from 'rxjs/operators';
 import {MatDialog} from '@angular/material/dialog';
 import {AcceptedFileTypesConstants} from '@project/common/components/file-management/accepted-file-types.constants';
 import {Alert} from '@common/components/forms/alert';
-import FileTypeEnum = ProjectReportFileDTO.TypeEnum;
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {
+  ProjectPartnerStore
+} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
 import {FileListItem} from '@common/components/file-list/file-list-item';
+import FileTypeEnum = ProjectReportFileDTO.TypeEnum;
 
 @UntilDestroy()
 @Component({
@@ -29,7 +32,8 @@ export class ContractingFilesComponent implements OnInit{
   selectedCategoryPath$: Observable<I18nMessage[]>;
 
   constructor(
-    public store: ContractingFilesStore,
+    public store: ContractingFilesStoreService,
+    private partnerStore: ProjectPartnerStore,
     private dialog: MatDialog,
   ) {
     this.selectedCategoryPath$ = store.selectedCategoryPath$;
@@ -39,6 +43,7 @@ export class ContractingFilesComponent implements OnInit{
   }
 
   ngOnInit(): void {
+    this.store.setFileCategories(this.fileCategories());
     this.store.setSection({type: FileTypeEnum.Contracting} as CategoryInfo);
   }
 
@@ -67,5 +72,49 @@ export class ContractingFilesComponent implements OnInit{
       .pipe(take(1))
       .subscribe();
   }
+
+
+  private fileCategories(): Observable<CategoryNode> {
+    return this.partnerStore.partnerReportSummaries$.pipe(
+      map(partners => ({
+        info: { type: FileTypeEnum.Contracting },
+        name: { i18nKey: 'project.application.contracting.title' },
+        parent: undefined,
+        children: [
+          {
+            info: { type: FileTypeEnum.ContractSupport },
+            name: { i18nKey: 'project.application.contract.and.supporting' },
+            children: [
+              {
+                info: { type: FileTypeEnum.Contract },
+                name: { i18nKey: 'project.application.contract.and.supporting.contracts' },
+              },
+              {
+                info: { type: FileTypeEnum.ContractDoc },
+                name: { i18nKey: 'project.application.contract.and.supporting.project' },
+              },
+            ],
+          },
+          {
+            info: { type: FileTypeEnum.ContractPartner },
+            name: { i18nKey: 'project.application.contract.partner' },
+            children: partners.map(partner => ({
+              info: { type: FileTypeEnum.ContractPartnerDoc, id: partner.id },
+              name: {
+                i18nKey: `common.label.project.partner.role.shortcut.${partner.role}`,
+                i18nArguments: {partner: `${partner.sortNumber || ''} ${partner.abbreviation}`}
+              },
+            })),
+          },
+          {
+            info: { type: FileTypeEnum.ContractInternal },
+            name: { i18nKey: 'project.application.contract.internal' },
+          },
+        ],
+      })),
+      tap(filters => this.store.setParent(filters)),
+    );
+  }
+
 
 }

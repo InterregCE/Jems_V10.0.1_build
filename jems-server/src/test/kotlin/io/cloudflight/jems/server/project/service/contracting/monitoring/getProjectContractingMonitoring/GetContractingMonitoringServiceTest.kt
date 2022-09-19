@@ -186,8 +186,26 @@ internal class GetContractingMonitoringServiceTest : UnitTest() {
 
     @Test
     fun getContractMonitoringDates() {
-        val start = LocalDate.of(2022, 1, 31)
-        every { contractingMonitoringPersistence.getContractingMonitoring(51L).startDate } returns start
+        every { contractingMonitoringPersistence.getContractingMonitoring(51L) } returns ProjectContractingMonitoring(
+            projectId = projectId,
+            startDate = LocalDate.of(2022, 1, 31),
+            endDate =LocalDate.of(2022, 2, 28),
+            typologyProv94 = ContractingMonitoringExtendedOption.Partly,
+            typologyProv94Comment = "typologyProv94Comment",
+            typologyProv95 = ContractingMonitoringExtendedOption.Yes,
+            typologyProv95Comment = "typologyProv95Comment",
+            typologyStrategic = ContractingMonitoringOption.No,
+            typologyStrategicComment = "typologyStrategicComment",
+            typologyPartnership = ContractingMonitoringOption.Yes,
+            typologyPartnershipComment = "typologyPartnershipComment",
+            addDates = listOf(ProjectContractingMonitoringAddDate(
+                projectId = projectId,
+                number = 1,
+                entryIntoForceDate = ZonedDateTime.parse("2022-07-22T10:00:00+02:00").toLocalDate(),
+                comment = "comment"
+            )),
+            fastTrackLumpSums = lumpSums
+        )
         every { versionPersistence.getLatestApprovedOrCurrent(51L) } returns "V1"
         every { projectPersistence.getProject(51L, "V1").duration } returns 1
 
@@ -197,8 +215,26 @@ internal class GetContractingMonitoringServiceTest : UnitTest() {
 
     @Test
     fun `getContractMonitoringDates - no start date`() {
-        val start = LocalDate.of(2022, 8, 19)
-        every { contractingMonitoringPersistence.getContractingMonitoring(52L).startDate } returns start
+        every { contractingMonitoringPersistence.getContractingMonitoring(52L) } returns ProjectContractingMonitoring(
+            projectId = projectId,
+            startDate = LocalDate.of(2022, 8, 19),
+            endDate = null,
+            typologyProv94 = ContractingMonitoringExtendedOption.Partly,
+            typologyProv94Comment = "typologyProv94Comment",
+            typologyProv95 = ContractingMonitoringExtendedOption.Yes,
+            typologyProv95Comment = "typologyProv95Comment",
+            typologyStrategic = ContractingMonitoringOption.No,
+            typologyStrategicComment = "typologyStrategicComment",
+            typologyPartnership = ContractingMonitoringOption.Yes,
+            typologyPartnershipComment = "typologyPartnershipComment",
+            addDates = listOf(ProjectContractingMonitoringAddDate(
+                projectId = projectId,
+                number = 1,
+                entryIntoForceDate = ZonedDateTime.parse("2022-07-22T10:00:00+02:00").toLocalDate(),
+                comment = "comment"
+            )),
+            fastTrackLumpSums = lumpSums
+        )
         every { versionPersistence.getLatestApprovedOrCurrent(52L) } returns "V1"
         every { projectPersistence.getProject(52L, "V1").duration } returns null
 

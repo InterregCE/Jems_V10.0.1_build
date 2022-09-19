@@ -1,0 +1,36 @@
+<jems-alert *ngIf="store.error$ | async as error"
+            [show]="!!error"
+            [type]="Alert.ERROR">
+    <jems-api-error-content [error]="error"></jems-api-error-content>
+</jems-alert>
+<jems-alert *ngIf="fileSizeOverLimitError$ | async as showError"
+            [show]="showError"
+            [type]="Alert.ERROR">
+    <p>{{'project.file.size.over.limit' | translate}} {{maximumAllowedFileSizeInMB}} MB</p>
+</jems-alert>
+
+<div jemsNoWidthLimit id="contract-files" class="overflow-auto">
+    <jems-category-tree
+            [categories]="store.fileCategories$ | async"
+            (categorySelected)="store.selectedCategory$.next($event)"
+            [selectedCategory]="store.selectedCategory$ | async">
+    </jems-category-tree>
+
+    <jems-file-list
+            [fileList]="store.fileList$ | async"
+            (onSortChange)="store.newSort$.next($event)"
+            (onPageIndexChange)="store.newPageIndex$.next($event)"
+            (onPageSizeChange)="store.newPageSize$.next($event)"
+            (onDownload)="downloadFile($event)"
+            (onDelete)="deleteFile($event)">
+    </jems-file-list>
+</div>
+
+<div class="mt-3" *ngIf="isEditable">
+    <input #selectFile (change)="uploadFile($event?.target)" onclick="this.value=null;"
+           type="file" [accept]="acceptedFilesTypes" [hidden]="true">
+    <button (click)="selectFile.click()" mat-stroked-button>
+        <mat-icon fontSet="material-icons-outlined" class="mr-1">file_upload</mat-icon>
+        {{'file.upload.add.new' | translate}}
+    </button>
+</div>

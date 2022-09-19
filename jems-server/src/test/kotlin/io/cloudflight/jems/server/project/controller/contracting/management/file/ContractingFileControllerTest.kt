@@ -9,10 +9,10 @@ import io.cloudflight.jems.server.project.controller.report.dummyFile
 import io.cloudflight.jems.server.project.controller.report.dummyFileDto
 import io.cloudflight.jems.server.project.controller.report.dummyFileExpected
 import io.cloudflight.jems.server.project.controller.report.dummyMultipartFile
-import io.cloudflight.jems.server.project.service.contracting.management.file.deleteContractingFile.DeleteContractingFileInteractor
-import io.cloudflight.jems.server.project.service.contracting.management.file.downloadContractingFile.DownloadContractingFileInteractor
-import io.cloudflight.jems.server.project.service.contracting.management.file.listContractingFiles.ListContractingFilesInteractor
-import io.cloudflight.jems.server.project.service.contracting.management.file.uploadFileToContracting.UploadFileToContractingInteractor
+import io.cloudflight.jems.server.project.service.contracting.fileManagement.deleteContractingFile.DeleteContractingFileInteractor
+import io.cloudflight.jems.server.project.service.contracting.fileManagement.downloadContractingFile.DownloadContractingFileInteractor
+import io.cloudflight.jems.server.project.service.contracting.fileManagement.listContractingFiles.ListContractingFilesInteractor
+import io.cloudflight.jems.server.project.service.contracting.fileManagement.uploadFileToContracting.UploadFileToContractingInteractor
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingFileSearchRequest
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType

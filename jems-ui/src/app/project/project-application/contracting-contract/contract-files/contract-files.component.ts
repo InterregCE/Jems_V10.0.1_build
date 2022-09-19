@@ -1,0 +1,102 @@
+import {Component, Input, OnInit} from '@angular/core';
+import {Observable, of, Subject} from 'rxjs';
+import {CategoryInfo, CategoryNode} from '@project/common/components/category-tree/categoryModels';
+import {ProjectReportFileDTO,} from '@cat/api';
+import {ContractingFilesStoreService} from '@project/project-application/services/contracting-files-store.service';
+import {AcceptedFileTypesConstants} from '@project/common/components/file-management/accepted-file-types.constants';
+import {I18nMessage} from '@common/models/I18nMessage';
+import {Alert} from '@common/components/forms/alert';
+import {MatDialog} from '@angular/material/dialog';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {FileListItem} from '@common/components/file-list/file-list-item';
+import {filter, switchMap, take} from 'rxjs/operators';
+import {Forms} from '@common/utils/forms';
+import FileTypeEnum = ProjectReportFileDTO.TypeEnum;
+
+@UntilDestroy()
+@Component({
+  selector: 'jems-contract-files',
+  templateUrl: './contract-files.component.html',
+  styleUrls: ['./contract-files.component.scss']
+})
+export class ContractFilesComponent implements OnInit {
+
+  Alert = Alert;
+
+  @Input()
+  isEditable: boolean;
+
+  maximumAllowedFileSizeInMB: number;
+  fileSizeOverLimitError$ = new Subject<boolean>();
+  acceptedFilesTypes = AcceptedFileTypesConstants.acceptedFilesTypes;
+
+  selectedCategoryPath$: Observable<I18nMessage[]>;
+
+  constructor(
+    public store: ContractingFilesStoreService,
+    private dialog: MatDialog
+  ) {
+    this.selectedCategoryPath$ = store.selectedCategoryPath$;
+    this.store.getMaximumAllowedFileSize()
+      .pipe(untilDestroyed(this))
+      .subscribe((maxAllowedSize) => this.maximumAllowedFileSizeInMB = maxAllowedSize);
+  }
+
+  ngOnInit(): void {
+    this.store.setFileCategories(this.fileCategories());
+    this.store.setSection({type: FileTypeEnum.Contract} as CategoryInfo);
+  }
+
+
+  downloadFile(file: FileListItem): void {
+    this.store.downloadFile(file.id)
+      .pipe(take(1))
+      .subscribe();
+  }
+
+  deleteFile(file: FileListItem): void {
+    Forms.confirm(this.dialog, {
+      title: file.name,
+      message: { i18nKey: 'file.dialog.message', i18nArguments: { name: file.name } },
+    }).pipe(
+      take(1),
+      filter(answer => !!answer),
+      switchMap(() => this.store.deleteFile(file.id)),
+    ).subscribe();
+  }
+
+  uploadFile(target: any): void {
+    if (!target) {
+      return;
+    }
+
+    this.fileSizeOverLimitError$.next(false);
+    this.store.error$.next(null);
+
+    if (target?.files[0].size > this.maximumAllowedFileSizeInMB * 1024 * 1024) {
+      setTimeout(() => this.fileSizeOverLimitError$.next(true), 10);
+      return;
+    }
+
+    this.store.uploadFile(target?.files[0])
+      .pipe(take(1))
+      .subscribe();
+  }
+
+  private fileCategories(): Observable<CategoryNode> {
+    return of({
+          info: {type: FileTypeEnum.ContractSupport},
+          name: {i18nKey: 'project.application.contract.and.supporting'},
+          children: [
+            {
+              info: {type: FileTypeEnum.Contract},
+              name: {i18nKey: 'project.application.contract.and.supporting.contracts'},
+            },
+            {
+              info: {type: FileTypeEnum.ContractDoc},
+              name: {i18nKey: 'project.application.contract.and.supporting.project'},
+            },
+          ],
+    });
+  }
+}
