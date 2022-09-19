@@ -63,7 +63,7 @@ class CreateLumpSumInteractorTest : UnitTest() {
             splittingAllowed = true,
             phase = null,
             categories = setOf(OfficeAndAdministrationCosts),
-            isFastTrack = false
+            fastTrack = false
         )
         val ex = assertThrows<LumpSumIsInvalid> { createLumpSum.createLumpSum(wrongLumpSum) }
         assertThat(ex.formErrors).containsExactlyInAnyOrderEntriesOf(mapOf(
@@ -83,7 +83,7 @@ class CreateLumpSumInteractorTest : UnitTest() {
             splittingAllowed = true,
             phase = Implementation,
             categories = setOf(OfficeAndAdministrationCosts, StaffCosts),
-            isFastTrack = false
+            fastTrack = false
         )
         assertThrows<MaxAllowedLumpSumsReached> { createLumpSum.createLumpSum(lumpSum) }
     }
@@ -100,7 +100,7 @@ class CreateLumpSumInteractorTest : UnitTest() {
             splittingAllowed = true,
             phase = Implementation,
             categories = setOf(OfficeAndAdministrationCosts, StaffCosts),
-            isFastTrack = false
+            fastTrack = false
         )
         val auditSlot = slot<AuditCandidate>()
         every { auditService.logEvent(capture(auditSlot)) } answers {}
@@ -121,7 +121,7 @@ class CreateLumpSumInteractorTest : UnitTest() {
             cost = BigDecimal.ONE,
             splittingAllowed = true,
             phase = Implementation,
-            isFastTrack = false
+            fastTrack = false
         )
 
         assertThrows<IdHasToBeNull>("when creating id cannot be filled in") {
@@ -136,7 +136,7 @@ class CreateLumpSumInteractorTest : UnitTest() {
             cost = BigDecimal.ONE,
             splittingAllowed = true,
             phase = Implementation,
-            isFastTrack = false
+            fastTrack = false
         )
         val name = setOf(InputTranslation(SystemLanguage.SK, getStringOfLength(51)))
         every {
@@ -156,7 +156,7 @@ class CreateLumpSumInteractorTest : UnitTest() {
             cost = BigDecimal.ONE,
             splittingAllowed = true,
             phase = Implementation,
-            isFastTrack = false
+            fastTrack = false
         )
         val description = setOf(InputTranslation(SystemLanguage.EN, getStringOfLength(256)))
         every {
@@ -177,7 +177,7 @@ class CreateLumpSumInteractorTest : UnitTest() {
             cost = BigDecimal.ONE,
             splittingAllowed = true,
             phase = Implementation,
-            isFastTrack = false
+            fastTrack = false
         )
         val phase = null
         every {

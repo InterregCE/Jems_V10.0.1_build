@@ -16,7 +16,7 @@ fun ProjectContractingMonitoring.fillEndDateWithDuration(
 fun getEndDate(startDate: LocalDate, duration: Int?) =
     if (duration != null) startDate.plusMonths(duration.toLong()) else null
 
-fun ProjectContractingMonitoring.fillFTLumpSumsList(
+fun ProjectContractingMonitoring.fillLumpSumsList(
     resolveLumpSums: () -> List<ProjectLumpSum>?
 ) = this.also {
     this.fastTrackLumpSums = resolveLumpSums.invoke()

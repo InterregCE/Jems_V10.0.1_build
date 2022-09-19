@@ -223,6 +223,10 @@ export class ContractMonitoringExtensionComponent {
     return this.decisionForm.get('lumpSums') as FormArray;
   }
 
+  get fastTrackLumpSumsControls() {
+    return this.lumpSumsForm.controls.filter(lumpSum => lumpSum.value.fastTrack);
+  }
+
   getLumpSum(id: number, lumpSums: ProgrammeLumpSum[]): InputTranslation[] | null {
     const lumpSum = lumpSums.find(it => it.id === id);
     return lumpSum ? lumpSum.name : null;
@@ -250,6 +254,6 @@ export class ContractMonitoringExtensionComponent {
   }
 
   areThereFastTrackLumpSums(): boolean {
-    return this.lumpSumsForm.controls.filter(control => control.value.fastTrack === true).length > 0;
+    return this.fastTrackLumpSumsControls.length > 0;
   }
 }

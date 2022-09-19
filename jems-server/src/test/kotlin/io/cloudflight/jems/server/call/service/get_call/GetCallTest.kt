@@ -69,7 +69,7 @@ class GetCallTest : UnitTest() {
                 ),
             ),
             lumpSums = listOf(
-                ProgrammeLumpSum(splittingAllowed = true, isFastTrack = false),
+                ProgrammeLumpSum(splittingAllowed = true, fastTrack = false),
             ),
             unitCosts = listOf(
                 ProgrammeUnitCost(projectId = null, isOneCostCategory = true),

@@ -119,7 +119,7 @@ class CallControllerTest : UnitTest() {
                 ProjectCallFlatRate(type = OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS, rate = 5, adjustable = true),
             ),
             lumpSums = listOf(
-                ProgrammeLumpSum(splittingAllowed = true, isFastTrack = false),
+                ProgrammeLumpSum(splittingAllowed = true, fastTrack = false),
             ),
             unitCosts = listOf(
                 ProgrammeUnitCost(projectId = null, isOneCostCategory = true),

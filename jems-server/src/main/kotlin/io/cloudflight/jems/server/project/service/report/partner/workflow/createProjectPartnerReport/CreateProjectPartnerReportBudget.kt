@@ -73,7 +73,7 @@ class CreateProjectPartnerReportBudget(
         return PartnerReportBudget(
             contributions = contributions,
             lumpSums = lumpSumPersistence.getLumpSums(projectId, version = version)
-                .filter { it.isFastTrack != null && !it.isFastTrack }
+                .filter { it.fastTrack != null && !it.fastTrack }
                 .toPartnerReportLumpSums(partnerId = partnerId),
             unitCosts = getSetOfUnitCostsWithTotalAndNumberOfUnits(
                 partnerBudgetCostsPersistence.getBudgetStaffCosts(partnerId, version)

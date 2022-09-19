@@ -325,7 +325,7 @@ private val defaultLumpSums = listOf(
         splittingAllowed = true,
         phase = ProgrammeLumpSumPhase.Closure,
         categories = setOf(BudgetCategory.InfrastructureCosts),
-        isFastTrack = false
+        fastTrack = false
     )
 )
 

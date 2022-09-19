@@ -78,7 +78,7 @@ internal class UpdateProjectLumpSumsTest : UnitTest() {
         val programmeLumpSum = ProgrammeLumpSum(
             id = PROGRAMME_LUMP_SUM_ID,
             splittingAllowed = true,
-            isFastTrack = false
+            fastTrack = false
         )
         every { projectPersistence.getProjectCallSettings(PROJECT_ID) } returns
             callSettings(lumpSums = listOf(programmeLumpSum))
@@ -94,7 +94,7 @@ internal class UpdateProjectLumpSumsTest : UnitTest() {
         val programmeLumpSum = ProgrammeLumpSum(
             id = PROGRAMME_LUMP_SUM_ID,
             splittingAllowed = false,
-            isFastTrack = false
+            fastTrack = false
         )
         val lumpSumNonSplittable = lumpSum.copy(
             lumpSumContributions = listOf(
@@ -118,7 +118,7 @@ internal class UpdateProjectLumpSumsTest : UnitTest() {
         val programmeLumpSum = ProgrammeLumpSum(
             id = PROGRAMME_LUMP_SUM_ID,
             splittingAllowed = true,
-            isFastTrack = false
+            fastTrack = false
         )
         every { projectPersistence.getProjectCallSettings(PROJECT_ID) } returns
             callSettings(lumpSums = listOf(programmeLumpSum))
@@ -134,7 +134,7 @@ internal class UpdateProjectLumpSumsTest : UnitTest() {
         val programmeLumpSum = ProgrammeLumpSum(
             id = PROGRAMME_LUMP_SUM_ID,
             splittingAllowed = false,
-            isFastTrack = false
+            fastTrack = false
         )
         every { projectPersistence.getProjectCallSettings(PROJECT_ID) } returns
             callSettings(lumpSums = listOf(programmeLumpSum))
@@ -152,7 +152,7 @@ internal class UpdateProjectLumpSumsTest : UnitTest() {
         val programmeLumpSum = ProgrammeLumpSum(
             id = PROGRAMME_LUMP_SUM_ID,
             splittingAllowed = true,
-            isFastTrack = false
+            fastTrack = false
         )
         every { projectPersistence.getProjectCallSettings(PROJECT_ID) } returns
             callSettings(lumpSums = listOf(programmeLumpSum))
@@ -177,7 +177,7 @@ internal class UpdateProjectLumpSumsTest : UnitTest() {
         val programmeLumpSum = ProgrammeLumpSum(
             id = PROGRAMME_LUMP_SUM_ID,
             splittingAllowed = true,
-            isFastTrack = false
+            fastTrack = false
         )
         every { projectPersistence.getProjectCallSettings(PROJECT_ID) } returns
             callSettings(lumpSums = listOf(programmeLumpSum))

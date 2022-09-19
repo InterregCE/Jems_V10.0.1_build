@@ -619,7 +619,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             splittingAllowed = true,
             phase = ProgrammeLumpSumPhase.Preparation,
             categories = setOf(BudgetCategory.StaffCosts),
-            isFastTrack = false
+            fastTrack = false
         )
         private val projectDefinedUnitCost = ProgrammeUnitCost(
             id = 51L,

@@ -208,8 +208,7 @@
                     <span>{{'project.application.contract.monitoring.project.ready.for.payment' | translate }}</span>
                     <span>{{'project.application.contract.monitoring.project.topology.comment' | translate }}</span>
                 </div>
-
-                <div *ngFor="let lumpSum of lumpSumsForm.controls;let i=index">
+                <div *ngFor="let lumpSum of fastTrackLumpSumsControls; let i=index">
                     <ng-container formArrayName="lumpSums" *ngIf="lumpSum?.value?.fastTrack">
                         <ng-container [formGroupName]="i">
                             <span>{{getLumpSum(lumpSum?.value?.programmeLumpSumId, data.projectCallLumpSums) | translateBySystemLanguage | async}}</span>

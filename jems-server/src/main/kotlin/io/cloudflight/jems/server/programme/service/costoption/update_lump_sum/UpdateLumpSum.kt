@@ -60,7 +60,7 @@ class UpdateLumpSum(
     }
 
     private fun fastTrackLumpSumUpdateRestrictions(existingLumpSum: ProgrammeLumpSum, updatedLumpSum: ProgrammeLumpSum) {
-        if (existingLumpSum.isFastTrack != updatedLumpSum.isFastTrack)
+        if (existingLumpSum.fastTrack != updatedLumpSum.fastTrack)
             throw UpdateLumpSumWhenProgrammeSetupRestricted()
     }
 

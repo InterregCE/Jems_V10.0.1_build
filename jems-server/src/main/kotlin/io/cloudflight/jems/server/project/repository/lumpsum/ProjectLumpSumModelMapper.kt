@@ -17,7 +17,7 @@ fun List<ProjectLumpSumEntity>.toModel() = sortedBy { it.id.orderNr }.map {
         period = it.endPeriod,
         programmeLumpSumId = it.programmeLumpSum.id,
         lumpSumContributions = it.lumpSumContributions.toModel(),
-        isFastTrack = it.programmeLumpSum.isFastTrack,
+        fastTrack = it.programmeLumpSum.isFastTrack,
         readyForPayment = it.isReadyForPayment,
         comment = it.comment,
         lastApprovedVersionBeforeReadyForPayment = it.lastApprovedVersionBeforeReadyForPayment,
@@ -84,7 +84,7 @@ fun List<ProjectLumpSumRow>.toProjectLumpSumHistoricalData() =
                         amount = it.amount
                     )
                 }.toList(),
-            isFastTrack = groupedRows.value.first().fastTrack != 0,
+            fastTrack = groupedRows.value.first().fastTrack != 0,
             readyForPayment = groupedRows.value.first().readyForPayment != 0,
             comment = groupedRows.value.first().comment,
             paymentEnabledDate = if (groupedRows.value.first().paymentEnabledDate != null) {
