@@ -6,11 +6,10 @@ import {ContractingFilesStoreService} from '@project/project-application/service
 import {AcceptedFileTypesConstants} from '@project/common/components/file-management/accepted-file-types.constants';
 import {I18nMessage} from '@common/models/I18nMessage';
 import {Alert} from '@common/components/forms/alert';
-import {MatDialog} from '@angular/material/dialog';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {FileListItem} from '@common/components/file-list/file-list-item';
-import {filter, switchMap, take} from 'rxjs/operators';
-import {Forms} from '@common/utils/forms';
+import {catchError, map, take} from 'rxjs/operators';
+import {PageFileList} from '@common/components/file-list/page-file-list';
 import FileTypeEnum = ProjectReportFileDTO.TypeEnum;
 
 @UntilDestroy()
@@ -26,6 +25,7 @@ export class ContractFilesComponent implements OnInit {
   @Input()
   isEditable: boolean;
 
+  files$: Observable<PageFileList>;
   maximumAllowedFileSizeInMB: number;
   fileSizeOverLimitError$ = new Subject<boolean>();
   acceptedFilesTypes = AcceptedFileTypesConstants.acceptedFilesTypes;
@@ -34,9 +34,9 @@ export class ContractFilesComponent implements OnInit {
 
   constructor(
     public store: ContractingFilesStoreService,
-    private dialog: MatDialog
   ) {
     this.selectedCategoryPath$ = store.selectedCategoryPath$;
+    this.files$ = this.getFilesToList();
     this.store.getMaximumAllowedFileSize()
       .pipe(untilDestroyed(this))
       .subscribe((maxAllowedSize) => this.maximumAllowedFileSizeInMB = maxAllowedSize);
@@ -47,6 +47,18 @@ export class ContractFilesComponent implements OnInit {
     this.store.setSection({type: FileTypeEnum.Contract} as CategoryInfo);
   }
 
+  private getFilesToList(): Observable<PageFileList> {
+   return this.store.fileList$.pipe(
+      map(pageFiles => ({
+        ...pageFiles,
+        content: this.transform(pageFiles.content),
+      } as PageFileList)),
+      catchError(error => {
+        this.store.error$.next(error.error);
+        return of({} as PageFileList);
+      })
+    );
+  }
 
   downloadFile(file: FileListItem): void {
     this.store.downloadFile(file.id)
@@ -55,14 +67,7 @@ export class ContractFilesComponent implements OnInit {
   }
 
   deleteFile(file: FileListItem): void {
-    Forms.confirm(this.dialog, {
-      title: file.name,
-      message: { i18nKey: 'file.dialog.message', i18nArguments: { name: file.name } },
-    }).pipe(
-      take(1),
-      filter(answer => !!answer),
-      switchMap(() => this.store.deleteFile(file.id)),
-    ).subscribe();
+    this.store.deleteFile(file.id).pipe(take(1)).subscribe();
   }
 
   uploadFile(target: any): void {
@@ -98,5 +103,15 @@ export class ContractFilesComponent implements OnInit {
             },
           ],
     });
+  }
+
+  private transform(content: ProjectReportFileDTO[]): FileListItem[] {
+    return content.map(file => ({
+      ...file,
+      deletable: this.isEditable,
+      editable: false,
+      tooltipIfNotDeletable: '',
+      iconIfNotDeletable: 'delete',
+    }));
   }
 }

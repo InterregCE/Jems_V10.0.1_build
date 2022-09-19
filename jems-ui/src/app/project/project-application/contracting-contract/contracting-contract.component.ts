@@ -25,7 +25,7 @@ export class ContractingContractComponent implements OnInit {
   Alert = Alert;
 
   contractInfoForm: FormGroup = this.formBuilder.group({
-      website: ['', Validators.maxLength(30)],
+      website: ['', Validators.maxLength(250)],
       partnershipAgreementDate:['']
     }
   );

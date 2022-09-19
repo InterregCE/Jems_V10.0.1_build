@@ -3,14 +3,11 @@ package io.cloudflight.jems.server.project.authorization
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.authentication.model.CurrentUser
 import io.cloudflight.jems.server.authentication.service.SecurityService
-import io.cloudflight.jems.server.project.entity.partneruser.PartnerCollaboratorLevel
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.ProjectApplicantAndStatus
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
-import io.cloudflight.jems.server.project.service.partner.UserPartnerCollaboratorPersistence
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
-import io.cloudflight.jems.server.user.service.model.assignment.PartnerCollaborator
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -22,7 +19,6 @@ import org.junit.jupiter.api.Test
 internal class ProjectContractingManagementAuthorizationTest: UnitTest() {
 
     companion object {
-        private const val PARTNER_ID = 21L
         private const val PROJECT_ID = 9L
         private const val PROJECT_CREATOR_USER_ID = 3L
 
@@ -43,13 +39,6 @@ internal class ProjectContractingManagementAuthorizationTest: UnitTest() {
             collaboratorManageIds = setOf(PROJECT_COLLABORATOR_MANAGE_USER_ID),
             projectStatus = ApplicationStatus.APPROVED
         )
-
-        private val partnerCollaborator = PartnerCollaborator(
-            userId = PARTNER_COLLABORATOR_USER_ID,
-            partnerId = PARTNER_ID,
-            userEmail = "user05@jems.eu",
-            level = PartnerCollaboratorLevel.EDIT
-        )
     }
 
     @MockK
@@ -59,13 +48,13 @@ internal class ProjectContractingManagementAuthorizationTest: UnitTest() {
     lateinit var partnerPersistence: PartnerPersistence
 
     @MockK
-    lateinit var partnerCollaboratorPersistence: UserPartnerCollaboratorPersistence
-
-    @MockK
     lateinit var currentUser: CurrentUser
 
     @MockK
     lateinit var projectPersistence: ProjectPersistence
+
+    @MockK
+    lateinit var authorizationUtilService: AuthorizationUtilService
 
     @InjectMockKs
     lateinit var projectManagementAuthorization: ProjectContractingManagementAuthorization
@@ -85,10 +74,16 @@ internal class ProjectContractingManagementAuthorizationTest: UnitTest() {
         every { currentUser.hasPermission(UserRolePermission.ProjectContractingManagementEdit) } returns false
         every { securityService.getUserIdOrThrow() } returns PROJECT_CREATOR_USER_ID
         every { projectPersistence.getApplicantAndStatusById(PROJECT_ID)} returns applicantAndStatus
-        every { partnerCollaboratorPersistence.findPartnersByUserAndProject(
+        every { authorizationUtilService.userIsPartnerCollaboratorForProject(
             userId = PROJECT_CREATOR_USER_ID,
             projectId = PROJECT_ID)
-        } returns emptySet()
+        } returns false
+        every {
+            authorizationUtilService.userIsProjectOwnerOrProjectCollaborator(userId = PROJECT_CREATOR_USER_ID, applicantAndStatus)
+        } returns true
+        every {
+            authorizationUtilService.userIsProjectCollaboratorWithEditPrivilege(userId = PROJECT_CREATOR_USER_ID, applicantAndStatus)
+        } returns false
         Assertions.assertThat(projectManagementAuthorization.canViewProjectManagement(PROJECT_ID)).isTrue
         Assertions.assertThat(projectManagementAuthorization.canEditProjectManagement(PROJECT_ID)).isTrue
     }
@@ -99,10 +94,13 @@ internal class ProjectContractingManagementAuthorizationTest: UnitTest() {
         every { currentUser.hasPermission(UserRolePermission.ProjectContractingManagementEdit) } returns false
         every { securityService.getUserIdOrThrow() } returns PARTNER_COLLABORATOR_USER_ID
         every { projectPersistence.getApplicantAndStatusById(PROJECT_ID)} returns applicantAndStatus
-        every { partnerCollaboratorPersistence.findPartnersByUserAndProject(
+        every {
+            authorizationUtilService.userIsProjectOwnerOrProjectCollaborator(userId = PARTNER_COLLABORATOR_USER_ID, applicantAndStatus)
+        } returns false
+        every { authorizationUtilService.userIsPartnerCollaboratorForProject(
             userId = PARTNER_COLLABORATOR_USER_ID,
             projectId = PROJECT_ID)
-        } returns setOf(partnerCollaborator)
+        } returns true
         Assertions.assertThat(projectManagementAuthorization.canViewProjectManagement(PROJECT_ID)).isTrue
     }
 
@@ -112,10 +110,13 @@ internal class ProjectContractingManagementAuthorizationTest: UnitTest() {
         every { currentUser.hasPermission(UserRolePermission.ProjectContractingManagementEdit) } returns false
         every { securityService.getUserIdOrThrow() } returns PARTNER_COLLABORATOR_USER_ID
         every { projectPersistence.getApplicantAndStatusById(PROJECT_ID)} returns applicantAndStatus
-        every { partnerCollaboratorPersistence.findPartnersByUserAndProject(
+        every { authorizationUtilService.userIsPartnerCollaboratorForProject(
             userId = PARTNER_COLLABORATOR_USER_ID,
             projectId = PROJECT_ID)
-        } returns setOf(partnerCollaborator)
+        } returns true
+        every {
+            authorizationUtilService.userIsProjectCollaboratorWithEditPrivilege(userId = PARTNER_COLLABORATOR_USER_ID, applicantAndStatus)
+        } returns false
         Assertions.assertThat(projectManagementAuthorization.canEditProjectManagement(PROJECT_ID)).isFalse
     }
 
@@ -124,10 +125,13 @@ internal class ProjectContractingManagementAuthorizationTest: UnitTest() {
         every { currentUser.hasPermission(UserRolePermission.ProjectContractingManagementView) } returns false
         every { currentUser.hasPermission(UserRolePermission.ProjectContractingManagementEdit) } returns false
         every { securityService.getUserIdOrThrow() } returns PROJECT_COLLABORATOR_VIEW_USER_ID
-        every { partnerCollaboratorPersistence.findPartnersByUserAndProject(
+        every { authorizationUtilService.userIsPartnerCollaboratorForProject(
             userId = PROJECT_COLLABORATOR_VIEW_USER_ID,
             projectId = PROJECT_ID)
-        } returns emptySet()
+        } returns false
+        every {
+            authorizationUtilService.userIsProjectOwnerOrProjectCollaborator(userId = PROJECT_COLLABORATOR_VIEW_USER_ID, applicantAndStatus)
+        } returns true
         every { projectPersistence.getApplicantAndStatusById(PROJECT_ID)} returns applicantAndStatus
         Assertions.assertThat(projectManagementAuthorization.canViewProjectManagement(PROJECT_ID)).isTrue
     }
@@ -137,10 +141,16 @@ internal class ProjectContractingManagementAuthorizationTest: UnitTest() {
         every { currentUser.hasPermission(UserRolePermission.ProjectContractingManagementView) } returns false
         every { currentUser.hasPermission(UserRolePermission.ProjectContractingManagementEdit) } returns false
         every { securityService.getUserIdOrThrow() } returns PROJECT_COLLABORATOR_VIEW_USER_ID
-        every { partnerCollaboratorPersistence.findPartnersByUserAndProject(
+        every { authorizationUtilService.userIsPartnerCollaboratorForProject(
             userId = PROJECT_COLLABORATOR_VIEW_USER_ID,
             projectId = PROJECT_ID)
-        } returns emptySet()
+        } returns false
+        every {
+            authorizationUtilService.userIsProjectOwnerOrProjectCollaborator(userId = PROJECT_COLLABORATOR_VIEW_USER_ID, applicantAndStatus)
+        } returns true
+        every {
+            authorizationUtilService.userIsProjectCollaboratorWithEditPrivilege(userId = PROJECT_COLLABORATOR_VIEW_USER_ID, applicantAndStatus)
+        } returns false
         every { projectPersistence.getApplicantAndStatusById(PROJECT_ID)} returns applicantAndStatus
         Assertions.assertThat(projectManagementAuthorization.canEditProjectManagement(PROJECT_ID)).isFalse
     }
@@ -150,10 +160,16 @@ internal class ProjectContractingManagementAuthorizationTest: UnitTest() {
         every { currentUser.hasPermission(UserRolePermission.ProjectContractingManagementView) } returns false
         every { currentUser.hasPermission(UserRolePermission.ProjectContractingManagementEdit) } returns false
         every { securityService.getUserIdOrThrow() } returns PROJECT_COLLABORATOR_EDIT_USER_ID
-        every { partnerCollaboratorPersistence.findPartnersByUserAndProject(
+        every { authorizationUtilService.userIsPartnerCollaboratorForProject(
             userId = PROJECT_COLLABORATOR_EDIT_USER_ID,
             projectId = PROJECT_ID)
-        } returns emptySet()
+        } returns false
+        every {
+            authorizationUtilService.userIsProjectOwnerOrProjectCollaborator(userId = PROJECT_COLLABORATOR_EDIT_USER_ID, applicantAndStatus)
+        } returns true
+        every {
+            authorizationUtilService.userIsProjectCollaboratorWithEditPrivilege(userId = PROJECT_COLLABORATOR_EDIT_USER_ID, applicantAndStatus)
+        } returns true
         every { projectPersistence.getApplicantAndStatusById(PROJECT_ID)} returns applicantAndStatus
         Assertions.assertThat(projectManagementAuthorization.canViewProjectManagement(PROJECT_ID)).isTrue
         Assertions.assertThat(projectManagementAuthorization.canEditProjectManagement(PROJECT_ID)).isTrue
@@ -164,10 +180,16 @@ internal class ProjectContractingManagementAuthorizationTest: UnitTest() {
         every { currentUser.hasPermission(UserRolePermission.ProjectContractingManagementView) } returns false
         every { currentUser.hasPermission(UserRolePermission.ProjectContractingManagementEdit) } returns false
         every { securityService.getUserIdOrThrow() } returns PROJECT_COLLABORATOR_MANAGE_USER_ID
-        every { partnerCollaboratorPersistence.findPartnersByUserAndProject(
+        every { authorizationUtilService.userIsPartnerCollaboratorForProject(
             userId = PROJECT_COLLABORATOR_MANAGE_USER_ID,
             projectId = PROJECT_ID)
-        } returns emptySet()
+        } returns false
+        every {
+            authorizationUtilService.userIsProjectOwnerOrProjectCollaborator(userId = PROJECT_COLLABORATOR_MANAGE_USER_ID, applicantAndStatus)
+        } returns true
+        every {
+            authorizationUtilService.userIsProjectCollaboratorWithEditPrivilege(userId = PROJECT_COLLABORATOR_MANAGE_USER_ID, applicantAndStatus)
+        } returns true
         every { projectPersistence.getApplicantAndStatusById(PROJECT_ID)} returns applicantAndStatus
         Assertions.assertThat(projectManagementAuthorization.canViewProjectManagement(PROJECT_ID)).isTrue
         Assertions.assertThat(projectManagementAuthorization.canEditProjectManagement(PROJECT_ID)).isTrue
@@ -178,10 +200,10 @@ internal class ProjectContractingManagementAuthorizationTest: UnitTest() {
         every { currentUser.user.id } returns MONITOR_USER_ID
         every { securityService.getUserIdOrThrow() } returns MONITOR_USER_ID
         every { currentUser.user.assignedProjects } returns setOf(PROJECT_ID)
-        every { partnerCollaboratorPersistence.findPartnersByUserAndProject(
+        every { authorizationUtilService.userIsPartnerCollaboratorForProject(
             userId = MONITOR_USER_ID,
             projectId = PROJECT_ID)
-        } returns emptySet()
+        } returns false
         every { projectPersistence.getApplicantAndStatusById(PROJECT_ID)} returns applicantAndStatus
         every { currentUser.hasPermission(UserRolePermission.ProjectContractingManagementView) } returns true
         every { currentUser.hasPermission(UserRolePermission.ProjectContractingManagementEdit) } returns false
@@ -194,10 +216,13 @@ internal class ProjectContractingManagementAuthorizationTest: UnitTest() {
         every { currentUser.user.id } returns MONITOR_USER_ID
         every { securityService.getUserIdOrThrow() } returns MONITOR_USER_ID
         every { currentUser.user.assignedProjects } returns setOf(PROJECT_ID)
-        every { partnerCollaboratorPersistence.findPartnersByUserAndProject(
+        every { authorizationUtilService.userIsPartnerCollaboratorForProject(
             userId = MONITOR_USER_ID,
             projectId = PROJECT_ID)
-        } returns emptySet()
+        } returns false
+        every {
+            authorizationUtilService.userIsProjectCollaboratorWithEditPrivilege(userId = MONITOR_USER_ID, applicantAndStatus)
+        } returns false
         every { projectPersistence.getApplicantAndStatusById(PROJECT_ID)} returns applicantAndStatus
         every { currentUser.hasPermission(UserRolePermission.ProjectContractingManagementView) } returns true
         every { currentUser.hasPermission(UserRolePermission.ProjectContractingManagementEdit) } returns false
@@ -210,10 +235,10 @@ internal class ProjectContractingManagementAuthorizationTest: UnitTest() {
         every { currentUser.user.id } returns MONITOR_USER_ID
         every { securityService.getUserIdOrThrow() } returns MONITOR_USER_ID
         every { currentUser.user.assignedProjects } returns setOf(PROJECT_ID)
-        every { partnerCollaboratorPersistence.findPartnersByUserAndProject(
+        every { authorizationUtilService.userIsPartnerCollaboratorForProject(
             userId = MONITOR_USER_ID,
             projectId = PROJECT_ID)
-        } returns emptySet()
+        } returns false
         every { projectPersistence.getApplicantAndStatusById(PROJECT_ID)} returns applicantAndStatus
         every { currentUser.hasPermission(UserRolePermission.ProjectContractingManagementView) } returns true
         every { currentUser.hasPermission(UserRolePermission.ProjectContractingManagementEdit) } returns true
@@ -227,10 +252,17 @@ internal class ProjectContractingManagementAuthorizationTest: UnitTest() {
         every { currentUser.user.id } returns 9L
         every { securityService.getUserIdOrThrow() } returns 9L
         every { currentUser.user.assignedProjects } returns setOf(99L)
-        every { partnerCollaboratorPersistence.findPartnersByUserAndProject(
+        every {
+            authorizationUtilService.userIsProjectOwnerOrProjectCollaborator(userId = 9L, applicantAndStatus)
+        } returns false
+        every {
+            authorizationUtilService.userIsProjectCollaboratorWithEditPrivilege(userId = 9L, applicantAndStatus)
+        } returns false
+        every { authorizationUtilService.userIsPartnerCollaboratorForProject(
             userId = 9L,
             projectId = PROJECT_ID)
-        } returns emptySet()
+        } returns false
+
         every { projectPersistence.getApplicantAndStatusById(PROJECT_ID)} returns applicantAndStatus
         every { currentUser.hasPermission(UserRolePermission.ProjectContractingManagementView) } returns false
         every { currentUser.hasPermission(UserRolePermission.ProjectContractingManagementEdit) } returns false
