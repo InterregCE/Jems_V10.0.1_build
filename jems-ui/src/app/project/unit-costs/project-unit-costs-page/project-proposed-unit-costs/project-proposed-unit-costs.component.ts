@@ -1,4 +1,4 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component, TemplateRef, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, TemplateRef, ViewChild} from '@angular/core';
 import {MatTableDataSource} from '@angular/material/table';
 import {ProgrammeUnitCostListDTO, ProjectStatusDTO} from '@cat/api';
 import { Alert } from '@common/components/forms/alert';
@@ -24,7 +24,7 @@ import {ColumnWidth} from '@common/components/table/model/column-width';
   styleUrls: ['./project-proposed-unit-costs.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectProposedUnitCostsComponent implements AfterViewInit{
+export class ProjectProposedUnitCostsComponent {
   @ViewChild('nameCell', {static: true})
   nameCell: TemplateRef<any>;
 
@@ -65,11 +65,12 @@ export class ProjectProposedUnitCostsComponent implements AfterViewInit{
     ]).pipe(
       tap(([status, isEditable]) => {
         this.isDeleteAvailable = status.status !== ProjectStatusDTO.StatusEnum.INMODIFICATION && isEditable;
+        this.resetTable();
       })
     ).subscribe();
   }
 
-  ngAfterViewInit(): void {
+  private resetTable() {
     this.tableConfiguration = new TableConfiguration({
       isTableClickable: true,
       sortable: false,
