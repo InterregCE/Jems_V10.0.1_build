@@ -5,6 +5,7 @@ export class PartnerReportExpendituresTabConstants {
   public static MAX_NUMBER_OF_ITEMS = 150;
   public static MAX_LENGTH = 255;
   public static MAX_LENGTH_INVOICE = 30;
+  public static FOCUS_TIMEOUT = 50;
   public static FORM_CONTROL_NAMES = {
     rowId: 'rowId',
     costOptions: 'costOptions',

@@ -26,15 +26,29 @@
                             </mat-cell>
                             <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                         </ng-container>
-                        <ng-container matColumnDef="costOptions">
 
+                        <ng-container matColumnDef="costOptions">
                             <mat-header-cell *matHeaderCellDef>
                                         <span jemsText
                                               maxLines="2">{{'project.application.partner.report.expenditures.tab.cost.lump.sum' | translate}}</span>
                             </mat-header-cell>
-
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                                <mat-form-field jemsFormFieldWidth="full">
+                                <div *ngIf="expenditureFormIndex !== i && !control.get(constants.FORM_CONTROL_NAMES.costOptions).errors"
+                                     (click)="selectRow(i, 'costOptions')" class="custom-wrapper pointer"
+                                     [matTooltip]="getCostOptionsDefinition(control.get(constants.FORM_CONTROL_NAMES.costOptions).value) | async"
+                                     [matTooltipClass]="'tooltip'"
+                                     [ngClass]="getAdditionalRowClass(i, constants.FORM_CONTROL_NAMES.costOptions)">
+                                    <div class="custom-dropdown-text">
+                                        <div>
+                                            {{getCostOptionsDefinition(control.get(constants.FORM_CONTROL_NAMES.costOptions).value) | async}}
+                                        </div>
+                                    </div>
+                                    <div *ngIf="!control.get(constants.FORM_CONTROL_NAMES.costOptions).disabled" class="custom-icon">
+                                        <mat-icon class="arrow">arrow_drop_down</mat-icon>
+                                    </div>
+                                </div>
+
+                                <mat-form-field *ngIf="expenditureFormIndex === i || control.get(constants.FORM_CONTROL_NAMES.costOptions).errors" jemsFormFieldWidth="full">
                                     <mat-select #costOptionsSelect
                                                 (selectionChange)="onCostOptionChange($event, control, i)"
                                                 [formControlName]="constants.FORM_CONTROL_NAMES.costOptions"
@@ -64,21 +78,35 @@
                             </mat-cell>
                             <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                         </ng-container>
+
                         <ng-container matColumnDef="costCategory">
                             <mat-header-cell *matHeaderCellDef>
                                         <span jemsText
                                               maxLines="2">{{'project.application.partner.report.expenditures.tab.cost.category' | translate}}</span>
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                                <mat-form-field jemsFormFieldWidth="full">
+                                <div *ngIf="expenditureFormIndex !== i && !control.get(constants.FORM_CONTROL_NAMES.costCategory).errors"
+                                     [matTooltip]="('project.application.partner.report.expenditures.cost.category.' + control.get(constants.FORM_CONTROL_NAMES.costCategory).value) | translate"
+                                     [matTooltipClass]="'tooltip'"
+                                     (click)="selectRow(i, 'costCategory')" class="custom-wrapper pointer"
+                                     [ngClass]="getAdditionalRowClass(i, constants.FORM_CONTROL_NAMES.costCategory)">
+                                    <div class="custom-dropdown-text cost-category">
+                                        {{ ('project.application.partner.report.expenditures.cost.category.' + control.get(constants.FORM_CONTROL_NAMES.costCategory).value) | translate}}
+                                    </div>
+                                    <div *ngIf="!control.get(constants.FORM_CONTROL_NAMES.costCategory).disabled" class="custom-icon cost-category">
+                                        <mat-icon>arrow_drop_down</mat-icon>
+                                    </div>
+                                </div>
+
+                                <mat-form-field *ngIf="expenditureFormIndex === i || control.get(constants.FORM_CONTROL_NAMES.costCategory).errors" jemsFormFieldWidth="full">
                                     <mat-select class="placeholder-required" required
                                                 #costCategorySelect
-                                                (selectionChange)="onCostCategoryChange($event, control)"
+                                                (selectionChange)="onCostCategoryChange($event, control, i)"
                                                 [formControlName]="constants.FORM_CONTROL_NAMES.costCategory"
                                                 [matTooltip]="costCategorySelect.triggerValue"
                                                 [placeholder]="'project.application.partner.report.expenditures.cost.category.placeholder' | translate">
                                         <mat-option *ngIf="isCostOptionSelectedInCurrentFormGroup(i)"
-                                                [value]="CostCategoryEnum.Multiple">{{'project.application.partner.report.expenditures.cost.category.multiple' | translate}}</mat-option>
+                                                [value]="CostCategoryEnum.Multiple">{{'project.application.partner.report.expenditures.cost.category.Multiple' | translate}}</mat-option>
                                         <mat-option *ngFor="let costCategory of data.costCategories"
                                                     [value]="costCategory">
                                             {{ ('project.application.partner.report.expenditures.cost.category.' + costCategory) | translate}}
@@ -88,13 +116,31 @@
                             </mat-cell>
                             <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                         </ng-container>
+
                         <ng-container *ngIf="data.investmentsSummary.length > 0" matColumnDef="investmentId">
                             <mat-header-cell *matHeaderCellDef>
                                         <span jemsText
                                               maxLines="2">{{'project.application.partner.report.expenditures.tab.investment.number' | translate}}</span>
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                                <mat-form-field jemsFormFieldWidth="full">
+                                <div *ngIf="expenditureFormIndex !== i && !control.get(constants.FORM_CONTROL_NAMES.investmentId).errors"
+                                     (click)="selectRow(i, 'investmentId')" class="custom-wrapper pointer"
+                                     [matTooltip]="control.get(constants.FORM_CONTROL_NAMES.investmentId).value" [matTooltipClass]="'tooltip'"
+                                     [ngClass]="getAdditionalRowClass(i, constants.FORM_CONTROL_NAMES.investmentId)">
+                                    <div class="custom-dropdown-text">
+                                        <span *ngIf="control.get(constants.FORM_CONTROL_NAMES.investmentId).value">
+                                            {{control.get(constants.FORM_CONTROL_NAMES.investmentId).value}}
+                                        </span>
+                                        <span *ngIf="!control.get(constants.FORM_CONTROL_NAMES.investmentId).value">
+                                            {{'common.not.applicable.option' | translate}}
+                                        </span>
+                                    </div>
+                                    <div *ngIf="!control.get(constants.FORM_CONTROL_NAMES.investmentId).disabled" class="custom-icon">
+                                        <mat-icon class="arrow">arrow_drop_down</mat-icon>
+                                    </div>
+                                </div>
+
+                                <mat-form-field *ngIf="expenditureFormIndex === i || control.get(constants.FORM_CONTROL_NAMES.investmentId).errors" jemsFormFieldWidth="full">
                                     <mat-select
                                         #investmentNumber
                                         (selectionChange)="onInvestmentNumberChange($event, control)"
@@ -112,13 +158,32 @@
                             </mat-cell>
                             <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                         </ng-container>
+
                         <ng-container matColumnDef="contractId">
                             <mat-header-cell *matHeaderCellDef>
                                         <span jemsText
                                               maxLines="2">{{'project.application.partner.report.expenditures.tab.contract.ID' | translate}}</span>
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                                <mat-form-field jemsFormFieldWidth="full">
+                                <div *ngIf="expenditureFormIndex !== i && !control.get(constants.FORM_CONTROL_NAMES.contractId).errors"
+                                      (click)="selectRow(i, 'contractId')" class="custom-wrapper pointer"
+                                      [matTooltip]="control.get(constants.FORM_CONTROL_NAMES.contractId).value ?? ('common.not.applicable.option' | translate)"
+                                      [matTooltipClass]="'tooltip'"
+                                      [ngClass]="getAdditionalRowClass(i, constants.FORM_CONTROL_NAMES.contractId)">
+                                    <div class="custom-dropdown-text">
+                                        <span *ngIf="control.get(constants.FORM_CONTROL_NAMES.contractId).value">
+                                            {{control.get(constants.FORM_CONTROL_NAMES.contractId).value}}
+                                        </span>
+                                        <span *ngIf="!control.get(constants.FORM_CONTROL_NAMES.contractId).value">
+                                            {{'common.not.applicable.option' | translate}}
+                                        </span>
+                                    </div>
+                                    <div *ngIf="!control.get(constants.FORM_CONTROL_NAMES.contractId).disabled" class="custom-icon">
+                                        <mat-icon class="arrow">arrow_drop_down</mat-icon>
+                                    </div>
+                                </div>
+
+                                <mat-form-field *ngIf="expenditureFormIndex === i || control.get(constants.FORM_CONTROL_NAMES.contractId).errors" jemsFormFieldWidth="full">
                                     <mat-select
                                         #contractId
                                         [formControlName]="constants.FORM_CONTROL_NAMES.contractId"
@@ -135,16 +200,27 @@
                             </mat-cell>
                             <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                         </ng-container>
+
                         <ng-container matColumnDef="internalReferenceNumber">
                             <mat-header-cell *matHeaderCellDef>
                                         <span jemsText
                                               maxLines="2">{{'project.application.partner.report.expenditures.tab.internal.reference.number' | translate}}</span>
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                                <mat-form-field jemsFormFieldWidth="full">
+                                <div *ngIf="expenditureFormIndex !== i && !control.get(constants.FORM_CONTROL_NAMES.internalReferenceNumber).errors"
+                                     (click)="selectRow(i, 'internalReferenceNumber')" class="custom-wrapper"
+                                     [matTooltip]="getLimitedTextInputTooltip(control.get(constants.FORM_CONTROL_NAMES.internalReferenceNumber).value, constants.MAX_LENGTH_INVOICE)"
+                                     [matTooltipClass]="'tooltip'"
+                                     [ngClass]="getAdditionalRowClass(i, constants.FORM_CONTROL_NAMES.internalReferenceNumber)">
+                                    <div class="custom-text-area">
+                                        {{control.get(constants.FORM_CONTROL_NAMES.internalReferenceNumber).value}}
+                                    </div>
+                                </div>
+
+                                <mat-form-field *ngIf="expenditureFormIndex === i || control.get(constants.FORM_CONTROL_NAMES.internalReferenceNumber).errors" jemsFormFieldWidth="full">
                                     <input #internalReferenceNumber
                                               [formControlName]="constants.FORM_CONTROL_NAMES.internalReferenceNumber"
-                                              [matTooltip]="internalReferenceNumber.value + ' (' + lengthOfForm(control, constants.FORM_CONTROL_NAMES.internalReferenceNumber) + '/' + constants.MAX_LENGTH_INVOICE + ')'"
+                                              [matTooltip]="getLimitedTextInputTooltip(control.get(constants.FORM_CONTROL_NAMES.internalReferenceNumber).value, constants.MAX_LENGTH_INVOICE)"
                                               matInput>
                                     <mat-hint [jemsHintFor]="internalReferenceNumber">
                                         <jems-text-hint
@@ -162,15 +238,26 @@
                             </mat-cell>
                             <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                         </ng-container>
+
                         <ng-container matColumnDef="invoiceNumber">
                             <mat-header-cell *matHeaderCellDef>
                                         <span jemsText
                                               maxLines="2">{{'project.application.partner.report.expenditures.tab.invoice.number' | translate}}</span>
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                                <mat-form-field jemsFormFieldWidth="full">
+                                <div *ngIf="expenditureFormIndex !== i && !control.get(constants.FORM_CONTROL_NAMES.invoiceNumber).errors"
+                                     (click)="selectRow(i, 'invoiceNumber')" class="custom-wrapper"
+                                     [matTooltip]="getLimitedTextInputTooltip(control.get(constants.FORM_CONTROL_NAMES.invoiceNumber).value, constants.MAX_LENGTH_INVOICE)"
+                                     [matTooltipClass]="'tooltip'"
+                                     [ngClass]="getAdditionalRowClass(i, constants.FORM_CONTROL_NAMES.invoiceNumber)">
+                                    <div class="custom-text-area">
+                                        {{control.get(constants.FORM_CONTROL_NAMES.invoiceNumber).value}}
+                                    </div>
+                                </div>
+
+                                <mat-form-field *ngIf="expenditureFormIndex === i || control.get(constants.FORM_CONTROL_NAMES.invoiceNumber).errors" jemsFormFieldWidth="full">
                                     <input #invoiceNumberInput
-                                              [matTooltip]="invoiceNumberInput.value + ' (' + lengthOfForm(control, constants.FORM_CONTROL_NAMES.invoiceNumber) + '/' + constants.MAX_LENGTH_INVOICE + ')'"
+                                           [matTooltip]="getLimitedTextInputTooltip(control.get(constants.FORM_CONTROL_NAMES.invoiceNumber).value, constants.MAX_LENGTH_INVOICE)"
                                               [formControlName]="constants.FORM_CONTROL_NAMES.invoiceNumber"
                                               matInput>
                                     <mat-hint [jemsHintFor]="invoiceNumberInput">
@@ -189,14 +276,29 @@
                             </mat-cell>
                             <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                         </ng-container>
+
                         <ng-container matColumnDef="invoiceDate">
                             <mat-header-cell *matHeaderCellDef>
                                         <span jemsText
                                               maxLines="2">{{'project.application.partner.report.expenditures.tab.invoice.date' | translate}}</span>
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                                <mat-form-field jemsFormFieldWidth="full">
+                                <div *ngIf="expenditureFormIndex !== i && !control.get(constants.FORM_CONTROL_NAMES.invoiceDate).errors"
+                                     class="custom-wrapper" [ngClass]="getAdditionalRowClass(i, constants.FORM_CONTROL_NAMES.invoiceDate)"
+                                     (click)="selectRow(i, 'invoiceDate')">
+                                    <div class="custom-text-area date">
+                                        {{control.get(constants.FORM_CONTROL_NAMES.invoiceDate).value | date: 'd.M.yyyy'}}
+                                    </div>
+                                    <div class="custom-icon" (click)="selectRow(i, 'invoiceDatePicker')">
+                                        <mat-icon class="calendar" [ngClass]="{'disabled': control.get(constants.FORM_CONTROL_NAMES.invoiceDate).disabled}">
+                                            today
+                                        </mat-icon>
+                                    </div>
+                                </div>
+
+                                <mat-form-field *ngIf="expenditureFormIndex === i || control.get(constants.FORM_CONTROL_NAMES.invoiceDate).errors" jemsFormFieldWidth="full">
                                     <input name="invoiceDateForm"
+                                           #invoiceDateInput
                                            [formControlName]="constants.FORM_CONTROL_NAMES.invoiceDate"
                                            matInput [matDatepicker]="invoiceDatePicker">
                                     <mat-datepicker-toggle matSuffix
@@ -206,14 +308,29 @@
                             </mat-cell>
                             <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                         </ng-container>
+
                         <ng-container matColumnDef="dateOfPayment">
                             <mat-header-cell *matHeaderCellDef>
                                         <span jemsText
                                               maxLines="2">{{'project.application.partner.report.expenditures.tab.date.of.payment' | translate}}</span>
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                                <mat-form-field jemsFormFieldWidth="full">
+                                <div *ngIf="expenditureFormIndex !== i && !control.get(constants.FORM_CONTROL_NAMES.dateOfPayment).errors"
+                                     class="custom-wrapper" [ngClass]="getAdditionalRowClass(i, constants.FORM_CONTROL_NAMES.dateOfPayment)"
+                                     (click)="selectRow(i, 'dateOfPayment')">
+                                    <div class="custom-text-area date">
+                                        {{control.get(constants.FORM_CONTROL_NAMES.dateOfPayment).value | date: 'd.M.yyyy'}}
+                                    </div>
+                                    <div class="custom-icon" (click)="selectRow(i, 'dateOfPaymentDatePicker')">
+                                        <mat-icon class="calendar" [ngClass]="{'disabled': control.get(constants.FORM_CONTROL_NAMES.dateOfPayment).disabled}">
+                                            today
+                                        </mat-icon>
+                                    </div>
+                                </div>
+
+                                <mat-form-field *ngIf="expenditureFormIndex === i || control.get(constants.FORM_CONTROL_NAMES.dateOfPayment).errors" jemsFormFieldWidth="full">
                                     <input name="dateOfPaymentForm"
+                                           #dateOfPaymentInput
                                            [formControlName]="constants.FORM_CONTROL_NAMES.dateOfPayment"
                                            matInput [matDatepicker]="dateOfPaymentPicker">
                                     <mat-datepicker-toggle matSuffix
@@ -223,17 +340,30 @@
                             </mat-cell>
                             <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                         </ng-container>
+
                         <ng-container matColumnDef="description">
                             <mat-header-cell *matHeaderCellDef>
                                         <span jemsText
                                               maxLines="2">{{'project.application.partner.report.expenditures.tab.description' | translate}}</span>
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                                <div *ngIf="expenditureFormIndex !== i && !control.get(constants.FORM_CONTROL_NAMES.description).errors"
+                                     (click)="selectRow(i, 'description')" class="custom-wrapper"
+                                     [matTooltip]="getLimitedTextInputTooltip(control.get(constants.FORM_CONTROL_NAMES.description).value[0]?.translation, constants.MAX_LENGTH)"
+                                     [matTooltipClass]="'tooltip'"
+                                     [ngClass]="getAdditionalRowClass(i, constants.FORM_CONTROL_NAMES.description)">
+                                    <div class="custom-text-area">
+                                        {{control.get(constants.FORM_CONTROL_NAMES.description).value | translateByInputLanguage | async}}
+                                    </div>
+                                </div>
+
                                 <ng-container>
                                     <jems-multi-language-form-field
+                                            *ngIf="expenditureFormIndex === i || control.get(constants.FORM_CONTROL_NAMES.description).errors"
                                             #descriptionInput
                                             type="input"
                                             condensed="true"
+                                            [hasFocus]="descriptionInputPressed"
                                             [formControlName]="constants.FORM_CONTROL_NAMES.description"
                                             [maxLength]="constants.MAX_LENGTH">
                                     </jems-multi-language-form-field>
@@ -241,18 +371,31 @@
                             </mat-cell>
                             <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                         </ng-container>
+
                         <ng-container matColumnDef="comment">
                             <mat-header-cell *matHeaderCellDef>
                                         <span jemsText
                                               maxLines="2">{{'project.application.partner.report.expenditures.tab.comment' | translate}}</span>
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                                <div *ngIf="expenditureFormIndex !== i && !control.get(constants.FORM_CONTROL_NAMES.comment).errors"
+                                     (click)="selectRow(i, 'comment')" class="custom-wrapper"
+                                     [matTooltip]="getLimitedTextInputTooltip(control.get(constants.FORM_CONTROL_NAMES.comment).value[0]?.translation, constants.MAX_LENGTH)"
+                                     [matTooltipClass]="'tooltip'"
+                                     [ngClass]="getAdditionalRowClass(i, constants.FORM_CONTROL_NAMES.comment)">
+                                    <div class="custom-text-area">
+                                        {{control.get(constants.FORM_CONTROL_NAMES.comment).value | translateByInputLanguage | async}}
+                                    </div>
+                                </div>
+
                                 <ng-container>
                                     <jems-multi-language-form-field
+                                            *ngIf="expenditureFormIndex === i || control.get(constants.FORM_CONTROL_NAMES.comment).errors"
                                             #commentInput
                                             type="input"
                                             condensed="true"
                                             [title]="commentInput.label"
+                                            [hasFocus]="commentInputPressed"
                                             [formControlName]="constants.FORM_CONTROL_NAMES.comment"
                                             [maxLength]="constants.MAX_LENGTH">
                                     </jems-multi-language-form-field>
@@ -266,56 +409,91 @@
                                               maxLines="2">{{'project.application.partner.report.expenditures.tab.total.value.invoice' | translate}}</span>
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                                <mat-form-field jemsFormFieldWidth="full">
+                                <div *ngIf="expenditureFormIndex !== i && !control.get(constants.FORM_CONTROL_NAMES.totalValueInvoice).errors"
+                                     (click)="selectRow(i, 'totalValueInvoice')" class="custom-wrapper align-right"
+                                     [ngClass]="getAdditionalRowClass(i, constants.FORM_CONTROL_NAMES.totalValueInvoice)">
+                                    <div class="custom-text-area">
+                                        {{control.get(constants.FORM_CONTROL_NAMES.totalValueInvoice).value?? 0 | number : '1.2-2' : 'de-DE'}}
+                                    </div>
+                                </div>
+
+                                <mat-form-field *ngIf="expenditureFormIndex === i || control.get(constants.FORM_CONTROL_NAMES.totalValueInvoice).errors" jemsFormFieldWidth="full">
                                     <input [formControlName]="constants.FORM_CONTROL_NAMES.totalValueInvoice"
                                            [options]="{min: constants.MIN_VALUE, max: constants.MAX_VALUE, align: 'right'}"
                                            currencyMask matInput
-                                           type="decimal">
+                                           type="decimal" #totalValueInvoiceInput>
                                 </mat-form-field>
                             </mat-cell>
                             <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                         </ng-container>
+
                         <ng-container matColumnDef="vat">
                             <mat-header-cell class="end-flex-header-table" *matHeaderCellDef>
                                         <span jemsText
                                               maxLines="2">{{'project.application.partner.report.expenditures.tab.vat' | translate}}</span>
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                                <mat-form-field jemsFormFieldWidth="full">
+                                <div *ngIf="expenditureFormIndex !== i && !control.get(constants.FORM_CONTROL_NAMES.vat).errors"
+                                     (click)="selectRow(i, 'vat')" class="custom-wrapper align-right"
+                                     [ngClass]="getAdditionalRowClass(i, constants.FORM_CONTROL_NAMES.vat)">
+                                    <div class="custom-text-area">
+                                        {{control.get(constants.FORM_CONTROL_NAMES.vat).value?? 0  | number : '1.2-2' : 'de-DE'}}
+                                    </div>
+                                </div>
+
+                                <mat-form-field *ngIf="expenditureFormIndex === i || control.get(constants.FORM_CONTROL_NAMES.vat).errors" jemsFormFieldWidth="full">
                                     <input [formControlName]="constants.FORM_CONTROL_NAMES.vat"
                                            [options]="{min: constants.MIN_VALUE, max: constants.MAX_VALUE, align: 'right'}"
                                            currencyMask matInput
-                                           type="decimal">
+                                           type="decimal" #vatInput>
                                 </mat-form-field>
                             </mat-cell>
                             <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                         </ng-container>
+
                         <ng-container matColumnDef="numberOfUnits">
                             <mat-header-cell class="end-flex-header-table" *matHeaderCellDef>
                                         <span jemsText
                                               maxLines="2">{{'project.application.partner.report.expenditures.tab.number.of.units' | translate}}</span>
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                                <mat-form-field jemsFormFieldWidth="full" *ngIf="control.value.costOptions" (keyup)="onUpdateNumberOfUnits(i)">
+                                <div *ngIf="control.value.costOptions && (expenditureFormIndex !== i && !control.get(constants.FORM_CONTROL_NAMES.numberOfUnits).errors)"
+                                     (click)="selectRow(i, 'numberOfUnits')" class="custom-wrapper"
+                                     [ngClass]="getAdditionalRowClass(i, constants.FORM_CONTROL_NAMES.numberOfUnits)">
+                                    <div class="custom-text-area" >
+                                        {{control.get(constants.FORM_CONTROL_NAMES.numberOfUnits).value | number : '1.2-2' : 'de-DE'}}
+                                    </div>
+                                </div>
+
+                                <mat-form-field jemsFormFieldWidth="full" *ngIf="control.value.costOptions && (expenditureFormIndex === i || control.get(constants.FORM_CONTROL_NAMES.numberOfUnits).errors)" (keyup)="onUpdateNumberOfUnits(i)">
                                     <input [formControlName]="constants.FORM_CONTROL_NAMES.numberOfUnits"
                                            matInput
                                            currencyMask
-                                           type="decimal">
+                                           type="decimal" #numberOfUnitsInput>
                                 </mat-form-field>
                             </mat-cell>
                             <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                         </ng-container>
+
                         <ng-container matColumnDef="pricePerUnit">
                             <mat-header-cell class="end-flex-header-table" *matHeaderCellDef>
                                         <span jemsText
                                               maxLines="2">{{'project.application.partner.report.expenditures.tab.price.per.unit' | translate}}</span>
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                                <mat-form-field jemsFormFieldWidth="full" *ngIf="control.value.costOptions">
+                                <div *ngIf="control.value.costOptions && (expenditureFormIndex !== i && !control.get(constants.FORM_CONTROL_NAMES.pricePerUnit).errors)"
+                                     (click)="selectRow(i, 'pricePerUnit')" class="custom-wrapper align-right"
+                                     [ngClass]="getAdditionalRowClass(i, constants.FORM_CONTROL_NAMES.pricePerUnit)">
+                                    <div class="custom-text-area" >
+                                        {{control.get(constants.FORM_CONTROL_NAMES.pricePerUnit).value | number : '1.2-2' : 'de-DE'}}
+                                    </div>
+                                </div>
+
+                                <mat-form-field jemsFormFieldWidth="full" *ngIf="control.value.costOptions && (expenditureFormIndex === i || control.get(constants.FORM_CONTROL_NAMES.pricePerUnit).errors)">
                                     <input [formControlName]="constants.FORM_CONTROL_NAMES.pricePerUnit"
                                            [options]="{min: constants.MIN_VALUE, max: constants.MAX_VALUE, align: 'right'}"
                                            currencyMask matInput
-                                           type="decimal">
+                                           type="decimal" #pricePerUnitInput>
                                 </mat-form-field>
                             </mat-cell>
                             <mat-footer-cell *matFooterCellDef></mat-footer-cell>
@@ -326,25 +504,43 @@
                                               maxLines="2">{{'project.application.partner.report.expenditures.declared.amount' | translate}}</span>
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                                <mat-form-field jemsFormFieldWidth="full">
+                                <div *ngIf="expenditureFormIndex !== i && !control.get(constants.FORM_CONTROL_NAMES.declaredAmount).errors"
+                                     (click)="selectRow(i, 'declaredAmount')" class="custom-wrapper align-right"
+                                     [ngClass]="getAdditionalRowClass(i, constants.FORM_CONTROL_NAMES.declaredAmount)">
+                                    <div class="custom-text-area" >
+                                        {{control.get(constants.FORM_CONTROL_NAMES.declaredAmount).value | number : '1.2-2' : 'de-DE'}}
+                                    </div>
+                                </div>
+
+                                <mat-form-field *ngIf="expenditureFormIndex === i || control.get(constants.FORM_CONTROL_NAMES.declaredAmount).errors" jemsFormFieldWidth="full">
                                     <input [formControlName]="constants.FORM_CONTROL_NAMES.declaredAmount"
                                            [options]="{min: constants.MIN_VALUE, max: constants.MAX_VALUE, align: 'right'}"
                                            (keyup)="updateAmountInEur(i, control.value.declaredAmount)"
-                                           currencyMask matInput
+                                           currencyMask matInput #declaredAmountInput
                                            type="decimal">
                                 </mat-form-field>
                             </mat-cell>
                             <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                         </ng-container>
-
                         <ng-container matColumnDef="currencyCode">
                             <mat-header-cell *matHeaderCellDef>
                                         <span jemsText
                                               maxLines="2">{{'project.application.partner.report.expenditures.currency' | translate}}</span>
                             </mat-header-cell>
-                            <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                                <mat-form-field jemsFormFieldWidth="full">
+                            <mat-cell *matCellDef="let control;  let i = index" (click)="selectRow(i, 'currencyCode')" [formGroupName]="i">
+                                <div *ngIf="expenditureFormIndex !== i && !control.get(constants.FORM_CONTROL_NAMES.currencyCode).errors"
+                                     class="custom-wrapper pointer" [ngClass]="getAdditionalRowClass(i, constants.FORM_CONTROL_NAMES.currencyCode)">
+                                    <div class="custom-dropdown-text">
+                                        {{control.get(constants.FORM_CONTROL_NAMES.currencyCode).value}}
+                                    </div>
+                                    <div *ngIf="!control.get(constants.FORM_CONTROL_NAMES.currencyCode).disabled" class="custom-icon">
+                                        <mat-icon class="arrow">arrow_drop_down</mat-icon>
+                                    </div>
+                                </div>
+
+                                <mat-form-field *ngIf="expenditureFormIndex === i || control.get(constants.FORM_CONTROL_NAMES.currencyCode).errors" jemsFormFieldWidth="full">
                                     <mat-select class="placeholder-required"
+                                                #currencyCodeSelect
                                                 [disabled]="currentReport.identification.currency === CurrencyCodesEnum.EUR"
                                                 [formControlName]="constants.FORM_CONTROL_NAMES.currencyCode"
                                                 [required]="true"
@@ -356,14 +552,19 @@
                             </mat-cell>
                             <mat-footer-cell *matFooterCellDef></mat-footer-cell>
                         </ng-container>
-
                         <ng-container matColumnDef="currencyConversionRate">
                             <mat-header-cell class="end-flex-header-table justify-end" *matHeaderCellDef>
                                         <span jemsText
                                               maxLines="2">{{'project.application.partner.report.expenditures.conversion.rate' | translate}}</span>
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                                <mat-form-field jemsFormFieldWidth="full" [class.mat-form-field-disabled]="true">
+                                <div *ngIf="expenditureFormIndex !== i" class="custom-wrapper align-right border-with-dotted">
+                                    <div class="custom-text-area">
+                                        {{control.get(constants.FORM_CONTROL_NAMES.currencyConversionRate).value}}
+                                    </div>
+                                </div>
+
+                                <mat-form-field *ngIf="expenditureFormIndex === i" jemsFormFieldWidth="full" [class.mat-form-field-disabled]="true">
                                     <input class="text-right" [formControlName]="constants.FORM_CONTROL_NAMES.currencyConversionRate"
                                            [readonly]="true"
                                            matInput>
@@ -382,7 +583,13 @@
                                 </span>
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                                <mat-form-field jemsFormFieldWidth="full" [class.mat-form-field-disabled]="true">
+                                <div *ngIf="expenditureFormIndex !== i" class="custom-wrapper align-right border-with-dotted">
+                                    <div class="custom-text-area" >
+                                        {{control.get(constants.FORM_CONTROL_NAMES.declaredAmountInEur).value | number : '1.2-2' : 'de-DE'}}
+                                    </div>
+                                </div>
+
+                                <mat-form-field *ngIf="expenditureFormIndex === i" jemsFormFieldWidth="full" [class.mat-form-field-disabled]="true">
                                     <input [formControlName]="constants.FORM_CONTROL_NAMES.declaredAmountInEur"
                                            [readonly]="true"
                                            [options]="{align: 'right'}"

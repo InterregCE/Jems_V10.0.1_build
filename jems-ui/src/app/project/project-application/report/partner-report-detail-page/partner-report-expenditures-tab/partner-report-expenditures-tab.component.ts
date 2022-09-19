@@ -1,10 +1,18 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  ElementRef,
+  OnInit,
+  QueryList,
+  ViewChildren
+} from '@angular/core';
 import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
-import {catchError, map, take, tap} from 'rxjs/operators';
+import {catchError, concat, map, take, tap} from 'rxjs/operators';
 import {HttpErrorResponse} from '@angular/common/http';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {FormService} from '@common/components/section/form/form.service';
-import {combineLatest, Observable} from 'rxjs';
+import {combineLatest, Observable, of} from 'rxjs';
 import {
   PartnerReportExpendituresTabConstants
 } from '@project/project-application/report/partner-report-detail-page/partner-report-expenditures-tab/partner-report-expenditures-tab.constants';
@@ -35,6 +43,10 @@ import {
 } from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
 import {RoutingService} from '@common/services/routing.service';
 import {v4 as uuid} from 'uuid';
+import {MatSelect} from '@angular/material/select';
+import {MatDatepicker} from '@angular/material/datepicker';
+import {CustomTranslatePipe} from '@common/pipe/custom-translate-pipe';
+import {TranslateByInputLanguagePipe} from '@common/pipe/translate-by-input-language.pipe';
 
 @UntilDestroy()
 @Component({
@@ -45,6 +57,7 @@ import {v4 as uuid} from 'uuid';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PartnerReportExpendituresTabComponent implements OnInit {
+  expenditureFormIndex: number | null;
   CurrencyCodesEnum = CurrencyCodesEnum;
   CostCategoryEnum = ProjectPartnerReportExpenditureCostDTO.CostCategoryEnum;
   reportExpendituresForm: FormGroup;
@@ -76,6 +89,8 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
   unitCostsAvailable: boolean;
   lumpSumHasValue = false;
   unitCostHasValue = false;
+  descriptionInputPressed = false;
+  commentInputPressed = false;
 
   availableLumpSums: ProjectPartnerReportLumpSumDTO[];
   availableUnitCosts: ProjectPartnerReportUnitCostDTO[];
@@ -90,9 +105,30 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
               private formService: FormService,
               private partnerFileManagementStore: PartnerFileManagementStore,
               private partnerReportDetailPageStore: PartnerReportDetailPageStore,
-              private router: RoutingService) {
+              private router: RoutingService,
+              private customTranslatePipe: CustomTranslatePipe,
+              private translateByInputLanguagePipe: TranslateByInputLanguagePipe) {
     this.isReportEditable$ = this.pageStore.isEditable$;
   }
+
+  @ViewChildren('costOptionsSelect') private costOptionsSelect: QueryList<MatSelect>;
+  @ViewChildren('costCategorySelect') private costCategorySelect: QueryList<MatSelect>;
+  @ViewChildren('investmentNumber') private investmentNumberSelect: QueryList<MatSelect>;
+  @ViewChildren('contractId') private contractIdSelect: QueryList<MatSelect>;
+  @ViewChildren('internalReferenceNumber') private internalReferenceNumberTextField: QueryList<ElementRef>;
+  @ViewChildren('invoiceNumberInput') private invoiceNumberTextField: QueryList<ElementRef>;
+  @ViewChildren('invoiceDateInput') private invoiceDateFormDateInput: QueryList<ElementRef>;
+  @ViewChildren('invoiceDatePicker') private invoiceDateFormDatePicker: QueryList<MatDatepicker<Date>>;
+  @ViewChildren('dateOfPaymentInput') private dateOfPaymentDateInput: QueryList<ElementRef>;
+  @ViewChildren('dateOfPaymentPicker') private dateOfPaymentDatePicker: QueryList<MatDatepicker<Date>>;
+  @ViewChildren('descriptionInput') private descriptionInput: QueryList<ElementRef>;
+  @ViewChildren('totalValueInvoiceInput') private totalValueInvoiceInput: QueryList<ElementRef>;
+  @ViewChildren('vatInput') private vatInput: QueryList<ElementRef>;
+  @ViewChildren('numberOfUnitsInput') private numberOfUnitsInput: QueryList<ElementRef>;
+  @ViewChildren('pricePerUnitInput') private pricePerUnitInput: QueryList<ElementRef>;
+  @ViewChildren('declaredAmountInput') private declaredAmountInput: QueryList<ElementRef>;
+  @ViewChildren('currencyCodeSelect') private currencyCodeSelect: QueryList<MatSelect>;
+
 
   ngOnInit(): void {
     this.initForm();
@@ -114,7 +150,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     this.dataAsObservable();
   }
 
-  onCostCategoryChange(change: MatSelectChange, control: FormGroup): void {
+  onCostCategoryChange(change: MatSelectChange, control: FormGroup, index: number): void {
     control.patchValue({costCategory: change.value});
     if (this.isStaffCostsSelectedForCostCategoryRow(control) ||
       this.isTravelAndAccommodationSelectedForCostCategoryRow(control)) {
@@ -283,24 +319,25 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       numberOfUnits: 0,
       pricePerUnit: 0,
       declaredAmount: 0,
-      currencyCode: this.currentReport.identification?.currency ,
+      currencyCode: [this.currentReport.identification?.currency, Validators.required],
       currencyConversionRate: this.getConversionRateByCode(this.currentReport.identification?.currency),
       declaredAmountInEur: 0,
       attachment: [],
     });
     this.items.push(item);
+    this.clearRowSelections();
     item.get('numberOfUnits')?.disable();
     item.get('pricePerUnit')?.disable();
     this.tableData = [...this.items.controls];
     this.formService.setDirty(true);
     this.availableCurrenciesPerRow.push(this.getAvailableCurrenciesByType(null));
-
     setTimeout(() => this.changeDetectorRef.detectChanges());
   }
 
   updateReportExpenditures(): void {
     this.pageStore.updateExpenditures(this.formToReportExpenditures()).pipe(
       tap(() => this.formService.setSuccess('project.application.partner.report.expenditures.cost.save.success')),
+      tap(() => this.clearRowSelections()),
       catchError((error: HttpErrorResponse) => this.formService.setError(error)),
       untilDestroyed(this)
     ).subscribe();
@@ -568,6 +605,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
 
   refreshListOfExpenditures(): void {
     this.pageStore.refreshExpenditures$.next(undefined);
+    this.clearRowSelections();
   }
 
   isCostOptionSelectedInCurrentFormGroup(index: number): boolean {
@@ -624,5 +662,134 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
 
   hasPartnerCurrencySetToEur(): boolean {
     return  this.currentReport.identification.currency === CurrencyCodesEnum.EUR;
+  }
+
+  getCostOptionsDefinition(costOption: any): Observable<string> {
+    if (!costOption) {
+      return of(this.customTranslatePipe.transform('common.not.applicable.option'));
+    } else if (costOption.type === 'unitCost') {
+      const prefix = costOption.projectDefined ? 'E.2.1_' : '';
+      return this.translateByInputLanguagePipe.transform(costOption.name).pipe(map(n => prefix + n));
+    } else {
+      let postfix = '';
+      if (costOption.period && costOption.period === this.PERIOD_PREPARATION) {
+        postfix = '-' + this.customTranslatePipe.transform('project.application.form.section.part.e.period.preparation');
+      } else if (costOption.period && costOption.period === this.PERIOD_CLOSURE) {
+        postfix = '-' + this.customTranslatePipe.transform('project.application.form.section.part.e.period.preparation');
+      } else if(costOption.period) {
+        postfix = '-' + costOption.period;
+      }
+      return this.translateByInputLanguagePipe.transform(costOption.name).pipe(map(n => n + postfix));
+    }
+  }
+
+  getLimitedTextInputTooltip(content: string | null, limit: number): string {
+    return content ? `${content} (${content.length}/${limit})` : '';
+  }
+
+  getAdditionalRowClass(index: number, formControlName: string) {
+    if(this.items.at(index).get(formControlName)?.disabled) {
+      return formControlName === PartnerReportExpendituresTabConstants.FORM_CONTROL_NAMES.contractId ? 'border-with-dotted disabled-text' : 'border-with-dotted';
+    } else if (index % 2 === 0) {
+      return 'blue-background';
+    } else {
+      return 'grey-background';
+    }
+  }
+
+  clearRowSelections() {
+    this.descriptionInputPressed = false;
+    this.commentInputPressed = false;
+    this.costCategorySelect.forEach(e => e.close());
+    this.costOptionsSelect.forEach(e => e.close());
+    this.investmentNumberSelect.forEach(e => e.close());
+    this.contractIdSelect.forEach(e => e.close());
+    this.internalReferenceNumberTextField.forEach(e => e.nativeElement.blur());
+    this.invoiceNumberTextField.forEach(e => e.nativeElement.blur());
+    this.invoiceDateFormDateInput.forEach(e => e.nativeElement.blur());
+    this.invoiceDateFormDatePicker.forEach(e => e.close());
+    this.dateOfPaymentDateInput.forEach(e => e.nativeElement.blur());
+    this.dateOfPaymentDatePicker.forEach(e => e.close());
+    this.totalValueInvoiceInput.forEach(e => e.nativeElement.blur());
+    this.vatInput.forEach(e => e.nativeElement.blur());
+    this.numberOfUnitsInput.forEach(e => e.nativeElement.blur());
+    this.pricePerUnitInput.forEach(e => e.nativeElement.blur());
+    this.declaredAmountInput.forEach(e => e.nativeElement.blur());
+    this.currencyCodeSelect.forEach(e => e.close());
+  }
+
+  selectRow(index: number, column: String) {
+    this.expenditureFormIndex = index;
+    this.descriptionInputPressed = false;
+    this.commentInputPressed = false;
+    if (column === 'costCategory') {
+      setTimeout(() => {
+        this.costCategorySelect.first.open();
+      }, PartnerReportExpendituresTabConstants.FOCUS_TIMEOUT);
+    } else if (column === 'costOptions') {
+      setTimeout(() => {
+        this.costOptionsSelect.first.open();
+      }, PartnerReportExpendituresTabConstants.FOCUS_TIMEOUT);
+    } else if (column === 'investmentId') {
+      setTimeout(() => {
+        this.investmentNumberSelect.first.open();
+      }, PartnerReportExpendituresTabConstants.FOCUS_TIMEOUT);
+    } else if (column === 'contractId') {
+      setTimeout(() => {
+        this.contractIdSelect.first.open();
+      }, PartnerReportExpendituresTabConstants.FOCUS_TIMEOUT);
+    } else if (column === 'internalReferenceNumber') {
+      setTimeout(() => {
+        this.internalReferenceNumberTextField.first.nativeElement.focus();
+      }, PartnerReportExpendituresTabConstants.FOCUS_TIMEOUT);
+    } else if (column === 'invoiceNumber') {
+      setTimeout(() => {
+        this.invoiceNumberTextField.first.nativeElement.focus();
+      }, PartnerReportExpendituresTabConstants.FOCUS_TIMEOUT);
+    } else if (column === 'invoiceDate') {
+      setTimeout(() => {
+        this.invoiceDateFormDateInput.first.nativeElement.focus();
+      }, PartnerReportExpendituresTabConstants.FOCUS_TIMEOUT);
+    } else if (column === 'invoiceDatePicker') {
+      setTimeout(() => {
+        this.invoiceDateFormDatePicker.first.open();
+      }, PartnerReportExpendituresTabConstants.FOCUS_TIMEOUT);
+    }  else if (column === 'dateOfPayment') {
+      setTimeout(() => {
+        this.dateOfPaymentDateInput.first.nativeElement.focus();
+      }, PartnerReportExpendituresTabConstants.FOCUS_TIMEOUT);
+    } else if (column === 'dateOfPaymentDatePicker') {
+      setTimeout(() => {
+        this.dateOfPaymentDatePicker.first.open();
+      }, PartnerReportExpendituresTabConstants.FOCUS_TIMEOUT);
+    } else if (column === 'description') {
+      this.descriptionInputPressed = true;
+    } else if (column === 'comment') {
+      this.commentInputPressed = true;
+    } else if (column === 'totalValueInvoice') {
+      setTimeout(() => {
+        this.totalValueInvoiceInput.first.nativeElement.focus();
+      }, PartnerReportExpendituresTabConstants.FOCUS_TIMEOUT);
+    } else if (column === 'vat') {
+      setTimeout(() => {
+        this.vatInput.first.nativeElement.focus();
+      }, PartnerReportExpendituresTabConstants.FOCUS_TIMEOUT);
+    } else if (column === 'numberOfUnits') {
+      setTimeout(() => {
+        this.numberOfUnitsInput.first.nativeElement.focus();
+      }, PartnerReportExpendituresTabConstants.FOCUS_TIMEOUT);
+    } else if (column === 'pricePerUnit') {
+      setTimeout(() => {
+        this.pricePerUnitInput.first.nativeElement.focus();
+      }, PartnerReportExpendituresTabConstants.FOCUS_TIMEOUT);
+    } else if (column === 'declaredAmount') {
+      setTimeout(() => {
+        this.declaredAmountInput.first.nativeElement.focus();
+      }, PartnerReportExpendituresTabConstants.FOCUS_TIMEOUT);
+    } else if (column === 'currencyCode') {
+      setTimeout(() => {
+        this.currencyCodeSelect.first.open();
+      }, PartnerReportExpendituresTabConstants.FOCUS_TIMEOUT);
+    }
   }
 }

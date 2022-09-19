@@ -1,4 +1,4 @@
-import {Component, forwardRef, Input, OnInit} from '@angular/core';
+import {Component, ElementRef, forwardRef, Input, OnInit, ViewChild} from '@angular/core';
 import {
   AbstractControl,
   ControlValueAccessor,
@@ -65,10 +65,13 @@ export class MultiLanguageFormFieldComponent implements OnInit, ControlValueAcce
   condensed = false;
   @Input()
   isRequired = false;
+  @Input()
+  hasFocus = false;
 
   multiLanguageFormGroup: FormGroup;
   currentLanguage$: Observable<string>;
   state$ = new ReplaySubject<{ [key: string]: INPUT_STATE }>(1);
+  @ViewChild('input') inputRef: ElementRef;
 
   constructor(private multiLanguageContainerService: MultiLanguageContainerService,
               public languageStore: LanguageStore,
@@ -84,6 +87,9 @@ export class MultiLanguageFormFieldComponent implements OnInit, ControlValueAcce
     ).subscribe();
 
     this.currentLanguage$ = this.multiLanguageContainerService.activeLanguage$;
+    if (this.hasFocus) {
+      setTimeout(() => this.inputRef.nativeElement.focus(), 50);
+    }
   }
 
   registerOnChange(fn: any): void {

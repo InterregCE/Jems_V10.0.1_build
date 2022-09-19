@@ -202,6 +202,7 @@ import { ContractFilesComponent } from './project-application/contracting-contra
 import {
   PartnerReportProcurementAttachmentComponent
 } from '@project/project-application/report/partner-report-detail-page/partner-report-procurements-tab/partner-report-procurement-detail/partner-report-procurement-attachment/partner-report-procurement-attachment.component';
+import {TranslateByInputLanguagePipe} from '@common/pipe/translate-by-input-language.pipe';
 
 @NgModule({
   declarations: [
@@ -374,7 +375,8 @@ import {
     ProjectPartnerCoFinancingSpfStore,
     ProjectPartnerStateAidsStore,
     PartnerControlReportStore,
-    ProjectProposedUnitCostBreadcrumbResolver
+    ProjectProposedUnitCostBreadcrumbResolver,
+    TranslateByInputLanguagePipe
   ]
 })
 export class ProjectModule {

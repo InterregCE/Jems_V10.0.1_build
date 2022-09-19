@@ -2,3 +2,97 @@
   display: flex;
   justify-content: end;
 }
+
+.custom-wrapper {
+  display: flex;
+  width: 100%;
+  height: 2.36rem;
+  border-bottom-style:groove;
+  border-width: thin;
+  justify-content: space-between;
+  padding-left: 0.65rem;
+  padding-right: 0.475rem;
+  overflow: hidden;
+  align-items: center;
+  position: relative;
+}
+
+.custom-wrapper.pointer {
+  cursor: pointer;
+}
+
+.grey-background {
+  background-color: rgb(247, 247, 247);
+}
+
+.blue-background {
+  background-color: rgb(236, 242, 246);
+}
+
+.align-right {
+  justify-content: end !important;
+}
+
+.border-with-dotted {
+  border-bottom-style: dotted !important;
+  border-width: thin !important;
+  border-color: rgb(220, 220, 220) !important;
+}
+
+.disabled-text {
+  color: rgb(142, 142, 142) !important;
+  cursor: default !important;
+  padding-bottom: 0.05rem !important;
+}
+
+.custom-dropdown-text {
+  padding-top: 0.15rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.custom-dropdown-text.cost-category {
+  width: 8.5rem;
+  position: absolute;
+  left: 0.66rem;
+}
+
+.custom-icon {
+  .calendar {
+    transform: scale(0.875);
+    padding-right: 0.55rem;
+    height: 100%;
+    padding-top: 0.5rem;
+    cursor: pointer;
+  }
+  .calendar.disabled {
+    color: rgb(189, 189, 189) !important;
+    cursor: default;
+    padding-top: 0.45rem !important;
+  }
+
+  mat-icon {
+    color: grey;
+    padding-top: 0.45rem;
+  }
+}
+
+.custom-icon.cost-category {
+  margin-left: 8.375rem;
+}
+
+.custom-text-area {
+  padding-top: 0.15rem;
+  padding-right: 0.1rem;
+  white-space: nowrap;
+  .date {
+    margin-right: 0.5rem;
+  }
+}
+
+::ng-deep .tooltip {
+  position: relative !important;
+  top: -0.75rem !important;
+}
+
