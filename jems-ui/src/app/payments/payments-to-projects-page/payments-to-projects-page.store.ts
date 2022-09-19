@@ -34,7 +34,7 @@ export class PaymentsToProjectPageStore {
       this.newPageSize$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_SIZE)),
       this.newSort$.pipe(
         startWith(Tables.DEFAULT_INITIAL_SORT),
-        map(sort => sort?.direction ? sort : Tables.DEFAULT_INITIAL_SORT),
+        map(sort => (sort?.direction && this.isSortCapable(sort?.active)) ? sort : Tables.DEFAULT_INITIAL_SORT),
         map(sort => `${sort.active},${sort.direction}`)
       )
     ])
@@ -53,6 +53,11 @@ export class PaymentsToProjectPageStore {
       .pipe(
         map(([canRetrieve, canUpdate]) => canRetrieve || canUpdate)
       );
+  }
+
+  // Although these columns has sortable feature, they don't keep any value at the moment - so sort with default config
+  private isSortCapable(column: string | undefined): boolean {
+    return (column !== 'paymentType' && column !== 'dateOfLastPayment' && column !== 'amountPaidPerFund');
   }
 
 }
