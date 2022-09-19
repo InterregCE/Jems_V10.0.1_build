@@ -4,6 +4,9 @@ import {WorkPackageService} from '@cat/api';
 import {WorkPackagePageStore} from './work-package-page-store.service';
 import {RoutingService} from '@common/services/routing.service';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
+import {
+  ProjectStore
+} from "@project/project-application/containers/project-application-detail/services/project-store.service";
 
 @Component({
   selector: 'jems-project-work-package-detail-page',
@@ -19,7 +22,8 @@ export class ProjectWorkPackageDetailPageComponent {
   constructor(private workPackageService: WorkPackageService,
               private activatedRoute: ActivatedRoute,
               private router: RoutingService,
-              public workPackageStore: WorkPackagePageStore) {
+              public workPackageStore: WorkPackagePageStore,
+              public projectStore: ProjectStore) {
   }
 
   activeTab(route: string): boolean {

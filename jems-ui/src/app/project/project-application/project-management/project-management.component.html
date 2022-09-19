@@ -7,15 +7,15 @@
                (save)="onSubmit()"
                (discard)="resetForm(managers)">
         <form jemsFormLayout [formGroup]="projectManagersForm">
-            <h4 class="mb-3">{{'project.application.contract.management.type.projectManager' | translate}}</h4>
+            <h3 class="mb-3">{{'project.application.contract.management.type.projectManager' | translate}}</h3>
             <ng-container [ngTemplateOutlet]="managementContact"
                           [ngTemplateOutletContext]="{controls: projectManagersForm.get('ProjectManager')}">
             </ng-container>
-            <h4 class="mb-3">{{'project.application.contract.management.type.financeManager' | translate}}</h4>
+            <h3 class="mb-3">{{'project.application.contract.management.type.financeManager' | translate}}</h3>
             <ng-container [ngTemplateOutlet]="managementContact"
                           [ngTemplateOutletContext]="{controls: projectManagersForm.get('FinanceManager')}">
             </ng-container>
-            <h4 class="mb-3">{{'project.application.contract.management.type.communicationManager' | translate}}</h4>
+            <h3 class="mb-3">{{'project.application.contract.management.type.communicationManager' | translate}}</h3>
             <ng-container [ngTemplateOutlet]="managementContact"
                           [ngTemplateOutletContext]="{controls: projectManagersForm.get('CommunicationManager')}">
             </ng-container>

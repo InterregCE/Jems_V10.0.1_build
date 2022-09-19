@@ -1,8 +1,8 @@
 <ng-container *ngIf="pageStore.partnerSummary$ | async as partnerReportSummary">
     <ng-container *ngIf="data$ | async as data">
         <jems-project-page-template *ngIf="pageStore.partnerReport$ | async as partnerReport"
-                                    [titleKey]="'project.application.partner.reports.title.number' | translate : {reportNumber: partnerReport?.reportNumber}"
-                                    [subTitleText]="'common.label.project.partner.role.shortcut.' + partnerReport?.identification?.partnerRole | adaptTranslationKeyByCallType | async | translate : {partner: partnerReport?.identification?.partnerNumber + ' ' + partnerReportSummary.abbreviation}"
+                                    [titleText]="'common.label.project.partner.role.shortcut.' + partnerReport?.identification?.partnerRole | adaptTranslationKeyByCallType | async | translate : {partner: partnerReport?.identification?.partnerNumber + ' ' + partnerReportSummary.abbreviation}"
+                                    [subTitleText]="'project.application.partner.reports.title.number' | translate : {reportNumber: partnerReport?.reportNumber}"
                                     [isVersionedData]="false">
             <nav mat-tab-nav-bar>
                 <a [active]="activeTab('identification')" mat-tab-link
