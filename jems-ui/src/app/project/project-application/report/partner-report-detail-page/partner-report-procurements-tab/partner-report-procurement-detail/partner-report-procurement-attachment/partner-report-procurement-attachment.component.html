@@ -13,8 +13,7 @@
         <div *ngIf="data.isReportEditable">
             <input #selectFile (change)="uploadFile($event?.target)" onclick="this.value=null;"
                    type="file" [accept]="acceptedFilesTypes" [hidden]="true">
-            <button *jemsHasPermission="PermissionsEnum.ProjectReportingEdit" mat-stroked-button
-                    (click)="selectFile.click()" [disabled]="data.attachments.length >= 30">
+            <button mat-stroked-button (click)="selectFile.click()" [disabled]="data.attachments.length >= 30">
                 <mat-icon fontSet="material-icons-outlined" class="mr-1">file_upload</mat-icon>{{ 'file.upload.add.new' | translate }}
             </button>
         </div>

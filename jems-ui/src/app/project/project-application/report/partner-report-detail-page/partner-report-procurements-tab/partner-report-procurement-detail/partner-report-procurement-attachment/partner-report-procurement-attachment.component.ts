@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges} from '@angular/core';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {FormService} from '@common/components/section/form/form.service';
 import {ActivatedRoute} from '@angular/router';
@@ -32,7 +32,7 @@ import {FileListComponent} from '@common/components/file-list/file-list.componen
   providers: [FormService],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PartnerReportProcurementAttachmentComponent {
+export class PartnerReportProcurementAttachmentComponent implements OnChanges {
   Alert = Alert;
   PermissionsEnum = PermissionsEnum;
 
@@ -81,6 +81,12 @@ export class PartnerReportProcurementAttachmentComponent {
     );
     this.fileManagementStore.getMaximumAllowedFileSize().pipe(untilDestroyed(this))
       .subscribe((maxAllowedSize) => this.maximumAllowedFileSizeInMB = maxAllowedSize);
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.procurementId && !changes.procurementId.previousValue) {
+      this.procurementStore.procurementId$.next(this.procurementId);
+    }
   }
 
   uploadFile(target: any): void {
