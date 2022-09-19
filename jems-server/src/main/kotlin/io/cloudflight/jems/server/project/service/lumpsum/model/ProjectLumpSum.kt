@@ -7,6 +7,7 @@ const val PREPARATION_PERIOD_NUMBER = 0
 const val CLOSURE_PERIOD_NUMBER = 255
 
 data class ProjectLumpSum (
+    var orderNr: Int,
     val programmeLumpSumId: Long,
     val period: Int? = null,
     val lumpSumContributions: List<ProjectPartnerLumpSum> = emptyList(),

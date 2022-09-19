@@ -123,6 +123,7 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
 
     private fun lumpSums(partnerId: Long) = listOf(
         ProjectLumpSum(
+            orderNr = 1,
             programmeLumpSumId = 44L,
             period = 3,
             lumpSumContributions = listOf(

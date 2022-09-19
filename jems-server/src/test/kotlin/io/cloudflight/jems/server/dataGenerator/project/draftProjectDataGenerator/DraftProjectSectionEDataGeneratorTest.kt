@@ -37,6 +37,7 @@ class DraftProjectSectionEDataGeneratorTest(@LocalServerPort private val port: I
         DRAFT_PROJECT_LUMP_SUMS = lumpSumsApi.updateProjectLumpSums(
             DRAFT_PROJECT_ID, listOf(
                 ProjectLumpSumDTO(
+                    orderNr = 1,
                     programmeLumpSumId = PROGRAMME_LUMP_SUMS.first().id!!,
                     period = 1,
                     lumpSumContributions = listOf(

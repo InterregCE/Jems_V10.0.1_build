@@ -267,6 +267,7 @@ internal class PartnerBudgetPerPeriodCalculatorTest : UnitTest() {
             11.10.toScaledBigDecimal(), 62.91.toScaledBigDecimal(), 10.22.toScaledBigDecimal()
         )
         val p1LumpSumPeriod1 = ProjectLumpSum(
+            orderNr = 1,
             programmeLumpSumId = 2L,
             period = 1,
             lumpSumContributions = listOf(ProjectPartnerLumpSum(partner1Id, 10.22.toScaledBigDecimal()))

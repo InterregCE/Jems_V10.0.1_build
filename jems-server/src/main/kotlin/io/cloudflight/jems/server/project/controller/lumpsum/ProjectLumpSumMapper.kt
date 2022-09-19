@@ -8,6 +8,7 @@ import java.math.BigDecimal
 
 fun List<ProjectLumpSum>.toDto() = map {
     ProjectLumpSumDTO(
+        orderNr = it.orderNr,
         programmeLumpSumId = it.programmeLumpSumId,
         period = it.period,
         lumpSumContributions = it.lumpSumContributions.map { it.toDto() },
@@ -26,6 +27,7 @@ fun ProjectPartnerLumpSum.toDto() = ProjectPartnerLumpSumDTO(
 
 fun List<ProjectLumpSumDTO>.toModel() = map {
     ProjectLumpSum(
+        orderNr = it.orderNr,
         programmeLumpSumId = it.programmeLumpSumId,
         period = it.period,
         lumpSumContributions = it.lumpSumContributions.toPartnerContributionModel(),

@@ -27,6 +27,7 @@ internal class UpdateProjectLumpSumsTest : UnitTest() {
         private const val PROGRAMME_LUMP_SUM_ID: Long = 19L
 
         private val lumpSum = ProjectLumpSum(
+            orderNr = 1,
             programmeLumpSumId = PROGRAMME_LUMP_SUM_ID,
             period = 2,
             lumpSumContributions = listOf(

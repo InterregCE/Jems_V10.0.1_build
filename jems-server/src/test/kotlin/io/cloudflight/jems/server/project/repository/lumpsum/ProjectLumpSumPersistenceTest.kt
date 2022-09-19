@@ -152,6 +152,7 @@ internal class ProjectLumpSumPersistenceTest : UnitTest() {
 
         assertThat(persistence.getLumpSums(1L)).containsExactly(
             ProjectLumpSum(
+                orderNr = 1,
                 programmeLumpSumId = 50,
                 period = 7,
                 lumpSumContributions = listOf(
@@ -162,6 +163,7 @@ internal class ProjectLumpSumPersistenceTest : UnitTest() {
                 lastApprovedVersionBeforeReadyForPayment = "v1.0"
             ),
             ProjectLumpSum(
+                orderNr = 2,
                 programmeLumpSumId = 50,
                 period = 8,
                 paymentEnabledDate = null,
@@ -192,6 +194,7 @@ internal class ProjectLumpSumPersistenceTest : UnitTest() {
 
         val toBeSaved = listOf(
             ProjectLumpSum(
+                orderNr = 1,
                 programmeLumpSumId = 20,
                 period = 7,
                 lumpSumContributions = listOf(
@@ -241,6 +244,7 @@ internal class ProjectLumpSumPersistenceTest : UnitTest() {
 
         val toBeSaved = listOf(
             ProjectLumpSum(
+                orderNr = 0,
                 programmeLumpSumId = -1,
                 period = 7,
             ),
@@ -269,6 +273,7 @@ internal class ProjectLumpSumPersistenceTest : UnitTest() {
 
         val toBeSaved = listOf(
             ProjectLumpSum(
+                orderNr = 1,
                 programmeLumpSumId = 20,
                 period = 7,
                 lumpSumContributions = listOf(

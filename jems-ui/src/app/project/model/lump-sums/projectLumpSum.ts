@@ -1,6 +1,7 @@
 import {PartnerContribution} from './partnerContribution';
 
 export class ProjectLumpSum {
+  orderNr: number;
   programmeLumpSumId: number;
   period: number;
   lumpSumContributions: PartnerContribution[];
@@ -11,6 +12,7 @@ export class ProjectLumpSum {
   lastApprovedVersionBeforeReadyForPayment: string;
 
   constructor(
+    orderNr: number,
     programmeLumpSumId: number,
     period: number,
     lumpSumContributions: PartnerContribution[],
@@ -20,6 +22,7 @@ export class ProjectLumpSum {
     paymentEnabledDate: Date,
     lastApprovedVersionBeforeReadyForPayment: string
   ) {
+    this.orderNr = orderNr;
     this.programmeLumpSumId = programmeLumpSumId;
     this.period = period;
     this.lumpSumContributions = lumpSumContributions;

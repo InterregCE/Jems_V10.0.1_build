@@ -66,6 +66,7 @@ class UpdateContractingMonitoringTest : UnitTest() {
         )
         private val lumpSums = listOf(
             ProjectLumpSum(
+                orderNr = 1,
                 programmeLumpSumId = 1,
                 period = 1,
                 lumpSumContributions = listOf(),
@@ -79,6 +80,7 @@ class UpdateContractingMonitoringTest : UnitTest() {
 
         private val lumpSumsUpdated = listOf(
             ProjectLumpSum(
+                orderNr = 1,
                 programmeLumpSumId = 1,
                 period = 1,
                 lumpSumContributions = listOf(),
@@ -320,6 +322,7 @@ class UpdateContractingMonitoringTest : UnitTest() {
         val monitoringNew = monitoring.copy(
             fastTrackLumpSums = listOf(
                 ProjectLumpSum(
+                    orderNr = 1,
                     programmeLumpSumId = 1,
                     period = 1,
                     lumpSumContributions = listOf(),

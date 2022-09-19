@@ -3,6 +3,7 @@ package io.cloudflight.jems.api.project.dto.lumpsum
 import java.time.ZonedDateTime
 
 data class ProjectLumpSumDTO (
+    val orderNr: Int,
     val programmeLumpSumId: Long,
     val period: Int? = null,
     val lumpSumContributions: List<ProjectPartnerLumpSumDTO> = emptyList(),

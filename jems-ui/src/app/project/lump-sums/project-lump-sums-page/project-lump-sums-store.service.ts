@@ -48,6 +48,7 @@ export class ProjectLumpSumsStore {
       map((projectLumpSums: ProjectLumpSumDTO[]) =>
         projectLumpSums.map(projectLumpSum =>
           new ProjectLumpSum(
+            projectLumpSum.orderNr,
             projectLumpSum.programmeLumpSumId,
             projectLumpSum.period,
             projectLumpSum.lumpSumContributions.map((contribution: ProjectPartnerLumpSumDTO) =>

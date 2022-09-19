@@ -54,6 +54,7 @@ class GetPartnerBudgetPerPeriodInteractorTest : UnitTest() {
     )
 
     private fun lumpSumEntry(partnerId: Long, amount: BigDecimal) = ProjectLumpSum(
+        orderNr = 1,
         programmeLumpSumId = 2L,
         period = 1,
         lumpSumContributions = listOf(ProjectPartnerLumpSum(partnerId, amount))

@@ -30,6 +30,9 @@ class ProjectLumpSumPersistenceProvider(
 
     @Transactional
     override fun updateLumpSums(projectId: Long, lumpSums: List<ProjectLumpSum>): List<ProjectLumpSum> {
+        if(lumpSums.isNotEmpty())
+            updateLumpSumsOrderNr(lumpSums)
+
         return projectRepository.save(
             getProjectOrThrow(projectId).copy(
                 lumpSums = lumpSums.toEntity(
@@ -44,6 +47,14 @@ class ProjectLumpSumPersistenceProvider(
     @Transactional(readOnly = true)
     override fun isFastTrackLumpSumReadyForPayment(programmeLumpSumId: Long) =
         projectLumpSumRepository.findAllByProgrammeLumpSumId(programmeLumpSumId).any { it.readyForPayment }
+
+    private fun updateLumpSumsOrderNr(lumpSums: List<ProjectLumpSum>) {
+        var lastAvailableOrderNr = lumpSums.map { it.orderNr }.sortedDescending().first()
+
+        lumpSums.filter{ it.orderNr == 0 }.forEach {
+            it.orderNr = ++lastAvailableOrderNr
+        }
+    }
 
     private fun getProjectOrThrow(projectId: Long) =
         projectRepository.findById(projectId).orElseThrow { ResourceNotFoundException("project") }

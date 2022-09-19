@@ -16,6 +16,7 @@ internal class GetProjectLumpSumsTest : UnitTest() {
 
     companion object {
         private val lumpSum = ProjectLumpSum(
+            orderNr = 1,
             programmeLumpSumId = 51,
             period = 1,
             lumpSumContributions = listOf(
