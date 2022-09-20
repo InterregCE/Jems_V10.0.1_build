@@ -60,11 +60,11 @@ internal class SetProjectFileDescriptionTest : UnitTest() {
     @Test
     fun `should throw AppInputValidationException when description length is not valid`() {
         val descriptionSlot = slot<String>()
-        val validLength = 100
+        val validLength = 250
         val fieldName = "description"
         every { generalValidator.maxLength(capture(descriptionSlot), validLength, fieldName) } returns inputErrorMap
         assertThrows<AppInputValidationException> {
-            setProjectFileDescription.setDescription(PROJECT_ID, FILE_ID, getStringOfLength(101))
+            setProjectFileDescription.setDescription(PROJECT_ID, FILE_ID, getStringOfLength(251))
         }
         verify(exactly = 1) { generalValidator.maxLength(descriptionSlot.captured, validLength, fieldName) }
 

@@ -4,7 +4,7 @@ import {
   PaymentsApiService, UserRoleCreateDTO,
 } from '@cat/api';
 import {PermissionService} from '../../security/permissions/permission.service';
-import {Observable, combineLatest, Subject, of} from 'rxjs';
+import {Observable, combineLatest, Subject} from 'rxjs';
 import {map, startWith, switchMap, tap} from 'rxjs/operators';
 import {Tables} from '@common/utils/tables';
 import {Log} from '@common/utils/log';

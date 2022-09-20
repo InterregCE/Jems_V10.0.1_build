@@ -69,8 +69,8 @@ class ProjectPartnerReportController(
     override fun deleteAttachment(partnerId: Long, reportId: Long, fileId: Long) =
         deletePartnerReportFile.delete(partnerId = partnerId, reportId = reportId, fileId = fileId)
 
-    override fun updateDescription(partnerId: Long, reportId: Long, fileId: Long, description: String) =
-        setDescriptionToFile.setDescription(partnerId = partnerId, reportId = reportId, fileId = fileId, description)
+    override fun updateDescription(partnerId: Long, reportId: Long, fileId: Long, description: String?) =
+        setDescriptionToFile.setDescription(partnerId = partnerId, reportId = reportId, fileId = fileId, description ?: "")
 
     override fun uploadAttachment(partnerId: Long, reportId: Long, file: MultipartFile) =
         uploadPartnerReportFile

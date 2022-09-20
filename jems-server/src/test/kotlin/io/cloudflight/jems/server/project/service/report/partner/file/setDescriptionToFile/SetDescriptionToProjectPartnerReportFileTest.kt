@@ -3,7 +3,6 @@ package io.cloudflight.jems.server.project.service.report.partner.file.setDescri
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
-import io.cloudflight.jems.server.project.service.application.reject_modification.RejectModificationInteractorTest
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.file.ProjectReportFilePersistence
 import io.mockk.clearMocks
@@ -38,7 +37,7 @@ class SetDescriptionToProjectPartnerReportFileTest : UnitTest() {
         every { generalValidator.throwIfAnyIsInvalid(*varargAny { it.isEmpty() }) } returns Unit
         every { generalValidator.throwIfAnyIsInvalid(*varargAny { it.isNotEmpty() }) } throws
             AppInputValidationException(emptyMap())
-        every { generalValidator.maxLength(any<String>(), 5000, "description") } returns emptyMap()
+        every { generalValidator.maxLength(any<String>(), 250, "description") } returns emptyMap()
     }
 
     @Test

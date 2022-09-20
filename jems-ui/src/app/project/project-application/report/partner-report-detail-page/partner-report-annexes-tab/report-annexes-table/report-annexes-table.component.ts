@@ -6,7 +6,7 @@ import {
   ProjectReportFileDTO,
   UserRoleDTO,
 } from '@cat/api';
-import {BehaviorSubject, combineLatest, Observable, of, Subject} from 'rxjs';
+import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
 import {CategoryInfo} from '@project/common/components/category-tree/categoryModels';
 import {finalize, map, switchMap, take, tap} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';

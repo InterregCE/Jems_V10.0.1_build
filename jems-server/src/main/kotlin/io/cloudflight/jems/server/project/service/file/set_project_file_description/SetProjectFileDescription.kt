@@ -25,7 +25,7 @@ class SetProjectFileDescription(
     override fun setDescription(
         projectId: Long, fileId: Long, description: String?
     ): ProjectFileMetadata {
-        throwIdDescriptionIsNotValid(description)
+        throwIfDescriptionIsNotValid(description)
         projectPersistence.throwIfNotExists(projectId)
         val oldDescription = filePersistence.getFileMetadata(fileId).description ?: ""
         return filePersistence.setFileDescription(fileId, description).also {
@@ -35,9 +35,9 @@ class SetProjectFileDescription(
         }
     }
 
-    fun throwIdDescriptionIsNotValid(description: String?) {
+    private fun throwIfDescriptionIsNotValid(description: String?) {
         generalValidatorService.throwIfAnyIsInvalid(
-            generalValidatorService.maxLength(description, 100, "description")
+            generalValidatorService.maxLength(description, 250, "description")
         )
     }
 }

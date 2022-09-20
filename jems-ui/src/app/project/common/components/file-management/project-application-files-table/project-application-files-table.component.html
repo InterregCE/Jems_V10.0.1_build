@@ -1,70 +1,12 @@
 <ng-container *ngIf="data$ | async as data">
-    <mat-table *ngIf="data.files.content?.length; else noFiles"
-               [dataSource]="dataSource" jemsNoWidthLimit>
 
-        <ng-container matColumnDef="name">
-            <mat-header-cell *matHeaderCellDef>
-                <span jemsText maxLines="2">{{'file.table.column.name.name' | translate }}</span>
-            </mat-header-cell>
-            <mat-cell *matCellDef="let file">
-                <span jemsText maxWidth="100" maxLines="1"> {{ file?.name }}</span>
-            </mat-cell>
-        </ng-container>
-
-        <ng-container matColumnDef="uploadDate">
-            <mat-header-cell *matHeaderCellDef>
-                <span jemsText maxLines="2">{{'file.table.column.name.timestamp' | translate }}</span>
-            </mat-header-cell>
-            <mat-cell *matCellDef="let file">
-                {{ file?.uploadedAt | localeDate: 'L' : 'LT'}}
-            </mat-cell>
-        </ng-container>
-
-        <ng-container matColumnDef="user">
-            <mat-header-cell *matHeaderCellDef>
-                <span jemsText maxLines="2">{{'file.table.column.name.username' | translate }}</span>
-            </mat-header-cell>
-            <mat-cell *matCellDef="let file">{{ file?.uploadedBy?.email }}</mat-cell>
-        </ng-container>
-
-        <ng-container matColumnDef="description">
-            <mat-header-cell *matHeaderCellDef>
-                <span jemsText maxLines="2">{{'file.table.column.name.description' | translate }}</span>
-            </mat-header-cell>
-            <mat-cell *matCellDef="let file">
-                <jems-description-cell
-                        (editFinished)="editableDescriptionFileId = null"
-                        (saveFile)="setFileDescription($event)"
-                        [editable]="editableDescriptionFileId === file?.id"
-                        [file]="file">
-                </jems-description-cell>
-            </mat-cell>
-        </ng-container>
-
-        <ng-container matColumnDef="actions">
-            <mat-header-cell *matHeaderCellDef class="justify-end">
-                <span jemsText maxLines="2">{{'file.table.column.name.action' | translate }}</span>
-            </mat-header-cell>
-            <mat-cell *matCellDef="let file" class="justify-end">
-                <jems-actions-cell
-                        (delete)="deleteFile($event)"
-                        (download)="downloadFile($event)"
-                        (edit)="editableDescriptionFileId = $event"
-                        [file]="file"
-                        [isAllowedToChangeApplicationFile]="fileManagementStore.canChangeApplicationFile$ | async"
-                        [isAllowedToChangeAssessmentFile]="fileManagementStore.canChangeAssessmentFile$ | async"
-                        [isAllowedToChangeModificationFile]="fileManagementStore.canChangeModificationFile$ | async"
-                        [isThisUserOwner]="fileManagementStore.userIsProjectOwnerOrEditCollaborator$ | async"
-                        [projectStatus]="data.projectStatus"
-                        [type]="data.selectedCategory?.type">
-                </jems-actions-cell>
-            </mat-cell>
-        </ng-container>
-
-        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
-        <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
-
-    </mat-table>
+    <jems-file-list-table
+            [fileList]="data.fileList"
+            (onDownload)="downloadFile($event)"
+            (onDelete)="deleteFile($event)"
+            (onDescriptionChange)="updateDescription($event)"
+            [savingInProgressForId]="savingDescriptionId$ | async">
+    </jems-file-list-table>
 
     <jems-paginator (pageIndexChanged)="fileManagementStore.newPageIndex$.next($event)"
                    (pageSizeChanged)="fileManagementStore.newPageSize$.next($event)"
@@ -77,8 +19,8 @@
     <div *ngIf="fileManagementStore.canUpload$ | async">
         <input #selectFile (change)="uploadFile($event?.target)" onclick="this.value=null;"
                type="file" [accept]="acceptedFilesTypes">
-        <button (click)="selectFile.click()"
-                mat-stroked-button>+ {{'file.upload.add.new' | translate}}
+        <button (click)="selectFile.click()" mat-stroked-button>
+            <mat-icon fontSet="material-icons-outlined" class="mr-1">file_upload</mat-icon>{{ 'file.upload.add.new' | translate }}
         </button>
     </div>
 </ng-container>
