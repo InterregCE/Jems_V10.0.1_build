@@ -97,7 +97,8 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.call.service.model.CallCostOption
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.programme.service.ProgrammeDataService
+import io.cloudflight.jems.server.programme.entity.ProgrammeDataEntity
+import io.cloudflight.jems.server.programme.repository.ProgrammeDataRepository
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeLumpSumPersistence
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
@@ -164,11 +165,13 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.math.BigDecimal
 import java.time.ZonedDateTime
+import java.util.Optional
 
 internal class ProjectDataProviderImplTest : UnitTest() {
     @RelaxedMockK
@@ -238,7 +241,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
     lateinit var projectDataProvider: ProjectDataProviderImpl
 
     @RelaxedMockK
-    lateinit var programmeDataService: ProgrammeDataService
+    lateinit var programmeDataRepository: ProgrammeDataRepository
 
     @MockK
     lateinit var projectUnitCostPersistence: ProjectUnitCostPersistence
@@ -842,6 +845,9 @@ internal class ProjectDataProviderImplTest : UnitTest() {
         every { projectResultPersistence.getResultsForProject(id, null) } returns projectResults
         every { projectBudgetPersistence.getBudgetPerPartner(setOf(2), id, null) } returns emptyList()
         every { projectBudgetPersistence.getBudgetTotalForPartners(setOf(2), id, null) } returns emptyMap()
+        val programmeData = mockk<ProgrammeDataEntity>()
+        every { programmeData.title } returns "programme title"
+        every { programmeDataRepository.findById(1L) } returns Optional.of(programmeData)
 
         // test getByProjectId and its mappings..
         val projectData = projectDataProvider.getProjectDataForProjectId(id)
@@ -1449,6 +1455,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                 )
             )
         )
+        assertThat(projectData.programmeTitle).isEqualTo("programme title")
     }
 
     @Test

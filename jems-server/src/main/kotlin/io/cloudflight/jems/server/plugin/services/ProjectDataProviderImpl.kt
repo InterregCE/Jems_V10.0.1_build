@@ -12,7 +12,8 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionE.ProjectDataSe
 import io.cloudflight.jems.plugin.contract.models.project.versions.ProjectVersionData
 import io.cloudflight.jems.plugin.contract.services.ProjectDataProvider
 import io.cloudflight.jems.server.call.service.CallPersistence
-import io.cloudflight.jems.server.programme.service.ProgrammeDataService
+import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.programme.repository.ProgrammeDataRepository
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeLumpSumPersistence
 import io.cloudflight.jems.server.programme.service.indicator.OutputIndicatorPersistence
 import io.cloudflight.jems.server.programme.service.indicator.ResultIndicatorPersistence
@@ -77,7 +78,7 @@ class ProjectDataProviderImpl(
     private val projectResultPersistence: ProjectResultPersistence,
     private val listOutputIndicatorsPersistence: OutputIndicatorPersistence,
     private val listResultIndicatorsPersistence: ResultIndicatorPersistence,
-    private val programmeDataService: ProgrammeDataService,
+    private val programmeDataRepository: ProgrammeDataRepository,
     private val projectUnitCostPersistence: ProjectUnitCostPersistence,
 ) : ProjectDataProvider {
 
@@ -228,7 +229,8 @@ class ProjectDataProviderImpl(
                 assessmentStep2 = project.assessmentStep2?.toDataModel()
             ),
             versions = projectVersionPersistence.getAllVersionsByProjectId(projectId).toDataModel(),
-            programmeTitle = programmeDataService.get().title ?: ""
+            programmeTitle = programmeDataRepository.findById(1)
+                .orElseThrow { ResourceNotFoundException("programmeData") }.title ?: "",
         )
     }
 
