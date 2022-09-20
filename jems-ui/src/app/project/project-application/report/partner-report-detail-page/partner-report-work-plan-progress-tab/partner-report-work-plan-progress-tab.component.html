@@ -2,8 +2,7 @@
     <jems-form (discard)="resetForm(savedWorkPackages)"
                (save)="saveWorkPlan()">
 
-        <h2 class="mb-5">{{'project.application.partner.report.sub.title.workplan' | translate}}</h2>
-
+        <h3>{{'project.application.partner.report.sub.title.workplan' | translate}}</h3>
         <form [formGroup]="workPlanForm" jemsFormLayout>
             <ng-container *ngFor="let workPackage of savedWorkPackages; let workPackageIndex = index "
                           [formArrayName]="constants.WORK_PACKAGES.name">

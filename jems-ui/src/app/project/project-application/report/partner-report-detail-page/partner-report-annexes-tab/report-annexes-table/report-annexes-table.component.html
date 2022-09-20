@@ -1,4 +1,4 @@
-<mat-card *ngIf="data$ | async as data" jemsNoWidthLimit>
+<div *ngIf="data$ | async as data" jemsNoWidthLimit>
 
     <jems-file-list-table
             [fileList]="data.fileList"
@@ -25,7 +25,7 @@
             <mat-icon fontSet="material-icons-outlined" class="mr-1">file_upload</mat-icon>{{ 'file.upload.add.new' | translate }}
         </button>
     </div>
-</mat-card>
+</div>
 
 <jems-alert *ngIf="fileManagementStore.error$ | async as error"
             [show]="!!error"
