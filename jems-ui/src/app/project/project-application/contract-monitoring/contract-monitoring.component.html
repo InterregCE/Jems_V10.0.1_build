@@ -1,32 +1,34 @@
 <jems-project-page-template *ngIf="data$ | async as data" [needsCard]="true"
-                           titleKey="project.application.contracting.title"
-                           [subTitleText]="'project.application.form.acronym' | translate : {projectTitle: data.currentVersionOfProjectTitle}"
-                           [isVersionedData]="false">
+                            titleKey="project.application.contracting.title"
+                            subTitleKey="project.application.contract.monitoring.title"
+                            [isVersionedData]="false">
 
     <h3> {{'project.application.contract.monitoring.title' | translate}}</h3>
-    <jems-pending-button
-            [disabled]="data.currentVersionOfProject.projectStatus.status !== STATUS.APPROVED || !data.canSetToContracted"
-            [pending]="actionPending"
-            (clicked)="setToContracted(data.currentVersionOfProject.id, data.currentVersionOfProjectTitle)">
-        {{'project.application.set.to.contracted' | translate}}
-    </jems-pending-button>
-    <jems-context-info    infoText="{{ 'project.application.set.to.contracted.info' | translate }}"
-                         infoPosition="right">
-    </jems-context-info>
+    <p>
+        <jems-pending-button
+                [disabled]="data.currentVersionOfProject.projectStatus.status !== STATUS.APPROVED || !data.canSetToContracted"
+                [pending]="actionPending"
+                (clicked)="setToContracted(data.currentVersionOfProject.id, data.currentVersionOfProjectTitle)">
+            {{'project.application.set.to.contracted' | translate}}
+        </jems-pending-button>
+        <jems-context-info    infoText="{{ 'project.application.set.to.contracted.info' | translate }}"
+                             infoPosition="right">
+        </jems-context-info>
 
-    <jems-alert *ngIf="error$ | async as error"
-               [show]="!!error.i18nMessage?.i18nKey"
-               [type]="Alert.ERROR">
-        <jems-api-error-content [error]="error"></jems-api-error-content>
-    </jems-alert>
-
-    <ng-container *ngIf="showSuccessMessage$ | async as successMessageArg">
-        <jems-alert
-                [show]="successMessageArg"
-                [type]="Alert.SUCCESS">
-            <p>{{'project.application.set.to.contracted.success.message' | translate : {projectName: successMessageArg} }}</p>
+        <jems-alert *ngIf="error$ | async as error"
+                   [show]="!!error.i18nMessage?.i18nKey"
+                   [type]="Alert.ERROR">
+            <jems-api-error-content [error]="error"></jems-api-error-content>
         </jems-alert>
-    </ng-container>
+
+        <ng-container *ngIf="showSuccessMessage$ | async as successMessageArg">
+            <jems-alert
+                    [show]="successMessageArg"
+                    [type]="Alert.SUCCESS">
+                <p>{{'project.application.set.to.contracted.success.message' | translate : {projectName: successMessageArg} }}</p>
+            </jems-alert>
+        </ng-container>
+    </p>
 
     <jems-contract-monitoring-extension *ngIf="data.canSeeMonitoringExtension"></jems-contract-monitoring-extension>
 

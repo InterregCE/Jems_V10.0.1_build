@@ -1,5 +1,5 @@
 <jems-project-page-template *ngIf="workPackageStore.workPackage$ | async as workPackage"
-                           titleKey="project.application.form.section.part.c"
+                           [titleText]="'project.application.form.acronym' | translate : {projectTitle: projectStore.projectTitle$ | async}"
                            subTitleText="{{'project.application.form.workpackage.form.header' | translate}}{{workPackage.number}}">
     <nav mat-tab-nav-bar
          *ngIf="workPackageId">

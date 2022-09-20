@@ -1,9 +1,10 @@
 <jems-project-page-template *ngIf="data$ | async as data"
                             [needsCard]="true"
-                            titleKey="project.application.partner.reports.title"
-                            [subTitleText]="'common.label.project.partner.role.shortcut.' + data.partner.role | adaptTranslationKeyByCallType | async | translate
-            : {partner: getPartnerTranslationString(data.partner)}"
+                            titleKey="project.application.reporting.title"
+                            subTitleKey="project.application.partner.reports.title"
                             [isVersionedData]="false">
+    <h3>{{'common.label.project.partner.role.shortcut.' + data.partner.role | adaptTranslationKeyByCallType | async | translate
+        : {partner: getPartnerTranslationString(data.partner)} }}</h3>
     <jems-alert [type]="Alert.WARNING"
                 [closable]="false"
                 [show]="!data.partner.active">
@@ -11,18 +12,20 @@
     </jems-alert>
 
     <ng-container *ngIf="pageStore.userCanEditReports$ | async">
-        <jems-pending-button jemsText class="mb-3"
-                             icon="add"
-                             (clicked)="createPartnerReport()"
-                             [pending]="actionPending">
-            {{'project.application.partner.reports.add' | translate}}
-        </jems-pending-button>
+            <p>
+                <jems-pending-button jemsText class="mb-3"
+                                     icon="add"
+                                     (clicked)="createPartnerReport()"
+                                     [pending]="actionPending">
+                    {{'project.application.partner.reports.add' | translate}}
+                </jems-pending-button>
+            </p>
     </ng-container>
 
     <jems-alert *ngIf="error$ | async as error"
                 [show]="!!error.i18nMessage?.i18nKey"
                 [type]="Alert.ERROR">
-        <jems-api-error-content [error]="error"></jems-api-error-content>
+            <jems-api-error-content [error]="error"></jems-api-error-content>
     </jems-alert>
 
     <ng-container *ngIf="data.partnerReports as partnerReports">
