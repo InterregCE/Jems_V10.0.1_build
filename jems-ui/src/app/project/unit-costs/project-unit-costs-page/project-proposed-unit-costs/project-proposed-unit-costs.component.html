@@ -1,4 +1,4 @@
-<jems-project-page-template *ngIf="unitCostDataSource$ | async as unitCostDataSource"
+<jems-project-page-template *ngIf="data$ | async as data"
                             [needsCard]="true"
                             [titleText]="'project.application.form.acronym' | translate : {projectTitle: projectStore.projectTitle$ | async} "
                             subTitleKey="project.application.form.section.part.e.subsection.two.subsection.one">
@@ -8,12 +8,12 @@
 
     <ng-container *ngIf="projectStore.projectEditable$ | async">
         <button mat-stroked-button class="mt-1"
-                [disabled]="(projectStore.projectEditable$ | async) === false || unitCostDataSource?.data.length >= 10"
+                [disabled]="(projectStore.projectEditable$ | async) === false || data.dataSource?.data.length >= 10"
                 [routerLink]="'/app/project/detail/' + projectId + '/applicationFormUnitCosts/projectProposed/create'">
             <mat-icon>add</mat-icon>&nbsp;{{ 'project.unitCost.add' | translate }}
         </button>
 
-        <jems-alert [closable]="false" [show]="unitCostDataSource?.data.length >= 10" [type]="Alert.INFO" disableMargins="true">
+        <jems-alert [closable]="false" [show]="data.dataSource?.data.length >= 10" [type]="Alert.INFO" disableMargins="true">
             <span>{{ 'project.application.form.section.part.e.subsection.two.subsection.one.unit.cost.notification' | translate }}</span>
         </jems-alert>
     </ng-container>
@@ -25,10 +25,10 @@
     </jems-alert>
 
     <div jemsFormLayout jemsNoWidthLimit>
-        <jems-multi-language-container class="language-buttons" [switchButtonsVisible]="!!unitCostDataSource?.data.length" jemsNoWidthLimit>
-            <ng-container *ngIf="unitCostDataSource?.data as unitCost">
+        <jems-multi-language-container class="language-buttons" [switchButtonsVisible]="!!data.dataSource?.data.length" jemsNoWidthLimit>
+            <ng-container *ngIf="data.dataSource?.data as unitCost">
                 <jems-table *ngIf="unitCost.length > 0"
-                            [configuration]="tableConfiguration"
+                            [configuration]="data.tableConfiguration"
                             [rows]="unitCost"
                             [totalElements]="unitCost.length"
                             [isMultiLanguage]="true">
@@ -60,5 +60,3 @@
         <mat-icon>delete</mat-icon>
     </button>
 </ng-template>
-
-

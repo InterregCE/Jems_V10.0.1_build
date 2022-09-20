@@ -1,9 +1,9 @@
-import {ChangeDetectionStrategy, Component, TemplateRef, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {MatTableDataSource} from '@angular/material/table';
 import {ProgrammeUnitCostListDTO, ProjectStatusDTO} from '@cat/api';
 import { Alert } from '@common/components/forms/alert';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
-import {catchError, map, take, tap} from 'rxjs/operators';
+import {catchError, map, take} from 'rxjs/operators';
 import {
   ProjectStore
 } from '@project/project-application/containers/project-application-detail/services/project-store.service';
@@ -11,20 +11,22 @@ import {
   ProjectApplicationFormSidenavService
 } from '@project/project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {ProjectUnitCostsStore} from '@project/unit-costs/project-unit-costs-page/project-unit-costs-store.service';
-import {APPLICATION_FORM} from '@project/common/application-form-model';
 import { ActivatedRoute } from '@angular/router';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
 import {APIError} from '@common/models/APIError';
 import {ColumnWidth} from '@common/components/table/model/column-width';
+import {UntilDestroy, untilDestroyed} from "@ngneat/until-destroy";
 
+@UntilDestroy()
 @Component({
   selector: 'jems-project-proposed-unit-costs',
   templateUrl: './project-proposed-unit-costs.component.html',
   styleUrls: ['./project-proposed-unit-costs.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ProjectProposedUnitCostsComponent {
+export class ProjectProposedUnitCostsComponent implements OnInit {
+
   @ViewChild('nameCell', {static: true})
   nameCell: TemplateRef<any>;
 
@@ -40,95 +42,74 @@ export class ProjectProposedUnitCostsComponent {
   @ViewChild('actionCell', {static: true})
   actionCell: TemplateRef<any>;
 
-  APPLICATION_FORM = APPLICATION_FORM;
   Alert = Alert;
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
 
-  displayedColumns: string[] = ['name', 'type', 'category', 'costPerUnit', 'delete'];
   error$ = new BehaviorSubject<APIError | null>(null);
 
-  isDeleteAvailable = false;
+  data$: Observable<{
+    tableConfiguration: TableConfiguration;
+    dataSource: MatTableDataSource<ProgrammeUnitCostListDTO>,
+  }>;
 
-  tableConfiguration: TableConfiguration;
-  unitCostDataSource$: Observable<MatTableDataSource<ProgrammeUnitCostListDTO>> = this.unitCostStore.projectProposedUnitCosts$
-    .pipe(
-      map(list => new MatTableDataSource(list))
-    );
-
-  constructor(public projectStore: ProjectStore,
-              private activatedRoute: ActivatedRoute,
-              public unitCostStore: ProjectUnitCostsStore,
-              private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService) {
-    combineLatest([
-      this.projectStore.projectStatus$,
-      this.projectStore.projectEditable$
-    ]).pipe(
-      tap(([status, isEditable]) => {
-        this.isDeleteAvailable = status.status !== ProjectStatusDTO.StatusEnum.INMODIFICATION && isEditable;
-        this.resetTable();
-      })
-    ).subscribe();
+  constructor(
+    public projectStore: ProjectStore,
+    private activatedRoute: ActivatedRoute,
+    public unitCostStore: ProjectUnitCostsStore,
+    private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService) {
   }
 
-  private resetTable() {
-    this.tableConfiguration = new TableConfiguration({
+  ngOnInit(): void {
+    this.data$ = combineLatest([
+      this.projectStore.projectStatus$,
+      this.projectStore.projectEditable$,
+      this.unitCostStore.projectProposedUnitCosts$,
+    ]).pipe(
+      map(([status, isEditable, unitCosts]) => ({
+        tableConfiguration: this.getTableConfig(this.projectId, status.status !== ProjectStatusDTO.StatusEnum.INMODIFICATION && isEditable),
+        dataSource: new MatTableDataSource(unitCosts),
+      })),
+      untilDestroyed(this),
+    );
+  }
+
+  private getTableConfig(projectId: number, isDeleteAvailable: boolean): TableConfiguration {
+    return new TableConfiguration({
       isTableClickable: true,
       sortable: false,
-      columns: this.isDeleteAvailable
-        ? [
-          {
-            displayedColumn: 'unit.cost.table.column.name.name',
-            columnType: ColumnType.CustomComponent,
-            customCellTemplate: this.nameCell,
-          },
-          {
-            displayedColumn: 'unit.cost.table.column.name.unit.type',
-            columnType: ColumnType.CustomComponent,
-            customCellTemplate: this.unitTypeCell,
-          },
-          {
-            displayedColumn: 'unit.cost.table.column.name.unit.category',
-            columnType: ColumnType.CustomComponent,
-            customCellTemplate: this.categoriesCell,
-          },
-          {
-            displayedColumn: 'unit.cost.table.column.name.cost.unit',
-            columnType: ColumnType.CustomComponent,
-            customCellTemplate: this.valueCell,
-          },
+      routerLink: `/app/project/detail/${projectId}/applicationFormUnitCosts/projectProposed`,
+      columns: [
+        {
+          displayedColumn: 'unit.cost.table.column.name.name',
+          columnType: ColumnType.CustomComponent,
+          customCellTemplate: this.nameCell,
+        },
+        {
+          displayedColumn: 'unit.cost.table.column.name.unit.type',
+          columnType: ColumnType.CustomComponent,
+          customCellTemplate: this.unitTypeCell,
+        },
+        {
+          displayedColumn: 'unit.cost.table.column.name.unit.category',
+          columnType: ColumnType.CustomComponent,
+          customCellTemplate: this.categoriesCell,
+        },
+        {
+          displayedColumn: 'unit.cost.table.column.name.cost.unit',
+          columnType: ColumnType.CustomComponent,
+          customCellTemplate: this.valueCell,
+        },
+        ...isDeleteAvailable ? [
           {
             displayedColumn: 'common.delete.entry',
             columnType: ColumnType.CustomComponent,
             customCellTemplate: this.actionCell,
             columnWidth: ColumnWidth.IdColumn,
             clickable: false
-          },
-        ]
-        : [
-          {
-            displayedColumn: 'unit.cost.table.column.name.name',
-            columnType: ColumnType.CustomComponent,
-            customCellTemplate: this.nameCell,
-          },
-          {
-            displayedColumn: 'unit.cost.table.column.name.unit.type',
-            columnType: ColumnType.CustomComponent,
-            customCellTemplate: this.unitTypeCell,
-          },
-          {
-            displayedColumn: 'unit.cost.table.column.name.unit.category',
-            columnType: ColumnType.CustomComponent,
-            customCellTemplate: this.categoriesCell,
-          },
-          {
-            displayedColumn: 'unit.cost.table.column.name.cost.unit',
-            columnType: ColumnType.CustomComponent,
-            customCellTemplate: this.valueCell,
           }
-        ]
+        ] : [],
+      ],
     });
-
-    this.tableConfiguration.routerLink = `/app/project/detail/${this.projectId}/applicationFormUnitCosts/projectProposed`;
   }
 
   deleteEntry(unitCost: ProgrammeUnitCostListDTO): void {
