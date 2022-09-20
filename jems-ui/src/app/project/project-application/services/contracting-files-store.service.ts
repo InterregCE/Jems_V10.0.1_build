@@ -1,11 +1,13 @@
 import {Injectable} from '@angular/core';
 import {combineLatest, Observable, of, ReplaySubject, Subject} from 'rxjs';
 import {
+  PageProjectReportFileDTO,
   ProjectContractingFileManagementService,
   ProjectContractingFileSearchRequestDTO,
   ProjectReportFileDTO,
   ProjectReportFileMetadataDTO,
-  SettingsService, UserRoleDTO
+  SettingsService,
+  UserRoleDTO
 } from '@cat/api';
 import {catchError, filter, map, startWith, switchMap, take, tap, withLatestFrom} from 'rxjs/operators';
 import {MatSort} from '@angular/material/sort';
@@ -21,13 +23,11 @@ import {FileManagementStore} from '@project/common/components/file-management/fi
 import {
   ProjectPartnerStore
 } from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
-import FileTypeEnum = ProjectReportFileDTO.TypeEnum;
 import {
   ProjectStore
 } from '@project/project-application/containers/project-application-detail/services/project-store.service';
-import {PageFileList} from '@common/components/file-list/page-file-list';
-import {FileListItem} from '@common/components/file-list/file-list-item';
 import {PermissionService} from '../../../security/permissions/permission.service';
+import FileTypeEnum = ProjectReportFileDTO.TypeEnum;
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @Injectable({
@@ -35,7 +35,7 @@ import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 })
 export class ContractingFilesStoreService {
 
-  fileList$: Observable<PageFileList>;
+  fileList$: Observable<PageProjectReportFileDTO>;
   fileCategories$: Observable<CategoryNode>;
   selectedCategory$ = new ReplaySubject<CategoryInfo | undefined>(1);
   selectedCategoryPath$: Observable<I18nMessage[]>;
@@ -69,7 +69,7 @@ export class ContractingFilesStoreService {
     this.selectedCategory$.next(section);
   }
 
-  setFileCategories(fileCategories:  Observable<CategoryNode>): void {
+  setFileCategories(fileCategories: Observable<CategoryNode>): void {
     this.fileCategories$ = fileCategories;
   }
 
@@ -135,10 +135,6 @@ export class ContractingFilesStoreService {
     });
   }
 
-  private hasDeletionPrivilege(): Observable<boolean> {
-    return this.permissionService.hasPermission(PermissionsEnum.ProjectSetToContracted);
-  }
-
   private canUpload(): Observable<boolean> {
     return combineLatest([
       this.selectedCategory$,
@@ -148,7 +144,7 @@ export class ContractingFilesStoreService {
     );
   }
 
-  private fileList(): Observable<PageFileList> {
+  private fileList(): Observable<PageProjectReportFileDTO> {
     return combineLatest([
       this.selectedCategory$,
       this.projectStore.projectId$,
@@ -160,11 +156,10 @@ export class ContractingFilesStoreService {
         map(sort => sort?.direction ? sort : Tables.DEFAULT_INITIAL_SORT),
         map(sort => `${sort.active},${sort.direction}`)
       ),
-      this.hasDeletionPrivilege(),
       this.filesChanged$.pipe(startWith(null)),
     ])
       .pipe(
-        filter(([selectedCategory, projectId, partnerId, pageIndex, pageSize, sort, hasDeletionPrivilege]: any) => !!partnerId),
+        filter(([selectedCategory, projectId, partnerId, pageIndex, pageSize, sort]: any) => !!partnerId),
         tap(data => this.canDelete = data[6]),
         switchMap(([selectedCategory, projectId, partnerId, pageIndex, pageSize, sort]) =>
           this.contractingFileService.listFiles(
@@ -178,28 +173,9 @@ export class ContractingFilesStoreService {
             pageSize,
             sort
           )
-        ),
-        map(pageFiles => ({
-          ...pageFiles,
-          content: this.transform(pageFiles.content),
-        } as PageFileList)),
-        catchError(error => {
-          this.error$.next(error.error);
-          return of({} as PageFileList);
-        })
+        )
       );
   }
-
-  private transform(content: ProjectReportFileDTO[]): FileListItem[] {
-    return content.map(file => ({
-      ...file,
-      deletable: this.canDelete,
-      editable: false,
-      tooltipIfNotDeletable: '',
-      iconIfNotDeletable: 'delete',
-    }));
-  }
-
 
   private selectedCategoryPath(): Observable<I18nMessage[]> {
     return combineLatest([this.selectedCategory$, this.fileCategories$])

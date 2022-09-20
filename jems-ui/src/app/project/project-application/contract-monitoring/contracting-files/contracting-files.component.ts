@@ -1,11 +1,10 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
-import {Observable, Subject} from 'rxjs';
+import {Observable, of, Subject} from 'rxjs';
 import {CategoryInfo, CategoryNode} from '@project/common/components/category-tree/categoryModels';
 import {I18nMessage} from '@common/models/I18nMessage';
 import {ContractingFilesStoreService} from '@project/project-application/services/contracting-files-store.service';
-import {ProjectReportFileDTO} from '@cat/api';
-import {map, take, tap} from 'rxjs/operators';
-import {MatDialog} from '@angular/material/dialog';
+import {ProjectReportFileDTO, UserRoleCreateDTO} from '@cat/api';
+import {catchError, map, take, tap} from 'rxjs/operators';
 import {AcceptedFileTypesConstants} from '@project/common/components/file-management/accepted-file-types.constants';
 import {Alert} from '@common/components/forms/alert';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
@@ -13,7 +12,10 @@ import {
   ProjectPartnerStore
 } from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
 import {FileListItem} from '@common/components/file-list/file-list-item';
+import {PermissionService} from '../../../../security/permissions/permission.service';
+import {PageFileList} from '@common/components/file-list/page-file-list';
 import FileTypeEnum = ProjectReportFileDTO.TypeEnum;
+import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 
 @UntilDestroy()
 @Component({
@@ -28,18 +30,25 @@ export class ContractingFilesComponent implements OnInit{
   fileSizeOverLimitError$ = new Subject<boolean>();
 
   acceptedFilesTypes = AcceptedFileTypesConstants.acceptedFilesTypes;
-
   selectedCategoryPath$: Observable<I18nMessage[]>;
+  files$: Observable<PageFileList>;
+  canEdit: boolean;
 
   constructor(
     public store: ContractingFilesStoreService,
     private partnerStore: ProjectPartnerStore,
-    private dialog: MatDialog,
+    private permissionService: PermissionService
   ) {
     this.selectedCategoryPath$ = store.selectedCategoryPath$;
     this.store.getMaximumAllowedFileSize()
       .pipe(untilDestroyed(this))
       .subscribe((maxAllowedSize) => this.maximumAllowedFileSizeInMB = maxAllowedSize);
+    this.files$ = this.getFilesToList();
+    this.permissionService.hasPermission(PermissionsEnum.ProjectSetToContracted).pipe(
+      tap(hasPermission => this.canEdit = hasPermission),
+      untilDestroyed(this)
+    ).subscribe();
+
   }
 
   ngOnInit(): void {
@@ -73,6 +82,18 @@ export class ContractingFilesComponent implements OnInit{
       .subscribe();
   }
 
+  private getFilesToList(): Observable<PageFileList> {
+    return this.store.fileList$.pipe(
+      map(pageFiles => ({
+        ...pageFiles,
+        content: this.transform(pageFiles.content),
+      } as PageFileList)),
+      catchError(error => {
+        this.store.error$.next(error.error);
+        return of({} as PageFileList);
+      })
+    );
+  }
 
   private fileCategories(): Observable<CategoryNode> {
     return this.partnerStore.partnerReportSummaries$.pipe(
@@ -116,5 +137,14 @@ export class ContractingFilesComponent implements OnInit{
     );
   }
 
+  private transform(content: ProjectReportFileDTO[]): FileListItem[] {
+    return content.map(file => ({
+      ...file,
+      deletable: this.canEdit,
+      editable: false,
+      tooltipIfNotDeletable: '',
+      iconIfNotDeletable: 'delete',
+    }));
+  }
 
 }

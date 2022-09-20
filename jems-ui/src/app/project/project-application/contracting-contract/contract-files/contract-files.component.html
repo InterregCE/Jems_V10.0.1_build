@@ -17,7 +17,7 @@
     </jems-category-tree>
 
     <jems-file-list
-            [fileList]="store.fileList$ | async"
+            [fileList]="files$ | async"
             (onSortChange)="store.newSort$.next($event)"
             (onPageIndexChange)="store.newPageIndex$.next($event)"
             (onPageSizeChange)="store.newPageSize$.next($event)"
