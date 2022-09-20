@@ -92,7 +92,9 @@ export class FormService {
       // confirm page leave unless the form is in create mode
       this.routingService.confirmLeaveMap.set(this.serviceId, true);
     }
-    this.setSuccess(null);
+    if(dirty){
+      this.setSuccess(null);
+    }
     this.setValid(this.form?.valid);
     this.dirty$.next(dirty);
   }
