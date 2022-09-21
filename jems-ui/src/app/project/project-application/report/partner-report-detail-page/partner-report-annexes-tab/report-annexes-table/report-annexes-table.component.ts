@@ -109,7 +109,7 @@ export class ReportAnnexesTableComponent {
       take(1),
       tap(() => this.savingDescriptionId$.next(data.id)),
       switchMap(([partnerId, reportId]) =>
-        this.projectPartnerReportService.updateDescription(data.id, partnerId, reportId, data.description)
+        this.projectPartnerReportService.updateReportFileDescription(data.id, partnerId, reportId, data.description)
       ),
       tap(() => this.fileManagementStore.reportFilesChanged$.next()),
       finalize(() => this.savingDescriptionId$.next(null)),

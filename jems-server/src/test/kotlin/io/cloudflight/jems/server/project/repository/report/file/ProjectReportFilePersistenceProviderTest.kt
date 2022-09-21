@@ -48,6 +48,7 @@ import java.util.*
 class ProjectReportFilePersistenceProviderTest : UnitTest() {
 
     companion object {
+        private const val PROJECT_ID = 877L
         private const val PARTNER_ID = 365L
         private const val USER_ID = 270L
 
@@ -225,6 +226,51 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
             id = 14L,
         ) } returns true
         assertThat(persistence.existsFile(PARTNER_ID, "Project/45/Report/21", fileId = 14L)).isTrue
+    }
+
+    @Test
+    fun existsFileByProjectIdAndFileIdAndFileTypeIn() {
+        every { reportFileRepository.existsByProjectIdAndIdAndTypeIn(
+            projectId = PROJECT_ID,
+            fileId = 15L,
+            fileTypes = setOf(ProjectPartnerReportFileType.ContractInternal),
+        ) } returns true
+        assertThat(
+            persistence.existsFileByProjectIdAndFileIdAndFileTypeIn(PROJECT_ID, fileId = 15L, setOf(ProjectPartnerReportFileType.ContractInternal))
+        ).isTrue()
+    }
+
+    @Test
+    fun getFileAuthor() {
+        val reportFile = mockk<ReportProjectFileEntity>()
+
+        val user = mockk<UserEntity>()
+        every { user.id } returns USER_ID
+        every { user.email } returns "email 270"
+        every { user.name } returns "name 270"
+        every { user.surname } returns "surname 270"
+
+        every { reportFile.user } returns user
+        every { reportFileRepository.findByPartnerIdAndPathPrefixAndId(
+            partnerId = PARTNER_ID,
+            pathPrefix = "prefix",
+            id = 16L,
+        ) } returns reportFile
+        assertThat(
+            persistence.getFileAuthor(PARTNER_ID, "prefix", fileId = 16L)
+        ).isEqualTo(UserSimple(USER_ID, "email 270", name = "name 270", "surname 270"))
+    }
+
+    @Test
+    fun `getFileAuthor - not existing file`() {
+        every { reportFileRepository.findByPartnerIdAndPathPrefixAndId(
+            partnerId = PARTNER_ID,
+            pathPrefix = "prefix",
+            id = 16L,
+        ) } returns null
+        assertThat(
+            persistence.getFileAuthor(PARTNER_ID, "prefix", fileId = 16L)
+        ).isNull()
     }
 
     @Test

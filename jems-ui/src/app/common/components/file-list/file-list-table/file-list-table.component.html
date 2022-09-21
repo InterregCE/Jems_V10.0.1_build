@@ -34,7 +34,7 @@
             <mat-header-cell *matHeaderCellDef>
                 <span jemsText maxLines="2">{{'file.table.column.name.username' | translate }}</span>
             </mat-header-cell>
-            <mat-cell *matCellDef="let file">{{ file?.author?.email }}</mat-cell>
+            <mat-cell *matCellDef="let file" [class.is-myself]="(securityService.currentUser | async)?.id === file?.author?.id">{{ file?.author?.email }}</mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="size">

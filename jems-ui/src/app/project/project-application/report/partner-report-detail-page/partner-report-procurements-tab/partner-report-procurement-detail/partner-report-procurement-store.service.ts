@@ -32,7 +32,6 @@ import {FileListItem} from '@common/components/file-list/file-list-item';
 import {
   ReportFileManagementStore
 } from '@project/project-application/report/partner-report-detail-page/partner-report-annexes-tab/report-file-management-store';
-import {FileDescriptionChange} from '@common/components/file-list/file-list-table/file-description-change';
 import {APIError} from '@common/models/APIError';
 
 @Injectable({providedIn: 'root'})
@@ -251,19 +250,6 @@ export class PartnerReportProcurementStore {
         this.error$.next(error.error);
         return of({} as ProjectReportFileMetadataDTO);
       }),
-    );
-  }
-
-  updateDescription(data: FileDescriptionChange): Observable<void> {
-    return combineLatest([
-      this.partnerId$.pipe(map(id => Number(id))),
-      this.routingService.routeParameterChanges(PartnerReportDetailPageStore.REPORT_DETAIL_PATH, 'reportId')
-        .pipe(map(id => Number(id))),
-    ]).pipe(
-      take(1),
-      switchMap(([partnerId, reportId]) =>
-        this.projectPartnerReportService.updateDescription(data.id, partnerId, reportId, data.description)
-      ),
     );
   }
 

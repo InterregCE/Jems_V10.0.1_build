@@ -106,17 +106,6 @@ internal class CreateProjectTest : UnitTest() {
             userStatus = UserStatus.ACTIVE
         )
 
-        private fun projectVersion(status: ApplicationStatus): ProjectVersion {
-            return ProjectVersion(
-                version = "1.0",
-                projectId = PROJECT_ID,
-                createdAt = ZonedDateTime.now(),
-                user = userEntity,
-                status = status,
-                current = true
-            )
-        }
-
         private fun projectVersionSummary(): ProjectVersionSummary {
             return ProjectVersionSummary(
                 version = "1.0",

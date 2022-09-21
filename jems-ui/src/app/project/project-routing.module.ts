@@ -116,6 +116,9 @@ import { PartnerControlReportControlChecklistPageComponent } from '@project/proj
 import {
   ContractingContractComponent
 } from '@project/project-application/contracting-contract/contracting-contract.component';
+import {
+  PartnerControlReportDocumentTabComponent
+} from '@project/project-application/report/partner-control-report/partner-control-report-document-tab/partner-control-report-document-tab.component';
 
 export const routes: Routes = [
   {
@@ -227,7 +230,11 @@ export const routes: Routes = [
                             path: 'controlChecklistsTab/checklist/:checklistId',
                             component: PartnerControlReportControlChecklistPageComponent,
                             data: {breadcrumb: 'checklists.instance.title'}
-                          }
+                          },
+                          {
+                            path: 'document',
+                            component: PartnerControlReportDocumentTabComponent,
+                          },
                         ],
                       }
                     ]

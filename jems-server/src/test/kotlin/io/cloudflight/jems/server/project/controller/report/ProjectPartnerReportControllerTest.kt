@@ -39,6 +39,11 @@ import io.cloudflight.jems.server.project.service.report.model.file.ProjectRepor
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileSearchRequest
 import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
 import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportPeriod
+import io.cloudflight.jems.server.project.service.report.partner.file.control.deleteControlReportFile.DeleteControlReportFileInteractor
+import io.cloudflight.jems.server.project.service.report.partner.file.control.downloadControlReportFile.DownloadControlReportFileInteractor
+import io.cloudflight.jems.server.project.service.report.partner.file.control.listProjectPartnerControlReportFile.ListControlReportFileInteractor
+import io.cloudflight.jems.server.project.service.report.partner.file.control.setDescriptionToControlReportFile.SetDescriptionToControlReportFileInteractor
+import io.cloudflight.jems.server.project.service.report.partner.file.control.uploadFileToControlReport.UploadFileToControlReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.workflow.createProjectPartnerReport.CreateProjectPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.deleteProjectPartnerReportFile.DeleteProjectPartnerReportFileInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.downloadProjectPartnerReportFile.DownloadProjectPartnerReportFileInteractor
@@ -215,19 +220,34 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
     lateinit var getPartnerReport: GetProjectPartnerReportInteractor
 
     @MockK
-    lateinit var downloadPartnerReportFile: DownloadProjectPartnerReportFileInteractor
+    lateinit var downloadReportFile: DownloadProjectPartnerReportFileInteractor
 
     @MockK
-    lateinit var deletePartnerReportFile: DeleteProjectPartnerReportFileInteractor
+    lateinit var deleteReportFile: DeleteProjectPartnerReportFileInteractor
 
     @MockK
-    lateinit var setDescriptionToFile: SetDescriptionToProjectPartnerReportFileInteractor
+    lateinit var setDescriptionToReportFile: SetDescriptionToProjectPartnerReportFileInteractor
 
     @MockK
     lateinit var listPartnerReportFile: ListProjectPartnerReportFileInteractor
 
     @MockK
     lateinit var uploadPartnerReportFile: UploadFileToProjectPartnerReportInteractor
+
+    @MockK
+    lateinit var downloadControlReportFile: DownloadControlReportFileInteractor
+
+    @MockK
+    lateinit var deleteControlReportFile: DeleteControlReportFileInteractor
+
+    @MockK
+    lateinit var setDescriptionToControlReportFile: SetDescriptionToControlReportFileInteractor
+
+    @MockK
+    lateinit var listPartnerControlReportFile: ListControlReportFileInteractor
+
+    @MockK
+    lateinit var uploadPartnerControlReportFile: UploadFileToControlReportInteractor
 
     @InjectMockKs
     private lateinit var controller: ProjectPartnerReportController
@@ -288,11 +308,11 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
     }
 
     @Test
-    fun downloadAttachment() {
+    fun downloadReportFile() {
         val fileContentArray = ByteArray(5)
-        every { downloadPartnerReportFile.download(partnerId = 20L, fileId = 350L) } returns Pair("fileName.txt", fileContentArray)
+        every { downloadReportFile.download(partnerId = 20L, fileId = 350L) } returns Pair("fileName.txt", fileContentArray)
 
-        assertThat(controller.downloadAttachment(partnerId = 20L, fileId = 350L))
+        assertThat(controller.downloadReportFile(partnerId = 20L, fileId = 350L))
             .isEqualTo(
                 ResponseEntity.ok()
                     .contentLength(5)
@@ -303,22 +323,29 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
     }
 
     @Test
-    fun deleteAttachment() {
-        every { deletePartnerReportFile.delete(partnerId = 24L, reportId = 99L, fileId = 300L) } answers { }
-        controller.deleteAttachment(partnerId = 24L, reportId = 99L, fileId = 300L)
-        verify(exactly = 1) { deletePartnerReportFile.delete(partnerId = 24L, reportId = 99L, fileId = 300L) }
+    fun deleteReportFile() {
+        every { deleteReportFile.delete(partnerId = 24L, reportId = 99L, fileId = 300L) } answers { }
+        controller.deleteReportFile(partnerId = 24L, reportId = 99L, fileId = 300L)
+        verify(exactly = 1) { deleteReportFile.delete(partnerId = 24L, reportId = 99L, fileId = 300L) }
     }
 
     @Test
-    fun uploadAttachment() {
+    fun updateReportFileDescription() {
+        every { setDescriptionToReportFile.setDescription(partnerId = 25L, reportId = 80L, fileId = 14L, "desc to set") } answers { }
+        controller.updateReportFileDescription(partnerId = 25L, reportId = 80L, fileId = 14L, "desc to set")
+        verify(exactly = 1) { setDescriptionToReportFile.setDescription(partnerId = 25L, reportId = 80L, fileId = 14L, "desc to set") }
+    }
+
+    @Test
+    fun uploadReportFile() {
         val slotFile = slot<ProjectFile>()
         every { uploadPartnerReportFile.uploadToReport(27L, reportId = 35L, capture(slotFile)) } returns dummyFile
-        assertThat(controller.uploadAttachment(27L, 35L, dummyMultipartFile())).isEqualTo(dummyFileDto)
+        assertThat(controller.uploadReportFile(27L, 35L, dummyMultipartFile())).isEqualTo(dummyFileDto)
         assertThat(slotFile.captured).isEqualTo(dummyFileExpected)
     }
 
     @Test
-    fun listAttachments() {
+    fun listReportFiles() {
         val searchRequest = slot<ProjectReportFileSearchRequest>()
         every { listPartnerReportFile.list(29L, Pageable.unpaged(), capture(searchRequest)) } returns
             PageImpl(listOf(reportFile))
@@ -329,7 +356,7 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
             filterSubtypes = setOf(ProjectPartnerReportFileTypeDTO.Activity),
         )
 
-        assertThat(controller.listAttachments(29L, Pageable.unpaged(), searchRequestDto).content)
+        assertThat(controller.listReportFiles(29L, Pageable.unpaged(), searchRequestDto).content)
             .containsExactly(reportFileDto)
         assertThat(searchRequest.captured).isEqualTo(
             ProjectReportFileSearchRequest(
@@ -338,6 +365,35 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
                 filterSubtypes = setOf(ProjectPartnerReportFileType.Activity),
             )
         )
+    }
+
+    @Test
+    fun downloadControlReportFile() {
+        val fileContentArray = ByteArray(5)
+        every { downloadControlReportFile.download(partnerId = 30L, fileId = 450L) } returns Pair("fileName.txt", fileContentArray)
+
+        assertThat(controller.downloadControlReportFile(partnerId = 30L, fileId = 450L))
+            .isEqualTo(
+                ResponseEntity.ok()
+                    .contentLength(5)
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"fileName.txt\"")
+                    .body(ByteArrayResource(fileContentArray))
+            )
+    }
+
+    @Test
+    fun deleteControlReportFile() {
+        every { deleteControlReportFile.delete(partnerId = 124L, reportId = 99L, fileId = 300L) } answers { }
+        controller.deleteControlReportFile(partnerId = 124L, reportId = 99L, fileId = 300L)
+        verify(exactly = 1) { deleteControlReportFile.delete(partnerId = 124L, reportId = 99L, fileId = 300L) }
+    }
+
+    @Test
+    fun updateControlReportFileDescription() {
+        every { setDescriptionToControlReportFile.setDescription(partnerId = 125L, reportId = 80L, fileId = 13L, "desc to set") } answers { }
+        controller.updateControlReportFileDescription(partnerId = 125L, reportId = 80L, fileId = 13L, "desc to set")
+        verify(exactly = 1) { setDescriptionToControlReportFile.setDescription(partnerId = 125L, reportId = 80L, fileId = 13L, "desc to set") }
     }
 
 }

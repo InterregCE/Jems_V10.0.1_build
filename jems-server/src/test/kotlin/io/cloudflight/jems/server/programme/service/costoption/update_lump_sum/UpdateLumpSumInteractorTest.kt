@@ -106,7 +106,7 @@ internal class UpdateLumpSumInteractorTest : UnitTest() {
             categories = setOf(OfficeAndAdministrationCosts, StaffCosts ),
             fastTrack = true
         )
-        val ex = assertThrows<UpdateLumpSumWhenProgrammeSetupRestricted> { updateLumpSum.updateLumpSum(wrongLumpSum) }
+        assertThrows<UpdateLumpSumWhenProgrammeSetupRestricted> { updateLumpSum.updateLumpSum(wrongLumpSum) }
     }
 
     @Test

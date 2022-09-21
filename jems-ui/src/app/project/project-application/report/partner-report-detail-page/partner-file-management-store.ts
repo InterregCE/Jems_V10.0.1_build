@@ -65,7 +65,7 @@ export class PartnerFileManagementStore {
     ]).pipe(
       take(1),
       switchMap(([partnerId, reportId]) =>
-        this.projectPartnerReportService.deleteAttachment(fileId, partnerId as number, reportId)
+        this.projectPartnerReportService.deleteReportFile(fileId, partnerId as number, reportId)
       ),
     );
   }

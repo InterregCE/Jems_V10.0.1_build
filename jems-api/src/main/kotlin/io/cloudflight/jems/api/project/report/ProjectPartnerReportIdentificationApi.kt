@@ -5,6 +5,7 @@ import io.cloudflight.jems.api.project.dto.report.partner.identification.Project
 import io.cloudflight.jems.api.project.dto.report.partner.identification.UpdateProjectPartnerReportIdentificationDTO
 import io.cloudflight.jems.api.project.dto.report.partner.identification.control.ProjectPartnerControlReportChangeDTO
 import io.cloudflight.jems.api.project.dto.report.partner.identification.control.ProjectPartnerControlReportDTO
+import io.cloudflight.jems.api.project.report.ProjectPartnerReportApi.Companion.ENDPOINT_API_PROJECT_PARTNER_CONTROL_REPORT
 import io.cloudflight.jems.api.project.report.ProjectPartnerReportApi.Companion.ENDPOINT_API_PROJECT_PARTNER_REPORT
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
@@ -22,7 +23,7 @@ interface ProjectPartnerReportIdentificationApi {
             "$ENDPOINT_API_PROJECT_PARTNER_REPORT/identification/byPartnerId/{partnerId}/byReportId/{reportId}"
 
         private const val ENDPOINT_API_PROJECT_PARTNER_REPORT_CONTROL =
-            "$ENDPOINT_API_PROJECT_PARTNER_REPORT/control/identification/byPartnerId/{partnerId}/byReportId/{reportId}"
+            "$ENDPOINT_API_PROJECT_PARTNER_CONTROL_REPORT/identification/byPartnerId/{partnerId}/byReportId/{reportId}"
     }
 
     @ApiOperation("Returns project partner report identification")

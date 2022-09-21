@@ -49,12 +49,13 @@ export class ReportFileManagementStore {
   newSort$ = new Subject<Partial<MatSort>>();
   reportFilesChanged$ = new Subject<void>();
 
-  constructor(private settingsService: SettingsService,
-              private downloadService: DownloadService,
-              private partnerReportDetailPageStore: PartnerReportDetailPageStore,
-              private projectPartnerReportService: ProjectPartnerReportService,
-              private fileManagementStore: FileManagementStore,
-              private routingService: RoutingService
+  constructor(
+    private settingsService: SettingsService,
+    private downloadService: DownloadService,
+    private partnerReportDetailPageStore: PartnerReportDetailPageStore,
+    private projectPartnerReportService: ProjectPartnerReportService,
+    private fileManagementStore: FileManagementStore,
+    private routingService: RoutingService
   ) {
     this.reportStatus$ = this.partnerReportDetailPageStore.reportStatus$;
     this.canUpload$ = this.canUpload();
@@ -75,7 +76,7 @@ export class ReportFileManagementStore {
         take(1),
         withLatestFrom(this.partnerReportDetailPageStore.partnerReportId$, this.partnerReportDetailPageStore.partnerId$),
         filter(([category, reportId, partnerId]) => !!partnerId && !!reportId),
-        switchMap(([category, reportId, partnerId]) => this.projectPartnerReportService.uploadAttachmentForm(file, Number(partnerId), reportId)),
+        switchMap(([category, reportId, partnerId]) => this.projectPartnerReportService.uploadReportFileForm(file, Number(partnerId), reportId)),
         tap(() => this.reportFilesChanged$.next()),
         tap(() => this.error$.next(null)),
         tap(() => this.routingService.confirmLeaveMap.delete(serviceId)),
@@ -95,7 +96,7 @@ export class ReportFileManagementStore {
         take(1),
         filter(([partnerId, reportId]) => !!partnerId),
         switchMap(([partnerId, reportId]) =>
-          this.projectPartnerReportService.deleteAttachment(fileId, Number(partnerId), reportId)
+          this.projectPartnerReportService.deleteReportFile(fileId, Number(partnerId), reportId)
         ),
         tap(() => this.reportFilesChanged$.next()),
         tap(() => this.deleteSuccess$.next(true)),
@@ -154,7 +155,7 @@ export class ReportFileManagementStore {
       .pipe(
         filter(([selectedCategory, partnerId, partnerReportId, pageIndex, pageSize, sort]: any) => !!partnerId && !!partnerReportId),
         switchMap(([selectedCategory, partnerId, partnerReportId, pageIndex, pageSize, sort]) =>
-          this.projectPartnerReportService.listAttachments(
+          this.projectPartnerReportService.listReportFiles(
             Number(partnerId),
             {
               reportId : Number(partnerReportId),

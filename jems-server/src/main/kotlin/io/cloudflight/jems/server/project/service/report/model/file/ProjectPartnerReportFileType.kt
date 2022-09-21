@@ -20,6 +20,9 @@ enum class ProjectPartnerReportFileType(
               ProcurementAttachment(Procurement, false),
             Contribution(PartnerReport, true),
 
+          PartnerControlReport(Partner, true),
+            ControlDocument(PartnerControlReport, false),
+
       Contracting(Project, false),
         ContractSupport(Contracting, false),
           Contract(ContractSupport, false),

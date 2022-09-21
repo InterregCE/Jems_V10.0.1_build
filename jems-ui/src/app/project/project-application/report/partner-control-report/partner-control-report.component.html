@@ -22,6 +22,12 @@
                         {{'project.application.partner.report.tab.controlChecklists' | translate}}
                     </span>
                 </a>
+                <a [active]="activeTab('document')" mat-tab-link
+                   (click)="routeTo('document')">
+                    <span jemsText maxWidth="230">
+                        {{ 'project.application.partner.report.control.tab.document' | translate }}
+                    </span>
+                </a>
             </nav>
 
             <nav *ngIf="store.limitedControlReportView$ | async" mat-tab-nav-bar>
@@ -29,6 +35,12 @@
                    (click)="routeTo('informationTab')">
                     <span jemsText maxWidth="230">
                         {{'project.application.partner.report.tab.information' | translate}}
+                    </span>
+                </a>
+                <a [active]="activeTab('document')" mat-tab-link
+                   (click)="routeTo('document')">
+                    <span jemsText maxWidth="230">
+                        {{ 'project.application.partner.report.control.tab.document' | translate }}
                     </span>
                 </a>
             </nav>

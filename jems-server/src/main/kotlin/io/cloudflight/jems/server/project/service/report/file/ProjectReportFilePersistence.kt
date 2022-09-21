@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartn
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFile
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileCreate
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 
@@ -14,6 +15,8 @@ interface ProjectReportFilePersistence {
     fun existsFile(partnerId: Long, pathPrefix: String, fileId: Long): Boolean
 
     fun existsFileByProjectIdAndFileIdAndFileTypeIn(projectId: Long, fileId: Long, fileTypes: Set<ProjectPartnerReportFileType>): Boolean
+
+    fun getFileAuthor(partnerId: Long, pathPrefix: String, fileId: Long): UserSimple?
 
     fun downloadFile(partnerId: Long, fileId: Long): Pair<String, ByteArray>?
 

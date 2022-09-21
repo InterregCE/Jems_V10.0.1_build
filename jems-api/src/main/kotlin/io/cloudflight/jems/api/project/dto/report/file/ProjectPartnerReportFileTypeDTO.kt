@@ -17,6 +17,9 @@ enum class ProjectPartnerReportFileTypeDTO {
               ProcurementAttachment,
             Contribution,
 
+          PartnerControlReport,
+            ControlDocument,
+
       Contracting,
         ContractSupport,
           Contract,

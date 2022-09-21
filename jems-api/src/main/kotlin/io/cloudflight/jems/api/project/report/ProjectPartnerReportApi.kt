@@ -29,6 +29,7 @@ interface ProjectPartnerReportApi {
 
     companion object {
         const val ENDPOINT_API_PROJECT_PARTNER_REPORT = "/api/project/report/partner"
+        const val ENDPOINT_API_PROJECT_PARTNER_CONTROL_REPORT = "/api/project/report/partner/control"
     }
 
     @ApiOperation("Returns all project partner report summaries by partner id and version")
@@ -75,18 +76,18 @@ interface ProjectPartnerReportApi {
         "$ENDPOINT_API_PROJECT_PARTNER_REPORT/byPartnerId/{partnerId}/{fileId}",
         produces = [MediaType.APPLICATION_OCTET_STREAM_VALUE]
     )
-    fun downloadAttachment(@PathVariable partnerId: Long, @PathVariable fileId: Long): ResponseEntity<ByteArrayResource>
+    fun downloadReportFile(@PathVariable partnerId: Long, @PathVariable fileId: Long): ResponseEntity<ByteArrayResource>
 
     @ApiOperation("Delete file from partner report")
     @DeleteMapping("$ENDPOINT_API_PROJECT_PARTNER_REPORT/byPartnerId/{partnerId}/byReportId/{reportId}/{fileId}")
-    fun deleteAttachment(@PathVariable partnerId: Long, @PathVariable reportId: Long, @PathVariable fileId: Long)
+    fun deleteReportFile(@PathVariable partnerId: Long, @PathVariable reportId: Long, @PathVariable fileId: Long)
 
     @ApiOperation("Update description of already uploaded file")
     @PutMapping(
         "$ENDPOINT_API_PROJECT_PARTNER_REPORT/byPartnerId/{partnerId}/byReportId/{reportId}/{fileId}/description",
         consumes = [MediaType.APPLICATION_JSON_VALUE],
     )
-    fun updateDescription(
+    fun updateReportFileDescription(
         @PathVariable partnerId: Long,
         @PathVariable reportId: Long,
         @PathVariable fileId: Long,
@@ -98,7 +99,7 @@ interface ProjectPartnerReportApi {
         "$ENDPOINT_API_PROJECT_PARTNER_REPORT/byPartnerId/{partnerId}/byReportId/{reportId}",
         consumes = [MediaType.MULTIPART_FORM_DATA_VALUE]
     )
-    fun uploadAttachment(
+    fun uploadReportFile(
         @PathVariable partnerId: Long,
         @PathVariable reportId: Long,
         @RequestPart("file") file: MultipartFile,
@@ -114,10 +115,57 @@ interface ProjectPartnerReportApi {
         "$ENDPOINT_API_PROJECT_PARTNER_REPORT/byPartnerId/{partnerId}/attachments",
         consumes = [MediaType.APPLICATION_JSON_VALUE],
     )
-    fun listAttachments(
+    fun listReportFiles(
         @PathVariable partnerId: Long,
         pageable: Pageable,
         @RequestBody searchRequest: ProjectReportFileSearchRequestDTO,
+    ): Page<ProjectReportFileDTO>
+
+    @ApiOperation("Download file from partner control report")
+    @GetMapping(
+        "$ENDPOINT_API_PROJECT_PARTNER_CONTROL_REPORT/byPartnerId/{partnerId}/{fileId}",
+        produces = [MediaType.APPLICATION_OCTET_STREAM_VALUE]
+    )
+    fun downloadControlReportFile(@PathVariable partnerId: Long, @PathVariable fileId: Long): ResponseEntity<ByteArrayResource>
+
+    @ApiOperation("Delete file from partner control report")
+    @DeleteMapping("$ENDPOINT_API_PROJECT_PARTNER_CONTROL_REPORT/byPartnerId/{partnerId}/byReportId/{reportId}/{fileId}")
+    fun deleteControlReportFile(@PathVariable partnerId: Long, @PathVariable reportId: Long, @PathVariable fileId: Long)
+
+    @ApiOperation("Update description of already uploaded control report file")
+    @PutMapping(
+        "$ENDPOINT_API_PROJECT_PARTNER_CONTROL_REPORT/byPartnerId/{partnerId}/byReportId/{reportId}/{fileId}/description",
+        consumes = [MediaType.APPLICATION_JSON_VALUE],
+    )
+    fun updateControlReportFileDescription(
+        @PathVariable partnerId: Long,
+        @PathVariable reportId: Long,
+        @PathVariable fileId: Long,
+        @RequestBody(required = false) description: String?,
+    )
+
+    @ApiOperation("Upload file to partner control report")
+    @PostMapping(
+        "$ENDPOINT_API_PROJECT_PARTNER_CONTROL_REPORT/byPartnerId/{partnerId}/byReportId/{reportId}",
+        consumes = [MediaType.MULTIPART_FORM_DATA_VALUE]
+    )
+    fun uploadControlReportFile(
+        @PathVariable partnerId: Long,
+        @PathVariable reportId: Long,
+        @RequestPart("file") file: MultipartFile,
+    ): ProjectReportFileMetadataDTO
+
+    @ApiOperation("List attachments of control report")
+    @ApiImplicitParams(
+        ApiImplicitParam(paramType = "query", name = "page", dataType = "integer"),
+        ApiImplicitParam(paramType = "query", name = "size", dataType = "integer"),
+        ApiImplicitParam(paramType = "query", name = "sort", dataType = "string")
+    )
+    @GetMapping("$ENDPOINT_API_PROJECT_PARTNER_CONTROL_REPORT/byPartnerIdAndReportId/{partnerId}/{reportId}/attachments")
+    fun listControlReportFiles(
+        @PathVariable partnerId: Long,
+        @PathVariable reportId: Long,
+        pageable: Pageable,
     ): Page<ProjectReportFileDTO>
 
 }

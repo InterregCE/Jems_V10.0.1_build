@@ -1,0 +1,43 @@
+<mat-card>
+    <h3>{{ 'project.application.partner.report.control.tab.document' | translate }}</h3>
+    <div *ngIf="data$ | async as data" jemsNoWidthLimit id="report-control-files" class="overflow-auto">
+
+        <jems-category-tree class="mr-3" id="report-control-files-tree"
+                [categories]="data.categories"
+                [selectedCategory]="selectedCategory">
+        </jems-category-tree>
+
+        <div id="report-control-files-table">
+            <jems-file-list-table jemsNoWidthLimit class="pb-2"
+                    [fileList]="data.attachments"
+                    [sortingEnabled]="true"
+                    (onSortChange)="controlReportFileStore.newSort$.next($event)"
+                    (onDownload)="downloadFile($event)"
+                    (onDelete)="deleteFile($event)"
+                    (onDescriptionChange)="updateDescription($event)"
+                    [savingInProgressForId]="savingDescriptionId$ | async">
+            </jems-file-list-table>
+
+            <div *ngIf="data.isControlReportEditable">
+                <input #selectFile (change)="uploadFile($event?.target)" onclick="this.value=null;"
+                       type="file" [accept]="acceptedFilesTypes" [hidden]="true">
+                <button mat-stroked-button (click)="selectFile.click()" [disabled]="data.attachments.length >= 40">
+                    <mat-icon fontSet="material-icons-outlined" class="mr-1">file_upload</mat-icon>{{ 'file.upload.add.new' | translate }}
+                </button>
+            </div>
+        </div>
+
+        <jems-alert *ngIf="controlReportFileStore.error$ | async as error"
+                    [show]="!!error"
+                    [type]="Alert.ERROR">
+            <jems-api-error-content [error]="error"></jems-api-error-content>
+        </jems-alert>
+        <jems-alert *ngIf="fileSizeOverLimitError$ | async as showError"
+                    [show]="showError"
+                    [type]="Alert.ERROR">
+            <p>{{'project.file.size.over.limit' | translate}} {{maximumAllowedFileSizeInMB}} MB</p>
+        </jems-alert>
+
+    </div>
+
+</mat-card>

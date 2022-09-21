@@ -203,6 +203,9 @@ import {
   PartnerReportProcurementAttachmentComponent
 } from '@project/project-application/report/partner-report-detail-page/partner-report-procurements-tab/partner-report-procurement-detail/partner-report-procurement-attachment/partner-report-procurement-attachment.component';
 import {TranslateByInputLanguagePipe} from '@common/pipe/translate-by-input-language.pipe';
+import {
+  PartnerControlReportDocumentTabComponent
+} from '@project/project-application/report/partner-control-report/partner-control-report-document-tab/partner-control-report-document-tab.component';
 
 @NgModule({
   declarations: [
@@ -342,6 +345,7 @@ import {TranslateByInputLanguagePipe} from '@common/pipe/translate-by-input-lang
     PartnerControlReportInformationTabComponent,
     PartnerControlReportControlChecklistsTabComponent,
     PartnerControlReportControlChecklistPageComponent,
+    PartnerControlReportDocumentTabComponent,
     ProjectProposedUnitCostsComponent,
     ProjectProposedUnitCostDetailComponent,
     PartnerControlReportInformationTabComponent,
