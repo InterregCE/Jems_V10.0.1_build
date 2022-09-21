@@ -110,14 +110,13 @@
         </jems-multi-language-form-field>
     </jems-multi-language-container>
 
-    <jems-expandable-textarea
-            [control]="resultIndicatorForm?.controls?.comments"
-            [errors]="resultIndicatorForm?.controls?.comments?.errors"
-            [messages]="inputErrorMessages"
-            [characterLimit]="1000"
-            [label]="'result.indicator.form.field.comments'"
-            [disabled]="formState === FormState.VIEW">
-    </jems-expandable-textarea>
+    <jems-multi-language-container [useSystemLanguages]="true"
+                                   [switchButtonsVisible]="formState === FormState.EDIT">
+        <jems-multi-language-form-field [disabled]="formState === FormState.VIEW" [maxLength]="1000" type="textarea"
+                                        label="result.indicator.form.field.comments"
+                                        formControlName="comment">
+        </jems-multi-language-form-field>
+    </jems-multi-language-container>
     <div jemsMultiColumnRow *ngIf="formState === FormState.EDIT">
         <button mat-stroked-button
                 type="button"
