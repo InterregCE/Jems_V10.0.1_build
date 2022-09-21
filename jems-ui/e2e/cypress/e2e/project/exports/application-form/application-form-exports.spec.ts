@@ -260,7 +260,7 @@ context('Application form exports', () => {
     });
   });
 
-  it.only('TB-545 Export application form in different steps [step 1&2]', () => {
+  it('TB-545 Export application form in different steps [step 1&2]', () => {
     cy.fixture('project/exports/application-form/TB-545.json').then(testData => {
       call2step.applicationFormConfiguration = testData.call.applicationFormConfiguration;
       cy.create2StepCall(call2step, user.programmeUser.email).then(callId => {
