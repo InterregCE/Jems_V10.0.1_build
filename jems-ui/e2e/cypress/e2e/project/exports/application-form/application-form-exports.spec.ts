@@ -236,10 +236,9 @@ context('Application form exports', () => {
             cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/application?*`, 'pdf').then(file => {
               const templateFile = 'TB-373-export-template-v2.pdf';
               const currentMask = comparePdfMask;
-              currentMask.push({pageIndex: 12, coordinates: {x0: 426, x1: 760, y0: 855, y1: 875}});
-              currentMask.push({pageIndex: 12, coordinates: {x0: 400, x1: 760, y0: 873, y1: 898}});
-              currentMask.push({pageIndex: 13, coordinates: {x0: 425, x1: 760, y0: 235, y1: 255}});
-              currentMask.push({pageIndex: 14, coordinates: {x0: 96, x1: 136, y0: 244, y1: 256}});
+              currentMask.push({pageIndex: 11, coordinates: {x0: 430, x1: 480, y0: 855, y1: 875}});
+              currentMask.push({pageIndex: 12, coordinates: {x0: 425, x1: 480, y0: 235, y1: 252}});
+              currentMask.push({pageIndex: 13, coordinates: {x0: 96, x1: 136, y0: 244, y1: 256}});
               cy.comparePdf(templateFile, file, currentMask, baselinePath).then(x => {
                 expect(x.status==="passed").to.be.true;
               });
@@ -261,7 +260,7 @@ context('Application form exports', () => {
     });
   });
 
-  it('TB-545 Export application form in different steps [step 1&2]', () => {
+  it.only('TB-545 Export application form in different steps [step 1&2]', () => {
     cy.fixture('project/exports/application-form/TB-545.json').then(testData => {
       call2step.applicationFormConfiguration = testData.call.applicationFormConfiguration;
       cy.create2StepCall(call2step, user.programmeUser.email).then(callId => {
@@ -303,10 +302,9 @@ context('Application form exports', () => {
             cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/application?*`, 'pdf').then(file => {
               const templateFile = 'TB-545-export-template-v2.pdf';
               const currentMask = comparePdfMask;
-              currentMask.push({pageIndex: 12, coordinates: {x0: 426, x1: 760, y0: 855, y1: 875}});
-              currentMask.push({pageIndex: 12, coordinates: {x0: 400, x1: 760, y0: 873, y1: 898}});
-              currentMask.push({pageIndex: 13, coordinates: {x0: 425, x1: 760, y0: 235, y1: 255}});
-              currentMask.push({pageIndex: 14, coordinates: {x0: 96, x1: 136, y0: 244, y1: 256}});
+              currentMask.push({pageIndex: 11, coordinates: {x0: 425, x1: 480, y0: 855, y1: 875}});
+              currentMask.push({pageIndex: 12, coordinates: {x0: 425, x1: 480, y0: 235, y1: 252}});
+              currentMask.push({pageIndex: 13, coordinates: {x0: 96, x1: 136, y0: 244, y1: 256}});
               cy.comparePdf(templateFile, file, currentMask, baselinePath).then(x => {
                 expect(x.status==="passed").to.be.true;
               });
@@ -319,10 +317,10 @@ context('Application form exports', () => {
             cy.contains('div#export-config button', 'Export').clickToDownload(`api/project/${applicationId}/export/application?*version=1.0`, 'pdf').then(file => {
               const templateFile = 'TB-545-export-template-v1.pdf';
               const currentMask = comparePdfMask;
-              currentMask.push({pageIndex: 10, coordinates: {x0: 426, x1: 760, y0: 855, y1: 875}});
-              currentMask.push({pageIndex: 10, coordinates: {x0: 400, x1: 760, y0: 873, y1: 898}});
-              currentMask.push({pageIndex: 11, coordinates: {x0: 425, x1: 760, y0: 235, y1: 255}});
-              currentMask.push({pageIndex: 12, coordinates: {x0: 96, x1: 136, y0: 244, y1: 256}});
+              currentMask.push({pageIndex: 9, coordinates: {x0: 426, x1: 480, y0: 855, y1: 875}});
+              // currentMask.push({pageIndex: 10, coordinates: {x0: 400, x1: 760, y0: 873, y1: 898}});
+              currentMask.push({pageIndex: 10, coordinates: {x0: 425, x1: 480, y0: 235, y1: 255}});
+              currentMask.push({pageIndex: 11, coordinates: {x0: 96, x1: 136, y0: 244, y1: 256}});
               cy.comparePdf(templateFile, file, currentMask, baselinePath).then(x => {
                 expect(x.status==="passed").to.be.true;
               });
