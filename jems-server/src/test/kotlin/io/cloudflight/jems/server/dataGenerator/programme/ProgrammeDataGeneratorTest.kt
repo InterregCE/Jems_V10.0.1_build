@@ -228,7 +228,7 @@ class ProgrammeDataGeneratorTest(@LocalServerPort private val port: Int) : DataG
                 finalTarget = BigDecimal.valueOf(54365, 2),
                 referenceYear = "2022",
                 sourceOfData = emptySet(),
-                comment = "result indicator comment"
+                comment = inputTranslation("result indicator comment")
             )
         )
 

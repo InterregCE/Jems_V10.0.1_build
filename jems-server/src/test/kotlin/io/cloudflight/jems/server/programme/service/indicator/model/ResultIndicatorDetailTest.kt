@@ -23,7 +23,7 @@ internal class ResultIndicatorDetailTest : IndicatorsBaseTest() {
             referenceYear = "2022/2024",
             finalTarget = BigDecimal.TEN,
             sourceOfData = setOf(InputTranslation(SystemLanguage.EN, "test source of data update")),
-            comment = "test comment update",
+            comment = setOf(InputTranslation(SystemLanguage.EN, "test comment update")),
             programmeObjectivePolicy = ProgrammeObjectivePolicy.AdvancedTechnologies,
             programmePriorityCode = indicatorProgrammePriorityCode,
             programmePriorityPolicyCode = indicatorProgrammeSpecificObjectiveCode
