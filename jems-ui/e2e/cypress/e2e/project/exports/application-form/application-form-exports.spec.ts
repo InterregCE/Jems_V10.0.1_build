@@ -318,7 +318,6 @@ context('Application form exports', () => {
               const templateFile = 'TB-545-export-template-v1.pdf';
               const currentMask = comparePdfMask;
               currentMask.push({pageIndex: 9, coordinates: {x0: 426, x1: 480, y0: 855, y1: 875}});
-              // currentMask.push({pageIndex: 10, coordinates: {x0: 400, x1: 760, y0: 873, y1: 898}});
               currentMask.push({pageIndex: 10, coordinates: {x0: 425, x1: 480, y0: 235, y1: 255}});
               currentMask.push({pageIndex: 11, coordinates: {x0: 96, x1: 136, y0: 244, y1: 256}});
               cy.comparePdf(templateFile, file, currentMask, baselinePath).then(x => {
