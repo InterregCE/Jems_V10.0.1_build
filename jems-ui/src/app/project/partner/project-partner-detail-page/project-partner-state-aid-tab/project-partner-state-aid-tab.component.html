@@ -1,13 +1,14 @@
 <jems-form *ngIf="data$ | async as data"
           (save)="updateStateAid(data.project.callSettings.stateAids)"
           (discard)="resetForm(data.stateAid)">
+    <h3>{{ 'partner.tab.state.aid' | translate }}</h3>
     <form jemsFormLayout [formGroup]="form">
         <ng-container *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.STATE_AID.CRITERIA_SELF_CHECK">
-            <h3>{{ 'project.partner.state.aid.title' | translate }}</h3>
+            <h4>{{ 'project.partner.state.aid.title' | translate }}</h4>
             <jems-multi-language-container>
                 <div [jemsTableConfig]="[{},{maxInRem:6},{}]">
                     <span class="table-header mt-2">
-                        <h4 class="mt-2">{{'project.partner.state.aid.economic.title' | translate}}</h4>
+                        <span class="mt-2">{{'project.partner.state.aid.economic.title' | translate}}</span>
                         <span></span>
                         <h5 class="ml-2">{{'project.partner.state.aid.table.subtitle' | translate}}</h5>
                     </span>
@@ -54,7 +55,7 @@
             <jems-multi-language-container class="mt-3">
                 <div [jemsTableConfig]="[{},{maxInRem:6},{}]">
                     <span class="table-header mt-2">
-                        <h4 class="mt-2">{{'project.partner.state.aid.advantage.title' | translate}}</h4>
+                        <span class="mt-2">{{'project.partner.state.aid.advantage.title' | translate}}</span>
                         <span></span>
                         <h5 class="ml-2">{{'project.partner.state.aid.table.subtitle' | translate}}</h5>
                     </span>
@@ -105,6 +106,7 @@
         </ng-container>
 
 
+        <h4>{{'project.partner.state.aid.relevant.activities' | translate }}</h4>
         <jems-alert *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.STATE_AID.RELEVANT_ACTIVITIES"
                 [type]="Alert.WARNING"
                 [show]="data.activities.length === 0"
@@ -132,7 +134,7 @@
             <mat-autocomplete #auto="matAutocomplete"
                               (optionSelected)="addActivity($event.option.value); filterActivities.value = ''; filterActivities.blur()">
                 <mat-optgroup *ngFor="let group of getWorkpackagesWithActivities(data.displayActivities)" [label]="getDisplayValueForWorkPackageNumber(group.workpackage) + (group.workpackage.name | translateByInputLanguage | async)">
-                    <mat-option *ngFor="let activity of getActivitiesWithoutSelected(group.activities) | filterActivities: filterActivities.value" [value]="activity">
+                    <mat-option *ngFor="let activity of getActivitiesWithoutSelected(group.activities) | filterActivities: filterActivities.value" [value]="activity" class="activity-text-size">
                         {{ getDisplayValueForActivityNumber(data.activities, activity)}}
                     </mat-option>
                 </mat-optgroup>
