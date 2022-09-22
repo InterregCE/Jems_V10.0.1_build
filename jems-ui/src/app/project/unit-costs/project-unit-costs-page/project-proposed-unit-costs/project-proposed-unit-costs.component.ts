@@ -16,7 +16,7 @@ import {TableConfiguration} from '@common/components/table/model/table.configura
 import {ColumnType} from '@common/components/table/model/column-type.enum';
 import {APIError} from '@common/models/APIError';
 import {ColumnWidth} from '@common/components/table/model/column-width';
-import {UntilDestroy, untilDestroyed} from "@ngneat/until-destroy";
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
 @UntilDestroy()
 @Component({
@@ -49,7 +49,7 @@ export class ProjectProposedUnitCostsComponent implements OnInit {
 
   data$: Observable<{
     tableConfiguration: TableConfiguration;
-    dataSource: MatTableDataSource<ProgrammeUnitCostListDTO>,
+    dataSource: MatTableDataSource<ProgrammeUnitCostListDTO>;
   }>;
 
   constructor(

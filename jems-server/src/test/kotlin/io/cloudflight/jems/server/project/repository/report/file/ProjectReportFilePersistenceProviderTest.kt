@@ -273,16 +273,16 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
     fun setDescription() {
         val filePathFull = "sample/path/to/file-with-desc.txt"
         val fileToUpdate = file(id = 20L, name = "file-with-desc.txt", filePathFull = filePathFull)
-        every { reportFileRepository.findByPartnerIdAndId(PARTNER_ID, fileId = 20L) } returns fileToUpdate
+        every { reportFileRepository.findById( 20L) } returns Optional.of(fileToUpdate)
 
-        persistence.setDescriptionToFile(PARTNER_ID, fileId = 20L, "description new")
+        persistence.setDescriptionToFile(fileId = 20L, "description new")
         assertThat(fileToUpdate.description).isEqualTo("description new")
     }
 
     @Test
     fun `setDescription - not existing`() {
-        every { reportFileRepository.findByPartnerIdAndId(PARTNER_ID, fileId = -1L) } returns null
-        assertThrows<ResourceNotFoundException> { persistence.setDescriptionToFile(PARTNER_ID, fileId = -1L, "") }
+        every { reportFileRepository.findById(-1L) } returns Optional.empty()
+        assertThrows<ResourceNotFoundException> { persistence.setDescriptionToFile(fileId = -1L, "") }
     }
 
     @Test

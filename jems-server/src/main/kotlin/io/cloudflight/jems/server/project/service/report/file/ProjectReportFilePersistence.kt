@@ -13,11 +13,13 @@ interface ProjectReportFilePersistence {
 
     fun existsFile(partnerId: Long, pathPrefix: String, fileId: Long): Boolean
 
+    fun existsFileByProjectIdAndFileIdAndFileTypeIn(projectId: Long, fileId: Long, fileTypes: Set<ProjectPartnerReportFileType>): Boolean
+
     fun downloadFile(partnerId: Long, fileId: Long): Pair<String, ByteArray>?
 
     fun deleteFile(partnerId: Long, fileId: Long)
 
-    fun setDescriptionToFile(partnerId: Long, fileId: Long, description: String)
+    fun setDescriptionToFile(fileId: Long, description: String)
 
     fun updatePartnerReportActivityAttachment(activityId: Long, file: ProjectReportFileCreate): ProjectReportFileMetadata
 

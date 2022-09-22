@@ -16,6 +16,7 @@ import {PermissionService} from '../../../../security/permissions/permission.ser
 import {PageFileList} from '@common/components/file-list/page-file-list';
 import FileTypeEnum = ProjectReportFileDTO.TypeEnum;
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
+import {FileDescriptionChange} from '@common/components/file-list/file-list-table/file-description-change';
 
 @UntilDestroy()
 @Component({
@@ -82,6 +83,13 @@ export class ContractingFilesComponent implements OnInit{
       .subscribe();
   }
 
+  updateDescription(data: FileDescriptionChange) {
+    this.store.setFileDescription(data.id, data.description).pipe(
+      tap(() => this.store.filesChanged$.next()),
+      untilDestroyed(this)
+    ).subscribe();
+  }
+
   private getFilesToList(): Observable<PageFileList> {
     return this.store.fileList$.pipe(
       map(pageFiles => ({
@@ -139,11 +147,17 @@ export class ContractingFilesComponent implements OnInit{
 
   private transform(content: ProjectReportFileDTO[]): FileListItem[] {
     return content.map(file => ({
-      ...file,
+      id: file.id,
+      name: file.name,
+      type: file.type,
+      uploaded: file.uploaded,
+      author: file.author,
+      sizeString: file.sizeString,
+      description: file.description,
+      editable: this.canEdit,
       deletable: this.canEdit,
-      editable: false,
-      tooltipIfNotDeletable: '',
-      iconIfNotDeletable: 'delete',
+      tooltipIfNotDeletable: 'file.table.action.delete.disabled.for.tab.tooltip',
+      iconIfNotDeletable: 'delete_forever',
     }));
   }
 

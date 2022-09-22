@@ -29,7 +29,7 @@ class SetDescriptionToProjectPartnerReportFile(
         if (!reportFilePersistence.existsFile(partnerId = partnerId, pathPrefix = reportPrefix, fileId = fileId))
             throw FileNotFound()
 
-        reportFilePersistence.setDescriptionToFile(partnerId = partnerId, fileId = fileId, description = description)
+        reportFilePersistence.setDescriptionToFile(fileId = fileId, description = description)
     }
 
     private fun validateDescription(text: String) {

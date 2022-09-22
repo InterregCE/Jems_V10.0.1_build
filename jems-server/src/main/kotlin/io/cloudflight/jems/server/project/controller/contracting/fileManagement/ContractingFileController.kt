@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.controller.contracting.management.file
+package io.cloudflight.jems.server.project.controller.contracting.fileManagement
 
 import io.cloudflight.jems.api.project.contracting.ContractingFileApi
 import io.cloudflight.jems.api.project.dto.contracting.file.ProjectContractingFileSearchRequestDTO
@@ -7,6 +7,8 @@ import io.cloudflight.jems.server.project.controller.report.toProjectFile
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.deleteContractingFile.DeleteContractingFileInteractor
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.downloadContractingFile.DownloadContractingFileInteractor
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.listContractingFiles.ListContractingFilesInteractor
+import io.cloudflight.jems.server.project.service.contracting.fileManagement.setContractFileDescription.SetContractFileDescriptionInteractor
+import io.cloudflight.jems.server.project.service.contracting.fileManagement.setInternalFileDescription.SetInternalFileDescriptionInteractor
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.uploadFileToContracting.UploadFileToContractingInteractor
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.data.domain.Pageable
@@ -22,6 +24,8 @@ class ContractingFileController(
     private val listContractingFiles: ListContractingFilesInteractor,
     private val downloadContractingFile: DownloadContractingFileInteractor,
     private val deleteContractingFile: DeleteContractingFileInteractor,
+    private val setContractFileDescriptionInteractor: SetContractFileDescriptionInteractor,
+    private val setInternalFileDescriptionInteractor: SetInternalFileDescriptionInteractor
 ): ContractingFileApi {
 
     override fun uploadContractFile(projectId: Long, file: MultipartFile) =
@@ -60,4 +64,19 @@ class ContractingFileController(
     override fun deleteFile(projectId: Long, fileId: Long) =
         deleteContractingFile.delete(projectId, fileId = fileId)
 
+    override fun updateContractFileDescription(projectId: Long, fileId: Long, description: String?) {
+        setContractFileDescriptionInteractor.setContractFileDescription(
+            projectId = projectId,
+            fileId = fileId,
+            description = description ?: ""
+        )
+    }
+
+    override fun updateInternalFileDescription(projectId: Long, fileId: Long, description: String?) {
+        setInternalFileDescriptionInteractor.setInternalFileDescription(
+            projectId = projectId,
+            fileId = fileId,
+            description = description ?: ""
+        )
+    }
 }

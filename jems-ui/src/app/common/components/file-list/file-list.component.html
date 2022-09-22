@@ -4,7 +4,8 @@
             sortingEnabled="true"
             (onSortChange)="this.onSortChange.next($event)"
             (onDownload)="onDownload.emit($event)"
-            (onDelete)="onDelete.emit($event)">
+            (onDelete)="onDelete.emit($event)"
+            (onDescriptionChange)="onDescriptionChange.emit($event)">
     </jems-file-list-table>
 
     <jems-paginator *ngIf="fileList?.content?.length"

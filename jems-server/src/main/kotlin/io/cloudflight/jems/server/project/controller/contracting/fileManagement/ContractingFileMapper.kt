@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.controller.contracting.management.file
+package io.cloudflight.jems.server.project.controller.contracting.fileManagement
 
 import io.cloudflight.jems.api.project.dto.contracting.file.ProjectContractingFileSearchRequestDTO
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingFileSearchRequest
