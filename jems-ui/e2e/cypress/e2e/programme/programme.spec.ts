@@ -1,5 +1,9 @@
-import { faker } from '@faker-js/faker';
+import {faker} from '@faker-js/faker';
 import user from '../../fixtures/users.json';
+import call from '../../fixtures/api/call/1.step.call.json';
+import spfCall from '../../fixtures/api/call/spf.1.step.call.json';
+import application from '../../fixtures/api/application/application.json';
+import partner from '../../fixtures/api/application/partner/partner.json';
 
 context('Programme management tests', () => {
 
@@ -9,8 +13,9 @@ context('Programme management tests', () => {
 
   it('TB-387 Programme Basic data can be configured', () => {
     cy.fixture('programme/TB-387.json').then((basicData) => {
-      cy.visit('/app/programme', {failOnStatusCode: false});
+      cy.visit('/');
 
+      cy.contains('Programme').click();
       cy.contains('Edit').click();
 
       cy.contains('div', 'CCI').find('input').type(basicData.cci);
@@ -34,8 +39,9 @@ context('Programme management tests', () => {
 
   it('TB-525 Programme Languages can be configured', () => {
     cy.fixture('programme/TB-525.json').then((languages) => {
-      cy.visit('/app/programme/languages', {failOnStatusCode: false});
+      cy.visit('/app/programme', {failOnStatusCode: false});
 
+      cy.contains('Languages').click();
       cy.contains('Edit').click();
 
       languages.forEach(language => {
@@ -52,8 +58,9 @@ context('Programme management tests', () => {
 
   it('TB-523 Programme NUTS can be downloaded and areas selected', () => {
 
-    cy.visit('/app/programme/areas', {failOnStatusCode: false});
+    cy.visit('/app/programme', {failOnStatusCode: false});
 
+    cy.contains('Geographical coverage').click();
     cy.contains('Download').click();
     cy.get('jems-alert p', {timeout: 40000}).should('contain.text', 'Up to date NUTS dataset was successfully downloaded.');
 
@@ -66,8 +73,9 @@ context('Programme management tests', () => {
 
   it('TB-524 Programme Funds can be configured', () => {
     cy.fixture('programme/TB-524.json').then((funds) => {
-      cy.visit('/app/programme/funds', {failOnStatusCode: false});
+      cy.visit('/app/programme', {failOnStatusCode: false});
 
+      cy.contains('Funds').click();
       cy.contains('Edit').click();
       cy.contains('button', 'DE').click();
 
@@ -92,8 +100,9 @@ context('Programme management tests', () => {
 
   it('TB-526 Programme Priorities can be configured', () => {
     cy.fixture('programme/TB-526.json').then((priorities) => {
-      cy.visit('/app/programme/priorities', {failOnStatusCode: false});
+      cy.visit('/app/programme', {failOnStatusCode: false});
 
+      cy.contains('Priorities').click();
       priorities.forEach(priority => {
 
         cy.contains('Add priority').click();
@@ -153,9 +162,10 @@ context('Programme management tests', () => {
   it('TB-527 Programme result indicators can be configured', () => {
     cy.fixture('programme/TB-527.json').then((resultIndicators) => {
       resultIndicators.forEach(current => {
-        current.identifier = current.identifier+faker.random.numeric(6);
+        current.identifier = current.identifier + faker.random.numeric(6);
       })
-      cy.visit('/app/programme/indicators', {failOnStatusCode: false});
+      cy.visit('/app/programme', {failOnStatusCode: false});
+      cy.contains('Indicators').click();
 
       resultIndicators.forEach(indicator => {
         cy.contains('Create result indicator').click();
@@ -191,7 +201,7 @@ context('Programme management tests', () => {
   it('TB-528 Programme output indicators can be configured', () => {
     cy.fixture('programme/TB-528.json').then((outputIndicators) => {
       outputIndicators.forEach(current => {
-        current.identifier = current.identifier+faker.random.numeric(6);
+        current.identifier = current.identifier + faker.random.numeric(6);
       })
       cy.visit('/app/programme/indicators', {failOnStatusCode: false});
 
@@ -223,8 +233,9 @@ context('Programme management tests', () => {
 
   it('TB-529 Programme Strategies can be configured', () => {
     cy.fixture('programme/TB-529.json').then((strategies) => {
-      cy.visit('/app/programme/strategies', {failOnStatusCode: false});
+      cy.visit('/app/programme', {failOnStatusCode: false});
 
+      cy.contains('Strategies').click();
       cy.contains('button', 'Edit').click();
 
       strategies.forEach(strategy => {
@@ -242,8 +253,9 @@ context('Programme management tests', () => {
 
   it('TB-530 Programme Legal status can be configured', () => {
 
-    cy.visit('/app/programme/legalStatus', {failOnStatusCode: false});
+    cy.visit('/app/programme', {failOnStatusCode: false});
 
+    cy.contains('Legal status').click();
     cy.contains('button', 'Edit').click();
 
     cy.contains('button', 'DE').click();
@@ -262,8 +274,9 @@ context('Programme management tests', () => {
 
   it('TB-531 Programme Lump Sums can be configured', () => {
     cy.fixture('programme/TB-531.json').then((lumpSums) => {
-      cy.visit('/app/programme/costs', {failOnStatusCode: false});
+      cy.visit('/app/programme', {failOnStatusCode: false});
 
+      cy.contains('Simplified Cost Options').click();
       lumpSums.forEach(lumpSum => {
         cy.contains('button', 'Add Lump Sum').click();
 
@@ -349,8 +362,9 @@ context('Programme management tests', () => {
 
   it('TB-533 Programme State Aid can be configured', () => {
     cy.fixture('programme/TB-533.json').then((stateAid) => {
-      cy.visit('/app/programme/stateAid', {failOnStatusCode: false});
+      cy.visit('/app/programme', {failOnStatusCode: false});
 
+      cy.contains('State Aid').click();
       cy.contains('button', 'Add State Aid').click();
 
       stateAid.forEach(aid => {
@@ -384,6 +398,8 @@ context('Programme management tests', () => {
 
   it('TB-579 User can create, edit, preview and delete checklists', () => {
     cy.fixture('programme/TB-579.json').then((testData) => {
+      cy.visit('app/programme', {failOnStatusCode: false});
+
       testData.checklists.forEach(checklist => {
         createChecklist(checklist);
 
@@ -442,9 +458,117 @@ context('Programme management tests', () => {
     });
   });
 
+  it('TB-747 Data export in programme setup shall take the correct data version', () => {
+    cy.fixture('programme/TB-747').then(testData => {
+
+      call.generalCallSettings.name = '';
+      cy.createCall(call).then(callId => {
+        cy.publishCall(callId);
+
+        cy.createCall(spfCall).then(spfCallId => {
+          cy.publishCall(spfCallId);
+
+          application.details.projectCallId = callId;
+          const spfApplication = JSON.parse(JSON.stringify(application));
+          spfApplication.partners[0].budget.infrastructure = null; // SPF projects don't allow infrastructure costs
+          spfApplication.partners[0].budget.spf = testData.spfCostItem;
+          spfApplication.partners[0].cofinancing.partnerContributions[0].amount = testData.cofinancingAmount;
+          spfApplication.partners[0].spfCofinancing = testData.spfCofinancing;
+          spfApplication.description.relevanceAndContext.projectSpfRecipients = testData.projectSpfRecipients;
+          spfApplication.details.projectCallId = spfCallId;
+
+          cy.loginByRequest(user.applicantUser.email);
+          application.partners.push(partner);
+
+          for (let i = 0; i < 3; i++) {
+            cy.createApplication(application);
+            cy.createApplication(spfApplication);
+            cy.createApprovedApplication(application, user.programmeUser.email);
+            cy.createApprovedApplication(spfApplication, user.programmeUser.email);
+          }
+        });
+      });
+
+      cy.loginByRequest(user.admin.email);
+      testData.dataExportRole.name = `dataExportRole_${faker.random.alphaNumeric(5)}`;
+      testData.dataExportUser.email = faker.internet.email();
+      cy.createRole(testData.dataExportRole).then(roleId => {
+        testData.dataExportUser.userRoleId = roleId;
+        cy.createUser(testData.dataExportUser);
+      });
+      cy.loginByRequest(testData.dataExportUser.email);
+      cy.loginByRequest(user.admin.email);
+      cy.visit('app/programme', {failOnStatusCode: false});
+      cy.contains('Data export').click();
+      
+      cy.contains('div', 'Programme data export plugin').find('mat-select').click();
+      cy.contains('mat-option', 'Standard programme partner data export').click();
+      cy.contains('button', 'Generate export file').click();
+      cy.get('mat-spinner').should('exist');
+      cy.get('mat-spinner').should('not.exist');
+
+      let requestToIntercept = '/api/programme/export/download?pluginKey=standard-programme-partner-data-export-plugin';
+      cy.contains('div', 'Standard programme partner data export').find('button').clickToDownload(requestToIntercept, 'xlsx').then(exportFile => {
+        cy.fixture('programme/TB-747-partner-export-en-en.xlsx', null).parseXLSX().then(testDataFile => {
+          preparePartnerExportData(exportFile);
+          const assertionMessage = 'Verify downloaded partner EN xlsx file';
+          expect(exportFile.content[0].data, assertionMessage).to.deep.equal(testDataFile[0].data);
+        });
+      });
+
+      cy.contains('form div', 'Export language').find('mat-select').click();
+      cy.contains('mat-option', 'Deutsch').click();
+      cy.contains('form div', 'Input language').find('mat-select').click();
+      cy.contains('mat-option', 'Deutsch').click();
+      cy.contains('button', 'Generate export file').click();
+      cy.get('mat-spinner').should('exist');
+      cy.get('mat-spinner').should('not.exist');
+
+      requestToIntercept = '/api/programme/export/download?pluginKey=standard-programme-partner-data-export-plugin';
+      cy.contains('div', 'Standard programme partner data export').find('button').clickToDownload(requestToIntercept, 'xlsx').then(exportFile => {
+        cy.fixture('programme/TB-747-partner-export-de-de.xlsx', null).parseXLSX().then(testDataFile => {
+          preparePartnerExportData(exportFile);
+          const assertionMessage = 'Verify downloaded partner DE xlsx file';
+          expect(exportFile.content[0].data, assertionMessage).to.deep.equal(testDataFile[0].data);
+        });
+      });
+
+      cy.contains('div', 'Programme data export plugin').find('mat-select').click();
+      cy.contains('mat-option', 'Standard programme project data export').click();
+      cy.contains('button', 'Generate export file').click();
+      cy.get('mat-spinner').should('exist');
+      cy.get('mat-spinner').should('not.exist');
+
+      requestToIntercept = '/api/programme/export/download?pluginKey=standard-programme-project-data-export-plugin';
+      cy.contains('div', 'Standard programme project data export').find('button').clickToDownload(requestToIntercept, 'xlsx').then(exportFile => {
+        cy.fixture('programme/TB-747-project-export-de-de.xlsx', null).parseXLSX().then(testDataFile => {
+          prepareProjectExportData(exportFile);
+          const assertionMessage = 'Verify downloaded project DE xlsx file';
+          expect(exportFile.content[0].data, assertionMessage).to.deep.equal(testDataFile[0].data);
+        });
+      });
+
+      cy.contains('form div', 'Export language').find('mat-select').click();
+      cy.contains('mat-option', 'English').click();
+      cy.contains('form div', 'Input language').find('mat-select').click();
+      cy.contains('mat-option', 'English').click();
+      cy.contains('button', 'Generate export file').click();
+      cy.get('mat-spinner').should('exist');
+      cy.get('mat-spinner').should('not.exist');
+
+      requestToIntercept = '/api/programme/export/download?pluginKey=standard-programme-project-data-export-plugin';
+      cy.contains('div', 'Standard programme project data export').find('button').clickToDownload(requestToIntercept, 'xlsx').then(exportFile => {
+        cy.fixture('programme/TB-747-project-export-en-en.xlsx', null).parseXLSX().then(testDataFile => {
+          prepareProjectExportData(exportFile);
+          const assertionMessage = 'Verify downloaded project EN xlsx file';
+          expect(exportFile.content[0].data, assertionMessage).to.deep.equal(testDataFile[0].data);
+        });
+      });
+    })
+  });
+
   it('TB-746 Programme conversion rates can be loaded in the system', () => {
-    cy.loginByRequest(user.programmeUser.email);
-    cy.visit('/', {failOnStatusCode: false});
+    cy.visit('/app/progr amme', {failOnStatusCode: false});
     cy.get('div#navbarSupportedContent').contains('span', 'Programme').click();
     cy.contains('div', 'Conversion rates').click();
     cy.contains('button', 'Load conversion rates').click();
@@ -454,7 +578,7 @@ context('Programme management tests', () => {
 });
 
 function createChecklist(checklist) {
-  cy.visit('app/programme/checklists', {failOnStatusCode: false});
+  cy.contains('Checklists').click();
 
   cy.contains('button', 'Create new checklist').click();
   cy.contains('div', 'Checklist type').find('mat-select').click();
@@ -463,7 +587,7 @@ function createChecklist(checklist) {
 
   checklist.Score.forEach(scoreComponent => {
     cy.contains('button', 'Add component').click();
-    cy.get('.jems-table-config').children().last().within(()=>{
+    cy.get('.jems-table-config').children().last().within(() => {
       cy.contains('mat-form-field', 'Component type').click();
       cy.root().closest('body').find('mat-option').contains('Score').click();
       cy.contains('mat-form-field', 'Weight').find('input').type(scoreComponent.weight);
@@ -473,7 +597,7 @@ function createChecklist(checklist) {
 
   checklist.Headline.forEach(headlineComponent => {
     cy.contains('button', 'Add component').click();
-    cy.get('.jems-table-config').children().last().within(()=>{
+    cy.get('.jems-table-config').children().last().within(() => {
       cy.contains('mat-form-field', 'Component type').click();
       cy.root().closest('body').find('mat-option').contains('Headline').click();
       cy.contains('mat-form-field', 'Headline name').find('input').type(headlineComponent.headlineText);
@@ -482,7 +606,7 @@ function createChecklist(checklist) {
 
   checklist.OptionsToggle.forEach(optionsToggleComponent => {
     cy.contains('button', 'Add component').click();
-    cy.get('.jems-table-config').children().last().within(()=>{
+    cy.get('.jems-table-config').children().last().within(() => {
       cy.contains('mat-form-field', 'Component type').click();
       cy.root().closest('body').find('mat-option').contains('Options toggle').click();
       cy.contains('mat-form-field', 'Question text').find('textarea').type(optionsToggleComponent.question);
@@ -494,7 +618,7 @@ function createChecklist(checklist) {
 
   checklist.TextInput.forEach(textInputComponent => {
     cy.contains('button', 'Add component').click();
-    cy.get('.jems-table-config').children().last().within(()=>{
+    cy.get('.jems-table-config').children().last().within(() => {
       cy.contains('mat-form-field', 'Component type').click();
       cy.root().closest('body').find('mat-option').contains('Text input').click();
       cy.contains('mat-form-field', 'Question text').find('textarea').type(textInputComponent.question);
@@ -503,4 +627,28 @@ function createChecklist(checklist) {
     })
   });
   cy.contains('button', 'Create').click();
+}
+
+function preparePartnerExportData(exportFile) {
+  exportFile.content[0].data = exportFile.content[0].data.slice(-9); // limit data to only relevant rows
+  exportFile.content[0].data.forEach(data => {
+    data[0] = null; // remove call id
+    data[1] = null; // remove call name
+    data[2] = null; // remove project id
+    data[3] = null; // remove project acronym
+  });
+}
+
+function prepareProjectExportData(exportFile) {
+  exportFile.content[0].data = exportFile.content[0].data.slice(-6); // limit data to only relevant rows
+  exportFile.content[0].data.forEach(data => {
+    data[0] = null; // remove call id
+    data[1] = null; // remove call name
+    data[2] = null; // remove call start date
+    data[3] = null; // remove call end date step 1
+    data[4] = null; // remove call end date
+    data[6] = null; // remove call project id
+    data[7] = null; // remove project acronym
+    data[79] = null; // remove first submission date
+  });
 }

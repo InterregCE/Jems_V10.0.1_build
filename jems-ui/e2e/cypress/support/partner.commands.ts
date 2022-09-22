@@ -1,21 +1,26 @@
-import {ProjectPartnerDTO} from '../../../build/swagger-code-jems-api/model/projectPartnerDTO'
-import {ProjectPartnerAddressDTO} from '../../../build/swagger-code-jems-api/model/projectPartnerAddressDTO'
-import {ProjectContactDTO} from '../../../build/swagger-code-jems-api/model/projectContactDTO'
-import {ProjectPartnerMotivationDTO} from '../../../build/swagger-code-jems-api/model/projectPartnerMotivationDTO'
-import {ProjectPartnerStateAidDTO} from '../../../build/swagger-code-jems-api/model/projectPartnerStateAidDTO'
+import {ProjectPartnerDTO} from '../../../build/swagger-code-jems-api/model/projectPartnerDTO';
+import {ProjectPartnerAddressDTO} from '../../../build/swagger-code-jems-api/model/projectPartnerAddressDTO';
+import {ProjectContactDTO} from '../../../build/swagger-code-jems-api/model/projectContactDTO';
+import {ProjectPartnerMotivationDTO} from '../../../build/swagger-code-jems-api/model/projectPartnerMotivationDTO';
+import {ProjectPartnerStateAidDTO} from '../../../build/swagger-code-jems-api/model/projectPartnerStateAidDTO';
 import {
   ProjectPartnerCoFinancingAndContributionInputDTO
-} from '../../../build/swagger-code-jems-api/model/projectPartnerCoFinancingAndContributionInputDTO'
-import {ProjectPartnerBudgetOptionsDto} from '../../../build/swagger-code-jems-api/model/projectPartnerBudgetOptionsDto'
-import {BudgetGeneralCostEntryDTO} from '../../../build/swagger-code-jems-api/model/budgetGeneralCostEntryDTO'
-import {BudgetUnitCostEntryDTO} from '../../../build/swagger-code-jems-api/model/budgetUnitCostEntryDTO'
-import {BudgetStaffCostEntryDTO} from '../../../build/swagger-code-jems-api/model/budgetStaffCostEntryDTO'
+} from '../../../build/swagger-code-jems-api/model/projectPartnerCoFinancingAndContributionInputDTO';
+import {
+  ProjectPartnerBudgetOptionsDto
+} from '../../../build/swagger-code-jems-api/model/projectPartnerBudgetOptionsDto';
+import {BudgetGeneralCostEntryDTO} from '../../../build/swagger-code-jems-api/model/budgetGeneralCostEntryDTO';
+import {BudgetUnitCostEntryDTO} from '../../../build/swagger-code-jems-api/model/budgetUnitCostEntryDTO';
+import {BudgetStaffCostEntryDTO} from '../../../build/swagger-code-jems-api/model/budgetStaffCostEntryDTO';
 import {
   InputProjectAssociatedOrganization
-} from '../../../build/swagger-code-jems-api/model/inputProjectAssociatedOrganization'
+} from '../../../build/swagger-code-jems-api/model/inputProjectAssociatedOrganization';
 import {
   BudgetTravelAndAccommodationCostEntryDTO
-} from '../../../build/swagger-code-jems-api/model/budgetTravelAndAccommodationCostEntryDTO'
+} from '../../../build/swagger-code-jems-api/model/budgetTravelAndAccommodationCostEntryDTO';
+import {
+  BudgetSpfCostEntryDTO
+} from '../../../build/swagger-code-jems-api/model/BudgetSpfCostEntryDTO';
 
 declare global {
 
@@ -26,6 +31,7 @@ declare global {
     motivation?: ProjectPartnerMotivationDTO,
     budget?: PartnerBudget,
     cofinancing?: ProjectPartnerCoFinancingAndContributionInputDTO,
+    spfCofinancing?: ProjectPartnerCoFinancingAndContributionInputDTO;
     stateAid?: ProjectPartnerStateAidDTO
   }
 
@@ -36,7 +42,8 @@ declare global {
     equipment?: BudgetGeneralCostEntryDTO[],
     infrastructure?: BudgetGeneralCostEntryDTO[],
     unit?: BudgetUnitCostEntryDTO[],
-    travel?: BudgetTravelAndAccommodationCostEntryDTO[]
+    travel?: BudgetTravelAndAccommodationCostEntryDTO[],
+    spf?: BudgetSpfCostEntryDTO[];
   }
 
   namespace Cypress {
@@ -144,6 +151,8 @@ export function createPartners(applicationId: number, partners: ProjectPartner[]
       updateMotivation(response.body.id, partner.motivation);
       updateBudget(response.body.id, partner.budget);
       updateCofinancing(response.body.id, partner.cofinancing);
+      if (partner.spfCofinancing)
+        updateSpfCofinancing(response.body.id, partner.spfCofinancing);
       updateStateAid(response.body.id, partner.stateAid);
     });
   });
@@ -224,6 +233,13 @@ function updateBudget(partnerId: number, budget: PartnerBudget, investmentId?: n
   if (budget.travel) {
     addTravelCosts(partnerId, budget.travel);
   }
+  if (budget.spf) {
+    cy.request({
+      method: 'PUT',
+      url: `api/project/partner/${partnerId}/budget/spf`,
+      body: budget.spf
+    });
+  }
 }
 
 function addTravelCosts(partnerId: number, travelCosts: BudgetTravelAndAccommodationCostEntryDTO[]) {
@@ -239,6 +255,14 @@ function updateCofinancing(partnerId: number, cofinancing: ProjectPartnerCoFinan
     method: 'PUT',
     url: `api/project/partner/${partnerId}/budget/cofinancing`,
     body: cofinancing
+  });
+}
+
+function updateSpfCofinancing(partnerId: number, spfCofinancing: ProjectPartnerCoFinancingAndContributionInputDTO) {
+  cy.request({
+    method: 'PUT',
+    url: `api/project/partner/${partnerId}/budget/spf/cofinancing`,
+    body: spfCofinancing
   });
 }
 

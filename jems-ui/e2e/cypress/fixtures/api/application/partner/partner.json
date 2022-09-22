@@ -1,4 +1,5 @@
 {
+  "id": null,
   "details": {
     "abbreviation": "Project Partner",
     "role": "PARTNER",
@@ -178,7 +179,11 @@
           }
         ]
       }
-    ]
+    ],
+    "external": null,
+    "equipment": null,
+    "infrastructure": null,
+    "travel": null
   },
   "cofinancing": {
     "finances": [
@@ -257,6 +262,7 @@
         "language": "EN"
       }
     ],
+    "activities": null,
     "stateAidScheme": {
       "id": 1,
       "measure": "GENERAL_DE_MINIMIS",

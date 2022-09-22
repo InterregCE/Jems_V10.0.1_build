@@ -213,7 +213,6 @@ context('Application form exports', () => {
             // 2nd step version
             cy.loginByRequest(user.applicantUser.email);
             const updatedPartner = testData.application.partners[0];
-            application2step.secondStep.identification.acronym = testData.application.acronym + ' v2';
             cy.updateProjectIdentification(applicationId, application2step.secondStep.identification);
             cy.createProjectWorkPlan(applicationId, testData.application.description.workPlan);
             cy.updateProjectRelevanceAndContext(applicationId, application2step.secondStep.description.relevanceAndContext);
