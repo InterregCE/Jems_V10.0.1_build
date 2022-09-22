@@ -13,7 +13,9 @@ class ResultIndicatorTranslEntity(
 
     val measurementUnit: String? = null,
 
-    val sourceOfData: String? = null
+    val sourceOfData: String? = null,
+
+    val comment: String? = null
 
 ) {
     override fun equals(other: Any?) =

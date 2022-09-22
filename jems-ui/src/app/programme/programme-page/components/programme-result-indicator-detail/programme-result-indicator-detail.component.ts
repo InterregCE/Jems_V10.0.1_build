@@ -68,7 +68,7 @@ export class ProgrammeResultIndicatorDetailComponent extends ViewEditFormCompone
     referenceYear: ['', Validators.maxLength(10)],
     finalTarget: [0],
     sourceOfData: [[]],
-    comments: ['', Validators.maxLength(1000)]
+    comment: [[]]
   });
 
   inputErrorMessages = {
@@ -111,7 +111,7 @@ export class ProgrammeResultIndicatorDetailComponent extends ViewEditFormCompone
       this.resultIndicatorForm.controls.referenceYear.setValue(this.resultIndicator.referenceYear);
       this.resultIndicatorForm.controls.finalTarget.setValue(this.resultIndicator.finalTarget || 0);
       this.resultIndicatorForm.controls.sourceOfData.setValue(this.resultIndicator.sourceOfData);
-      this.resultIndicatorForm.controls.comments.setValue(this.resultIndicator.comment);
+      this.resultIndicatorForm.controls.comment.setValue(this.resultIndicator.comment);
       this.changeFormState$.next(FormState.VIEW);
     } else {
       this.changeFormState$.next(FormState.EDIT);
@@ -146,7 +146,7 @@ export class ProgrammeResultIndicatorDetailComponent extends ViewEditFormCompone
           referenceYear: this.resultIndicatorForm?.controls?.referenceYear?.value,
           finalTarget: this.resultIndicatorForm?.controls?.finalTarget?.value,
           sourceOfData: this.resultIndicatorForm?.controls?.sourceOfData?.value,
-          comment: this.resultIndicatorForm?.controls?.comments?.value,
+          comment: this.resultIndicatorForm?.controls?.comment?.value,
         });
       } else {
         this.updateResultIndicator.emit({
@@ -160,7 +160,7 @@ export class ProgrammeResultIndicatorDetailComponent extends ViewEditFormCompone
           referenceYear: this.resultIndicatorForm?.controls?.referenceYear?.value,
           finalTarget: this.resultIndicatorForm?.controls?.finalTarget?.value,
           sourceOfData: this.resultIndicatorForm?.controls?.sourceOfData?.value,
-          comment: this.resultIndicatorForm?.controls?.comments?.value,
+          comment: this.resultIndicatorForm?.controls?.comment?.value,
         });
       }
     });

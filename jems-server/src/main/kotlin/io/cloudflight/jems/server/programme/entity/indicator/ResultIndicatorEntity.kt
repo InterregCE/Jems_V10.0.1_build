@@ -37,8 +37,6 @@ class ResultIndicatorEntity(
 
     val finalTarget: BigDecimal? = null,
 
-    val comment: String? = null,
-
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.sourceEntity")
     val translatedValues: MutableSet<ResultIndicatorTranslEntity> = mutableSetOf(),
 

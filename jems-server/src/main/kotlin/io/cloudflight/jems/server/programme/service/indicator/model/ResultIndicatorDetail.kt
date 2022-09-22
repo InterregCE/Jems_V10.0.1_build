@@ -17,7 +17,7 @@ data class ResultIndicatorDetail(
     val referenceYear: String?,
     val finalTarget: BigDecimal?,
     val sourceOfData: Set<InputTranslation> = emptySet(),
-    val comment: String?
+    val comment: Set<InputTranslation> = emptySet()
 ) {
     fun getDiff(other: ResultIndicatorDetail): Map<String, Pair<Any?, Any?>> {
         val changes = mutableMapOf<String, Pair<Any?, Any?>>()
