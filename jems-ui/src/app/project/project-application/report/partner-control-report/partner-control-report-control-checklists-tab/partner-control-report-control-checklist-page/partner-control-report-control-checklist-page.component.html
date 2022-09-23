@@ -37,7 +37,7 @@
             {{'checklists.instance.confirm.finish.title' | translate}}
         </jems-pending-button>
 
-        <jems-pending-button *ngIf="data.checklist.status === Status.FINISHED"
+        <jems-pending-button *ngIf="data.checklist.status === Status.FINISHED && (userCanEditControlChecklists$ | async)"
                              class="mr-2" type="secondary"
                              [confirm]="confirmUnfinish"
                              (clicked)="updateStatus(data.checklist.id, Status.DRAFT)">

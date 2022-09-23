@@ -1,35 +1,37 @@
-package io.cloudflight.jems.server.programme.service.checklist.delete
+package io.cloudflight.jems.server.project.service.checklist.delete.control
 
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
-import io.cloudflight.jems.server.project.authorization.CanDeleteChecklistAssessment
+import io.cloudflight.jems.server.project.authorization.CanEditPartnerControlReport
 import io.cloudflight.jems.server.project.service.checklist.ChecklistInstancePersistence
-import io.cloudflight.jems.server.project.service.checklist.checklistDeleted
+import io.cloudflight.jems.server.project.service.checklist.controlChecklistDeleted
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceStatus
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
-class DeleteChecklistInstance(
+class DeleteControlChecklistInstance(
     private val persistence: ChecklistInstancePersistence,
     private val auditPublisher: ApplicationEventPublisher,
     private val securityService: SecurityService
-    ) : DeleteChecklistInstanceInteractor {
+) : DeleteControlChecklistInstanceInteractor {
 
-    @CanDeleteChecklistAssessment
+    @CanEditPartnerControlReport
     @Transactional
-    @ExceptionWrapper(DeleteChecklistInstanceException::class)
-    override fun deleteById(checklistId: Long) {
+    @ExceptionWrapper(DeleteControlChecklistInstanceException::class)
+    override fun deleteById(partnerId: Long, reportId: Long, checklistId: Long) {
         val checklistToBeDeleted = persistence.getChecklistDetail(checklistId)
         if (checklistToBeDeleted.status == ChecklistInstanceStatus.FINISHED)
-            throw DeleteChecklistInstanceStatusNotAllowedException()
+            throw DeleteControlChecklistInstanceStatusNotAllowedException()
         persistence.deleteById(checklistId).also {
             auditPublisher.publishEvent(
-                checklistDeleted(
+                controlChecklistDeleted(
                     context = this,
                     checklist = checklistToBeDeleted,
-                    author = securityService.getUserIdOrThrow()
+                    author = securityService.getUserIdOrThrow(),
+                    partnerId = partnerId,
+                    reportId = reportId
                 )
             )
         }

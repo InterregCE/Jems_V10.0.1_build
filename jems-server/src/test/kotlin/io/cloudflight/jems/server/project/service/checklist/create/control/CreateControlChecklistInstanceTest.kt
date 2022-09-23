@@ -1,23 +1,20 @@
-package io.cloudflight.jems.server.project.service.checklist.create
+package io.cloudflight.jems.server.project.service.checklist.create.control
 
-import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
-import io.cloudflight.jems.server.audit.model.AuditProject
-import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistComponentInstance
-import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistComponentType
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.HeadlineMetadata
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.OptionsToggleMetadata
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.TextInputMetadata
 import io.cloudflight.jems.server.project.authorization.AuthorizationUtil
-import io.cloudflight.jems.server.project.service.checklist.ChecklistInstancePersistence
+import io.cloudflight.jems.server.project.service.checklist.ControlChecklistInstancePersistence
+import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceStatus
 import io.cloudflight.jems.server.project.service.checklist.model.CreateChecklistInstanceModel
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
@@ -27,7 +24,6 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.slot
-import io.mockk.verify
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -35,27 +31,29 @@ import org.springframework.context.ApplicationEventPublisher
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import java.math.BigDecimal
 
-internal class CreateChecklistInstanceTest : UnitTest() {
+internal class CreateControlChecklistInstanceTest : UnitTest() {
 
-    private val CHECKLIST_ID = 100L
-    private val RELATED_TO_ID = 2L
-    private val CREATOR_ID = 3L
-    private val PROGRAMME_CHECKLIST_ID = 4L
+    private val checklistId = 100L
+    private val relatedToId = 2L
+    private val creatorId = 3L
+    private val programmeChecklistId = 4L
+    private val partnerId = 5L
+    private val reportId = 6L
 
-    private val createChecklist = CreateChecklistInstanceModel(
-        RELATED_TO_ID,
-        PROGRAMME_CHECKLIST_ID
+    private val createControlChecklist = CreateChecklistInstanceModel(
+        relatedToId,
+        programmeChecklistId
     )
 
-    private val createdCheckLisDetail = ChecklistInstanceDetail(
-        CHECKLIST_ID,
-        programmeChecklistId = PROGRAMME_CHECKLIST_ID,
+    private val createdControlCheckLisDetail = ChecklistInstanceDetail(
+        checklistId,
+        programmeChecklistId = programmeChecklistId,
         status = ChecklistInstanceStatus.DRAFT,
-        type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
+        type = ProgrammeChecklistType.CONTROL,
         name = "name",
-        relatedToId = RELATED_TO_ID,
+        relatedToId = reportId,
         creatorEmail = "a@a",
-        creatorId = CREATOR_ID,
+        creatorId = creatorId,
         finishedDate = null,
         minScore = BigDecimal(0),
         maxScore = BigDecimal(10),
@@ -88,7 +86,7 @@ internal class CreateChecklistInstanceTest : UnitTest() {
     )
 
     @MockK
-    lateinit var persistence: ChecklistInstancePersistence
+    lateinit var persistence: ControlChecklistInstancePersistence
 
     @MockK
     lateinit var securityService: SecurityService
@@ -100,7 +98,7 @@ internal class CreateChecklistInstanceTest : UnitTest() {
     lateinit var generalValidator: GeneralValidatorService
 
     @InjectMockKs
-    lateinit var createChecklistInstance: CreateChecklistInstance
+    lateinit var createControlChecklistInstance: CreateControlChecklistInstance
 
     @BeforeEach
     fun setup() {
@@ -108,31 +106,22 @@ internal class CreateChecklistInstanceTest : UnitTest() {
         clearMocks(generalValidator)
         every { generalValidator.throwIfAnyIsInvalid(*varargAny { it.isEmpty() }) } returns Unit
         every { generalValidator.throwIfAnyIsInvalid(*varargAny { it.isNotEmpty() }) } throws
-            AppInputValidationException(emptyMap())
+                AppInputValidationException(emptyMap())
     }
 
     @Test
-    fun `create - successfully`() {
+    fun `create control checklist - OK`() {
         val currentUser = LocalCurrentUser(
             AuthorizationUtil.userApplicant, "hash_pass",
             listOf(SimpleGrantedAuthority(UserRolePermission.CallRetrieve.key))
         )
         every { securityService.currentUser } returns currentUser
-        every { persistence.create(createChecklist, CREATOR_ID) } returns createdCheckLisDetail
+        every { persistence.create(createControlChecklist, creatorId, reportId) } returns createdControlCheckLisDetail
         val auditSlot = slot<AuditCandidateEvent>()
-        every { auditPublisher.publishEvent(capture(auditSlot)) } answers {}
+        every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit
 
-        Assertions.assertThat(createChecklistInstance.create(createChecklist))
+        Assertions.assertThat(createControlChecklistInstance.create(partnerId, reportId, createControlChecklist))
             .usingRecursiveComparison()
-            .isEqualTo(createdCheckLisDetail)
-
-        verify(exactly = 1) { auditPublisher.publishEvent(capture(auditSlot)) }
-        Assertions.assertThat(auditSlot.captured.auditCandidate).isEqualTo(
-            AuditCandidate(
-                action = AuditAction.CHECKLIST_IS_CREATED,
-                project = AuditProject(id = createdCheckLisDetail.relatedToId.toString()),
-                description = "Checklist with ID [${createdCheckLisDetail.programmeChecklistId}] created"
-            )
-        )
+            .isEqualTo(createdControlCheckLisDetail)
     }
 }

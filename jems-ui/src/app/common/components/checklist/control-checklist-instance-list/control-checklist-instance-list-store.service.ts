@@ -1,11 +1,10 @@
 import {Injectable} from '@angular/core';
 import {
   ChecklistInstanceDTO,
-  ChecklistInstanceService,
+  ControlChecklistInstanceService,
   IdNamePairDTO,
   ProgrammeChecklistDetailDTO,
-  ProgrammeChecklistService,
-  UserRoleDTO
+  ProgrammeChecklistService
 } from '@cat/api';
 import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
 import {map, startWith, switchMap, take, tap} from 'rxjs/operators';
@@ -20,9 +19,7 @@ export class ControlChecklistInstanceListStore {
   defaultSort: Partial<MatSort> = {active: 'id', direction: 'desc'};
 
   currentUserEmail$: Observable<string>;
-  userCanChangeSelection$: Observable<boolean>;
 
-  private userCanConsolidate$: Observable<boolean>;
   private listChanged$ = new Subject();
 
   private instancesSort$ = new BehaviorSubject<Partial<MatSort>>(this.defaultSort);
@@ -30,13 +27,11 @@ export class ControlChecklistInstanceListStore {
     map(sort => sort?.direction ? sort : this.defaultSort),
   );
 
-  constructor(private checklistInstanceService: ChecklistInstanceService,
+  constructor(private controlChecklistInstanceService: ControlChecklistInstanceService,
               private programmeChecklistService: ProgrammeChecklistService,
               private permissionService: PermissionService,
               private securityService: SecurityService) {
-    this.userCanConsolidate$ = this.permissionService.hasPermission(UserRoleDTO.PermissionsEnum.ProjectAssessmentChecklistConsolidate);
     this.currentUserEmail$ = this.currentUserEmail();
-    this.userCanChangeSelection$ = this.permissionService.hasPermission(UserRoleDTO.PermissionsEnum.ProjectAssessmentChecklistSelectedUpdate);
   }
 
   setInstancesSort(sort: Partial<MatSort>) {
@@ -50,30 +45,30 @@ export class ControlChecklistInstanceListStore {
     );
   }
 
-  checklistInstances(relatedType: ProgrammeChecklistDetailDTO.TypeEnum, relatedId: number): Observable<ChecklistInstanceDTO[]> {
+  controlChecklistInstances(partnerId: number, reportId: number): Observable<ChecklistInstanceDTO[]> {
     return combineLatest([
       this.listChanged$.pipe(startWith(null)),
     ]).pipe(
-      switchMap(() => this.checklistInstanceService.getAllChecklistInstances(relatedId, relatedType as string)),
-      tap(checklists => Log.info('Fetched the checklist instances', this, checklists))
+      switchMap(() => this.controlChecklistInstanceService.getAllControlChecklistInstances(partnerId, reportId)),
+      tap(checklists => Log.info('Fetched the control checklist instances', this, checklists))
     );
   }
 
-  deleteChecklistInstance(id: number): Observable<void> {
-    return this.checklistInstanceService.deleteChecklistInstance(id)
+  deleteChecklistInstance(partnerId: number, reportId: number, id: number): Observable<void> {
+    return this.controlChecklistInstanceService.deleteControlChecklistInstance(id, partnerId, reportId)
       .pipe(
         take(1),
         tap(() => this.listChanged$.next()),
-        tap(() => Log.info(`Checklist instance with id ${id} deleted`))
+        tap(() => Log.info(`Control checklist instance with id ${id} deleted`))
       );
   }
 
 
-  createInstance(relatedType: ProgrammeChecklistDetailDTO.TypeEnum, relatedToId: number, programmeChecklistId: number): Observable<number> {
-    return this.checklistInstanceService.createChecklistInstance({relatedToId, programmeChecklistId})
+  createInstance(partnerId: number, reportId: number, relatedToId: number, programmeChecklistId: number): Observable<number> {
+    return this.controlChecklistInstanceService.createControlChecklistInstance(partnerId, reportId, {relatedToId, programmeChecklistId})
       .pipe(
         take(1),
-        tap(checklistInstance => Log.info('Created a new checklist instance', this, checklistInstance)),
+        tap(checklistInstance => Log.info('Created a new control checklist instance', this, checklistInstance)),
         map(checklistInstance => checklistInstance.id)
       );
   }

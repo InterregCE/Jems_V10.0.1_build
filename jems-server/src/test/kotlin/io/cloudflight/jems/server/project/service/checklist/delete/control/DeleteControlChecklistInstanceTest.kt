@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.service.checklist.delete
+package io.cloudflight.jems.server.project.service.checklist.delete.control
 
 import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.UnitTest
@@ -6,15 +6,17 @@ import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.authentication.service.SecurityService
-import io.cloudflight.jems.server.programme.service.checklist.delete.DeleteChecklistInstance
-import io.cloudflight.jems.server.programme.service.checklist.delete.DeleteChecklistInstanceStatusNotAllowedException
-import io.cloudflight.jems.server.project.service.checklist.getInstances.GetChecklistInstanceDetailNotFoundException
 import io.cloudflight.jems.server.programme.service.checklist.model.ChecklistComponentInstance
-import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistComponentType
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
-import io.cloudflight.jems.server.programme.service.checklist.model.metadata.*
+import io.cloudflight.jems.server.programme.service.checklist.model.metadata.HeadlineInstanceMetadata
+import io.cloudflight.jems.server.programme.service.checklist.model.metadata.HeadlineMetadata
+import io.cloudflight.jems.server.programme.service.checklist.model.metadata.OptionsToggleInstanceMetadata
+import io.cloudflight.jems.server.programme.service.checklist.model.metadata.OptionsToggleMetadata
+import io.cloudflight.jems.server.programme.service.checklist.model.metadata.TextInputMetadata
 import io.cloudflight.jems.server.project.service.checklist.ChecklistInstancePersistence
+import io.cloudflight.jems.server.project.service.checklist.getInstances.control.GetControlChecklistDetailNotAllowedException
+import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceStatus
 import io.cloudflight.jems.server.project.service.checklist.model.metadata.TextInputInstanceMetadata
 import io.cloudflight.jems.server.user.service.authorization.UserAuthorization
@@ -30,20 +32,22 @@ import org.junit.jupiter.api.assertThrows
 import org.springframework.context.ApplicationEventPublisher
 import java.math.BigDecimal
 
-internal class DeleteChecklistInstanceTest : UnitTest() {
+internal class DeleteControlChecklistInstanceTest : UnitTest() {
 
-    private val CHECKLIST_ID = 100L
-    private val CREATOR_ID = 1L
+    private val checklistId = 100L
+    private val creatorId = 1L
+    private val partnerId = 2L
+    private val reportId = 3L
 
-    private val checkLisDetail = ChecklistInstanceDetail(
-        id = CHECKLIST_ID,
+    private val controlCheckLisDetail = ChecklistInstanceDetail(
+        id = checklistId,
         programmeChecklistId = 1L,
         status = ChecklistInstanceStatus.DRAFT,
-        type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
+        type = ProgrammeChecklistType.CONTROL,
         name = "name",
         creatorEmail = "a@a",
-        creatorId = CREATOR_ID,
-        relatedToId = 1L,
+        creatorId = creatorId,
+        relatedToId = reportId,
         finishedDate = null,
         minScore = BigDecimal(0),
         maxScore = BigDecimal(10),
@@ -75,15 +79,15 @@ internal class DeleteChecklistInstanceTest : UnitTest() {
         )
     )
 
-    private val checkLisDetailWithFinishStatus = ChecklistInstanceDetail(
-        id = CHECKLIST_ID,
+    private val controlCheckLisDetailWithFinishStatus = ChecklistInstanceDetail(
+        id = checklistId,
         programmeChecklistId = 1L,
         status = ChecklistInstanceStatus.FINISHED,
-        type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
+        type = ProgrammeChecklistType.CONTROL,
         name = "name",
         creatorEmail = "a@a",
-        creatorId = CREATOR_ID,
-        relatedToId = 1L,
+        creatorId = creatorId,
+        relatedToId = reportId,
         finishedDate = null,
         consolidated = false,
         visible = true,
@@ -106,41 +110,41 @@ internal class DeleteChecklistInstanceTest : UnitTest() {
     lateinit var securityService: SecurityService
 
     @InjectMockKs
-    lateinit var deleteChecklistInstance: DeleteChecklistInstance
+    lateinit var deleteControlChecklistInstance: DeleteControlChecklistInstance
 
     @Test
-    fun `delete checklist - OK`() {
+    fun `delete control checklist - OK`() {
         every { userAuthorization.getUser() } returns user
         every { securityService.getUserIdOrThrow() } returns user.id
-        every { persistence.getChecklistDetail(CHECKLIST_ID) } returns checkLisDetail
+        every { persistence.getChecklistDetail(checklistId) } returns controlCheckLisDetail
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } answers {}
-        every { persistence.deleteById(CHECKLIST_ID) } answers {}
-        deleteChecklistInstance.deleteById(CHECKLIST_ID)
-        verify { persistence.deleteById(CHECKLIST_ID) }
+        every { persistence.deleteById(checklistId) } answers {}
+        deleteControlChecklistInstance.deleteById(partnerId, reportId, checklistId)
+        verify { persistence.deleteById(checklistId) }
 
         verify(exactly = 1) { auditPublisher.publishEvent(capture(auditSlot)) }
         Assertions.assertThat(auditSlot.captured.auditCandidate).isEqualTo(
             AuditCandidate(
-                action = AuditAction.ASSESSMENT_CHECKLIST_DELETED,
-                project = AuditProject(id = checkLisDetail.relatedToId.toString()),
-                description = "Checklist [${checkLisDetail.id}] type [${checkLisDetail.type}] name [${checkLisDetail.name}] " +
-                        "was deleted by [${user.id}]"
+                action = AuditAction.CONTROL_CHECKLIST_DELETED,
+                project = AuditProject(id = controlCheckLisDetail.relatedToId.toString()),
+                description = "Checklist [${controlCheckLisDetail.id}] type [${controlCheckLisDetail.type}] name [${controlCheckLisDetail.name}] " +
+                        "for [${partnerId}] and [${reportId}] was deleted by [${user.id}]"
             )
         )
     }
 
     @Test
-    fun `delete checklist - not existing`() {
-        every { persistence.getChecklistDetail(-1) } throws GetChecklistInstanceDetailNotFoundException()
-        assertThrows<GetChecklistInstanceDetailNotFoundException> {
-            deleteChecklistInstance.deleteById(-1L)
+    fun `delete control checklist - does not exist`() {
+        every { persistence.getChecklistDetail(-1) } throws GetControlChecklistDetailNotAllowedException()
+        assertThrows<GetControlChecklistDetailNotAllowedException> {
+            deleteControlChecklistInstance.deleteById(partnerId, reportId, -1L)
         }
     }
 
     @Test
-    fun `delete checklist - is already in FINISHED status`() {
-        every { persistence.getChecklistDetail(CHECKLIST_ID) } returns checkLisDetailWithFinishStatus
-        assertThrows<DeleteChecklistInstanceStatusNotAllowedException> { deleteChecklistInstance.deleteById(CHECKLIST_ID) }
+    fun `delete control checklist - is already in FINISHED status (cannot be deleted)`() {
+        every { persistence.getChecklistDetail(checklistId) } returns controlCheckLisDetailWithFinishStatus
+        assertThrows<DeleteControlChecklistInstanceStatusNotAllowedException> { deleteControlChecklistInstance.deleteById(partnerId, reportId, checklistId) }
     }
 }
