@@ -167,12 +167,12 @@
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                                 <div *ngIf="expenditureFormIndex !== i && !control.get(constants.FORM_CONTROL_NAMES.contractId).errors"
                                       (click)="selectRow(i, 'contractId')" class="custom-wrapper pointer"
-                                      [matTooltip]="control.get(constants.FORM_CONTROL_NAMES.contractId).value ?? ('common.not.applicable.option' | translate)"
+                                      [matTooltip]="control.get(constants.FORM_CONTROL_NAMES.contractId).name ?? ('common.not.applicable.option' | translate)"
                                       [matTooltipClass]="'tooltip'"
                                       [ngClass]="getAdditionalRowClass(i, constants.FORM_CONTROL_NAMES.contractId)">
                                     <div class="custom-dropdown-text">
                                         <span *ngIf="control.get(constants.FORM_CONTROL_NAMES.contractId).value">
-                                            {{control.get(constants.FORM_CONTROL_NAMES.contractId).value}}
+                                            {{control.get(constants.FORM_CONTROL_NAMES.contractId).name}}
                                         </span>
                                         <span *ngIf="!control.get(constants.FORM_CONTROL_NAMES.contractId).value">
                                             {{'common.not.applicable.option' | translate}}
@@ -287,7 +287,7 @@
                                      class="custom-wrapper" [ngClass]="getAdditionalRowClass(i, constants.FORM_CONTROL_NAMES.invoiceDate)"
                                      (click)="selectRow(i, 'invoiceDate')">
                                     <div class="custom-text-area date">
-                                        {{control.get(constants.FORM_CONTROL_NAMES.invoiceDate).value | date: 'd.M.yyyy'}}
+                                        {{control.get(constants.FORM_CONTROL_NAMES.invoiceDate).value | localeDate : 'l' }}
                                     </div>
                                     <div class="custom-icon" (click)="selectRow(i, 'invoiceDatePicker')">
                                         <mat-icon class="calendar" [ngClass]="{'disabled': control.get(constants.FORM_CONTROL_NAMES.invoiceDate).disabled}">
@@ -319,7 +319,7 @@
                                      class="custom-wrapper" [ngClass]="getAdditionalRowClass(i, constants.FORM_CONTROL_NAMES.dateOfPayment)"
                                      (click)="selectRow(i, 'dateOfPayment')">
                                     <div class="custom-text-area date">
-                                        {{control.get(constants.FORM_CONTROL_NAMES.dateOfPayment).value | date: 'd.M.yyyy'}}
+                                        {{control.get(constants.FORM_CONTROL_NAMES.dateOfPayment).value | localeDate : 'l'}}
                                     </div>
                                     <div class="custom-icon" (click)="selectRow(i, 'dateOfPaymentDatePicker')">
                                         <mat-icon class="calendar" [ngClass]="{'disabled': control.get(constants.FORM_CONTROL_NAMES.dateOfPayment).disabled}">
@@ -533,7 +533,7 @@
                                     <div class="custom-dropdown-text">
                                         {{control.get(constants.FORM_CONTROL_NAMES.currencyCode).value}}
                                     </div>
-                                    <div *ngIf="!control.get(constants.FORM_CONTROL_NAMES.currencyCode).disabled" class="custom-icon">
+                                    <div *ngIf="!control.get(constants.FORM_CONTROL_NAMES.currencyCode).disabled && !hasPartnerCurrencySetToEur()" class="custom-icon">
                                         <mat-icon class="arrow">arrow_drop_down</mat-icon>
                                     </div>
                                 </div>
@@ -541,7 +541,7 @@
                                 <mat-form-field *ngIf="expenditureFormIndex === i || control.get(constants.FORM_CONTROL_NAMES.currencyCode).errors" jemsFormFieldWidth="full">
                                     <mat-select class="placeholder-required"
                                                 #currencyCodeSelect
-                                                [disabled]="currentReport.identification.currency === CurrencyCodesEnum.EUR"
+                                                [disabled]="hasPartnerCurrencySetToEur()"
                                                 [formControlName]="constants.FORM_CONTROL_NAMES.currencyCode"
                                                 [required]="true"
                                                 placeholder="{{'project.application.partner.report.expenditures.currency.placeholder' | translate}}"
