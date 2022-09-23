@@ -37,4 +37,3 @@ class ProjectChecklistAuthorization(securityService: SecurityService) : Authoriz
     fun canConsolidate(projectId: Long): Boolean =
         hasPermission(UserRolePermission.ProjectAssessmentChecklistConsolidate, projectId)
 }
-

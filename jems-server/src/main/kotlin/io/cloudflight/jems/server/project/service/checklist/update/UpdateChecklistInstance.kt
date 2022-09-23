@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.service.checklist.update
 
+import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstance
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
@@ -22,6 +23,7 @@ class UpdateChecklistInstance(
     private val auditPublisher: ApplicationEventPublisher,
     private val checklistInstanceValidator: ChecklistInstanceValidator,
     private val userAuthorization: UserAuthorization,
+    private val securityService: SecurityService
 ) : UpdateChecklistInstanceInteractor {
 
     @CanUpdateChecklistAssessment
@@ -62,6 +64,7 @@ class UpdateChecklistInstance(
                     context = this,
                     checklist = it,
                     oldStatus = existing.status,
+                    author = securityService.getUserIdOrThrow()
                 )
             )
         }

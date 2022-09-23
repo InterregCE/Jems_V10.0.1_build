@@ -1,5 +1,4 @@
-
-<span jemsMultiColumnRow>
+<span jemsMultiColumnRow *ngIf="(userCanEditControlChecklists$ | async)">
     <mat-form-field jemsFormFieldWidth="xx-large">
         <mat-select placeholder="{{'checklists.instance.list.new.select' | translate}}"
                     [(ngModel)]="selectedTemplate">
@@ -13,7 +12,7 @@
             jemsText mat-raised-button color="primary" class="mb-3 mt-3"
             (click)="createInstance()">
         <mat-icon>add</mat-icon>
-        {{'control.checklists.instances.list.new.button' | translate}}
+        {{'checklists.instances.list.new.button' | translate}}
     </button>
 </span>
 

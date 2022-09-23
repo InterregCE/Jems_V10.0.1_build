@@ -1,10 +1,11 @@
 import {Injectable} from '@angular/core';
 import {RoutingService} from '@common/services/routing.service';
 import {combineLatest, merge, Observable, Subject} from 'rxjs';
-import {ChecklistInstanceDetailDTO, ChecklistInstanceDTO, ChecklistInstanceService} from '@cat/api';
+import {ChecklistInstanceDetailDTO, ChecklistInstanceDTO, ControlChecklistInstanceService} from '@cat/api';
 import {map, shareReplay, switchMap, take, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 import {SecurityService} from '../../../../../../security/security.service';
+import {ActivatedRoute} from '@angular/router';
 
 @Injectable()
 export class PartnerControlReportControlChecklistPageStore {
@@ -13,42 +14,45 @@ export class PartnerControlReportControlChecklistPageStore {
   checklist$: Observable<ChecklistInstanceDetailDTO>;
   checklistEditable$: Observable<boolean>;
 
+  partnerId = Number(this.routingService.getParameter(this.activatedRoute, 'partnerId'));
+  reportId = Number(this.routingService.getParameter(this.activatedRoute, 'reportId'));
+
   private updatedChecklist$ = new Subject<ChecklistInstanceDetailDTO>();
 
   constructor(private routingService: RoutingService,
-              private checklistInstanceService: ChecklistInstanceService,
-              private securityService: SecurityService) {
+              private checklistInstanceService: ControlChecklistInstanceService,
+              private securityService: SecurityService,
+              private activatedRoute: ActivatedRoute) {
     this.checklist$ = this.checklist();
     this.checklistEditable$ = this.checklistEditable();
   }
 
-  updateChecklist(checklist: ChecklistInstanceDetailDTO): Observable<ChecklistInstanceDetailDTO> {
-    return this.checklistInstanceService.updateChecklistInstance(checklist)
+  updateChecklist(partnerId: number, reportId: number, checklist: ChecklistInstanceDetailDTO): Observable<ChecklistInstanceDetailDTO> {
+    return this.checklistInstanceService.updateControlChecklistInstance(partnerId, reportId, checklist)
       .pipe(
         take(1),
         tap(() => this.updatedChecklist$.next(checklist)),
-        tap(updated => Log.info('Updated checklist instance', this, updated))
+        tap(updated => Log.info('Updated control checklist instance', this, updated))
       );
   }
 
-  changeStatus(checklistId: number, status: ChecklistInstanceDTO.StatusEnum): Observable<ChecklistInstanceDTO> {
-    return this.checklistInstanceService.changeChecklistStatus(checklistId, status)
+  changeStatus(partnerId: number, reportId: number, checklistId: number, status: ChecklistInstanceDTO.StatusEnum): Observable<ChecklistInstanceDTO> {
+    return this.checklistInstanceService.changeControlChecklistStatus(checklistId, partnerId, reportId,  status)
       .pipe(
         take(1),
-        tap(updated => Log.info('Changed checklist status', this, updated))
+        tap(updated => Log.info('Changed control checklist status', this, updated))
       );
   }
 
   private checklist(): Observable<ChecklistInstanceDetailDTO> {
     const initialChecklist$ = combineLatest([
-      this.routingService.routeParameterChanges(PartnerControlReportControlChecklistPageStore.CHECKLIST_DETAIL_PATH, 'checklistId'),
-      this.routingService.routeParameterChanges('reports/', 'reportId')
+      this.routingService.routeParameterChanges(PartnerControlReportControlChecklistPageStore.CHECKLIST_DETAIL_PATH, 'checklistId')
       ]
     ).pipe(
-        switchMap(([checklistId, reportId]) => {
-          return this.checklistInstanceService.getChecklistInstanceDetail(checklistId as number, reportId as number);
+        switchMap(([ checklistId]) => {
+          return this.checklistInstanceService.getControlChecklistInstanceDetail(checklistId as number, this.partnerId, this.reportId);
         }),
-        tap(checklist => Log.info('Fetched the checklist instance', this, checklist))
+        tap(checklist => Log.info('Fetched the control checklist instance', this, checklist))
       );
 
     return merge(initialChecklist$, this.updatedChecklist$)

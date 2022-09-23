@@ -3,7 +3,7 @@ import {TableConfiguration} from '@common/components/table/model/table.configura
 import {ColumnWidth} from '@common/components/table/model/column-width';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
 import {
-  ChecklistInstanceDTO,
+  ChecklistInstanceDTO, ControllerInstitutionsApiService,
   IdNamePairDTO,
   ProgrammeChecklistDetailDTO,
 } from '@cat/api';
@@ -34,9 +34,13 @@ export class ControlChecklistInstanceListComponent implements OnInit {
   @Input()
   relatedId: number;
 
+  partnerId = Number(this.routingService.getParameter(this.activatedRoute, 'partnerId'));
+  reportId = Number(this.routingService.getParameter(this.activatedRoute, 'reportId'));
+
   private checklistInstances$: Observable<ChecklistInstanceDTO[]>;
   checklistInstancesSorted$: Observable<ChecklistInstanceDTO[]>;
   checklistTemplates$: Observable<IdNamePairDTO[]>;
+  userCanEditControlChecklists$: Observable<boolean>;
 
   instancesTableConfiguration: TableConfiguration;
   selectedTemplate: IdNamePairDTO;
@@ -53,15 +57,30 @@ export class ControlChecklistInstanceListComponent implements OnInit {
               private formService: FormService,
               private routingService: RoutingService,
               private activatedRoute: ActivatedRoute,
-              private dialog: MatDialog) { }
+              private dialog: MatDialog,
+              private controllerInstitutionService: ControllerInstitutionsApiService) {
+
+    this.userCanEditControlChecklists$ = this.userCanEditControlChecklists();
+  }
 
   onInstancesSortChange(sort: Partial<MatSort>) {
     const order = sort.direction;
     this.pageStore.setInstancesSort({...sort, direction: order === 'desc' ? 'desc' : 'asc'});
   }
 
+  private userCanEditControlChecklists(): Observable<boolean> {
+    return this.institutionUserControlReportLevel()
+        .pipe(
+            map((level) => level === 'Edit')
+        );
+  }
+
+  private institutionUserControlReportLevel(): Observable<string> {
+    return this.controllerInstitutionService.getControllerUserAccessLevelForPartner(this.partnerId);
+  }
+
   ngOnInit(): void {
-    this.checklistInstances$ = this.pageStore.checklistInstances(this.relatedType, this.relatedId);
+    this.checklistInstances$ = this.pageStore.controlChecklistInstances(this.partnerId, this.reportId);
     this.checklistInstancesSorted$ = combineLatest([
       this.checklistInstances$,
       this.pageStore.getInstancesSort$,
@@ -81,7 +100,7 @@ export class ControlChecklistInstanceListComponent implements OnInit {
       .pipe(
         take(1),
         filter(answer => !!answer),
-        switchMap(() => this.pageStore.deleteChecklistInstance(checklist.id)),
+        switchMap(() => this.pageStore.deleteChecklistInstance(this.partnerId, this.reportId, checklist.id)),
       ).subscribe();
   }
 
@@ -134,7 +153,7 @@ export class ControlChecklistInstanceListComponent implements OnInit {
   }
 
   createInstance(): void {
-    this.pageStore.createInstance(this.relatedType, this.relatedId, this.selectedTemplate.id)
+    this.pageStore.createInstance(this.partnerId, this.reportId, this.relatedId, this.selectedTemplate.id)
       .pipe(
         tap(instanceId => this.routingService.navigate(
           ['checklist', instanceId],

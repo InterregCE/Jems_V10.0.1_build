@@ -5,7 +5,7 @@ import {
 import {
   PartnerControlReportControlChecklistPageStore
 } from '@project/project-application/report/partner-control-report/partner-control-report-control-checklists-tab/partner-control-report-control-checklist-page/partner-control-report-control-checklist-page-store.service';
-import {ChecklistComponentInstanceDTO, ChecklistInstanceDetailDTO} from '@cat/api';
+import {ChecklistComponentInstanceDTO, ChecklistInstanceDetailDTO, ControllerInstitutionsApiService} from '@cat/api';
 import {FormService} from '@common/components/section/form/form.service';
 import {map, tap} from 'rxjs/operators';
 import {RoutingService} from '@common/services/routing.service';
@@ -37,30 +37,47 @@ export class PartnerControlReportControlChecklistPageComponent {
     message: 'checklists.instance.confirm.unfinish.message'
   };
 
+  userCanEditControlChecklists$: Observable<boolean>;
+
+  partnerId = Number(this.routingService.getParameter(this.activatedRoute, 'partnerId'));
+  reportId = Number(this.routingService.getParameter(this.activatedRoute, 'reportId'));
+
   constructor(private projectSidenavService: ProjectApplicationFormSidenavService,
               private pageStore: PartnerControlReportControlChecklistPageStore,
               private formService: FormService,
               private routingService: RoutingService,
-              private activatedRoute: ActivatedRoute) {
+              private activatedRoute: ActivatedRoute,
+              private controllerInstitutionService: ControllerInstitutionsApiService) {
     this.data$ = combineLatest([
       this.pageStore.checklist$,
       this.pageStore.checklistEditable$,
     ]).pipe(
       map(([checklist, editable]) => ({checklist, editable})),
     );
+    this.userCanEditControlChecklists$ = this.userCanEditControlChecklists();
+  }
+
+  private userCanEditControlChecklists(): Observable<boolean> {
+    return this.institutionUserControlReportLevel()
+        .pipe(
+            map((level) => level === 'Edit')
+        );
+  }
+
+  private institutionUserControlReportLevel(): Observable<string> {
+    return this.controllerInstitutionService.getControllerUserAccessLevelForPartner(this.partnerId);
   }
 
   save(checklist: ChecklistInstanceDetailDTO): void {
     checklist.components = this.getFormComponents();
-    this.pageStore.updateChecklist(checklist)
+    this.pageStore.updateChecklist(this.partnerId, this.reportId, checklist)
       .pipe(
         tap(() => this.formService.setSuccess('checklists.instance.saved.successfully'))
       ).subscribe();
   }
 
-
   updateStatus(checklistId: number, status: ChecklistInstanceDetailDTO.StatusEnum) {
-    this.pageStore.changeStatus(checklistId, status)
+    this.pageStore.changeStatus(this.partnerId, this.reportId, checklistId, status)
       .pipe(
         tap(() => this.formService.setDirty(false)),
         tap(() => this.routingService.navigate(['../..'], {relativeTo: this.activatedRoute}))

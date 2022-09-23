@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
+import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorDefaultImpl
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
@@ -189,6 +190,9 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
     @MockK
     lateinit var userAuthorization: UserAuthorization
 
+    @MockK
+    lateinit var securityService: SecurityService
+
     lateinit var updateChecklistInstance: UpdateChecklistInstance
 
     lateinit var generalValidator: GeneralValidatorService
@@ -203,7 +207,7 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
         generalValidator = GeneralValidatorDefaultImpl()
         checklistInstanceValidator = mockk()
         checklistInstanceValidator = ChecklistInstanceValidator(generalValidator)
-        updateChecklistInstance = UpdateChecklistInstance(persistence, auditPublisher, checklistInstanceValidator, userAuthorization)
+        updateChecklistInstance = UpdateChecklistInstance(persistence, auditPublisher, checklistInstanceValidator, userAuthorization, securityService)
     }
 
     @Test
@@ -220,6 +224,7 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
         every { auditPublisher.publishEvent(capture(auditSlot)) } answers {}
         every { persistence.update(checkLisDetail) } returns checkLisDetail
         every { userAuthorization.getUser() } returns user
+        every { securityService.getUserIdOrThrow() } returns user.id
         every { persistence.getChecklistSummary(CHECKLIST_ID) } returns checklistInstance(ChecklistInstanceStatus.DRAFT)
         every { persistence.changeStatus(CHECKLIST_ID, ChecklistInstanceStatus.FINISHED) } returns checklistInstance(ChecklistInstanceStatus.FINISHED)
 
@@ -230,8 +235,8 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
             AuditCandidate(
                 action = AuditAction.ASSESSMENT_CHECKLIST_STATUS_CHANGE,
                 project = AuditProject(id = checkLisDetail.relatedToId.toString()),
-                description = "[" + checkLisDetail.id + "] [" + checkLisDetail.type + "]" +
-                    " [" + checkLisDetail.name + "]" + " status changed from [DRAFT] to [FINISHED]"
+                description = "Checklist [${checkLisDetail.id}] type [${checkLisDetail.type}] name [${checkLisDetail.name}] " +
+                        "changed status from [DRAFT] to [FINISHED] by [${userAuthorization.getUser().id}]"
             )
         )
     }
