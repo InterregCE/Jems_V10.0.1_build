@@ -6,7 +6,7 @@ import './programme.commands';
 import './system.commands';
 
 // update test case execution results in Jira
-Cypress.on('test:after:run', function (test) {
+Cypress.on('test:after:run', async function(test) {
   if (Cypress.env('executionKey')) {
     const match = /TB-\d+/.exec(test.title);
     if (match) {
@@ -29,7 +29,7 @@ Cypress.on('test:after:run', function (test) {
         },
         body: JSON.stringify(testCaseExecutionDetails)
       };
-      fetch(`https://rtm-api.hexygen.com/api/v2/test-case-execution/${Cypress.env('executionKey')}-${testKey}`, requestDetails);
+      await fetch(`https://rtm-api.hexygen.com/api/v2/test-case-execution/${Cypress.env('executionKey')}-${testKey}`, requestDetails);
     }
   }
 });
