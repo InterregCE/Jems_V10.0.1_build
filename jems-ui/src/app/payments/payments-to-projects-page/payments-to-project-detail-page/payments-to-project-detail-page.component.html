@@ -1,0 +1,21 @@
+<jems-main-page-template *ngIf="data$ | async as data"
+                         [needsCard]="true"
+                         [titleText]=""
+                         subTitleKey="">
+
+    <span jemsMultiColumnRow>
+        <a color="primary" class="mr-1" mat-icon-button
+           routerLink=".."
+           matTooltip="{{ 'payments.payment.to.project.detail.back.tooltip.button' | translate }}">
+            <mat-icon class="icon-back" fontSet="material-icons-outlined">arrow_circle_left</mat-icon>
+        </a>
+        <h3 class="mb-4 put-icon-to-header-line">{{'payments.payment.to.project.detail.back.button' | translate}}</h3>
+    </span>
+
+    <h3>{{'payments.payment.to.project.detail.header' | translate : {
+        paymentId: data.id,
+        projectId: data.projectId,
+        fundName: data.fundName
+    } }}</h3>
+    <p>{{'payments.payment.to.project.detail.subtext' | translate}}</p>
+</jems-main-page-template>
