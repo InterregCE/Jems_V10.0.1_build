@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestPart
+import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.multipart.MultipartFile
 
 @Api("Project Contracting File Management")
@@ -75,6 +76,29 @@ interface ContractingFileApi {
         pageable: Pageable,
         @RequestBody searchRequest: ProjectContractingFileSearchRequestDTO,
     ): Page<ProjectReportFileDTO>
+
+    @ApiOperation("Update description of already uploaded file")
+    @PutMapping(
+        "${ENDPOINT_API_CONTRACTING_FILE}/{fileId}/description",
+        consumes = [MediaType.APPLICATION_JSON_VALUE],
+    )
+    fun updateContractFileDescription(
+        @PathVariable projectId: Long,
+        @PathVariable fileId: Long,
+        @RequestBody(required = false) description: String?,
+    )
+
+
+    @ApiOperation("Update description of already uploaded file")
+    @PutMapping(
+        "${ENDPOINT_API_CONTRACTING_FILE}/monitoring/{fileId}/description",
+        consumes = [MediaType.APPLICATION_JSON_VALUE],
+    )
+    fun updateInternalFileDescription(
+        @PathVariable projectId: Long,
+        @PathVariable fileId: Long,
+        @RequestBody(required = false) description: String?,
+    )
 
 
     @ApiOperation("Download contracting file")

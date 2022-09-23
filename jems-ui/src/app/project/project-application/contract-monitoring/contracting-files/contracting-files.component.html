@@ -22,7 +22,8 @@
             (onPageIndexChange)="store.newPageIndex$.next($event)"
             (onPageSizeChange)="store.newPageSize$.next($event)"
             (onDownload)="downloadFile($event)"
-            (onDelete)="deleteFile($event)">
+            (onDelete)="deleteFile($event)"
+            (onDescriptionChange)="updateDescription($event)" >
     </jems-file-list>
 </div>
 

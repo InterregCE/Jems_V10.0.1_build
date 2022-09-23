@@ -13,6 +13,7 @@ import {Observable, Subject, Subscription} from 'rxjs';
 import {APIError} from '@common/models/APIError';
 import {take} from 'rxjs/operators';
 import {ProjectReportFileMetadataDTO} from '@cat/api';
+import {FileDescriptionChange} from '@common/components/file-list/file-list-table/file-description-change';
 
 @Component({
   selector: 'jems-file-list',
@@ -40,6 +41,9 @@ export class FileListComponent {
 
   @Output()
   onDelete = new EventEmitter<FileListItem>();
+
+  @Output()
+  onDescriptionChange =  new EventEmitter<FileDescriptionChange>();
 
   static doFileUploadWithValidation(
     target: any,

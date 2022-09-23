@@ -51,6 +51,11 @@ class ProjectReportFilePersistenceProvider(
         reportFileRepository.existsByPartnerIdAndPathPrefixAndId(partnerId = partnerId, pathPrefix, id = fileId)
 
     @Transactional(readOnly = true)
+    override fun existsFileByProjectIdAndFileIdAndFileTypeIn(projectId: Long, fileId: Long, fileTypes: Set<ProjectPartnerReportFileType>): Boolean =
+        reportFileRepository.existsByProjectIdAndIdAndTypeIn(projectId = projectId, fileId = fileId, fileTypes = fileTypes )
+
+
+    @Transactional(readOnly = true)
     override fun downloadFile(partnerId: Long, fileId: Long) =
         reportFileRepository.findByPartnerIdAndId(partnerId = partnerId, fileId = fileId)?.let { file ->
             minioStorage.getFile(file.minioBucket, filePath = file.minioLocation).let {
@@ -64,10 +69,11 @@ class ProjectReportFilePersistenceProvider(
             .deleteIfPresent()
 
     @Transactional
-    override fun setDescriptionToFile(partnerId: Long, fileId: Long, description: String) {
-        val file = reportFileRepository.findByPartnerIdAndId(partnerId = partnerId, fileId = fileId)
-            ?: throw ResourceNotFoundException("file")
-        file.description = description
+    override fun setDescriptionToFile(fileId: Long, description: String) {
+        reportFileRepository.findById(fileId).ifPresentOrElse(
+            { it.description = description },
+            { throw ResourceNotFoundException("file") }
+        )
     }
 
     @Transactional

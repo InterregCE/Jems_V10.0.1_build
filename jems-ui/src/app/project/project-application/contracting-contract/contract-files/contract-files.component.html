@@ -9,6 +9,10 @@
     <p>{{'project.file.size.over.limit' | translate}} {{maximumAllowedFileSizeInMB}} MB</p>
 </jems-alert>
 
+<h3>
+    {{'file.tab.header' | translate}}
+    <jems-context-info infoPosition="right" infoText="{{'file.tab.info' | translate}}"></jems-context-info>
+</h3>
 <div jemsNoWidthLimit id="contract-files" class="overflow-auto">
     <jems-category-tree
             [categories]="store.fileCategories$ | async"
@@ -22,7 +26,8 @@
             (onPageIndexChange)="store.newPageIndex$.next($event)"
             (onPageSizeChange)="store.newPageSize$.next($event)"
             (onDownload)="downloadFile($event)"
-            (onDelete)="deleteFile($event)">
+            (onDelete)="deleteFile($event)"
+            (onDescriptionChange)="updateDescription($event)">
     </jems-file-list>
 </div>
 
@@ -34,3 +39,5 @@
         {{'file.upload.add.new' | translate}}
     </button>
 </div>
+
+

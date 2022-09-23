@@ -100,6 +100,24 @@ export class ContractingFilesStoreService {
       );
   }
 
+  setFileDescription(fileId: number, fileDescription: string): Observable<any> {
+    return this.selectedCategory$.pipe(
+      take(1),
+      withLatestFrom(this.projectStore.projectId$),
+      switchMap(([category, projectId]) => {
+        switch (category?.type) {
+          case FileTypeEnum.Contract:
+            return this.contractingFileService.updateContractFileDescription(fileId, projectId, fileDescription);
+          case FileTypeEnum.ContractDoc:
+            return this.contractingFileService.updateContractFileDescription(fileId, projectId, fileDescription);
+          case FileTypeEnum.ContractInternal:
+          default:
+            return this.contractingFileService.updateInternalFileDescription(fileId, projectId, fileDescription);
+        }
+      })
+    );
+  }
+
   deleteFile(fileId: number): Observable<void> {
     return this.projectStore.projectId$
       .pipe(

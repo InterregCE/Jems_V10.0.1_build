@@ -1,10 +1,11 @@
-package io.cloudflight.jems.server.project.service.report.partner.file.setDescriptionToFile
+package io.cloudflight.jems.server.project.service.contracting.fileManagement.setContractFileDescription
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
-import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.file.ProjectReportFilePersistence
+import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType
+import io.cloudflight.jems.server.project.service.report.partner.file.setDescriptionToFile.FileNotFound
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -14,14 +15,8 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
-class SetDescriptionToProjectPartnerReportFileTest : UnitTest() {
+class SetContractFileDescriptionTest: UnitTest() {
 
-    companion object {
-        private const val expectedPath = "Project/000008/Report/Partner/000640/PartnerReport/000477/"
-    }
-
-    @MockK
-    lateinit var partnerPersistence: PartnerPersistence
     @MockK
     lateinit var reportFilePersistence: ProjectReportFilePersistence
 
@@ -29,7 +24,8 @@ class SetDescriptionToProjectPartnerReportFileTest : UnitTest() {
     lateinit var generalValidator: GeneralValidatorService
 
     @InjectMockKs
-    lateinit var interactor: SetDescriptionToProjectPartnerReportFile
+    lateinit var setContractFileDescription: SetContractFileDescription
+
 
     @BeforeEach
     fun setup() {
@@ -42,26 +38,30 @@ class SetDescriptionToProjectPartnerReportFileTest : UnitTest() {
 
     @Test
     fun setDescription() {
-        val partnerId = 640L
         val projectId = 8L
-        every { partnerPersistence.getProjectIdForPartnerId(partnerId) } returns projectId
-        every { reportFilePersistence.existsFile(partnerId, expectedPath, 200L) } returns true
+        every {
+            reportFilePersistence.existsFileByProjectIdAndFileIdAndFileTypeIn(
+                projectId,
+                200L,
+                setOf(ProjectPartnerReportFileType.ContractDoc, ProjectPartnerReportFileType.Contract)
+            )
+        } returns true
         every { reportFilePersistence.setDescriptionToFile(200L, "new desc") } answers { }
 
-        interactor.setDescription(partnerId, reportId = 477L, fileId = 200L, "new desc")
+        setContractFileDescription.setContractFileDescription(projectId, 200L, "new desc")
         verify(exactly = 1) { reportFilePersistence.setDescriptionToFile(200L, "new desc") }
     }
 
     @Test
     fun `setDescription - not existing`() {
-        val partnerId = 645L
-        val projectId = 9L
-        every { partnerPersistence.getProjectIdForPartnerId(partnerId) } returns projectId
-        every { reportFilePersistence
-            .existsFile(partnerId, "Project/000009/Report/Partner/000645/PartnerReport/000000/", -1L)
+        val projectId = 8L
+        every {
+            reportFilePersistence.existsFileByProjectIdAndFileIdAndFileTypeIn(
+                projectId,
+                -1,
+                setOf(ProjectPartnerReportFileType.ContractDoc, ProjectPartnerReportFileType.Contract)
+            )
         } returns false
-
-        assertThrows<FileNotFound> { interactor.setDescription(partnerId, 0L, fileId = -1L, "") }
+        assertThrows<FileNotFound> { setContractFileDescription.setContractFileDescription(projectId, -1, "new desc") }
     }
-
 }

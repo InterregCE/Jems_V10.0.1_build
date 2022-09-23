@@ -8,8 +8,9 @@ import {I18nMessage} from '@common/models/I18nMessage';
 import {Alert} from '@common/components/forms/alert';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {FileListItem} from '@common/components/file-list/file-list-item';
-import {catchError, map, take} from 'rxjs/operators';
+import {catchError, map, take, tap} from 'rxjs/operators';
 import {PageFileList} from '@common/components/file-list/page-file-list';
+import {FileDescriptionChange} from '@common/components/file-list/file-list-table/file-description-change';
 import FileTypeEnum = ProjectReportFileDTO.TypeEnum;
 
 @UntilDestroy()
@@ -88,6 +89,14 @@ export class ContractFilesComponent implements OnInit {
       .subscribe();
   }
 
+  updateDescription(data: FileDescriptionChange) {
+    this.store.setFileDescription(data.id, data.description).pipe(
+      tap(() => this.store.filesChanged$.next()),
+      untilDestroyed(this)
+    ).subscribe();
+  }
+
+
   private fileCategories(): Observable<CategoryNode> {
     return of({
           info: {type: FileTypeEnum.ContractSupport},
@@ -107,11 +116,17 @@ export class ContractFilesComponent implements OnInit {
 
   private transform(content: ProjectReportFileDTO[]): FileListItem[] {
     return content.map(file => ({
-      ...file,
+      id: file.id,
+      name: file.name,
+      type: file.type,
+      uploaded: file.uploaded,
+      author: file.author,
+      sizeString: file.sizeString,
+      description: file.description,
+      editable: this.isEditable,
       deletable: this.isEditable,
-      editable: false,
-      tooltipIfNotDeletable: '',
-      iconIfNotDeletable: 'delete',
+      tooltipIfNotDeletable: 'file.table.action.delete.disabled.for.tab.tooltip',
+      iconIfNotDeletable: 'delete_forever',
     }));
   }
 }

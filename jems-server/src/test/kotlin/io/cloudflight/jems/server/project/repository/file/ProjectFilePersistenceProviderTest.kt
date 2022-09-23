@@ -328,7 +328,7 @@ internal class ProjectFilePersistenceProviderTest : UnitTest() {
     }
 
     @Nested
-    inner class SetFileDescription {
+    inner class SetContractFileDescription {
         @Test
         fun `should set description for file when there is no problem`() {
             val projectFileEntity = projectFileEntity(FILE_ID)

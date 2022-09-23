@@ -6,7 +6,7 @@ import {RoutingService} from '@common/services/routing.service';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {
   ProjectStore
-} from "@project/project-application/containers/project-application-detail/services/project-store.service";
+} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 
 @Component({
   selector: 'jems-project-work-package-detail-page',

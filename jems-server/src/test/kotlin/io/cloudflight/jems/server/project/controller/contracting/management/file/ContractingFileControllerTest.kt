@@ -5,6 +5,7 @@ import io.cloudflight.jems.api.project.dto.report.file.ProjectPartnerReportFileT
 import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileDTO
 import io.cloudflight.jems.api.project.dto.report.file.UserSimpleDTO
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.project.controller.contracting.fileManagement.ContractingFileController
 import io.cloudflight.jems.server.project.controller.report.dummyFile
 import io.cloudflight.jems.server.project.controller.report.dummyFileDto
 import io.cloudflight.jems.server.project.controller.report.dummyFileExpected
@@ -12,6 +13,8 @@ import io.cloudflight.jems.server.project.controller.report.dummyMultipartFile
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.deleteContractingFile.DeleteContractingFileInteractor
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.downloadContractingFile.DownloadContractingFileInteractor
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.listContractingFiles.ListContractingFilesInteractor
+import io.cloudflight.jems.server.project.service.contracting.fileManagement.setContractFileDescription.SetContractFileDescriptionInteractor
+import io.cloudflight.jems.server.project.service.contracting.fileManagement.setInternalFileDescription.SetInternalFileDescriptionInteractor
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.uploadFileToContracting.UploadFileToContractingInteractor
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingFileSearchRequest
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
@@ -76,6 +79,12 @@ class ContractingFileControllerTest : UnitTest() {
 
     @MockK
     lateinit var deleteContractingFile: DeleteContractingFileInteractor
+
+    @MockK
+    lateinit var setContractFileDescriptionInteractor: SetContractFileDescriptionInteractor
+
+    @MockK
+    lateinit var setInternalFileDescriptionInteractor: SetInternalFileDescriptionInteractor
 
     @InjectMockKs
     private lateinit var controller: ContractingFileController
@@ -168,6 +177,29 @@ class ContractingFileControllerTest : UnitTest() {
         every { deleteContractingFile.delete(PROJECT_ID, fileId = 302L) } answers { }
         controller.deleteFile(PROJECT_ID, fileId = 302L)
         verify(exactly = 1) { deleteContractingFile.delete(PROJECT_ID, fileId = 302L) }
+    }
+
+    @Test
+    fun setContractFileDescription() {
+        every { setContractFileDescriptionInteractor.setContractFileDescription(
+            projectId = 1L,
+            fileId = 1L,
+            description = "description"
+        ) } answers { }
+        controller.updateContractFileDescription(1L, 1L, "description")
+        verify(exactly = 1) { controller.updateContractFileDescription(1L, 1L, "description") }
+    }
+
+
+    @Test
+    fun setInternalFileDescription() {
+        every { setInternalFileDescriptionInteractor.setInternalFileDescription(
+            projectId = 1L,
+            fileId = 1L,
+            description = "description"
+        ) } answers { }
+        controller.updateInternalFileDescription(1L, 1L, "description")
+        verify(exactly = 1) { controller.updateInternalFileDescription(1L, 1L, "description") }
     }
 
 }
