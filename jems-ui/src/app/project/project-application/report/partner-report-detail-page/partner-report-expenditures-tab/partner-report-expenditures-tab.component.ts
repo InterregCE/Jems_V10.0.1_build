@@ -8,7 +8,7 @@ import {
   ViewChildren
 } from '@angular/core';
 import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, Validators} from '@angular/forms';
-import {catchError, concat, map, take, tap} from 'rxjs/operators';
+import {catchError, map, take, tap} from 'rxjs/operators';
 import {HttpErrorResponse} from '@angular/common/http';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {FormService} from '@common/components/section/form/form.service';
@@ -128,7 +128,6 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
   @ViewChildren('pricePerUnitInput') private pricePerUnitInput: QueryList<ElementRef>;
   @ViewChildren('declaredAmountInput') private declaredAmountInput: QueryList<ElementRef>;
   @ViewChildren('currencyCodeSelect') private currencyCodeSelect: QueryList<MatSelect>;
-
 
   ngOnInit(): void {
     this.initForm();
@@ -661,7 +660,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
   }
 
   hasPartnerCurrencySetToEur(): boolean {
-    return  this.currentReport.identification.currency === CurrencyCodesEnum.EUR;
+    return this.currentReport.identification.currency === CurrencyCodesEnum.EUR;
   }
 
   getCostOptionsDefinition(costOption: any): Observable<string> {
@@ -687,9 +686,9 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     return content ? `${content} (${content.length}/${limit})` : '';
   }
 
-  getAdditionalRowClass(index: number, formControlName: string) {
-    if(this.items.at(index).get(formControlName)?.disabled) {
-      return formControlName === PartnerReportExpendituresTabConstants.FORM_CONTROL_NAMES.contractId ? 'border-with-dotted disabled-text' : 'border-with-dotted';
+  getAdditionalRowClass(index: number, controlName: string) {
+    if(this.items.at(index).get(controlName)?.disabled || (controlName === PartnerReportExpendituresTabConstants.FORM_CONTROL_NAMES.currencyCode && this.hasPartnerCurrencySetToEur())) {
+      return controlName === PartnerReportExpendituresTabConstants.FORM_CONTROL_NAMES.contractId ? 'border-with-dotted disabled-text' : 'border-with-dotted';
     } else if (index % 2 === 0) {
       return 'blue-background';
     } else {
