@@ -19,7 +19,7 @@ context('Partner reports tests', () => {
       const secondPartner = partner.details.abbreviation;
       cy.createCall(call, user.programmeUser.email).then(callId => {
         application.details.projectCallId = callId;
-        application.partners.push(partner as any);
+        application.partners.push(partner);
         cy.publishCall(callId, user.programmeUser.email);
       });
       cy.createApprovedApplication(application, user.programmeUser.email).then(applicationId => {

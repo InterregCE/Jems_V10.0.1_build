@@ -22,7 +22,7 @@ Cypress.Commands.add('comparePdf', {prevSubject: false}, (templatePdf, actualPdf
 })
 
 Cypress.Commands.add('clickToDownload', {prevSubject: true}, (subject, requestToIntercept, fileExtension) => {
-  const randomizeDownload = `downloadRequest ${faker.random.alphaNumeric(5)}`;
+  const randomizeDownload = `downloadRequest_${faker.random.alphaNumeric(5)}`;
   cy.intercept(requestToIntercept).as(randomizeDownload);
   cy.wrap(subject).click();
   cy.wait(`@${randomizeDownload}`).then(result => {

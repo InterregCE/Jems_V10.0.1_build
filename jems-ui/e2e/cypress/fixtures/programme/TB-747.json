@@ -1,0 +1,99 @@
+{
+  "dataExportRole": {
+    "name": "randomize",
+    "permissions": [
+      "ProgrammeDataExportRetrieve"
+    ]
+  },
+  "dataExportUser": {
+    "email": "randomize",
+    "name": "Data Export",
+    "surname": "User",
+    "userRoleId": null,
+    "userStatus": "ACTIVE"
+  },
+  "spfCostItem": [
+    {
+      "description": [
+        {
+          "translation": "API generated SPF description DE",
+          "language": "DE"
+        }, {
+          "translation": "API generated SPF description EN",
+          "language": "EN"
+        }
+      ],
+      "comments": [
+        {
+          "translation": "API generated SPF comment DE",
+          "language": "DE"
+        }, {
+          "translation": "API generated SPF comment EN",
+          "language": "EN"
+        }
+      ],
+      "unitType": [
+        {
+          "translation": "API generated SPF unit type DE",
+          "language": "DE"
+        }, {
+          "translation": "API generated SPF unit type EN",
+          "language": "EN"
+        }
+      ],
+      "numberOfUnits": 3001,
+      "pricePerUnit": 599.99,
+      "budgetPeriods": [
+        {
+          "amount": 1000000,
+          "number": 1
+        }, {
+          "amount": 500000,
+          "number": 2
+        }, {
+          "amount": 270000,
+          "number": 7
+        }, {
+          "amount": 30569.99,
+          "number": 8
+        }
+      ]
+    }
+  ],
+  "cofinancingAmount": 22687.44,
+  "spfCofinancing": {
+    "finances": [
+      {
+        "fundId": 3,
+        "fundType": "MainFund",
+        "percentage": 50
+      }, {
+        "percentage": 50,
+        "fundType": "PartnerContribution"
+      }
+    ],
+    "partnerContributions": [
+      {
+        "name": "API generated source of small project contribution",
+        "status": "AutomaticPublic",
+        "amount": 900285.00,
+        "partner": false
+      }
+    ]
+  },
+  "projectSpfRecipients": [
+    {
+      "recipientGroup": "Other",
+      "specification": [
+        {
+          "translation": "API generated SPF recipients DE",
+          "language": "DE"
+        },
+        {
+          "translation": "API generated SPF recipients EN",
+          "language": "EN"
+        }
+      ]
+    }
+  ]
+}
