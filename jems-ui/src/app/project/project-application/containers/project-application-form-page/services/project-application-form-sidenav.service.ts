@@ -216,6 +216,29 @@ export class ProjectApplicationFormSidenavService {
       startWith([])
     );
 
+  private readonly contractingPartnerSection$: Observable<HeadlineRoute[]> =
+    combineLatest([this.canSeeContractMonitoring$, this.projectStore.projectId$, this.projectStore.projectCallType$]).pipe(
+      switchMap(([canSeeReporting, projectId, callType]) => {
+        return (canSeeReporting) ?
+          this.partnerStore.partnerReportSummaries$.pipe(
+            withLatestFrom(this.projectStore.projectId$),
+            map(([partners]) =>
+              partners.map(partner => ({
+                  headline: {
+                    i18nKey: ProjectPartnerStore.getPartnerTranslationKey(partner.role, callType),
+                    i18nArguments: {partner: `${partner.sortNumber || ''} ${partner.abbreviation}`}
+                  },
+                  icon: partner.active ? '' : 'person_off',
+                  route: `/app/project/detail/${projectId}/contractPartner/${partner.id}`
+                }
+              ))
+            )
+          ) : of([]);
+      }),
+      catchError(() => of([])),
+      startWith([])
+    );
+
   private readonly packages$: Observable<HeadlineRoute[]> =
     this.canSeeProjectForm$.pipe(
       switchMap(canSeeProject => {
@@ -274,7 +297,8 @@ export class ProjectApplicationFormSidenavService {
       this.versionSelectTemplate$,
       this.canSeeProjectForm$,
       this.canSeeModificationSection$,
-      this.canSeePrivilegesSection$
+      this.canSeePrivilegesSection$,
+      this.contractingPartnerSection$
     ])
       .pipe(
         debounceTime(50), // there's race condition with SidenavService.resetOnLeave
@@ -295,13 +319,14 @@ export class ProjectApplicationFormSidenavService {
                versionTemplate,
                canSeeProjectForm,
                canSeeModificationSection,
-               canSeePrivilegesSection
+               canSeePrivilegesSection,
+               contractingPartnerSection
              ]: any) => {
           this.sideNavService.setHeadlines(ProjectPaths.PROJECT_DETAIL_PATH, [
             this.getProjectOverviewHeadline(project.id),
             ...canSeeReporting ? this.getReportingHeadline(reportSectionPartners) : [],
             ...(canSeeProjectManagement || canSeeContractMonitoring) ?
-              this.getContractingHeadlines(project.id, canSeeContractMonitoring, canSeeProjectManagement, canSeeContractReporting) : [],
+              this.getContractingHeadlines(project.id, canSeeContractMonitoring, canSeeProjectManagement, canSeeContractReporting, contractingPartnerSection) : [],
             this.getApplicationFormHeadline(project.id, partners, packages, versionTemplate, canReadApplicationFiles,
               canSeeAssessments, canSubmitApplication || canCheckApplication, canSeeProjectForm, canSeeModificationSection),
             ...canSeeProjectForm ? this.getExportHeadline(project.id) : [],
@@ -336,14 +361,15 @@ export class ProjectApplicationFormSidenavService {
     };
   }
 
-  private getContractingHeadlines(projectId: number, canSeeContractMonitoring: boolean, canSeeProjectManagement: boolean, canSeeContractReporting: boolean): HeadlineRoute[] {
+  private getContractingHeadlines(projectId: number, canSeeContractMonitoring: boolean, canSeeProjectManagement: boolean, canSeeContractReporting: boolean, partners: HeadlineRoute[]): HeadlineRoute[] {
     return [{
       headline: {i18nKey: 'project.application.contracting.title'},
       bullets: [
         ...canSeeContractMonitoring ? this.getContractMonitoringHeadline(projectId) : [],
         ...canSeeProjectManagement ? this.getProjectContractsHeadline(projectId) : [],
         ...canSeeProjectManagement ? this.getProjectManagementHeadline(projectId) : [],
-        ...canSeeContractReporting ? this.getContractReportingHeadline(projectId) : []
+        ...canSeeContractReporting ? this.getContractReportingHeadline(projectId) : [],
+        ...canSeeContractReporting ? this.getContractPartnerHeadline(projectId, partners) : [],
       ]
     }];
   }
@@ -381,6 +407,14 @@ export class ProjectApplicationFormSidenavService {
       route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/contractReporting`,
       scrollToTop: true,
       scrollRoute: ''
+    }];
+  }
+
+  private getContractPartnerHeadline(projectId: number, partners: HeadlineRoute[]): HeadlineRoute[] {
+    return [{
+      headline: {i18nKey: 'project.application.contract.partner.section.title'},
+      badgeText: 'test',
+      bullets: [...partners],
     }];
   }
 
