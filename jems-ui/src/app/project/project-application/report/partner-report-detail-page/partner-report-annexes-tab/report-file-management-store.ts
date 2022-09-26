@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {combineLatest, Observable, of, ReplaySubject, Subject} from 'rxjs';
+import {BehaviorSubject, combineLatest, Observable, of, ReplaySubject, Subject} from 'rxjs';
 import {
   PageProjectReportFileDTO,
   ProjectPartnerReportDTO,
@@ -9,7 +9,17 @@ import {
   ProjectReportFileSearchRequestDTO,
   SettingsService
 } from '@cat/api';
-import {catchError, filter, map, startWith, switchMap, take, tap, withLatestFrom} from 'rxjs/operators';
+import {
+  catchError,
+  distinctUntilChanged,
+  filter,
+  map,
+  startWith,
+  switchMap,
+  take,
+  tap,
+  withLatestFrom
+} from 'rxjs/operators';
 import {MatSort} from '@angular/material/sort';
 import {Tables} from '@common/utils/tables';
 import {CategoryInfo, CategoryNode} from '@project/common/components/category-tree/categoryModels';
@@ -25,6 +35,7 @@ import {
 import {FileManagementStore} from '@project/common/components/file-management/file-management-store';
 import {RoutingService} from '@common/services/routing.service';
 import {v4 as uuid} from 'uuid';
+import {FileListTableConstants} from "@common/components/file-list/file-list-table/file-list-table-constants";
 
 @Injectable({
   providedIn: 'root'
@@ -46,7 +57,7 @@ export class ReportFileManagementStore {
 
   newPageSize$ = new Subject<number>();
   newPageIndex$ = new Subject<number>();
-  newSort$ = new Subject<Partial<MatSort>>();
+  newSort$ = new BehaviorSubject<Partial<MatSort>>(FileListTableConstants.DEFAULT_SORT);
   reportFilesChanged$ = new Subject<void>();
 
   constructor(
@@ -146,9 +157,9 @@ export class ReportFileManagementStore {
       this.newPageIndex$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
       this.newPageSize$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_SIZE)),
       this.newSort$.pipe(
-        startWith(Tables.DEFAULT_INITIAL_SORT),
-        map(sort => sort?.direction ? sort : Tables.DEFAULT_INITIAL_SORT),
-        map(sort => `${sort.active},${sort.direction}`)
+        map(sort => sort?.direction ? sort : FileListTableConstants.DEFAULT_SORT),
+        map(sort => `${sort.active},${sort.direction}`),
+        distinctUntilChanged(),
       ),
       this.reportFilesChanged$.pipe(startWith(null))
     ])

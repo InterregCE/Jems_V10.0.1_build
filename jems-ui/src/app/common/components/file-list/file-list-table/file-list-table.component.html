@@ -1,7 +1,5 @@
 <div [class.reduce-max-width]="!fileList.length">
-    <mat-table matSort (matSortChange)="onSortChange.emit($event)"
-            *ngIf="fileList.length; else noFiles"
-            [dataSource]="dataSource">
+    <mat-table matSort matSortDisableClear [class.hide]="!fileList.length" [dataSource]="dataSource">
 
         <ng-container matColumnDef="name">
             <mat-header-cell *matHeaderCellDef [mat-sort-header]="sortingEnabled ? 'name' : null" [disabled]="!sortingEnabled">
@@ -112,9 +110,7 @@
 
     </mat-table>
 
-    <ng-template #noFiles>
-        <jems-alert [show]="true" [type]="Alert.INFO">
-            <p>{{ 'file.table.no.files' | translate }}</p>
-        </jems-alert>
-    </ng-template>
+    <jems-alert [show]="!fileList.length" [type]="Alert.INFO">
+        <p>{{ 'file.table.no.files' | translate }}</p>
+    </jems-alert>
 </div>
