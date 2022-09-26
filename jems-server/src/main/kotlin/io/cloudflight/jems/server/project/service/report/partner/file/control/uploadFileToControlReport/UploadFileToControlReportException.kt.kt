@@ -18,7 +18,12 @@ class ReportNotInControl : ApplicationUnprocessableException(
     i18nMessage = I18nMessage(i18nKey = "$UPLOAD_FILE_TO_CONTROL_REPORT_ERROR_KEY_PREFIX.report.not.in.control"),
 )
 
-class FileTypeNotSupported : ApplicationUnprocessableException(
+class FileAlreadyExists : ApplicationUnprocessableException(
     code = "$UPLOAD_FILE_TO_CONTROL_REPORT_ERROR_CODE_PREFIX-002",
+    i18nMessage = I18nMessage("$UPLOAD_FILE_TO_CONTROL_REPORT_ERROR_KEY_PREFIX.file.already.exists"),
+)
+
+class FileTypeNotSupported : ApplicationUnprocessableException(
+    code = "$UPLOAD_FILE_TO_CONTROL_REPORT_ERROR_CODE_PREFIX-003",
     i18nMessage = I18nMessage("$UPLOAD_FILE_TO_CONTROL_REPORT_ERROR_KEY_PREFIX.type.not.supported")
 )
