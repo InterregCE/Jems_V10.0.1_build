@@ -1,11 +1,15 @@
 import {
+  AfterViewInit,
   ChangeDetectionStrategy,
   Component,
   EventEmitter,
-  Input, OnChanges,
-  Output, SimpleChanges,
+  Input,
+  OnChanges,
+  Output,
+  SimpleChanges,
+  ViewChild,
 } from '@angular/core';
-import { MatSort } from '@angular/material/sort';
+import {MatSort, MatSortable} from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Alert } from '@common/components/forms/alert';
 import { Tables } from '@common/utils/tables';
@@ -13,22 +17,26 @@ import { FileListItem } from '@common/components/file-list/file-list-item';
 import { FileDescriptionChange } from '@common/components/file-list/file-list-table/file-description-change';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Forms } from '@common/utils/forms';
-import { filter, take } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
-import {SecurityService} from '../../../../security/security.service';
+import {UntilDestroy, untilDestroyed} from "@ngneat/until-destroy";
+import { filter, take, tap } from 'rxjs/operators';
+import { SecurityService } from '../../../../security/security.service';
 
+@UntilDestroy()
 @Component({
   selector: 'jems-file-list-table',
   templateUrl: './file-list-table.component.html',
   styleUrls: ['./file-list-table.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FileListTableComponent implements OnChanges {
+export class FileListTableComponent implements OnChanges, AfterViewInit {
   Alert = Alert;
   Tables = Tables;
 
   displayedColumns: string[] = ['name', 'location', 'uploadDate', 'user', 'size', 'description', 'action'];
   dataSource = new MatTableDataSource<FileListItem>();
+
+  @ViewChild(MatSort) sort: MatSort
 
   @Input()
   fileList: FileListItem[];
@@ -57,6 +65,15 @@ export class FileListTableComponent implements OnChanges {
     private dialog: MatDialog,
     public securityService: SecurityService,
   ) {
+  }
+
+  ngAfterViewInit(): void {
+    this.sort?.sortChange
+      .pipe(
+        tap(() => this.onSortChange.emit(this.sort)),
+        untilDestroyed(this),
+      ).subscribe();
+    this.sort?.sort(({ id: 'uploaded', start: 'desc'}) as MatSortable);
   }
 
   ngOnChanges(changes: SimpleChanges): void {

@@ -3,11 +3,11 @@ import {BehaviorSubject, combineLatest, Observable, of, Subject} from 'rxjs';
 import {
   ProjectPartnerReportDTO,
   ProjectPartnerReportService,
-  ProjectPartnerReportSummaryDTO,
-  ProjectReportFileDTO, ProjectReportFileMetadataDTO,
+  ProjectReportFileDTO,
+  ProjectReportFileMetadataDTO,
   SettingsService
 } from '@cat/api';
-import {catchError, filter, map, startWith, switchMap, take, tap} from 'rxjs/operators';
+import {catchError, distinctUntilChanged, filter, map, startWith, switchMap, take, tap} from 'rxjs/operators';
 import {DownloadService} from '@common/services/download.service';
 import {
   PartnerReportDetailPageStore
@@ -18,13 +18,11 @@ import {Log} from '@common/utils/log';
 import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
 import {FileListItem} from '@common/components/file-list/file-list-item';
 import {MatSort} from '@angular/material/sort';
-import {Tables} from '@common/utils/tables';
+import {FileListTableConstants} from "@common/components/file-list/file-list-table/file-list-table-constants";
 import {APIError} from '@common/models/APIError';
 import {v4 as uuid} from 'uuid';
 
-@Injectable({
-  providedIn: 'root'
-})
+@Injectable({ providedIn: 'root' })
 export class PartnerControlReportFileManagementStore {
 
   partnerId$: Observable<number>;
@@ -33,7 +31,7 @@ export class PartnerControlReportFileManagementStore {
   report$: Observable<ProjectPartnerReportDTO>;
 
   filesChanged$ = new Subject<void>();
-  newSort$ = new BehaviorSubject<Partial<MatSort>>(Tables.DEFAULT_INITIAL_SORT);
+  newSort$ = new BehaviorSubject<Partial<MatSort>>(FileListTableConstants.DEFAULT_SORT);
   error$ = new Subject<APIError | null>();
 
   constructor(
@@ -60,8 +58,9 @@ export class PartnerControlReportFileManagementStore {
       this.routingService.routeParameterChanges(PartnerReportDetailPageStore.REPORT_DETAIL_PATH, 'reportId')
         .pipe(map(id => Number(id))),
       this.newSort$.pipe(
-        map(sort => sort?.direction ? sort : Tables.DEFAULT_INITIAL_SORT),
+        map(sort => sort?.direction ? sort : FileListTableConstants.DEFAULT_SORT),
         map(sort => `${sort.active},${sort.direction}`),
+        distinctUntilChanged(),
       ),
       this.filesChanged$.pipe(startWith(null)),
     ]).pipe(
