@@ -610,6 +610,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             investments = listOf(investment)
         )
         private val projectLumpSum = ProjectLumpSum(
+            orderNr = 1,
             programmeLumpSumId = 1L,
             period = 2,
             lumpSumContributions = listOf(ProjectPartnerLumpSum(3L, BigDecimal.ZERO))

@@ -55,6 +55,7 @@ internal class GetContractingMonitoringServiceTest : UnitTest() {
 
         private val lumpSums = listOf(
             ProjectLumpSum(
+                orderNr = 1,
                 programmeLumpSumId = 1,
                 period = 1,
                 lumpSumContributions = listOf(),

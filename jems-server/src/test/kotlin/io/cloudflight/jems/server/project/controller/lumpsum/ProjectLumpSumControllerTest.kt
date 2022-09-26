@@ -24,6 +24,7 @@ internal class ProjectLumpSumControllerTest : UnitTest() {
         private const val version = "v2.0"
 
         private val lumpSum1 = ProjectLumpSum(
+            orderNr = 1,
             programmeLumpSumId = 1,
             period = 3,
             lumpSumContributions = listOf(
@@ -32,10 +33,12 @@ internal class ProjectLumpSumControllerTest : UnitTest() {
             )
         )
         private val lumpSum2 = ProjectLumpSum(
+            orderNr = 2,
             programmeLumpSumId = 2,
             period = 4,
         )
         private val lumpSum3 = ProjectLumpSum(
+            orderNr = 3,
             programmeLumpSumId = 3,
             period = 4,
             readyForPayment = true,
@@ -59,6 +62,7 @@ internal class ProjectLumpSumControllerTest : UnitTest() {
 
         assertThat(controller.getProjectLumpSums(1L)).containsExactly(
             ProjectLumpSumDTO(
+                orderNr = 1,
                 programmeLumpSumId = 1,
                 period = 3,
                 lumpSumContributions = listOf(
@@ -70,6 +74,7 @@ internal class ProjectLumpSumControllerTest : UnitTest() {
                 fastTrack = false
             ),
             ProjectLumpSumDTO(
+                orderNr = 2,
                 programmeLumpSumId = 2,
                 period = 4,
                 readyForPayment = false,
@@ -77,6 +82,7 @@ internal class ProjectLumpSumControllerTest : UnitTest() {
                 fastTrack = false
             ),
             ProjectLumpSumDTO(
+                orderNr = 3,
                 programmeLumpSumId = 3,
                 period = 4,
                 readyForPayment = true,
@@ -101,6 +107,7 @@ internal class ProjectLumpSumControllerTest : UnitTest() {
         every { updateLumpSumInteractor.updateLumpSums(2L, capture(lumpSumsSlot)) } returns emptyList()
 
         val lumpSumDto1 = ProjectLumpSumDTO(
+            orderNr = 1,
             programmeLumpSumId = 5,
             period = 7,
             lumpSumContributions = listOf(
@@ -113,6 +120,7 @@ internal class ProjectLumpSumControllerTest : UnitTest() {
             fastTrack = false,
         )
         val lumpSumDto2 = ProjectLumpSumDTO(
+            orderNr = 2,
             programmeLumpSumId = 6,
             period = 8,
             lumpSumContributions = listOf(
@@ -124,6 +132,7 @@ internal class ProjectLumpSumControllerTest : UnitTest() {
             fastTrack = false,
         )
         val lumpSumDto3 = ProjectLumpSumDTO(
+            orderNr = 3,
             programmeLumpSumId = 7,
             period = 2,
             lumpSumContributions = listOf(
@@ -141,11 +150,13 @@ internal class ProjectLumpSumControllerTest : UnitTest() {
 
         assertThat(lumpSumsSlot.captured).containsExactly(
             ProjectLumpSum(
+                orderNr = 1,
                 programmeLumpSumId = 5,
                 period = 7,
                 lumpSumContributions = emptyList(), // negative contributions are not allowed
             ),
             ProjectLumpSum(
+                orderNr = 2,
                 programmeLumpSumId = 6,
                 period = 8,
                 lumpSumContributions = listOf(
@@ -154,6 +165,7 @@ internal class ProjectLumpSumControllerTest : UnitTest() {
                 ),
             ),
             ProjectLumpSum(
+                orderNr = 3,
                 programmeLumpSumId = 7,
                 period = 2,
                 lumpSumContributions = listOf(

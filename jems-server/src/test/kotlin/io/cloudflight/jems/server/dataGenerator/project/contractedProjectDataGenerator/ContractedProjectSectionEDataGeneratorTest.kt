@@ -37,6 +37,7 @@ class ContractedProjectSectionEDataGeneratorTest(@LocalServerPort private val po
         CONTRACTED_PROJECT_LUMP_SUMS = lumpSumsApi.updateProjectLumpSums(
             CONTRACTED_PROJECT_ID, listOf(
                 ProjectLumpSumDTO(
+                    orderNr = 1,
                     programmeLumpSumId = PROGRAMME_LUMP_SUMS.first().id!!,
                     period = 1,
                     lumpSumContributions = listOf(

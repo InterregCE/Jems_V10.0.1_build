@@ -308,6 +308,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
       const lumpSum = projectCallLumpSums.find(it => it.id === projectLumpSum.programmeLumpSumId);
       const rowSum = ProjectLumpSumsPageComponent.calculateRowSum(projectLumpSum.lumpSumContributions.map(it => it.amount));
       const item = this.formBuilder.group({
+        orderNr: projectLumpSum.orderNr,
         rowId: this.newRowId(),
         id: null,
         lumpSum: [lumpSum, Validators.required],
@@ -358,6 +359,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
   private formToProjectLumpSums(): ProjectLumpSum[] {
     return this.items.controls.map((formGroup: FormGroup) => {
       return new ProjectLumpSum(
+        formGroup.get(this.constants.FORM_CONTROL_NAMES.orderNr)?.value,
         this.getLumpSumControl(formGroup)?.value?.id,
         formGroup.get(this.constants.FORM_CONTROL_NAMES.periodNumber)?.value,
         this.getPartnerContributionFormArray(formGroup)?.value,

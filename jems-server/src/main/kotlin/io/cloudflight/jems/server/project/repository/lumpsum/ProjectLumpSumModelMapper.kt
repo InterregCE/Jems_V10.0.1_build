@@ -14,6 +14,7 @@ import java.time.ZonedDateTime
 
 fun List<ProjectLumpSumEntity>.toModel() = sortedBy { it.id.orderNr }.map {
     ProjectLumpSum(
+        orderNr = it.id.orderNr,
         period = it.endPeriod,
         programmeLumpSumId = it.programmeLumpSum.id,
         lumpSumContributions = it.lumpSumContributions.toModel(),
@@ -55,7 +56,7 @@ fun List<ProjectLumpSum>.toEntity(
     getProgrammeLumpSum: (Long) -> ProgrammeLumpSumEntity,
     getProjectPartner: (Long) -> ProjectPartnerEntity,
 ) = mapIndexed { index, model ->
-    model.toEntity(ProjectLumpSumId(projectId, index.plus(1)), getProgrammeLumpSum, getProjectPartner)
+    model.toEntity(ProjectLumpSumId(projectId, model.orderNr), getProgrammeLumpSum, getProjectPartner)
 }
 
 fun List<ProjectPartnerLumpSum>.toPartnerLumpSumEntity(
@@ -74,6 +75,7 @@ fun List<ProjectPartnerLumpSum>.toPartnerLumpSumEntity(
 fun List<ProjectLumpSumRow>.toProjectLumpSumHistoricalData() =
     this.groupBy { it.orderNr }.map { groupedRows ->
         ProjectLumpSum(
+            orderNr = groupedRows.value.first().orderNr,
             programmeLumpSumId = groupedRows.value.first().programmeLumpSumId,
             period = groupedRows.value.first().endPeriod,
             lumpSumContributions = groupedRows.value
