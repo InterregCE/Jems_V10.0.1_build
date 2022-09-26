@@ -43,7 +43,6 @@ export class PartnerReportProcurementAttachmentComponent implements OnChanges {
   data$: Observable<{
     attachments: FileListItem[];
     isReportEditable: boolean;
-    reportNumber: number;
   }>;
 
   @Input()
@@ -59,9 +58,8 @@ export class PartnerReportProcurementAttachmentComponent implements OnChanges {
     this.data$ = combineLatest([
       this.procurementStore.attachments$,
       this.partnerReportDetailPageStore.reportEditable$,
-      this.partnerReportDetailPageStore.partnerReport$,
     ]).pipe(
-      map(([attachments, isReportEditable, report]) => ({
+      map(([attachments, isReportEditable]) => ({
         attachments: attachments.map((file: ProjectReportProcurementFileDTO) => ({
           id: file.id,
           name: file.name,
@@ -76,7 +74,6 @@ export class PartnerReportProcurementAttachmentComponent implements OnChanges {
           iconIfNotDeletable: '',
         })),
         isReportEditable,
-        reportNumber: report.reportNumber,
       })),
     );
     this.fileManagementStore.getMaximumAllowedFileSize().pipe(untilDestroyed(this))
@@ -118,7 +115,7 @@ export class PartnerReportProcurementAttachmentComponent implements OnChanges {
       take(1),
       tap(() => this.savingDescriptionId$.next(data.id)),
       switchMap(([partnerId, reportId]) =>
-        this.projectPartnerReportService.updateDescription(data.id, partnerId, reportId, data.description)
+        this.projectPartnerReportService.updateReportFileDescription(data.id, partnerId, reportId, data.description)
       ),
       tap(() => this.procurementStore.filesChanged$.next()),
       finalize(() => this.savingDescriptionId$.next(null)),

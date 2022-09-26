@@ -54,6 +54,9 @@ class ProjectReportFilePersistenceProvider(
     override fun existsFileByProjectIdAndFileIdAndFileTypeIn(projectId: Long, fileId: Long, fileTypes: Set<ProjectPartnerReportFileType>): Boolean =
         reportFileRepository.existsByProjectIdAndIdAndTypeIn(projectId = projectId, fileId = fileId, fileTypes = fileTypes )
 
+    @Transactional(readOnly = true)
+    override fun getFileAuthor(partnerId: Long, pathPrefix: String, fileId: Long) =
+        reportFileRepository.findByPartnerIdAndPathPrefixAndId(partnerId = partnerId, pathPrefix, id = fileId)?.user?.toModel()
 
     @Transactional(readOnly = true)
     override fun downloadFile(partnerId: Long, fileId: Long) =

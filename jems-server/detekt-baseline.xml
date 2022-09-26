@@ -56,7 +56,6 @@
     <ID>MaxLineLength:PartnerBudgetPerFundCalculatorTest.kt$PartnerBudgetPerFundCalculatorTest$ProjectPartnerContribution(id = 3L, name = "con3", status = ProjectPartnerContributionStatusDTO.Private, amount = BigDecimal(580), isPartner = true)</ID>
     <ID>MaxLineLength:PartnerPersistenceProvider.kt$PartnerPersistenceProvider$)</ID>
     <ID>MaxLineLength:ProgrammeAuditFactory.kt$.</ID>
-    <ID>MaxLineLength:ProgrammeIndicatorsEntityMapper.kt$name.filter { !it.translation.isNullOrBlank() }.plus(measurementUnit.filter { !it.translation.isNullOrBlank() }).plus(sourceOfData.filter { !it.translation.isNullOrBlank() })</ID>
     <ID>MaxLineLength:ProjectAuditFactory.kt$ProjectFileCategoryType.INVESTMENT -&gt; "FAILED upload of document $fileName to project application $projectId for Investment ${projectFileCategory.id} by $userId"</ID>
     <ID>MaxLineLength:ProjectAuditFactory.kt$ProjectFileCategoryType.INVESTMENT -&gt; "document ${projectFileMetaData.name} uploaded to project application ${projectFileMetaData.projectId} for Investment ${projectFileCategory.id} by ${projectFileMetaData.uploadedBy.id}"</ID>
     <ID>MaxLineLength:ProjectAuditFactory.kt$ProjectFileCategoryType.PARTNER -&gt; "FAILED upload of document $fileName to project application $projectId for Partner ${projectFileCategory.id} by $userId"</ID>
@@ -574,6 +573,7 @@
     <ID>ReturnCount:ProjectDescriptionMapper.kt$fun getMappedStrategy(strategy: ProgrammeStrategy?): ProgrammeStrategy?</ID>
     <ID>ReturnCount:UserRoleAuditFactory.kt$private fun getAuditPermissionState(node: UserRolePermissionNode, permissions: Set&lt;UserRolePermission&gt;): String</ID>
     <ID>ThrowsCount:BudgetCostValidator.kt$BudgetCostValidator$final fun validateBaseEntries(budgetEntries: List&lt;BaseBudgetEntry&gt;)</ID>
+    <ID>ThrowsCount:ControlReportFileAuthorizationService.kt$ControlReportFileAuthorizationService$fun validateChangeToFileAllowed(partnerId: Long, reportId: Long, fileId: Long)</ID>
     <ID>ThrowsCount:CreateOutputIndicator.kt$CreateOutputIndicator$private fun validateOutputIndicatorDetail(outputIndicator: OutputIndicator)</ID>
     <ID>ThrowsCount:CreateUser.kt$CreateUser$private fun validateUser(user: UserChange)</ID>
     <ID>ThrowsCount:WorkPackageActivityValidation.kt$fun validateWorkPackageActivities(workPackageActivities: Collection&lt;WorkPackageActivity&gt;)</ID>
@@ -607,7 +607,6 @@
     <ID>UnnecessaryAbstractClass:UserConfirmationMapper.kt$UserConfirmationMapper</ID>
     <ID>UnusedPrivateMember:ApplicationStateFactoryTest.kt$ApplicationStateFactoryTest$private fun provideSummaryWithExpectedInstance(): Stream&lt;Arguments&gt;</ID>
     <ID>UnusedPrivateMember:AssignUserEventListeners.kt$AssignUserEventListeners$private val appProperties: AppProperties</ID>
-    <ID>UnusedPrivateMember:CallPersistenceProviderTest.kt$CallPersistenceProviderTest$@MockK private lateinit var programmeStateAidRepo: ProgrammeStateAidRepository</ID>
     <ID>UnusedPrivateMember:CreateProjectTest.kt$CreateProjectTest.Companion$private fun projectVersion(status: ApplicationStatus): ProjectVersion</ID>
     <ID>UnusedPrivateMember:ProgrammeSetupAuthorizationTest.kt$ProgrammeSetupAuthorizationTest$private fun provideAllUsers(): Stream&lt;Arguments&gt;</ID>
     <ID>UnusedPrivateMember:ProjectBudgetControllerTest.kt$ProjectBudgetControllerTest$@MockK private lateinit var getPartnerBudgetPerFundInteractor: GetPartnerBudgetPerFundInteractor</ID>

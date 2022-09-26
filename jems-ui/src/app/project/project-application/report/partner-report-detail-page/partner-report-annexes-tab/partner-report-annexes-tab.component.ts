@@ -17,12 +17,7 @@ import {
 })
 export class PartnerReportAnnexesTabComponent implements OnInit{
 
-  canReadFiles$: Observable<boolean>;
-  selectedCategoryPath$: Observable<I18nMessage[]>;
-
   constructor(public reportFileManagementStore: ReportFileManagementStore) {
-    this.canReadFiles$ = reportFileManagementStore.canReadFiles$;
-    this.selectedCategoryPath$ = reportFileManagementStore.selectedCategoryPath$;
   }
 
   ngOnInit(): void {

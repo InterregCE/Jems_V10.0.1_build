@@ -8,12 +8,6 @@
                 class="mr-3" id="report-files-tree">
         </jems-category-tree>
         <div id="report-files-table">
-            <div *ngIf="selectedCategoryPath$ | async as selectedCategoryPath" class="mb-3">
-                <span *ngFor="let item of selectedCategoryPath; let last = last">
-                    <span [class.mat-body-strong]="item === last">{{item.i18nKey | translate : item.i18nArguments}}</span>
-                    <span *ngIf="!last"> / </span>
-                </span>
-            </div>
             <jems-report-annexes-table></jems-report-annexes-table>
         </div>
     </div>

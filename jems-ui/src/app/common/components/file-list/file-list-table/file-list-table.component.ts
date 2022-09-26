@@ -15,6 +15,7 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { Forms } from '@common/utils/forms';
 import { filter, take } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
+import {SecurityService} from '../../../../security/security.service';
 
 @Component({
   selector: 'jems-file-list-table',
@@ -54,6 +55,7 @@ export class FileListTableComponent implements OnChanges {
   constructor(
     private formBuilder: FormBuilder,
     private dialog: MatDialog,
+    public securityService: SecurityService,
   ) {
   }
 
