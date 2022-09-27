@@ -45,6 +45,4 @@ interface ProjectReportFilePersistence {
 
     fun addAttachmentToPartnerReport(file: ProjectReportFileCreate): ProjectReportFileMetadata
 
-    fun getFileType(fileId: Long, projectId: Long): ProjectPartnerReportFileType?
-
 }

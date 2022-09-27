@@ -35,7 +35,7 @@ import {
 import {FileManagementStore} from '@project/common/components/file-management/file-management-store';
 import {RoutingService} from '@common/services/routing.service';
 import {v4 as uuid} from 'uuid';
-import {FileListTableConstants} from '@common/components/file-list/file-list-table/file-list-table-constants';
+import {FileListTableConstants} from "@common/components/file-list/file-list-table/file-list-table-constants";
 
 @Injectable({
   providedIn: 'root'

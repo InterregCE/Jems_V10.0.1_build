@@ -68,7 +68,6 @@ export class ReportAnnexesTableComponent {
             author: file.author,
             sizeString: file.sizeString,
             description: file.description,
-            editableDescription: file.type === ProjectReportFileDTO.TypeEnum.PartnerReport,
             editable: reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.Draft,
             deletable: file.type === ProjectReportFileDTO.TypeEnum.PartnerReport && reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.Draft,
             tooltipIfNotDeletable: 'file.table.action.delete.disabled.for.tab.tooltip',
