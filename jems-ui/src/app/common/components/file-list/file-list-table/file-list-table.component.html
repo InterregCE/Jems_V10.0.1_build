@@ -51,14 +51,14 @@
                 <ng-container *ngIf="descriptionForm.value.id !== file.id">
                     <span *ngIf="file.description" jemsText maxLines="2"
                           class="mr-1 text-left fill-space-left-to-button" [matTooltip]="file.description">{{ file.description }}</span>
-                    <button (click)="editDescription(file)" *ngIf="file.editable"
+                    <button (click)="editDescription(file)" *ngIf="file.editableDescription"
                             [disabled]="descriptionForm.value.id && descriptionForm.value.id !== file.id"
                             color="primary" mat-icon-button matTooltip="{{ 'file.table.action.description.tooltip' | translate }}" class="my-fab">
                         <mat-icon>edit</mat-icon>
                     </button>
                 </ng-container>
 
-                <form [formGroup]="descriptionForm" *ngIf="descriptionForm.value.id === file.id" class="w-100">
+                <form [formGroup]="descriptionForm" *ngIf="descriptionForm.value.id === file.id && file.editableDescription" class="w-100">
                     <jems-expandable-textarea class="w-100"
                             label="file.table.column.name.description"
                             [control]="descriptionForm.controls.description"

@@ -18,7 +18,7 @@ import { FileDescriptionChange } from '@common/components/file-list/file-list-ta
 import { FormBuilder, Validators } from '@angular/forms';
 import { Forms } from '@common/utils/forms';
 import { MatDialog } from '@angular/material/dialog';
-import {UntilDestroy, untilDestroyed} from "@ngneat/until-destroy";
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import { filter, take, tap } from 'rxjs/operators';
 import { SecurityService } from '../../../../security/security.service';
 
@@ -36,7 +36,7 @@ export class FileListTableComponent implements OnChanges, AfterViewInit {
   displayedColumns: string[] = ['name', 'location', 'uploadDate', 'user', 'size', 'description', 'action'];
   dataSource = new MatTableDataSource<FileListItem>();
 
-  @ViewChild(MatSort) sort: MatSort
+  @ViewChild(MatSort) sort: MatSort;
 
   @Input()
   fileList: FileListItem[];

@@ -68,6 +68,7 @@ export class PartnerReportProcurementAttachmentComponent implements OnChanges {
           author: file.author,
           sizeString: file.sizeString,
           description: file.description,
+          editableDescription: true,
           editable: file.createdInThisReport && isReportEditable,
           deletable: file.createdInThisReport && isReportEditable,
           tooltipIfNotDeletable: '',

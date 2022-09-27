@@ -171,6 +171,11 @@ class ProjectReportFilePersistenceProvider(
     override fun addAttachmentToPartnerReport(file: ProjectReportFileCreate) =
         persistFileAndUpdateLink(file = file) { /* we do not need to update any link */ }
 
+    @Transactional(readOnly = true)
+    override fun getFileType(fileId: Long, projectId: Long): ProjectPartnerReportFileType? =
+        reportFileRepository.findByProjectIdAndId(fileId, projectId)?.type
+
+
     private fun persistFileAndUpdateLink(file: ProjectReportFileCreate, additionalStep: (ReportProjectFileEntity) -> Unit): ProjectReportFileMetadata {
         return persistAttachmentAndMetadata(file = file, locationForMinio = file.getMinioFullPath())
             .also { additionalStep.invoke(it) }

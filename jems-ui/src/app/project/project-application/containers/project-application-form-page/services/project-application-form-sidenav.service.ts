@@ -63,6 +63,19 @@ export class ProjectApplicationFormSidenavService {
     )
   );
 
+  private readonly canSeeProjectContracts$: Observable<boolean> = combineLatest([
+    this.permissionService.hasPermission(PermissionsEnum.ProjectContractsView),
+    this.permissionService.hasPermission(PermissionsEnum.ProjectContractsEdit),
+    this.projectStore.userIsProjectOwner$,
+    this.projectStore.userIsPartnerCollaborator$,
+    this.projectStore.currentVersionOfProjectStatus$,
+  ]).pipe(
+    map(([hasProjectManagementViewPermission, hasProjectManagementEditPermission, isOwner, isPartnerCollaborator, projectStatus]) =>
+      (hasProjectManagementViewPermission || hasProjectManagementEditPermission || isOwner || isPartnerCollaborator) &&
+      ProjectUtil.isInApprovedOrAnyStatusAfterApproved(projectStatus)
+    )
+  );
+
   private readonly canSeeContractReporting$: Observable<boolean> = combineLatest([
     this.permissionService.hasPermission(PermissionsEnum.ProjectContractingReportingView),
     this.permissionService.hasPermission(PermissionsEnum.ProjectContractingReportingEdit),
@@ -263,6 +276,7 @@ export class ProjectApplicationFormSidenavService {
       this.canSeeReporting$,
       this.reportSectionPartners$,
       this.canSeeContractMonitoring$,
+      this.canSeeProjectContracts$,
       this.canSeeProjectManagement$,
       this.canSeeContractReporting$,
       this.canSeeAssessments$,
@@ -284,6 +298,7 @@ export class ProjectApplicationFormSidenavService {
                canSeeReporting,
                reportSectionPartners,
                canSeeContractMonitoring,
+               canSeeProjectContracts,
                canSeeProjectManagement,
                canSeeContractReporting,
                canSeeAssessments,
@@ -301,7 +316,7 @@ export class ProjectApplicationFormSidenavService {
             this.getProjectOverviewHeadline(project.id),
             ...canSeeReporting ? this.getReportingHeadline(reportSectionPartners) : [],
             ...(canSeeProjectManagement || canSeeContractMonitoring) ?
-              this.getContractingHeadlines(project.id, canSeeContractMonitoring, canSeeProjectManagement, canSeeContractReporting) : [],
+              this.getContractingHeadlines(project.id, canSeeContractMonitoring, canSeeProjectContracts, canSeeProjectManagement, canSeeContractReporting) : [],
             this.getApplicationFormHeadline(project.id, partners, packages, versionTemplate, canReadApplicationFiles,
               canSeeAssessments, canSubmitApplication || canCheckApplication, canSeeProjectForm, canSeeModificationSection),
             ...canSeeProjectForm ? this.getExportHeadline(project.id) : [],
@@ -336,12 +351,12 @@ export class ProjectApplicationFormSidenavService {
     };
   }
 
-  private getContractingHeadlines(projectId: number, canSeeContractMonitoring: boolean, canSeeProjectManagement: boolean, canSeeContractReporting: boolean): HeadlineRoute[] {
+  private getContractingHeadlines(projectId: number, canSeeContractMonitoring: boolean, canSeeProjectContracts: boolean, canSeeProjectManagement: boolean, canSeeContractReporting: boolean): HeadlineRoute[] {
     return [{
       headline: {i18nKey: 'project.application.contracting.title'},
       bullets: [
         ...canSeeContractMonitoring ? this.getContractMonitoringHeadline(projectId) : [],
-        ...canSeeProjectManagement ? this.getProjectContractsHeadline(projectId) : [],
+        ...canSeeProjectContracts ? this.getProjectContractsHeadline(projectId) : [],
         ...canSeeProjectManagement ? this.getProjectManagementHeadline(projectId) : [],
         ...canSeeContractReporting ? this.getContractReportingHeadline(projectId) : []
       ]

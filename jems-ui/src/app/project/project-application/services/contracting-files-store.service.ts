@@ -29,6 +29,7 @@ import {
 import {PermissionService} from '../../../security/permissions/permission.service';
 import FileTypeEnum = ProjectReportFileDTO.TypeEnum;
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
+import {ProjectUtil} from '@project/common/project-util';
 
 @Injectable({
   providedIn: 'root'
@@ -106,6 +107,8 @@ export class ContractingFilesStoreService {
       withLatestFrom(this.projectStore.projectId$),
       switchMap(([category, projectId]) => {
         switch (category?.type) {
+          case FileTypeEnum.ContractSupport:
+            return this.contractingFileService.updateContractFileDescription(fileId, projectId, fileDescription);
           case FileTypeEnum.Contract:
             return this.contractingFileService.updateContractFileDescription(fileId, projectId, fileDescription);
           case FileTypeEnum.ContractDoc:
@@ -207,5 +210,19 @@ export class ContractingFilesStoreService {
   getMaximumAllowedFileSize(): Observable<number> {
     return this.settingsService.getMaximumAllowedFileSize();
   }
+
+
+  readonly canSeeProjectContracts$: Observable<boolean> = combineLatest([
+    this.permissionService.hasPermission(PermissionsEnum.ProjectContractsView),
+    this.permissionService.hasPermission(PermissionsEnum.ProjectContractsEdit),
+    this.projectStore.userIsProjectOwner$,
+    this.projectStore.userIsPartnerCollaborator$,
+    this.projectStore.currentVersionOfProjectStatus$,
+  ]).pipe(
+    map(([hasProjectManagementViewPermission, hasProjectManagementEditPermission, isOwner, isPartnerCollaborator, projectStatus]) =>
+      (hasProjectManagementViewPermission || hasProjectManagementEditPermission || isOwner || isPartnerCollaborator) &&
+      ProjectUtil.isInApprovedOrAnyStatusAfterApproved(projectStatus)
+    )
+  );
 
 }
