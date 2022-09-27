@@ -1,5 +1,7 @@
 <mat-card>
     <h3>{{ 'project.application.partner.report.control.tab.document' | translate }}</h3>
+    <p class="respect-line-break">{{ 'project.application.partner.report.control.tab.document.subtitle' | translate }}</p>
+
     <div *ngIf="data$ | async as data" jemsNoWidthLimit id="report-control-files" class="overflow-auto">
 
         <jems-category-tree class="mr-3" id="report-control-files-tree"
@@ -25,18 +27,18 @@
                     <mat-icon fontSet="material-icons-outlined" class="mr-1">file_upload</mat-icon>{{ 'file.upload.add.new' | translate }}
                 </button>
             </div>
-        </div>
 
-        <jems-alert *ngIf="controlReportFileStore.error$ | async as error"
-                    [show]="!!error"
-                    [type]="Alert.ERROR">
-            <jems-api-error-content [error]="error"></jems-api-error-content>
-        </jems-alert>
-        <jems-alert *ngIf="fileSizeOverLimitError$ | async as showError"
-                    [show]="showError"
-                    [type]="Alert.ERROR">
-            <p>{{'project.file.size.over.limit' | translate}} {{maximumAllowedFileSizeInMB}} MB</p>
-        </jems-alert>
+            <jems-alert *ngIf="controlReportFileStore.error$ | async as error"
+                        [show]="!!error"
+                        [type]="Alert.ERROR">
+                <jems-api-error-content [error]="error"></jems-api-error-content>
+            </jems-alert>
+            <jems-alert *ngIf="fileSizeOverLimitError$ | async as showError"
+                        [show]="showError"
+                        [type]="Alert.ERROR">
+                <p>{{'project.file.size.over.limit' | translate}} {{maximumAllowedFileSizeInMB}} MB</p>
+            </jems-alert>
+        </div>
 
     </div>
 

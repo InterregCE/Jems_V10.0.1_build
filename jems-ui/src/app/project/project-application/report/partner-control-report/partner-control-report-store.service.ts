@@ -1,19 +1,20 @@
 import {Injectable} from '@angular/core';
 import {combineLatest, merge, Observable, of, Subject} from 'rxjs';
 import {
+  PartnerUserCollaboratorDTO,
   ProjectPartnerControlReportChangeDTO,
   ProjectPartnerControlReportDTO,
   ProjectPartnerDetailDTO,
   ProjectPartnerReportIdentificationService,
   ProjectPartnerReportSummaryDTO,
-  ProjectPartnerService
+  ProjectPartnerService, ProjectPartnerUserCollaboratorService, UpdatePartnerUserCollaboratorDTO
 } from '@cat/api';
 import {RoutingService} from '@common/services/routing.service';
 import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
 import {
   ProjectStore
 } from '@project/project-application/containers/project-application-detail/services/project-store.service';
-import {catchError, map, shareReplay, switchMap, tap} from 'rxjs/operators';
+import {catchError, map, shareReplay, switchMap, tap, withLatestFrom} from 'rxjs/operators';
 import {ProjectPaths} from '@project/common/project-util';
 import {Log} from '@common/utils/log';
 import {
@@ -52,12 +53,25 @@ export class PartnerControlReportStore {
     )
   );
 
-  constructor(private routingService: RoutingService,
-              private partnerReportDetailPageStore: PartnerReportDetailPageStore,
-              private reportPageStore: PartnerReportPageStore,
-              private projectStore: ProjectStore,
-              private reportIdentificationService: ProjectPartnerReportIdentificationService,
-              private partnerService: ProjectPartnerService,) {
+  readonly canEditControlReport$ = combineLatest([
+    this.partnerReportLevel()
+      .pipe(map(level => level === PartnerUserCollaboratorDTO.LevelEnum.EDIT)),
+    this.partnerReportDetailPageStore.partnerReportPageStore.institutionUserCanEditControlReports$,
+  ]).pipe(
+    map(([editRightsForReport, editRightsFromInstitution]) =>
+      editRightsForReport || editRightsFromInstitution
+    ),
+  );
+
+  constructor(
+    private routingService: RoutingService,
+    private partnerReportDetailPageStore: PartnerReportDetailPageStore,
+    private reportPageStore: PartnerReportPageStore,
+    private projectStore: ProjectStore,
+    private reportIdentificationService: ProjectPartnerReportIdentificationService,
+    private partnerService: ProjectPartnerService,
+    private partnerUserCollaboratorService: ProjectPartnerUserCollaboratorService,
+  ) {
     this.partnerControlReport$ = this.partnerControlReport();
     this.controlReportEditable$ = this.controlReportEditable();
     this.partner$ = this.partner();
@@ -71,6 +85,22 @@ export class PartnerControlReportStore {
       .pipe(
         map(([canEdit, status]) => canEdit && status === ProjectPartnerReportSummaryDTO.StatusEnum.InControl)
       );
+  }
+
+  private partnerReportLevel(): Observable<PartnerUserCollaboratorDTO.LevelEnum | undefined> {
+    return combineLatest([
+      this.projectStore.projectId$,
+      this.routingService.routeParameterChanges(PartnerReportPageStore.PARTNER_REPORT_DETAIL_PATH, 'partnerId')
+        .pipe(map(id => Number(id))),
+    ]).pipe(
+      switchMap(([projectId, partnerId]) =>
+        combineLatest([
+          this.partnerUserCollaboratorService.listCurrentUserPartnerCollaborations(projectId),
+          of(partnerId),
+        ])
+      ),
+      map(([collaborations, partnerId]) => collaborations.find(collab => collab.partnerId === partnerId)?.level),
+    );
   }
 
   private partnerControlReport(): Observable<ProjectPartnerControlReportDTO> {

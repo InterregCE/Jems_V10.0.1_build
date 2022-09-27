@@ -5,7 +5,7 @@ import {FileListItem} from '@common/components/file-list/file-list-item';
 import {
   PartnerControlReportFileManagementStore
 } from '@project/project-application/report/partner-control-report/partner-control-report-document-tab/partner-control-report-file-management-store';
-import {finalize, map, switchMap, take, tap, withLatestFrom} from 'rxjs/operators';
+import {finalize, map, switchMap, take, tap} from 'rxjs/operators';
 import {
   ProjectPartnerReportDTO,
   ProjectPartnerReportService,
@@ -19,6 +19,9 @@ import {FileListComponent} from '@common/components/file-list/file-list.componen
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {Alert} from '@common/components/forms/alert';
 import {TranslateService} from '@ngx-translate/core';
+import {
+  PartnerControlReportStore
+} from "@project/project-application/report/partner-control-report/partner-control-report-store.service";
 
 @UntilDestroy()
 @Component({
@@ -47,13 +50,15 @@ export class PartnerControlReportDocumentTabComponent {
     private projectPartnerReportService: ProjectPartnerReportService,
     private securityService: SecurityService,
     private translationService: TranslateService,
+    private partnerControlReportStore: PartnerControlReportStore,
   ) {
     this.data$ = combineLatest([
       this.controlReportFileStore.fileList$,
       this.controlReportFileStore.report$,
       this.securityService.currentUser.pipe(map(user => user?.id || 0)),
+      this.partnerControlReportStore.canEditControlReport$,
     ]).pipe(
-      map(([fileList, report, currentUserId]) => ({
+      map(([fileList, report, currentUserId, canEdit]) => ({
         attachments: fileList.map((file: ProjectReportProcurementFileDTO) => ({
           id: file.id,
           name: file.name,
@@ -67,7 +72,7 @@ export class PartnerControlReportDocumentTabComponent {
           tooltipIfNotDeletable: '',
           iconIfNotDeletable: '',
         })),
-        isControlReportEditable: PartnerControlReportDocumentTabComponent.isEditable(report),
+        isControlReportEditable: PartnerControlReportDocumentTabComponent.isEditable(report) && canEdit,
         categories: {
           name: { i18nKey: this.translationService.instant(
               `project.application.partner.reports.title.number`,

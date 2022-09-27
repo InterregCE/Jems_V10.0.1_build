@@ -56,13 +56,16 @@ class UploadFileToControlReportTest : UnitTest() {
         every { securityService.getUserIdOrThrow() } returns USER_ID
     }
 
-    @ParameterizedTest(name = "validateChangeToFileAllowed (status {0})")
+    @ParameterizedTest(name = "uploadToControlReport (status {0})")
     @EnumSource(value = ReportStatus::class, names = ["InControl"])
     fun uploadToControlReport(status: ReportStatus) {
         val reportId = 49L
         val report = mockk<ProjectPartnerReport>()
         every { report.status } returns status
         every { reportPersistence.getPartnerReportById(PARTNER_ID, reportId = reportId) } returns report
+        every { reportFilePersistence
+            .existsFile("Project/000360/Report/Partner/000434/PartnerControlReport/000049/ControlDocument/", "test.xlsx")
+        } returns false
 
         val fileToAdd = slot<ProjectReportFileCreate>()
         val mockResult = mockk<ProjectReportFileMetadata>()
@@ -89,7 +92,7 @@ class UploadFileToControlReportTest : UnitTest() {
         )
     }
 
-    @ParameterizedTest(name = "validateChangeToFileAllowed - wrong status (status {0})")
+    @ParameterizedTest(name = "uploadToControlReport - wrong status (status {0})")
     @EnumSource(value = ReportStatus::class, names = ["InControl"], mode = EnumSource.Mode.EXCLUDE)
     fun `uploadToControlReport - wrong status`(status: ReportStatus) {
         val reportId = 56L
@@ -106,7 +109,7 @@ class UploadFileToControlReportTest : UnitTest() {
         verify(exactly = 0) { reportFilePersistence.addAttachmentToPartnerReport(any()) }
     }
 
-    @ParameterizedTest(name = "validateChangeToFileAllowed - wrong file type (status {0})")
+    @ParameterizedTest(name = "uploadToControlReport - wrong file type (status {0})")
     @EnumSource(value = ReportStatus::class, names = ["InControl"])
     fun `uploadToControlReport - wrong file type`(status: ReportStatus) {
         val reportId = 10L
@@ -120,6 +123,30 @@ class UploadFileToControlReportTest : UnitTest() {
             size = 18L,
         )
         assertThrows<FileTypeNotSupported> { interactor.uploadToControlReport(PARTNER_ID, reportId, file) }
+        verify(exactly = 0) { reportFilePersistence.addAttachmentToPartnerReport(any()) }
+    }
+
+    @ParameterizedTest(name = "uploadToControlReport - file duplicate (status {0})")
+    @EnumSource(value = ReportStatus::class, names = ["InControl"])
+    fun `uploadToControlReport - file duplicate`(status: ReportStatus) {
+        val reportId = 28L
+        val report = mockk<ProjectPartnerReport>()
+        every { report.status } returns status
+        every { reportPersistence.getPartnerReportById(PARTNER_ID, reportId = reportId) } returns report
+        every { reportFilePersistence
+            .existsFile("Project/000360/Report/Partner/000434/PartnerControlReport/000028/ControlDocument/", "duplicate.xlsx")
+        } returns true
+
+        val fileToAdd = slot<ProjectReportFileCreate>()
+        val mockResult = mockk<ProjectReportFileMetadata>()
+        every { reportFilePersistence.addAttachmentToPartnerReport(capture(fileToAdd)) } returns mockResult
+
+        val file = ProjectFile(
+            stream = content,
+            name = "duplicate.xlsx",
+            size = 20L,
+        )
+        assertThrows<FileAlreadyExists> { interactor.uploadToControlReport(PARTNER_ID, reportId, file) }
         verify(exactly = 0) { reportFilePersistence.addAttachmentToPartnerReport(any()) }
     }
 
