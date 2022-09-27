@@ -63,7 +63,14 @@ export class ProjectApplicationFilesTableComponent {
             author: file.uploadedBy,
             sizeString: file.sizeString,
             description: file.description,
-            editable: ProjectApplicationFilesTableComponent.isFileEditable(selectedCategory?.type, canChangeApplicationFile, canChangeAssessmentFile, canChangeModificationFile),
+            editable: ProjectApplicationFilesTableComponent.isFileEditable(
+              selectedCategory?.type,
+              projectStatus,
+              canChangeApplicationFile,
+              canChangeAssessmentFile,
+              canChangeModificationFile,
+              isOwner,
+            ),
             deletable: ProjectApplicationFilesTableComponent.isFileDeletable(
               selectedCategory?.type,
               projectStatus,
@@ -83,14 +90,21 @@ export class ProjectApplicationFilesTableComponent {
     this.fileManagementStore.getMaximumAllowedFileSize().pipe(untilDestroyed(this)).subscribe((maxAllowedSize) => this.maximumAllowedFileSizeInMB = maxAllowedSize);
   }
 
-  private static isFileEditable(type: any, canChangeApplicationFile: boolean, canChangeAssessmentFile: boolean, canChangeModificationFile: boolean): boolean {
+  private static isFileEditable(
+    type: any,
+    status: ProjectStatusDTO,
+    canChangeApplicationFile: boolean,
+    canChangeAssessmentFile: boolean,
+    canChangeModificationFile: boolean,
+    isOwner: boolean,
+  ): boolean {
     switch (type) {
       case FileCategoryTypeEnum.MODIFICATION:
         return canChangeModificationFile;
       case FileCategoryTypeEnum.ASSESSMENT:
         return canChangeAssessmentFile;
       case FileCategoryTypeEnum.APPLICATION:
-        return canChangeApplicationFile;
+        return canChangeApplicationFile || (isOwner && ProjectUtil.isOpenForModifications(status));
       default:
         return false;
     }
