@@ -12,7 +12,6 @@ import io.cloudflight.jems.server.project.service.model.ProjectApplicantAndStatu
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.UserPartnerCollaboratorPersistence
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
-import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Component
 
@@ -103,15 +102,19 @@ class ProjectReportAuthorization(
         ) != null
 
     fun canUpdatePartner(partnerId: Long): Boolean {
-        val project = getProjectFromPartnerId(partnerId)
-        return hasPermissionForProject(UserRolePermission.ProjectFormUpdate, projectId = project.projectId)
-            || isActiveUserIdEqualToOneOf(project.getUserIdsWithEditLevel())
+        val perm = partnerCollaboratorPersistence
+            .findByUserIdAndPartnerId(userId = securityService.getUserIdOrThrow(), partnerId = partnerId)
+
+        return perm.isPresent && perm.get() == EDIT
     }
 
     fun canRetrievePartner(partnerId: Long): Boolean {
-        val project = getProjectFromPartnerId(partnerId)
-        return hasPermissionForProject(UserRolePermission.ProjectFormRetrieve, projectId = project.projectId)
-            || isActiveUserIdEqualToOneOf(project.getUserIdsWithViewLevel())
+        val partnerUserPermission = partnerCollaboratorPersistence
+            .findByUserIdAndPartnerId(userId = securityService.getUserIdOrThrow(), partnerId = partnerId)
+
+        val projectCollaborators = getProjectFromPartnerId(partnerId).getUserIdsWithViewLevel()
+
+        return partnerUserPermission.isPresent || isActiveUserIdEqualToOneOf(projectCollaborators)
     }
 
     private fun getProjectFromPartnerId(partnerId: Long): ProjectApplicantAndStatus {
