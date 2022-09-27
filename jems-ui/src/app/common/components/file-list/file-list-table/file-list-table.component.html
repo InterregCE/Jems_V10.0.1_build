@@ -32,7 +32,12 @@
             <mat-header-cell *matHeaderCellDef>
                 <span jemsText maxLines="2">{{'file.table.column.name.username' | translate }}</span>
             </mat-header-cell>
-            <mat-cell *matCellDef="let file" [class.is-myself]="(securityService.currentUser | async)?.id === file?.author?.id">{{ file?.author?.email }}</mat-cell>
+            <mat-cell *matCellDef="let file" [class.is-myself]="(securityService.currentUser | async)?.id === file?.author?.id">
+                <span matTooltip="{{ file?.author?.name + ' ' + file?.author?.surname + '\n' + file?.author?.email }}"
+                      matTooltipPosition="below" matTooltipClass="tooltip">
+                    {{ file?.author?.email }}
+                </span>
+            </mat-cell>
         </ng-container>
 
         <ng-container matColumnDef="size">

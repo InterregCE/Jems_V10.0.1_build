@@ -75,3 +75,12 @@ mat-spinner {
 .is-myself {
   font-weight: 500;
 }
+
+::ng-deep .tooltip {
+  position: relative !important;
+  top: -1rem !important;
+  padding: 0;
+  margin: 0;
+  word-break: break-all !important;
+  white-space: pre-line !important;
+}

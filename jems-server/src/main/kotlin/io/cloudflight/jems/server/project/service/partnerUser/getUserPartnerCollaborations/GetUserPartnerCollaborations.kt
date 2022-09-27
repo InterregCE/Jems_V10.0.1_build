@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.project.service.partnerUser.getUserPartnerCol
 
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
-import io.cloudflight.jems.server.project.repository.partneruser.UserPartnerCollaboratorPersistenceProvider
+import io.cloudflight.jems.server.project.service.partner.UserPartnerCollaboratorPersistence
 import io.cloudflight.jems.server.user.service.model.assignment.PartnerCollaborator
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class GetUserPartnerCollaborations(
-    private val userPartnerCollaboratorPersistence: UserPartnerCollaboratorPersistenceProvider,
+    private val userPartnerCollaboratorPersistence: UserPartnerCollaboratorPersistence,
     private val securityService: SecurityService
 ): GetUserPartnerCollaborationsInteractor {
 

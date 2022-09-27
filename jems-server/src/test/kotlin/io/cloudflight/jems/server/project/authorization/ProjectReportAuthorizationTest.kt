@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.authentication.model.CurrentUser
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.controllerInstitution.service.model.UserInstitutionAccessLevel
+import io.cloudflight.jems.server.project.entity.partneruser.PartnerCollaboratorLevel
 import io.cloudflight.jems.server.project.entity.partneruser.PartnerCollaboratorLevel.EDIT
 import io.cloudflight.jems.server.project.entity.partneruser.PartnerCollaboratorLevel.VIEW
 import io.cloudflight.jems.server.project.service.ProjectPersistence
@@ -16,7 +17,6 @@ import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerRep
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectFormRetrieve
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectReportingEdit
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectReportingView
-import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectFormUpdate
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -176,94 +176,44 @@ internal class ProjectReportAuthorizationTest : UnitTest() {
     }
 
     @Test
-    fun `canUpdatePartner - hasPermission`() {
+    fun `canUpdatePartner - has EDIT`() {
         val partnerId = 1198L
-        val projectId = 458L
-        val project = mockk<ProjectApplicantAndStatus>()
-        every { project.projectId } returns projectId
-        every { partnerPersistence.getProjectIdForPartnerId(partnerId) } returns projectId
-        every { projectPersistence.getApplicantAndStatusById(projectId) } returns project
+        val userId = 458L
 
-        every { currentUser.hasPermission(ProjectFormUpdate) } returns true
-        every { currentUser.user.assignedProjects } returns setOf(projectId)
+        every { securityService.getUserIdOrThrow() } returns userId
+        every { partnerCollaboratorPersistence.findByUserIdAndPartnerId(userId = userId, partnerId = partnerId) } returns Optional.of(EDIT)
 
         assertThat(reportAuthorization.canUpdatePartner(partnerId)).isTrue()
     }
 
     @Test
-    fun `canUpdatePartner - is Owner`() {
-        val partnerId = 1198L
-        val projectId = 458L
-        val userId = 3333L
-        val project = mockk<ProjectApplicantAndStatus>()
-        every { project.projectId } returns projectId
-        every { project.getUserIdsWithEditLevel() } returns setOf(userId)
-        every { partnerPersistence.getProjectIdForPartnerId(partnerId) } returns projectId
-        every { projectPersistence.getApplicantAndStatusById(projectId) } returns project
+    fun `canUpdatePartner - has only VIEW`() {
+        val partnerId = 1288L
+        val userId = 456L
 
         every { securityService.getUserIdOrThrow() } returns userId
-        every { currentUser.hasPermission(ProjectFormUpdate) } returns false
-        every { currentUser.user.assignedProjects } returns emptySet()
-
-        assertThat(reportAuthorization.canUpdatePartner(partnerId)).isTrue()
-    }
-
-    @Test
-    fun `canUpdatePartner - False`() {
-        val partnerId = 1199L
-        val projectId = 459L
-        val userId = 3334L
-        val project = mockk<ProjectApplicantAndStatus>()
-        every { project.projectId } returns projectId
-        every { project.getUserIdsWithEditLevel() } returns emptySet()
-        every { partnerPersistence.getProjectIdForPartnerId(partnerId) } returns projectId
-        every { projectPersistence.getApplicantAndStatusById(projectId) } returns project
-
-        every { securityService.getUserIdOrThrow() } returns userId
-        every { currentUser.hasPermission(ProjectFormUpdate) } returns false
-        every { currentUser.user.assignedProjects } returns emptySet()
+        every { partnerCollaboratorPersistence.findByUserIdAndPartnerId(userId = userId, partnerId = partnerId) } returns Optional.of(VIEW)
 
         assertThat(reportAuthorization.canUpdatePartner(partnerId)).isFalse()
     }
 
     @Test
-    fun `canRetrievePartner - hasPermission`() {
-        val partnerId = 1192L
-        val projectId = 452L
-        val project = mockk<ProjectApplicantAndStatus>()
-        every { project.projectId } returns projectId
-        every { partnerPersistence.getProjectIdForPartnerId(partnerId) } returns projectId
-        every { projectPersistence.getApplicantAndStatusById(projectId) } returns project
-
-        every { currentUser.hasPermission(ProjectFormRetrieve) } returns true
-        every { currentUser.user.assignedProjects } returns setOf(projectId)
-
-        assertThat(reportAuthorization.canRetrievePartner(partnerId)).isTrue()
-    }
-
-    @Test
-    fun `canRetrievePartner - is Owner`() {
-        val partnerId = 1193L
-        val projectId = 453L
-        val userId = 3333L
-        val project = mockk<ProjectApplicantAndStatus>()
-        every { project.projectId } returns projectId
-        every { project.getUserIdsWithViewLevel() } returns setOf(userId)
-        every { partnerPersistence.getProjectIdForPartnerId(partnerId) } returns projectId
-        every { projectPersistence.getApplicantAndStatusById(projectId) } returns project
+    fun `canUpdatePartner - has no partner-related permission`() {
+        val partnerId = 1279L
+        val userId = 468L
 
         every { securityService.getUserIdOrThrow() } returns userId
-        every { currentUser.hasPermission(ProjectFormRetrieve) } returns false
-        every { currentUser.user.assignedProjects } returns emptySet()
+        every { partnerCollaboratorPersistence.findByUserIdAndPartnerId(userId = userId, partnerId = partnerId) } returns Optional.empty()
 
-        assertThat(reportAuthorization.canRetrievePartner(partnerId)).isTrue()
+        assertThat(reportAuthorization.canUpdatePartner(partnerId)).isFalse()
     }
 
-    @Test
-    fun `canRetrievePartner - False`() {
-        val partnerId = 1194L
-        val projectId = 454L
-        val userId = 3334L
+    @ParameterizedTest(name = "canRetrievePartner - is Partner collaborator (level {0})")
+    @EnumSource(value = PartnerCollaboratorLevel::class)
+    fun `canRetrievePartner - is Partner collaborator`(level: PartnerCollaboratorLevel) {
+        val partnerId = 1192L
+        val userId = 546L
+        val projectId = 452L
         val project = mockk<ProjectApplicantAndStatus>()
         every { project.projectId } returns projectId
         every { project.getUserIdsWithViewLevel() } returns emptySet()
@@ -271,8 +221,41 @@ internal class ProjectReportAuthorizationTest : UnitTest() {
         every { projectPersistence.getApplicantAndStatusById(projectId) } returns project
 
         every { securityService.getUserIdOrThrow() } returns userId
-        every { currentUser.hasPermission(ProjectFormRetrieve) } returns false
-        every { currentUser.user.assignedProjects } returns emptySet()
+        every { partnerCollaboratorPersistence.findByUserIdAndPartnerId(userId, partnerId = partnerId) } returns Optional.of(level)
+
+        assertThat(reportAuthorization.canRetrievePartner(partnerId)).isTrue()
+    }
+
+    @Test
+    fun `canRetrievePartner - is in institution`() {
+        val partnerId = 1193L
+        val userId = 547L
+        val projectId = 453L
+        val project = mockk<ProjectApplicantAndStatus>()
+        every { project.projectId } returns projectId
+        every { project.getUserIdsWithViewLevel() } returns setOf(userId)
+        every { partnerPersistence.getProjectIdForPartnerId(partnerId) } returns projectId
+        every { projectPersistence.getApplicantAndStatusById(projectId) } returns project
+
+        every { securityService.getUserIdOrThrow() } returns userId
+        every { partnerCollaboratorPersistence.findByUserIdAndPartnerId(userId, partnerId = partnerId) } returns Optional.empty()
+
+        assertThat(reportAuthorization.canRetrievePartner(partnerId)).isTrue()
+    }
+
+    @Test
+    fun `canRetrievePartner - cannot retrieve`() {
+        val partnerId = 1194L
+        val userId = 548L
+        val projectId = 454L
+        val project = mockk<ProjectApplicantAndStatus>()
+        every { project.projectId } returns projectId
+        every { project.getUserIdsWithViewLevel() } returns emptySet()
+        every { partnerPersistence.getProjectIdForPartnerId(partnerId) } returns projectId
+        every { projectPersistence.getApplicantAndStatusById(projectId) } returns project
+
+        every { securityService.getUserIdOrThrow() } returns userId
+        every { partnerCollaboratorPersistence.findByUserIdAndPartnerId(userId, partnerId = partnerId) } returns Optional.empty()
 
         assertThat(reportAuthorization.canRetrievePartner(partnerId)).isFalse()
     }
