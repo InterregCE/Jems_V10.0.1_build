@@ -26,8 +26,6 @@ export class ContractFilesComponent implements OnInit {
   @Input()
   isEditable: boolean;
 
-  canUpload$: Observable<boolean>;
-
   files$: Observable<PageFileList>;
   maximumAllowedFileSizeInMB: number;
   fileSizeOverLimitError$ = new Subject<boolean>();
@@ -43,15 +41,11 @@ export class ContractFilesComponent implements OnInit {
     this.store.getMaximumAllowedFileSize()
       .pipe(untilDestroyed(this))
       .subscribe((maxAllowedSize) => this.maximumAllowedFileSizeInMB = maxAllowedSize);
-    this.canUpload$ = store.selectedCategory$.pipe(
-      map(selected => this.isEditable &&
-        (selected?.type ===  FileTypeEnum.Contract || selected?.type ===  FileTypeEnum.ContractDoc)),
-    );
   }
 
   ngOnInit(): void {
     this.store.setFileCategories(this.fileCategories());
-    this.store.setSection({type: FileTypeEnum.ContractSupport} as CategoryInfo);
+    this.store.setSection({type: FileTypeEnum.Contract} as CategoryInfo);
   }
 
   private getFilesToList(): Observable<PageFileList> {
@@ -129,9 +123,8 @@ export class ContractFilesComponent implements OnInit {
       author: file.author,
       sizeString: file.sizeString,
       description: file.description,
-      editableDescription: (file.type === FileTypeEnum.Contract || file.type === FileTypeEnum.ContractDoc) && this.isEditable,
       editable: this.isEditable,
-      deletable: this.isEditable && (file.type === FileTypeEnum.Contract || file.type === FileTypeEnum.ContractDoc),
+      deletable: this.isEditable,
       tooltipIfNotDeletable: 'file.table.action.delete.disabled.for.tab.tooltip',
       iconIfNotDeletable: 'delete_forever',
     }));

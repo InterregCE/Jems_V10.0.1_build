@@ -20,24 +20,24 @@
             [selectedCategory]="store.selectedCategory$ | async">
     </jems-category-tree>
 
-    <div class="file-list">
-        <jems-file-list
-                [fileList]="files$ | async"
-                (onSortChange)="store.newSort$.next($event)"
-                (onPageIndexChange)="store.newPageIndex$.next($event)"
-                (onPageSizeChange)="store.newPageSize$.next($event)"
-                (onDownload)="downloadFile($event)"
-                (onDelete)="deleteFile($event)"
-                (onDescriptionChange)="updateDescription($event)">
-        </jems-file-list>
-
-        <div *ngIf="canUpload$ | async" id="upload-btn">
-            <input #selectFile (change)="uploadFile($event?.target)" onclick="this.value=null;"
-                   type="file" [accept]="acceptedFilesTypes" [hidden]="true">
-            <button (click)="selectFile.click()" mat-stroked-button>
-                <mat-icon fontSet="material-icons-outlined" class="mr-1">file_upload</mat-icon>
-                {{'file.upload.add.new' | translate}}
-            </button>
-        </div>
-    </div>
+    <jems-file-list
+            [fileList]="files$ | async"
+            (onSortChange)="store.newSort$.next($event)"
+            (onPageIndexChange)="store.newPageIndex$.next($event)"
+            (onPageSizeChange)="store.newPageSize$.next($event)"
+            (onDownload)="downloadFile($event)"
+            (onDelete)="deleteFile($event)"
+            (onDescriptionChange)="updateDescription($event)">
+    </jems-file-list>
 </div>
+
+<div class="mt-3" *ngIf="isEditable">
+    <input #selectFile (change)="uploadFile($event?.target)" onclick="this.value=null;"
+           type="file" [accept]="acceptedFilesTypes" [hidden]="true">
+    <button (click)="selectFile.click()" mat-stroked-button>
+        <mat-icon fontSet="material-icons-outlined" class="mr-1">file_upload</mat-icon>
+        {{'file.upload.add.new' | translate}}
+    </button>
+</div>
+
+

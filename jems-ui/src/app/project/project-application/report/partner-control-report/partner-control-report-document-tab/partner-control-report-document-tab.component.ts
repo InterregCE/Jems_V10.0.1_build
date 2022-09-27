@@ -67,7 +67,6 @@ export class PartnerControlReportDocumentTabComponent {
           author: file.author,
           sizeString: file.sizeString,
           description: file.description,
-          editableDescription: true,
           editable: PartnerControlReportDocumentTabComponent.isEditable(report) && file.author.id === currentUserId,
           deletable: PartnerControlReportDocumentTabComponent.isEditable(report) && file.author.id === currentUserId,
           tooltipIfNotDeletable: '',

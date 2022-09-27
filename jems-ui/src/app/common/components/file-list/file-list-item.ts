@@ -8,7 +8,6 @@ export interface FileListItem {
   author: UserSimpleDTO;
   sizeString: string;
   description: string;
-  editableDescription: boolean;
   editable: boolean;
   deletable: boolean;
   tooltipIfNotDeletable: string;
