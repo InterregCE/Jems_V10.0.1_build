@@ -8,5 +8,6 @@ interface PaymentRow {
     val orderNr: Int
     val programmeLumpSumId: Long
     val programmeFundId: Long
-    val amountApprovedPerFund: BigDecimal
+    val partnerPayments: List<PaymentPerPartner>
+    val amountApprovedPerPartner: BigDecimal
 }

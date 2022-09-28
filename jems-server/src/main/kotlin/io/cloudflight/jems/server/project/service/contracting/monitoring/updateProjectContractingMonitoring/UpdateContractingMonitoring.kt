@@ -2,6 +2,9 @@ package io.cloudflight.jems.server.project.service.contracting.monitoring.update
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.payments.PaymentPersistence
+import io.cloudflight.jems.server.payments.entity.PaymentGroupingId
+import io.cloudflight.jems.server.payments.service.model.PaymentPartnerToCreate
+import io.cloudflight.jems.server.payments.service.model.PaymentToCreate
 import io.cloudflight.jems.server.project.authorization.CanSetProjectToContracted
 import io.cloudflight.jems.server.project.repository.ProjectPersistenceProvider
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
@@ -59,7 +62,7 @@ class UpdateContractingMonitoring(
             updateReadyForPayment(projectId, contractMonitoring.fastTrackLumpSums!!, oldMonitoring.fastTrackLumpSums!!,
                 lumpSumsOrderNrTobeAdded, lumpSumsOrderNrToBeDeleted)
             projectLumpSumPersistence.updateLumpSums(projectId, contractMonitoring.fastTrackLumpSums!!)
-            updateApprovedAmountPerFund(projectId, lumpSumsOrderNrTobeAdded, lumpSumsOrderNrToBeDeleted)
+            updateApprovedAmountPerPartner(projectId, lumpSumsOrderNrTobeAdded, lumpSumsOrderNrToBeDeleted)
 
             if (projectSummary.status.isAlreadyContracted()) {
                 auditPublisher.publishEvent(
@@ -78,16 +81,16 @@ class UpdateContractingMonitoring(
     private fun updateReadyForPayment(projectId: Long, lumpSums: List<ProjectLumpSum>, savedFastTrackLumpSums: List<ProjectLumpSum>,
                                       orderNrsToBeAdded: MutableSet<Int>, orderNrsToBeDeleted: MutableSet<Int>) {
         lumpSums.forEachIndexed { index, it ->
-            val lumpSum = savedFastTrackLumpSums[index]
+            val lumpSum = savedFastTrackLumpSums.first { o -> o.orderNr == it.orderNr }
             it.lastApprovedVersionBeforeReadyForPayment = lumpSum.lastApprovedVersionBeforeReadyForPayment
             it.paymentEnabledDate = lumpSum.paymentEnabledDate
             if ( lumpSum.readyForPayment != it.readyForPayment) {
                 if(it.readyForPayment) {
-                    orderNrsToBeAdded.add(index + 1)
+                    orderNrsToBeAdded.add(it.orderNr)
                     it.lastApprovedVersionBeforeReadyForPayment = this.versionPersistence.getLatestApprovedOrCurrent(projectId)
                     it.paymentEnabledDate = ZonedDateTime.now()
                 } else {
-                    orderNrsToBeDeleted.add(index + 1)
+                    orderNrsToBeDeleted.add(it.orderNr)
                     it.lastApprovedVersionBeforeReadyForPayment = null
                     it.paymentEnabledDate = null
                 }
@@ -95,7 +98,7 @@ class UpdateContractingMonitoring(
         }
     }
 
-    private fun updateApprovedAmountPerFund(
+    private fun updateApprovedAmountPerPartner(
         projectId: Long,
         orderNrsToBeAdded: MutableSet<Int>,
         orderNrsToBeDeleted: MutableSet<Int>
@@ -106,7 +109,22 @@ class UpdateContractingMonitoring(
 
         if (orderNrsToBeAdded.isNotEmpty()) {
             val calculatedAmountsToBeAdded = this.paymentPersistence.getAmountPerPartnerByProjectIdAndLumpSumOrderNrIn(projectId, orderNrsToBeAdded)
-            this.paymentPersistence.savePaymentToProjects(projectId, calculatedAmountsToBeAdded)
+
+            val paymentsToUpdate = calculatedAmountsToBeAdded.groupBy { PaymentGroupingId(it.orderNr, it.programmeFundId) }
+                .mapValues { (_, partnerPayments) ->
+                    PaymentToCreate(
+                        partnerPayments.first().programmeLumpSumId,
+                        partnerPayments.map { o ->
+                            PaymentPartnerToCreate(
+                                o.partnerId,
+                                o.amountApprovedPerPartner
+                            )
+                        },
+                        partnerPayments.sumOf { it.amountApprovedPerPartner }
+                    )
+                }
+
+            this.paymentPersistence.savePaymentToProjects(projectId, paymentsToUpdate)
         }
     }
 }

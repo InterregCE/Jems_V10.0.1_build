@@ -27,7 +27,7 @@ export class PaymentsToProjectPageComponent implements OnInit {
     columns: [
       {
         displayedColumn: 'payments.payment.to.project.table.column.id',
-        elementProperty: 'paymentId',
+        elementProperty: 'id',
         sortProperty: 'id',
         columnWidth: ColumnWidth.IdColumn,
       },
@@ -42,6 +42,11 @@ export class PaymentsToProjectPageComponent implements OnInit {
         elementProperty: 'projectId',
         sortProperty: 'project_id',
         columnWidth: ColumnWidth.DateColumn,
+      },
+      {
+        displayedColumn: 'payments.payment.to.project.table.column.project.version',
+        elementProperty: 'lastApprovedVersionBeforeReadyForPayment',
+        columnWidth: ColumnWidth.IdColumn,
       },
       {
         displayedColumn: 'payments.payment.to.project.table.column.project.acronym',
@@ -88,8 +93,7 @@ export class PaymentsToProjectPageComponent implements OnInit {
       },
       {
         displayedColumn: 'payments.payment.to.project.table.column.amount.approved.per.fund',
-        elementProperty: 'amountApprovedPerFound',
-        sortProperty: 'amount_approved_per_fund',
+        elementProperty: 'amountApprovedPerFund',
         columnWidth: ColumnWidth.ChipColumn,
         columnType: ColumnType.DecimalWithJustifiedStart,
         infoMessage: 'payments.payment.to.project.table.column.amount.approved.per.fund.info'
@@ -97,7 +101,6 @@ export class PaymentsToProjectPageComponent implements OnInit {
       {
         displayedColumn: 'payments.payment.to.project.table.column.amount.paid.per.fund',
         elementProperty: 'amountPaidPerFund',
-        sortProperty: 'amountPaidPerFund',
         columnWidth: ColumnWidth.ChipColumn,
         columnType: ColumnType.DecimalWithJustifiedStart
       },
@@ -128,7 +131,7 @@ export class PaymentsToProjectPageComponent implements OnInit {
     for (const paymentToProject of dto.content) {
       paymentToProject.totalEligibleAmount = NumberService.truncateNumber(paymentToProject.totalEligibleAmount);
       paymentToProject.amountPaidPerFund = NumberService.truncateNumber(paymentToProject.amountPaidPerFund);
-      paymentToProject.amountApprovedPerFound = NumberService.truncateNumber(paymentToProject.amountApprovedPerFound);
+      paymentToProject.amountApprovedPerFund = NumberService.truncateNumber(paymentToProject.amountApprovedPerFund);
     }
     return dto;
   }

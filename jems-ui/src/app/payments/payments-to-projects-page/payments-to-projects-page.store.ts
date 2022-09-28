@@ -57,7 +57,7 @@ export class PaymentsToProjectPageStore {
 
   // Although these columns has sortable feature, they don't keep any value at the moment - so sort with default config
   private isSortCapable(column: string | undefined): boolean {
-    return (column !== 'paymentType' && column !== 'dateOfLastPayment' && column !== 'amountPaidPerFund');
+    return (column !== 'paymentType' && column !== 'dateOfLastPayment');
   }
 
 }

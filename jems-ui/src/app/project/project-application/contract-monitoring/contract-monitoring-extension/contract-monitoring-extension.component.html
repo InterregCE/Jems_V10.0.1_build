@@ -210,7 +210,7 @@
                 </div>
                 <div *ngFor="let lumpSum of fastTrackLumpSumsControls; let i=index">
                     <ng-container formArrayName="lumpSums" *ngIf="lumpSum?.value?.fastTrack">
-                        <ng-container [formGroupName]="i">
+                        <ng-container [formGroupName]="getIndexForCurrentLumpSum(lumpSum)">
                             <span>{{getLumpSum(lumpSum?.value?.programmeLumpSumId, data.projectCallLumpSums) | translateBySystemLanguage | async}}</span>
                             <span>{{getAmount(lumpSum?.value?.lumpSumContributions) | asMoney}}</span>
                             <span>{{getPeriodLabel(lumpSum?.value?.period, data.periods)}}</span>

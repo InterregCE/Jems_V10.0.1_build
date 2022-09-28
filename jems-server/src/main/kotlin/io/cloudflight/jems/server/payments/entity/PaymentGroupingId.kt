@@ -1,7 +1,6 @@
 package io.cloudflight.jems.server.payments.entity
 
-data class PaymentGrouppingId (
+data class PaymentGroupingId (
     val orderNr: Int,
-    val partnerId: Long,
     val programmeFundId: Long,
 )

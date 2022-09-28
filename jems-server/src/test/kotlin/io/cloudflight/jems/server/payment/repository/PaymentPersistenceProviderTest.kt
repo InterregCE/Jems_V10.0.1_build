@@ -5,11 +5,16 @@ import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.createTestCallEntity
-import io.cloudflight.jems.server.payments.entity.PaymentToProjectEntity
+import io.cloudflight.jems.server.payments.entity.PaymentEntity
+import io.cloudflight.jems.server.payments.entity.PaymentGroupingId
+import io.cloudflight.jems.server.payments.entity.PaymentPartnerEntity
+import io.cloudflight.jems.server.payments.repository.PaymentPartnerRepository
 import io.cloudflight.jems.server.payments.repository.PaymentPersistenceProvider
 import io.cloudflight.jems.server.payments.repository.PaymentRepository
-import io.cloudflight.jems.server.payments.service.model.ComputedPaymentToProject
+import io.cloudflight.jems.server.payments.service.model.PaymentPartnerToCreate
+import io.cloudflight.jems.server.payments.service.model.PaymentToCreate
 import io.cloudflight.jems.server.payments.service.model.PaymentToProject
+import io.cloudflight.jems.server.payments.service.model.PaymentType
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumEntity
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
@@ -25,6 +30,8 @@ import io.cloudflight.jems.server.project.entity.lumpsum.ProjectPartnerLumpSumId
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.lumpsum.ProjectLumpSumRepository
+import io.cloudflight.jems.server.project.repository.toModel
+import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.user.entity.UserEntity
@@ -34,6 +41,7 @@ import io.cloudflight.jems.server.utils.projectEntity
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageImpl
@@ -47,7 +55,13 @@ class PaymentPersistenceProviderTest: UnitTest() {
     lateinit var paymentRepository: PaymentRepository
 
     @RelaxedMockK
+    lateinit var paymentPartnerRepository: PaymentPartnerRepository
+
+    @RelaxedMockK
     lateinit var projectRepository: ProjectRepository
+
+    @RelaxedMockK
+    lateinit var projectPersistence: ProjectPersistence
 
     @RelaxedMockK
     lateinit var projectLumpSumRepository: ProjectLumpSumRepository
@@ -88,38 +102,49 @@ class PaymentPersistenceProviderTest: UnitTest() {
             type = ProgrammeFundType.OTHER,
         )
 
-        private val paymentEntity = PaymentToProjectEntity(
+        private val paymentEntity = PaymentEntity(
             id = PAYMENT_ID,
+            type = PaymentType.FTLS,
             project = dummyProject,
             amountApprovedPerFund = BigDecimal(100),
-            partnerId = PARTNER_ID,
             fund = fund,
             orderNr = 1,
             programmeLumpSumId = LUMP_SUM_ID
         )
-        private val computedPayment = ComputedPaymentToProject(
-            projectId = PROJECT_ID,
+
+        private val paymentToCreateEntity = PaymentEntity(
+            id = 0L,
+            type = PaymentType.FTLS,
+            project = dummyProject,
             amountApprovedPerFund = BigDecimal(100),
-            partnerId = PARTNER_ID,
+            fund = fund,
             orderNr = 1,
-            programmeLumpSumId = LUMP_SUM_ID,
-            programmeFundId = FUND_ID
+            programmeLumpSumId = LUMP_SUM_ID
         )
+        private val partnerPaymentCreate = PaymentPartnerToCreate(
+            partnerId = PARTNER_ID,
+            amountApprovedPerPartner = BigDecimal.ONE
+        )
+        private val paymentToCreateMap = mapOf(Pair(
+            PaymentGroupingId(1, FUND_ID),
+            PaymentToCreate(LUMP_SUM_ID, listOf(partnerPaymentCreate), BigDecimal(100))
+        ))
 
         private val currentTime = ZonedDateTime.now()
 
         private val expectedPayments = PaymentToProject(
-            paymentId = PAYMENT_ID,
-            paymentType = io.cloudflight.jems.api.payments.PaymentType.FTLS,
+            id = PAYMENT_ID,
+            paymentType = PaymentType.FTLS,
             projectId = "",
             projectAcronym = "Test Project",
             paymentClaimNo = 0,
             fundName = "OTHER",
-            amountApprovedPerFound = BigDecimal(100),
+            amountApprovedPerFund = BigDecimal(100),
             amountPaidPerFund = BigDecimal.ZERO,
             paymentApprovalDate = currentTime,
             paymentClaimSubmissionDate = null,
-            totalEligibleAmount = BigDecimal(10)
+            totalEligibleAmount = BigDecimal(10),
+            lastApprovedVersionBeforeReadyForPayment = "v1.0"
         )
         private val projectLumpSumId = ProjectLumpSumId(projectId =dummyProject.id, orderNr = 1)
         val programmeLumpSum = programmeLumpSum(id = 50)
@@ -163,26 +188,44 @@ class PaymentPersistenceProviderTest: UnitTest() {
     }
 
     @Test
-    fun getPayments() {
-        every { paymentRepository.getAllByGrouping(Pageable.unpaged()) } returns PageImpl(mutableListOf(paymentEntity))
+    fun getAllPaymentToProject() {
+        every { paymentRepository.findAll(Pageable.unpaged()) } returns PageImpl(mutableListOf(paymentEntity))
         every { projectLumpSumRepository.getByIdProjectIdAndIdOrderNr(PROJECT_ID, 1) } returns lumpSumEntity
+        every {
+            projectPersistence.getProject(PROJECT_ID, expectedPayments.lastApprovedVersionBeforeReadyForPayment)
+        } returns dummyProject.toModel(null, null, mutableSetOf(), mutableSetOf())
 
-         assertThat(paymentPersistenceProvider.getAllPaymentToProject(Pageable.unpaged()).content)
+        assertThat(paymentPersistenceProvider.getAllPaymentToProject(Pageable.unpaged()).content)
             .containsAll(listOf(expectedPayments))
     }
 
     @Test
     fun deleteAllByProjectIdAndOrderNrIn() {
         every { paymentRepository.deleteAllByProjectIdAndOrderNr(PROJECT_ID, setOf(1))} returns listOf(paymentEntity)
-        assertThat(paymentPersistenceProvider.deleteAllByProjectIdAndOrderNrIn(PROJECT_ID, setOf(1)))
-            .containsAll(listOf(paymentEntity))
+        paymentPersistenceProvider.deleteAllByProjectIdAndOrderNrIn(PROJECT_ID, setOf(1))
     }
 
     @Test
     fun savePaymentToProjects() {
         every { projectRepository.getById(PROJECT_ID)} returns projectEntity
         every { fundRepository.getById(any())} returns fund
-        every { paymentRepository.saveAll(listOf(paymentEntity))} returns mutableListOf(paymentEntity)
-       paymentPersistenceProvider.savePaymentToProjects(PROJECT_ID, listOf(computedPayment))
+        val slotPayments = slot<MutableList<PaymentEntity>>()
+        every { paymentRepository.saveAll(capture(slotPayments))} returns mutableListOf(paymentToCreateEntity)
+        val slotPartners = slot<MutableList<PaymentPartnerEntity>>()
+        every { paymentPartnerRepository.saveAll(capture(slotPartners)) } returns emptyList()
+
+        paymentPersistenceProvider.savePaymentToProjects(PROJECT_ID, paymentToCreateMap)
+
+        with(slotPayments.captured[0]) {
+            assertThat(id).isEqualTo(0)
+            assertThat(type).isEqualTo(PaymentType.FTLS)
+            assertThat(amountApprovedPerFund).isEqualTo(BigDecimal(100))
+        }
+        with(slotPartners.captured[0]) {
+            assertThat(id).isEqualTo(0)
+            assertThat(payment).isEqualTo(paymentToCreateEntity)
+            assertThat(partnerId).isEqualTo(PARTNER_ID)
+            assertThat(amountApprovedPerPartner).isEqualTo(BigDecimal.ONE)
+        }
     }
 }
