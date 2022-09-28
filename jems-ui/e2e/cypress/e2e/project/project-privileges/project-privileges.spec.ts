@@ -129,9 +129,7 @@ context('Project privileges tests', () => {
         cy.visit('/');
         cy.get('#table:first').contains('div', applicationId).should('be.visible');
         cy.visit(`/app/project/detail/${applicationId}/applicationFormIdentification`, {failOnStatusCode: false});
-        // cy.contains('div', 'Project identification').click();
         cy.get("textarea:first").should('have.attr', 'readonly');
-        // cy.wait(100);
         cy.contains('Project privileges').click();
         cy.get('mat-button-toggle-group:last').contains('span', 'view').click();
         cy.contains('button', 'Save changes').should('not.exist');
