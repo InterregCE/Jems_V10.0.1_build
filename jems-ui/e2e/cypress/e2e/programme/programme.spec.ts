@@ -459,7 +459,7 @@ context('Programme management tests', () => {
   });
 
   it('TB-747 Data export in programme setup shall take the correct data version', () => {
-    cy.fixture('programme/TB-747').then(testData => {
+    cy.fixture('programme/TB-747.json').then(testData => {
 
       call.generalCallSettings.name = '';
       cy.createCall(call).then(callId => {
@@ -497,7 +497,6 @@ context('Programme management tests', () => {
         cy.createUser(testData.dataExportUser);
       });
       cy.loginByRequest(testData.dataExportUser.email);
-      cy.loginByRequest(user.admin.email);
       cy.visit('app/programme', {failOnStatusCode: false});
       cy.contains('Data export').click();
       

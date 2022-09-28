@@ -91,10 +91,7 @@ context('Project privileges tests', () => {
 
   it('TB-374 Add user to project using project privileges', () => {
     cy.fixture('project/project-privileges/TB-374.json').then(testData => {
-      Cypress.on('uncaught:exception', (err) => {
-        return !err.message.includes('ResizeObserver loop limit exceeded');
-      })
-
+      
       // Preparation for the tests
       cy.loginByRequest(user.admin.email);
 
@@ -131,10 +128,10 @@ context('Project privileges tests', () => {
         cy.loginByRequest(testData.applicantView.email);
         cy.visit('/');
         cy.get('#table:first').contains('div', applicationId).should('be.visible');
-        cy.visit(`/app/project/detail/${applicationId}`, {failOnStatusCode: false});
-        cy.contains('div', 'Project identification').click();
+        cy.visit(`/app/project/detail/${applicationId}/applicationFormIdentification`, {failOnStatusCode: false});
+        // cy.contains('div', 'Project identification').click();
         cy.get("textarea:first").should('have.attr', 'readonly');
-        cy.wait(100);
+        // cy.wait(100);
         cy.contains('Project privileges').click();
         cy.get('mat-button-toggle-group:last').contains('span', 'view').click();
         cy.contains('button', 'Save changes').should('not.exist');
@@ -157,7 +154,6 @@ context('Project privileges tests', () => {
 
         // Testing the edit privileges
         cy.loginByRequest(testData.applicantEdit.email);
-        cy.visit('/', {failOnStatusCode: false});
         testEditPrivileges(applicationId);
         cy.contains('Project privileges').click();
         cy.get('mat-button-toggle-group:last').contains('span', 'view').click();
@@ -167,7 +163,6 @@ context('Project privileges tests', () => {
 
         // Testing the manage privileges
         cy.loginByRequest(testData.applicantManage.email);
-        cy.visit('/', {failOnStatusCode: false});
         testEditPrivileges(applicationId);
         cy.contains('Project privileges').click();
         cy.get('mat-button-toggle-group:last').contains('span', 'view').click();
@@ -342,11 +337,10 @@ context('Project privileges tests', () => {
     cy.get("textarea:first").should('not.have.attr', 'readonly');
     cy.visit(`/app/project/detail/${applicationId}/export`, {failOnStatusCode: false});
     cy.contains('button', 'Export').should('be.visible');
-    cy.wait(100);
     cy.contains('Application annexes').click();
     cy.contains('button', 'Upload file').should('be.visible');
     cy.contains('mat-icon', 'download').should('be.visible');
-    cy.contains('mat-icon', 'edit').should('be.visible');
+    cy.contains('mat-icon', 'edit').scrollIntoView().should('be.visible');
     cy.contains('Check & Submit').click();
     cy.contains('button', 'Run pre-submission check').should('be.visible');
     cy.contains('button', 'Run pre-submission check').click();

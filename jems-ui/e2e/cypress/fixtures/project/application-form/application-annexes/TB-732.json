@@ -1,4 +1,10 @@
 {
+  "partner": {
+    "abbreviation": "randomize",
+    "role": "PARTNER",
+    "nameInEnglish": "",
+    "legalStatusId": 1
+  },
   "applicationCreator": {
     "email": "randomize",
     "name": "application",
