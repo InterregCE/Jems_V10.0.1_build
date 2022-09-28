@@ -16,6 +16,9 @@
       margin-bottom: 0;
       margin-top: 0;
     }
+    h1, h2, h3, h4, h5, p {
+      white-space: pre-wrap;
+    }
   }
   jems-breadcrumb {
     display: flex;
@@ -37,7 +40,6 @@
     overflow: auto;
     overflow-x: hidden;
     scroll-behavior: smooth;
-
 
     .page-content-container {
       margin-top: 1rem;
