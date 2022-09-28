@@ -1,10 +1,7 @@
 package io.cloudflight.jems.server.project.service.checklist.create
 
-import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
-import io.cloudflight.jems.server.audit.model.AuditProject
-import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
@@ -27,7 +24,6 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.slot
-import io.mockk.verify
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -120,19 +116,10 @@ internal class CreateChecklistInstanceTest : UnitTest() {
         every { securityService.currentUser } returns currentUser
         every { persistence.create(createChecklist, CREATOR_ID) } returns createdCheckLisDetail
         val auditSlot = slot<AuditCandidateEvent>()
-        every { auditPublisher.publishEvent(capture(auditSlot)) } answers {}
+        every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit
 
         Assertions.assertThat(createChecklistInstance.create(createChecklist))
             .usingRecursiveComparison()
             .isEqualTo(createdCheckLisDetail)
-
-        verify(exactly = 1) { auditPublisher.publishEvent(capture(auditSlot)) }
-        Assertions.assertThat(auditSlot.captured.auditCandidate).isEqualTo(
-            AuditCandidate(
-                action = AuditAction.CHECKLIST_IS_CREATED,
-                project = AuditProject(id = createdCheckLisDetail.relatedToId.toString()),
-                description = "Checklist with ID [${createdCheckLisDetail.programmeChecklistId}] created"
-            )
-        )
     }
 }

@@ -1,6 +1,5 @@
 package io.cloudflight.jems.server.project.service.checklist.update.control
 
-import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanEditPartnerControlReport
 import io.cloudflight.jems.server.project.service.checklist.ChecklistInstancePersistence
@@ -9,6 +8,7 @@ import io.cloudflight.jems.server.project.service.checklist.controlChecklistStat
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstance
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceStatus
+import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.user.service.authorization.UserAuthorization
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
@@ -20,7 +20,7 @@ class UpdateControlChecklistInstance(
     private val auditPublisher: ApplicationEventPublisher,
     private val checklistInstanceValidator: ChecklistInstanceValidator,
     private val userAuthorization: UserAuthorization,
-    private val securityService: SecurityService
+    private val partnerPersistence: PartnerPersistence
 ) : UpdateControlChecklistInstanceInteractor {
 
     @CanEditPartnerControlReport
@@ -41,6 +41,8 @@ class UpdateControlChecklistInstance(
     @Transactional
     @ExceptionWrapper(UpdateControlChecklistInstanceException::class)
     override fun changeStatus(partnerId: Long, reportId: Long, checklistId: Long, status: ChecklistInstanceStatus): ChecklistInstance {
+        val partner = partnerPersistence.getById(partnerId)
+
         val existing = persistence.getChecklistSummary(checklistId)
 
         val isReturnToDraft = existing.status == ChecklistInstanceStatus.FINISHED
@@ -59,8 +61,8 @@ class UpdateControlChecklistInstance(
                     context = this,
                     checklist = it,
                     oldStatus = existing.status,
-                    author = securityService.getUserIdOrThrow(),
-                    partnerId = partnerId
+                    partner = partner,
+                    reportId = reportId
                 )
             )
         }

@@ -4,18 +4,15 @@ import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanEditPartnerControlReport
 import io.cloudflight.jems.server.project.service.checklist.ControlChecklistInstancePersistence
-import io.cloudflight.jems.server.project.service.checklist.checklistCreated
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
 import io.cloudflight.jems.server.project.service.checklist.model.CreateChecklistInstanceModel
-import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 class CreateControlChecklistInstance(
     private val persistence: ControlChecklistInstancePersistence,
-    private val securityService: SecurityService,
-    private val auditPublisher: ApplicationEventPublisher
+    private val securityService: SecurityService
 ) : CreateControlChecklistInstanceInteractor {
 
     @CanEditPartnerControlReport
@@ -26,13 +23,6 @@ class CreateControlChecklistInstance(
             createChecklist = createCheckList,
             creatorId = securityService.currentUser?.user?.id!!,
             reportId = reportId
-        ).also {
-            auditPublisher.publishEvent(
-                checklistCreated(
-                    context = this,
-                    checklist = createCheckList
-                )
-            )
-        }
+        )
     }
 }

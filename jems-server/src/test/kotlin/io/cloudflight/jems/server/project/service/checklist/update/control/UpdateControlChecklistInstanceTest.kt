@@ -1,6 +1,8 @@
 package io.cloudflight.jems.server.project.service.checklist.update.control
 
 import io.cloudflight.jems.api.audit.dto.AuditAction
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
@@ -25,6 +27,16 @@ import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInsta
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceStatus
 import io.cloudflight.jems.server.project.service.checklist.model.metadata.ScoreInstanceMetadata
 import io.cloudflight.jems.server.project.service.checklist.model.metadata.TextInputInstanceMetadata
+import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
+import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
+import io.cloudflight.jems.server.project.service.partner.model.NaceGroupLevel
+import io.cloudflight.jems.server.project.service.partner.model.PartnerSubType
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAddress
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAddressType
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerMotivation
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVatRecovery
 import io.cloudflight.jems.server.user.service.authorization.UserAuthorization
 import io.cloudflight.jems.server.utils.user
 import io.mockk.MockKAnnotations
@@ -40,6 +52,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.context.ApplicationEventPublisher
 import java.math.BigDecimal
+import java.time.ZonedDateTime
 
 internal class UpdateControlChecklistInstanceTest : UnitTest() {
 
@@ -49,6 +62,8 @@ internal class UpdateControlChecklistInstanceTest : UnitTest() {
     private val partnerId = 5L
     private val reportId = 6L
     private val creatorEmail = "a@a"
+    private val projectId = 7L
+    private val partnerName = "PP2"
 
     private val controlCheckLisDetail = controlChecklistInstanceDetail()
 
@@ -183,6 +198,45 @@ internal class UpdateControlChecklistInstanceTest : UnitTest() {
         components = mutableListOf(optionsToggleComponentInstance)
     )
 
+    private val projectPartner = ProjectPartnerDetail(
+        projectId = 7,
+        id = 2L,
+        active = true,
+        abbreviation = "partner",
+        role = ProjectPartnerRole.PARTNER,
+        nameInOriginalLanguage = "test",
+        nameInEnglish = "test",
+        createdAt = ZonedDateTime.now(),
+        sortNumber = 2,
+        partnerType = ProjectTargetGroup.BusinessSupportOrganisation,
+        partnerSubType = PartnerSubType.LARGE_ENTERPRISE,
+        nace = NaceGroupLevel.A,
+        otherIdentifierNumber = null,
+        otherIdentifierDescription = emptySet(),
+        pic = null,
+        vat = "test vat",
+        vatRecovery = ProjectPartnerVatRecovery.Yes,
+        legalStatusId = 3L,
+        addresses = listOf(
+            ProjectPartnerAddress(
+                type = ProjectPartnerAddressType.Organization,
+                country = "country",
+                nutsRegion2 = "nutsRegion2",
+                nutsRegion3 = "nutsRegion3",
+                street = "street",
+                houseNumber = "houseNumber",
+                postalCode = "postalCode",
+                city = "city",
+                homepage = "homepage"
+            )
+        ),
+        motivation = ProjectPartnerMotivation(
+            organizationRelevance = setOf(InputTranslation(SystemLanguage.EN, "organizationRelevance")),
+            organizationExperience = setOf(InputTranslation(SystemLanguage.EN, "organizationExperience")),
+            organizationRole = setOf(InputTranslation(SystemLanguage.EN, "organizationRole"))
+        )
+    )
+
     @MockK
     lateinit var persistence: ChecklistInstancePersistence
 
@@ -194,6 +248,9 @@ internal class UpdateControlChecklistInstanceTest : UnitTest() {
 
     @MockK
     lateinit var securityService: SecurityService
+
+    @MockK
+    lateinit var partnerPersistence: PartnerPersistence
 
     lateinit var updateControlChecklistInstance: UpdateControlChecklistInstance
 
@@ -210,7 +267,7 @@ internal class UpdateControlChecklistInstanceTest : UnitTest() {
         checklistInstanceValidator = mockk()
         checklistInstanceValidator = ChecklistInstanceValidator(generalValidator)
         updateControlChecklistInstance =
-            UpdateControlChecklistInstance(persistence, auditPublisher, checklistInstanceValidator, userAuthorization, securityService)
+            UpdateControlChecklistInstance(persistence, auditPublisher, checklistInstanceValidator, userAuthorization, partnerPersistence)
     }
 
     @Test
@@ -230,6 +287,8 @@ internal class UpdateControlChecklistInstanceTest : UnitTest() {
         every { persistence.update(controlCheckLisDetail) } returns controlCheckLisDetail
         every { userAuthorization.getUser() } returns user
         every { securityService.getUserIdOrThrow() } returns user.id
+        every { partnerPersistence.getProjectIdForPartnerId(partnerId) } returns projectId
+        every { partnerPersistence.getById(partnerId) } returns projectPartner
         every { persistence.getChecklistSummary(checklistId) } returns controlChecklistInstance(ChecklistInstanceStatus.DRAFT)
         every { persistence.changeStatus(checklistId, ChecklistInstanceStatus.FINISHED) } returns controlChecklistInstance(
             ChecklistInstanceStatus.FINISHED)
@@ -239,10 +298,10 @@ internal class UpdateControlChecklistInstanceTest : UnitTest() {
         verify(exactly = 1) { auditPublisher.publishEvent(capture(auditSlot)) }
         Assertions.assertThat(auditSlot.captured.auditCandidate).isEqualTo(
             AuditCandidate(
-                action = AuditAction.CONTROL_CHECKLIST_STATUS_CHANGE,
-                project = AuditProject(id = controlCheckLisDetail.relatedToId.toString()),
+                action = AuditAction.CHECKLIST_STATUS_CHANGE,
+                project = AuditProject(id = projectId.toString()),
                 description = "Checklist [${controlCheckLisDetail.id}] type [${controlCheckLisDetail.type}] name [${controlCheckLisDetail.name}] " +
-                        "for [${partnerId}] and [${reportId}] changed status from [DRAFT] to [FINISHED] by [${userAuthorization.getUser().id}]"
+                        "for partner [${partnerName}] and partner report [R.${reportId}] changed status from [DRAFT] to [FINISHED]"
             )
         )
     }
