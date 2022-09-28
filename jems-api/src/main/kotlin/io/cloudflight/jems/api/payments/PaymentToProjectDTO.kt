@@ -4,8 +4,8 @@ import java.math.BigDecimal
 import java.time.ZonedDateTime
 
 data class PaymentToProjectDTO(
-    val paymentId: Long,
-    val paymentType: PaymentType,
+    val id: Long,
+    val paymentType: PaymentTypeDTO,
     val projectId: String,
     val projectAcronym: String,
     val paymentClaimNo: Int = 0,
@@ -13,7 +13,8 @@ data class PaymentToProjectDTO(
     val paymentApprovalDate: ZonedDateTime?,
     val totalEligibleAmount: BigDecimal,
     val fundName: String,
-    val amountApprovedPerFound: BigDecimal,
+    val amountApprovedPerFund: BigDecimal,
     val amountPaidPerFund: BigDecimal,
-    val dateOfLastPayment: ZonedDateTime? = null
+    val dateOfLastPayment: ZonedDateTime? = null,
+    val lastApprovedVersionBeforeReadyForPayment: String?
 )

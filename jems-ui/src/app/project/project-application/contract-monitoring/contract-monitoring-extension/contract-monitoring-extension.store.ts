@@ -43,9 +43,6 @@ export class ContractMonitoringExtensionStore {
       .pipe(
         switchMap(projectId => this.projectContractingMonitoringService.getContractingMonitoring(projectId)),
       );
-    return merge(initialProjectContractMonitoring$, this.savedProjectContractingMonitoring$)
-      .pipe(
-        shareReplay(1)
-      );
+    return merge(initialProjectContractMonitoring$, this.savedProjectContractingMonitoring$);
   }
 }

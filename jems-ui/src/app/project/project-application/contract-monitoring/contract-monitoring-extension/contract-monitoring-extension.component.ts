@@ -132,6 +132,7 @@ export class ContractMonitoringExtensionComponent {
     this.lumpSumsForm.clear();
     projectContractingMonitoring.fastTrackLumpSums.forEach(lumpSum => {
       this.lumpSumsForm.push(this.formBuilder.group({
+        orderNr: this.formBuilder.control(lumpSum?.orderNr),
         programmeLumpSumId: this.formBuilder.control(lumpSum?.programmeLumpSumId),
         period: this.formBuilder.control(lumpSum?.period),
         lumpSumContributions: this.formBuilder.control(lumpSum?.lumpSumContributions),
@@ -190,6 +191,7 @@ export class ContractMonitoringExtensionComponent {
       typologyPartnership: this.decisionForm.controls.typologyPartnership.value,
       typologyPartnershipComment: this.decisionForm.controls.typologyPartnershipComment.value,
       fastTrackLumpSums: this.decisionForm.controls.lumpSums.value.map((lumpSum: any) => ({
+        orderNr: lumpSum.orderNr,
         programmeLumpSumId: lumpSum.programmeLumpSumId,
         period: lumpSum.period,
         lumpSumContributions: lumpSum.lumpSumContributions,
@@ -255,5 +257,9 @@ export class ContractMonitoringExtensionComponent {
 
   areThereFastTrackLumpSums(): boolean {
     return this.fastTrackLumpSumsControls.length > 0;
+  }
+
+  getIndexForCurrentLumpSum(lumpSum: AbstractControl) {
+    return this.lumpSumsForm.controls.indexOf(this.fastTrackLumpSumsControls.filter(it => it.value.orderNr == lumpSum.value.orderNr)[0]);
   }
 }

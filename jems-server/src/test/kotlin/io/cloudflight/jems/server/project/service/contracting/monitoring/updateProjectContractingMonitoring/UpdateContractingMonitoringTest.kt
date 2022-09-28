@@ -6,7 +6,7 @@ import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.payments.PaymentPersistence
-import io.cloudflight.jems.server.payments.service.model.ComputedPaymentToProject
+import io.cloudflight.jems.server.payments.service.model.PaymentPerPartner
 import io.cloudflight.jems.server.project.repository.ProjectPersistenceProvider
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
@@ -112,13 +112,14 @@ class UpdateContractingMonitoringTest : UnitTest() {
             )),
             fastTrackLumpSums = lumpSumsUpdated
         )
-        private val paymentToProjectEntity = ComputedPaymentToProject(
-            projectId = 1,
+
+        private val paymentPerPartner = PaymentPerPartner(
+            projectId = projectId,
             partnerId = 1,
             orderNr = 1,
             programmeLumpSumId = 1,
             programmeFundId = 1,
-            amountApprovedPerFund = BigDecimal(1),
+            amountApprovedPerPartner = BigDecimal.ONE
         )
     }
 
@@ -224,7 +225,7 @@ class UpdateContractingMonitoringTest : UnitTest() {
         every { projectLumpSumPersistence.getLumpSums(1, "2.0")} returns lumpSums
         every { projectLumpSumPersistence.updateLumpSums(1, any())} returns lumpSumsUpdated
         every { paymentPersistence.getAmountPerPartnerByProjectIdAndLumpSumOrderNrIn(1, Sets.newSet(1))} returns
-            listOf(paymentToProjectEntity)
+            listOf(paymentPerPartner)
 
         assertThat(updateContractingMonitoring.updateContractingMonitoring(projectId, monitoringNew))
             .isEqualTo(
@@ -340,8 +341,8 @@ class UpdateContractingMonitoringTest : UnitTest() {
         every { projectLumpSumPersistence.getLumpSums(1, "2.0")} returns lumpSums
         every { projectLumpSumPersistence.updateLumpSums(any(), any())} returns monitoringNew.fastTrackLumpSums!!
         every { paymentPersistence.getAmountPerPartnerByProjectIdAndLumpSumOrderNrIn(1, Sets.newSet(1))} returns
-            listOf(paymentToProjectEntity)
-        every { paymentPersistence.deleteAllByProjectIdAndOrderNrIn(1, Sets.newSet(1))} returns listOf()
+            listOf(paymentPerPartner)
+        every { paymentPersistence.deleteAllByProjectIdAndOrderNrIn(1, Sets.newSet(1))} returns Unit
         val updatedMonitoring = updateContractingMonitoring.updateContractingMonitoring(projectId, monitoringNew)
 
         assertThat(updatedMonitoring.fastTrackLumpSums)
