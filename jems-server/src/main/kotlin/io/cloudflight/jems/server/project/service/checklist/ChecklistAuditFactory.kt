@@ -36,9 +36,8 @@ fun controlChecklistStatusChanged(
         auditCandidate = AuditCandidate(
             action = AuditAction.CHECKLIST_STATUS_CHANGE,
             project = AuditProject(id = partner.projectId.toString()),
-            description = "Checklist [${checklist.id}] type [${checklist.type}] name [${checklist.name}] " +
-                    "for partner [${if (partner.role.isLead) "LP" else "PP".plus(partner.sortNumber)}] " +
-                    "and partner report [R.${reportId}] changed status from [$oldStatus] to [${checklist.status}]"
+            description = "Checklist '${checklist.id}' type '${checklist.type}' name '${checklist.name}' " +
+                    "for partner '${getPartnerName(partner)}' and partner report 'R.${reportId}' changed status from '$oldStatus' to '${checklist.status}'"
         )
     )
 
@@ -58,17 +57,16 @@ fun checklistDeleted(
 fun controlChecklistDeleted(
     context: Any,
     checklist: ChecklistInstanceDetail,
-    partnerName: String,
-    reportId: Long,
-    projectId: Long
+    partner: ProjectPartnerDetail,
+    reportId: Long
 ): AuditCandidateEvent =
     AuditCandidateEvent(
         context = context,
         auditCandidate = AuditCandidate(
             action = AuditAction.CHECKLIST_DELETED,
-            project = AuditProject(id = projectId.toString()),
-            description = "Checklist [${checklist.id}] type [${checklist.type}] name [${checklist.name}] " +
-                    "for partner [${partnerName}] and partner report [R.${reportId}] was deleted"
+            project = AuditProject(id = partner.projectId.toString()),
+            description = "Checklist '${checklist.id}' type '${checklist.type}' name '${checklist.name}' " +
+                    "for partner '${getPartnerName(partner)}' and partner report 'R.${reportId}' was deleted"
         )
     )
 
@@ -99,3 +97,8 @@ fun checklistSelectionUpdate(
             }
         )
     )
+
+private fun getPartnerName(partner: ProjectPartnerDetail): String =
+    partner.role.isLead.let {
+        if (it) "LP${partner.sortNumber}" else "PP${partner.sortNumber}"
+    }

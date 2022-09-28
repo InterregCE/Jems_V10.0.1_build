@@ -22,8 +22,6 @@ class DeleteControlChecklistInstance(
     @ExceptionWrapper(DeleteControlChecklistInstanceException::class)
     override fun deleteById(partnerId: Long, reportId: Long, checklistId: Long) {
         val partner = partnerPersistence.getById(partnerId)
-        val partnerRole = if (partner.role.isLead) "LP" else "PP"
-        val partnerName = partnerRole.plus(partner.sortNumber)
 
         val checklistToBeDeleted = persistence.getChecklistDetail(checklistId)
         if (checklistToBeDeleted.status == ChecklistInstanceStatus.FINISHED)
@@ -33,9 +31,8 @@ class DeleteControlChecklistInstance(
                 controlChecklistDeleted(
                     context = this,
                     checklist = checklistToBeDeleted,
-                    partnerName = partnerName,
-                    reportId = reportId,
-                    projectId = partner.projectId
+                    partner = partner,
+                    reportId = reportId
                 )
             )
         }
