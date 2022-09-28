@@ -300,8 +300,8 @@ internal class UpdateControlChecklistInstanceTest : UnitTest() {
             AuditCandidate(
                 action = AuditAction.CHECKLIST_STATUS_CHANGE,
                 project = AuditProject(id = projectId.toString()),
-                description = "Checklist [${controlCheckLisDetail.id}] type [${controlCheckLisDetail.type}] name [${controlCheckLisDetail.name}] " +
-                        "for partner [${partnerName}] and partner report [R.${reportId}] changed status from [DRAFT] to [FINISHED]"
+                description = "Checklist '${controlCheckLisDetail.id}' type '${controlCheckLisDetail.type}' name '${controlCheckLisDetail.name}' " +
+                        "for partner '${partnerName}' and partner report 'R.${reportId}' changed status from 'DRAFT' to 'FINISHED'"
             )
         )
     }

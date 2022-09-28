@@ -187,8 +187,8 @@ internal class DeleteControlChecklistInstanceTest : UnitTest() {
             AuditCandidate(
                 action = AuditAction.CHECKLIST_DELETED,
                 project = AuditProject(id = projectId.toString()),
-                description = "Checklist [${controlCheckLisDetail.id}] type [${controlCheckLisDetail.type}] name [${controlCheckLisDetail.name}] " +
-                        "for partner [${partnerName}] and partner report [R.${reportId}] was deleted"
+                description = "Checklist '${controlCheckLisDetail.id}' type '${controlCheckLisDetail.type}' name '${controlCheckLisDetail.name}' " +
+                        "for partner '${partnerName}' and partner report 'R.${reportId}' was deleted"
             )
         )
     }
