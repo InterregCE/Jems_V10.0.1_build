@@ -1,0 +1,8 @@
+<ng-container *ngIf="data$ | async as data">
+    <jems-project-page-template [needsCard]="false"
+                                titleKey="project.application.contracting.title"
+                                [subTitleText]="'project.application.contract.partner.section.subtitle' | translate: {partnerInfo: getPartnerTranslationString(data.partnerSummary) | async}"
+                                [isVersionedData]="false">
+        <jems-contract-partner-beneficial-owner [partnerId]="partnerId"></jems-contract-partner-beneficial-owner>
+    </jems-project-page-template>
+</ng-container>

@@ -119,6 +119,7 @@ import {
 import {
   PartnerControlReportDocumentTabComponent
 } from '@project/project-application/report/partner-control-report/partner-control-report-document-tab/partner-control-report-document-tab.component';
+import {ContractPartnerComponent} from '@project/project-application/contract-partner/contract-partner.component';
 
 export const routes: Routes = [
   {
@@ -267,6 +268,11 @@ export const routes: Routes = [
             path: 'contractReporting',
             component: ContractReportingComponent,
             data: {breadcrumb: 'project.breadcrumb.applicationForm.contract.reporting'},
+          },
+          {
+            path: 'contractPartner/:partnerId',
+            component: ContractPartnerComponent,
+            data: {breadcrumb: 'project.breadcrumb.applicationForm.contract.partner'},
           },
           {
             path: 'annexes',

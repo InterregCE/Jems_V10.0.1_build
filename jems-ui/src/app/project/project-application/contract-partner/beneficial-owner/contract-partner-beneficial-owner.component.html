@@ -1,0 +1,105 @@
+<jems-form *ngIf="data$ | async as data"
+           (save)="saveForm()"
+           (discard)="discardChanges(data.beneficials)">
+
+    <form jemsFormLayout [formGroup]="form">
+        <h3>{{'project.application.contract.partner.section.beneficial.owner.title' | translate }}</h3>
+
+        <mat-table *ngIf="beneficials.length" jemsNoWidthLimit [dataSource]="dataSource" formArrayName="beneficialOwners">
+
+            <ng-container matColumnDef="firstName">
+                <mat-header-cell *matHeaderCellDef>
+                    <span jemsText maxLines="2">{{'project.application.contract.partner.section.beneficial.owner.firstName' | translate }}</span>
+                </mat-header-cell>
+                <mat-cell *matCellDef="let control; let i = index">
+                    <mat-form-field [formGroup]="control">
+                        <mat-label>{{'project.application.contract.partner.section.beneficial.owner.firstName' | translate }}</mat-label>
+                        <input #firstNameInput formControlName="firstName" matInput>
+                        <mat-hint [jemsHintFor]="firstNameInput" [hide]="control.firstName?.errors !== null">
+                            <jems-text-hint [currentLength]="firstNameInput?.value?.length" [maxLength]="50"></jems-text-hint>
+                        </mat-hint>
+                        <mat-error>
+                            <jems-form-field-errors [errors]="control?.get('firstName')?.errors">
+                            </jems-form-field-errors>
+                        </mat-error>
+                    </mat-form-field>
+                </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="lastName">
+                <mat-header-cell *matHeaderCellDef>
+                    <span jemsText maxLines="2">{{'project.application.contract.partner.section.beneficial.owner.lastName' | translate }}</span>
+                </mat-header-cell>
+                <mat-cell *matCellDef="let control;  let i = index">
+                    <mat-form-field [formGroup]="control">
+                        <mat-label>{{'project.application.contract.partner.section.beneficial.owner.lastName' | translate }}</mat-label>
+                        <input #lastNameInput formControlName="lastName" matInput>
+                        <mat-hint [jemsHintFor]="lastNameInput" [hide]="control.lastName?.errors !== null">
+                            <jems-text-hint [currentLength]="lastNameInput?.value?.length" [maxLength]="50"></jems-text-hint>
+                        </mat-hint>
+                        <mat-error>
+                            <jems-form-field-errors [errors]="control?.get('lastName')?.errors">
+                            </jems-form-field-errors>
+                        </mat-error>
+                    </mat-form-field>
+                </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="birth">
+                <mat-header-cell *matHeaderCellDef>
+                    <span jemsText maxLines="2">{{'project.application.contract.partner.section.beneficial.owner.dateOfBirth' | translate }}</span>
+                </mat-header-cell>
+                <mat-cell *matCellDef="let control;  let i = index">
+                    <mat-form-field [formGroup]="control">
+                        <mat-label>{{'project.application.contract.partner.section.beneficial.owner.dateOfBirth' | translate | dateFormatInfo }}</mat-label>
+                        <input formControlName="birth" matInput [matDatepicker]="birth">
+                        <mat-datepicker-toggle matSuffix [for]="birth"></mat-datepicker-toggle>
+                        <mat-datepicker #birth startView="multi-year"></mat-datepicker>
+                    </mat-form-field>
+                </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="vatNumber">
+                <mat-header-cell *matHeaderCellDef>
+                    <span jemsText maxLines="2">{{'project.application.contract.partner.section.beneficial.owner.vat' | translate }}</span>
+                </mat-header-cell>
+                <mat-cell *matCellDef="let control; let i = index">
+                    <mat-form-field [formGroup]="control">
+                        <mat-label>{{'project.application.contract.partner.section.beneficial.owner.vat' | translate }}</mat-label>
+                        <input #vatNumberInput formControlName="vatNumber" matInput required>
+                        <mat-hint [jemsHintFor]="vatNumberInput" [hide]="control.vatNumber?.errors !== null">
+                            <jems-text-hint [currentLength]="vatNumberInput?.value?.length" [maxLength]="30"></jems-text-hint>
+                        </mat-hint>
+                        <mat-error>
+                            <jems-form-field-errors [errors]="control?.get('vatNumber')?.errors">
+                            </jems-form-field-errors>
+                        </mat-error>
+                    </mat-form-field>
+                </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="delete" stickyEnd>
+                <mat-header-cell *matHeaderCellDef class="border-cell-left text-center">
+                    {{ 'common.delete.entry' | translate }}
+                </mat-header-cell>
+                <mat-cell *matCellDef="let control; let i = index" class="border-cell-left text-center">
+                    <button (click)="deleteBeneficialOwner(i)"
+                            color="accent" mat-icon-button>
+                        <mat-icon>delete</mat-icon>
+                    </button>
+                </mat-cell>
+            </ng-container>
+
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+
+        </mat-table>
+
+        <button mat-raised-button jemsText class="mb-3 mt-3 mat-primary"
+                [disabled]="beneficials.length >= 10" (click)="addBeneficialOwner()">
+            <mat-icon>add</mat-icon>{{ 'project.application.partner.report.procurements.beneficial.add' | translate }}
+        </button>
+
+    </form>
+</jems-form>
+

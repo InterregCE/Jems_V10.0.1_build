@@ -206,6 +206,11 @@ import {TranslateByInputLanguagePipe} from '@common/pipe/translate-by-input-lang
 import {
   PartnerControlReportDocumentTabComponent
 } from '@project/project-application/report/partner-control-report/partner-control-report-document-tab/partner-control-report-document-tab.component';
+import {ContractPartnerComponent} from '@project/project-application/contract-partner/contract-partner.component';
+import {
+  ContractPartnerBeneficialOwnerComponent
+} from '@project/project-application/contract-partner/beneficial-owner/contract-partner-beneficial-owner.component';
+import {AdaptTranslationKeyByCallTypePipe} from '@common/pipe/adapt-translation-by-call-type.pipe';
 
 @NgModule({
   declarations: [
@@ -351,6 +356,8 @@ import {
     PartnerControlReportInformationTabComponent,
     ContractingContractComponent,
     ContractFilesComponent,
+    ContractPartnerComponent,
+    ContractPartnerBeneficialOwnerComponent,
   ],
   imports: [
     SharedModule,
@@ -380,7 +387,8 @@ import {
     ProjectPartnerStateAidsStore,
     PartnerControlReportStore,
     ProjectProposedUnitCostBreadcrumbResolver,
-    TranslateByInputLanguagePipe
+    TranslateByInputLanguagePipe,
+    AdaptTranslationKeyByCallTypePipe,
   ]
 })
 export class ProjectModule {
