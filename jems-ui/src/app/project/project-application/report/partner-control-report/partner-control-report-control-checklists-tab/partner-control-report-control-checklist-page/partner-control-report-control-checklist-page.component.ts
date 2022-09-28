@@ -11,6 +11,9 @@ import {map, tap} from 'rxjs/operators';
 import {RoutingService} from '@common/services/routing.service';
 import {ActivatedRoute} from '@angular/router';
 import {combineLatest, Observable} from 'rxjs';
+import {
+  PartnerReportDetailPageStore
+} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
 
 @Component({
   selector: 'jems-partner-control-report-control-checklist-page',
@@ -25,6 +28,7 @@ export class PartnerControlReportControlChecklistPageComponent {
   data$: Observable<{
     checklist: ChecklistInstanceDetailDTO;
     editable: boolean;
+    reportId: number;
   }>;
 
   confirmFinish = {
@@ -47,12 +51,14 @@ export class PartnerControlReportControlChecklistPageComponent {
               private formService: FormService,
               private routingService: RoutingService,
               private activatedRoute: ActivatedRoute,
-              private controllerInstitutionService: ControllerInstitutionsApiService) {
+              private controllerInstitutionService: ControllerInstitutionsApiService,
+              private partnerReportDetailPageStore: PartnerReportDetailPageStore) {
     this.data$ = combineLatest([
       this.pageStore.checklist$,
       this.pageStore.checklistEditable$,
+      this.partnerReportDetailPageStore.partnerReport$,
     ]).pipe(
-      map(([checklist, editable]) => ({checklist, editable})),
+      map(([checklist, editable, report]) => ({checklist, editable, reportId: report.reportNumber})),
     );
     this.userCanEditControlChecklists$ = this.userCanEditControlChecklists();
   }
@@ -76,8 +82,8 @@ export class PartnerControlReportControlChecklistPageComponent {
       ).subscribe();
   }
 
-  updateStatus(checklistId: number, status: ChecklistInstanceDetailDTO.StatusEnum) {
-    this.pageStore.changeStatus(this.partnerId, this.reportId, checklistId, status)
+  updateStatus(reportId: number, checklistId: number, status: ChecklistInstanceDetailDTO.StatusEnum) {
+    this.pageStore.changeStatus(this.partnerId, reportId, checklistId, status)
       .pipe(
         tap(() => this.formService.setDirty(false)),
         tap(() => this.routingService.navigate(['../..'], {relativeTo: this.activatedRoute}))

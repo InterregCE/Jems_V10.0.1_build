@@ -30,7 +30,7 @@
         <jems-pending-button *ngIf="data.editable"
                              class="mr-2" type="secondary"
                              [confirm]="confirmFinish"
-                             (clicked)="updateStatus(data.checklist.id,Status.FINISHED)"
+                             (clicked)="updateStatus(data.reportId, data.checklist.id,Status.FINISHED)"
                              [disabled]="saveDiscardMenuIsActive()"
                              [matTooltip]="'checklists.instance.button.info' | translate"
                              [matTooltipDisabled]="!saveDiscardMenuIsActive()">
@@ -40,7 +40,7 @@
         <jems-pending-button *ngIf="data.checklist.status === Status.FINISHED && (userCanEditControlChecklists$ | async)"
                              class="mr-2" type="secondary"
                              [confirm]="confirmUnfinish"
-                             (clicked)="updateStatus(data.checklist.id, Status.DRAFT)">
+                             (clicked)="updateStatus(data.reportId ,data.checklist.id, Status.DRAFT)">
             {{'checklists.instance.unfinish' | translate : {name: data.checklist.creatorEmail} }}
         </jems-pending-button>
 

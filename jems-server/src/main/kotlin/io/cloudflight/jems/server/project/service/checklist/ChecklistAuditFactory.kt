@@ -7,21 +7,20 @@ import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstance
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceStatus
-import io.cloudflight.jems.server.project.service.checklist.model.CreateChecklistInstanceModel
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
 
 fun checklistStatusChanged(
     context: Any,
     checklist: ChecklistInstance,
-    oldStatus: ChecklistInstanceStatus,
-    author: Long
+    oldStatus: ChecklistInstanceStatus
 ): AuditCandidateEvent =
     AuditCandidateEvent(
         context = context,
         auditCandidate = AuditCandidate(
             action = AuditAction.ASSESSMENT_CHECKLIST_STATUS_CHANGE,
             project = AuditProject(id = checklist.relatedToId.toString()),
-            description = "Checklist [${checklist.id}] type [${checklist.type}] name [${checklist.name}] " +
-                    "changed status from [$oldStatus] to [${checklist.status}] by [$author]"
+            description = "[${checklist.id}] [${checklist.type}] [${checklist.name}] " +
+                    "changed status from [$oldStatus] to [${checklist.status}]"
         )
     )
 
@@ -29,60 +28,47 @@ fun controlChecklistStatusChanged(
     context: Any,
     checklist: ChecklistInstance,
     oldStatus: ChecklistInstanceStatus,
-    author: Long,
-    partnerId: Long
+    partner: ProjectPartnerDetail,
+    reportId: Long
 ): AuditCandidateEvent =
     AuditCandidateEvent(
         context = context,
         auditCandidate = AuditCandidate(
-            action = AuditAction.CONTROL_CHECKLIST_STATUS_CHANGE,
-            project = AuditProject(id = checklist.relatedToId.toString()),
+            action = AuditAction.CHECKLIST_STATUS_CHANGE,
+            project = AuditProject(id = partner.projectId.toString()),
             description = "Checklist [${checklist.id}] type [${checklist.type}] name [${checklist.name}] " +
-                    "for [${partnerId}] and [${checklist.relatedToId}] changed status from [$oldStatus] to [${checklist.status}] by [$author]"
-        )
-    )
-
-fun checklistCreated(
-    context: Any,
-    checklist: CreateChecklistInstanceModel,
-): AuditCandidateEvent =
-    AuditCandidateEvent(
-        context = context,
-        auditCandidate = AuditCandidate(
-            action = AuditAction.CHECKLIST_IS_CREATED,
-            project = AuditProject(id = checklist.relatedToId.toString()),
-            description = "Checklist with ID [${checklist.programmeChecklistId}] created"
+                    "for partner [${if (partner.role.isLead) "LP" else "PP".plus(partner.sortNumber)}] " +
+                    "and partner report [R.${reportId}] changed status from [$oldStatus] to [${checklist.status}]"
         )
     )
 
 fun checklistDeleted(
     context: Any,
-    checklist: ChecklistInstanceDetail,
-    author: Long
+    checklist: ChecklistInstanceDetail
 ): AuditCandidateEvent =
     AuditCandidateEvent(
         context = context,
         auditCandidate = AuditCandidate(
             action = AuditAction.ASSESSMENT_CHECKLIST_DELETED,
             project = AuditProject(id = checklist.relatedToId.toString()),
-            description = "Checklist [${checklist.id}] type [${checklist.type}] name [${checklist.name}] was deleted by [$author]"
+            description = "[${checklist.id}] [${checklist.type}] [${checklist.name}] deleted"
         )
     )
 
 fun controlChecklistDeleted(
     context: Any,
     checklist: ChecklistInstanceDetail,
-    author: Long,
-    partnerId: Long,
-    reportId: Long
+    partnerName: String,
+    reportId: Long,
+    projectId: Long
 ): AuditCandidateEvent =
     AuditCandidateEvent(
         context = context,
         auditCandidate = AuditCandidate(
-            action = AuditAction.CONTROL_CHECKLIST_DELETED,
-            project = AuditProject(id = checklist.relatedToId.toString()),
+            action = AuditAction.CHECKLIST_DELETED,
+            project = AuditProject(id = projectId.toString()),
             description = "Checklist [${checklist.id}] type [${checklist.type}] name [${checklist.name}] " +
-                    "for [${partnerId}] and [${reportId}] was deleted by [$author]"
+                    "for partner [${partnerName}] and partner report [R.${reportId}] was deleted"
         )
     )
 

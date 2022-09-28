@@ -1,6 +1,5 @@
 package io.cloudflight.jems.server.programme.service.checklist.delete
 
-import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanDeleteChecklistAssessment
 import io.cloudflight.jems.server.project.service.checklist.ChecklistInstancePersistence
@@ -13,8 +12,7 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class DeleteChecklistInstance(
     private val persistence: ChecklistInstancePersistence,
-    private val auditPublisher: ApplicationEventPublisher,
-    private val securityService: SecurityService
+    private val auditPublisher: ApplicationEventPublisher
     ) : DeleteChecklistInstanceInteractor {
 
     @CanDeleteChecklistAssessment
@@ -28,8 +26,7 @@ class DeleteChecklistInstance(
             auditPublisher.publishEvent(
                 checklistDeleted(
                     context = this,
-                    checklist = checklistToBeDeleted,
-                    author = securityService.getUserIdOrThrow()
+                    checklist = checklistToBeDeleted
                 )
             )
         }

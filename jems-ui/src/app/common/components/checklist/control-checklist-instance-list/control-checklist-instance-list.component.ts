@@ -18,6 +18,9 @@ import {FormService} from '@common/components/section/form/form.service';
 import {TableComponent} from '@common/components/table/table.component';
 import {MatSort} from '@angular/material/sort';
 import {ControlChecklistSort} from '@common/components/checklist/control-checklist-instance-list/control-checklist-instance-list-custom-sort';
+import {
+  PartnerReportDetailPageStore
+} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
 
 @Component({
   selector: 'jems-control-checklist-instance-list',
@@ -36,6 +39,8 @@ export class ControlChecklistInstanceListComponent implements OnInit {
 
   partnerId = Number(this.routingService.getParameter(this.activatedRoute, 'partnerId'));
   reportId = Number(this.routingService.getParameter(this.activatedRoute, 'reportId'));
+
+  data$: Observable<{ reportId: number }>;
 
   private checklistInstances$: Observable<ChecklistInstanceDTO[]>;
   checklistInstancesSorted$: Observable<ChecklistInstanceDTO[]>;
@@ -58,9 +63,15 @@ export class ControlChecklistInstanceListComponent implements OnInit {
               private routingService: RoutingService,
               private activatedRoute: ActivatedRoute,
               private dialog: MatDialog,
-              private controllerInstitutionService: ControllerInstitutionsApiService) {
+              private controllerInstitutionService: ControllerInstitutionsApiService,
+              private partnerReportDetailPageStore: PartnerReportDetailPageStore) {
 
     this.userCanEditControlChecklists$ = this.userCanEditControlChecklists();
+    this.data$ = combineLatest([
+      this.partnerReportDetailPageStore.partnerReport$,
+    ]).pipe(
+        map(([report]) => ({reportId: report.reportNumber})),
+    );
   }
 
   onInstancesSortChange(sort: Partial<MatSort>) {
@@ -91,7 +102,7 @@ export class ControlChecklistInstanceListComponent implements OnInit {
     this.instancesTableConfiguration = this.initializeTableConfiguration();
   }
 
-  delete(checklist: ChecklistInstanceDTO): void {
+  delete(reportId: number, checklist: ChecklistInstanceDTO): void {
     Forms.confirm(
       this.dialog, {
         title: checklist.name,
@@ -100,7 +111,7 @@ export class ControlChecklistInstanceListComponent implements OnInit {
       .pipe(
         take(1),
         filter(answer => !!answer),
-        switchMap(() => this.pageStore.deleteChecklistInstance(this.partnerId, this.reportId, checklist.id)),
+        switchMap(() => this.pageStore.deleteChecklistInstance(this.partnerId, reportId, checklist.id)),
       ).subscribe();
   }
 

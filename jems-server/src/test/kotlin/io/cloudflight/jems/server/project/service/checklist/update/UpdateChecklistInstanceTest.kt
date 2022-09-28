@@ -207,7 +207,7 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
         generalValidator = GeneralValidatorDefaultImpl()
         checklistInstanceValidator = mockk()
         checklistInstanceValidator = ChecklistInstanceValidator(generalValidator)
-        updateChecklistInstance = UpdateChecklistInstance(persistence, auditPublisher, checklistInstanceValidator, userAuthorization, securityService)
+        updateChecklistInstance = UpdateChecklistInstance(persistence, auditPublisher, checklistInstanceValidator, userAuthorization)
     }
 
     @Test
@@ -235,8 +235,8 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
             AuditCandidate(
                 action = AuditAction.ASSESSMENT_CHECKLIST_STATUS_CHANGE,
                 project = AuditProject(id = checkLisDetail.relatedToId.toString()),
-                description = "Checklist [${checkLisDetail.id}] type [${checkLisDetail.type}] name [${checkLisDetail.name}] " +
-                        "changed status from [DRAFT] to [FINISHED] by [${userAuthorization.getUser().id}]"
+                description = "[${checkLisDetail.id}] [${checkLisDetail.type}] [${checkLisDetail.name}] " +
+                        "changed status from [DRAFT] to [FINISHED]"
             )
         )
     }

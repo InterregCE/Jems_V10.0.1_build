@@ -25,10 +25,12 @@
 </ng-container>
 
 <ng-template #deleteCell let-checklist>
-    <button *ngIf="checklist.status === Status.DRAFT && (pageStore.currentUserEmail$ | async) === checklist.creatorEmail"
-            mat-icon-button color="accent"
-            (click)="delete(checklist);$event.stopPropagation();"
-            matTooltip="{{'common.delete.entry.tooltip' | translate}}">
-        <mat-icon>delete</mat-icon>
-    </button>
+    <ng-container *ngIf="data$ | async as data">
+        <button *ngIf="checklist.status === Status.DRAFT && (pageStore.currentUserEmail$ | async) === checklist.creatorEmail"
+                mat-icon-button color="accent"
+                (click)="delete(data.reportId, checklist);$event.stopPropagation();"
+                matTooltip="{{'common.delete.entry.tooltip' | translate}}">
+            <mat-icon>delete</mat-icon>
+        </button>
+    </ng-container>
 </ng-template>
