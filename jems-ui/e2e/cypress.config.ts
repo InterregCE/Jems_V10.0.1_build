@@ -121,6 +121,6 @@ export default defineConfig({
       return config;
     },
     baseUrl: 'http://localhost:4200',
-    specPattern: ['cypress/e2e/login/**', 'cypress/e2e/programme/**', 'cypress/e2e/call/**', 'cypress/e2e/project/**']
+    specPattern: ['cypress/e2e/login/**', 'cypress/e2e/programme/**', 'cypress/e2e/controller/**', 'cypress/e2e/call/**', 'cypress/e2e/project/**']
   },
 })
