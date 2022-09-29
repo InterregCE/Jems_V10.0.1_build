@@ -2,12 +2,17 @@ package io.cloudflight.jems.server.payments.repository
 
 import io.cloudflight.jems.server.payments.PaymentPersistence
 import io.cloudflight.jems.server.payments.entity.PaymentGroupingId
+import io.cloudflight.jems.server.payments.service.model.PartnerPayment
+import io.cloudflight.jems.server.payments.service.model.PaymentDetail
 import io.cloudflight.jems.server.payments.service.model.PaymentPerPartner
 import io.cloudflight.jems.server.payments.service.model.PaymentToCreate
 import io.cloudflight.jems.server.payments.service.model.PaymentToProject
+import io.cloudflight.jems.server.payments.service.model.PaymentType
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.lumpsum.ProjectLumpSumRepository
+import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
+import io.cloudflight.jems.server.project.repository.partner.toProjectPartnerDetail
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -18,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional
 class PaymentPersistenceProvider(private val paymentRepository: PaymentRepository,
                                  private val paymentPartnerRepository: PaymentPartnerRepository,
                                  private val projectRepository: ProjectRepository,
+                                 private val projectPartnerRepository: ProjectPartnerRepository,
                                  private val projectLumpSumRepository: ProjectLumpSumRepository,
                                  private val projectPersistence: ProjectPersistence,
                                  private val fundRepository: ProgrammeFundRepository): PaymentPersistence {
@@ -48,7 +54,11 @@ class PaymentPersistenceProvider(private val paymentRepository: PaymentRepositor
     override fun savePaymentToProjects(projectId: Long, paymentsToBeSaved: Map<PaymentGroupingId, PaymentToCreate>) {
         val projectEntity = projectRepository.getById(projectId)
         val paymentEntities = this.paymentRepository.saveAll(paymentsToBeSaved.map { (id, model) ->
-            model.toEntity(projectEntity, id.orderNr, fundRepository.getById(id.programmeFundId))
+            model.toEntity(
+                projectEntity = projectEntity,
+                paymentType =  PaymentType.FTLS,
+                orderNr = id.orderNr,
+                fundEntity = fundRepository.getById(id.programmeFundId))
         }).associateBy { PaymentGroupingId(it.orderNr, it.fund.id) }
 
         paymentEntities.forEach { (paymentId, entity) ->
@@ -57,4 +67,16 @@ class PaymentPersistenceProvider(private val paymentRepository: PaymentRepositor
             )
         }
     }
+
+    @Transactional(readOnly = true)
+    override fun getPaymentDetails(paymentId: Long): PaymentDetail =
+        this.paymentRepository.getById(paymentId).toDetailModel(
+            partnerPayments = getAllPartnerPayments(paymentId)
+        )
+
+    @Transactional(readOnly = true)
+    override fun getAllPartnerPayments(paymentId: Long): List<PartnerPayment> =
+        this.paymentPartnerRepository.findAllByPaymentId(paymentId)
+            .map { it.toModel(this.projectPartnerRepository.getById(it.partnerId).toProjectPartnerDetail()) }
+
 }
