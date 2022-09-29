@@ -11,9 +11,10 @@
     border: 1px solid var(--table-border-color);
     margin-right: 1rem;
   }
-
-  jems-file-list {
-    width: calc(100% - 20rem - 1rem);
+  .file-list {
+    display: flex;
+    flex-flow: column;
+    width: 80%;
   }
 }
 

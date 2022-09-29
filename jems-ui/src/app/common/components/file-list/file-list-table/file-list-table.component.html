@@ -63,7 +63,7 @@
                     </button>
                 </ng-container>
 
-                <form [formGroup]="descriptionForm" *ngIf="descriptionForm.value.id === file.id" class="w-100">
+                <form [formGroup]="descriptionForm" *ngIf="descriptionForm.value.id === file.id && file.editable" class="w-100">
                     <jems-expandable-textarea class="w-100"
                             label="file.table.column.name.description"
                             [control]="descriptionForm.controls.description"

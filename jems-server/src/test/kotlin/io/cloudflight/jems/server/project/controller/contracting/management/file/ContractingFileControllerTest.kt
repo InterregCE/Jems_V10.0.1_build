@@ -10,8 +10,15 @@ import io.cloudflight.jems.server.project.controller.report.dummyFile
 import io.cloudflight.jems.server.project.controller.report.dummyFileDto
 import io.cloudflight.jems.server.project.controller.report.dummyFileExpected
 import io.cloudflight.jems.server.project.controller.report.dummyMultipartFile
-import io.cloudflight.jems.server.project.service.contracting.fileManagement.deleteContractingFile.DeleteContractingFileInteractor
-import io.cloudflight.jems.server.project.service.contracting.fileManagement.downloadContractingFile.DownloadContractingFileInteractor
+import io.cloudflight.jems.server.project.service.contracting.fileManagement.FileNotFound
+import io.cloudflight.jems.server.project.service.contracting.fileManagement.deleteContractFile.DeleteContractFileException
+import io.cloudflight.jems.server.project.service.contracting.fileManagement.deleteContractFile.DeleteContractFileInteractor
+import io.cloudflight.jems.server.project.service.contracting.fileManagement.deleteInternalFile.DeleteContractingInternalFileException
+import io.cloudflight.jems.server.project.service.contracting.fileManagement.deleteInternalFile.DeleteInternalFileInteractor
+import io.cloudflight.jems.server.project.service.contracting.fileManagement.downloadContractFile.DownloadContractFileException
+import io.cloudflight.jems.server.project.service.contracting.fileManagement.downloadContractFile.DownloadContractFileInteractor
+import io.cloudflight.jems.server.project.service.contracting.fileManagement.downloadInternalFile.DownloadInternalFileException
+import io.cloudflight.jems.server.project.service.contracting.fileManagement.downloadInternalFile.DownloadInternalFileInteractor
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.listContractingFiles.ListContractingFilesInteractor
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.setContractFileDescription.SetContractFileDescriptionInteractor
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.setInternalFileDescription.SetInternalFileDescriptionInteractor
@@ -30,6 +37,7 @@ import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
@@ -75,10 +83,16 @@ class ContractingFileControllerTest : UnitTest() {
     lateinit var listContractingFiles: ListContractingFilesInteractor
 
     @MockK
-    lateinit var downloadContractingFile: DownloadContractingFileInteractor
+    lateinit var downloadContractFile: DownloadContractFileInteractor
 
     @MockK
-    lateinit var deleteContractingFile: DeleteContractingFileInteractor
+    lateinit var downloadInternalFile: DownloadInternalFileInteractor
+
+    @MockK
+    lateinit var deleteContractFile: DeleteContractFileInteractor
+
+    @MockK
+    lateinit var deleteInternalFile: DeleteInternalFileInteractor
 
     @MockK
     lateinit var setContractFileDescriptionInteractor: SetContractFileDescriptionInteractor
@@ -158,11 +172,11 @@ class ContractingFileControllerTest : UnitTest() {
     }
 
     @Test
-    fun downloadAttachment() {
+    fun `download contract attachment`() {
         val fileContentArray = ByteArray(5)
-        every { downloadContractingFile.download(PROJECT_ID, fileId = 350L) } returns Pair("fileName.txt", fileContentArray)
+        every { downloadContractFile.download(PROJECT_ID, fileId = 350L) } returns Pair("fileName.txt", fileContentArray)
 
-        assertThat(controller.downloadFile(PROJECT_ID, fileId = 350L))
+        assertThat(controller.downloadContractFile(PROJECT_ID, fileId = 350L))
             .isEqualTo(
                 ResponseEntity.ok()
                     .contentLength(5)
@@ -173,10 +187,60 @@ class ContractingFileControllerTest : UnitTest() {
     }
 
     @Test
-    fun deleteAttachment() {
-        every { deleteContractingFile.delete(PROJECT_ID, fileId = 302L) } answers { }
-        controller.deleteFile(PROJECT_ID, fileId = 302L)
-        verify(exactly = 1) { deleteContractingFile.delete(PROJECT_ID, fileId = 302L) }
+    fun `download contract attachment throws exception`() {
+        every { downloadContractFile.download(PROJECT_ID, fileId = -1L) } throws DownloadContractFileException(FileNotFound())
+        val exception = assertThrows<DownloadContractFileException> { downloadContractFile.download(PROJECT_ID, fileId = -1L) }
+        assertThat(exception.i18nMessage.i18nKey).isEqualTo("use.case.download.contract.file.failed")
+    }
+
+    @Test
+    fun `download internal attachment`() {
+        val fileContentArray = ByteArray(5)
+        every { downloadInternalFile.download(PROJECT_ID, fileId = 350L) } returns Pair("fileName.txt", fileContentArray)
+
+        assertThat(controller.downloadInternalFile(PROJECT_ID, fileId = 350L))
+            .isEqualTo(
+                ResponseEntity.ok()
+                    .contentLength(5)
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"fileName.txt\"")
+                    .body(ByteArrayResource(fileContentArray))
+            )
+    }
+
+    @Test
+    fun `download internal attachment throws exception`() {
+        every { downloadInternalFile.download(PROJECT_ID, fileId = -1L) } throws DownloadInternalFileException(FileNotFound())
+        val exception = assertThrows<DownloadInternalFileException> { downloadInternalFile.download(PROJECT_ID, fileId = -1L) }
+        assertThat(exception.i18nMessage.i18nKey).isEqualTo("use.case.download.internal.file.failed")
+    }
+
+    @Test
+    fun `delete contract attachment`() {
+        every { deleteContractFile.delete(PROJECT_ID, fileId = 302L) } answers { }
+        controller.deleteContractFile(PROJECT_ID, fileId = 302L)
+        verify(exactly = 1) { deleteContractFile.delete(PROJECT_ID, fileId = 302L) }
+    }
+
+
+    @Test
+    fun `delete contract attachment throws exception`() {
+        every { deleteContractFile.delete(PROJECT_ID, fileId = -1L) } throws DeleteContractFileException(RuntimeException())
+        val exception = assertThrows<DeleteContractFileException> { deleteContractFile.delete(PROJECT_ID, fileId = -1L) }
+        assertThat(exception.i18nMessage.i18nKey).isEqualTo("use.case.delete.contract.file.failed")
+    }
+    @Test
+    fun `delete internal attachment`() {
+        every { deleteInternalFile.delete(PROJECT_ID, fileId = 302L) } answers { }
+        controller.deleteInternalFile(PROJECT_ID, fileId = 302L)
+        verify(exactly = 1) { deleteInternalFile.delete(PROJECT_ID, fileId = 302L) }
+    }
+
+    @Test
+    fun `delete internal attachment throws exception`() {
+        every { deleteInternalFile.delete(PROJECT_ID, fileId = -1L) } throws DeleteContractingInternalFileException(RuntimeException())
+        val exception = assertThrows<DeleteContractingInternalFileException> { deleteInternalFile.delete(PROJECT_ID, fileId = -1L) }
+        assertThat(exception.i18nMessage.i18nKey).isEqualTo("use.case.delete.contracting.internal.file.failed")
     }
 
     @Test
