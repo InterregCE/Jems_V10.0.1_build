@@ -1,0 +1,48 @@
+{
+  "controllerUser1": {
+    "email": "randomize",
+    "name": "Controller 1",
+    "surname": "User",
+    "userRoleId": 2,
+    "userStatus": "ACTIVE"
+  },
+  "controllerUser2": {
+    "email": "randomize",
+    "name": "Controller 2",
+    "surname": "User",
+    "userRoleId": 2,
+    "userStatus": "ACTIVE"
+  },
+  "controllerCreatorRole": {
+    "name": "randomize",
+    "permissions": [
+      "ProjectContractingView",
+      "InstitutionsUpdate",
+      "InstitutionsUnlimited",
+      "InstitutionsRetrieve"
+    ]
+  },
+  "controllerCreatorUser": {
+    "email": "randomize",
+    "name": "Controller Creator",
+    "surname": "User",
+    "userRoleId": null,
+    "userStatus": "ACTIVE"
+  },
+  "institution": {
+    "name": "randomize",
+    "description": "Some controller institution description",
+    "nuts": ["Österreich", "România"],
+    "nutsVerification": "AT, RO",
+    "users": [
+      {
+        "email": "randomize",
+        "accessLevel": "view"
+      },
+      {
+        "email": "randomize",
+        "accessLevel": "edit"
+      }
+    ]
+  }
+}
