@@ -1,0 +1,115 @@
+<div jemsNoWidthLimit [jemsTableConfig]="[{}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}]">
+    <div>
+        <div class=mat-body-strong>{{'payments.detail.table.header.installment.installment.number' | translate}}</div>
+        <div class=mat-body-strong>{{'payments.detail.table.header.installment.amount paid' | translate}}</div>
+        <div class=mat-body-strong>{{'payments.detail.table.header.installment.payment.date' | translate}}</div>
+        <div class=mat-body-strong>{{'payments.detail.table.header.installment.comment' | translate}}</div>
+        <div class=mat-body-strong>{{'payments.detail.table.header.installment.save.payment.info' | translate}}</div>
+        <div class=mat-body-strong>{{'payments.detail.table.header.installment.user.saving.payment.info' | translate}}</div>
+        <div class=mat-body-strong>{{'payments.detail.table.header.installment.save.payment.date' | translate}}</div>
+        <div class=mat-body-strong>{{'payments.detail.table.header.installment.confirm.payment' | translate}}</div>
+        <div class=mat-body-strong>{{'payments.detail.table.header.installment.user.confirming.payment' | translate}}</div>
+        <div class=mat-body-strong>{{'payments.detail.table.header.installment.payment.confirmation.date' | translate}}</div>
+        <div></div>
+    </div>
+    <div *ngFor="let installment of installments">
+        <div>
+            <p>this should not be a field</p>
+            <mat-form-field>
+                <input formControlName="installmentNumber"
+                       matInput
+                       type="decimal">
+            </mat-form-field>
+        </div>
+
+        <div>
+            <mat-form-field>
+                <input formControlName="amountPaid"
+                       currencyMask matInput
+                       type="decimal">
+            </mat-form-field>
+        </div>
+
+        <div>
+            <p>This should probably not be an input</p>
+            <mat-form-field>
+                <input formControlName="paymentDate"
+                       matInput
+                       type="decimal">
+            </mat-form-field>
+        </div>
+
+        <div>
+            <mat-form-field>
+                <input formControlName="comment"
+                       matInput
+                       type="text">
+            </mat-form-field>
+        </div>
+
+        <div>
+            <p>This should be a checkbox</p>
+            <mat-form-field>
+                <input formControlName="savePaymentInfo"
+                       matInput
+                       type="text">
+            </mat-form-field>
+        </div>
+
+        <div>
+            <p>This should not be a field</p>
+            <mat-form-field>
+                <input formControlName="userSavingPaymentInfo"
+                       matInput
+                       type="text">
+            </mat-form-field>
+        </div>
+
+        <div>
+            <p>This should not be a field</p>
+            <mat-form-field>
+                <input formControlName="savePaymentDate"
+                       matInput
+                       type="text">
+            </mat-form-field>
+        </div>
+
+        <div>
+            <p>This should be a checkbox</p>
+            <mat-form-field>
+                <input formControlName="confirmPayment"
+                       matInput
+                       type="text">
+            </mat-form-field>
+        </div>
+
+        <div>
+            <p>This should not be a field</p>
+            <mat-form-field>
+                <input formControlName="userConfirmingPayment"
+                       matInput
+                       type="text">
+            </mat-form-field>
+        </div>
+
+        <div>
+            <p>This should not be a field</p>
+            <mat-form-field>
+                <input formControlName="paymentConfirmationDate"
+                       matInput
+                       type="text">
+            </mat-form-field>
+        </div>
+
+        <div>
+            <button (click)="removeItem(installment)"
+                    class="delete-button"
+                    color="accent" mat-icon-button
+                    matTooltip="{{'common.delete.entry.tooltip' | translate}}"
+                    tabindex="-1"
+                    type="button">
+                <mat-icon>delete</mat-icon>
+            </button>
+        </div>
+    </div>
+</div>

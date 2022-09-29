@@ -11,13 +11,17 @@ import {
 import {
   PaymentsToProjectDetailBreadcrumbResolver
 } from './payments-to-projects-page/payments-to-project-detail.resolver';
+import {
+  PaymentInstallmentTableComponent
+} from './payments-to-projects-page/payments-to-project-detail-page/payment-installment-table/payment-installment-table.component';
 
 @NgModule({
   declarations: [
     PaymentsPageComponent,
     PaymentsToProjectPageComponent,
     AdvancedPaymentsPageComponent,
-    PaymentsToProjectDetailPageComponent
+    PaymentsToProjectDetailPageComponent,
+    PaymentInstallmentTableComponent
   ],
   imports: [
     SharedModule,
