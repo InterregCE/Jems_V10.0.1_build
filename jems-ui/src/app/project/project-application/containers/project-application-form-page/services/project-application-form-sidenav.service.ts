@@ -92,6 +92,19 @@ export class ProjectApplicationFormSidenavService {
     ),
   );
 
+  private readonly canSeeContractPartner$: Observable<boolean> = combineLatest([
+    this.permissionService.hasPermission(PermissionsEnum.ProjectContractingPartnerView),
+    this.permissionService.hasPermission(PermissionsEnum.ProjectContractingPartnerEdit),
+    this.projectStore.userIsPartnerCollaborator$,
+    this.projectStore.currentVersionOfProjectStatus$,
+  ]).pipe(
+    map(([hasViewPermission, hasEditPermission, isPartnerCollaborator, projectStatus]:
+           [boolean, boolean, boolean, ProjectStatusDTO]) =>
+      ((hasViewPermission || hasEditPermission) || isPartnerCollaborator) &&
+      ProjectUtil.isInApprovedOrAnyStatusAfterApproved(projectStatus),
+    ),
+  );
+
   private readonly canSeeReporting$: Observable<boolean> = combineLatest([
     this.projectStore.currentVersionOfProjectStatus$,
     this.permissionService.hasPermission(PermissionsEnum.ProjectReportingView),
@@ -212,6 +225,7 @@ export class ProjectApplicationFormSidenavService {
         return (canSeeReporting) ?
           this.partnerStore.partnerReportSummaries$.pipe(
             withLatestFrom(this.projectStore.projectId$),
+            tap(data => Log.info('reportSectionPartners$', data)),
             map(([partners]) =>
               partners.map(partner => ({
                   headline: {
@@ -230,11 +244,12 @@ export class ProjectApplicationFormSidenavService {
     );
 
   private readonly contractingPartnerSection$: Observable<HeadlineRoute[]> =
-    combineLatest([this.canSeeContractMonitoring$, this.projectStore.projectId$, this.projectStore.projectCallType$]).pipe(
-      switchMap(([canSeeReporting, projectId, callType]) => {
-        return (canSeeReporting) ?
+    combineLatest([this.canSeeContractPartner$, this.projectStore.projectId$, this.projectStore.projectCallType$]).pipe(
+      switchMap(([canSeeContractPartner, projectId, callType]) => {
+        return (canSeeContractPartner) ?
           this.partnerStore.partnerReportSummaries$.pipe(
             withLatestFrom(this.projectStore.projectId$),
+            tap(data => Log.info('contractingPartnerSection$', data)),
             map(([partners]) =>
               partners.map(partner => ({
                   headline: {
@@ -302,6 +317,7 @@ export class ProjectApplicationFormSidenavService {
       this.canSeeProjectContracts$,
       this.canSeeProjectManagement$,
       this.canSeeContractReporting$,
+      this.canSeeContractPartner$,
       this.canSeeAssessments$,
       this.canSubmitApplication$,
       this.canCheckApplication$,
@@ -325,6 +341,7 @@ export class ProjectApplicationFormSidenavService {
                canSeeProjectContracts,
                canSeeProjectManagement,
                canSeeContractReporting,
+               canSeeContractPartner,
                canSeeAssessments,
                canSubmitApplication,
                canCheckApplication,
@@ -341,7 +358,10 @@ export class ProjectApplicationFormSidenavService {
             this.getProjectOverviewHeadline(project.id),
             ...canSeeReporting ? this.getReportingHeadline(reportSectionPartners) : [],
             ...(canSeeProjectManagement || canSeeContractMonitoring) ?
-              this.getContractingHeadlines(project.id, canSeeContractMonitoring, canSeeProjectContracts, canSeeProjectManagement, canSeeContractReporting, contractingPartnerSection) : [],
+              this.getContractingHeadlines(project.id, canSeeContractMonitoring, canSeeProjectContracts, canSeeProjectManagement, canSeeContractReporting, canSeeContractPartner, contractingPartnerSection) : [],
+            ...(canSeeProjectManagement || canSeeContractMonitoring || canSeeContractReporting) ?
+              this.getContractingHeadlines(project.id, canSeeContractMonitoring, canSeeProjectContracts, canSeeProjectManagement, canSeeContractReporting,
+                canSeeContractPartner, contractingPartnerSection) : [],
             this.getApplicationFormHeadline(project.id, partners, packages, versionTemplate, canReadApplicationFiles,
               canSeeAssessments, canSubmitApplication || canCheckApplication, canSeeProjectForm, canSeeModificationSection),
             ...canSeeProjectForm ? this.getExportHeadline(project.id) : [],
@@ -376,7 +396,10 @@ export class ProjectApplicationFormSidenavService {
     };
   }
 
-  private getContractingHeadlines(projectId: number, canSeeContractMonitoring: boolean, canSeeProjectContracts: boolean, canSeeProjectManagement: boolean, canSeeContractReporting: boolean, partners: HeadlineRoute[]): HeadlineRoute[] {
+
+  private getContractingHeadlines(projectId: number, canSeeContractMonitoring: boolean, canSeeProjectContracts: boolean,
+                                  canSeeProjectManagement: boolean, canSeeContractReporting: boolean, canSeeContractPartner: boolean,
+                                  partners: HeadlineRoute[]): HeadlineRoute[] {
     return [{
       headline: {i18nKey: 'project.application.contracting.title'},
       bullets: [
@@ -384,7 +407,7 @@ export class ProjectApplicationFormSidenavService {
         ...canSeeProjectContracts ? this.getProjectContractsHeadline(projectId) : [],
         ...canSeeProjectManagement ? this.getProjectManagementHeadline(projectId) : [],
         ...canSeeContractReporting ? this.getContractReportingHeadline(projectId) : [],
-        ...canSeeContractReporting ? this.getContractPartnerHeadline(projectId, partners) : [],
+        ...canSeeContractPartner ? this.getContractPartnerHeadline(projectId, partners) : [],
       ]
     }];
   }

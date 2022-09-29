@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.service.contracting.partner.beneficia
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
+import io.cloudflight.jems.server.project.authorization.CanUpdateProjectContractingPartner
 import io.cloudflight.jems.server.project.service.contracting.partner.beneficialOwner.ContractingPartnerBeneficialOwner
 import io.cloudflight.jems.server.project.service.contracting.partner.beneficialOwner.ContractingPartnerBeneficialOwnersPersistence
 import org.springframework.stereotype.Service
@@ -19,6 +20,7 @@ class UpdateContractingPartnerBeneficialOwners(
         const val MAX_VAT_LENGTH = 30
     }
 
+    @CanUpdateProjectContractingPartner
     @Transactional
     @ExceptionWrapper(UpdateContractingPartnerBeneficialOwnersException::class)
     override fun updateBeneficialOwners(

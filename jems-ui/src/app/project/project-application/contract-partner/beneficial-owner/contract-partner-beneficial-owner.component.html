@@ -2,7 +2,7 @@
            (save)="saveForm()"
            (discard)="discardChanges(data.beneficials)">
 
-    <form jemsFormLayout [formGroup]="form">
+    <form *ngIf="data.canView" jemsFormLayout [formGroup]="form">
         <h3>{{'project.application.contract.partner.section.beneficial.owner.title' | translate }}</h3>
 
         <mat-table *ngIf="beneficials.length" jemsNoWidthLimit [dataSource]="dataSource" formArrayName="beneficialOwners">
@@ -95,7 +95,7 @@
 
         </mat-table>
 
-        <button mat-raised-button jemsText class="mb-3 mt-3 mat-primary"
+        <button *ngIf="data.canEdit" mat-raised-button jemsText class="mb-3 mt-3 mat-primary"
                 [disabled]="beneficials.length >= 10" (click)="addBeneficialOwner()">
             <mat-icon>add</mat-icon>{{ 'project.application.partner.report.procurements.beneficial.add' | translate }}
         </button>

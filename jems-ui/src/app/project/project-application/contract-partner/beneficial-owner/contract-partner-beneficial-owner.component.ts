@@ -37,6 +37,8 @@ export class ContractPartnerBeneficialOwnerComponent {
 
   data$: Observable<{
     beneficials: ContractingPartnerBeneficialOwnerDTO[];
+    canEdit: boolean;
+    canView: boolean;
   }>;
 
   constructor(
@@ -47,15 +49,18 @@ export class ContractPartnerBeneficialOwnerComponent {
   ) {
     this.data$ = combineLatest([
       this.contractPartnerStore.beneficialOwners$,
+      this.contractPartnerStore.userCanEditContractPartner$,
+      this.contractPartnerStore.userCanViewContractPartner$,
     ]).pipe(
-      tap(([beneficialOwners]) => this.resetForm(beneficialOwners)),
-      tap(([beneficialOwners]) => this.prepareVisibleColumns(true)),
-      map(([beneficials]) => ({ beneficials })),
+      map(([beneficials, canEdit, canView]) => ({ beneficials, canEdit, canView })),
+      tap(data => this.resetForm(data.beneficials, data.canEdit)),
+      tap(data => this.prepareVisibleColumns(data.canEdit)),
+
     );
     this.formService.init(this.form);
   }
 
-  private resetForm(beneficials: ContractingPartnerBeneficialOwnerDTO[], editable = true) {
+  private resetForm(beneficials: ContractingPartnerBeneficialOwnerDTO[], editable = false) {
     this.beneficials.clear();
 
     beneficials.forEach(b => this.addBeneficialOwner(b));
