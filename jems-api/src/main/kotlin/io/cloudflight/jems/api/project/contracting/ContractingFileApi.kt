@@ -79,7 +79,7 @@ interface ContractingFileApi {
 
     @ApiOperation("Update description of already uploaded file")
     @PutMapping(
-        "${ENDPOINT_API_CONTRACTING_FILE}/{fileId}/description",
+        "${ENDPOINT_API_CONTRACTING_FILE}/contract/{fileId}/description",
         consumes = [MediaType.APPLICATION_JSON_VALUE],
     )
     fun updateContractFileDescription(
@@ -100,16 +100,25 @@ interface ContractingFileApi {
         @RequestBody(required = false) description: String?,
     )
 
-
-    @ApiOperation("Download contracting file")
+    @ApiOperation("Download contract file")
     @GetMapping(
-        "${ENDPOINT_API_CONTRACTING_FILE}/download/{fileId}",
+        "${ENDPOINT_API_CONTRACTING_FILE}/contract/download/{fileId}",
         produces = [MediaType.APPLICATION_OCTET_STREAM_VALUE]
     )
-    fun downloadFile(@PathVariable projectId: Long, @PathVariable fileId: Long): ResponseEntity<ByteArrayResource>
+    fun downloadContractFile(@PathVariable projectId: Long, @PathVariable fileId: Long): ResponseEntity<ByteArrayResource>
 
-    @ApiOperation("Delete contracting file")
-    @DeleteMapping("${ENDPOINT_API_CONTRACTING_FILE}/delete/{fileId}")
-    fun deleteFile(@PathVariable projectId: Long, @PathVariable fileId: Long)
+    @ApiOperation("Download internal file")
+    @GetMapping(
+        "${ENDPOINT_API_CONTRACTING_FILE}/internal/download/{fileId}",
+        produces = [MediaType.APPLICATION_OCTET_STREAM_VALUE]
+    )
+    fun downloadInternalFile(@PathVariable projectId: Long, @PathVariable fileId: Long): ResponseEntity<ByteArrayResource>
 
+    @ApiOperation("Delete contract file")
+    @DeleteMapping("${ENDPOINT_API_CONTRACTING_FILE}/contract/delete/{fileId}")
+    fun deleteContractFile(@PathVariable projectId: Long, @PathVariable fileId: Long)
+
+    @ApiOperation("Delete internal file")
+    @DeleteMapping("${ENDPOINT_API_CONTRACTING_FILE}/monitoring/delete/{fileId}")
+    fun deleteInternalFile(@PathVariable projectId: Long, @PathVariable fileId: Long)
 }
