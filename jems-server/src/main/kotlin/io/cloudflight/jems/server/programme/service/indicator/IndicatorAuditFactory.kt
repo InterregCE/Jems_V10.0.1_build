@@ -24,3 +24,10 @@ fun indicatorEdited(context: Any, identifier: String, changes: Map<String, Pair<
             .build()
     )
 }
+
+fun indicatorDeleted(context: Any, identifier: String) = AuditCandidateEvent (
+    context = context,
+    auditCandidate = AuditBuilder(AuditAction.PROGRAMME_INDICATOR_DELETED)
+        .description("Programme indicator $identifier has been deleted")
+        .build()
+)

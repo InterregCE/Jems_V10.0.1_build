@@ -114,4 +114,10 @@ interface ProgrammeUnitCostRepository : JpaRepository<ProgrammeUnitCostEntity, L
 
     fun deleteByIdAndProjectId(id: Long, projectId: Long)
 
+    @Query(
+        nativeQuery = true,
+        value = "SELECT COUNT(programme_unit_cost_id) from project_call_unit_cost WHERE programme_unit_cost_id = :unitCostId"
+    )
+    fun getNumberOfOccurrencesInCalls(unitCostId: Long): Int
+
 }

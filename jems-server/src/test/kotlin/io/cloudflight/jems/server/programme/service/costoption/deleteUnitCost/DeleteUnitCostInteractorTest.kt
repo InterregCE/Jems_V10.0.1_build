@@ -1,7 +1,6 @@
-package io.cloudflight.jems.server.programme.service.costoption.delete_unit_cost
+package io.cloudflight.jems.server.programme.service.costoption.deleteUnitCost
 
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.programme.service.costoption.DeleteUnitCostWhenProgrammeSetupRestricted
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeUnitCostPersistence
 import io.cloudflight.jems.server.programme.service.info.isSetupLocked.IsProgrammeSetupLockedInteractor
 import io.mockk.MockKAnnotations

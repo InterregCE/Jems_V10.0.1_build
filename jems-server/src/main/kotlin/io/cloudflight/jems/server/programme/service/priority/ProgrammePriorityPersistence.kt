@@ -18,4 +18,6 @@ interface ProgrammePriorityPersistence {
 
     fun getObjectivePoliciesAlreadySetUp(): Iterable<ProgrammeObjectivePolicy>
     fun getObjectivePoliciesAlreadyInUse(): Iterable<ProgrammeObjectivePolicy>
+    fun getObjectivePoliciesAlreadyUsedByResultIndicator(): Iterable<ProgrammeObjectivePolicy>
+    fun getObjectivePoliciesAlreadyUsedByOutputIndicator(): Iterable<ProgrammeObjectivePolicy>
 }

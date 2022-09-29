@@ -96,6 +96,14 @@ class ProgrammePriorityPersistenceProvider(
     override fun getObjectivePoliciesAlreadyInUse(): Iterable<ProgrammeObjectivePolicy> =
         specificObjectiveRepo.getObjectivePoliciesAlreadyInUse().map { ProgrammeObjectivePolicy.valueOf(it) }
 
+    @Transactional(readOnly = true)
+    override fun getObjectivePoliciesAlreadyUsedByResultIndicator(): Iterable<ProgrammeObjectivePolicy> =
+        specificObjectiveRepo.getObjectivePoliciesAlreadyUsedByResultIndicator().map { ProgrammeObjectivePolicy.valueOf(it) }
+
+    @Transactional(readOnly = true)
+    override fun getObjectivePoliciesAlreadyUsedByOutputIndicator(): Iterable<ProgrammeObjectivePolicy> =
+        specificObjectiveRepo.getObjectivePoliciesAlreadyUsedByOutputIndicator().map { ProgrammeObjectivePolicy.valueOf(it) }
+
     private fun getPriorityOrThrow(priorityId: Long) =
         priorityRepo.findById(priorityId).orElseThrow { ResourceNotFoundException("programmePriority") }
 

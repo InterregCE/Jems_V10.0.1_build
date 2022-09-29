@@ -10,5 +10,6 @@ interface ProgrammeUnitCostPersistence {
     fun createUnitCost(unitCost: ProgrammeUnitCost): ProgrammeUnitCost
     fun updateUnitCost(unitCost: ProgrammeUnitCost): ProgrammeUnitCost
     fun deleteUnitCost(unitCostId: Long)
+    fun getNumberOfOccurrencesInCalls(unitCostId: Long): Int
 
 }

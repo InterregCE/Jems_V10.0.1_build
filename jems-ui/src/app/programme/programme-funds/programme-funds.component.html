@@ -13,12 +13,15 @@
             </button>
         </div>
         <jems-multi-language-container jemsNoWidthLimit [useSystemLanguages]="true">
-            <div [jemsTableConfig]="[{maxInRem: 2},{maxInRem: 10},{},{}]">
+            <div [jemsTableConfig]="[{maxInRem: 2},{maxInRem: 10},{},{},{maxInRem: 5}]">
                 <div>
                     <span class="mat-body-strong">{{ 'programme.fund.list.select' | translate }}</span>
                     <span class="mat-body-strong">{{ 'programme.legal.status.list.type' | translate }}</span>
                     <span class="mat-body-strong">{{ 'programme.fund.list.abbreviation' | translate }}</span>
                     <span class="mat-body-strong">{{ 'programme.fund.list.description' | translate }}</span>
+                    <span class="mat-body-strong" *ngIf="(changeFormState$ | async) === FormState.EDIT">
+                        {{ 'common.delete.entry.tooltip' | translate }}
+                    </span>
                 </div>
                 <div *ngFor="let fund of fundsForm.controls;let i=index">
                     <ng-container formArrayName="funds">
@@ -46,6 +49,17 @@
                                     [isFallBackLanguageReadonly]="isPredefinedFund(fund)"
                                     maxLength="127">
                             </jems-multi-language-form-field>
+
+                            <div *ngIf="(changeFormState$ | async) === FormState.EDIT">
+                                <button mat-icon-button color="accent"
+                                        type="button"
+                                        [disabled]="isProgrammeSetupLocked ? !!fund.get('id').value : false"
+                                        matTooltip="{{'common.delete.entry.tooltip' | translate}}"
+                                        (click)="deleteFund(i)">
+
+                                    <mat-icon>delete</mat-icon>
+                                </button>
+                            </div>
 
                         </ng-container>
                     </ng-container>

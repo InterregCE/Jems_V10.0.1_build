@@ -1,7 +1,6 @@
-package io.cloudflight.jems.server.programme.service.costoption.delete_lump_sum
+package io.cloudflight.jems.server.programme.service.costoption.deleteLumpSum
 
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.programme.service.costoption.DeleteLumpSumWhenProgrammeSetupRestricted
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeLumpSumPersistence
 import io.cloudflight.jems.server.programme.service.info.isSetupLocked.IsProgrammeSetupLockedInteractor
 import io.mockk.MockKAnnotations

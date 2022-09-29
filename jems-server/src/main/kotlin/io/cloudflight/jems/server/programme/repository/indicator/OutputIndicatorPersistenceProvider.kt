@@ -62,4 +62,9 @@ class OutputIndicatorPersistenceProvider(
             return null
         return resultIndicatorRepository.getById(resultIndicatorId)
     }
+
+    @Transactional
+    override fun deleteOutputIndicator(id: Long) {
+        outputIndicatorRepository.deleteById(id)
+    }
 }

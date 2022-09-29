@@ -52,6 +52,10 @@ class ProgrammeUnitCostPersistenceProvider(
     override fun deleteUnitCost(unitCostId: Long) =
         repository.delete(getUnitCostOrThrow(unitCostId))
 
+    @Transactional
+    override fun getNumberOfOccurrencesInCalls(unitCostId: Long): Int =
+        repository.getNumberOfOccurrencesInCalls(unitCostId)
+
     private fun getUnitCostOrThrow(unitCostId: Long): ProgrammeUnitCostEntity =
         repository.findByIdAndProjectIdNull(unitCostId).orElseThrow { ResourceNotFoundException("programmeUnitCost") }
 

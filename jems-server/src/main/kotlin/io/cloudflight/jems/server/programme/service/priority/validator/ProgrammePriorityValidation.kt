@@ -194,20 +194,6 @@ private fun validateEveryPolicyCodeIsFreeOrLinkedToThisPriority(
         )
 }
 
-fun checkNoCallExistsForRemovedSpecificObjectives(
-    objectivePoliciesToBeRemoved: Set<ProgrammeObjectivePolicy>,
-    alreadyUsedObjectivePolicies: Iterable<ProgrammeObjectivePolicy>
-) {
-    val policiesThatCannotBeRemoved = alreadyUsedObjectivePolicies intersect objectivePoliciesToBeRemoved
-    if (policiesThatCannotBeRemoved.isNotEmpty())
-        invalid(fieldErrors = mapOf(
-            "specificObjectives" to I18nFieldError(
-                i18nKey = "programme.priority.specificObjective.already.used.in.call",
-                i18nArguments = policiesThatCannotBeRemoved.map { it.name }
-            )
-        ))
-}
-
 private fun invalid(message: String? = null, fieldErrors: Map<String, I18nFieldError> = emptyMap()) {
     throw I18nValidationException(
         httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,

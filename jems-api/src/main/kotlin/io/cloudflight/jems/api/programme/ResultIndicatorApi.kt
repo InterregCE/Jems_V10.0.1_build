@@ -12,11 +12,7 @@ import io.swagger.annotations.ApiOperation
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.http.MediaType
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.*
 
 @Api("Programme Indicator Result")
 interface ResultIndicatorApi {
@@ -36,6 +32,10 @@ interface ResultIndicatorApi {
     fun updateResultIndicator(
         @RequestBody resultIndicatorUpdateRequestDTO: ResultIndicatorUpdateRequestDTO
     ): ResultIndicatorDetailDTO
+
+    @ApiOperation("Delete RESULT indicator")
+    @DeleteMapping("$ENDPOINT_API_PROGRAMME_INDICATOR_RESULT/{id}")
+    fun deleteResultIndicator(@PathVariable id: Long)
 
 
     @ApiOperation("Returns all RESULT indicators")

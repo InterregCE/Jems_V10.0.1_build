@@ -15,4 +15,5 @@ interface ResultIndicatorPersistence {
     fun getResultIndicatorsForSpecificObjective(programmeObjectivePolicy: ProgrammeObjectivePolicy): List<ResultIndicatorSummary>
     fun saveResultIndicator(resultIndicator: ResultIndicator): ResultIndicatorDetail
     fun isIdentifierUsedByAnotherResultIndicator(resultIndicatorId: Long?, identifier: String): Boolean
+    fun deleteResultIndicator(id: Long)
 }

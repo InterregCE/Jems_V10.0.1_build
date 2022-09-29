@@ -12,8 +12,8 @@
             <jems-programme-lump-sums-list
                     jemsFormLayout
                     jemsNoWidthLimit
-                    [lumpSum]="lumpSum$ | async"
-                    [dataSource]="lumpSumsDataSource">
+                    [dataSource]="lumpSumsDataSource"
+                    (deleted)="lumpSumDeleted$.next()">
             </jems-programme-lump-sums-list>
         </ng-container>
 
@@ -27,8 +27,8 @@
             <jems-programme-unit-costs-list
                     jemsFormLayout
                     jemsNoWidthLimit
-                    [unitCost]="unitCost$ | async"
-                    [dataSource]="unitCostDataSource">
+                    [dataSource]="unitCostDataSource"
+                    (deleted)="unitCostDeleted$.next()">
             </jems-programme-unit-costs-list>
         </ng-container>
     </div>

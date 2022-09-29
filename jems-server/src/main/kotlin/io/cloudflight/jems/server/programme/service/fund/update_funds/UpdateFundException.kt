@@ -28,3 +28,13 @@ class CreationOfFundUnderPreDefinedTypesIsNotAllowedException : ApplicationUnpro
     code = "$UPDATE_FUNDS_ERROR_CODE_PREFIX-003",
     i18nMessage = I18nMessage("$UPDATE_FUNDS_ERROR_KEY_PREFIX.creation.of.fund.under.pre.defined.types.is.not.allowed"),
 )
+
+class ToDeleteFundAlreadyUsedInCall : ApplicationUnprocessableException(
+    code = "$UPDATE_FUNDS_ERROR_CODE_PREFIX-004",
+    i18nMessage = I18nMessage("$UPDATE_FUNDS_ERROR_KEY_PREFIX.to.delete.fund.already.used.in.call"),
+)
+
+class ToDeselectFundAlreadyUsedInCall : ApplicationUnprocessableException(
+    code = "$UPDATE_FUNDS_ERROR_CODE_PREFIX-005",
+    i18nMessage = I18nMessage("$UPDATE_FUNDS_ERROR_KEY_PREFIX.to.deselect.fund.already.used.in.call"),
+)

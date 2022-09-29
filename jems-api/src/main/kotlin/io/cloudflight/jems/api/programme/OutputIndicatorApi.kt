@@ -12,11 +12,7 @@ import io.swagger.annotations.ApiOperation
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.http.MediaType
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.*
 
 @Api("Programme Indicator Output")
 interface OutputIndicatorApi {
@@ -36,6 +32,10 @@ interface OutputIndicatorApi {
     fun updateOutputIndicator(
         @RequestBody outputIndicatorUpdateRequestDTO: OutputIndicatorUpdateRequestDTO
     ): OutputIndicatorDetailDTO
+
+    @ApiOperation("Delete OUTPUT indicator")
+    @DeleteMapping("${ENDPOINT_API_PROGRAMME_INDICATOR_OUTPUT}/{id}")
+    fun deleteOutputIndicator(@PathVariable id: Long)
 
     @ApiOperation("Returns all OUTPUT indicators")
     @ApiImplicitParams(

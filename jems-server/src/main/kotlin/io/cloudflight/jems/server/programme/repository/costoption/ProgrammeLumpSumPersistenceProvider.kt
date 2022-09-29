@@ -54,6 +54,10 @@ class ProgrammeLumpSumPersistenceProvider(
     override fun deleteLumpSum(lumpSumId: Long) =
         repository.delete(getLumpSumOrThrow(lumpSumId))
 
+    @Transactional
+    override fun getNumberOfOccurrencesInCalls(lumpSumId: Long): Int =
+        repository.getNumberOfOccurrencesInCalls(lumpSumId)
+
     private fun getLumpSumOrThrow(lumpSumId: Long): ProgrammeLumpSumEntity =
         repository.findById(lumpSumId).orElseThrow { ResourceNotFoundException("programmeLumpSum") }
 

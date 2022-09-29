@@ -15,6 +15,17 @@
                     [rows]="priorities"
                     [totalElements]="priorities.length">
             </jems-table>
+            <jems-alert *ngIf="priorityDeleteError$ | async as error"
+                        [show]="!!error"
+                        [type]="Alert.ERROR"
+                        (closed)="priorityDeleteError$.next(null);">
+                <jems-api-error-content [error]="error"></jems-api-error-content>
+            </jems-alert>
+            <jems-alert
+                    [show]="priorityDeleteSuccess$ | async"
+                    [type]="Alert.SUCCESS">
+                <p>{{'programme.priority.delete.success' | translate}}</p>
+            </jems-alert>
         </ng-container>
     </div>
     <ng-template #specificObjective let-priority>
@@ -23,5 +34,14 @@
                 {{objective.code}} - {{'programme.policy.' + objective.programmeObjectivePolicy | translate}}
             </div>
         </div>
+    </ng-template>
+    <ng-template #deleteCell let-priority>
+        <button
+                mat-icon-button color="accent"
+                [disabled]="isProgrammeSetupRestricted"
+                (click)="delete(priority);$event.stopPropagation();"
+                matTooltip="{{'common.delete.entry.tooltip' | translate}}">
+            <mat-icon>delete</mat-icon>
+        </button>
     </ng-template>
 </jems-main-page-template>

@@ -7,7 +7,7 @@ import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeUnitCostListDTO
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.programme.service.costoption.create_unit_cost.CreateUnitCostInteractor
-import io.cloudflight.jems.server.programme.service.costoption.delete_unit_cost.DeleteUnitCostInteractor
+import io.cloudflight.jems.server.programme.service.costoption.deleteUnitCost.DeleteUnitCostInteractor
 import io.cloudflight.jems.server.programme.service.costoption.get_unit_cost.GetUnitCostInteractor
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.programme.service.costoption.update_unit_cost.UpdateUnitCostInteractor

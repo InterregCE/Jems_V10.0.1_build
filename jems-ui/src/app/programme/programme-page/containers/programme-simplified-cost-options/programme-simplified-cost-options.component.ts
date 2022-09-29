@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {BaseComponent} from '@common/components/base-component';
-import {Observable} from 'rxjs';
-import {map, tap} from 'rxjs/operators';
+import {combineLatest, Observable, Subject} from 'rxjs';
+import {map, startWith, switchMap, tap} from 'rxjs/operators';
 import {Log} from '../../../../common/utils/log';
 import {ProgrammePageSidenavService} from '../../services/programme-page-sidenav.service';
 import {LumpSumsStore} from '../../services/lump-sums-store.service';
@@ -19,16 +19,25 @@ import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 export class ProgrammeSimplifiedCostOptionsComponent extends BaseComponent {
 
   PermissionsEnum = PermissionsEnum;
-  lumpSum$ = this.lumpSumsStore.lumpSum();
-  unitCost$ = this.unitCostStore.unitCost();
 
-  lumpSumsDataSource$: Observable<MatTableDataSource<ProgrammeLumpSumListDTO>> = this.programmeCostOptionService.getProgrammeLumpSums()
+  lumpSumDeleted$ = new Subject<void>();
+  unitCostDeleted$ = new Subject<void>();
+
+  lumpSumsDataSource$: Observable<MatTableDataSource<ProgrammeLumpSumListDTO>> =
+    combineLatest(
+    [this.lumpSumDeleted$.pipe(startWith(null)
+    )])
     .pipe(
+      switchMap(() => this.programmeCostOptionService.getProgrammeLumpSums()),
       tap(list => Log.info('Fetched the Lump Sums:', this, list)),
       map(list => new MatTableDataSource(list))
     );
-  unitCostDataSource$: Observable<MatTableDataSource<ProgrammeUnitCostListDTO>> = this.programmeCostOptionService.getProgrammeUnitCosts()
+  unitCostDataSource$: Observable<MatTableDataSource<ProgrammeUnitCostListDTO>> =
+    combineLatest(
+      [this.unitCostDeleted$.pipe(startWith(null)
+    )])
     .pipe(
+      switchMap(() => this.programmeCostOptionService.getProgrammeUnitCosts()),
       tap(list => Log.info('Fetched the Unit Costs:', this, list)),
       map(list => new MatTableDataSource(list))
     );

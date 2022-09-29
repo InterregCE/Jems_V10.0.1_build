@@ -43,11 +43,22 @@ class UpdateFunds(
         throwIfAnyOfToUpdateFundsNotExists(currentFunds, toUpdateFunds)
 
         val toDeleteFundIds = currentFunds.map { it.id }
-            .filterTo(HashSet()) { currentFundId -> toUpdateFunds.none { it.id == currentFundId } }
+            .filter{ currentFundId -> toUpdateFunds.none { it.id == currentFundId } }
 
-        throwIfChangesAreNotAllowed(currentFunds, toUpdateFunds, toDeleteFundIds)
+        val toDeselectFundIds = currentFunds.filter { currentFund ->
+            toUpdateFunds.any { toUpdateFund -> currentFund.id == toUpdateFund.id && currentFund.selected && !toUpdateFund.selected }
+        }.map{it.id}
 
-        return persistence.updateFunds(toDeleteIds = toDeleteFundIds, funds.toSet()).also {
+        val fundsAlreadyInUse = persistence.getFundsAlreadyInUse()
+
+
+        throwIfChangesAreNotAllowed(toDeleteFundIds, toDeselectFundIds)
+
+        throwIfAnyOfToDeleteFundsInUse(toDeleteFundIds, fundsAlreadyInUse)
+
+        throwIfAnyOfDeselectedFundsInUse(toDeselectFundIds, fundsAlreadyInUse)
+
+        return persistence.updateFunds(toDeleteIds = toDeleteFundIds.toSet(), funds.toSet()).also {
             auditPublisher.publishEvent(programmeFundsChanged(this, it))
         }
     }
@@ -74,17 +85,23 @@ class UpdateFunds(
     }
 
     private fun throwIfChangesAreNotAllowed(
-        currentFunds: Collection<ProgrammeFund>,
-        toUpdateFunds: Collection<ProgrammeFund>,
-        toDeleteFundIds: Collection<Long>
+        toDeleteFundIds: Collection<Long>,
+        toDeselectFundIds: Collection<Long>
     ) {
         if (isProgrammeSetupLocked.isLocked() &&
-            (toDeleteFundIds.isNotEmpty() || isAnyFundDeselected(currentFunds, toUpdateFunds))
+            (toDeleteFundIds.isNotEmpty() || toDeselectFundIds.isNotEmpty())
         ) throw ChangesAreNotAllowedException()
     }
 
-    private fun isAnyFundDeselected(currentFunds: Collection<ProgrammeFund>, toUpdateFunds: Collection<ProgrammeFund>) =
-        toUpdateFunds.any { toUpdateFund ->
-            currentFunds.any { currentFund -> toUpdateFund.id == currentFund.id && currentFund.selected && !toUpdateFund.selected }
-        }
+    private fun throwIfAnyOfToDeleteFundsInUse(toDeleteFundIds: Iterable<Long>, fundsAlreadyInUse: Iterable<Long>) {
+        val fundsThatCannotBeRemoved = toDeleteFundIds.filter{deselectedFundId -> fundsAlreadyInUse.any { it == deselectedFundId }}
+        if (fundsThatCannotBeRemoved.isNotEmpty())
+            throw ToDeleteFundAlreadyUsedInCall()
+    }
+
+    private fun throwIfAnyOfDeselectedFundsInUse(deselectedFundIds: Iterable<Long>, fundsAlreadyInUse: Iterable<Long>) {
+        val fundsThatCannotBeDeselected = deselectedFundIds.filter{deselectedFundId -> fundsAlreadyInUse.any{it == deselectedFundId}}
+        if (fundsThatCannotBeDeselected.isNotEmpty())
+            throw ToDeselectFundAlreadyUsedInCall()
+    }
 }
