@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {combineLatest, merge, Observable, Subject} from 'rxjs';
+import {combineLatest, merge, Observable, of, Subject} from 'rxjs';
 import {
   ProjectStore
 } from '@project/project-application/containers/project-application-detail/services/project-store.service';
@@ -11,9 +11,12 @@ import {RoutingService} from '@common/services/routing.service';
 import {
   ContractingPartnerBeneficialOwnerDTO,
   ProjectContractingPartnerBeneficialOwnerService,
-  ProjectPartnerSummaryDTO,
+  ProjectPartnerSummaryDTO, ProjectPartnerUserCollaboratorService, ProjectUserCollaboratorDTO, UserRoleCreateDTO,
 } from '@cat/api';
 import {Log} from '@common/utils/log';
+import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
+import LevelEnum = ProjectUserCollaboratorDTO.LevelEnum;
+import {PermissionService} from '../../../security/permissions/permission.service';
 
 @Injectable({
   providedIn: 'root'
@@ -25,15 +28,21 @@ export class ContractPartnerStore {
   partnerId$: Observable<string | number | null>;
   beneficialOwners$: Observable<ContractingPartnerBeneficialOwnerDTO[]>;
   savedBeneficialOwners$ = new Subject<ContractingPartnerBeneficialOwnerDTO[]>();
+  userCanEditContractPartner$: Observable<boolean>;
+  userCanViewContractPartner$: Observable<boolean>;
 
   constructor(private partnerStore: ProjectPartnerStore,
               private projectStore: ProjectStore,
               private routingService: RoutingService,
-              private beneficialOwnerService: ProjectContractingPartnerBeneficialOwnerService,) {
+              private beneficialOwnerService: ProjectContractingPartnerBeneficialOwnerService,
+              private permissionService: PermissionService,
+              private partnerUserCollaboratorService: ProjectPartnerUserCollaboratorService) {
     this.partnerId$ = this.partnerId();
     this.projectId$ = this.projectStore.projectId$;
     this.partnerSummary$ = this.partnerInfo();
     this.beneficialOwners$ = this.beneficialOwners();
+    this.userCanEditContractPartner$ = this.userCanEditContractPartner();
+    this.userCanViewContractPartner$ = this.userCanViewContractPartner();
   }
 
   updateBeneficialOwners(beneficialOwners: ContractingPartnerBeneficialOwnerDTO[]) {
@@ -67,5 +76,33 @@ export class ContractPartnerStore {
       .pipe(
         shareReplay(1)
       );
+  }
+
+  private userCanEditContractPartner(): Observable<boolean> {
+    return combineLatest([
+      this.partnerId$,
+      this.permissionService.hasPermission(PermissionsEnum.ProjectContractingPartnerEdit),
+    ]).pipe(
+      switchMap(([partnerId, hasContractingPartnerEdit]) =>
+        combineLatest([
+          this.partnerUserCollaboratorService.checkMyPartnerLevel(partnerId as number),
+          of(hasContractingPartnerEdit),
+        ])
+      ),
+      map(([partnerLevel, hasContractingPartnerEdit]) => hasContractingPartnerEdit || partnerLevel === LevelEnum.EDIT));
+  }
+
+  private userCanViewContractPartner(): Observable<boolean> {
+    return combineLatest([
+      this.partnerId$,
+      this.permissionService.hasPermission(PermissionsEnum.ProjectContractingPartnerView),
+    ]).pipe(
+      switchMap(([partnerId, hasContractingPartnerView]) =>
+        combineLatest([
+          this.partnerUserCollaboratorService.checkMyPartnerLevel(partnerId as number),
+          of(hasContractingPartnerView),
+        ])
+      ),
+      map(([partnerLevel, hasContractingPartnerView]) => hasContractingPartnerView || partnerLevel === LevelEnum.EDIT || partnerLevel === LevelEnum.VIEW));
   }
 }
