@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiOperation
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 
 @Api("Payments api")
 interface PaymentsApi {
@@ -24,4 +25,9 @@ interface PaymentsApi {
     @GetMapping(ENDPOINT_API_PAYMENTS)
     fun getPaymentsToProjects(pageable: Pageable): Page<PaymentToProjectDTO>
 
+    @ApiOperation("Retrieve payment detail and partner data by payment id")
+    @GetMapping("${ENDPOINT_API_PAYMENTS}/{paymentId}")
+    fun getPaymentDetail(
+        @PathVariable paymentId: Long
+    ): PaymentDetailDTO
 }

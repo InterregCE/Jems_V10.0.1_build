@@ -11,6 +11,8 @@ import io.cloudflight.jems.server.payments.entity.PaymentPartnerEntity
 import io.cloudflight.jems.server.payments.repository.PaymentPartnerRepository
 import io.cloudflight.jems.server.payments.repository.PaymentPersistenceProvider
 import io.cloudflight.jems.server.payments.repository.PaymentRepository
+import io.cloudflight.jems.server.payments.service.model.PartnerPayment
+import io.cloudflight.jems.server.payments.service.model.PaymentDetail
 import io.cloudflight.jems.server.payments.service.model.PaymentPartnerToCreate
 import io.cloudflight.jems.server.payments.service.model.PaymentToCreate
 import io.cloudflight.jems.server.payments.service.model.PaymentToProject
@@ -30,6 +32,7 @@ import io.cloudflight.jems.server.project.entity.lumpsum.ProjectPartnerLumpSumId
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.lumpsum.ProjectLumpSumRepository
+import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.repository.toModel
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
@@ -59,6 +62,9 @@ class PaymentPersistenceProviderTest: UnitTest() {
 
     @RelaxedMockK
     lateinit var projectRepository: ProjectRepository
+
+    @RelaxedMockK
+    lateinit var projectPartnerRepository: ProjectPartnerRepository
 
     @RelaxedMockK
     lateinit var projectPersistence: ProjectPersistence
@@ -112,6 +118,44 @@ class PaymentPersistenceProviderTest: UnitTest() {
             programmeLumpSumId = LUMP_SUM_ID
         )
 
+        private val partnerPaymentEntity = PaymentPartnerEntity(
+            id = 1L,
+            payment = paymentEntity,
+            partnerId = PARTNER_ID,
+            amountApprovedPerPartner = BigDecimal.ONE
+        )
+        private val projectPartnerEntity = ProjectPartnerEntity(
+            abbreviation = "Lead",
+            legalStatus = ProgrammeLegalStatusEntity(1),
+            project = dummyProject,
+            role = ProjectPartnerRole.LEAD_PARTNER,
+            sortNumber = 1
+        )
+
+        private val paymentDetail = PaymentDetail(
+            id = PAYMENT_ID,
+            paymentType = PaymentType.FTLS,
+            projectId = PROJECT_ID,
+            fundName = fund.type.name,
+            projectAcronym = dummyProject.acronym,
+            amountApprovedPerFund = paymentEntity.amountApprovedPerFund!!,
+            dateOfLastPayment = null,
+            partnerPayments = listOf(
+                PartnerPayment(
+                    id = 1L,
+                    projectId = PROJECT_ID,
+                    orderNr = 1,
+                    programmeLumpSumId = LUMP_SUM_ID,
+                    programmeFundId = fund.id,
+                    partnerId = PARTNER_ID,
+                    partnerRole = ProjectPartnerRole.LEAD_PARTNER,
+                    partnerNumber = 1,
+                    partnerAbbreviation = "Lead",
+                    amountApprovedPerPartner = BigDecimal.ONE
+                )
+            )
+        )
+
         private val paymentToCreateEntity = PaymentEntity(
             id = 0L,
             type = PaymentType.FTLS,
@@ -146,7 +190,7 @@ class PaymentPersistenceProviderTest: UnitTest() {
             totalEligibleAmount = BigDecimal(10),
             lastApprovedVersionBeforeReadyForPayment = "v1.0"
         )
-        private val projectLumpSumId = ProjectLumpSumId(projectId =dummyProject.id, orderNr = 1)
+        private val projectLumpSumId = ProjectLumpSumId(projectId = dummyProject.id, orderNr = 1)
         val programmeLumpSum = programmeLumpSum(id = 50)
         private val contribution1 = ProjectPartnerLumpSumEntity(
             id = ProjectPartnerLumpSumId(
@@ -228,4 +272,15 @@ class PaymentPersistenceProviderTest: UnitTest() {
             assertThat(amountApprovedPerPartner).isEqualTo(BigDecimal.ONE)
         }
     }
+
+    @Test
+    fun getPaymentDetails() {
+        every { paymentRepository.getById(PAYMENT_ID) } returns paymentEntity
+        every { paymentPartnerRepository.findAllByPaymentId(PAYMENT_ID) } returns listOf(partnerPaymentEntity)
+        every { projectPartnerRepository.getById(PARTNER_ID) } returns projectPartnerEntity
+
+        assertThat(paymentPersistenceProvider.getPaymentDetails(PAYMENT_ID))
+            .isEqualTo(paymentDetail)
+    }
+
 }
