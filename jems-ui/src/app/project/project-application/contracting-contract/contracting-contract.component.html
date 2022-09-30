@@ -9,7 +9,7 @@
                (save)="onSubmit()"
                (discard)="resetForm(contractInfo)">
         <form jemsFormLayout [formGroup]="contractInfoForm">
-
+            <h3>{{'project.application.contract.contracts.title' | translate}}</h3>
             <div jemsMultiColumnRow>
                 <mat-form-field jemsFormFieldWidth="half" *ngIf="contractInfo.projectStartDate !== null">
                     <mat-label>{{'project.application.contract.monitoring.project.start.date' | translate  | dateFormatInfo}}</mat-label>
@@ -40,8 +40,8 @@
                 </mat-form-field>
             </div>
 
-            <div jemsMultiColumnRow>
-                <jems-expandable-textarea jemsMultiColumnRow class="mt-2"
+            <div>
+                <jems-expandable-textarea jemsMultiColumnRow
                                           [control]="contractInfoForm?.controls?.website"
                                           [errors]="contractInfoForm?.controls?.website.errors"
                                           [characterLimit]="250"
@@ -51,36 +51,31 @@
                 </jems-expandable-textarea>
             </div>
 
-
-
-            <div jemsMultiColumnRow class="mt-2">
-                <span><!--used for alignment--></span>
-                <h4 jemsFormFieldWidth="half">{{'project.application.contract.contracts.subsidy.contract' | translate}}</h4>
-                <h4 jemsFormFieldWidth="half">{{'project.application.contract.contracts.partnership.agreement' | translate}}</h4>
-            </div>
-
-            <div jemsMultiColumnRow>
-                <mat-form-field jemsFormFieldWidth="half" *ngIf="contractInfo.subsidyContractDate !== null">
-                    <mat-label>{{'project.application.contract.monitoring.project.additional.entry.into.force.date' | translate  | dateFormatInfo}}</mat-label>
-                    <input name="projectEndDate" [disabled]="true" matInput [value]="contractInfo.subsidyContractDate" [matDatepicker]="subsidyContractDate">
-                    <mat-datepicker-toggle matSuffix [for]="subsidyContractDate"></mat-datepicker-toggle>
-                    <mat-datepicker #subsidyContractDate></mat-datepicker>
-                </mat-form-field>
-
-                <mat-form-field jemsFormFieldWidth="half" *ngIf="contractInfo.subsidyContractDate === null">
-                    <mat-label>{{'project.application.contract.contracts.partnership.agreement.date' | translate | dateFormatInfo}}</mat-label>
-                    <input [disabled]="true" matInput name="notDefined"
-                           [value]="'project.contracting.contracts.value.not.set.info' | translate">
-                </mat-form-field>
-
-                <mat-form-field jemsFormFieldWidth="half">
-                    <mat-label>{{'project.application.contract.contracts.partnership.agreement.date' | translate | dateFormatInfo}}</mat-label>
-                    <input name="partnershipAgreementDate" [matDatepicker]="partnershipAgreementDate" matInput
-                           formControlName="partnershipAgreementDate">
-                    <mat-datepicker-toggle matSuffix [for]="partnershipAgreementDate"></mat-datepicker-toggle>
-                    <mat-datepicker #partnershipAgreementDate></mat-datepicker>
-                </mat-form-field>
-
+            <div jemsMultiColumnRow class="mt-4">
+                <div jemsFormFieldWidth="half">
+                    <h4>{{'project.application.contract.contracts.subsidy.contract' | translate}}</h4>
+                    <mat-form-field jemsFormFieldWidth="full" *ngIf="contractInfo.subsidyContractDate !== null">
+                        <mat-label>{{'project.application.contract.monitoring.project.additional.entry.into.force.date' | translate  | dateFormatInfo}}</mat-label>
+                        <input name="projectEndDate" [disabled]="true" matInput [value]="contractInfo.subsidyContractDate" [matDatepicker]="subsidyContractDate">
+                        <mat-datepicker-toggle matSuffix [for]="subsidyContractDate"></mat-datepicker-toggle>
+                        <mat-datepicker #subsidyContractDate></mat-datepicker>
+                    </mat-form-field>
+                    <mat-form-field jemsFormFieldWidth="full" *ngIf="contractInfo.subsidyContractDate === null">
+                        <mat-label>{{'project.application.contract.contracts.partnership.agreement.date' | translate | dateFormatInfo}}</mat-label>
+                        <input [disabled]="true" matInput name="notDefined"
+                               [value]="'project.contracting.contracts.value.not.set.info' | translate">
+                    </mat-form-field>
+                </div>
+                <div jemsFormFieldWidth="half">
+                    <h4>{{'project.application.contract.contracts.partnership.agreement' | translate}}</h4>
+                    <mat-form-field jemsFormFieldWidth="full">
+                        <mat-label>{{'project.application.contract.contracts.partnership.agreement.date' | translate | dateFormatInfo}}</mat-label>
+                        <input name="partnershipAgreementDate" [matDatepicker]="partnershipAgreementDate" matInput
+                               formControlName="partnershipAgreementDate">
+                        <mat-datepicker-toggle matSuffix [for]="partnershipAgreementDate"></mat-datepicker-toggle>
+                        <mat-datepicker #partnershipAgreementDate></mat-datepicker>
+                    </mat-form-field>
+                </div>
             </div>
 
         </form>
