@@ -51,24 +51,48 @@ class ProjectReportFilePersistenceProvider(
         reportFileRepository.existsByPartnerIdAndPathPrefixAndId(partnerId = partnerId, pathPrefix, id = fileId)
 
     @Transactional(readOnly = true)
-    override fun existsFileByProjectIdAndFileIdAndFileTypeIn(projectId: Long, fileId: Long, fileTypes: Set<ProjectPartnerReportFileType>): Boolean =
-        reportFileRepository.existsByProjectIdAndIdAndTypeIn(projectId = projectId, fileId = fileId, fileTypes = fileTypes )
+    override fun existsFile(type: ProjectPartnerReportFileType, fileId: Long) =
+        reportFileRepository.existsByTypeAndId(type, id = fileId)
+
+    @Transactional(readOnly = true)
+    override fun existsFileByProjectIdAndFileIdAndFileTypeIn(
+        projectId: Long,
+        fileId: Long,
+        fileTypes: Set<ProjectPartnerReportFileType>
+    ): Boolean =
+        reportFileRepository.existsByProjectIdAndIdAndTypeIn(
+            projectId = projectId,
+            fileId = fileId,
+            fileTypes = fileTypes
+        )
 
     @Transactional(readOnly = true)
     override fun getFileAuthor(partnerId: Long, pathPrefix: String, fileId: Long) =
-        reportFileRepository.findByPartnerIdAndPathPrefixAndId(partnerId = partnerId, pathPrefix, id = fileId)?.user?.toModel()
+        reportFileRepository.findByPartnerIdAndPathPrefixAndId(
+            partnerId = partnerId,
+            pathPrefix,
+            id = fileId
+        )?.user?.toModel()
 
     @Transactional(readOnly = true)
     override fun downloadFile(partnerId: Long, fileId: Long) =
-        reportFileRepository.findByPartnerIdAndId(partnerId = partnerId, fileId = fileId)?.let { file ->
-            minioStorage.getFile(file.minioBucket, filePath = file.minioLocation).let {
-                Pair(file.name, it)
-            }
-        }
+        reportFileRepository.findByPartnerIdAndId(partnerId = partnerId, fileId = fileId)?.download()
+
+    @Transactional(readOnly = true)
+    override fun downloadFile(type: ProjectPartnerReportFileType, fileId: Long) =
+        reportFileRepository.findByTypeAndId(type = type, fileId = fileId)?.download()
+
+    private fun ReportProjectFileEntity.download() =
+        Pair(name, minioStorage.getFile(minioBucket, filePath = minioLocation))
 
     @Transactional
     override fun deleteFile(partnerId: Long, fileId: Long) =
         reportFileRepository.findByPartnerIdAndId(partnerId = partnerId, fileId = fileId)
+            .deleteIfPresent()
+
+    @Transactional
+    override fun deleteFile(type: ProjectPartnerReportFileType, fileId: Long) =
+        reportFileRepository.findByTypeAndId(type, fileId = fileId)
             .deleteIfPresent()
 
     @Transactional

@@ -24,15 +24,21 @@ import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 
 @Repository
-class PaymentPersistenceProvider(private val paymentRepository: PaymentRepository,
-                                 private val paymentPartnerRepository: PaymentPartnerRepository,
-                                 private val paymentPartnerInstallmentRepository: PaymentPartnerInstallmentRepository,
-                                 private val projectRepository: ProjectRepository,
-                                 private val projectPartnerRepository: ProjectPartnerRepository,
-                                 private val projectLumpSumRepository: ProjectLumpSumRepository,
-                                 private val projectPersistence: ProjectPersistence,
-                                 private val userRepository: UserRepository,
-                                 private val fundRepository: ProgrammeFundRepository): PaymentPersistence {
+class PaymentPersistenceProvider(
+    private val paymentRepository: PaymentRepository,
+    private val paymentPartnerRepository: PaymentPartnerRepository,
+    private val paymentPartnerInstallmentRepository: PaymentPartnerInstallmentRepository,
+    private val projectRepository: ProjectRepository,
+    private val projectPartnerRepository: ProjectPartnerRepository,
+    private val projectLumpSumRepository: ProjectLumpSumRepository,
+    private val projectPersistence: ProjectPersistence,
+    private val userRepository: UserRepository,
+    private val fundRepository: ProgrammeFundRepository
+) : PaymentPersistence {
+
+    @Transactional(readOnly = true)
+    override fun existsById(id: Long) =
+        paymentRepository.existsById(id)
 
     @Transactional(readOnly = true)
     override fun getAllPaymentToProject(pageable: Pageable): Page<PaymentToProject> {

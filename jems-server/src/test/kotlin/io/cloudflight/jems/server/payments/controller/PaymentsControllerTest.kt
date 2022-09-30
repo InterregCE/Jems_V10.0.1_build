@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.payment.controller
+package io.cloudflight.jems.server.payments.controller
 
 import io.cloudflight.jems.api.payments.PaymentDetailDTO
 import io.cloudflight.jems.api.payments.PaymentPartnerDTO
@@ -9,7 +9,6 @@ import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.api.user.dto.OutputUser
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.createTestCallEntity
-import io.cloudflight.jems.server.payments.controller.PaymentsController
 import io.cloudflight.jems.server.payments.service.getPaymentDetail.GetPaymentDetailInteractor
 import io.cloudflight.jems.server.payments.service.getPayments.GetPaymentsInteractor
 import io.cloudflight.jems.server.payments.service.model.PartnerPayment

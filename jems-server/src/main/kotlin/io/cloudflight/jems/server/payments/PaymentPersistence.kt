@@ -13,6 +13,8 @@ import org.springframework.data.domain.Pageable
 
 interface PaymentPersistence {
 
+    fun existsById(id: Long): Boolean
+
     fun getAllPaymentToProject(pageable: Pageable): Page<PaymentToProject>
 
     fun getPaymentDetails(paymentId: Long): PaymentDetail

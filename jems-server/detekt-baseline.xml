@@ -594,6 +594,7 @@
     <ID>TooManyFunctions:ProjectPartnerBudgetMapper.kt$io.cloudflight.jems.server.project.controller.partner.budget.ProjectPartnerBudgetMapper.kt</ID>
     <ID>TooManyFunctions:ProjectPartnerEntityMapper.kt$io.cloudflight.jems.server.project.repository.partner.ProjectPartnerEntityMapper.kt</ID>
     <ID>TooManyFunctions:ProjectPartnerRepository.kt$ProjectPartnerRepository : JpaRepository</ID>
+    <ID>TooManyFunctions:ProjectReportFilePersistenceProvider.kt$ProjectReportFilePersistenceProvider : ProjectReportFilePersistence</ID>
     <ID>TooManyFunctions:UpdateCoFinancingValidation.kt$io.cloudflight.jems.server.project.service.partner.cofinancing.update_cofinancing.UpdateCoFinancingValidation.kt</ID>
     <ID>TooManyFunctions:WorkPackagePersistenceProvider.kt$WorkPackagePersistenceProvider : WorkPackagePersistence</ID>
     <ID>UnnecessaryAbstractClass:ApplicationState.kt$ApplicationState</ID>

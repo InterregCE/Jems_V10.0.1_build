@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.payment.service
+package io.cloudflight.jems.server.payments.service
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.exception.I18nValidationException

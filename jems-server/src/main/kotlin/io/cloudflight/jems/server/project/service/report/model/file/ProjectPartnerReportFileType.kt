@@ -4,6 +4,9 @@ enum class ProjectPartnerReportFileType(
     private val parent: ProjectPartnerReportFileType?,
     val needsId: Boolean,
 ) {
+    Payment(null, true),
+      PaymentAttachment(Payment, false),
+
     Project(null, true),
       Report(Project, false),
         Partner(Report, true),

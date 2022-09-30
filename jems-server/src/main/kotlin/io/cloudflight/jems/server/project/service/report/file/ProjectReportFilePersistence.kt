@@ -14,27 +14,53 @@ interface ProjectReportFilePersistence {
 
     fun existsFile(partnerId: Long, pathPrefix: String, fileId: Long): Boolean
 
-    fun existsFileByProjectIdAndFileIdAndFileTypeIn(projectId: Long, fileId: Long, fileTypes: Set<ProjectPartnerReportFileType>): Boolean
+    fun existsFile(type: ProjectPartnerReportFileType, fileId: Long): Boolean
+
+    fun existsFileByProjectIdAndFileIdAndFileTypeIn(
+        projectId: Long,
+        fileId: Long,
+        fileTypes: Set<ProjectPartnerReportFileType>
+    ): Boolean
 
     fun getFileAuthor(partnerId: Long, pathPrefix: String, fileId: Long): UserSimple?
 
     fun downloadFile(partnerId: Long, fileId: Long): Pair<String, ByteArray>?
 
+    fun downloadFile(type: ProjectPartnerReportFileType, fileId: Long): Pair<String, ByteArray>?
+
     fun deleteFile(partnerId: Long, fileId: Long)
+
+    fun deleteFile(type: ProjectPartnerReportFileType, fileId: Long)
 
     fun setDescriptionToFile(fileId: Long, description: String)
 
-    fun updatePartnerReportActivityAttachment(activityId: Long, file: ProjectReportFileCreate): ProjectReportFileMetadata
+    fun updatePartnerReportActivityAttachment(
+        activityId: Long,
+        file: ProjectReportFileCreate
+    ): ProjectReportFileMetadata
 
-    fun updatePartnerReportDeliverableAttachment(deliverableId: Long, file: ProjectReportFileCreate): ProjectReportFileMetadata
+    fun updatePartnerReportDeliverableAttachment(
+        deliverableId: Long,
+        file: ProjectReportFileCreate
+    ): ProjectReportFileMetadata
 
     fun updatePartnerReportOutputAttachment(outputId: Long, file: ProjectReportFileCreate): ProjectReportFileMetadata
 
-    fun updatePartnerReportContributionAttachment(contributionId: Long, file: ProjectReportFileCreate): ProjectReportFileMetadata
+    fun updatePartnerReportContributionAttachment(
+        contributionId: Long,
+        file: ProjectReportFileCreate
+    ): ProjectReportFileMetadata
 
-    fun updatePartnerReportExpenditureAttachment(expenditureId: Long, file: ProjectReportFileCreate): ProjectReportFileMetadata
+    fun updatePartnerReportExpenditureAttachment(
+        expenditureId: Long,
+        file: ProjectReportFileCreate
+    ): ProjectReportFileMetadata
 
-    fun addPartnerReportProcurementAttachment(reportId: Long, procurementId: Long, file: ProjectReportFileCreate): ProjectReportFileMetadata
+    fun addPartnerReportProcurementAttachment(
+        reportId: Long,
+        procurementId: Long,
+        file: ProjectReportFileCreate
+    ): ProjectReportFileMetadata
 
     fun listAttachments(
         pageable: Pageable,

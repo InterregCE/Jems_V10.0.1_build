@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.payment.repository
+package io.cloudflight.jems.server.payments.repository
 
 import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumPhase
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
@@ -10,10 +10,6 @@ import io.cloudflight.jems.server.payments.entity.PaymentEntity
 import io.cloudflight.jems.server.payments.entity.PaymentGroupingId
 import io.cloudflight.jems.server.payments.entity.PaymentPartnerEntity
 import io.cloudflight.jems.server.payments.entity.PaymentPartnerInstallmentEntity
-import io.cloudflight.jems.server.payments.repository.PaymentPartnerInstallmentRepository
-import io.cloudflight.jems.server.payments.repository.PaymentPartnerRepository
-import io.cloudflight.jems.server.payments.repository.PaymentPersistenceProvider
-import io.cloudflight.jems.server.payments.repository.PaymentRepository
 import io.cloudflight.jems.server.payments.service.model.PartnerPayment
 import io.cloudflight.jems.server.payments.service.model.PaymentDetail
 import io.cloudflight.jems.server.payments.service.model.PaymentPartnerInstallment

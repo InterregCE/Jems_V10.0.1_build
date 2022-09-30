@@ -10,7 +10,7 @@ data class ProjectFile(
     val size: Long
 ) {
     fun getFileMetadata(
-        projectId: Long,
+        projectId: Long?,
         partnerId: Long?,
         location: String,
         type: ProjectPartnerReportFileType,
