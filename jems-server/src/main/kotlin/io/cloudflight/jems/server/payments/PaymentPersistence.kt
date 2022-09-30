@@ -3,6 +3,8 @@ package io.cloudflight.jems.server.payments
 import io.cloudflight.jems.server.payments.entity.PaymentGroupingId
 import io.cloudflight.jems.server.payments.service.model.PartnerPayment
 import io.cloudflight.jems.server.payments.service.model.PaymentDetail
+import io.cloudflight.jems.server.payments.service.model.PaymentPartnerInstallment
+import io.cloudflight.jems.server.payments.service.model.PaymentPartnerInstallmentUpdate
 import io.cloudflight.jems.server.payments.service.model.PaymentToCreate
 import io.cloudflight.jems.server.payments.service.model.PaymentPerPartner
 import io.cloudflight.jems.server.payments.service.model.PaymentToProject
@@ -19,7 +21,19 @@ interface PaymentPersistence {
 
     fun deleteAllByProjectIdAndOrderNrIn(projectId: Long, orderNr: Set<Int>)
 
-    fun getAmountPerPartnerByProjectIdAndLumpSumOrderNrIn(projectId: Long, orderNrsToBeAdded: MutableSet<Int>): List<PaymentPerPartner>
+    fun getAmountPerPartnerByProjectIdAndLumpSumOrderNrIn(
+        projectId: Long,
+        orderNrsToBeAdded: MutableSet<Int>
+    ): List<PaymentPerPartner>
 
     fun savePaymentToProjects(projectId: Long, paymentsToBeSaved:  Map<PaymentGroupingId, PaymentToCreate>)
+
+    fun getPaymentPartnerId(paymentId: Long, partnerId: Long): Long
+
+    fun findPaymentPartnerInstallments(paymentPartnerId: Long): List <PaymentPartnerInstallment>
+
+    fun updatePaymentPartnerInstallments(paymentPartnerId: Long,
+                                         toDeleteInstallmentIds: Set<Long>,
+                                         paymentPartnerInstallments: List<PaymentPartnerInstallmentUpdate>
+    ): List<PaymentPartnerInstallment>
 }

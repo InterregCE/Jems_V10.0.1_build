@@ -4,6 +4,8 @@ import io.cloudflight.jems.server.payments.PaymentPersistence
 import io.cloudflight.jems.server.payments.entity.PaymentGroupingId
 import io.cloudflight.jems.server.payments.service.model.PartnerPayment
 import io.cloudflight.jems.server.payments.service.model.PaymentDetail
+import io.cloudflight.jems.server.payments.service.model.PaymentPartnerInstallment
+import io.cloudflight.jems.server.payments.service.model.PaymentPartnerInstallmentUpdate
 import io.cloudflight.jems.server.payments.service.model.PaymentPerPartner
 import io.cloudflight.jems.server.payments.service.model.PaymentToCreate
 import io.cloudflight.jems.server.payments.service.model.PaymentToProject
@@ -14,6 +16,8 @@ import io.cloudflight.jems.server.project.repository.lumpsum.ProjectLumpSumRepos
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.repository.partner.toProjectPartnerDetail
 import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.user.entity.UserEntity
+import io.cloudflight.jems.server.user.repository.user.UserRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
@@ -22,10 +26,12 @@ import org.springframework.transaction.annotation.Transactional
 @Repository
 class PaymentPersistenceProvider(private val paymentRepository: PaymentRepository,
                                  private val paymentPartnerRepository: PaymentPartnerRepository,
+                                 private val paymentPartnerInstallmentRepository: PaymentPartnerInstallmentRepository,
                                  private val projectRepository: ProjectRepository,
                                  private val projectPartnerRepository: ProjectPartnerRepository,
                                  private val projectLumpSumRepository: ProjectLumpSumRepository,
                                  private val projectPersistence: ProjectPersistence,
+                                 private val userRepository: UserRepository,
                                  private val fundRepository: ProgrammeFundRepository): PaymentPersistence {
 
     @Transactional(readOnly = true)
@@ -38,7 +44,7 @@ class PaymentPersistenceProvider(private val paymentRepository: PaymentRepositor
 
     @Transactional
     override fun deleteAllByProjectIdAndOrderNrIn(projectId: Long, orderNr: Set<Int>) {
-        this.paymentRepository.deleteAllByProjectIdAndOrderNr(projectId, orderNr)
+        paymentRepository.deleteAllByProjectIdAndOrderNr(projectId, orderNr)
     }
 
     @Transactional
@@ -46,14 +52,14 @@ class PaymentPersistenceProvider(private val paymentRepository: PaymentRepositor
         projectId: Long,
         orderNrsToBeAdded: MutableSet<Int>
     ): List<PaymentPerPartner> =
-        this.paymentRepository
+        paymentRepository
             .getAmountPerPartnerByProjectIdAndLumpSumOrderNrIn(projectId, orderNrsToBeAdded)
             .toListModel()
 
     @Transactional
     override fun savePaymentToProjects(projectId: Long, paymentsToBeSaved: Map<PaymentGroupingId, PaymentToCreate>) {
         val projectEntity = projectRepository.getById(projectId)
-        val paymentEntities = this.paymentRepository.saveAll(paymentsToBeSaved.map { (id, model) ->
+        val paymentEntities = paymentRepository.saveAll(paymentsToBeSaved.map { (id, model) ->
             model.toEntity(
                 projectEntity = projectEntity,
                 paymentType =  PaymentType.FTLS,
@@ -70,13 +76,48 @@ class PaymentPersistenceProvider(private val paymentRepository: PaymentRepositor
 
     @Transactional(readOnly = true)
     override fun getPaymentDetails(paymentId: Long): PaymentDetail =
-        this.paymentRepository.getById(paymentId).toDetailModel(
+        paymentRepository.getById(paymentId).toDetailModel(
             partnerPayments = getAllPartnerPayments(paymentId)
         )
 
     @Transactional(readOnly = true)
     override fun getAllPartnerPayments(paymentId: Long): List<PartnerPayment> =
-        this.paymentPartnerRepository.findAllByPaymentId(paymentId)
-            .map { it.toModel(this.projectPartnerRepository.getById(it.partnerId).toProjectPartnerDetail()) }
+        paymentPartnerRepository.findAllByPaymentId(paymentId)
+            .map { it.toModel(
+                projectPartnerRepository.getById(it.partnerId).toProjectPartnerDetail(),
+                findPaymentPartnerInstallments(it.id)
+            ) }
+
+    @Transactional(readOnly = true)
+    override fun getPaymentPartnerId(paymentId: Long, partnerId: Long): Long =
+        this.paymentPartnerRepository.getIdByPaymentIdAndPartnerId(paymentId, partnerId)
+
+    @Transactional(readOnly = true)
+    override fun findPaymentPartnerInstallments(paymentPartnerId: Long): List <PaymentPartnerInstallment> =
+        this.paymentPartnerInstallmentRepository.findAllByPaymentPartnerId(paymentPartnerId).toModelList()
+
+    @Transactional
+    override fun updatePaymentPartnerInstallments(
+        paymentPartnerId: Long,
+        toDeleteInstallmentIds: Set<Long>,
+        paymentPartnerInstallments: List<PaymentPartnerInstallmentUpdate>
+    ): List<PaymentPartnerInstallment> {
+        paymentPartnerInstallmentRepository.deleteAllByIdInBatch(toDeleteInstallmentIds)
+
+        return paymentPartnerInstallmentRepository.saveAll(
+            paymentPartnerInstallments.map {
+                it.toEntity(
+                    paymentPartner = paymentPartnerRepository.getById(paymentPartnerId),
+                    savePaymentInfoUser = getUserOrNull(it.savePaymentInfoUserId),
+                    paymentConfirmedUser = getUserOrNull(it.paymentConfirmedUserId)
+                )
+            }
+        ).toModelList()
+    }
+
+    private fun getUserOrNull(userId: Long?): UserEntity? =
+        if (userId != null) {
+            userRepository.getById(userId)
+        } else null
 
 }
