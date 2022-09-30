@@ -8,6 +8,7 @@ import {PaymentsToProjectDetailPageConstants} from './payments-to-project-detail
 import {PaymentsDetailPageStore} from './payments-detail-page.store';
 import {tap} from 'rxjs/operators';
 import {animate, state, style, transition, trigger} from '@angular/animations';
+import {FormService} from "@common/components/section/form/form.service";
 
 @Component({
   selector: 'jems-payments-to-project-detail-page',
@@ -21,6 +22,7 @@ import {animate, state, style, transition, trigger} from '@angular/animations';
       transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
     ]),
   ],
+  providers: [FormService]
 })
 export class PaymentsToProjectDetailPageComponent implements OnInit {
 
@@ -73,5 +75,9 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
 
   get partnerPayments(): FormArray {
     return this.partnerPaymentsForm.get(this.constants.FORM_CONTROL_NAMES.partnerPayments) as FormArray;
+  }
+
+  save() {
+
   }
 }

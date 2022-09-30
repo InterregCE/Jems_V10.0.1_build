@@ -23,103 +23,210 @@
     <!--    <pre>-->
     <!--        {{data.partnerPayments | json}}-->
     <!--    </pre>-->
-    <form jemsFormLayout [formGroup]="partnerPaymentsForm">
+<!--    <form jemsFormLayout [formGroup]="partnerPaymentsForm">-->
 
-        <ng-container *ngIf="data.partnerPayments">
-            <h3>{{'programme.priority.objective.title' | translate}}</h3>
-            <div class="table-container" jemsNoWidthLimit>
-                <table mat-table jemsNoWidthLimit
-                       [dataSource]="tableData"
-                       multiTemplateDataRows
-                       class="mat-elevation-z8 partner-payments-table"
-                       [formArrayName]="constants.FORM_CONTROL_NAMES.partnerPayments">
+<!--        <ng-container *ngIf="data.partnerPayments">-->
+<!--            <h3>{{'programme.priority.objective.title' | translate}}</h3>-->
+<!--            <div class="table-container" jemsNoWidthLimit>-->
+<!--                <table mat-table jemsNoWidthLimit-->
+<!--                       [dataSource]="tableData"-->
+<!--                       multiTemplateDataRows-->
+<!--                       class="mat-elevation-z8 partner-payments-table"-->
+<!--                       [formArrayName]="constants.FORM_CONTROL_NAMES.partnerPayments">-->
 
-                    <ng-container matColumnDef="partner">
-                        <th class="text-field-column title-column-width" mat-header-cell *matHeaderCellDef scope="col">
-                            {{'payments.detail.table.header.partner' | translate}}
-                        </th>
-                        <td class="text-field-column title-column-width" mat-cell
-                            *matCellDef="let control; let i = dataIndex;" [formGroupName]="i">
-                            <div>{{'common.label.project.partner.role.shortcut.' + control.get(constants.FORM_CONTROL_NAMES.partnerType).value | adaptTranslationKeyByCallType | async | translate : {partner: control.get(constants.FORM_CONTROL_NAMES.partnerNumber).value} }}</div>
-                        </td>
-                    </ng-container>
+<!--                    <ng-container matColumnDef="partner">-->
+<!--                        <th class="text-field-column title-column-width" mat-header-cell *matHeaderCellDef scope="col">-->
+<!--                            {{'payments.detail.table.header.partner' | translate}}-->
+<!--                        </th>-->
+<!--                        <td class="text-field-column title-column-width" mat-cell-->
+<!--                            *matCellDef="let control; let i = dataIndex;" [formGroupName]="i">-->
+<!--                            <div>{{'common.label.project.partner.role.shortcut.' + control.get(constants.FORM_CONTROL_NAMES.partnerType).value | adaptTranslationKeyByCallType | async | translate : {partner: control.get(constants.FORM_CONTROL_NAMES.partnerNumber).value} }}</div>-->
+<!--                        </td>-->
+<!--                    </ng-container>-->
 
-                    <ng-container matColumnDef="partnerName">
-                        <th class="text-field-column" mat-header-cell *matHeaderCellDef scope="col">
-                            {{'payments.detail.table.header.partner.name' | translate}}
-                        </th>
-                        <td class="text-field-column title-column-width" mat-cell
-                            *matCellDef="let control; let i = dataIndex;" [formGroupName]="i">
-                            <div>{{control.get(constants.FORM_CONTROL_NAMES.partnerAbbreviation).value}}</div>
-                        </td>
-                    </ng-container>
+<!--                    <ng-container matColumnDef="partnerName">-->
+<!--                        <th class="text-field-column" mat-header-cell *matHeaderCellDef scope="col">-->
+<!--                            {{'payments.detail.table.header.partner.name' | translate}}-->
+<!--                        </th>-->
+<!--                        <td class="text-field-column title-column-width" mat-cell-->
+<!--                            *matCellDef="let control; let i = dataIndex;" [formGroupName]="i">-->
+<!--                            <div>{{control.get(constants.FORM_CONTROL_NAMES.partnerAbbreviation).value}}</div>-->
+<!--                        </td>-->
+<!--                    </ng-container>-->
 
-                    <ng-container matColumnDef="amountApproved">
-                        <th class="text-field-column title-column-width" mat-header-cell *matHeaderCellDef scope="col">
-                            {{'payments.detail.table.header.amount.approved' | translate}}
-                        </th>
-                        <td class="text-field-column title-column-width" mat-cell
-                            *matCellDef="let control; let i = dataIndex;" [formGroupName]="i">
-                            <div>{{control.get(constants.FORM_CONTROL_NAMES.amountApproved).value | asMoney}}</div>
-                        </td>
-                    </ng-container>
+<!--                    <ng-container matColumnDef="amountApproved">-->
+<!--                        <th class="text-field-column title-column-width" mat-header-cell *matHeaderCellDef scope="col">-->
+<!--                            {{'payments.detail.table.header.amount.approved' | translate}}-->
+<!--                        </th>-->
+<!--                        <td class="text-field-column title-column-width" mat-cell-->
+<!--                            *matCellDef="let control; let i = dataIndex;" [formGroupName]="i">-->
+<!--                            <div>{{control.get(constants.FORM_CONTROL_NAMES.amountApproved).value | asMoney}}</div>-->
+<!--                        </td>-->
+<!--                    </ng-container>-->
 
 
-                    <ng-container matColumnDef="addInstallment" stickyEnd>
-                        <th mat-header-cell *matHeaderCellDef scope="col"></th>
-                        <td mat-cell *matCellDef="let element; let i = dataIndex;" [formGroupName]="i">
-                            <button
-                                    type="button" mat-icon-button
-                                    (click)="expandedElement = expandedElement === element ? null : element">
-                                <mat-icon *ngIf="element !== expandedElement; else expandedIcon">expand_more</mat-icon>
-                                <ng-template #expandedIcon>
-                                    <mat-icon>expand_less</mat-icon>
-                                </ng-template>
-                            </button>
-                        </td>
-                    </ng-container>
+<!--                    <ng-container matColumnDef="addInstallment" stickyEnd>-->
+<!--                        <th mat-header-cell *matHeaderCellDef scope="col"></th>-->
+<!--                        <td mat-cell *matCellDef="let element; let i = dataIndex;" [formGroupName]="i">-->
+<!--                            <button-->
+<!--                                    type="button" mat-icon-button-->
+<!--                                    (click)="expandedElement = expandedElement === element ? null : element">-->
+<!--                                <mat-icon *ngIf="element !== expandedElement; else expandedIcon">expand_more</mat-icon>-->
+<!--                                <ng-template #expandedIcon>-->
+<!--                                    <mat-icon>expand_less</mat-icon>-->
+<!--                                </ng-template>-->
+<!--                            </button>-->
+<!--                        </td>-->
+<!--                    </ng-container>-->
 
-                    <ng-container matColumnDef="expandedDetail">
-                        <td
-                                mat-cell
-                                *matCellDef="let control; let i = dataIndex;"
-                                [formGroupName]="i"
-                                [attr.colspan]="columnsToDisplay.length">
+<!--                    <ng-container matColumnDef="expandedDetail">-->
+<!--                        <td-->
+<!--                                mat-cell-->
+<!--                                *matCellDef="let control; let i = dataIndex;"-->
+<!--                                [formGroupName]="i"-->
+<!--                                [attr.colspan]="columnsToDisplay.length">-->
 
-                            <div class="extended-row-container"
-                                 [@detailExpand]="control === expandedElement ? 'expanded' : 'collapsed'">
-                                <div class="extension-content">
-                                    <ng-container [ngTemplateOutlet]="installmentsTemplate"
-                                                  [ngTemplateOutletContext]="{$implicit: control.get(constants.FORM_CONTROL_NAMES.installments)}">
-                                    </ng-container>
-                                </div>
-                            </div>
-                        </td>
-                    </ng-container>
+<!--                            <div class="extended-row-container"-->
+<!--                                 [@detailExpand]="control === expandedElement ? 'expanded' : 'collapsed'">-->
+<!--                                <div class="extension-content">-->
+<!--                                    <ng-container [ngTemplateOutlet]="installmentsTemplate"-->
+<!--                                                  [ngTemplateOutletContext]="{$implicit: control.get(constants.FORM_CONTROL_NAMES.installments)}">-->
+<!--                                    </ng-container>-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                        </td>-->
+<!--                    </ng-container>-->
 
-                    <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
-                    <tr #normalRows mat-row *matRowDef="let element; columns: columnsToDisplay; let i = dataIndex; "
-                        class="element-row"
-                        [class.expanded-row]="expandedElement === element"
-                        [class.colored-row]="i%2 !== 0"
-                        [class.normal-row]="i%2 === 0"></tr>
-                    <tr [class.normal-row]="i%2 === 0" #extendedRows
-                        [class.colored-row]="i%2 !== 0"
-                        mat-row *matRowDef="let row; let i = dataIndex; columns: ['expandedDetail']"
-                        class="detail-row"></tr>
-                </table>
-            </div>
-            <!--        <mat-error>-->
-            <!--&lt;!&ndash;            <jems-form-field-errors&ndash;&gt;-->
-            <!--&lt;!&ndash;                    [errors]="form.get(constants.SPECIFIC_OBJECTIVES.name)?.errors"&ndash;&gt;-->
-            <!--&lt;!&ndash;                    [messages]="constants.SPECIFIC_OBJECTIVES.errorMessages">&ndash;&gt;-->
-            <!--&lt;!&ndash;            </jems-form-field-errors>&ndash;&gt;-->
-            <!--        </mat-error>-->
-        </ng-container>
+<!--                    <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>-->
+<!--                    <tr #normalRows mat-row *matRowDef="let element; columns: columnsToDisplay; let i = dataIndex; "-->
+<!--                        class="element-row"-->
+<!--                        [class.expanded-row]="expandedElement === element"-->
+<!--                        [class.colored-row]="i%2 !== 0"-->
+<!--                        [class.normal-row]="i%2 === 0"></tr>-->
+<!--                    <tr [class.normal-row]="i%2 === 0" #extendedRows-->
+<!--                        [class.colored-row]="i%2 !== 0"-->
+<!--                        mat-row *matRowDef="let row; let i = dataIndex; columns: ['expandedDetail']"-->
+<!--                        class="detail-row"></tr>-->
+<!--                </table>-->
+<!--            </div>-->
+<!--            &lt;!&ndash;        <mat-error>&ndash;&gt;-->
+<!--            &lt;!&ndash;&lt;!&ndash;            <jems-form-field-errors&ndash;&gt;&ndash;&gt;-->
+<!--            &lt;!&ndash;&lt;!&ndash;                    [errors]="form.get(constants.SPECIFIC_OBJECTIVES.name)?.errors"&ndash;&gt;&ndash;&gt;-->
+<!--            &lt;!&ndash;&lt;!&ndash;                    [messages]="constants.SPECIFIC_OBJECTIVES.errorMessages">&ndash;&gt;&ndash;&gt;-->
+<!--            &lt;!&ndash;&lt;!&ndash;            </jems-form-field-errors>&ndash;&gt;&ndash;&gt;-->
+<!--            &lt;!&ndash;        </mat-error>&ndash;&gt;-->
+<!--        </ng-container>-->
 
-    </form>
+<!--    </form>-->
 
     <!--    END OF TABLE-->
+
+
+    <!--    NEW TABLE-->
+
+    <jems-form (discard)="resetForm(data.partnerPayments)"
+               (save)="save()">
+        <form [formGroup]="partnerPaymentsForm" jemsFormLayout>
+
+            <ng-container *ngIf="partnerPayments">
+        <div jemsNoWidthLimit id="payments-per-partner-table" class="mb-3 payments-per-partner-container"
+             *ngIf="data.partnerPayments as partnerPayments">
+
+            <div class="payments-per-partner-header header-color" jemsNoWidthLimit jemsMultiColumnRow
+                 justifyContent="start">
+                <span>{{ 'payments.detail.table.header.partner' | translate }}</span>
+                <span class="justify-start">{{ 'payments.detail.table.header.partner.name' | translate }}</span>
+                <span class="justify-start progress-header-column">{{ 'payments.detail.table.header.amount.approved' | translate }}</span>
+            </div>
+
+            <ng-container *ngFor="let partnerPayment of partnerPayments; let index = index"
+                          [formArrayName]="constants.FORM_CONTROL_NAMES.partnerPayments">
+
+                    <div [formGroupName]="index" jemsMultiColumnRow class="activity-items">
+                        <span>
+                            {{partnerPayment.partnerType == 'LEAD_PARTNER' ? 'LP' : 'PP' + partnerPayment.partnerNumber}}
+                        </span>
+
+                        <span class="justify-center" jemsFormFieldWidth="x-large">
+                               {{partnerPayment.partnerAbbreviation}}
+                        </span>
+
+                        <span class="justify-center" jemsFormFieldWidth="x-large">
+                               {{partnerPayment.amountApproved}}
+                        </span>
+
+
+                    </div>
+
+                <ng-container *ngIf="partnerPayment.installments.length">
+                    <div id="installments-table" jemsNoWidthLimit
+                         [jemsTableConfig]="[{minInRem: 5, maxInRem: 8}, {minInRem:22, maxInRem: 25}, {minInRem: 7, maxInRem: 8}, {minInRem: 5, maxInRem: 6}, {minInRem: 25, maxInRem:30}, {minInRem: 5, maxInRem: 8}, {minInRem:22, maxInRem: 25}, {minInRem: 7, maxInRem: 8}, {minInRem: 5, maxInRem: 6}, {minInRem: 25, maxInRem:30}]">
+                        <div class="">
+                            <span>{{ 'payments.detail.table.header.installment.installment.number' | translate }}</span>
+                            <span class="justify-start" >
+                                                    {{ 'payments.detail.table.header.installment.amount.paid' | translate }}
+                            </span>
+                            <span  class="justify-start">
+                                                    {{ 'payments.detail.table.header.installment.payment.date' | translate }}
+                            </span>
+                            <span jemsText class="justify-start attachments-header-column">
+                                                    {{ 'payments.detail.table.header.installment.comment' | translate }}
+                            </span>
+
+
+                            <span jemsText class="justify-start attachments-header-column">
+                                                    {{ 'payments.detail.table.header.installment.save.payment.info' | translate }}
+                            </span>
+                            <span jemsText class="justify-start attachments-header-column">
+                                                    {{ 'payments.detail.table.header.installment.user.saving.payment.info' | translate }}
+                            </span>
+                            <span jemsText class="justify-start attachments-header-column">
+                                                    {{ 'payments.detail.table.header.installment.save.payment.date' | translate }}
+                            </span>
+                            <span jemsText class="justify-start attachments-header-column">
+                                                    {{ 'payments.detail.table.header.installment.confirm.payment' | translate }}
+                            </span>
+                            <span jemsText class="justify-start attachments-header-column">
+                                                    {{ 'payments.detail.table.header.installment.user.confirming.payment' | translate }}
+                            </span>
+                            <span jemsText class="justify-start attachments-header-column">
+                                                    {{ 'payments.detail.table.header.installment.payment.confirmation.date' | translate }}
+                            </span>
+
+                            <span><!-- ACTION COLUMN--></span>
+
+                        </div>
+
+                        <ng-container [formGroupName]="index">
+                            <ng-container
+                                    *ngFor="let installment of partnerPayment.installments; let installmentIndex = index"
+                                    [formArrayName]="constants.FORM_CONTROL_NAMES.installments">
+                                <div [formGroupName]="installmentIndex">
+                                    <span [formControlName]="constants.FORM_CONTROL_NAMES.installmentNumber">{{installment.installmentNumber}}</span>
+                                    <span [formControlName]="constants.FORM_CONTROL_NAMES.amountPaid">{{installment.amountPaid}}</span>
+                                    <span [formControlName]="constants.FORM_CONTROL_NAMES.paymentDate">{{installment.paymentDate}}</span>
+                                    <span [formControlName]="constants.FORM_CONTROL_NAMES.comment">{{installment.comment}}</span>
+                                    <span [formControlName]="constants.FORM_CONTROL_NAMES.savePayment">{{installment.isSavePaymentInfo}}</span>
+                                    <span [formControlName]="constants.FORM_CONTROL_NAMES.userSavingPayment">{{installment.savePaymentInfoUser}}</span>
+                                    <span [formControlName]="constants.FORM_CONTROL_NAMES.savePaymentDate">{{installment.savePaymentDate}}</span>
+                                    <span [formControlName]="constants.FORM_CONTROL_NAMES.confirmPayment">{{installment.isPaymentConfirmed}}</span>
+                                    <span [formControlName]="constants.FORM_CONTROL_NAMES.userConfirmingPayment">{{installment.paymentConfirmedUser}}</span>
+                                    <span [formControlName]="constants.FORM_CONTROL_NAMES.paymentConfirmationDate">{{installment.paymentConfirmedDate}}</span>
+
+                                </div>
+                            </ng-container>
+                        </ng-container>
+                    </div>
+                </ng-container>
+            </ng-container>
+        </div>
+    </ng-container>
+        </form>
+    </jems-form>
+
+
+
+    <!--    END OF NEW TABLE-->
 </jems-main-page-template>
 
 <ng-template #installmentsTemplate let-installments>

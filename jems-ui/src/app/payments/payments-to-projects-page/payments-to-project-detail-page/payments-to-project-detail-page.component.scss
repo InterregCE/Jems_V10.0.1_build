@@ -83,3 +83,81 @@ tr.detail-row {
   display: inline-block;
   margin-top: 0 !important;
 }
+
+
+
+
+
+
+/////////
+
+
+.work-package-panel {
+  max-width: 92rem !important;
+}
+
+.payments-per-partner-container {
+  padding: 0.75rem;
+  border: 1px solid var(--light-blue-gray);
+  overflow: auto !important;
+
+  .payments-per-partner-header {
+    padding: 1.25rem 0.75rem;
+    width: 100%;
+    margin-left: -0.75rem;
+    margin-top: -0.75rem;
+    color: var(--table-header-text-color);
+    font-size: var(--body-strong-font-size);
+    font-weight: var(--body-strong-font-weight);
+    background-color: var(--light-blue-gray);
+    min-width: 70rem !important;
+
+    span:nth-child(2) {
+      padding-left: 2vw;
+      padding-right: 15rem;
+    }
+
+    .progress-header-column {
+      padding-left: 3vw;
+    }
+
+    .attachments-header-column {
+      padding-left: 19vw;
+    }
+  }
+
+  .activity-items {
+    padding-bottom: 1rem;
+    align-items: center;
+    align-content: center;
+    vertical-align: center;
+    width: 100%;
+
+    span:nth-child(2) {
+      padding-left: 4vw;
+    }
+
+    .progress-element {
+      padding-left: 2vw;
+    }
+
+    .attachments-element {
+      padding-left: 1.7vw;
+    }
+  }
+}
+
+.header-color {
+  width: 100%;
+  background-color: var(--light-blue-gray);
+}
+
+.justify-start {
+  justify-content: start;
+}
+
+.attachments-element-deliverable {
+  padding-left: 6.5vw;
+}
+
+
