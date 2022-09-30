@@ -4,5 +4,7 @@
                                 [subTitleText]="'project.application.contract.partner.section.subtitle' | translate: {partnerInfo: getPartnerTranslationString(data.partnerSummary) | async}"
                                 [isVersionedData]="false">
         <jems-contract-partner-beneficial-owner [partnerId]="partnerId"></jems-contract-partner-beneficial-owner>
+        <div class="section-break"></div>
+        <jems-contract-partner-documents-location [partnerId]="partnerId"></jems-contract-partner-documents-location>
     </jems-project-page-template>
 </ng-container>

@@ -211,6 +211,9 @@ import {
   ContractPartnerBeneficialOwnerComponent
 } from '@project/project-application/contract-partner/beneficial-owner/contract-partner-beneficial-owner.component';
 import {AdaptTranslationKeyByCallTypePipe} from '@common/pipe/adapt-translation-by-call-type.pipe';
+import {
+  ContractPartnerDocumentsLocationComponent
+} from '@project/project-application/contract-partner/documents-location/contract-partner-documents-location.component';
 
 @NgModule({
   declarations: [
@@ -358,6 +361,7 @@ import {AdaptTranslationKeyByCallTypePipe} from '@common/pipe/adapt-translation-
     ContractFilesComponent,
     ContractPartnerComponent,
     ContractPartnerBeneficialOwnerComponent,
+    ContractPartnerDocumentsLocationComponent,
   ],
   imports: [
     SharedModule,

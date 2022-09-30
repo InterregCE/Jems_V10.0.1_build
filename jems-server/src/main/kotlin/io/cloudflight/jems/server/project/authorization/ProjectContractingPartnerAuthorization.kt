@@ -24,28 +24,35 @@ class ProjectContractingPartnerAuthorization(
     val partnerPersistence: PartnerPersistence,
     val projectPersistence: ProjectPersistence,
     val partnerCollaboratorPersistence: UserPartnerCollaboratorPersistence,
-    val projectAuthorization: ProjectAuthorization
+    val projectAuthorization: ProjectAuthorization,
+    val authorizationUtilService: AuthorizationUtilService
 ): Authorization(securityService) {
 
     fun hasViewPermission(partnerId: Long): Boolean {
         val projectId = partnerPersistence.getProjectIdForPartnerId(partnerId)
+        val userId = securityService.getUserIdOrThrow()
+        val applicantAndStatus = projectPersistence.getApplicantAndStatusById(projectId)
         val hasProjectPermission = projectAuthorization.hasPermission(UserRolePermission.ProjectContractingPartnerView, projectId)
 
         val level = partnerCollaboratorPersistence.findByUserIdAndPartnerId(
             userId = securityService.getUserIdOrThrow(),
             partnerId = partnerId,
         )
-        return level.isPresent || hasProjectPermission
+        return level.isPresent || hasProjectPermission || authorizationUtilService.userIsProjectOwnerOrProjectCollaborator(
+            userId,
+            applicantAndStatus)
     }
 
     fun hasEditPermission(partnerId: Long): Boolean {
         val projectId = partnerPersistence.getProjectIdForPartnerId(partnerId)
+        val userId = securityService.getUserIdOrThrow()
+        val applicantAndStatus = projectPersistence.getApplicantAndStatusById(projectId)
         val hasProjectPermission = projectAuthorization.hasPermission(UserRolePermission.ProjectContractingPartnerEdit, projectId)
-
+        val isProjectCollaboratorWithEdit = authorizationUtilService.userIsProjectCollaboratorWithEditPrivilege(userId, applicantAndStatus)
         val level = partnerCollaboratorPersistence.findByUserIdAndPartnerId(
             userId = securityService.getUserIdOrThrow(),
             partnerId = partnerId,
         )
-        return (level.isPresent && level.get() == PartnerCollaboratorLevel.EDIT) || hasProjectPermission
+        return (level.isPresent && level.get() == PartnerCollaboratorLevel.EDIT) || hasProjectPermission || isProjectCollaboratorWithEdit
     }
 }
