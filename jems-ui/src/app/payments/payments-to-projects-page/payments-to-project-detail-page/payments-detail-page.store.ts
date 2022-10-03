@@ -1,46 +1,47 @@
 import {Injectable} from '@angular/core';
-import {Observable, of} from 'rxjs';
-import {PaymentPartnerDTO, PaymentsApiService, PaymentToProjectDTO} from '@cat/api';
+import {merge, Observable, Subject} from 'rxjs';
+import {
+  PaymentDetailDTO,
+  PaymentPartnerInstallmentDTO,
+  PaymentsApiService,
+
+} from '@cat/api';
 import {PermissionService} from '../../../security/permissions/permission.service';
 import {RoutingService} from '@common/services/routing.service';
+import {switchMap, tap} from "rxjs/operators";
+import {Log} from "@common/utils/log";
+import {
+  ProjectStore
+} from "@project/project-application/containers/project-application-detail/services/project-store.service";
 
 @Injectable({
   providedIn: 'root'
 })
 export class PaymentsDetailPageStore {
+  public static PAYMENT_DETAIL_PATH = '/app/payments/';
 
-  partnerPayments$: Observable<PaymentPartnerDTO[]>;
+  paymentDetail$: Observable<PaymentDetailDTO>;
+  savedPaymentDetail$ = new Subject<PaymentDetailDTO>();
 
   constructor(private paymentApiService: PaymentsApiService,
               private permissionService: PermissionService,
               private routingService: RoutingService) {
-    this.partnerPayments$ = this.partnerPayments();
+    this.paymentDetail$ = this.paymentDetail();
   }
 
 
-  private partnerPayments(): Observable<PaymentPartnerDTO[]> {
+  private paymentDetail(): Observable<PaymentDetailDTO> {
+    const initialPaymentDetail$ = this.routingService.routeParameterChanges(PaymentsDetailPageStore.PAYMENT_DETAIL_PATH, 'paymentId')
+      .pipe(
+        switchMap((paymentId: number) => this.paymentApiService.getPaymentDetail(paymentId)),
+        tap(data => Log.info('Fetched payment detail', this, data))
+      );
 
-    const partnerPayment: PaymentPartnerDTO[] = [{
-      id: 1,
-      projectId: 1,
-      partnerId: 1,
-      partnerType: PaymentPartnerDTO.PartnerTypeEnum.LEADPARTNER,
-      partnerNumber: 1,
-      partnerAbbreviation: 'Abbreviated name',
-      amountApproved: 123.45
-    },
-      {
-        id: 2,
-        projectId: 2,
-        partnerId: 2,
-        partnerType: PaymentPartnerDTO.PartnerTypeEnum.PARTNER,
-        partnerNumber: 3,
-        partnerAbbreviation: 'Abbreviated name 2',
-        amountApproved: 12344.45
-      }
-    ];
+    this.savedPaymentDetail$.subscribe(da => console.log(da));
+    return merge(initialPaymentDetail$, this.savedPaymentDetail$);
+  }
 
-    return of(partnerPayment);
-
+   updatePaymentInstallmentsPerPartner(paymentId: number, partnerId: number, installments: PaymentPartnerInstallmentDTO[]): Observable<PaymentPartnerInstallmentDTO[]> {
+    return this.paymentApiService.updatePaymentPartnerInstallments(partnerId, paymentId, installments);
   }
 }

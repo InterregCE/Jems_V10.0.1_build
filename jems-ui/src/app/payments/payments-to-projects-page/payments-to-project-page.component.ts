@@ -1,4 +1,4 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {AfterViewInit, ChangeDetectionStrategy, Component, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {combineLatest, Observable} from 'rxjs';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
@@ -15,6 +15,9 @@ import {NumberService} from '@common/services/number.service';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PaymentsToProjectPageComponent implements OnInit, AfterViewInit {
+
+  @ViewChild('remainingToBePaidCell', {static: true})
+  remainingToBePaidCell: TemplateRef<any>;
 
   data$: Observable<{
     userCanView: boolean;
@@ -56,9 +59,9 @@ export class PaymentsToProjectPageComponent implements OnInit, AfterViewInit {
         },
         {
           displayedColumn: 'payments.payment.to.project.table.column.project.id',
-          elementProperty: 'projectId',
-          sortProperty: 'project_id',
-          columnWidth: ColumnWidth.SmallColumn,
+          elementProperty: 'projectCustomIdentifier',
+          sortProperty: 'projectCustomIdentifier',
+          columnWidth: ColumnWidth.DateColumn,
         },
         {
           displayedColumn: 'payments.payment.to.project.table.column.project.acronym',
@@ -92,7 +95,6 @@ export class PaymentsToProjectPageComponent implements OnInit, AfterViewInit {
           displayedColumn: 'payments.payment.to.project.table.column.total.eligible.amount',
           elementProperty: 'totalEligibleAmount',
           columnWidth: ColumnWidth.ChipColumn,
-          alternativeValue: '3232',
           columnType: ColumnType.DecimalWithJustifiedStart,
           infoMessage: 'payments.payment.to.project.table.column.total.eligible.amount.info'
         },
@@ -105,7 +107,7 @@ export class PaymentsToProjectPageComponent implements OnInit, AfterViewInit {
         },
         {
           displayedColumn: 'payments.payment.to.project.table.column.amount.approved.per.fund',
-          elementProperty: 'amountApprovedPerFound',
+          elementProperty: 'amountApprovedPerFund',
           sortProperty: 'amount_approved_per_fund',
           columnWidth: ColumnWidth.ChipColumn,
           columnType: ColumnType.DecimalWithJustifiedStart,
@@ -124,6 +126,12 @@ export class PaymentsToProjectPageComponent implements OnInit, AfterViewInit {
           columnWidth: ColumnWidth.DateColumn,
           elementProperty: 'dateOfLastPayment',
           sortProperty: 'dateOfLastPayment'
+        },
+        {
+          displayedColumn: 'payments.payment.to.project.table.column.remaining.to.be.paid',
+          columnType: ColumnType.CustomComponent,
+          columnWidth: ColumnWidth.ChipColumn,
+          customCellTemplate: this.remainingToBePaidCell
         }
       ]
     });

@@ -81,68 +81,61 @@ tr.detail-row {
 
 .put-icon-to-header-line {
   display: inline-block;
-  margin-top: 0 !important;
+  margin-top: 1.3rem !important;
 }
 
-
-
-
-
-
-/////////
-
-
-.work-package-panel {
-  max-width: 92rem !important;
+.payment-detail-panel {
+  max-width: 90rem !important;
 }
 
 .payments-per-partner-container {
-  padding: 0.75rem;
+  padding: 0.75rem 0;
   border: 1px solid var(--light-blue-gray);
   overflow: auto !important;
+  width: 100%;
 
   .payments-per-partner-header {
-    padding: 1.25rem 0.75rem;
+    padding: 1.25rem 0 1.25rem 0;
     width: 100%;
-    margin-left: -0.75rem;
     margin-top: -0.75rem;
     color: var(--table-header-text-color);
     font-size: var(--body-strong-font-size);
     font-weight: var(--body-strong-font-weight);
     background-color: var(--light-blue-gray);
     min-width: 70rem !important;
+    overflow: hidden;
+
+    span:first-child {
+      padding-left: 0.75rem;
+    }
 
     span:nth-child(2) {
-      padding-left: 2vw;
-      padding-right: 15rem;
+      padding-left: 7vw;
+      padding-right: 1vw;
     }
 
-    .progress-header-column {
-      padding-left: 3vw;
-    }
-
-    .attachments-header-column {
-      padding-left: 19vw;
+    .amount-approved-header-column {
+      padding-left: 0.25vw;
     }
   }
 
-  .activity-items {
-    padding-bottom: 1rem;
+  .payment-per-partner-row {
+    margin: 1.5rem 0 1rem 0;
     align-items: center;
     align-content: center;
     vertical-align: center;
     width: 100%;
 
+    span:first-child{
+      padding-left: 0.75rem;
+    }
+
     span:nth-child(2) {
-      padding-left: 4vw;
+      padding-left: 5vw;
     }
 
-    .progress-element {
+    .amount-approved-column {
       padding-left: 2vw;
-    }
-
-    .attachments-element {
-      padding-left: 1.7vw;
     }
   }
 }
@@ -156,8 +149,44 @@ tr.detail-row {
   justify-content: start;
 }
 
-.attachments-element-deliverable {
-  padding-left: 6.5vw;
+.installment-table-container {
+  padding: 0.25rem 3rem;
+
+  .installments-row {
+    height: 9rem;
+
+    .amount-paid-input {
+      max-width: 8vw;
+    }
+
+    .save-payment-input {
+      max-width: 8.1rem;
+    }
+
+    .comment-textarea {
+      min-width: 17rem;
+    }
+  }
+}
+
+.installment-button-container {
+  height: 1.6rem;
+}
+
+.installment-button {
+  height: 1.5rem;
+  background-color: white;
+  border: 0.2px solid  var(--primary-color);
+  border-radius: 0.3rem;
+
+  :hover {
+    cursor: pointer;
+  }
+}
+
+.add-installment-button-text {
+  font-size: 0.75rem;
+  color: var(--primary-color);
 }
 
 
