@@ -112,16 +112,14 @@ Cypress.Commands.add('createApplication', (application: Application) => {
 
 Cypress.Commands.add('createSubmittedApplication', (application: Application) => {
   createApplication(application.details).then(applicationId => {
-    application.id = applicationId;
-    submitApplication(application);
+    submitApplication(applicationId, application);
     cy.wrap(application.id).as('applicationId');
   });
 });
 
 Cypress.Commands.add('createApprovedApplication', (application: Application, approvingUserEmail?: string) => {
   createApplication(application.details).then(applicationId => {
-    application.id = applicationId;
-    submitApplication(application);
+    submitApplication(applicationId, application);
     approveApplication(applicationId, application.assessments, approvingUserEmail);
     cy.wrap(applicationId).as('applicationId');
   });
@@ -286,30 +284,30 @@ function createApplication(applicationDetails: ProjectCreateDTO) {
   });
 }
 
-function submitApplication(application) {
+function submitApplication(applicationId, application) {
 
-  updateIdentification(application.id, application.identification);
+  updateIdentification(applicationId, application.identification);
 
   // C - project description
-  updateOverallObjective(application.id, application.description.overallObjective);
-  updateRelevanceAndContext(application.id, application.description.relevanceAndContext);
-  updatePartnership(application.id, application.description.partnership);
-  createWorkPlan(application.id, application.description.workPlan);
-  createResults(application.id, application.description.results);
-  updateManagement(application.id, application.description.management);
-  updateLongTermPlans(application.id, application.description.longTermPlans);
+  updateOverallObjective(applicationId, application.description.overallObjective);
+  updateRelevanceAndContext(applicationId, application.description.relevanceAndContext);
+  updatePartnership(applicationId, application.description.partnership);
+  createWorkPlan(applicationId, application.description.workPlan);
+  createResults(applicationId, application.description.results);
+  updateManagement(applicationId, application.description.management);
+  updateLongTermPlans(applicationId, application.description.longTermPlans);
 
   // B - project partners
-  createPartners(application.id, application.partners);
+  createPartners(applicationId, application.partners);
 
   // E - project lump sums
   cy.get(`@${application.partners[0].details.abbreviation}`).then((partnerId: any) => {
     application.lumpSums[0].lumpSumContributions[0].partnerId = partnerId;
-    updateLumpSums(application.id, application.lumpSums);
+    updateLumpSums(applicationId, application.lumpSums);
   });
 
-  runPreSubmissionCheck(application.id);
-  submitProjectApplication(application.id);
+  runPreSubmissionCheck(applicationId);
+  submitProjectApplication(applicationId);
 }
 
 function updateIdentification(applicationId: number, projectIdentification: InputProjectData) {
