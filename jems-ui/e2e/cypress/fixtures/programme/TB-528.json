@@ -4,6 +4,7 @@
     "code": "RCO01",
     "programmeObjectivePolicy": "SO1.1 - Developing and enhancing research and innovation capacities and the uptake of advanced technologies",
     "resultIndicator": "RI1",
+    "measurementUnit": "enterprises",
     "milestone": 0,
     "finalTarget": "999999,99"
   },
@@ -12,6 +13,7 @@
     "code": "RCO02",
     "programmeObjectivePolicy": "SO2.1 - Promoting energy efficiency and reducing greenhouse gas emissions",
     "resultIndicator": "RI2",
+    "measurementUnit": "enterprises",
     "milestone": 0,
     "finalTarget": "999999,99"
   },
@@ -20,6 +22,7 @@
     "code": "RCO03",
     "programmeObjectivePolicy": "SO2.1 - Promoting energy efficiency and reducing greenhouse gas emissions",
     "resultIndicator": "RI3",
+    "measurementUnit": "enterprises",
     "milestone": 0,
     "finalTarget": "9999999,99"
   },
@@ -27,6 +30,7 @@
     "identifier": "OI4",
     "code": "RCO04",
     "programmeObjectivePolicy": "SO2.1 - Promoting energy efficiency and reducing greenhouse gas emissions",
+    "measurementUnit": "enterprises",
     "milestone": 2,
     "finalTarget": "50000,99"
   }

@@ -4,7 +4,7 @@ import {faker} from "@faker-js/faker";
 context('Controller tests', () => {
   it('TB-810 Controller institutions can be created', () => {
     cy.fixture('controller/TB-810.json').then(testData => {
-      
+
       cy.loginByRequest(user.admin.email);
       testData.controllerUser1.email = faker.internet.email();
       testData.controllerUser2.email = faker.internet.email();
@@ -31,7 +31,7 @@ context('Controller tests', () => {
       testData.institution.nuts.forEach(nuts => {
         cy.contains('mat-checkbox', nuts).click();
       });
-      
+
       testData.institution.users.forEach(user => {
         cy.contains('button', 'Add user').click();
         cy.contains('div #institution-collaborators-table-content', 'Cannot be blank').within(() => {
@@ -42,21 +42,20 @@ context('Controller tests', () => {
 
       cy.contains('button', 'Create').click();
       cy.get('#institution-collaborators-table-content input').should('be.disabled');
-      
-      // try to add applicant user
+
       cy.contains('Add user').click()
       cy.contains('div #institution-collaborators-table-content', 'Cannot be blank').within(() => {
         cy.contains('div', 'Jems username').find('input').type('applicant');
         cy.contains('Input data are not valid').should('be.visible');
         cy.contains('div', 'Jems username').find('input').type('.user@jems.eu');
       });
-      
+
       cy.contains('Save changes').click();
       cy.contains('Not possible to save: Make sure the username is correctly typed and privileged to monitor projects.').should('be.visible');
       cy.get('button:contains("delete")').last().click();
       cy.contains('Save changes').click();
       cy.contains('Controller institution was updated successfully').should('be.visible');
-      
+
       cy.contains('Institutions').click();
       cy.contains('mat-row', testData.institution.name).should('be.visible');
       cy.contains(testData.institution.nutsVerification).should('be.visible');

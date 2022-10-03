@@ -173,6 +173,7 @@ context('Programme management tests', () => {
         cy.get('input[name="identifier"').type(indicator.identifier);
         cy.get('mat-select[name="indicatorCode"').click();
         cy.contains('mat-option', indicator.code).click();
+        cy.get('mat-form-field:contains("Measurement unit") input').should('have.value', indicator.measurementUnit);
 
         cy.get('mat-select[name="specificObjective"').click();
         cy.contains('mat-option', indicator.programmeObjectivePolicy).click();
@@ -211,6 +212,7 @@ context('Programme management tests', () => {
         cy.get('input[name="identifier"').type(indicator.identifier);
         cy.get('mat-select[name="indicatorCode"').click();
         cy.contains('mat-option', indicator.code).click();
+        cy.get('mat-form-field:contains("Measurement unit") input').should('have.value', indicator.measurementUnit);
 
         cy.get('mat-select[name="specificObjective"').click();
         cy.contains('mat-option', indicator.programmeObjectivePolicy).click();
@@ -481,8 +483,14 @@ context('Programme management tests', () => {
           application.partners.push(partner);
 
           for (let i = 0; i < 3; i++) {
-            cy.createApplication(application);
-            cy.createApplication(spfApplication);
+            cy.createApplication(application).then(applicationId => {
+              cy.updateProjectIdentification(applicationId, application.identification);
+              cy.createPartners(applicationId, application.partners);
+            });
+            cy.createApplication(spfApplication).then(spfApplicationId => {
+              cy.updateProjectIdentification(spfApplicationId, spfApplication.identification);
+              cy.createPartners(spfApplicationId, spfApplication.partners);
+            });
             cy.createApprovedApplication(application, user.programmeUser.email);
             cy.createApprovedApplication(spfApplication, user.programmeUser.email);
           }
