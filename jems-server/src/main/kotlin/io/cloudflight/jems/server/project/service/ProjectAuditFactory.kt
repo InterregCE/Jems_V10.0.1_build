@@ -19,6 +19,7 @@ import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectDetail
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.model.ProjectVersionSummary
+import java.time.LocalDate
 import java.time.ZoneOffset
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
@@ -233,6 +234,23 @@ fun projectContractingMonitoringChanged(
             action = AuditAction.PROJECT_CONTRACT_MONITORING_CHANGED,
             project = AuditProject(id = project.id.toString()),
             description = "Fields changed:\n$changes"
+        )
+    )
+}
+
+fun projectContractInfoChanged(
+    context: Any,
+    project: ProjectSummary,
+    oldPartnershipAgreementDate:  LocalDate?,
+    newPartnershipAgreementDate:  LocalDate?
+): AuditCandidateEvent {
+    val oldValue = oldPartnershipAgreementDate ?: "Not defined"
+    return AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditCandidate(
+            action = AuditAction.PROJECT_CONTRACT_INFO_CHANGED,
+            project = AuditProject(id = project.id.toString()),
+            description = "Partnership agreement date changed from:\n $oldValue to $newPartnershipAgreementDate"
         )
     )
 }

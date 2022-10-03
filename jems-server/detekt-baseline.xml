@@ -586,6 +586,7 @@
     <ID>TooManyFunctions:GeneralValidatorService.kt$GeneralValidatorService</ID>
     <ID>TooManyFunctions:PartnerPersistence.kt$PartnerPersistence</ID>
     <ID>TooManyFunctions:PartnerPersistenceProvider.kt$PartnerPersistenceProvider : PartnerPersistence</ID>
+    <ID>TooManyFunctions:ProjectAuditFactory.kt$io.cloudflight.jems.server.project.service.ProjectAuditFactory.kt</ID>
     <ID>TooManyFunctions:ProjectDataModelMapper.kt$PluginDataMapper</ID>
     <ID>TooManyFunctions:ProjectDataModelMapper.kt$io.cloudflight.jems.server.plugin.services.ProjectDataModelMapper.kt</ID>
     <ID>TooManyFunctions:ProjectDescriptionMapper.kt$io.cloudflight.jems.server.project.controller.ProjectDescriptionMapper.kt</ID>
@@ -606,8 +607,6 @@
     <ID>UnnecessaryAbstractClass:UnitTest.kt$UnitTest</ID>
     <ID>UnnecessaryAbstractClass:UserConfirmationMapper.kt$UserConfirmationMapper</ID>
     <ID>UnusedPrivateMember:ApplicationStateFactoryTest.kt$ApplicationStateFactoryTest$private fun provideSummaryWithExpectedInstance(): Stream&lt;Arguments&gt;</ID>
-    <ID>UnusedPrivateMember:AssignUserEventListeners.kt$AssignUserEventListeners$private val appProperties: AppProperties</ID>
-    <ID>UnusedPrivateMember:CreateProjectTest.kt$CreateProjectTest.Companion$private fun projectVersion(status: ApplicationStatus): ProjectVersion</ID>
     <ID>UnusedPrivateMember:ProgrammeSetupAuthorizationTest.kt$ProgrammeSetupAuthorizationTest$private fun provideAllUsers(): Stream&lt;Arguments&gt;</ID>
     <ID>UnusedPrivateMember:ProjectBudgetControllerTest.kt$ProjectBudgetControllerTest$@MockK private lateinit var getPartnerBudgetPerFundInteractor: GetPartnerBudgetPerFundInteractor</ID>
     <ID>UnusedPrivateMember:ProjectPartnerFactory.kt$ProjectPartnerFactory$author: UserEntity</ID>
