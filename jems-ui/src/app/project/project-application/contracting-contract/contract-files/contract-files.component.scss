@@ -14,7 +14,7 @@
   .file-list {
     display: flex;
     flex-flow: column;
-    width: 80%;
+    width: calc(100% - 21rem); // 21 rem = width + margin of category tree
   }
 }
 
