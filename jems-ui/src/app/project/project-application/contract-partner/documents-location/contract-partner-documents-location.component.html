@@ -1,0 +1,175 @@
+<jems-form *ngIf="data$ | async as data" (save)="saveForm()"
+           (discard)="resetForm(data.documentsLocation)">
+    <form *ngIf="data.canView" jemsFormLayout [formGroup]="documentsLocationForm">
+        <div jemsMultiColumnRow>
+            <h3>Location of Documents</h3>
+        </div>
+        <div jemsMultiColumnRow>
+            <mat-form-field jemsFormFieldWidth="x-large">
+                <mat-label>Title</mat-label>
+                <input #lodTitle formControlName="title" matInput>
+                <mat-hint [jemsHintFor]="lodTitle" [hide]="documentsLocationForm?.controls?.title?.errors !== null">
+                    <jems-text-hint [currentLength]="lodTitle.value.length" [maxLength]="50"></jems-text-hint>
+                </mat-hint>
+                <mat-error>
+                    <jems-form-field-errors
+                            [errors]="documentsLocationForm?.controls?.title?.errors">
+                    </jems-form-field-errors>
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field jemsFormFieldWidth="xx-large">
+                <mat-label>First name</mat-label>
+                <input #lodFirstName formControlName="firstName" matInput>
+                <mat-hint [jemsHintFor]="lodFirstName" [hide]="documentsLocationForm?.controls?.firstName?.errors !== null">
+                    <jems-text-hint [currentLength]="lodFirstName.value.length" [maxLength]="50"></jems-text-hint>
+                </mat-hint>
+                <mat-error>
+                    <jems-form-field-errors
+                            [errors]="documentsLocationForm?.controls?.firstName?.errors">
+                    </jems-form-field-errors>
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field jemsFormFieldWidth="xx-large">
+                <mat-label>Last name</mat-label>
+                <input #lodLastName formControlName="lastName" matInput>
+                <mat-hint [jemsHintFor]="lodLastName" [hide]="documentsLocationForm?.controls?.lastName?.errors !== null">
+                    <jems-text-hint [currentLength]="lodLastName.value.length" [maxLength]="50"></jems-text-hint>
+                </mat-hint>
+                <mat-error>
+                    <jems-form-field-errors
+                            [errors]="documentsLocationForm?.controls?.lastName?.errors">
+                    </jems-form-field-errors>
+                </mat-error>
+            </mat-form-field>
+        </div>
+
+        <div jemsMultiColumnRow>
+            <mat-form-field jemsFormFieldWidth="xx-large">
+                <mat-label>E-mail address</mat-label>
+                <input #lodEmail formControlName="emailAddress" matInput>
+                <mat-hint [jemsHintFor]="lodEmail" [hide]="documentsLocationForm?.controls?.emailAddress?.errors !== null">
+                    <jems-text-hint [currentLength]="lodEmail.value.length" [maxLength]="255"></jems-text-hint>
+                </mat-hint>
+                <mat-error>
+                    <jems-form-field-errors
+                            [errors]="documentsLocationForm?.controls?.emailAddress?.errors">
+                    </jems-form-field-errors>
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field jemsFormFieldWidth="x-large">
+                <mat-label>Telephone no</mat-label>
+                <input #lodTelephoneNo formControlName="telephoneNo" matInput>
+                <mat-hint [jemsHintFor]="lodTelephoneNo" [hide]="documentsLocationForm?.controls?.telephoneNo?.errors !== null">
+                    <jems-text-hint [currentLength]="lodTelephoneNo.value.length" [maxLength]="25"></jems-text-hint>
+                </mat-hint>
+                <mat-error>
+                    <jems-form-field-errors
+                            [errors]="documentsLocationForm?.controls?.telephoneNo?.errors">
+                    </jems-form-field-errors>
+                </mat-error>
+            </mat-form-field>
+        </div>
+
+        <div jemsMultiColumnRow>
+            <mat-form-field jemsFormFieldWidth="xxx-large">
+                <mat-label>Institution Name</mat-label>
+                <input #lodInstitutionName formControlName="institutionName" matInput>
+                <mat-hint [jemsHintFor]="lodInstitutionName" [hide]="documentsLocationForm?.controls?.institutionName?.errors !== null">
+                    <jems-text-hint [currentLength]="lodInstitutionName.value.length" [maxLength]="100"></jems-text-hint>
+                </mat-hint>
+                <mat-error>
+                    <jems-form-field-errors
+                            [errors]="documentsLocationForm?.controls?.institutionName?.errors">
+                    </jems-form-field-errors>
+                </mat-error>
+            </mat-form-field>
+        </div>
+
+        <div jemsMultiColumnRow>
+            <mat-form-field jemsFormFieldWidth="xx-large">
+                <mat-label>Street</mat-label>
+                <input #lodStreet formControlName="street" matInput>
+                <mat-hint [jemsHintFor]="lodStreet" [hide]="documentsLocationForm?.controls?.street?.errors !== null">
+                    <jems-text-hint [currentLength]="lodStreet.value.length" [maxLength]="50"></jems-text-hint>
+                </mat-hint>
+                <mat-error>
+                    <jems-form-field-errors
+                            [errors]="documentsLocationForm?.controls?.street?.errors">
+                    </jems-form-field-errors>
+                </mat-error>
+            </mat-form-field>
+
+            <mat-form-field jemsFormFieldWidth="large">
+                <mat-label>Number</mat-label>
+                <input #lodNumber formControlName="locationNumber" matInput>
+                <mat-hint [jemsHintFor]="lodNumber" [hide]="documentsLocationForm?.controls?.locationNumber?.errors !== null">
+                    <jems-text-hint [currentLength]="lodNumber.value.length" [maxLength]="20"></jems-text-hint>
+                </mat-hint>
+                <mat-error>
+                    <jems-form-field-errors
+                            [errors]="documentsLocationForm?.controls?.locationNumber?.errors">
+                    </jems-form-field-errors>
+                </mat-error>
+            </mat-form-field>
+        </div>
+
+        <div jemsMultiColumnRow>
+            <mat-form-field jemsFormFieldWidth="x-large">
+                <mat-label>Postal code</mat-label>
+                <input #lodPostalCode formControlName="postalCode" matInput>
+                <mat-hint [jemsHintFor]="lodPostalCode" [hide]="documentsLocationForm?.controls?.postalCode?.errors !== null">
+                    <jems-text-hint [currentLength]="lodPostalCode.value.length" [maxLength]="50"></jems-text-hint>
+                </mat-hint>
+                <mat-error>
+                    <jems-form-field-errors
+                            [errors]="documentsLocationForm?.controls?.postalCode?.errors">
+                    </jems-form-field-errors>
+                </mat-error>
+            </mat-form-field>
+        </div>
+
+        <div jemsMultiColumnRow>
+            <mat-form-field jemsFormFieldWidth="x-large">
+                <mat-label>City</mat-label>
+                <input #lodCity formControlName="city" matInput>
+                <mat-hint [jemsHintFor]="lodCity" [hide]="documentsLocationForm?.controls?.city?.errors !== null">
+                    <jems-text-hint [currentLength]="lodCity.value.length" [maxLength]="50"></jems-text-hint>
+                </mat-hint>
+                <mat-error>
+                    <jems-form-field-errors
+                            [errors]="documentsLocationForm?.controls?.city?.errors">
+                    </jems-form-field-errors>
+                </mat-error>
+            </mat-form-field>
+        </div>
+
+        <div jemsMultiColumnRow>
+            <mat-form-field jemsFormFieldWidth="xx-large">
+                <mat-label>Homepage</mat-label>
+                <input #lodHomepage formControlName="homepage" matInput>
+                <mat-hint [jemsHintFor]="lodHomepage" [hide]="documentsLocationForm?.controls?.homepage?.errors !== null">
+                    <jems-text-hint [currentLength]="lodHomepage.value.length" [maxLength]="100"></jems-text-hint>
+                </mat-hint>
+                <mat-error>
+                    <jems-form-field-errors
+                            [errors]="documentsLocationForm?.controls?.homepage?.errors">
+                    </jems-form-field-errors>
+                </mat-error>
+            </mat-form-field>
+        </div>
+
+        <div>
+            <jems-project-application-form-address
+                    *ngIf="documentsLocationForm?.controls"
+                    [partnerId]="partnerId"
+                    [addressForm]="documentsLocationForm?.controls?.nuts"
+                    [nuts]="data.nuts"
+                    [fieldIds]="nutsConfig">
+            </jems-project-application-form-address>
+        </div>
+
+    </form>
+</jems-form>

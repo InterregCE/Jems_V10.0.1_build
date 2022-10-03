@@ -9,8 +9,8 @@ import {
 import {filter, map, shareReplay, switchMap, tap} from 'rxjs/operators';
 import {RoutingService} from '@common/services/routing.service';
 import {
-  ContractingPartnerBeneficialOwnerDTO,
-  ProjectContractingPartnerBeneficialOwnerService,
+  ContractingPartnerBeneficialOwnerDTO, ContractingPartnerDocumentsLocationDTO,
+  ProjectContractingPartnerBeneficialOwnerService, ProjectContractingPartnerLocationOfDocumentsService,
   ProjectPartnerSummaryDTO, ProjectPartnerUserCollaboratorService, ProjectUserCollaboratorDTO, UserRoleCreateDTO,
 } from '@cat/api';
 import {Log} from '@common/utils/log';
@@ -27,7 +27,9 @@ export class ContractPartnerStore {
   partnerSummary$: Observable<ProjectPartnerSummaryDTO>;
   partnerId$: Observable<string | number | null>;
   beneficialOwners$: Observable<ContractingPartnerBeneficialOwnerDTO[]>;
+  documentsLocation$: Observable<ContractingPartnerDocumentsLocationDTO>;
   savedBeneficialOwners$ = new Subject<ContractingPartnerBeneficialOwnerDTO[]>();
+  savedDocumentsLocation$ = new Subject<ContractingPartnerDocumentsLocationDTO>();
   userCanEditContractPartner$: Observable<boolean>;
   userCanViewContractPartner$: Observable<boolean>;
 
@@ -36,13 +38,15 @@ export class ContractPartnerStore {
               private routingService: RoutingService,
               private beneficialOwnerService: ProjectContractingPartnerBeneficialOwnerService,
               private permissionService: PermissionService,
-              private partnerUserCollaboratorService: ProjectPartnerUserCollaboratorService) {
+              private partnerUserCollaboratorService: ProjectPartnerUserCollaboratorService,
+              private documentsLocationService: ProjectContractingPartnerLocationOfDocumentsService) {
     this.partnerId$ = this.partnerId();
     this.projectId$ = this.projectStore.projectId$;
     this.partnerSummary$ = this.partnerInfo();
     this.beneficialOwners$ = this.beneficialOwners();
     this.userCanEditContractPartner$ = this.userCanEditContractPartner();
     this.userCanViewContractPartner$ = this.userCanViewContractPartner();
+    this.documentsLocation$ = this.documentsLocation();
   }
 
   updateBeneficialOwners(beneficialOwners: ContractingPartnerBeneficialOwnerDTO[]) {
@@ -81,28 +85,58 @@ export class ContractPartnerStore {
   private userCanEditContractPartner(): Observable<boolean> {
     return combineLatest([
       this.partnerId$,
+      this.projectStore.userIsPartnerCollaborator$,
       this.permissionService.hasPermission(PermissionsEnum.ProjectContractingPartnerEdit),
+      this.projectStore.userIsProjectOwnerOrEditCollaborator$,
+      this.projectStore.collaboratorLevel$
     ]).pipe(
-      switchMap(([partnerId, hasContractingPartnerEdit]) =>
+      switchMap(([partnerId, userIsPartnerCollaborator, hasContractingPartnerEdit, isProjectOwnerOrEditCollaborator, collaboratorLevel  ]) =>
         combineLatest([
           this.partnerUserCollaboratorService.checkMyPartnerLevel(partnerId as number),
+          of(userIsPartnerCollaborator),
           of(hasContractingPartnerEdit),
+          of(isProjectOwnerOrEditCollaborator),
+          of(collaboratorLevel),
         ])
       ),
-      map(([partnerLevel, hasContractingPartnerEdit]) => hasContractingPartnerEdit || partnerLevel === LevelEnum.EDIT));
+      map(([partnerLevel, userIsPartnerCollaborator, hasContractingPartnerEdit, isProjectOwnerOrEditCollaborator, collaboratorLevel]) => hasContractingPartnerEdit || (userIsPartnerCollaborator && partnerLevel === LevelEnum.EDIT) || (isProjectOwnerOrEditCollaborator && (collaboratorLevel === LevelEnum.EDIT || collaboratorLevel === LevelEnum.MANAGE))));
   }
 
   private userCanViewContractPartner(): Observable<boolean> {
     return combineLatest([
       this.partnerId$,
+      this.projectStore.userIsPartnerCollaborator$,
       this.permissionService.hasPermission(PermissionsEnum.ProjectContractingPartnerView),
+      this.projectStore.userIsProjectOwner$,
     ]).pipe(
-      switchMap(([partnerId, hasContractingPartnerView]) =>
+      switchMap(([partnerId, userIsPartnerCollaborator, hasContractingPartnerView, userIsProjectOwner]) =>
         combineLatest([
           this.partnerUserCollaboratorService.checkMyPartnerLevel(partnerId as number),
+          of(userIsPartnerCollaborator),
           of(hasContractingPartnerView),
+          of(userIsProjectOwner),
         ])
       ),
-      map(([partnerLevel, hasContractingPartnerView]) => hasContractingPartnerView || partnerLevel === LevelEnum.EDIT || partnerLevel === LevelEnum.VIEW));
+      map(([partnerLevel, userIsPartnerCollaborator, hasContractingPartnerView, userIsProjectOwner]) => userIsProjectOwner || hasContractingPartnerView || (userIsPartnerCollaborator && (partnerLevel === LevelEnum.EDIT || partnerLevel === LevelEnum.VIEW))));
+  }
+
+  updateDocumentsLocation(documentsLocation: ContractingPartnerDocumentsLocationDTO): Observable<ContractingPartnerDocumentsLocationDTO> {
+    return combineLatest([this.partnerId$, this.projectId$])
+      .pipe(
+        switchMap(([partnerId, projectId]) => this.documentsLocationService.updateDocumentsLocation(partnerId as number, projectId,  documentsLocation)),
+        tap(saved => Log.info('Saved contract partner documents location', saved)),
+        tap(data => this.savedDocumentsLocation$.next(data))
+      );
+  }
+
+  private documentsLocation(): Observable<ContractingPartnerDocumentsLocationDTO> {
+    const initialData$ = combineLatest([this.partnerId$, this.projectId$])
+      .pipe(
+        switchMap(([partnerId, projectId]) => this.documentsLocationService.getDocumentsLocation(partnerId as number, projectId)),
+      );
+    return merge(initialData$, this.savedDocumentsLocation$)
+      .pipe(
+        shareReplay(1)
+      );
   }
 }
