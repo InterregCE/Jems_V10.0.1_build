@@ -149,7 +149,8 @@ Cypress.Commands.add('updateProjectPartnership', (applicationId: number, partner
 });
 
 Cypress.Commands.add('createProjectWorkPlan', (applicationId: number, workPlan: WorkPackage[]) => {
-  createWorkPlan(applicationId, workPlan);
+  const options = createWorkPlan(applicationId, workPlan);
+  cy.wrap(options).as('options');
 });
 
 Cypress.Commands.add('createProjectResults', (applicationId: number, projectResults: ProjectResultDTO[]) => {
@@ -291,13 +292,13 @@ function submitApplication(applicationId, application) {
   updateOverallObjective(applicationId, application.description.overallObjective);
   updateRelevanceAndContext(applicationId, application.description.relevanceAndContext);
   updatePartnership(applicationId, application.description.partnership);
-  createWorkPlan(applicationId, application.description.workPlan);
+  const options = createWorkPlan(applicationId, application.description.workPlan);
   createResults(applicationId, application.description.results);
   updateManagement(applicationId, application.description.management);
   updateLongTermPlans(applicationId, application.description.longTermPlans);
 
   // B - project partners
-  createPartners(applicationId, application.partners);
+  createPartners(applicationId, application.partners, options);
 
   // E - project lump sums
   cy.get(`@${application.partners[0].details.abbreviation}`).then((partnerId: any) => {
@@ -343,12 +344,15 @@ function updatePartnership(applicationId: number, partnership: InputTranslation[
 }
 
 function createWorkPlan(applicationId: number, workPlan: WorkPackage[]) {
+  const options = {workPlanId: null, activityId: null};
   workPlan.forEach(workPackage => {
     cy.request({
       method: 'POST',
       url: `api/project/${applicationId}/workPackage`,
       body: workPackage.details
     }).then(result => {
+      cy.wrap(result.body.id).as('workPlanId');
+      options.workPlanId = result.body.id;
       if (workPackage.investment) {
         cy.request({
           method: 'POST',
@@ -364,6 +368,7 @@ function createWorkPlan(applicationId: number, workPlan: WorkPackage[]) {
         body: workPackage.activities
       }).then(response => {
         cy.wrap(response.body[0].id).as('activityId');
+        options.activityId = response.body[0].id;
       });
       cy.request({
         method: 'PUT',
@@ -372,6 +377,7 @@ function createWorkPlan(applicationId: number, workPlan: WorkPackage[]) {
       });
     });
   });
+  return options;
 }
 
 function createResults(applicationId: number, results: ProjectResultDTO[]) {

@@ -538,13 +538,7 @@
             "language": "EN"
           }
         ],
-        "activities": [
-          {
-            "activityId": 1,
-            "workPackageNumber": 1,
-            "activityNumber": 1
-          }
-        ],
+        "activities": [],
         "stateAidScheme": {
           "id": 1,
           "measure": "GENERAL_DE_MINIMIS",

@@ -67,7 +67,7 @@ declare global {
 
       updatePartnerCofinancing(partnerId: number, cofinancing);
 
-      updatePartnerStateAid(partnerId: number, stateAid);
+      updatePartnerStateAid(partnerId: number, stateAid, options?: any);
 
       deactivatePartner(partnerId: number);
 
@@ -119,8 +119,8 @@ Cypress.Commands.add('updatePartnerCofinancing', (partnerId: number, cofinancing
   updateCofinancing(partnerId, cofinancing);
 });
 
-Cypress.Commands.add('updatePartnerStateAid', (partnerId: number, stateAid: ProjectPartnerStateAidDTO) => {
-  updateStateAid(partnerId, stateAid);
+Cypress.Commands.add('updatePartnerStateAid', (partnerId: number, stateAid: ProjectPartnerStateAidDTO, options?) => {
+  updateStateAid(partnerId, stateAid, options);
 });
 
 Cypress.Commands.add('deactivatePartner', (partnerId: number) => {
@@ -142,7 +142,7 @@ export function createPartner(applicationId: number, partner: ProjectPartnerDTO)
   });
 }
 
-export function createPartners(applicationId: number, partners: ProjectPartner[]) {
+export function createPartners(applicationId: number, partners: ProjectPartner[], options?) {
   partners.forEach(partner => {
     createPartner(applicationId, partner.details).then(response => {
       cy.wrap(response.body.id).as(partner.details.abbreviation);
@@ -153,7 +153,7 @@ export function createPartners(applicationId: number, partners: ProjectPartner[]
       updateCofinancing(response.body.id, partner.cofinancing);
       if (partner.spfCofinancing)
         updateSpfCofinancing(response.body.id, partner.spfCofinancing);
-      updateStateAid(response.body.id, partner.stateAid);
+      updateStateAid(response.body.id, partner.stateAid, options);
     });
   });
 }
@@ -266,13 +266,20 @@ function updateSpfCofinancing(partnerId: number, spfCofinancing: ProjectPartnerC
   });
 }
 
-function updateStateAid(partnerId: number, stateAid: ProjectPartnerStateAidDTO, activityId?: number) {
-  if (activityId)
-    stateAid.activities[0].activityId = activityId;
+function updateStateAid(partnerId: number, stateAid: ProjectPartnerStateAidDTO, options?) {
+  const stateAidCopy = JSON.parse(JSON.stringify(stateAid));
+  if (options?.workPlanId) {
+    const activity = {
+      "activityId": options.activityId,
+      "workPackageNumber": options.workPlanId,
+      "activityNumber": null
+    }
+    stateAidCopy.activities.push(activity);
+  }
   cy.request({
     method: 'PUT',
     url: `api/project/partner/${partnerId}/stateAid`,
-    body: stateAid
+    body: stateAidCopy
   });
 }
 

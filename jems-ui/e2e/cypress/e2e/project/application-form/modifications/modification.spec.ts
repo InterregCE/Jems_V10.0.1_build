@@ -153,9 +153,9 @@ context('Application modification tests', () => {
           cy.contains('mat-row', testData.partner2.abbreviation).contains('button', 'Deactivate partner').should('be.disabled');
           cy.contains('mat-row', testData.partner2.abbreviation).contains('Inactive').should('be.visible');
           cy.contains('mat-row', testData.partner2.abbreviation).contains('mat-icon', 'person_off').should('be.visible');
-          cy.contains('li', testData.partner2.abbreviation).contains('person_off').should('be.visible');
+          cy.get(`li:contains("${testData.partner2.abbreviation}") mat-icon:contains("person_off")`).should('be.visible');
           
-          cy.contains('li', testData.partner2.abbreviation).click();
+          cy.contains('li', 'Partners overview').contains(testData.partner2.abbreviation).click();
           cy.wait(1000);
           cy.contains('You are currently viewing a deactivated partner.').should('be.visible');
           

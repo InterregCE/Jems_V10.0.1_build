@@ -262,7 +262,7 @@
         "language": "EN"
       }
     ],
-    "activities": null,
+    "activities": [],
     "stateAidScheme": {
       "id": 1,
       "measure": "GENERAL_DE_MINIMIS",
