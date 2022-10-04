@@ -105,15 +105,14 @@ declare global {
 
 Cypress.Commands.add('createApplication', (application: Application) => {
   createApplication(application.details).then(applicationId => {
-    application.id = applicationId;
-    cy.wrap(application.id).as('applicationId');
+    cy.wrap(applicationId).as('applicationId');
   });
 });
 
 Cypress.Commands.add('createSubmittedApplication', (application: Application) => {
   createApplication(application.details).then(applicationId => {
     submitApplication(applicationId, application);
-    cy.wrap(application.id).as('applicationId');
+    cy.wrap(applicationId).as('applicationId');
   });
 });
 
