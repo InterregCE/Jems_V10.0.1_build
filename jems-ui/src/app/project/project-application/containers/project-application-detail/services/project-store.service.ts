@@ -395,7 +395,8 @@ export class ProjectStore {
         tap(collaborators => Log.info('Fetched current user partner collaborations', this, collaborators)),
         map(userPartnerCollaborations => {
           return userPartnerCollaborations.length > 0;
-        })
+        }),
+        shareReplay(1)
       );
   }
 

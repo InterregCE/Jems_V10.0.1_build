@@ -8,7 +8,7 @@ import {
 import {ActivatedRoute} from '@angular/router';
 import {ContractPartnerStore} from '@project/project-application/contract-partner/contract-partner.store';
 import {AbstractControl, FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {catchError, map, startWith, tap} from 'rxjs/operators';
+import {catchError, map, startWith, take, tap} from 'rxjs/operators';
 import {NutsStore} from '@common/services/nuts.store';
 
 @UntilDestroy()
@@ -111,6 +111,7 @@ export class ContractPartnerDocumentsLocationComponent {
   saveForm(): void {
     this.contractPartnerStore.updateDocumentsLocation(this.getUpdatedDocumentsLocationDTO())
       .pipe(
+        take(1),
         tap(() => this.formService.setSuccess('project.application.contract.partner.section.beneficial.owner.save.success')),
         catchError(err => this.formService.setError(err)),
       ).subscribe();
