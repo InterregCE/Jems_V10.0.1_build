@@ -103,11 +103,11 @@ context('Application form exports', () => {
             cy.updatePartnerAddress(partnerId, updatedPartner.address);
             cy.updatePartnerContact(partnerId, updatedPartner.contact);
             cy.updatePartnerMotivation(partnerId, updatedPartner.motivation);
-            cy.get('@investmentId').then(investmentId => {
-              cy.updatePartnerBudget(partnerId, updatedPartner.budget, +investmentId);
+            cy.then(function() {
+              cy.updatePartnerBudget(partnerId, updatedPartner.budget, this.investmentId);
+              cy.updatePartnerCofinancing(partnerId, updatedPartner.cofinancing);
+              cy.updatePartnerStateAid(partnerId, updatedPartner.stateAid, this.options);
             });
-            cy.updatePartnerCofinancing(partnerId, updatedPartner.cofinancing);
-            cy.updatePartnerStateAid(partnerId, updatedPartner.stateAid);
             cy.createAssociatedOrganization(applicationId, partnerId, updatedPartner.associatedOrganization);
             cy.runPreSubmissionCheck(applicationId);
             cy.submitProjectApplication(applicationId);
