@@ -2,6 +2,7 @@ import {ProjectPartnerBudgetModel} from './ProjectPartnerBudgetModel';
 
 export interface ProjectPartnerBudgetAndContribution {
     partnerSortNumber: number;
+    partnerAbbreviation: string;
     partnerRole: string;
     partnerCountry: string;
     isPartnerActive: boolean;

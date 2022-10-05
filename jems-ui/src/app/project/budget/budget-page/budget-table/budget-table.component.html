@@ -3,7 +3,8 @@
      *ngIf="budget$ | async as budgets">
 
     <div class="header-center">
-        <span jemsText maxLines="2" >{{ 'project.breadcrumb.partnerName' | translate }}</span>
+        <span jemsText maxLines="2">{{ 'project.breadcrumb.partnerName' | translate }}</span>
+        <span jemsText maxLines="2">{{ 'project.application.form.partner.table.name' | translate }}</span>
         <span jemsText maxLines="2" *ngIf="displayedColumns.includes('country')">{{ 'project.partner.main-address.country' | translate }}</span>
         <span jemsText maxLines="2" *ngIf="displayedColumns.includes('staffCosts')" [class.section-link]="headerLinks" class="justify-end" (click)="scrollTo('staffCosts')">{{ 'project.partner.budget.staff' | translate }}</span>
         <span jemsText maxLines="2" *ngIf="displayedColumns.includes('officeAndAdministrationCosts')" [class.section-link]="headerLinks" class="justify-end" (click)="scrollTo('officeAdministrativeCosts')">{{ 'project.partner.budget.office.and.admin.header' | translate }}</span>
@@ -19,7 +20,8 @@
 
     <ng-container *ngFor="let budget of budgets">
         <div>
-            <span >{{ 'common.label.project.partner.role.shortcut.' + budget.partner?.role | adaptTranslationKeyByCallType | async | translate : {partner: budget.partner?.sortNumber} }}</span>
+            <span>{{ 'common.label.project.partner.role.shortcut.' + budget.partner?.role | adaptTranslationKeyByCallType | async | translate : {partner: budget.partner?.sortNumber} }}</span>
+            <span>{{ budget.partner?.abbreviation }}</span>
             <span *ngIf="displayedColumns.includes('country')">{{ budget.partner?.country }}</span>
             <span *ngIf="displayedColumns.includes('staffCosts')" class="justify-end">{{ budget.staffCosts | asMoney }}</span>
             <span *ngIf="displayedColumns.includes('officeAndAdministrationCosts')" class="justify-end">{{ budget.officeAndAdministrationCosts | asMoney }}</span>
@@ -36,6 +38,7 @@
 
     <div class="footer">
         <span>{{ 'project.partner.budget.table.total' | translate }}</span>
+        <span><!--blank cell for partner abbreviation--></span>
         <span *ngIf="displayedColumns.includes('country')" ><!--blank cell--></span>
         <span *ngIf="displayedColumns.includes('staffCosts')" class="justify-end">{{ totalStaffCosts | asMoney }}</span>
         <span *ngIf="displayedColumns.includes('officeAndAdministrationCosts')" class="justify-end">{{ totalOfficeAndAdministrationCosts | asMoney }}</span>

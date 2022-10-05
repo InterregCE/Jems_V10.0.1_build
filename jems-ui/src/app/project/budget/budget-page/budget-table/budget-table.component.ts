@@ -99,10 +99,14 @@ export class BudgetTableComponent implements OnInit, OnChanges {
                               callSettings: ProjectCallSettingsDTO,
                               unitCosts: ProgrammeUnitCost[]): string[] {
     const columns: string[] = ['partner'];
-    this.tableConfig = [{minInRem: 3}];
+    this.tableConfig = [{minInRem: 4, maxInRem: 4}];
+
+    columns.push('partnerAbbreviation');
+    this.tableConfig.push({minInRem: 7, maxInRem: 10});
+
     if (!this.hideCountry) {
       columns.push('country');
-      this.tableConfig.push({minInRem: 7});
+      this.tableConfig.push({minInRem: 6, maxInRem: 12});
     }
     if (allowedBudgetCategories.staff.realOrUnitCosts() || callSettings.flatRates?.staffCostFlatRateSetup) {
       columns.push('staffCosts');
