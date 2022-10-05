@@ -99,7 +99,9 @@ export class ContractPartnerStore {
           of(collaboratorLevel),
         ])
       ),
-      map(([partnerLevel, userIsPartnerCollaborator, hasContractingPartnerEdit, isProjectOwnerOrEditCollaborator, collaboratorLevel]) => hasContractingPartnerEdit || (userIsPartnerCollaborator && partnerLevel === LevelEnum.EDIT) || (isProjectOwnerOrEditCollaborator && (collaboratorLevel === LevelEnum.EDIT || collaboratorLevel === LevelEnum.MANAGE))));
+      map(([partnerLevel, userIsPartnerCollaborator, hasContractingPartnerEdit, isProjectOwnerOrEditCollaborator, collaboratorLevel]) => hasContractingPartnerEdit || (userIsPartnerCollaborator && partnerLevel === LevelEnum.EDIT) || (isProjectOwnerOrEditCollaborator && (collaboratorLevel === LevelEnum.EDIT || collaboratorLevel === LevelEnum.MANAGE))),
+      shareReplay(1)
+    );
   }
 
   private userCanViewContractPartner(): Observable<boolean> {
@@ -117,7 +119,9 @@ export class ContractPartnerStore {
           of(userIsProjectOwner),
         ])
       ),
-      map(([partnerLevel, userIsPartnerCollaborator, hasContractingPartnerView, userIsProjectOwner]) => userIsProjectOwner || hasContractingPartnerView || (userIsPartnerCollaborator && (partnerLevel === LevelEnum.EDIT || partnerLevel === LevelEnum.VIEW))));
+      map(([partnerLevel, userIsPartnerCollaborator, hasContractingPartnerView, userIsProjectOwner]) => userIsProjectOwner || hasContractingPartnerView || (userIsPartnerCollaborator && (partnerLevel === LevelEnum.EDIT || partnerLevel === LevelEnum.VIEW))),
+      shareReplay(1)
+    );
   }
 
   updateDocumentsLocation(documentsLocation: ContractingPartnerDocumentsLocationDTO): Observable<ContractingPartnerDocumentsLocationDTO> {

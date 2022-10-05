@@ -12,7 +12,7 @@ import {
   tap,
   withLatestFrom
 } from 'rxjs/operators';
-import {ProjectStatusDTO, UserRoleDTO, WorkPackageService} from '@cat/api';
+import {ProjectPartnerUserCollaboratorService, ProjectStatusDTO, UserRoleDTO, WorkPackageService} from '@cat/api';
 import {HeadlineRoute} from '@common/components/side-nav/headline-route';
 import {Log} from '@common/utils/log';
 import {TranslateService} from '@ngx-translate/core';
@@ -247,20 +247,26 @@ export class ProjectApplicationFormSidenavService {
     combineLatest([this.canSeeContractPartner$, this.projectStore.projectId$, this.projectStore.projectCallType$]).pipe(
       switchMap(([canSeeContractPartner, projectId, callType]) => {
         return (canSeeContractPartner) ?
-          this.partnerStore.partnerSummaries$.pipe(
-            withLatestFrom(this.projectStore.projectId$),
-            map(([partners]) =>
-              partners.map(partner => ({
-                  headline: {
-                    i18nKey: ProjectPartnerStore.getPartnerTranslationKey(partner.role, callType),
-                    i18nArguments: {partner: `${partner.sortNumber || ''} ${partner.abbreviation}`}
-                  },
-                  icon: partner.active ? '' : 'person_off',
-                  route: `/app/project/detail/${projectId}/contractPartner/${partner.id}`
-                }
-              ))
-            )
-          ) : of([]);
+          combineLatest([
+            this.partnerStore.partnerSummaries$,
+            this.projectStore.userIsPartnerCollaborator$,
+            this.projectStore.projectId$,
+            this.partnerUserCollaboratorService.listCurrentUserPartnerCollaborations(projectId)
+          ])
+            .pipe(
+              map(([partners, isUserPartnerCollaborator, projectID, collaborators]) =>
+                partners.filter(p => isUserPartnerCollaborator ? collaborators.some(c => c.partnerId === p.id) : true)
+                .map(partner => ({
+                    headline: {
+                      i18nKey: ProjectPartnerStore.getPartnerTranslationKey(partner.role, callType),
+                      i18nArguments: {partner: `${partner.sortNumber || ''} ${partner.abbreviation}`}
+                    },
+                    icon: partner.active ? '' : 'person_off',
+                    route: `/app/project/detail/${projectID}/contractPartner/${partner.id}`
+                  }
+                ))
+              )
+            ) : of([]);
       }),
       catchError(() => of([])),
       startWith([])
@@ -306,6 +312,7 @@ export class ProjectApplicationFormSidenavService {
               private permissionService: PermissionService,
               private routingService: RoutingService,
               private visibilityStatusService: FormVisibilityStatusService,
+              private partnerUserCollaboratorService: ProjectPartnerUserCollaboratorService
   ) {
 
     const headlines$ = combineLatest([
