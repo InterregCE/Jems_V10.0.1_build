@@ -8,6 +8,7 @@
          *ngIf="budgets$ | async as budgets">
         <div>
             <span>{{'project.breadcrumb.partnerName' | translate}}</span>
+            <span>{{'project.application.form.partner.table.name' | translate}}</span>
             <span>{{'project.partner.main-address.country' | translate}}</span>
             <span *ngIf="isCallTypeSpf$ | async">{{'project.partner.spf.cost' | translate}}</span>
             <ng-container *ngFor="let fund of chosenProjectFunds$ | async">
@@ -37,6 +38,7 @@
                     <mat-icon *ngIf="!budget.isPartnerActive">person_off</mat-icon>
                     {{ 'common.label.project.partner.role.shortcut.' + budget.partnerRole | adaptTranslationKeyByCallType | async | translate : {partner: budget.partnerSortNumber} }}
                 </span>
+                <span>{{ budget.partnerAbbreviation }}</span>
                 <span>{{ budget.partnerCountry }}</span>
                 <span *ngIf="isCallTypeSpf$ | async">{{ 'project.partner.spf.cost.type.' + budget.costType.toLowerCase() | translate }}</span>
                 <ng-container *ngFor="let fund of chosenProjectFunds$ | async">
@@ -63,6 +65,7 @@
         </ng-container>
 
         <div class="footer" *ngIf="budgetColumns[budgetColumns.length - 1] as total">
+            <span><!--blank cell--></span>
             <span> {{ 'project.partner.budget.table.total' | translate }}
                 <jems-context-info
                         infoText="{{ 'project.partner.percent.total.partner.contextinfo' | translate }}"

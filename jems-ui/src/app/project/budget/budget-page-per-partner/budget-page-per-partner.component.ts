@@ -58,8 +58,9 @@ export class BudgetPagePerPartnerComponent {
               private visibilityStatusService: FormVisibilityStatusService) {
     this.tableConfig$ = combineLatest([this.chosenProjectFunds$, this.isCallTypeSpf$])
       .pipe(map( ([funds, isSpf]) => [
-        {minInRem: 4},
-        {minInRem: 2},
+        {minInRem: 4, maxInRem: 4},  // partner id
+        {minInRem: 7, maxInRem: 10}, // partner abbreviation
+        {minInRem: 6, maxInRem: 12}, // country
         ...isSpf ? [{minInRem: 3}] : [],
         ...funds.flatMap(() => [{minInRem: 7}, {minInRem: 7}]),
         {minInRem: 5},
@@ -110,6 +111,7 @@ export class BudgetPagePerPartnerComponent {
     budgets.forEach((budget: ProjectPartnerBudgetPerFundDTO) => {
       this.budgetColumns.push({
         partnerSortNumber: budget?.partner?.sortNumber,
+        partnerAbbreviation: budget?.partner?.abbreviation,
         partnerRole: budget?.partner?.role,
         partnerCountry: budget?.partner?.country,
         isPartnerActive: budget?.partner?.active,

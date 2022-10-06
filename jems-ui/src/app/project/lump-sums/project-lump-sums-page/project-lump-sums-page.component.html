@@ -134,7 +134,7 @@
                                         *ngFor="let partner of data.partners, let partnerAmountIndex=index"
                                         [matColumnDef]="partner.id + ''">
                                     <mat-header-cell *matHeaderCellDef class="justify-end">
-                                        <span jemsText maxLines="2">{{partner.partnerNumber}}</span>
+                                        <span jemsText maxLines="2">{{partner.partnerNumber}}&nbsp;{{partner.abbreviation}}</span>
                                     </mat-header-cell>
                                     <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i"
                                               [class.gap-exists]="isGapExistsInRow(control)">

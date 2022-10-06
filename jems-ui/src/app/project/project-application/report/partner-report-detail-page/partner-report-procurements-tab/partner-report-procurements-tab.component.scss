@@ -8,6 +8,11 @@
   border-left: .0625rem solid var(--table-border-color);
 }
 
+.mat-column-id {
+  min-width: 4rem;
+  max-width: 4rem;
+}
+
 .mat-column-delete {
   min-width: 2.5rem;
   max-width: 2.5rem;
