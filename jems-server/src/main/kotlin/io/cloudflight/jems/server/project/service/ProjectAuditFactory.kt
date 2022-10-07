@@ -9,9 +9,11 @@ import io.cloudflight.jems.server.audit.service.AuditBuilder
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.common.audit.fromOldToNewChanges
+import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoring
+import io.cloudflight.jems.server.project.service.contracting.partner.bankingDetails.ContractingPartnerBankingDetails
 import io.cloudflight.jems.server.project.service.file.model.ProjectFileCategory
 import io.cloudflight.jems.server.project.service.file.model.ProjectFileCategoryType
 import io.cloudflight.jems.server.project.service.file.model.ProjectFileMetadata
@@ -254,3 +256,26 @@ fun projectContractInfoChanged(
         )
     )
 }
+
+fun projectContractingPartnerInfoChanged(
+    context: Any,
+    partner: ProjectPartnerEntity,
+    oldBankingDetails: ContractingPartnerBankingDetails?,
+    newBankingDetails: ContractingPartnerBankingDetails
+): AuditCandidateEvent {
+    val changes = newBankingDetails.getDiff(old = oldBankingDetails).fromOldToNewChanges()
+
+    return AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditCandidate(
+            action = AuditAction.PROJECT_CONTRACT_PARTNER_INFO_CHANGE,
+            project = AuditProject(id = partner.project.id.toString()),
+            description = "Fields changed for partner info of ${getPartnerName(partner)}:\n$changes"
+        )
+    )
+}
+
+private fun getPartnerName(partner: ProjectPartnerEntity): String =
+    partner.role.isLead.let {
+        if (it) "LP${partner.sortNumber}" else "PP${partner.sortNumber}"
+    }

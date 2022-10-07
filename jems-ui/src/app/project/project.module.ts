@@ -212,6 +212,9 @@ import {
 } from '@project/project-application/contract-partner/beneficial-owner/contract-partner-beneficial-owner.component';
 import {AdaptTranslationKeyByCallTypePipe} from '@common/pipe/adapt-translation-by-call-type.pipe';
 import {
+  ContractPartnerBankingDetailsComponent
+} from '@project/project-application/contract-partner/banking-details/contract-partner-banking-details.component';
+import {
   ContractPartnerDocumentsLocationComponent
 } from '@project/project-application/contract-partner/documents-location/contract-partner-documents-location.component';
 
@@ -361,7 +364,8 @@ import {
     ContractFilesComponent,
     ContractPartnerComponent,
     ContractPartnerBeneficialOwnerComponent,
-    ContractPartnerDocumentsLocationComponent,
+    ContractPartnerBankingDetailsComponent,
+    ContractPartnerDocumentsLocationComponent
   ],
   imports: [
     SharedModule,
