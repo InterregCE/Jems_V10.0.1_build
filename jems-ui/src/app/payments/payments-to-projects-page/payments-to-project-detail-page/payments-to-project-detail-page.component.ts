@@ -1,24 +1,17 @@
 import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {combineLatest, Observable, of, Subject} from 'rxjs';
-import {
-  OutputUser,
-  PaymentDetailDTO,
-  PaymentPartnerDTO,
-  PaymentPartnerInstallmentDTO,
-  ProgrammePriorityDTO,
-  UserDTO
-} from '@cat/api';
+import {OutputUser, PaymentDetailDTO, PaymentPartnerDTO, PaymentPartnerInstallmentDTO, UserDTO} from '@cat/api';
 import {PaymentsToProjectPageStore} from '../payments-to-projects-page.store';
 import {ActivatedRoute} from '@angular/router';
-import {AbstractControl, Form, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
+import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {PaymentsToProjectDetailPageConstants} from './payments-to-project-detail-page.constants';
 import {PaymentsDetailPageStore} from './payments-detail-page.store';
 import {catchError, map, take, tap} from 'rxjs/operators';
 import {animate, state, style, transition, trigger} from '@angular/animations';
-import {FormService} from "@common/components/section/form/form.service";
-import {SecurityService} from "../../../security/security.service";
-import {UntilDestroy, untilDestroyed} from "@ngneat/until-destroy";
-import {HttpErrorResponse} from "@angular/common/http";
+import {FormService} from '@common/components/section/form/form.service';
+import {SecurityService} from '../../../security/security.service';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {HttpErrorResponse} from '@angular/common/http';
 
 @UntilDestroy()
 @Component({
@@ -56,8 +49,8 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
 
   currentUserDetails: UserDTO;
   data$: Observable<{
-    paymentDetail: PaymentDetailDTO,
-    currentUser: UserDTO
+    paymentDetail: PaymentDetailDTO;
+    currentUser: UserDTO;
   }>;
 
   constructor(private paymentToProjectsStore: PaymentsToProjectPageStore,
@@ -186,11 +179,11 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
   }
 
   computeAvailableSum(paymentIndex: number): number {
-    let installments = this.installmentsArray(paymentIndex)
+    const installments = this.installmentsArray(paymentIndex);
     let amountPaid = 0;
     installments.value.forEach( (installment: PaymentPartnerInstallmentDTO) =>
     amountPaid += installment.amountPaid
-    )
+    );
 
     return this.partnerPayments.at(paymentIndex).value.amountApproved - amountPaid;
   }
@@ -222,12 +215,12 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
       email: userDetails.email,
       name: userDetails.name,
       surname: userDetails.surname
-    } as OutputUser
+    } as OutputUser;
   }
 
   getFormattedCurrentLocaleDate() {
-    let date = new Date();
-    return date.toISOString().substring(0,10)
+    const date = new Date();
+    return date.toISOString().substring(0,10);
   }
 
   setConfirmPaymentDate(isChecked: boolean, paymentIndex: number, installmentIndex: number) {

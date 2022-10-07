@@ -56,7 +56,7 @@
 
                     <div [formGroupName]="index" jemsMultiColumnRow class="payment-per-partner-row">
                         <span>
-                            {{partnerPayment.partnerType == 'LEAD_PARTNER' ? 'LP' : 'PP' + partnerPayment.partnerNumber}}
+                            {{partnerPayment.partnerType === 'LEAD_PARTNER' ? 'LP' : 'PP' + partnerPayment.partnerNumber}}
                         </span>
 
                         <span class="justify-center" jemsFormFieldWidth="x-large">
@@ -67,7 +67,7 @@
                                {{partnerPayment.amountApproved}}
                         </span>
 
-                        <div *ngIf="installmentsArray(index).length == 0" class="justify-end">
+                        <div *ngIf="installmentsArray(index).length === 0" class="justify-end">
                             <button
                                     (click)="addInstallment(null, index)"
                                     class="justify-end"

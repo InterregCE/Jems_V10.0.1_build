@@ -1,18 +1,10 @@
 import {Injectable} from '@angular/core';
 import {merge, Observable, Subject} from 'rxjs';
-import {
-  PaymentDetailDTO,
-  PaymentPartnerInstallmentDTO,
-  PaymentsApiService,
-
-} from '@cat/api';
+import {PaymentDetailDTO, PaymentPartnerInstallmentDTO, PaymentsApiService,} from '@cat/api';
 import {PermissionService} from '../../../security/permissions/permission.service';
 import {RoutingService} from '@common/services/routing.service';
-import {switchMap, tap} from "rxjs/operators";
-import {Log} from "@common/utils/log";
-import {
-  ProjectStore
-} from "@project/project-application/containers/project-application-detail/services/project-store.service";
+import {switchMap, tap} from 'rxjs/operators';
+import {Log} from '@common/utils/log';
 
 @Injectable({
   providedIn: 'root'
@@ -37,7 +29,6 @@ export class PaymentsDetailPageStore {
         tap(data => Log.info('Fetched payment detail', this, data))
       );
 
-    this.savedPaymentDetail$.subscribe(da => console.log(da));
     return merge(initialPaymentDetail$, this.savedPaymentDetail$);
   }
 
