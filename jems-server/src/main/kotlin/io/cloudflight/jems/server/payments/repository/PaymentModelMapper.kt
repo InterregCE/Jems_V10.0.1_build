@@ -2,8 +2,11 @@ package io.cloudflight.jems.server.payments.repository
 
 import io.cloudflight.jems.server.payments.entity.PaymentEntity
 import io.cloudflight.jems.server.payments.entity.PaymentPartnerEntity
+import io.cloudflight.jems.server.payments.entity.PaymentPartnerInstallmentEntity
 import io.cloudflight.jems.server.payments.service.model.PartnerPayment
 import io.cloudflight.jems.server.payments.service.model.PaymentDetail
+import io.cloudflight.jems.server.payments.service.model.PaymentPartnerInstallment
+import io.cloudflight.jems.server.payments.service.model.PaymentPartnerInstallmentUpdate
 import io.cloudflight.jems.server.payments.service.model.PaymentPartnerToCreate
 import io.cloudflight.jems.server.payments.service.model.PaymentPerPartner
 import io.cloudflight.jems.server.payments.service.model.PaymentRow
@@ -15,6 +18,8 @@ import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumEntity
 import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
+import io.cloudflight.jems.server.user.entity.UserEntity
+import io.cloudflight.jems.server.user.service.toOutputUser
 import org.springframework.data.domain.Page
 import java.math.BigDecimal
 
@@ -32,7 +37,7 @@ fun Page<PaymentEntity>.toListModel(
 fun PaymentEntity.toModel(lumpSum: ProjectLumpSumEntity, projectFull: ProjectFull) = PaymentToProject(
     id = id,
     paymentType = type,
-    projectId = projectFull.customIdentifier,
+    projectCustomIdentifier = projectFull.customIdentifier,
     projectAcronym = projectFull.acronym,
     paymentClaimNo = 0,
     paymentClaimSubmissionDate = projectFull.contractedDecision?.updated,
@@ -84,7 +89,7 @@ fun PaymentEntity.toDetailModel(
 ) = PaymentDetail(
     id = id,
     paymentType = PaymentType.valueOf(type.name),
-    projectId = project.id,
+    projectCustomIdentifier = project.customIdentifier,
     projectAcronym = project.acronym,
     fundName = fund.type.name,
     amountApprovedPerFund = amountApprovedPerFund!!,
@@ -92,8 +97,11 @@ fun PaymentEntity.toDetailModel(
     partnerPayments = partnerPayments
 )
 
+// Payment Partner
+
 fun PaymentPartnerEntity.toModel(
-    partnerDetail: ProjectPartnerDetail
+    partnerDetail: ProjectPartnerDetail,
+    installments: List<PaymentPartnerInstallment>
 ) = PartnerPayment(
     id = id,
     projectId = payment.project.id,
@@ -104,5 +112,40 @@ fun PaymentPartnerEntity.toModel(
     partnerRole = partnerDetail.role,
     partnerAbbreviation = partnerDetail.abbreviation,
     partnerNumber = partnerDetail.sortNumber,
-    amountApprovedPerPartner = amountApprovedPerPartner
+    amountApprovedPerPartner = amountApprovedPerPartner,
+    installments = installments
+)
+
+// Payment Partner Installment
+
+fun List<PaymentPartnerInstallmentEntity>.toModelList() = map { it.toModel() }
+fun PaymentPartnerInstallmentEntity.toModel() = PaymentPartnerInstallment(
+    id = id,
+    amountPaid = amountPaid,
+    paymentDate = paymentDate,
+    comment = comment,
+    isSavePaymentInfo = isSavePaymentInfo,
+    savePaymentInfoUser = savePaymentInfoUser?.toOutputUser(),
+    savePaymentDate = savePaymentDate,
+    isPaymentConfirmed = isPaymentConfirmed,
+    paymentConfirmedUser = paymentConfirmedUser?.toOutputUser(),
+    paymentConfirmedDate = paymentConfirmedDate
+)
+
+fun PaymentPartnerInstallmentUpdate.toEntity(
+    paymentPartner: PaymentPartnerEntity,
+    savePaymentInfoUser: UserEntity?,
+    paymentConfirmedUser: UserEntity?
+) = PaymentPartnerInstallmentEntity(
+    id = id ?: 0,
+    paymentPartner = paymentPartner,
+    amountPaid = amountPaid,
+    paymentDate = paymentDate,
+    comment = comment,
+    isSavePaymentInfo = isSavePaymentInfo,
+    savePaymentInfoUser = savePaymentInfoUser,
+    savePaymentDate = savePaymentDate,
+    isPaymentConfirmed = isPaymentConfirmed,
+    paymentConfirmedUser = paymentConfirmedUser,
+    paymentConfirmedDate = paymentConfirmedDate
 )

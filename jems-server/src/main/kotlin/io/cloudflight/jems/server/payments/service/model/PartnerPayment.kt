@@ -14,4 +14,6 @@ data class PartnerPayment(
     val partnerNumber: Int?,
     val partnerAbbreviation: String,
     val amountApprovedPerPartner: BigDecimal?,
+
+    val installments: List<PaymentPartnerInstallment>
 )

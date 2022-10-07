@@ -6,7 +6,7 @@ import java.time.ZonedDateTime
 data class PaymentToProject (
     val id: Long,
     val paymentType: PaymentType,
-    val projectId: String,
+    val projectCustomIdentifier: String,
     val projectAcronym: String,
     val paymentClaimNo: Int = 0,
     val paymentClaimSubmissionDate: ZonedDateTime?,

@@ -6,10 +6,10 @@ import java.time.ZonedDateTime
 data class PaymentDetail(
     val id: Long,
     val paymentType: PaymentType,
-    val projectId: Long,
     val fundName: String,
-
+    val projectCustomIdentifier: String,
     val projectAcronym: String,
+
     val amountApprovedPerFund: BigDecimal,
     val dateOfLastPayment: ZonedDateTime? = null,
 

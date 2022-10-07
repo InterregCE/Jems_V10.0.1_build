@@ -2,17 +2,20 @@ package io.cloudflight.jems.server.payments.service
 
 import io.cloudflight.jems.api.payments.PaymentDetailDTO
 import io.cloudflight.jems.api.payments.PaymentPartnerDTO
+import io.cloudflight.jems.api.payments.PaymentPartnerInstallmentDTO
 import io.cloudflight.jems.api.payments.PaymentToProjectDTO
 import io.cloudflight.jems.api.payments.PaymentTypeDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.server.payments.service.model.PartnerPayment
 import io.cloudflight.jems.server.payments.service.model.PaymentDetail
+import io.cloudflight.jems.server.payments.service.model.PaymentPartnerInstallment
+import io.cloudflight.jems.server.payments.service.model.PaymentPartnerInstallmentUpdate
 import io.cloudflight.jems.server.payments.service.model.PaymentToProject
 
 fun PaymentToProject.toDTO() = PaymentToProjectDTO(
     id = id,
     paymentType = PaymentTypeDTO.valueOf(paymentType.name),
-    projectId = projectId,
+    projectCustomIdentifier = projectCustomIdentifier,
     projectAcronym = projectAcronym,
     paymentClaimNo = paymentClaimNo,
     paymentClaimSubmissionDate = paymentClaimSubmissionDate,
@@ -28,8 +31,8 @@ fun PaymentToProject.toDTO() = PaymentToProjectDTO(
 fun PaymentDetail.toDTO() = PaymentDetailDTO(
     id = id,
     paymentType = PaymentTypeDTO.valueOf(paymentType.name),
-    projectId = projectId,
     fundName = fundName,
+    projectCustomIdentifier = projectCustomIdentifier,
     projectAcronym = projectAcronym,
     amountApprovedPerFund = amountApprovedPerFund,
     dateOfLastPayment = dateOfLastPayment,
@@ -38,10 +41,36 @@ fun PaymentDetail.toDTO() = PaymentDetailDTO(
 
 fun PartnerPayment.toDTO() = PaymentPartnerDTO(
     id = id,
-    projectId = projectId,
     partnerId = partnerId,
     partnerType = ProjectPartnerRoleDTO.valueOf(partnerRole.name),
     partnerNumber = partnerNumber,
     partnerAbbreviation = partnerAbbreviation,
-    amountApproved = amountApprovedPerPartner
+    amountApproved = amountApprovedPerPartner,
+    installments = installments.map { it.toDTO() }
 )
+
+// Payment Partner Installment
+
+fun PaymentPartnerInstallment.toDTO() = PaymentPartnerInstallmentDTO(
+    id = id,
+    amountPaid = amountPaid,
+    paymentDate = paymentDate,
+    comment = comment,
+    savePaymentInfo = isSavePaymentInfo,
+    savePaymentInfoUser = savePaymentInfoUser,
+    savePaymentDate = savePaymentDate,
+    paymentConfirmed = isPaymentConfirmed,
+    paymentConfirmedUser = paymentConfirmedUser,
+    paymentConfirmedDate = paymentConfirmedDate
+)
+
+fun Iterable<PaymentPartnerInstallmentDTO>.toModelList() = map {
+    PaymentPartnerInstallmentUpdate(
+        id = it.id,
+        amountPaid = it.amountPaid,
+        paymentDate = it.paymentDate,
+        comment = it.comment,
+        isSavePaymentInfo = it.savePaymentInfo,
+        isPaymentConfirmed = it.paymentConfirmed
+    )
+}
