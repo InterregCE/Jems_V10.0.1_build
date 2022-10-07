@@ -18,3 +18,8 @@
         </ng-container>
     </div>
 </ng-container>
+
+<ng-template #remainingToBePaidCell let-payment>
+    {{payment.amountApprovedPerFund - payment.amountPaidPerFund}}
+</ng-template>
+

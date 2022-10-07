@@ -13,9 +13,229 @@
     </span>
 
     <h3>{{'payments.payment.to.project.detail.header' | translate : {
-        paymentId: data.id,
-        projectId: data.projectId,
-        fundName: data.fundName
+        paymentId: data.paymentDetail.id,
+        projectId: data.paymentDetail.projectCustomIdentifier,
+        fundName: data.paymentDetail.fundName
     } }}</h3>
     <p>{{'payments.payment.to.project.detail.subtext' | translate}}</p>
+
+    <jems-form (discard)="resetForm(data.paymentDetail)"
+               (save)="updatePaymentInstallments(paymentId, partnerPaymentsForm.getRawValue())">
+        <form [formGroup]="partnerPaymentsForm" jemsFormLayout>
+
+            <ng-container *ngIf="partnerPayments">
+                <div jemsNoWidthLimit id="payments-per-partner-table" class="mb-3 payments-per-partner-container"
+                    *ngIf="data.paymentDetail.partnerPayments as partnerPayments">
+
+                    <div class="payments-per-partner-header header-color" jemsNoWidthLimit jemsMultiColumnRow
+                 justifyContent="start">
+                <span>{{ 'payments.detail.table.header.partner' | translate }}</span>
+
+                <span class="justify-start" jemsFormFieldWidth="x-large">
+                    {{ 'payments.detail.table.header.partner.name' | translate }}
+                    <jems-context-info
+                            infoPosition="right"
+                            infoText="{{ 'payments.detail.table.header.partner.name.contextinfo' | adaptTranslationKeyByCallType | async | translate }}">
+                    </jems-context-info>
+                </span>
+
+                <span class="justify-start amount-approved-header-column">
+                    {{ 'payments.detail.table.header.amount.approved' | translate }}
+                    <jems-context-info
+                            infoPosition="right"
+                            infoText="{{ 'payments.detail.table.header.installment.confirm.payment.contextinfo' | adaptTranslationKeyByCallType | async | translate }}">
+                    </jems-context-info>
+                </span>
+
+                <span><!-- ADD PAYMENT DETAIL BUTTON --></span>
+
+            </div>
+
+                    <ng-container *ngFor="let partnerPayment of partnerPayments; let index = index"
+                          [formArrayName]="constants.FORM_CONTROL_NAMES.partnerPayments">
+
+                    <div [formGroupName]="index" jemsMultiColumnRow class="payment-per-partner-row">
+                        <span>
+                            {{partnerPayment.partnerType === 'LEAD_PARTNER' ? 'LP' : 'PP' + partnerPayment.partnerNumber}}
+                        </span>
+
+                        <span class="justify-center" jemsFormFieldWidth="x-large">
+                               {{partnerPayment.partnerAbbreviation}}
+                        </span>
+
+                        <span class="justify-center amount-approved-column" jemsFormFieldWidth="x-large">
+                               {{partnerPayment.amountApproved}}
+                        </span>
+
+                        <div *ngIf="installmentsArray(index).length === 0" class="justify-end">
+                            <button
+                                    (click)="addInstallment(null, index)"
+                                    class="justify-end"
+                                    mat-stroked-button color="primary">
+                                <div class="add-installment-button-text">+ {{'payments.detail.table.header.add.detail.button' | translate}}</div>
+                            </button>
+                        </div>
+                    </div>
+
+                <div class="installment-table-container" *ngIf="installmentsArray(index).length">
+                    <div id="installments-table" jemsNoWidthLimit
+                         [jemsTableConfig]="constants.columnsWidths">
+                        <div>
+                            <span>{{ 'payments.detail.table.header.installment.installment.number' | translate }}</span>
+
+                            <span class="justify-start" >
+                                                    {{ 'payments.detail.table.header.installment.amount.paid' | translate }}
+                            </span>
+
+                            <span  class="justify-center">
+                                                    {{ 'payments.detail.table.header.installment.payment.date' | translate }}
+                            </span>
+
+                            <span jemsText class="justify-center">
+                                                    {{ 'payments.detail.table.header.installment.comment' | translate }}
+                            </span>
+
+
+                            <span jemsText class="justify-center">
+                                                    {{ 'payments.detail.table.header.installment.save.payment.info' | translate }}
+                                <jems-context-info
+                                        infoPosition="right"
+                                        infoText="{{ 'payments.detail.table.header.installment.user.saving.payment.contextinfo' | adaptTranslationKeyByCallType | async | translate }}">
+                                </jems-context-info>
+                            </span>
+
+                            <span jemsText class="justify-center ">
+                                                    {{ 'payments.detail.table.header.installment.user.saving.payment.info' | translate }}
+                            </span>
+
+                            <span jemsText class="justify-center ">
+                                {{ 'payments.detail.table.header.installment.save.payment.date' | translate }}
+                            </span>
+
+                            <span jemsText class="justify-center">
+                                {{ 'payments.detail.table.header.installment.confirm.payment' | translate }}
+                                <jems-context-info
+                                        infoPosition="right"
+                                        infoText="{{ 'payments.detail.table.header.installment.confirm.payment.contextinfo' | adaptTranslationKeyByCallType | async | translate }}">
+                                </jems-context-info>
+                            </span>
+
+                            <span jemsText class="justify-center">
+                                                    {{ 'payments.detail.table.header.installment.user.confirming.payment' | translate }}
+                            </span>
+
+                            <span jemsText class="justify-center">
+                                                    {{ 'payments.detail.table.header.installment.payment.confirmation.date' | translate }}
+                            </span>
+
+                            <span><!-- ACTION COLUMN--></span>
+
+                        </div>
+
+                        <ng-container [formGroupName]="index">
+                            <ng-container
+                                    *ngFor="let installment of installmentsArray(index).controls; let installmentIndex = index"
+                                    [formArrayName]="constants.FORM_CONTROL_NAMES.installments">
+                                <div class="installments-row" [formGroupName]="installmentIndex">
+
+                                    <div>{{installmentIndex + 1}}</div>
+
+                                   <div>
+                                       <mat-form-field class="amount-paid-input">
+                                            <input matInput type="decimal" currencyMask
+                                                   jemsFormFieldWidth="medium"
+                                                   [options]="{allowNegative: true}"
+                                                   [formControlName]="constants.FORM_CONTROL_NAMES.amountPaid">
+                                       </mat-form-field>
+                                   </div>
+
+                                    <div>
+                                        <mat-form-field class="save-payment-input">
+                                            <input name="paymentDate"
+                                                   [formControlName]="constants.FORM_CONTROL_NAMES.paymentDate" matInput
+                                                   [matDatepicker]="paymentDatePicker">
+                                            <mat-datepicker-toggle matSuffix [for]="paymentDatePicker"></mat-datepicker-toggle>
+                                            <mat-datepicker #paymentDatePicker></mat-datepicker>
+                                        </mat-form-field>
+                                    </div>
+
+                                    <div class="justify-center">
+                                        <mat-form-field class="comment-textarea">
+                                            <textarea matInput #comment
+                                                      [formControlName]="constants.FORM_CONTROL_NAMES.comment"
+                                                      #autosize="cdkTextareaAutosize"
+                                                      [cdkTextareaAutosize]
+                                                      [cdkAutosizeMinRows]="3"
+                                                      [cdkAutosizeMaxRows]="5"
+                                                      [matTooltip]="installment.get(constants.FORM_CONTROL_NAMES.comment).value" ></textarea>
+                                            <mat-hint [jemsHintFor]="comment">
+                                                <jems-text-hint [currentLength]="comment.value.length" [maxLength]="500"></jems-text-hint>
+                                            </mat-hint>
+                                            <mat-error>
+                                                <jems-form-field-errors [errors]="installment.get(constants.FORM_CONTROL_NAMES.comment)?.errors"></jems-form-field-errors>
+                                            </mat-error>
+                                        </mat-form-field>
+                                    </div>
+
+                                    <div class="justify-center">
+                                        <mat-checkbox
+                                                      [disabled]="isPaymentConfirmed(index, installmentIndex)"
+                                                      (change)="setSavePaymentDate($event.checked, index, installmentIndex)"
+                                                      [formControlName]="constants.FORM_CONTROL_NAMES.savePaymentInfo">
+                                        </mat-checkbox>
+                                    </div>
+
+                                    <div>
+                                        <span>{{installment.get(constants.FORM_CONTROL_NAMES.savePaymentInfoUser).value?.email}}</span>
+                                    </div>
+
+                                    <div>
+                                        <span>{{installment.get(constants.FORM_CONTROL_NAMES.savePaymentDate).value}}</span>
+                                    </div>
+
+                                    <div class="justify-center">
+                                        <mat-checkbox
+                                                      (change)="setConfirmPaymentDate($event.checked, index, installmentIndex)"
+                                                      [disabled]="!isPaymentSaved(index, installmentIndex)"
+                                                      [formControlName]="constants.FORM_CONTROL_NAMES.paymentConfirmed">
+                                        </mat-checkbox>
+                                    </div>
+
+                                    <div class="justify-center">{{installment.get(constants.FORM_CONTROL_NAMES.paymentConfirmedUser).value?.email}}</div>
+
+                                    <div class="justify-center">{{installment.get(constants.FORM_CONTROL_NAMES.paymentConfirmedDate).value}}</div>
+
+
+                                    <div>
+                                        <button *ngIf="!isPaymentSaved(index, installmentIndex)"
+                                                (click)="removeItem(index, installmentIndex)"
+                                                class="delete-button"
+                                                color="accent" mat-icon-button
+                                                matTooltip="{{'common.delete.entry.tooltip' | translate}}"
+                                                type="button">
+                                            <mat-icon>delete</mat-icon>
+                                        </button>
+                                    </div>
+                                </div>
+                            </ng-container>
+
+                            <div class="installment-button-container">
+                                <button *ngIf="installmentsArray(index).length>0 && installmentsArray(index).length<5"
+                                        (click)="addInstallment(null, index)"
+                                        class="installment-button"
+                                         color="primary">
+                                    <span class="add-installment-button-text">+ {{'payments.detail.table.header.installment.add.button' | translate}}</span>
+                                </button>
+                            </div>
+
+                        </ng-container>
+
+                    </div>
+                </div>
+
+            </ng-container>
+                </div>
+            </ng-container>
+        </form>
+    </jems-form>
 </jems-main-page-template>

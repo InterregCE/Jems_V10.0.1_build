@@ -89,9 +89,6 @@ export class TopBarService {
       .pipe(
         map(([permissions, editUserItem]) => {
           const menuItems: MenuItemConfiguration[] = [this.dashboardItem];
-          if (permissions.includes(PermissionsEnum.PaymentsRetrieve)) {
-            menuItems.push(this.paymentsItem);
-          }
           if (permissions.includes(PermissionsEnum.ProjectRetrieve)) {
             menuItems.push(this.applicationsItem);
           }
@@ -108,7 +105,9 @@ export class TopBarService {
           if (Permission.CONTROLLERS_ASSIGNMENT_PERMISSIONS.some(perm => permissions.includes(perm))) {
             menuItems.push(this.controllerAssignmentItem);
           }
-
+          if (permissions.includes(PermissionsEnum.PaymentsRetrieve)) {
+            menuItems.push(this.paymentsItem);
+          }
           if (Permission.SYSTEM_MODULE_PERMISSIONS.some(perm => permissions.includes(perm))) {
             if (permissions.includes(PermissionsEnum.AuditRetrieve)) {
               this.systemItem.route = '/app/system/audit';

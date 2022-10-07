@@ -1,0 +1,192 @@
+.top {
+  align-items: flex-start;
+}
+
+.dimensions {
+  display: block;
+
+  mat-error {
+    margin-top: -1rem;
+  }
+}
+
+table {
+  width: 100%;
+}
+
+.table-container {
+  padding-top: 1rem;
+}
+
+tr.detail-row {
+  height: 0;
+}
+
+.extended-row-container {
+  overflow: hidden;
+  display: flex;
+}
+
+.priority-table > td, tr {
+  padding: 0.3rem;
+}
+
+.text-field-column {
+  padding: 0 0.3rem;
+}
+
+.extension-content {
+  padding: 0.75rem 5rem;
+  width: 100%;
+
+  jems-multi-language-form-field {
+    width: 40rem !important;
+    display: inline-flex;
+    --widthBasedOnType: unset !important;
+  }
+
+  jems-partner-actions-cell {
+    display: inline-flex;
+  }
+}
+
+.colored-row {
+  background: var(--table-highlight-color);
+}
+
+.normal-row {
+  background: white !important;
+}
+
+.normal-row:hover {
+  background: var(--table-hover-color) !important;
+}
+
+.width-3 {
+  width: 3.2rem;
+}
+
+.title-column-width {
+  max-width: 25rem;
+}
+
+.official-code-column-width {
+  max-width: 4rem;
+}
+
+.icon-back {
+  font-size: 2rem;
+  margin-top: -.25rem;
+}
+
+.put-icon-to-header-line {
+  display: inline-block;
+  margin-top: 1.3rem !important;
+}
+
+.payment-detail-panel {
+  max-width: 90rem !important;
+}
+
+.payments-per-partner-container {
+  padding: 0.75rem 0;
+  border: 1px solid var(--light-blue-gray);
+  overflow: auto !important;
+  width: 100%;
+
+  .payments-per-partner-header {
+    padding: 1.25rem 0 1.25rem 0;
+    width: 100%;
+    margin-top: -0.75rem;
+    color: var(--table-header-text-color);
+    font-size: var(--body-strong-font-size);
+    font-weight: var(--body-strong-font-weight);
+    background-color: var(--light-blue-gray);
+    min-width: 70rem !important;
+    overflow: hidden;
+
+    span:first-child {
+      padding-left: 0.75rem;
+    }
+
+    span:nth-child(2) {
+      padding-left: 7vw;
+      padding-right: 1vw;
+    }
+
+    .amount-approved-header-column {
+      padding-left: 0.25vw;
+    }
+  }
+
+  .payment-per-partner-row {
+    margin: 1.5rem 0 1rem 0;
+    align-items: center;
+    align-content: center;
+    vertical-align: center;
+    width: 100%;
+
+    span:first-child{
+      padding-left: 0.75rem;
+    }
+
+    span:nth-child(2) {
+      padding-left: 5vw;
+    }
+
+    .amount-approved-column {
+      padding-left: 2vw;
+    }
+  }
+}
+
+.header-color {
+  width: 100%;
+  background-color: var(--light-blue-gray);
+}
+
+.justify-start {
+  justify-content: start;
+}
+
+.installment-table-container {
+  padding: 0.25rem 3rem;
+
+  .installments-row {
+    height: 9rem;
+
+    .amount-paid-input {
+      max-width: 8vw;
+    }
+
+    .save-payment-input {
+      max-width: 8.1rem;
+    }
+
+    .comment-textarea {
+      min-width: 17rem;
+    }
+  }
+}
+
+.installment-button-container {
+  height: 1.6rem;
+}
+
+.installment-button {
+  height: 1.5rem;
+  background-color: white;
+  border: 0.2px solid  var(--primary-color);
+  border-radius: 0.3rem;
+
+  :hover {
+    cursor: pointer;
+  }
+}
+
+.add-installment-button-text {
+  font-size: 0.75rem;
+  color: var(--primary-color);
+}
+
+
