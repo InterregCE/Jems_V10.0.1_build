@@ -12,6 +12,7 @@ import {map} from 'rxjs/operators';
 import {ProjectPartnerSummaryDTO} from '@cat/api';
 import {AdaptTranslationKeyByCallTypePipe} from '@common/pipe/adapt-translation-by-call-type.pipe';
 import {CustomTranslatePipe} from '@common/pipe/custom-translate-pipe';
+import {Alert} from '@common/components/forms/alert';
 
 @UntilDestroy()
 @Component({
@@ -28,6 +29,7 @@ export class ContractPartnerComponent implements OnInit {
   data$: Observable<{
     partnerSummary: ProjectPartnerSummaryDTO;
   }>;
+  Alert = Alert;
 
   ngOnInit(): void {
     this.data$ = combineLatest([

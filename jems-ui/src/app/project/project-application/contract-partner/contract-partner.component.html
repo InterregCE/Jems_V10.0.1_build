@@ -3,7 +3,14 @@
                                 titleKey="project.application.contracting.title"
                                 [subTitleText]="'project.application.contract.partner.section.subtitle' | translate: {partnerInfo: getPartnerTranslationString(data.partnerSummary) | async}"
                                 [isVersionedData]="false">
+        <jems-alert [type]="Alert.WARNING"
+                    [closable]="false"
+                    [show]="!data.partnerSummary.active">
+            <div>{{'project.application.form.section.part.b.deactivated.partner.warning' | translate}}</div>
+        </jems-alert>
         <jems-contract-partner-beneficial-owner [partnerId]="partnerId"></jems-contract-partner-beneficial-owner>
+        <div class="section-break"></div>
+        <jems-contract-partner-banking-details></jems-contract-partner-banking-details>
         <div class="section-break"></div>
         <jems-contract-partner-documents-location [partnerId]="partnerId"></jems-contract-partner-documents-location>
     </jems-project-page-template>
