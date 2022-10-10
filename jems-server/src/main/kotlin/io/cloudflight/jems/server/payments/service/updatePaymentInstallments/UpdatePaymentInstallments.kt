@@ -6,6 +6,10 @@ import io.cloudflight.jems.server.payments.PaymentPersistence
 import io.cloudflight.jems.server.payments.authorization.CanUpdatePayments
 import io.cloudflight.jems.server.payments.service.model.PaymentPartnerInstallment
 import io.cloudflight.jems.server.payments.service.model.PaymentPartnerInstallmentUpdate
+import io.cloudflight.jems.server.payments.service.paymentInstallmentConfirmed
+import io.cloudflight.jems.server.payments.service.paymentInstallmentCreated
+import io.cloudflight.jems.server.payments.service.paymentInstallmentDeleted
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.time.LocalDate
@@ -14,7 +18,8 @@ import java.time.LocalDate
 class UpdatePaymentInstallments(
     private val paymentPersistence: PaymentPersistence,
     private val securityService: SecurityService,
-    private val validator: PaymentInstallmentsValidator
+    private val validator: PaymentInstallmentsValidator,
+    private val auditPublisher: ApplicationEventPublisher
 ): UpdatePaymentInstallmentsInteractor {
 
     @CanUpdatePayments
@@ -50,11 +55,33 @@ class UpdatePaymentInstallments(
             )
         }
 
+        // load project, partner for audit
+        val payment = paymentPersistence.getPaymentDetails(paymentId)
+        val partner = payment.partnerPayments.find { it.partnerId == partnerId }
+
         return paymentPersistence.updatePaymentPartnerInstallments(
             paymentPartnerId = paymentPartnerId,
             toDeleteInstallmentIds = deleteInstallments.mapNotNull { it.id }.toHashSet(),
             paymentPartnerInstallments = installments
-        )
+        ).also {
+            deleteInstallments.forEach { installment ->
+                val instNr = savedInstallments.indexOfFirst { it.id == installment.id }
+                auditPublisher.publishEvent(paymentInstallmentDeleted(this, payment, partner!!, instNr +1))
+            }
+            installments.forEachIndexed { instNr, installment ->
+                val oldInstallment = savedInstallments.find { installment.id == it.id }
+                // get all that were saved
+                if (installment.isSavePaymentInfo == true &&
+                    (oldInstallment == null || oldInstallment.isSavePaymentInfo != true)) {
+                    auditPublisher.publishEvent(paymentInstallmentCreated(this, payment, partner!!, instNr +1))
+                }
+                // get all that were confirmed
+                if (installment.isPaymentConfirmed == true &&
+                    (oldInstallment == null || oldInstallment.isPaymentConfirmed != true)) {
+                    auditPublisher.publishEvent(paymentInstallmentConfirmed(this, payment, partner!!, instNr +1))
+                }
+            }
+        }
     }
 
     private fun calculateCheckboxValues(

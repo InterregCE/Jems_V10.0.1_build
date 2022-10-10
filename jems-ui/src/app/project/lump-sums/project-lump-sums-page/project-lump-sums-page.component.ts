@@ -367,7 +367,8 @@ export class ProjectLumpSumsPageComponent implements OnInit {
         formGroup.get(this.constants.FORM_CONTROL_NAMES.readyForPayment)?.value,
         formGroup.get(this.constants.FORM_CONTROL_NAMES.fastTrack)?.value,
         formGroup.get(this.constants.FORM_CONTROL_NAMES.paymentEnabledDate)?.value,
-        formGroup.get(this.constants.FORM_CONTROL_NAMES.lastApprovedVersionBeforeReadyForPayment)?.value
+        formGroup.get(this.constants.FORM_CONTROL_NAMES.lastApprovedVersionBeforeReadyForPayment)?.value,
+        formGroup.get(this.constants.FORM_CONTROL_NAMES.installmentsAlreadyCreated)?.value
       );
     });
   }

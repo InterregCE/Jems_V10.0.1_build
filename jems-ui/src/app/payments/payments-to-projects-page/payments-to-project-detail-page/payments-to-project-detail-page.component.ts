@@ -12,7 +12,7 @@ import {FormService} from '@common/components/section/form/form.service';
 import {SecurityService} from '../../../security/security.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {HttpErrorResponse} from '@angular/common/http';
-import {LocaleDatePipe} from "@common/pipe/locale-date.pipe";
+import {LocaleDatePipe} from '@common/pipe/locale-date.pipe';
 
 @UntilDestroy()
 @Component({

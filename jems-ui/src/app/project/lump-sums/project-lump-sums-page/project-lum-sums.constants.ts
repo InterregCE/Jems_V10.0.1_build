@@ -20,6 +20,7 @@ export class ProjectLumSumsConstants {
     fastTrack: 'fastTrack',
     paymentEnabledDate: 'paymentEnabledDate',
     lastApprovedVersionBeforeReadyForPayment: 'lastApprovedVersionBeforeReadyForPayment',
+    installmentsAlreadyCreated: 'installmentsAlreadyCreated'
   };
 
   public static FORM_ERRORS = {

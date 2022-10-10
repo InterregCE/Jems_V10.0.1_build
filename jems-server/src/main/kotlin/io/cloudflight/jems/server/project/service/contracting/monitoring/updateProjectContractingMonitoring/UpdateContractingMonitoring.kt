@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.payments.PaymentPersistence
 import io.cloudflight.jems.server.payments.entity.PaymentGroupingId
 import io.cloudflight.jems.server.payments.service.model.PaymentPartnerToCreate
 import io.cloudflight.jems.server.payments.service.model.PaymentToCreate
+import io.cloudflight.jems.server.payments.service.monitoringFtlsReadyForPayment
 import io.cloudflight.jems.server.project.authorization.CanSetProjectToContracted
 import io.cloudflight.jems.server.project.repository.ProjectPersistenceProvider
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
@@ -15,6 +16,7 @@ import io.cloudflight.jems.server.project.service.contracting.model.ProjectContr
 import io.cloudflight.jems.server.project.service.contracting.monitoring.ContractingMonitoringPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
+import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.projectContractingMonitoringChanged
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
@@ -59,10 +61,15 @@ class UpdateContractingMonitoring(
             val lumpSumsOrderNrTobeAdded: MutableSet<Int> = mutableSetOf()
             val lumpSumsOrderNrToBeDeleted: MutableSet<Int> = mutableSetOf()
 
-            updateReadyForPayment(projectId, contractMonitoring.fastTrackLumpSums!!, oldMonitoring.fastTrackLumpSums!!,
-                lumpSumsOrderNrTobeAdded, lumpSumsOrderNrToBeDeleted)
+            updateReadyForPayment(
+                projectId = projectId,
+                lumpSums = contractMonitoring.fastTrackLumpSums!!,
+                savedFastTrackLumpSums = oldMonitoring.fastTrackLumpSums!!,
+                orderNrsToBeAdded = lumpSumsOrderNrTobeAdded,
+                orderNrsToBeDeleted = lumpSumsOrderNrToBeDeleted
+            )
             projectLumpSumPersistence.updateLumpSums(projectId, contractMonitoring.fastTrackLumpSums!!)
-            updateApprovedAmountPerPartner(projectId, lumpSumsOrderNrTobeAdded, lumpSumsOrderNrToBeDeleted)
+            updateApprovedAmountPerPartner(projectSummary, lumpSumsOrderNrTobeAdded, lumpSumsOrderNrToBeDeleted)
 
             if (projectSummary.status.isAlreadyContracted()) {
                 auditPublisher.publishEvent(
@@ -78,14 +85,23 @@ class UpdateContractingMonitoring(
         }
     }
 
-    private fun updateReadyForPayment(projectId: Long, lumpSums: List<ProjectLumpSum>, savedFastTrackLumpSums: List<ProjectLumpSum>,
-                                      orderNrsToBeAdded: MutableSet<Int>, orderNrsToBeDeleted: MutableSet<Int>) {
-        lumpSums.forEachIndexed { index, it ->
+    private fun updateReadyForPayment(
+        projectId: Long,
+        lumpSums: List<ProjectLumpSum>,
+        savedFastTrackLumpSums: List<ProjectLumpSum>,
+        orderNrsToBeAdded: MutableSet<Int>,
+        orderNrsToBeDeleted: MutableSet<Int>
+    ) {
+        lumpSums.forEachIndexed { _, it ->
             val lumpSum = savedFastTrackLumpSums.first { o -> o.orderNr == it.orderNr }
             it.lastApprovedVersionBeforeReadyForPayment = lumpSum.lastApprovedVersionBeforeReadyForPayment
             it.paymentEnabledDate = lumpSum.paymentEnabledDate
-            if ( lumpSum.readyForPayment != it.readyForPayment) {
-                if(it.readyForPayment) {
+            if (lumpSum.readyForPayment != it.readyForPayment) {
+                if (contractingMonitoringPersistence
+                        .existsSavedInstallment(projectId, lumpSum.programmeLumpSumId, lumpSum.orderNr)) {
+                    throw UpdateContractingMonitoringFTLSException()
+                }
+                if (it.readyForPayment) {
                     orderNrsToBeAdded.add(it.orderNr)
                     it.lastApprovedVersionBeforeReadyForPayment = this.versionPersistence.getLatestApprovedOrCurrent(projectId)
                     it.paymentEnabledDate = ZonedDateTime.now()
@@ -99,12 +115,16 @@ class UpdateContractingMonitoring(
     }
 
     private fun updateApprovedAmountPerPartner(
-        projectId: Long,
+        project: ProjectSummary,
         orderNrsToBeAdded: MutableSet<Int>,
         orderNrsToBeDeleted: MutableSet<Int>
     ) {
+        val projectId = project.id
         if (orderNrsToBeDeleted.isNotEmpty()) {
             this.paymentPersistence.deleteAllByProjectIdAndOrderNrIn(projectId, orderNrsToBeDeleted)
+            orderNrsToBeDeleted.forEach { orderNr ->
+                auditPublisher.publishEvent(monitoringFtlsReadyForPayment(this, project, orderNr, false))
+            }
         }
 
         if (orderNrsToBeAdded.isNotEmpty()) {
@@ -125,6 +145,9 @@ class UpdateContractingMonitoring(
                 }
 
             this.paymentPersistence.savePaymentToProjects(projectId, paymentsToUpdate)
+            orderNrsToBeAdded.forEach { orderNr ->
+                auditPublisher.publishEvent(monitoringFtlsReadyForPayment(this, project, orderNr, true))
+            }
         }
     }
 }

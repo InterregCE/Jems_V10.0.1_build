@@ -87,6 +87,18 @@ internal class ContractingMonitoringPersistenceProviderTest: UnitTest() {
     }
 
     @Test
+    fun `exists saved installment for project fast track entry`() {
+        every { projectContractingMonitoringRepository.existsSavedInstallment(projectId, 2L, 3) } returns true
+        assertThat(contractingMonitoringPersistence.existsSavedInstallment(projectId, 2L, 3)).isTrue
+    }
+
+    @Test
+    fun `not exists saved installment for project fast track entry`() {
+        every { projectContractingMonitoringRepository.existsSavedInstallment(projectId, 2L, 1) } returns false
+        assertThat(contractingMonitoringPersistence.existsSavedInstallment(projectId, 2L, 1)).isFalse
+    }
+
+    @Test
     fun `update project monitoring - valid`() {
         val monitoringSlot = slot<ProjectContractingMonitoringEntity>()
         val monitoringToUpdate = ProjectContractingMonitoring(

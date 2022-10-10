@@ -43,6 +43,8 @@ class UpdateContractingMonitoringTest : UnitTest() {
     companion object {
         private const val projectId = 1L
         private const val version = "2.0"
+        private const val lumpSumId = 2L
+        private const val orderNr = 1
 
         private val project = ProjectFull(
             id = projectId,
@@ -66,8 +68,8 @@ class UpdateContractingMonitoringTest : UnitTest() {
         )
         private val lumpSums = listOf(
             ProjectLumpSum(
-                orderNr = 1,
-                programmeLumpSumId = 1,
+                orderNr = orderNr,
+                programmeLumpSumId = lumpSumId,
                 period = 1,
                 lumpSumContributions = listOf(),
                 fastTrack = true,
@@ -80,8 +82,8 @@ class UpdateContractingMonitoringTest : UnitTest() {
 
         private val lumpSumsUpdated = listOf(
             ProjectLumpSum(
-                orderNr = 1,
-                programmeLumpSumId = 1,
+                orderNr = orderNr,
+                programmeLumpSumId = lumpSumId,
                 period = 1,
                 lumpSumContributions = listOf(),
                 fastTrack = true,
@@ -116,8 +118,8 @@ class UpdateContractingMonitoringTest : UnitTest() {
         private val paymentPerPartner = PaymentPerPartner(
             projectId = projectId,
             partnerId = 1,
-            orderNr = 1,
-            programmeLumpSumId = 1,
+            orderNr = orderNr,
+            programmeLumpSumId = lumpSumId,
             programmeFundId = 1,
             amountApprovedPerPartner = BigDecimal.ONE
         )
@@ -161,8 +163,8 @@ class UpdateContractingMonitoringTest : UnitTest() {
         )
         every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns version
         every { contractingMonitoringPersistence.updateContractingMonitoring(monitoring) } returns monitoring
-        every { projectLumpSumPersistence.getLumpSums(1, "2.0")} returns lumpSums
-        every { projectLumpSumPersistence.updateLumpSums(1, lumpSumsUpdated)} returns lumpSumsUpdated
+        every { projectLumpSumPersistence.getLumpSums(projectId, version)} returns lumpSums
+        every { projectLumpSumPersistence.updateLumpSums(projectId, lumpSumsUpdated)} returns lumpSumsUpdated
 
         assertThat(updateContractingMonitoring.updateContractingMonitoring(projectId, monitoring)).isEqualTo(monitoring)
         verify(exactly = 0) { auditPublisher.publishEvent(any()) }
@@ -174,16 +176,17 @@ class UpdateContractingMonitoringTest : UnitTest() {
             projectPersistence.getProjectSummary(projectId)
         } returns projectSummary.copy(status = ApplicationStatus.CONTRACTED)
         every { validator.validateProjectStatusForModification(projectSummary) } returns Unit
-        every { contractingMonitoringPersistence.getContractingMonitoring(projectId) } returns monitoring.copy(
+        val monitoringOther = monitoring.copy(
             fastTrackLumpSums = lumpSumsUpdated
         )
+        every { contractingMonitoringPersistence.getContractingMonitoring(projectId) } returns monitoringOther
         every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns version
-        every { contractingMonitoringPersistence.updateContractingMonitoring(monitoring) } returns monitoring
-        every { projectLumpSumPersistence.getLumpSums(1, "2.0")} returns lumpSumsUpdated
-        every { projectLumpSumPersistence.updateLumpSums(1, lumpSumsUpdated)} returns lumpSumsUpdated
+        every { contractingMonitoringPersistence.updateContractingMonitoring(monitoringOther) } returns monitoringOther
+        every { projectLumpSumPersistence.getLumpSums(projectId, version) } returns lumpSumsUpdated
+        every { projectLumpSumPersistence.updateLumpSums(projectId, lumpSumsUpdated)} returns lumpSumsUpdated
 
-        assertThat(updateContractingMonitoring.updateContractingMonitoring(projectId, monitoring))
-            .isEqualTo(monitoring)
+        assertThat(updateContractingMonitoring.updateContractingMonitoring(projectId, monitoringOther))
+            .isEqualTo(monitoringOther)
         val slotAudit = slot<AuditCandidateEvent>()
         verify(exactly = 1) { auditPublisher.publishEvent(capture(slotAudit)) }
         assertThat(slotAudit.captured.auditCandidate).isEqualTo(
@@ -222,8 +225,8 @@ class UpdateContractingMonitoringTest : UnitTest() {
         every { contractingMonitoringPersistence.updateContractingMonitoring(monitoringNew) } returns monitoringNew
         every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns version
         every { projectPersistence.getProject(projectId, version) } returns project
-        every { projectLumpSumPersistence.getLumpSums(1, "2.0")} returns lumpSums
-        every { projectLumpSumPersistence.updateLumpSums(1, any())} returns lumpSumsUpdated
+        every { projectLumpSumPersistence.getLumpSums(projectId, version)} returns lumpSums
+        every { projectLumpSumPersistence.updateLumpSums(projectId, any())} returns lumpSumsUpdated
         every { paymentPersistence.getAmountPerPartnerByProjectIdAndLumpSumOrderNrIn(1, Sets.newSet(1))} returns
             listOf(paymentPerPartner)
 
@@ -323,8 +326,8 @@ class UpdateContractingMonitoringTest : UnitTest() {
         val monitoringNew = monitoring.copy(
             fastTrackLumpSums = listOf(
                 ProjectLumpSum(
-                    orderNr = 1,
-                    programmeLumpSumId = 1,
+                    orderNr = orderNr,
+                    programmeLumpSumId = lumpSumId,
                     period = 1,
                     lumpSumContributions = listOf(),
                     fastTrack = true,
@@ -338,16 +341,46 @@ class UpdateContractingMonitoringTest : UnitTest() {
         every { contractingMonitoringPersistence.updateContractingMonitoring(monitoringNew) } returns monitoringNew
         every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns version
         every { projectPersistence.getProject(projectId, version) } returns project
-        every { projectLumpSumPersistence.getLumpSums(1, "2.0")} returns lumpSums
-        every { projectLumpSumPersistence.updateLumpSums(any(), any())} returns monitoringNew.fastTrackLumpSums!!
-        every { paymentPersistence.getAmountPerPartnerByProjectIdAndLumpSumOrderNrIn(1, Sets.newSet(1))} returns
+        every { projectLumpSumPersistence.getLumpSums(projectId, version) } returns lumpSums
+        every { contractingMonitoringPersistence.existsSavedInstallment(projectId, lumpSumId, orderNr) } returns false
+
+        every { projectLumpSumPersistence.updateLumpSums(any(), any()) } returns monitoringNew.fastTrackLumpSums!!
+        every { paymentPersistence.getAmountPerPartnerByProjectIdAndLumpSumOrderNrIn(projectId, Sets.newSet(1))} returns
             listOf(paymentPerPartner)
-        every { paymentPersistence.deleteAllByProjectIdAndOrderNrIn(1, Sets.newSet(1))} returns Unit
+        every { paymentPersistence.deleteAllByProjectIdAndOrderNrIn(projectId, Sets.newSet(1))} returns Unit
+
         val updatedMonitoring = updateContractingMonitoring.updateContractingMonitoring(projectId, monitoringNew)
 
         assertThat(updatedMonitoring.fastTrackLumpSums)
             .isEqualTo(
                     monitoringNew.fastTrackLumpSums
             )
+    }
+
+    @Test
+    fun `error on remove ready for payment for existing installments`() {
+        every { projectPersistence.getProjectSummary(projectId) } returns projectSummary
+        every { contractingMonitoringPersistence.getContractingMonitoring(projectId) } returns monitoring
+        every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns version
+        every { projectLumpSumPersistence.getLumpSums(projectId, version) } returns lumpSums
+        val monitoringNew = monitoring.copy(
+            fastTrackLumpSums = listOf(
+                ProjectLumpSum(
+                    orderNr = orderNr,
+                    programmeLumpSumId = lumpSumId,
+                    period = 1,
+                    fastTrack = true,
+                    readyForPayment = false,
+                    lastApprovedVersionBeforeReadyForPayment = version
+                )
+            )
+        )
+        every { contractingMonitoringPersistence.updateContractingMonitoring(monitoringNew) } returns monitoringNew
+        every { contractingMonitoringPersistence.existsSavedInstallment(projectId, lumpSumId, orderNr) } returns true
+
+        assertThrows<UpdateContractingMonitoringFTLSException> {
+            updateContractingMonitoring.updateContractingMonitoring(projectId, monitoringNew)
+        }
+
     }
 }
