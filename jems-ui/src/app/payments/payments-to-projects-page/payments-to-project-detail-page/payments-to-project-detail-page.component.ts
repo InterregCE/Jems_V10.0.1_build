@@ -245,4 +245,9 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
   isPaymentConfirmed(paymentIndex: number, installmentIndex: number): boolean {
     return this.installmentsArray(paymentIndex).at(installmentIndex).get('paymentConfirmed')?.value;
   }
+
+  addInstallmentButtonClicked(installment: PaymentPartnerInstallmentDTO | null, paymentIndex: number): void {
+    this.addInstallment(installment, paymentIndex);
+    this.formService.setDirty(true);
+  }
 }
