@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody
 interface PaymentsApi {
 
     companion object {
-        private const val ENDPOINT_API_PAYMENTS = "/api/payments"
+        const val ENDPOINT_API_PAYMENTS = "/api/payments"
     }
 
     @ApiOperation("Retrieve payments to projects")

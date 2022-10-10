@@ -293,14 +293,33 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
     }
 
     @Test
+    fun `downloadFile - by type`() {
+        val filePathFull = "sample/path/to/file.txt"
+        every { reportFileRepository.findByTypeAndId(ProjectPartnerReportFileType.PaymentAttachment, fileId = 20L) } returns
+            file(id = 20L, name = "file.txt", filePathFull = filePathFull)
+        every { minioStorage.getFile(BUCKET, filePathFull) } returns ByteArray(5)
+
+        assertThat(persistence.downloadFile(ProjectPartnerReportFileType.PaymentAttachment, fileId = 20L))
+            .usingRecursiveComparison()
+            .isEqualTo(Pair("file.txt", ByteArray(5)))
+    }
+
+    @Test
+    fun `downloadFile - by type - not existing`() {
+        every { reportFileRepository.findByTypeAndId(ProjectPartnerReportFileType.PaymentAttachment, fileId = -1L) } returns null
+        assertThat(persistence.downloadFile(ProjectPartnerReportFileType.PaymentAttachment, fileId = -1L)).isNull()
+        verify(exactly = 0) { minioStorage.getFile(any(), any()) }
+    }
+
+    @Test
     fun deleteFile() {
         val filePathFull = "sample/path/to/file-to-delete.txt"
         val fileToDelete = file(id = 20L, name = "file-to-delete.txt", filePathFull = filePathFull)
-        every { reportFileRepository.findByPartnerIdAndId(PARTNER_ID, fileId = 20L) } returns fileToDelete
+        every { reportFileRepository.findByTypeAndId(ProjectPartnerReportFileType.PaymentAttachment, fileId = 20L) } returns fileToDelete
         every { minioStorage.deleteFile(BUCKET, filePathFull) } answers { }
         every { reportFileRepository.delete(fileToDelete) } answers { }
 
-        persistence.deleteFile(PARTNER_ID, fileId = 20L)
+        persistence.deleteFile(ProjectPartnerReportFileType.PaymentAttachment, fileId = 20L)
 
         verify(exactly = 1) { minioStorage.deleteFile(BUCKET, filePathFull) }
         verify(exactly = 1) { reportFileRepository.delete(fileToDelete) }
@@ -310,6 +329,29 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
     fun `deleteFile - not existing`() {
         every { reportFileRepository.findByPartnerIdAndId(PARTNER_ID, fileId = -1L) } returns null
         persistence.deleteFile(PARTNER_ID, fileId = -1L)
+
+        verify(exactly = 0) { minioStorage.deleteFile(any(), any()) }
+        verify(exactly = 0) { reportFileRepository.delete(any()) }
+    }
+
+    @Test
+    fun `deleteFile - by type`() {
+        val filePathFull = "sample/path/to/file-to-delete.txt"
+        val fileToDelete = file(id = 21L, name = "file-to-delete.txt", filePathFull = filePathFull)
+        every { reportFileRepository.findByTypeAndId(ProjectPartnerReportFileType.PaymentAttachment, fileId = 21L) } returns fileToDelete
+        every { minioStorage.deleteFile(BUCKET, filePathFull) } answers { }
+        every { reportFileRepository.delete(fileToDelete) } answers { }
+
+        persistence.deleteFile(ProjectPartnerReportFileType.PaymentAttachment, fileId = 21L)
+
+        verify(exactly = 1) { minioStorage.deleteFile(BUCKET, filePathFull) }
+        verify(exactly = 1) { reportFileRepository.delete(fileToDelete) }
+    }
+
+    @Test
+    fun `deleteFile - by type - not existing`() {
+        every { reportFileRepository.findByTypeAndId(ProjectPartnerReportFileType.PaymentAttachment, fileId = -1L) } returns null
+        persistence.deleteFile(ProjectPartnerReportFileType.PaymentAttachment, fileId = -1L)
 
         verify(exactly = 0) { minioStorage.deleteFile(any(), any()) }
         verify(exactly = 0) { reportFileRepository.delete(any()) }

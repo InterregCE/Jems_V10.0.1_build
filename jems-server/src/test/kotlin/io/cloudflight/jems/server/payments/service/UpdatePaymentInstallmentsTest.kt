@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.payment.service
+package io.cloudflight.jems.server.payments.service
 
 import io.cloudflight.jems.api.user.dto.OutputUser
 import io.cloudflight.jems.server.UnitTest

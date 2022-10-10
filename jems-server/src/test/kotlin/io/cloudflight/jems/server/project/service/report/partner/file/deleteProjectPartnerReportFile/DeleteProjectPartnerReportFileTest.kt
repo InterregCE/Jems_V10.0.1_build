@@ -56,7 +56,7 @@ class DeleteProjectPartnerReportFileTest : UnitTest() {
         every { partnerPersistence.getProjectIdForPartnerId(PARTNER_ID) } returns projectId
         every { reportFilePersistence.existsFile(PARTNER_ID, any(), fileId) } returns false
         assertThrows<FileNotFound> { interactor.delete(PARTNER_ID, 5L, -1L) }
-        verify(exactly = 0) { reportFilePersistence.deleteFile(any(), any()) }
+        verify(exactly = 0) { reportFilePersistence.deleteFile(any<Long>(), any()) }
     }
 
 }

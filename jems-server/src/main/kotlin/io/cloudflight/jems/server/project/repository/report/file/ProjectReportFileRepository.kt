@@ -20,22 +20,34 @@ interface ProjectReportFileRepository : JpaRepository<ReportProjectFileEntity, L
 
     fun existsByPathAndName(path: String, name: String): Boolean
 
-    @Query("""
+    @Query(
+        """
         SELECT CASE WHEN COUNT(e) > 0 THEN TRUE ELSE FALSE END
         FROM #{#entityName} e
         WHERE e.partnerId = :partnerId AND e.path LIKE :pathPrefix% AND e.id = :id
-    """)
+    """
+    )
     fun existsByPartnerIdAndPathPrefixAndId(partnerId: Long, pathPrefix: String, id: Long): Boolean
 
-    fun existsByProjectIdAndIdAndTypeIn(projectId: Long, fileId: Long, fileTypes: Set<ProjectPartnerReportFileType>): Boolean
+    fun existsByTypeAndId(type: ProjectPartnerReportFileType, id: Long): Boolean
 
-    @Query("""
+    fun existsByProjectIdAndIdAndTypeIn(
+        projectId: Long,
+        fileId: Long,
+        fileTypes: Set<ProjectPartnerReportFileType>
+    ): Boolean
+
+    @Query(
+        """
         FROM #{#entityName} e
         WHERE e.partnerId = :partnerId AND e.path LIKE :pathPrefix% AND e.id = :id
-    """)
+    """
+    )
     fun findByPartnerIdAndPathPrefixAndId(partnerId: Long, pathPrefix: String, id: Long): ReportProjectFileEntity?
 
     fun findByPartnerIdAndId(partnerId: Long, fileId: Long): ReportProjectFileEntity?
+
+    fun findByTypeAndId(type: ProjectPartnerReportFileType, fileId: Long): ReportProjectFileEntity?
 
     fun findByProjectIdAndId(projectId: Long, fileId: Long): ReportProjectFileEntity?
 

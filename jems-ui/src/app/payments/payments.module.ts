@@ -11,6 +11,9 @@ import {
 import {
   PaymentsToProjectDetailBreadcrumbResolver
 } from './payments-to-projects-page/payments-to-project-detail.resolver';
+import {
+  PaymentsToProjectAttachmentsComponent
+} from './payments-to-projects-page/payments-to-project-detail-page/payments-to-project-attachments/payments-to-project-attachments.component';
 
 
 @NgModule({
@@ -19,6 +22,7 @@ import {
     PaymentsToProjectPageComponent,
     AdvancedPaymentsPageComponent,
     PaymentsToProjectDetailPageComponent,
+    PaymentsToProjectAttachmentsComponent,
   ],
   imports: [
     SharedModule,

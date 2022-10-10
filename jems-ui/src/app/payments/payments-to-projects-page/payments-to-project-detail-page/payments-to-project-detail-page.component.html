@@ -238,4 +238,7 @@
             </ng-container>
         </form>
     </jems-form>
+
+    <jems-payments-to-project-attachments *ngIf="data.id > 0"
+                                          [paymentId]="data.id"></jems-payments-to-project-attachments>
 </jems-main-page-template>
