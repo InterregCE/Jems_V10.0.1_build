@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.payments.repository
 import io.cloudflight.jems.server.payments.PaymentPersistence
 import io.cloudflight.jems.server.payments.entity.PaymentGroupingId
 import io.cloudflight.jems.server.payments.service.model.PartnerPayment
+import io.cloudflight.jems.server.payments.service.model.PaymentConfirmedInfo
 import io.cloudflight.jems.server.payments.service.model.PaymentDetail
 import io.cloudflight.jems.server.payments.service.model.PaymentPartnerInstallment
 import io.cloudflight.jems.server.payments.service.model.PaymentPartnerInstallmentUpdate
@@ -22,6 +23,8 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
+import java.math.BigDecimal
+import java.time.LocalDate
 
 @Repository
 class PaymentPersistenceProvider(
@@ -44,8 +47,29 @@ class PaymentPersistenceProvider(
     override fun getAllPaymentToProject(pageable: Pageable): Page<PaymentToProject> {
         return paymentRepository.findAll(pageable).toListModel(
             getLumpSum = { projectId, orderNr -> projectLumpSumRepository.getByIdProjectIdAndIdOrderNr(projectId, orderNr) },
-            getProject = { projectId, version -> projectPersistence.getProject(projectId, version) }
+            getProject = { projectId, version -> projectPersistence.getProject(projectId, version) },
+            getConfirm = { id -> getConfirmedInfosForPayment(id) }
         )
+    }
+
+    @Transactional(readOnly = true)
+    override fun getConfirmedInfosForPayment(paymentId: Long): PaymentConfirmedInfo {
+        val paymentPartners = paymentPartnerRepository.findAllByPaymentId(paymentId)
+        var amountPaid = BigDecimal.ZERO
+        var lastPaymentDate: LocalDate? = null
+        paymentPartners.forEach { paymentPartner ->
+            val installments = paymentPartnerInstallmentRepository.findAllByPaymentPartnerId(paymentPartner.id)
+            installments
+                .filter { it.isPaymentConfirmed == true }
+                .forEach { installment ->
+                    amountPaid = amountPaid.add(installment.amountPaid)
+                    if (installment.paymentConfirmedDate != null &&
+                        (lastPaymentDate == null || installment.paymentConfirmedDate!!.isAfter(lastPaymentDate))) {
+                        lastPaymentDate = installment.paymentConfirmedDate
+                    }
+                }
+        }
+        return PaymentConfirmedInfo(id = paymentId, amountPaidPerFund = amountPaid, dateOfLastPayment = lastPaymentDate)
     }
 
     @Transactional

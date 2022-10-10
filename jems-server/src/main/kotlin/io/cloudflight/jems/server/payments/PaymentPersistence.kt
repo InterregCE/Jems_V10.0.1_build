@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.payments
 
 import io.cloudflight.jems.server.payments.entity.PaymentGroupingId
 import io.cloudflight.jems.server.payments.service.model.PartnerPayment
+import io.cloudflight.jems.server.payments.service.model.PaymentConfirmedInfo
 import io.cloudflight.jems.server.payments.service.model.PaymentDetail
 import io.cloudflight.jems.server.payments.service.model.PaymentPartnerInstallment
 import io.cloudflight.jems.server.payments.service.model.PaymentPartnerInstallmentUpdate
@@ -16,6 +17,8 @@ interface PaymentPersistence {
     fun existsById(id: Long): Boolean
 
     fun getAllPaymentToProject(pageable: Pageable): Page<PaymentToProject>
+
+    fun getConfirmedInfosForPayment(paymentId: Long): PaymentConfirmedInfo
 
     fun getPaymentDetails(paymentId: Long): PaymentDetail
 

@@ -4,17 +4,15 @@ import {FormService} from '@common/components/section/form/form.service';
 import {FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {combineLatest, Observable, of} from 'rxjs';
 import {
-    ContractingPartnerBankingDetailsDTO,
-    OutputNuts,
-    ProjectContractingPartnerBankingDetailsService,
-    ProjectPartnerSummaryDTO
+  ContractingPartnerBankingDetailsDTO,
+  OutputNuts,
+  ProjectContractingPartnerBankingDetailsService,
+  ProjectPartnerSummaryDTO
 } from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
 import {catchError, map, startWith, switchMap, take, tap} from 'rxjs/operators';
 import {ContractPartnerStore} from '@project/project-application/contract-partner/contract-partner.store';
-import {
-    ProjectAssociatedOrganizationStore
-} from '@project/project-application/containers/project-application-form-page/services/project-associated-organization-store.service';
+import {ProjectAssociatedOrganizationStore} from '@project/project-application/containers/project-application-form-page/services/project-associated-organization-store.service';
 import {ProjectPartnerRoleEnum} from '@project/model/ProjectPartnerRoleEnum';
 
 @UntilDestroy()
@@ -207,7 +205,7 @@ export class ContractPartnerBankingDetailsComponent {
         return this.selectedRegion2?.areas || [];
     }
 
-    resetForm(bankingDetails: ContractingPartnerBankingDetailsDTO, editable: boolean = false) {
+    resetForm(bankingDetails: ContractingPartnerBankingDetailsDTO, editable = false) {
         this.formService.setEditable(editable);
         this.partnerBankingDetailsForm.controls.accountHolder.setValue(bankingDetails?.accountHolder);
         this.partnerBankingDetailsForm.controls.accountNumber.setValue(bankingDetails?.accountNumber);
