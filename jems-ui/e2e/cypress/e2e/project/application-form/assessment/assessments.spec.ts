@@ -50,21 +50,18 @@ context('Assessments & decision tests', () => {
         cy.contains('mat-form-field', 'Decision date').find('button').click();
         cy.get('.mat-calendar-body-today').click();
         cy.contains('Submit funding decision').click();
-        cy.intercept('api/project/*/file/list*').as('pageLoaded');
         cy.contains('Confirm').should('be.visible').click();
-        cy.wait('@pageLoaded');
         cy.contains('Funding decision:').next().should('contain.text', 'Approved with conditions');
 
-        cy.contains('Project overview').click();
+        cy.visit(`app/project/detail/${applicationId}`, {failOnStatusCode: false});
         cy.contains('Approved with conditions').should('be.visible');
 
         cy.contains('Assessment & Decision').click();
         cy.contains('Return to applicant').click();
         cy.contains('Confirm').should('be.visible').click();
-        cy.wait('@pageLoaded');
         cy.contains('Project application has been returned to applicant successfully.').scrollIntoView().should('be.visible');
 
-        cy.contains('Project overview').click();
+        cy.visit(`app/project/detail/${applicationId}`, {failOnStatusCode: false});
         cy.contains('Returned for conditions').should('be.visible');
         cy.contains('(current) V. 2.0').should('be.visible');
       });
