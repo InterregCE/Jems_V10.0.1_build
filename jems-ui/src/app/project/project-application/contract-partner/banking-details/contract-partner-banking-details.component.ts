@@ -71,6 +71,7 @@ export class ContractPartnerBankingDetailsComponent {
         private bankingDetailsService: ProjectContractingPartnerBankingDetailsService,
         public associatedOrganizationStore: ProjectAssociatedOrganizationStore
     ) {
+        this.formService.init(this.partnerBankingDetailsForm);
         const bankingDetails$ = combineLatest([this.contractPartnerStore.partnerId$, this.contractPartnerStore.projectId$])
             .pipe(
                 tap(([partnerId, projectId]) => {
@@ -98,7 +99,6 @@ export class ContractPartnerBankingDetailsComponent {
             tap(data => this.nuts = data.nuts),
             tap(data => this.resetForm(data.bankingDetails, data.canEdit))
         );
-        this.formService.init(this.partnerBankingDetailsForm);
     }
 
     countryChanged(countryTitle: string): void {
@@ -209,17 +209,17 @@ export class ContractPartnerBankingDetailsComponent {
 
     resetForm(bankingDetails: ContractingPartnerBankingDetailsDTO, editable: boolean = false) {
         this.formService.setEditable(editable);
-        this.partnerBankingDetailsForm.controls.accountHolder.setValue(bankingDetails.accountHolder);
-        this.partnerBankingDetailsForm.controls.accountNumber.setValue(bankingDetails.accountNumber);
-        this.partnerBankingDetailsForm.controls.accountIBAN.setValue(bankingDetails.accountIBAN);
-        this.partnerBankingDetailsForm.controls.accountSwiftBICCode.setValue(bankingDetails.accountSwiftBICCode);
-        this.partnerBankingDetailsForm.controls.bankName.setValue(bankingDetails.bankName);
-        this.partnerBankingDetailsForm.controls.streetName.setValue(bankingDetails.streetName);
-        this.partnerBankingDetailsForm.controls.streetNumber.setValue(bankingDetails.streetNumber);
-        this.partnerBankingDetailsForm.controls.postalCode.setValue(bankingDetails.postalCode);
-        this.partnerBankingDetailsForm.controls.country.setValue(bankingDetails.country);
-        this.partnerBankingDetailsForm.controls.nutsTwoRegion.setValue(bankingDetails.nutsTwoRegion);
-        this.partnerBankingDetailsForm.controls.nutsThreeRegion.setValue(bankingDetails.nutsThreeRegion);
+        this.partnerBankingDetailsForm.controls.accountHolder.setValue(bankingDetails?.accountHolder);
+        this.partnerBankingDetailsForm.controls.accountNumber.setValue(bankingDetails?.accountNumber);
+        this.partnerBankingDetailsForm.controls.accountIBAN.setValue(bankingDetails?.accountIBAN);
+        this.partnerBankingDetailsForm.controls.accountSwiftBICCode.setValue(bankingDetails?.accountSwiftBICCode);
+        this.partnerBankingDetailsForm.controls.bankName.setValue(bankingDetails?.bankName);
+        this.partnerBankingDetailsForm.controls.streetName.setValue(bankingDetails?.streetName);
+        this.partnerBankingDetailsForm.controls.streetNumber.setValue(bankingDetails?.streetNumber);
+        this.partnerBankingDetailsForm.controls.postalCode.setValue(bankingDetails?.postalCode);
+        this.partnerBankingDetailsForm.controls.country.setValue(bankingDetails?.country);
+        this.partnerBankingDetailsForm.controls.nutsTwoRegion.setValue(bankingDetails?.nutsTwoRegion);
+        this.partnerBankingDetailsForm.controls.nutsThreeRegion.setValue(bankingDetails?.nutsThreeRegion);
     }
 
     saveForm() {

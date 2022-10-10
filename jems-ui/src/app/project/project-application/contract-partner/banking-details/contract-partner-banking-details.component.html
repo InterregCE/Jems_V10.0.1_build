@@ -11,7 +11,7 @@
             <mat-form-field>
                 <mat-label>{{'project.application.contract.partner.section.banking.details.account.holder' | translate}}</mat-label>
                 <input #accountHolder formControlName="accountHolder" matInput
-                       [ngModel]="activeBankingDetails.accountHolder">
+                       [ngModel]="activeBankingDetails?.accountHolder">
                 <mat-hint [jemsHintFor]="accountHolder"
                           [hide]="partnerBankingDetailsForm.get('accountHolder')?.errors !== null">
                     <jems-text-hint [currentLength]="accountHolder?.value?.length"
@@ -20,7 +20,7 @@
             </mat-form-field>
             <mat-form-field>
                 <mat-label>{{'project.application.contract.partner.section.banking.details.bank.name' | translate}}</mat-label>
-                <input #bankName formControlName="bankName" matInput [ngModel]="activeBankingDetails.bankName">
+                <input #bankName formControlName="bankName" matInput [ngModel]="activeBankingDetails?.bankName">
                 <mat-hint [jemsHintFor]="bankName"
                           [hide]="partnerBankingDetailsForm.get('bankName')?.errors !== null">
                     <jems-text-hint [currentLength]="bankName?.value?.length"
@@ -33,7 +33,7 @@
             <mat-form-field jemsFormFieldWidth="xx-large">
                 <mat-label>{{'project.application.contract.partner.section.banking.details.account.number' | translate}}</mat-label>
                 <input #accountNumber formControlName="accountNumber" matInput
-                       [ngModel]="activeBankingDetails.accountNumber">
+                       [ngModel]="activeBankingDetails?.accountNumber">
                 <mat-hint [jemsHintFor]="accountNumber"
                           [hide]="partnerBankingDetailsForm.get('accountNumber')?.errors !== null">
                     <jems-text-hint [currentLength]="accountNumber?.value?.length"
@@ -44,7 +44,7 @@
                 <mat-form-field jemsFormFieldWidth="large" id="partnerSectionStreetName">
                     <mat-label>{{'project.application.contract.partner.section.banking.details.street.name' | translate}}</mat-label>
                     <input #streetName formControlName="streetName" matInput
-                           [ngModel]="activeBankingDetails.streetName">
+                           [ngModel]="activeBankingDetails?.streetName">
                     <mat-hint [jemsHintFor]="streetName"
                               [hide]="partnerBankingDetailsForm.get('streetName')?.errors !== null">
                         <jems-text-hint [currentLength]="streetName?.value?.length"
@@ -54,7 +54,7 @@
                 <mat-form-field jemsFormFieldWidth="small">
                     <mat-label>{{'project.application.contract.partner.section.banking.details.street.number' | translate}}</mat-label>
                     <input #streetNumber formControlName="streetNumber" matInput
-                           [ngModel]="activeBankingDetails.streetNumber">
+                           [ngModel]="activeBankingDetails?.streetNumber">
                     <mat-hint [jemsHintFor]="streetNumber"
                               [hide]="partnerBankingDetailsForm.get('streetNumber')?.errors !== null">
                         <jems-text-hint [currentLength]="streetNumber?.value?.length"
@@ -68,7 +68,7 @@
         <div jemsMultiColumnRow stretch gap="10rem">
             <mat-form-field>
                 <mat-label>{{'project.application.contract.partner.section.banking.details.account.iban' | translate}}</mat-label>
-                <input #accountIBAN formControlName="accountIBAN" matInput [ngModel]="activeBankingDetails.accountIBAN">
+                <input #accountIBAN formControlName="accountIBAN" matInput [ngModel]="activeBankingDetails?.accountIBAN">
                 <mat-hint [jemsHintFor]="accountIBAN"
                           [hide]="partnerBankingDetailsForm.get('accountIBAN')?.errors !== null">
                     <jems-text-hint [currentLength]="accountIBAN?.value?.length"
@@ -77,7 +77,7 @@
             </mat-form-field>
             <mat-form-field>
                 <mat-label>{{'project.application.contract.partner.section.banking.details.postal.code' | translate}}</mat-label>
-                <input #postalCode formControlName="postalCode" matInput [ngModel]="activeBankingDetails.postalCode">
+                <input #postalCode formControlName="postalCode" matInput [ngModel]="activeBankingDetails?.postalCode">
                 <mat-hint [jemsHintFor]="postalCode"
                           [hide]="partnerBankingDetailsForm.get('postalCode')?.errors !== null">
                     <jems-text-hint [currentLength]="postalCode?.value?.length"
@@ -89,7 +89,7 @@
             <mat-form-field>
                 <mat-label>{{'project.application.contract.partner.section.banking.details.account.swift.bic.code' | translate}}</mat-label>
                 <input #accountSwiftBICCode formControlName="accountSwiftBICCode" matInput
-                       [ngModel]="activeBankingDetails.accountSwiftBICCode">
+                       [ngModel]="activeBankingDetails?.accountSwiftBICCode">
                 <mat-hint [jemsHintFor]="accountSwiftBICCode"
                           [hide]="partnerBankingDetailsForm.get('accountSwiftBICCode')?.errors !== null">
                     <jems-text-hint [currentLength]="accountSwiftBICCode?.value?.length"
@@ -99,7 +99,7 @@
             <ng-container *ngIf="data.nuts">
                 <mat-form-field>
                     <mat-label>{{'project.application.contract.partner.section.banking.details.country' | translate}}</mat-label>
-                    <input name="country" formControlName="country" matInput [ngModel]="activeBankingDetails.country"
+                    <input name="country" formControlName="country" matInput [ngModel]="activeBankingDetails?.country"
                            [matAutocomplete]="country"
                            (focusin)="initializeFilters()"
                            (focusout)="countryUnfocused($event)">
@@ -119,7 +119,7 @@
                 <mat-form-field jemsFormFieldWidth="xx-large">
                     <mat-label>{{'project.application.contract.partner.section.banking.details.nuts.two.region' | translate}}</mat-label>
                     <input name="nutsTwoRegion" formControlName="nutsTwoRegion" matInput
-                           [ngModel]="activeBankingDetails.nutsTwoRegion"
+                           [ngModel]="activeBankingDetails?.nutsTwoRegion"
                            [matAutocomplete]="nutsTwoRegion"
                            (focusout)="region2Unfocused($event)">
                     <mat-autocomplete #nutsTwoRegion="matAutocomplete"
@@ -138,7 +138,7 @@
                 <mat-form-field jemsFormFieldWidth="xx-large">
                     <mat-label>{{'project.application.contract.partner.section.banking.details.nuts.three.region' | translate}}</mat-label>
                     <input name="nutsThreeRegion" formControlName="nutsThreeRegion" matInput
-                           [ngModel]="activeBankingDetails.nutsThreeRegion"
+                           [ngModel]="activeBankingDetails?.nutsThreeRegion"
                            [matAutocomplete]="nutsThreeRegion"
                            (focusout)="region3Unfocused($event)">
                     <mat-autocomplete #nutsThreeRegion="matAutocomplete"
