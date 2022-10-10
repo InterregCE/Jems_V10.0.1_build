@@ -5,11 +5,11 @@ import partner from '../../../../fixtures/api/application/partner/partner.json';
 
 const baselinePath = "/project/application-form/d-project-budget/";
 const comparePdfMask = [
-  { pageIndex: 0, coordinates: { x0: 387, x1: 440, y0: 324, y1: 343} },
-  { pageIndex: 1, coordinates: { x0:400, x1: 450, y0: 207, y1: 224} },
-  { pageIndex: 1, coordinates: { x0:400, x1: 580, y0: 370, y1: 390} },
-  { pageIndex: 0, coordinates: { x0:260, x1: 580, y0: 373, y1: 404} },
-  { pageIndex: 0, coordinates: { x0:400, x1: 560, y0: 515, y1: 535} }
+  {pageIndex: 0, coordinates: {x0: 387, x1: 440, y0: 324, y1: 343}},
+  {pageIndex: 1, coordinates: {x0: 400, x1: 450, y0: 207, y1: 224}},
+  {pageIndex: 1, coordinates: {x0: 400, x1: 580, y0: 370, y1: 390}},
+  {pageIndex: 0, coordinates: {x0: 260, x1: 580, y0: 373, y1: 404}},
+  {pageIndex: 0, coordinates: {x0: 400, x1: 560, y0: 515, y1: 535}}
 ];
 
 context('Project budget tests', () => {
@@ -65,14 +65,14 @@ context('Project budget tests', () => {
 
         testData.partners.forEach((partner, partnerIndex) => {
           cy.contains('div', partner.abbreviation).find('span').each((partnerBudget, budgetIndex) => {
-            if (budgetIndex !== 0 && budgetIndex !== 1)
-              expect(partnerBudget.text()).to.be.equal(testData.partners[partnerIndex].budgetOverview[budgetIndex - 2]);
+            if (![0, 1, 2].includes(budgetIndex))
+              expect(partnerBudget.text()).to.be.equal(testData.partners[partnerIndex].budgetOverview[budgetIndex - 3]);
           });
         });
 
         cy.get('div.footer').find('span').each((totalBudget, budgetIndex) => {
-          if (budgetIndex !== 0 && budgetIndex !== 1)
-            expect(totalBudget.text()).to.be.equal(testData.fundingAmounts.totalBudgetOverview[budgetIndex - 2]);
+          if (![0, 1, 2].includes(budgetIndex))
+            expect(totalBudget.text()).to.be.equal(testData.fundingAmounts.totalBudgetOverview[budgetIndex - 3]);
         });
 
         // D.3
@@ -88,12 +88,12 @@ context('Project budget tests', () => {
             cy.visit(`app/project/detail/${applicationId}/applicationFormPartner/${partnerId}/budget`, {failOnStatusCode: false});
 
             cy.get('jems-budget-table div').eq(2).find('span').each((partnerBudget, index) => {
-              if (index !== 0)
-                expect(partnerBudget.text()).to.be.equal(partner.budgetOverview[index - 1]);
+              if (![0,1].includes(index))
+                expect(partnerBudget.text()).to.be.equal(partner.budgetOverview[index - 2]);
             });
 
-            cy.contains('a', 'Co-financing').click();
-            cy.contains('a', 'Co-financing').click(); // TODO remove after MP2-2665 is fixed
+            cy.get('.mat-tab-header-pagination-after').click();
+            cy.contains('a', 'Co-financing').should('be.visible').click();
 
             cy.contains('div.jems-table-config', 'Source').children().eq(1).find('div').should('contain', partner.cofinancingAmount);
             cy.contains('div.jems-table-config', 'Source').children().eq(3).find('div').eq(1).should('contain', partner.budgetOverview[9]);
@@ -162,10 +162,10 @@ context('Project budget tests', () => {
             cy.visit(`app/project/detail/${applicationId}/applicationFormBudgetPerPartner`, {failOnStatusCode: false});
             cy.contains('100 % of total').should('be.visible');
             cy.get('div.jems-table-config').children().eq(1).then(partnerBreakdown => {
-              cy.wrap(partnerBreakdown).children().eq(4).should('contain', testData.roundedDownAmount);
-              cy.wrap(partnerBreakdown).children().eq(5).should('contain', testData.fundPercentage);
-              cy.wrap(partnerBreakdown).children().eq(8).should('contain', testData.roundedUpAmount);
-              cy.wrap(partnerBreakdown).children().eq(10).should('contain', testData.partnerTotalEligibleBudget);
+              cy.wrap(partnerBreakdown).children().eq(5).should('contain', testData.roundedDownAmount);
+              cy.wrap(partnerBreakdown).children().eq(6).should('contain', testData.fundPercentage);
+              cy.wrap(partnerBreakdown).children().eq(9).should('contain', testData.roundedUpAmount);
+              cy.wrap(partnerBreakdown).children().eq(11).should('contain', testData.partnerTotalEligibleBudget);
             });
 
             // verify PDF export
@@ -173,7 +173,7 @@ context('Project budget tests', () => {
             cy.contains('button', 'Export').clickToDownload('**/export/application?*', 'pdf').then(exportFile => {
               const templateFile = '/project/application-form/d-project-budget/TB-383-export-template.pdf';
               cy.comparePdf(templateFile, exportFile, comparePdfMask, baselinePath).then(x => {
-                expect(x.status==="passed").to.be.true;
+                expect(x.status === "passed").to.be.true;
               });
             });
 
