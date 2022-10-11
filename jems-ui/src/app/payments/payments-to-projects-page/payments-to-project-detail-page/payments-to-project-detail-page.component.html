@@ -48,14 +48,14 @@
                     </div>
 
                     <ng-container *ngFor="let partnerPayment of partnerPayments; let index = index"
-                        [formArrayName]="constants.FORM_CONTROL_NAMES.partnerPayments" class="full-payment-row">
+                        [formArrayName]="constants.FORM_CONTROL_NAMES.partnerPayments">
 
-                        <div [formGroupName]="index" jemsMultiColumnRow class="table-row">
+                        <div [formGroupName]="index" jemsMultiColumnRow class="table-row full-payment-row">
                             <div class="column-partner-id justify-start">{{partnerPayment.partnerType === 'LEAD_PARTNER' ? 'LP' : 'PP' + partnerPayment.partnerNumber}}</div>
                             <div class="column-partner-name justify-left">{{partnerPayment.partnerAbbreviation}}</div>
                             <div class="column-amount-approved justify-end">{{partnerPayment.amountApproved | asMoney}}</div>
                             <div *ngIf="installmentsArray(index).length === 0">
-                                <button mat-stroked-button (click)="addInstallment(null, index)">
+                                <button mat-stroked-button (click)="addInstallmentButtonClicked(null, index);">
                                     + {{'payments.detail.table.header.add.detail.button' | translate}}
                                 </button>
                             </div>
@@ -105,6 +105,8 @@
                                             <div>
                                                 <mat-form-field class="w-100">
                                                     <input name="paymentDate"
+                                                           class="placeholder-required"
+                                                           placeholder="*"
                                                            [formControlName]="constants.FORM_CONTROL_NAMES.paymentDate" matInput required
                                                            [matDatepicker]="paymentDatePicker">
                                                     <mat-error>
