@@ -1,4 +1,4 @@
-import user from "../../fixtures/users.json";
+import user from "../fixtures/users.json";
 import {faker} from "@faker-js/faker";
 
 context('Controller tests', () => {

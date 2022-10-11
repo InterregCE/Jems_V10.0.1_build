@@ -181,7 +181,7 @@ context('Call management tests', () => {
     cy.wait(1000);
 
     cy.loginByRequest(user.applicantUser.email);
-    cy.visit('/', {failOnStatusCode: false});
+    cy.visit('/');
 
     cy.contains('mat-row', callName).contains('button', 'Apply').click();
     cy.contains('div.mat-form-field-flex', 'Project acronym').type(faker.word.noun());

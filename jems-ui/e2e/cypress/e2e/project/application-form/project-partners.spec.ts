@@ -1,6 +1,6 @@
-import user from '../../../../fixtures/users.json';
-import application from '../../../../fixtures/api/application/application.json';
-import call from "../../../../fixtures/api/call/1.step.call.json";
+import user from '../../../fixtures/users.json';
+import application from '../../../fixtures/api/application/application.json';
+import call from "../../../fixtures/api/call/1.step.call.json";
 
 context('Project partners tests', () => {
 
@@ -21,7 +21,7 @@ context('Project partners tests', () => {
   });
 
   it('TB-581 Applicant can add lead partner to the project', function () {
-    cy.fixture('project/application-form/b-project-partners/TB-581').then(testData => {
+    cy.fixture('project/application-form/project-partners/TB-581.json').then(testData => {
       cy.contains('Partners overview').click();
       cy.contains('Add new partner').click();
       const leadPartner = testData.partner;
@@ -61,7 +61,7 @@ context('Project partners tests', () => {
   });
 
   it('TB-608 Applicant can edit partners address', function () {
-    cy.fixture('project/application-form/b-project-partners/TB-608').then(testData => {
+    cy.fixture('project/application-form/project-partners/TB-608.json').then(testData => {
       cy.contains(this.partnerAbbreviation).click();
       cy.contains('a', 'Address').click();
 
@@ -100,7 +100,7 @@ context('Project partners tests', () => {
   });
 
   it('TB-609 Applicant can edit partners contact info', function () {
-    cy.fixture('project/application-form/b-project-partners/TB-609').then(testData => {
+    cy.fixture('project/application-form/project-partners/TB-609.json').then(testData => {
       cy.contains(this.partnerAbbreviation).click();
       cy.contains('a', 'Contact').click();
 
@@ -120,7 +120,7 @@ context('Project partners tests', () => {
   });
 
   it('TB-610 Applicant can edit partners motivation info', function () {
-    cy.fixture('project/application-form/b-project-partners/TB-610').then(testData => {
+    cy.fixture('project/application-form/project-partners/TB-610.json').then(testData => {
       cy.contains(this.partnerAbbreviation).click();
       cy.contains('a', 'Motivation').click();
 
@@ -151,7 +151,7 @@ context('Project partners tests', () => {
   });
 
   it('TB-628 Applicant can edit partners budget info', function () {
-    cy.fixture('project/application-form/b-project-partners/TB-628').then(testData => {
+    cy.fixture('project/application-form/project-partners/TB-628.json').then(testData => {
       cy.contains(this.partnerAbbreviation).click();
       cy.contains('a', 'Budget').click();
 
@@ -266,7 +266,7 @@ context('Project partners tests', () => {
   });
 
   it('TB-633 Applicant can edit partners confinancing info', function () {
-    cy.fixture('project/application-form/b-project-partners/TB-633').then(testData => {
+    cy.fixture('project/application-form/project-partners/TB-633.json').then(testData => {
       cy.contains(this.partnerAbbreviation).click();
       cy.get('.mat-tab-header-pagination-after').click();
       cy.wait(500);
@@ -315,7 +315,7 @@ context('Project partners tests', () => {
   });
 
   it('TB-634 Applicant can edit partners state aid info', function () {
-    cy.fixture('project/application-form/b-project-partners/TB-634').then(testData => {
+    cy.fixture('project/application-form/project-partners/TB-634.json').then(testData => {
       cy.contains(this.partnerAbbreviation).click();
       cy.get('.mat-tab-header-pagination-after').click();
       cy.wait(500);
@@ -362,7 +362,7 @@ context('Project partners tests', () => {
   });
 
   it('TB-638 Applicant can add associated organisation', function () {
-    cy.fixture('project/application-form/b-project-partners/TB-638').then(testData => {
+    cy.fixture('project/application-form/project-partners/TB-638.json').then(testData => {
       cy.contains('Associated organisations').click();
 
       cy.contains('Add new associated organisation').click();

@@ -1,6 +1,6 @@
-import user from '../../../../fixtures/users.json';
-import application from '../../../../fixtures/api/application/application.json';
-import call from '../../../../fixtures/api/call/1.step.call.json';
+import user from '../../../fixtures/users.json';
+import application from '../../../fixtures/api/application/application.json';
+import call from '../../../fixtures/api/call/1.step.call.json';
 import {faker} from '@faker-js/faker';
 
 context('Application contracting tests', () => {

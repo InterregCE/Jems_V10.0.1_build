@@ -1,9 +1,9 @@
-import user from "../../../../fixtures/users.json";
-import call from "../../../../fixtures/api/call/1.step.call.json";
-import application from "../../../../fixtures/api/application/application.json";
+import user from "../../../fixtures/users.json";
+import call from "../../../fixtures/api/call/1.step.call.json";
+import application from "../../../fixtures/api/application/application.json";
 
 context('Draft budget tests', () => {
-  it('TB-672 Create project proposed lump sums', () => {
+  it('TB-672 Create project proposed unit costs', () => {
     cy.fixture('project/application-form/d-project-budget/TB-672.json').then(testData => {
 
       cy.loginByRequest(user.programmeUser.email);

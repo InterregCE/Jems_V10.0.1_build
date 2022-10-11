@@ -1,7 +1,7 @@
-import user from '../../../../fixtures/users.json';
+import user from '../../../fixtures/users.json';
 import {faker} from '@faker-js/faker';
-import call from '../../../../fixtures/api/call/1.step.call.json';
-import application from '../../../../fixtures/api/application/application.json';
+import call from '../../../fixtures/api/call/1.step.call.json';
+import application from '../../../fixtures/api/application/application.json';
 
 context('Project identification tests', () => {
 
@@ -41,7 +41,7 @@ context('Project identification tests', () => {
   });
 
   it('TB-556 Applicant can open and edit his projects', function () {
-    cy.fixture('project/application-form/a-project-identification/TB-556').then(testData => {
+    cy.fixture('project/application-form/project-identification/TB-556').then(testData => {
 
       cy.visit('/');
 

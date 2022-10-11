@@ -1,10 +1,10 @@
-import user from '../../../../fixtures/users.json';
-import call from '../../../../fixtures/api/call/1.step.call.json';
-import application from '../../../../fixtures/api/application/application.json';
-import call2step from '../../../../fixtures/api/call/2.step.call.json';
-import application2step from '../../../../fixtures/api/application/2.step.application.json';
-import partner from '../../../../fixtures/api/application/partner/partner.json';
-import draftBudgetUnitCosts from '../../../../fixtures/api/application/draft-budget/project.proposed.unit.costs.json';
+import user from '../../../fixtures/users.json';
+import call from '../../../fixtures/api/call/1.step.call.json';
+import application from '../../../fixtures/api/application/application.json';
+import call2step from '../../../fixtures/api/call/2.step.call.json';
+import application2step from '../../../fixtures/api/application/2.step.application.json';
+import partner from '../../../fixtures/api/application/partner/partner.json';
+import draftBudgetUnitCosts from '../../../fixtures/api/application/draft-budget/project.proposed.unit.costs.json';
 import date from "date-and-time";
 
 context('Partners budget exports', () => {
