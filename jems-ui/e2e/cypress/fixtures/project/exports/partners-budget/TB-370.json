@@ -37,38 +37,52 @@
           {
             "amount": 55.56,
             "number": 1
-          },
+          }
+        ]
+      }, {
+        "unitCostId": 999,
+        "numberOfUnits": 13,
+        "rowSum": 1611.87,
+        "budgetPeriods": [
           {
-            "amount": 0,
-            "number": 2
-          },
-          {
-            "amount": 0,
-            "number": 3
-          },
-          {
-            "amount": 0,
-            "number": 4
-          },
-          {
-            "amount": 0,
-            "number": 5
-          },
-          {
-            "amount": 0,
-            "number": 6
-          },
-          {
-            "amount": 0,
-            "number": 7
-          },
-          {
-            "amount": 0,
+            "amount": 1611.87,
             "number": 8
           }
         ]
       }
     ],
+    "modifiedTravelCost": {
+      "comments": [
+        {
+          "translation": "API generated project proposed travel and accommodation cost comments DE",
+          "language": "DE"
+        },
+        {
+          "translation": "API generated project proposed travel and accommodation cost comments EN",
+          "language": "EN"
+        }
+      ],
+      "awardProcedures": [
+        {
+          "translation": "API generated project proposed travel and accommodation cost award procedures DE",
+          "language": "DE"
+        },
+        {
+          "translation": "API generated project proposed travel and accommodation cost award procedures EN",
+          "language": "EN"
+        }
+      ],
+      "numberOfUnits": 19,
+      "pricePerUnit": 123.99,
+      "rowSum": 2355.81,
+      "budgetPeriods": [
+        {
+          "amount": 2355.81,
+          "number": 1
+        }
+      ],
+      "unitCostId": 999
+    },
     "modifiedCofinancing": {
       "finances": [
         {
@@ -83,10 +97,9 @@
       ],
       "partnerContributions": [
         {
-          "id": null,
           "name": "Lead Partner",
           "status": "Public",
-          "amount": 487.44,
+          "amount": 2281.82,
           "partner": true
         }
       ]

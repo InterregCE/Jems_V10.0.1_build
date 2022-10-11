@@ -101,6 +101,8 @@ declare global {
       assignPartnerCollaborators(applicationId: number, partnerId: number, users: string[]);
       
       returnToApplicant(applicationId: number, userEmail?: string);
+
+      createProjectProposedUnitCost(applicationId: number, unitCost);
     }
   }
 }
@@ -287,6 +289,16 @@ Cypress.Commands.add('returnToApplicant', (applicationId: number, userEmail?: st
       loginByRequest(currentUser.name);
     });
   }
+});
+
+Cypress.Commands.add('createProjectProposedUnitCost', (applicationId: number, unitCost) => {
+  cy.request({
+    method: 'POST',
+    url: `api/project/${applicationId}/costOption/unitCost`,
+    body: unitCost
+  }).then(response => {
+    return response.body.id;
+  });
 });
 
 function createApplication(applicationDetails: ProjectCreateDTO) {
