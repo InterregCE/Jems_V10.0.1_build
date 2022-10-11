@@ -41,7 +41,7 @@
                             {{ 'payments.detail.table.header.amount.approved' | translate }}
                             <jems-context-info
                                     infoPosition="right"
-                                    infoText="{{ 'payments.detail.table.header.installment.confirm.payment.contextinfo' | adaptTranslationKeyByCallType | async | translate }}">
+                                    infoText="{{ 'payments.detail.table.header.amount.approved.contextinfo' | adaptTranslationKeyByCallType | async | translate }}">
                             </jems-context-info>
                         </div>
                         <div class="column-add-payment"><!-- Empty - just for alignment reasons --></div>
@@ -105,8 +105,11 @@
                                             <div>
                                                 <mat-form-field class="w-100">
                                                     <input name="paymentDate"
-                                                           [formControlName]="constants.FORM_CONTROL_NAMES.paymentDate" matInput
+                                                           [formControlName]="constants.FORM_CONTROL_NAMES.paymentDate" matInput required
                                                            [matDatepicker]="paymentDatePicker">
+                                                    <mat-error>
+                                                        <jems-form-field-errors [errors]="installment.get(constants.FORM_CONTROL_NAMES.paymentDate)?.errors"></jems-form-field-errors>
+                                                    </mat-error>
                                                     <mat-datepicker-toggle matSuffix [for]="paymentDatePicker"></mat-datepicker-toggle>
                                                     <mat-datepicker #paymentDatePicker></mat-datepicker>
                                                 </mat-form-field>
@@ -132,7 +135,7 @@
                                                 </mat-checkbox>
                                             </div>
                                             <div>{{installment.get(constants.FORM_CONTROL_NAMES.savePaymentInfoUser).value?.email}}</div>
-                                            <div>{{installment.get(constants.FORM_CONTROL_NAMES.savePaymentDate).value}}</div>
+                                            <div>{{getFormattedDate(installment.get(constants.FORM_CONTROL_NAMES.savePaymentDate).value)}}</div>
                                             <div  class="justify-center">
                                                 <mat-checkbox
                                                               (change)="setConfirmPaymentDate($event.checked, index, installmentIndex)"
@@ -141,7 +144,7 @@
                                                 </mat-checkbox>
                                             </div>
                                             <div>{{installment.get(constants.FORM_CONTROL_NAMES.paymentConfirmedUser).value?.email}}</div>
-                                            <div>{{installment.get(constants.FORM_CONTROL_NAMES.paymentConfirmedDate).value}}</div>
+                                            <div>{{getFormattedDate(installment.get(constants.FORM_CONTROL_NAMES.paymentConfirmedDate).value)}}</div>
                                             <div>
                                                 <button *ngIf="!isPaymentSaved(index, installmentIndex)"
                                                         (click)="removeItem(index, installmentIndex)"

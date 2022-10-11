@@ -12,6 +12,7 @@ import {FormService} from '@common/components/section/form/form.service';
 import {SecurityService} from '../../../security/security.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {HttpErrorResponse} from '@angular/common/http';
+import {LocaleDatePipe} from "@common/pipe/locale-date.pipe";
 
 @UntilDestroy()
 @Component({
@@ -58,7 +59,8 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
               private formBuilder: FormBuilder,
               private formService: FormService,
               private paymentsDetailPageStore: PaymentsDetailPageStore,
-              private securityService: SecurityService) {
+              private securityService: SecurityService,
+              private localeDatePipe: LocaleDatePipe) {
   }
 
   ngOnInit(): void {
@@ -122,7 +124,7 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
     const group = this.formBuilder.group({
       id: installment?.id ? installment.id : null,
       amountPaid: installment?.amountPaid ? this.formBuilder.control(installment.amountPaid) : this.computeAvailableSum(paymentIndex),
-      paymentDate: this.formBuilder.control(installment?.paymentDate ? installment.paymentDate : null),
+      paymentDate: this.formBuilder.control(installment?.paymentDate ? installment.paymentDate : null, Validators.required),
       comment: this.formBuilder.control(installment?.comment ? installment.comment : '', [Validators.maxLength(500)]),
       savePaymentInfo: this.formBuilder.control(installment?.savePaymentInfo ? installment.savePaymentInfo : false),
       savePaymentInfoUser: this.formBuilder.control(installment?.savePaymentInfoUser ? this.getOutputUserObject(installment.savePaymentInfoUser) : null),
@@ -249,5 +251,9 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
   addInstallmentButtonClicked(installment: PaymentPartnerInstallmentDTO | null, paymentIndex: number): void {
     this.addInstallment(installment, paymentIndex);
     this.formService.setDirty(true);
+  }
+
+  getFormattedDate(value: string): any {
+    return this.localeDatePipe.transform(value);
   }
 }
