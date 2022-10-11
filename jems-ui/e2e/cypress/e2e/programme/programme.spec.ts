@@ -508,6 +508,8 @@ context('Programme management tests', () => {
       cy.visit('app/programme', {failOnStatusCode: false});
       cy.contains('Data export').click();
       
+      cy.wait(5000); // give some time to the system to make sure all created projects/partners are in the exports
+      
       cy.contains('div', 'Programme data export plugin').find('mat-select').click();
       cy.contains('mat-option', 'Standard programme partner data export').click();
       cy.contains('button', 'Generate export file').click();
@@ -575,8 +577,7 @@ context('Programme management tests', () => {
   });
 
   it('TB-746 Programme conversion rates can be loaded in the system', () => {
-    cy.visit('/app/progr amme', {failOnStatusCode: false});
-    cy.get('div#navbarSupportedContent').contains('span', 'Programme').click();
+    cy.visit('/app/programme', {failOnStatusCode: false});
     cy.contains('div', 'Conversion rates').click();
     cy.contains('button', 'Load conversion rates').click();
     cy.contains('div', 'Loaded conversion rates successfully').should('be.visible');

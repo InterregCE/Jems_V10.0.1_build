@@ -1,0 +1,92 @@
+[
+  {
+    "name": [
+      {
+        "translation": "Project Proposed Unit Cost for One Category DE",
+        "language": "DE"
+      }, {
+        "translation": "Project Proposed Unit Cost for One Category EN",
+        "language": "EN"
+      }
+    ],
+    "description": [
+      {
+        "translation": "API generated description of the unit cost DE",
+        "language": "DE"
+      }, {
+        "translation": "API generated description of the unit cost EN",
+        "language": "EN"
+      }
+    ],
+    "type": [
+      {
+        "translation": "API gen unit type DE",
+        "language": "DE"
+      }, {
+        "translation": "API gen unit type EN",
+        "language": "EN"
+      }
+    ],
+    "costPerUnit": 123.99,
+    "costPerUnitForeignCurrency": 666.99,
+    "foreignCurrencyCode": "USD",
+    "oneCostCategory": true,
+    "categories": ["TravelAndAccommodationCosts"],
+    "justification": [
+      {
+        "translation": "API generated justification and calculation DE",
+        "language": "DE"
+      }, {
+        "translation": "API generated justification and calculation EN",
+        "language": "EN"
+      }
+    ]
+  },
+  {
+    "name": [
+      {
+        "translation": "Project Proposed Unit Cost for Multi Categories DE",
+        "language": "DE"
+      }, {
+        "translation": "Project Proposed Unit Cost for Multi Categories EN",
+        "language": "EN"
+      }
+    ],
+    "description": [
+      {
+        "translation": "API generated description of the unit cost DE",
+        "language": "DE"
+      }, {
+        "translation": "API generated description of the unit cost EN",
+        "language": "EN"
+      }
+    ],
+    "type": [
+      {
+        "translation": "API gen unit type DE",
+        "language": "DE"
+      }, {
+        "translation": "API gen unit type EN",
+        "language": "EN"
+      }
+    ],
+    "costPerUnit": 123.99,
+    "costPerUnitForeignCurrency": 666.99,
+    "foreignCurrencyCode": "USD",
+    "oneCostCategory": false,
+    "projectDefined": true,
+    "categories": [
+      "OfficeAndAdministrationCosts", "StaffCosts", "TravelAndAccommodationCosts", "ExternalCosts", "EquipmentCosts",
+      "InfrastructureCosts"
+    ],
+    "justification": [
+      {
+        "translation": "API generated justification and calculation DE",
+        "language": "DE"
+      }, {
+        "translation": "API generated justification and calculation EN",
+        "language": "EN"
+      }
+    ]
+  }
+]
