@@ -22,6 +22,8 @@ interface ProjectReportFilePersistence {
         fileTypes: Set<ProjectPartnerReportFileType>
     ): Boolean
 
+    fun existsFileByPartnerIdAndFileIdAndFileTypeIn(partnerId: Long, fileId: Long, fileTypes: Set<ProjectPartnerReportFileType>): Boolean
+
     fun getFileAuthor(partnerId: Long, pathPrefix: String, fileId: Long): UserSimple?
 
     fun downloadFile(partnerId: Long, fileId: Long): Pair<String, ByteArray>?
@@ -72,5 +74,7 @@ interface ProjectReportFilePersistence {
     fun addAttachmentToPartnerReport(file: ProjectReportFileCreate): ProjectReportFileMetadata
 
     fun getFileType(fileId: Long, projectId: Long): ProjectPartnerReportFileType?
+
+    fun getFileTypeByPartnerId(fileId: Long, partnerId: Long): ProjectPartnerReportFileType
 
 }

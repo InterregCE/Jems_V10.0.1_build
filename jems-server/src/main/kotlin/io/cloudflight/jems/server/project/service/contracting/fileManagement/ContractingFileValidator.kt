@@ -34,6 +34,11 @@ val CONTRACT_ALLOWED_FILE_TYPES = mapOf(
     ProjectPartnerReportFileType.ContractDoc to setOf(ProjectPartnerReportFileType.ContractDoc),
 )
 
+val PARTNER_ALLOWED_FILE_TYPES = mapOf(
+    ProjectPartnerReportFileType.ContractPartner to setOf(ProjectPartnerReportFileType.ContractPartnerDoc),
+    ProjectPartnerReportFileType.ContractPartnerDoc to setOf(ProjectPartnerReportFileType.ContractPartnerDoc),
+)
+
 fun validateInternalFile(fileType:  ProjectPartnerReportFileType?) {
     if (fileType == null || fileType != ProjectPartnerReportFileType.ContractInternal) {
         throw FileNotFound()
@@ -45,7 +50,6 @@ fun validateContractFile(fileType:  ProjectPartnerReportFileType?) {
         throw FileNotFound()
     }
 }
-
 
 fun validateConfiguration(
     searchRequest: ProjectContractingFileSearchRequest,

@@ -67,6 +67,10 @@ class ProjectReportFilePersistenceProvider(
         )
 
     @Transactional(readOnly = true)
+    override fun existsFileByPartnerIdAndFileIdAndFileTypeIn(partnerId: Long, fileId: Long, fileTypes: Set<ProjectPartnerReportFileType>): Boolean =
+        reportFileRepository.existsByPartnerIdAndIdAndTypeIn(partnerId = partnerId, fileId = fileId, fileTypes = fileTypes)
+
+    @Transactional(readOnly = true)
     override fun getFileAuthor(partnerId: Long, pathPrefix: String, fileId: Long) =
         reportFileRepository.findByPartnerIdAndPathPrefixAndId(
             partnerId = partnerId,
@@ -199,6 +203,9 @@ class ProjectReportFilePersistenceProvider(
     override fun getFileType(fileId: Long, projectId: Long): ProjectPartnerReportFileType? =
         reportFileRepository.findByProjectIdAndId(projectId, fileId)?.type
 
+    @Transactional(readOnly = true)
+    override fun getFileTypeByPartnerId(fileId: Long, partnerId: Long): ProjectPartnerReportFileType =
+        reportFileRepository.findByPartnerIdAndId(partnerId, fileId)?.type ?: throw ResourceNotFoundException("projectPartnerReportFileType")
 
     private fun persistFileAndUpdateLink(file: ProjectReportFileCreate, additionalStep: (ReportProjectFileEntity) -> Unit): ProjectReportFileMetadata {
         return persistAttachmentAndMetadata(file = file, locationForMinio = file.getMinioFullPath())

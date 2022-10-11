@@ -37,6 +37,8 @@ interface ProjectReportFileRepository : JpaRepository<ReportProjectFileEntity, L
         fileTypes: Set<ProjectPartnerReportFileType>
     ): Boolean
 
+    fun existsByPartnerIdAndIdAndTypeIn(partnerId: Long, fileId: Long, fileTypes: Set<ProjectPartnerReportFileType>): Boolean
+
     @Query(
         """
         FROM #{#entityName} e
@@ -50,6 +52,7 @@ interface ProjectReportFileRepository : JpaRepository<ReportProjectFileEntity, L
     fun findByTypeAndId(type: ProjectPartnerReportFileType, fileId: Long): ReportProjectFileEntity?
 
     fun findByProjectIdAndId(projectId: Long, fileId: Long): ReportProjectFileEntity?
+
 
     @EntityGraph(value = "ReportProjectFileEntity.user")
     override fun findAll(predicate: Predicate, pageable: Pageable): Page<ReportProjectFileEntity>

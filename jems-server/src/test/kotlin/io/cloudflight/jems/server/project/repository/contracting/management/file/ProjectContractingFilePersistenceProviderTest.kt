@@ -142,4 +142,32 @@ class ProjectContractingFilePersistenceProviderTest : UnitTest() {
         verify(exactly = 0) { minioStorage.deleteFile(any(), any()) }
     }
 
+    @Test
+    fun `download file by partner id`() {
+        val filePathFull = "sample/path/to/file.txt"
+        every { reportFileRepository.findByPartnerIdAndId(partnerId = 1L, fileId = 19L) } returns
+            file(id = 19, name = "file.txt", filePathFull = filePathFull)
+        every { minioStorage.getFile(BUCKET, filePathFull) } returns ByteArray(5)
+
+        assertThat(persistence.downloadFileByPartnerId(partnerId = 1L, fileId = 19L))
+            .usingRecursiveComparison()
+            .isEqualTo(Pair("file.txt", ByteArray(5)))
+    }
+
+    @Test
+    fun `delete file by partner id`() {
+        val file = mockk<ReportProjectFileEntity>()
+        every { file.minioBucket } returns BUCKET
+        every { file.minioLocation } returns "location"
+        every { reportFileRepository.findByPartnerIdAndId(partnerId = 1L, fileId = 15L) } returns file
+
+        every { reportFileRepository.delete(any()) } answers { }
+        every { minioStorage.deleteFile(BUCKET, "location") } answers { }
+
+        persistence.deleteFileByPartnerId(1L, fileId = 15L)
+
+        verify(exactly = 1) { reportFileRepository.delete(any()) }
+        verify(exactly = 1) { minioStorage.deleteFile(BUCKET, "location") }
+    }
+
 }

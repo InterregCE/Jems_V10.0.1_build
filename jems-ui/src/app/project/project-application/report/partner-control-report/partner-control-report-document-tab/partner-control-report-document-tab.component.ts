@@ -9,8 +9,7 @@ import {finalize, map, switchMap, take, tap} from 'rxjs/operators';
 import {
   ProjectPartnerReportDTO,
   ProjectPartnerReportService,
-  ProjectPartnerReportSummaryDTO,
-  ProjectReportProcurementFileDTO
+  ProjectPartnerReportSummaryDTO, ProjectReportFileDTO,
 } from '@cat/api';
 import {FileDescriptionChange} from '@common/components/file-list/file-list-table/file-description-change';
 import {AcceptedFileTypesConstants} from '@project/common/components/file-management/accepted-file-types.constants';
@@ -59,7 +58,7 @@ export class PartnerControlReportDocumentTabComponent {
       this.partnerControlReportStore.canEditControlReport$,
     ]).pipe(
       map(([fileList, report, currentUserId, canEdit]) => ({
-        attachments: fileList.map((file: ProjectReportProcurementFileDTO) => ({
+        attachments: fileList.map((file: ProjectReportFileDTO) => ({
           id: file.id,
           name: file.name,
           type: file.type,

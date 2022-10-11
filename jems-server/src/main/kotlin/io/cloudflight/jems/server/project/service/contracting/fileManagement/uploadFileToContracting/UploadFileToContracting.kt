@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanEditContractInfo
 import io.cloudflight.jems.server.project.authorization.CanEditProjectManagement
 import io.cloudflight.jems.server.project.authorization.CanEditProjectMonitoring
+import io.cloudflight.jems.server.project.authorization.CanUpdateProjectContractingPartner
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.ProjectContractingFilePersistence
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
@@ -36,7 +37,7 @@ class UploadFileToContracting(
     override fun uploadContractDocument(projectId: Long, file: ProjectFile) =
         uploadFileGeneric(projectId, null, file, ContractDoc)
 
-    @CanEditProjectManagement
+    @CanUpdateProjectContractingPartner
     @Transactional
     @ExceptionWrapper(UploadFileToContractingException::class)
     override fun uploadContractPartnerFile(projectId: Long, partnerId: Long, file: ProjectFile): ProjectReportFileMetadata {

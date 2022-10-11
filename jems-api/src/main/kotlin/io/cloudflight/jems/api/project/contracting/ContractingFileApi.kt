@@ -77,6 +77,23 @@ interface ContractingFileApi {
         @RequestBody searchRequest: ProjectContractingFileSearchRequestDTO,
     ): Page<ProjectReportFileDTO>
 
+    @ApiOperation("List contracting partner files")
+    @ApiImplicitParams(
+        ApiImplicitParam(paramType = "query", name = "page", dataType = "integer"),
+        ApiImplicitParam(paramType = "query", name = "size", dataType = "integer"),
+        ApiImplicitParam(paramType = "query", name = "sort", dataType = "string")
+    )
+    @PostMapping(
+        "${ENDPOINT_API_CONTRACTING_FILE}/list/partnerDocument/{partnerId}",
+        consumes = [MediaType.APPLICATION_JSON_VALUE],
+    )
+    fun listPartnerFiles(
+        @PathVariable projectId: Long,
+        @PathVariable partnerId: Long,
+        pageable: Pageable,
+        @RequestBody searchRequest: ProjectContractingFileSearchRequestDTO,
+    ): Page<ProjectReportFileDTO>
+
     @ApiOperation("Update description of already uploaded file")
     @PutMapping(
         "${ENDPOINT_API_CONTRACTING_FILE}/contract/{fileId}/description",
@@ -100,6 +117,18 @@ interface ContractingFileApi {
         @RequestBody(required = false) description: String?,
     )
 
+    @ApiOperation("Update description of already uploaded partner file")
+    @PutMapping(
+        "${ENDPOINT_API_CONTRACTING_FILE}/partnerDocument/{partnerId}/{fileId}/description",
+        consumes = [MediaType.APPLICATION_JSON_VALUE],
+    )
+    fun updatePartnerFileDescription(
+        @PathVariable projectId: Long,
+        @PathVariable partnerId: Long,
+        @PathVariable fileId: Long,
+        @RequestBody(required = false) description: String?,
+    )
+
     @ApiOperation("Download contract file")
     @GetMapping(
         "${ENDPOINT_API_CONTRACTING_FILE}/contract/download/{fileId}",
@@ -114,6 +143,13 @@ interface ContractingFileApi {
     )
     fun downloadInternalFile(@PathVariable projectId: Long, @PathVariable fileId: Long): ResponseEntity<ByteArrayResource>
 
+    @ApiOperation("Download partner file")
+    @GetMapping(
+        "${ENDPOINT_API_CONTRACTING_FILE}/partnerDocument/{partnerId}/download/{fileId}",
+        produces = [MediaType.APPLICATION_OCTET_STREAM_VALUE]
+    )
+    fun downloadPartnerFile(@PathVariable projectId: Long, @PathVariable partnerId: Long, @PathVariable fileId: Long): ResponseEntity<ByteArrayResource>
+
     @ApiOperation("Delete contract file")
     @DeleteMapping("${ENDPOINT_API_CONTRACTING_FILE}/contract/delete/{fileId}")
     fun deleteContractFile(@PathVariable projectId: Long, @PathVariable fileId: Long)
@@ -121,4 +157,8 @@ interface ContractingFileApi {
     @ApiOperation("Delete internal file")
     @DeleteMapping("${ENDPOINT_API_CONTRACTING_FILE}/monitoring/delete/{fileId}")
     fun deleteInternalFile(@PathVariable projectId: Long, @PathVariable fileId: Long)
+
+    @ApiOperation("Delete partner file")
+    @DeleteMapping("${ENDPOINT_API_CONTRACTING_FILE}/partnerDocument/{partnerId}/delete/{fileId}")
+    fun deletePartnerFile(@PathVariable projectId: Long, @PathVariable partnerId: Long, @PathVariable fileId: Long)
 }

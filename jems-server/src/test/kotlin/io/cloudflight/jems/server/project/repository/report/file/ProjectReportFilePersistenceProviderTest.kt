@@ -241,6 +241,18 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
     }
 
     @Test
+    fun existsFileByPartnerIdAndFileIdAndFileTypeIn() {
+        every { reportFileRepository.existsByPartnerIdAndIdAndTypeIn(
+            partnerId = 1L,
+            fileId = 15L,
+            fileTypes = setOf(ProjectPartnerReportFileType.ContractPartnerDoc),
+        ) } returns true
+        assertThat(
+            persistence.existsFileByPartnerIdAndFileIdAndFileTypeIn(1L, fileId = 15L, setOf(ProjectPartnerReportFileType.ContractPartnerDoc))
+        ).isTrue()
+    }
+
+    @Test
     fun getFileAuthor() {
         val reportFile = mockk<ReportProjectFileEntity>()
 
@@ -562,6 +574,15 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
         assertThat(fileEntity.captured.type).isEqualTo(ProjectPartnerReportFileType.PartnerReport)
         assertThat(fileEntity.captured.size).isEqualTo(45L)
         assertThat(fileEntity.captured.description).isEmpty()
+    }
+
+    @Test
+    fun getFileTypeByPartnerId() {
+        every { reportFileRepository.findByPartnerIdAndId(
+            partnerId = 5L,
+            fileId = 15L,
+        ) } returns dummyReportFileEntity
+        assertThat(persistence.getFileTypeByPartnerId(partnerId = 5L, fileId = 15L)).isEqualTo(ProjectPartnerReportFileType.Contribution)
     }
 
 }
