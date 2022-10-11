@@ -1,7 +1,7 @@
-import user from '../../../../fixtures/users.json';
-import call from '../../../../fixtures/api/call/1.step.call.json';
-import application from '../../../../fixtures/api/application/application.json';
-import assessmentChecklist from '../../../../fixtures/api/checklist/assessmentChecklist.json';
+import user from '../../../fixtures/users.json';
+import call from '../../../fixtures/api/call/1.step.call.json';
+import application from '../../../fixtures/api/application/application.json';
+import assessmentChecklist from '../../../fixtures/api/checklist/assessmentChecklist.json';
 
 context('Assessments & decision tests', () => {
 

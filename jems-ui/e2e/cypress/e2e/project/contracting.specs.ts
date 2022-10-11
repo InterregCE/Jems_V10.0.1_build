@@ -1,7 +1,7 @@
-import user from '../../../fixtures/users.json';
-import application from '../../../fixtures/api/application/application.json';
-import approvalInfo from '../../../fixtures/api/application/modification/approval.info.json';
-import call from "../../../fixtures/api/call/1.step.call.json";
+import user from '../../fixtures/users.json';
+import application from '../../fixtures/api/application/application.json';
+import approvalInfo from '../../fixtures/api/application/modification/approval.info.json';
+import call from "../../fixtures/api/call/1.step.call.json";
 import {faker} from "@faker-js/faker";
 
 context('Application contracting tests', () => {
@@ -109,7 +109,7 @@ context('Application contracting tests', () => {
   })
 
   it('TB-755 Contracting Project management', () => {
-    cy.fixture("project/contracting/TB-755.json").then(testData => {
+    cy.fixture('project/contracting/TB-755.json').then(testData => {
       cy.loginByRequest(user.admin.email);
       testData.applicationUser.email = faker.internet.email();
       cy.createUser(testData.applicationUser);

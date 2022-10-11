@@ -1,10 +1,10 @@
-import user from '../../../../fixtures/users.json';
-import application from '../../../../fixtures/api/application/application.json';
-import call from "../../../../fixtures/api/call/1.step.call.json";
+import user from '../../../fixtures/users.json';
+import application from '../../../fixtures/api/application/application.json';
+import call from "../../../fixtures/api/call/1.step.call.json";
 
 context('Project lump sums tests', () => {
   it('TB-734 Project lump sums can be defined and allocated to project partners', () => {
-    cy.fixture("project/application-form/project-lump-sums/TB-734").then(testData => {
+    cy.fixture('project/application-form/project-lump-sums/TB-734').then(testData => {
       cy.loginByRequest(user.programmeUser.email);
       call.budgetSettings.lumpSums.push(3);
       cy.createCall(call).then(callId => {

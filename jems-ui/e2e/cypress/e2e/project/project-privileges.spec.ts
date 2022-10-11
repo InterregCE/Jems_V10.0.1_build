@@ -1,7 +1,7 @@
-import user from '../../../fixtures/users.json';
+import user from '../../fixtures/users.json';
 import {faker} from '@faker-js/faker';
-import call from '../../../fixtures/api/call/1.step.call.json';
-import application from '../../../fixtures/api/application/application.json';
+import call from '../../fixtures/api/call/1.step.call.json';
+import application from '../../fixtures/api/application/application.json';
 
 context('Project privileges tests', () => {
 
@@ -47,7 +47,7 @@ context('Project privileges tests', () => {
         });
 
         cy.loginByRequest(testData.projectCollaborator.email);
-        cy.visit('/', {failOnStatusCode: false});
+        cy.visit('/');
         cy.get('jems-project-application-list').contains(application.identification.acronym).should('be.visible');
 
         // Remove user privileges from the project
@@ -61,7 +61,7 @@ context('Project privileges tests', () => {
         });
 
         cy.loginByRequest(testData.projectCollaborator.email);
-        cy.visit('/', {failOnStatusCode: false});
+        cy.visit('/');
         cy.get('jems-project-application-list').contains(application.identification.acronym).should('not.exist');
 
         cy.visit(`app/project/detail/${applicationId}`, {failOnStatusCode: false});
@@ -216,7 +216,7 @@ context('Project privileges tests', () => {
 
       // Create and submit project
       cy.loginByRequest(user.programmeUser.email);
-      call.preSubmissionCheckSettings.pluginKey = "jems-pre-condition-check-off";
+      call.preSubmissionCheckSettings.pluginKey = 'jems-pre-condition-check-off';
       cy.createCall(call).then(callId => {
         application.details.projectCallId = callId;
         cy.publishCall(callId);
@@ -279,15 +279,14 @@ context('Project privileges tests', () => {
 
           // testing by logging into the users accounts
           cy.loginByRequest(testData.monitorUser1.email);
-          cy.visit('/', {failOnStatusCode: false});
+          cy.visit('/');
           cy.contains(firstApplicationAcronym).should('not.exist');
           cy.contains(secondApplicationAcronym).should('be.visible');
-          cy.contains(secondApplicationAcronym).click();
-          cy.contains('div', 'Project identification').click();
+          cy.visit(`/app/project/detail/${applicationId2}/applicationFormIdentification`, {failOnStatusCode: false});
           cy.get('textarea.mat-input-element:first').should('have.attr', 'readonly');
 
           cy.loginByRequest(testData.monitorUser2.email);
-          cy.visit('/', {failOnStatusCode: false});
+          cy.visit('/');
           cy.contains(firstApplicationAcronym).should('not.exist');
           cy.contains(secondApplicationAcronym).should('not.exist');
           cy.contains('No projects submitted').should('be.visible');

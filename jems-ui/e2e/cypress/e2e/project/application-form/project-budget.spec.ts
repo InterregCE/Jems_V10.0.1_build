@@ -1,9 +1,9 @@
-import user from '../../../../fixtures/users.json';
-import call from '../../../../fixtures/api/call/1.step.call.json';
-import application from '../../../../fixtures/api/application/application.json';
-import partner from '../../../../fixtures/api/application/partner/partner.json';
+import user from '../../../fixtures/users.json';
+import call from '../../../fixtures/api/call/1.step.call.json';
+import application from '../../../fixtures/api/application/application.json';
+import partner from '../../../fixtures/api/application/partner/partner.json';
 
-const baselinePath = "/project/application-form/d-project-budget/";
+const baselinePath = '/project/application-form/project-budget/';
 const comparePdfMask = [
   {pageIndex: 0, coordinates: {x0: 387, x1: 440, y0: 324, y1: 343}},
   {pageIndex: 1, coordinates: {x0: 400, x1: 450, y0: 207, y1: 224}},
@@ -15,7 +15,7 @@ const comparePdfMask = [
 context('Project budget tests', () => {
 
   it('TB-534 Amounts cross-checks within AF', () => {
-    cy.fixture('project/application-form/d-project-budget/TB-534.json').then(testData => {
+    cy.fixture('project/application-form/project-budget/TB-534.json').then(testData => {
 
       cy.loginByRequest(user.programmeUser.email);
       call.budgetSettings.flatRates = testData.call.flatRates;
@@ -105,7 +105,7 @@ context('Project budget tests', () => {
 
 
   it('TB-383 Rounding values in partner co-financing', () => {
-    cy.fixture('project/application-form/d-project-budget/TB-383.json').then(testData => {
+    cy.fixture('project/application-form/project-budget/TB-383.json').then(testData => {
       cy.loginByRequest(user.applicantUser.email);
       call.generalCallSettings.additionalFundAllowed = false;
       cy.createCall(call, user.programmeUser.email).then(callId => {
@@ -171,7 +171,7 @@ context('Project budget tests', () => {
             // verify PDF export
             cy.visit(`app/project/detail/${applicationId}/export`, {failOnStatusCode: false});
             cy.contains('button', 'Export').clickToDownload('**/export/application?*', 'pdf').then(exportFile => {
-              const templateFile = '/project/application-form/d-project-budget/TB-383-export-template.pdf';
+              const templateFile = '/project/application-form/project-budget/TB-383-export-template.pdf';
               cy.comparePdf(templateFile, exportFile, comparePdfMask, baselinePath).then(x => {
                 expect(x.status === "passed").to.be.true;
               });
@@ -180,7 +180,7 @@ context('Project budget tests', () => {
             // verify CSV export
             cy.contains('button', 'Partners budget').click();
             cy.contains('button', 'Export').clickToDownload('**/export/budget?*', 'xlsx').then(exportFile => {
-              cy.fixture('project/application-form/d-project-budget/TB-383-export.xlsx', null).parseXLSX().then(testDataFile => {
+              cy.fixture('project/application-form/project-budget/TB-383-export.xlsx', null).parseXLSX().then(testDataFile => {
                 const assertionMessage = 'Verify downloaded xlsx file';
                 expect(exportFile.content[0].data.slice(1), assertionMessage).to.deep.equal(testDataFile[0].data.slice(1));
                 expect(exportFile.content[1].data.slice(1), assertionMessage).to.deep.equal(testDataFile[1].data.slice(1));

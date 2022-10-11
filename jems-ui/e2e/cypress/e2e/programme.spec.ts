@@ -1,9 +1,9 @@
 import {faker} from '@faker-js/faker';
-import user from '../../fixtures/users.json';
-import call from '../../fixtures/api/call/1.step.call.json';
-import spfCall from '../../fixtures/api/call/spf.1.step.call.json';
-import application from '../../fixtures/api/application/application.json';
-import partner from '../../fixtures/api/application/partner/partner.json';
+import user from '../fixtures/users.json';
+import call from '../fixtures/api/call/1.step.call.json';
+import spfCall from '../fixtures/api/call/spf.1.step.call.json';
+import application from '../fixtures/api/application/application.json';
+import partner from '../fixtures/api/application/partner/partner.json';
 
 context('Programme management tests', () => {
 

@@ -1,8 +1,8 @@
-import user from '../../../../fixtures/users.json';
-import call from '../../../../fixtures/api/call/1.step.call.json';
-import call2step from '../../../../fixtures/api/call/2.step.call.json';
-import application from '../../../../fixtures/api/application/application.json';
-import application2step from '../../../../fixtures/api/application/2.step.application.json';
+import user from '../../../fixtures/users.json';
+import call from '../../../fixtures/api/call/1.step.call.json';
+import call2step from '../../../fixtures/api/call/2.step.call.json';
+import application from '../../../fixtures/api/application/application.json';
+import application2step from '../../../fixtures/api/application/2.step.application.json';
 
 context('Application modification tests', () => {
 
@@ -100,9 +100,8 @@ context('Application modification tests', () => {
 
       cy.runPreSubmissionCheck(applicationId);
       cy.submitProjectApplication(applicationId);
-      cy.reload();
 
-      cy.contains('Project overview').click();
+      cy.visit(`app/project/detail/${applicationId}`, {failOnStatusCode: false});
       cy.get('jems-project-application-information').find('div').should('contain.text', 'Modification precontracted submitted');
 
       cy.contains('.link', 'A - Project identification').click();
