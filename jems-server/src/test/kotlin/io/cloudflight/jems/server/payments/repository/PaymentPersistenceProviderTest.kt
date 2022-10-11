@@ -11,6 +11,7 @@ import io.cloudflight.jems.server.payments.entity.PaymentGroupingId
 import io.cloudflight.jems.server.payments.entity.PaymentPartnerEntity
 import io.cloudflight.jems.server.payments.entity.PaymentPartnerInstallmentEntity
 import io.cloudflight.jems.server.payments.service.model.PartnerPayment
+import io.cloudflight.jems.server.payments.service.model.PartnerPaymentSimple
 import io.cloudflight.jems.server.payments.service.model.PaymentConfirmedInfo
 import io.cloudflight.jems.server.payments.service.model.PaymentDetail
 import io.cloudflight.jems.server.payments.service.model.PaymentPartnerInstallment
@@ -157,6 +158,7 @@ class PaymentPersistenceProviderTest: UnitTest() {
         )
         private val installmentFirst = PaymentPartnerInstallment(
             id = 3L,
+            fundId = fundId,
             amountPaid = BigDecimal.TEN,
             paymentDate = currentDate,
             comment = "comment",
@@ -382,6 +384,13 @@ class PaymentPersistenceProviderTest: UnitTest() {
     }
 
     @Test
+    fun getAllPartnerPaymentsForPartner() {
+        every { paymentPartnerRepository.findAllByPartnerId(22L) } returns listOf(partnerPaymentEntity)
+        assertThat(paymentPersistenceProvider.getAllPartnerPaymentsForPartner(22L))
+            .containsExactly(PartnerPaymentSimple(fundId, BigDecimal.ONE))
+    }
+
+    @Test
     fun getPaymentPartnerId() {
         every {
             paymentPartnerRepository
@@ -408,5 +417,12 @@ class PaymentPersistenceProviderTest: UnitTest() {
             toDeleteInstallmentIds = deleteIds,
             paymentPartnerInstallments = listOf(installmentUpdate)
         )).containsExactly(installmentFirst)
+    }
+
+    @Test
+    fun findByPartnerId() {
+        every { paymentPartnerInstallmentRepository.findAllByPaymentPartnerPartnerId(64L) } returns
+            listOf(installmentEntity)
+        assertThat(paymentPersistenceProvider.findByPartnerId(64L)).containsExactly(installmentFirst)
     }
 }

@@ -79,6 +79,7 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
         )
         private val installment = PaymentPartnerInstallment(
             id = 3L,
+            fundId = 19L,
             amountPaid = BigDecimal.TEN,
             paymentDate = currentDate,
             comment = "comment",
@@ -91,6 +92,7 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
         )
         private val installmentToDelete = PaymentPartnerInstallment(
             id = 4L,
+            fundId = 24L,
             amountPaid = BigDecimal.TEN,
             paymentDate = currentDate,
             comment = "comment",
@@ -107,6 +109,7 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
         )
         private val installmentNew = PaymentPartnerInstallment(
             id = 5L,
+            fundId = 33L,
             amountPaid = BigDecimal.ONE,
             paymentDate = currentDate.minusDays(1),
             comment = null,

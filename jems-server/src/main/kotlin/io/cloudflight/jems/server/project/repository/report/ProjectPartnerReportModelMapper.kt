@@ -158,6 +158,7 @@ fun List<PreviouslyReportedFund>.toEntity(
             total = fund.total,
             current = ZERO,
             previouslyReported = fund.previouslyReported,
+            previouslyPaid = fund.previouslyPaid,
         )
     }
 }

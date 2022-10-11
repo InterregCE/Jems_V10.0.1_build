@@ -77,6 +77,14 @@ class ProjectReportExpenditureCoFinancingPersistenceProviderTest : UnitTest() {
                 privateContribution = BigDecimal.valueOf(5),
                 sum = BigDecimal.valueOf(6),
             ),
+            previouslyPaid = ReportExpenditureCoFinancingColumn(
+                funds = mapOf(20L to BigDecimal.valueOf(81L), null to BigDecimal.valueOf(123L)),
+                partnerContribution = BigDecimal.ZERO,
+                publicContribution = BigDecimal.ZERO,
+                automaticPublicContribution = BigDecimal.ZERO,
+                privateContribution = BigDecimal.ZERO,
+                sum = BigDecimal.valueOf(204),
+            ),
         )
 
         private fun fund() = ProjectPartnerReportCoFinancingEntity(
@@ -86,6 +94,7 @@ class ProjectReportExpenditureCoFinancingPersistenceProviderTest : UnitTest() {
             total = BigDecimal.valueOf(250L),
             current = BigDecimal.valueOf(125L),
             previouslyReported = BigDecimal.valueOf(50L),
+            previouslyPaid = BigDecimal.valueOf(81L),
         )
 
         private fun partnerContribution() = ProjectPartnerReportCoFinancingEntity(
@@ -95,6 +104,7 @@ class ProjectReportExpenditureCoFinancingPersistenceProviderTest : UnitTest() {
             total = BigDecimal.valueOf(750L),
             current = BigDecimal.valueOf(375L),
             previouslyReported = BigDecimal.valueOf(150L),
+            previouslyPaid = BigDecimal.valueOf(123L),
         )
 
         private val reportsCumulative = ReportExpenditureCoFinancingColumnWithoutFunds(

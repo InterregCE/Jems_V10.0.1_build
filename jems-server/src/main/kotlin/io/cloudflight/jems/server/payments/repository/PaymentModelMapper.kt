@@ -132,6 +132,7 @@ fun PaymentPartnerEntity.toModel(
 fun List<PaymentPartnerInstallmentEntity>.toModelList() = map { it.toModel() }
 fun PaymentPartnerInstallmentEntity.toModel() = PaymentPartnerInstallment(
     id = id,
+    fundId = paymentPartner.payment.fund.id,
     amountPaid = amountPaid,
     paymentDate = paymentDate,
     comment = comment,

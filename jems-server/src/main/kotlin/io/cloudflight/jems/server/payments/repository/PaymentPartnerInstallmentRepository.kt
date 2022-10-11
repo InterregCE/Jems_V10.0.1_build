@@ -9,4 +9,6 @@ interface PaymentPartnerInstallmentRepository: JpaRepository<PaymentPartnerInsta
 
     fun findAllByPaymentPartnerId(paymentPartnerId: Long): List<PaymentPartnerInstallmentEntity>
 
+    fun findAllByPaymentPartnerPartnerId(partnerId: Long): List<PaymentPartnerInstallmentEntity>
+
 }

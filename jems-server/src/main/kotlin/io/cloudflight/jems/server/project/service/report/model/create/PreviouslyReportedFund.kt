@@ -7,4 +7,5 @@ data class PreviouslyReportedFund(
     val percentage: BigDecimal,
     val total: BigDecimal,
     val previouslyReported: BigDecimal,
+    val previouslyPaid: BigDecimal,
 )
