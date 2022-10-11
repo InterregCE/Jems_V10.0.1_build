@@ -1,5 +1,7 @@
 export class PaymentsToProjectDetailPageConstants {
 
+  public static MAX_VALUE = 999_999_999.99;
+
   public static FORM_CONTROL_NAMES = {
     partnerPayments: 'partnerPayments',
     partnerNumber: 'partnerNumber',
@@ -21,17 +23,17 @@ export class PaymentsToProjectDetailPageConstants {
   };
 
   public static columnsWidths = [
-    {minInRem: 5, maxInRem: 8}, //Installment number
-    {minInRem:10, maxInRem: 15}, //Amount paid
-    {minInRem: 8, maxInRem: 12},//Payment date
-    {minInRem: 18, maxInRem: 45},//Comment
-    {minInRem: 5, maxInRem: 40},//Save payment
-    {minInRem: 10, maxInRem: 20},//User saving payment
-    {minInRem: 6, maxInRem: 20},//Save payment date
-    {minInRem: 5, maxInRem: 20},//Confirm payment
-    {minInRem: 12, maxInRem: 30},//User confirming payment
-    {minInRem: 6, maxInRem:20},//Payment confirmation date
-    {minInRem: 2, maxInRem:3}//Actions
+    {minInRem: 4, maxInRem: 4}, //Installment number (just to align with the name)
+    {minInRem: 9, maxInRem: 9}, //Amount paid
+    {minInRem: 9, maxInRem: 9}, //Payment date
+    {minInRem: 12},             //Comment
+    {minInRem: 5, maxInRem: 5}, //Authorise payment
+    {minInRem: 9, maxInRem: 12},//User authorising payment
+    {minInRem: 9, maxInRem: 9}, //Authorisation date
+    {minInRem: 5, maxInRem: 5}, //Confirm payment
+    {minInRem: 9, maxInRem: 12},//User confirming payment
+    {minInRem: 6, maxInRem: 6}, //Payment confirmation date
+    {minInRem: 3, maxInRem: 3}  //Actions
   ];
 
 }
