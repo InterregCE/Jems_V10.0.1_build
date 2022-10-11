@@ -2,21 +2,15 @@
     <form jemsFormLayout>
         <h3>{{ 'payments.payment.to.project.detail.attachments.title' | translate }}</h3>
 
-        <jems-file-list-table jemsNoWidthLimit
-                              [fileList]="data.attachmentList"
-                              (onDownload)="downloadFile($event)"
-                              (onDelete)="deleteFile($event)"
-                              (onDescriptionChange)="updateDescription($event)"
-                              [savingInProgressForId]="savingDescriptionId$ | async">
-        </jems-file-list-table>
-
-        <jems-paginator (pageIndexChanged)="fileManagementStore.newPageIndex$.next($event)"
-                        (pageSizeChanged)="fileManagementStore.newPageSize$.next($event)"
-                        *ngIf="data.attachments.content?.length"
-                        [currentPageIndex]="Tables.DEFAULT_INITIAL_PAGE_INDEX"
-                        [currentPageSize]="Tables.DEFAULT_INITIAL_PAGE_SIZE"
-                        [length]="data.attachments.totalElements">
-        </jems-paginator>
+        <jems-file-list jemsNoWidthLimit
+                [fileList]="data.attachments"
+                (onSortChange)="paymentAttachmentsStore.newSort$.next($event)"
+                (onPageIndexChange)="paymentAttachmentsStore.newPageIndex$.next($event)"
+                (onPageSizeChange)="paymentAttachmentsStore.newPageSize$.next($event)"
+                (onDownload)="downloadFile($event)"
+                (onDelete)="deleteFile($event)"
+                (onDescriptionChange)="updateDescription($event)" >
+        </jems-file-list>
 
         <div *ngIf="data.isPaymentEditable">
             <input #selectFile (change)="uploadFile($event?.target)" onclick="this.value=null;"
