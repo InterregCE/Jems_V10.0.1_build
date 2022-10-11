@@ -99,6 +99,8 @@ declare global {
       setProjectToContracted(applicationId: number, userEmail?: string);
 
       assignPartnerCollaborators(applicationId: number, partnerId: number, users: string[]);
+      
+      returnToApplicant(applicationId: number, userEmail?: string);
     }
   }
 }
@@ -271,6 +273,20 @@ Cypress.Commands.add('assignPartnerCollaborators', (applicationId: number, partn
     url: `api/projectPartnerCollaborators/forProject/${applicationId}/forPartner/${partnerId}`,
     body: users
   });
+});
+
+Cypress.Commands.add('returnToApplicant', (applicationId: number, userEmail?: string) => {
+  if (userEmail)
+    loginByRequest(userEmail);
+  cy.request({
+    method: 'PUT',
+    url: `api/project/${applicationId}/return-to-applicant`
+  });
+  if (userEmail) {
+    cy.get('@currentUser').then((currentUser: any) => {
+      loginByRequest(currentUser.name);
+    });
+  }
 });
 
 function createApplication(applicationDetails: ProjectCreateDTO) {

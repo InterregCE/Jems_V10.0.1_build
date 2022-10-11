@@ -99,7 +99,11 @@
     ],
     "unitCosts": [
       1,3,4
-    ]
+    ],
+    "allowedCostOption": {
+      "projectDefinedLumpSumAllowed": false,
+      "projectDefinedUnitCostAllowed": false
+    }
   },
   "preSubmissionCheckSettings": {
     "pluginKey": "standard-pre-condition-check-plugin",

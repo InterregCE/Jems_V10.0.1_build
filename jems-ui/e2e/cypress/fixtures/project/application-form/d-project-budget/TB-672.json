@@ -1,0 +1,140 @@
+{
+  "draftUnitCosts": [
+    {
+      "name": [
+        {
+          "translation": "Draft Unit Cost for One Category DE",
+          "language": "DE"
+        }, {
+          "translation": "Draft Unit Cost for One Category EN",
+          "language": "EN"
+        }
+      ],
+      "description": [
+        {
+          "translation": "Some description of the unit cost DE",
+          "language": "DE"
+        }, {
+          "translation": "Some description of the unit cost EN",
+          "language": "EN"
+        }
+      ],
+      "type": [
+        {
+          "translation": "Some unit type DE",
+          "language": "DE"
+        }, {
+          "translation": "Some unit type EN",
+          "language": "EN"
+        }
+      ],
+      "costPerUnit": "123,99",
+      "costPerUnitForeignCurrency": "666,99",
+      "foreignCurrencyCode": "USD",
+      "costCategory": "One cost category",
+      "categories": ["Infrastructure and works"],
+      "justification": [
+        {
+          "translation": "Some justification and calculation DE",
+          "language": "DE"
+        }, {
+          "translation": "Some justification and calculation EN",
+          "language": "EN"
+        }
+      ]
+    }, {
+      "name": [
+        {
+          "translation": "Draft Unit Cost for Multiple Categories DE",
+          "language": "DE"
+        }, {
+          "translation": "Draft Unit Cost for Multiple Categories EN",
+          "language": "EN"
+        }
+      ],
+      "description": [
+        {
+          "translation": "Some other description of the unit cost DE",
+          "language": "DE"
+        }, {
+          "translation": "Some other description of the unit cost EN",
+          "language": "EN"
+        }
+      ],
+      "type": [
+        {
+          "translation": "Some other unit type DE",
+          "language": "DE"
+        }, {
+          "translation": "Some other unit type EN",
+          "language": "EN"
+        }
+      ],
+      "costPerUnit": "789,33",
+      "costPerUnitForeignCurrency": "357,00",
+      "foreignCurrencyCode": "RSD",
+      "costCategory": "Multiple cost categories",
+      "categories": [
+        "Staff Costs", "Office and administrative costs", "Travel and accommodation", "External expertise and services",
+        "Equipment", "Infrastructure and works"
+      ],
+      "justification": [
+        {
+          "translation": "Some justification and calculation DE",
+          "language": "DE"
+        }, {
+          "translation": "Some justification and calculation EN",
+          "language": "EN"
+        }
+      ]
+    }
+  ],
+  "infrastructureCostItem": {
+    "name": "Draft Unit Cost for One Category",
+    "comment": [
+      {
+        "translation": "Some comment DE",
+        "language": "DE"
+      }, {
+        "translation": "Some comment EN",
+        "language": "EN"
+      }
+    ],
+    "awardProcedures": [
+      {
+        "translation": "Some award procedures DE",
+        "language": "DE"
+      }, {
+        "translation": "Some award procedures EN",
+        "language": "EN"
+      }
+    ],
+    "numberOfUnits": 13,
+    "period1Amount": "1.611,87"
+  },
+  "unitCostItem": {
+    "name": "Draft Unit Cost for Multiple Categories",
+    "numberOfUnits": 19,
+    "period1Amount": "14.997,27"
+  },
+  "updatedCofinancing": {
+    "finances": [
+      {
+        "fundId": 1,
+        "fundType": "MainFund",
+        "percentage": 60
+      }, {
+        "percentage": 40,
+        "fundType": "PartnerContribution"
+      }
+    ],
+    "partnerContributions": [
+      {
+        "name": "Lead Partner",
+        "status": "Public",
+        "amount": 32157.82,
+        "partner": true
+      }
+    ]
+  }
+}

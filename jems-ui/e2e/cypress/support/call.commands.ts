@@ -1,6 +1,7 @@
 import {CallUpdateRequestDTO} from '../../../build/swagger-code-jems-api/model/callUpdateRequestDTO';
 import {PreSubmissionPluginsDTO} from '../../../build/swagger-code-jems-api/model/preSubmissionPluginsDTO';
 import {FlatRateSetupDTO} from '../../../build/swagger-code-jems-api/model/flatRateSetupDTO';
+import {CallCostOptionDTO} from '../../../build/swagger-code-jems-api/model/callCostOptionDTO';
 import {
   UpdateApplicationFormFieldConfigurationRequestDTO
 } from '../../../build/swagger-code-jems-api/model/updateApplicationFormFieldConfigurationRequestDTO';
@@ -14,7 +15,8 @@ declare global {
     budgetSettings: {
       flatRates: FlatRateSetupDTO,
       lumpSums: number[],
-      unitCosts: number[]
+      unitCosts: number[],
+      allowedCostOption: CallCostOptionDTO
     },
     applicationFormConfiguration: UpdateApplicationFormFieldConfigurationRequestDTO[],
     preSubmissionCheckSettings: PreSubmissionPluginsDTO
@@ -74,6 +76,8 @@ function createCall(call: Call, creatingUserEmail?: string) {
       setCallLumpSums(callId, call.budgetSettings.lumpSums);
     if (call.budgetSettings?.unitCosts)
       setCallUnitCosts(callId, call.budgetSettings.unitCosts);
+    if (call.budgetSettings?.allowedCostOption)
+      allowedCostOption(callId, call.budgetSettings.allowedCostOption);
     if (call.applicationFormConfiguration)
       setCallApplicationFormConfiguration(callId, call.applicationFormConfiguration);
     if (call.preSubmissionCheckSettings)
@@ -108,6 +112,14 @@ function setCallUnitCosts(callId: number, unitCosts: number[]) {
     method: 'PUT',
     url: `api/call/byId/${callId}/unitCost`,
     body: unitCosts
+  });
+}
+
+function allowedCostOption(callId: number, allowedCostOption: CallCostOptionDTO) {
+  cy.request({
+    method: 'PUT',
+    url: `api/call/byId/${callId}/allowedCostOption`,
+    body: allowedCostOption
   });
 }
 
