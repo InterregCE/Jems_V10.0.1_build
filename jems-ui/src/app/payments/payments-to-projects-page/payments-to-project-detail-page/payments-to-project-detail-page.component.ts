@@ -181,12 +181,10 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
   }
 
   computeAvailableSum(paymentIndex: number): number {
-    const installments = this.installmentsArray(paymentIndex);
     let amountPaid = 0;
-    installments.value.forEach( (installment: PaymentPartnerInstallmentDTO) =>
-    amountPaid += installment.amountPaid
-    );
-
+    this.installmentsArray(paymentIndex).controls.forEach((formGroup: AbstractControl) => {
+      amountPaid += formGroup?.get(this.constants.FORM_CONTROL_NAMES.amountPaid)?.value
+    });
     return this.partnerPayments.at(paymentIndex).value.amountApproved - amountPaid;
   }
 
