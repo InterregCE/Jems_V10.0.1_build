@@ -14,32 +14,38 @@ fun ReportExpenditureCoFinancing.toLinesModel() = ExpenditureCoFinancingBreakdow
             fundId = it.key,
             totalEligibleBudget = it.value,
             previouslyReported = previouslyReported.funds.getOrDefault(it.key, BigDecimal.ZERO),
+            previouslyPaid = previouslyPaid.funds.getOrDefault(it.key, BigDecimal.ZERO),
             currentReport = currentlyReported.funds.getOrDefault(it.key, BigDecimal.ZERO),
         )
     },
     partnerContribution = ExpenditureCoFinancingBreakdownLine(
         totalEligibleBudget = totalsFromAF.partnerContribution,
         previouslyReported = previouslyReported.partnerContribution,
+        previouslyPaid = previouslyPaid.partnerContribution,
         currentReport = currentlyReported.partnerContribution,
     ),
     publicContribution = ExpenditureCoFinancingBreakdownLine(
         totalEligibleBudget = totalsFromAF.publicContribution,
         previouslyReported = previouslyReported.publicContribution,
+        previouslyPaid = previouslyPaid.publicContribution,
         currentReport = currentlyReported.publicContribution,
     ),
     automaticPublicContribution = ExpenditureCoFinancingBreakdownLine(
         totalEligibleBudget = totalsFromAF.automaticPublicContribution,
         previouslyReported = previouslyReported.automaticPublicContribution,
+        previouslyPaid = previouslyPaid.automaticPublicContribution,
         currentReport = currentlyReported.automaticPublicContribution,
     ),
     privateContribution = ExpenditureCoFinancingBreakdownLine(
         totalEligibleBudget = totalsFromAF.privateContribution,
         previouslyReported = previouslyReported.privateContribution,
+        previouslyPaid = previouslyPaid.privateContribution,
         currentReport = currentlyReported.privateContribution,
     ),
     total = ExpenditureCoFinancingBreakdownLine(
         totalEligibleBudget = totalsFromAF.sum,
         previouslyReported = previouslyReported.sum,
+        previouslyPaid = previouslyPaid.sum,
         currentReport = currentlyReported.sum,
     ),
 )

@@ -175,6 +175,7 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
                 total = ZERO,
                 current = ONE,
                 previouslyReported = TEN,
+                previouslyPaid = ONE,
             ),
             ProjectPartnerReportCoFinancingEntity(
                 ProjectPartnerReportCoFinancingIdEntity(report = report, fundSortNumber = 1),
@@ -183,6 +184,7 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
                 total = TEN,
                 current = ZERO,
                 previouslyReported = ONE,
+                previouslyPaid = ZERO,
             ),
         )
 

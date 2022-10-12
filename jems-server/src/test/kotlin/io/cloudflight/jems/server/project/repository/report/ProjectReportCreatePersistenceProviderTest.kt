@@ -240,9 +240,11 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
                 previouslyReportedCoFinancing = PreviouslyReportedCoFinancing(
                     fundsSorted = listOf(
                         PreviouslyReportedFund(fundId = programmeFundEntity.id, percentage = TEN,
-                            total = BigDecimal.valueOf(100L), previouslyReported = BigDecimal.valueOf(25)),
+                            total = BigDecimal.valueOf(100L), previouslyReported = BigDecimal.valueOf(25),
+                            previouslyPaid = BigDecimal.valueOf(35)),
                         PreviouslyReportedFund(fundId = null, percentage = BigDecimal.valueOf(90),
-                            total = BigDecimal.valueOf(900L), previouslyReported = BigDecimal.valueOf(400)),
+                            total = BigDecimal.valueOf(900L), previouslyReported = BigDecimal.valueOf(400),
+                            previouslyPaid = BigDecimal.valueOf(410)),
                     ),
                     totalPartner = BigDecimal.valueOf(900L),
                     totalPublic = BigDecimal.valueOf(200L),
@@ -416,10 +418,12 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
         with(reportCoFinancingSlot.captured.find { it.id.fundSortNumber == 1 }!!) {
             assertThat(programmeFund!!.equals(programmeFundEntity)).isTrue
             assertThat(percentage).isEqualByComparingTo(BigDecimal.valueOf(10L))
+            assertThat(previouslyPaid).isEqualByComparingTo(BigDecimal.valueOf(35L))
         }
         with(reportCoFinancingSlot.captured.find { it.id.fundSortNumber == 2 }!!) {
             assertThat(programmeFund).isNull()
             assertThat(percentage).isEqualTo(BigDecimal.valueOf(90L))
+            assertThat(previouslyPaid).isEqualByComparingTo(BigDecimal.valueOf(410L))
         }
 
         assertExpenditureCoFinancing(reportExpenditureCoFinancingSlot)

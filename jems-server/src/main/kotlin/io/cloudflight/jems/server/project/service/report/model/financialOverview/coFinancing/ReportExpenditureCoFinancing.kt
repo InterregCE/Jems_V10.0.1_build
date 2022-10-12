@@ -4,4 +4,5 @@ data class ReportExpenditureCoFinancing(
     val totalsFromAF: ReportExpenditureCoFinancingColumn,
     val currentlyReported: ReportExpenditureCoFinancingColumn,
     val previouslyReported: ReportExpenditureCoFinancingColumn,
+    val previouslyPaid: ReportExpenditureCoFinancingColumn,
 )

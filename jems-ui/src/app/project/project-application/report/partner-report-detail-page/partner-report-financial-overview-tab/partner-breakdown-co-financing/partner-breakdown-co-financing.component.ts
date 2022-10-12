@@ -19,7 +19,7 @@ import {MatTableDataSource} from '@angular/material/table';
 })
 export class PartnerBreakdownCoFinancingComponent implements OnChanges {
 
-  displayedColumns = ['type', 'totalEligibleBudget', 'previouslyReported', 'currentReport', 'totalReportedSoFar', 'totalReportedSoFarPercentage', 'remainingBudget'];
+  displayedColumns = ['type', 'totalEligibleBudget', 'previouslyReported', 'currentReport', 'totalReportedSoFar', 'totalReportedSoFarPercentage', 'remainingBudget', 'previouslyPaid'];
 
   @Input()
   breakdown: ExpenditureCoFinancingBreakdownDTO;

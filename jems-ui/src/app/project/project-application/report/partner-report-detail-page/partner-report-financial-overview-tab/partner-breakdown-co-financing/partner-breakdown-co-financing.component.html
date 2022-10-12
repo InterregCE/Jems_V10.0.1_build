@@ -60,6 +60,16 @@
         <mat-footer-cell *matFooterCellDef class="text-right">{{ breakdown.total.remainingBudget | asMoney }}</mat-footer-cell>
     </ng-container>
 
+    <ng-container matColumnDef="previouslyPaid">
+        <mat-header-cell *matHeaderCellDef class="text-right">
+            <span jemsText maxLines="2">{{ 'project.application.partner.report.financial.previously.paid' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let line" class="text-right">
+            {{ line.isProgrammeLanguage ? (line.previouslyPaid | asMoney) : ('common.not.applicable.option' | translate) }}
+        </mat-cell>
+        <mat-footer-cell *matFooterCellDef class="text-right">{{ breakdown.total.previouslyPaid | asMoney }}</mat-footer-cell>
+    </ng-container>
+
     <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
     <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
     <mat-footer-row *matFooterRowDef="displayedColumns"></mat-footer-row>

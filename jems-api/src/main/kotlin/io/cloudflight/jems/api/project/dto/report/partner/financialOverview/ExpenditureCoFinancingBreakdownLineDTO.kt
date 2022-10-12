@@ -6,6 +6,7 @@ data class ExpenditureCoFinancingBreakdownLineDTO(
     val fundId: Long? = null,
     val totalEligibleBudget: BigDecimal,
     val previouslyReported: BigDecimal,
+    val previouslyPaid: BigDecimal,
     var currentReport: BigDecimal,
     var totalReportedSoFar: BigDecimal,
     var totalReportedSoFarPercentage: BigDecimal,

@@ -59,6 +59,7 @@ class PaymentInstallmentsValidatorTest : UnitTest() {
         assertDoesNotThrow {
             validator.validateInstallmentDeletion(listOf( PaymentPartnerInstallment(
                 id = 4L,
+                fundId = 65L,
                 amountPaid = BigDecimal.TEN,
                 paymentDate = currentDate,
                 comment = "comment"
@@ -71,6 +72,7 @@ class PaymentInstallmentsValidatorTest : UnitTest() {
         val ex = assertThrows<I18nValidationException> {
             validator.validateInstallmentDeletion(listOf(PaymentPartnerInstallment(
                 id = 4L,
+                fundId = 65L,
                 amountPaid = BigDecimal.TEN,
                 paymentDate = currentDate,
                 isSavePaymentInfo = true

@@ -86,9 +86,10 @@ export class PartnerReportFinancialOverviewStoreService {
           this.callService.getAllowedRealCosts(call.callId),
           of(call.flatRates),
           this.partnerReportExpenditureCostsService.getAvailableLumpSums(Number(partnerId), reportId),
+          of(call.lumpSums),
           this.partnerReportExpenditureCostsService.getAvailableUnitCosts(Number(partnerId), reportId),
         ])),
-        map(([allowedRealCosts, flatRates, lumpSums, unitCosts]) => {
+        map(([allowedRealCosts, flatRates, lumpSums, lumpSumsFromCall, unitCosts]) => {
           const setting = new Map<ProjectPartnerReportUnitCostDTO.CategoryEnum | 'LumpSum' | 'UnitCost', boolean>();
 
           setting.set(CategoryEnum.StaffCosts, allowedRealCosts.allowRealStaffCosts || flatRates.staffCostFlatRateSetup != null);
@@ -99,7 +100,7 @@ export class PartnerReportFinancialOverviewStoreService {
           setting.set(CategoryEnum.EquipmentCosts, allowedRealCosts.allowRealEquipmentCosts);
           setting.set(CategoryEnum.InfrastructureCosts, allowedRealCosts.allowRealInfrastructureCosts);
           setting.set(CategoryEnum.Multiple, flatRates.otherCostsOnStaffCostsFlatRateSetup != null);
-          setting.set('LumpSum', !!lumpSums.length);
+          setting.set('LumpSum', !!lumpSums.length || !!lumpSumsFromCall.length);
           setting.set('UnitCost', !!unitCosts.length);
 
           return setting;

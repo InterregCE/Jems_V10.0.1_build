@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.payments.repository
 import io.cloudflight.jems.server.payments.PaymentPersistence
 import io.cloudflight.jems.server.payments.entity.PaymentGroupingId
 import io.cloudflight.jems.server.payments.service.model.PartnerPayment
+import io.cloudflight.jems.server.payments.service.model.PartnerPaymentSimple
 import io.cloudflight.jems.server.payments.service.model.PaymentConfirmedInfo
 import io.cloudflight.jems.server.payments.service.model.PaymentDetail
 import io.cloudflight.jems.server.payments.service.model.PaymentPartnerInstallment
@@ -119,12 +120,22 @@ class PaymentPersistenceProvider(
             ) }
 
     @Transactional(readOnly = true)
+    override fun getAllPartnerPaymentsForPartner(partnerId: Long) =
+        paymentPartnerRepository.findAllByPartnerId(partnerId).map {
+            PartnerPaymentSimple(fundId = it.payment.fund.id, it.amountApprovedPerPartner ?: BigDecimal.ZERO)
+        }
+
+    @Transactional(readOnly = true)
     override fun getPaymentPartnerId(paymentId: Long, partnerId: Long): Long =
         this.paymentPartnerRepository.getIdByPaymentIdAndPartnerId(paymentId, partnerId)
 
     @Transactional(readOnly = true)
     override fun findPaymentPartnerInstallments(paymentPartnerId: Long): List <PaymentPartnerInstallment> =
         this.paymentPartnerInstallmentRepository.findAllByPaymentPartnerId(paymentPartnerId).toModelList()
+
+    @Transactional(readOnly = true)
+    override fun findByPartnerId(partnerId: Long) =
+        paymentPartnerInstallmentRepository.findAllByPaymentPartnerPartnerId(partnerId).toModelList()
 
     @Transactional
     override fun updatePaymentPartnerInstallments(

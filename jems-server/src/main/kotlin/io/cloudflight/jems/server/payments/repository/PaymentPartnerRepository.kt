@@ -14,6 +14,8 @@ interface PaymentPartnerRepository: JpaRepository<PaymentPartnerEntity, Long> {
 
     fun findAllByPaymentId(paymentId: Long): List<PaymentPartnerEntity>
 
+    fun findAllByPartnerId(partnerId: Long): List<PaymentPartnerEntity>
+
     @Query("" +
         "SELECT pp.id FROM #{#entityName} pp" +
         " WHERE pp.payment.id = :paymentId AND pp.partnerId = :partnerId")
