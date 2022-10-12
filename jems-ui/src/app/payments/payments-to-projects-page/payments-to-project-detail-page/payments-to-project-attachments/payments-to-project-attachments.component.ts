@@ -20,7 +20,7 @@ import {Alert} from '@common/components/forms/alert';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import {PaymentAttachmentsStore} from './payments-to-project-attachments-store.service';
 import {Tables} from '@common/utils/tables';
-import {PageProjectReportFileDTO} from '@cat/api';
+import {PageFileList} from '@common/components/file-list/page-file-list';
 
 @UntilDestroy()
 @Component({
@@ -40,8 +40,7 @@ export class PaymentsToProjectAttachmentsComponent implements OnChanges {
   fileSizeOverLimitError$ = new Subject<boolean>();
 
   data$: Observable<{
-    attachments: PageProjectReportFileDTO;
-    attachmentList: FileListItem[];
+    attachments: PageFileList;
     isPaymentEditable: boolean;
   }>;
 
@@ -51,7 +50,7 @@ export class PaymentsToProjectAttachmentsComponent implements OnChanges {
   constructor(
     private activatedRoute: ActivatedRoute,
     public paymentAttachmentsStore: PaymentAttachmentsStore,
-    public fileManagementStore: ReportFileManagementStore,
+    private fileManagementStore: ReportFileManagementStore,
     private paymentAttachmentService: PaymentAttachmentService
   ) {
     this.data$ = combineLatest([
@@ -59,20 +58,22 @@ export class PaymentsToProjectAttachmentsComponent implements OnChanges {
       this.paymentAttachmentsStore.paymentEditable$,
     ]).pipe(
       map(([attachments, isPaymentEditable]) => ({
-        attachments,
-        attachmentList: attachments.content?.map((file: ProjectReportFileDTO) => ({
-          id: file.id,
-          name: file.name,
-          type: file.type,
-          uploaded: file.uploaded,
-          author: file.author,
-          sizeString: file.sizeString,
-          description: file.description,
-          editable: isPaymentEditable,
-          deletable: isPaymentEditable,
-          tooltipIfNotDeletable: '',
-          iconIfNotDeletable: '',
-        })),
+        attachments: {
+          ...attachments,
+          content: attachments.content?.map((file: ProjectReportFileDTO) => ({
+            id: file.id,
+            name: file.name,
+            type: file.type,
+            uploaded: file.uploaded,
+            author: file.author,
+            sizeString: file.sizeString,
+            description: file.description,
+            editable: isPaymentEditable,
+            deletable: isPaymentEditable,
+            tooltipIfNotDeletable: '',
+            iconIfNotDeletable: '',
+          })),
+        },
         isPaymentEditable,
       })),
     );
@@ -97,7 +98,7 @@ export class PaymentsToProjectAttachmentsComponent implements OnChanges {
   }
 
   downloadFile(file: FileListItem): void {
-    this.paymentAttachmentService.downloadAttachment(file.id)
+    this.paymentAttachmentsStore.downloadFile(file.id)
       .pipe(take(1))
       .subscribe();
   }

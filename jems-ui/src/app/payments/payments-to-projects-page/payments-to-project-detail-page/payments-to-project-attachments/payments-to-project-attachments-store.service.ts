@@ -17,6 +17,7 @@ import {PermissionService} from '../../../../security/permissions/permission.ser
 import {Tables} from '@common/utils/tables';
 import {FileListTableConstants} from '@common/components/file-list/file-list-table/file-list-table-constants';
 import {MatSort} from '@angular/material/sort';
+import {DownloadService} from '@common/services/download.service';
 
 @Injectable({providedIn: 'root'})
 export class PaymentAttachmentsStore {
@@ -36,6 +37,7 @@ export class PaymentAttachmentsStore {
     private routingService: RoutingService,
     private paymentAttachmentService: PaymentAttachmentService,
     private permissionService: PermissionService,
+    private downloadService: DownloadService,
   ) {
     this.attachments$ = this.getAttachments();
     this.paymentEditable$ = this.paymentEditable();
@@ -95,6 +97,17 @@ export class PaymentAttachmentsStore {
       .pipe(
         map(canEdit => canEdit)
       );
+  }
+
+  downloadFile(fileId: number): Observable<any> {
+    return this.routingService.routeParameterChanges(PaymentAttachmentsStore.PAYMENT_DETAIL_PATH, 'paymentId').pipe(
+      map(id => Number(id)),
+      take(1),
+      switchMap(paymentId => {
+        this.downloadService.download(`/api/payments/attachment/byFileId/${fileId}`, 'payment-attachment');
+        return of(null);
+      }),
+    );
   }
 
 }
