@@ -32,7 +32,13 @@ class GetContractingMonitoringService(
                 versionPersistence.getLatestApprovedOrCurrent(projectId = projectId)
                     .let { projectLumpSumPersistence.getLumpSums(projectId = projectId, version = it) }
             } )
-
+            .also { it.fastTrackLumpSums?.forEach { projectLumpSum ->
+                projectLumpSum.installmentsAlreadyCreated = contractingMonitoringPersistence.existsSavedInstallment(
+                    projectId = projectId,
+                    lumpSumId = projectLumpSum.programmeLumpSumId,
+                    orderNr = projectLumpSum.orderNr
+                )
+            } }
     }
 
     @Transactional(readOnly = true)

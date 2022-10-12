@@ -26,4 +26,9 @@ class ContractingMonitoringPersistenceProvider(
     override fun updateContractingMonitoring(contractMonitoring: ProjectContractingMonitoring): ProjectContractingMonitoring {
         return projectContractingMonitoringRepository.save(contractMonitoring.toEntity()).toModel()
     }
+
+    @Transactional(readOnly = true)
+    override fun existsSavedInstallment(projectId: Long, lumpSumId: Long, orderNr: Int): Boolean {
+        return projectContractingMonitoringRepository.existsSavedInstallment(projectId, lumpSumId, orderNr)
+    }
 }

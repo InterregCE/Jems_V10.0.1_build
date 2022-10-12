@@ -60,7 +60,8 @@ export class ProjectLumpSumsStore {
             projectLumpSum.readyForPayment,
             projectLumpSum.fastTrack,
             projectLumpSum.paymentEnabledDate,
-            projectLumpSum.lastApprovedVersionBeforeReadyForPayment))),
+            projectLumpSum.lastApprovedVersionBeforeReadyForPayment,
+            projectLumpSum.installmentsAlreadyCreated))),
       shareReplay(1)
     );
   }

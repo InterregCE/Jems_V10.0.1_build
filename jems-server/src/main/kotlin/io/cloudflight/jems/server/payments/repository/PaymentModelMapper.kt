@@ -1,9 +1,11 @@
 package io.cloudflight.jems.server.payments.repository
 
+import io.cloudflight.jems.server.common.entity.toInstant
 import io.cloudflight.jems.server.payments.entity.PaymentEntity
 import io.cloudflight.jems.server.payments.entity.PaymentPartnerEntity
 import io.cloudflight.jems.server.payments.entity.PaymentPartnerInstallmentEntity
 import io.cloudflight.jems.server.payments.service.model.PartnerPayment
+import io.cloudflight.jems.server.payments.service.model.PaymentConfirmedInfo
 import io.cloudflight.jems.server.payments.service.model.PaymentDetail
 import io.cloudflight.jems.server.payments.service.model.PaymentPartnerInstallment
 import io.cloudflight.jems.server.payments.service.model.PaymentPartnerInstallmentUpdate
@@ -21,20 +23,27 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDe
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.service.toOutputUser
 import org.springframework.data.domain.Page
-import java.math.BigDecimal
+import java.time.ZoneOffset.UTC
+import java.time.ZonedDateTime
 
 fun Page<PaymentEntity>.toListModel(
     getLumpSum: (Long, Int) -> ProjectLumpSumEntity,
-    getProject: (Long, String?) -> ProjectFull
+    getProject: (Long, String?) -> ProjectFull,
+    getConfirm: (Long) -> PaymentConfirmedInfo
 ) = map {
     val lumpSum = getLumpSum.invoke(it.project.id, it.orderNr)
     it.toModel(
         lumpSum,
-        getProject.invoke(it.project.id, lumpSum.lastApprovedVersionBeforeReadyForPayment)
+        getProject.invoke(it.project.id, lumpSum.lastApprovedVersionBeforeReadyForPayment),
+        getConfirm.invoke(it.id)
     )
 }
 
-fun PaymentEntity.toModel(lumpSum: ProjectLumpSumEntity, projectFull: ProjectFull) = PaymentToProject(
+fun PaymentEntity.toModel(
+    lumpSum: ProjectLumpSumEntity,
+    projectFull: ProjectFull,
+    paymentConfirmedInfo: PaymentConfirmedInfo
+) = PaymentToProject(
     id = id,
     paymentType = type,
     projectCustomIdentifier = projectFull.customIdentifier,
@@ -45,8 +54,10 @@ fun PaymentEntity.toModel(lumpSum: ProjectLumpSumEntity, projectFull: ProjectFul
     totalEligibleAmount = lumpSum.programmeLumpSum.cost,
     fundName = fund.type.name,
     amountApprovedPerFund = amountApprovedPerFund!!,
-    amountPaidPerFund = BigDecimal.ZERO,
-    dateOfLastPayment = null,
+    amountPaidPerFund = paymentConfirmedInfo.amountPaidPerFund,
+    dateOfLastPayment = if (paymentConfirmedInfo.dateOfLastPayment != null) {
+        ZonedDateTime.ofInstant(paymentConfirmedInfo.dateOfLastPayment.toInstant(), UTC)
+    } else { null } ,
     lastApprovedVersionBeforeReadyForPayment = lumpSum.lastApprovedVersionBeforeReadyForPayment
 )
 

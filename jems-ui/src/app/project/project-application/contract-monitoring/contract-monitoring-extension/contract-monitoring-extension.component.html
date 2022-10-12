@@ -215,7 +215,7 @@
                             <span>{{getAmount(lumpSum?.value?.lumpSumContributions) | asMoney}}</span>
                             <span>{{getPeriodLabel(lumpSum?.value?.period, data.periods)}}</span>
                             <div>
-                                <mat-button-toggle-group formControlName="readyForPayment">
+                                <mat-button-toggle-group formControlName="readyForPayment" [disabled]="lumpSum?.value?.installmentsAlreadyCreated">
                                     <mat-button-toggle [value]="true">{{'common.yes' | translate}}</mat-button-toggle>
                                     <mat-button-toggle [value]="false">{{'common.no' | translate}}</mat-button-toggle>
                                 </mat-button-toggle-group>

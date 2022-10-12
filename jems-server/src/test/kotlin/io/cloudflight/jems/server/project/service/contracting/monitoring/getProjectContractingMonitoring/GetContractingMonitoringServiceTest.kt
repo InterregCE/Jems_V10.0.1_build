@@ -31,6 +31,8 @@ internal class GetContractingMonitoringServiceTest : UnitTest() {
     companion object {
         private const val projectId = 1L
         private const val version = "2.0"
+        private const val lumpSumId = 2L
+        private const val orderNr = 1
 
         private val project = ProjectFull(
             id = projectId,
@@ -55,8 +57,8 @@ internal class GetContractingMonitoringServiceTest : UnitTest() {
 
         private val lumpSums = listOf(
             ProjectLumpSum(
-                orderNr = 1,
-                programmeLumpSumId = 1,
+                orderNr = orderNr,
+                programmeLumpSumId = lumpSumId,
                 period = 1,
                 lumpSumContributions = listOf(),
                 fastTrack = true,
@@ -75,12 +77,14 @@ internal class GetContractingMonitoringServiceTest : UnitTest() {
             typologyStrategicComment = "typologyStrategicComment",
             typologyPartnership = ContractingMonitoringOption.Yes,
             typologyPartnershipComment = "typologyPartnershipComment",
-            addDates = listOf(ProjectContractingMonitoringAddDate(
-                projectId = projectId,
-                number = 1,
-                entryIntoForceDate = ZonedDateTime.parse("2022-07-22T10:00:00+02:00").toLocalDate(),
-                comment = "comment"
-            )),
+            addDates = listOf(
+                ProjectContractingMonitoringAddDate(
+                    projectId = projectId,
+                    number = 1,
+                    entryIntoForceDate = ZonedDateTime.parse("2022-07-22T10:00:00+02:00").toLocalDate(),
+                    comment = "comment"
+                )
+            ),
             fastTrackLumpSums = lumpSums
         )
     }
@@ -110,7 +114,7 @@ internal class GetContractingMonitoringServiceTest : UnitTest() {
         every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns version
         every { projectPersistence.getProject(projectId, version) } returns project
         every { contractingMonitoringPersistence.getContractingMonitoring(projectId) } returns monitoring
-        every { projectLumpSumPersistence.getLumpSums(1, "2.0")} returns lumpSums
+        every { projectLumpSumPersistence.getLumpSums(projectId, version) } returns lumpSums
 
         assertThat(getContractingMonitoringService.getContractingMonitoring(projectId))
             .isEqualTo(
@@ -126,12 +130,14 @@ internal class GetContractingMonitoringServiceTest : UnitTest() {
                     typologyStrategicComment = "typologyStrategicComment",
                     typologyPartnership = ContractingMonitoringOption.Yes,
                     typologyPartnershipComment = "typologyPartnershipComment",
-                    addDates = listOf(ProjectContractingMonitoringAddDate(
-                        projectId = projectId,
-                        number = 1,
-                        entryIntoForceDate = ZonedDateTime.parse("2022-07-22T10:00:00+02:00").toLocalDate(),
-                        comment = "comment"
-                    )),
+                    addDates = listOf(
+                        ProjectContractingMonitoringAddDate(
+                            projectId = projectId,
+                            number = 1,
+                            entryIntoForceDate = ZonedDateTime.parse("2022-07-22T10:00:00+02:00").toLocalDate(),
+                            comment = "comment"
+                        )
+                    ),
                     fastTrackLumpSums = lumpSums
                 )
             )
@@ -146,7 +152,8 @@ internal class GetContractingMonitoringServiceTest : UnitTest() {
         every {
             contractingMonitoringPersistence.getContractingMonitoring(projectId)
         } returns monitoring.copy(startDate = ZonedDateTime.parse("2022-07-01T10:00:00+02:00").toLocalDate())
-        every { projectLumpSumPersistence.getLumpSums(1, "2.0")} returns lumpSums
+        every { projectLumpSumPersistence.getLumpSums(projectId, version) } returns lumpSums
+        every { contractingMonitoringPersistence.existsSavedInstallment(projectId, lumpSumId, orderNr) } returns false
 
         assertThat(getContractingMonitoringService.getContractingMonitoring(projectId))
             .isEqualTo(
@@ -162,12 +169,14 @@ internal class GetContractingMonitoringServiceTest : UnitTest() {
                     typologyStrategicComment = "typologyStrategicComment",
                     typologyPartnership = ContractingMonitoringOption.Yes,
                     typologyPartnershipComment = "typologyPartnershipComment",
-                    addDates = listOf(ProjectContractingMonitoringAddDate(
-                        projectId = projectId,
-                        number = 1,
-                        entryIntoForceDate = ZonedDateTime.parse("2022-07-22T10:00:00+02:00").toLocalDate(),
-                        comment = "comment"
-                    )),
+                    addDates = listOf(
+                        ProjectContractingMonitoringAddDate(
+                            projectId = projectId,
+                            number = 1,
+                            entryIntoForceDate = ZonedDateTime.parse("2022-07-22T10:00:00+02:00").toLocalDate(),
+                            comment = "comment"
+                        )
+                    ),
                     fastTrackLumpSums = lumpSums
                 )
             )
@@ -190,7 +199,7 @@ internal class GetContractingMonitoringServiceTest : UnitTest() {
         every { contractingMonitoringPersistence.getContractingMonitoring(51L) } returns ProjectContractingMonitoring(
             projectId = projectId,
             startDate = LocalDate.of(2022, 1, 31),
-            endDate =LocalDate.of(2022, 2, 28),
+            endDate = LocalDate.of(2022, 2, 28),
             typologyProv94 = ContractingMonitoringExtendedOption.Partly,
             typologyProv94Comment = "typologyProv94Comment",
             typologyProv95 = ContractingMonitoringExtendedOption.Yes,
@@ -199,12 +208,14 @@ internal class GetContractingMonitoringServiceTest : UnitTest() {
             typologyStrategicComment = "typologyStrategicComment",
             typologyPartnership = ContractingMonitoringOption.Yes,
             typologyPartnershipComment = "typologyPartnershipComment",
-            addDates = listOf(ProjectContractingMonitoringAddDate(
-                projectId = projectId,
-                number = 1,
-                entryIntoForceDate = ZonedDateTime.parse("2022-07-22T10:00:00+02:00").toLocalDate(),
-                comment = "comment"
-            )),
+            addDates = listOf(
+                ProjectContractingMonitoringAddDate(
+                    projectId = projectId,
+                    number = 1,
+                    entryIntoForceDate = ZonedDateTime.parse("2022-07-22T10:00:00+02:00").toLocalDate(),
+                    comment = "comment"
+                )
+            ),
             fastTrackLumpSums = lumpSums
         )
         every { versionPersistence.getLatestApprovedOrCurrent(51L) } returns "V1"
@@ -228,12 +239,14 @@ internal class GetContractingMonitoringServiceTest : UnitTest() {
             typologyStrategicComment = "typologyStrategicComment",
             typologyPartnership = ContractingMonitoringOption.Yes,
             typologyPartnershipComment = "typologyPartnershipComment",
-            addDates = listOf(ProjectContractingMonitoringAddDate(
-                projectId = projectId,
-                number = 1,
-                entryIntoForceDate = ZonedDateTime.parse("2022-07-22T10:00:00+02:00").toLocalDate(),
-                comment = "comment"
-            )),
+            addDates = listOf(
+                ProjectContractingMonitoringAddDate(
+                    projectId = projectId,
+                    number = 1,
+                    entryIntoForceDate = ZonedDateTime.parse("2022-07-22T10:00:00+02:00").toLocalDate(),
+                    comment = "comment"
+                )
+            ),
             fastTrackLumpSums = lumpSums
         )
         every { versionPersistence.getLatestApprovedOrCurrent(52L) } returns "V1"
@@ -252,4 +265,35 @@ internal class GetContractingMonitoringServiceTest : UnitTest() {
         assertThat(getContractingMonitoringService.getContractMonitoringDates(50L)).isNull()
     }
 
+    @Test
+    fun `getContractingMonitoring - including installment info`() {
+        every { projectPersistence.getProjectSummary(projectId) } returns projectSummary
+        val lumpSum = ProjectLumpSum(
+            orderNr = orderNr,
+            programmeLumpSumId = lumpSumId,
+            period = 1,
+            lumpSumContributions = listOf(),
+            fastTrack = true,
+            readyForPayment = true
+        )
+        val monitoringOld = ProjectContractingMonitoring(
+            projectId = projectId,
+            addDates = emptyList(),
+            fastTrackLumpSums = listOf(lumpSum)
+        )
+        every { contractingMonitoringPersistence.getContractingMonitoring(projectId) } returns monitoringOld
+        every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns version
+        every { projectLumpSumPersistence.getLumpSums(projectId, version) } returns listOf(lumpSum)
+        every { contractingMonitoringPersistence.existsSavedInstallment(projectId, lumpSumId, orderNr) } returns true
+
+        assertThat(getContractingMonitoringService.getContractingMonitoring(projectId))
+            .isEqualTo(ProjectContractingMonitoring(
+                    projectId = projectId,
+                    addDates = emptyList(),
+                    fastTrackLumpSums = listOf(lumpSum.copy(
+                        installmentsAlreadyCreated = true
+                    ))
+            ))
+
+    }
 }

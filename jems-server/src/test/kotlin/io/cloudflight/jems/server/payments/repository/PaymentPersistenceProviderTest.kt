@@ -11,6 +11,7 @@ import io.cloudflight.jems.server.payments.entity.PaymentGroupingId
 import io.cloudflight.jems.server.payments.entity.PaymentPartnerEntity
 import io.cloudflight.jems.server.payments.entity.PaymentPartnerInstallmentEntity
 import io.cloudflight.jems.server.payments.service.model.PartnerPayment
+import io.cloudflight.jems.server.payments.service.model.PaymentConfirmedInfo
 import io.cloudflight.jems.server.payments.service.model.PaymentDetail
 import io.cloudflight.jems.server.payments.service.model.PaymentPartnerInstallment
 import io.cloudflight.jems.server.payments.service.model.PaymentPartnerInstallmentUpdate
@@ -82,6 +83,7 @@ class PaymentPersistenceProviderTest: UnitTest() {
 
     companion object {
         private val currentTime = ZonedDateTime.now()
+        private val currentDate = currentTime.toLocalDate()
         private const val projectId = 1L
         private const val paymentId = 2L
         private const val lumpSumId = 50L
@@ -144,38 +146,38 @@ class PaymentPersistenceProviderTest: UnitTest() {
             id = 3L,
             paymentPartner = partnerPaymentEntity,
             amountPaid = BigDecimal.TEN,
-            paymentDate = currentTime.toLocalDate(),
+            paymentDate = currentDate,
             comment = "comment",
             isSavePaymentInfo = true,
             savePaymentInfoUser = savePaymentUser,
-            savePaymentDate = currentTime.toLocalDate(),
+            savePaymentDate = currentDate,
             isPaymentConfirmed = true,
             paymentConfirmedUser = paymentConfirmedUser,
-            paymentConfirmedDate = currentTime.toLocalDate()
+            paymentConfirmedDate = currentDate
         )
         private val installmentFirst = PaymentPartnerInstallment(
             id = 3L,
             amountPaid = BigDecimal.TEN,
-            paymentDate = currentTime.toLocalDate(),
+            paymentDate = currentDate,
             comment = "comment",
             isSavePaymentInfo = true,
             savePaymentInfoUser = OutputUser(4L, "savePaymentInfo@User", "name", "surname"),
-            savePaymentDate = currentTime.toLocalDate(),
+            savePaymentDate = currentDate,
             isPaymentConfirmed = true,
             paymentConfirmedUser = OutputUser(5L, "paymentConfirmed@User", "name", "surname"),
-            paymentConfirmedDate = currentTime.toLocalDate()
+            paymentConfirmedDate = currentDate
         )
         private val installmentUpdate = PaymentPartnerInstallmentUpdate(
             id = 3L,
             amountPaid = BigDecimal.TEN,
-            paymentDate = currentTime.toLocalDate(),
+            paymentDate = currentDate,
             comment = "comment",
             isSavePaymentInfo = true,
             savePaymentInfoUserId = 4L,
-            savePaymentDate = currentTime.toLocalDate(),
+            savePaymentDate = currentDate,
             isPaymentConfirmed = true,
             paymentConfirmedUserId = 5L,
-            paymentConfirmedDate = currentTime.toLocalDate()
+            paymentConfirmedDate = currentDate
         )
         private val paymentDetail = PaymentDetail(
             id = paymentId,
@@ -285,6 +287,58 @@ class PaymentPersistenceProviderTest: UnitTest() {
 
         assertThat(paymentPersistenceProvider.getAllPaymentToProject(Pageable.unpaged()).content)
             .containsAll(listOf(expectedPayments))
+    }
+
+    @Test
+    fun getConfirmedInfosForPayment() {
+        every { paymentPartnerRepository.findAllByPaymentId(paymentId) } returns listOf(partnerPaymentEntity)
+        every {
+            paymentPartnerInstallmentRepository.findAllByPaymentPartnerId(1L)
+        } returns listOf(installmentEntity, PaymentPartnerInstallmentEntity(
+            id = 4L,
+            paymentPartner = partnerPaymentEntity,
+            amountPaid = BigDecimal("22.21"),
+            paymentDate = currentDate.minusDays(5),
+            comment = "comment",
+            isSavePaymentInfo = true,
+            savePaymentInfoUser = savePaymentUser,
+            savePaymentDate = currentDate,
+            isPaymentConfirmed = false,
+            paymentConfirmedUser = null,
+            paymentConfirmedDate = null
+        ),
+        PaymentPartnerInstallmentEntity(
+            id = 5L,
+            paymentPartner = partnerPaymentEntity,
+            amountPaid = BigDecimal("22.21"),
+            paymentDate = currentDate.minusDays(5),
+            comment = "comment",
+            isSavePaymentInfo = true,
+            savePaymentInfoUser = savePaymentUser,
+            savePaymentDate = currentDate,
+            isPaymentConfirmed = true,
+            paymentConfirmedUser = paymentConfirmedUser,
+            paymentConfirmedDate = currentDate.minusDays(4)
+        ),
+        PaymentPartnerInstallmentEntity(
+            id = 6L,
+            paymentPartner = partnerPaymentEntity,
+            amountPaid = BigDecimal("-5.1"),
+            paymentDate = currentDate.minusDays(5),
+            comment = "comment",
+            isSavePaymentInfo = true,
+            savePaymentInfoUser = savePaymentUser,
+            savePaymentDate = currentDate,
+            isPaymentConfirmed = true,
+            paymentConfirmedUser = paymentConfirmedUser,
+            paymentConfirmedDate = currentDate.plusDays(2)
+        ))
+
+        assertThat(paymentPersistenceProvider.getConfirmedInfosForPayment(paymentId)).isEqualTo(PaymentConfirmedInfo(
+            id = paymentId,
+            amountPaidPerFund = BigDecimal("27.11"),
+            dateOfLastPayment = currentDate.plusDays(2)
+        ))
     }
 
     @Test

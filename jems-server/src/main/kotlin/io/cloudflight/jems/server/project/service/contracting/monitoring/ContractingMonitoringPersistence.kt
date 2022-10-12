@@ -8,4 +8,6 @@ interface ContractingMonitoringPersistence {
 
     fun updateContractingMonitoring(contractMonitoring: ProjectContractingMonitoring): ProjectContractingMonitoring
 
+    fun existsSavedInstallment(projectId: Long, lumpSumId: Long, orderNr: Int): Boolean
+
 }

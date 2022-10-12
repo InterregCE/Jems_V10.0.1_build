@@ -1,23 +1,22 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
-import { FormService } from '@common/components/section/form/form.service';
+import {FormService} from '@common/components/section/form/form.service';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {combineLatest, Observable} from 'rxjs';
 import {catchError, map, startWith, tap} from 'rxjs/operators';
-import {
-  ContractMonitoringExtensionStore
-} from '@project/project-application/contract-monitoring/contract-monitoring-extension/contract-monitoring-extension.store';
+import {ContractMonitoringExtensionStore} from '@project/project-application/contract-monitoring/contract-monitoring-extension/contract-monitoring-extension.store';
 import {
   InputTranslation,
   ProjectContractingMonitoringAddDateDTO,
   ProjectContractingMonitoringDTO,
-  ProjectPartnerLumpSumDTO, ProjectStatusDTO
+  ProjectPartnerLumpSumDTO,
+  ProjectStatusDTO
 } from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
 import {ProgrammeLumpSum} from '@project/model/lump-sums/programmeLumpSum';
 import {ProjectLumpSumsStore} from '@project/lump-sums/project-lump-sums-page/project-lump-sums-store.service';
 import {ProjectPeriod} from '@project/model/ProjectPeriod';
 import {TranslateService} from '@ngx-translate/core';
-import { ProjectStore } from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 
 @Component({
   selector: 'jems-contract-monitoring-extension',
@@ -139,6 +138,7 @@ export class ContractMonitoringExtensionComponent {
         comment: this.formBuilder.control(lumpSum?.comment || '', Validators.maxLength(200)),
         readyForPayment: this.formBuilder.control(lumpSum?.readyForPayment || false),
         fastTrack: this.formBuilder.control(lumpSum?.fastTrack || false),
+        installmentsAlreadyCreated: this.formBuilder.control(lumpSum?.installmentsAlreadyCreated || false)
       }));
     });
 
@@ -198,6 +198,7 @@ export class ContractMonitoringExtensionComponent {
         comment: lumpSum.comment,
         readyForPayment: lumpSum.readyForPayment,
         fastTrack: lumpSum.fastTrack,
+        installmentsAlreadyCreated: lumpSum.installmentsAlreadyCreated
       }))
     } as ProjectContractingMonitoringDTO;
   }

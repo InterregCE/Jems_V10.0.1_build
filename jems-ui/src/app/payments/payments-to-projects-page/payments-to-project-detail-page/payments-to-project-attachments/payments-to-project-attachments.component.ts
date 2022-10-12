@@ -4,14 +4,8 @@ import {AcceptedFileTypesConstants} from '@project/common/components/file-manage
 import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
 import {FileListItem} from '@common/components/file-list/file-list-item';
 import {ActivatedRoute} from '@angular/router';
-import {
-  ReportFileManagementStore
-} from '@project/project-application/report/partner-report-detail-page/partner-report-annexes-tab/report-file-management-store';
-import {
-  PaymentAttachmentService,
-  ProjectReportFileDTO,
-  UserRoleDTO
-} from '@cat/api';
+import {ReportFileManagementStore} from '@project/project-application/report/partner-report-detail-page/partner-report-annexes-tab/report-file-management-store';
+import {PageProjectReportFileDTO, PaymentAttachmentService, ProjectReportFileDTO, UserRoleDTO} from '@cat/api';
 import {finalize, map, take, tap} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {FileListComponent} from '@common/components/file-list/file-list.component';
