@@ -1,11 +1,6 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {combineLatest, Observable} from 'rxjs';
-import {
-  ProjectContractingMonitoringDTO,
-  ProjectDetailDTO,
-  ProjectPartnerControlReportDTO,
-  ProjectPartnerDetailDTO
-} from '@cat/api';
+import {ProjectDetailDTO, ProjectPartnerControlReportDTO, ProjectPartnerDetailDTO} from '@cat/api';
 import {FormBuilder, FormGroup} from '@angular/forms';
 import {
   PartnerReportDetailPageStore
@@ -18,9 +13,6 @@ import {
   ProjectApplicationFormSidenavService
 } from '@project/project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {catchError, map, take, tap} from 'rxjs/operators';
-import {
-  ContractMonitoringExtensionStore
-} from '@project/project-application/contract-monitoring/contract-monitoring-extension/contract-monitoring-extension.store';
 import {LocaleDatePipe} from '@common/pipe/locale-date.pipe';
 import {SelectionModel} from '@angular/cdk/collections';
 import {
@@ -41,7 +33,6 @@ export class PartnerControlReportIdentificationTabComponent {
   data$: Observable<{
     partnerControlReport: ProjectPartnerControlReportDTO;
     project: ProjectDetailDTO;
-    contracting: ProjectContractingMonitoringDTO;
     partner: ProjectPartnerDetailDTO;
   }>;
 
@@ -63,19 +54,16 @@ export class PartnerControlReportIdentificationTabComponent {
               public formService: FormService,
               private formBuilder: FormBuilder,
               private projectStore: ProjectStore,
-              private contractMonitoringExtensionStore: ContractMonitoringExtensionStore,
               private projectSidenavService: ProjectApplicationFormSidenavService,
               private localeDatePipe: LocaleDatePipe) {
     this.data$ = combineLatest([
       store.partnerControlReport$,
       projectStore.project$,
-      contractMonitoringExtensionStore.projectContractingMonitoring$,
       store.partner$
     ]).pipe(
-      map(([partnerControlReport, project, contracting, partner]) => ({
+      map(([partnerControlReport, project, partner]) => ({
         partnerControlReport,
         project,
-        contracting,
         partner
       })),
       tap((data) => this.resetForm(data.partnerControlReport)),
