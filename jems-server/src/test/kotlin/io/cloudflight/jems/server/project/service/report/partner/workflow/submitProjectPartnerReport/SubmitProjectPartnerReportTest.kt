@@ -30,6 +30,7 @@ import io.cloudflight.jems.server.project.service.report.partner.contribution.Pr
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectReportExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureCostCategoryPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureInvestmentPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportLumpSumPersistence
 import io.mockk.clearMocks
 import io.mockk.every
@@ -97,6 +98,26 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             unitCostId = null,
             costCategory = ReportBudgetCategory.Multiple,
             investmentId = null,
+            contractId = null,
+            internalReferenceNumber = null,
+            invoiceNumber = null,
+            invoiceDate = null,
+            dateOfPayment = null,
+            numberOfUnits = BigDecimal.ONE,
+            pricePerUnit = BigDecimal.valueOf(485, 1),
+            declaredAmount = BigDecimal.valueOf(485, 1),
+            currencyCode = "EUR",
+            currencyConversionRate = null,
+            declaredAmountAfterSubmission = null,
+            attachment = null,
+        )
+
+        private val expenditure3 = ProjectPartnerReportExpenditureCost(
+            id = 632,
+            lumpSumId = null,
+            unitCostId = null,
+            costCategory = ReportBudgetCategory.InfrastructureCosts,
+            investmentId = 1L,
             contractId = null,
             internalReferenceNumber = null,
             invoiceNumber = null,
@@ -207,6 +228,9 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
     lateinit var reportLumpSumPersistence: ProjectReportLumpSumPersistence
 
     @MockK
+    lateinit var reportInvestmentPersistence: ProjectReportExpenditureInvestmentPersistence
+
+    @MockK
     lateinit var auditPublisher: ApplicationEventPublisher
 
     @InjectMockKs
@@ -233,7 +257,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
         every { reportPersistence.getPartnerReportById(PARTNER_ID, 35L) } returns report
 
         every { reportExpenditurePersistence.getPartnerReportExpenditureCosts(PARTNER_ID, 35L) } returns
-            listOf(expenditure1, expenditure2)
+            listOf(expenditure1, expenditure2, expenditure3)
         every { currencyPersistence.findAllByIdYearAndIdMonth(year = YEAR, month = MONTH) } returns
             listOf(
                 CurrencyConversion("CZK", YEAR, MONTH, "", BigDecimal.valueOf(254855, 4)),
@@ -248,6 +272,9 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
         every { reportExpenditureCostCategoryPersistence
             .updateCurrentlyReportedValues(PARTNER_ID, reportId = 35L, capture(expenditureCcSlot))
         } answers { }
+
+        val investmentsSlot = slot<Map<Long, BigDecimal>>()
+        every { reportInvestmentPersistence.updateCurrentlyReportedValues(PARTNER_ID, reportId = 35L, capture(investmentsSlot)) } answers { }
 
         every { reportContributionPersistence.getPartnerReportContribution(PARTNER_ID, reportId = 35L) } returns partnerContribution
         val coFinSlot = slot<ReportExpenditureCoFinancingColumn>()
@@ -282,6 +309,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
                 declaredAmountAfterSubmission = BigDecimal.valueOf(999, 2),
             ),
             expenditure2.copy(),
+            expenditure3.copy()
         )
         assertThat(expenditureCcSlot.captured).isEqualTo(expectedPersistedExpenditureCostCategory)
         assertThat(coFinSlot.captured).isEqualTo(expectedCoFinancing)

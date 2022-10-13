@@ -14,13 +14,16 @@ import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerRepor
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportLumpSumEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportUnitCostEntity
 import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
+import io.cloudflight.jems.server.project.entity.report.financialOverview.ReportProjectPartnerExpenditureInvestmentEntity
 import io.cloudflight.jems.server.project.repository.report.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.repository.report.file.ProjectReportFileRepository
+import io.cloudflight.jems.server.project.repository.report.financialOverview.investment.ReportProjectPartnerExpenditureInvestmentRepository
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportLumpSum
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportUnitCost
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ReportBudgetCategory
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.workpackage.model.InvestmentSummary
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -198,6 +201,17 @@ class ProjectReportExpenditurePersistenceProviderTest : UnitTest() {
             previouslyReported = BigDecimal.ZERO,
         )
 
+        private fun dummyInvestmentEntity(reportEntity: ProjectPartnerReportEntity) =
+        ReportProjectPartnerExpenditureInvestmentEntity(
+            reportEntity = reportEntity,
+            investmentId = 1L,
+            investmentNumber = 1,
+            workPackageNumber = 1,
+            total = BigDecimal.ONE,
+            current = BigDecimal.ONE,
+            previouslyReported = BigDecimal.ZERO
+        )
+
         private val dummyLumpSum = ProjectPartnerReportLumpSum(
             id = 4L,
             lumpSumProgrammeId = 400L,
@@ -218,6 +232,12 @@ class ProjectReportExpenditurePersistenceProviderTest : UnitTest() {
             foreignCurrencyCode = "RON",
             category = ReportBudgetCategory.Multiple
         )
+
+        private val dummyInvestment = InvestmentSummary(
+            id = 1L,
+            investmentNumber = 1,
+            workPackageNumber = 1
+        )
     }
 
     @MockK
@@ -231,6 +251,9 @@ class ProjectReportExpenditurePersistenceProviderTest : UnitTest() {
 
     @MockK
     lateinit var reportUnitCostRepository: ProjectPartnerReportUnitCostRepository
+
+    @MockK
+    lateinit var reportInvestmentRepository: ReportProjectPartnerExpenditureInvestmentRepository
 
     @MockK
     lateinit var minioStorage: MinioStorage
@@ -284,6 +307,13 @@ class ProjectReportExpenditurePersistenceProviderTest : UnitTest() {
         every { reportUnitCostRepository.findByReportEntityPartnerIdAndReportEntityIdOrderByIdAsc(PARTNER_ID, reportId = 20L) } returns
             mutableListOf(dummyUnitCostEntity(mockk()))
         assertThat(persistence.getAvailableUnitCosts(PARTNER_ID, reportId = 20L)).containsExactly(dummyUnitCost)
+    }
+
+    @Test
+    fun getAvailableInvestments() {
+        every { reportInvestmentRepository.findByReportEntityPartnerIdAndReportEntityIdOrderByInvestmentIdAscIdAsc(PARTNER_ID, reportId = 20L) } returns
+            mutableListOf(dummyInvestmentEntity(mockk()))
+        assertThat(persistence.getAvailableInvestments(PARTNER_ID, reportId = 20L)).containsExactly(dummyInvestment)
     }
 
     @Test

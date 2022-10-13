@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.payments.PaymentPersistence
 import io.cloudflight.jems.server.payments.service.model.PaymentPartnerInstallment
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
+import io.cloudflight.jems.server.project.controller.workpackage.ProjectWorkPackageInvestmentControllerTest.Companion.investmentId
 import io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_period.GetPartnerBudgetPerPeriodInteractor
 import io.cloudflight.jems.server.project.service.budget.get_project_budget.GetProjectBudget
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
@@ -30,9 +31,12 @@ import io.cloudflight.jems.server.project.service.report.model.file.ProjectRepor
 import io.cloudflight.jems.server.project.service.report.model.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportPeriod
 import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectReportContributionPersistence
+import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectReportExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureCostCategoryPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportLumpSumPersistence
+import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
+import io.cloudflight.jems.server.project.service.workpackage.model.InvestmentSummary
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportUnitCostPersistence
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -185,6 +189,7 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         every { cost.unitCostId } returns unitCostId
         every { cost.rowSum } returns BigDecimal.ZERO
         every { cost.numberOfUnits } returns BigDecimal.ZERO
+        every { cost.investmentId } returns investmentId
         return cost
     }
 
@@ -208,15 +213,36 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
 
     private val externalCosts = listOf(
         generalCost(7L),
+        BudgetGeneralCostEntry(
+            id = 2,
+            rowSum = BigDecimal.valueOf(100L),
+            numberOfUnits = BigDecimal.ONE,
+            pricePerUnit = BigDecimal.valueOf(100L),
+            budgetPeriods = mutableSetOf()
+        )
     )
 
     private val equipmentCosts = listOf(
         generalCost(7L),
         generalCost(8L),
+        BudgetGeneralCostEntry(
+            id = 1,
+            rowSum = BigDecimal.valueOf(100L),
+            numberOfUnits = BigDecimal.ONE,
+            pricePerUnit = BigDecimal.valueOf(100L),
+            budgetPeriods = mutableSetOf()
+        )
     )
 
     private val infrastructureCosts = listOf(
         generalCost(9L),
+        BudgetGeneralCostEntry(
+            id = 3,
+            rowSum = BigDecimal.valueOf(100L),
+            numberOfUnits = BigDecimal.ONE,
+            pricePerUnit = BigDecimal.valueOf(100L),
+            budgetPeriods = mutableSetOf()
+        )
     )
 
     private val unitCosts = listOf(
@@ -401,6 +427,18 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         return installment
     }
 
+    private val investmentSummaries = listOf(
+        InvestmentSummary(
+            id = 1L,
+            investmentNumber = 1,
+            workPackageNumber = 1
+        ),
+        InvestmentSummary(
+            id = 2L,
+            investmentNumber = 2,
+            workPackageNumber = 1
+        ))
+
     @MockK
     lateinit var reportPersistence: ProjectReportPersistence
     @MockK
@@ -424,6 +462,10 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
     @MockK
     lateinit var reportLumpSumPersistence: ProjectReportLumpSumPersistence
     @MockK
+    lateinit var reportExpenditurePersistence: ProjectReportExpenditurePersistence
+    @MockK
+    lateinit var projectWorkPackagePersistence: WorkPackagePersistence
+    @MockK
     lateinit var reportUnitCostPersistence: ProjectReportUnitCostPersistence
 
     @InjectMockKs
@@ -436,6 +478,9 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         val version = "v4.2"
         val budgetOptions = mockk<ProjectPartnerBudgetOptions>()
         val partner = mockInputsAndGetPartner(projectId, partnerId = partnerId, version, budgetOptions)
+
+        every { projectWorkPackagePersistence.getProjectInvestmentSummaries(projectId, version)} returns investmentSummaries
+        every { reportExpenditurePersistence.getPartnerReportExpenditureCosts(partnerId, 408L)} returns emptyList()
 
         val result = service.retrieveBudgetDataFor(projectId, partner, version, coFinancing)
 
@@ -476,6 +521,8 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         val budgetOptions = mockk<ProjectPartnerBudgetOptions>()
         val partner = mockInputsAndGetPartner(projectId, partnerId = partnerId, version, budgetOptions)
 
+        every { projectWorkPackagePersistence.getProjectInvestmentSummaries(projectId, version)} returns investmentSummaries
+        every { reportExpenditurePersistence.getPartnerReportExpenditureCosts(partnerId, 408L)} returns emptyList()
         every { reportExpenditureCoFinancingPersistence.getCoFinancingCumulative(setOf(408L)) } returns previousReportedCoFinancing.copy(funds = emptyMap())
 
         val result = service.retrieveBudgetDataFor(projectId, partner, version, coFinancing.copy(finances = emptyList()))

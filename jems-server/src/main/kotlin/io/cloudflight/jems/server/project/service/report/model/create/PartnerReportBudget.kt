@@ -11,4 +11,5 @@ data class PartnerReportBudget(
     val budgetPerPeriod: List<ProjectPartnerReportPeriod>,
     val expenditureSetup: ReportExpenditureCostCategory,
     val previouslyReportedCoFinancing: PreviouslyReportedCoFinancing,
+    val perInvestmentBudget: List<PartnerReportPerInvestmentBudget>
 )

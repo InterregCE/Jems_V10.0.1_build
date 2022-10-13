@@ -15,6 +15,7 @@ import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEnti
 import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
 import io.cloudflight.jems.server.project.entity.report.financialOverview.ReportProjectPartnerExpenditureCoFinancingEntity
 import io.cloudflight.jems.server.project.entity.report.financialOverview.ReportProjectPartnerExpenditureCostCategoryEntity
+import io.cloudflight.jems.server.project.entity.report.financialOverview.ReportProjectPartnerExpenditureInvestmentEntity
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageActivityDeliverableEntity
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageActivityEntity
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageEntity
@@ -26,6 +27,7 @@ import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerRep
 import io.cloudflight.jems.server.project.service.report.model.create.ProjectPartnerReportCreate
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSummary
+import io.cloudflight.jems.server.project.service.report.model.create.PartnerReportPerInvestmentBudget
 import io.cloudflight.jems.server.project.service.report.model.create.PreviouslyReportedCoFinancing
 import io.cloudflight.jems.server.project.service.report.model.create.PreviouslyReportedFund
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
@@ -284,4 +286,14 @@ fun ReportExpenditureCostCategory.toCreateEntity(report: ProjectPartnerReportEnt
     lumpSumPreviouslyReported = previouslyReported.lumpSum,
     unitCostPreviouslyReported = previouslyReported.unitCost,
     sumPreviouslyReported = previouslyReported.sum,
+)
+
+fun PartnerReportPerInvestmentBudget.toCreateEntity(report: ProjectPartnerReportEntity) = ReportProjectPartnerExpenditureInvestmentEntity(
+    reportEntity = report,
+    investmentId = investmentId,
+    investmentNumber = investmentNumber,
+    workPackageNumber = workPackageNumber ?: 0,
+    total = totalEligibleBudget,
+    previouslyReported = previouslyReported,
+    current = ZERO
 )

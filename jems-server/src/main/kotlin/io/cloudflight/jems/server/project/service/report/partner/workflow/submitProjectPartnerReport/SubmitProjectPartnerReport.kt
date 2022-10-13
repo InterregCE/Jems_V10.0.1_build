@@ -15,10 +15,12 @@ import io.cloudflight.jems.server.project.service.report.partner.expenditure.Pro
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.fillCurrencyRates
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureCostCategoryPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureInvestmentPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportLumpSumPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.generateCoFinCalculationInputData
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.getCurrentFrom
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown.calculateCurrent
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureInvestementsBreakdown.getCurrentForInvestments
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureLumpSumBreakdown.getCurrentForLumpSums
 import io.cloudflight.jems.server.project.service.report.partnerReportSubmitted
 import org.springframework.context.ApplicationEventPublisher
@@ -38,6 +40,7 @@ class SubmitProjectPartnerReport(
     private val reportExpenditureCoFinancingPersistence: ProjectReportExpenditureCoFinancingPersistence,
     private val reportContributionPersistence: ProjectReportContributionPersistence,
     private val reportLumpSumPersistence: ProjectReportLumpSumPersistence,
+    private val reportInvestmentPersistence: ProjectReportExpenditureInvestmentPersistence,
     private val auditPublisher: ApplicationEventPublisher,
 ) : SubmitProjectPartnerReportInteractor {
 
@@ -59,6 +62,7 @@ class SubmitProjectPartnerReport(
             report = report, partnerId = partnerId,
         )
         saveCurrentLumpSums(expenditures.getCurrentForLumpSums(), partnerId = partnerId, reportId)
+        saveCurrentInvestments(expenditures.getCurrentForInvestments(), partnerId = partnerId, reportId)
 
         return reportPersistence.submitReportById(
             partnerId = partnerId,
@@ -135,6 +139,14 @@ class SubmitProjectPartnerReport(
             partnerId = partnerId,
             reportId = reportId,
             currentlyReported = currentLumpSums,
+        )
+    }
+
+    private fun saveCurrentInvestments(currentInvestments: Map<Long, BigDecimal>, partnerId: Long, reportId: Long) {
+        reportInvestmentPersistence.updateCurrentlyReportedValues(
+            partnerId = partnerId,
+            reportId = reportId,
+            currentlyReported = currentInvestments,
         )
     }
 

@@ -9,10 +9,13 @@ import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerRepor
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportUnitCostEntity
 import io.cloudflight.jems.server.project.repository.report.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.repository.report.file.ProjectReportFileRepository
+import io.cloudflight.jems.server.project.repository.report.financialOverview.investment.ReportProjectPartnerExpenditureInvestmentRepository
+import io.cloudflight.jems.server.project.repository.report.financialOverview.investment.toInvestmentSummary
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportLumpSum
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportUnitCost
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectReportExpenditurePersistence
+import io.cloudflight.jems.server.project.service.workpackage.model.InvestmentSummary
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 import kotlin.collections.HashSet
@@ -23,6 +26,7 @@ class ProjectReportExpenditurePersistenceProvider(
     private val reportExpenditureRepository: ProjectPartnerReportExpenditureRepository,
     private val reportLumpSumRepository: ProjectPartnerReportLumpSumRepository,
     private val reportUnitCostRepository: ProjectPartnerReportUnitCostRepository,
+    private val reportInvestmentRepository: ReportProjectPartnerExpenditureInvestmentRepository,
     private val minioStorage: MinioStorage,
     private val reportFileRepository: ProjectReportFileRepository,
 ) : ProjectReportExpenditurePersistence {
@@ -87,6 +91,13 @@ class ProjectReportExpenditurePersistenceProvider(
             partnerId = partnerId,
             reportId = reportId,
         ).toModel()
+
+    @Transactional(readOnly = true)
+    override fun getAvailableInvestments(partnerId: Long, reportId: Long): List<InvestmentSummary> =
+        reportInvestmentRepository.findByReportEntityPartnerIdAndReportEntityIdOrderByInvestmentIdAscIdAsc(
+            partnerId = partnerId,
+            reportId = reportId,
+        ).map { it.toInvestmentSummary() }.toList()
 
     private fun PartnerReportExpenditureCostEntity.updateWith(
         newData: ProjectPartnerReportExpenditureCost,

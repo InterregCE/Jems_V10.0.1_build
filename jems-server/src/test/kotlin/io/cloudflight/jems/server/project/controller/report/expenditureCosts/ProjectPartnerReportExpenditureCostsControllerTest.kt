@@ -7,6 +7,7 @@ import io.cloudflight.jems.api.project.dto.report.partner.expenditure.BudgetCate
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportExpenditureCostDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportLumpSumDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportUnitCostDTO
+import io.cloudflight.jems.api.project.dto.workpackage.investment.InvestmentSummaryDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportExpenditureCost
@@ -14,11 +15,13 @@ import io.cloudflight.jems.server.project.service.report.model.expenditure.Proje
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportUnitCost
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ReportBudgetCategory
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.partner.expenditure.getAvailableInvestmentsForReport.GetAvailableInvestmentsForReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.getAvailableLumpSumsForReport.GetAvailableLumpSumsForReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.getAvailableUnitCostsForReport.GetAvailableUnitCostsForReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.getProjectPartnerReportExpenditure.GetProjectPartnerReportExpenditureInteractor
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.updateProjectPartnerReportExpenditure.UpdateProjectPartnerReportExpenditureInteractor
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.uploadFileToProjectPartnerReportExpenditure.UploadFileToProjectPartnerReportExpenditure
+import io.cloudflight.jems.server.project.service.workpackage.model.InvestmentSummary
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -128,6 +131,12 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
         category = ReportBudgetCategory.Multiple
     )
 
+    private val dummyInvestment = InvestmentSummary(
+        id = 1L,
+        investmentNumber = 1,
+        workPackageNumber = 1
+    )
+
     private val dummyUnitCostDTO = ProjectPartnerReportUnitCostDTO(
         id = 18L,
         unitCostProgrammeId = 140L,
@@ -139,6 +148,12 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
         foreignCurrencyCode = "RON",
         name = setOf(InputTranslation(SystemLanguage.EN, "EN unit cost")),
         category = BudgetCategoryDTO.Multiple
+    )
+
+    private val dummyInvestmentDTO = InvestmentSummaryDTO(
+        id = 1L,
+        investmentNumber = 1,
+        workPackageNumber = 1
     )
 
     @MockK
@@ -155,6 +170,9 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
 
     @MockK
     lateinit var getAvailableUnitCostsForReportInteractor: GetAvailableUnitCostsForReportInteractor
+
+    @MockK
+    lateinit var getAvailableInvestmentsForReportInteractor: GetAvailableInvestmentsForReportInteractor
 
     @InjectMockKs
     private lateinit var controller: ProjectPartnerReportExpenditureCostsController
@@ -204,6 +222,13 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
         every { getAvailableUnitCostsForReportInteractor.getUnitCosts(PARTNER_ID, 38L) } returns
             listOf(dummyUnitCost)
         assertThat(controller.getAvailableUnitCosts(PARTNER_ID, reportId = 38L)).containsExactly(dummyUnitCostDTO)
+    }
+
+    @Test
+    fun getAvailableInvestments() {
+        every { getAvailableInvestmentsForReportInteractor.getInvestments(PARTNER_ID, 38L) } returns
+            listOf(dummyInvestment)
+        assertThat(controller.getAvailableInvestments(PARTNER_ID, reportId = 38L)).containsExactly(dummyInvestmentDTO)
     }
 
 }
