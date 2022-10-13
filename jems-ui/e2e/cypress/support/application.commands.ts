@@ -126,6 +126,7 @@ Cypress.Commands.add('createApprovedApplication', (application: Application, app
   createApplication(application.details).then(applicationId => {
     submitApplication(applicationId, application);
     approveApplication(applicationId, application.assessments, approvingUserEmail);
+    cy.wrap(applicationId).as('applicationId');
   });
 });
 

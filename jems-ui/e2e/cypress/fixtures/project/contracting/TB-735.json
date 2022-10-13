@@ -1,0 +1,18 @@
+{
+  "contractingRole": {
+    "name": "randomize",
+    "permissions": [
+      "ProjectSetToContracted", "ProjectContractingView", "ProjectContractsEdit", "ProjectContractsView",
+      "ProjectContractingManagementEdit", "ProjectContractingManagementView", "ProjectContractingReportingEdit",
+      "ProjectContractingReportingView", "ProjectContractingPartnerEdit", "ProjectContractingPartnerView",
+      "ProjectFormRetrieve", "ProjectRetrieve"
+    ]
+  },
+  "contractingUser": {
+    "email": "randomize",
+    "name": "Contracting",
+    "surname": "User",
+    "userRoleId": null,
+    "userStatus": "ACTIVE"
+  }
+}
