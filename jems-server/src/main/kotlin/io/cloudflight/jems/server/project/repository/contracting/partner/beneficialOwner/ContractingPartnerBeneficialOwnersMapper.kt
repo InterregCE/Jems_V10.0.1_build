@@ -15,6 +15,15 @@ fun List<ProjectContractingPartnerBeneficialOwnerEntity>.toModel() = map {
     )
 }
 
+fun ProjectContractingPartnerBeneficialOwnerEntity.toModel() = ContractingPartnerBeneficialOwner(
+    id = id,
+    partnerId = projectPartner.id,
+    firstName = firstName,
+    lastName = lastName,
+    birth = birth,
+    vatNumber = vatNumber,
+)
+
 fun ContractingPartnerBeneficialOwner.toEntity(projectPartner: ProjectPartnerEntity) =
     ProjectContractingPartnerBeneficialOwnerEntity(
         projectPartner = projectPartner,

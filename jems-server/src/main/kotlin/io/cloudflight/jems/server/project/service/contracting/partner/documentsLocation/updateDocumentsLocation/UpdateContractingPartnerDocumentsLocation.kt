@@ -13,17 +13,18 @@ import org.springframework.transaction.annotation.Transactional
 class UpdateContractingPartnerDocumentsLocation(
     private val documentsLocationPersistence: ContractingPartnerDocumentsLocationPersistence,
     private val generalValidator: GeneralValidatorService
-): UpdateContractingPartnerDocumentsLocationInteractor {
+) : UpdateContractingPartnerDocumentsLocationInteractor {
 
     @CanUpdateProjectContractingPartner
     @Transactional
     @ExceptionWrapper(UpdateContractingPartnerDocumentsLocationException::class)
     override fun updateDocumentsLocation(
+        projectId: Long,
         partnerId: Long,
         documentsLocation: ContractingPartnerDocumentsLocation
     ): ContractingPartnerDocumentsLocation {
         validateDocumentsLocation(documentsLocation)
-        return documentsLocationPersistence.updateDocumentsLocation(partnerId, documentsLocation)
+        return documentsLocationPersistence.updateDocumentsLocation(projectId, partnerId, documentsLocation)
     }
 
     private fun validateDocumentsLocation(input: ContractingPartnerDocumentsLocation) {
@@ -32,7 +33,7 @@ class UpdateContractingPartnerDocumentsLocation(
             generalValidator.maxLength(input.lastName, 50, "lastName"),
             generalValidator.maxLength(input.title, 50, "title"),
             generalValidator.maxLength(input.emailAddress, 50, "emailAddress"),
-            if (input.emailAddress.isNullOrBlank()) emptyMap () else
+            if (input.emailAddress.isNullOrBlank()) emptyMap() else
                 generalValidator.matches(input.emailAddress, EMAIL_REGEX, "emailAddress", "user.email.wrong.format"),
             generalValidator.maxLength(input.telephoneNo, 25, "telephoneNo"),
             generalValidator.maxLength(input.institutionName, 100, "institutionName"),
@@ -42,6 +43,7 @@ class UpdateContractingPartnerDocumentsLocation(
             generalValidator.maxLength(input.city, 50, "city"),
             generalValidator.maxLength(input.countryCode, 2, "countryCode"),
             generalValidator.maxLength(input.nutsTwoRegionCode, 4, "nutsTwoRegionCode"),
-            generalValidator.maxLength(input.nutsThreeRegionCode, 5, "nutsThreeRegionCode"))
+            generalValidator.maxLength(input.nutsThreeRegionCode, 5, "nutsThreeRegionCode")
+        )
     }
 }

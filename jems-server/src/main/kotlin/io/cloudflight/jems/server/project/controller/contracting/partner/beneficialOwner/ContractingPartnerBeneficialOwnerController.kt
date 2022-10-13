@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController
 class ContractingPartnerBeneficialOwnerController(
     private val updateBeneficialOwnersInteractor: UpdateContractingPartnerBeneficialOwnersInteractor,
     private val getBeneficialOwnersInteractor: GetContractingPartnerBeneficialOwnersInteractor
-    ): ContractingPartnerBeneficialOwnerApi {
+) : ContractingPartnerBeneficialOwnerApi {
 
     override fun getBeneficialOwners(projectId: Long, partnerId: Long): List<ContractingPartnerBeneficialOwnerDTO> {
         return getBeneficialOwnersInteractor.getBeneficialOwners(partnerId).toDto()
@@ -21,6 +21,6 @@ class ContractingPartnerBeneficialOwnerController(
         partnerId: Long,
         owners: List<ContractingPartnerBeneficialOwnerDTO>
     ): List<ContractingPartnerBeneficialOwnerDTO> {
-        return updateBeneficialOwnersInteractor.updateBeneficialOwners(partnerId, owners.toModel()).toDto()
+        return updateBeneficialOwnersInteractor.updateBeneficialOwners(projectId, partnerId, owners.toModel()).toDto()
     }
 }

@@ -12,9 +12,9 @@ import org.springframework.transaction.annotation.Transactional
 class UpdateContractingPartnerBeneficialOwners(
     private val beneficialOwnersPersistence: ContractingPartnerBeneficialOwnersPersistence,
     private val generalValidator: GeneralValidatorService
-): UpdateContractingPartnerBeneficialOwnersInteractor {
+) : UpdateContractingPartnerBeneficialOwnersInteractor {
 
-    companion object{
+    companion object {
         const val MAX_NUM_BENEFICIAL_OWNERS = 10
         const val MAX_NAME_LENGTH = 50
         const val MAX_VAT_LENGTH = 30
@@ -24,6 +24,7 @@ class UpdateContractingPartnerBeneficialOwners(
     @Transactional
     @ExceptionWrapper(UpdateContractingPartnerBeneficialOwnersException::class)
     override fun updateBeneficialOwners(
+        projectId: Long,
         partnerId: Long,
         beneficialOwners: List<ContractingPartnerBeneficialOwner>
     ): List<ContractingPartnerBeneficialOwner> {
@@ -31,7 +32,7 @@ class UpdateContractingPartnerBeneficialOwners(
         if (beneficialOwners.size > MAX_NUM_BENEFICIAL_OWNERS)
             throw MaxAmountOfBeneficialOwnersReachedException(MAX_NUM_BENEFICIAL_OWNERS)
         beneficialOwners.validateBeneficialOwners()
-        return beneficialOwnersPersistence.updateBeneficialOwners(partnerId, beneficialOwners)
+        return beneficialOwnersPersistence.updateBeneficialOwners(projectId, partnerId, beneficialOwners)
     }
 
     private fun List<ContractingPartnerBeneficialOwner>.validateBeneficialOwners() {

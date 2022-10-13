@@ -18,9 +18,11 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
-internal class UpdateContractingPartnerBeneficialOwnersTest: UnitTest()  {
+internal class UpdateContractingPartnerBeneficialOwnersTest : UnitTest() {
 
     companion object {
+        const val projectId = 1L
+
         private val beneficialOwner1 = ContractingPartnerBeneficialOwner(
             id = 18L,
             partnerId = 20L,
@@ -29,6 +31,7 @@ internal class UpdateContractingPartnerBeneficialOwnersTest: UnitTest()  {
             vatNumber = "123456",
             birth = null
         )
+
         private val beneficialOwner2 = ContractingPartnerBeneficialOwner(
             id = 19L,
             partnerId = 20L,
@@ -37,6 +40,7 @@ internal class UpdateContractingPartnerBeneficialOwnersTest: UnitTest()  {
             vatNumber = "102030",
             birth = null
         )
+
         private val invalidBeneficialOwner = ContractingPartnerBeneficialOwner(
             id = 20L,
             partnerId = 20L,
@@ -63,7 +67,7 @@ internal class UpdateContractingPartnerBeneficialOwnersTest: UnitTest()  {
         clearMocks(generalValidator)
         every { generalValidator.throwIfAnyIsInvalid(*varargAny { it.isEmpty() }) } returns Unit
         every { generalValidator.throwIfAnyIsInvalid(*varargAny { it.isNotEmpty() }) } throws
-            AppInputValidationException(emptyMap())
+                AppInputValidationException(emptyMap())
         every { generalValidator.maxLength(any<String>(), any(), any()) } returns emptyMap()
         every { generalValidator.notBlank(any<String>(), any()) } returns emptyMap()
     }
@@ -71,12 +75,13 @@ internal class UpdateContractingPartnerBeneficialOwnersTest: UnitTest()  {
     @Test
     fun `update - success`() {
         val partnerId = 20L
-        every { beneficialOwnersPersistence
-            .updateBeneficialOwners(partnerId, listOf(beneficialOwner1, beneficialOwner2))
+        every {
+            beneficialOwnersPersistence
+                .updateBeneficialOwners(projectId, partnerId, listOf(beneficialOwner1, beneficialOwner2))
         } returns listOf(beneficialOwner1, beneficialOwner2)
 
         val owners = listOf(beneficialOwner1, beneficialOwner2)
-        Assertions.assertThat(interactor.updateBeneficialOwners(partnerId, owners))
+        Assertions.assertThat(interactor.updateBeneficialOwners(projectId, partnerId, owners))
             .containsExactly(beneficialOwner1, beneficialOwner2)
     }
 
@@ -86,19 +91,24 @@ internal class UpdateContractingPartnerBeneficialOwnersTest: UnitTest()  {
         val partnerId = 20L
         val owners = mockk<List<ContractingPartnerBeneficialOwner>>()
         every { owners.size } returns 11
-        assertThrows<MaxAmountOfBeneficialOwnersReachedException> { interactor.updateBeneficialOwners(partnerId, owners)}
+        assertThrows<MaxAmountOfBeneficialOwnersReachedException> {
+            interactor.updateBeneficialOwners(
+                projectId,
+                partnerId,
+                owners
+            )
+        }
     }
 
     @Test
     fun `update - test input validations`() {
-        every { generalValidator.throwIfAnyIsInvalid(any())} throws
-            AppInputValidationException(emptyMap())
+        every { generalValidator.throwIfAnyIsInvalid(any()) } throws
+                AppInputValidationException(emptyMap())
         every { generalValidator.notBlank(any(), any()) } answers {
             mapOf(secondArg<String>() to I18nMessage(i18nKey = "${firstArg<String>()}---notBlank"))
         }
         val partnerId = 20L
         val owners = listOf(beneficialOwner1, beneficialOwner2, invalidBeneficialOwner)
-        assertThrows<AppInputValidationException> { interactor.updateBeneficialOwners(partnerId, owners)}
+        assertThrows<AppInputValidationException> { interactor.updateBeneficialOwners(projectId, partnerId, owners) }
     }
-
 }

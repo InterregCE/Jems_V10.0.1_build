@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController
 class ContractingPartnerDocumentsLocationController(
     private val getDocumentsLocationInteractor: GetContractingPartnerDocumentsLocationInteractor,
     private val updateDocumentsLocationInteractor: UpdateContractingPartnerDocumentsLocationInteractor
-): ContractingPartnerDocumentsLocationApi {
+) : ContractingPartnerDocumentsLocationApi {
 
     override fun getDocumentsLocation(projectId: Long, partnerId: Long): ContractingPartnerDocumentsLocationDTO {
         return getDocumentsLocationInteractor.getDocumentsLocation(partnerId).toDto()
@@ -21,7 +21,10 @@ class ContractingPartnerDocumentsLocationController(
         partnerId: Long,
         documentsLocation: ContractingPartnerDocumentsLocationDTO
     ): ContractingPartnerDocumentsLocationDTO {
-        return updateDocumentsLocationInteractor.updateDocumentsLocation(partnerId, documentsLocation.toModel()).toDto()
+        return updateDocumentsLocationInteractor.updateDocumentsLocation(
+            projectId,
+            partnerId,
+            documentsLocation.toModel()
+        ).toDto()
     }
-
 }

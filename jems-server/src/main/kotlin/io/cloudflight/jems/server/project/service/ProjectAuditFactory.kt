@@ -9,11 +9,14 @@ import io.cloudflight.jems.server.audit.service.AuditBuilder
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.common.audit.fromOldToNewChanges
+import io.cloudflight.jems.server.project.entity.contracting.partner.ProjectContractingPartnerBeneficialOwnerEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoring
 import io.cloudflight.jems.server.project.service.contracting.partner.bankingDetails.ContractingPartnerBankingDetails
+import io.cloudflight.jems.server.project.service.contracting.partner.beneficialOwner.ContractingPartnerBeneficialOwner
+import io.cloudflight.jems.server.project.service.contracting.partner.documentsLocation.ContractingPartnerDocumentsLocation
 import io.cloudflight.jems.server.project.service.file.model.ProjectFileCategory
 import io.cloudflight.jems.server.project.service.file.model.ProjectFileCategoryType
 import io.cloudflight.jems.server.project.service.file.model.ProjectFileMetadata
@@ -70,13 +73,16 @@ fun projectVersionSnapshotCreated(
             .project(projectSummary)
             .description(
                 "New project version \"V.${projectVersion.version}\" is created by user: ${projectVersion.user.email} on " +
-                    projectVersion.createdAt.toLocalDateTime().withNano(0)
-                        .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                        projectVersion.createdAt.toLocalDateTime().withNano(0)
+                            .format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
             ).build()
     )
 
 fun projectVersionRecorded(
-    context: Any, projectSummary: ProjectSummary, userEmail: String, version: String = ProjectVersionUtils.DEFAULT_VERSION,
+    context: Any,
+    projectSummary: ProjectSummary,
+    userEmail: String,
+    version: String = ProjectVersionUtils.DEFAULT_VERSION,
 ): AuditCandidateEvent =
     AuditCandidateEvent(
         context = context,
@@ -84,7 +90,7 @@ fun projectVersionRecorded(
             .project(projectSummary)
             .description(
                 "New project version \"V.$version\" is recorded by user: $userEmail on " +
-                    ZonedDateTime.now(ZoneOffset.UTC).withNano(0).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+                        ZonedDateTime.now(ZoneOffset.UTC).withNano(0).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)
             ).build()
     )
 
@@ -104,16 +110,24 @@ private fun callAlreadyEnded(context: Any, callName: String, callId: Long): Audi
             .build()
     )
 
-fun qualityAssessmentStep1Concluded(context: Any, project: ProjectSummary, result: ProjectAssessmentQualityResult): AuditCandidateEvent =
+fun qualityAssessmentStep1Concluded(
+    context: Any,
+    project: ProjectSummary,
+    result: ProjectAssessmentQualityResult
+): AuditCandidateEvent =
     AuditCandidateEvent(
         context = context,
         auditCandidate = AuditBuilder(AuditAction.QUALITY_ASSESSMENT_CONCLUDED)
-        .project(project)
-        .description("Project application quality assessment (step 1) concluded as $result")
-        .build()
+            .project(project)
+            .description("Project application quality assessment (step 1) concluded as $result")
+            .build()
     )
 
-fun qualityAssessmentStep2Concluded(context: Any, project: ProjectSummary, result: ProjectAssessmentQualityResult): AuditCandidateEvent =
+fun qualityAssessmentStep2Concluded(
+    context: Any,
+    project: ProjectSummary,
+    result: ProjectAssessmentQualityResult
+): AuditCandidateEvent =
     AuditCandidateEvent(
         context = context,
         auditCandidate = AuditBuilder(AuditAction.QUALITY_ASSESSMENT_CONCLUDED)
@@ -122,7 +136,11 @@ fun qualityAssessmentStep2Concluded(context: Any, project: ProjectSummary, resul
             .build()
     )
 
-fun eligibilityAssessmentStep1Concluded(context: Any, project: ProjectSummary, result: ProjectAssessmentEligibilityResult): AuditCandidateEvent =
+fun eligibilityAssessmentStep1Concluded(
+    context: Any,
+    project: ProjectSummary,
+    result: ProjectAssessmentEligibilityResult
+): AuditCandidateEvent =
     AuditCandidateEvent(
         context = context,
         auditCandidate = AuditBuilder(AuditAction.ELIGIBILITY_ASSESSMENT_CONCLUDED)
@@ -131,7 +149,11 @@ fun eligibilityAssessmentStep1Concluded(context: Any, project: ProjectSummary, r
             .build()
     )
 
-fun eligibilityAssessmentStep2Concluded(context: Any, project: ProjectSummary, result: ProjectAssessmentEligibilityResult): AuditCandidateEvent =
+fun eligibilityAssessmentStep2Concluded(
+    context: Any,
+    project: ProjectSummary,
+    result: ProjectAssessmentEligibilityResult
+): AuditCandidateEvent =
     AuditCandidateEvent(
         context = context,
         auditCandidate = AuditBuilder(AuditAction.ELIGIBILITY_ASSESSMENT_CONCLUDED)
@@ -155,7 +177,7 @@ fun projectFileDownloadSucceed(
     )
 
 fun projectFileDownloadFailed(
-    context: Any, projectId: Long, fileId:Long, userId:Long
+    context: Any, projectId: Long, fileId: Long, userId: Long
 ): AuditCandidateEvent =
     AuditCandidateEvent(
         context = context,
@@ -183,7 +205,13 @@ fun projectFileUploadSucceed(
         )
     )
 
-fun projectFileUploadFailed(context: Any, projectId: Long, fileName: String, projectFileCategory: ProjectFileCategory, userId: Long): AuditCandidateEvent =
+fun projectFileUploadFailed(
+    context: Any,
+    projectId: Long,
+    fileName: String,
+    projectFileCategory: ProjectFileCategory,
+    userId: Long
+): AuditCandidateEvent =
     AuditCandidateEvent(
         context = context,
         auditCandidate = AuditCandidate(
@@ -243,8 +271,8 @@ fun projectContractingMonitoringChanged(
 fun projectContractInfoChanged(
     context: Any,
     project: ProjectSummary,
-    oldPartnershipAgreementDate:  LocalDate?,
-    newPartnershipAgreementDate:  LocalDate?
+    oldPartnershipAgreementDate: LocalDate?,
+    newPartnershipAgreementDate: LocalDate?
 ): AuditCandidateEvent {
     val oldValue = oldPartnershipAgreementDate ?: "Not defined"
     return AuditCandidateEvent(
@@ -257,8 +285,69 @@ fun projectContractInfoChanged(
     )
 }
 
-fun projectContractingPartnerInfoChanged(
+fun projectContractingPartnerBeneficialOwnerCreated(
     context: Any,
+    projectSummary: ProjectSummary,
+    partner: ProjectPartnerEntity,
+    beneficialOwner: ContractingPartnerBeneficialOwner
+): AuditCandidateEvent {
+
+    return AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditBuilder(AuditAction.PROJECT_BENEFICIAL_OWNER_ADDED)
+            .project(projectSummary)
+            .description(
+                "Project beneficial owner added to partner ${getPartnerName(partner)}: firstName '${beneficialOwner.firstName}'," +
+                        " lastName '${beneficialOwner.lastName}', birth '${beneficialOwner.birth}', vatNumber '${beneficialOwner.vatNumber}';\n"
+            )
+            .build()
+    )
+}
+
+fun projectContractingPartnerBeneficialOwnersDeleted(
+    context: Any,
+    projectSummary: ProjectSummary,
+    partner: ProjectPartnerEntity,
+    removedBeneficialOwners: Collection<ProjectContractingPartnerBeneficialOwnerEntity>
+): AuditCandidateEvent {
+    val listOfRemovals = StringBuilder()
+    removedBeneficialOwners.forEach { owner ->
+        listOfRemovals.append(
+            "Project beneficial owner removed from partner ${getPartnerName(partner)}: firstName '${owner.firstName}'," +
+                    " lastName '${owner.lastName}', birth '${owner.birth}', vatNumber '${owner.vatNumber}';\n"
+        )
+    }
+
+    return AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditBuilder(AuditAction.PROJECT_BENEFICIAL_OWNER_REMOVED)
+            .project(projectSummary)
+            .description("$listOfRemovals")
+            .build()
+    )
+}
+
+fun projectContractingPartnerBeneficialOwnerChanged(
+    context: Any,
+    projectSummary: ProjectSummary,
+    partner: ProjectPartnerEntity,
+    oldBeneficialOwner: ContractingPartnerBeneficialOwner,
+    newBeneficialOwner: ContractingPartnerBeneficialOwner
+): AuditCandidateEvent {
+    val changes = newBeneficialOwner.getDiff(old = oldBeneficialOwner).fromOldToNewChanges()
+
+    return AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditBuilder(AuditAction.PROJECT_BENEFICIAL_OWNER_CHANGED)
+            .project(projectSummary)
+            .description("Project beneficial owner changed for partner ${getPartnerName(partner)}:\n$changes")
+            .build()
+    )
+}
+
+fun projectContractingPartnerBankingDetailsChanged(
+    context: Any,
+    projectSummary: ProjectSummary,
     partner: ProjectPartnerEntity,
     oldBankingDetails: ContractingPartnerBankingDetails?,
     newBankingDetails: ContractingPartnerBankingDetails
@@ -267,11 +356,28 @@ fun projectContractingPartnerInfoChanged(
 
     return AuditCandidateEvent(
         context = context,
-        auditCandidate = AuditCandidate(
-            action = AuditAction.PROJECT_CONTRACT_PARTNER_INFO_CHANGE,
-            project = AuditProject(id = partner.project.id.toString()),
-            description = "Fields changed for partner info of ${getPartnerName(partner)}:\n$changes"
-        )
+        auditCandidate = AuditBuilder(AuditAction.PROJECT_CONTRACT_PARTNER_INFO_CHANGE)
+            .project(projectSummary)
+            .description("Banking Details fields changed for partner ${getPartnerName(partner)}:\n$changes")
+            .build()
+    )
+}
+
+fun projectContractingPartnerDocumentsLocationChanged(
+    context: Any,
+    projectSummary: ProjectSummary,
+    partner: ProjectPartnerEntity,
+    oldDocumentsLocation: ContractingPartnerDocumentsLocation?,
+    newDocumentsLocation: ContractingPartnerDocumentsLocation
+): AuditCandidateEvent {
+    val changes = newDocumentsLocation.getDiff(old = oldDocumentsLocation).fromOldToNewChanges()
+
+    return AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditBuilder(AuditAction.PROJECT_CONTRACT_PARTNER_INFO_CHANGE)
+            .project(projectSummary)
+            .description("Documents Location fields changed for partner ${getPartnerName(partner)}:\n$changes")
+            .build()
     )
 }
 

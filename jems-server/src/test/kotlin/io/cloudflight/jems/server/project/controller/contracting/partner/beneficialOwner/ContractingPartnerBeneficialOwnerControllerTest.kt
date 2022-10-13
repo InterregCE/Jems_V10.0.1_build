@@ -12,7 +12,7 @@ import io.mockk.slot
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 
-internal class ContractingPartnerBeneficialOwnerControllerTest: UnitTest() {
+internal class ContractingPartnerBeneficialOwnerControllerTest : UnitTest() {
 
     companion object {
 
@@ -38,6 +38,7 @@ internal class ContractingPartnerBeneficialOwnerControllerTest: UnitTest() {
 
     @MockK
     lateinit var getBeneficialOwnersInteractor: GetContractingPartnerBeneficialOwnersInteractor
+
     @MockK
     lateinit var updateBeneficialOwnersInteractor: UpdateContractingPartnerBeneficialOwnersInteractor
 
@@ -49,7 +50,7 @@ internal class ContractingPartnerBeneficialOwnerControllerTest: UnitTest() {
         val partnerId = 20L
         val projectId = 1L
         every { getBeneficialOwnersInteractor.getBeneficialOwners(partnerId) } returns
-            listOf(beneficialOwner)
+                listOf(beneficialOwner)
         Assertions.assertThat(controller.getBeneficialOwners(projectId, partnerId))
             .containsExactly(beneficialOwnerDTO)
     }
@@ -60,7 +61,7 @@ internal class ContractingPartnerBeneficialOwnerControllerTest: UnitTest() {
         val projectId = 1L
         val updateModelSlot = slot<List<ContractingPartnerBeneficialOwner>>()
         every {
-            updateBeneficialOwnersInteractor.updateBeneficialOwners(partnerId, capture(updateModelSlot))
+            updateBeneficialOwnersInteractor.updateBeneficialOwners(projectId, partnerId, capture(updateModelSlot))
         } returns listOf(beneficialOwner)
 
         val toCreate = listOf(
