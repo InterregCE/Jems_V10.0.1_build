@@ -1,17 +1,11 @@
 package io.cloudflight.jems.server.project.controller.contracting.monitoring
 
-import io.cloudflight.jems.api.project.dto.contracting.ContractingMonitoringExtendedOptionDTO
-import io.cloudflight.jems.api.project.dto.contracting.ContractingMonitoringOptionDTO
-import io.cloudflight.jems.api.project.dto.contracting.ProjectContractingMonitoringAddDateDTO
-import io.cloudflight.jems.api.project.dto.contracting.ProjectContractingMonitoringDTO
-import io.cloudflight.jems.api.project.dto.contracting.ProjectPeriodForMonitoringDTO
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectiveDimensionDTO
+import io.cloudflight.jems.api.project.dto.contracting.*
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.programme.service.priority.model.ProgrammeObjectiveDimension
 import io.cloudflight.jems.server.project.service.contracting.ContractingModificationDeniedException
-import io.cloudflight.jems.server.project.service.contracting.model.ContractingMonitoringExtendedOption
-import io.cloudflight.jems.server.project.service.contracting.model.ContractingMonitoringOption
-import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoring
-import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoringAddDate
-import io.cloudflight.jems.server.project.service.contracting.model.ProjectPeriodForMonitoring
+import io.cloudflight.jems.server.project.service.contracting.model.*
 import io.cloudflight.jems.server.project.service.contracting.monitoring.getLastApprovedPeriods.GetLastApprovedPeriodsInteractor
 import io.cloudflight.jems.server.project.service.contracting.monitoring.getProjectContractingMonitoring.GetContractingMonitoringInteractor
 import io.cloudflight.jems.server.project.service.contracting.monitoring.updateProjectContractingMonitoring.UpdateContractingMonitoringException
@@ -23,6 +17,7 @@ import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.ZonedDateTime
 
@@ -50,7 +45,16 @@ internal class ContractingMonitoringControllerTest: UnitTest() {
                 number = 1,
                 entryIntoForceDate = ZonedDateTime.parse("2022-07-22T10:00:00+02:00").toLocalDate(),
                 comment = "comment"
-            ))
+            )),
+            dimensionCodes = listOf(
+                ContractingDimensionCode(
+                    id = 0,
+                    projectId = projectId,
+                    programmeObjectiveDimension = ProgrammeObjectiveDimension.TypesOfIntervention,
+                    dimensionCode = "001",
+                    projectBudgetAmountShare = BigDecimal(10000)
+                )
+            )
         )
 
         private val monitoringDTO = ProjectContractingMonitoringDTO(
@@ -70,7 +74,16 @@ internal class ContractingMonitoringControllerTest: UnitTest() {
                 number = 1,
                 entryIntoForceDate = ZonedDateTime.parse("2022-07-22T10:00:00+02:00").toLocalDate(),
                 comment = "comment"
-            ))
+            )),
+            dimensionCodes = listOf(
+                ContractingDimensionCodeDTO(
+                    id = 0,
+                    projectId = projectId,
+                    programmeObjectiveDimension = ProgrammeObjectiveDimensionDTO.TypesOfIntervention,
+                    dimensionCode = "001",
+                    projectBudgetAmountShare = BigDecimal(10000)
+                )
+            )
         )
 
         private val dummyPeriod = ProjectPeriodForMonitoring(

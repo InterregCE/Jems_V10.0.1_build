@@ -1,0 +1,13 @@
+#monitoring-dimension-codes-table {
+  .row-has-error {
+    border-bottom: 1px solid var(--error-color);
+  }
+
+  .has-error {
+    background-color: var(--light-yellow);
+
+    &.dimension-code, &.dimension-code-amount {
+      background-color: var(--pale-yellow);
+    }
+  }
+}

@@ -1,21 +1,18 @@
 package io.cloudflight.jems.server.project.repository.contracting.monitoring
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.project.entity.contracting.ContractingMonitoringAddDateId
-import io.cloudflight.jems.server.project.entity.contracting.ProjectContractingMonitoringAddDateEntity
-import io.cloudflight.jems.server.project.entity.contracting.ProjectContractingMonitoringEntity
-import io.cloudflight.jems.server.project.service.contracting.model.ContractingMonitoringExtendedOption
-import io.cloudflight.jems.server.project.service.contracting.model.ContractingMonitoringOption
-import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoring
-import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoringAddDate
+import io.cloudflight.jems.server.programme.service.priority.model.ProgrammeObjectiveDimension
+import io.cloudflight.jems.server.project.entity.contracting.*
+import io.cloudflight.jems.server.project.service.contracting.model.*
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import java.math.BigDecimal
 import java.time.ZonedDateTime
-import java.util.Optional
+import java.util.*
 
 internal class ContractingMonitoringPersistenceProviderTest: UnitTest() {
 
@@ -39,7 +36,16 @@ internal class ContractingMonitoringPersistenceProviderTest: UnitTest() {
                 number = 1,
                 entryIntoForceDate = ZonedDateTime.parse("2022-07-22T10:00:00+02:00").toLocalDate(),
                 comment = "comment"
-            ))
+            )),
+            dimensionCodes = listOf(
+                ContractingDimensionCode(
+                    id = 0,
+                    projectId = projectId,
+                    programmeObjectiveDimension = ProgrammeObjectiveDimension.TypesOfIntervention,
+                    dimensionCode = "001",
+                    projectBudgetAmountShare = BigDecimal(10000)
+                )
+            )
         )
         private val monitoringEntity = ProjectContractingMonitoringEntity(
             projectId = projectId,
@@ -57,6 +63,15 @@ internal class ContractingMonitoringPersistenceProviderTest: UnitTest() {
                     ContractingMonitoringAddDateId(projectId = projectId, number = 1),
                     entryIntoForceDate = ZonedDateTime.parse("2022-07-22T10:00:00+02:00").toLocalDate(),
                     comment = "comment"
+                )
+            ),
+            dimensionCodes = listOf(
+                ContractingDimensionCodeEntity(
+                    id = 0,
+                    projectId = projectId,
+                    programmeObjectiveDimension = ProgrammeObjectiveDimension.TypesOfIntervention,
+                    dimensionCode = "001",
+                    projectBudgetAmountShare = BigDecimal(10000)
                 )
             )
         )
@@ -83,7 +98,7 @@ internal class ContractingMonitoringPersistenceProviderTest: UnitTest() {
         every { projectContractingMonitoringRepository.findByProjectId(projectId) } returns Optional.empty()
 
         assertThat(contractingMonitoringPersistence.getContractingMonitoring(projectId))
-            .isEqualTo(ProjectContractingMonitoring(projectId = projectId, addDates = emptyList()))
+            .isEqualTo(ProjectContractingMonitoring(projectId = projectId, addDates = emptyList(), dimensionCodes = emptyList()))
     }
 
     @Test
@@ -118,7 +133,8 @@ internal class ContractingMonitoringPersistenceProviderTest: UnitTest() {
                 number = 1,
                 entryIntoForceDate = ZonedDateTime.parse("2022-07-22T10:00:00+02:00").toLocalDate(),
                 comment = "comment"
-            ))
+            )),
+            dimensionCodes = emptyList()
         )
         val monitoringEntityToUpdate = ProjectContractingMonitoringEntity(
             projectId = projectId,

@@ -1,0 +1,114 @@
+<div jemsFormLayout [formGroup]="formGroup">
+
+
+    <mat-table *ngIf="dimensionCodesTableData.length > 0" jemsNoWidthLimit
+               class="table-condensed mt-3 mb-3"
+               id="monitoring-dimension-codes-table"
+               [jemsTableConfig]="[{maxInRem:14},{maxInRem:5},{maxInRem:10},{maxInRem: 8}, {maxInRem: 1}]"
+               [dataSource]="dimensionCodesTableData"
+               formArrayName="dimensionCodesItems">
+        <ng-container matColumnDef="dimension">
+            <mat-header-cell *matHeaderCellDef>
+                    <span jemsText
+                          maxLines="1">{{'project.application.contract.monitoring.project.dimension' | translate}}</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i" class="dimension-code">
+                <mat-form-field jemsFormFieldWidth="x-large">
+                    <mat-select formControlName="dimension"
+                                placeholder="{{'project.contracting.monitoring.dimension.input.select' | translate}}">
+                        <mat-option *ngFor="let dimension of dimensionsEnum" [value]="dimension"
+                                    (onSelectionChange)="resetDimensionControl($event, i)">
+                           {{'programme.objective.dimension.' + dimension.toLowerCase() | translate}}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error>
+                        <jems-form-field-errors [errors]="control?.errors"></jems-form-field-errors>
+                    </mat-error>
+                </mat-form-field>
+            </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="dimensionCode">
+            <mat-header-cell *matHeaderCellDef>
+                    <span jemsText
+                          maxLines="1">{{'project.application.contract.monitoring.project.dimension.code' | translate}}</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                <mat-form-field jemsFormFieldWidth="small">
+                    <mat-select formControlName="dimensionCode">
+                        <mat-option
+                                *ngFor="let dimensionCode of getCodesForDimension(control?.get('dimension').value)"
+                                [value]="dimensionCode">
+                                {{dimensionCode}}
+                        </mat-option>
+                    </mat-select>
+                    <mat-error>
+                        <jems-form-field-errors
+                                [errors]="control?.controls?.dimensionCode?.errors"
+                                [messages]="{dimensionCodeAmountAlreadyExists: 'project.application.contract.monitoring.project.dimension.code.warning'}"
+                                condensed="true">
+                        </jems-form-field-errors>
+                    </mat-error>
+                </mat-form-field>
+            </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="projectBudgetAmountShare">
+            <mat-header-cell *matHeaderCellDef>
+                    <span jemsText
+                          maxLines="1">{{'project.application.contract.monitoring.project.dimension.budget.share.amount' | translate}}</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                <mat-form-field jemsFormFieldWidth="medium"
+                                (keyup)="setDimensionCodeBudgetPercentShare($event, i)">
+                    <input currencyMask
+                           formControlName="projectBudgetAmountShare"
+                           type="decimal"
+                           matInput
+                           [options]="{align: 'right'}">
+                    <mat-error>
+                        <jems-form-field-errors
+                                [errors]="control?.controls?.projectBudgetAmountShare?.errors"
+                                [messages]="{dimensionCodeAmountError: 'project.application.contract.monitoring.project.dimension.budget.share.amount.warning'}"
+                                condensed="true">
+                        </jems-form-field-errors>
+                    </mat-error>
+                </mat-form-field>
+            </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="projectBudgetPercentShare">
+            <mat-header-cell *matHeaderCellDef>
+                    <span jemsText
+                          maxLines="1">{{'project.application.contract.monitoring.project.dimension.budget.share.percent' | translate}}</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                <mat-form-field jemsFormFieldWidth="medium">
+                    <input formControlName="projectBudgetPercentShare"
+                           matInput
+                           readonly>
+                </mat-form-field>
+            </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="delete">
+            <mat-header-cell *matHeaderCellDef>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
+                <button *ngIf="editable" type="button" (click)="removeItem(i)"
+                        mat-icon-button color="accent">
+                    <mat-icon>delete</mat-icon>
+                </button>
+            </mat-cell>
+        </ng-container>
+        <mat-header-row *matHeaderRowDef="dimensionCodesColumnsToDisplay"></mat-header-row>
+        <mat-row
+                *matRowDef="let dimensionCodesRowData; columns: dimensionCodesColumnsToDisplay; let rowIndex = index"></mat-row>
+    </mat-table>
+
+    <button *ngIf="editable"
+            mat-stroked-button type="button" class="mt-2 mb-2"
+            (click)="addDimensionCodeData()">
+        <mat-icon>add</mat-icon>
+        <span>&nbsp;{{'project.application.contract.monitoring.project.intervention.code.add' | translate}}</span>
+    </button>
+</div>

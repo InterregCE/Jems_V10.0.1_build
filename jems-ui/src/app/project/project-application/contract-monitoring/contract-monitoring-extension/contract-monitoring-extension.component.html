@@ -1,6 +1,10 @@
 <div>
     <jems-form *ngIf="data$ | async as data" (save)="onSubmit()"
-               (discard)="resetForm(data.projectContractingMonitoring, data.contractMonitoringEditable, data.status.status)" jemsFormLayout [formGroup]="decisionForm" >
+               (discard)="resetForm(
+               data.projectContractingMonitoring,
+               data.contractMonitoringEditable,
+               data.status.status)"
+               jemsFormLayout [formGroup]="decisionForm">
         <div jemsMultiColumnRow>
             <mat-form-field jemsFormFieldWidth="half">
                 <mat-label>{{'project.application.contract.monitoring.project.start.date' | translate | dateFormatInfo}}</mat-label>
@@ -97,7 +101,7 @@
 
         </mat-table>
 
-        <button *ngIf="data.contractMonitoringEditable && !isAdditionalDataActivated && tableData.length < 10"
+        <button *ngIf="data.contractMonitoringEditable && !isAdditionalDataActivated && tableData.length < 25"
                 mat-stroked-button type="button" class="mt-2 mb-2"
                 (click)="addAdditionalEntryIntoForceData()">
             <mat-icon>add</mat-icon>
@@ -193,6 +197,17 @@
                 </div>
             </div>
         </div>
+
+        <h4>{{'project.application.contract.monitoring.project.dimension.title' | translate}}</h4>
+        <p>{{'project.application.contract.monitoring.project.dimension.description' | translate}}</p>
+        <jems-contract-monitoring-codes-of-intervention-table
+                [formGroup]="decisionForm"
+                [contractMonitoringDimensionCodesDTO]="dimensionCodesDTO"
+                [dimensionCodes]="data.dimensionCodes"
+                [projectBudget]="data.projectBudget"
+                [editable]="data.contractMonitoringEditable"
+                (changed)="tableChanged()">
+        </jems-contract-monitoring-codes-of-intervention-table>
 
         <ng-container *ngIf="areThereFastTrackLumpSums()">
             <h3>{{'project.application.contract.monitoring.project.fast.track.lump.sums.title' | translate}}

@@ -1,15 +1,13 @@
 package io.cloudflight.jems.server.project.service.contracting.monitoring.getProjectContractingMonitoring
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.programme.service.priority.model.ProgrammeObjectiveDimension
 import io.cloudflight.jems.server.project.repository.ProjectPersistenceProvider
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.contracting.ContractingModificationDeniedException
 import io.cloudflight.jems.server.project.service.contracting.ContractingValidator
-import io.cloudflight.jems.server.project.service.contracting.model.ContractingMonitoringExtendedOption
-import io.cloudflight.jems.server.project.service.contracting.model.ContractingMonitoringOption
-import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoring
-import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingMonitoringAddDate
+import io.cloudflight.jems.server.project.service.contracting.model.*
 import io.cloudflight.jems.server.project.service.contracting.monitoring.ContractingMonitoringPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
@@ -23,6 +21,7 @@ import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.ZonedDateTime
 
@@ -77,15 +76,20 @@ internal class GetContractingMonitoringServiceTest : UnitTest() {
             typologyStrategicComment = "typologyStrategicComment",
             typologyPartnership = ContractingMonitoringOption.Yes,
             typologyPartnershipComment = "typologyPartnershipComment",
-            addDates = listOf(
-                ProjectContractingMonitoringAddDate(
-                    projectId = projectId,
-                    number = 1,
-                    entryIntoForceDate = ZonedDateTime.parse("2022-07-22T10:00:00+02:00").toLocalDate(),
-                    comment = "comment"
-                )
-            ),
-            fastTrackLumpSums = lumpSums
+            addDates = listOf(ProjectContractingMonitoringAddDate(
+                projectId = projectId,
+                number = 1,
+                entryIntoForceDate = ZonedDateTime.parse("2022-07-22T10:00:00+02:00").toLocalDate(),
+                comment = "comment"
+            )),
+            fastTrackLumpSums = lumpSums,
+            dimensionCodes = listOf(ContractingDimensionCode(
+                id = 0,
+                projectId = projectId,
+                programmeObjectiveDimension = ProgrammeObjectiveDimension.TypesOfIntervention,
+                dimensionCode = "001",
+                projectBudgetAmountShare = BigDecimal(10000)
+            ))
         )
     }
 
@@ -130,15 +134,20 @@ internal class GetContractingMonitoringServiceTest : UnitTest() {
                     typologyStrategicComment = "typologyStrategicComment",
                     typologyPartnership = ContractingMonitoringOption.Yes,
                     typologyPartnershipComment = "typologyPartnershipComment",
-                    addDates = listOf(
-                        ProjectContractingMonitoringAddDate(
-                            projectId = projectId,
-                            number = 1,
-                            entryIntoForceDate = ZonedDateTime.parse("2022-07-22T10:00:00+02:00").toLocalDate(),
-                            comment = "comment"
-                        )
-                    ),
-                    fastTrackLumpSums = lumpSums
+                    addDates = listOf(ProjectContractingMonitoringAddDate(
+                        projectId = projectId,
+                        number = 1,
+                        entryIntoForceDate = ZonedDateTime.parse("2022-07-22T10:00:00+02:00").toLocalDate(),
+                        comment = "comment"
+                    )),
+                    fastTrackLumpSums = lumpSums,
+                    dimensionCodes = listOf(ContractingDimensionCode(
+                        id = 0,
+                        projectId = projectId,
+                        programmeObjectiveDimension = ProgrammeObjectiveDimension.TypesOfIntervention,
+                        dimensionCode = "001",
+                        projectBudgetAmountShare = BigDecimal(10000)
+                    ))
                 )
             )
     }
@@ -169,15 +178,20 @@ internal class GetContractingMonitoringServiceTest : UnitTest() {
                     typologyStrategicComment = "typologyStrategicComment",
                     typologyPartnership = ContractingMonitoringOption.Yes,
                     typologyPartnershipComment = "typologyPartnershipComment",
-                    addDates = listOf(
-                        ProjectContractingMonitoringAddDate(
-                            projectId = projectId,
-                            number = 1,
-                            entryIntoForceDate = ZonedDateTime.parse("2022-07-22T10:00:00+02:00").toLocalDate(),
-                            comment = "comment"
-                        )
-                    ),
-                    fastTrackLumpSums = lumpSums
+                    addDates = listOf(ProjectContractingMonitoringAddDate(
+                        projectId = projectId,
+                        number = 1,
+                        entryIntoForceDate = ZonedDateTime.parse("2022-07-22T10:00:00+02:00").toLocalDate(),
+                        comment = "comment"
+                    )),
+                    fastTrackLumpSums = lumpSums,
+                    dimensionCodes = listOf(ContractingDimensionCode(
+                        id = 0,
+                        projectId = projectId,
+                        programmeObjectiveDimension = ProgrammeObjectiveDimension.TypesOfIntervention,
+                        dimensionCode = "001",
+                        projectBudgetAmountShare = BigDecimal(10000)
+                    ))
                 )
             )
     }
@@ -208,15 +222,20 @@ internal class GetContractingMonitoringServiceTest : UnitTest() {
             typologyStrategicComment = "typologyStrategicComment",
             typologyPartnership = ContractingMonitoringOption.Yes,
             typologyPartnershipComment = "typologyPartnershipComment",
-            addDates = listOf(
-                ProjectContractingMonitoringAddDate(
-                    projectId = projectId,
-                    number = 1,
-                    entryIntoForceDate = ZonedDateTime.parse("2022-07-22T10:00:00+02:00").toLocalDate(),
-                    comment = "comment"
-                )
-            ),
-            fastTrackLumpSums = lumpSums
+            addDates = listOf(ProjectContractingMonitoringAddDate(
+                projectId = projectId,
+                number = 1,
+                entryIntoForceDate = ZonedDateTime.parse("2022-07-22T10:00:00+02:00").toLocalDate(),
+                comment = "comment"
+            )),
+            fastTrackLumpSums = lumpSums,
+            dimensionCodes = listOf(ContractingDimensionCode(
+                id = 0,
+                projectId = projectId,
+                programmeObjectiveDimension = ProgrammeObjectiveDimension.TypesOfIntervention,
+                dimensionCode = "001",
+                projectBudgetAmountShare = BigDecimal(10000)
+            ))
         )
         every { versionPersistence.getLatestApprovedOrCurrent(51L) } returns "V1"
         every { projectPersistence.getProject(51L, "V1").duration } returns 1
@@ -239,15 +258,20 @@ internal class GetContractingMonitoringServiceTest : UnitTest() {
             typologyStrategicComment = "typologyStrategicComment",
             typologyPartnership = ContractingMonitoringOption.Yes,
             typologyPartnershipComment = "typologyPartnershipComment",
-            addDates = listOf(
-                ProjectContractingMonitoringAddDate(
-                    projectId = projectId,
-                    number = 1,
-                    entryIntoForceDate = ZonedDateTime.parse("2022-07-22T10:00:00+02:00").toLocalDate(),
-                    comment = "comment"
-                )
-            ),
-            fastTrackLumpSums = lumpSums
+            addDates = listOf(ProjectContractingMonitoringAddDate(
+                projectId = projectId,
+                number = 1,
+                entryIntoForceDate = ZonedDateTime.parse("2022-07-22T10:00:00+02:00").toLocalDate(),
+                comment = "comment"
+            )),
+            fastTrackLumpSums = lumpSums,
+            dimensionCodes = listOf(ContractingDimensionCode(
+                id = 0,
+                projectId = projectId,
+                programmeObjectiveDimension = ProgrammeObjectiveDimension.TypesOfIntervention,
+                dimensionCode = "001",
+                projectBudgetAmountShare = BigDecimal(10000)
+            ))
         )
         every { versionPersistence.getLatestApprovedOrCurrent(52L) } returns "V1"
         every { projectPersistence.getProject(52L, "V1").duration } returns null
@@ -279,7 +303,8 @@ internal class GetContractingMonitoringServiceTest : UnitTest() {
         val monitoringOld = ProjectContractingMonitoring(
             projectId = projectId,
             addDates = emptyList(),
-            fastTrackLumpSums = listOf(lumpSum)
+            fastTrackLumpSums = listOf(lumpSum),
+            dimensionCodes = emptyList()
         )
         every { contractingMonitoringPersistence.getContractingMonitoring(projectId) } returns monitoringOld
         every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns version
@@ -292,7 +317,8 @@ internal class GetContractingMonitoringServiceTest : UnitTest() {
                     addDates = emptyList(),
                     fastTrackLumpSums = listOf(lumpSum.copy(
                         installmentsAlreadyCreated = true
-                    ))
+                    )),
+                    dimensionCodes = emptyList()
             ))
 
     }

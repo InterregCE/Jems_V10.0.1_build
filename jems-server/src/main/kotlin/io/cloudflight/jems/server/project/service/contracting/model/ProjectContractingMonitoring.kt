@@ -19,6 +19,7 @@ data class ProjectContractingMonitoring(
     val typologyPartnershipComment: String? = null,
 
     val addDates: List<ProjectContractingMonitoringAddDate>,
+    val dimensionCodes: List<ContractingDimensionCode>,
     var fastTrackLumpSums: List<ProjectLumpSum>? = emptyList()
 
 ) {
