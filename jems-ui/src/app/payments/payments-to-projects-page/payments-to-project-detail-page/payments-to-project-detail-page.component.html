@@ -131,7 +131,7 @@
                                             </div>
                                             <div class="justify-center">
                                                 <mat-checkbox
-                                                              [disabled]="isPaymentConfirmed(index, installmentIndex)"
+                                                              [disabled]="isPaymentDateEmpty(index, installmentIndex) || isPaymentConfirmed(index, installmentIndex)"
                                                               (change)="setSavePaymentDate($event.checked, index, installmentIndex)"
                                                               [formControlName]="constants.FORM_CONTROL_NAMES.savePaymentInfo">
                                                 </mat-checkbox>

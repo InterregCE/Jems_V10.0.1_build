@@ -54,7 +54,7 @@ export class PaymentsToProjectPageComponent implements OnInit, AfterViewInit {
         {
           displayedColumn: 'payments.payment.to.project.table.column.payment.type',
           elementProperty: 'paymentType',
-          sortProperty: 'paymentType',
+          sortProperty: 'type',
           columnWidth: ColumnWidth.SmallColumn,
         },
         {
@@ -66,7 +66,7 @@ export class PaymentsToProjectPageComponent implements OnInit, AfterViewInit {
         {
           displayedColumn: 'payments.payment.to.project.table.column.project.acronym',
           elementProperty: 'projectAcronym',
-          sortProperty: 'acronym',
+          sortProperty: 'projectAcronym',
           columnWidth: ColumnWidth.ChipColumn,
         },
         {
@@ -80,7 +80,7 @@ export class PaymentsToProjectPageComponent implements OnInit, AfterViewInit {
           columnType: ColumnType.DateOnlyColumn,
           columnWidth: ColumnWidth.DateColumn,
           elementProperty: 'paymentClaimSubmissionDate',
-          sortProperty: 'payment_claim_submission_date',
+          sortProperty: 'project.contractedDecision.updated',
           infoMessage: 'payments.payment.to.project.table.column.payment.claim.submission.date.info'
         },
         {
@@ -88,7 +88,6 @@ export class PaymentsToProjectPageComponent implements OnInit, AfterViewInit {
           columnType: ColumnType.DateOnlyColumn,
           columnWidth: ColumnWidth.WideColumn,
           elementProperty: 'paymentApprovalDate',
-          sortProperty: 'payment_approval_date',
           infoMessage: 'payments.payment.to.project.table.column.payment.claim.approval.date.info'
         },
         {
@@ -101,14 +100,13 @@ export class PaymentsToProjectPageComponent implements OnInit, AfterViewInit {
         {
           displayedColumn: 'payments.payment.to.project.table.column.fund',
           elementProperty: 'fundName',
-          sortProperty: 'programme_fund_id',
+          sortProperty: 'fund.type',
           columnWidth: ColumnWidth.SmallColumn,
           infoMessage: 'payments.payment.to.project.table.column.fund.info'
         },
         {
           displayedColumn: 'payments.payment.to.project.table.column.amount.approved.per.fund',
           elementProperty: 'amountApprovedPerFund',
-          sortProperty: 'amount_approved_per_fund',
           columnWidth: ColumnWidth.ChipColumn,
           columnType: ColumnType.DecimalWithJustifiedStart,
           infoMessage: 'payments.payment.to.project.table.column.amount.approved.per.fund.info'
@@ -116,7 +114,6 @@ export class PaymentsToProjectPageComponent implements OnInit, AfterViewInit {
         {
           displayedColumn: 'payments.payment.to.project.table.column.amount.paid.per.fund',
           elementProperty: 'amountPaidPerFund',
-          sortProperty: 'amountPaidPerFund',
           columnWidth: ColumnWidth.ChipColumn,
           columnType: ColumnType.DecimalWithJustifiedStart
         },
@@ -125,7 +122,6 @@ export class PaymentsToProjectPageComponent implements OnInit, AfterViewInit {
           columnType: ColumnType.DateOnlyColumn,
           columnWidth: ColumnWidth.DateColumn,
           elementProperty: 'dateOfLastPayment',
-          sortProperty: 'dateOfLastPayment'
         },
         {
           displayedColumn: 'payments.payment.to.project.table.column.remaining.to.be.paid',

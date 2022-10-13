@@ -174,16 +174,16 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
       .subscribe(
         (updatedInstallments) => {
           paymentDetail.partnerPayments.filter(partnerPayment => partnerPayment.partnerId = payment.partnerId)[0].installments = updatedInstallments;
+          this.paymentsDetailPageStore.savedPaymentDetail$.next(paymentDetail);
         }
       );
     });
-   this.paymentsDetailPageStore.savedPaymentDetail$.next(paymentDetail);
   }
 
   computeAvailableSum(paymentIndex: number): number {
     let amountPaid = 0;
     this.installmentsArray(paymentIndex).controls.forEach((formGroup: AbstractControl) => {
-      amountPaid += formGroup?.get(this.constants.FORM_CONTROL_NAMES.amountPaid)?.value
+      amountPaid += formGroup?.get(this.constants.FORM_CONTROL_NAMES.amountPaid)?.value;
     });
     return this.partnerPayments.at(paymentIndex).value.amountApproved - amountPaid;
   }
@@ -242,8 +242,14 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
     return this.installmentsArray(paymentIndex).at(installmentIndex).get('savePaymentInfo')?.value;
   }
 
+  isPaymentDateEmpty(paymentIndex: number, installmentIndex: number): boolean {
+    return !this.installmentsArray(paymentIndex).at(installmentIndex)
+      .get(this.constants.FORM_CONTROL_NAMES.paymentDate)?.value;
+  }
+
   isPaymentConfirmed(paymentIndex: number, installmentIndex: number): boolean {
-    return this.installmentsArray(paymentIndex).at(installmentIndex).get('paymentConfirmed')?.value;
+    return this.installmentsArray(paymentIndex).at(installmentIndex)
+      .get(this.constants.FORM_CONTROL_NAMES.paymentConfirmed)?.value;
   }
 
   addInstallmentButtonClicked(installment: PaymentPartnerInstallmentDTO | null, paymentIndex: number): void {

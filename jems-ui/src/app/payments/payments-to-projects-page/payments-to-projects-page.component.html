@@ -20,6 +20,6 @@
 </ng-container>
 
 <ng-template #remainingToBePaidCell let-payment>
-    {{payment.amountApprovedPerFund - payment.amountPaidPerFund}}
+    {{(payment.amountApprovedPerFund - payment.amountPaidPerFund) | asMoney}}
 </ng-template>
 

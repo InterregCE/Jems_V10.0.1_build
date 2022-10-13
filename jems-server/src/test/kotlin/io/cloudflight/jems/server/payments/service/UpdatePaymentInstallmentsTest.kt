@@ -244,10 +244,10 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
         )
         assertThat(slotAudit[2].auditCandidate).isEqualTo(
             AuditCandidate(
-                action = AuditAction.PAYMENT_INSTALLMENT_SAVED,
+                action = AuditAction.PAYMENT_INSTALLMENT_AUTHORISED,
                 project = AuditProject(projectId.toString(), paymentDetail.projectCustomIdentifier, paymentDetail.projectAcronym),
                 entityRelatedId =null,
-                description = "Payment details for payment 1, installment 2 of partner LP1 are saved"
+                description = "Payment details for payment 1, installment 2 of partner LP1 are authorised"
             )
         )
     }
