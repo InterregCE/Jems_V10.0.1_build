@@ -436,6 +436,9 @@ import {
 import {
   PartnerBreakdownUnitCostComponent
 } from '@project/project-application/report/partner-report-detail-page/partner-report-financial-overview-tab/partner-breakdown-unit-cost/partner-breakdown-unit-cost.component';
+import {
+  PartnerBreakdownInvestmentComponent
+} from "@project/project-application/report/partner-report-detail-page/partner-report-financial-overview-tab/partner-breakdown-investment/partner-breakdown-investment.component";
 
 @NgModule({
   declarations: [
@@ -564,6 +567,7 @@ import {
     PartnerBreakdownCostCategoryComponent,
     PartnerBreakdownLumpSumComponent,
     PartnerBreakdownUnitCostComponent,
+    PartnerBreakdownInvestmentComponent,
     PartnerBreakdownCoFinancingComponent,
     PartnerActionsCellComponent,
     AssessmentAndDecisionChecklistPageComponent,

@@ -24,4 +24,12 @@
             [breakdown]="data.perUnitCost">
     </jems-partner-breakdown-unit-cost>
 
+    <ng-container *ngIf="data.perInvestment.investments.length > 0">
+        <h3>{{ 'project.application.partner.report.financial.breakdown.investment' | translate}}</h3>
+
+        <jems-partner-breakdown-investment
+                [breakdown]="data.perInvestment">
+        </jems-partner-breakdown-investment>
+    </ng-container>
+
 </jems-form>
