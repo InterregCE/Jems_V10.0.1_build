@@ -16,7 +16,7 @@ and `programme` tests a single time. This will properly set users and programme 
 All other tests can be run independently, multiple times, and in any order.
 
 You can skip this step and just run tests on Cypress interact environment. To do that set:
-- `CYPRESS_BASE_URL` to `http://jems.interact-eu.net:8082`
+- `CYPRESS_BASE_URL` to `https://cypress.interact-eu.net`
 
 Bear in mind that cypress tests here are executed each night and env is cleaned each time.
 You won't be able to run login or programme tests here, but all the other will work just fine, without any prior setup.
