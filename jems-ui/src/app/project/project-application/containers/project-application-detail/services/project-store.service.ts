@@ -4,6 +4,9 @@ import {
   CallService,
   InputProjectData,
   InvestmentSummaryDTO,
+  OutputProgrammePrioritySimple,
+  ProgrammePriorityDTO,
+  ProgrammeSpecificObjectiveDTO,
   ProjectBudgetService,
   ProjectCallSettingsDTO,
   ProjectDecisionDTO,
@@ -19,7 +22,7 @@ import {
   UserRoleCreateDTO,
   WorkPackageActivitySummaryDTO
 } from '@cat/api';
-import {filter, map, shareReplay, startWith, switchMap, tap, withLatestFrom} from 'rxjs/operators';
+import {filter, map, mergeMap, shareReplay, startWith, switchMap, tap, withLatestFrom} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 import {PermissionService} from '../../../../../security/permissions/permission.service';
 import {ProjectCallSettings} from '@project/model/projectCallSettings';
@@ -36,6 +39,7 @@ import {
   InvestmentSummary
 } from '@project/work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
 import {AllowedBudgetCategories, AllowedBudgetCategory} from '@project/model/allowed-budget-category';
+import {NumberService} from '@common/services/number.service';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 import CallTypeEnum = ProjectCallSettingsDTO.CallTypeEnum;
 
@@ -77,6 +81,14 @@ export class ProjectStore {
   projectCall$: Observable<ProjectCallSettings>;
 
   investmentChangeEvent$ = new Subject<void>();
+
+  projectCallObjectives$: Observable<{
+    priorities: OutputProgrammePrioritySimple[];
+    objectivesWithPolicies: { [p: string]: ProgrammeSpecificObjectiveDTO[] };
+  }>;
+
+  projectBudget$: Observable<number>;
+
 
   private projectAcronym$ = new ReplaySubject<string>(1);
   private updatedProjectData$ = new Subject<void>();
@@ -126,6 +138,8 @@ export class ProjectStore {
     this.projectPeriods$ = this.projectForm$.pipe(
       map(projectForm => projectForm.periods)
     );
+    this.projectCallObjectives$ = this.projectCallObjectives();
+    this.projectBudget$ = this.getProjectBudget();
   }
 
   updateProjectData(data: InputProjectData): Observable<ProjectDetailFormDTO> {
@@ -144,6 +158,22 @@ export class ProjectStore {
         switchMap(([id, version]) => this.projectBudgetService.getProjectPartnerBudgetPerFund(id, version)),
         tap((data: ProjectPartnerBudgetPerFundDTO[]) => Log.info('Fetched project budget per fund:', this, data))
       );
+  }
+
+  /* returns the last approved version of project total budget */
+  getProjectBudget(): Observable<number> {
+    return combineLatest([
+      this.projectId$,
+      this.projectVersionStore.lastApprovedOrContractedVersion$,
+    ]).pipe(
+      switchMap(([projectId, version]) =>
+        this.projectService.getProjectCoFinancingOverview(projectId, version?.version)
+      ),
+      map(data => NumberService.sum([
+        data.projectManagementCoFinancing.totalFundAndContribution,
+        data.projectSpfCoFinancing.totalFundAndContribution
+      ])),
+    );
   }
 
   projectDecisions(step: number | undefined): Observable<ProjectDecisionDTO> {
@@ -398,6 +428,35 @@ export class ProjectStore {
         }),
         shareReplay(1)
       );
+  }
+
+  private projectCallObjectives(): Observable<{
+    priorities: OutputProgrammePrioritySimple[];
+    objectivesWithPolicies: { [p: string]: ProgrammeSpecificObjectiveDTO[] };
+  }> {
+    return this.project$
+      .pipe(
+        mergeMap(project => this.callService.getCallById(project.callSettings.callId)),
+        map(call => call.objectives),
+        tap(objectives => Log.info('Fetched objectives', this, objectives)),
+        map(objectives => ({
+          priorities: objectives
+            .sort((a, b) => {
+              const orderBool = a.code.toLocaleLowerCase() > b.code.toLocaleLowerCase();
+              return orderBool ? 1 : -1;
+            })
+            .map(objective => ({title: objective.title, code: objective.code}) as OutputProgrammePrioritySimple),
+          objectivesWithPolicies: this.getObjectivesWithPolicies(objectives)
+        }))
+      );
+  }
+
+  private getObjectivesWithPolicies(objectives: ProgrammePriorityDTO[]): { [key: string]: ProgrammeSpecificObjectiveDTO[] } {
+    const objectivesWithPolicies: { [key: string]: ProgrammeSpecificObjectiveDTO[] } = {};
+    objectives.forEach(objective =>
+      objectivesWithPolicies[objective.code] =
+        objective.specificObjectives.map(priority => priority));
+    return objectivesWithPolicies;
   }
 
 }

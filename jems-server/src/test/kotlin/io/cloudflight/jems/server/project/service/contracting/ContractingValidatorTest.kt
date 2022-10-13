@@ -248,9 +248,26 @@ class ContractingValidatorTest : UnitTest() {
                 ProjectContractingMonitoringAddDate(projectID, 7, LocalDate.parse("2022-07-27")),
                 ProjectContractingMonitoringAddDate(projectID, 8, LocalDate.parse("2022-07-28")),
                 ProjectContractingMonitoringAddDate(projectID, 9, LocalDate.parse("2022-07-29")),
+                ProjectContractingMonitoringAddDate(projectID, 10, LocalDate.parse("2022-07-30")),
                 ProjectContractingMonitoringAddDate(projectID, 11, LocalDate.parse("2022-07-30")),
-                ProjectContractingMonitoringAddDate(projectID, 10, LocalDate.parse("2022-07-31"))
-            )
+                ProjectContractingMonitoringAddDate(projectID, 12, LocalDate.parse("2022-07-31")),
+                ProjectContractingMonitoringAddDate(projectID, 13, LocalDate.parse("2022-07-21")),
+                ProjectContractingMonitoringAddDate(projectID, 14, LocalDate.parse("2022-07-22")),
+                ProjectContractingMonitoringAddDate(projectID, 15, LocalDate.parse("2022-07-23")),
+                ProjectContractingMonitoringAddDate(projectID, 16, LocalDate.parse("2022-07-24")),
+                ProjectContractingMonitoringAddDate(projectID, 17, LocalDate.parse("2022-07-25")),
+                ProjectContractingMonitoringAddDate(projectID, 18, LocalDate.parse("2022-07-26")),
+                ProjectContractingMonitoringAddDate(projectID, 19, LocalDate.parse("2022-07-27")),
+                ProjectContractingMonitoringAddDate(projectID, 20, LocalDate.parse("2022-07-28")),
+                ProjectContractingMonitoringAddDate(projectID, 21, LocalDate.parse("2022-07-29")),
+                ProjectContractingMonitoringAddDate(projectID, 22, LocalDate.parse("2022-07-30")),
+                ProjectContractingMonitoringAddDate(projectID, 23, LocalDate.parse("2022-07-26")),
+                ProjectContractingMonitoringAddDate(projectID, 24, LocalDate.parse("2022-07-27")),
+                ProjectContractingMonitoringAddDate(projectID, 25, LocalDate.parse("2022-07-28")),
+                ProjectContractingMonitoringAddDate(projectID, 26, LocalDate.parse("2022-07-29")),
+            ),
+            dimensionCodes = emptyList()
+
         )
 
         val ex = assertThrows<AppInputValidationException> {

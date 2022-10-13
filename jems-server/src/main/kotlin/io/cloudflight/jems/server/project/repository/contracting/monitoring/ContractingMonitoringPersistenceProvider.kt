@@ -17,7 +17,7 @@ class ContractingMonitoringPersistenceProvider(
             .let {
                 when {
                     it.isPresent -> it.get().toModel()
-                    else -> ProjectContractingMonitoring(projectId = projectId, addDates = emptyList())
+                    else -> ProjectContractingMonitoring(projectId = projectId, addDates = emptyList(), dimensionCodes = emptyList())
                 }
             }
     }

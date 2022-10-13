@@ -19,5 +19,6 @@ data class ProjectContractingMonitoringDTO(
     val typologyPartnershipComment: String? = null,
 
     val addDates: List<ProjectContractingMonitoringAddDateDTO>,
+    val dimensionCodes: List<ContractingDimensionCodeDTO>,
     val fastTrackLumpSums: List<ProjectLumpSumDTO>? = emptyList()
 )

@@ -112,7 +112,8 @@ class UpdateContractingMonitoringTest : UnitTest() {
                 entryIntoForceDate = ZonedDateTime.parse("2022-07-22T10:00:00+02:00").toLocalDate(),
                 comment = "comment"
             )),
-            fastTrackLumpSums = lumpSumsUpdated
+            fastTrackLumpSums = lumpSumsUpdated,
+            dimensionCodes = emptyList()
         )
 
         private val paymentPerPartner = PaymentPerPartner(
@@ -250,7 +251,8 @@ class UpdateContractingMonitoringTest : UnitTest() {
                         entryIntoForceDate = ZonedDateTime.parse("2022-07-22T10:00:00+02:00").toLocalDate(),
                         comment = "comment"
                     )),
-                    fastTrackLumpSums = lumpSumsUpdated
+                    fastTrackLumpSums = lumpSumsUpdated,
+                    dimensionCodes = emptyList()
                 )
             )
         val event = slot<AuditCandidateEvent>()

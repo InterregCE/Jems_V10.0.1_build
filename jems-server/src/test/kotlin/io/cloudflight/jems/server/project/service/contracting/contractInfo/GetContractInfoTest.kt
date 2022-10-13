@@ -69,7 +69,8 @@ internal class GetContractInfoTest: UnitTest(){
                 comment = "comment"
             )
             ),
-            fastTrackLumpSums = null
+            fastTrackLumpSums = null,
+            dimensionCodes = emptyList()
         )
     }
 

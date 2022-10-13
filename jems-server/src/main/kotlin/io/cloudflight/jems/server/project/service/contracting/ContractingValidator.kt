@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service
 class ContractingValidator(private val validator: GeneralValidatorService) {
 
     companion object {
-        const val MAX_NUMBER_OF_ADD_DATES = 10
+        const val MAX_NUMBER_OF_ADD_DATES = 25
     }
 
     fun validateManagerContacts(projectManagers: List<ProjectContractingManagement>) {

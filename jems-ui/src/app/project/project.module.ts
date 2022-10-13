@@ -217,6 +217,7 @@ import {
 import {
   ContractPartnerDocumentsLocationComponent
 } from '@project/project-application/contract-partner/documents-location/contract-partner-documents-location.component';
+import { ContractMonitoringCodesOfInterventionTableComponent } from './project-application/contract-monitoring/contract-monitoring-codes-of-intervention-table/contract-monitoring-codes-of-intervention-table.component';
 import {
   PartnerFilesComponent
 } from '@project/project-application/contract-partner/partner-files/partner-files.component';
@@ -369,7 +370,7 @@ import {
     ContractPartnerBeneficialOwnerComponent,
     ContractPartnerBankingDetailsComponent,
     ContractPartnerDocumentsLocationComponent,
-    ContractPartnerDocumentsLocationComponent,
+    ContractMonitoringCodesOfInterventionTableComponent,
     PartnerFilesComponent,
   ],
   imports: [

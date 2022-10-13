@@ -2,7 +2,6 @@ package io.cloudflight.jems.server.project.entity.contracting
 
 import io.cloudflight.jems.server.project.service.contracting.model.ContractingMonitoringExtendedOption
 import io.cloudflight.jems.server.project.service.contracting.model.ContractingMonitoringOption
-import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVatRecovery
 import java.time.LocalDate
 import javax.persistence.CascadeType
 import javax.persistence.Column
@@ -42,6 +41,9 @@ class ProjectContractingMonitoringEntity(
     val typologyPartnershipComment: String? = null,
 
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "addDateId.projectId")
-    val addDates: List<ProjectContractingMonitoringAddDateEntity> = emptyList()
+    val addDates: List<ProjectContractingMonitoringAddDateEntity> = emptyList(),
+
+    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "projectId")
+    val dimensionCodes: List<ContractingDimensionCodeEntity> = emptyList()
 
 )
