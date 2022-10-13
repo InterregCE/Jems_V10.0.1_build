@@ -15,7 +15,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
-internal class UpdateContractingPartnerDocumentsLocationTest: UnitTest()  {
+internal class UpdateContractingPartnerDocumentsLocationTest : UnitTest() {
 
     companion object {
         const val partnerId = 20L
@@ -81,28 +81,35 @@ internal class UpdateContractingPartnerDocumentsLocationTest: UnitTest()  {
         clearMocks(generalValidator)
         every { generalValidator.throwIfAnyIsInvalid(*varargAny { it.isEmpty() }) } returns Unit
         every { generalValidator.throwIfAnyIsInvalid(*varargAny { it.isNotEmpty() }) } throws
-            AppInputValidationException(emptyMap())
+                AppInputValidationException(emptyMap())
         every { generalValidator.maxLength(any<String>(), any(), any()) } returns emptyMap()
         every { generalValidator.matches(any(), any(), any(), any()) } returns emptyMap()
     }
 
     @Test
     fun `update documents location - success`() {
-        every { documentsLocationPersistence
-            .updateDocumentsLocation(partnerId, documentsLocation)
+        every {
+            documentsLocationPersistence
+                .updateDocumentsLocation(projectId, partnerId, documentsLocation)
         } returns documentsLocation
 
-        Assertions.assertThat(interactor.updateDocumentsLocation(partnerId, documentsLocation))
+        Assertions.assertThat(interactor.updateDocumentsLocation(projectId, partnerId, documentsLocation))
             .isEqualTo(documentsLocation)
     }
 
     @Test
     fun `update - test input validations`() {
-        every { generalValidator.throwIfAnyIsInvalid(any())} throws
-            AppInputValidationException(emptyMap())
+        every { generalValidator.throwIfAnyIsInvalid(any()) } throws
+                AppInputValidationException(emptyMap())
         every { generalValidator.matches(any<String>(), any(), any(), any()) } answers {
             mapOf(thirdArg<String>() to I18nMessage(i18nKey = "${firstArg<String>()}---maxLength-${secondArg<String>()}"))
         }
-        assertThrows<AppInputValidationException> { interactor.updateDocumentsLocation(partnerId, invalidDocumentsLocation)}
+        assertThrows<AppInputValidationException> {
+            interactor.updateDocumentsLocation(
+                projectId,
+                partnerId,
+                invalidDocumentsLocation
+            )
+        }
     }
 }

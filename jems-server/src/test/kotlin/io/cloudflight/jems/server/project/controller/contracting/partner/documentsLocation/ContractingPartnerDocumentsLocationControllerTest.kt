@@ -12,7 +12,7 @@ import io.mockk.slot
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 
-internal class ContractingPartnerDocumentsLocationControllerTest: UnitTest() {
+internal class ContractingPartnerDocumentsLocationControllerTest : UnitTest() {
 
     companion object {
         const val partnerId = 20L
@@ -65,6 +65,7 @@ internal class ContractingPartnerDocumentsLocationControllerTest: UnitTest() {
 
     @MockK
     lateinit var getDocumentsLocationInteractor: GetContractingPartnerDocumentsLocationInteractor
+
     @MockK
     lateinit var updateDocumentsLocationInteractor: UpdateContractingPartnerDocumentsLocationInteractor
 
@@ -82,7 +83,7 @@ internal class ContractingPartnerDocumentsLocationControllerTest: UnitTest() {
     fun `update contract partner documents location`() {
         val updateModelSlot = slot<ContractingPartnerDocumentsLocation>()
         every {
-            updateDocumentsLocationInteractor.updateDocumentsLocation(partnerId, capture(updateModelSlot))
+            updateDocumentsLocationInteractor.updateDocumentsLocation(projectId, partnerId, capture(updateModelSlot))
         } returns documentsLocation
 
         val toCreate = documentsLocationDTO

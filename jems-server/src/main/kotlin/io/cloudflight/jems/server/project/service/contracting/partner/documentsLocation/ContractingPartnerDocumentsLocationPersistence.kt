@@ -4,6 +4,9 @@ interface ContractingPartnerDocumentsLocationPersistence {
 
     fun getDocumentsLocation(partnerId: Long): ContractingPartnerDocumentsLocation
 
-    fun updateDocumentsLocation(partnerId: Long, documentsLocation: ContractingPartnerDocumentsLocation):
-        ContractingPartnerDocumentsLocation
+    fun updateDocumentsLocation(
+        projectId: Long,
+        partnerId: Long,
+        documentsLocation: ContractingPartnerDocumentsLocation
+    ): ContractingPartnerDocumentsLocation
 }

@@ -3,7 +3,9 @@ package io.cloudflight.jems.server.project.service.contracting.partner.documents
 import io.cloudflight.jems.server.project.service.contracting.partner.documentsLocation.ContractingPartnerDocumentsLocation
 
 interface UpdateContractingPartnerDocumentsLocationInteractor {
-    fun updateDocumentsLocation(partnerId: Long,
-                                documentsLocation: ContractingPartnerDocumentsLocation
+    fun updateDocumentsLocation(
+        projectId: Long,
+        partnerId: Long,
+        documentsLocation: ContractingPartnerDocumentsLocation
     ): ContractingPartnerDocumentsLocation
 }

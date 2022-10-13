@@ -7,10 +7,13 @@ import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.project.entity.contracting.partner.ProjectContractingPartnerBankingDetailsEntity
+import io.cloudflight.jems.server.project.repository.ProjectPersistenceProvider
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.contracting.partner.bankingDetails.ContractingPartnerBankingDetails
 import io.cloudflight.jems.server.project.service.contracting.partner.bankingDetails.getBankingDetails.GetContractingPartnerBankingDetailsPartnerNotFoundException
 import io.cloudflight.jems.server.project.service.contracting.partner.bankingDetails.updateBankingDetails.UpdateContractingPartnerBankingDetailsNotAllowedException
+import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.utils.partner.projectPartnerEntity
 import io.mockk.clearMocks
 import io.mockk.every
@@ -22,14 +25,24 @@ import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.context.ApplicationEventPublisher
 import java.util.Optional
 
 internal class ContractingPartnerBankingDetailsPersistenceTest : UnitTest() {
 
-    private val projectId = 1L
-
     companion object {
+        const val projectId = 1L
+
+        private val projectSummary = ProjectSummary(
+            id = projectId,
+            customIdentifier = "01",
+            callName = "",
+            acronym = "project acronym",
+            status = ApplicationStatus.CONTRACTED
+        )
+
         private val bankingDetails = ContractingPartnerBankingDetails(
             partnerId = 1L,
             accountHolder = "Test",
@@ -85,6 +98,9 @@ internal class ContractingPartnerBankingDetailsPersistenceTest : UnitTest() {
     @MockK
     lateinit var auditPublisher: ApplicationEventPublisher
 
+    @MockK
+    lateinit var projectPersistence: ProjectPersistenceProvider
+
     @InjectMockKs
     lateinit var persistence: ContractingPartnerBankingDetailsPersistenceProvider
 
@@ -107,11 +123,16 @@ internal class ContractingPartnerBankingDetailsPersistenceTest : UnitTest() {
         val partnerId = 100L
 
         every { projectPartnerRepository.findById(partnerId) } returns Optional.empty()
-        assertThrows<GetContractingPartnerBankingDetailsPartnerNotFoundException> {persistence.getBankingDetails(partnerId) }
+        assertThrows<GetContractingPartnerBankingDetailsPartnerNotFoundException> {
+            persistence.getBankingDetails(
+                partnerId
+            )
+        }
     }
 
-    @Test
-    fun `update banking details - success (should trigger an audit log)`() {
+    @ParameterizedTest(name = "can update banking details and trigger an audit log")
+    @EnumSource(value = ApplicationStatus::class, names = ["CONTRACTED"])
+    fun `update banking details - success`() {
         val partnerId = 2L // from 'projectPartnerEntity()'
         val partnerName = "LP0" // from 'projectPartnerEntity()'
 
@@ -120,6 +141,7 @@ internal class ContractingPartnerBankingDetailsPersistenceTest : UnitTest() {
         every { bankingDetailsRepository.findByPartnerId(partnerId) } returns bankingDetailsEntity
         every { projectPartnerRepository.findById(partnerId) } returns Optional.of(projectPartnerEntity())
         every { bankingDetailsRepository.save(any()) } returnsArgument 0
+        every { projectPersistence.getProjectSummary(projectId) } returns projectSummary
 
         persistence.updateBankingDetails(partnerId, projectId, bankingDetailsToBeUpdatedTo)
 
@@ -127,8 +149,12 @@ internal class ContractingPartnerBankingDetailsPersistenceTest : UnitTest() {
         Assertions.assertThat(auditSlot.captured.auditCandidate).isEqualTo(
             AuditCandidate(
                 action = AuditAction.PROJECT_CONTRACT_PARTNER_INFO_CHANGE,
-                project = AuditProject(id = projectId.toString()),
-                description = "Fields changed for partner info of $partnerName:\n" +
+                project = AuditProject(
+                    id = projectSummary.id.toString(),
+                    customIdentifier = projectSummary.customIdentifier,
+                    name = projectSummary.acronym
+                ),
+                description = "Banking Details fields changed for partner $partnerName:\n" +
                         "accountHolder changed from '${bankingDetails.accountHolder}' to '${bankingDetailsToBeUpdatedTo.accountHolder}',\n" +
                         "accountNumber changed from '${bankingDetails.accountNumber}' to '${bankingDetailsToBeUpdatedTo.accountNumber}',\n" +
                         "accountIBAN changed from '${bankingDetails.accountIBAN}' to '${bankingDetailsToBeUpdatedTo.accountIBAN}',\n" +
@@ -137,8 +163,9 @@ internal class ContractingPartnerBankingDetailsPersistenceTest : UnitTest() {
         )
     }
 
-    @Test
-    fun `update banking details - success but no changes from original input (should trigger an audit log)`() {
+    @ParameterizedTest(name = "can update banking details and trigger an 'empty' audit log")
+    @EnumSource(value = ApplicationStatus::class, names = ["CONTRACTED"])
+    fun `update banking details - success but no changes from original input`() {
         val partnerId = 2L // from 'projectPartnerEntity()'
         val partnerName = "LP0" // from 'projectPartnerEntity()'
 
@@ -147,15 +174,19 @@ internal class ContractingPartnerBankingDetailsPersistenceTest : UnitTest() {
         every { bankingDetailsRepository.findByPartnerId(partnerId) } returns bankingDetailsEntity
         every { projectPartnerRepository.findById(partnerId) } returns Optional.of(projectPartnerEntity())
         every { bankingDetailsRepository.save(any()) } returnsArgument 0
-
+        every { projectPersistence.getProjectSummary(projectId) } returns projectSummary
         persistence.updateBankingDetails(partnerId, projectId, bankingDetails)
 
         verify(exactly = 1) { auditPublisher.publishEvent(capture(auditSlot)) }
         Assertions.assertThat(auditSlot.captured.auditCandidate).isEqualTo(
             AuditCandidate(
                 action = AuditAction.PROJECT_CONTRACT_PARTNER_INFO_CHANGE,
-                project = AuditProject(id = projectId.toString()),
-                description = "Fields changed for partner info of $partnerName:\n(no-change)"
+                project = AuditProject(
+                    id = projectSummary.id.toString(),
+                    customIdentifier = projectSummary.customIdentifier,
+                    name = projectSummary.acronym
+                ),
+                description = "Banking Details fields changed for partner $partnerName:\n(no-change)"
             )
         )
     }
@@ -165,7 +196,13 @@ internal class ContractingPartnerBankingDetailsPersistenceTest : UnitTest() {
         val partnerId = 100L
 
         every { projectPartnerRepository.findById(partnerId) } returns Optional.empty()
-        assertThrows<ResourceNotFoundException> { persistence.updateBankingDetails(partnerId, projectId, bankingDetailsToBeUpdatedTo) }
+        assertThrows<ResourceNotFoundException> {
+            persistence.updateBankingDetails(
+                partnerId,
+                projectId,
+                bankingDetailsToBeUpdatedTo
+            )
+        }
     }
 
     @Test
