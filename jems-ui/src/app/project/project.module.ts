@@ -217,6 +217,9 @@ import {
 import {
   ContractPartnerDocumentsLocationComponent
 } from '@project/project-application/contract-partner/documents-location/contract-partner-documents-location.component';
+import {
+  PartnerFilesComponent
+} from '@project/project-application/contract-partner/partner-files/partner-files.component';
 
 @NgModule({
   declarations: [
@@ -365,7 +368,9 @@ import {
     ContractPartnerComponent,
     ContractPartnerBeneficialOwnerComponent,
     ContractPartnerBankingDetailsComponent,
-    ContractPartnerDocumentsLocationComponent
+    ContractPartnerDocumentsLocationComponent,
+    ContractPartnerDocumentsLocationComponent,
+    PartnerFilesComponent,
   ],
   imports: [
     SharedModule,

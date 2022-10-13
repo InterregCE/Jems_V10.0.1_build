@@ -1,0 +1,47 @@
+<jems-form *ngIf="data$ | async as data">
+    <div *ngIf="data.canView">
+        <jems-alert *ngIf="contractingFilesStoreService.error$ | async as error"
+                    [show]="!!error"
+                    [type]="Alert.ERROR">
+            <jems-api-error-content [error]="error"></jems-api-error-content>
+        </jems-alert>
+        <jems-alert *ngIf="fileSizeOverLimitError$ | async as showError"
+                    [show]="showError"
+                    [type]="Alert.ERROR">
+            <p>{{'project.file.size.over.limit' | translate}} {{maximumAllowedFileSizeInMB}} MB</p>
+        </jems-alert>
+
+        <h3>
+            {{'file.tab.header' | translate}}
+            <jems-context-info infoPosition="right" infoText="{{'file.tab.info' | translate}}"></jems-context-info>
+        </h3>
+        <div jemsNoWidthLimit id="partner-files">
+            <jems-category-tree
+                    [categories]="contractingFilesStoreService.fileCategories$ | async"
+                    (categorySelected)="contractingFilesStoreService.selectedCategory$.next($event)"
+                    [selectedCategory]="contractingFilesStoreService.selectedCategory$ | async">
+            </jems-category-tree>
+
+            <div class="file-list">
+                <jems-file-list
+                        [fileList]="files$ | async"
+                        (onSortChange)="contractingFilesStoreService.newSort$.next($event)"
+                        (onPageIndexChange)="contractingFilesStoreService.newPageIndex$.next($event)"
+                        (onPageSizeChange)="contractingFilesStoreService.newPageSize$.next($event)"
+                        (onDownload)="downloadFile($event)"
+                        (onDelete)="deleteFile($event)"
+                        (onDescriptionChange)="updateDescription($event)" >
+                </jems-file-list>
+
+                <div *ngIf="data.canEdit">
+                    <input #selectFile (change)="uploadFile($event?.target)" onclick="this.value=null;"
+                           type="file" [accept]="acceptedFilesTypes" [hidden]="true">
+                    <button (click)="selectFile.click()" mat-stroked-button>
+                        <mat-icon fontSet="material-icons-outlined" class="mr-1">file_upload</mat-icon>
+                        {{'file.upload.add.new' | translate}}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</jems-form>

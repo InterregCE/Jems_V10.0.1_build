@@ -30,6 +30,7 @@ import {PermissionService} from '../../../security/permissions/permission.servic
 import FileTypeEnum = ProjectReportFileDTO.TypeEnum;
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import {ProjectUtil} from '@project/common/project-util';
+import {RoutingService} from '@common/services/routing.service';
 
 @Injectable({
   providedIn: 'root'
@@ -59,7 +60,8 @@ export class ContractingFilesStoreService {
               private projectStore: ProjectStore,
               private contractingFileService: ProjectContractingFileManagementService,
               private fileManagementStore: FileManagementStore,
-              private permissionService: PermissionService
+              private permissionService: PermissionService,
+              private routingService: RoutingService
   ) {
     this.canUpload$ = this.canUpload();
     this.selectedCategoryPath$ = this.selectedCategoryPath();
@@ -78,15 +80,16 @@ export class ContractingFilesStoreService {
     return this.selectedCategory$
       .pipe(
         take(1),
-        withLatestFrom(this.projectStore.projectId$),
-        switchMap(([category, projectId]) => {
+        withLatestFrom(this.projectStore.projectId$, this.routingService.routeParameterChanges('/', 'partnerId')),
+        switchMap(([category, projectId, partnerIdInRoute]) => {
           switch (category?.type) {
             case FileTypeEnum.Contract:
               return this.contractingFileService.uploadContractFileForm(file, projectId);
             case FileTypeEnum.ContractDoc:
               return this.contractingFileService.uploadContractDocumentFileForm(file, projectId);
             case FileTypeEnum.ContractPartnerDoc:
-              return this.contractingFileService.uploadContractFileForPartnerForm(file, Number(category?.id), projectId);
+            case FileTypeEnum.ContractPartner:
+              return this.contractingFileService.uploadContractFileForPartnerForm(file, Number(partnerIdInRoute), projectId);
             case FileTypeEnum.ContractInternal:
             default:
               return this.contractingFileService.uploadContractInternalFileForm(file, projectId);
@@ -104,13 +107,16 @@ export class ContractingFilesStoreService {
   setFileDescription(fileId: number, fileDescription: string): Observable<any> {
     return this.selectedCategory$.pipe(
       take(1),
-      withLatestFrom(this.projectStore.projectId$),
-      switchMap(([category, projectId]) => {
+      withLatestFrom(this.projectStore.projectId$, this.routingService.routeParameterChanges('/', 'partnerId')),
+      switchMap(([category, projectId, partnerId]) => {
         switch (category?.type) {
           case FileTypeEnum.Contract:
           case FileTypeEnum.ContractDoc:
           case FileTypeEnum.ContractSupport:
             return this.contractingFileService.updateContractFileDescription(fileId, projectId, fileDescription);
+          case FileTypeEnum.ContractPartnerDoc:
+          case FileTypeEnum.ContractPartner:
+            return this.contractingFileService.updatePartnerFileDescription(fileId, Number(partnerId), projectId, fileDescription);
           case FileTypeEnum.ContractInternal:
           default:
             return this.contractingFileService.updateInternalFileDescription(fileId, projectId, fileDescription);
@@ -122,13 +128,16 @@ export class ContractingFilesStoreService {
 
   deleteFile(fileId: number): Observable<void> {
     return this.selectedCategory$.pipe(
-      withLatestFrom(this.projectStore.projectId$),
-      switchMap(([category, projectId]) => {
+      withLatestFrom(this.projectStore.projectId$, this.routingService.routeParameterChanges('/', 'partnerId')),
+      switchMap(([category, projectId, partnerIdInRoute]) => {
         switch (category?.type) {
           case FileTypeEnum.Contract:
           case FileTypeEnum.ContractDoc:
           case FileTypeEnum.ContractSupport:
             return this.contractingFileService.deleteContractFile(fileId, projectId);
+          case FileTypeEnum.ContractPartner:
+          case FileTypeEnum.ContractPartnerDoc:
+            return this.contractingFileService.deletePartnerFile(fileId, Number(partnerIdInRoute), projectId);
           case FileTypeEnum.ContractInternal:
           default:
             return this.contractingFileService.deleteInternalFile(fileId, projectId);
@@ -146,13 +155,16 @@ export class ContractingFilesStoreService {
 
   downloadFile(fileId: number): Observable<any> {
     return this.selectedCategory$.pipe(
-      withLatestFrom(this.projectStore.projectId$),
-      switchMap(([category, projectId]) => {
+      withLatestFrom(this.projectStore.projectId$, this.routingService.routeParameterChanges('/', 'partnerId')),
+      switchMap(([category, projectId, partnerIdInRoute]) => {
         switch (category?.type) {
           case FileTypeEnum.Contract:
           case FileTypeEnum.ContractDoc:
           case FileTypeEnum.ContractSupport:
             return this.downloadService.download(`/api/project/${projectId}/contracting/file/contract/download/${fileId}`, 'contracting-file');
+          case FileTypeEnum.ContractPartner:
+          case FileTypeEnum.ContractPartnerDoc:
+            return this.downloadService.download(`/api/project/${projectId}/contracting/file/partner/${partnerIdInRoute}/download/${fileId}`, 'contracting-file');
           case FileTypeEnum.ContractInternal:
           default:
             return this.downloadService.download(`/api/project/${projectId}/contracting/file/internal/download/${fileId}`, 'contracting-file');
@@ -185,7 +197,7 @@ export class ContractingFilesStoreService {
     return combineLatest([
       this.selectedCategory$,
       this.projectStore.projectId$,
-      of(1),
+      this.routingService.routeParameterChanges('/', 'partnerId'),
       this.newPageIndex$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
       this.newPageSize$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_SIZE)),
       this.newSort$.pipe(
@@ -196,9 +208,19 @@ export class ContractingFilesStoreService {
       this.filesChanged$.pipe(startWith(null)),
     ])
       .pipe(
-        filter(([selectedCategory, projectId, partnerId, pageIndex, pageSize, sort]: any) => !!partnerId),
-        tap(data => this.canDelete = data[6]),
-        switchMap(([selectedCategory, projectId, partnerId, pageIndex, pageSize, sort]) =>
+        tap(([selectedCategory, projectId, partnerId, pageIndex, pageSize, sort, filesChanged]: any) => this.canDelete = filesChanged),
+        switchMap(([selectedCategory, projectId, partnerIdInRoute, pageIndex, pageSize, sort]) =>
+          partnerIdInRoute ? this.contractingFileService.listPartnerFiles(
+              Number(partnerIdInRoute),
+              Number(projectId),
+              {
+                treeNode: selectedCategory.type,
+                filterSubtypes: [],
+              } as ProjectContractingFileSearchRequestDTO,
+              pageIndex,
+              pageSize,
+              sort
+            ) :
           this.contractingFileService.listFiles(
             selectedCategory?.id || 0,
             Number(projectId),

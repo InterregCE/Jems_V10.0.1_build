@@ -15,13 +15,19 @@ import io.cloudflight.jems.server.project.service.contracting.fileManagement.del
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.deleteContractFile.DeleteContractFileInteractor
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.deleteInternalFile.DeleteContractingInternalFileException
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.deleteInternalFile.DeleteInternalFileInteractor
+import io.cloudflight.jems.server.project.service.contracting.fileManagement.deletePartnerFile.DeleteContractingPartnerFileException
+import io.cloudflight.jems.server.project.service.contracting.fileManagement.deletePartnerFile.DeletePartnerFileInteractor
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.downloadContractFile.DownloadContractFileException
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.downloadContractFile.DownloadContractFileInteractor
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.downloadInternalFile.DownloadInternalFileException
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.downloadInternalFile.DownloadInternalFileInteractor
+import io.cloudflight.jems.server.project.service.contracting.fileManagement.downloadPartnerFile.DownloadPartnerFileInteractor
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.listContractingFiles.ListContractingFilesInteractor
+import io.cloudflight.jems.server.project.service.contracting.fileManagement.listPartnerFiles.ListContractingPartnerFilesInteractor
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.setContractFileDescription.SetContractFileDescriptionInteractor
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.setInternalFileDescription.SetInternalFileDescriptionInteractor
+import io.cloudflight.jems.server.project.service.contracting.fileManagement.setPartnerFileDescription.SetDescriptionToPartnerFileException
+import io.cloudflight.jems.server.project.service.contracting.fileManagement.setPartnerFileDescription.SetPartnerFileDescriptionInteractor
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.uploadFileToContracting.UploadFileToContractingInteractor
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingFileSearchRequest
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
@@ -73,6 +79,27 @@ class ContractingFileControllerTest : UnitTest() {
             description = "example desc",
         )
 
+        private val partnerFile = ProjectReportFile(
+            id = 479L,
+            name = "partner-attachment.pdf",
+            type = ProjectPartnerReportFileType.ContractPartnerDoc,
+            uploaded = YESTERDAY,
+            author = UserSimple(45L, email = "admin@cloudflight.io", name = "Admin", surname = "Big"),
+            size = 47889L,
+            description = "example desc",
+        )
+
+        private val partnerFileDto = ProjectReportFileDTO(
+            id = 479L,
+            name = "partner-attachment.pdf",
+            type = ProjectPartnerReportFileTypeDTO.ContractPartnerDoc,
+            uploaded = YESTERDAY,
+            author = UserSimpleDTO(45L, email = "admin@cloudflight.io", name = "Admin", surname = "Big"),
+            size = 47889L,
+            sizeString = "46.8\u0020kB",
+            description = "example desc",
+        )
+
     }
 
 
@@ -100,6 +127,19 @@ class ContractingFileControllerTest : UnitTest() {
     @MockK
     lateinit var setInternalFileDescriptionInteractor: SetInternalFileDescriptionInteractor
 
+    @MockK
+    lateinit var listContractingPartnerFiles: ListContractingPartnerFilesInteractor
+
+    @MockK
+    lateinit var setPartnerFileDescription: SetPartnerFileDescriptionInteractor
+
+    @MockK
+    lateinit var downloadPartnerFile: DownloadPartnerFileInteractor
+
+    @MockK
+    lateinit var deletePartnerFile: DeletePartnerFileInteractor
+
+
     @InjectMockKs
     private lateinit var controller: ContractingFileController
 
@@ -107,6 +147,7 @@ class ContractingFileControllerTest : UnitTest() {
     fun reset() {
         clearMocks(uploadToContracting)
         clearMocks(listContractingFiles)
+        clearMocks(listContractingPartnerFiles)
     }
 
     @Test
@@ -264,6 +305,78 @@ class ContractingFileControllerTest : UnitTest() {
         ) } answers { }
         controller.updateInternalFileDescription(1L, 1L, "description")
         verify(exactly = 1) { controller.updateInternalFileDescription(1L, 1L, "description") }
+    }
+
+    @Test
+    fun `set partner file description`() {
+        every { setPartnerFileDescription.setPartnerFileDescription(
+            partnerId = 1L,
+            fileId = 1L,
+            description = "description partner"
+        ) } answers { }
+        controller.updatePartnerFileDescription(1L, 1L, 1L, "description partner")
+        verify(exactly = 1) { controller.updatePartnerFileDescription(1L, 1L, 1L, "description partner") }
+    }
+
+    @Test
+    fun `set partner file description throws exception`() {
+        every { setPartnerFileDescription.setPartnerFileDescription(
+            partnerId = 1L,
+            fileId = 1L,
+            description = ""
+        ) } throws SetDescriptionToPartnerFileException(FileNotFound())
+        val exception = assertThrows<SetDescriptionToPartnerFileException> { setPartnerFileDescription.setPartnerFileDescription(1L, 1L, "") }
+        assertThat(exception.i18nMessage.i18nKey).isEqualTo("use.case.set.description.to.partner.file.failed")
+    }
+
+    @Test
+    fun `list partner specific files`() {
+        val searchRequest = slot<ProjectContractingFileSearchRequest>()
+        every { listContractingPartnerFiles.listPartner(1L, Pageable.unpaged(), capture(searchRequest)) } returns
+            PageImpl(listOf(partnerFile))
+
+        val searchRequestDto = ProjectContractingFileSearchRequestDTO(
+            treeNode = ProjectPartnerReportFileTypeDTO.ContractPartnerDoc,
+            filterSubtypes = setOf(ProjectPartnerReportFileTypeDTO.ContractPartnerDoc),
+        )
+
+        assertThat(controller.listPartnerFiles(29L, 1L, Pageable.unpaged(), searchRequestDto).content)
+            .containsExactly(partnerFileDto)
+        assertThat(searchRequest.captured).isEqualTo(
+            ProjectContractingFileSearchRequest(
+                treeNode = ProjectPartnerReportFileType.ContractPartnerDoc,
+                filterSubtypes = setOf(ProjectPartnerReportFileType.ContractPartnerDoc),
+            )
+        )
+    }
+
+    @Test
+    fun `download partner file`() {
+        val fileContentArray = ByteArray(5)
+        every { downloadPartnerFile.downloadPartnerFile(1L, fileId = 360L) } returns Pair("partnerFile.txt", fileContentArray)
+
+        assertThat(controller.downloadPartnerFile(PROJECT_ID, 1L, fileId = 360L))
+            .isEqualTo(
+                ResponseEntity.ok()
+                    .contentLength(5)
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"partnerFile.txt\"")
+                    .body(ByteArrayResource(fileContentArray))
+            )
+    }
+
+    @Test
+    fun `delete partner file`() {
+        every { deletePartnerFile.delete(1L, fileId = 303L) } answers { }
+        controller.deletePartnerFile(PROJECT_ID, 1L, fileId = 303L)
+        verify(exactly = 1) { deletePartnerFile.delete(1L, fileId = 303L) }
+    }
+
+    @Test
+    fun `delete partner attachment throws exception`() {
+        every { deletePartnerFile.delete(1L, fileId = -1L) } throws DeleteContractingPartnerFileException(RuntimeException())
+        val exception = assertThrows<DeleteContractingPartnerFileException> { deletePartnerFile.delete(1L, fileId = -1L) }
+        assertThat(exception.i18nMessage.i18nKey).isEqualTo("use.case.delete.contracting.partner.file.failed")
     }
 
 }

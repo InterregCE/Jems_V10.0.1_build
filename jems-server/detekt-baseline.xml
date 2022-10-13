@@ -597,6 +597,7 @@
     <ID>TooManyFunctions:ProjectReportFilePersistenceProvider.kt$ProjectReportFilePersistenceProvider : ProjectReportFilePersistence</ID>
     <ID>TooManyFunctions:UpdateCoFinancingValidation.kt$io.cloudflight.jems.server.project.service.partner.cofinancing.update_cofinancing.UpdateCoFinancingValidation.kt</ID>
     <ID>TooManyFunctions:WorkPackagePersistenceProvider.kt$WorkPackagePersistenceProvider : WorkPackagePersistence</ID>
+    <ID>TooManyFunctions:ProjectReportFilePersistence.kt$ProjectReportFilePersistence</ID>
     <ID>UnnecessaryAbstractClass:ApplicationState.kt$ApplicationState</ID>
     <ID>UnnecessaryAbstractClass:CommonDTOMapper.kt$CommonDTOMapper</ID>
     <ID>UnnecessaryAbstractClass:MailNotificationMapper.kt$MailNotificationMapper</ID>
