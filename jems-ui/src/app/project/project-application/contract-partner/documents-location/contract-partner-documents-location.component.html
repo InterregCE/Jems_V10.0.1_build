@@ -5,7 +5,7 @@
             <h3>Location of Documents</h3>
         </div>
         <div jemsMultiColumnRow>
-            <mat-form-field jemsFormFieldWidth="x-large">
+            <mat-form-field jemsFormFieldWidth="x-large" [matTooltip]="lodTitle.value">
                 <mat-label>Title</mat-label>
                 <input #lodTitle formControlName="title" matInput>
                 <mat-hint [jemsHintFor]="lodTitle" [hide]="documentsLocationForm?.controls?.title?.errors !== null">
@@ -18,10 +18,11 @@
                 </mat-error>
             </mat-form-field>
 
-            <mat-form-field jemsFormFieldWidth="xx-large">
+            <mat-form-field jemsFormFieldWidth="xx-large" [matTooltip]="lodFirstName.value">
                 <mat-label>First name</mat-label>
                 <input #lodFirstName formControlName="firstName" matInput>
-                <mat-hint [jemsHintFor]="lodFirstName" [hide]="documentsLocationForm?.controls?.firstName?.errors !== null">
+                <mat-hint [jemsHintFor]="lodFirstName"
+                          [hide]="documentsLocationForm?.controls?.firstName?.errors !== null">
                     <jems-text-hint [currentLength]="lodFirstName.value.length" [maxLength]="50"></jems-text-hint>
                 </mat-hint>
                 <mat-error>
@@ -31,10 +32,11 @@
                 </mat-error>
             </mat-form-field>
 
-            <mat-form-field jemsFormFieldWidth="xx-large">
+            <mat-form-field jemsFormFieldWidth="xx-large" [matTooltip]="lodLastName.value">
                 <mat-label>Last name</mat-label>
                 <input #lodLastName formControlName="lastName" matInput>
-                <mat-hint [jemsHintFor]="lodLastName" [hide]="documentsLocationForm?.controls?.lastName?.errors !== null">
+                <mat-hint [jemsHintFor]="lodLastName"
+                          [hide]="documentsLocationForm?.controls?.lastName?.errors !== null">
                     <jems-text-hint [currentLength]="lodLastName.value.length" [maxLength]="50"></jems-text-hint>
                 </mat-hint>
                 <mat-error>
@@ -46,10 +48,11 @@
         </div>
 
         <div jemsMultiColumnRow>
-            <mat-form-field jemsFormFieldWidth="xx-large">
+            <mat-form-field jemsFormFieldWidth="xx-large" [matTooltip]="lodEmail.value">
                 <mat-label>E-mail address</mat-label>
                 <input #lodEmail formControlName="emailAddress" matInput>
-                <mat-hint [jemsHintFor]="lodEmail" [hide]="documentsLocationForm?.controls?.emailAddress?.errors !== null">
+                <mat-hint [jemsHintFor]="lodEmail"
+                          [hide]="documentsLocationForm?.controls?.emailAddress?.errors !== null">
                     <jems-text-hint [currentLength]="lodEmail.value.length" [maxLength]="255"></jems-text-hint>
                 </mat-hint>
                 <mat-error>
@@ -62,7 +65,8 @@
             <mat-form-field jemsFormFieldWidth="x-large">
                 <mat-label>Telephone no</mat-label>
                 <input #lodTelephoneNo formControlName="telephoneNo" matInput>
-                <mat-hint [jemsHintFor]="lodTelephoneNo" [hide]="documentsLocationForm?.controls?.telephoneNo?.errors !== null">
+                <mat-hint [jemsHintFor]="lodTelephoneNo"
+                          [hide]="documentsLocationForm?.controls?.telephoneNo?.errors !== null">
                     <jems-text-hint [currentLength]="lodTelephoneNo.value.length" [maxLength]="25"></jems-text-hint>
                 </mat-hint>
                 <mat-error>
@@ -74,11 +78,13 @@
         </div>
 
         <div jemsMultiColumnRow>
-            <mat-form-field jemsFormFieldWidth="xxx-large">
+            <mat-form-field jemsFormFieldWidth="xxx-large" [matTooltip]="lodInstitutionName.value">
                 <mat-label>Institution Name</mat-label>
                 <input #lodInstitutionName formControlName="institutionName" matInput>
-                <mat-hint [jemsHintFor]="lodInstitutionName" [hide]="documentsLocationForm?.controls?.institutionName?.errors !== null">
-                    <jems-text-hint [currentLength]="lodInstitutionName.value.length" [maxLength]="100"></jems-text-hint>
+                <mat-hint [jemsHintFor]="lodInstitutionName"
+                          [hide]="documentsLocationForm?.controls?.institutionName?.errors !== null">
+                    <jems-text-hint [currentLength]="lodInstitutionName.value.length"
+                                    [maxLength]="100"></jems-text-hint>
                 </mat-hint>
                 <mat-error>
                     <jems-form-field-errors
@@ -89,7 +95,7 @@
         </div>
 
         <div jemsMultiColumnRow>
-            <mat-form-field jemsFormFieldWidth="xx-large">
+            <mat-form-field jemsFormFieldWidth="xx-large" [matTooltip]="lodStreet.value">
                 <mat-label>Street</mat-label>
                 <input #lodStreet formControlName="street" matInput>
                 <mat-hint [jemsHintFor]="lodStreet" [hide]="documentsLocationForm?.controls?.street?.errors !== null">
@@ -102,10 +108,11 @@
                 </mat-error>
             </mat-form-field>
 
-            <mat-form-field jemsFormFieldWidth="large">
+            <mat-form-field jemsFormFieldWidth="large" [matTooltip]="lodNumber.value">
                 <mat-label>Number</mat-label>
                 <input #lodNumber formControlName="locationNumber" matInput>
-                <mat-hint [jemsHintFor]="lodNumber" [hide]="documentsLocationForm?.controls?.locationNumber?.errors !== null">
+                <mat-hint [jemsHintFor]="lodNumber"
+                          [hide]="documentsLocationForm?.controls?.locationNumber?.errors !== null">
                     <jems-text-hint [currentLength]="lodNumber.value.length" [maxLength]="20"></jems-text-hint>
                 </mat-hint>
                 <mat-error>
@@ -120,8 +127,9 @@
             <mat-form-field jemsFormFieldWidth="x-large">
                 <mat-label>Postal code</mat-label>
                 <input #lodPostalCode formControlName="postalCode" matInput>
-                <mat-hint [jemsHintFor]="lodPostalCode" [hide]="documentsLocationForm?.controls?.postalCode?.errors !== null">
-                    <jems-text-hint [currentLength]="lodPostalCode.value.length" [maxLength]="50"></jems-text-hint>
+                <mat-hint [jemsHintFor]="lodPostalCode"
+                          [hide]="documentsLocationForm?.controls?.postalCode?.errors !== null">
+                    <jems-text-hint [currentLength]="lodPostalCode.value.length" [maxLength]="20"></jems-text-hint>
                 </mat-hint>
                 <mat-error>
                     <jems-form-field-errors
@@ -132,7 +140,7 @@
         </div>
 
         <div jemsMultiColumnRow>
-            <mat-form-field jemsFormFieldWidth="x-large">
+            <mat-form-field jemsFormFieldWidth="x-large" [matTooltip]="lodCity.value">
                 <mat-label>City</mat-label>
                 <input #lodCity formControlName="city" matInput>
                 <mat-hint [jemsHintFor]="lodCity" [hide]="documentsLocationForm?.controls?.city?.errors !== null">
@@ -147,11 +155,12 @@
         </div>
 
         <div jemsMultiColumnRow>
-            <mat-form-field jemsFormFieldWidth="xx-large">
+            <mat-form-field jemsFormFieldWidth="xx-large" [matTooltip]="lodHomepage.value">
                 <mat-label>Homepage</mat-label>
                 <input #lodHomepage formControlName="homepage" matInput>
-                <mat-hint [jemsHintFor]="lodHomepage" [hide]="documentsLocationForm?.controls?.homepage?.errors !== null">
-                    <jems-text-hint [currentLength]="lodHomepage.value.length" [maxLength]="100"></jems-text-hint>
+                <mat-hint [jemsHintFor]="lodHomepage"
+                          [hide]="documentsLocationForm?.controls?.homepage?.errors !== null">
+                    <jems-text-hint [currentLength]="lodHomepage.value.length" [maxLength]="250"></jems-text-hint>
                 </mat-hint>
                 <mat-error>
                     <jems-form-field-errors

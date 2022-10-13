@@ -8,7 +8,7 @@
         </div>
 
         <div jemsMultiColumnRow stretch gap="10rem">
-            <mat-form-field>
+            <mat-form-field [matTooltip]="accountHolder.value">
                 <mat-label>{{'project.application.contract.partner.section.banking.details.account.holder' | translate}}</mat-label>
                 <input #accountHolder formControlName="accountHolder" matInput
                        [ngModel]="activeBankingDetails?.accountHolder">
@@ -17,8 +17,13 @@
                     <jems-text-hint [currentLength]="accountHolder?.value?.length"
                                     [maxLength]="100"></jems-text-hint>
                 </mat-hint>
+                <mat-error>
+                    <jems-form-field-errors
+                            [errors]="partnerBankingDetailsForm?.controls?.accountHolder?.errors">
+                    </jems-form-field-errors>
+                </mat-error>
             </mat-form-field>
-            <mat-form-field>
+            <mat-form-field [matTooltip]="bankName.value">
                 <mat-label>{{'project.application.contract.partner.section.banking.details.bank.name' | translate}}</mat-label>
                 <input #bankName formControlName="bankName" matInput [ngModel]="activeBankingDetails?.bankName">
                 <mat-hint [jemsHintFor]="bankName"
@@ -26,11 +31,16 @@
                     <jems-text-hint [currentLength]="bankName?.value?.length"
                                     [maxLength]="100"></jems-text-hint>
                 </mat-hint>
+                <mat-error>
+                    <jems-form-field-errors
+                            [errors]="partnerBankingDetailsForm?.controls?.bankName?.errors">
+                    </jems-form-field-errors>
+                </mat-error>
             </mat-form-field>
         </div>
 
         <div jemsMultiColumnRow stretch gap="10rem">
-            <mat-form-field jemsFormFieldWidth="xx-large">
+            <mat-form-field jemsFormFieldWidth="xx-large" [matTooltip]="accountNumber.value">
                 <mat-label>{{'project.application.contract.partner.section.banking.details.account.number' | translate}}</mat-label>
                 <input #accountNumber formControlName="accountNumber" matInput
                        [ngModel]="activeBankingDetails?.accountNumber">
@@ -39,9 +49,15 @@
                     <jems-text-hint [currentLength]="accountNumber?.value?.length"
                                     [maxLength]="50"></jems-text-hint>
                 </mat-hint>
+                <mat-error>
+                    <jems-form-field-errors
+                            [errors]="partnerBankingDetailsForm?.controls?.accountNumber?.errors">
+                    </jems-form-field-errors>
+                </mat-error>
             </mat-form-field>
             <div jemsMultiColumnRow>
-                <mat-form-field jemsFormFieldWidth="large" id="partnerSectionStreetName">
+                <mat-form-field jemsFormFieldWidth="large" id="partnerSectionStreetName"
+                                [matTooltip]="streetName.value">
                     <mat-label>{{'project.application.contract.partner.section.banking.details.street.name' | translate}}</mat-label>
                     <input #streetName formControlName="streetName" matInput
                            [ngModel]="activeBankingDetails?.streetName">
@@ -50,29 +66,45 @@
                         <jems-text-hint [currentLength]="streetName?.value?.length"
                                         [maxLength]="50"></jems-text-hint>
                     </mat-hint>
+                    <mat-error>
+                        <jems-form-field-errors
+                                [errors]="partnerBankingDetailsForm?.controls?.streetName?.errors">
+                        </jems-form-field-errors>
+                    </mat-error>
                 </mat-form-field>
-                <mat-form-field jemsFormFieldWidth="small">
+                <mat-form-field jemsFormFieldWidth="small" [matTooltip]="streetNumber.value">
                     <mat-label>{{'project.application.contract.partner.section.banking.details.street.number' | translate}}</mat-label>
                     <input #streetNumber formControlName="streetNumber" matInput
                            [ngModel]="activeBankingDetails?.streetNumber">
                     <mat-hint [jemsHintFor]="streetNumber"
                               [hide]="partnerBankingDetailsForm.get('streetNumber')?.errors !== null">
                         <jems-text-hint [currentLength]="streetNumber?.value?.length"
-                                        [maxLength]="10"></jems-text-hint>
+                                        [maxLength]="20"></jems-text-hint>
                     </mat-hint>
+                    <mat-error>
+                        <jems-form-field-errors
+                                [errors]="partnerBankingDetailsForm?.controls?.streetNumber?.errors">
+                        </jems-form-field-errors>
+                    </mat-error>
                 </mat-form-field>
             </div>
         </div>
 
 
         <div jemsMultiColumnRow stretch gap="10rem">
-            <mat-form-field>
+            <mat-form-field [matTooltip]="accountIBAN.value">
                 <mat-label>{{'project.application.contract.partner.section.banking.details.account.iban' | translate}}</mat-label>
-                <input #accountIBAN formControlName="accountIBAN" matInput [ngModel]="activeBankingDetails?.accountIBAN">
+                <input #accountIBAN formControlName="accountIBAN" matInput
+                       [ngModel]="activeBankingDetails?.accountIBAN">
                 <mat-hint [jemsHintFor]="accountIBAN"
                           [hide]="partnerBankingDetailsForm.get('accountIBAN')?.errors !== null">
                     <jems-text-hint [currentLength]="accountIBAN?.value?.length"
                                     [maxLength]="50"></jems-text-hint>
+                    <mat-error>
+                        <jems-form-field-errors
+                                [errors]="partnerBankingDetailsForm?.controls?.accountIBAN?.errors">
+                        </jems-form-field-errors>
+                    </mat-error>
                 </mat-hint>
             </mat-form-field>
             <mat-form-field>
@@ -81,12 +113,17 @@
                 <mat-hint [jemsHintFor]="postalCode"
                           [hide]="partnerBankingDetailsForm.get('postalCode')?.errors !== null">
                     <jems-text-hint [currentLength]="postalCode?.value?.length"
-                                    [maxLength]="10"></jems-text-hint>
+                                    [maxLength]="20"></jems-text-hint>
                 </mat-hint>
+                <mat-error>
+                    <jems-form-field-errors
+                            [errors]="partnerBankingDetailsForm?.controls?.postalCode?.errors">
+                    </jems-form-field-errors>
+                </mat-error>
             </mat-form-field>
         </div>
         <div jemsMultiColumnRow stretch gap="10rem">
-            <mat-form-field>
+            <mat-form-field [matTooltip]="accountSwiftBICCode.value">
                 <mat-label>{{'project.application.contract.partner.section.banking.details.account.swift.bic.code' | translate}}</mat-label>
                 <input #accountSwiftBICCode formControlName="accountSwiftBICCode" matInput
                        [ngModel]="activeBankingDetails?.accountSwiftBICCode">
@@ -95,6 +132,11 @@
                     <jems-text-hint [currentLength]="accountSwiftBICCode?.value?.length"
                                     [maxLength]="50"></jems-text-hint>
                 </mat-hint>
+                <mat-error>
+                    <jems-form-field-errors
+                            [errors]="partnerBankingDetailsForm?.controls?.accountSwiftBICCode?.errors">
+                    </jems-form-field-errors>
+                </mat-error>
             </mat-form-field>
             <ng-container *ngIf="data.nuts">
                 <mat-form-field>
