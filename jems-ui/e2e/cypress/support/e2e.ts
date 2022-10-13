@@ -4,6 +4,8 @@ import './call.commands';
 import './application.commands';
 import './programme.commands';
 import './system.commands';
+import './partner-report.commands';
+import './controller.commands';
 
 // update test case execution results in Jira
 Cypress.on('test:after:run', async function(test) {

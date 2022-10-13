@@ -1,20 +1,20 @@
-import {ProjectCreateDTO} from '../../../build/swagger-code-jems-api/model/projectCreateDTO'
-import {InputProjectData} from '../../../build/swagger-code-jems-api/model/inputProjectData'
-import {InputProjectRelevance} from '../../../build/swagger-code-jems-api/model/inputProjectRelevance'
-import {InputWorkPackageCreate} from '../../../build/swagger-code-jems-api/model/inputWorkPackageCreate'
-import {WorkPackageInvestmentDTO} from '../../../build/swagger-code-jems-api/model/workPackageInvestmentDTO'
-import {WorkPackageActivityDTO} from '../../../build/swagger-code-jems-api/model/workPackageActivityDTO'
-import {WorkPackageOutputDTO} from '../../../build/swagger-code-jems-api/model/workPackageOutputDTO'
-import {ProjectResultDTO} from '../../../build/swagger-code-jems-api/model/projectResultDTO'
-import {InputProjectManagement} from '../../../build/swagger-code-jems-api/model/inputProjectManagement'
-import {InputProjectLongTermPlans} from '../../../build/swagger-code-jems-api/model/inputProjectLongTermPlans'
+import {ProjectCreateDTO} from '../../../build/swagger-code-jems-api/model/projectCreateDTO';
+import {InputProjectData} from '../../../build/swagger-code-jems-api/model/inputProjectData';
+import {InputProjectRelevance} from '../../../build/swagger-code-jems-api/model/inputProjectRelevance';
+import {InputWorkPackageCreate} from '../../../build/swagger-code-jems-api/model/inputWorkPackageCreate';
+import {WorkPackageInvestmentDTO} from '../../../build/swagger-code-jems-api/model/workPackageInvestmentDTO';
+import {WorkPackageActivityDTO} from '../../../build/swagger-code-jems-api/model/workPackageActivityDTO';
+import {WorkPackageOutputDTO} from '../../../build/swagger-code-jems-api/model/workPackageOutputDTO';
+import {ProjectResultDTO} from '../../../build/swagger-code-jems-api/model/projectResultDTO';
+import {InputProjectManagement} from '../../../build/swagger-code-jems-api/model/inputProjectManagement';
+import {InputProjectLongTermPlans} from '../../../build/swagger-code-jems-api/model/inputProjectLongTermPlans';
 import {
   ProjectAssessmentEligibilityDTO
-} from '../../../build/swagger-code-jems-api/model/projectAssessmentEligibilityDTO'
-import {ProjectAssessmentQualityDTO} from '../../../build/swagger-code-jems-api/model/projectAssessmentQualityDTO'
-import {ApplicationActionInfoDTO} from '../../../build/swagger-code-jems-api/model/applicationActionInfoDTO'
-import {InputTranslation} from '../../../build/swagger-code-jems-api/model/inputTranslation'
-import {ProjectLumpSumDTO} from '../../../build/swagger-code-jems-api/model/projectLumpSumDTO'
+} from '../../../build/swagger-code-jems-api/model/projectAssessmentEligibilityDTO';
+import {ProjectAssessmentQualityDTO} from '../../../build/swagger-code-jems-api/model/projectAssessmentQualityDTO';
+import {ApplicationActionInfoDTO} from '../../../build/swagger-code-jems-api/model/applicationActionInfoDTO';
+import {InputTranslation} from '../../../build/swagger-code-jems-api/model/inputTranslation';
+import {ProjectLumpSumDTO} from '../../../build/swagger-code-jems-api/model/projectLumpSumDTO';
 import {faker} from '@faker-js/faker';
 import {createPartners} from './partner.commands';
 import {loginByRequest} from './login.commands';
@@ -55,6 +55,8 @@ declare global {
       createSubmittedApplication(application);
 
       createApprovedApplication(application, approvingUserEmail?: string);
+
+      createContractedApplication(application, contractingUserEmail?: string);
 
       updateProjectIdentification(applicationId: number, identification);
 
@@ -99,7 +101,7 @@ declare global {
       setProjectToContracted(applicationId: number, userEmail?: string);
 
       assignPartnerCollaborators(applicationId: number, partnerId: number, users: string[]);
-      
+
       returnToApplicant(applicationId: number, userEmail?: string);
 
       createProjectProposedUnitCost(applicationId: number, unitCost);
@@ -124,6 +126,24 @@ Cypress.Commands.add('createApprovedApplication', (application: Application, app
   createApplication(application.details).then(applicationId => {
     submitApplication(applicationId, application);
     approveApplication(applicationId, application.assessments, approvingUserEmail);
+  });
+});
+
+Cypress.Commands.add('createContractedApplication', (application: Application, contractingUserEmail?: string) => {
+  createApplication(application.details).then(applicationId => {
+    submitApplication(applicationId, application);
+    if (contractingUserEmail)
+      loginByRequest(contractingUserEmail);
+    approveApplication(applicationId, application.assessments);
+    cy.request({
+      method: 'PUT',
+      url: `api/project/${applicationId}/set-to-contracted`
+    });
+    if (contractingUserEmail) {
+      cy.get('@currentUser').then((currentUser: any) => {
+        loginByRequest(currentUser.name);
+      });
+    }
     cy.wrap(applicationId).as('applicationId');
   });
 });
@@ -308,7 +328,7 @@ function createApplication(applicationDetails: ProjectCreateDTO) {
     url: 'api/project',
     body: applicationDetails
   }).then(response => {
-    return response.body.id
+    return response.body.id;
   });
 }
 

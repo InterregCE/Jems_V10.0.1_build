@@ -8,7 +8,7 @@ context('Application contracting tests', () => {
 
   before(() => {
     cy.loginByRequest(user.programmeUser.email);
-    call.preSubmissionCheckSettings.pluginKey = "jems-pre-condition-check-off";
+    call.preSubmissionCheckSettings.pluginKey = 'jems-pre-condition-check-off';
     cy.createCall(call).then(callId => {
       application.details.projectCallId = callId;
       cy.publishCall(callId);

@@ -119,7 +119,7 @@ context('Application modification tests', () => {
   it('TB-358 Deactivate Partner', () => {
     cy.fixture('project/application-form/modifications/TB-358.json').then(testData => {
       cy.loginByRequest(user.programmeUser.email);
-      call2step.preSubmissionCheckSettings.pluginKey = "jems-pre-condition-check-off";
+      call2step.preSubmissionCheckSettings.pluginKey = 'jems-pre-condition-check-off';
       cy.create2StepCall(call2step, user.programmeUser.email).then(callId => {
         cy.publishCall(callId, user.programmeUser.email);
         cy.loginByRequest(user.applicantUser.email);
