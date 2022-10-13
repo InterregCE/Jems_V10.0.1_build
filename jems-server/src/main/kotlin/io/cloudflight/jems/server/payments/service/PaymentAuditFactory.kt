@@ -31,10 +31,10 @@ fun paymentInstallmentCreated(
 ): AuditCandidateEvent =
     AuditCandidateEvent(
         context = context,
-        auditCandidate = AuditBuilder(AuditAction.PAYMENT_INSTALLMENT_SAVED)
+        auditCandidate = AuditBuilder(AuditAction.PAYMENT_INSTALLMENT_AUTHORISED)
             .project(partner.projectId, payment.projectCustomIdentifier, payment.projectAcronym)
             .description("Payment details for payment ${payment.id}, installment $installmentNr" +
-                " of partner ${getPartnerName(partner.partnerRole, partner.partnerNumber)} are saved")
+                " of partner ${getPartnerName(partner.partnerRole, partner.partnerNumber)} are authorised")
             .build()
     )
 
