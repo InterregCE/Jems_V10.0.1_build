@@ -1,23 +1,18 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, of, Subject} from 'rxjs';
-import {
-  PageProjectReportFileDTO,
-  PaymentAttachmentService,
-  ProjectReportFileMetadataDTO,
-  UserRoleDTO
-} from '@cat/api';
+import {PageProjectReportFileDTO, PaymentAttachmentService, ProjectReportFileMetadataDTO, UserRoleDTO} from '@cat/api';
 import {catchError, distinctUntilChanged, map, startWith, switchMap, take, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 import {v4 as uuid} from 'uuid';
 import {FileListItem} from '@common/components/file-list/file-list-item';
 import {RoutingService} from '@common/services/routing.service';
 import {APIError} from '@common/models/APIError';
-import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import {PermissionService} from '../../../../security/permissions/permission.service';
 import {Tables} from '@common/utils/tables';
 import {FileListTableConstants} from '@common/components/file-list/file-list-table/file-list-table-constants';
 import {MatSort} from '@angular/material/sort';
 import {DownloadService} from '@common/services/download.service';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @Injectable({providedIn: 'root'})
 export class PaymentAttachmentsStore {

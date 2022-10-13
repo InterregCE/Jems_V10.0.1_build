@@ -5,16 +5,16 @@ import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
 import {FileListItem} from '@common/components/file-list/file-list-item';
 import {ActivatedRoute} from '@angular/router';
 import {ReportFileManagementStore} from '@project/project-application/report/partner-report-detail-page/partner-report-annexes-tab/report-file-management-store';
-import {PageProjectReportFileDTO, PaymentAttachmentService, ProjectReportFileDTO, UserRoleDTO} from '@cat/api';
+import {PaymentAttachmentService, ProjectReportFileDTO, UserRoleDTO} from '@cat/api';
 import {finalize, map, take, tap} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {FileListComponent} from '@common/components/file-list/file-list.component';
 import {FileDescriptionChange} from '@common/components/file-list/file-list-table/file-description-change';
 import {Alert} from '@common/components/forms/alert';
-import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import {PaymentAttachmentsStore} from './payments-to-project-attachments-store.service';
 import {Tables} from '@common/utils/tables';
 import {PageFileList} from '@common/components/file-list/page-file-list';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @UntilDestroy()
 @Component({
