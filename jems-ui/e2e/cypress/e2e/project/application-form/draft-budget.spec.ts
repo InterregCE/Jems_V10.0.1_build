@@ -4,7 +4,7 @@ import application from "../../../fixtures/api/application/application.json";
 
 context('Draft budget tests', () => {
   it('TB-672 Create project proposed unit costs', () => {
-    cy.fixture('project/application-form/d-project-budget/TB-672.json').then(testData => {
+    cy.fixture('project/application-form/project-budget/TB-672.json').then(testData => {
 
       cy.loginByRequest(user.programmeUser.email);
       call.generalCallSettings.additionalFundAllowed = true;
