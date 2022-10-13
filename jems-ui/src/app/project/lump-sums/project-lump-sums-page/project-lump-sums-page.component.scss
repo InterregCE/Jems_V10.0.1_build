@@ -13,6 +13,9 @@
         background-color: var(--pale-yellow);
       }
     }
+    mat-header-cell mat-icon {
+      font-size: 1em;
+    }
   }
 
   #overlay {
