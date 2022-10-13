@@ -175,7 +175,7 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
                         currentlyReported = ZERO,
                     ),
                 ),
-                lumpSums = listOf(
+                availableLumpSums = listOf(
                     PartnerReportLumpSum(
                         lumpSumId = 85L,
                         period = 0,

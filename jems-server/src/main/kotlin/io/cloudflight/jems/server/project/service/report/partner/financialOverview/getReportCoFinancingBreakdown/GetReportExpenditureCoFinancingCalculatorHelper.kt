@@ -2,7 +2,10 @@ package io.cloudflight.jems.server.project.service.report.partner.financialOverv
 
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO.MainFund
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
 import io.cloudflight.jems.server.project.service.report.model.contribution.ProjectPartnerReportContributionOverview
 import io.cloudflight.jems.server.project.service.report.model.financialOverview.coFinancing.*
 import java.math.BigDecimal
@@ -104,16 +107,53 @@ fun getCurrentFrom(input: ReportExpenditureCoFinancingCalculationInput): ReportE
  */
 fun ProjectPartnerReportContributionOverview.generateCoFinCalculationInputData(
     totalEligibleBudget: BigDecimal,
-    currentExpenditure: BigDecimal,
+    currentValueToSplit: BigDecimal,
     funds: List<ProjectPartnerCoFinancing>,
+): ReportExpenditureCoFinancingCalculationInput = generateCoFinCalculationInputDataGeneric(
+    totalEligibleBudget = totalEligibleBudget,
+    currentValueToSplit = currentValueToSplit,
+    coFinancing = funds,
+    contributionAmounts = mapOf(
+        ProjectPartnerContributionStatus.Public to public.amount,
+        ProjectPartnerContributionStatus.AutomaticPublic to automaticPublic.amount,
+        ProjectPartnerContributionStatus.Private to private.amount,
+    ),
+)
+
+fun generateCoFinCalculationInputData(
+    totalEligibleBudget: BigDecimal,
+    currentValueToSplit: BigDecimal,
+    coFinancing: ProjectPartnerCoFinancingAndContribution,
+): ReportExpenditureCoFinancingCalculationInput = generateCoFinCalculationInputDataGeneric(
+    totalEligibleBudget = totalEligibleBudget,
+    currentValueToSplit = currentValueToSplit,
+    coFinancing = coFinancing.finances,
+    contributionAmounts = mapOf(
+        ProjectPartnerContributionStatus.Public to coFinancing.partnerContributions
+            .filter { it.status == ProjectPartnerContributionStatusDTO.Public }.sumOf { it.amount ?: BigDecimal.ZERO },
+        ProjectPartnerContributionStatus.AutomaticPublic to coFinancing.partnerContributions
+            .filter { it.status == ProjectPartnerContributionStatusDTO.AutomaticPublic }.sumOf { it.amount ?: BigDecimal.ZERO },
+        ProjectPartnerContributionStatus.Private to coFinancing.partnerContributions
+            .filter { it.status == ProjectPartnerContributionStatusDTO.Private }.sumOf { it.amount ?: BigDecimal.ZERO },
+    ),
+)
+
+private fun generateCoFinCalculationInputDataGeneric(
+    totalEligibleBudget: BigDecimal,
+    currentValueToSplit: BigDecimal,
+    coFinancing: List<ProjectPartnerCoFinancing>,
+    contributionAmounts: Map<ProjectPartnerContributionStatus, BigDecimal>,
 ): ReportExpenditureCoFinancingCalculationInput =
     ReportExpenditureCoFinancingCalculationInput(
-        currentTotal = currentExpenditure,
-        fundsPercentages = funds.getMainFunds().associateBy({ it.fund!!.id }, { it.percentage}),
-        partnerContributionPercentage = funds.getPartnerContributionPercentage(),
-        publicPercentage = public.amount.getPercentageOf(totalEligibleBudget),
-        automaticPublicPercentage = automaticPublic.amount.getPercentageOf(totalEligibleBudget),
-        privatePercentage = private.amount.getPercentageOf(totalEligibleBudget),
+        currentTotal = currentValueToSplit,
+        fundsPercentages = coFinancing.getMainFunds().associateBy({ it.fund!!.id }, { it.percentage}),
+        partnerContributionPercentage = coFinancing.getPartnerContributionPercentage(),
+        publicPercentage = contributionAmounts.getOrDefault(ProjectPartnerContributionStatus.Public, BigDecimal.ZERO)
+            .getPercentageOf(totalEligibleBudget),
+        automaticPublicPercentage = contributionAmounts.getOrDefault(ProjectPartnerContributionStatus.AutomaticPublic, BigDecimal.ZERO)
+            .getPercentageOf(totalEligibleBudget),
+        privatePercentage = contributionAmounts.getOrDefault(ProjectPartnerContributionStatus.Private, BigDecimal.ZERO)
+            .getPercentageOf(totalEligibleBudget),
     )
 
 private fun BigDecimal.getPercentageOf(total: BigDecimal) =

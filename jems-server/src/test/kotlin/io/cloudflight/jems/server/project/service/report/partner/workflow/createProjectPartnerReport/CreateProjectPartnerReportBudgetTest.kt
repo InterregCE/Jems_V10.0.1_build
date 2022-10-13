@@ -5,7 +5,6 @@ import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoF
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.payments.PaymentPersistence
-import io.cloudflight.jems.server.payments.service.model.PartnerPaymentSimple
 import io.cloudflight.jems.server.payments.service.model.PaymentPartnerInstallment
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_period.GetPartnerBudgetPerPeriodInteractor
@@ -135,7 +134,32 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
                     amount = BigDecimal.TEN,
                 ),
             ),
-        )
+        ),
+        ProjectLumpSum(
+            orderNr = 2,
+            programmeLumpSumId = 45L,
+            period = 4,
+            lumpSumContributions = listOf(
+                ProjectPartnerLumpSum(
+                    partnerId = partnerId,
+                    amount = BigDecimal.valueOf(13),
+                ),
+            ),
+            fastTrack = true,
+        ),
+        ProjectLumpSum(
+            orderNr = 3,
+            programmeLumpSumId = 46L,
+            period = 4,
+            lumpSumContributions = listOf(
+                ProjectPartnerLumpSum(
+                    partnerId = partnerId,
+                    amount = BigDecimal.valueOf(1033, 2),
+                ),
+            ),
+            fastTrack = true,
+            readyForPayment = true,
+        ),
     )
 
     private fun staffCost(unitCostId: Long): BudgetStaffCostEntry {
@@ -317,21 +341,21 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         equipment = BigDecimal.valueOf(34),
         infrastructure = BigDecimal.valueOf(35),
         other = BigDecimal.valueOf(36),
-        lumpSum = BigDecimal.valueOf(137),
+        lumpSum = BigDecimal.valueOf(4733, 2) /* +10.33 from ready FT lump sum */,
         unitCost = BigDecimal.valueOf(38),
-        sum = BigDecimal.valueOf(139),
+        sum = BigDecimal.valueOf(4933, 2) /* +10.33 from ready FT lump sum */,
     )
 
     private val expectedPreviouslyReportedCoFinancing = PreviouslyReportedCoFinancing(
         fundsSorted = listOf(
             PreviouslyReportedFund(fund.id, percentage = BigDecimal.valueOf(30),
-                total = BigDecimal.valueOf(570, 2), previouslyReported = BigDecimal.valueOf(114),
+                total = BigDecimal.valueOf(570, 2), previouslyReported = BigDecimal.valueOf(1709, 2),
                 previouslyPaid = BigDecimal.valueOf(11)),
             PreviouslyReportedFund(-1L, percentage = BigDecimal.ZERO,
                 total = BigDecimal.ZERO, previouslyReported = BigDecimal.TEN,
                 previouslyPaid = BigDecimal.valueOf(0)),
             PreviouslyReportedFund(null, percentage = BigDecimal.valueOf(70),
-                total = BigDecimal.valueOf(1330, 2), previouslyReported = BigDecimal.valueOf(25),
+                total = BigDecimal.valueOf(1330, 2), previouslyReported = BigDecimal.valueOf(3223, 2),
                 previouslyPaid = BigDecimal.valueOf(0)),
         ),
         totalPartner = BigDecimal.valueOf(1),
@@ -339,11 +363,11 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         totalAutoPublic = BigDecimal.valueOf(1),
         totalPrivate = BigDecimal.valueOf(0),
         totalSum = BigDecimal.valueOf(19),
-        previouslyReportedPartner = BigDecimal.valueOf(9),
-        previouslyReportedPublic = BigDecimal.valueOf(2),
-        previouslyReportedAutoPublic = BigDecimal.valueOf(3),
-        previouslyReportedPrivate = BigDecimal.valueOf(4),
-        previouslyReportedSum = BigDecimal.valueOf(105),
+        previouslyReportedPartner = BigDecimal.valueOf(1623, 2),
+        previouslyReportedPublic = BigDecimal.valueOf(200, 2),
+        previouslyReportedAutoPublic = BigDecimal.valueOf(354, 2),
+        previouslyReportedPrivate = BigDecimal.valueOf(400, 2),
+        previouslyReportedSum = BigDecimal.valueOf(1533, 2),
     )
 
     private val zeros = BudgetCostsCalculationResultFull(
@@ -374,11 +398,6 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         every { installment.isPaymentConfirmed } returns true
         return installment
     }
-
-    private val payment = PartnerPaymentSimple(
-        fundId = fund.id,
-        amountApprovedPerPartner = BigDecimal.valueOf(100),
-    )
 
     @MockK
     lateinit var reportPersistence: ProjectReportPersistence
@@ -415,7 +434,7 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         val result = service.retrieveBudgetDataFor(projectId, partner, version, coFinancing)
 
         assertThat(result.contributions).hasSize(3)
-        assertThat(result.lumpSums).containsExactly(PartnerReportLumpSum(
+        assertThat(result.availableLumpSums).containsExactly(PartnerReportLumpSum(
             lumpSumId = 44L,
             period = 3,
             value = BigDecimal.TEN
@@ -452,15 +471,20 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         val result = service.retrieveBudgetDataFor(projectId, partner, version, coFinancing.copy(finances = emptyList()))
 
         assertThat(result.previouslyReportedCoFinancing)
-            .isEqualTo(expectedPreviouslyReportedCoFinancing.copy(fundsSorted = listOf(
-                PreviouslyReportedFund(
-                    fundId = null,
-                    percentage = BigDecimal.valueOf(100),
-                    total = BigDecimal.ZERO,
-                    previouslyReported = BigDecimal.ZERO,
-                    previouslyPaid = BigDecimal.ZERO,
+            .isEqualTo(
+                expectedPreviouslyReportedCoFinancing.copy(
+                    fundsSorted = listOf(
+                        PreviouslyReportedFund(
+                            fundId = null,
+                            percentage = BigDecimal.valueOf(100),
+                            total = BigDecimal.ZERO,
+                            previouslyReported = BigDecimal.valueOf(0, 2),
+                            previouslyPaid = BigDecimal.ZERO,
+                        ),
+                    ),
+                    previouslyReportedPartner = BigDecimal.valueOf(900, 2) /* should be no change on empty */,
                 )
-            )))
+            )
     }
 
     private fun mockInputsAndGetPartner(projectId: Long, partnerId: Long, version: String, budgetOptions: ProjectPartnerBudgetOptions): ProjectPartnerSummary {
@@ -485,7 +509,6 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         every { projectPartnerBudgetOptionsPersistence.getBudgetOptions(partnerId, version) } returns budgetOptions
         every { getProjectBudget.getBudget(listOf(partner), projectId, version) } returns listOf(partnerBudget(partner))
         every { paymentPersistence.findByPartnerId(partnerId) } returns listOf(paymentInstallment_1(), paymentInstallment_2())
-        every { paymentPersistence.getAllPartnerPaymentsForPartner(partnerId) } returns listOf(payment)
         every { reportExpenditureCostCategoryPersistence.getCostCategoriesCumulative(setOf(408L)) } returns previousExpenditures
         // previouslyReportedCoFinancing
         every { reportExpenditureCoFinancingPersistence.getCoFinancingCumulative(setOf(408L)) } returns previousReportedCoFinancing
