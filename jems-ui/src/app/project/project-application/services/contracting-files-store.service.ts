@@ -164,7 +164,7 @@ export class ContractingFilesStoreService {
             return this.downloadService.download(`/api/project/${projectId}/contracting/file/contract/download/${fileId}`, 'contracting-file');
           case FileTypeEnum.ContractPartner:
           case FileTypeEnum.ContractPartnerDoc:
-            return this.downloadService.download(`/api/project/${projectId}/contracting/file/partner/${partnerIdInRoute}/download/${fileId}`, 'contracting-file');
+            return this.downloadService.download(`/api/project/${projectId}/contracting/file/partnerDocument/${partnerIdInRoute}/download/${fileId}`, 'contracting-file');
           case FileTypeEnum.ContractInternal:
           default:
             return this.downloadService.download(`/api/project/${projectId}/contracting/file/internal/download/${fileId}`, 'contracting-file');
