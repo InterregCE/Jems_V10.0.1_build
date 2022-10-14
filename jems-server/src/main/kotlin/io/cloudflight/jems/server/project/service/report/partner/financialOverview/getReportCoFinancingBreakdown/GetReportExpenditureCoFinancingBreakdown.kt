@@ -37,7 +37,7 @@ class GetReportExpenditureCoFinancingBreakdown(
             val currentValues = getCurrentFrom(
                 contributions.generateCoFinCalculationInputData(
                     totalEligibleBudget = expenditureTotal.totalEligibleBudget,
-                    currentExpenditure = expenditureTotal.currentReport,
+                    currentValueToSplit = expenditureTotal.currentReport,
                     funds = report.identification.coFinancing,
                 )
             )

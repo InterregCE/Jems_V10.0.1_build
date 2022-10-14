@@ -119,7 +119,7 @@ class SubmitProjectPartnerReport(
             currentlyReported = getCurrentFrom(
                 contributions.generateCoFinCalculationInputData(
                     totalEligibleBudget = totalEligibleBudget,
-                    currentExpenditure = currentExpenditure,
+                    currentValueToSplit = currentExpenditure,
                     funds = report.identification.coFinancing,
                 )
             ),

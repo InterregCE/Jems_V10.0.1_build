@@ -70,7 +70,7 @@ class ProjectReportCreatePersistenceProvider(
         persistWorkPlanToReport(report.workPackages, report = reportEntity)
         persistTargetGroupsAndSpendingToReport(report.targetGroups, report = reportEntity)
         persistContributionsToReport(report.budget.contributions, report = reportEntity)
-        persistAvailableLumpSumsToReport(report.budget.lumpSums, report = reportEntity)
+        persistAvailableLumpSumsToReport(report.budget.availableLumpSums, report = reportEntity)
         persistAvailableUnitCostsToReport(report.budget.unitCosts, report = reportEntity)
         persistBudgetPerPeriodToReport(report.budget.budgetPerPeriod, report = reportEntity)
         persistBudgetExpenditureSetupToReport(report.budget.expenditureSetup, report = reportEntity)
