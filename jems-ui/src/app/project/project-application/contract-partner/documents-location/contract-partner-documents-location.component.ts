@@ -71,7 +71,7 @@ export class ContractPartnerDocumentsLocationComponent {
       locationNumber: ['', Validators.maxLength(20)],
       postalCode: ['', Validators.maxLength(20)],
       city: ['', Validators.maxLength(50)],
-      homepage: ['', Validators.maxLength(100)],
+      homepage: ['', Validators.maxLength(250)],
       nuts: this.formBuilder.group({
         country: [''],
         countryCode: [''],

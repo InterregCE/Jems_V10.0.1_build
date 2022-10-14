@@ -1,7 +1,6 @@
 import {UntilDestroy} from '@ngneat/until-destroy';
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
 import {FormService} from '@common/components/section/form/form.service';
-import {MatTableDataSource} from '@angular/material/table';
 import {AbstractControl, FormArray, FormBuilder, Validators} from '@angular/forms';
 import {combineLatest, Observable} from 'rxjs';
 import {
@@ -27,13 +26,13 @@ export class ContractPartnerBeneficialOwnerComponent {
   private readonlyColumns = this.allColumns.filter(col => col !== 'delete');
   displayedColumns: string[] = [];
   readonly MAX_NAME_LENGTH: number = 50;
-  readonly MAX_VAT_LENGTH: number = 30;
+  readonly MAX_VAT_LENGTH: number = 50;
 
   form = this.formBuilder.group({
     beneficialOwners: this.formBuilder.array([]),
   });
 
-  dataSource: MatTableDataSource<AbstractControl> = new MatTableDataSource([]);
+  tableData: AbstractControl[] = [];
 
   data$: Observable<{
     beneficials: ContractingPartnerBeneficialOwnerDTO[];
@@ -66,7 +65,7 @@ export class ContractPartnerBeneficialOwnerComponent {
     beneficials.forEach(b => this.addBeneficialOwner(b));
     this.formService.setEditable(editable);
     this.formService.resetEditable();
-    this.dataSource.data = this.beneficials.controls;
+    this.tableData = [...this.beneficials.controls];
   }
 
   private prepareVisibleColumns(isEditable: boolean) {
@@ -88,7 +87,7 @@ export class ContractPartnerBeneficialOwnerComponent {
     });
 
     this.beneficials.push(item);
-    this.dataSource.data = this.beneficials.controls;
+    this.tableData = [...this.beneficials.controls];
     this.formService.setDirty(true);
   }
 
@@ -104,12 +103,12 @@ export class ContractPartnerBeneficialOwnerComponent {
 
   deleteBeneficialOwner(index: number) {
     this.beneficials.removeAt(index);
-    this.dataSource.data = this.beneficials.controls;
+    this.tableData = [...this.beneficials.controls];
     this.formService.setDirty(true);
   }
 
-  discardChanges(originalData: ContractingPartnerBeneficialOwnerDTO[]) {
-    this.resetForm(originalData);
+  discardChanges(originalData: ContractingPartnerBeneficialOwnerDTO[], editable: boolean) {
+    this.resetForm(originalData, editable);
   }
 
   get beneficials(): FormArray {
