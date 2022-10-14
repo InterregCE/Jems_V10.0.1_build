@@ -23,12 +23,11 @@ class DeleteUnitCost(
         if (isProgrammeSetupLocked.isLocked())
             throw DeleteUnitCostWhenProgrammeSetupRestricted()
 
-        val unitCostsUsedInCall = persistence.getNumberOfOccurrencesInCalls(unitCostId)
-        if(unitCostsUsedInCall > 0){
+        if(persistence.getNumberOfOccurrencesInCalls(unitCostId) > 0){
             throw ToDeleteUnitCostAlreadyUsedInCall()
         }
         val unitCostToBeDeleted = persistence.getUnitCost(unitCostId)
-        persistence.deleteUnitCost(unitCostId).also{
+        persistence.deleteUnitCost(unitCostId).also {
             auditPublisher.publishEvent(unitCostDeleted(this, unitCostToBeDeleted))
         }
     }

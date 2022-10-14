@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.programme.service.fund.update_funds
+package io.cloudflight.jems.server.programme.service.fund.updateFunds
 
 import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.server.common.exception.ApplicationException
@@ -29,12 +29,12 @@ class CreationOfFundUnderPreDefinedTypesIsNotAllowedException : ApplicationUnpro
     i18nMessage = I18nMessage("$UPDATE_FUNDS_ERROR_KEY_PREFIX.creation.of.fund.under.pre.defined.types.is.not.allowed"),
 )
 
-class ToDeleteFundAlreadyUsedInCall : ApplicationUnprocessableException(
+class UpdateFundDeletedFundAlreadyUsedInCallException : ApplicationUnprocessableException(
     code = "$UPDATE_FUNDS_ERROR_CODE_PREFIX-004",
     i18nMessage = I18nMessage("$UPDATE_FUNDS_ERROR_KEY_PREFIX.to.delete.fund.already.used.in.call"),
 )
 
-class ToDeselectFundAlreadyUsedInCall : ApplicationUnprocessableException(
+class UpdateFundDeselectedFundAlreadyUsedInCallException : ApplicationUnprocessableException(
     code = "$UPDATE_FUNDS_ERROR_CODE_PREFIX-005",
     i18nMessage = I18nMessage("$UPDATE_FUNDS_ERROR_KEY_PREFIX.to.deselect.fund.already.used.in.call"),
 )

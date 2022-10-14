@@ -20,15 +20,16 @@ class DeleteLumpSum(
     @Transactional
     @ExceptionWrapper(DeleteLumpSumFailed::class)
     override fun deleteLumpSum(lumpSumId: Long) {
-        if (isProgrammeSetupLocked.isLocked())
+        if (isProgrammeSetupLocked.isLocked()) {
             throw DeleteLumpSumWhenProgrammeSetupRestricted()
+        }
 
         val lumpSumsUsedInCall = persistence.getNumberOfOccurrencesInCalls(lumpSumId)
-        if (lumpSumsUsedInCall > 0){
+        if (lumpSumsUsedInCall > 0) {
             throw ToDeleteLumpSumAlreadyUsedInCall()
         }
         val lumpSumToBeDeleted = persistence.getLumpSum(lumpSumId)
-        persistence.deleteLumpSum(lumpSumId).also{
+        persistence.deleteLumpSum(lumpSumId).also {
             auditPublisher.publishEvent(lumpSumDeleted(this, lumpSumToBeDeleted))
         }
     }

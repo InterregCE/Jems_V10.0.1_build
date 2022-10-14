@@ -25,21 +25,17 @@ class DeletePriority(
 
         val objectivePoliciesToBeRemoved = persistence.getPriorityById(priorityId).getSpecificObjectivePolicies()
         val alreadyUsedObjectivePolicies = persistence.getObjectivePoliciesAlreadyInUse()
-        val alreadyUsedByResultIndicatorPolicies = persistence.getObjectivePoliciesAlreadyUsedByResultIndicator()
-        val alreadyUsedByOutputIndicatorPolicies = persistence.getObjectivePoliciesAlreadyUsedByOutputIndicator()
-
-        if((objectivePoliciesToBeRemoved intersect alreadyUsedObjectivePolicies).isNotEmpty()
-        ) {
+        if((objectivePoliciesToBeRemoved intersect alreadyUsedObjectivePolicies).isNotEmpty()) {
             throw ToDeletePriorityAlreadyUsedInCall()
         }
 
-        if((objectivePoliciesToBeRemoved intersect alreadyUsedByResultIndicatorPolicies).isNotEmpty()
-        ) {
+        val alreadyUsedByResultIndicatorPolicies = persistence.getObjectivePoliciesAlreadyUsedByResultIndicator()
+        if((objectivePoliciesToBeRemoved intersect alreadyUsedByResultIndicatorPolicies).isNotEmpty()) {
             throw ToDeletePriorityAlreadyUsedInResultIndicator()
         }
 
-        if((objectivePoliciesToBeRemoved intersect alreadyUsedByOutputIndicatorPolicies).isNotEmpty()
-        ) {
+        val alreadyUsedByOutputIndicatorPolicies = persistence.getObjectivePoliciesAlreadyUsedByOutputIndicator()
+        if((objectivePoliciesToBeRemoved intersect alreadyUsedByOutputIndicatorPolicies).isNotEmpty()) {
             throw ToDeletePriorityAlreadyUsedInOutputIndicator()
         }
 

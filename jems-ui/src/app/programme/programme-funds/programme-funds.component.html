@@ -53,7 +53,7 @@
                             <div *ngIf="(changeFormState$ | async) === FormState.EDIT">
                                 <button mat-icon-button color="accent"
                                         type="button"
-                                        [disabled]="isProgrammeSetupLocked ? !!fund.get('id').value : false"
+                                        [disabled]="isProgrammeSetupLocked || isPredefinedFund(fund)"
                                         matTooltip="{{'common.delete.entry.tooltip' | translate}}"
                                         (click)="deleteFund(i)">
 

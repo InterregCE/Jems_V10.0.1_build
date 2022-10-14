@@ -36,9 +36,8 @@ class ResultIndicatorController(
         updateResultIndicator.updateResultIndicator(resultIndicatorUpdateRequestDTO.toResultIndicator())
             .toResultIndicatorDetailDTO()
 
-    override fun deleteResultIndicator(id: Long) {
+    override fun deleteResultIndicator(id: Long) =
         deleteResultIndicator.deleteResultIndicator(id)
-    }
 
     override fun getResultIndicatorSummaries(): Set<ResultIndicatorSummaryDTO> =
         listResultIndicators.getResultIndicatorSummaries().toResultIndicatorSummaryDTOSet()

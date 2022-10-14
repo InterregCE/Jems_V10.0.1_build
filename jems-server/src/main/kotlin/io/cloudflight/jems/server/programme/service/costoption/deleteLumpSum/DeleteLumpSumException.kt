@@ -15,7 +15,7 @@ class DeleteLumpSumFailed(cause: Throwable) : ApplicationException(
 )
 
 class DeleteLumpSumWhenProgrammeSetupRestricted : ApplicationAccessDeniedException(
-    code = "${DELETE_LUMP_SUM_ERROR_CODE_PREFIX}_PREFIX-001",
+    code = "$DELETE_LUMP_SUM_ERROR_CODE_PREFIX-001",
     i18nMessage = I18nMessage("$DELETE_LUMP_SUM_ERROR_KEY_PREFIX.programme.setup.restricted"),
 )
 

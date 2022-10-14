@@ -1,9 +1,9 @@
 package io.cloudflight.jems.api.programme
 
-import io.cloudflight.jems.api.programme.dto.indicator.ResultIndicatorUpdateRequestDTO
 import io.cloudflight.jems.api.programme.dto.indicator.ResultIndicatorCreateRequestDTO
-import io.cloudflight.jems.api.programme.dto.indicator.ResultIndicatorSummaryDTO
 import io.cloudflight.jems.api.programme.dto.indicator.ResultIndicatorDetailDTO
+import io.cloudflight.jems.api.programme.dto.indicator.ResultIndicatorSummaryDTO
+import io.cloudflight.jems.api.programme.dto.indicator.ResultIndicatorUpdateRequestDTO
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
@@ -12,7 +12,12 @@ import io.swagger.annotations.ApiOperation
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.http.MediaType
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestBody
 
 @Api("Programme Indicator Result")
 interface ResultIndicatorApi {

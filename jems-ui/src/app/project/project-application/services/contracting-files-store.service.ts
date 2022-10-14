@@ -9,28 +9,22 @@ import {
   SettingsService,
   UserRoleDTO
 } from '@cat/api';
-import {catchError, filter, map, startWith, switchMap, take, tap, withLatestFrom} from 'rxjs/operators';
+import {catchError, map, startWith, switchMap, take, tap, withLatestFrom} from 'rxjs/operators';
 import {MatSort} from '@angular/material/sort';
 import {Tables} from '@common/utils/tables';
 import {CategoryInfo, CategoryNode} from '@project/common/components/category-tree/categoryModels';
 import {APIError} from '@common/models/APIError';
 import {I18nMessage} from '@common/models/I18nMessage';
 import {DownloadService} from '@common/services/download.service';
-import {
-  PartnerReportDetailPageStore
-} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
+import {PartnerReportDetailPageStore} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
 import {FileManagementStore} from '@project/common/components/file-management/file-management-store';
-import {
-  ProjectPartnerStore
-} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
-import {
-  ProjectStore
-} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {ProjectPartnerStore} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
+import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {PermissionService} from '../../../security/permissions/permission.service';
-import FileTypeEnum = ProjectReportFileDTO.TypeEnum;
-import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import {ProjectUtil} from '@project/common/project-util';
 import {RoutingService} from '@common/services/routing.service';
+import FileTypeEnum = ProjectReportFileDTO.TypeEnum;
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @Injectable({
   providedIn: 'root'

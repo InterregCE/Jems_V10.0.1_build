@@ -4,9 +4,9 @@ import {AbstractControl, FormArray, FormBuilder, FormGroup} from '@angular/forms
 import {ProgrammeFundDTO, ProgrammeFundService} from '@cat/api';
 import {FormState} from '@common/components/forms/form-state';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {catchError, map, mergeMap, share, shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
+import {catchError, map, share, startWith, switchMap, tap} from 'rxjs/operators';
 import {TranslateService} from '@ngx-translate/core';
-import {combineLatest, merge, Observable, Subject} from 'rxjs';
+import {combineLatest, Observable, Subject} from 'rxjs';
 import {MatSort} from '@angular/material/sort';
 import {Log} from '@common/utils/log';
 import {HttpErrorResponse} from '@angular/common/http';

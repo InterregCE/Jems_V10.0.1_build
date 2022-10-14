@@ -1,15 +1,15 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {combineLatest, Observable, Subject} from 'rxjs';
 import {MatSort} from '@angular/material/sort';
-import {mergeMap, map, startWith, tap, take} from 'rxjs/operators';
-import {Tables} from '../../../../common/utils/tables';
-import {Log} from '../../../../common/utils/log';
+import {map, mergeMap, startWith, tap} from 'rxjs/operators';
+import {Tables} from '@common/utils/tables';
+import {Log} from '@common/utils/log';
 import {IndicatorsStore} from '../../services/indicators-store.service';
 import {ProgrammeIndicatorOutputService, ProgrammeIndicatorResultService, UserRoleDTO} from '@cat/api';
 import {BaseComponent} from '@common/components/base-component';
 import {ProgrammePageSidenavService} from '../../services/programme-page-sidenav.service';
-import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import {ProgrammeEditableStateStore} from '../../services/programme-editable-state-store.service';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @Component({
   selector: 'jems-programme-indicators-overview-page',

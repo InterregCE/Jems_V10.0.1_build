@@ -43,7 +43,6 @@ class OutputIndicatorController(
         updateOutputIndicator.updateOutputIndicator(outputIndicatorUpdateRequestDTO.toOutputIndicator())
             .toOutputIndicatorDetailDTO()
 
-    override fun deleteOutputIndicator(id: Long) {
+    override fun deleteOutputIndicator(id: Long) =
         deleteOutputIndicator.deleteOutputIndicator(id)
-    }
 }

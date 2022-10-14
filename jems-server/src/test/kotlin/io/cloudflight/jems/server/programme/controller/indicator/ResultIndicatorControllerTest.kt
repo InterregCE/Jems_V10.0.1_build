@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.programme.controller.indicator
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.cloudflight.jems.server.programme.service.indicator.create_result_indicator.CreateResultIndicatorException
 import io.cloudflight.jems.server.programme.service.indicator.create_result_indicator.CreateResultIndicatorInteractor
+import io.cloudflight.jems.server.programme.service.indicator.deleteResultIndicator.DeleteResultIndicatorInteractor
 import io.cloudflight.jems.server.programme.service.indicator.get_result_indicator.GetResultIndicatorException
 import io.cloudflight.jems.server.programme.service.indicator.get_result_indicator.GetResultIndicatorInteractor
 import io.cloudflight.jems.server.programme.service.indicator.list_result_indicators.GetResultIndicatorDetailsException
@@ -14,11 +15,11 @@ import io.cloudflight.jems.server.programme.service.indicator.update_result_indi
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.verify
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
-import java.lang.Exception
 
 internal class ResultIndicatorControllerTest : IndicatorsControllerBaseTest() {
 
@@ -33,6 +34,9 @@ internal class ResultIndicatorControllerTest : IndicatorsControllerBaseTest() {
 
     @MockK
     private lateinit var updateResultIndicator: UpdateResultIndicatorInteractor
+
+    @MockK
+    private lateinit var deleteResultIndicator: DeleteResultIndicatorInteractor
 
     @InjectMockKs
     private lateinit var resultIndicatorController: ResultIndicatorController
@@ -155,5 +159,12 @@ internal class ResultIndicatorControllerTest : IndicatorsControllerBaseTest() {
         Assertions.assertThatExceptionOfType(UpdateResultIndicatorException::class.java).isThrownBy {
             resultIndicatorController.updateResultIndicator(resultIndicatorUpdateRequestDTO)
         }
+    }
+
+    @Test
+    fun `should delete Result Indicator successfully`() {
+        every { deleteResultIndicator.deleteResultIndicator(1L) } returns Unit
+        resultIndicatorController.deleteResultIndicator(1L)
+        verify { deleteResultIndicator.deleteResultIndicator(1L) }
     }
 }

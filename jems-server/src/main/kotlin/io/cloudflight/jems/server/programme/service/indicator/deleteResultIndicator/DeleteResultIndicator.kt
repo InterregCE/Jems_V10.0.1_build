@@ -2,13 +2,12 @@ package io.cloudflight.jems.server.programme.service.indicator.deleteResultIndic
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.programme.authorization.CanUpdateProgrammeSetup
-import org.springframework.context.ApplicationEventPublisher
-import org.springframework.stereotype.Service
 import io.cloudflight.jems.server.programme.service.indicator.ResultIndicatorPersistence
 import io.cloudflight.jems.server.programme.service.indicator.indicatorDeleted
 import io.cloudflight.jems.server.programme.service.info.isSetupLocked.IsProgrammeSetupLockedInteractor
+import org.springframework.context.ApplicationEventPublisher
+import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
-
 
 @Service
 class DeleteResultIndicator(
@@ -19,10 +18,11 @@ class DeleteResultIndicator(
 
     @Transactional
     @CanUpdateProgrammeSetup
-    @ExceptionWrapper(ResultIndicatorDeletionFailed::class)
-    override fun deleteResultIndicator(resultIndicatorId: Long){
-        if (isProgrammeSetupLocked.isLocked())
-            throw ResultIndicatorDeletionWhenProgrammeSetupRestricted()
+    @ExceptionWrapper(DeleteResultIndicatorFailed::class)
+    override fun deleteResultIndicator(resultIndicatorId: Long) {
+        if (isProgrammeSetupLocked.isLocked()) {
+            throw DeleteResultIndicatorProgrammeSetupRestrictedException()
+        }
 
         val resultIndicatorToBeDeleted = persistence.getResultIndicator(resultIndicatorId)
         persistence.deleteResultIndicator(resultIndicatorId).also {
