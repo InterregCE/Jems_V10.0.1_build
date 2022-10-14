@@ -4,10 +4,10 @@
 
         <jems-file-list-table jemsNoWidthLimit
                 [fileList]="data.attachments"
+                [setDescriptionCallback]="setDescriptionCallback"
+                [deleteCallback]="deleteCallback"
                 (onDownload)="downloadFile($event)"
-                (onDelete)="deleteFile($event)"
-                (onDescriptionChange)="updateDescription($event)"
-                [savingInProgressForId]="savingDescriptionId$ | async">
+                (refresh)="procurementStore.filesChanged$.next()">
         </jems-file-list-table>
 
         <div *ngIf="data.isReportEditable">

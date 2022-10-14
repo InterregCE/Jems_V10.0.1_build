@@ -27,6 +27,11 @@ export class FileListComponent {
   @Input()
   fileList: PageFileList;
 
+  @Input()
+  setDescriptionCallback: (data: FileDescriptionChange) => Observable<any>;
+  @Input()
+  deleteCallback: (file: FileListItem) => Observable<void>;
+
   @Output()
   onSortChange = new EventEmitter<Partial<MatSort>>();
 
@@ -40,10 +45,7 @@ export class FileListComponent {
   onDownload = new EventEmitter<FileListItem>();
 
   @Output()
-  onDelete = new EventEmitter<FileListItem>();
-
-  @Output()
-  onDescriptionChange =  new EventEmitter<FileDescriptionChange>();
+  refresh = new EventEmitter<any>();
 
   static doFileUploadWithValidation(
     target: any,

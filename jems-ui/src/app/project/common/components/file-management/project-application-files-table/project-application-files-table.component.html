@@ -2,10 +2,10 @@
 
     <jems-file-list-table
             [fileList]="data.fileList"
+            [setDescriptionCallback]="setDescriptionCallback"
+            [deleteCallback]="deleteCallback"
             (onDownload)="downloadFile($event)"
-            (onDelete)="deleteFile($event)"
-            (onDescriptionChange)="updateDescription($event)"
-            [savingInProgressForId]="savingDescriptionId$ | async">
+            (refresh)="fileManagementStore.filesChanged$.next()">
     </jems-file-list-table>
 
     <jems-paginator (pageIndexChanged)="fileManagementStore.newPageIndex$.next($event)"

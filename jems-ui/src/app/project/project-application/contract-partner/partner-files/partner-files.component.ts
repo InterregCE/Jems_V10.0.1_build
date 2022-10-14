@@ -119,12 +119,13 @@ export class PartnerFilesComponent implements OnInit {
       .subscribe();
   }
 
-  updateDescription(data: FileDescriptionChange) {
-    this.contractingFilesStoreService.setFileDescription(data.id, data.description).pipe(
-      tap(() => this.contractingFilesStoreService.filesChanged$.next()),
-      untilDestroyed(this)
-    ).subscribe();
-  }
+  setDescriptionCallback = (data: FileDescriptionChange): Observable<any> => {
+    return this.contractingFilesStoreService.setFileDescription(data.id, data.description);
+  };
+
+  deleteCallback = (file: FileListItem): Observable<void> => {
+    return this.contractingFilesStoreService.deleteFile(file.id);
+  };
 
   private getFilesToList(): Observable<PageFileList> {
     return this.contractingFilesStoreService.fileList$.pipe(

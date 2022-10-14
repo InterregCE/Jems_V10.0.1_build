@@ -25,12 +25,13 @@
             <div class="file-list">
                 <jems-file-list
                         [fileList]="files$ | async"
+                        [setDescriptionCallback]="setDescriptionCallback"
+                        [deleteCallback]="deleteCallback"
                         (onSortChange)="contractingFilesStoreService.newSort$.next($event)"
                         (onPageIndexChange)="contractingFilesStoreService.newPageIndex$.next($event)"
                         (onPageSizeChange)="contractingFilesStoreService.newPageSize$.next($event)"
                         (onDownload)="downloadFile($event)"
-                        (onDelete)="deleteFile($event)"
-                        (onDescriptionChange)="updateDescription($event)" >
+                        (refresh)="contractingFilesStoreService.filesChanged$.next()" >
                 </jems-file-list>
 
                 <div *ngIf="data.canEdit">

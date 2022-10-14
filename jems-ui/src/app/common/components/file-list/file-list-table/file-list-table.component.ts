@@ -9,17 +9,17 @@ import {
   SimpleChanges,
   ViewChild,
 } from '@angular/core';
-import {MatSort, MatSortable} from '@angular/material/sort';
+import { MatSort, MatSortable } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { Alert } from '@common/components/forms/alert';
-import { Tables } from '@common/utils/tables';
 import { FileListItem } from '@common/components/file-list/file-list-item';
 import { FileDescriptionChange } from '@common/components/file-list/file-list-table/file-description-change';
 import { FormBuilder, Validators } from '@angular/forms';
 import { Forms } from '@common/utils/forms';
 import { MatDialog } from '@angular/material/dialog';
-import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import { filter, take, tap } from 'rxjs/operators';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { filter, finalize, switchMap, take, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable } from "rxjs";
 import { SecurityService } from '../../../../security/security.service';
 
 @UntilDestroy()
@@ -31,7 +31,6 @@ import { SecurityService } from '../../../../security/security.service';
 })
 export class FileListTableComponent implements OnChanges, AfterViewInit {
   Alert = Alert;
-  Tables = Tables;
 
   displayedColumns: string[] = ['name', 'location', 'uploadDate', 'user', 'size', 'description', 'action'];
   dataSource = new MatTableDataSource<FileListItem>();
@@ -43,17 +42,17 @@ export class FileListTableComponent implements OnChanges, AfterViewInit {
   @Input()
   sortingEnabled = false;
 
+  @Input()
+  setDescriptionCallback: (data: FileDescriptionChange) => Observable<any>;
+  @Input()
+  deleteCallback: (file: FileListItem) => Observable<void>;
+
   @Output()
   onSortChange = new EventEmitter<Partial<MatSort>>();
   @Output()
   onDownload = new EventEmitter<FileListItem>();
   @Output()
-  onDelete = new EventEmitter<FileListItem>();
-
-  @Output()
-  onDescriptionChange = new EventEmitter<FileDescriptionChange>();
-  @Input()
-  savingInProgressForId: number | null = null;
+  refresh = new EventEmitter<any>();
 
   descriptionForm = this.formBuilder.group({
     id: [null, Validators.required],
@@ -87,8 +86,16 @@ export class FileListTableComponent implements OnChanges, AfterViewInit {
     this.descriptionForm.reset();
   }
 
+  savingDescriptionId$ = new BehaviorSubject<number | null>(null);
   saveDescription() {
-    this.onDescriptionChange.emit(this.descriptionForm.value);
+    this.savingDescriptionId$.next(this.descriptionForm.value.id);
+    this.setDescriptionCallback(this.descriptionForm.value)
+      .pipe(
+        take(1),
+        finalize(() => this.savingDescriptionId$.next(null)),
+        tap(() => this.descriptionForm.reset()),
+        tap(() => this.refresh.emit()),
+      ).subscribe();
   }
 
   editDescription(file: FileListItem) {
@@ -107,7 +114,19 @@ export class FileListTableComponent implements OnChanges, AfterViewInit {
       .pipe(
         take(1),
         filter(answer => !!answer),
-      ).subscribe(() => this.onDelete.emit(file));
+        tap(() => this.performDeletion(file)),
+      ).subscribe();
+  }
+
+  deletingId$ = new BehaviorSubject<number | null>(null);
+  private performDeletion(file: FileListItem) {
+    this.deletingId$.next(file.id);
+    this.deleteCallback(file)
+      .pipe(
+        take(1),
+        finalize(() => this.deletingId$.next(null)),
+        tap(() => this.refresh.emit()),
+      ).subscribe();
   }
 
 }

@@ -23,12 +23,13 @@
     <div class="file-list">
         <jems-file-list
                 [fileList]="files$ | async"
+                [setDescriptionCallback]="setDescriptionCallback"
+                [deleteCallback]="deleteCallback"
                 (onSortChange)="store.newSort$.next($event)"
                 (onPageIndexChange)="store.newPageIndex$.next($event)"
                 (onPageSizeChange)="store.newPageSize$.next($event)"
                 (onDownload)="downloadFile($event)"
-                (onDelete)="deleteFile($event)"
-                (onDescriptionChange)="updateDescription($event)" >
+                (refresh)="store.filesChanged$.next()">
         </jems-file-list>
 
         <div *ngIf="store.canUpload$ | async">

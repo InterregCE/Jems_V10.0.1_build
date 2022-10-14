@@ -3,11 +3,11 @@
     <jems-file-list-table
             [fileList]="data.fileList"
             sortingEnabled="true"
+            [setDescriptionCallback]="setDescriptionCallback"
+            [deleteCallback]="deleteCallback"
             (onSortChange)="fileManagementStore.newSort$.next($event)"
             (onDownload)="downloadFile($event)"
-            (onDelete)="deleteFile($event)"
-            (onDescriptionChange)="updateDescription($event)"
-            [savingInProgressForId]="savingDescriptionId$ | async">
+            (refresh)="fileManagementStore.reportFilesChanged$.next()">
     </jems-file-list-table>
 
     <jems-paginator (pageIndexChanged)="fileManagementStore.newPageIndex$.next($event)"

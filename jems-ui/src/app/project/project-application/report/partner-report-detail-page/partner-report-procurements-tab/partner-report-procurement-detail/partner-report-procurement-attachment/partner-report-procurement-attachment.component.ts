@@ -102,10 +102,6 @@ export class PartnerReportProcurementAttachmentComponent implements OnChanges {
       .subscribe();
   }
 
-  deleteFile(file: FileListItem): void {
-    this.procurementStore.deleteProcurementFile(file).pipe(take(1)).subscribe();
-  }
-
   savingDescriptionId$ = new BehaviorSubject<number | null>(null);
   updateDescription(data: FileDescriptionChange) {
     return combineLatest([
@@ -121,5 +117,27 @@ export class PartnerReportProcurementAttachmentComponent implements OnChanges {
       finalize(() => this.savingDescriptionId$.next(null)),
     ).subscribe();
   }
+
+  setDescriptionCallback = (data: FileDescriptionChange): Observable<any> => {
+    return combineLatest([
+      this.procurementStore.partnerId$.pipe(map(id => Number(id))),
+      this.procurementStore.reportId$.pipe(map(id => Number(id))),
+    ]).pipe(
+      switchMap(([partnerId, reportId]) =>
+        this.projectPartnerReportService.updateReportFileDescription(data.id, partnerId, reportId, data.description)
+      ),
+    );
+  };
+
+  deleteCallback = (file: FileListItem): Observable<void> => {
+    return combineLatest([
+      this.procurementStore.partnerId$.pipe(map(id => Number(id))),
+      this.procurementStore.reportId$.pipe(map(id => Number(id))),
+    ]).pipe(
+      switchMap(([partnerId, reportId]) =>
+        this.projectPartnerReportService.deleteReportFile(file.id, partnerId, reportId)
+      ),
+    );
+  };
 
 }

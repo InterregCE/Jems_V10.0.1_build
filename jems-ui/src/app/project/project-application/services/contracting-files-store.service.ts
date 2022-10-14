@@ -143,7 +143,6 @@ export class ContractingFilesStoreService {
             return this.contractingFileService.deleteInternalFile(fileId, projectId);
         }
       }),
-      tap(() => this.filesChanged$.next()),
       tap(() => this.deleteSuccess$.next(true)),
       tap(() => setTimeout(() => this.deleteSuccess$.next(false), 3000)),
       catchError(error => {

@@ -110,24 +110,26 @@ export class PartnerControlReportDocumentTabComponent {
       .subscribe();
   }
 
-  deleteFile(file: FileListItem): void {
-    this.controlReportFileStore.deleteFile(file).pipe(take(1)).subscribe();
-  }
-
-  savingDescriptionId$ = new BehaviorSubject<number | null>(null);
-  updateDescription(data: FileDescriptionChange) {
-    combineLatest([
+  setDescriptionCallback = (data: FileDescriptionChange): Observable<any> => {
+    return combineLatest([
       this.controlReportFileStore.partnerId$,
       this.controlReportFileStore.reportId$,
     ]).pipe(
-      take(1),
-      tap(() => this.savingDescriptionId$.next(data.id)),
       switchMap(([partnerId, reportId]) =>
         this.projectPartnerReportService.updateControlReportFileDescription(data.id, partnerId, reportId, data.description)
       ),
-      tap(() => this.controlReportFileStore.filesChanged$.next()),
-      finalize(() => this.savingDescriptionId$.next(null)),
-    ).subscribe();
-  }
+    );
+  };
+
+  deleteCallback = (file: FileListItem): Observable<void> => {
+    return combineLatest([
+      this.controlReportFileStore.partnerId$,
+      this.controlReportFileStore.reportId$,
+    ]).pipe(
+      switchMap(([partnerId, reportId]) =>
+        this.projectPartnerReportService.deleteControlReportFile(file.id, partnerId, reportId)
+      ),
+    );
+  };
 
 }
