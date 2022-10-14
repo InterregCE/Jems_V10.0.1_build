@@ -3,195 +3,180 @@
            (discard)="resetForm(activeBankingDetails, data.canEdit)">
     <form *ngIf="data.canView" jemsFormLayout [formGroup]="partnerBankingDetailsForm">
 
-        <div jemsMultiColumnRow>
-            <h3>{{getPartnerTranslationString(data.partnerSummary) | async | translate}}</h3>
-        </div>
+        <h3>{{getPartnerTranslationString(data.partnerSummary) | async | translate}}</h3>
 
-        <div jemsMultiColumnRow stretch gap="10rem">
-            <mat-form-field [matTooltip]="accountHolder.value">
-                <mat-label>{{'project.application.contract.partner.section.banking.details.account.holder' | translate}}</mat-label>
-                <input #accountHolder formControlName="accountHolder" matInput
-                       [ngModel]="activeBankingDetails?.accountHolder">
-                <mat-hint [jemsHintFor]="accountHolder"
-                          [hide]="partnerBankingDetailsForm.get('accountHolder')?.errors !== null">
-                    <jems-text-hint [currentLength]="accountHolder?.value?.length"
-                                    [maxLength]="100"></jems-text-hint>
-                </mat-hint>
+        <h4>{{'project.application.contract.partner.section.banking.details.partner.subtitle.holder' | translate}}</h4>
+        <mat-form-field [matTooltip]="accountHolder.value">
+            <mat-label>{{'project.application.contract.partner.section.banking.details.account.holder' | translate}}</mat-label>
+            <input #accountHolder formControlName="accountHolder" matInput
+                   [ngModel]="activeBankingDetails?.accountHolder">
+            <mat-hint [jemsHintFor]="accountHolder"
+                      [hide]="partnerBankingDetailsForm.get('accountHolder')?.errors !== null">
+                <jems-text-hint [currentLength]="accountHolder?.value?.length"
+                                [maxLength]="100"></jems-text-hint>
+            </mat-hint>
+            <mat-error>
+                <jems-form-field-errors
+                        [errors]="partnerBankingDetailsForm?.controls?.accountHolder?.errors">
+                </jems-form-field-errors>
+            </mat-error>
+        </mat-form-field>
+        <mat-form-field [matTooltip]="accountNumber.value">
+            <mat-label>{{'project.application.contract.partner.section.banking.details.account.number' | translate}}</mat-label>
+            <input #accountNumber formControlName="accountNumber" matInput
+                   [ngModel]="activeBankingDetails?.accountNumber">
+            <mat-hint [jemsHintFor]="accountNumber"
+                      [hide]="partnerBankingDetailsForm.get('accountNumber')?.errors !== null">
+                <jems-text-hint [currentLength]="accountNumber?.value?.length"
+                                [maxLength]="50">
+                </jems-text-hint>
+            </mat-hint>
+            <mat-error>
+                <jems-form-field-errors
+                        [errors]="partnerBankingDetailsForm?.controls?.accountNumber?.errors">
+                </jems-form-field-errors>
+            </mat-error>
+        </mat-form-field>
+        <mat-form-field [matTooltip]="accountIBAN.value">
+            <mat-label>{{'project.application.contract.partner.section.banking.details.account.iban' | translate}}</mat-label>
+            <input #accountIBAN formControlName="accountIBAN" matInput
+                   [ngModel]="activeBankingDetails?.accountIBAN">
+            <mat-hint [jemsHintFor]="accountIBAN"
+                      [hide]="partnerBankingDetailsForm.get('accountIBAN')?.errors !== null">
+                <jems-text-hint [currentLength]="accountIBAN?.value?.length"
+                                [maxLength]="50"></jems-text-hint>
                 <mat-error>
                     <jems-form-field-errors
-                            [errors]="partnerBankingDetailsForm?.controls?.accountHolder?.errors">
+                            [errors]="partnerBankingDetailsForm?.controls?.accountIBAN?.errors">
                     </jems-form-field-errors>
                 </mat-error>
-            </mat-form-field>
-            <mat-form-field [matTooltip]="bankName.value">
-                <mat-label>{{'project.application.contract.partner.section.banking.details.bank.name' | translate}}</mat-label>
-                <input #bankName formControlName="bankName" matInput [ngModel]="activeBankingDetails?.bankName">
-                <mat-hint [jemsHintFor]="bankName"
-                          [hide]="partnerBankingDetailsForm.get('bankName')?.errors !== null">
-                    <jems-text-hint [currentLength]="bankName?.value?.length"
-                                    [maxLength]="100"></jems-text-hint>
-                </mat-hint>
-                <mat-error>
-                    <jems-form-field-errors
-                            [errors]="partnerBankingDetailsForm?.controls?.bankName?.errors">
-                    </jems-form-field-errors>
-                </mat-error>
-            </mat-form-field>
-        </div>
+            </mat-hint>
+        </mat-form-field>
+        <mat-form-field [matTooltip]="accountSwiftBICCode.value">
+            <mat-label>{{'project.application.contract.partner.section.banking.details.account.swift.bic.code' | translate}}</mat-label>
+            <input #accountSwiftBICCode formControlName="accountSwiftBICCode" matInput
+                   [ngModel]="activeBankingDetails?.accountSwiftBICCode">
+            <mat-hint [jemsHintFor]="accountSwiftBICCode"
+                      [hide]="partnerBankingDetailsForm.get('accountSwiftBICCode')?.errors !== null">
+                <jems-text-hint [currentLength]="accountSwiftBICCode?.value?.length"
+                                [maxLength]="50"></jems-text-hint>
+            </mat-hint>
+            <mat-error>
+                <jems-form-field-errors
+                        [errors]="partnerBankingDetailsForm?.controls?.accountSwiftBICCode?.errors">
+                </jems-form-field-errors>
+            </mat-error>
+        </mat-form-field>
 
-        <div jemsMultiColumnRow stretch gap="10rem">
-            <mat-form-field jemsFormFieldWidth="xx-large" [matTooltip]="accountNumber.value">
-                <mat-label>{{'project.application.contract.partner.section.banking.details.account.number' | translate}}</mat-label>
-                <input #accountNumber formControlName="accountNumber" matInput
-                       [ngModel]="activeBankingDetails?.accountNumber">
-                <mat-hint [jemsHintFor]="accountNumber"
-                          [hide]="partnerBankingDetailsForm.get('accountNumber')?.errors !== null">
-                    <jems-text-hint [currentLength]="accountNumber?.value?.length"
-                                    [maxLength]="50"></jems-text-hint>
-                </mat-hint>
-                <mat-error>
-                    <jems-form-field-errors
-                            [errors]="partnerBankingDetailsForm?.controls?.accountNumber?.errors">
-                    </jems-form-field-errors>
-                </mat-error>
-            </mat-form-field>
-            <div jemsMultiColumnRow>
-                <mat-form-field jemsFormFieldWidth="large" id="partnerSectionStreetName"
-                                [matTooltip]="streetName.value">
-                    <mat-label>{{'project.application.contract.partner.section.banking.details.street.name' | translate}}</mat-label>
-                    <input #streetName formControlName="streetName" matInput
-                           [ngModel]="activeBankingDetails?.streetName">
-                    <mat-hint [jemsHintFor]="streetName"
-                              [hide]="partnerBankingDetailsForm.get('streetName')?.errors !== null">
-                        <jems-text-hint [currentLength]="streetName?.value?.length"
-                                        [maxLength]="50"></jems-text-hint>
-                    </mat-hint>
-                    <mat-error>
-                        <jems-form-field-errors
-                                [errors]="partnerBankingDetailsForm?.controls?.streetName?.errors">
-                        </jems-form-field-errors>
-                    </mat-error>
-                </mat-form-field>
-                <mat-form-field jemsFormFieldWidth="small" [matTooltip]="streetNumber.value">
-                    <mat-label>{{'project.application.contract.partner.section.banking.details.street.number' | translate}}</mat-label>
-                    <input #streetNumber formControlName="streetNumber" matInput
-                           [ngModel]="activeBankingDetails?.streetNumber">
-                    <mat-hint [jemsHintFor]="streetNumber"
-                              [hide]="partnerBankingDetailsForm.get('streetNumber')?.errors !== null">
-                        <jems-text-hint [currentLength]="streetNumber?.value?.length"
-                                        [maxLength]="20"></jems-text-hint>
-                    </mat-hint>
-                    <mat-error>
-                        <jems-form-field-errors
-                                [errors]="partnerBankingDetailsForm?.controls?.streetNumber?.errors">
-                        </jems-form-field-errors>
-                    </mat-error>
-                </mat-form-field>
-            </div>
-        </div>
+        <h4>{{'project.application.contract.partner.section.banking.details.partner.subtitle.bank' | translate}}</h4>
+        <mat-form-field [matTooltip]="bankName.value">
+            <mat-label>{{'project.application.contract.partner.section.banking.details.bank.name' | translate}}</mat-label>
+            <input #bankName formControlName="bankName" matInput [ngModel]="activeBankingDetails?.bankName">
+            <mat-hint [jemsHintFor]="bankName"
+                      [hide]="partnerBankingDetailsForm.get('bankName')?.errors !== null">
+                <jems-text-hint [currentLength]="bankName?.value?.length"
+                                [maxLength]="100"></jems-text-hint>
+            </mat-hint>
+            <mat-error>
+                <jems-form-field-errors
+                        [errors]="partnerBankingDetailsForm?.controls?.bankName?.errors">
+                </jems-form-field-errors>
+            </mat-error>
+        </mat-form-field>
+        <mat-form-field id="partnerSectionStreetName"
+                        [matTooltip]="streetName.value">
+            <mat-label>{{'project.application.contract.partner.section.banking.details.street.name' | translate}}</mat-label>
+            <input #streetName formControlName="streetName" matInput
+                   [ngModel]="activeBankingDetails?.streetName">
+            <mat-hint [jemsHintFor]="streetName"
+                      [hide]="partnerBankingDetailsForm.get('streetName')?.errors !== null">
+                <jems-text-hint [currentLength]="streetName?.value?.length"
+                                [maxLength]="50"></jems-text-hint>
+            </mat-hint>
+            <mat-error>
+                <jems-form-field-errors
+                        [errors]="partnerBankingDetailsForm?.controls?.streetName?.errors">
+                </jems-form-field-errors>
+            </mat-error>
+        </mat-form-field>
+        <mat-form-field jemsFormFieldWidth="xxx-large" [matTooltip]="streetNumber.value">
+            <mat-label>{{'project.application.contract.partner.section.banking.details.housenumber' | translate}}</mat-label>
+            <input #streetNumber formControlName="streetNumber" matInput
+                   [ngModel]="activeBankingDetails?.streetNumber">
+            <mat-hint [jemsHintFor]="streetNumber"
+                      [hide]="partnerBankingDetailsForm.get('streetNumber')?.errors !== null">
+                <jems-text-hint [currentLength]="streetNumber?.value?.length"
+                                [maxLength]="20"></jems-text-hint>
+            </mat-hint>
+            <mat-error>
+                <jems-form-field-errors
+                        [errors]="partnerBankingDetailsForm?.controls?.streetNumber?.errors">
+                </jems-form-field-errors>
+            </mat-error>
+        </mat-form-field>
+        <mat-form-field jemsFormFieldWidth="xxx-large">
+            <mat-label>{{'project.application.contract.partner.section.banking.details.postalcode' | translate}}</mat-label>
+            <input #postalCode formControlName="postalCode" matInput [ngModel]="activeBankingDetails?.postalCode">
+            <mat-hint [jemsHintFor]="postalCode"
+                      [hide]="partnerBankingDetailsForm.get('postalCode')?.errors !== null">
+                <jems-text-hint [currentLength]="postalCode?.value?.length"
+                                [maxLength]="20"></jems-text-hint>
+            </mat-hint>
+            <mat-error>
+                <jems-form-field-errors
+                        [errors]="partnerBankingDetailsForm?.controls?.postalCode?.errors">
+                </jems-form-field-errors>
+            </mat-error>
+        </mat-form-field>
 
-
-        <div jemsMultiColumnRow stretch gap="10rem">
-            <mat-form-field [matTooltip]="accountIBAN.value">
-                <mat-label>{{'project.application.contract.partner.section.banking.details.account.iban' | translate}}</mat-label>
-                <input #accountIBAN formControlName="accountIBAN" matInput
-                       [ngModel]="activeBankingDetails?.accountIBAN">
-                <mat-hint [jemsHintFor]="accountIBAN"
-                          [hide]="partnerBankingDetailsForm.get('accountIBAN')?.errors !== null">
-                    <jems-text-hint [currentLength]="accountIBAN?.value?.length"
-                                    [maxLength]="50"></jems-text-hint>
-                    <mat-error>
-                        <jems-form-field-errors
-                                [errors]="partnerBankingDetailsForm?.controls?.accountIBAN?.errors">
-                        </jems-form-field-errors>
-                    </mat-error>
-                </mat-hint>
-            </mat-form-field>
+        <ng-container *ngIf="nuts">
             <mat-form-field>
-                <mat-label>{{'project.application.contract.partner.section.banking.details.postal.code' | translate}}</mat-label>
-                <input #postalCode formControlName="postalCode" matInput [ngModel]="activeBankingDetails?.postalCode">
-                <mat-hint [jemsHintFor]="postalCode"
-                          [hide]="partnerBankingDetailsForm.get('postalCode')?.errors !== null">
-                    <jems-text-hint [currentLength]="postalCode?.value?.length"
-                                    [maxLength]="20"></jems-text-hint>
-                </mat-hint>
-                <mat-error>
-                    <jems-form-field-errors
-                            [errors]="partnerBankingDetailsForm?.controls?.postalCode?.errors">
-                    </jems-form-field-errors>
-                </mat-error>
+                <mat-label>{{'project.application.contract.partner.section.banking.details.country' | translate}}</mat-label>
+                <input name="country" formControlName="country" matInput [ngModel]="activeBankingDetails?.country"
+                       [matAutocomplete]="country"
+                       (focusin)="initializeFilters()"
+                       (focusout)="countryUnfocused($event)">
+                <mat-autocomplete #country="matAutocomplete"
+                                  (optionSelected)="countryChanged($event.option?.value)">
+                    <mat-option *ngFor="let region of filteredCountry | async" [value]="region"
+                                class="nuts-text-size">
+                        {{region}}
+                    </mat-option>
+                </mat-autocomplete>
             </mat-form-field>
-        </div>
-        <div jemsMultiColumnRow stretch gap="10rem">
-            <mat-form-field [matTooltip]="accountSwiftBICCode.value">
-                <mat-label>{{'project.application.contract.partner.section.banking.details.account.swift.bic.code' | translate}}</mat-label>
-                <input #accountSwiftBICCode formControlName="accountSwiftBICCode" matInput
-                       [ngModel]="activeBankingDetails?.accountSwiftBICCode">
-                <mat-hint [jemsHintFor]="accountSwiftBICCode"
-                          [hide]="partnerBankingDetailsForm.get('accountSwiftBICCode')?.errors !== null">
-                    <jems-text-hint [currentLength]="accountSwiftBICCode?.value?.length"
-                                    [maxLength]="50"></jems-text-hint>
-                </mat-hint>
-                <mat-error>
-                    <jems-form-field-errors
-                            [errors]="partnerBankingDetailsForm?.controls?.accountSwiftBICCode?.errors">
-                    </jems-form-field-errors>
-                </mat-error>
+        </ng-container>
+        <ng-container *ngIf="partnerBankingDetailsForm.controls.country?.value">
+            <mat-form-field>
+                <mat-label>{{'project.application.contract.partner.section.banking.details.region2' | translate}}</mat-label>
+                <input name="nutsTwoRegion" formControlName="nutsTwoRegion" matInput
+                       [ngModel]="activeBankingDetails?.nutsTwoRegion"
+                       [matAutocomplete]="nutsTwoRegion"
+                       (focusout)="region2Unfocused($event)">
+                <mat-autocomplete #nutsTwoRegion="matAutocomplete"
+                                  (optionSelected)="region2Changed($event.option?.value)">
+                    <mat-option *ngFor="let region of filteredRegion2 | async" [value]="region"
+                                class="nuts-text-size">
+                        {{region}}
+                    </mat-option>
+                </mat-autocomplete>
             </mat-form-field>
-            <ng-container *ngIf="data.nuts">
-                <mat-form-field>
-                    <mat-label>{{'project.application.contract.partner.section.banking.details.country' | translate}}</mat-label>
-                    <input name="country" formControlName="country" matInput [ngModel]="activeBankingDetails?.country"
-                           [matAutocomplete]="country"
-                           (focusin)="initializeFilters()"
-                           (focusout)="countryUnfocused($event)">
-                    <mat-autocomplete #country="matAutocomplete"
-                                      (optionSelected)="countryChanged($event.option?.value)">
-                        <mat-option *ngFor="let region of filteredCountry | async" [value]="region"
-                                    class="nuts-text-size">
-                            {{region}}
-                        </mat-option>
-                    </mat-autocomplete>
-                </mat-form-field>
-            </ng-container>
-        </div>
+        </ng-container>
+        <ng-container *ngIf="partnerBankingDetailsForm.controls.nutsTwoRegion?.value">
+            <mat-form-field>
+                <mat-label>{{'project.application.contract.partner.section.banking.details.region3' | translate}}</mat-label>
+                <input name="nutsThreeRegion" formControlName="nutsThreeRegion" matInput
+                       [ngModel]="activeBankingDetails?.nutsThreeRegion"
+                       [matAutocomplete]="nutsThreeRegion"
+                       (focusout)="region3Unfocused($event)">
+                <mat-autocomplete #nutsThreeRegion="matAutocomplete"
+                                  (optionSelected)="region3Changed($event.option?.value)">
+                    <mat-option *ngFor="let region of filteredRegion3 | async" [value]="region"
+                                class="nuts-text-size">
+                        {{region}}
+                    </mat-option>
+                </mat-autocomplete>
+            </mat-form-field>
+        </ng-container>
 
-        <div jemsMultiColumnRow class="justify-end">
-            <ng-container *ngIf="partnerBankingDetailsForm.controls.country?.value">
-                <mat-form-field jemsFormFieldWidth="xx-large">
-                    <mat-label>{{'project.application.contract.partner.section.banking.details.nuts.two.region' | translate}}</mat-label>
-                    <input name="nutsTwoRegion" formControlName="nutsTwoRegion" matInput
-                           [ngModel]="activeBankingDetails?.nutsTwoRegion"
-                           [matAutocomplete]="nutsTwoRegion"
-                           (focusout)="region2Unfocused($event)">
-                    <mat-autocomplete #nutsTwoRegion="matAutocomplete"
-                                      (optionSelected)="region2Changed($event.option?.value)">
-                        <mat-option *ngFor="let region of filteredRegion2 | async" [value]="region"
-                                    class="nuts-text-size">
-                            {{region}}
-                        </mat-option>
-                    </mat-autocomplete>
-                </mat-form-field>
-            </ng-container>
-        </div>
-
-        <div jemsMultiColumnRow class="justify-end">
-            <ng-container *ngIf="partnerBankingDetailsForm.controls.nutsTwoRegion?.value">
-                <mat-form-field jemsFormFieldWidth="xx-large">
-                    <mat-label>{{'project.application.contract.partner.section.banking.details.nuts.three.region' | translate}}</mat-label>
-                    <input name="nutsThreeRegion" formControlName="nutsThreeRegion" matInput
-                           [ngModel]="activeBankingDetails?.nutsThreeRegion"
-                           [matAutocomplete]="nutsThreeRegion"
-                           (focusout)="region3Unfocused($event)">
-                    <mat-autocomplete #nutsThreeRegion="matAutocomplete"
-                                      (optionSelected)="region3Changed($event.option?.value)">
-                        <mat-option *ngFor="let region of filteredRegion3 | async" [value]="region"
-                                    class="nuts-text-size">
-                            {{region}}
-                        </mat-option>
-                    </mat-autocomplete>
-                </mat-form-field>
-            </ng-container>
-        </div>
     </form>
 </jems-form>
