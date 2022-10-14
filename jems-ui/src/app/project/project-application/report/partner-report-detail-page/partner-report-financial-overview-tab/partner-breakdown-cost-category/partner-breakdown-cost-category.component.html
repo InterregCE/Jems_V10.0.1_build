@@ -27,6 +27,7 @@
     <ng-container matColumnDef="previouslyReported">
         <mat-header-cell *matHeaderCellDef class="text-right">
             <span jemsText maxLines="2">{{ 'project.application.partner.report.financial.previously.reported' | translate }}</span>
+            <jems-context-info infoPosition="right" infoText="{{ 'project.application.partner.report.financial.previously.reported.tooltip' | translate}}"></jems-context-info>
         </mat-header-cell>
         <mat-cell *matCellDef="let line" class="text-right">{{ line.previouslyReported | asMoney }}</mat-cell>
         <mat-footer-cell *matFooterCellDef class="text-right">{{ breakdown.total.previouslyReported | asMoney }}</mat-footer-cell>
