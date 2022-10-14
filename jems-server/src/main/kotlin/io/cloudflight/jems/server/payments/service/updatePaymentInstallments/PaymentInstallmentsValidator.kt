@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.payments.service.updatePaymentInstallments
 
+import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.payments.service.model.PaymentPartnerInstallment
@@ -16,12 +17,37 @@ class PaymentInstallmentsValidator(private val validator: GeneralValidatorServic
         const val PAYMENT_PARTNER_INSTALLMENT_MAX_ERROR_KEY = "payment.partner.installment.save.not.possible"
     }
 
-    fun validateInstallmentValues(installments: Collection<PaymentPartnerInstallmentUpdate>) {
+    fun validateInstallments(
+        installments: Collection<PaymentPartnerInstallmentUpdate>,
+        savedInstallments: Collection<PaymentPartnerInstallment>,
+        deleteInstallments: Collection<PaymentPartnerInstallment>
+    ) {
+        validateInstallmentDeletion(deleteInstallments)
+        validateMaxInstallments(installments)
+        validateCheckboxStates(installments)
+        validator.throwIfAnyIsInvalid(
+            *validateInstallmentValues(installments, savedInstallments).toTypedArray()
+        )
+    }
+
+    fun validateInstallmentValues(
+        installments: Collection<PaymentPartnerInstallmentUpdate>,
+        savedInstallments: Collection<PaymentPartnerInstallment>
+    ): List<Map<String, I18nMessage>> {
+        val feedback = mutableListOf<Map<String, I18nMessage>>()
         installments.forEach { installment ->
-            validator.throwIfAnyIsInvalid(
-                validator.maxLength(installment.comment, 500, "comment")
-            )
+            val savedInstallment = savedInstallments.find { installment.id == it.id }
+            if (isInstallmentAuthorized(savedInstallment) && installment.isSavePaymentInfo == false) {
+                throw I18nValidationException(i18nKey = PAYMENT_PARTNER_INSTALLMENT_DELETION_ERROR_KEY)
+            }
+            feedback.add(validator.notNull(installment.paymentDate, "paymentDate"))
+            feedback.add(validator.maxLength(installment.comment, 500, "comment"))
         }
+        return feedback
+    }
+
+    private fun isInstallmentAuthorized(installment: PaymentPartnerInstallment?): Boolean {
+        return installment != null && installment.isSavePaymentInfo == true && installment.isPaymentConfirmed == true
     }
 
     fun validateInstallmentDeletion(

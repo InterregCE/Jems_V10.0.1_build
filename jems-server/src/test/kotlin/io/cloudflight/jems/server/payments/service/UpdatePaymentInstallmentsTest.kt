@@ -140,10 +140,7 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
         every { paymentPersistence.getPaymentPartnerId(paymentId, partnerId) } returns paymentPartnerId
         every { paymentPersistence.findPaymentPartnerInstallments(paymentPartnerId) } returns listOf(installment)
         every { securityService.getUserIdOrThrow() } returns currentUserId
-        every { validator.validateInstallmentDeletion(emptyList()) } returns Unit
-        every { validator.validateMaxInstallments(listOf(installmentUpdate)) } returns Unit
-        every { validator.validateInstallmentValues(listOf(installmentUpdate)) } returns Unit
-        every { validator.validateCheckboxStates(listOf(installmentUpdate)) } returns Unit
+        every { validator.validateInstallments(listOf(installmentUpdate), listOf(installment), emptyList()) } returns Unit
         every { paymentPersistence.getPaymentDetails(paymentId) } returns paymentDetail
 
         val toUpdateSlot = slot<List<PaymentPartnerInstallmentUpdate>>()
@@ -180,10 +177,9 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
             paymentPersistence.findPaymentPartnerInstallments(paymentPartnerId)
         } returns listOf(installment, installmentToDelete)
         every { securityService.getUserIdOrThrow() } returns currentUserId
-        every { validator.validateInstallmentDeletion(listOf(installmentToDelete)) } returns Unit
-        every { validator.validateMaxInstallments(updates) } returns Unit
-        every { validator.validateInstallmentValues(updates) } returns Unit
-        every { validator.validateCheckboxStates(updates) } returns Unit
+        every {
+            validator.validateInstallments(updates, listOf(installment, installmentToDelete), listOf(installmentToDelete))
+        } returns Unit
         every { paymentPersistence.getPaymentDetails(paymentId) } returns paymentDetail
 
         val toUpdateSlot = slot<List<PaymentPartnerInstallmentUpdate>>()
@@ -257,10 +253,7 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
         every { paymentPersistence.getPaymentPartnerId(paymentId, partnerId) } returns paymentPartnerId
         every { paymentPersistence.findPaymentPartnerInstallments(paymentPartnerId) } returns listOf(installment)
         every { securityService.getUserIdOrThrow() } returns currentUserId
-        every { validator.validateInstallmentDeletion(emptyList()) } returns Unit
-        every { validator.validateMaxInstallments(listOf(installmentUpdate)) } returns Unit
-        every { validator.validateInstallmentValues(listOf(installmentUpdate)) } returns Unit
-        every { validator.validateCheckboxStates(listOf(installmentUpdate)) } returns Unit
+        every { validator.validateInstallments(listOf(installmentUpdate), listOf(installment), emptyList()) } returns Unit
         every { paymentPersistence.getPaymentDetails(paymentId) } returns paymentDetail
         every {
             paymentPersistence.updatePaymentPartnerInstallments(paymentPartnerId, emptySet(), any())
@@ -281,7 +274,7 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
         every { paymentPersistence.getPaymentPartnerId(paymentId, partnerId) } returns paymentPartnerId
         every { paymentPersistence.findPaymentPartnerInstallments(paymentPartnerId) } returns listOf(installment)
         every {
-            validator.validateInstallmentDeletion(emptyList())
+            validator.validateInstallments(listOf(installmentUpdate), listOf(installment), emptyList())
         } throws I18nValidationException()
 
         assertThrows<I18nValidationException> {

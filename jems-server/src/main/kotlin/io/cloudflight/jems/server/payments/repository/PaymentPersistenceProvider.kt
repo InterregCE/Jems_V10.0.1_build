@@ -64,9 +64,9 @@ class PaymentPersistenceProvider(
                 .filter { it.isPaymentConfirmed == true }
                 .forEach { installment ->
                     amountPaid = amountPaid.add(installment.amountPaid)
-                    if (installment.paymentConfirmedDate != null &&
-                        (lastPaymentDate == null || installment.paymentConfirmedDate!!.isAfter(lastPaymentDate))) {
-                        lastPaymentDate = installment.paymentConfirmedDate
+                    if (installment.paymentDate != null &&
+                        (lastPaymentDate == null || installment.paymentDate!!.isAfter(lastPaymentDate))) {
+                        lastPaymentDate = installment.paymentDate
                     }
                 }
         }

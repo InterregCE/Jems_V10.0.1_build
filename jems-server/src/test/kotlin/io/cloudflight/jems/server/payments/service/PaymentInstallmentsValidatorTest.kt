@@ -35,6 +35,15 @@ class PaymentInstallmentsValidatorTest : UnitTest() {
             paymentConfirmedUserId = null,
             paymentConfirmedDate = null
         )
+        private val installmentSaved = PaymentPartnerInstallment(
+            id = 3L,
+            fundId = 1L,
+            amountPaid = BigDecimal.TEN,
+            paymentDate = currentDate,
+            comment = "comment",
+            isSavePaymentInfo = true,
+            isPaymentConfirmed = true
+        )
         private val installmentNew = PaymentPartnerInstallmentUpdate(
             id = 0L,
             amountPaid = BigDecimal.ONE,
@@ -85,11 +94,37 @@ class PaymentInstallmentsValidatorTest : UnitTest() {
     @Test
     fun `should throw InputValidationException if text too long`() {
         val ex = assertThrows<AppInputValidationException> {
-            validator.validateInstallmentValues(
-                listOf(installmentNew, installmentUpdate.copy(comment = "t".repeat(501)))
+            validator.validateInstallments(
+                listOf(installmentNew, installmentUpdate.copy(comment = "t".repeat(501))),
+                emptyList(),
+                emptyList()
             )
         }
         assertEquals(COMMON_INPUT_ERROR, ex.i18nMessage.i18nKey)
+    }
+
+    @Test
+    fun `should throw InputValidationException if paymentDate is empty`() {
+        val ex = assertThrows<AppInputValidationException> {
+            validator.validateInstallments(
+                listOf(installmentNew, installmentUpdate.copy(paymentDate = null)),
+                emptyList(),
+                emptyList()
+            )
+        }
+        assertEquals(COMMON_INPUT_ERROR, ex.i18nMessage.i18nKey)
+    }
+
+    @Test
+    fun `should throw I18nValidationException if both checkboxes removed at same time`() {
+        val ex = assertThrows<I18nValidationException> {
+            validator.validateInstallments(
+                listOf(installmentUpdate.copy(isSavePaymentInfo = false, isPaymentConfirmed = false)),
+                listOf(installmentSaved),
+                emptyList()
+            )
+        }
+        assertEquals(PaymentInstallmentsValidator.PAYMENT_PARTNER_INSTALLMENT_DELETION_ERROR_KEY, ex.i18nKey)
     }
 
     @Test
