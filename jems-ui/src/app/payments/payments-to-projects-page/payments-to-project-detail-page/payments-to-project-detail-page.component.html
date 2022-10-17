@@ -21,6 +21,7 @@
             fundName: data.paymentDetail.fundName
         } }}</h3>
         <p>{{'payments.payment.to.project.detail.subtext' | translate}}</p>
+        <p>{{'payments.detail.installment.deletion.not.possible.warning' | translate}}</p>
 
             <ng-container *ngIf="partnerPayments">
                 <div jemsNoWidthLimit id="payments-per-partner-table" class="mb-3 payments-per-partner-container"
@@ -131,7 +132,7 @@
                                             </div>
                                             <div class="justify-center">
                                                 <mat-checkbox
-                                                              [disabled]="isPaymentDateEmpty(index, installmentIndex) || isPaymentConfirmed(index, installmentIndex)"
+                                                              [disabled]="isPaymentAuthorisationDisabled(index, installmentIndex)"
                                                               (change)="setSavePaymentDate($event.checked, index, installmentIndex)"
                                                               [formControlName]="constants.FORM_CONTROL_NAMES.savePaymentInfo">
                                                 </mat-checkbox>
@@ -141,14 +142,14 @@
                                             <div  class="justify-center">
                                                 <mat-checkbox
                                                               (change)="setConfirmPaymentDate($event.checked, index, installmentIndex)"
-                                                              [disabled]="!isPaymentSaved(index, installmentIndex)"
+                                                              [disabled]="!isPaymentAuthorised(index, installmentIndex)"
                                                               [formControlName]="constants.FORM_CONTROL_NAMES.paymentConfirmed">
                                                 </mat-checkbox>
                                             </div>
                                             <div><span jemsText class="text-overflow-ellipsis">{{installment.get(constants.FORM_CONTROL_NAMES.paymentConfirmedUser).value?.email}}</span></div>
                                             <div>{{getFormattedDate(installment.get(constants.FORM_CONTROL_NAMES.paymentConfirmedDate).value)}}</div>
                                             <div>
-                                                <button *ngIf="!isPaymentSaved(index, installmentIndex)"
+                                                <button *ngIf="canInstallmentBeDeleted(index, installmentIndex)"
                                                         (click)="removeItem(index, installmentIndex)"
                                                         class="delete-button"
                                                         color="accent" mat-icon-button
