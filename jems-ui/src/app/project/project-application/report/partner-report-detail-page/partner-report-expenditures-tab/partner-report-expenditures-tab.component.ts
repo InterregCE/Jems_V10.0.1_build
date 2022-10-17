@@ -95,6 +95,8 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
   availableLumpSums: ProjectPartnerReportLumpSumDTO[];
   availableUnitCosts: ProjectPartnerReportUnitCostDTO[];
   availableCurrenciesPerRow: CurrencyDTO[][] = [];
+  contractIDs: IdNamePairDTO[] = [];
+  investmentsSummary: InvestmentSummary[] = [];
 
   readonly PERIOD_PREPARATION: number = 0;
   readonly PERIOD_CLOSURE: number = 255;
@@ -386,7 +388,9 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
           ...reportCosts
         })
       ),
-      tap(data => this.resetForm(data.expendituresCosts))
+      tap(data => this.resetForm(data.expendituresCosts)),
+      tap(data => this.contractIDs = data.contractIDs),
+      tap(data => this.investmentsSummary = data.investmentsSummary),
     );
 
   }
@@ -461,7 +465,7 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
       tableConfig.push({minInRem: 3, maxInRem: 3}); //delete
     }
     if (investments.length > 0) {
-      tableConfig.splice(2, 0, {minInRem: 6});
+      tableConfig.splice(2, 0, {minInRem: 11});
     }
     return tableConfig;
   }
@@ -694,6 +698,16 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     } else {
       return 'grey-background';
     }
+  }
+
+  getContractIdValue(contractId: number): string {
+    const value = this.contractIDs.find(c => c.id === contractId)?.name;
+    return value ?? '';
+  }
+
+  getInvestmentIdValue(investmentId: number): string {
+    const summary = this.investmentsSummary.find(s => s.id === investmentId);
+    return summary?.toString() ?? '';
   }
 
   clearRowSelections() {
