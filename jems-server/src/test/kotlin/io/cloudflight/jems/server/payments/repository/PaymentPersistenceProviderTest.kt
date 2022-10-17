@@ -147,7 +147,7 @@ class PaymentPersistenceProviderTest: UnitTest() {
             id = 3L,
             paymentPartner = partnerPaymentEntity,
             amountPaid = BigDecimal.TEN,
-            paymentDate = currentDate,
+            paymentDate = currentDate.minusDays(3),
             comment = "comment",
             isSavePaymentInfo = true,
             savePaymentInfoUser = savePaymentUser,
@@ -160,7 +160,7 @@ class PaymentPersistenceProviderTest: UnitTest() {
             id = 3L,
             fundId = fundId,
             amountPaid = BigDecimal.TEN,
-            paymentDate = currentDate,
+            paymentDate = currentDate.minusDays(3),
             comment = "comment",
             isSavePaymentInfo = true,
             savePaymentInfoUser = OutputUser(4L, "savePaymentInfo@User", "name", "surname"),
@@ -300,7 +300,7 @@ class PaymentPersistenceProviderTest: UnitTest() {
             id = 4L,
             paymentPartner = partnerPaymentEntity,
             amountPaid = BigDecimal("22.21"),
-            paymentDate = currentDate.minusDays(5),
+            paymentDate = currentDate.minusDays(1),
             comment = "comment",
             isSavePaymentInfo = true,
             savePaymentInfoUser = savePaymentUser,
@@ -326,7 +326,7 @@ class PaymentPersistenceProviderTest: UnitTest() {
             id = 6L,
             paymentPartner = partnerPaymentEntity,
             amountPaid = BigDecimal("-5.1"),
-            paymentDate = currentDate.minusDays(5),
+            paymentDate = currentDate.minusDays(2),
             comment = "comment",
             isSavePaymentInfo = true,
             savePaymentInfoUser = savePaymentUser,
@@ -339,7 +339,7 @@ class PaymentPersistenceProviderTest: UnitTest() {
         assertThat(paymentPersistenceProvider.getConfirmedInfosForPayment(paymentId)).isEqualTo(PaymentConfirmedInfo(
             id = paymentId,
             amountPaidPerFund = BigDecimal("27.11"),
-            dateOfLastPayment = currentDate.plusDays(2)
+            dateOfLastPayment = currentDate.minusDays(2)
         ))
     }
 

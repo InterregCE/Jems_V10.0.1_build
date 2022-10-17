@@ -36,10 +36,7 @@ class UpdatePaymentInstallments(
         val deleteInstallments = savedInstallments.filter { saved -> saved.id !in installments.map { it.id } }
 
         // prevent deletion if isSavePaymentInfo, validate data
-        validator.validateInstallmentDeletion(deleteInstallments)
-        validator.validateInstallmentValues(installments)
-        validator.validateMaxInstallments(installments)
-        validator.validateCheckboxStates(installments)
+        validator.validateInstallments(installments, savedInstallments, deleteInstallments)
 
         // calculate
         // - savePaymentInfoUserId, savePaymentDate by isSavePaymentInfo

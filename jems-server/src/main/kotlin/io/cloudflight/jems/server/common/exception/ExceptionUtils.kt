@@ -27,7 +27,10 @@ fun createAPIErrorDTO(
         if (cause is ApplicationException) {
             errorDetail.add(ErrorDetailDTO(cause.code, cause.i18nMessage))
             formErrors = formErrors.plus(cause.formErrors)
-            if (!cause.message.isNullOrBlank()) message = cause.message
+            if (cause.message.isNotBlank()) message = cause.message
+        }
+        if (cause is I18nValidationException) {
+            errorDetail.add(ErrorDetailDTO(cause.httpStatus.name, I18nMessage(cause.i18nKey, emptyMap())))
         }
         cause = cause.cause
     }
