@@ -59,7 +59,7 @@ export class ContractPartnerStore {
   }
 
   private partnerInfo(): Observable<ProjectPartnerSummaryDTO> {
-    return combineLatest([this.partnerId$, this.partnerStore.partnerSummaries$])
+    return combineLatest([this.partnerId$, this.partnerStore.partnerSummariesOfLastApprovedVersion$])
       .pipe(
         filter(([partnerId, partnerSummaries]) => !!partnerId),
         map(([partnerId, partnerSummaries]) =>
