@@ -47,7 +47,7 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
       })
     ])
   });
-
+  initialPaymentDetail: PaymentDetailDTO;
   currentUserDetails: UserDTO;
   data$: Observable<{
     paymentDetail: PaymentDetailDTO;
@@ -73,6 +73,7 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
           paymentDetail,
           currentUser,
         })),
+        tap((data) => this.initialPaymentDetail = data.paymentDetail),
         tap(data => this.currentUserDetails = data.currentUser),
         tap(data => this.resetForm(data.paymentDetail))
       );
@@ -228,8 +229,24 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
     this.formService.setDirty(true);
   }
 
-  isPaymentSaved(paymentIndex: number, installmentIndex: number): boolean {
+  isPaymentAuthorised(paymentIndex: number, installmentIndex: number): boolean {
     return this.installmentsArray(paymentIndex).at(installmentIndex).get('savePaymentInfo')?.value;
+  }
+
+  isInstallmentAlreadyAuthorised(paymentIndex: number, installmentIndex: number): boolean {
+    if (installmentIndex >= this.initialPaymentDetail.partnerPayments[paymentIndex].installments.length )
+      return false;
+    return  this.initialPaymentDetail.partnerPayments[paymentIndex].installments[installmentIndex].savePaymentInfo || false;
+  }
+
+  canInstallmentBeDeleted(paymentIndex: number, installmentIndex: number) {
+    return !this.isPaymentAuthorised(paymentIndex, installmentIndex) && !this.isInstallmentAlreadyAuthorised(paymentIndex, installmentIndex)
+  }
+
+  isPaymentAuthorisationDisabled(paymentIndex: number, installmentIndex: number): boolean {
+    return this.isPaymentDateEmpty(paymentIndex, installmentIndex) ||
+    this.isPaymentConfirmed(paymentIndex, installmentIndex) ||
+    this.isPaymentAlreadyConfirmed(paymentIndex, installmentIndex)
   }
 
   isPaymentDateEmpty(paymentIndex: number, installmentIndex: number): boolean {
@@ -240,6 +257,12 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
   isPaymentConfirmed(paymentIndex: number, installmentIndex: number): boolean {
     return this.installmentsArray(paymentIndex).at(installmentIndex)
       .get(this.constants.FORM_CONTROL_NAMES.paymentConfirmed)?.value;
+  }
+
+  isPaymentAlreadyConfirmed(paymentIndex: number, installmentIndex: number): boolean {
+    if (installmentIndex >= this.initialPaymentDetail.partnerPayments[paymentIndex].installments.length )
+      return false;
+    return  this.initialPaymentDetail.partnerPayments[paymentIndex].installments[installmentIndex].paymentConfirmed || false;
   }
 
   addInstallmentButtonClicked(installment: PaymentPartnerInstallmentDTO | null, paymentIndex: number): void {
