@@ -12,7 +12,13 @@ import {
   tap,
   withLatestFrom
 } from 'rxjs/operators';
-import {ProjectPartnerUserCollaboratorService, ProjectStatusDTO, UserRoleDTO, WorkPackageService} from '@cat/api';
+import {
+  ProjectPartnerSummaryDTO,
+  ProjectPartnerUserCollaboratorService,
+  ProjectStatusDTO,
+  UserRoleDTO,
+  WorkPackageService
+} from '@cat/api';
 import {HeadlineRoute} from '@common/components/side-nav/headline-route';
 import {Log} from '@common/utils/log';
 import {TranslateService} from '@ngx-translate/core';
@@ -248,7 +254,7 @@ export class ProjectApplicationFormSidenavService {
       switchMap(([canSeeContractPartner, projectId, callType]) => {
         return (canSeeContractPartner) ?
           combineLatest([
-            this.partnerStore.partnerSummaries$,
+            this.partnerSummariesOfLastApprovedVersion$,
             this.projectStore.userIsPartnerCollaborator$,
             this.projectStore.projectId$,
             this.partnerUserCollaboratorService.listCurrentUserPartnerCollaborations(projectId)
@@ -271,6 +277,14 @@ export class ProjectApplicationFormSidenavService {
       catchError(() => of([])),
       startWith([])
     );
+
+  private readonly partnerSummariesOfLastApprovedVersion$: Observable<ProjectPartnerSummaryDTO[]> =
+    this.projectVersionStore.lastApprovedOrContractedVersion$
+      .pipe(
+        map(lastApprovedVersion => lastApprovedVersion?.version),
+        filter(version => !!version),
+        switchMap(version => this.partnerStore.partnerSummariesFromVersion(version)),
+      );
 
   private readonly packages$: Observable<HeadlineRoute[]> =
     this.canSeeProjectForm$.pipe(
@@ -312,7 +326,7 @@ export class ProjectApplicationFormSidenavService {
               private permissionService: PermissionService,
               private routingService: RoutingService,
               private visibilityStatusService: FormVisibilityStatusService,
-              private partnerUserCollaboratorService: ProjectPartnerUserCollaboratorService
+              private partnerUserCollaboratorService: ProjectPartnerUserCollaboratorService,
   ) {
 
     const headlines$ = combineLatest([
