@@ -7,13 +7,13 @@ mat-cell, mat-header-cell {
 
 // columns
 .mat-column-firstName {
-  min-with: 9rem;
+  min-width: 3rem;
 }
 .mat-column-lastName {
-  min-with: 9rem;
+  min-width: 3rem;
 }
 .mat-column-birth {
-  min-with: 8rem;
+  min-width: 8rem;
   max-width: 8rem;
 }
 .mat-column-vatNumber {
