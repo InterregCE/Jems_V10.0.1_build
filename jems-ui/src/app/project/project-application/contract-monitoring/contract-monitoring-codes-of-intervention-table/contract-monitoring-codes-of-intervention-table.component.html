@@ -4,16 +4,16 @@
     <mat-table *ngIf="dimensionCodesTableData.length > 0" jemsNoWidthLimit
                class="table-condensed mt-3 mb-3"
                id="monitoring-dimension-codes-table"
-               [jemsTableConfig]="[{maxInRem:14},{maxInRem:5},{maxInRem:10},{maxInRem: 8}, {maxInRem: 1}]"
+               [jemsTableConfig]="[{minInRem:9},{minInRem:6, maxInRem:6},{minInRem:10, maxInRem:10},{minInRem: 6,maxInRem:6}, {minInRem:2, maxInRem: 2}]"
                [dataSource]="dimensionCodesTableData"
                formArrayName="dimensionCodesItems">
         <ng-container matColumnDef="dimension">
             <mat-header-cell *matHeaderCellDef>
                     <span jemsText
-                          maxLines="1">{{'project.application.contract.monitoring.project.dimension' | translate}}</span>
+                          maxLines="2">{{'project.application.contract.monitoring.project.dimension' | translate}}</span>
             </mat-header-cell>
-            <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i" class="dimension-code">
-                <mat-form-field jemsFormFieldWidth="x-large">
+            <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i" class="dimension-code w-100">
+                <mat-form-field class="w-100">
                     <mat-select formControlName="dimension"
                                 placeholder="{{'project.contracting.monitoring.dimension.input.select' | translate}}">
                         <mat-option *ngFor="let dimension of dimensionsEnum" [value]="dimension"
@@ -30,10 +30,10 @@
         <ng-container matColumnDef="dimensionCode">
             <mat-header-cell *matHeaderCellDef>
                     <span jemsText
-                          maxLines="1">{{'project.application.contract.monitoring.project.dimension.code' | translate}}</span>
+                          maxLines="2">{{'project.application.contract.monitoring.project.dimension.code' | translate}}</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                <mat-form-field jemsFormFieldWidth="small">
+                <mat-form-field class="w-100">
                     <mat-select formControlName="dimensionCode">
                         <mat-option
                                 *ngFor="let dimensionCode of getCodesForDimension(control?.get('dimension').value)"
@@ -54,11 +54,11 @@
 
         <ng-container matColumnDef="projectBudgetAmountShare">
             <mat-header-cell *matHeaderCellDef>
-                    <span jemsText
-                          maxLines="1">{{'project.application.contract.monitoring.project.dimension.budget.share.amount' | translate}}</span>
+                    <span jemsText class="justify-end"
+                          maxLines="2">{{'project.application.contract.monitoring.project.dimension.budget.share.amount' | translate}}</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                <mat-form-field jemsFormFieldWidth="medium"
+                <mat-form-field class="w-100"
                                 (keyup)="setDimensionCodeBudgetPercentShare($event, i)">
                     <input currencyMask
                            formControlName="projectBudgetAmountShare"
@@ -79,10 +79,10 @@
         <ng-container matColumnDef="projectBudgetPercentShare">
             <mat-header-cell *matHeaderCellDef>
                     <span jemsText
-                          maxLines="1">{{'project.application.contract.monitoring.project.dimension.budget.share.percent' | translate}}</span>
+                          maxLines="2">{{'project.application.contract.monitoring.project.dimension.budget.share.percent' | translate}}</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                <mat-form-field jemsFormFieldWidth="medium">
+                <mat-form-field class="w-100">
                     <input formControlName="projectBudgetPercentShare"
                            matInput
                            readonly>
