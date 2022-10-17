@@ -136,7 +136,7 @@
                                                               [formControlName]="constants.FORM_CONTROL_NAMES.savePaymentInfo">
                                                 </mat-checkbox>
                                             </div>
-                                            <div>{{installment.get(constants.FORM_CONTROL_NAMES.savePaymentInfoUser).value?.email}}</div>
+                                            <div><span  jemsText class="text-overflow-ellipsis">{{installment.get(constants.FORM_CONTROL_NAMES.savePaymentInfoUser).value?.email}}</span></div>
                                             <div>{{getFormattedDate(installment.get(constants.FORM_CONTROL_NAMES.savePaymentDate).value)}}</div>
                                             <div  class="justify-center">
                                                 <mat-checkbox
@@ -145,7 +145,7 @@
                                                               [formControlName]="constants.FORM_CONTROL_NAMES.paymentConfirmed">
                                                 </mat-checkbox>
                                             </div>
-                                            <div>{{installment.get(constants.FORM_CONTROL_NAMES.paymentConfirmedUser).value?.email}}</div>
+                                            <div><span jemsText class="text-overflow-ellipsis">{{installment.get(constants.FORM_CONTROL_NAMES.paymentConfirmedUser).value?.email}}</span></div>
                                             <div>{{getFormattedDate(installment.get(constants.FORM_CONTROL_NAMES.paymentConfirmedDate).value)}}</div>
                                             <div>
                                                 <button *ngIf="!isPaymentSaved(index, installmentIndex)"
