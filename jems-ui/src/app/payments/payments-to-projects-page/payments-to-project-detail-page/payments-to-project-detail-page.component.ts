@@ -89,28 +89,14 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
       untilDestroyed(this)
     ).subscribe();
 
-      this.updateInstallmentsSuccess$.pipe(
-        tap(() => this.formService.setSuccess('payments.detail.table.have.success'))
-      )
-       .subscribe();
+    this.updateInstallmentsSuccess$.pipe(
+      tap(() => this.formService.setSuccess('payments.detail.table.have.success'))
+    ).subscribe();
 
-    combineLatest([
-      this.updateInstallmentsError$,
-      this.updateInstallmentsSuccess$
-    ])
-      .pipe(
-        map(([paymentDetail, currentUser]: any) => ({
-          paymentDetail,
-          currentUser,
-        })),
-        tap(data => this.currentUserDetails = data.currentUser),
-        tap(data => this.resetForm(data.paymentDetail))
-      );
     this.formService.init(this.partnerPaymentsForm, of(true));
   }
 
   resetForm(paymentDetail: PaymentDetailDTO) {
-
     this.partnerPaymentsForm.get('id')?.setValue(this.paymentId);
     this.partnerPaymentsForm.get('projectCustomIdentifier')?.setValue(paymentDetail.projectCustomIdentifier);
     this.partnerPaymentsForm.get('fundName')?.setValue(paymentDetail.fundName);
@@ -161,7 +147,7 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
   }
 
   updatePaymentInstallments(paymentId: number, paymentDetail: PaymentDetailDTO) {
-    paymentDetail.partnerPayments.forEach((payment) => {
+    paymentDetail.partnerPayments.forEach((payment, index: number) => {
       this.paymentsDetailPageStore.updatePaymentInstallmentsPerPartner(paymentId, payment.partnerId, payment.installments).pipe(
         take(1),
         tap(() => this.updateInstallmentsSuccess$.next(true)),
@@ -173,8 +159,12 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
       )
       .subscribe(
         (updatedInstallments) => {
-          paymentDetail.partnerPayments.filter(partnerPayment => partnerPayment.partnerId = payment.partnerId)[0].installments = updatedInstallments;
-          this.paymentsDetailPageStore.savedPaymentDetail$.next(paymentDetail);
+          paymentDetail.partnerPayments.filter(partnerPayment => partnerPayment.partnerId === payment.partnerId)[0].installments = updatedInstallments;
+
+          // As we update installments for each partner this is needed so that we only call the next method once all the partners are updated.
+          if(index === paymentDetail.partnerPayments.length - 1) {
+            this.paymentsDetailPageStore.savedPaymentDetail$.next(paymentDetail);
+          }
         }
       );
     });
