@@ -40,7 +40,8 @@ describe('ProjectApplicationFormPartnerBudgetOptionsComponent', () => {
         {
           provide: ProjectVersionStore,
           useValue: {
-            selectedVersionParam$: of('1.0')
+            selectedVersionParam$: of('1.0'),
+            lastApprovedOrContractedVersion$: of('1.0')
           }
         },
         {
