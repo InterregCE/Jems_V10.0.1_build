@@ -231,18 +231,18 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
 
   isInstallmentAlreadyAuthorised(paymentIndex: number, installmentIndex: number): boolean {
     if (installmentIndex >= this.initialPaymentDetail.partnerPayments[paymentIndex].installments.length )
-      return false;
+      {return false;}
     return  this.initialPaymentDetail.partnerPayments[paymentIndex].installments[installmentIndex].savePaymentInfo || false;
   }
 
   canInstallmentBeDeleted(paymentIndex: number, installmentIndex: number) {
-    return !this.isPaymentAuthorised(paymentIndex, installmentIndex) && !this.isInstallmentAlreadyAuthorised(paymentIndex, installmentIndex)
+    return !this.isPaymentAuthorised(paymentIndex, installmentIndex) && !this.isInstallmentAlreadyAuthorised(paymentIndex, installmentIndex);
   }
 
   isPaymentAuthorisationDisabled(paymentIndex: number, installmentIndex: number): boolean {
     return this.isPaymentDateEmpty(paymentIndex, installmentIndex) ||
     this.isPaymentConfirmed(paymentIndex, installmentIndex) ||
-    this.isPaymentAlreadyConfirmed(paymentIndex, installmentIndex)
+    this.isPaymentAlreadyConfirmed(paymentIndex, installmentIndex);
   }
 
   isPaymentDateEmpty(paymentIndex: number, installmentIndex: number): boolean {
@@ -257,7 +257,7 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
 
   isPaymentAlreadyConfirmed(paymentIndex: number, installmentIndex: number): boolean {
     if (installmentIndex >= this.initialPaymentDetail.partnerPayments[paymentIndex].installments.length )
-      return false;
+      {return false;}
     return  this.initialPaymentDetail.partnerPayments[paymentIndex].installments[installmentIndex].paymentConfirmed || false;
   }
 

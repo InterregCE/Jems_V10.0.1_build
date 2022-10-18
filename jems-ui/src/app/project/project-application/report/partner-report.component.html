@@ -72,8 +72,8 @@
         </jems-pending-button>
         <button jemsText *ngIf="partnerReport.status === ProjectPartnerReportSummaryDTO.StatusEnum.InControl && ((pageStore.userCanEditReports$ | async) || (pageStore.userCanViewReports$ | async))" mat-stroked-button type="submit" class="ml-1"
                 [disabled]="false"
-                [routerLink]="partnerReport.id + '/controlReport/identificationTab'">
-            {{'project.application.partner.reports.open.control' | translate}}
+                [routerLink]="partnerReport.id + '/controlReport/' + ((store.fullControlReportView$ | async) ? 'identificationTab' : 'document')">
+        {{'project.application.partner.reports.open.control' | translate}}
         </button>
     </ng-container>
 </ng-template>
