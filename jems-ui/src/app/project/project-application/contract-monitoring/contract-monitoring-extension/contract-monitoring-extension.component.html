@@ -198,17 +198,6 @@
             </div>
         </div>
 
-        <h4>{{'project.application.contract.monitoring.project.dimension.title' | translate}}</h4>
-        <p>{{'project.application.contract.monitoring.project.dimension.description' | translate}}</p>
-        <jems-contract-monitoring-codes-of-intervention-table
-                [formGroup]="decisionForm"
-                [contractMonitoringDimensionCodesDTO]="dimensionCodesDTO"
-                [dimensionCodes]="data.dimensionCodes"
-                [projectBudget]="data.projectBudget"
-                [editable]="data.contractMonitoringEditable"
-                (changed)="tableChanged()">
-        </jems-contract-monitoring-codes-of-intervention-table>
-
         <ng-container *ngIf="areThereFastTrackLumpSums()">
             <h3>{{'project.application.contract.monitoring.project.fast.track.lump.sums.title' | translate}}
                 <jems-context-info    infoText="{{ 'project.application.set.to.contracted.lump.sums.info' | translate }}"
@@ -250,5 +239,17 @@
                 </div>
             </div>
         </ng-container>
+
+        <h4>{{'project.application.contract.monitoring.project.dimension.title' | translate}}</h4>
+        <p>{{'project.application.contract.monitoring.project.dimension.description' | translate}} [ {{data.projectBudget | asMoney}} &euro; ].</p>
+        <jems-contract-monitoring-codes-of-intervention-table
+                [formGroup]="decisionForm"
+                [contractMonitoringDimensionCodesDTO]="dimensionCodesDTO"
+                [dimensionCodes]="data.dimensionCodes"
+                [projectBudget]="data.projectBudget"
+                [projectPartnersNuts]="data.projectPartnersNuts"
+                [editable]="data.contractMonitoringEditable"
+                (changed)="tableChanged()">
+        </jems-contract-monitoring-codes-of-intervention-table>
     </jems-form>
 </div>

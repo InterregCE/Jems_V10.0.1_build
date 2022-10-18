@@ -27,9 +27,22 @@ class GetProjectPartner(
     @ExceptionWrapper(GetProjectPartnersByProjectIdException::class)
     override fun findAllByProjectId(projectId: Long, page: Pageable, version: String?): Page<ProjectBudgetPartnerSummary>  {
         val partnersPage = persistence.findAllByProjectId(projectId, page, version)
-        val partnerBudgets = getProjectBudget.getBudget(partnersPage.content, projectId, version);
+        val partnerBudgets = getProjectBudget.getBudget(partnersPage.content, projectId, version)
 
-        return PageImpl(partnerBudgets.map { ProjectBudgetPartnerSummary(partnerSummary =  ProjectPartnerSummary(it.partner.id, it.partner.abbreviation, it.partner.active, it.partner.role, it.partner.sortNumber, it.partner.country, it.partner.region), totalBudget = it.totalCosts)  }, page, partnerBudgets.size.toLong())
+        return PageImpl(partnerBudgets.map {
+            ProjectBudgetPartnerSummary(
+                partnerSummary = ProjectPartnerSummary(
+                    id = it.partner.id,
+                    abbreviation = it.partner.abbreviation,
+                    active = it.partner.active,
+                    role = it.partner.role,
+                    sortNumber = it.partner.sortNumber,
+                    country = it.partner.country,
+                    region = it.partner.region
+                ),
+                totalBudget = it.totalCosts
+            )
+        }, page, partnerBudgets.size.toLong())
     }
 
     @CanRetrieveProjectPartner

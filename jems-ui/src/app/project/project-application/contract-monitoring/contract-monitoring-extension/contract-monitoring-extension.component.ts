@@ -13,6 +13,7 @@ import {
   ProjectContractingMonitoringAddDateDTO,
   ProjectContractingMonitoringDTO,
   ProjectPartnerLumpSumDTO,
+  ProjectPartnerSummaryDTO,
   ProjectStatusDTO
 } from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
@@ -26,6 +27,9 @@ import {
 import {
   ProjectOverviewTablesPageStore
 } from '@project/project-overview-tables-page/project-overview-tables-page-store.service';
+import {
+  ProjectPartnerStore
+} from "@project/project-application/containers/project-application-form-page/services/project-partner-store.service";
 
 @Component({
   selector: 'jems-contract-monitoring-extension',
@@ -74,6 +78,7 @@ export class ContractMonitoringExtensionComponent {
     status: ProjectStatusDTO;
     dimensionCodes:  {[p: string]: string[]};
     projectBudget: number;
+    projectPartnersNuts: {country: string, nuts3Region: string}[];
   }>;
   isAdditionalDataActivated = false;
 
@@ -86,7 +91,8 @@ export class ContractMonitoringExtensionComponent {
               private contractMonitoringExtensionStore: ContractMonitoringExtensionStore,
               private projectLumpSumsStore: ProjectLumpSumsStore,
               private projectStore: ProjectStore,
-              private translateService: TranslateService) {
+              private translateService: TranslateService,
+              private partnerStore: ProjectPartnerStore) {
 
     const permissions$ = combineLatest(([
       this.contractMonitoringExtensionStore.contractMonitoringViewable$,
@@ -103,24 +109,36 @@ export class ContractMonitoringExtensionComponent {
       map(([lumpSums, projectPeriods]) => ({lumpSums, projectPeriods}))
     );
 
+    const codesOfInterventionData$ = combineLatest(([
+      this.projectStore.projectCallObjectives$,
+      this.projectStore.projectBudget$,
+      this.partnerStore.partnerSummariesOfLastApprovedProjectVersion$
+    ])).pipe(
+      map(([projectCallObjectives, projectBudget, partnerSummaries]) => ({
+        projectCallObjectives,
+        projectBudget,
+        partnerSummaries
+      }))
+    )
+
     this.projectId = this.activatedRoute.snapshot.params.projectId;
     this.data$ = combineLatest([
       this.contractMonitoringExtensionStore.projectContractingMonitoring$,
+      this.projectStore.currentVersionOfProjectStatus$,
       permissions$,
       lumpSumData$,
-      this.projectStore.currentVersionOfProjectStatus$,
-      this.projectStore.projectCallObjectives$,
-      this.projectStore.projectBudget$
+      codesOfInterventionData$
     ]).pipe(
-      map(([projectContractingMonitoring, permissions, lumpsumData, status, projectCallObjectives, projectBudget]) => ({
+      map(([projectContractingMonitoring, status, permissions, lumpsumData, codesOfInterventionData]) => ({
         projectContractingMonitoring,
         contractMonitoringViewable: permissions.canView,
         contractMonitoringEditable: permissions.canEdit,
         projectCallLumpSums: lumpsumData.lumpSums,
         periods: lumpsumData.projectPeriods,
         status,
-        dimensionCodes: this.getProjectDimensionCodes(projectCallObjectives.objectivesWithPolicies),
-        projectBudget
+        dimensionCodes: this.getProjectDimensionCodes(codesOfInterventionData.projectCallObjectives.objectivesWithPolicies),
+        projectBudget: codesOfInterventionData.projectBudget,
+        projectPartnersNuts: this.getPartnerNutsRegionCodes(codesOfInterventionData.partnerSummaries)
       })),
       tap(data => this.dimensionCodesDTO = data.projectContractingMonitoring.dimensionCodes),
       tap(data => this.initForm(data.contractMonitoringEditable)),
@@ -273,7 +291,6 @@ export class ContractMonitoringExtensionComponent {
           dimensionCode: element.dimensionCode,
           projectBudgetAmountShare: element.projectBudgetAmountShare
         })
-
     );
   }
 
@@ -330,5 +347,23 @@ export class ContractMonitoringExtensionComponent {
       return dimensionCodes ? dimensionCodes : {};
     }
     return {};
+  }
+
+
+  private getPartnerNutsRegionCodes(partnerSummaries: ProjectPartnerSummaryDTO[]): {country: string, nuts3Region: string}[] {
+    let nutsRegions: {country: string, nuts3Region: string}[] = [];
+    partnerSummaries.map(partnerSummary => ({
+      country: partnerSummary.country,
+      nuts3Region: partnerSummary.region
+    })).forEach(
+      nutsRegion => {
+        if (nutsRegions.find(r => r.nuts3Region == nutsRegion.nuts3Region)) {
+          return;
+        }else {
+          nutsRegions.push(nutsRegion)
+        }
+      }
+    )
+    return nutsRegions
   }
 }

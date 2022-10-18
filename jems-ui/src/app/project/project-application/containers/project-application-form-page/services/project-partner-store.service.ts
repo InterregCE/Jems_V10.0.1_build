@@ -36,6 +36,7 @@ export class ProjectPartnerStore {
   partners$: Observable<ProjectPartner[]>;
   leadPartner$: Observable<ProjectPartnerDetailDTO | null>;
   partnerSummaries$: Observable<ProjectPartnerSummaryDTO[]>;
+  partnerSummariesOfLastApprovedProjectVersion$: Observable<ProjectPartnerSummaryDTO[]>;
   partnerReportSummaries$: Observable<ProjectPartnerSummaryDTO[]>;
   latestPartnerSummaries$: Observable<ProjectPartnerSummaryDTO[]>;
   partnerSummariesOfLastApprovedVersion$: Observable<ProjectPartnerSummaryDTO[]>;
@@ -54,6 +55,7 @@ export class ProjectPartnerStore {
     this.projectCallType$ = this.projectStore.projectCallType$;
     this.isProjectCallTypeSpf$ = this.projectCallType$.pipe(map(type => type === CallTypeEnum.SPF));
     this.partnerSummaries$ = this.partnerSummaries();
+    this.partnerSummariesOfLastApprovedProjectVersion$ = this.partnerSummariesOfLastApprovedVersion();
     this.latestPartnerSummaries$ = this.partnerSummariesFromVersion();
     this.partnerReportSummaries$ = this.partnerReportSummaries();
     this.partnerSummariesOfLastApprovedVersion$ = this.getPartnerSummariesOfLastApprovedVersion();
@@ -195,6 +197,17 @@ export class ProjectPartnerStore {
     return combineLatest([this.projectStore.projectId$, this.projectVersionStore.selectedVersionParam$, this.partnerUpdateEvent$])
       .pipe(
         switchMap(([projectId, version]) => this.partnerService.getProjectPartnersForDropdown(projectId, ['sortNumber'], version))
+      );
+  }
+
+  private partnerSummariesOfLastApprovedVersion(): Observable<ProjectPartnerSummaryDTO[]> {
+    return combineLatest([
+      this.projectStore.projectId$,
+      this.projectVersionStore.lastApprovedOrContractedVersion$,
+      this.partnerUpdateEvent$
+    ])
+      .pipe(
+        switchMap(([projectId, version]) => this.partnerService.getProjectPartnersForDropdown(projectId, ['sortNumber'], version?.version))
       );
   }
 

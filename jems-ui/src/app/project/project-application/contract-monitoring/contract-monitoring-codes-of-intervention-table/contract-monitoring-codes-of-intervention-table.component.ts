@@ -32,6 +32,9 @@ export class ContractMonitoringCodesOfInterventionTableComponent implements OnCh
   projectBudget: number;
 
   @Input()
+  projectPartnersNuts: {country: string, nuts3Region: string}[]
+
+  @Input()
   editable: boolean;
 
   @Output()
@@ -76,7 +79,7 @@ export class ContractMonitoringCodesOfInterventionTableComponent implements OnCh
           dimension: [dimensionCodeShare.programmeObjectiveDimension],
           dimensionCode: [dimensionCodeShare.dimensionCode, this.dimensionCodeAlreadySelected()],
           projectBudgetAmountShare: [dimensionCodeShare.projectBudgetAmountShare, this.dimensionCodeAmountValidator()],
-          projectBudgetPercentShare: [{value: this.calculateDimensionCodePercentShare(dimensionCodeShare.projectBudgetAmountShare) +'%',  disabled:true}],
+          projectBudgetPercentShare: [{value: NumberService.toLocale(this.calculateDimensionCodePercentShare(dimensionCodeShare.projectBudgetAmountShare)) +'%',  disabled:true}],
         });
         this.dimensionCodesFormItems.push(item);
       }
@@ -98,7 +101,13 @@ export class ContractMonitoringCodesOfInterventionTableComponent implements OnCh
   }
 
   getCodesForDimension(dimension: ContractingDimensionCodeDTO.ProgrammeObjectiveDimensionEnum): string[] {
-    return this.dimensionCodes ? this.dimensionCodes[dimension] : [];
+    switch (dimension) {
+      case ContractingDimensionCodeDTO.ProgrammeObjectiveDimensionEnum.Location:
+        return [... this.projectPartnersNuts.map(nuts => nuts.nuts3Region ? nuts.nuts3Region : nuts.country)];
+      default:
+        return this.dimensionCodes ? this.dimensionCodes[dimension] : [];
+    }
+
   }
 
   removeItem(controlIndex: number): void {

@@ -4,7 +4,7 @@
     <mat-table *ngIf="dimensionCodesTableData.length > 0" jemsNoWidthLimit
                class="table-condensed mt-3 mb-3"
                id="monitoring-dimension-codes-table"
-               [jemsTableConfig]="[{minInRem:9},{minInRem:6, maxInRem:6},{minInRem:10, maxInRem:10},{minInRem: 6,maxInRem:6}, {minInRem:2, maxInRem: 2}]"
+               [jemsTableConfig]="[{minInRem:9},{minInRem:6, maxInRem:10},{minInRem:8, maxInRem:8},{minInRem: 6,maxInRem:6}, {minInRem:2, maxInRem: 2}]"
                [dataSource]="dimensionCodesTableData"
                formArrayName="dimensionCodesItems">
         <ng-container matColumnDef="dimension">
