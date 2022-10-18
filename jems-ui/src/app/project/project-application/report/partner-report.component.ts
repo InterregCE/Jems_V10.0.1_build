@@ -1,21 +1,18 @@
 import {AfterViewInit, ChangeDetectionStrategy, Component, TemplateRef, ViewChild} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
-import {
-  ProjectPartnerReportSummaryDTO,
-  ProjectPartnerSummaryDTO,
-  UserRoleDTO
-} from '@cat/api';
+import {ProjectPartnerReportSummaryDTO, ProjectPartnerSummaryDTO, UserRoleDTO} from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {catchError, distinctUntilChanged, filter, finalize, map, take, tap} from 'rxjs/operators';
-import {ProjectApplicationFormSidenavService} from '../containers/project-application-form-page/services/project-application-form-sidenav.service';
+import {
+  ProjectApplicationFormSidenavService
+} from '../containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {RoutingService} from '@common/services/routing.service';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
 import {APIError} from '@common/models/APIError';
-import { Alert } from '@common/components/forms/alert';
-import PermissionsEnum = UserRoleDTO.PermissionsEnum;
+import {Alert} from '@common/components/forms/alert';
 import {
   PartnerReportDetailPageStore
 } from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
@@ -25,6 +22,10 @@ import {
 } from '@common/components/forms/multi-language-container/multi-language-global.service';
 import {Forms} from '@common/utils/forms';
 import {MatDialog} from '@angular/material/dialog';
+import {
+  PartnerControlReportStore
+} from '@project/project-application/report/partner-control-report/partner-control-report-store.service';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @Component({
   selector: 'jems-contract-monitoring',
@@ -80,14 +81,17 @@ export class PartnerReportComponent implements AfterViewInit {
     )
   );
 
-  constructor(public pageStore: PartnerReportPageStore,
-              private activatedRoute: ActivatedRoute,
-              private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
-              private router: RoutingService,
-              private partnerReportDetail: PartnerReportDetailPageStore,
-              private translateService: TranslateService,
-              private multiLanguageGlobalService: MultiLanguageGlobalService,
-              private dialog: MatDialog) {
+  constructor(
+      public pageStore: PartnerReportPageStore,
+      public store: PartnerControlReportStore,
+      private activatedRoute: ActivatedRoute,
+      private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
+      private router: RoutingService,
+      private partnerReportDetail: PartnerReportDetailPageStore,
+      private translateService: TranslateService,
+      private multiLanguageGlobalService: MultiLanguageGlobalService,
+      private dialog: MatDialog
+  ) {
     this.data$ = combineLatest([
       this.pageStore.partnerReports$,
       this.pageStore.partnerSummary$,

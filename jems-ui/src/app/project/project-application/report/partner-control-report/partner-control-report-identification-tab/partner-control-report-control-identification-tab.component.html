@@ -38,11 +38,11 @@
         </div>
         <div class="project-row">
             <span class="header p-1 pr-3">{{'project.application.partner.control.report.first.submission' | translate}}</span>
-            <span class="p-1">{{transformData(data.partnerControlReport.reportFirstSubmission)}}</span>
+            <span class="p-1">{{data.partnerControlReport.reportFirstSubmission | localeDate : 'L' : 'LT'}}</span>
         </div>
         <div class="project-row">
             <span class="header p-1 pr-3">{{'project.application.partner.control.report.latest.resubmission' | translate}}</span>
-            <span class="p-1">{{transformData(data.partnerControlReport.reportFirstSubmission)}}</span>
+            <span class="p-1">{{data.partnerControlReport.reportFirstSubmission | localeDate : 'L' : 'LT'}}</span>
         </div>
     </div>
 
