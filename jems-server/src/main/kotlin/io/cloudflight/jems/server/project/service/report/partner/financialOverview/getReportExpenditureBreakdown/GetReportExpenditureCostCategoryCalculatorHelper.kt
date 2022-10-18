@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown
 
+import io.cloudflight.jems.server.currency.service.model.CurrencyConversion
 import io.cloudflight.jems.server.project.service.budget.calculator.BudgetCostCategory
 import io.cloudflight.jems.server.project.service.budget.calculator.BudgetCostCategory.Staff
 import io.cloudflight.jems.server.project.service.budget.calculator.BudgetCostCategory.Office
@@ -18,6 +19,7 @@ import io.cloudflight.jems.server.project.service.report.model.expenditure.Repor
 import io.cloudflight.jems.server.project.service.report.model.financialOverview.costCategory.ExpenditureCostCategoryBreakdown
 import io.cloudflight.jems.server.project.service.report.model.financialOverview.costCategory.ExpenditureCostCategoryBreakdownLine
 import io.cloudflight.jems.server.project.service.report.model.financialOverview.costCategory.ReportExpenditureCostCategory
+import io.cloudflight.jems.server.project.service.report.partner.expenditure.fillCurrencyRates
 import java.math.BigDecimal
 import java.math.RoundingMode
 
@@ -140,4 +142,9 @@ fun Collection<ProjectPartnerReportExpenditureCost>.calculateCurrent(options: Pr
     val sums = groupBy { it.getCategory() }
         .mapValues { it.value.sumOf { it.declaredAmountAfterSubmission ?: BigDecimal.ZERO } }
     return calculateBudget(options, sums)
+}
+
+fun List<ProjectPartnerReportExpenditureCost>.fillActualCurrencyRates(rates: Collection<CurrencyConversion>) = apply {
+    val ratesByCode = rates.associateBy { it.code }
+    this.fillCurrencyRates(ratesByCode)
 }

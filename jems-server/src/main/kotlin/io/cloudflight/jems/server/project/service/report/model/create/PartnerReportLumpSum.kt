@@ -4,6 +4,8 @@ import java.math.BigDecimal
 
 data class PartnerReportLumpSum(
     val lumpSumId: Long,
+    val orderNr: Int,
     val period: Int?,
-    val value: BigDecimal
+    val total: BigDecimal,
+    val previouslyReported: BigDecimal,
 )

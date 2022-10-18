@@ -30,6 +30,7 @@ import io.cloudflight.jems.server.project.service.report.partner.contribution.Pr
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectReportExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureCostCategoryPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportLumpSumPersistence
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -85,6 +86,26 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             pricePerUnit = BigDecimal.ZERO,
             declaredAmount = BigDecimal.valueOf(25448, 2),
             currencyCode = "CZK",
+            currencyConversionRate = null,
+            declaredAmountAfterSubmission = null,
+            attachment = null,
+        )
+
+        private val expenditure2 = ProjectPartnerReportExpenditureCost(
+            id = 631,
+            lumpSumId = 22L,
+            unitCostId = null,
+            costCategory = ReportBudgetCategory.Multiple,
+            investmentId = null,
+            contractId = null,
+            internalReferenceNumber = null,
+            invoiceNumber = null,
+            invoiceDate = null,
+            dateOfPayment = null,
+            numberOfUnits = BigDecimal.ONE,
+            pricePerUnit = BigDecimal.valueOf(485, 1),
+            declaredAmount = BigDecimal.valueOf(485, 1),
+            currencyCode = "EUR",
             currencyConversionRate = null,
             declaredAmountAfterSubmission = null,
             attachment = null,
@@ -183,6 +204,9 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
     lateinit var reportContributionPersistence: ProjectReportContributionPersistence
 
     @MockK
+    lateinit var reportLumpSumPersistence: ProjectReportLumpSumPersistence
+
+    @MockK
     lateinit var auditPublisher: ApplicationEventPublisher
 
     @InjectMockKs
@@ -209,7 +233,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
         every { reportPersistence.getPartnerReportById(PARTNER_ID, 35L) } returns report
 
         every { reportExpenditurePersistence.getPartnerReportExpenditureCosts(PARTNER_ID, 35L) } returns
-            listOf(expenditure1)
+            listOf(expenditure1, expenditure2)
         every { currencyPersistence.findAllByIdYearAndIdMonth(year = YEAR, month = MONTH) } returns
             listOf(
                 CurrencyConversion("CZK", YEAR, MONTH, "", BigDecimal.valueOf(254855, 4)),
@@ -228,6 +252,9 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
         every { reportContributionPersistence.getPartnerReportContribution(PARTNER_ID, reportId = 35L) } returns partnerContribution
         val coFinSlot = slot<ReportExpenditureCoFinancingColumn>()
         every { reportExpenditureCoFinancingPersistence.updateCurrentlyReportedValues(PARTNER_ID, reportId = 35L, capture(coFinSlot)) } answers { }
+
+        val lumpSumSlot = slot<Map<Long, BigDecimal>>()
+        every { reportLumpSumPersistence.updateCurrentlyReportedValues(PARTNER_ID, reportId = 35L, capture(lumpSumSlot)) } answers { }
 
         val submissionTime = slot<ZonedDateTime>()
         every { reportPersistence.submitReportById(any(), any(), capture(submissionTime)) } returns mockedResult
@@ -254,9 +281,11 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
                 currencyConversionRate = BigDecimal.valueOf(254855, 4),
                 declaredAmountAfterSubmission = BigDecimal.valueOf(999, 2),
             ),
+            expenditure2.copy(),
         )
         assertThat(expenditureCcSlot.captured).isEqualTo(expectedPersistedExpenditureCostCategory)
         assertThat(coFinSlot.captured).isEqualTo(expectedCoFinancing)
+        assertThat(lumpSumSlot.captured).containsExactlyEntriesOf(mapOf(22L to BigDecimal.valueOf(485, 1)))
     }
 
     @Test

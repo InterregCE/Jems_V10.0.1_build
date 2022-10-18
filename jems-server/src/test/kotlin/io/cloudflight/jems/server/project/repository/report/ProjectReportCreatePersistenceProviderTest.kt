@@ -71,6 +71,7 @@ import java.math.BigDecimal
 import java.math.BigDecimal.ONE
 import java.math.BigDecimal.TEN
 import java.math.BigDecimal.ZERO
+import java.math.BigDecimal.valueOf
 import java.util.UUID
 
 class ProjectReportCreatePersistenceProviderTest : UnitTest() {
@@ -178,14 +179,17 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
                 availableLumpSums = listOf(
                     PartnerReportLumpSum(
                         lumpSumId = 85L,
+                        orderNr = 7,
                         period = 0,
-                        value = ONE
+                        total = ONE,
+                        previouslyReported = valueOf(7, 1),
                     ),
                 ),
                 unitCosts = setOf(PartnerReportUnitCostBase(
                     unitCostId = 5L,
+                    numberOfUnits = ONE,
                     totalCost = ONE,
-                    numberOfUnits = ONE
+                    previouslyReported = valueOf(5, 1),
                 )),
                 budgetPerPeriod = listOf(
                     ProjectPartnerReportPeriod(1, ONE, ONE, 1, 3),
@@ -564,7 +568,9 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
         with(lumpSumSlot.captured.first()) {
             assertThat(programmeLumpSum).isNotNull
             assertThat(period).isEqualTo(0)
-            assertThat(cost).isEqualTo(ONE)
+            assertThat(total).isEqualTo(ONE)
+            assertThat(current).isEqualByComparingTo(ZERO)
+            assertThat(previouslyReported).isEqualByComparingTo(valueOf(7, 1))
         }
     }
 
@@ -574,8 +580,10 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
         assertThat(unitCostSlot.captured).hasSize(1)
         with(unitCostSlot.captured.first()) {
             assertThat(programmeUnitCost).isNotNull
-            assertThat(totalCost).isEqualTo(ONE)
             assertThat(numberOfUnits).isEqualTo(ONE)
+            assertThat(total).isEqualTo(ONE)
+            assertThat(current).isEqualTo(ZERO)
+            assertThat(previouslyReported).isEqualTo(valueOf(5, 1))
         }
     }
 

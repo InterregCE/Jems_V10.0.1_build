@@ -35,6 +35,7 @@ import io.cloudflight.jems.server.project.service.report.model.identification.Pr
 import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectReportContributionPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureCostCategoryPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportLumpSumPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.applyPercentage
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.generateCoFinCalculationInputData
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.getCurrentFrom
@@ -57,6 +58,7 @@ class CreateProjectPartnerReportBudget(
     private val reportExpenditureCostCategoryPersistence: ProjectReportExpenditureCostCategoryPersistence,
     private val reportExpenditureCoFinancingPersistence: ProjectReportExpenditureCoFinancingPersistence,
     private val paymentPersistence: PaymentPersistence,
+    private val reportLumpSumPersistence: ProjectReportLumpSumPersistence,
 ) {
 
     @Transactional
@@ -79,7 +81,12 @@ class CreateProjectPartnerReportBudget(
 
         return PartnerReportBudget(
             contributions = contributions,
-            availableLumpSums = lumpSums.onlyNonFastTrack().toPartnerReportLumpSums(partnerId = partnerId),
+            availableLumpSums = lumpSums
+                .onlyNonFastTrack()
+                .toPartnerReportLumpSums(
+                    partnerId = partnerId,
+                    previouslyReported = reportLumpSumPersistence.getLumpSumCumulative(submittedReportIds),
+                ),
             unitCosts = getSetOfUnitCostsWithTotalAndNumberOfUnits(
                 partnerBudgetCostsPersistence.getBudgetStaffCosts(partnerId, version)
                     .asSequence()
@@ -88,7 +95,9 @@ class CreateProjectPartnerReportBudget(
                     .plus(partnerBudgetCostsPersistence.getBudgetEquipmentCosts(partnerId, version))
                     .plus(partnerBudgetCostsPersistence.getBudgetInfrastructureAndWorksCosts(partnerId, version))
                     .plus(partnerBudgetCostsPersistence.getBudgetUnitCosts(partnerId, version))
-                    .toList()),
+                    .toList(),
+                previouslyReported = emptyMap( /* TODO MP2-2907 */),
+            ),
             budgetPerPeriod = (
                 getPartnerBudgetPerPeriod.getPartnerBudgetPerPeriod(projectId = projectId, version)
                     .partnersBudgetPerPeriod.firstOrNull { it.partner.id == partnerId }?.periodBudgets ?: emptyList()
@@ -177,21 +186,30 @@ class CreateProjectPartnerReportBudget(
     }
 
     private fun List<ProjectLumpSum>.toPartnerReportLumpSums(
-        partnerId: Long
+        partnerId: Long,
+        previouslyReported: Map<Int, BigDecimal>,
     ) = map {
         PartnerReportLumpSum(
             lumpSumId = it.programmeLumpSumId,
+            orderNr = it.orderNr,
             period = it.period,
-            value = it.lumpSumContributions.firstOrNull { it.partnerId == partnerId }?.amount ?: ZERO
+            total = it.lumpSumContributions.firstOrNull { it.partnerId == partnerId }?.amount ?: ZERO,
+            previouslyReported = previouslyReported.getOrDefault(it.orderNr, ZERO),
         )
     }
 
-    private fun getSetOfUnitCostsWithTotalAndNumberOfUnits(budgetEntries: List<BaseBudgetEntry>): Set<PartnerReportUnitCostBase> {
-        return budgetEntries.filter {it.unitCostId != null}.groupBy { it.unitCostId }.entries.map { mapOfUnitCostsById -> PartnerReportUnitCostBase(
-            unitCostId = mapOfUnitCostsById.key!!,
-            totalCost = mapOfUnitCostsById.value.sumOf { it.rowSum!! },
-            numberOfUnits = mapOfUnitCostsById.value.sumOf { it.numberOfUnits },
-        ) }.toSet()
+    private fun getSetOfUnitCostsWithTotalAndNumberOfUnits(
+        budgetEntries: List<BaseBudgetEntry>,
+        previouslyReported: Map<Long, BigDecimal>,
+    ): Set<PartnerReportUnitCostBase> {
+        return budgetEntries.filter {it.unitCostId != null}
+            .groupBy { it.unitCostId!! }.entries
+            .mapTo(HashSet()) { (unitCostId, budgetEntries) -> PartnerReportUnitCostBase(
+                unitCostId = unitCostId,
+                totalCost = budgetEntries.sumOf { it.rowSum!! },
+                numberOfUnits = budgetEntries.sumOf { it.numberOfUnits },
+                previouslyReported = previouslyReported.getOrDefault(unitCostId, ZERO),
+        ) }
     }
 
     private fun List<ProjectPeriodBudget>.getCumulative() = sortedBy { it.periodNumber }

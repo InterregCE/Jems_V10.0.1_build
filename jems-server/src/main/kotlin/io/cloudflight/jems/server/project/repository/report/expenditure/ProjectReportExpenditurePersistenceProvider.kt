@@ -53,7 +53,7 @@ class ProjectReportExpenditurePersistenceProvider(
         )
 
         val lumpSumsById = reportLumpSumRepository
-            .findByReportEntityPartnerIdAndReportEntityIdOrderByPeriodAscIdAsc(partnerId, reportId)
+            .findByReportEntityPartnerIdAndReportEntityIdOrderByOrderNrAscIdAsc(partnerId, reportId)
             .associateBy { it.id }
         val unitCostsById = reportUnitCostRepository
             .findByReportEntityPartnerIdAndReportEntityIdOrderByIdAsc(partnerId, reportId)
@@ -76,7 +76,7 @@ class ProjectReportExpenditurePersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getAvailableLumpSums(partnerId: Long, reportId: Long): List<ProjectPartnerReportLumpSum> =
-        reportLumpSumRepository.findByReportEntityPartnerIdAndReportEntityIdOrderByPeriodAscIdAsc(
+        reportLumpSumRepository.findByReportEntityPartnerIdAndReportEntityIdOrderByOrderNrAscIdAsc(
             partnerId = partnerId,
             reportId = reportId,
         ).toModel()

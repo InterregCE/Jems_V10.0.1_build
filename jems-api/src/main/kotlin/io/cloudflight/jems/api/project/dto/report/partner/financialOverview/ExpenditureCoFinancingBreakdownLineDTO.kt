@@ -7,8 +7,8 @@ data class ExpenditureCoFinancingBreakdownLineDTO(
     val totalEligibleBudget: BigDecimal,
     val previouslyReported: BigDecimal,
     val previouslyPaid: BigDecimal,
-    var currentReport: BigDecimal,
-    var totalReportedSoFar: BigDecimal,
-    var totalReportedSoFarPercentage: BigDecimal,
-    var remainingBudget: BigDecimal,
+    val currentReport: BigDecimal,
+    val totalReportedSoFar: BigDecimal,
+    val totalReportedSoFarPercentage: BigDecimal,
+    val remainingBudget: BigDecimal,
 )

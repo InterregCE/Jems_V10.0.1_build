@@ -28,8 +28,13 @@ class PartnerReportUnitCostEntity (
     var programmeUnitCost: ProgrammeUnitCostEntity,
 
     @field:NotNull
-    val totalCost: BigDecimal,
+    val numberOfUnits: BigDecimal,
 
     @field:NotNull
-    val numberOfUnits: BigDecimal
+    val total: BigDecimal,
+    @field:NotNull
+    var current: BigDecimal,
+    @field:NotNull
+    val previouslyReported: BigDecimal,
+
 )

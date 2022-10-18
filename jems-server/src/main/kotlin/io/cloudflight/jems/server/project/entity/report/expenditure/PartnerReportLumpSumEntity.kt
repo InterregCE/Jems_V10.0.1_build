@@ -26,10 +26,17 @@ class PartnerReportLumpSumEntity(
 
     @ManyToOne(optional = false)
     @field:NotNull
-    var programmeLumpSum: ProgrammeLumpSumEntity,
+    val programmeLumpSum: ProgrammeLumpSumEntity,
+
+    val orderNr: Int,
 
     val period: Int?,
 
     @field:NotNull
-    val cost: BigDecimal,
+    val total: BigDecimal,
+    @field:NotNull
+    var current: BigDecimal,
+    @field:NotNull
+    val previouslyReported: BigDecimal,
+
 )
