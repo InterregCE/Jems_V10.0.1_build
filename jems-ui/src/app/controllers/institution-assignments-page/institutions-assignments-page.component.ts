@@ -125,7 +125,7 @@ export class InstitutionsAssignmentsPageComponent{
         {
           displayedColumn: 'controller.institutions.assignment.table.project.id.column.headline',
           elementProperty: 'projectCustomIdentifier',
-          columnWidth: ColumnWidth.MediumColumn,
+          columnWidth: ColumnWidth.ChipColumn,
           sortProperty: 'projectId',
         },
         {

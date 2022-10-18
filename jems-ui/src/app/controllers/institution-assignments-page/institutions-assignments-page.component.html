@@ -1,17 +1,18 @@
 <jems-main-page-template *ngIf="data$ | async as data"
-                         [needsCard]="true"
+                         [needsCard]="false"
                          titleKey="topbar.main.controllers">
 
     <jems-form (discard)="resetForm(data.rows, true)" (save)="saveForm()">
-            <jems-table class="overflow-auto" *ngIf="data.rows.length"
-                        [configuration]="data.tableConfiguration"
-                        [rows]="data.rows"
-                        [totalElements]="data.totalElements"
-                        [pageIndex]="institutionAssignmentStore.newPageIndex$ | async"
-                        (newPageIndex)="institutionAssignmentStore.newPageIndex$.next($event)"
-                        (newPageSize)="institutionAssignmentStore.newPageSize$.next($event)"
-                        (sortRows)="institutionAssignmentStore.newSort$.next($event)">
-            </jems-table>
+        <h3>{{'topbar.main.institutions.assignment' | translate}}</h3>
+        <jems-table class="overflow-auto" *ngIf="data.rows.length"
+                    [configuration]="data.tableConfiguration"
+                    [rows]="data.rows"
+                    [totalElements]="data.totalElements"
+                    [pageIndex]="institutionAssignmentStore.newPageIndex$ | async"
+                    (newPageIndex)="institutionAssignmentStore.newPageIndex$.next($event)"
+                    (newPageSize)="institutionAssignmentStore.newPageSize$.next($event)"
+                    (sortRows)="institutionAssignmentStore.newSort$.next($event)">
+        </jems-table>
     </jems-form>
 
 </jems-main-page-template>
