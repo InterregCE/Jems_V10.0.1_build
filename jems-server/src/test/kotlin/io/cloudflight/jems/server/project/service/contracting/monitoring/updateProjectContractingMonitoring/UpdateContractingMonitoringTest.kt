@@ -189,14 +189,7 @@ class UpdateContractingMonitoringTest : UnitTest() {
         assertThat(updateContractingMonitoring.updateContractingMonitoring(projectId, monitoringOther))
             .isEqualTo(monitoringOther)
         val slotAudit = slot<AuditCandidateEvent>()
-        verify(exactly = 1) { auditPublisher.publishEvent(capture(slotAudit)) }
-        assertThat(slotAudit.captured.auditCandidate).isEqualTo(
-            AuditCandidate(
-                action = AuditAction.PROJECT_CONTRACT_MONITORING_CHANGED,
-                project = AuditProject(id = projectId.toString()),
-                description = "Fields changed:\n(no-change)"
-            )
-        )
+        verify(exactly = 0) { auditPublisher.publishEvent(capture(slotAudit)) }
     }
 
     @Test
@@ -272,16 +265,6 @@ class UpdateContractingMonitoringTest : UnitTest() {
                     "  2022-06-02\n" +
                     "] to [\n" +
                     "  2022-07-22\n" +
-                    "],\n" +
-                    "setReadyForPayment changed from [\n" +
-                    "  true\n" +
-                    "] to [\n" +
-                    "  true\n" +
-                    "],\n" +
-                    "setComment changed from [\n" +
-                    "  null\n" +
-                    "] to [\n" +
-                    "  Test\n" +
                     "]"
             )
         )

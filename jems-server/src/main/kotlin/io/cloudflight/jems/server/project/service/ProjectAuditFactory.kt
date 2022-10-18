@@ -253,11 +253,8 @@ fun projectFileDescriptionChanged(
 fun projectContractingMonitoringChanged(
     context: Any,
     project: ProjectSummary,
-    oldMonitoring: ProjectContractingMonitoring,
-    newMonitoring: ProjectContractingMonitoring
+    changes: String
 ): AuditCandidateEvent {
-    val changes = newMonitoring.getDiff(old = oldMonitoring).fromOldToNewChanges()
-
     return AuditCandidateEvent(
         context = context,
         auditCandidate = AuditCandidate(

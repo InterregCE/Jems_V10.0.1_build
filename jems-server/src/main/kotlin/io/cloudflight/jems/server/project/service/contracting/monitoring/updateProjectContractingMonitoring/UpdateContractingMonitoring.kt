@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.service.contracting.monitoring.updateProjectContractingMonitoring
 
+import io.cloudflight.jems.server.common.audit.fromOldToNewChanges
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.payments.PaymentPersistence
 import io.cloudflight.jems.server.payments.entity.PaymentGroupingId
@@ -72,14 +73,16 @@ class UpdateContractingMonitoring(
             updateApprovedAmountPerPartner(projectSummary, lumpSumsOrderNrTobeAdded, lumpSumsOrderNrToBeDeleted)
 
             if (projectSummary.status.isAlreadyContracted()) {
-                auditPublisher.publishEvent(
-                    projectContractingMonitoringChanged(
-                        context = this,
-                        project = projectSummary,
-                        oldMonitoring = oldMonitoring,
-                        newMonitoring = contractMonitoring
+                val diff = contractMonitoring.getDiff(old = oldMonitoring)
+                if (diff.isNotEmpty()) {
+                    auditPublisher.publishEvent(
+                        projectContractingMonitoringChanged(
+                            context = this,
+                            project = projectSummary,
+                            changes = diff.fromOldToNewChanges()
+                        )
                     )
-                )
+                }
             }
             return updated
         }
