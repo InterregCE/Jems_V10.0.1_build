@@ -28,15 +28,17 @@ export class ContractPartnerComponent implements OnInit {
   partnerId = this.activatedRoute.snapshot.params.partnerId;
   data$: Observable<{
     partnerSummary: ProjectPartnerSummaryDTO;
+    canView: boolean;
   }>;
   Alert = Alert;
 
   ngOnInit(): void {
     this.data$ = combineLatest([
       this.contractPartnerStore.partnerSummary$,
+      this.contractPartnerStore.userCanViewContractPartner$
     ])
       .pipe(
-        map(([partnerSummary]) => ({partnerSummary}))
+        map(([partnerSummary, canView]) => ({partnerSummary, canView}))
       );
   }
 

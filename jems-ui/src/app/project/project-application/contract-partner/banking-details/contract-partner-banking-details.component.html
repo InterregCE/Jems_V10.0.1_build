@@ -44,13 +44,15 @@
             <mat-hint [jemsHintFor]="accountIBAN"
                       [hide]="partnerBankingDetailsForm.get('accountIBAN')?.errors !== null">
                 <jems-text-hint [currentLength]="accountIBAN?.value?.length"
-                                [maxLength]="50"></jems-text-hint>
-                <mat-error>
+                                [maxLength]="50">
+
+                </jems-text-hint>
+            </mat-hint>
+            <mat-error>
                     <jems-form-field-errors
                             [errors]="partnerBankingDetailsForm?.controls?.accountIBAN?.errors">
                     </jems-form-field-errors>
-                </mat-error>
-            </mat-hint>
+            </mat-error>
         </mat-form-field>
         <mat-form-field [matTooltip]="accountSwiftBICCode.value">
             <mat-label>{{'project.application.contract.partner.section.banking.details.account.swift.bic.code' | translate}}</mat-label>
