@@ -9,14 +9,21 @@ import {
 import {filter, map, shareReplay, switchMap, tap} from 'rxjs/operators';
 import {RoutingService} from '@common/services/routing.service';
 import {
-  ContractingPartnerBeneficialOwnerDTO, ContractingPartnerDocumentsLocationDTO,
-  ProjectContractingPartnerBeneficialOwnerService, ProjectContractingPartnerLocationOfDocumentsService,
-  ProjectPartnerSummaryDTO, ProjectPartnerUserCollaboratorService, ProjectUserCollaboratorDTO, UserRoleCreateDTO,
+  ContractingPartnerBeneficialOwnerDTO,
+  ContractingPartnerDocumentsLocationDTO,
+  ProjectContractingPartnerBeneficialOwnerService,
+  ProjectContractingPartnerLocationOfDocumentsService,
+  ProjectPartnerSummaryDTO,
+  ProjectPartnerUserCollaboratorService,
+  ProjectStatusDTO,
+  ProjectUserCollaboratorDTO,
+  UserRoleCreateDTO,
 } from '@cat/api';
 import {Log} from '@common/utils/log';
+import {PermissionService} from '../../../security/permissions/permission.service';
+import {ProjectUtil} from "@project/common/project-util";
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 import LevelEnum = ProjectUserCollaboratorDTO.LevelEnum;
-import {PermissionService} from '../../../security/permissions/permission.service';
 
 @Injectable({
   providedIn: 'root'
@@ -33,13 +40,16 @@ export class ContractPartnerStore {
   userCanEditContractPartner$: Observable<boolean>;
   userCanViewContractPartner$: Observable<boolean>;
 
-  constructor(private partnerStore: ProjectPartnerStore,
-              private projectStore: ProjectStore,
-              private routingService: RoutingService,
-              private beneficialOwnerService: ProjectContractingPartnerBeneficialOwnerService,
-              private permissionService: PermissionService,
-              private partnerUserCollaboratorService: ProjectPartnerUserCollaboratorService,
-              private documentsLocationService: ProjectContractingPartnerLocationOfDocumentsService) {
+  constructor(
+      private partnerStore: ProjectPartnerStore,
+      private projectStore: ProjectStore,
+      private routingService: RoutingService,
+      private beneficialOwnerService: ProjectContractingPartnerBeneficialOwnerService,
+      private permissionService: PermissionService,
+      private partnerUserCollaboratorService: ProjectPartnerUserCollaboratorService,
+      private documentsLocationService: ProjectContractingPartnerLocationOfDocumentsService,
+      private projectPartnerStore: ProjectPartnerStore
+  ) {
     this.partnerId$ = this.partnerId();
     this.projectId$ = this.projectStore.projectId$;
     this.partnerSummary$ = this.partnerInfo();
@@ -110,16 +120,25 @@ export class ContractPartnerStore {
       this.projectStore.userIsPartnerCollaborator$,
       this.permissionService.hasPermission(PermissionsEnum.ProjectContractingPartnerView),
       this.projectStore.userIsProjectOwner$,
+      this.projectPartnerStore.partnerSummaries$,
+      this.projectStore.projectStatus$
     ]).pipe(
-      switchMap(([partnerId, userIsPartnerCollaborator, hasContractingPartnerView, userIsProjectOwner]) =>
+      switchMap(([partnerId, userIsPartnerCollaborator, hasContractingPartnerView, userIsProjectOwner, partners, projectStatus]:
+          [string | number | null, boolean, boolean, boolean, ProjectPartnerSummaryDTO[], ProjectStatusDTO]) =>
         combineLatest([
+          of(Number(partnerId)),
           this.partnerUserCollaboratorService.checkMyPartnerLevel(partnerId as number),
           of(userIsPartnerCollaborator),
           of(hasContractingPartnerView),
           of(userIsProjectOwner),
+          of(partners),
+          of(projectStatus)
         ])
       ),
-      map(([partnerLevel, userIsPartnerCollaborator, hasContractingPartnerView, userIsProjectOwner]) => userIsProjectOwner || hasContractingPartnerView || (userIsPartnerCollaborator && (partnerLevel === LevelEnum.EDIT || partnerLevel === LevelEnum.VIEW))),
+      map(([partnerId, partnerLevel, userIsPartnerCollaborator, hasContractingPartnerView, userIsProjectOwner, partners, projectStatus]:
+      [number, string, boolean, boolean, boolean, ProjectPartnerSummaryDTO[], ProjectStatusDTO]) =>
+          (partners.map(partner => partner.id).find(id => id == partnerId) != undefined) && ProjectUtil.isInApprovedOrAnyStatusAfterApproved(projectStatus) &&
+          (userIsProjectOwner || hasContractingPartnerView || (userIsPartnerCollaborator && (partnerLevel === LevelEnum.EDIT || partnerLevel === LevelEnum.VIEW)))),
       shareReplay(1)
     );
   }
