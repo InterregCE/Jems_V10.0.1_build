@@ -38,6 +38,7 @@ export class ProjectPartnerStore {
   partnerSummaries$: Observable<ProjectPartnerSummaryDTO[]>;
   partnerReportSummaries$: Observable<ProjectPartnerSummaryDTO[]>;
   latestPartnerSummaries$: Observable<ProjectPartnerSummaryDTO[]>;
+  partnerSummariesOfLastApprovedVersion$: Observable<ProjectPartnerSummaryDTO[]>;
   private partnerId: number;
   private projectId: number;
   private lastContractedVersion$ = new ReplaySubject<string>(1);
@@ -55,6 +56,7 @@ export class ProjectPartnerStore {
     this.partnerSummaries$ = this.partnerSummaries();
     this.latestPartnerSummaries$ = this.partnerSummariesFromVersion();
     this.partnerReportSummaries$ = this.partnerReportSummaries();
+    this.partnerSummariesOfLastApprovedVersion$ = this.getPartnerSummariesOfLastApprovedVersion();
     this.partners$ = combineLatest([
       this.projectStore.project$,
       this.projectVersionStore.selectedVersionParam$,
@@ -218,6 +220,16 @@ export class ProjectPartnerStore {
     return Tools.first(versions.filter(version => version.status === StatusEnum.CONTRACTED)
       .sort((a, b) => a.createdAt > b.createdAt ? -1 : 1))?.version;
   }
+
+  private getPartnerSummariesOfLastApprovedVersion(): Observable<ProjectPartnerSummaryDTO[]> {
+    return this.projectVersionStore.lastApprovedOrContractedVersion$
+      .pipe(
+        map(lastApprovedVersion => lastApprovedVersion?.version),
+        filter(version => !!version),
+        switchMap(version => this.partnerSummariesFromVersion(version)),
+      );
+  }
+
 
   static getPartnerTranslationKey(role: ProjectPartnerDTO.RoleEnum, callType: CallTypeEnum) {
     const prefix = (callType === CallTypeEnum.STANDARD) ? '' : callType.toLocaleLowerCase() + '.';

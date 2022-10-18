@@ -254,7 +254,7 @@ export class ProjectApplicationFormSidenavService {
       switchMap(([canSeeContractPartner, projectId, callType]) => {
         return (canSeeContractPartner) ?
           combineLatest([
-            this.partnerSummariesOfLastApprovedVersion$,
+            this.partnerStore.partnerSummariesOfLastApprovedVersion$,
             this.projectStore.userIsPartnerCollaborator$,
             this.projectStore.projectId$,
             this.partnerUserCollaboratorService.listCurrentUserPartnerCollaborations(projectId)
@@ -277,14 +277,6 @@ export class ProjectApplicationFormSidenavService {
       catchError(() => of([])),
       startWith([])
     );
-
-  private readonly partnerSummariesOfLastApprovedVersion$: Observable<ProjectPartnerSummaryDTO[]> =
-    this.projectVersionStore.lastApprovedOrContractedVersion$
-      .pipe(
-        map(lastApprovedVersion => lastApprovedVersion?.version),
-        filter(version => !!version),
-        switchMap(version => this.partnerStore.partnerSummariesFromVersion(version)),
-      );
 
   private readonly packages$: Observable<HeadlineRoute[]> =
     this.canSeeProjectForm$.pipe(
