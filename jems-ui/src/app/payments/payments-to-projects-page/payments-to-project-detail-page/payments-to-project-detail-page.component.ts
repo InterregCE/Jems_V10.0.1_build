@@ -161,11 +161,7 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
       .subscribe(
         (updatedInstallments) => {
           paymentDetail.partnerPayments.filter(partnerPayment => partnerPayment.partnerId === payment.partnerId)[0].installments = updatedInstallments;
-
-          // As we update installments for each partner this is needed so that we only call the next method once all the partners are updated.
-          if(index === paymentDetail.partnerPayments.length - 1) {
-            this.paymentsDetailPageStore.savedPaymentDetail$.next(paymentDetail);
-          }
+          this.paymentsDetailPageStore.savedPaymentDetail$.next(paymentDetail);
         }
       );
     });
