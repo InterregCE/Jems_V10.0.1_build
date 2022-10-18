@@ -21,7 +21,10 @@
             fundName: data.paymentDetail.fundName
         } }}</h3>
         <p>{{'payments.payment.to.project.detail.subtext' | translate}}</p>
-        <p>{{'payments.detail.installment.deletion.not.possible.warning' | translate}}</p>
+        <jems-alert [show]="true"
+                    [type]="Alert.WARNING">
+            <span>{{'payments.detail.installment.deletion.not.possible.warning' | translate}}</span>
+        </jems-alert>
 
             <ng-container *ngIf="partnerPayments">
                 <div jemsNoWidthLimit id="payments-per-partner-table" class="mb-3 payments-per-partner-container"
