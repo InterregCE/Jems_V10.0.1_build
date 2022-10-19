@@ -73,10 +73,6 @@ export class ContractFilesComponent implements OnInit {
       .subscribe();
   }
 
-  deleteFile(file: FileListItem): void {
-    this.store.deleteFile(file.id).pipe(take(1)).subscribe();
-  }
-
   uploadFile(target: any): void {
     if (!target) {
       return;
@@ -94,14 +90,6 @@ export class ContractFilesComponent implements OnInit {
       .pipe(take(1))
       .subscribe();
   }
-
-  updateDescription(data: FileDescriptionChange) {
-    this.store.setFileDescription(data.id, data.description).pipe(
-      tap(() => this.store.filesChanged$.next()),
-      untilDestroyed(this)
-    ).subscribe();
-  }
-
 
   private fileCategories(): Observable<CategoryNode> {
     return of({
@@ -135,4 +123,13 @@ export class ContractFilesComponent implements OnInit {
       iconIfNotDeletable: 'delete_forever',
     }));
   }
+
+  setDescriptionCallback = (data: FileDescriptionChange): Observable<any> => {
+    return this.store.setFileDescription(data.id, data.description);
+  };
+
+  deleteCallback = (file: FileListItem): Observable<void> => {
+    return this.store.deleteFile(file.id);
+  };
+
 }

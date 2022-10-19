@@ -105,33 +105,6 @@ export class FileManagementStore {
       );
   }
 
-  deleteFile(fileId: number): Observable<void> {
-    return this.projectStore.projectId$
-      .pipe(
-        take(1),
-        switchMap(projectId => this.projectFileService.deleteProjectFile(fileId, projectId)),
-        tap(() => this.filesChanged$.next()),
-        tap(() => this.deleteSuccess$.next(true)),
-        tap(() => setTimeout(() => this.deleteSuccess$.next(false), 3000)),
-        catchError(error => {
-          this.error$.next(error.error);
-          return of({} as ProjectFileMetadataDTO);
-        })
-      );
-  }
-
-  setFileDescription(fileId: number, description: string): Observable<ProjectFileMetadataDTO> {
-    return this.projectStore.projectId$
-      .pipe(
-        take(1),
-        switchMap(projectId => this.projectFileService.setProjectFileDescription(fileId, projectId, description)),
-        catchError(error => {
-          this.error$.next(error.error);
-          throw error;
-        })
-      );
-  }
-
   downloadFile(fileId: number): Observable<any> {
     return this.projectStore.projectId$
       .pipe(

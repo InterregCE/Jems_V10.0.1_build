@@ -4,12 +4,13 @@
 
         <jems-file-list jemsNoWidthLimit
                 [fileList]="data.attachments"
+                [setDescriptionCallback]="setDescriptionCallback"
+                [deleteCallback]="deleteCallback"
                 (onSortChange)="paymentAttachmentsStore.newSort$.next($event)"
                 (onPageIndexChange)="paymentAttachmentsStore.newPageIndex$.next($event)"
                 (onPageSizeChange)="paymentAttachmentsStore.newPageSize$.next($event)"
                 (onDownload)="downloadFile($event)"
-                (onDelete)="deleteFile($event)"
-                (onDescriptionChange)="updateDescription($event)" >
+                (refresh)="paymentAttachmentsStore.filesChanged$.next()">
         </jems-file-list>
 
         <div *ngIf="data.isPaymentEditable">

@@ -13,11 +13,11 @@
             <jems-file-list-table jemsNoWidthLimit class="pb-2"
                     [fileList]="data.attachments"
                     [sortingEnabled]="true"
+                    [setDescriptionCallback]="setDescriptionCallback"
+                    [deleteCallback]="deleteCallback"
                     (onSortChange)="controlReportFileStore.newSort$.next($event)"
                     (onDownload)="downloadFile($event)"
-                    (onDelete)="deleteFile($event)"
-                    (onDescriptionChange)="updateDescription($event)"
-                    [savingInProgressForId]="savingDescriptionId$ | async">
+                    (refresh)="controlReportFileStore.filesChanged$.next()">
             </jems-file-list-table>
 
             <div *ngIf="data.isControlReportEditable">

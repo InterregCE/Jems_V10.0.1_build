@@ -82,15 +82,6 @@ export class PartnerControlReportFileManagementStore {
       .pipe(map(id => Number(id)));
   }
 
-  deleteFile(file: FileListItem): Observable<void> {
-    return combineLatest([this.partnerId$, this.reportId$])
-      .pipe(
-        switchMap(([partnerId, reportId]) =>
-          this.projectPartnerReportService.deleteControlReportFile(file.id, partnerId, reportId)),
-        tap(() => this.filesChanged$.next()),
-      );
-  }
-
   uploadFile(file: File): Observable<ProjectReportFileMetadataDTO> {
     const serviceId = uuid();
     this.routingService.confirmLeaveMap.set(serviceId, true);

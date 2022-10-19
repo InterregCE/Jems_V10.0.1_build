@@ -2,10 +2,11 @@
     <jems-file-list-table
             [fileList]="fileList?.content || []"
             sortingEnabled="true"
+            [setDescriptionCallback]="setDescriptionCallback"
+            [deleteCallback]="deleteCallback"
             (onSortChange)="this.onSortChange.next($event)"
             (onDownload)="onDownload.emit($event)"
-            (onDelete)="onDelete.emit($event)"
-            (onDescriptionChange)="onDescriptionChange.emit($event)">
+            (refresh)="refresh.emit()">
     </jems-file-list-table>
 
     <jems-paginator *ngIf="fileList?.content?.length"

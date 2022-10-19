@@ -84,10 +84,6 @@ export class ContractingFilesComponent implements OnInit{
     this.store.downloadFile(file.id).pipe(take(1)).subscribe();
   }
 
-  deleteFile(file: FileListItem): void {
-    this.store.deleteFile(file.id).pipe(take(1)).subscribe();
-  }
-
   uploadFile(target: any): void {
     if (!target) {
       return;
@@ -106,12 +102,13 @@ export class ContractingFilesComponent implements OnInit{
       .subscribe();
   }
 
-  updateDescription(data: FileDescriptionChange) {
-    this.store.setFileDescription(data.id, data.description).pipe(
-      tap(() => this.store.filesChanged$.next()),
-      untilDestroyed(this)
-    ).subscribe();
-  }
+  setDescriptionCallback = (data: FileDescriptionChange): Observable<any> => {
+    return this.store.setFileDescription(data.id, data.description);
+  };
+
+  deleteCallback = (file: FileListItem): Observable<void> => {
+    return this.store.deleteFile(file.id);
+  };
 
   private getFilesToList(): Observable<PageFileList> {
     return this.store.fileList$.pipe(

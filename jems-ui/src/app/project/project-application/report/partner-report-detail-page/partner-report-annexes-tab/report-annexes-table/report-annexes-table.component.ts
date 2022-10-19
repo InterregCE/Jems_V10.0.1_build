@@ -96,24 +96,26 @@ export class ReportAnnexesTableComponent {
       .subscribe();
   }
 
-  deleteFile(file: FileListItem): void {
-    this.fileManagementStore.deleteFile(file.id).pipe(take(1)).subscribe();
-  }
-
-  savingDescriptionId$ = new BehaviorSubject<number | null>(null);
-  updateDescription(data: FileDescriptionChange) {
+  setDescriptionCallback = (data: FileDescriptionChange): Observable<any> => {
     return combineLatest([
       this.partnerReportDetailPageStore.partnerId$.pipe(map(id => Number(id))),
       this.partnerReportDetailPageStore.partnerReportId$.pipe(map(id => Number(id))),
     ]).pipe(
-      take(1),
-      tap(() => this.savingDescriptionId$.next(data.id)),
       switchMap(([partnerId, reportId]) =>
         this.projectPartnerReportService.updateReportFileDescription(data.id, partnerId, reportId, data.description)
       ),
-      tap(() => this.fileManagementStore.reportFilesChanged$.next()),
-      finalize(() => this.savingDescriptionId$.next(null)),
-    ).subscribe();
-  }
+    );
+  };
+
+  deleteCallback = (file: FileListItem): Observable<void> => {
+    return combineLatest([
+      this.partnerReportDetailPageStore.partnerId$.pipe(map(id => Number(id))),
+      this.partnerReportDetailPageStore.partnerReportId$.pipe(map(id => Number(id))),
+    ]).pipe(
+      switchMap(([partnerId, reportId]) =>
+        this.projectPartnerReportService.deleteReportFile(file.id, partnerId, reportId)
+      ),
+    );
+  };
 
 }

@@ -97,17 +97,12 @@ export class PaymentsToProjectAttachmentsComponent implements OnChanges {
       .subscribe();
   }
 
-  deleteFile(file: FileListItem): void {
-    this.paymentAttachmentsStore.deletePaymentFile(file).pipe(take(1)).subscribe();
-  }
+  setDescriptionCallback = (data: FileDescriptionChange): Observable<any> => {
+    return this.paymentAttachmentService.updateAttachmentDescription(data.id, data.description);
+  };
 
-  savingDescriptionId$ = new BehaviorSubject<number | null>(null);
+  deleteCallback = (file: FileListItem): Observable<void> => {
+    return this.paymentAttachmentService.deleteAttachment(file.id);
+  };
 
-  updateDescription(data: FileDescriptionChange) {
-    this.savingDescriptionId$.next(data.id);
-    return this.paymentAttachmentService.updateAttachmentDescription(data.id, data.description).pipe(
-      tap(() => this.paymentAttachmentsStore.filesChanged$.next()),
-      finalize(() => this.savingDescriptionId$.next(null)),
-    ).subscribe();
-  }
 }
