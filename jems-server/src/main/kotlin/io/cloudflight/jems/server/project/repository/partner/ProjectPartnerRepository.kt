@@ -308,7 +308,9 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
         SELECT
           entity.*,
           entity.sort_number as sortNumber,
-          addresses.*
+          addresses.country,
+          addresses.nuts_region2 as nutsRegion2,
+          addresses.nuts_region3 as nutsRegion3
         FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
             LEFT JOIN #{#entityName}_address FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS addresses
                 ON entity.id = addresses.partner_id AND addresses.type = 'Organization'

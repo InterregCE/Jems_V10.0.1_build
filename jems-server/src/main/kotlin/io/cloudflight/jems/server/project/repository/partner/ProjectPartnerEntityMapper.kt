@@ -357,7 +357,7 @@ fun PartnerSimpleRow.toProjectPartnerHistoricalData() = ProjectPartnerSummary(
     role = role,
     sortNumber = sortNumber,
     country = country,
-    region = nutsRegion2
+    region = nutsRegion3
 )
 
 fun PartnerSimpleRow.toProjectPartnerDTOHistoricalData() = ProjectPartnerSummary(
@@ -367,7 +367,7 @@ fun PartnerSimpleRow.toProjectPartnerDTOHistoricalData() = ProjectPartnerSummary
     role = role,
     sortNumber = sortNumber,
     country = country,
-    region = nutsRegion2
+    region = nutsRegion3
 )
 
 fun ProjectPartnerStateAid.toEntity(
