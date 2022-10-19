@@ -47,6 +47,12 @@ interface ProjectApi {
         @RequestBody(required = false) searchRequest: ProjectSearchRequestDTO?
     ): Page<OutputProjectSimple>
 
+    @ApiOperation("Get contracted projects for advance payment details")
+    @GetMapping("$ENDPOINT_API_PROJECT/contracted")
+    fun getContractedProjects(
+        @RequestParam searchId: String
+    ): Page<OutputProjectSimple>
+
     @ApiOperation("Returns applications of current user")
     @ApiImplicitParams(
         ApiImplicitParam(paramType = "query", name = "page", dataType = "integer"),

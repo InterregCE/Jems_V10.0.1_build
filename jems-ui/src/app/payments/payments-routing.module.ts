@@ -8,6 +8,9 @@ import {
 import {
   PaymentsToProjectDetailBreadcrumbResolver
 } from './payments-to-projects-page/payments-to-project-detail.resolver';
+import {
+  AdvancePaymentsDetailPageComponent
+} from './advance-payments-page/advance-payments-detail-page/advance-payments-detail-page.component';
 
 export const paymentsRoutes: Routes = [
   {
@@ -17,6 +20,8 @@ export const paymentsRoutes: Routes = [
       permissionsOnly: [
         PermissionsEnum.PaymentsRetrieve,
         PermissionsEnum.PaymentsUpdate,
+        PermissionsEnum.AdvancePaymentsRetrieve,
+        PermissionsEnum.AdvancePaymentsUpdate,
       ],
     },
     children: [
@@ -29,6 +34,17 @@ export const paymentsRoutes: Routes = [
         component: PaymentsToProjectDetailPageComponent,
         data: {dynamicBreadcrumb: true},
         resolve: {breadcrumb$: PaymentsToProjectDetailBreadcrumbResolver},
+      },
+
+      {
+        path: 'advancePayments/create',
+        component: AdvancePaymentsDetailPageComponent,
+        data: {breadcrumb: 'advance.payments.breadcrumb'},
+      },
+      {
+        path: 'advancePayments/:advancePaymentId',
+        component: AdvancePaymentsDetailPageComponent,
+        data: {breadcrumb: 'advance.payments.breadcrumb'},
       }
     ]
   }

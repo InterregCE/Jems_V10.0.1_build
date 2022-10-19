@@ -127,9 +127,7 @@
                                             <div>
                                                 <mat-form-field class="w-100">
                                                     <input name="paymentDate"
-                                                           class="placeholder-required"
-                                                           placeholder="*"
-                                                           [formControlName]="constants.FORM_CONTROL_NAMES.paymentDate" matInput required
+                                                           [formControlName]="constants.FORM_CONTROL_NAMES.paymentDate" matInput
                                                            [matDatepicker]="paymentDatePicker">
                                                     <mat-error>
                                                         <jems-form-field-errors [errors]="installment.get(constants.FORM_CONTROL_NAMES.paymentDate)?.errors"></jems-form-field-errors>
@@ -163,7 +161,7 @@
                                             <div  class="justify-center">
                                                 <mat-checkbox
                                                               (change)="setConfirmPaymentDate($event.checked, index, installmentIndex)"
-                                                              [disabled]="!isPaymentAuthorised(index, installmentIndex)"
+                                                              [disabled]="isPaymentConfirmationDisabled(index, installmentIndex)"
                                                               [formControlName]="constants.FORM_CONTROL_NAMES.paymentConfirmed">
                                                 </mat-checkbox>
                                             </div>

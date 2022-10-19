@@ -94,7 +94,6 @@ enum class UserRolePermissionDTO(val key: String) {
 
     PaymentsRetrieve("PaymentsRetrieve"),
     PaymentsUpdate("PaymentsUpdate"),
-
     AdvancePaymentsRetrieve("AdvancePaymentsRetrieve"),
     AdvancePaymentsUpdate("AdvancePaymentsUpdate"),
 
