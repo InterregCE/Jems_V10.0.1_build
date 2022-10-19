@@ -32,6 +32,7 @@ import io.cloudflight.jems.server.project.service.cofinancing.model.ProjectCoFin
 import io.cloudflight.jems.server.project.service.cofinancing.model.ProjectCoFinancingOverview
 import io.cloudflight.jems.server.project.service.common.BudgetCostsCalculatorService
 import io.cloudflight.jems.server.project.service.common.PartnerBudgetPerFundCalculatorService
+import io.cloudflight.jems.server.project.service.contracting.monitoring.ContractingMonitoringPersistence
 import io.cloudflight.jems.server.project.service.customCostOptions.ProjectUnitCostPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
 import io.cloudflight.jems.server.project.service.model.ProjectPartnerBudgetPerPeriod
@@ -80,6 +81,7 @@ class ProjectDataProviderImpl(
     private val listResultIndicatorsPersistence: ResultIndicatorPersistence,
     private val programmeDataRepository: ProgrammeDataRepository,
     private val projectUnitCostPersistence: ProjectUnitCostPersistence,
+    private val contractingMonitoringPersistence: ContractingMonitoringPersistence
 ) : ProjectDataProvider {
 
     companion object {
@@ -231,6 +233,7 @@ class ProjectDataProviderImpl(
             versions = projectVersionPersistence.getAllVersionsByProjectId(projectId).toDataModel(),
             programmeTitle = programmeDataRepository.findById(1)
                 .orElseThrow { ResourceNotFoundException("programmeData") }.title ?: "",
+            dimensionCodes = contractingMonitoringPersistence.getContractingMonitoring(projectId).dimensionCodes.toContractingDimensionCodeDataList()
         )
     }
 

@@ -39,13 +39,25 @@ internal class ExportApplicationFormTest : UnitTest() {
             jemsPluginRegistry.get(ApplicationFormExportPlugin::class, pluginKey)
         } returns applicationFormExportPlugin
         every {
-            applicationFormExportPlugin.export(1L, SystemLanguageData.EN, SystemLanguageData.DE, localDateTime)
+            applicationFormExportPlugin.export(
+                projectId = 1L,
+                exportLanguage = SystemLanguageData.EN,
+                dataLanguage = SystemLanguageData.DE,
+                version = "1",
+                logo = null,
+                localDateTime = localDateTime)
         } returns exportResult
         every {
             getLogosInteractor.getLogos()
         } returns listOf<LogoDTO>()
 
-        assertThat(exportApplicationForm.export(1L, SystemLanguage.EN, SystemLanguage.DE, localDateTime))
+        assertThat(exportApplicationForm.export(
+            projectId = 1L,
+            exportLanguage = SystemLanguage.EN,
+            inputLanguage = SystemLanguage.DE,
+            localDateTime = localDateTime,
+            version = "1",
+        ))
             .isEqualTo(exportResult)
     }
 }
