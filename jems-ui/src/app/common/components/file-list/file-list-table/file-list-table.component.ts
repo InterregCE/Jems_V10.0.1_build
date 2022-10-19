@@ -9,18 +9,18 @@ import {
   SimpleChanges,
   ViewChild,
 } from '@angular/core';
-import { MatSort, MatSortable } from '@angular/material/sort';
-import { MatTableDataSource } from '@angular/material/table';
-import { Alert } from '@common/components/forms/alert';
-import { FileListItem } from '@common/components/file-list/file-list-item';
-import { FileDescriptionChange } from '@common/components/file-list/file-list-table/file-description-change';
-import { FormBuilder, Validators } from '@angular/forms';
-import { Forms } from '@common/utils/forms';
-import { MatDialog } from '@angular/material/dialog';
-import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { filter, finalize, switchMap, take, tap } from 'rxjs/operators';
-import { BehaviorSubject, Observable } from "rxjs";
-import { SecurityService } from '../../../../security/security.service';
+import {MatSort, MatSortable} from '@angular/material/sort';
+import {MatTableDataSource} from '@angular/material/table';
+import {Alert} from '@common/components/forms/alert';
+import {FileListItem} from '@common/components/file-list/file-list-item';
+import {FileDescriptionChange} from '@common/components/file-list/file-list-table/file-description-change';
+import {FormBuilder, Validators} from '@angular/forms';
+import {Forms} from '@common/utils/forms';
+import {MatDialog} from '@angular/material/dialog';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+import {filter, finalize, take, tap} from 'rxjs/operators';
+import {BehaviorSubject, Observable} from 'rxjs';
+import {SecurityService} from '../../../../security/security.service';
 
 @UntilDestroy()
 @Component({

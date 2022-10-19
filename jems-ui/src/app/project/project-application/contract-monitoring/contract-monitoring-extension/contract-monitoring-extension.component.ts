@@ -29,7 +29,7 @@ import {
 } from '@project/project-overview-tables-page/project-overview-tables-page-store.service';
 import {
   ProjectPartnerStore
-} from "@project/project-application/containers/project-application-form-page/services/project-partner-store.service";
+} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
 
 @Component({
   selector: 'jems-contract-monitoring-extension',
@@ -78,7 +78,7 @@ export class ContractMonitoringExtensionComponent {
     status: ProjectStatusDTO;
     dimensionCodes:  {[p: string]: string[]};
     projectBudget: number;
-    projectPartnersNuts: {country: string, nuts3Region: string}[];
+    projectPartnersNuts: {country: string; nuts3Region: string}[];
   }>;
   isAdditionalDataActivated = false;
 
@@ -119,7 +119,7 @@ export class ContractMonitoringExtensionComponent {
         projectBudget,
         partnerSummaries
       }))
-    )
+    );
 
     this.projectId = this.activatedRoute.snapshot.params.projectId;
     this.data$ = combineLatest([
@@ -350,8 +350,8 @@ export class ContractMonitoringExtensionComponent {
   }
 
 
-  private getPartnerNutsRegionCodes(partnerSummaries: ProjectPartnerSummaryDTO[]): {country: string, nuts3Region: string}[] {
-    let nutsRegions: {country: string, nuts3Region: string}[] = [];
+  private getPartnerNutsRegionCodes(partnerSummaries: ProjectPartnerSummaryDTO[]): {country: string; nuts3Region: string}[] {
+    const nutsRegions: {country: string; nuts3Region: string}[] = [];
     partnerSummaries.map(partnerSummary => ({
       country: partnerSummary.country,
       nuts3Region: partnerSummary.region
@@ -360,10 +360,10 @@ export class ContractMonitoringExtensionComponent {
         if (nutsRegions.find(r => r.nuts3Region == nutsRegion.nuts3Region)) {
           return;
         }else {
-          nutsRegions.push(nutsRegion)
+          nutsRegions.push(nutsRegion);
         }
       }
-    )
-    return nutsRegions
+    );
+    return nutsRegions;
   }
 }

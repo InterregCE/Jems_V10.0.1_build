@@ -27,9 +27,9 @@ class ExportApplicationForm(private val jemsPluginRegistry: JemsPluginRegistry,
             projectId,
             SystemLanguageData.valueOf(exportLanguage.toString()),
             SystemLanguageData.valueOf(inputLanguage.toString()),
-            localDateTime,
             version,
-            getMediumSizedLogo()
+            getMediumSizedLogo(),
+            localDateTime,
         )
 
     private fun getMediumSizedLogo(): String? {

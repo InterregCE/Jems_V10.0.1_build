@@ -32,7 +32,7 @@ export class ContractMonitoringCodesOfInterventionTableComponent implements OnCh
   projectBudget: number;
 
   @Input()
-  projectPartnersNuts: {country: string, nuts3Region: string}[]
+  projectPartnersNuts: {country: string; nuts3Region: string}[];
 
   @Input()
   editable: boolean;

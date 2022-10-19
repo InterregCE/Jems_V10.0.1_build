@@ -63,6 +63,7 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budg
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.PartnerBudgetData
 import io.cloudflight.jems.plugin.contract.models.programme.fund.ProgrammeFundTypeData
 import io.cloudflight.jems.plugin.contract.models.programme.unitcost.ProgrammeUnitCostListData
+import io.cloudflight.jems.plugin.contract.models.project.contracting.ContractingDimensionCodeData
 import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA3.ProjectCoFinancingCategoryOverviewData
 import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA3.ProjectCoFinancingOverviewData
 import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA3.ProjectCoFinancingByFundOverviewData
@@ -99,7 +100,6 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionC.workpackage.W
 import io.cloudflight.jems.plugin.contract.models.project.sectionD.BudgetCostsDetailData
 import io.cloudflight.jems.plugin.contract.models.project.sectionD.ProjectBudgetOverviewPerPartnerPerPeriodData
 import io.cloudflight.jems.plugin.contract.models.project.sectionD.ProjectPartnerBudgetPerFundData
-import io.cloudflight.jems.plugin.contract.models.project.sectionE.ProjectDataSectionE
 import io.cloudflight.jems.plugin.contract.models.project.sectionE.lumpsum.ProjectLumpSumData
 import io.cloudflight.jems.plugin.contract.models.project.sectionE.lumpsum.ProjectPartnerLumpSumData
 import io.cloudflight.jems.plugin.contract.models.project.versions.ProjectVersionData
@@ -112,6 +112,7 @@ import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalcul
 import io.cloudflight.jems.server.project.service.cofinancing.model.ProjectCoFinancingByFundOverview
 import io.cloudflight.jems.server.project.service.cofinancing.model.ProjectCoFinancingCategoryOverview
 import io.cloudflight.jems.server.project.service.cofinancing.model.ProjectCoFinancingOverview
+import io.cloudflight.jems.server.project.service.contracting.model.ContractingDimensionCode
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectPartnerLumpSum
 import io.cloudflight.jems.server.project.service.model.Address
@@ -318,6 +319,8 @@ fun List<ProjectCoFinancingByFundOverview>.projectCoFinancingByFundOverviewListT
         )
     }.toList()
 
+fun List<ContractingDimensionCode>.toContractingDimensionCodeDataList() = map { pluginDataMapper.map(it) }
+
 private val pluginDataMapper = Mappers.getMapper(PluginDataMapper::class.java)
 
 @Mapper
@@ -397,6 +400,7 @@ abstract class PluginDataMapper {
     abstract fun map(projectPartnerBudgetPerFund: ProjectPartnerBudgetPerFund): ProjectPartnerBudgetPerFundData
     abstract fun map(budgetCostsDetail: BudgetCostsDetail): BudgetCostsDetailData
     abstract fun map(projectBudgetOverviewPerPartnerPerPeriod: ProjectBudgetOverviewPerPartnerPerPeriod): ProjectBudgetOverviewPerPartnerPerPeriodData
+    abstract fun map(contractingDimensionCodes: ContractingDimensionCode): ContractingDimensionCodeData
 
     @Mappings(
         Mapping(target = "programmeLumpSum", source = "lumpSumsDetail")

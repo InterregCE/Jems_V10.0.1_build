@@ -1,16 +1,12 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {finalize, map, switchMap, take, tap} from 'rxjs/operators';
-import {
-  PageProjectFileMetadataDTO,
-  ProjectFileMetadataDTO, ProjectFileService,
-  ProjectStatusDTO
-} from '@cat/api';
+import {map, switchMap, take, tap} from 'rxjs/operators';
+import {PageProjectFileMetadataDTO, ProjectFileMetadataDTO, ProjectFileService, ProjectStatusDTO} from '@cat/api';
 import {FileManagementStore} from '@project/common/components/file-management/file-management-store';
 import {Tables} from '@common/utils/tables';
 import {Alert} from '@common/components/forms/alert';
 import {CategoryInfo} from '@project/common/components/category-tree/categoryModels';
 import {MatTableDataSource} from '@angular/material/table';
-import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
+import {combineLatest, Observable, Subject} from 'rxjs';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {AcceptedFileTypesConstants} from '@project/common/components/file-management/accepted-file-types.constants';
 import {FileListItem} from '@common/components/file-list/file-list-item';
@@ -19,7 +15,7 @@ import {FileDescriptionChange} from '@common/components/file-list/file-list-tabl
 import {ProjectUtil} from '@project/common/project-util';
 import {
   ProjectStore
-} from "@project/project-application/containers/project-application-detail/services/project-store.service";
+} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 
 @UntilDestroy()
 @Component({

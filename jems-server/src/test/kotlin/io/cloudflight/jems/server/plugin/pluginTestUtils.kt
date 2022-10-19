@@ -36,11 +36,10 @@ class ApplicationFormExportSamplePlugin : ApplicationFormExportPlugin {
         projectId: Long,
         exportLanguage: SystemLanguageData,
         dataLanguage: SystemLanguageData,
-        localDateTime: LocalDateTime,
         version: String?,
-        logo: String?
-    ) =
-        ExportResult("", "", byteArrayOf())
+        logo: String?,
+        localDateTime: LocalDateTime?
+    ) =  ExportResult("", "", byteArrayOf())
 
     override fun getDescription(): String =
         "description of ApplicationFormExportSamplePlugin"

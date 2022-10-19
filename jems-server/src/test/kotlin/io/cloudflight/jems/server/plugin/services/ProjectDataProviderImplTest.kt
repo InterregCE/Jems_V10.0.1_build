@@ -111,6 +111,7 @@ import io.cloudflight.jems.server.programme.service.indicator.model.ResultIndica
 import io.cloudflight.jems.server.programme.service.legalstatus.ProgrammeLegalStatusPersistence
 import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatus
 import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatusType
+import io.cloudflight.jems.server.programme.service.priority.model.ProgrammeObjectiveDimension
 import io.cloudflight.jems.server.project.service.ProjectDescriptionPersistence
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
@@ -121,6 +122,8 @@ import io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResult
 import io.cloudflight.jems.server.project.service.common.BudgetCostsCalculatorService
 import io.cloudflight.jems.server.project.service.common.PartnerBudgetPerFundCalculatorService
+import io.cloudflight.jems.server.project.service.contracting.model.ContractingDimensionCode
+import io.cloudflight.jems.server.project.service.contracting.monitoring.ContractingMonitoringPersistence
 import io.cloudflight.jems.server.project.service.customCostOptions.ProjectUnitCostPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
@@ -236,6 +239,9 @@ internal class ProjectDataProviderImplTest : UnitTest() {
 
     @MockK
     lateinit var projectBudgetPersistence: ProjectBudgetPersistence
+
+    @MockK
+    lateinit var contractingMonitoringPersistence: ContractingMonitoringPersistence
 
     @InjectMockKs
     lateinit var projectDataProvider: ProjectDataProviderImpl
@@ -722,6 +728,23 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                 description = setOf(InputTranslation(SystemLanguage.EN, "description2")),
             )
         )
+
+        val contractingDimensionCodes = listOf(
+            ContractingDimensionCode(
+                id = 1L,
+                projectId = 1L,
+                programmeObjectiveDimension = ProgrammeObjectiveDimension.TypesOfIntervention,
+                dimensionCode = "001",
+                projectBudgetAmountShare = BigDecimal(100)
+            ),
+            ContractingDimensionCode(
+                id = 2L,
+                projectId = 1L,
+                programmeObjectiveDimension = ProgrammeObjectiveDimension.RegionalAndSeaBasinStrategy,
+                dimensionCode = "003",
+                projectBudgetAmountShare = BigDecimal(100)
+            )
+        )
     }
 
     @Test
@@ -849,6 +872,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
         val programmeData = mockk<ProgrammeDataEntity>()
         every { programmeData.title } returns "programme title"
         every { programmeDataRepository.findById(1L) } returns Optional.of(programmeData)
+        every { contractingMonitoringPersistence.getContractingMonitoring(1L).dimensionCodes } returns contractingDimensionCodes
 
         // test getByProjectId and its mappings..
         val projectData = projectDataProvider.getProjectDataForProjectId(id)
@@ -1462,6 +1486,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
     @Test
     fun `project data provider get for project Id - with empty values`() {
         val id = project.id!!
+        every { contractingMonitoringPersistence.getContractingMonitoring(id).dimensionCodes } returns emptyList()
         every { projectPersistence.getProject(id) } returns ProjectFull(
             id = 1L,
             customIdentifier = "01",
@@ -1622,6 +1647,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
         )
 
         assertThat(projectData.versions).isEqualTo(projectVersions.toDataModel())
+
     }
 
     @Test

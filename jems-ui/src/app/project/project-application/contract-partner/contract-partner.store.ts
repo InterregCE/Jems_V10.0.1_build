@@ -21,7 +21,7 @@ import {
 } from '@cat/api';
 import {Log} from '@common/utils/log';
 import {PermissionService} from '../../../security/permissions/permission.service';
-import {ProjectUtil} from "@project/common/project-util";
+import {ProjectUtil} from '@project/common/project-util';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 import LevelEnum = ProjectUserCollaboratorDTO.LevelEnum;
 
