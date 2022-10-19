@@ -2,6 +2,7 @@ package io.cloudflight.jems.api.project.report
 
 import io.cloudflight.jems.api.project.dto.report.partner.financialOverview.ExpenditureCoFinancingBreakdownDTO
 import io.cloudflight.jems.api.project.dto.report.partner.financialOverview.ExpenditureCostCategoryBreakdownDTO
+import io.cloudflight.jems.api.project.dto.report.partner.financialOverview.ExpenditureLumpSumBreakdownDTO
 import io.cloudflight.jems.api.project.report.ProjectPartnerReportApi.Companion.ENDPOINT_API_PROJECT_PARTNER_REPORT
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
@@ -29,5 +30,12 @@ interface ProjectPartnerReportFinancialOverviewApi {
         @PathVariable partnerId: Long,
         @PathVariable reportId: Long,
     ): ExpenditureCostCategoryBreakdownDTO
+
+    @ApiOperation("Returns Partner Report breakdown into Lump sums")
+    @GetMapping("$ENDPOINT_API_PROJECT_PARTNER_REPORT_IDENTIFICATION/lumpSum")
+    fun getLumpSumBreakdown(
+        @PathVariable partnerId: Long,
+        @PathVariable reportId: Long,
+    ): ExpenditureLumpSumBreakdownDTO
 
 }

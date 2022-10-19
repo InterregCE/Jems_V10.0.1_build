@@ -2,10 +2,8 @@ package io.cloudflight.jems.server.project.service.report.partner.financialOverv
 
 import io.cloudflight.jems.server.currency.repository.CurrencyPersistence
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
-import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.financialOverview.costCategory.ExpenditureCostCategoryBreakdown
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectReportExpenditurePersistence
-import io.cloudflight.jems.server.project.service.report.partner.expenditure.fillCurrencyRates
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureCostCategoryPersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -33,17 +31,15 @@ class GetReportExpenditureCostCategoryCalculatorService(
 
         if (!isSubmitted) {
             val currentExpenditures = reportExpenditurePersistence.getPartnerReportExpenditureCosts(partnerId = partnerId, reportId = reportId)
-            currentExpenditures.fillCurrentCurrencies()
+            currentExpenditures.fillActualCurrencyRates(getActualCurrencyRates())
             costCategories.fillInCurrent(current = currentExpenditures.calculateCurrent(data.options))
         }
 
         return costCategories.fillInOverviewFields()
     }
 
-    private fun List<ProjectPartnerReportExpenditureCost>.fillCurrentCurrencies() = apply {
-        val today = LocalDate.now()
-        val rates = currencyPersistence.findAllByIdYearAndIdMonth(year = today.year, month = today.monthValue).associateBy { it.code }
-        this.fillCurrencyRates(rates)
+    private fun getActualCurrencyRates() = with(LocalDate.now()) {
+        return@with currencyPersistence.findAllByIdYearAndIdMonth(year = year, month = monthValue)
     }
 
 }

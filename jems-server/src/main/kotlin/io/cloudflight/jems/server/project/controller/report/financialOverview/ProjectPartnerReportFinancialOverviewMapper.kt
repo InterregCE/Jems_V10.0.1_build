@@ -2,8 +2,10 @@ package io.cloudflight.jems.server.project.controller.report.financialOverview
 
 import io.cloudflight.jems.api.project.dto.report.partner.financialOverview.ExpenditureCoFinancingBreakdownDTO
 import io.cloudflight.jems.api.project.dto.report.partner.financialOverview.ExpenditureCostCategoryBreakdownDTO
+import io.cloudflight.jems.api.project.dto.report.partner.financialOverview.ExpenditureLumpSumBreakdownDTO
 import io.cloudflight.jems.server.project.service.report.model.financialOverview.costCategory.ExpenditureCostCategoryBreakdown
 import io.cloudflight.jems.server.project.service.report.model.financialOverview.coFinancing.ExpenditureCoFinancingBreakdown
+import io.cloudflight.jems.server.project.service.report.model.financialOverview.lumpSum.ExpenditureLumpSumBreakdown
 import org.mapstruct.Mapper
 import org.mapstruct.factory.Mappers
 
@@ -11,9 +13,11 @@ private val mapper = Mappers.getMapper(ProjectPartnerReportFinancialOverviewMapp
 
 fun ExpenditureCoFinancingBreakdown.toDto() = mapper.map(this)
 fun ExpenditureCostCategoryBreakdown.toDto() = mapper.map(this)
+fun ExpenditureLumpSumBreakdown.toDto() = mapper.map(this)
 
 @Mapper
 interface ProjectPartnerReportFinancialOverviewMapper {
     fun map(expenditureCoFinancing: ExpenditureCoFinancingBreakdown): ExpenditureCoFinancingBreakdownDTO
     fun map(expenditureCostCategory: ExpenditureCostCategoryBreakdown): ExpenditureCostCategoryBreakdownDTO
+    fun map(lumpSum: ExpenditureLumpSumBreakdown): ExpenditureLumpSumBreakdownDTO
 }

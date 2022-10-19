@@ -430,6 +430,9 @@ import {
 import {
   PartnerControlReportControlIdentificationTabComponent
 } from '@project/project-application/report/partner-control-report/partner-control-report-identification-tab/partner-control-report-control-identification-tab.component';
+import {
+  PartnerBreakdownLumpSumComponent
+} from '@project/project-application/report/partner-report-detail-page/partner-report-financial-overview-tab/partner-breakdown-lump-sum/partner-breakdown-lump-sum.component';
 
 @NgModule({
   declarations: [
@@ -556,6 +559,7 @@ import {
     PartnerReportExpendituresTabComponent,
     PartnerReportFinancialOverviewTabComponent,
     PartnerBreakdownCostCategoryComponent,
+    PartnerBreakdownLumpSumComponent,
     PartnerBreakdownCoFinancingComponent,
     PartnerActionsCellComponent,
     AssessmentAndDecisionChecklistPageComponent,

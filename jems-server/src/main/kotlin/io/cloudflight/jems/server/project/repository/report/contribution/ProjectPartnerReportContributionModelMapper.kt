@@ -13,6 +13,7 @@ import io.cloudflight.jems.server.project.service.report.model.create.PartnerRep
 import io.cloudflight.jems.server.project.service.report.model.create.PartnerReportUnitCostBase
 import org.mapstruct.Mapper
 import org.mapstruct.factory.Mappers
+import java.math.BigDecimal
 
 fun List<ProjectPartnerReportContributionEntity>.toModel() = map { mapper.map(it) }
 
@@ -38,8 +39,11 @@ fun PartnerReportLumpSum.toEntity(
 ) = PartnerReportLumpSumEntity(
     reportEntity = report,
     programmeLumpSum = lumpSumResolver.invoke(lumpSumId),
+    orderNr = orderNr,
     period = period,
-    cost = value,
+    total = total,
+    current = BigDecimal.ZERO,
+    previouslyReported = previouslyReported,
 )
 
 fun PartnerReportUnitCostBase.toEntity(
@@ -48,8 +52,10 @@ fun PartnerReportUnitCostBase.toEntity(
 ) = PartnerReportUnitCostEntity(
     reportEntity = report,
     programmeUnitCost = unitCostResolver.invoke(unitCostId),
-    totalCost = totalCost,
-    numberOfUnits = numberOfUnits
+    numberOfUnits = numberOfUnits,
+    total = totalCost,
+    current = BigDecimal.ZERO,
+    previouslyReported = previouslyReported,
 )
 
 private val mapper = Mappers.getMapper(ProjectPartnerReportContributionModelMapper::class.java)

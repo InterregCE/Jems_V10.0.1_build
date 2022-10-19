@@ -1,9 +1,13 @@
 package io.cloudflight.jems.api.project.dto.report.partner.financialOverview
 
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import java.math.BigDecimal
 
-data class ExpenditureCostCategoryBreakdownLineDTO(
-    val flatRate: Int?,
+data class ExpenditureLumpSumBreakdownLineDTO(
+    val reportLumpSumId: Long,
+    val lumpSumId: Long,
+    val name: Set<InputTranslation>,
+    val period: Int?,
 
     val totalEligibleBudget: BigDecimal,
     val previouslyReported: BigDecimal,

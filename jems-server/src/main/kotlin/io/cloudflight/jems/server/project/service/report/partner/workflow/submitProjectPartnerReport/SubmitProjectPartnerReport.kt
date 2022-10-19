@@ -15,9 +15,11 @@ import io.cloudflight.jems.server.project.service.report.partner.expenditure.Pro
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.fillCurrencyRates
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureCostCategoryPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportLumpSumPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.generateCoFinCalculationInputData
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.getCurrentFrom
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown.calculateCurrent
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureLumpSumBreakdown.getCurrentForLumpSums
 import io.cloudflight.jems.server.project.service.report.partnerReportSubmitted
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
@@ -35,6 +37,7 @@ class SubmitProjectPartnerReport(
     private val reportExpenditureCostCategoryPersistence: ProjectReportExpenditureCostCategoryPersistence,
     private val reportExpenditureCoFinancingPersistence: ProjectReportExpenditureCoFinancingPersistence,
     private val reportContributionPersistence: ProjectReportContributionPersistence,
+    private val reportLumpSumPersistence: ProjectReportLumpSumPersistence,
     private val auditPublisher: ApplicationEventPublisher,
 ) : SubmitProjectPartnerReportInteractor {
 
@@ -55,6 +58,7 @@ class SubmitProjectPartnerReport(
             totalEligibleBudget = costCategories.totalsFromAF.sum,
             report = report, partnerId = partnerId,
         )
+        saveCurrentLumpSums(expenditures.getCurrentForLumpSums(), partnerId = partnerId, reportId)
 
         return reportPersistence.submitReportById(
             partnerId = partnerId,
@@ -85,7 +89,7 @@ class SubmitProjectPartnerReport(
             .associateBy { it.code }
             .filterKeys { it in usedCurrencies }
 
-        val notExistingRates = usedCurrencies.minus(rates.keys)
+        val notExistingRates = usedCurrencies.minus(rates.keys).minus("EUR")
         if (notExistingRates.isNotEmpty())
             throw CurrencyRatesMissing(notExistingRates)
 
@@ -123,6 +127,14 @@ class SubmitProjectPartnerReport(
                     funds = report.identification.coFinancing,
                 )
             ),
+        )
+    }
+
+    private fun saveCurrentLumpSums(currentLumpSums: Map<Long, BigDecimal>, partnerId: Long, reportId: Long) {
+        reportLumpSumPersistence.updateCurrentlyReportedValues(
+            partnerId = partnerId,
+            reportId = reportId,
+            currentlyReported = currentLumpSums,
         )
     }
 

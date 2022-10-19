@@ -4,6 +4,7 @@ import java.math.BigDecimal
 
 data class PartnerReportUnitCostBase (
     val unitCostId: Long,
+    var numberOfUnits: BigDecimal,
     var totalCost: BigDecimal,
-    var numberOfUnits: BigDecimal
+    var previouslyReported: BigDecimal,
 )

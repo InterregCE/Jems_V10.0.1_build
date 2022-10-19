@@ -162,8 +162,11 @@ class ProjectReportExpenditurePersistenceProviderTest : UnitTest() {
                 categories = mutableSetOf(),
                 isFastTrack = false
             ),
+            orderNr = 10,
             period = 2,
-            cost = BigDecimal.ONE,
+            total = BigDecimal.ONE,
+            current = BigDecimal.ZERO,
+            previouslyReported = BigDecimal.ZERO,
         )
 
         private fun dummyUnitCostEntity(reportEntity: ProjectPartnerReportEntity) = PartnerReportUnitCostEntity(
@@ -189,8 +192,10 @@ class ProjectReportExpenditurePersistenceProviderTest : UnitTest() {
                         category = BudgetCategory.EquipmentCosts
                     )),
             ),
-            totalCost = BigDecimal.ONE,
             numberOfUnits = BigDecimal.ONE,
+            total = BigDecimal.ONE,
+            current = BigDecimal.ZERO,
+            previouslyReported = BigDecimal.ZERO,
         )
 
         private val dummyLumpSum = ProjectPartnerReportLumpSum(
@@ -269,7 +274,7 @@ class ProjectReportExpenditurePersistenceProviderTest : UnitTest() {
 
     @Test
     fun getAvailableLumpSums() {
-        every { reportLumpSumRepository.findByReportEntityPartnerIdAndReportEntityIdOrderByPeriodAscIdAsc(PARTNER_ID, reportId = 20L) } returns
+        every { reportLumpSumRepository.findByReportEntityPartnerIdAndReportEntityIdOrderByOrderNrAscIdAsc(PARTNER_ID, reportId = 20L) } returns
             mutableListOf(dummyLumpSumEntity(mockk()))
         assertThat(persistence.getAvailableLumpSums(PARTNER_ID, reportId = 20L)).containsExactly(dummyLumpSum)
     }
@@ -304,7 +309,7 @@ class ProjectReportExpenditurePersistenceProviderTest : UnitTest() {
         val slotDeleted = slot<Iterable<PartnerReportExpenditureCostEntity>>()
         every { reportExpenditureRepository.deleteAll(capture(slotDeleted)) } answers { }
 
-        every { reportLumpSumRepository.findByReportEntityPartnerIdAndReportEntityIdOrderByPeriodAscIdAsc(PARTNER_ID, reportId = 58L) } returns
+        every { reportLumpSumRepository.findByReportEntityPartnerIdAndReportEntityIdOrderByOrderNrAscIdAsc(PARTNER_ID, reportId = 58L) } returns
             mutableListOf(lumpSum)
 
         every { reportUnitCostRepository.findByReportEntityPartnerIdAndReportEntityIdOrderByIdAsc(PARTNER_ID, reportId = 58L) } returns

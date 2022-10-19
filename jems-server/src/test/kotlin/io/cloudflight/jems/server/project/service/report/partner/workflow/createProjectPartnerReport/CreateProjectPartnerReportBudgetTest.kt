@@ -32,6 +32,7 @@ import io.cloudflight.jems.server.project.service.report.model.identification.Pr
 import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectReportContributionPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureCostCategoryPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportLumpSumPersistence
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -419,6 +420,8 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
     lateinit var reportExpenditureCoFinancingPersistence: ProjectReportExpenditureCoFinancingPersistence
     @MockK
     lateinit var paymentPersistence: PaymentPersistence
+    @MockK
+    lateinit var reportLumpSumPersistence: ProjectReportLumpSumPersistence
 
     @InjectMockKs
     lateinit var service: CreateProjectPartnerReportBudget
@@ -436,10 +439,12 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         assertThat(result.contributions).hasSize(3)
         assertThat(result.availableLumpSums).containsExactly(PartnerReportLumpSum(
             lumpSumId = 44L,
+            orderNr = 1,
             period = 3,
-            value = BigDecimal.TEN
+            total = BigDecimal.TEN,
+            previouslyReported = BigDecimal.TEN,
         ))
-        assertThat(result.unitCosts.map {it.unitCostId}).containsExactly(4, 5, 6, 7, 8, 9, 10)
+        assertThat(result.unitCosts.map {it.unitCostId}).containsExactlyInAnyOrder(4, 5, 6, 7, 8, 9, 10)
         assertThat(result.budgetPerPeriod).containsExactly(
             ProjectPartnerReportPeriod(1, BigDecimal.ONE, BigDecimal.ONE, 1, 3),
             ProjectPartnerReportPeriod(2, BigDecimal.TEN, BigDecimal.valueOf(11, 0), 4, 6),
@@ -495,6 +500,8 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         every { reportContributionPersistence.getAllContributionsForReportIds(setOf(408L)) } returns previousContributions
         // lump sums
         every { lumpSumPersistence.getLumpSums(projectId, version) } returns lumpSums(partnerId)
+        every { reportLumpSumPersistence.getLumpSumCumulative(setOf(408L)) } returns
+            mapOf(1 to BigDecimal.TEN, 2 to BigDecimal.valueOf(100), 3 to BigDecimal.valueOf(200)) /* only 1 is used */
         // unit costs
         every { partnerBudgetCostsPersistence.getBudgetStaffCosts(partnerId, version) } returns staffCosts
         every { partnerBudgetCostsPersistence.getBudgetTravelAndAccommodationCosts(partnerId, version) } returns travelCosts
