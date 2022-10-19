@@ -38,25 +38,21 @@ data class ProjectContractingMonitoring(
         if (old == null || typologyPartnership != old.typologyPartnership)
             changes["typologyPartnership"] = Pair(old?.typologyPartnership, typologyPartnership)
 
-        val oldAddDates = old?.addDates?.sortedBy { it.number }
-        val newAddDates = addDates.sortedBy { it.number }
+        val oldAddDates = old?.addDates?.sortedBy { it.number }?.map { it.entryIntoForceDate }
+        val newAddDates = addDates.sortedBy { it.number }?.map { it.entryIntoForceDate }
         if (newAddDates != oldAddDates)
             changes["addSubContractDates"] = Pair(
-                oldAddDates?.map { it.entryIntoForceDate },
-                newAddDates.map { it.entryIntoForceDate }
+                oldAddDates?.map { it },
+                newAddDates.map { it }
             )
 
-        val oldFastTrackLumpSums = old?.fastTrackLumpSums?.sortedBy { it.programmeLumpSumId }
-        val newFastTrackLumpSums = fastTrackLumpSums?.sortedBy { it.programmeLumpSumId }
+        val oldFastTrackLumpSums = old?.fastTrackLumpSums?.sortedBy { it.programmeLumpSumId }?.map { it.readyForPayment }
+        val newFastTrackLumpSums = fastTrackLumpSums?.sortedBy { it.programmeLumpSumId }?.map { it.readyForPayment }
+
         if (oldFastTrackLumpSums != newFastTrackLumpSums) {
             changes["setReadyForPayment"] = Pair(
-                oldFastTrackLumpSums?.map { it.readyForPayment },
-                newFastTrackLumpSums?.map { it.readyForPayment }
-            )
-
-            changes["setComment"] = Pair(
-                oldFastTrackLumpSums?.map { it.comment },
-                newFastTrackLumpSums?.map { it.comment }
+                oldFastTrackLumpSums?.map { it },
+                newFastTrackLumpSums?.map { it }
             )
         }
 
