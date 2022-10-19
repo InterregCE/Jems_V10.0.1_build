@@ -39,6 +39,7 @@
                             (sortRows)="onSelectedSortChange($event)"
                             [rows]="selections">
                 </jems-table>
+                <p *ngIf="!selections.length">{{'checklists.instance.selected.tab.empty' | translate}}</p>
             </form>
         </jems-form>
     </mat-tab>
