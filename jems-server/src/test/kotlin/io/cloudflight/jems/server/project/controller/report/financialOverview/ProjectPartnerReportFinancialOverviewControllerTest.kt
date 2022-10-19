@@ -8,6 +8,8 @@ import io.cloudflight.jems.api.project.dto.report.partner.financialOverview.Expe
 import io.cloudflight.jems.api.project.dto.report.partner.financialOverview.ExpenditureCostCategoryBreakdownLineDTO
 import io.cloudflight.jems.api.project.dto.report.partner.financialOverview.ExpenditureLumpSumBreakdownDTO
 import io.cloudflight.jems.api.project.dto.report.partner.financialOverview.ExpenditureLumpSumBreakdownLineDTO
+import io.cloudflight.jems.api.project.dto.report.partner.financialOverview.ExpenditureUnitCostBreakdownDTO
+import io.cloudflight.jems.api.project.dto.report.partner.financialOverview.ExpenditureUnitCostBreakdownLineDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.report.model.financialOverview.coFinancing.ExpenditureCoFinancingBreakdown
 import io.cloudflight.jems.server.project.service.report.model.financialOverview.coFinancing.ExpenditureCoFinancingBreakdownLine
@@ -15,9 +17,12 @@ import io.cloudflight.jems.server.project.service.report.model.financialOverview
 import io.cloudflight.jems.server.project.service.report.model.financialOverview.costCategory.ExpenditureCostCategoryBreakdownLine
 import io.cloudflight.jems.server.project.service.report.model.financialOverview.lumpSum.ExpenditureLumpSumBreakdown
 import io.cloudflight.jems.server.project.service.report.model.financialOverview.lumpSum.ExpenditureLumpSumBreakdownLine
+import io.cloudflight.jems.server.project.service.report.model.financialOverview.unitCost.ExpenditureUnitCostBreakdown
+import io.cloudflight.jems.server.project.service.report.model.financialOverview.unitCost.ExpenditureUnitCostBreakdownLine
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.GetReportExpenditureCoFinancingBreakdownInteractor
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown.GetReportExpenditureCostCategoryBreakdownInteractor
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureLumpSumBreakdown.GetReportExpenditureLumpSumBreakdownInteractor
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureUnitCostBreakdown.GetReportExpenditureUnitCostBreakdownInteractor
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -65,6 +70,18 @@ class ProjectPartnerReportFinancialOverviewControllerTest : UnitTest() {
             remainingBudget = BigDecimal.ZERO,
         )
 
+        private val dummyLineUnitCost = ExpenditureUnitCostBreakdownLine(
+            reportUnitCostId = 44L,
+            unitCostId = 945L,
+            name = setOf(InputTranslation(SystemLanguage.EN, "some unit cost 44 (or 945)")),
+            totalEligibleBudget = BigDecimal.ONE,
+            previouslyReported = BigDecimal.TEN,
+            currentReport = BigDecimal.ZERO,
+            totalReportedSoFar = BigDecimal.ONE,
+            totalReportedSoFarPercentage = BigDecimal.TEN,
+            remainingBudget = BigDecimal.ZERO,
+        )
+
         private val dummyExpenditureCostCategory = ExpenditureCostCategoryBreakdown(
             staff = dummyLine,
             office = dummyLine,
@@ -98,6 +115,14 @@ class ProjectPartnerReportFinancialOverviewControllerTest : UnitTest() {
             total = dummyLineLumpSum,
         )
 
+        private val dummyExpenditureUnitCost = ExpenditureUnitCostBreakdown(
+            unitCosts = listOf(
+                dummyLineUnitCost.copy(unitCostId = 49L, reportUnitCostId = 649L),
+                dummyLineUnitCost,
+            ),
+            total = dummyLineUnitCost,
+        )
+
         private val expectedDummyLine = ExpenditureCostCategoryBreakdownLineDTO(
             flatRate = 4,
             totalEligibleBudget = BigDecimal.ONE,
@@ -124,6 +149,18 @@ class ProjectPartnerReportFinancialOverviewControllerTest : UnitTest() {
             lumpSumId = 945L,
             name = setOf(InputTranslation(SystemLanguage.EN, "some lump sum 36 (or 945)")),
             period = 4,
+            totalEligibleBudget = BigDecimal.ONE,
+            previouslyReported = BigDecimal.TEN,
+            currentReport = BigDecimal.ZERO,
+            totalReportedSoFar = BigDecimal.ONE,
+            totalReportedSoFarPercentage = BigDecimal.TEN,
+            remainingBudget = BigDecimal.ZERO,
+        )
+
+        private val expectedDummyLineUnitCost = ExpenditureUnitCostBreakdownLineDTO(
+            reportUnitCostId = 44L,
+            unitCostId = 945L,
+            name = setOf(InputTranslation(SystemLanguage.EN, "some unit cost 44 (or 945)")),
             totalEligibleBudget = BigDecimal.ONE,
             previouslyReported = BigDecimal.TEN,
             currentReport = BigDecimal.ZERO,
@@ -164,6 +201,14 @@ class ProjectPartnerReportFinancialOverviewControllerTest : UnitTest() {
             ),
             total = expectedDummyLineLumpSum,
         )
+
+        private val expectedDummyExpenditureUnitCost = ExpenditureUnitCostBreakdownDTO(
+            unitCosts = listOf(
+                expectedDummyLineUnitCost.copy(unitCostId = 49L, reportUnitCostId = 649L),
+                expectedDummyLineUnitCost,
+            ),
+            total = expectedDummyLineUnitCost,
+        )
     }
 
     @MockK
@@ -174,6 +219,9 @@ class ProjectPartnerReportFinancialOverviewControllerTest : UnitTest() {
 
     @MockK
     lateinit var getReportExpenditureLumpSumBreakdown: GetReportExpenditureLumpSumBreakdownInteractor
+
+    @MockK
+    lateinit var getReportExpenditureUnitCostBreakdown: GetReportExpenditureUnitCostBreakdownInteractor
 
     @InjectMockKs
     private lateinit var controller: ProjectPartnerReportFinancialOverviewController
@@ -200,6 +248,14 @@ class ProjectPartnerReportFinancialOverviewControllerTest : UnitTest() {
             dummyExpenditureLumpSum
         assertThat(controller.getLumpSumBreakdown(partnerId = PARTNER_ID, reportId = REPORT_ID))
             .isEqualTo(expectedDummyExpenditureLumpSum)
+    }
+
+    @Test
+    fun getUnitCostBreakdown() {
+        every { getReportExpenditureUnitCostBreakdown.get(partnerId = PARTNER_ID, reportId = REPORT_ID) } returns
+            dummyExpenditureUnitCost
+        assertThat(controller.getUnitCostBreakdown(partnerId = PARTNER_ID, reportId = REPORT_ID))
+            .isEqualTo(expectedDummyExpenditureUnitCost)
     }
 
 }

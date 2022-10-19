@@ -3,16 +3,11 @@
 
     <ng-container matColumnDef="name" sticky>
         <mat-header-cell *matHeaderCellDef class="border-cell-right">
-            <span jemsText maxLines="2">{{ 'project.partner.budget.lumpSum' | translate }}</span>
+            <span jemsText maxLines="2">{{ 'unit.cost.title' | translate }}</span>
         </mat-header-cell>
         <mat-cell *matCellDef="let line" class="border-cell-right">
             <span jemsText maxLines="2">
-                <span>{{ line.name | translateByInputLanguage | async }}</span>
-                <span *ngIf="line.period !== null && line.period !== undefined">
-                    &nbsp;- {{ line.period === PERIOD_PREPARATION ? ('project.application.form.section.part.e.period.preparation' | translate) :
-                    (line.period === PERIOD_CLOSURE ? ('project.application.form.section.part.e.period.closure' | translate) :
-                        ('project.partner.budget.table.period' | translate) + ' ' + line.period) }}
-                </span>
+                {{ line.name | translateByInputLanguage | async }}
             </span>
         </mat-cell>
         <mat-footer-cell *matFooterCellDef class="border-cell-right">{{ 'project.partner.budget.table.total' | translate }}</mat-footer-cell>
@@ -76,5 +71,5 @@
 </jems-multi-language-container>
 
 <jems-alert [show]="!dataSource.data.length" [type]="Alert.INFO" closable="false">
-    <p>{{ 'lump.sum.empty.list' | translate }}</p>
+    <p>{{ 'unit.cost.empty.list' | translate }}</p>
 </jems-alert>
