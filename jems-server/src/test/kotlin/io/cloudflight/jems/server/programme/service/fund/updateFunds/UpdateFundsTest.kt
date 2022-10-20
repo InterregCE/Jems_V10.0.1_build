@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.programme.service.fund.update_funds
+package io.cloudflight.jems.server.programme.service.fund.updateFunds
 
 import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.api.common.dto.I18nMessage
@@ -12,9 +12,9 @@ import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.service.fund.ProgrammeFundPersistence
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
-import io.cloudflight.jems.server.programme.service.fund.update_funds.UpdateFunds.Companion.MAX_FUND_ABBREVIATION_LENGTH
-import io.cloudflight.jems.server.programme.service.fund.update_funds.UpdateFunds.Companion.MAX_FUND_DESCRIPTION_LENGTH
-import io.cloudflight.jems.server.programme.service.fund.update_funds.UpdateFunds.Companion.MAX_NUMBER_OF_FUNDS
+import io.cloudflight.jems.server.programme.service.fund.updateFunds.UpdateFunds.Companion.MAX_FUND_ABBREVIATION_LENGTH
+import io.cloudflight.jems.server.programme.service.fund.updateFunds.UpdateFunds.Companion.MAX_FUND_DESCRIPTION_LENGTH
+import io.cloudflight.jems.server.programme.service.fund.updateFunds.UpdateFunds.Companion.MAX_NUMBER_OF_FUNDS
 import io.cloudflight.jems.server.programme.service.info.isSetupLocked.IsProgrammeSetupLockedInteractor
 import io.mockk.clearMocks
 import io.mockk.every
@@ -86,16 +86,16 @@ internal class UpdateFundsTest : UnitTest() {
 
         every { persistence.getMax20Funds() } returns listOf(toDelete, toUpdate)
         every { isProgrammeSetupLocked.isLocked() } returns false
+        every { persistence.getFundsAlreadyInUse() } returns emptyList()
 
         val slotToDeleteIds = slot<Set<Long>>()
         val slotFunds = slot<Set<ProgrammeFund>>()
-        every { persistence.updateFunds(capture(slotToDeleteIds), capture(slotFunds)) } returns listOf(
-            toUpdate.copy(selected = !toUpdate.selected), fundToCreate,
-        )
+        every {
+            persistence.updateFunds(capture(slotToDeleteIds), capture(slotFunds))
+        } returns listOf(toUpdate.copy(selected = !toUpdate.selected), fundToCreate)
 
-        assertThat(
-            updateFunds.update(listOf(toUpdate.copy(selected = !toUpdate.selected), fundToCreate))
-        ).containsExactlyInAnyOrder(toUpdate.copy(selected = !toUpdate.selected), fundToCreate)
+        assertThat(updateFunds.update(listOf(toUpdate.copy(selected = !toUpdate.selected), fundToCreate)))
+            .containsExactlyInAnyOrder(toUpdate.copy(selected = !toUpdate.selected), fundToCreate)
 
         assertThat(slotToDeleteIds.captured).containsExactly(idExistingToDelete)
         assertThat(slotFunds.captured).containsExactly(
@@ -207,5 +207,18 @@ internal class UpdateFundsTest : UnitTest() {
 
     private fun providePreDefinedProgramFundTypes() =
         ProgrammeFundType.values().filter { it != ProgrammeFundType.OTHER }
+
+    @Test
+    fun `update funds - should throw exception when deleting predefined fund`() {
+        val toDelete = ProgrammeFund(
+            id = idExistingToDelete,
+            selected = false,
+            type = ProgrammeFundType.ERDF
+        )
+        every { persistence.getMax20Funds() } returns listOf(toDelete)
+        every { isProgrammeSetupLocked.isLocked() } returns false
+
+        assertThrows<ChangesAreNotAllowedException> { updateFunds.update(emptyList()) }
+    }
 
 }

@@ -1,10 +1,11 @@
 package io.cloudflight.jems.server.programme.service.costoption.update_lump_sum
 
 import io.cloudflight.jems.api.common.dto.I18nMessage
+import io.cloudflight.jems.server.common.exception.ApplicationAccessDeniedException
 import io.cloudflight.jems.server.common.exception.ApplicationException
 import io.cloudflight.jems.server.common.exception.ApplicationUnprocessableException
 
-private const val UPDATE_LUMP_SUM_ERROR_CODE_PREFIX = "S-LMP-UOI"
+private const val UPDATE_LUMP_SUM_ERROR_CODE_PREFIX = "S-LMP-ULS"
 private const val UPDATE_LUMP_SUM_ERROR_KEY_PREFIX = "use.case.update.lump.sum"
 
 class UpdateLumpSumException(cause: Throwable) : ApplicationException(
@@ -16,4 +17,9 @@ class LumpSumIsInvalid(errors: Map<String, I18nMessage>) : ApplicationUnprocessa
     code = "$UPDATE_LUMP_SUM_ERROR_CODE_PREFIX-001",
     i18nMessage = I18nMessage("$UPDATE_LUMP_SUM_ERROR_KEY_PREFIX.invalid"),
     formErrors = errors,
+)
+
+class UpdateLumpSumWhenProgrammeSetupRestricted : ApplicationAccessDeniedException(
+    code = "$UPDATE_LUMP_SUM_ERROR_CODE_PREFIX-002",
+    i18nMessage = I18nMessage("$UPDATE_LUMP_SUM_ERROR_KEY_PREFIX.programme.setup.restricted"),
 )

@@ -89,7 +89,7 @@ class ProgrammeDataGeneratorTest(@LocalServerPort private val port: Int) : DataG
     }
 
     @Test
-    @ExpectSelect(11)
+    @ExpectSelect(12)
     @ExpectUpdate(7)
     @ExpectInsert(0)
     @ExpectDelete(2)

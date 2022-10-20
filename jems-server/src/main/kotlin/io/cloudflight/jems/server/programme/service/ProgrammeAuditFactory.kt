@@ -7,6 +7,7 @@ import io.cloudflight.jems.server.audit.service.AuditBuilder
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.nuts.service.NutsIdentifier
 import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistDetail
+import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.language.model.ProgrammeLanguage
@@ -32,6 +33,12 @@ fun programmePriorityUpdated(oldPriority: ProgrammePriority, changes: Map<String
     return AuditBuilder(AuditAction.PROGRAMME_PRIORITY_UPDATED)
         .description("Programme priority data changed for '${oldPriority.code}' '${oldPriority.title}':\n$changedString")
         .build()
+}
+
+fun programmePriorityDeleted(context: Any, programmePriority: ProgrammePriority): AuditCandidateEvent {
+    return AuditCandidateEvent(context, AuditBuilder(AuditAction.PROGRAMME_PRIORITY_DELETED)
+        .description("Programme priority '${programmePriority.code}' '${programmePriority.title}' has been deleted")
+        .build())
 }
 
 fun programmeBasicDataChanged(changes: Map<String, Pair<Any?, Any?>>): AuditCandidate {
@@ -120,11 +127,27 @@ fun programmeTranslationFileUploaded(
             .build()
     )
 
+fun lumpSumDeleted(context: Any, lumpSum: ProgrammeLumpSum): AuditCandidateEvent =
+    AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditBuilder(AuditAction.PROGRAMME_LUMP_SUM_DELETED)
+        .description("Programme lump sum (id=${lumpSum.id}) '${lumpSum.name}' has been deleted")
+        .build()
+    )
+
 fun unitCostChangedAudit(context: Any, unitCost: ProgrammeUnitCost): AuditCandidateEvent =
     AuditCandidateEvent(
         context = context,
         auditCandidate = AuditBuilder(AuditAction.PROGRAMME_UNIT_COST_CHANGED)
             .description("Programme unit cost (id=${unitCost.id}) '${unitCost.name}' has been changed")
+            .build()
+    )
+
+fun unitCostDeleted(context: Any, unitCost: ProgrammeUnitCost): AuditCandidateEvent =
+    AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditBuilder(AuditAction.PROGRAMME_UNIT_COST_DELETED)
+            .description("Programme unit cost (id=${unitCost.id}) '${unitCost.name}' has been deleted")
             .build()
     )
 

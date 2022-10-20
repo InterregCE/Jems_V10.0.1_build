@@ -231,8 +231,9 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
   }
 
   isInstallmentAlreadyAuthorised(paymentIndex: number, installmentIndex: number): boolean {
-    if (installmentIndex >= this.initialPaymentDetail.partnerPayments[paymentIndex].installments.length )
-      {return false;}
+    if (installmentIndex >= this.initialPaymentDetail.partnerPayments[paymentIndex].installments.length) {
+      return false;
+    }
     return  this.initialPaymentDetail.partnerPayments[paymentIndex].installments[installmentIndex].savePaymentInfo || false;
   }
 
@@ -257,8 +258,9 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
   }
 
   isPaymentAlreadyConfirmed(paymentIndex: number, installmentIndex: number): boolean {
-    if (installmentIndex >= this.initialPaymentDetail.partnerPayments[paymentIndex].installments.length )
-      {return false;}
+    if (installmentIndex >= this.initialPaymentDetail.partnerPayments[paymentIndex].installments.length) {
+      return false;
+    }
     return  this.initialPaymentDetail.partnerPayments[paymentIndex].installments[installmentIndex].paymentConfirmed || false;
   }
 

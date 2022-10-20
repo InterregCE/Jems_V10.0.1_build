@@ -32,6 +32,18 @@ interface ProgrammeSpecificObjectiveRepository :
     )
     fun getObjectivePoliciesAlreadyInUse(): Iterable<String>
 
+    @Query(
+        nativeQuery = true,
+        value = "SELECT DISTINCT programme_priority_policy_id FROM programme_indicator_result"
+    )
+    fun getObjectivePoliciesAlreadyUsedByResultIndicator(): Iterable<String>
+
+    @Query(
+        nativeQuery = true,
+        value = "SELECT DISTINCT programme_priority_policy_id FROM programme_indicator_output"
+    )
+    fun getObjectivePoliciesAlreadyUsedByOutputIndicator(): Iterable<String>
+
     fun getAllByProgrammeObjectivePolicyIn(ids: Set<ProgrammeObjectivePolicy>): Set<ProgrammeSpecificObjectiveEntity>
 
 }

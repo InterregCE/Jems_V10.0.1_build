@@ -15,5 +15,5 @@ interface OutputIndicatorPersistence {
     fun getOutputIndicatorsForSpecificObjective(programmeObjectivePolicy: ProgrammeObjectivePolicy): List<OutputIndicatorSummary>
     fun saveOutputIndicator(outputIndicator: OutputIndicator): OutputIndicatorDetail
     fun isIdentifierUsedByAnotherOutputIndicator(outputIndicatorId: Long?, identifier: String): Boolean
-
+    fun deleteOutputIndicator(id: Long)
 }

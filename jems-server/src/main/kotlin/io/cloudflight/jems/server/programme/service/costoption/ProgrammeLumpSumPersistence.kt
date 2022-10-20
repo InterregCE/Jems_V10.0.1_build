@@ -11,5 +11,6 @@ interface ProgrammeLumpSumPersistence {
     fun createLumpSum(lumpSum: ProgrammeLumpSum): ProgrammeLumpSum
     fun updateLumpSum(lumpSum: ProgrammeLumpSum): ProgrammeLumpSum
     fun deleteLumpSum(lumpSumId: Long)
+    fun getNumberOfOccurrencesInCalls(lumpSumId: Long): Int
 
 }

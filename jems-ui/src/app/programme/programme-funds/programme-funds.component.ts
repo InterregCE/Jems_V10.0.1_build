@@ -4,9 +4,9 @@ import {AbstractControl, FormArray, FormBuilder, FormGroup} from '@angular/forms
 import {ProgrammeFundDTO, ProgrammeFundService} from '@cat/api';
 import {FormState} from '@common/components/forms/form-state';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {catchError, map, mergeMap, share, shareReplay, tap} from 'rxjs/operators';
+import {catchError, map, share, startWith, switchMap, tap} from 'rxjs/operators';
 import {TranslateService} from '@ngx-translate/core';
-import {combineLatest, merge, Subject} from 'rxjs';
+import {combineLatest, Observable, Subject} from 'rxjs';
 import {MatSort} from '@angular/material/sort';
 import {Log} from '@common/utils/log';
 import {HttpErrorResponse} from '@angular/common/http';
@@ -26,31 +26,28 @@ export class ProgrammeFundsComponent extends ViewEditFormComponent implements On
   fundsSaveError$ = new Subject<APIError | null>();
   fundsSaveSuccess$ = new Subject<boolean>();
   saveFunds$ = new Subject<ProgrammeFundDTO[]>();
+  fundChanged$ = new Subject<void>();
 
   newPageSize$ = new Subject<number>();
   newPageIndex$ = new Subject<number>();
   newSort$ = new Subject<Partial<MatSort>>();
 
-  private initialFunds$ = this.programmeFundService.getProgrammeFundList()
-    .pipe(
-      tap(funds => Log.info('Fetched programme funds:', this, funds)),
-      shareReplay(1)
-    );
-
-  private savedFunds$ = this.saveFunds$
-    .pipe(
-      mergeMap(funds => this.programmeFundService.updateProgrammeFundList(funds)),
+  saveFunds(funds: ProgrammeFundDTO[]): Observable<ProgrammeFundDTO[]> {
+    return this.programmeFundService.updateProgrammeFundList(funds).pipe(
       tap(saved => Log.info('Updated programme funds:', this, saved)),
       tap(() => this.fundsSaveSuccess$.next(true)),
       tap(() => this.fundsSaveError$.next(null)),
+      tap(() => this.fundChanged$.next()),
       catchError((error: HttpErrorResponse) => {
         this.fundsSaveError$.next(error.error);
         throw error;
       })
     );
+  }
 
-  funds$ = merge(this.initialFunds$, this.savedFunds$)
+  funds$ = combineLatest([this.fundChanged$.pipe(startWith(null))])
     .pipe(
+      switchMap(() => this.programmeFundService.getProgrammeFundList()),
       map(funds => funds.map(fund => ({
         id: fund.id,
         selected: fund.selected,
@@ -66,6 +63,7 @@ export class ProgrammeFundsComponent extends ViewEditFormComponent implements On
   });
 
   isProgrammeSetupLocked: boolean;
+  toDeleteIds: number[] = [];
 
   constructor(
     private formBuilder: FormBuilder,
@@ -92,6 +90,7 @@ export class ProgrammeFundsComponent extends ViewEditFormComponent implements On
           if (funds) {
             this.resetForm(funds);
             this.editableFundsForm.disable();
+            this.fundsSaveError$.next(null);
           }
         }
       });
@@ -118,14 +117,18 @@ export class ProgrammeFundsComponent extends ViewEditFormComponent implements On
     this.addControl();
   }
 
+  deleteFund(elementIndex: number): void {
+    this.fundsForm.removeAt(elementIndex);
+  }
+
   onSubmit(): void {
-    this.saveFunds$.next(this.editableFundsForm.controls.funds.value.map((fund: any) => ({
+    this.saveFunds(this.editableFundsForm.controls.funds.value.map((fund: any) => ({
       id: fund.id,
       selected: fund.selected === undefined ? true : fund.selected,
       type: fund.type,
       abbreviation: fund.abbreviation,
       description: fund.description,
-    })));
+    }))).pipe().subscribe();
   }
 
   isPredefinedFund(formGroup: AbstractControl): boolean {

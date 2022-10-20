@@ -2,12 +2,12 @@ package io.cloudflight.jems.server.programme.service.priority.update_priority
 
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.cloudflight.jems.server.audit.service.AuditService
+import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.authorization.CanUpdateProgrammeSetup
 import io.cloudflight.jems.server.programme.service.info.isSetupLocked.IsProgrammeSetupLockedInteractor
 import io.cloudflight.jems.server.programme.service.priority.ProgrammePriorityPersistence
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
-import io.cloudflight.jems.server.programme.service.priority.validator.checkNoCallExistsForRemovedSpecificObjectives
 import io.cloudflight.jems.server.programme.service.priority.validator.validateUpdateProgrammePriority
 import io.cloudflight.jems.server.programme.service.programmePriorityUpdated
 import org.springframework.stereotype.Service
@@ -23,6 +23,7 @@ class UpdatePriority(
 
     @Transactional
     @CanUpdateProgrammeSetup
+    @ExceptionWrapper(UpdatePriorityFailed::class)
     override fun updatePriority(priorityId: Long, priority: ProgrammePriority): ProgrammePriority {
         validateProgrammePriority(priority)
 
@@ -40,10 +41,9 @@ class UpdatePriority(
         if (isProgrammeSetupLocked.isLocked() && objectivePoliciesToBeRemoved.isNotEmpty())
             throw UpdateWhenProgrammeSetupRestricted()
 
-        checkNoCallExistsForRemovedSpecificObjectives(
-            objectivePoliciesToBeRemoved = objectivePoliciesToBeRemoved,
-            alreadyUsedObjectivePolicies = persistence.getObjectivePoliciesAlreadyInUse()
-        )
+        if((objectivePoliciesToBeRemoved intersect persistence.getObjectivePoliciesAlreadyInUse()).isNotEmpty()) {
+            throw ToUpdatePriorityAlreadyUsedInCall()
+        }
 
         val newPriority = persistence.update(priority.copy(id = priorityId))
         programmePriorityUpdated(existingPriority, existingPriority.getDiff(newPriority)).logWith(auditService)

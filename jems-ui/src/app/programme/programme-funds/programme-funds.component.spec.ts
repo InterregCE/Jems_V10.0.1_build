@@ -46,15 +46,8 @@ describe('ProgrammeFundsComponent', () => {
   }));
 
   it('should update funds', fakeAsync(() => {
-    let result: ProgrammeFundDTO[] = [];
-    component.funds$.subscribe(res => result = res);
-    component.saveFunds$.next([]);
+    component.saveFunds([]).pipe().subscribe();
 
     httpTestingController.expectOne({method: 'PUT', url: `//api/programmeFund`})
-      .flush([{id: 1}]);
-
-    tick(4100);
-    expect(result.length).toBe(1);
-    expect(result[0].id).toBe(1);
   }));
 });

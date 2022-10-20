@@ -6,6 +6,7 @@ import io.cloudflight.jems.api.programme.dto.indicator.ResultIndicatorSummaryDTO
 import io.cloudflight.jems.api.programme.dto.indicator.ResultIndicatorUpdateRequestDTO
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.cloudflight.jems.server.programme.service.indicator.create_result_indicator.CreateResultIndicatorInteractor
+import io.cloudflight.jems.server.programme.service.indicator.deleteResultIndicator.DeleteResultIndicatorInteractor
 import io.cloudflight.jems.server.programme.service.indicator.get_result_indicator.GetResultIndicatorInteractor
 import io.cloudflight.jems.server.programme.service.indicator.list_result_indicators.ListResultIndicatorsInteractor
 import io.cloudflight.jems.server.programme.service.indicator.update_result_indicator.UpdateResultIndicatorInteractor
@@ -18,6 +19,7 @@ class ResultIndicatorController(
     private val getResultIndicator: GetResultIndicatorInteractor,
     private val createResultIndicator: CreateResultIndicatorInteractor,
     private val updateResultIndicator: UpdateResultIndicatorInteractor,
+    private val deleteResultIndicator: DeleteResultIndicatorInteractor
 ) : ResultIndicatorApi {
 
     override fun getResultIndicatorDetails(pageable: Pageable) =
@@ -33,6 +35,9 @@ class ResultIndicatorController(
     override fun updateResultIndicator(resultIndicatorUpdateRequestDTO: ResultIndicatorUpdateRequestDTO) =
         updateResultIndicator.updateResultIndicator(resultIndicatorUpdateRequestDTO.toResultIndicator())
             .toResultIndicatorDetailDTO()
+
+    override fun deleteResultIndicator(id: Long) =
+        deleteResultIndicator.deleteResultIndicator(id)
 
     override fun getResultIndicatorSummaries(): Set<ResultIndicatorSummaryDTO> =
         listResultIndicators.getResultIndicatorSummaries().toResultIndicatorSummaryDTOSet()

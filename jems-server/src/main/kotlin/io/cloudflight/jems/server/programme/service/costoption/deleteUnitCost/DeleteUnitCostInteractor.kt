@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.programme.service.costoption.delete_unit_cost
+package io.cloudflight.jems.server.programme.service.costoption.deleteUnitCost
 
 interface DeleteUnitCostInteractor {
 

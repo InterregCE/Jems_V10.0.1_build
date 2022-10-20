@@ -7,6 +7,7 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.slot
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageImpl
@@ -14,7 +15,6 @@ import org.springframework.data.domain.Pageable
 import java.util.Optional
 
 internal class OutputIndicatorPersistenceProviderTest : IndicatorsPersistenceBaseTest() {
-
 
     @MockK
     private lateinit var outputIndicatorRepository: OutputIndicatorRepository
@@ -94,7 +94,6 @@ internal class OutputIndicatorPersistenceProviderTest : IndicatorsPersistenceBas
 
     @Test
     fun `should return false when identifier is not used by another output indicator`() {
-
         val outputIndicatorEntity = buildOutputIndicatorEntityInstance()
         every { outputIndicatorRepository.findOneByIdentifier(indicatorIdentifier) } returns outputIndicatorEntity
         assertThat(
@@ -107,7 +106,6 @@ internal class OutputIndicatorPersistenceProviderTest : IndicatorsPersistenceBas
 
     @Test
     fun `should return true when identifier is used by another output indicator`() {
-
         val outputIndicatorEntity = buildOutputIndicatorEntityInstance(2L)
         every { outputIndicatorRepository.findOneByIdentifier(indicatorIdentifier) } returns outputIndicatorEntity
         assertThat(
@@ -116,5 +114,12 @@ internal class OutputIndicatorPersistenceProviderTest : IndicatorsPersistenceBas
                 outputIndicatorEntity.identifier
             )
         ).isEqualTo(true)
+    }
+
+    @Test
+    fun testDeleteOutputIndicator() {
+        every { outputIndicatorRepository.deleteById(1L) } returns Unit
+        outputIndicatorPersistenceProvider.deleteOutputIndicator(1L)
+        verify { outputIndicatorRepository.deleteById(1L) }
     }
 }

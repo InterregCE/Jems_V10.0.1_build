@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.programme.service.fund.update_funds
+package io.cloudflight.jems.server.programme.service.fund.updateFunds
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
@@ -37,21 +37,23 @@ class UpdateFunds(
             throw CreationOfFundUnderPreDefinedTypesIsNotAllowedException()
 
         val currentFunds = persistence.getMax20Funds()
-
         val toUpdateFunds = funds.filterTo(HashSet()) { it.id != 0L }
-
         throwIfAnyOfToUpdateFundsNotExists(currentFunds, toUpdateFunds)
 
-        val toDeleteFundIds = currentFunds.map { it.id }
-            .filterTo(HashSet()) { currentFundId -> toUpdateFunds.none { it.id == currentFundId } }
+        val toDeleteFunds = currentFunds.filter { saved -> saved.id !in toUpdateFunds.map { it.id } }
+        val toDeselectFundIds = currentFunds.filter { currentFund ->
+            toUpdateFunds.any { toUpdateFund -> currentFund.id == toUpdateFund.id && currentFund.selected && !toUpdateFund.selected }
+        }.map { it.id }
+        throwIfChangesAreNotAllowed(toDeleteFunds, toDeselectFundIds)
 
-        throwIfChangesAreNotAllowed(currentFunds, toUpdateFunds, toDeleteFundIds)
+        val fundsAlreadyInUse = persistence.getFundsAlreadyInUse()
+        throwIfAnyOfToDeleteFundsInUse(toDeleteFunds, fundsAlreadyInUse)
+        throwIfAnyOfDeselectedFundsInUse(toDeselectFundIds, fundsAlreadyInUse)
 
-        return persistence.updateFunds(toDeleteIds = toDeleteFundIds, funds.toSet()).also {
+        return persistence.updateFunds(toDeleteIds = toDeleteFunds.map { it.id }.toSet(), funds.toSet()).also {
             auditPublisher.publishEvent(programmeFundsChanged(this, it))
         }
     }
-
 
     private fun validateInput(funds: Collection<ProgrammeFund>) =
         generalValidator.throwIfAnyIsInvalid(
@@ -69,22 +71,41 @@ class UpdateFunds(
         toUpdateFunds: Collection<ProgrammeFund>
     ) {
         if (currentFunds.map { it.id }
-                .union(toUpdateFunds.map { it.id }).size != currentFunds.distinct().size)
+                .union(toUpdateFunds.map { it.id }).size != currentFunds.distinct().size) {
             throw FundNotFoundException()
+        }
     }
 
     private fun throwIfChangesAreNotAllowed(
-        currentFunds: Collection<ProgrammeFund>,
-        toUpdateFunds: Collection<ProgrammeFund>,
-        toDeleteFundIds: Collection<Long>
+        toDeleteFunds: Collection<ProgrammeFund>,
+        toDeselectFundIds: Collection<Long>
     ) {
-        if (isProgrammeSetupLocked.isLocked() &&
-            (toDeleteFundIds.isNotEmpty() || isAnyFundDeselected(currentFunds, toUpdateFunds))
-        ) throw ChangesAreNotAllowedException()
+        if (isProgrammeSetupLocked.isLocked() && (toDeleteFunds.isNotEmpty() || toDeselectFundIds.isNotEmpty())) {
+            throw ChangesAreNotAllowedException()
+        }
+        if (toDeleteFunds.any { it.type != ProgrammeFundType.OTHER }) {
+            throw ChangesAreNotAllowedException()
+        }
     }
 
-    private fun isAnyFundDeselected(currentFunds: Collection<ProgrammeFund>, toUpdateFunds: Collection<ProgrammeFund>) =
-        toUpdateFunds.any { toUpdateFund ->
-            currentFunds.any { currentFund -> toUpdateFund.id == currentFund.id && currentFund.selected && !toUpdateFund.selected }
+    private fun throwIfAnyOfToDeleteFundsInUse(
+        toDeleteFunds: Collection<ProgrammeFund>,
+        fundsAlreadyInUse: Iterable<Long>
+    ) {
+        val fundsThatCannotBeRemoved = toDeleteFunds.filter { deselectedFund ->
+            fundsAlreadyInUse.any { it == deselectedFund.id }
         }
+        if (fundsThatCannotBeRemoved.isNotEmpty()) {
+            throw UpdateFundDeletedFundAlreadyUsedInCallException()
+        }
+    }
+
+    private fun throwIfAnyOfDeselectedFundsInUse(deselectedFundIds: Iterable<Long>, fundsAlreadyInUse: Iterable<Long>) {
+        val fundsThatCannotBeDeselected = deselectedFundIds.filter { deselectedFundId ->
+            fundsAlreadyInUse.any{ it == deselectedFundId }
+        }
+        if (fundsThatCannotBeDeselected.isNotEmpty()) {
+            throw UpdateFundDeselectedFundAlreadyUsedInCallException()
+        }
+    }
 }

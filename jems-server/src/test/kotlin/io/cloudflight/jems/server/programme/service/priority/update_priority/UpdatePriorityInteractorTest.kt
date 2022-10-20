@@ -1,5 +1,7 @@
 package io.cloudflight.jems.server.programme.service.priority.update_priority
 
+import io.cloudflight.jems.api.audit.dto.AuditAction
+import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjective
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
@@ -9,8 +11,6 @@ import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.G
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.RenewableEnergy
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy.WaterManagement
 import io.cloudflight.jems.api.project.dto.InputTranslation
-import io.cloudflight.jems.api.audit.dto.AuditAction
-import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.common.exception.I18nFieldError
@@ -28,7 +28,6 @@ import io.cloudflight.jems.server.programme.service.priority.testPriority
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
-import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit5.MockKExtension
 import io.mockk.slot
@@ -38,6 +37,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.api.extension.ExtendWith
+import org.springframework.http.HttpStatus
 
 @ExtendWith(MockKExtension::class)
 class UpdatePriorityInteractorTest {
@@ -407,14 +407,11 @@ class UpdatePriorityInteractorTest {
             )
         )
 
-        val ex =
-            assertThrows<I18nValidationException> { updatePriority.updatePriority(ID, toUpdateWithoutRenewableEnergy) }
-        assertThat(ex.i18nFieldErrors!!["specificObjectives"]).isEqualTo(
-            I18nFieldError(
-                i18nKey = "programme.priority.specificObjective.already.used.in.call",
-                i18nArguments = listOf(RenewableEnergy.name)
-            )
-        )
+        val ex = assertThrows<ToUpdatePriorityAlreadyUsedInCall> {
+            updatePriority.updatePriority(ID, toUpdateWithoutRenewableEnergy)
+        }
+        assertThat(ex.httpStatus).isEqualTo(HttpStatus.BAD_REQUEST)
+        assertThat(ex.i18nMessage.i18nKey).isEqualTo("use.case.update.programme.priority.already.used.in.call")
     }
 
 }

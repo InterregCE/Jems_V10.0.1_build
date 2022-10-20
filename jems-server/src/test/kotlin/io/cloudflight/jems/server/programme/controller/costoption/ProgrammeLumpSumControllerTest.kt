@@ -8,7 +8,7 @@ import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeLumpSumPhase.Im
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.programme.service.costoption.create_lump_sum.CreateLumpSumInteractor
-import io.cloudflight.jems.server.programme.service.costoption.delete_lump_sum.DeleteLumpSumInteractor
+import io.cloudflight.jems.server.programme.service.costoption.deleteLumpSum.DeleteLumpSumInteractor
 import io.cloudflight.jems.server.programme.service.costoption.get_lump_sum.GetLumpSumInteractor
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.costoption.update_lump_sum.UpdateLumpSumInteractor
