@@ -2,6 +2,8 @@ package io.cloudflight.jems.server.project.controller.contracting.monitoring
 
 import io.cloudflight.jems.api.project.contracting.ContractingMonitoringApi
 import io.cloudflight.jems.api.project.dto.contracting.ProjectContractingMonitoringDTO
+import io.cloudflight.jems.api.project.dto.contracting.ProjectContractingMonitoringStartDateDTO
+import io.cloudflight.jems.server.project.service.contracting.monitoring.getContractingMonitoringStartDate.GetContractingMonitoringStartDateInteractor
 import io.cloudflight.jems.server.project.service.contracting.monitoring.getLastApprovedPeriods.GetLastApprovedPeriodsInteractor
 import io.cloudflight.jems.server.project.service.contracting.monitoring.getProjectContractingMonitoring.GetContractingMonitoringInteractor
 import io.cloudflight.jems.server.project.service.contracting.monitoring.updateProjectContractingMonitoring.UpdateContractingMonitoringInteractor
@@ -12,6 +14,7 @@ class ContractingMonitoringController(
     private val getContractingMonitoringInteractor: GetContractingMonitoringInteractor,
     private val updateContractingMonitoringInteractor: UpdateContractingMonitoringInteractor,
     private val getLastApprovedPeriodsInteractor: GetLastApprovedPeriodsInteractor,
+    private val getContractingMonitoringStartDateInteractor: GetContractingMonitoringStartDateInteractor,
 ): ContractingMonitoringApi {
 
     override fun getContractingMonitoring(projectId: Long): ProjectContractingMonitoringDTO {
@@ -28,5 +31,9 @@ class ContractingMonitoringController(
 
     override fun getContractingMonitoringPeriods(projectId: Long) =
         getLastApprovedPeriodsInteractor.getPeriods(projectId).toDTO()
+
+    override fun getContractingMonitoringStartDate(projectId: Long): ProjectContractingMonitoringStartDateDTO {
+        return getContractingMonitoringStartDateInteractor.getStartDate(projectId).toDTO()
+    }
 
 }

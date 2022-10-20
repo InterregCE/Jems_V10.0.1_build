@@ -50,15 +50,15 @@ export class ContractReportingComponent implements OnInit {
       this.contractReportingStore.contractReportingDeadlines$,
       this.contractReportingStore.userCanViewDeadlines$,
       this.contractReportingStore.userCanEditDeadlines$,
-      this.contractMonitoringExtensionStore.projectContractingMonitoring$
+      this.contractReportingStore.contractingMonitoringStartDate$
     ])
       .pipe(
-        map(([availablePeriods, contractReportingDeadlines, userCanViewDeadlines, userCanEditDeadlines, projectContractingMonitoring]) => ({
+        map(([availablePeriods, contractReportingDeadlines, userCanViewDeadlines, userCanEditDeadlines, contractingMonitoringStartDate]) => ({
             periods: availablePeriods,
             reportingDeadlines: contractReportingDeadlines,
             canView: userCanViewDeadlines,
             canEdit: userCanEditDeadlines,
-            projectStartDate: projectContractingMonitoring.startDate
+            projectStartDate: contractingMonitoringStartDate
           })
         ),
         tap(data => this.initForm(data.canEdit)),

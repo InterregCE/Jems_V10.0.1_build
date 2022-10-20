@@ -5,6 +5,7 @@ import {ProjectPeriodDTO, ProjectResultDTO, ProjectResultService, WorkPackageSer
 import {filter, map, switchMap, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
+import {RoutingService} from '@common/services/routing.service';
 
 @Injectable()
 export class ProjectTimeplanPageStore {
@@ -18,7 +19,8 @@ export class ProjectTimeplanPageStore {
   constructor(private projectStore: ProjectStore,
               private workPackageService: WorkPackageService,
               private projectResultService: ProjectResultService,
-              private projectVersionStore: ProjectVersionStore) {
+              private projectVersionStore: ProjectVersionStore,
+              private router: RoutingService) {
     this.projectId$ = this.projectStore.projectId$;
     this.projectTitle$ = this.projectStore.projectTitle$;
     this.workPackages$ = this.workPackages();
@@ -27,7 +29,7 @@ export class ProjectTimeplanPageStore {
   }
 
   private workPackages(): Observable<any> {
-    return combineLatest([this.projectId$, this.projectVersionStore.selectedVersionParam$])
+    return combineLatest([this.projectId$, this.getVersion()])
       .pipe(
         filter(([id]) => !!id),
         switchMap(([id, version]) => this.workPackageService.getWorkPackagesForTimePlanByProjectId(id, version)),
@@ -43,11 +45,23 @@ export class ProjectTimeplanPageStore {
   }
 
   private projectResults(): Observable<any> {
-    return combineLatest([this.projectId$, this.projectVersionStore.selectedVersionParam$])
+    return combineLatest([this.projectId$, this.getVersion()])
       .pipe(
         filter(([id]) => !!id),
         switchMap(([id, version]) => this.projectResultService.getProjectResults(id, version)),
         tap(projectResults => Log.info('Fetching project results for timeplan', this, projectResults))
       );
+  }
+
+  private getVersion(): Observable<string | undefined> {
+    const isFromReportingPage = this.router.url.includes('contractReporting');
+    if (isFromReportingPage) {
+      return this.projectVersionStore.lastApprovedOrContractedVersion$
+        .pipe(
+          map(lastApprovedVersion => lastApprovedVersion?.version)
+        );
+    } else {
+      return this.projectVersionStore.selectedVersionParam$;
+    }
   }
 }

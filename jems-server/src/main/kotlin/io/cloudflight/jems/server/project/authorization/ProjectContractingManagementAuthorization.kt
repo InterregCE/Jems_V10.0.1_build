@@ -55,16 +55,19 @@ class ProjectContractingManagementAuthorization(
             authorizationUtilService.userIsProjectCollaboratorWithEditPrivilege(currentUserId, applicantAndStatus)
     }
 
-    fun canEditReportingAndIsCollaborator(projectId: Long): Boolean =
-        hasPermission(UserRolePermission.ProjectCreatorContractingReportingEdit) &&
-            authorizationUtilService.userIsPartnerCollaboratorForProject(
-                userId = securityService.getUserIdOrThrow(),
-                projectId = projectId)
+    fun canEditReportingAndIsCollaborator(projectId: Long): Boolean {
+        val applicantAndStatus = projectPersistence.getApplicantAndStatusById(projectId)
+        val isProjectOwnerOrProjectCollaborator = authorizationUtilService.userIsProjectOwnerOrProjectCollaborator(securityService.getUserIdOrThrow(),
+            applicantAndStatus)
+        return hasPermission(UserRolePermission.ProjectCreatorContractingReportingEdit) && isProjectOwnerOrProjectCollaborator
+    }
 
-    fun canViewReportingAndIsCollaborator(projectId: Long): Boolean =
-        hasPermission(UserRolePermission.ProjectCreatorContractingReportingView) &&
-            authorizationUtilService.userIsPartnerCollaboratorForProject(
-                userId = securityService.getUserIdOrThrow(),
-                projectId = projectId)
+
+    fun canViewReportingAndIsCollaborator(projectId: Long): Boolean {
+        val applicantAndStatus = projectPersistence.getApplicantAndStatusById(projectId)
+        val isProjectOwnerOrProjectCollaborator = authorizationUtilService.userIsProjectOwnerOrProjectCollaborator(securityService.getUserIdOrThrow(),
+            applicantAndStatus)
+        return hasPermission(UserRolePermission.ProjectCreatorContractingReportingView) && isProjectOwnerOrProjectCollaborator
+    }
 
 }

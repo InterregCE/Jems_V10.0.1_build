@@ -1,4 +1,5 @@
 <jems-project-page-template
+        [isVersionedData]="!reportingDeadlines"
         [needsCard]="!reportingDeadlines"
         [titleText]="reportingDeadlines ? '' : 'project.application.form.acronym' | translate : {projectTitle: pageStore.projectTitle$ | async}"
         [subTitleKey]="reportingDeadlines ? '' : 'project.application.form.section.part.c'">
