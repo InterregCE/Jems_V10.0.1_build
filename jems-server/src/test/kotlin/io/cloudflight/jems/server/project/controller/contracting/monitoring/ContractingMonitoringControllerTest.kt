@@ -6,6 +6,8 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammeObjectiveDimension
 import io.cloudflight.jems.server.project.service.contracting.ContractingModificationDeniedException
 import io.cloudflight.jems.server.project.service.contracting.model.*
+import io.cloudflight.jems.server.project.service.contracting.monitoring.getContractingMonitoringStartDate.GetContractingMonitoringStartDateException
+import io.cloudflight.jems.server.project.service.contracting.monitoring.getContractingMonitoringStartDate.GetContractingMonitoringStartDateInteractor
 import io.cloudflight.jems.server.project.service.contracting.monitoring.getLastApprovedPeriods.GetLastApprovedPeriodsInteractor
 import io.cloudflight.jems.server.project.service.contracting.monitoring.getProjectContractingMonitoring.GetContractingMonitoringInteractor
 import io.cloudflight.jems.server.project.service.contracting.monitoring.updateProjectContractingMonitoring.UpdateContractingMonitoringException
@@ -101,6 +103,10 @@ internal class ContractingMonitoringControllerTest: UnitTest() {
             startDate = yesterday,
             endDate = tomorrow,
         )
+
+        private val startDate = ProjectContractingMonitoringStartDate(
+            yesterday
+        )
     }
 
     @MockK
@@ -111,6 +117,9 @@ internal class ContractingMonitoringControllerTest: UnitTest() {
 
     @MockK
     lateinit var getLastApprovedPeriodsInteractor: GetLastApprovedPeriodsInteractor
+
+    @MockK
+    lateinit var getStartDateInteractor: GetContractingMonitoringStartDateInteractor
 
     @InjectMockKs
     lateinit var contractingMonitoringController: ContractingMonitoringController
@@ -152,4 +161,21 @@ internal class ContractingMonitoringControllerTest: UnitTest() {
             .containsExactly(dummyPeriodExpected)
     }
 
+    @Test
+    fun getContractingMonitoringStartDate() {
+        every { getStartDateInteractor.getStartDate(projectId) } returns startDate
+        assertThat(contractingMonitoringController.getContractingMonitoringStartDate(projectId))
+            .isEqualTo(ProjectContractingMonitoringStartDateDTO(yesterday))
+    }
+
+    @Test
+    fun getContractingMonitoringStartDateException() {
+        every {
+            getStartDateInteractor.getStartDate(projectId)
+        } throws GetContractingMonitoringStartDateException(RuntimeException())
+
+        assertThrows<GetContractingMonitoringStartDateException> {
+            contractingMonitoringController.getContractingMonitoringStartDate(projectId)
+        }
+    }
 }

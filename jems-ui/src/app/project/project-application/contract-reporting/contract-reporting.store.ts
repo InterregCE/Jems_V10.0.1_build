@@ -28,6 +28,7 @@ export class ContractReportingStore {
   userCanEditDeadlines$: Observable<boolean>;
   savedData$ = new Subject<ProjectContractingReportingScheduleDTO[]>();
   availablePeriods$: Observable<ProjectPeriodForMonitoringDTO[]>;
+  contractingMonitoringStartDate$: Observable<string>;
 
   constructor(private projectStore: ProjectStore,
               private projectContractingReportingService: ProjectContractingReportingService,
@@ -38,6 +39,7 @@ export class ContractReportingStore {
     this.userCanViewDeadlines$ = this.userCanViewDeadlines();
     this.userCanEditDeadlines$ = this.userCanEditDeadlines();
     this.availablePeriods$ = this.contractReportingAvailablePeriods();
+    this.contractingMonitoringStartDate$ = this.contractingMonitoringStartDate();
   }
 
   save(contractReportingDeadlines: ProjectContractingReportingScheduleDTO[]): Observable<ProjectContractingReportingScheduleDTO[]> {
@@ -87,6 +89,14 @@ export class ContractReportingStore {
     return this.projectStore.projectId$
       .pipe(
         switchMap(projectId => this.projectContractingMonitoringService.getContractingMonitoringPeriods(projectId)),
+      );
+  }
+
+  private contractingMonitoringStartDate(): Observable<string> {
+    return this.projectStore.projectId$
+      .pipe(
+        switchMap(projectId => this.projectContractingMonitoringService.getContractingMonitoringStartDate(projectId)),
+        map(data => data.startDate)
       );
   }
 
