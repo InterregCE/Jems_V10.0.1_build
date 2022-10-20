@@ -3,6 +3,7 @@ package io.cloudflight.jems.api.project.report
 import io.cloudflight.jems.api.project.dto.report.partner.financialOverview.ExpenditureCoFinancingBreakdownDTO
 import io.cloudflight.jems.api.project.dto.report.partner.financialOverview.ExpenditureCostCategoryBreakdownDTO
 import io.cloudflight.jems.api.project.dto.report.partner.financialOverview.ExpenditureLumpSumBreakdownDTO
+import io.cloudflight.jems.api.project.dto.report.partner.financialOverview.ExpenditureUnitCostBreakdownDTO
 import io.cloudflight.jems.api.project.report.ProjectPartnerReportApi.Companion.ENDPOINT_API_PROJECT_PARTNER_REPORT
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
@@ -37,5 +38,12 @@ interface ProjectPartnerReportFinancialOverviewApi {
         @PathVariable partnerId: Long,
         @PathVariable reportId: Long,
     ): ExpenditureLumpSumBreakdownDTO
+
+    @ApiOperation("Returns Partner Report breakdown into Unit costs")
+    @GetMapping("$ENDPOINT_API_PROJECT_PARTNER_REPORT_IDENTIFICATION/unitCost")
+    fun getUnitCostBreakdown(
+        @PathVariable partnerId: Long,
+        @PathVariable reportId: Long,
+    ): ExpenditureUnitCostBreakdownDTO
 
 }

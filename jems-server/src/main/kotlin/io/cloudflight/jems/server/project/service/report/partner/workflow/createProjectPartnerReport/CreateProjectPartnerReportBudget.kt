@@ -36,6 +36,7 @@ import io.cloudflight.jems.server.project.service.report.partner.contribution.Pr
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureCostCategoryPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportLumpSumPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportUnitCostPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.applyPercentage
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.generateCoFinCalculationInputData
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.getCurrentFrom
@@ -59,6 +60,7 @@ class CreateProjectPartnerReportBudget(
     private val reportExpenditureCoFinancingPersistence: ProjectReportExpenditureCoFinancingPersistence,
     private val paymentPersistence: PaymentPersistence,
     private val reportLumpSumPersistence: ProjectReportLumpSumPersistence,
+    private val reportUnitCostPersistence: ProjectReportUnitCostPersistence,
 ) {
 
     @Transactional
@@ -96,7 +98,7 @@ class CreateProjectPartnerReportBudget(
                     .plus(partnerBudgetCostsPersistence.getBudgetInfrastructureAndWorksCosts(partnerId, version))
                     .plus(partnerBudgetCostsPersistence.getBudgetUnitCosts(partnerId, version))
                     .toList(),
-                previouslyReported = emptyMap( /* TODO MP2-2907 */),
+                previouslyReported = reportUnitCostPersistence.getUnitCostCumulative(submittedReportIds),
             ),
             budgetPerPeriod = (
                 getPartnerBudgetPerPeriod.getPartnerBudgetPerPeriod(projectId = projectId, version)

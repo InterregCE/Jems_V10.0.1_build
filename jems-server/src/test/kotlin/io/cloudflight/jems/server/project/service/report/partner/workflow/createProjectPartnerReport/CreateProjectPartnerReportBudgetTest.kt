@@ -33,6 +33,7 @@ import io.cloudflight.jems.server.project.service.report.partner.contribution.Pr
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureCostCategoryPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportLumpSumPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportUnitCostPersistence
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -422,6 +423,8 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
     lateinit var paymentPersistence: PaymentPersistence
     @MockK
     lateinit var reportLumpSumPersistence: ProjectReportLumpSumPersistence
+    @MockK
+    lateinit var reportUnitCostPersistence: ProjectReportUnitCostPersistence
 
     @InjectMockKs
     lateinit var service: CreateProjectPartnerReportBudget
@@ -445,6 +448,8 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
             previouslyReported = BigDecimal.TEN,
         ))
         assertThat(result.unitCosts.map {it.unitCostId}).containsExactlyInAnyOrder(4, 5, 6, 7, 8, 9, 10)
+        assertThat(result.unitCosts.first { it.unitCostId == 6L }.previouslyReported).isEqualTo(BigDecimal.TEN)
+        assertThat(result.unitCosts.first { it.unitCostId == 7L }.previouslyReported).isEqualTo(BigDecimal.valueOf(100))
         assertThat(result.budgetPerPeriod).containsExactly(
             ProjectPartnerReportPeriod(1, BigDecimal.ONE, BigDecimal.ONE, 1, 3),
             ProjectPartnerReportPeriod(2, BigDecimal.TEN, BigDecimal.valueOf(11, 0), 4, 6),
@@ -509,6 +514,8 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         every { partnerBudgetCostsPersistence.getBudgetEquipmentCosts(partnerId, version) } returns equipmentCosts
         every { partnerBudgetCostsPersistence.getBudgetInfrastructureAndWorksCosts(partnerId, version) } returns infrastructureCosts
         every { partnerBudgetCostsPersistence.getBudgetUnitCosts(partnerId, version) } returns unitCosts
+        every { reportUnitCostPersistence.getUnitCostCumulative(setOf(408L)) } returns
+            mapOf(6L to BigDecimal.TEN, 7L to BigDecimal.valueOf(100), 8L to BigDecimal.ZERO)
         // budget per period
         every { getPartnerBudgetPerPeriod.getPartnerBudgetPerPeriod(projectId, version) } returns
             ProjectBudgetOverviewPerPartnerPerPeriod(partnersBudgetPerPeriod = perPeriod(partnerId), totals = emptyList(), totalsPercentage = emptyList())
