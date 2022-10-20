@@ -1,52 +1,8 @@
-import {ProjectCreateDTO} from '../../../build/swagger-code-jems-api/model/projectCreateDTO';
-import {InputProjectData} from '../../../build/swagger-code-jems-api/model/inputProjectData';
-import {InputProjectRelevance} from '../../../build/swagger-code-jems-api/model/inputProjectRelevance';
-import {InputWorkPackageCreate} from '../../../build/swagger-code-jems-api/model/inputWorkPackageCreate';
-import {WorkPackageInvestmentDTO} from '../../../build/swagger-code-jems-api/model/workPackageInvestmentDTO';
-import {WorkPackageActivityDTO} from '../../../build/swagger-code-jems-api/model/workPackageActivityDTO';
-import {WorkPackageOutputDTO} from '../../../build/swagger-code-jems-api/model/workPackageOutputDTO';
-import {ProjectResultDTO} from '../../../build/swagger-code-jems-api/model/projectResultDTO';
-import {InputProjectManagement} from '../../../build/swagger-code-jems-api/model/inputProjectManagement';
-import {InputProjectLongTermPlans} from '../../../build/swagger-code-jems-api/model/inputProjectLongTermPlans';
-import {
-  ProjectAssessmentEligibilityDTO
-} from '../../../build/swagger-code-jems-api/model/projectAssessmentEligibilityDTO';
-import {ProjectAssessmentQualityDTO} from '../../../build/swagger-code-jems-api/model/projectAssessmentQualityDTO';
-import {ApplicationActionInfoDTO} from '../../../build/swagger-code-jems-api/model/applicationActionInfoDTO';
-import {InputTranslation} from '../../../build/swagger-code-jems-api/model/inputTranslation';
-import {ProjectLumpSumDTO} from '../../../build/swagger-code-jems-api/model/projectLumpSumDTO';
 import {faker} from '@faker-js/faker';
 import {createPartners} from './partner.commands';
 import {loginByRequest} from './login.commands';
 
 declare global {
-
-  interface Application {
-    id: number,
-    details: ProjectCreateDTO,
-    identification?: InputProjectData,
-    partners?: ProjectPartner[],
-    description?: ProjectDescription,
-    lumpSums?: ProjectLumpSumDTO[],
-    assessments: {}
-  }
-
-  interface ProjectDescription {
-    overallObjective: InputTranslation[],
-    relevanceAndContext: InputProjectRelevance,
-    partnership: InputTranslation[],
-    workPlan: WorkPackage[],
-    results: ProjectResultDTO[],
-    management: InputProjectManagement,
-    longTermPlans: InputProjectLongTermPlans
-  }
-
-  interface WorkPackage {
-    details: InputWorkPackageCreate,
-    investment: WorkPackageInvestmentDTO,
-    activities: WorkPackageActivityDTO[],
-    outputs: WorkPackageOutputDTO[]
-  }
 
   namespace Cypress {
     interface Chainable {
@@ -109,20 +65,20 @@ declare global {
   }
 }
 
-Cypress.Commands.add('createApplication', (application: Application) => {
+Cypress.Commands.add('createApplication', (application) => {
   createApplication(application.details).then(applicationId => {
     cy.wrap(applicationId).as('applicationId');
   });
 });
 
-Cypress.Commands.add('createSubmittedApplication', (application: Application) => {
+Cypress.Commands.add('createSubmittedApplication', (application) => {
   createApplication(application.details).then(applicationId => {
     submitApplication(applicationId, application);
     cy.wrap(applicationId).as('applicationId');
   });
 });
 
-Cypress.Commands.add('createApprovedApplication', (application: Application, approvingUserEmail?: string) => {
+Cypress.Commands.add('createApprovedApplication', (application, approvingUserEmail?: string) => {
   createApplication(application.details).then(applicationId => {
     submitApplication(applicationId, application);
     approveApplication(applicationId, application.assessments, approvingUserEmail);
@@ -130,7 +86,7 @@ Cypress.Commands.add('createApprovedApplication', (application: Application, app
   });
 });
 
-Cypress.Commands.add('createContractedApplication', (application: Application, contractingUserEmail?: string) => {
+Cypress.Commands.add('createContractedApplication', (application, contractingUserEmail?: string) => {
   createApplication(application.details).then(applicationId => {
     submitApplication(applicationId, application);
     if (contractingUserEmail)
@@ -149,48 +105,48 @@ Cypress.Commands.add('createContractedApplication', (application: Application, c
   });
 });
 
-Cypress.Commands.add('approveApplication', (applicationId: number, assessment: InputProjectData, approvingUserEmail?: string) => {
+Cypress.Commands.add('approveApplication', (applicationId: number, assessment, approvingUserEmail?: string) => {
   approveApplication(applicationId, assessment, approvingUserEmail);
 });
 
 /* A - Project identification */
 
-Cypress.Commands.add('updateProjectIdentification', (applicationId: number, identification: InputProjectData) => {
+Cypress.Commands.add('updateProjectIdentification', (applicationId: number, identification) => {
   updateIdentification(applicationId, identification);
 });
 
 /* C - Project description */
 
-Cypress.Commands.add('updateProjectOverallObjective', (applicationId: number, overallObjective: InputTranslation[]) => {
+Cypress.Commands.add('updateProjectOverallObjective', (applicationId: number, overallObjective: []) => {
   updateOverallObjective(applicationId, overallObjective);
 });
 
-Cypress.Commands.add('updateProjectRelevanceAndContext', (applicationId: number, relevanceAndContext: InputProjectRelevance) => {
+Cypress.Commands.add('updateProjectRelevanceAndContext', (applicationId: number, relevanceAndContext) => {
   updateRelevanceAndContext(applicationId, relevanceAndContext);
 });
 
-Cypress.Commands.add('updateProjectPartnership', (applicationId: number, partnership: InputTranslation[]) => {
+Cypress.Commands.add('updateProjectPartnership', (applicationId: number, partnership: []) => {
   updatePartnership(applicationId, partnership);
 });
 
-Cypress.Commands.add('createProjectWorkPlan', (applicationId: number, workPlan: WorkPackage[]) => {
+Cypress.Commands.add('createProjectWorkPlan', (applicationId: number, workPlan: []) => {
   const options = createWorkPlan(applicationId, workPlan);
   cy.wrap(options).as('options');
 });
 
-Cypress.Commands.add('createProjectResults', (applicationId: number, projectResults: ProjectResultDTO[]) => {
+Cypress.Commands.add('createProjectResults', (applicationId: number, projectResults: []) => {
   createResults(applicationId, projectResults);
 });
 
-Cypress.Commands.add('updateProjectManagement', (applicationId: number, management: InputProjectManagement) => {
+Cypress.Commands.add('updateProjectManagement', (applicationId: number, management) => {
   updateManagement(applicationId, management);
 });
 
-Cypress.Commands.add('updateProjectLongTermPlans', (applicationId: number, longTermPlans: InputProjectLongTermPlans) => {
+Cypress.Commands.add('updateProjectLongTermPlans', (applicationId: number, longTermPlans) => {
   updateLongTermPlans(applicationId, longTermPlans);
 });
 
-Cypress.Commands.add('updateLumpSums', (applicationId: number, lumpSums: ProjectLumpSumDTO[]) => {
+Cypress.Commands.add('updateLumpSums', (applicationId: number, lumpSums: []) => {
   updateLumpSums(applicationId, lumpSums);
 });
 
@@ -202,19 +158,19 @@ Cypress.Commands.add('submitProjectApplication', (applicationId: number) => {
   submitProjectApplication(applicationId);
 });
 
-Cypress.Commands.add('enterEligibilityAssessment', (applicationId: number, assessment: ProjectAssessmentEligibilityDTO) => {
+Cypress.Commands.add('enterEligibilityAssessment', (applicationId: number, assessment) => {
   enterEligibilityAssessment(applicationId, assessment);
 });
 
-Cypress.Commands.add('enterQualityAssessment', (applicationId: number, assessment: ProjectAssessmentQualityDTO) => {
+Cypress.Commands.add('enterQualityAssessment', (applicationId: number, assessment) => {
   enterQualityAssessment(applicationId, assessment);
 });
 
-Cypress.Commands.add('enterEligibilityDecision', (applicationId: number, decision: ApplicationActionInfoDTO) => {
+Cypress.Commands.add('enterEligibilityDecision', (applicationId: number, decision) => {
   enterEligibilityDecision(applicationId, decision);
 });
 
-Cypress.Commands.add('enterFundingDecision', (applicationId: number, decision: ApplicationActionInfoDTO) => {
+Cypress.Commands.add('enterFundingDecision', (applicationId: number, decision) => {
   enterFundingDecision(applicationId, decision);
 });
 
@@ -246,7 +202,7 @@ Cypress.Commands.add('startModification', (applicationId: number, userEmail?: st
   }
 });
 
-Cypress.Commands.add('approveModification', (applicationId: number, approvalInfo: ApplicationActionInfoDTO, userEmail?: string) => {
+Cypress.Commands.add('approveModification', (applicationId: number, approvalInfo, userEmail?: string) => {
   if (userEmail)
     loginByRequest(userEmail);
   cy.request({
@@ -261,7 +217,7 @@ Cypress.Commands.add('approveModification', (applicationId: number, approvalInfo
   }
 });
 
-Cypress.Commands.add('rejectModification', (applicationId: number, rejectionInfo: ApplicationActionInfoDTO, userEmail?: string) => {
+Cypress.Commands.add('rejectModification', (applicationId: number, rejectionInfo, userEmail?: string) => {
   if (userEmail)
     loginByRequest(userEmail);
   cy.request({
@@ -322,7 +278,7 @@ Cypress.Commands.add('createProjectProposedUnitCost', (applicationId: number, un
   });
 });
 
-function createApplication(applicationDetails: ProjectCreateDTO) {
+function createApplication(applicationDetails) {
   applicationDetails.acronym = `${faker.hacker.adjective()} ${faker.hacker.noun()}`.substr(0, 25);
   return cy.request({
     method: 'POST',
@@ -350,8 +306,12 @@ function submitApplication(applicationId, application) {
   createPartners(applicationId, application.partners, options);
 
   // E - project lump sums
-  cy.get(`@${application.partners[0].details.abbreviation}`).then((partnerId: any) => {
-    application.lumpSums[0].lumpSumContributions[0].partnerId = partnerId;
+  cy.then(function () {
+    application.lumpSums.forEach(lumpSum => {
+      lumpSum.lumpSumContributions.forEach(contributions => {
+        contributions.partnerId = this[contributions.partnerAbbreviation];
+      });
+    });
     updateLumpSums(applicationId, application.lumpSums);
   });
 
@@ -359,7 +319,7 @@ function submitApplication(applicationId, application) {
   submitProjectApplication(applicationId);
 }
 
-function updateIdentification(applicationId: number, projectIdentification: InputProjectData) {
+function updateIdentification(applicationId: number, projectIdentification) {
   projectIdentification.acronym = `${faker.hacker.adjective()} ${faker.hacker.noun()}`.substr(0, 25);
   cy.request({
     method: 'PUT',
@@ -368,7 +328,7 @@ function updateIdentification(applicationId: number, projectIdentification: Inpu
   });
 }
 
-function updateOverallObjective(applicationId: number, overallObjective: InputTranslation[]) {
+function updateOverallObjective(applicationId: number, overallObjective: []) {
   cy.request({
     method: 'PUT',
     url: `api/project/${applicationId}/description/c1`,
@@ -376,7 +336,7 @@ function updateOverallObjective(applicationId: number, overallObjective: InputTr
   });
 }
 
-function updateRelevanceAndContext(applicationId: number, relevanceAndContext: InputProjectRelevance) {
+function updateRelevanceAndContext(applicationId: number, relevanceAndContext) {
   cy.request({
     method: 'PUT',
     url: `api/project/${applicationId}/description/c2`,
@@ -384,7 +344,7 @@ function updateRelevanceAndContext(applicationId: number, relevanceAndContext: I
   });
 }
 
-function updatePartnership(applicationId: number, partnership: InputTranslation[]) {
+function updatePartnership(applicationId: number, partnership: []) {
   cy.request({
     method: 'PUT',
     url: `api/project/${applicationId}/description/c3`,
@@ -392,7 +352,7 @@ function updatePartnership(applicationId: number, partnership: InputTranslation[
   });
 }
 
-function createWorkPlan(applicationId: number, workPlan: WorkPackage[]) {
+function createWorkPlan(applicationId: number, workPlan: any[]) {
   const options = {workPlanId: null, activityId: null};
   workPlan.forEach(workPackage => {
     cy.request({
@@ -429,7 +389,7 @@ function createWorkPlan(applicationId: number, workPlan: WorkPackage[]) {
   return options;
 }
 
-function createResults(applicationId: number, results: ProjectResultDTO[]) {
+function createResults(applicationId: number, results: []) {
   cy.request({
     method: 'PUT',
     url: `api/project/${applicationId}/result`,
@@ -437,7 +397,7 @@ function createResults(applicationId: number, results: ProjectResultDTO[]) {
   });
 }
 
-function updateManagement(applicationId: number, management: InputProjectManagement) {
+function updateManagement(applicationId: number, management) {
   cy.request({
     method: 'PUT',
     url: `api/project/${applicationId}/description/c7`,
@@ -445,7 +405,7 @@ function updateManagement(applicationId: number, management: InputProjectManagem
   });
 }
 
-function updateLongTermPlans(applicationId: number, longTermPlans: InputProjectLongTermPlans) {
+function updateLongTermPlans(applicationId: number, longTermPlans) {
   cy.request({
     method: 'PUT',
     url: `api/project/${applicationId}/description/c8`,
@@ -453,7 +413,7 @@ function updateLongTermPlans(applicationId: number, longTermPlans: InputProjectL
   });
 }
 
-function updateLumpSums(applicationId: number, lumpSums: ProjectLumpSumDTO[]) {
+function updateLumpSums(applicationId: number, lumpSums: []) {
   cy.request({
     method: 'PUT',
     url: `api/project/${applicationId}/lumpSum`,
