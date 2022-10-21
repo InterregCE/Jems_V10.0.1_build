@@ -14,7 +14,7 @@
             </mat-header-cell>
             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i" class="dimension-code w-100">
                 <mat-form-field class="w-100">
-                    <mat-select formControlName="dimension"
+                    <mat-select formControlName="dimension" required
                                 placeholder="{{'project.contracting.monitoring.dimension.input.select' | translate}}">
                         <mat-option *ngFor="let dimension of dimensionsEnum" [value]="dimension"
                                     (onSelectionChange)="resetDimensionControl($event, i)">
@@ -34,7 +34,7 @@
             </mat-header-cell>
             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                 <mat-form-field class="w-100">
-                    <mat-select formControlName="dimensionCode">
+                    <mat-select formControlName="dimensionCode" required>
                         <mat-option
                                 *ngFor="let dimensionCode of getCodesForDimension(control?.get('dimension').value)"
                                 [value]="dimensionCode">
@@ -64,6 +64,7 @@
                            formControlName="projectBudgetAmountShare"
                            type="decimal"
                            matInput
+                           required
                            [options]="{align: 'right'}">
                     <mat-error>
                         <jems-form-field-errors

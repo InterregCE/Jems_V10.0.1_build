@@ -357,7 +357,7 @@ export class ContractMonitoringExtensionComponent {
       nuts3Region: partnerSummary.region
     })).forEach(
       nutsRegion => {
-        if (nutsRegions.find(r => r.nuts3Region == nutsRegion.nuts3Region)) {
+        if (nutsRegions.find(r => r.nuts3Region === nutsRegion.nuts3Region && r.country === nutsRegion.country)) {
           return;
         }else {
           nutsRegions.push(nutsRegion);

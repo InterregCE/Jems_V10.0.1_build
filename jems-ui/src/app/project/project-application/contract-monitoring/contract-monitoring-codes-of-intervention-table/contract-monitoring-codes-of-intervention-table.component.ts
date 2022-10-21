@@ -1,4 +1,4 @@
-import {AfterViewInit, Component, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, Output, SimpleChanges} from '@angular/core';
 import {
   AbstractControl,
   FormArray,
@@ -17,7 +17,7 @@ import {Alert} from '@common/components/forms/alert';
   templateUrl: './contract-monitoring-codes-of-intervention-table.component.html',
   styleUrls: ['./contract-monitoring-codes-of-intervention-table.component.scss']
 })
-export class ContractMonitoringCodesOfInterventionTableComponent implements OnChanges, AfterViewInit {
+export class ContractMonitoringCodesOfInterventionTableComponent implements OnChanges {
 
   @Input()
   formGroup: FormGroup;
@@ -61,11 +61,6 @@ export class ContractMonitoringCodesOfInterventionTableComponent implements OnCh
     }
   }
 
-  ngAfterViewInit(): void {
-    this.dimensionCodesFormItems.controls.forEach(control =>
-      (control as FormGroup).controls.dimensionCode.addValidators(this.dimensionCodeAlreadySelected()));
-  }
-
 
   get dimensionCodesFormItems(): FormArray {
     return this.formGroup.get('dimensionCodesItems') as FormArray;
@@ -76,9 +71,9 @@ export class ContractMonitoringCodesOfInterventionTableComponent implements OnCh
     this.contractMonitoringDimensionCodesDTO.forEach((dimensionCodeShare) => {
         const item = this.formBuilder.group({
           id: [dimensionCodeShare.id],
-          dimension: [dimensionCodeShare.programmeObjectiveDimension],
-          dimensionCode: [dimensionCodeShare.dimensionCode, this.dimensionCodeAlreadySelected()],
-          projectBudgetAmountShare: [dimensionCodeShare.projectBudgetAmountShare, this.dimensionCodeAmountValidator()],
+          dimension: [dimensionCodeShare.programmeObjectiveDimension, Validators.required],
+          dimensionCode: [dimensionCodeShare.dimensionCode, [this.dimensionCodeAlreadySelected(), Validators.required]],
+          projectBudgetAmountShare: [dimensionCodeShare.projectBudgetAmountShare, [Validators.required, this.dimensionCodeAmountValidator()]],
           projectBudgetPercentShare: [{value: NumberService.toLocale(this.calculateDimensionCodePercentShare(dimensionCodeShare.projectBudgetAmountShare)) +'%',  disabled:true}],
         });
         this.dimensionCodesFormItems.push(item);
@@ -90,9 +85,9 @@ export class ContractMonitoringCodesOfInterventionTableComponent implements OnCh
   addDimensionCodeData(): void {
     const item = this.formBuilder.group({
       id: 0,
-      dimension: [''],
+      dimension: ['', Validators.required],
       dimensionCode: ['', {validators: [this.dimensionCodeAlreadySelected()],  updateOn: 'blur'}],
-      projectBudgetAmountShare: ['', [this.dimensionCodeAmountValidator()]],
+      projectBudgetAmountShare: ['', [Validators.required, this.dimensionCodeAmountValidator()]],
       projectBudgetPercentShare: ['', Validators.max(100)]
     });
     this.dimensionCodesFormItems.push(item);
