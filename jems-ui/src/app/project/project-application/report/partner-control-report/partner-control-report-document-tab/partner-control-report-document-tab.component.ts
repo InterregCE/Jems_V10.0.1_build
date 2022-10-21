@@ -1,11 +1,11 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {CategoryInfo, CategoryNode} from '@project/common/components/category-tree/categoryModels';
-import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
+import {combineLatest, Observable, Subject} from 'rxjs';
 import {FileListItem} from '@common/components/file-list/file-list-item';
 import {
   PartnerControlReportFileManagementStore
 } from '@project/project-application/report/partner-control-report/partner-control-report-document-tab/partner-control-report-file-management-store';
-import {finalize, map, switchMap, take, tap} from 'rxjs/operators';
+import {map, switchMap, take} from 'rxjs/operators';
 import {
   ProjectPartnerReportDTO,
   ProjectPartnerReportService,

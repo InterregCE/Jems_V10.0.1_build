@@ -3,7 +3,7 @@ import {
   ProjectStore
 } from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {ProjectContractingMonitoringDTO, ProjectContractingMonitoringService, UserRoleCreateDTO} from '@cat/api';
-import {switchMap, tap, shareReplay} from 'rxjs/operators';
+import {switchMap, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 import {Observable, Subject, merge} from 'rxjs';
 import {PermissionService} from '../../../../security/permissions/permission.service';

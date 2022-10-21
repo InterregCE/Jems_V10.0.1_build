@@ -11,7 +11,7 @@ import {
   ProjectPartnerStateAidDTO,
   WorkPackageActivitySummaryDTO
 } from '@cat/api';
-import {combineLatest, Observable, of} from 'rxjs';
+import {combineLatest, Observable} from 'rxjs';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {WorkPackagePageStore} from '@project/work-package/project-work-package-page/work-package-detail-page/work-package-page-store.service';
 import {COMMA, ENTER} from '@angular/cdk/keycodes';

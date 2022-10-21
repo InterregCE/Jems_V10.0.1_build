@@ -9,7 +9,7 @@ import {FormBuilder, Validators} from '@angular/forms';
 import {SelectionModel} from '@angular/cdk/collections';
 import {MatDialog} from '@angular/material/dialog';
 import {CurrencyCodesEnum, CurrencyStore} from '@common/services/currency.store';
-import {catchError, filter, map, take, tap} from 'rxjs/operators';
+import {catchError, map, take, tap} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {Forms} from '@common/utils/forms';
 import {

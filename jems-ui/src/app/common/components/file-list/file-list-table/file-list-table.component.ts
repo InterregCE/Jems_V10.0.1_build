@@ -16,11 +16,13 @@ import {FileListItem} from '@common/components/file-list/file-list-item';
 import {FileDescriptionChange} from '@common/components/file-list/file-list-table/file-description-change';
 import {FormBuilder, Validators} from '@angular/forms';
 import {Forms} from '@common/utils/forms';
+import {AlertMessage} from '@common/components/file-list/file-list-table/alert-message';
 import {MatDialog} from '@angular/material/dialog';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import {filter, finalize, take, tap} from 'rxjs/operators';
+import {catchError, filter, finalize, take, tap} from 'rxjs/operators';
 import {BehaviorSubject, Observable} from 'rxjs';
 import {SecurityService} from '../../../../security/security.service';
+import {v4 as uuid} from 'uuid';
 
 @UntilDestroy()
 @Component({
@@ -34,6 +36,8 @@ export class FileListTableComponent implements OnChanges, AfterViewInit {
 
   displayedColumns: string[] = ['name', 'location', 'uploadDate', 'user', 'size', 'description', 'action'];
   dataSource = new MatTableDataSource<FileListItem>();
+
+  alerts$ = new BehaviorSubject<AlertMessage[]>([]);
 
   @ViewChild(MatSort) sort: MatSort;
 
@@ -56,6 +60,7 @@ export class FileListTableComponent implements OnChanges, AfterViewInit {
 
   descriptionForm = this.formBuilder.group({
     id: [null, Validators.required],
+    fileName: '',
     description: ['', Validators.maxLength(250)],
   });
 
@@ -92,6 +97,17 @@ export class FileListTableComponent implements OnChanges, AfterViewInit {
     this.setDescriptionCallback(this.descriptionForm.value)
       .pipe(
         take(1),
+        tap(() => this.showAlert(FileListTableComponent.successAlert(
+          'file.description.change.message.success',
+          { fileName: this.descriptionForm.value.fileName },
+        ))),
+        catchError(error => {
+          this.showAlert(FileListTableComponent.errorAlert(
+            'file.description.change.message.failed',
+            { fileName: this.descriptionForm.value.fileName },
+          ));
+          throw error;
+        }),
         finalize(() => this.savingDescriptionId$.next(null)),
         tap(() => this.descriptionForm.reset()),
         tap(() => this.refresh.emit()),
@@ -101,6 +117,7 @@ export class FileListTableComponent implements OnChanges, AfterViewInit {
   editDescription(file: FileListItem) {
     this.descriptionForm.patchValue({
       id: file.id,
+      fileName: file.name,
       description: file.description,
     });
   }
@@ -124,9 +141,47 @@ export class FileListTableComponent implements OnChanges, AfterViewInit {
     this.deleteCallback(file)
       .pipe(
         take(1),
+        tap(() => this.showAlert(
+          FileListTableComponent.successAlert('file.delete.message.successful', { fileName: file.name })
+        )),
+        catchError(error => {
+          this.showAlert(
+            FileListTableComponent.errorAlert('file.delete.message.failed', { fileName: file.name }));
+          throw error;
+        }),
         finalize(() => this.deletingId$.next(null)),
         tap(() => this.refresh.emit()),
       ).subscribe();
+  }
+
+  private showAlert(alert: AlertMessage) {
+    this.alerts$.next([...this.alerts$.value, alert]);
+    setTimeout(
+      () => this.dismissAlert(alert.id),
+      alert.type === Alert.SUCCESS ? 5000 : 30000);
+  }
+
+  dismissAlert(id: string) {
+    const alerts = this.alerts$.value.filter(that => that.id != id);
+    this.alerts$.next(alerts);
+  }
+
+  private static successAlert(msg: string, i18nArgs: any = {}): AlertMessage {
+    return {
+      id: uuid(),
+      type: Alert.SUCCESS,
+      i18nMessage: msg,
+      i18nArgs,
+    };
+  }
+
+  private static errorAlert(msg: string, i18nArgs: any = {}): AlertMessage {
+    return {
+      id: uuid(),
+      type: Alert.ERROR,
+      i18nMessage: msg,
+      i18nArgs,
+    };
   }
 
 }

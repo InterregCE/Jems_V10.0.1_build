@@ -8,7 +8,7 @@ import {I18nMessage} from '@common/models/I18nMessage';
 import {Alert} from '@common/components/forms/alert';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {FileListItem} from '@common/components/file-list/file-list-item';
-import {catchError, map, take, tap} from 'rxjs/operators';
+import {catchError, map, take} from 'rxjs/operators';
 import {PageFileList} from '@common/components/file-list/page-file-list';
 import {FileDescriptionChange} from '@common/components/file-list/file-list-table/file-description-change';
 import FileTypeEnum = ProjectReportFileDTO.TypeEnum;

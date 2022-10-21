@@ -7,14 +7,15 @@ import {
   ProjectPartnerDetailDTO,
   ProjectPartnerReportIdentificationService,
   ProjectPartnerReportSummaryDTO,
-  ProjectPartnerService, ProjectPartnerUserCollaboratorService, UpdatePartnerUserCollaboratorDTO
+  ProjectPartnerService,
+  ProjectPartnerUserCollaboratorService,
 } from '@cat/api';
 import {RoutingService} from '@common/services/routing.service';
 import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
 import {
   ProjectStore
 } from '@project/project-application/containers/project-application-detail/services/project-store.service';
-import {catchError, map, shareReplay, switchMap, tap, withLatestFrom} from 'rxjs/operators';
+import {catchError, map, shareReplay, switchMap, tap} from 'rxjs/operators';
 import {ProjectPaths} from '@project/common/project-util';
 import {Log} from '@common/utils/log';
 import {

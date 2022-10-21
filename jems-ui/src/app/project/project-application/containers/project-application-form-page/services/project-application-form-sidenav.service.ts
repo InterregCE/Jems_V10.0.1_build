@@ -13,7 +13,6 @@ import {
   withLatestFrom
 } from 'rxjs/operators';
 import {
-  ProjectPartnerSummaryDTO,
   ProjectPartnerUserCollaboratorService,
   ProjectStatusDTO,
   UserRoleDTO,

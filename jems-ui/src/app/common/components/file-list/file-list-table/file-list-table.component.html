@@ -1,4 +1,10 @@
 <div [class.reduce-max-width]="!fileList.length">
+
+    <jems-alert *ngFor="let alert of alerts$ | async" [show]="true" [type]="alert.type"
+                (closed)="dismissAlert(alert.id)" [disableMargins]="true" class="mb-2 block">
+        <p>{{ alert.i18nMessage | translate : alert.i18nArgs }}</p>
+    </jems-alert>
+
     <mat-table matSort matSortDisableClear [class.hide]="!fileList.length" [dataSource]="dataSource">
 
         <ng-container matColumnDef="name">
@@ -123,4 +129,5 @@
     <jems-alert [show]="!fileList.length" [type]="Alert.INFO">
         <p>{{ 'file.table.no.files' | translate }}</p>
     </jems-alert>
+
 </div>
