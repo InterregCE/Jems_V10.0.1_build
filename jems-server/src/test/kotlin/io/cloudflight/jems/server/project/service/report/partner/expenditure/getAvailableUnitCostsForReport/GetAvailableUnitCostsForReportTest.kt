@@ -49,7 +49,7 @@ internal class GetAvailableUnitCostsForReportTest : UnitTest() {
     lateinit var interactor: GetAvailableUnitCostsForReport
 
     @Test
-    fun getLumpSums() {
+    fun getUnitCosts() {
         every { reportExpenditurePersistence.getAvailableUnitCosts(PARTNER_ID, 10L) } returns
             listOf(unitCostZero, unitCostNonZero)
         Assertions.assertThat(interactor.getUnitCosts(PARTNER_ID, 10L)).containsExactly(unitCostNonZero)
