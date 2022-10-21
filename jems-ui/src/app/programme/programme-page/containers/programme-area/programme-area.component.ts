@@ -7,7 +7,6 @@ import {Log} from '@common/utils/log';
 import {I18nValidationError} from '@common/validation/i18n-validation-error';
 import {HttpErrorResponse} from '@angular/common/http';
 import {MatTreeNestedDataSource} from '@angular/material/tree';
-import {ProgrammePageSidenavService} from '../../services/programme-page-sidenav.service';
 import {Permission} from '../../../../security/permissions/permission';
 import {JemsRegionCheckbox} from '@common/models/jems-region-checkbox';
 import {ProgrammeEditableStateStore} from '../../services/programme-editable-state-store.service';

@@ -3,13 +3,12 @@ import {FormService} from '@common/components/section/form/form.service';
 import {UntilDestroy} from '@ngneat/until-destroy';
 import {AbstractControl, FormArray, FormBuilder, FormGroup, Validators} from '@angular/forms';
 import {combineLatest, Observable} from 'rxjs';
-import {catchError, filter, map, startWith, switchMap, take, tap} from 'rxjs/operators';
+import {catchError, map, startWith, tap} from 'rxjs/operators';
 import {
   ProjectContractingReportingScheduleDTO,
   ProjectPeriodForMonitoringDTO
 } from '@cat/api';
 import {ContractReportingStore} from '@project/project-application/contract-reporting/contract-reporting.store';
-import {Forms} from '@common/utils/forms';
 import {MatDialog} from '@angular/material/dialog';
 import {
   ContractMonitoringExtensionStore

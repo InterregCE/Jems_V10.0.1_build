@@ -16,7 +16,6 @@ import {FileManagementStore} from '@project/common/components/file-management/fi
 import {RoutingService} from '@common/services/routing.service';
 import {Log} from '@common/utils/log';
 import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
-import {FileListItem} from '@common/components/file-list/file-list-item';
 import {MatSort} from '@angular/material/sort';
 import {FileListTableConstants} from '@common/components/file-list/file-list-table/file-list-table-constants';
 import {APIError} from '@common/models/APIError';
