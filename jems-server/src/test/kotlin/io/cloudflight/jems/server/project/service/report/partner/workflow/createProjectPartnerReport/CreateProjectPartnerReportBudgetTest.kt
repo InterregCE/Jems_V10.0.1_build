@@ -496,7 +496,8 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
             PartnerReportLumpSum(lumpSumId = 45L, orderNr = 2, period = 4,
                 total = BigDecimal.valueOf(13), previouslyReported = BigDecimal.valueOf(100), previouslyPaid = BigDecimal.ZERO),
             PartnerReportLumpSum(lumpSumId = 46L, orderNr = 3, period = 4,
-                total = BigDecimal.valueOf(1033, 2), previouslyReported = BigDecimal.valueOf(200), previouslyPaid = BigDecimal.valueOf(11)),
+                // is getting 200 from previous reports and 10.33 from ready fast track
+                total = BigDecimal.valueOf(1033, 2), previouslyReported = BigDecimal.valueOf(21033, 2), previouslyPaid = BigDecimal.valueOf(11)),
         )
         assertThat(result.unitCosts.map {it.unitCostId}).containsExactlyInAnyOrder(4, 5, 6, 7, 8, 9, 10)
         assertThat(result.unitCosts.first { it.unitCostId == 6L }.previouslyReported).isEqualTo(BigDecimal.TEN)

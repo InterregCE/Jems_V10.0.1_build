@@ -213,15 +213,24 @@ class CreateProjectPartnerReportBudget(
         previouslyReported: Map<Int, BigDecimal>,
         previouslyPaid: Map<Long, BigDecimal>,
     ) = map {
+        val lumpSumPartnerShare = it.lumpSumContributions.firstOrNull { it.partnerId == partnerId }?.amount ?: ZERO
+
+        var fromPrevious = previouslyReported.getOrDefault(it.orderNr, ZERO)
+        if (it.isReady()) {
+            fromPrevious += lumpSumPartnerShare
+        }
+
         PartnerReportLumpSum(
             lumpSumId = it.programmeLumpSumId,
             orderNr = it.orderNr,
             period = it.period,
-            total = it.lumpSumContributions.firstOrNull { it.partnerId == partnerId }?.amount ?: ZERO,
-            previouslyReported = previouslyReported.getOrDefault(it.orderNr, ZERO),
+            total = lumpSumPartnerShare,
+            previouslyReported = fromPrevious,
             previouslyPaid = previouslyPaid.getOrDefault(it.programmeLumpSumId, ZERO),
         )
     }
+
+    private fun ProjectLumpSum.isReady() = fastTrack && readyForPayment
 
     private fun getSetOfUnitCostsWithTotalAndNumberOfUnits(
         budgetEntries: List<BaseBudgetEntry>,
@@ -385,7 +394,7 @@ class CreateProjectPartnerReportBudget(
         )
     }
 
-    private fun Collection<ProjectLumpSum>.onlyReadyForPayment() = filter { it.fastTrack && it.readyForPayment }
+    private fun Collection<ProjectLumpSum>.onlyReadyForPayment() = filter { it.isReady() }
 
     private fun Collection<ProjectLumpSum>.onlyContributionsOf(partnerId: Long) =
         flatMap { it.lumpSumContributions }.filter { it.partnerId == partnerId }
