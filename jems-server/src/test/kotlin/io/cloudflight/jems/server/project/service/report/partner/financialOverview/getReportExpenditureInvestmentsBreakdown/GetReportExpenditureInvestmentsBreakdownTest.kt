@@ -142,10 +142,10 @@ class GetReportExpenditureInvestmentsBreakdownTest : UnitTest() {
                 workPackageNumber = 1,
                 totalEligibleBudget = BigDecimal.valueOf(300L),
                 previouslyReported = BigDecimal.valueOf(100L),
-                currentReport = BigDecimal.valueOf(0L),
-                totalReportedSoFar = BigDecimal.valueOf(100L),
-                totalReportedSoFarPercentage = BigDecimal.valueOf(33.33),
-                remainingBudget = BigDecimal.valueOf(200L),
+                currentReport = BigDecimal.valueOf(168.75),
+                totalReportedSoFar = BigDecimal.valueOf(268.75),
+                totalReportedSoFarPercentage = BigDecimal.valueOf(89.58),
+                remainingBudget = BigDecimal.valueOf(31.25),
             ),
             ExpenditureInvestmentBreakdownLine(
                 investmentId = 2L,
@@ -153,10 +153,10 @@ class GetReportExpenditureInvestmentsBreakdownTest : UnitTest() {
                 workPackageNumber = 1,
                 totalEligibleBudget = BigDecimal.ZERO,
                 previouslyReported = BigDecimal.valueOf(100L),
-                currentReport = BigDecimal.ZERO,
-                totalReportedSoFar = BigDecimal.valueOf(100L),
+                currentReport = BigDecimal.valueOf(168.75),
+                totalReportedSoFar = BigDecimal.valueOf(268.75),
                 totalReportedSoFarPercentage = BigDecimal.ZERO,
-                remainingBudget = BigDecimal.valueOf(-100L),
+                remainingBudget = BigDecimal.valueOf(-268.75),
             ),
             ExpenditureInvestmentBreakdownLine(
                 investmentId = 3L,
@@ -187,10 +187,10 @@ class GetReportExpenditureInvestmentsBreakdownTest : UnitTest() {
             workPackageNumber = 0,
             totalEligibleBudget = BigDecimal.valueOf(400L),
             previouslyReported = BigDecimal.valueOf(200L),
-            currentReport = BigDecimal.ZERO,
-            totalReportedSoFar = BigDecimal.valueOf(200L),
-            totalReportedSoFarPercentage = BigDecimal.valueOf(50.00).setScale(2),
-            remainingBudget = BigDecimal.valueOf(200L),
+            currentReport = BigDecimal.valueOf(337.50).setScale(2),
+            totalReportedSoFar = BigDecimal.valueOf(537.50).setScale(2),
+            totalReportedSoFarPercentage = BigDecimal.valueOf(134.38).setScale(2),
+            remainingBudget = BigDecimal.valueOf(-137.50).setScale(2),
         )
     )
 
