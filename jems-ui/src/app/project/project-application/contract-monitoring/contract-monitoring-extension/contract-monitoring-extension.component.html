@@ -241,7 +241,7 @@
         </ng-container>
 
         <h4>{{'project.application.contract.monitoring.project.dimension.title' | translate}}</h4>
-        <p>{{'project.application.contract.monitoring.project.dimension.description' | translate}} [ {{data.projectBudget | asMoney}} &euro; ].</p>
+        <p>{{'project.application.contract.monitoring.project.dimension.description' | translate}}: {{data.projectBudget | asMoney}} &euro;.</p>
         <jems-contract-monitoring-codes-of-intervention-table
                 [formGroup]="decisionForm"
                 [contractMonitoringDimensionCodesDTO]="dimensionCodesDTO"

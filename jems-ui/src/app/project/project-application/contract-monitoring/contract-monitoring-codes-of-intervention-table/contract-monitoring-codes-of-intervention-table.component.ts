@@ -116,10 +116,16 @@ export class ContractMonitoringCodesOfInterventionTableComponent implements OnCh
       this.dimensionCodesFormItems.at(controlIndex).setValue({
         id: 0,
         dimension: [event.source.value],
-        dimensionCode: ['', {validators: [this.dimensionCodeAlreadySelected()],  updateOn: 'blur'}],
-        projectBudgetAmountShare: ['', this.dimensionCodeAmountValidator()],
-        projectBudgetPercentShare: [''],
+        dimensionCode: '',
+        projectBudgetAmountShare: '',
+        projectBudgetPercentShare: '',
       });
+      const dimensionCodeControl = this.dimensionCodesFormItems.at(controlIndex).get('dimensionCode');
+      const projectBudgetAmountShareControl = this.dimensionCodesFormItems.at(controlIndex).get('projectBudgetAmountShare');
+      projectBudgetAmountShareControl?.setValidators([Validators.required, this.dimensionCodeAmountValidator()]);
+      projectBudgetAmountShareControl?.updateValueAndValidity();
+      dimensionCodeControl?.setValidators([Validators.required, this.dimensionCodeAlreadySelected()]);
+      dimensionCodeControl?.updateValueAndValidity();
     }
   }
 
@@ -156,7 +162,7 @@ export class ContractMonitoringCodesOfInterventionTableComponent implements OnCh
         }, value);
       }
       const dimensionCodeAmountValid = currentTotalAmountPerDimension <= this.projectBudget;
-      return !dimensionCodeAmountValid ? {dimensionCodeAmountError: true}: null;
+      return !dimensionCodeAmountValid ? {dimensionCodeAmountError: true} : null;
     };
   }
 
