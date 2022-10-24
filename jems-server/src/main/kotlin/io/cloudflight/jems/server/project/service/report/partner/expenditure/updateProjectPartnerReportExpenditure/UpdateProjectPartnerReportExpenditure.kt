@@ -3,7 +3,6 @@ package io.cloudflight.jems.server.project.service.report.partner.expenditure.up
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.authorization.CanEditPartnerReport
-import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.ReportStatus
@@ -16,7 +15,6 @@ import io.cloudflight.jems.server.project.service.report.partner.expenditure.fil
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.fillInUnitCost
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.filterInvalidCurrencies
 import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectReportProcurementPersistence
-import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
@@ -26,8 +24,6 @@ class UpdateProjectPartnerReportExpenditure(
     private val reportPersistence: ProjectReportPersistence,
     private val reportExpenditurePersistence: ProjectReportExpenditurePersistence,
     private val reportProcurementPersistence: ProjectReportProcurementPersistence,
-    private val workPackagePersistence: WorkPackagePersistence,
-    private val partnerPersistence: PartnerPersistence,
     private val generalValidator: GeneralValidatorService
 ) : UpdateProjectPartnerReportExpenditureInteractor {
 
@@ -56,10 +52,8 @@ class UpdateProjectPartnerReportExpenditure(
         validateLinkedProcurements(
             expenditureCosts = expenditureCosts,
             allowedProcurementIds = getAvailableProcurements(partnerId, reportId = report.id).mapTo(HashSet()) { it.first },
-            allowedInvestmentIds = workPackagePersistence.getProjectInvestmentSummaries(
-                projectId = partnerPersistence.getProjectIdForPartnerId(partnerId, report.version),
-                version = report.version,
-            ).mapTo(HashSet()) { it.id },
+            allowedInvestmentIds = reportExpenditurePersistence.getAvailableInvestments(partnerId, reportId = reportId)
+                .mapTo(HashSet()) { it.id },
         )
 
         validateCostOptions(

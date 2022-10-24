@@ -1,5 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.partner.workflow.createProjectPartnerReport
 
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO.MainFund
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO
@@ -7,7 +9,6 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.payments.PaymentPersistence
 import io.cloudflight.jems.server.payments.service.model.PaymentPartnerInstallment
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
-import io.cloudflight.jems.server.project.controller.workpackage.ProjectWorkPackageInvestmentControllerTest.Companion.investmentId
 import io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_period.GetPartnerBudgetPerPeriodInteractor
 import io.cloudflight.jems.server.project.service.budget.get_project_budget.GetProjectBudget
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
@@ -27,6 +28,7 @@ import io.cloudflight.jems.server.project.service.report.ProjectReportPersistenc
 import io.cloudflight.jems.server.project.service.report.model.contribution.create.CreateProjectPartnerReportContribution
 import io.cloudflight.jems.server.project.service.report.model.contribution.withoutCalculations.ProjectPartnerReportEntityContribution
 import io.cloudflight.jems.server.project.service.report.model.create.*
+import io.cloudflight.jems.server.project.service.report.model.expenditure.PartnerReportInvestmentSummary
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
 import io.cloudflight.jems.server.project.service.report.model.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportPeriod
@@ -34,6 +36,7 @@ import io.cloudflight.jems.server.project.service.report.partner.contribution.Pr
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectReportExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureCostCategoryPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportInvestmentPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportLumpSumPersistence
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import io.cloudflight.jems.server.project.service.workpackage.model.InvestmentSummary
@@ -88,6 +91,15 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         ),
         partnerContributions = listOf(contribNonPartner2, contribPartner, contribNonPartner1),
         partnerAbbreviation = "not needed",
+    )
+
+    private val investments = listOf(
+        PartnerReportInvestmentSummary(
+            investmentId = 485L,
+            investmentNumber = 5,
+            workPackageNumber = 2,
+            title = setOf(InputTranslation(SystemLanguage.EN, "investment title EN")),
+        ),
     )
 
     private val previousContributions = listOf(
@@ -187,11 +199,16 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         return cost
     }
 
-    private fun generalCost(unitCostId: Long): BudgetGeneralCostEntry {
+    private fun generalCost(
+        unitCostId: Long? = null,
+        investmentId: Long? = null,
+        rowSum: BigDecimal = BigDecimal.ZERO,
+        numberOfUnits: BigDecimal = BigDecimal.ZERO,
+    ): BudgetGeneralCostEntry {
         val cost = mockk<BudgetGeneralCostEntry>()
         every { cost.unitCostId } returns unitCostId
-        every { cost.rowSum } returns BigDecimal.ZERO
-        every { cost.numberOfUnits } returns BigDecimal.ZERO
+        every { cost.rowSum } returns rowSum
+        every { cost.numberOfUnits } returns numberOfUnits
         every { cost.investmentId } returns investmentId
         return cost
     }
@@ -215,37 +232,16 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
     )
 
     private val externalCosts = listOf(
-        generalCost(7L),
-        BudgetGeneralCostEntry(
-            id = 2,
-            rowSum = BigDecimal.valueOf(100L),
-            numberOfUnits = BigDecimal.ONE,
-            pricePerUnit = BigDecimal.valueOf(100L),
-            budgetPeriods = mutableSetOf()
-        )
+        generalCost(unitCostId = 7L, investmentId = 485L, rowSum = BigDecimal.valueOf(15)),
     )
 
     private val equipmentCosts = listOf(
-        generalCost(7L),
-        generalCost(8L),
-        BudgetGeneralCostEntry(
-            id = 1,
-            rowSum = BigDecimal.valueOf(100L),
-            numberOfUnits = BigDecimal.ONE,
-            pricePerUnit = BigDecimal.valueOf(100L),
-            budgetPeriods = mutableSetOf()
-        )
+        generalCost(unitCostId = 7L, rowSum = BigDecimal.valueOf(12)),
+        generalCost(unitCostId = 8L, investmentId = 485L, rowSum = BigDecimal.valueOf(17)),
     )
 
     private val infrastructureCosts = listOf(
-        generalCost(9L),
-        BudgetGeneralCostEntry(
-            id = 3,
-            rowSum = BigDecimal.valueOf(100L),
-            numberOfUnits = BigDecimal.ONE,
-            pricePerUnit = BigDecimal.valueOf(100L),
-            budgetPeriods = mutableSetOf()
-        )
+        generalCost(unitCostId = 9L),
     )
 
     private val unitCosts = listOf(
@@ -323,6 +319,15 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         lumpSumContribution = BigDecimal.valueOf(17),
         unitCosts = BigDecimal.valueOf(18),
         totalCosts = BigDecimal.valueOf(19),
+    )
+
+    private val expectedInvestment = PartnerReportInvestment(
+        investmentId = 485L,
+        investmentNumber = 5,
+        workPackageNumber = 2,
+        title = setOf(InputTranslation(SystemLanguage.EN, "investment title EN")),
+        total = BigDecimal.valueOf(32),
+        previouslyReported = BigDecimal.valueOf(30),
     )
 
     private val expectedTotal = BudgetCostsCalculationResultFull(
@@ -467,6 +472,8 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
     @MockK
     lateinit var reportLumpSumPersistence: ProjectReportLumpSumPersistence
     @MockK
+    lateinit var reportInvestmentPersistence: ProjectReportInvestmentPersistence
+    @MockK
     lateinit var reportExpenditurePersistence: ProjectReportExpenditurePersistence
     @MockK
     lateinit var projectWorkPackagePersistence: WorkPackagePersistence
@@ -487,7 +494,7 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         every { projectWorkPackagePersistence.getProjectInvestmentSummaries(projectId, version)} returns investmentSummaries
         every { reportExpenditurePersistence.getPartnerReportExpenditureCosts(partnerId, 408L)} returns emptyList()
 
-        val result = service.retrieveBudgetDataFor(projectId, partner, version, coFinancing)
+        val result = service.retrieveBudgetDataFor(projectId, partner, version, coFinancing, investments)
 
         assertThat(result.contributions).hasSize(3)
         assertThat(result.availableLumpSums).containsExactly(
@@ -502,6 +509,7 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         assertThat(result.unitCosts.map {it.unitCostId}).containsExactlyInAnyOrder(4, 5, 6, 7, 8, 9, 10)
         assertThat(result.unitCosts.first { it.unitCostId == 6L }.previouslyReported).isEqualTo(BigDecimal.TEN)
         assertThat(result.unitCosts.first { it.unitCostId == 7L }.previouslyReported).isEqualTo(BigDecimal.valueOf(100))
+        assertThat(result.investments).containsExactly(expectedInvestment)
         assertThat(result.budgetPerPeriod).containsExactly(
             ProjectPartnerReportPeriod(1, BigDecimal.ONE, BigDecimal.ONE, 1, 3),
             ProjectPartnerReportPeriod(2, BigDecimal.TEN, BigDecimal.valueOf(11, 0), 4, 6),
@@ -532,7 +540,7 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         every { reportExpenditurePersistence.getPartnerReportExpenditureCosts(partnerId, 408L)} returns emptyList()
         every { reportExpenditureCoFinancingPersistence.getCoFinancingCumulative(setOf(408L)) } returns previousReportedCoFinancing.copy(funds = emptyMap())
 
-        val result = service.retrieveBudgetDataFor(projectId, partner, version, coFinancing.copy(finances = emptyList()))
+        val result = service.retrieveBudgetDataFor(projectId, partner, version, coFinancing.copy(finances = emptyList()), emptyList())
 
         assertThat(result.previouslyReportedCoFinancing)
             .isEqualTo(
@@ -570,6 +578,8 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         every { partnerBudgetCostsPersistence.getBudgetUnitCosts(partnerId, version) } returns unitCosts
         every { reportUnitCostPersistence.getUnitCostCumulative(setOf(408L)) } returns
             mapOf(6L to BigDecimal.TEN, 7L to BigDecimal.valueOf(100), 8L to BigDecimal.ZERO)
+        // investments
+        every { reportInvestmentPersistence.getInvestmentsCumulative(setOf(408L)) } returns mapOf(485L to BigDecimal.valueOf(30))
         // budget per period
         every { getPartnerBudgetPerPeriod.getPartnerBudgetPerPeriod(projectId, version) } returns
             ProjectBudgetOverviewPerPartnerPerPeriod(partnersBudgetPerPeriod = perPeriod(partnerId), totals = emptyList(), totalsPercentage = emptyList())

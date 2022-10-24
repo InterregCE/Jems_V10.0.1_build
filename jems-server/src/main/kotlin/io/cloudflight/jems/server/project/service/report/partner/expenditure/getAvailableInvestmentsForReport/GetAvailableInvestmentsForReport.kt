@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.service.report.partner.expenditure.ge
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanViewPartnerReport
+import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportInvestment
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectReportExpenditurePersistence
 import io.cloudflight.jems.server.project.service.workpackage.model.InvestmentSummary
 import org.springframework.stereotype.Service
@@ -15,7 +16,7 @@ class GetAvailableInvestmentsForReport(
     @CanViewPartnerReport
     @Transactional(readOnly = true)
     @ExceptionWrapper(GetAvailableInvestmentsForReportException::class)
-    override fun getInvestments(partnerId: Long, reportId: Long): List<InvestmentSummary> {
+    override fun getInvestments(partnerId: Long, reportId: Long): List<ProjectPartnerReportInvestment> {
         return reportExpenditurePersistence.getAvailableInvestments(partnerId, reportId)
     }
 }

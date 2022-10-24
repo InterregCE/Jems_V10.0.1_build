@@ -15,7 +15,7 @@ import io.cloudflight.jems.server.project.service.report.partner.expenditure.Pro
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.fillCurrencyRates
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureCostCategoryPersistence
-import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureInvestmentPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportInvestmentPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportLumpSumPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportUnitCostPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.generateCoFinCalculationInputData
@@ -43,7 +43,7 @@ class SubmitProjectPartnerReport(
     private val reportContributionPersistence: ProjectReportContributionPersistence,
     private val reportLumpSumPersistence: ProjectReportLumpSumPersistence,
     private val reportUnitCostPersistence: ProjectReportUnitCostPersistence,
-    private val reportInvestmentPersistence: ProjectReportExpenditureInvestmentPersistence,
+    private val reportInvestmentPersistence: ProjectReportInvestmentPersistence,
     private val auditPublisher: ApplicationEventPublisher,
 ) : SubmitProjectPartnerReportInteractor {
 

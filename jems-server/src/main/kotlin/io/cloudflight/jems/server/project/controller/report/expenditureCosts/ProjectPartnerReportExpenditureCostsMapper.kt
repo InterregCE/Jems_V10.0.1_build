@@ -1,13 +1,13 @@
 package io.cloudflight.jems.server.project.controller.report.expenditureCosts
 
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportExpenditureCostDTO
+import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportInvestmentDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportLumpSumDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportUnitCostDTO
-import io.cloudflight.jems.api.project.dto.workpackage.investment.InvestmentSummaryDTO
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportExpenditureCost
+import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportInvestment
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportLumpSum
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportUnitCost
-import io.cloudflight.jems.server.project.service.workpackage.model.InvestmentSummary
 import org.mapstruct.Mapper
 import org.mapstruct.factory.Mappers
 
@@ -23,7 +23,7 @@ fun List<ProjectPartnerReportExpenditureCostDTO>.toModel() = map { mapper.map(it
 fun List<ProjectPartnerReportExpenditureCost>.toDto() = map { mapper.map(it) }.toList()
 fun List<ProjectPartnerReportLumpSum>.toLumpSumDto() = map { mapper.map(it) }.toList()
 fun List<ProjectPartnerReportUnitCost>.toUnitCostDto() = map { mapper.map(it) }
-fun List<InvestmentSummary>.toInvestmentSummaryDTOs() = map { mapper.map(it) }
+fun List<ProjectPartnerReportInvestment>.toInvestmentDto() = map { mapper.map(it) }
 
 @Mapper
 interface ProjectPartnerReportMapper {
@@ -31,5 +31,5 @@ interface ProjectPartnerReportMapper {
     fun map(partnerReportExpenditureCostDTO: ProjectPartnerReportExpenditureCostDTO): ProjectPartnerReportExpenditureCost
     fun map(lumpSum: ProjectPartnerReportLumpSum): ProjectPartnerReportLumpSumDTO
     fun map(unitCost: ProjectPartnerReportUnitCost): ProjectPartnerReportUnitCostDTO
-    fun map(investment: InvestmentSummary): InvestmentSummaryDTO
+    fun map(investment: ProjectPartnerReportInvestment): ProjectPartnerReportInvestmentDTO
 }

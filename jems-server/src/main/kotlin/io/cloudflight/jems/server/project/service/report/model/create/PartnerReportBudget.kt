@@ -8,8 +8,8 @@ data class PartnerReportBudget(
     val contributions: List<CreateProjectPartnerReportContribution>,
     val availableLumpSums: List<PartnerReportLumpSum>,
     val unitCosts: Set<PartnerReportUnitCostBase>,
+    val investments: List<PartnerReportInvestment>,
     val budgetPerPeriod: List<ProjectPartnerReportPeriod>,
     val expenditureSetup: ReportExpenditureCostCategory,
     val previouslyReportedCoFinancing: PreviouslyReportedCoFinancing,
-    val perInvestmentBudget: List<PartnerReportPerInvestmentBudget>
 )

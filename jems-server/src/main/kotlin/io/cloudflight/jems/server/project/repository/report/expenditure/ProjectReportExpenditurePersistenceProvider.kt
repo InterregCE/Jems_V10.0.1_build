@@ -5,17 +5,16 @@ import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.common.minio.MinioStorage
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportExpenditureCostEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportExpenditureCostTranslEntity
+import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportInvestmentEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportLumpSumEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportUnitCostEntity
 import io.cloudflight.jems.server.project.repository.report.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.repository.report.file.ProjectReportFileRepository
-import io.cloudflight.jems.server.project.repository.report.financialOverview.investment.ReportProjectPartnerExpenditureInvestmentRepository
-import io.cloudflight.jems.server.project.repository.report.financialOverview.investment.toInvestmentSummary
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportExpenditureCost
+import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportInvestment
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportLumpSum
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportUnitCost
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectReportExpenditurePersistence
-import io.cloudflight.jems.server.project.service.workpackage.model.InvestmentSummary
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 import kotlin.collections.HashSet
@@ -26,7 +25,7 @@ class ProjectReportExpenditurePersistenceProvider(
     private val reportExpenditureRepository: ProjectPartnerReportExpenditureRepository,
     private val reportLumpSumRepository: ProjectPartnerReportLumpSumRepository,
     private val reportUnitCostRepository: ProjectPartnerReportUnitCostRepository,
-    private val reportInvestmentRepository: ReportProjectPartnerExpenditureInvestmentRepository,
+    private val reportInvestmentRepository: ProjectPartnerReportInvestmentRepository,
     private val minioStorage: MinioStorage,
     private val reportFileRepository: ProjectReportFileRepository,
 ) : ProjectReportExpenditurePersistence {
@@ -62,12 +61,15 @@ class ProjectReportExpenditurePersistenceProvider(
         val unitCostsById = reportUnitCostRepository
             .findByReportEntityPartnerIdAndReportEntityIdOrderByIdAsc(partnerId, reportId)
             .associateBy { it.id }
+        val investmentsById = reportInvestmentRepository
+            .findByReportEntityPartnerIdAndReportEntityIdOrderByWorkPackageNumberAscInvestmentNumberAsc(partnerId, reportId)
+            .associateBy { it.id }
 
         return expenditureCosts.map { newData ->
             existingIds[newData.id].let { existing ->
                 when {
-                    existing != null -> existing.apply { updateWith(newData, lumpSumsById, unitCostsById) }
-                    else -> reportExpenditureRepository.save(newData.toEntity(reportEntity, lumpSumsById, unitCostsById))
+                    existing != null -> existing.apply { updateWith(newData, lumpSumsById, unitCostsById, investmentsById) }
+                    else -> reportExpenditureRepository.save(newData.toEntity(reportEntity, lumpSumsById, unitCostsById, investmentsById))
                 }
             }
         }.toModel()
@@ -93,21 +95,22 @@ class ProjectReportExpenditurePersistenceProvider(
         ).toModel()
 
     @Transactional(readOnly = true)
-    override fun getAvailableInvestments(partnerId: Long, reportId: Long): List<InvestmentSummary> =
-        reportInvestmentRepository.findByReportEntityPartnerIdAndReportEntityIdOrderByInvestmentIdAscIdAsc(
+    override fun getAvailableInvestments(partnerId: Long, reportId: Long): List<ProjectPartnerReportInvestment> =
+        reportInvestmentRepository.findByReportEntityPartnerIdAndReportEntityIdOrderByWorkPackageNumberAscInvestmentNumberAsc(
             partnerId = partnerId,
             reportId = reportId,
-        ).map { it.toInvestmentSummary() }.toList()
+        ).toModel()
 
     private fun PartnerReportExpenditureCostEntity.updateWith(
         newData: ProjectPartnerReportExpenditureCost,
         lumpSums: Map<Long, PartnerReportLumpSumEntity>,
         unitCosts: Map<Long, PartnerReportUnitCostEntity>,
+        investments: Map<Long, PartnerReportInvestmentEntity>,
     ) {
         reportLumpSum = if (newData.lumpSumId != null) lumpSums[newData.lumpSumId] else null
         reportUnitCost = if (newData.unitCostId != null) unitCosts[newData.unitCostId] else null
         costCategory = newData.costCategory
-        investmentId = newData.investmentId
+        reportInvestment = if (newData.investmentId != null) investments[newData.investmentId] else null
         procurementId = newData.contractId
         internalReferenceNumber = newData.internalReferenceNumber
         invoiceNumber = newData.invoiceNumber

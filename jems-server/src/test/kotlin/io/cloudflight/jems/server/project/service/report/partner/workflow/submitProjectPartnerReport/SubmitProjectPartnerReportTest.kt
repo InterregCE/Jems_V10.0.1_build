@@ -30,7 +30,7 @@ import io.cloudflight.jems.server.project.service.report.partner.contribution.Pr
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectReportExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureCostCategoryPersistence
-import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureInvestmentPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportInvestmentPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportLumpSumPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportUnitCostPersistence
 import io.mockk.clearMocks
@@ -232,7 +232,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
     lateinit var reportUnitCostPersistence: ProjectReportUnitCostPersistence
 
     @MockK
-    lateinit var reportInvestmentPersistence: ProjectReportExpenditureInvestmentPersistence
+    lateinit var reportInvestmentPersistence: ProjectReportInvestmentPersistence
 
     @MockK
     lateinit var auditPublisher: ApplicationEventPublisher

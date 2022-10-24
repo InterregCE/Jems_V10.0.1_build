@@ -40,7 +40,9 @@ class PartnerReportExpenditureCostEntity(
     @field:NotNull
     var costCategory: ReportBudgetCategory,
 
-    var investmentId: Long?,
+    @ManyToOne
+    var reportInvestment: PartnerReportInvestmentEntity?,
+
     var procurementId: Long?,
     var internalReferenceNumber: String?,
     var invoiceNumber: String?,

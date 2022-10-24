@@ -1,6 +1,7 @@
 import {ChangeDetectionStrategy, Component, Input, OnChanges, SimpleChanges} from '@angular/core';
 import {UntilDestroy} from '@ngneat/until-destroy';
 import {FormService} from '@common/components/section/form/form.service';
+import {Alert} from '@common/components/forms/alert';
 import {
 ExpenditureInvestmentBreakdownDTO, ExpenditureInvestmentBreakdownLineDTO,
 } from '@cat/api';
@@ -15,6 +16,7 @@ import {MatTableDataSource} from '@angular/material/table';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PartnerBreakdownInvestmentComponent implements OnChanges {
+  Alert = Alert;
 
   @Input()
   breakdown: ExpenditureInvestmentBreakdownDTO;

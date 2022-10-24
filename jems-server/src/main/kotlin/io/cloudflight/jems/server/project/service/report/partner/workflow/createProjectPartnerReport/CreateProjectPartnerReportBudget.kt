@@ -26,18 +26,18 @@ import io.cloudflight.jems.server.project.service.report.ProjectReportPersistenc
 import io.cloudflight.jems.server.project.service.report.model.contribution.create.CreateProjectPartnerReportContribution
 import io.cloudflight.jems.server.project.service.report.model.contribution.withoutCalculations.ProjectPartnerReportEntityContribution
 import io.cloudflight.jems.server.project.service.report.model.create.*
+import io.cloudflight.jems.server.project.service.report.model.expenditure.PartnerReportInvestmentSummary
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.model.financialOverview.costCategory.ReportExpenditureCostCategory
 import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportPeriod
 import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectReportContributionPersistence
-import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectReportExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureCostCategoryPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportInvestmentPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportLumpSumPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportUnitCostPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.applyPercentage
-import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.generateCoFinCalculationInputData
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.getCurrentFrom
 import org.springframework.stereotype.Service
@@ -61,8 +61,7 @@ class CreateProjectPartnerReportBudget(
     private val paymentPersistence: PaymentPersistence,
     private val reportLumpSumPersistence: ProjectReportLumpSumPersistence,
     private val reportUnitCostPersistence: ProjectReportUnitCostPersistence,
-    private val reportExpenditurePersistence: ProjectReportExpenditurePersistence,
-    private val projectWorkPackagePersistence: WorkPackagePersistence,
+    private val reportInvestmentPersistence: ProjectReportInvestmentPersistence,
 ) {
 
     @Transactional
@@ -71,6 +70,7 @@ class CreateProjectPartnerReportBudget(
         partner: ProjectPartnerSummary,
         version: String?,
         coFinancing: ProjectPartnerCoFinancingAndContribution,
+        investments: List<PartnerReportInvestmentSummary>,
     ): PartnerReportBudget {
         val partnerId = partner.id!!
         val submittedReportIds = reportPersistence.getSubmittedPartnerReportIds(partnerId = partnerId)
@@ -90,18 +90,6 @@ class CreateProjectPartnerReportBudget(
             .plus(partnerBudgetCostsPersistence.getBudgetInfrastructureAndWorksCosts(partnerId, version))
         val unitCosts = partnerBudgetCostsPersistence.getBudgetUnitCosts(partnerId, version)
 
-        val expenditureEntries = submittedReportIds.map{ reportId ->
-            reportExpenditurePersistence.getPartnerReportExpenditureCosts(partnerId, reportId) }.toList().flatten()
-
-        val perInvestmentBudget = projectWorkPackagePersistence.getProjectInvestmentSummaries(projectId, version)
-            .map { investmentSummary -> PartnerReportPerInvestmentBudget(
-                investmentId = investmentSummary.id,
-                investmentNumber = investmentSummary.investmentNumber,
-                workPackageNumber = investmentSummary.workPackageNumber,
-                totalEligibleBudget = calculateTotalEligibleBudgetForInvestmentId(investmentSummary.id, externalAndEquipmentAndInfrastructure),
-                previouslyReported = calculatePreviouslyReportedForInvestmentId(investmentSummary.id, expenditureEntries)
-            ) }.toList()
-
         val installmentsPaid = paymentPersistence.findByPartnerId(partnerId).getOnlyPaid()
 
         return PartnerReportBudget(
@@ -116,9 +104,12 @@ class CreateProjectPartnerReportBudget(
                 staffCosts
                     .plus(travelCosts)
                     .plus(externalAndEquipmentAndInfrastructure)
-                    .plus(unitCosts)
-                    .toList(),
+                    .plus(unitCosts),
                 previouslyReported = reportUnitCostPersistence.getUnitCostCumulative(submittedReportIds),
+            ),
+            investments = investments.toPartnerReportInvestments(
+                budgetEntries = externalAndEquipmentAndInfrastructure,
+                previouslyReported = reportInvestmentPersistence.getInvestmentsCumulative(submittedReportIds),
             ),
             budgetPerPeriod = (
                 getPartnerBudgetPerPeriod.getPartnerBudgetPerPeriod(projectId = projectId, version)
@@ -140,7 +131,6 @@ class CreateProjectPartnerReportBudget(
                     paymentReadyFastTrackLumpSums = sumOfPaymentReady,
                     paymentPaid = installmentsPaid.byFund(),
                 ),
-            perInvestmentBudget = perInvestmentBudget,
         )
     }
 
@@ -206,6 +196,26 @@ class CreateProjectPartnerReportBudget(
             previouslyReported = historicalContributions[uuid]?.sumOf { it } ?: ZERO,
             currentlyReported = ZERO,
         )
+    }
+
+    private fun List<PartnerReportInvestmentSummary>.toPartnerReportInvestments(
+        budgetEntries: List<BudgetGeneralCostEntry>,
+        previouslyReported: Map<Long, BigDecimal>,
+    ): List<PartnerReportInvestment> {
+        val byInvestment = budgetEntries
+            .filter { it.investmentId != null }
+            .groupBy { it.investmentId!! }.mapValues { (_, entries) -> entries.sumOf { it.rowSum ?: ZERO } }
+
+        return map {
+            PartnerReportInvestment(
+                investmentId = it.investmentId,
+                investmentNumber = it.investmentNumber,
+                workPackageNumber = it.workPackageNumber,
+                title = it.title,
+                total = byInvestment.getOrDefault(it.investmentId, ZERO),
+                previouslyReported = previouslyReported.getOrDefault(it.investmentId, ZERO),
+            )
+        }
     }
 
     private fun List<ProjectLumpSum>.toPartnerReportLumpSums(
@@ -420,13 +430,5 @@ class CreateProjectPartnerReportBudget(
             previouslyReported = previouslyReportedFund.previouslyReported
                 .plus(otherFundSums.getOrDefault(previouslyReportedFund.fundId, ZERO))
         ) }
-    private fun calculateTotalEligibleBudgetForInvestmentId(investmentId: Long, budgetEntries: List<BudgetGeneralCostEntry>): BigDecimal {
-        return budgetEntries.filter { it.investmentId == investmentId }.sumOf { it.rowSum!! }
-    }
-
-    private fun calculatePreviouslyReportedForInvestmentId(investmentId: Long, expenditureList: List<ProjectPartnerReportExpenditureCost>): BigDecimal {
-        return expenditureList.filter { it.investmentId == investmentId }
-                .sumOf { it.declaredAmountAfterSubmission!!}
-    }
 
 }

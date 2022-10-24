@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.partner.expenditure
 
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportExpenditureCost
+import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportInvestment
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportLumpSum
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportUnitCost
 import io.cloudflight.jems.server.project.service.workpackage.model.InvestmentSummary
@@ -21,6 +22,6 @@ interface ProjectReportExpenditurePersistence {
 
     fun getAvailableUnitCosts(partnerId: Long, reportId: Long): List<ProjectPartnerReportUnitCost>
 
-    fun getAvailableInvestments(partnerId: Long, reportId: Long): List<InvestmentSummary>
+    fun getAvailableInvestments(partnerId: Long, reportId: Long): List<ProjectPartnerReportInvestment>
 
 }

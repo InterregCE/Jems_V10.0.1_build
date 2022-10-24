@@ -38,6 +38,7 @@ import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerRep
 import io.cloudflight.jems.server.project.service.report.model.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.create.PartnerReportBaseData
 import io.cloudflight.jems.server.project.service.report.model.create.PartnerReportBudget
+import io.cloudflight.jems.server.project.service.report.model.expenditure.PartnerReportInvestmentSummary
 import io.cloudflight.jems.server.project.service.report.model.workPlan.create.CreateProjectPartnerReportWorkPackage
 import io.cloudflight.jems.server.project.service.report.model.workPlan.create.CreateProjectPartnerReportWorkPackageActivity
 import io.cloudflight.jems.server.project.service.report.model.workPlan.create.CreateProjectPartnerReportWorkPackageActivityDeliverable
@@ -45,7 +46,8 @@ import io.cloudflight.jems.server.project.service.report.model.workPlan.create.C
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityDeliverable
-import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackage
+import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackageFull
+import io.cloudflight.jems.server.project.service.workpackage.model.WorkPackageInvestment
 import io.cloudflight.jems.server.project.service.workpackage.output.model.WorkPackageOutput
 import io.mockk.clearMocks
 import io.mockk.every
@@ -236,7 +238,7 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
         )
 
         private val workPlan = listOf(
-            ProjectWorkPackage(
+            ProjectWorkPackageFull(
                 id = WORK_PACKAGE_ID,
                 workPackageNumber = 2,
                 activities = listOf(
@@ -261,6 +263,14 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
                         title = setOf(InputTranslation(EN, "7 output title")),
                     )
                 ),
+                investments = listOf(
+                    WorkPackageInvestment(
+                        id = 18L,
+                        investmentNumber = 4,
+                        title = setOf(InputTranslation(EN, "18 investment EN")),
+                        address = null,
+                    )
+                ),
             )
         )
 
@@ -269,6 +279,13 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
                 group = ProjectTargetGroupDTO.EducationTrainingCentreAndSchool,
                 specification = setOf(InputTranslation(language = EN, ProjectTargetGroupDTO.EducationTrainingCentreAndSchool.name))
             ),
+        )
+
+        private val expectedInvestment = PartnerReportInvestmentSummary(
+            investmentId = 18L,
+            workPackageNumber = 2,
+            investmentNumber = 4,
+            title = setOf(InputTranslation(EN, "18 investment EN")),
         )
     }
 
@@ -318,11 +335,14 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
         every { projectPartnerPersistence.getById(partnerId, "14.2.0") } returns detail
         every { currencyPersistence.getCurrencyForCountry("AT") } returns "EUR"
         // work plan
-        every { projectWorkPackagePersistence.getWorkPackagesWithOutputsAndActivitiesByProjectId(PROJECT_ID, "14.2.0") } returns workPlan
+        every { projectWorkPackagePersistence.getWorkPackagesWithAllDataByProjectId(PROJECT_ID, "14.2.0") } returns workPlan
         // budget
         val budgetMock = mockk<PartnerReportBudget>()
         val partnerSummary = slot<ProjectPartnerSummary>()
-        every { createProjectPartnerReportBudget.retrieveBudgetDataFor(PROJECT_ID, capture(partnerSummary), "14.2.0", coFinancingWrapper) } returns budgetMock
+        val investmentSlot = slot<List<PartnerReportInvestmentSummary>>()
+        every { createProjectPartnerReportBudget
+            .retrieveBudgetDataFor(PROJECT_ID, capture(partnerSummary), "14.2.0", coFinancingWrapper, capture(investmentSlot))
+        } returns budgetMock
         // identification
         every { projectDescriptionPersistence.getBenefits(PROJECT_ID, "14.2.0") } returns benefits
 
@@ -337,6 +357,7 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
         createReport.createReportFor(partnerId)
 
         assertThat(slotReport.captured).isEqualTo(expectedCreationObject(partnerId, budgetMock))
+        assertThat(investmentSlot.captured).containsExactly(expectedInvestment)
         assertThat(auditSlot.captured.auditCandidate.action).isEqualTo(AuditAction.PARTNER_REPORT_ADDED)
         assertThat(auditSlot.captured.auditCandidate.project?.id).isEqualTo(PROJECT_ID.toString())
         assertThat(auditSlot.captured.auditCandidate.project?.customIdentifier).isEqualTo("XE.1_0001")
@@ -363,11 +384,14 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
         every { projectPartnerPersistence.getById(partnerId, "14.2.0") } returns detail
         every { currencyPersistence.getCurrencyForCountry("AT") } returns "EUR"
         // work plan
-        every { projectWorkPackagePersistence.getWorkPackagesWithOutputsAndActivitiesByProjectId(PROJECT_ID, "14.2.0") } returns emptyList()
+        every { projectWorkPackagePersistence.getWorkPackagesWithAllDataByProjectId(PROJECT_ID, "14.2.0") } returns emptyList()
         // budget
         val budgetMock = mockk<PartnerReportBudget>()
         val partnerSummary = slot<ProjectPartnerSummary>()
-        every { createProjectPartnerReportBudget.retrieveBudgetDataFor(PROJECT_ID, capture(partnerSummary), "14.2.0", any()) } returns budgetMock
+        val investmentSlot = slot<List<PartnerReportInvestmentSummary>>()
+        every { createProjectPartnerReportBudget
+            .retrieveBudgetDataFor(PROJECT_ID, capture(partnerSummary), "14.2.0", any(), capture(investmentSlot))
+        } returns budgetMock
         // identification
         every { projectDescriptionPersistence.getBenefits(PROJECT_ID, "14.2.0") } returns null
 
@@ -382,6 +406,7 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
         createReport.createReportFor(partnerId)
 
         assertThat(slotReport.captured).isEqualTo(expectedCreationObjectLimited(partnerId, budgetMock))
+        assertThat(investmentSlot.captured).isEmpty()
         assertThat(auditSlot.captured.auditCandidate.action).isEqualTo(AuditAction.PARTNER_REPORT_ADDED)
         assertThat(auditSlot.captured.auditCandidate.project?.id).isEqualTo(PROJECT_ID.toString())
         assertThat(auditSlot.captured.auditCandidate.project?.customIdentifier).isEqualTo("XE.1_0001")
