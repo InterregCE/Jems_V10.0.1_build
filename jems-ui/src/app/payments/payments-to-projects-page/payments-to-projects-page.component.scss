@@ -9,36 +9,72 @@ p {
 
 ::ng-deep {
 
+  #table-wrapper {
+    overflow: auto;
+    padding: 0 !important;
+  }
+
+  .open-payment-indicator {
+    width: 0 !important;
+    height: 0 !important;
+    overflow: visible;
+
+    font-size: 0.67em;
+    color: var(--accent-color);
+  }
+
   .mat-sort-header-content {
-    text-align: left !important;
+    text-align: left;
+  }
+
+  .mat-cell, .mat-header-cell {
+    padding-left: 0.2rem;
+    padding-right: 0.2rem;
   }
 
   .id-column-width {
-    padding-left: 0.8rem !important;
-    padding-right: 0.2rem !important;
-    min-width: 4rem !important;
+    min-width: 2.5rem !important;
+    max-width: 2.5rem !important;
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+
+    position: sticky !important;
+    left: 0 !important;
+    z-index: 1000 !important;
+    border-right: 1px solid var(--table-border-color);
+
+    background-color: var(--table-backaground-color);
+    &:nth-child(even) {
+      background-color: var(--table-highlight-color);
+    }
   }
 
   .medium-column-width {
-    min-width: 6.5rem !important;
-    max-width: 10rem !important;
+    min-width: 7rem !important;
+    max-width: 12rem !important;
   }
 
   .small-column-width {
     min-width: 5rem !important;
-    max-width: 6.25rem !important;
+    max-width: 7rem !important;
+    justify-content: start;
+    text-align: left !important;
   }
 
   .date-column-width {
-    min-width: 9.5rem !important;
+    min-width: 6.5rem !important;
+    max-width: 6.5rem !important;
   }
 
   .wide-column-width {
-    min-width: 12.5rem !important;
+    min-width: 9rem !important;
   }
 
   .chip-column-width {
-    min-width: 10.5rem !important;
+    min-width: 8.5rem !important;
+    max-width: 12rem !important;
+    text-align: right;
+    justify-content: end;
   }
 
 }
