@@ -154,7 +154,7 @@ export class ContractMonitoringExtensionComponent {
   addAdditionalEntryIntoForceData(): void {
     this.isAdditionalDataActivated = false;
     const item = this.formBuilder.group({
-      additionalEntryIntoForceDate: [''],
+      additionalEntryIntoForceDate: ['', Validators.required],
       additionalEntryIntoForceComment: ['', Validators.maxLength(200)],
     });
     this.additionalEntryIntoForceItems.push(item);
