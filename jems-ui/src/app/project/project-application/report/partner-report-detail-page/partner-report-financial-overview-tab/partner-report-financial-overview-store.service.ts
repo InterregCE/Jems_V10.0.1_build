@@ -7,6 +7,7 @@ import {
   ExpenditureCostCategoryBreakdownDTO,
   ExpenditureLumpSumBreakdownDTO,
   ExpenditureUnitCostBreakdownDTO,
+  ExpenditureInvestmentBreakdownDTO,
   ProjectPartnerReportExpenditureCostsService,
   ProjectPartnerReportFinancialOverviewService,
   ProjectPartnerReportUnitCostDTO,
@@ -25,6 +26,7 @@ export class PartnerReportFinancialOverviewStoreService {
   perCostCategory$: Observable<ExpenditureCostCategoryBreakdownDTO>;
   perLumpSum$: Observable<ExpenditureLumpSumBreakdownDTO>;
   perUnitCost$: Observable<ExpenditureUnitCostBreakdownDTO>;
+  perInvestment$: Observable<ExpenditureInvestmentBreakdownDTO>;
   callFunds$: Observable<CallFundRateDTO[]>;
   allowedCostCategories$: Observable<Map<ProjectPartnerReportUnitCostDTO.CategoryEnum | 'LumpSum' | 'UnitCost', boolean>>;
 
@@ -39,6 +41,7 @@ export class PartnerReportFinancialOverviewStoreService {
     this.perCostCategory$ = this.perCostCategory();
     this.perLumpSum$ = this.perLumpSum();
     this.perUnitCost$ = this.perUnitCost();
+    this.perInvestment$ = this.perInvestment();
     this.callFunds$ = this.callFunds();
     this.allowedCostCategories$ = this.allowedCostCategories();
   }
@@ -92,6 +95,19 @@ export class PartnerReportFinancialOverviewStoreService {
           this.financialOverviewService.getUnitCostBreakdown(partnerId as number, reportId)
         ),
         tap(data => Log.info('Fetched overview breakdown per unit cost', this, data)),
+      );
+  }
+
+  private perInvestment(): Observable<ExpenditureInvestmentBreakdownDTO> {
+    return combineLatest([
+      this.partnerReportDetailPageStore.partnerId$,
+      this.partnerReportDetailPageStore.partnerReportId$,
+    ])
+      .pipe(
+        switchMap(([partnerId, reportId]) =>
+          this.financialOverviewService.getInvestmentsBreakdown(partnerId as number, reportId)
+        ),
+        tap(data => Log.info('Fetched overview breakdown per investment', this, data)),
       );
   }
 

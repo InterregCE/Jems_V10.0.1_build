@@ -120,12 +120,12 @@ export class PartnerReportExpendituresStore {
 
   private investmentSummariesForReport(): Observable<InvestmentSummary[]> {
     return combineLatest([
-      this.projectStore.project$,
+      this.partnerReportDetailPageStore.partnerId$,
       this.projectStore.investmentChangeEvent$.pipe(startWith(null)),
       this.partnerReportDetailPageStore.partnerReport$])
       .pipe(
-        switchMap(([project, changeEvent, partnerReport]) =>
-          this.projectStore.getProjectInvestmentSummaries(project, partnerReport.linkedFormVersion)),
+        switchMap(([partnerId, changeEvent, partnerReport]) =>
+          this.partnerReportExpenditureCostsService.getAvailableInvestments(partnerId as number, partnerReport.id)),
         map((investmentSummaryDTOs: InvestmentSummaryDTO[]) => investmentSummaryDTOs
           .map(it => new InvestmentSummary(it.id, it.investmentNumber, it.workPackageNumber))),
         map((investmentSummaries: InvestmentSummary[]) => investmentSummaries),
