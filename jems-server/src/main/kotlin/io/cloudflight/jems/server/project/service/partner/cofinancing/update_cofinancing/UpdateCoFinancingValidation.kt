@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.service.partner.cofinancing.update_co
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldSetting
+import io.cloudflight.jems.server.call.service.model.CallFundRate
 import io.cloudflight.jems.server.call.service.model.FieldVisibilityStatus
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
@@ -10,15 +11,18 @@ import io.cloudflight.jems.server.project.service.partner.cofinancing.model.Proj
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.UpdateProjectPartnerCoFinancing
 import java.math.BigDecimal
 import org.springframework.http.HttpStatus
+import java.util.SortedSet
+import kotlin.collections.HashSet
 
 const val PARTNER_CONTRIBUTIONS_NOT_ENABLED_ERROR_KEY = "project.partner.coFinancing.add.new.contributions.not.enabled"
 private const val MAX_FUNDS = 5
 
 fun validateFinancing(
     financing: Collection<UpdateProjectPartnerCoFinancing>,
-    allowedFundIds: Set<Long>
+    allowedFundIds: Set<Long>,
+    fundRates: SortedSet<CallFundRate>
 ) {
-    validateCoFinancingPercentageRange(financing)
+    validateCoFinancingPercentageRange(financing, fundRates)
     validateCoFinancingTotalPercentage(financing)
     validateSingleCoFinancing(financing)
     validateMaxFundsPerPartner(financing, allowedFundIds)
@@ -66,10 +70,25 @@ fun validateContributionSpf(
     validateMandatoryPartnerContributionSpfAmount(partnerContributions)
 }
 
+
+
 //co financing block
-private fun validateCoFinancingPercentageRange(financing: Collection<UpdateProjectPartnerCoFinancing>) {
+private fun validateCoFinancingPercentageRange(financing: Collection<UpdateProjectPartnerCoFinancing>, fundRates: SortedSet<CallFundRate>) {
     if (!financing.all { it.percentage != null && it.percentage <= BigDecimal.valueOf(100) && it.percentage >= BigDecimal.ZERO })
         invalid("project.partner.coFinancing.percentage.invalid")
+    val financingFromFunds = financing.filter{ it.fundId != null }
+    val fixedFundRates = fundRates.filter{ !it.adjustable }
+    if (financingFromFunds.isNotEmpty()) {
+        if (!financingFromFunds.all { validateFixedFundRate(it, fixedFundRates.firstOrNull { rate -> rate.programmeFund.id == it.fundId }) })
+            invalid("project.partner.coFinancing.fixed.percentage.invalid")
+    }
+}
+
+private fun validateFixedFundRate(coFinancing: UpdateProjectPartnerCoFinancing, rate: CallFundRate?): Boolean {
+    if (rate == null) {
+        return true
+    }
+    return coFinancing.percentage!!.compareTo(rate.rate) == 0
 }
 
 private fun validateCoFinancingTotalPercentage(financing: Collection<UpdateProjectPartnerCoFinancing>) {

@@ -31,9 +31,10 @@ class UpdateCoFinancing(
         val projectId = partnerPersistence.getProjectIdForPartnerId(partnerId)
         val callId = projectPersistence.getCallIdOfProject(projectId)
         val afConfig = callPersistence.getApplicationFormFieldConfigurations(callId)
+        val fundRates = callPersistence.getCallById(callId).funds
 
         validateContributionAFConfiguration(afConfig.applicationFormFieldConfigurations, partnerContributions)
-        validateFinancing(finances, persistence.getAvailableFunds(partnerId).map { it.id }.toSet())
+        validateFinancing(finances, persistence.getAvailableFunds(partnerId).map { it.id }.toSet(), fundRates)
         validateContribution(partnerContributions)
 
         return persistence.updateCoFinancingAndContribution(partnerId, finances, partnerContributions)
@@ -49,9 +50,10 @@ class UpdateCoFinancing(
         val projectId = partnerPersistence.getProjectIdForPartnerId(partnerId)
         val callId = projectPersistence.getCallIdOfProject(projectId)
         val afConfig = callPersistence.getApplicationFormFieldConfigurations(callId)
+        val fundRates = callPersistence.getCallById(callId).funds
 
         validateSpfContributionAFConfiguration(afConfig.applicationFormFieldConfigurations, partnerContributions)
-        validateFinancing(finances, persistence.getAvailableFunds(partnerId).map { it.id }.toSet())
+        validateFinancing(finances, persistence.getAvailableFunds(partnerId).map { it.id }.toSet(), fundRates)
         validateContributionSpf(partnerContributions)
 
         return persistence.updateSpfCoFinancingAndContribution(partnerId, finances, partnerContributions)
