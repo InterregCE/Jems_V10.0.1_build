@@ -170,6 +170,7 @@ class ProjectReportExpenditurePersistenceProviderTest : UnitTest() {
             total = BigDecimal.ONE,
             current = BigDecimal.ZERO,
             previouslyReported = BigDecimal.ZERO,
+            previouslyPaid = BigDecimal.valueOf(1111, 1),
         )
 
         private fun dummyUnitCostEntity(reportEntity: ProjectPartnerReportEntity) = PartnerReportUnitCostEntity(
@@ -215,6 +216,7 @@ class ProjectReportExpenditurePersistenceProviderTest : UnitTest() {
         private val dummyLumpSum = ProjectPartnerReportLumpSum(
             id = 4L,
             lumpSumProgrammeId = 400L,
+            fastTrack = false,
             period = 2,
             cost = BigDecimal.ONE,
             name = setOf(InputTranslation(SystemLanguage.EN, "name EN"))

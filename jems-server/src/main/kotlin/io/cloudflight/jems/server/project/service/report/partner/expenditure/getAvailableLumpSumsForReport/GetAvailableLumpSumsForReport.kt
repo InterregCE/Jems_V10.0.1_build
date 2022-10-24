@@ -18,6 +18,11 @@ class GetAvailableLumpSumsForReport(
     @ExceptionWrapper(GetAvailableLumpSumsForReportException::class)
     override fun getLumpSums(partnerId: Long, reportId: Long): List<ProjectPartnerReportLumpSum> =
         reportExpenditurePersistence.getAvailableLumpSums(partnerId = partnerId, reportId = reportId)
-            .filter { it.cost.compareTo(BigDecimal.ZERO) != 0 }
+            .onlyNonFastTrack()
+            .onlyNonZero()
+
+    private fun List<ProjectPartnerReportLumpSum>.onlyNonFastTrack() = filter { !it.fastTrack }
+
+    private fun List<ProjectPartnerReportLumpSum>.onlyNonZero() = filter { it.cost.compareTo(BigDecimal.ZERO) != 0 }
 
 }

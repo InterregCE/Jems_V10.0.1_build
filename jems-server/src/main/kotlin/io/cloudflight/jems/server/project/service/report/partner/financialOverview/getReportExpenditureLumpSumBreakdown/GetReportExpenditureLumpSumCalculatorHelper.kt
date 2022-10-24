@@ -22,6 +22,7 @@ private fun emptyLine() = ExpenditureLumpSumBreakdownLine(
     name = emptySet(),
     totalEligibleBudget = BigDecimal.ZERO,
     previouslyReported = BigDecimal.ZERO,
+    previouslyPaid = BigDecimal.ZERO,
     currentReport = BigDecimal.ZERO,
 )
 
@@ -29,6 +30,7 @@ fun List<ExpenditureLumpSumBreakdownLine>.sumUp() =
     fold(emptyLine()) { resultingTotalLine, lumpSum ->
         resultingTotalLine.totalEligibleBudget += lumpSum.totalEligibleBudget
         resultingTotalLine.previouslyReported += lumpSum.previouslyReported
+        resultingTotalLine.previouslyPaid += lumpSum.previouslyPaid
         resultingTotalLine.currentReport += lumpSum.currentReport
         return@fold resultingTotalLine
     }.fillInOverviewFields()

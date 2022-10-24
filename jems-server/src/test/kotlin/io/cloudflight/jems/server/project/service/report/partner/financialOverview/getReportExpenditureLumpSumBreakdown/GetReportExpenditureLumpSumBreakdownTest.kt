@@ -47,6 +47,7 @@ internal class GetReportExpenditureLumpSumBreakdownTest : UnitTest() {
             period = 11,
             totalEligibleBudget = BigDecimal.valueOf(52),
             previouslyReported = BigDecimal.valueOf(23),
+            previouslyPaid = BigDecimal.ZERO,
             currentReport = BigDecimal.valueOf(39, 1),
         )
 
@@ -57,7 +58,19 @@ internal class GetReportExpenditureLumpSumBreakdownTest : UnitTest() {
             period = 12,
             totalEligibleBudget = BigDecimal.valueOf(18),
             previouslyReported = BigDecimal.valueOf(7),
+            previouslyPaid = BigDecimal.ZERO,
             currentReport = BigDecimal.valueOf(11, 1),
+        )
+
+        private val lumpSum_ft = ExpenditureLumpSumBreakdownLine(
+            reportLumpSumId = 3L,
+            lumpSumId = 103L,
+            name = setOf(InputTranslation(SystemLanguage.TR, "name 3 TR")),
+            period = 13,
+            totalEligibleBudget = BigDecimal.valueOf(15),
+            previouslyReported = BigDecimal.ZERO,
+            previouslyPaid = BigDecimal.valueOf(12),
+            currentReport = BigDecimal.ZERO,
         )
 
         private val expenditureWithLumpSum = ProjectPartnerReportExpenditureCost(
@@ -91,6 +104,7 @@ internal class GetReportExpenditureLumpSumBreakdownTest : UnitTest() {
                     period = 11,
                     totalEligibleBudget = BigDecimal.valueOf(52),
                     previouslyReported = BigDecimal.valueOf(23),
+                    previouslyPaid = BigDecimal.ZERO,
                     currentReport = BigDecimal.valueOf(11),
                     totalReportedSoFar = BigDecimal.valueOf(34),
                     totalReportedSoFarPercentage = BigDecimal.valueOf(6538, 2),
@@ -103,10 +117,24 @@ internal class GetReportExpenditureLumpSumBreakdownTest : UnitTest() {
                     period = 12,
                     totalEligibleBudget = BigDecimal.valueOf(18),
                     previouslyReported = BigDecimal.valueOf(7),
+                    previouslyPaid = BigDecimal.ZERO,
                     currentReport = BigDecimal.ZERO,
                     totalReportedSoFar = BigDecimal.valueOf(7),
                     totalReportedSoFarPercentage = BigDecimal.valueOf(3889, 2),
                     remainingBudget = BigDecimal.valueOf(11),
+                ),
+                ExpenditureLumpSumBreakdownLine(
+                    reportLumpSumId = 3L,
+                    lumpSumId = 103L,
+                    name = setOf(InputTranslation(SystemLanguage.TR, "name 3 TR")),
+                    period = 13,
+                    totalEligibleBudget = BigDecimal.valueOf(15),
+                    previouslyReported = BigDecimal.ZERO,
+                    previouslyPaid = BigDecimal.valueOf(12),
+                    currentReport = BigDecimal.ZERO,
+                    totalReportedSoFar = BigDecimal.ZERO,
+                    totalReportedSoFarPercentage = BigDecimal.valueOf(0, 2),
+                    remainingBudget = BigDecimal.valueOf(15),
                 ),
             ),
             total = ExpenditureLumpSumBreakdownLine(
@@ -114,12 +142,13 @@ internal class GetReportExpenditureLumpSumBreakdownTest : UnitTest() {
                 lumpSumId = 0L,
                 name = emptySet(),
                 period = null,
-                totalEligibleBudget = BigDecimal.valueOf(70),
+                totalEligibleBudget = BigDecimal.valueOf(85),
                 previouslyReported = BigDecimal.valueOf(30),
+                previouslyPaid = BigDecimal.valueOf(12),
                 currentReport = BigDecimal.valueOf(11),
                 totalReportedSoFar = BigDecimal.valueOf(41),
-                totalReportedSoFarPercentage = BigDecimal.valueOf(5857, 2),
-                remainingBudget = BigDecimal.valueOf(29),
+                totalReportedSoFarPercentage = BigDecimal.valueOf(4824, 2),
+                remainingBudget = BigDecimal.valueOf(44),
             ),
         )
 
@@ -132,6 +161,7 @@ internal class GetReportExpenditureLumpSumBreakdownTest : UnitTest() {
                     period = 11,
                     totalEligibleBudget = BigDecimal.valueOf(52),
                     previouslyReported = BigDecimal.valueOf(23),
+                    previouslyPaid = BigDecimal.ZERO,
                     currentReport = BigDecimal.valueOf(39, 1),
                     totalReportedSoFar = BigDecimal.valueOf(269, 1),
                     totalReportedSoFarPercentage = BigDecimal.valueOf(5173, 2),
@@ -144,10 +174,24 @@ internal class GetReportExpenditureLumpSumBreakdownTest : UnitTest() {
                     period = 12,
                     totalEligibleBudget = BigDecimal.valueOf(18),
                     previouslyReported = BigDecimal.valueOf(7),
+                    previouslyPaid = BigDecimal.ZERO,
                     currentReport = BigDecimal.valueOf(11, 1),
                     totalReportedSoFar = BigDecimal.valueOf(81, 1),
                     totalReportedSoFarPercentage = BigDecimal.valueOf(4500, 2),
                     remainingBudget = BigDecimal.valueOf(99, 1),
+                ),
+                ExpenditureLumpSumBreakdownLine(
+                    reportLumpSumId = 3L,
+                    lumpSumId = 103L,
+                    name = setOf(InputTranslation(SystemLanguage.TR, "name 3 TR")),
+                    period = 13,
+                    totalEligibleBudget = BigDecimal.valueOf(15),
+                    previouslyReported = BigDecimal.ZERO,
+                    previouslyPaid = BigDecimal.valueOf(12),
+                    currentReport = BigDecimal.ZERO,
+                    totalReportedSoFar = BigDecimal.ZERO,
+                    totalReportedSoFarPercentage = BigDecimal.valueOf(0, 2),
+                    remainingBudget = BigDecimal.valueOf(15),
                 ),
             ),
             total = ExpenditureLumpSumBreakdownLine(
@@ -155,12 +199,13 @@ internal class GetReportExpenditureLumpSumBreakdownTest : UnitTest() {
                 lumpSumId = 0L,
                 name = emptySet(),
                 period = null,
-                totalEligibleBudget = BigDecimal.valueOf(70),
+                totalEligibleBudget = BigDecimal.valueOf(85),
                 previouslyReported = BigDecimal.valueOf(30),
+                previouslyPaid = BigDecimal.valueOf(12),
                 currentReport = BigDecimal.valueOf(50, 1),
                 totalReportedSoFar = BigDecimal.valueOf(350, 1),
-                totalReportedSoFarPercentage = BigDecimal.valueOf(5000, 2),
-                remainingBudget = BigDecimal.valueOf(350, 1),
+                totalReportedSoFarPercentage = BigDecimal.valueOf(4118, 2),
+                remainingBudget = BigDecimal.valueOf(500, 1),
             ),
         )
 
@@ -190,7 +235,7 @@ internal class GetReportExpenditureLumpSumBreakdownTest : UnitTest() {
         every { reportPersistence.getPartnerReportById(partnerId = PARTNER_ID, reportId) } returns
             report(reportId, status)
         every { reportLumpSumPersistence.getLumpSum(partnerId = PARTNER_ID, reportId = reportId) } returns
-            listOf(lumpSum_1.copy(currentReport = BigDecimal.ZERO), lumpSum_2.copy(currentReport = BigDecimal.ZERO))
+            listOf(lumpSum_1.copy(currentReport = BigDecimal.ZERO), lumpSum_2.copy(currentReport = BigDecimal.ZERO), lumpSum_ft)
         every { reportExpenditurePersistence.getPartnerReportExpenditureCosts(partnerId = PARTNER_ID, reportId = reportId) } returns
             listOf(expenditureWithLumpSum)
         assertThat(interactor.get(PARTNER_ID, reportId = reportId)).isEqualTo(expectedDraftBreakdown.copy())
@@ -203,7 +248,7 @@ internal class GetReportExpenditureLumpSumBreakdownTest : UnitTest() {
         every { reportPersistence.getPartnerReportById(partnerId = PARTNER_ID, reportId) } returns
             report(reportId, status)
         every { reportLumpSumPersistence.getLumpSum(partnerId = PARTNER_ID, reportId = reportId) } returns
-            listOf(lumpSum_1, lumpSum_2)
+            listOf(lumpSum_1, lumpSum_2, lumpSum_ft)
         assertThat(interactor.get(PARTNER_ID, reportId = reportId)).isEqualTo(expectedNonDraftBreakdown.copy())
     }
 

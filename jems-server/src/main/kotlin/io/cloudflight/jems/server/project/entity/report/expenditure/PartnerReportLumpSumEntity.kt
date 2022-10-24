@@ -28,6 +28,7 @@ class PartnerReportLumpSumEntity(
     @field:NotNull
     val programmeLumpSum: ProgrammeLumpSumEntity,
 
+    @field:NotNull
     val orderNr: Int,
 
     val period: Int?,
@@ -38,5 +39,7 @@ class PartnerReportLumpSumEntity(
     var current: BigDecimal,
     @field:NotNull
     val previouslyReported: BigDecimal,
+    @field:NotNull
+    val previouslyPaid: BigDecimal,
 
 )

@@ -26,6 +26,7 @@ class ProjectReportLumpSumPersistenceProvider(
                 period = it.period,
                 totalEligibleBudget = it.total,
                 previouslyReported = it.previouslyReported,
+                previouslyPaid = it.previouslyPaid,
                 currentReport = it.current,
             ) }
 

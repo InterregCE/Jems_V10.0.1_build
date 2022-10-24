@@ -32,6 +32,7 @@ import io.cloudflight.jems.server.project.service.report.partner.financialOvervi
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureCostCategoryPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureInvestmentPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportLumpSumPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportUnitCostPersistence
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -115,17 +116,17 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
         private val expenditure3 = ProjectPartnerReportExpenditureCost(
             id = 632,
             lumpSumId = null,
-            unitCostId = null,
+            unitCostId = 15L,
             costCategory = ReportBudgetCategory.InfrastructureCosts,
-            investmentId = 1L,
+            investmentId = null,
             contractId = null,
             internalReferenceNumber = null,
             invoiceNumber = null,
             invoiceDate = null,
             dateOfPayment = null,
             numberOfUnits = BigDecimal.ONE,
-            pricePerUnit = BigDecimal.valueOf(485, 1),
-            declaredAmount = BigDecimal.valueOf(485, 1),
+            pricePerUnit = BigDecimal.valueOf(165, 1),
+            declaredAmount = BigDecimal.valueOf(165, 1),
             currencyCode = "EUR",
             currencyConversionRate = null,
             declaredAmountAfterSubmission = null,
@@ -152,9 +153,9 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             equipment = BigDecimal.ZERO,
             infrastructure = BigDecimal.ZERO,
             other = BigDecimal.ZERO,
-            lumpSum = BigDecimal.ZERO,
-            unitCost = BigDecimal.ZERO,
-            sum = BigDecimal.valueOf(1262, 2),
+            lumpSum = BigDecimal.valueOf(4850, 2),
+            unitCost = BigDecimal.valueOf(1650, 2),
+            sum = BigDecimal.valueOf(7762, 2),
         )
 
         private fun fund(id: Long): ProgrammeFund {
@@ -190,15 +191,15 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
 
         private val expectedCoFinancing = ReportExpenditureCoFinancingColumn(
             funds = mapOf(
-                29L to BigDecimal.valueOf(176, 2),
-                35L to BigDecimal.valueOf(796, 2),
-                null to BigDecimal.valueOf(289, 2),
+                29L to BigDecimal.valueOf(1084, 2),
+                35L to BigDecimal.valueOf(4899, 2),
+                null to BigDecimal.valueOf(1778, 2),
             ),
-            partnerContribution = BigDecimal.valueOf(289, 2),
-            publicContribution = BigDecimal.valueOf(75, 2),
-            automaticPublicContribution = BigDecimal.valueOf(100, 2),
-            privateContribution = BigDecimal.valueOf(126, 2),
-            sum = BigDecimal.valueOf(1262, 2),
+            partnerContribution = BigDecimal.valueOf(1778, 2),
+            publicContribution = BigDecimal.valueOf(465, 2),
+            automaticPublicContribution = BigDecimal.valueOf(620, 2),
+            privateContribution = BigDecimal.valueOf(776, 2),
+            sum = BigDecimal.valueOf(7762, 2),
         )
 
     }
@@ -226,6 +227,9 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
 
     @MockK
     lateinit var reportLumpSumPersistence: ProjectReportLumpSumPersistence
+
+    @MockK
+    lateinit var reportUnitCostPersistence: ProjectReportUnitCostPersistence
 
     @MockK
     lateinit var reportInvestmentPersistence: ProjectReportExpenditureInvestmentPersistence
@@ -261,7 +265,8 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
         every { currencyPersistence.findAllByIdYearAndIdMonth(year = YEAR, month = MONTH) } returns
             listOf(
                 CurrencyConversion("CZK", YEAR, MONTH, "", BigDecimal.valueOf(254855, 4)),
-                CurrencyConversion("PLN", YEAR, MONTH, "", BigDecimal.ONE) /* not used */,
+                CurrencyConversion("PLN", YEAR, MONTH, "", BigDecimal.valueOf(195, 2)) /* not used */,
+                CurrencyConversion("EUR", YEAR, MONTH, "", BigDecimal.ONE),
             )
         val slotExpenditures = slot<List<ProjectPartnerReportExpenditureCost>>()
         every { reportExpenditurePersistence
@@ -273,15 +278,18 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             .updateCurrentlyReportedValues(PARTNER_ID, reportId = 35L, capture(expenditureCcSlot))
         } answers { }
 
-        val investmentsSlot = slot<Map<Long, BigDecimal>>()
-        every { reportInvestmentPersistence.updateCurrentlyReportedValues(PARTNER_ID, reportId = 35L, capture(investmentsSlot)) } answers { }
-
         every { reportContributionPersistence.getPartnerReportContribution(PARTNER_ID, reportId = 35L) } returns partnerContribution
         val coFinSlot = slot<ReportExpenditureCoFinancingColumn>()
         every { reportExpenditureCoFinancingPersistence.updateCurrentlyReportedValues(PARTNER_ID, reportId = 35L, capture(coFinSlot)) } answers { }
 
         val lumpSumSlot = slot<Map<Long, BigDecimal>>()
         every { reportLumpSumPersistence.updateCurrentlyReportedValues(PARTNER_ID, reportId = 35L, capture(lumpSumSlot)) } answers { }
+
+        val unitCostSlot = slot<Map<Long, BigDecimal>>()
+        every { reportUnitCostPersistence.updateCurrentlyReportedValues(PARTNER_ID, reportId = 35L, capture(unitCostSlot)) } answers { }
+
+        val investmentSlot = slot<Map<Long, BigDecimal>>()
+        every { reportInvestmentPersistence.updateCurrentlyReportedValues(PARTNER_ID, reportId = 35L, capture(investmentSlot)) } answers { }
 
         val submissionTime = slot<ZonedDateTime>()
         every { reportPersistence.submitReportById(any(), any(), capture(submissionTime)) } returns mockedResult
@@ -314,6 +322,8 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
         assertThat(expenditureCcSlot.captured).isEqualTo(expectedPersistedExpenditureCostCategory)
         assertThat(coFinSlot.captured).isEqualTo(expectedCoFinancing)
         assertThat(lumpSumSlot.captured).containsExactlyEntriesOf(mapOf(22L to BigDecimal.valueOf(485, 1)))
+        assertThat(unitCostSlot.captured).containsExactlyEntriesOf(mapOf(15L to BigDecimal.valueOf(1650, 2)))
+        assertThat(investmentSlot.captured).containsExactlyEntriesOf(mapOf(10L to BigDecimal.valueOf(999, 2)))
     }
 
     @Test

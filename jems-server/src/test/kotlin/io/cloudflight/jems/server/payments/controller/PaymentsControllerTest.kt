@@ -98,6 +98,7 @@ class PaymentsControllerTest : UnitTest() {
         private val installmentFirst = PaymentPartnerInstallment(
             id = installmentFirstDTO.id,
             fundId = fund.id,
+            lumpSumId = lumpSumId,
             amountPaid = installmentFirstDTO.amountPaid,
             paymentDate = currentTime.toLocalDate(),
             comment = installmentFirstDTO.comment,

@@ -11,6 +11,7 @@ data class ExpenditureLumpSumBreakdownLine(
 
     var totalEligibleBudget: BigDecimal,
     var previouslyReported: BigDecimal,
+    var previouslyPaid: BigDecimal,
     var currentReport: BigDecimal,
     var totalReportedSoFar: BigDecimal = BigDecimal.ZERO,
     var totalReportedSoFarPercentage: BigDecimal = BigDecimal.ZERO,

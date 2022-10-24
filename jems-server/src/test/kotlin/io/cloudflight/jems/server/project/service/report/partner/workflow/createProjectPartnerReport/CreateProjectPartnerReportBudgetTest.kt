@@ -140,6 +140,8 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
                     amount = BigDecimal.TEN,
                 ),
             ),
+            fastTrack = false,
+            readyForPayment = false,
         ),
         ProjectLumpSum(
             orderNr = 2,
@@ -152,6 +154,7 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
                 ),
             ),
             fastTrack = true,
+            readyForPayment = false,
         ),
         ProjectLumpSum(
             orderNr = 3,
@@ -414,6 +417,7 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
     private fun paymentInstallment_1(): PaymentPartnerInstallment {
         val installment = mockk<PaymentPartnerInstallment>()
         every { installment.fundId } returns fund.id
+        every { installment.lumpSumId } returns 45L
         every { installment.amountPaid } returns BigDecimal.valueOf(32)
         every { installment.isPaymentConfirmed } returns false
         return installment
@@ -422,6 +426,7 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
     private fun paymentInstallment_2(): PaymentPartnerInstallment {
         val installment = mockk<PaymentPartnerInstallment>()
         every { installment.fundId } returns fund.id
+        every { installment.lumpSumId } returns 46L
         every { installment.amountPaid } returns BigDecimal.valueOf(11)
         every { installment.isPaymentConfirmed } returns true
         return installment
@@ -485,13 +490,14 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         val result = service.retrieveBudgetDataFor(projectId, partner, version, coFinancing)
 
         assertThat(result.contributions).hasSize(3)
-        assertThat(result.availableLumpSums).containsExactly(PartnerReportLumpSum(
-            lumpSumId = 44L,
-            orderNr = 1,
-            period = 3,
-            total = BigDecimal.TEN,
-            previouslyReported = BigDecimal.TEN,
-        ))
+        assertThat(result.availableLumpSums).containsExactly(
+            PartnerReportLumpSum(lumpSumId = 44L, orderNr = 1, period = 3,
+                total = BigDecimal.TEN, previouslyReported = BigDecimal.TEN, previouslyPaid = BigDecimal.ZERO),
+            PartnerReportLumpSum(lumpSumId = 45L, orderNr = 2, period = 4,
+                total = BigDecimal.valueOf(13), previouslyReported = BigDecimal.valueOf(100), previouslyPaid = BigDecimal.ZERO),
+            PartnerReportLumpSum(lumpSumId = 46L, orderNr = 3, period = 4,
+                total = BigDecimal.valueOf(1033, 2), previouslyReported = BigDecimal.valueOf(200), previouslyPaid = BigDecimal.valueOf(11)),
+        )
         assertThat(result.unitCosts.map {it.unitCostId}).containsExactlyInAnyOrder(4, 5, 6, 7, 8, 9, 10)
         assertThat(result.unitCosts.first { it.unitCostId == 6L }.previouslyReported).isEqualTo(BigDecimal.TEN)
         assertThat(result.unitCosts.first { it.unitCostId == 7L }.previouslyReported).isEqualTo(BigDecimal.valueOf(100))
