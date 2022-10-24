@@ -44,6 +44,9 @@ private fun ExpenditureInvestmentBreakdownLine.fillInOverviewFields() = apply {
 }
 
 fun Collection<ProjectPartnerReportExpenditureCost>.getCurrentForInvestments() =
-    filter { it.unitCostId != null }
-        .groupBy { it.unitCostId!! }
-        .mapValues { it.value.sumOf { it.declaredAmountAfterSubmission!! } }
+    filter { it.investmentId != null }
+        .groupBy { it.investmentId!! }
+        .mapValues { it.value
+            .filter{ it.declaredAmountAfterSubmission != null }
+            .sumOf { it.declaredAmountAfterSubmission!! }
+        }

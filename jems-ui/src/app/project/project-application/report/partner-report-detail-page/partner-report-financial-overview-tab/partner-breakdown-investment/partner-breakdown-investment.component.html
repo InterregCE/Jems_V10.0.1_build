@@ -51,8 +51,7 @@
             <span jemsText maxLines="2">{{ 'project.application.partner.report.financial.total.reported.so.far.perc' | translate }}</span>
         </mat-header-cell>
         <mat-cell *matCellDef="let line" class="text-right">
-            <span *ngIf="line.totalReportedSoFarPercentage">{{ line.totalReportedSoFarPercentage | asMoney }}</span>
-            <span *ngIf="!line.totalReportedSoFarPercentage">N/A</span>
+            <span>{{ line.totalReportedSoFarPercentage | asMoney }}</span>
         </mat-cell>
         <mat-footer-cell *matFooterCellDef class="text-right">{{ breakdown.total.totalReportedSoFarPercentage | asMoney }}&nbsp;%</mat-footer-cell>
     </ng-container>

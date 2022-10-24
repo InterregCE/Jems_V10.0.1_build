@@ -438,7 +438,7 @@ import {
 } from '@project/project-application/report/partner-report-detail-page/partner-report-financial-overview-tab/partner-breakdown-unit-cost/partner-breakdown-unit-cost.component';
 import {
   PartnerBreakdownInvestmentComponent
-} from "@project/project-application/report/partner-report-detail-page/partner-report-financial-overview-tab/partner-breakdown-investment/partner-breakdown-investment.component";
+} from '@project/project-application/report/partner-report-detail-page/partner-report-financial-overview-tab/partner-breakdown-investment/partner-breakdown-investment.component';
 
 @NgModule({
   declarations: [
