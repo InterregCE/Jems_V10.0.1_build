@@ -16,7 +16,8 @@ import {Alert} from '@common/components/forms/alert';
 export class PartnerBreakdownLumpSumComponent implements OnChanges {
   Alert = Alert;
 
-  displayedColumns = ['name', 'totalEligibleBudget', 'previouslyReported', 'currentReport', 'totalReportedSoFar', 'totalReportedSoFarPercentage', 'remainingBudget'];
+  displayedColumns = ['name', 'totalEligibleBudget', 'previouslyReported', 'currentReport', 'totalReportedSoFar',
+    'totalReportedSoFarPercentage', 'remainingBudget', 'previouslyPaid'];
 
   readonly PERIOD_PREPARATION: number = 0;
   readonly PERIOD_CLOSURE: number = 255;

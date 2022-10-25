@@ -44,6 +44,7 @@ fun PartnerReportLumpSum.toEntity(
     total = total,
     current = BigDecimal.ZERO,
     previouslyReported = previouslyReported,
+    previouslyPaid = previouslyPaid,
 )
 
 fun PartnerReportUnitCostBase.toEntity(

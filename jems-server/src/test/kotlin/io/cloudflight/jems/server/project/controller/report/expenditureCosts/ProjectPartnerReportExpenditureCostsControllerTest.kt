@@ -105,6 +105,7 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
     private val dummyLumpSum = ProjectPartnerReportLumpSum(
         id = 18L,
         lumpSumProgrammeId = 140L,
+        fastTrack = false,
         period = 4,
         cost = BigDecimal.ONE,
         name = setOf(InputTranslation(SystemLanguage.EN, "EN lump sum"))

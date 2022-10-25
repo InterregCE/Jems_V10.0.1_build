@@ -8,6 +8,7 @@ fun List<PartnerReportLumpSumEntity>.toModel() = map {
     ProjectPartnerReportLumpSum(
         id = it.id,
         lumpSumProgrammeId = it.programmeLumpSum.id,
+        fastTrack = it.programmeLumpSum.isFastTrack,
         period = it.period,
         cost = it.total,
         name = it.programmeLumpSum.translatedValues.mapTo(HashSet()) { InputTranslation(it.translationId.language, it.name) },

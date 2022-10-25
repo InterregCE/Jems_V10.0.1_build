@@ -9,9 +9,6 @@ import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumTr
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportLumpSumEntity
 import io.cloudflight.jems.server.project.repository.report.expenditure.ProjectPartnerReportLumpSumRepository
-import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
-import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
-import io.cloudflight.jems.server.project.service.report.model.financialOverview.costCategory.ReportExpenditureCostCategory
 import io.cloudflight.jems.server.project.service.report.model.financialOverview.lumpSum.ExpenditureLumpSumBreakdownLine
 import io.mockk.clearMocks
 import io.mockk.every
@@ -53,6 +50,7 @@ class ProjectReportLumpSumPersistenceProviderTest : UnitTest() {
             total = BigDecimal.valueOf(10),
             current = BigDecimal.valueOf(20),
             previouslyReported = BigDecimal.valueOf(30),
+            previouslyPaid = BigDecimal.valueOf(40),
         )
 
         private val newValues = mapOf(90L to BigDecimal.TEN)
@@ -64,6 +62,7 @@ class ProjectReportLumpSumPersistenceProviderTest : UnitTest() {
             name = setOf(InputTranslation(SystemLanguage.EN, "lump sum name EN")),
             totalEligibleBudget = BigDecimal.valueOf(10),
             previouslyReported = BigDecimal.valueOf(30),
+            previouslyPaid = BigDecimal.valueOf(40),
             currentReport = BigDecimal.valueOf(20),
             totalReportedSoFar = BigDecimal.ZERO,
             totalReportedSoFarPercentage = BigDecimal.ZERO,

@@ -38,6 +38,7 @@ class PaymentInstallmentsValidatorTest : UnitTest() {
         private val installmentSaved = PaymentPartnerInstallment(
             id = 3L,
             fundId = 1L,
+            lumpSumId = 2L,
             amountPaid = BigDecimal.TEN,
             paymentDate = currentDate,
             comment = "comment",
@@ -69,6 +70,7 @@ class PaymentInstallmentsValidatorTest : UnitTest() {
             validator.validateInstallmentDeletion(listOf( PaymentPartnerInstallment(
                 id = 4L,
                 fundId = 65L,
+                lumpSumId = 6458L,
                 amountPaid = BigDecimal.TEN,
                 paymentDate = currentDate,
                 comment = "comment"
@@ -82,6 +84,7 @@ class PaymentInstallmentsValidatorTest : UnitTest() {
             validator.validateInstallmentDeletion(listOf(PaymentPartnerInstallment(
                 id = 4L,
                 fundId = 65L,
+                lumpSumId = 6459L,
                 amountPaid = BigDecimal.TEN,
                 paymentDate = currentDate,
                 isSavePaymentInfo = true

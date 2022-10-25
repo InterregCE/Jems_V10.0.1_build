@@ -185,6 +185,7 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
                         period = 0,
                         total = ONE,
                         previouslyReported = valueOf(7, 1),
+                        previouslyPaid = valueOf(7, 1),
                     ),
                 ),
                 unitCosts = setOf(PartnerReportUnitCostBase(

@@ -17,11 +17,13 @@ import io.cloudflight.jems.server.project.service.report.partner.financialOvervi
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureCostCategoryPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureInvestmentPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportLumpSumPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportUnitCostPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.generateCoFinCalculationInputData
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.getCurrentFrom
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown.calculateCurrent
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureInvestementsBreakdown.getCurrentForInvestments
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureLumpSumBreakdown.getCurrentForLumpSums
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureUnitCostBreakdown.getCurrentForUnitCosts
 import io.cloudflight.jems.server.project.service.report.partnerReportSubmitted
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
@@ -40,6 +42,7 @@ class SubmitProjectPartnerReport(
     private val reportExpenditureCoFinancingPersistence: ProjectReportExpenditureCoFinancingPersistence,
     private val reportContributionPersistence: ProjectReportContributionPersistence,
     private val reportLumpSumPersistence: ProjectReportLumpSumPersistence,
+    private val reportUnitCostPersistence: ProjectReportUnitCostPersistence,
     private val reportInvestmentPersistence: ProjectReportExpenditureInvestmentPersistence,
     private val auditPublisher: ApplicationEventPublisher,
 ) : SubmitProjectPartnerReportInteractor {
@@ -62,6 +65,7 @@ class SubmitProjectPartnerReport(
             report = report, partnerId = partnerId,
         )
         saveCurrentLumpSums(expenditures.getCurrentForLumpSums(), partnerId = partnerId, reportId)
+        saveCurrentUnitCosts(expenditures.getCurrentForUnitCosts(), partnerId = partnerId, reportId)
         saveCurrentInvestments(expenditures.getCurrentForInvestments(), partnerId = partnerId, reportId)
 
         return reportPersistence.submitReportById(
@@ -93,7 +97,7 @@ class SubmitProjectPartnerReport(
             .associateBy { it.code }
             .filterKeys { it in usedCurrencies }
 
-        val notExistingRates = usedCurrencies.minus(rates.keys).minus("EUR")
+        val notExistingRates = usedCurrencies.minus(rates.keys)
         if (notExistingRates.isNotEmpty())
             throw CurrencyRatesMissing(notExistingRates)
 
@@ -139,6 +143,14 @@ class SubmitProjectPartnerReport(
             partnerId = partnerId,
             reportId = reportId,
             currentlyReported = currentLumpSums,
+        )
+    }
+
+    private fun saveCurrentUnitCosts(currentUnitCosts: Map<Long, BigDecimal>, partnerId: Long, reportId: Long) {
+        reportUnitCostPersistence.updateCurrentlyReportedValues(
+            partnerId = partnerId,
+            reportId = reportId,
+            currentlyReported = currentUnitCosts,
         )
     }
 

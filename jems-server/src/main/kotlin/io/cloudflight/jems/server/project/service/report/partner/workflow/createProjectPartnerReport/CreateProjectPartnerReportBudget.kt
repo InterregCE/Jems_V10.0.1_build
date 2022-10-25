@@ -102,13 +102,15 @@ class CreateProjectPartnerReportBudget(
                 previouslyReported = calculatePreviouslyReportedForInvestmentId(investmentSummary.id, expenditureEntries)
             ) }.toList()
 
+        val installmentsPaid = paymentPersistence.findByPartnerId(partnerId).getOnlyPaid()
+
         return PartnerReportBudget(
             contributions = contributions,
             availableLumpSums = lumpSums
-                .onlyNonFastTrack()
                 .toPartnerReportLumpSums(
                     partnerId = partnerId,
                     previouslyReported = reportLumpSumPersistence.getLumpSumCumulative(submittedReportIds),
+                    previouslyPaid = installmentsPaid.byLumpSum(),
                 ),
             unitCosts = getSetOfUnitCostsWithTotalAndNumberOfUnits(
                 staffCosts
@@ -136,7 +138,7 @@ class CreateProjectPartnerReportBudget(
                     partnerTotal = budget.totalCosts,
                     contributions = contributions,
                     paymentReadyFastTrackLumpSums = sumOfPaymentReady,
-                    paymentPaid = paymentPersistence.findByPartnerId(partnerId).getPaidByFund(),
+                    paymentPaid = installmentsPaid.byFund(),
                 ),
             perInvestmentBudget = perInvestmentBudget,
         )
@@ -209,15 +211,26 @@ class CreateProjectPartnerReportBudget(
     private fun List<ProjectLumpSum>.toPartnerReportLumpSums(
         partnerId: Long,
         previouslyReported: Map<Int, BigDecimal>,
+        previouslyPaid: Map<Long, BigDecimal>,
     ) = map {
+        val lumpSumPartnerShare = it.lumpSumContributions.firstOrNull { it.partnerId == partnerId }?.amount ?: ZERO
+
+        var fromPrevious = previouslyReported.getOrDefault(it.orderNr, ZERO)
+        if (it.isReady()) {
+            fromPrevious += lumpSumPartnerShare
+        }
+
         PartnerReportLumpSum(
             lumpSumId = it.programmeLumpSumId,
             orderNr = it.orderNr,
             period = it.period,
-            total = it.lumpSumContributions.firstOrNull { it.partnerId == partnerId }?.amount ?: ZERO,
-            previouslyReported = previouslyReported.getOrDefault(it.orderNr, ZERO),
+            total = lumpSumPartnerShare,
+            previouslyReported = fromPrevious,
+            previouslyPaid = previouslyPaid.getOrDefault(it.programmeLumpSumId, ZERO),
         )
     }
+
+    private fun ProjectLumpSum.isReady() = fastTrack && readyForPayment
 
     private fun getSetOfUnitCostsWithTotalAndNumberOfUnits(
         budgetEntries: List<BaseBudgetEntry>,
@@ -361,10 +374,16 @@ class CreateProjectPartnerReportBudget(
         ).addExtraLumpSumValues(currentLumpSumValues)
     }
 
-    private fun List<PaymentPartnerInstallment>.getPaidByFund() =
-        filter { it.isPaymentConfirmed!! }
-            .groupBy { it.fundId }
+    private fun List<PaymentPartnerInstallment>.byFund() =
+        groupBy { it.fundId }
             .mapValues { (_, installments) -> installments.sumOf { it.amountPaid ?: ZERO } }
+
+    private fun List<PaymentPartnerInstallment>.byLumpSum() =
+        groupBy { it.lumpSumId }
+            .mapValues { (_, installments) -> installments.sumOf { it.amountPaid ?: ZERO } }
+
+    private fun List<PaymentPartnerInstallment>.getOnlyPaid() =
+        filter { it.isPaymentConfirmed!! }
 
     private fun BudgetCostsCalculationResultFull.addExtraPaymentReadyFastTrackLumpSums(
         paymentReadyFastTrackLumpSums: BigDecimal,
@@ -375,9 +394,7 @@ class CreateProjectPartnerReportBudget(
         )
     }
 
-    private fun Collection<ProjectLumpSum>.onlyNonFastTrack() = filter { !it.fastTrack }
-
-    private fun Collection<ProjectLumpSum>.onlyReadyForPayment() = filter { it.fastTrack && it.readyForPayment }
+    private fun Collection<ProjectLumpSum>.onlyReadyForPayment() = filter { it.isReady() }
 
     private fun Collection<ProjectLumpSum>.onlyContributionsOf(partnerId: Long) =
         flatMap { it.lumpSumContributions }.filter { it.partnerId == partnerId }

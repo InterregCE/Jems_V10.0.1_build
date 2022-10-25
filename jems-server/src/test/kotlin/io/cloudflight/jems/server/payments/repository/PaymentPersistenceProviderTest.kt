@@ -159,6 +159,7 @@ class PaymentPersistenceProviderTest: UnitTest() {
         private val installmentFirst = PaymentPartnerInstallment(
             id = 3L,
             fundId = fundId,
+            lumpSumId = lumpSumId,
             amountPaid = BigDecimal.TEN,
             paymentDate = currentDate.minusDays(3),
             comment = "comment",
