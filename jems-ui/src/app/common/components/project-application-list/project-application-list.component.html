@@ -28,8 +28,10 @@
             </jems-filter-autocomplete-input>
 
             <jems-filter-autocomplete-input
+                    [isDisabled] = "filterData.calls.size === 0"
                     [options]="filterData.calls"
                     [hasPartialLockingOfValues]="false"
+                    [tooltipContent]="filterData.calls.size > 0 ? '' : 'project.list.disabled.calls.filter' | translate"
                     formControlName="calls"
                     label="project.table.column.name.related">
             </jems-filter-autocomplete-input>

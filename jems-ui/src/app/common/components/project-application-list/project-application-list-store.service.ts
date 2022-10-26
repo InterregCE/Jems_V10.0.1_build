@@ -6,13 +6,15 @@ import {
   ProgrammePriorityService,
   ProgrammeSpecificObjectiveDTO,
   ProjectSearchRequestDTO,
-  ProjectService
+  ProjectService, UserRoleCreateDTO
 } from '@cat/api';
-import {BehaviorSubject, combineLatest, Observable, Subject} from 'rxjs';
+import {BehaviorSubject, combineLatest, Observable, of, Subject} from 'rxjs';
 import {MatSort} from '@angular/material/sort';
 import {map, startWith, switchMap, tap} from 'rxjs/operators';
 import {Tables} from '../../utils/tables';
 import {Log} from '../../utils/log';
+import {PermissionService} from '../../../security/permissions/permission.service';
+import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 
 @Injectable()
 export class ProjectApplicationListStore {
@@ -29,6 +31,7 @@ export class ProjectApplicationListStore {
 
   constructor(private projectService: ProjectService,
               private priorityService: ProgrammePriorityService,
+              private permissionService: PermissionService,
               private callService: CallService) {
     this.page$ = this.page(false);
     this.pageFilteredByOwner$ = this.page(true);
@@ -63,9 +66,10 @@ export class ProjectApplicationListStore {
   }
 
   private publishedCalls(): Observable<IdNamePairDTO[]> {
-    return this.callService.listCalls('PUBLISHED')
+    return this.permissionService.hasPermission(PermissionsEnum.CallRetrieve)
       .pipe(
-        tap(calls => Log.info('Fetched the found calls:', this, calls)),
-    );
+        switchMap(hasPermission => hasPermission ? this.callService.listCalls('PUBLISHED') : of([])),
+        tap(data => Log.info('Fetched the found calls:', this, data))
+      );
   }
 }

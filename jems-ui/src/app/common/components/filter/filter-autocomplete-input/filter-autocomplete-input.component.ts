@@ -25,6 +25,8 @@ export class FilterAutocompleteInputComponent extends FilterListInputComponent {
   isDisabled: boolean;
   @Input()
   hasPartialLockingOfValues: boolean;
+  @Input()
+  tooltipContent: String = '';
 
   disabled = false;
 
