@@ -1,11 +1,13 @@
 import {Injectable} from '@angular/core';
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {LanguageStore} from '@common/services/language-store.service';
-import {BehaviorSubject, Observable} from 'rxjs';
+import {BehaviorSubject, combineLatest, Observable} from 'rxjs';
 import {CategoryInfo, CategoryNode} from '@project/common/components/category-tree/categoryModels';
 import {map} from 'rxjs/operators';
 import {ExportCategoryTypeEnum} from '@project/project-application/export/export-category-type';
 import {ProjectPageTemplateStore} from '@project/project-page-template/project-page-template-store.service';
+import {PluginInfoDTO, PluginService} from '@cat/api';
+import {PluginType} from '@project/project-application/export/export-plugin-type';
 
 @Injectable()
 export class ExportPageStore {
@@ -17,32 +19,26 @@ export class ExportPageStore {
   projectTitle$ = this.projectStore.projectTitle$;
   fallBackLanguage = this.languageStore.getFallbackLanguageValue();
 
-  exportCategories$: Observable<CategoryNode>;
+  availablePlugins$: Observable<PluginType[]>;
   selectedCategory$ = new BehaviorSubject<CategoryInfo>({type: ExportCategoryTypeEnum.APPLICATION});
   projectCallType$ = this.projectStore.projectCallType$;
 
   constructor(private projectStore: ProjectStore,
               private languageStore: LanguageStore,
-              private projectVersionStore: ProjectPageTemplateStore) {
-    this.exportCategories$ = this.projectStore.projectTitle$.pipe(
-      map(projectTitle => ExportPageStore.getExportCategories(projectTitle))
-    );
+              private projectVersionStore: ProjectPageTemplateStore,
+              private pluginService: PluginService) {
+    this.availablePlugins$ = this.getExportPlugins();
   }
 
-  private static getExportCategories(projectTitle: string): CategoryNode {
-    return {
-      name: {i18nKey: projectTitle},
-      disabled: true,
-      children: [
-        {
-          name: {i18nKey: 'export.tree.type.application.form'},
-          info: {type: ExportCategoryTypeEnum.APPLICATION},
-        },
-        {
-          name: {i18nKey: 'export.tree.type.partner.budgets'},
-          info: {type: ExportCategoryTypeEnum.BUDGET},
-        }
-      ]
-    };
+  private getExportPlugins(): Observable<PluginType[]> {
+    return combineLatest([
+      this.pluginService.getAvailablePluginList(PluginInfoDTO.TypeEnum.APPLICATIONFORMEXPORT),
+      this.pluginService.getAvailablePluginList(PluginInfoDTO.TypeEnum.BUDGETEXPORT)
+    ]).pipe(
+      map(([appPlugins, budgetPlugins]) => [
+        ...appPlugins.map(plugin => ({type: ExportCategoryTypeEnum.APPLICATION, plugin} as PluginType)),
+        ...budgetPlugins.map(plugin => ({type: ExportCategoryTypeEnum.BUDGET, plugin} as PluginType))
+      ])
+    );
   }
 }

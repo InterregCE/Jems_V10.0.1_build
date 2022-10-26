@@ -34,7 +34,7 @@ internal class ExportBudgetTest : UnitTest() {
             budgetExportPlugin.export(1L, SystemLanguageData.EN, SystemLanguageData.DE)
         } returns exportResult
 
-        Assertions.assertThat(exportBudget.exportDataToCsv(1L, SystemLanguage.EN, SystemLanguage.DE))
+        Assertions.assertThat(exportBudget.exportDataToCsv(1L, SystemLanguage.EN, SystemLanguage.DE, null, pluginKey))
             .isEqualTo(exportResult)
     }
 }

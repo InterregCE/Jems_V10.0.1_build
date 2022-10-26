@@ -16,6 +16,8 @@ interface ProjectExportApi {
 
     companion object {
         private const val ENDPOINT_API_PROJECT_EXPORT = "/api/project/{projectId}/export"
+        private const val DEFAULT_APPLICATION_EXPORT_PLUGIN = "standard-application-form-export-plugin"
+        private const val DEFAULT_BUDGET_EXPORT_PLUGIN = "standard-budget-export-plugin"
     }
 
     @ApiOperation("Export budget data to csv file")
@@ -24,7 +26,8 @@ interface ProjectExportApi {
         @PathVariable projectId: Long,
         @RequestParam exportLanguage: SystemLanguage,
         @RequestParam inputLanguage: SystemLanguage,
-        @RequestParam(required = false) version: String? = null
+        @RequestParam(required = false) version: String? = null,
+        @RequestParam(required = false) pluginKey: String? = DEFAULT_BUDGET_EXPORT_PLUGIN,
     ): ResponseEntity<ByteArrayResource>
 
     @ApiOperation("Export application form data to pdf file")
@@ -34,6 +37,7 @@ interface ProjectExportApi {
         @RequestParam exportLanguage: SystemLanguage,
         @RequestParam inputLanguage: SystemLanguage,
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) localDateTime: LocalDateTime,
-        @RequestParam(required = false) version: String? = null
+        @RequestParam(required = false) version: String? = null,
+        @RequestParam(required = false) pluginKey: String? = DEFAULT_APPLICATION_EXPORT_PLUGIN,
     ): ResponseEntity<ByteArrayResource>
 }

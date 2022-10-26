@@ -57,6 +57,7 @@ internal class ExportApplicationFormTest : UnitTest() {
             inputLanguage = SystemLanguage.DE,
             localDateTime = localDateTime,
             version = "1",
+            pluginKey = pluginKey,
         ))
             .isEqualTo(exportResult)
     }

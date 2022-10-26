@@ -5,11 +5,17 @@ import io.cloudflight.jems.plugin.contract.export.ExportResult
 import java.time.LocalDateTime
 
 interface ExportApplicationFormInteractor {
+
+    companion object {
+        private const val DEFAULT_APPLICATION_EXPORT_PLUGIN = "standard-application-form-export-plugin"
+    }
+
     fun export(
         projectId: Long,
         exportLanguage: SystemLanguage,
         inputLanguage: SystemLanguage,
         localDateTime: LocalDateTime,
-        version: String? = null
+        version: String? = null,
+        pluginKey: String? = DEFAULT_APPLICATION_EXPORT_PLUGIN
     ): ExportResult
 }

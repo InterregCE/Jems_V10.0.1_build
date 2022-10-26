@@ -17,16 +17,28 @@ class ProjectExportController(
 ) : ProjectExportApi {
 
     override fun exportBudget(
-        projectId: Long, exportLanguage: SystemLanguage, inputLanguage: SystemLanguage, version: String?
+        projectId: Long,
+        exportLanguage: SystemLanguage,
+        inputLanguage: SystemLanguage,
+        version: String?,
+        pluginKey: String?,
     ): ResponseEntity<ByteArrayResource> =
-        exportBudget.exportDataToCsv(projectId, exportLanguage, inputLanguage, version).toResponseEntity()
+        exportBudget.exportDataToCsv(projectId, exportLanguage, inputLanguage, version, pluginKey).toResponseEntity()
 
     override fun exportApplicationForm(
         projectId: Long,
         exportLanguage: SystemLanguage,
         inputLanguage: SystemLanguage,
         localDateTime: LocalDateTime,
-        version: String?
+        version: String?,
+        pluginKey: String?,
     ): ResponseEntity<ByteArrayResource> =
-        exportApplicationForm.export(projectId, exportLanguage, inputLanguage, localDateTime, version).toResponseEntity()
+        exportApplicationForm.export(
+            projectId,
+            exportLanguage,
+            inputLanguage,
+            localDateTime,
+            version,
+            pluginKey
+        ).toResponseEntity()
 }
