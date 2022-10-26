@@ -202,6 +202,12 @@ fun callFundRate(fundId: Long) = CallFundRate(
     adjustable = true
 )
 
+fun callFundRateFixed(fundId: Long) = CallFundRate(
+    programmeFund = ProgrammeFund(id = fundId, selected = true),
+    rate = BigDecimal.TEN,
+    adjustable = false
+)
+
 fun callFundRateEntity(call: CallEntity, fundId: Long) = CallFundRateEntity(
     setupId = FundSetupId(call, ProgrammeFundEntity(id = fundId, selected = true)),
     rate = BigDecimal.TEN,

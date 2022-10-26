@@ -1,20 +1,35 @@
 package io.cloudflight.jems.server.project.service.partner.cofinancing.update_cofinancing
 
+import io.cloudflight.jems.api.call.dto.CallStatus
 import io.cloudflight.jems.api.call.dto.CallType
+import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjective
+import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
+import io.cloudflight.jems.api.programme.dto.strategy.ProgrammeStrategy
+import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO.AutomaticPublic
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO.Private
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO.Public
 import io.cloudflight.jems.server.call.callFund
+import io.cloudflight.jems.server.call.callFundRate
+import io.cloudflight.jems.server.call.callFundRateFixed
 import io.cloudflight.jems.server.call.service.CallPersistence
+import io.cloudflight.jems.server.call.service.model.CallApplicationFormFieldsConfiguration
+import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
+import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldSetting
-import io.cloudflight.jems.server.call.service.model.CallApplicationFormFieldsConfiguration
 import io.cloudflight.jems.server.call.service.model.FieldVisibilityStatus
 import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
+import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
+import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
+import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
+import io.cloudflight.jems.server.programme.service.priority.model.ProgrammeSpecificObjective
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPartnerCoFinancingPersistence
@@ -33,6 +48,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.math.BigDecimal
+import java.time.ZonedDateTime
 
 internal class UpdateCoFinancingInteractorTest {
 
@@ -44,11 +60,11 @@ internal class UpdateCoFinancingInteractorTest {
 
         private val financingOk = listOf(
             UpdateProjectPartnerCoFinancing(
-                percentage = BigDecimal.valueOf(40.5),
+                percentage = BigDecimal.valueOf(94.5),
                 fundId = null
             ),
             UpdateProjectPartnerCoFinancing(
-                percentage = BigDecimal.valueOf(59.5),
+                percentage = BigDecimal.valueOf(5.5),
                 fundId = 1
             )
         )
@@ -60,6 +76,158 @@ internal class UpdateCoFinancingInteractorTest {
                     FieldVisibilityStatus.STEP_ONE_AND_TWO
                 )
             )
+        )
+
+        private const val FUND_ID = 1L
+        private const val FUND_ID_SECOND = 2L
+        private const val FUND_ID_THIRD = 3L
+        private const val FUND_ID_FOURTH = 4L
+        private const val FUND_ID_FIFTH = 5L
+
+        private val callDetail = CallDetail(
+            id = 569L,
+            name = "existing call",
+            status = CallStatus.PUBLISHED,
+            type = CallType.STANDARD,
+            startDate = ZonedDateTime.now().minusDays(1),
+            endDateStep1 = null,
+            endDate = ZonedDateTime.now().plusDays(1),
+            isAdditionalFundAllowed = true,
+            lengthOfPeriod = 9,
+            description = setOf(
+                InputTranslation(language = SystemLanguage.EN, translation = "EN desc"),
+                InputTranslation(language = SystemLanguage.SK, translation = "SK desc"),
+            ),
+            objectives = listOf(
+                ProgrammePriority(
+                    code = "PRIO_CODE",
+                    objective = ProgrammeObjective.PO1,
+                    specificObjectives = listOf(
+                        ProgrammeSpecificObjective(ProgrammeObjectivePolicy.AdvancedTechnologies, "CODE_ADVA"),
+                        ProgrammeSpecificObjective(ProgrammeObjectivePolicy.Digitisation, "CODE_DIGI"),
+                    )
+                )
+            ),
+            strategies = sortedSetOf(ProgrammeStrategy.EUStrategyBalticSeaRegion, ProgrammeStrategy.AtlanticStrategy),
+            funds = sortedSetOf(callFundRate(FUND_ID), callFundRateFixed(FUND_ID_SECOND)),
+            flatRates = sortedSetOf(
+                ProjectCallFlatRate(
+                    type = FlatRateType.OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS,
+                    rate = 5,
+                    adjustable = true
+                ),
+            ),
+            lumpSums = listOf(
+                ProgrammeLumpSum(splittingAllowed = true, fastTrack = false),
+            ),
+            unitCosts = listOf(
+                ProgrammeUnitCost(projectId = null, isOneCostCategory = true),
+            ),
+            applicationFormFieldConfigurations = mutableSetOf(),
+            preSubmissionCheckPluginKey = null,
+            firstStepPreSubmissionCheckPluginKey = null,
+            projectDefinedUnitCostAllowed = false,
+            projectDefinedLumpSumAllowed = true,
+        )
+
+        private val callDetailsMaxFunds = CallDetail(
+            id = 569L,
+            name = "existing call",
+            status = CallStatus.PUBLISHED,
+            type = CallType.STANDARD,
+            startDate = ZonedDateTime.now().minusDays(1),
+            endDateStep1 = null,
+            endDate = ZonedDateTime.now().plusDays(1),
+            isAdditionalFundAllowed = true,
+            lengthOfPeriod = 9,
+            description = setOf(
+                InputTranslation(language = SystemLanguage.EN, translation = "EN desc"),
+                InputTranslation(language = SystemLanguage.SK, translation = "SK desc"),
+            ),
+            objectives = listOf(
+                ProgrammePriority(
+                    code = "PRIO_CODE",
+                    objective = ProgrammeObjective.PO1,
+                    specificObjectives = listOf(
+                        ProgrammeSpecificObjective(ProgrammeObjectivePolicy.AdvancedTechnologies, "CODE_ADVA"),
+                        ProgrammeSpecificObjective(ProgrammeObjectivePolicy.Digitisation, "CODE_DIGI"),
+                    )
+                )
+            ),
+            strategies = sortedSetOf(ProgrammeStrategy.EUStrategyBalticSeaRegion, ProgrammeStrategy.AtlanticStrategy),
+            funds = sortedSetOf(
+                callFundRate(FUND_ID),
+                callFundRateFixed(FUND_ID_SECOND),
+                callFundRate(FUND_ID_THIRD),
+                callFundRate(FUND_ID_FOURTH),
+                callFundRate(FUND_ID_FIFTH)
+            ),
+            flatRates = sortedSetOf(
+                ProjectCallFlatRate(
+                    type = FlatRateType.OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS,
+                    rate = 5,
+                    adjustable = true
+                ),
+            ),
+            lumpSums = listOf(
+                ProgrammeLumpSum(splittingAllowed = true, fastTrack = false),
+            ),
+            unitCosts = listOf(
+                ProgrammeUnitCost(projectId = null, isOneCostCategory = true),
+            ),
+            applicationFormFieldConfigurations = mutableSetOf(),
+            preSubmissionCheckPluginKey = null,
+            firstStepPreSubmissionCheckPluginKey = null,
+            projectDefinedUnitCostAllowed = false,
+            projectDefinedLumpSumAllowed = true,
+        )
+
+        private val callDetailsOneFund = CallDetail(
+            id = 569L,
+            name = "existing call",
+            status = CallStatus.PUBLISHED,
+            type = CallType.STANDARD,
+            startDate = ZonedDateTime.now().minusDays(1),
+            endDateStep1 = null,
+            endDate = ZonedDateTime.now().plusDays(1),
+            isAdditionalFundAllowed = true,
+            lengthOfPeriod = 9,
+            description = setOf(
+                InputTranslation(language = SystemLanguage.EN, translation = "EN desc"),
+                InputTranslation(language = SystemLanguage.SK, translation = "SK desc"),
+            ),
+            objectives = listOf(
+                ProgrammePriority(
+                    code = "PRIO_CODE",
+                    objective = ProgrammeObjective.PO1,
+                    specificObjectives = listOf(
+                        ProgrammeSpecificObjective(ProgrammeObjectivePolicy.AdvancedTechnologies, "CODE_ADVA"),
+                        ProgrammeSpecificObjective(ProgrammeObjectivePolicy.Digitisation, "CODE_DIGI"),
+                    )
+                )
+            ),
+            strategies = sortedSetOf(ProgrammeStrategy.EUStrategyBalticSeaRegion, ProgrammeStrategy.AtlanticStrategy),
+            funds = sortedSetOf(
+                callFundRate(FUND_ID)
+            ),
+            flatRates = sortedSetOf(
+                ProjectCallFlatRate(
+                    type = FlatRateType.OFFICE_AND_ADMINISTRATION_ON_OTHER_COSTS,
+                    rate = 5,
+                    adjustable = true
+                ),
+            ),
+            lumpSums = listOf(
+                ProgrammeLumpSum(splittingAllowed = true, fastTrack = false),
+            ),
+            unitCosts = listOf(
+                ProgrammeUnitCost(projectId = null, isOneCostCategory = true),
+            ),
+            applicationFormFieldConfigurations = mutableSetOf(),
+            preSubmissionCheckPluginKey = null,
+            firstStepPreSubmissionCheckPluginKey = null,
+            projectDefinedUnitCostAllowed = false,
+            projectDefinedLumpSumAllowed = true,
         )
 
     }
@@ -85,11 +253,13 @@ internal class UpdateCoFinancingInteractorTest {
 
     @Test
     fun `test percentage null`() {
+        every { callPersistence.getCallById(callId) } returns callDetail
         testWrongPercentage(percentages = listOf(null), errorMsg = "project.partner.coFinancing.percentage.invalid")
     }
 
     @Test
     fun `test negative percentage`() {
+        every { callPersistence.getCallById(callId) } returns callDetail
         testWrongPercentage(
             percentages = listOf(BigDecimal.valueOf(-1)),
             errorMsg = "project.partner.coFinancing.percentage.invalid"
@@ -98,6 +268,7 @@ internal class UpdateCoFinancingInteractorTest {
 
     @Test
     fun `test percentage over 100`() {
+        every { callPersistence.getCallById(callId) } returns callDetail
         testWrongPercentage(
             percentages = listOf(BigDecimal.valueOf(101)),
             errorMsg = "project.partner.coFinancing.percentage.invalid"
@@ -106,6 +277,7 @@ internal class UpdateCoFinancingInteractorTest {
 
     @Test
     fun `test percentage over 100 and combination`() {
+        every { callPersistence.getCallById(callId) } returns callDetail
         testWrongPercentage(
             percentages = listOf(BigDecimal.valueOf(101), BigDecimal.valueOf(50)),
             errorMsg = "project.partner.coFinancing.percentage.invalid"
@@ -114,6 +286,7 @@ internal class UpdateCoFinancingInteractorTest {
 
     @Test
     fun `test percentage wrong sum`() {
+        every { callPersistence.getCallById(callId) } returns callDetail
         testWrongPercentage(
             percentages = listOf(BigDecimal.valueOf(45), BigDecimal.valueOf(56)),
             errorMsg = "project.partner.coFinancing.sum.invalid"
@@ -139,6 +312,7 @@ internal class UpdateCoFinancingInteractorTest {
 
     @Test
     fun `test wrong amount of fundIds - 2 nulls`() {
+        every { callPersistence.getCallById(callId) } returns callDetail
         every { persistence.getAvailableFunds(partnerId) } returns setOf(callFund(101L), callFund(102L), callFund(103L))
         val testCoFinancing = listOf(
             UpdateProjectPartnerCoFinancing(
@@ -159,6 +333,7 @@ internal class UpdateCoFinancingInteractorTest {
 
     @Test
     fun `test success on partner contribution if disabled in configuration`() {
+        every { callPersistence.getCallById(callId) } returns callDetail
         val partnerContributions = listOf(
             ProjectPartnerContribution(name = null, amount = BigDecimal.TEN, status = Public, isPartner = true)
         )
@@ -172,7 +347,7 @@ internal class UpdateCoFinancingInteractorTest {
             )
         )
         every { callPersistence.getApplicationFormFieldConfigurations(callId) } returns afConfigurationNoContrib
-        every { persistence.getAvailableFunds(partnerId) } returns setOf(callFund(1L))
+        every { persistence.getAvailableFunds(partnerId) } returns setOf(callFund(1L), callFund(2L))
         val result = ProjectPartnerCoFinancingAndContribution(emptyList(), partnerContributions, "")
         every { persistence.updateCoFinancingAndContribution(partnerId, financingOk, partnerContributions) } returns result
 
@@ -181,6 +356,7 @@ internal class UpdateCoFinancingInteractorTest {
 
     @Test
     fun `test exception on partner contribution if disabled in configuration`() {
+        every { callPersistence.getCallById(callId) } returns callDetail
         val partnerContributions = listOf(
             ProjectPartnerContribution(name = null, amount = BigDecimal.TEN, isPartner = true, status = Public),
             ProjectPartnerContribution(name = null, amount = BigDecimal.TEN, isPartner = false, status = Public)
@@ -204,15 +380,16 @@ internal class UpdateCoFinancingInteractorTest {
 
     @Test
     fun `test wrong amount of fundIds - no any null`() {
+        every { callPersistence.getCallById(callId) } returns callDetailsOneFund
         ignoreFundIdsRetrieval()
         val testCoFinancing = listOf(
             UpdateProjectPartnerCoFinancing(
-                percentage = BigDecimal.valueOf(20),
-                fundId = 10
+                percentage = BigDecimal.valueOf(10),
+                fundId = 1
             ),
             UpdateProjectPartnerCoFinancing(
-                percentage = BigDecimal.valueOf(80),
-                fundId = 11
+                percentage = BigDecimal.valueOf(90),
+                fundId = 2
             )
         )
 
@@ -224,6 +401,7 @@ internal class UpdateCoFinancingInteractorTest {
 
     @Test
     fun `test duplicate fundIds - no any null`() {
+        every { callPersistence.getCallById(callId) } returns callDetail
         every { persistence.getAvailableFunds(1L) } returns setOf(callFund(101L), callFund(102L), callFund(103L))
 
         val testCoFinancing = listOf(
@@ -233,11 +411,11 @@ internal class UpdateCoFinancingInteractorTest {
             ),
             UpdateProjectPartnerCoFinancing(
                 percentage = BigDecimal.valueOf(30),
-                fundId = 555
+                fundId = 1
             ),
             UpdateProjectPartnerCoFinancing(
                 percentage = BigDecimal.valueOf(50),
-                fundId = 555
+                fundId = 1
             )
         )
 
@@ -248,13 +426,40 @@ internal class UpdateCoFinancingInteractorTest {
     }
 
     @Test
+    fun `test non-fixed percentage when it should be fixed`() {
+        every { callPersistence.getCallById(callId) } returns callDetail
+        every { persistence.getAvailableFunds(1L) } returns setOf(callFund(1L), callFund(2L))
+
+        val testCoFinancing = listOf(
+            UpdateProjectPartnerCoFinancing(
+                percentage = BigDecimal.valueOf(82),
+                fundId = null
+            ),
+            UpdateProjectPartnerCoFinancing(
+                percentage = BigDecimal.valueOf(10),
+                fundId = 1
+            ),
+            UpdateProjectPartnerCoFinancing(
+                percentage = BigDecimal.valueOf(8),
+                fundId = 2
+            )
+        )
+
+        val ex = assertThrows<I18nValidationException> {
+            updateCoFinancing.updateCoFinancing(1L, testCoFinancing, emptyList())
+        }
+        assertThat(ex.i18nKey).isEqualTo("project.partner.coFinancing.fixed.percentage.invalid")
+    }
+
+    @Test
     fun `wrong amount of funds - more than MAX`() {
+        every { callPersistence.getCallById(callId) } returns callDetailsMaxFunds
         every { persistence.getAvailableFunds(1L) } returns setOf(
-            callFund(101L),
-            callFund(102L),
-            callFund(103L),
-            callFund(104L),
-            callFund(105L)
+            callFund(1L),
+            callFund(2L),
+            callFund(3L),
+            callFund(4L),
+            callFund(5L)
         )
 
         val testCoFinancing = listOf(
@@ -264,23 +469,23 @@ internal class UpdateCoFinancingInteractorTest {
             ),
             UpdateProjectPartnerCoFinancing(
                 percentage = BigDecimal.valueOf(20),
-                fundId = 101
+                fundId = 1
             ),
             UpdateProjectPartnerCoFinancing(
                 percentage = BigDecimal.valueOf(10),
-                fundId = 102
+                fundId = 2
             ),
             UpdateProjectPartnerCoFinancing(
                 percentage = BigDecimal.valueOf(10),
-                fundId = 103
+                fundId = 3
             ),
             UpdateProjectPartnerCoFinancing(
                 percentage = BigDecimal.valueOf(10),
-                fundId = 104
+                fundId = 4
             ),
             UpdateProjectPartnerCoFinancing(
                 percentage = BigDecimal.valueOf(10),
-                fundId = 105
+                fundId = 5
             ),
         )
 
@@ -292,7 +497,8 @@ internal class UpdateCoFinancingInteractorTest {
 
     @Test
     fun `wrong amount of funds - not enough funds available MAX`() {
-        every { persistence.getAvailableFunds(1L) } returns setOf(callFund(101L))
+        every { callPersistence.getCallById(callId) } returns callDetailsOneFund
+        every { persistence.getAvailableFunds(1L) } returns setOf(callFund(1L))
 
         val testCoFinancing = listOf(
             UpdateProjectPartnerCoFinancing(
@@ -301,11 +507,11 @@ internal class UpdateCoFinancingInteractorTest {
             ),
             UpdateProjectPartnerCoFinancing(
                 percentage = BigDecimal.valueOf(30),
-                fundId = 101
+                fundId = 1
             ),
             UpdateProjectPartnerCoFinancing(
                 percentage = BigDecimal.valueOf(30),
-                fundId = 102
+                fundId = 2
             ),
         )
 
@@ -317,6 +523,7 @@ internal class UpdateCoFinancingInteractorTest {
 
     @Test
     fun `update financing forbidden or not-existing fund`() {
+        every { callPersistence.getCallById(callId) } returns callDetail
         every { persistence.getAvailableFunds(partnerId) } returns setOf(callFund(fund.id))
 
         val toSave = listOf(
@@ -337,6 +544,7 @@ internal class UpdateCoFinancingInteractorTest {
 
     @Test
     fun `update financing OK and 1 contribution OK`() {
+        every { callPersistence.getCallById(callId) } returns callDetail
         every { persistence.getAvailableFunds(1) } returns setOf(callFund(fund.id))
 
         val slotFinances = slot<List<UpdateProjectPartnerCoFinancing>>()
@@ -360,17 +568,18 @@ internal class UpdateCoFinancingInteractorTest {
         assertThat(slotFinances.captured).containsExactlyInAnyOrder(
             UpdateProjectPartnerCoFinancing(
                 fundId = fund.id,
-                percentage = BigDecimal.valueOf(59.5)
+                percentage = BigDecimal.valueOf(5.5)
             ),
             UpdateProjectPartnerCoFinancing(
                 fundId = null,
-                percentage = BigDecimal.valueOf(40.5)
+                percentage = BigDecimal.valueOf(94.5)
             )
         )
     }
 
     @Test
     fun `update financing OK and contribution - wrong partner numbers`() {
+        every { callPersistence.getCallById(callId) } returns callDetail
         every { persistence.getAvailableFunds(partnerId) } returns setOf(callFund(fund.id))
 
         val toSave = listOf(
@@ -387,6 +596,7 @@ internal class UpdateCoFinancingInteractorTest {
 
     @Test
     fun `update financing OK and contribution - wrong partner status`() {
+        every { callPersistence.getCallById(callId) } returns callDetail
         every { persistence.getAvailableFunds(partnerId) } returns setOf(callFund(fund.id))
 
         val toSave = listOf(
@@ -407,6 +617,7 @@ internal class UpdateCoFinancingInteractorTest {
 
     @Test
     fun `update financing OK and contribution - missing name`() {
+        every { callPersistence.getCallById(callId) } returns callDetail
         every { persistence.getAvailableFunds(partnerId) } returns setOf(callFund(fund.id))
 
         val toSave = listOf(
@@ -427,6 +638,7 @@ internal class UpdateCoFinancingInteractorTest {
 
     @Test
     fun `update financing OK and contribution - missing status`() {
+        every { callPersistence.getCallById(callId) } returns callDetail
         every { persistence.getAvailableFunds(partnerId) } returns setOf(callFund(fund.id))
 
         val toSave = listOf(
@@ -441,6 +653,7 @@ internal class UpdateCoFinancingInteractorTest {
 
     @Test
     fun `update financing OK and contribution - missing amount`() {
+        every { callPersistence.getCallById(callId) } returns callDetail
         every { persistence.getAvailableFunds(partnerId) } returns setOf(callFund(fund.id))
 
         val toSave = listOf(
@@ -455,6 +668,7 @@ internal class UpdateCoFinancingInteractorTest {
 
     @Test
     fun `update financing OK and contribution - amount 0`() {
+        every { callPersistence.getCallById(callId) } returns callDetail
         every { persistence.getAvailableFunds(partnerId) } returns setOf(callFund(fund.id))
 
         val toSave = listOf(
@@ -479,17 +693,18 @@ internal class UpdateCoFinancingInteractorTest {
         assertThat(slotFinances.captured).containsExactlyInAnyOrder(
             UpdateProjectPartnerCoFinancing(
                 fundId = fund.id,
-                percentage = BigDecimal.valueOf(59.5)
+                percentage = BigDecimal.valueOf(5.5)
             ),
             UpdateProjectPartnerCoFinancing(
                 fundId = null,
-                percentage = BigDecimal.valueOf(40.5)
+                percentage = BigDecimal.valueOf(94.5)
             )
         )
     }
 
     @Test
     fun `test exception on SPF partner contribution if disabled in configuration`() {
+        every { callPersistence.getCallById(callId) } returns callDetail
         val partnerSpfContributions = listOf(
             ProjectPartnerContributionSpf(name = null, amount = BigDecimal.TEN, status = Public),
             ProjectPartnerContributionSpf(name = null, amount = BigDecimal.ONE, status = Private)
@@ -513,6 +728,7 @@ internal class UpdateCoFinancingInteractorTest {
 
     @Test
     fun `update financing SPF OK and contribution - missing amount`() {
+        every { callPersistence.getCallById(callId) } returns callDetail
         every { persistence.getAvailableFunds(partnerId) } returns setOf(callFund(fund.id))
 
         val toSave = listOf(
@@ -527,6 +743,7 @@ internal class UpdateCoFinancingInteractorTest {
 
     @Test
     fun updateSpfCoFinancing() {
+        every { callPersistence.getCallById(callId) } returns callDetail
         every { persistence.getAvailableFunds(partnerId) } returns setOf(callFund(fund.id))
         val updateFinance1 = UpdateProjectPartnerCoFinancing(fundId = 1, percentage = BigDecimal.valueOf(40))
         val updateFinance2 = UpdateProjectPartnerCoFinancing(fundId = null, percentage = BigDecimal.valueOf(60))
