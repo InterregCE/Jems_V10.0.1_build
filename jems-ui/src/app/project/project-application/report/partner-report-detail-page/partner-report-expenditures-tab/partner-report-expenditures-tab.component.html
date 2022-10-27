@@ -1,9 +1,9 @@
 <div *ngIf="data$ | async as data">
     <jems-form (save)="updateReportExpenditures()"
                (discard)="refreshListOfExpenditures()">
+        <h3>{{'project.application.partner.report.expenditures.title' | translate}}</h3>
+        <p>{{'project.application.partner.report.expenditures.currencies.info.message' | translate}}</p>
         <form jemsFormLayout [formGroup]="reportExpendituresForm">
-            <h3>{{'project.application.partner.report.expenditures.title' | translate}}</h3>
-            <span> {{'project.application.partner.report.expenditures.currencies.info.message' | translate}}</span>
             <div id="table-container" jemsNoWidthLimit *ngIf="tableData.length > 0">
                 <jems-multi-language-container>
                     <mat-table jemsNoWidthLimit

@@ -1,8 +1,9 @@
 <ng-container *ngIf="savedContribution$ | async as savedContribution">
     <jems-form (save)="saveForm()"
                (discard)="refreshContributions()">
+        <h3 class="mb5">{{'project.application.partner.report.contribution.tab.subtitle' | translate}}</h3>
+        <p>{{'project.application.partner.report.contribution.tab.hint' | translate}}</p>
         <form jemsFormLayout [formGroup]="contributionForm">
-            <h3 class="mb5">{{'project.application.partner.report.contribution.tab.subtitle' | translate}}</h3>
             <mat-table jemsNoWidthLimit
                        id="contributions-table"
                        [dataSource]="tableData"
