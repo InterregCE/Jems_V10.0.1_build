@@ -48,6 +48,7 @@
                                     infoText="{{ 'payments.detail.table.header.amount.approved.contextinfo' | adaptTranslationKeyByCallType | async | translate }}">
                             </jems-context-info>
                         </div>
+                        <div class="column-amount-approved justify-end">{{ 'payments.detail.table.header.installment.amount.remaining' | translate }}</div>
                         <div class="column-add-payment"><!-- Empty - just for alignment reasons --></div>
                     </div>
 
@@ -55,42 +56,58 @@
                         [formArrayName]="constants.FORM_CONTROL_NAMES.partnerPayments">
 
                         <div [formGroupName]="index" jemsMultiColumnRow class="table-row full-payment-row">
-                            <div class="column-partner-id justify-start">{{partnerPayment.partnerType === 'LEAD_PARTNER' ? 'LP' : 'PP' + partnerPayment.partnerNumber}}</div>
+                            <div class="column-partner-id justify-start">
+                                <span matTooltip="{{'payments.payment.to.project.table.indicator.tooltip' | translate}}"
+                                      [matTooltipDisabled]="!this.showPaymentIndicatorForIndex(index)">
+                                    {{partnerPayment.partnerType === 'LEAD_PARTNER' ? 'LP' : 'PP' + partnerPayment.partnerNumber}}
+                                    <mat-icon *ngIf="this.showPaymentIndicatorForIndex(index)" class="open-payment-indicator">circle</mat-icon>
+                                </span>
+                            </div>
                             <div class="column-partner-name justify-left">{{partnerPayment.partnerAbbreviation}}</div>
                             <div class="column-amount-approved justify-end">{{partnerPayment.amountApproved | asMoney}}</div>
-                            <div *ngIf="installmentsArray(index).length === 0">
-                                <button mat-stroked-button (click)="addInstallmentButtonClicked(null, index);">
-                                    + {{'payments.detail.table.header.add.detail.button' | translate}}
+                            <div class="column-payments-remaining justify-end">{{this.computeAvailableSum(index) | asMoney}}</div>
+                            <div class="column-action-buttons justify-end">
+                                <button mat-stroked-button *ngIf="installmentsArray(index).length === 0"
+                                        (click)="addInstallmentButtonClicked(null, index);
+                                                 togglePaymentRowAtIndex(index);
+                                                 $event.stopPropagation();">
+                                        + {{'payments.detail.table.header.installment.add.button' | translate}}
+                                </button>
+                                <button mat-icon-button *ngIf="installmentsArray(index).length" class="button-expand"
+                                        (click)="togglePaymentRowAtIndex(index)">
+                                    <mat-icon>expand_more</mat-icon>
                                 </button>
                             </div>
                         </div>
-                        <div class="installment-table-container" *ngIf="installmentsArray(index).length">
-                            <div id="installments-table" jemsNoWidthLimit
+                        <div #installmentsTableContainer class="installments-table-container"
+                            [ngClass]="{'expanded' : getPaymentRowToggleStateAtIndex(index)}">
+                            <div *ngIf="installmentsArray(index).length"
+                                 class="installments-table table-condensed" jemsNoWidthLimit
                                  [jemsTableConfig]="constants.columnsWidths">
                                 <div class="table-row">
                                     <div class="column-installment-number justify-start">{{ 'payments.detail.table.header.installment.installment.number' | translate }}</div>
                                     <div class="column-installment-amount-paid justify-end" >{{ 'payments.detail.table.header.installment.amount.paid' | translate }}</div>
                                     <div class="column-installment-date justify-start">{{ 'payments.detail.table.header.installment.payment.date' | translate }}</div>
-                                    <div jemsText class="column-installment-comment">{{ 'payments.detail.table.header.installment.comment' | translate }}</div>
-                                    <div jemsText class="column-installment-authorise-checkbox justify-center">
+                                    <div class="column-installment-comment">{{ 'payments.detail.table.header.installment.comment' | translate }}</div>
+                                    <div class="column-installment-authorise-checkbox justify-center">
                                         {{ 'payments.detail.table.header.installment.save.payment.info' | translate }}
                                         <jems-context-info
                                                 infoPosition="right"
                                                 infoText="{{ 'payments.detail.table.header.installment.user.saving.payment.contextinfo' | adaptTranslationKeyByCallType | async | translate }}">
                                         </jems-context-info>
                                     </div>
-                                    <div jemsText class="column-installment-authorise-user justify-start">{{ 'payments.detail.table.header.installment.user.saving.payment.info' | translate }}</div>
-                                    <div jemsText class="column-installment-authorise-date justify-start">{{ 'payments.detail.table.header.installment.save.payment.date' | translate }}</div>
-                                    <div jemsText class="column-installment-confirm-checkbox justify-center">
+                                    <div class="column-installment-authorise-user justify-start">{{ 'payments.detail.table.header.installment.user.saving.payment.info' | translate }}</div>
+                                    <div class="column-installment-authorise-date justify-start">{{ 'payments.detail.table.header.installment.save.payment.date' | translate }}</div>
+                                    <div class="column-installment-confirm-checkbox justify-center">
                                         {{ 'payments.detail.table.header.installment.confirm.payment' | translate }}
                                         <jems-context-info
                                                 infoPosition="right"
                                                 infoText="{{ 'payments.detail.table.header.installment.confirm.payment.contextinfo' | adaptTranslationKeyByCallType | async | translate }}">
                                         </jems-context-info>
                                     </div>
-                                    <div jemsText class="column-installment-confirm-user justify-start">{{ 'payments.detail.table.header.installment.user.confirming.payment' | translate }}</div>
-                                    <div jemsText class="column-installment-confirm-date justify-start">{{ 'payments.detail.table.header.installment.payment.confirmation.date' | translate }}</div>
-                                    <div jemsText class="column-installment-delete justify-center">{{ 'common.delete.entry' | translate }}</div>
+                                    <div class="column-installment-confirm-user justify-start">{{ 'payments.detail.table.header.installment.user.confirming.payment' | translate }}</div>
+                                    <div class="column-installment-confirm-date justify-start">{{ 'payments.detail.table.header.installment.payment.confirmation.date' | translate }}</div>
+                                    <div class="column-installment-delete justify-center">{{ 'common.delete.entry' | translate }}</div>
                                 </div>
 
                                 <ng-container [formGroupName]="index">

@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import {combineLatest, Observable, of, Subject} from 'rxjs';
 import {OutputUser, PaymentDetailDTO, PaymentPartnerDTO, PaymentPartnerInstallmentDTO, UserDTO} from '@cat/api';
 import {PaymentsToProjectPageStore} from '../payments-to-projects-page.store';
@@ -38,6 +38,7 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
   columnsToDisplay = ['partner', 'partnerName', 'amountApproved', 'addInstallment'];
   updateInstallmentsError$ = new Subject<HttpErrorResponse | null>();
   updateInstallmentsSuccess$ = new Subject<boolean>();
+  toggleStatesOfPaymentRows:boolean[] = [];
 
   partnerPaymentsForm = this.formBuilder.group({
     id: '',
@@ -106,6 +107,8 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
     this.partnerPayments.clear();
 
     paymentDetail.partnerPayments.forEach((partnerPayment, index) => this.addPartnerPayment(partnerPayment, index));
+
+    this.updateAllPaymentRowToggleStates();
   }
 
   addInstallment(installment: PaymentPartnerInstallmentDTO | null, paymentIndex: number): void {
@@ -224,6 +227,7 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
   removeItem(paymentIndex: number, installmentIndex: number) {
     this.installmentsArray(paymentIndex).removeAt(installmentIndex);
     this.formService.setDirty(true);
+    this.updateAllPaymentRowToggleStates();
   }
 
   isPaymentAuthorised(paymentIndex: number, installmentIndex: number): boolean {
@@ -272,4 +276,37 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
   getFormattedDate(value: string): any {
     return this.localeDatePipe.transform(value);
   }
+
+  togglePaymentRowAtIndex(index:number): void {
+    this.toggleStatesOfPaymentRows[index] = !this.toggleStatesOfPaymentRows[index];
+  }
+
+  getPaymentRowToggleStateAtIndex(index: number) :boolean {
+    return this.toggleStatesOfPaymentRows[index];
+  }
+
+  updateAllPaymentRowToggleStates(): void {
+    if (!this.toggleStatesOfPaymentRows.length) {
+      this.toggleStatesOfPaymentRows = new Array(this.partnerPayments.length).fill(false);
+    }
+    else {
+      this.toggleStatesOfPaymentRows.forEach((toggleState, index) => {
+        if (!this.installmentsArray(index).length)
+          this.toggleStatesOfPaymentRows[index] = false;
+      });
+    }
+  }
+
+  showPaymentIndicatorForIndex(paymentIndex:number): boolean {
+    if (this.computeAvailableSum(paymentIndex) > 0)
+      return true;
+    else {
+      for (let i=0; i<this.installmentsArray(paymentIndex).length; i++) {
+        if (!this.isPaymentConfirmed(paymentIndex, i))
+          return true;
+      }
+    }
+    return false;
+  }
+
 }

@@ -5,12 +5,16 @@ table {
 }
 .full-payment-row {
   border-top: 1px solid var(--light-blue-gray);
+  transition: height 0.3s ease-in-out;
 }
 .table-row {
   padding: 0.5rem 0;
-  max-width: 100%;
+
   > :first-child {
     padding-left: 1rem
+  }
+  > :last-child {
+    padding-right: 1rem;
   }
   > * {
     padding: 0.5rem;
@@ -19,25 +23,36 @@ table {
 
 // payment columns
 .column-partner-id {
-  font-weight: var(--body-strong-font-weight);
-  min-width: 4rem !important;
-  max-width: 4rem !important;
+  min-width: 4rem;
+  max-width: 4rem;
+
+  .open-payment-indicator {
+    width: 0 !important;
+    height: 0 !important;
+    overflow: visible;
+
+    font-size: 0.67em;
+    color: var(--accent-color);
+  }
 }
 .column-partner-name {
-  font-weight: var(--body-strong-font-weight);
-  min-width: 9rem !important;
-  max-width: 100% !important;
+  min-width: 9rem;
+  max-width: 100%;
   width: auto;
 }
-.column-amount-approved {
-  min-width: 9rem !important;
-  max-width: 9rem !important;
+.column-amount-approved, .column-payments-remaining {
+  min-width: 9rem;
+  max-width: 9rem;
 }
 .column-add-payment {
-  min-width: 9rem !important;
-  max-width: 100% !important;
+  min-width: 9rem;
+  max-width: 100%;
   width: auto;
 }
+.column-action-buttons {
+  flex-grow: 1 !important;
+}
+
 
 
 .colored-row {
@@ -56,7 +71,6 @@ table {
 .mat-datepicker-input.placeholder-required::placeholder {
   color: var(--error-color) !important;
 }
-
 
 .icon-back {
   font-size: 2rem;
@@ -84,8 +98,21 @@ table {
   width: 100%;
   background-color: var(--light-blue-gray);
 }
-.installment-table-container {
-  padding: 0 1rem 0.5rem 12rem;
+.installments-table-container {
+  position: relative;
+  background-color: var(--background);
+  overflow: hidden;
+
+  max-height: 0;
+  padding: 0 1rem 0 12rem;
+
+  transition: max-height 0.25s ease-out, padding 0.3s ease-out;
+
+  &.expanded {
+    max-height: 25rem;
+    box-shadow: inset 0px 10px 16px -10px rgba(0,0,0,0.25), inset 0px -10px 16px -10px rgba(0,0,0,0.25);
+    padding: 1rem 1rem 1rem 12rem;
+  }
 }
 .footer-with-button {
   background: none !important;
@@ -97,3 +124,4 @@ jems-payments-to-project-attachments {
   display: inline-block;
   padding-top: 1rem;
 }
+

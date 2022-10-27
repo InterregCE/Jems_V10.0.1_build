@@ -19,6 +19,9 @@ export class PaymentsToProjectPageComponent implements OnInit, AfterViewInit {
   @ViewChild('remainingToBePaidCell', {static: true})
   remainingToBePaidCell: TemplateRef<any>;
 
+  @ViewChild('idCell', {static: true})
+  idCell: TemplateRef<any>;
+
   data$: Observable<{
     userCanView: boolean;
     page: PagePaymentToProjectDTO;
@@ -50,6 +53,7 @@ export class PaymentsToProjectPageComponent implements OnInit, AfterViewInit {
           elementProperty: 'id',
           sortProperty: 'id',
           columnWidth: ColumnWidth.IdColumn,
+          customCellTemplate: this.idCell,
         },
         {
           displayedColumn: 'payments.payment.to.project.table.column.payment.type',
@@ -67,7 +71,7 @@ export class PaymentsToProjectPageComponent implements OnInit, AfterViewInit {
           displayedColumn: 'payments.payment.to.project.table.column.project.acronym',
           elementProperty: 'projectAcronym',
           sortProperty: 'projectAcronym',
-          columnWidth: ColumnWidth.ChipColumn,
+          columnWidth: ColumnWidth.WideColumn,
         },
         {
           displayedColumn: 'payments.payment.to.project.table.column.payment.claim.no',
@@ -86,7 +90,7 @@ export class PaymentsToProjectPageComponent implements OnInit, AfterViewInit {
         {
           displayedColumn: 'payments.payment.to.project.table.column.payment.claim.approval.date',
           columnType: ColumnType.DateOnlyColumn,
-          columnWidth: ColumnWidth.WideColumn,
+          columnWidth: ColumnWidth.DateColumn,
           elementProperty: 'paymentApprovalDate',
           infoMessage: 'payments.payment.to.project.table.column.payment.claim.approval.date.info'
         },
@@ -94,28 +98,28 @@ export class PaymentsToProjectPageComponent implements OnInit, AfterViewInit {
           displayedColumn: 'payments.payment.to.project.table.column.total.eligible.amount',
           elementProperty: 'totalEligibleAmount',
           columnWidth: ColumnWidth.ChipColumn,
-          columnType: ColumnType.DecimalWithJustifiedStart,
+          columnType: ColumnType.Decimal,
           infoMessage: 'payments.payment.to.project.table.column.total.eligible.amount.info'
         },
         {
           displayedColumn: 'payments.payment.to.project.table.column.fund',
           elementProperty: 'fundName',
           sortProperty: 'fund.type',
-          columnWidth: ColumnWidth.SmallColumn,
+          columnWidth: ColumnWidth.MediumColumn,
           infoMessage: 'payments.payment.to.project.table.column.fund.info'
         },
         {
           displayedColumn: 'payments.payment.to.project.table.column.amount.approved.per.fund',
           elementProperty: 'amountApprovedPerFund',
           columnWidth: ColumnWidth.ChipColumn,
-          columnType: ColumnType.DecimalWithJustifiedStart,
+          columnType: ColumnType.Decimal,
           infoMessage: 'payments.payment.to.project.table.column.amount.approved.per.fund.info'
         },
         {
           displayedColumn: 'payments.payment.to.project.table.column.amount.paid.per.fund',
           elementProperty: 'amountPaidPerFund',
           columnWidth: ColumnWidth.ChipColumn,
-          columnType: ColumnType.DecimalWithJustifiedStart
+          columnType: ColumnType.Decimal
         },
         {
           displayedColumn: 'payments.payment.to.project.table.column.last.payment.date',
@@ -125,7 +129,7 @@ export class PaymentsToProjectPageComponent implements OnInit, AfterViewInit {
         },
         {
           displayedColumn: 'payments.payment.to.project.table.column.remaining.to.be.paid',
-          columnType: ColumnType.CustomComponent,
+          columnType: ColumnType.Decimal,
           columnWidth: ColumnWidth.ChipColumn,
           customCellTemplate: this.remainingToBePaidCell
         }
