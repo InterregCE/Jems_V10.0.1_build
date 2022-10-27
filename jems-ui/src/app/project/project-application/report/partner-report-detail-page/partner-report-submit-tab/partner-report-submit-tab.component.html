@@ -10,6 +10,9 @@
     <div *ngIf="!data.userCanEditReport">
         <p>{{'project.application.partner.report.submit.description.view.mode' | translate}}</p>
     </div>
+    <jems-alert show="true" [type]="Alert.INFO" [closable]="false">
+        <span>{{'project.application.partner.report.alert.info' | translate}}</span>
+    </jems-alert>
 
     <div jemsNoWidthLimit>
         <jems-pending-button *ngIf="data.userCanEditReport && data.reportStatus === StatusEnum.Draft"
