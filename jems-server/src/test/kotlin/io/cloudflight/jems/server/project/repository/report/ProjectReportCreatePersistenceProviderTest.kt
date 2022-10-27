@@ -18,11 +18,11 @@ import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeL
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportCoFinancingEntity
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.contribution.ProjectPartnerReportContributionEntity
+import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportInvestmentEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportLumpSumEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportUnitCostEntity
 import io.cloudflight.jems.server.project.entity.report.financialOverview.ReportProjectPartnerExpenditureCoFinancingEntity
 import io.cloudflight.jems.server.project.entity.report.financialOverview.ReportProjectPartnerExpenditureCostCategoryEntity
-import io.cloudflight.jems.server.project.entity.report.financialOverview.ReportProjectPartnerExpenditureInvestmentEntity
 import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportBudgetPerPeriodEntity
 import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportIdentificationEntity
 import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportIdentificationTargetGroupEntity
@@ -31,11 +31,11 @@ import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerR
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageEntity
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageOutputEntity
 import io.cloudflight.jems.server.project.repository.report.contribution.ProjectPartnerReportContributionRepository
+import io.cloudflight.jems.server.project.repository.report.expenditure.ProjectPartnerReportInvestmentRepository
 import io.cloudflight.jems.server.project.repository.report.expenditure.ProjectPartnerReportLumpSumRepository
 import io.cloudflight.jems.server.project.repository.report.expenditure.ProjectPartnerReportUnitCostRepository
 import io.cloudflight.jems.server.project.repository.report.financialOverview.coFinancing.ReportProjectPartnerExpenditureCoFinancingRepository
 import io.cloudflight.jems.server.project.repository.report.financialOverview.costCategory.ReportProjectPartnerExpenditureCostCategoryRepository
-import io.cloudflight.jems.server.project.repository.report.financialOverview.investment.ReportProjectPartnerExpenditureInvestmentRepository
 import io.cloudflight.jems.server.project.repository.report.identification.ProjectPartnerReportBudgetPerPeriodRepository
 import io.cloudflight.jems.server.project.repository.report.identification.ProjectPartnerReportIdentificationRepository
 import io.cloudflight.jems.server.project.repository.report.identification.ProjectPartnerReportIdentificationTargetGroupRepository
@@ -265,14 +265,15 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
                     previouslyReportedPrivate = BigDecimal.valueOf(170L),
                     previouslyReportedSum = BigDecimal.valueOf(7500L),
                 ),
-                perInvestmentBudget = listOf(
-                    PartnerReportPerInvestmentBudget(
-                    investmentId = 1,
-                    investmentNumber = 1,
-                    workPackageNumber = 1,
-                    totalEligibleBudget = BigDecimal.valueOf(100L),
-                    previouslyReported = BigDecimal.valueOf(50L)
-                )
+                investments = listOf(
+                    PartnerReportInvestment(
+                        investmentId = 245,
+                        investmentNumber = 4,
+                        workPackageNumber = 7,
+                        title = setOf(InputTranslation(EN, "investment title EN")),
+                        total = BigDecimal.valueOf(100L),
+                        previouslyReported = BigDecimal.valueOf(50L),
+                    )
                 )
             ),
         )
@@ -327,13 +328,13 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
     lateinit var reportUnitCostRepository: ProjectPartnerReportUnitCostRepository
 
     @MockK
+    lateinit var reportInvestmentRepository: ProjectPartnerReportInvestmentRepository
+
+    @MockK
     lateinit var reportBudgetPerPeriodRepository: ProjectPartnerReportBudgetPerPeriodRepository
 
     @MockK
     lateinit var reportBudgetExpenditureRepository: ReportProjectPartnerExpenditureCostCategoryRepository
-
-    @MockK
-    lateinit var reportInvestmentExpenditureRepository: ReportProjectPartnerExpenditureInvestmentRepository
 
     @InjectMockKs
     lateinit var persistence: ProjectReportCreatePersistenceProvider
@@ -390,6 +391,10 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
         val unitCostSlot = slot<Iterable<PartnerReportUnitCostEntity>>()
         every { reportUnitCostRepository.saveAll(capture(unitCostSlot)) } returnsArgument 0
 
+        // available investments
+        val investmentSlot = slot<Iterable<PartnerReportInvestmentEntity>>()
+        every { reportInvestmentRepository.saveAll(capture(investmentSlot)) } returnsArgument 0
+
         // budget per period
         val budgetPerPeriodSlot = slot<Iterable<ProjectPartnerReportBudgetPerPeriodEntity>>()
         every { reportBudgetPerPeriodRepository.saveAll(capture(budgetPerPeriodSlot)) } returnsArgument 0
@@ -397,10 +402,6 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
         // expenditureSetup
         val expenditureSlot = slot<ReportProjectPartnerExpenditureCostCategoryEntity>()
         every { reportBudgetExpenditureRepository.save(capture(expenditureSlot)) } returnsArgument 0
-
-        // investmentSetup
-        val investmentSlot = slot<Iterable<ReportProjectPartnerExpenditureInvestmentEntity>>()
-        every {reportInvestmentExpenditureRepository.saveAll(capture(investmentSlot))} returnsArgument 0
 
         val createdReport = persistence.createPartnerReport(reportToBeCreated.copy(
             identification = reportToBeCreated.identification.removeLegalStatusIf(withoutLegalStatus)
@@ -450,9 +451,9 @@ class ProjectReportCreatePersistenceProviderTest : UnitTest() {
         }
 
         assertThat(investmentSlot.captured).hasSize(1)
-        with(investmentSlot.captured.find { it.investmentId == 1L }!!) {
-            assertThat(investmentNumber).isEqualTo(1)
-            assertThat(workPackageNumber).isEqualTo(1)
+        with(investmentSlot.captured.find { it.investmentId == 245L }!!) {
+            assertThat(investmentNumber).isEqualTo(4)
+            assertThat(workPackageNumber).isEqualTo(7)
             assertThat(total).isEqualTo(BigDecimal.valueOf(100L))
             assertThat(previouslyReported).isEqualByComparingTo(BigDecimal.valueOf(50L))
         }

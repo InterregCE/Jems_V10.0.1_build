@@ -1,10 +1,16 @@
+<jems-multi-language-container *ngIf="dataSource.data.length">
 <mat-table jemsNoWidthLimit [dataSource]="dataSource">
 
     <ng-container matColumnDef="investmentNr" sticky>
         <mat-header-cell *matHeaderCellDef class="border-cell-right">
             <span jemsText maxLines="2">{{ 'project.application.partner.report.financial.investment.number' | translate }}</span>
         </mat-header-cell>
-        <mat-cell *matCellDef="let line" class="border-cell-right">{{ 'I' + line.workPackageNumber + '.' +line.investmentNumber }}</mat-cell>
+        <mat-cell *matCellDef="let line" class="border-cell-right">
+            <span jemsText maxLines="2">
+                <span>{{ 'I' + line.workPackageNumber + '.' + line.investmentNumber }}</span>
+                <span>&nbsp;{{ line.title | translateByInputLanguage | async }}</span>
+            </span>
+        </mat-cell>
         <mat-footer-cell *matFooterCellDef class="border-cell-right">{{ 'project.partner.budget.table.total' | translate }}</mat-footer-cell>
     </ng-container>
 
@@ -69,3 +75,8 @@
     <mat-footer-row *matFooterRowDef="displayedColumns"></mat-footer-row>
 
 </mat-table>
+</jems-multi-language-container>
+
+<jems-alert [show]="!dataSource.data.length" [type]="Alert.INFO" closable="false">
+    <p>{{ 'project.application.form.workpackage.investment.list.empty' | translate }}</p>
+</jems-alert>

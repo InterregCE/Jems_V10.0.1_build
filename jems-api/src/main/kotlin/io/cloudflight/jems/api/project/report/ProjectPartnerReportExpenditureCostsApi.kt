@@ -2,9 +2,9 @@ package io.cloudflight.jems.api.project.report
 
 import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadataDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportExpenditureCostDTO
+import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportInvestmentDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportLumpSumDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportUnitCostDTO
-import io.cloudflight.jems.api.project.dto.workpackage.investment.InvestmentSummaryDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import org.springframework.http.MediaType
@@ -67,6 +67,6 @@ interface ProjectPartnerReportExpenditureCostsApi {
     fun getAvailableInvestments(
         @PathVariable partnerId: Long,
         @PathVariable reportId: Long,
-    ): List<InvestmentSummaryDTO>
+    ): List<ProjectPartnerReportInvestmentDTO>
 
 }

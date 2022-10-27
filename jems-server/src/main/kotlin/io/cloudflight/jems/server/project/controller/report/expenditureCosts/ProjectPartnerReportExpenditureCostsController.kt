@@ -1,9 +1,9 @@
 package io.cloudflight.jems.server.project.controller.report.expenditureCosts
 
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportExpenditureCostDTO
+import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportInvestmentDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportLumpSumDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportUnitCostDTO
-import io.cloudflight.jems.api.project.dto.workpackage.investment.InvestmentSummaryDTO
 import io.cloudflight.jems.api.project.report.ProjectPartnerReportExpenditureCostsApi
 import io.cloudflight.jems.server.project.controller.report.toDto
 import io.cloudflight.jems.server.project.controller.report.toProjectFile
@@ -61,7 +61,7 @@ class ProjectPartnerReportExpenditureCostsController(
     override fun getAvailableUnitCosts(partnerId: Long, reportId: Long): List<ProjectPartnerReportUnitCostDTO> =
         getAvailableUnitCostsForReportInteractor.getUnitCosts(partnerId = partnerId, reportId = reportId).toUnitCostDto()
 
-    override fun getAvailableInvestments(partnerId: Long, reportId: Long): List<InvestmentSummaryDTO> =
-        getAvailableInvestmentsForReportInteractor.getInvestments(partnerId, reportId).toInvestmentSummaryDTOs()
+    override fun getAvailableInvestments(partnerId: Long, reportId: Long): List<ProjectPartnerReportInvestmentDTO> =
+        getAvailableInvestmentsForReportInteractor.getInvestments(partnerId, reportId).toInvestmentDto()
 
 }

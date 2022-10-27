@@ -19,13 +19,15 @@ import io.cloudflight.jems.server.project.service.report.model.create.ProjectPar
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSummary
 import io.cloudflight.jems.server.project.service.report.model.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.create.PartnerReportBaseData
+import io.cloudflight.jems.server.project.service.report.model.expenditure.PartnerReportInvestmentSummary
 import io.cloudflight.jems.server.project.service.report.model.workPlan.create.CreateProjectPartnerReportWorkPackage
 import io.cloudflight.jems.server.project.service.report.model.workPlan.create.CreateProjectPartnerReportWorkPackageActivity
 import io.cloudflight.jems.server.project.service.report.model.workPlan.create.CreateProjectPartnerReportWorkPackageActivityDeliverable
 import io.cloudflight.jems.server.project.service.report.model.workPlan.create.CreateProjectPartnerReportWorkPackageOutput
 import io.cloudflight.jems.server.project.service.report.partnerReportCreated
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
-import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackage
+import io.cloudflight.jems.server.project.service.workpackage.model.InvestmentSummary
+import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackageFull
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -75,20 +77,20 @@ class CreateProjectPartnerReport(
         )
 
         val workPackages = projectWorkPackagePersistence
-            .getWorkPackagesWithOutputsAndActivitiesByProjectId(projectId = project.id!!, version = version)
-            .toCreateEntity()
+            .getWorkPackagesWithAllDataByProjectId(projectId = project.id!!, version = version)
 
         val budget = createProjectPartnerReportBudget.retrieveBudgetDataFor(
             projectId = projectId,
             partner = partner.toSummary(),
             version = version,
             coFinancing = partnerCoFinancingPersistence.getCoFinancingAndContributions(partnerId, version),
+            investments = workPackages.extractInvestments(),
         )
 
         val report = ProjectPartnerReportCreate(
             baseData = baseData,
             identification = identification,
-            workPackages = workPackages,
+            workPackages = workPackages.toCreateEntity(),
             targetGroups = projectDescriptionPersistence.getBenefits(projectId = project.id, version = version) ?: emptyList(),
             budget = budget,
         )
@@ -160,7 +162,7 @@ class CreateProjectPartnerReport(
         currency = getCurrencyCodeForCountry(countryCode, country, currencyResolver)
     }
 
-    private fun List<ProjectWorkPackage>.toCreateEntity() = map { wp ->
+    private fun List<ProjectWorkPackageFull>.toCreateEntity() = map { wp ->
         CreateProjectPartnerReportWorkPackage(
             workPackageId = wp.id,
             number = wp.workPackageNumber,
@@ -186,5 +188,16 @@ class CreateProjectPartnerReport(
              },
         )
     }
+
+    private fun List<ProjectWorkPackageFull>.extractInvestments() = map { wp ->
+        wp.investments.map {
+            PartnerReportInvestmentSummary(
+                investmentId = it.id!!,
+                investmentNumber = it.investmentNumber,
+                workPackageNumber = wp.workPackageNumber,
+                title = it.title,
+            )
+        }
+    }.flatten()
 
 }

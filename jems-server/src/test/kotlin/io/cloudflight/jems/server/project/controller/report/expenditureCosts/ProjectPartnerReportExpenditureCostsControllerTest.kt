@@ -5,12 +5,14 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadataDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.BudgetCategoryDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportExpenditureCostDTO
+import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportInvestmentDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportLumpSumDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportUnitCostDTO
 import io.cloudflight.jems.api.project.dto.workpackage.investment.InvestmentSummaryDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportExpenditureCost
+import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportInvestment
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportLumpSum
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportUnitCost
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ReportBudgetCategory
@@ -132,10 +134,13 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
         category = ReportBudgetCategory.Multiple
     )
 
-    private val dummyInvestment = InvestmentSummary(
-        id = 1L,
-        investmentNumber = 1,
-        workPackageNumber = 1
+    private val dummyInvestment = ProjectPartnerReportInvestment(
+        id = 256L,
+        investmentId = 678L,
+        workPackageNumber = 6,
+        investmentNumber = 4,
+        title = setOf(InputTranslation(SystemLanguage.EN, "EN investment")),
+        total = BigDecimal.ONE,
     )
 
     private val dummyUnitCostDTO = ProjectPartnerReportUnitCostDTO(
@@ -151,10 +156,12 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
         category = BudgetCategoryDTO.Multiple
     )
 
-    private val dummyInvestmentDTO = InvestmentSummaryDTO(
-        id = 1L,
-        investmentNumber = 1,
-        workPackageNumber = 1
+    private val dummyInvestmentDTO = ProjectPartnerReportInvestmentDTO(
+        id = 256L,
+        investmentId = 678L,
+        workPackageNumber = 6,
+        investmentNumber = 4,
+        title = setOf(InputTranslation(SystemLanguage.EN, "EN investment")),
     )
 
     @MockK

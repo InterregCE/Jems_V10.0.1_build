@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.project.service.report.partner.financialOverv
 import io.cloudflight.jems.server.project.service.report.model.financialOverview.investments.ExpenditureInvestmentBreakdownLine
 import java.math.BigDecimal
 
-interface ProjectReportExpenditureInvestmentPersistence {
+interface ProjectReportInvestmentPersistence {
     fun getInvestments(partnerId: Long, reportId: Long): List<ExpenditureInvestmentBreakdownLine>
 
     fun getInvestmentsCumulative(reportIds: Set<Long>): Map<Long, BigDecimal>

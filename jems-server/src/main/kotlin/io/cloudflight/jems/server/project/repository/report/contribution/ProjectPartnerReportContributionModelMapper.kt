@@ -1,14 +1,21 @@
 package io.cloudflight.jems.server.project.repository.report.contribution
 
+import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostEntity
+import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostTranslEntity
+import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostTranslId
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.contribution.ProjectPartnerReportContributionEntity
+import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportInvestmentEntity
+import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportInvestmentTranslEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportLumpSumEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportUnitCostEntity
 import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
 import io.cloudflight.jems.server.project.service.report.model.contribution.create.CreateProjectPartnerReportContribution
 import io.cloudflight.jems.server.project.service.report.model.contribution.withoutCalculations.ProjectPartnerReportEntityContribution
+import io.cloudflight.jems.server.project.service.report.model.create.PartnerReportInvestment
 import io.cloudflight.jems.server.project.service.report.model.create.PartnerReportLumpSum
 import io.cloudflight.jems.server.project.service.report.model.create.PartnerReportUnitCostBase
 import org.mapstruct.Mapper
@@ -58,6 +65,38 @@ fun PartnerReportUnitCostBase.toEntity(
     current = BigDecimal.ZERO,
     previouslyReported = previouslyReported,
 )
+
+fun PartnerReportInvestment.toEntity(
+    report: ProjectPartnerReportEntity,
+) = PartnerReportInvestmentEntity(
+    reportEntity = report,
+    investmentId = investmentId,
+    investmentNumber = investmentNumber,
+    workPackageNumber = workPackageNumber,
+    translatedValues = mutableSetOf(),
+    total = total,
+    current = BigDecimal.ZERO,
+    previouslyReported = previouslyReported,
+).apply {
+    translatedValues.addAll(
+        combineInvestmentTranslatedValues(this, title)
+    )
+}
+
+fun combineInvestmentTranslatedValues(
+    sourceEntity: PartnerReportInvestmentEntity,
+    title: Set<InputTranslation>,
+): MutableSet<PartnerReportInvestmentTranslEntity> {
+    val titleMap = title.filter { !it.translation.isNullOrBlank() }
+        .associateBy( { it.language }, { it.translation } )
+
+    return titleMap.keys.mapTo(HashSet()) {
+        PartnerReportInvestmentTranslEntity(
+            TranslationId(sourceEntity, it),
+            title = titleMap[it]!!,
+        )
+    }
+}
 
 private val mapper = Mappers.getMapper(ProjectPartnerReportContributionModelMapper::class.java)
 

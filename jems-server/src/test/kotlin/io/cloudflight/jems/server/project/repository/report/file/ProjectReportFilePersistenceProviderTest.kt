@@ -117,7 +117,7 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
             reportLumpSum = null,
             reportUnitCost = null,
             costCategory = ReportBudgetCategory.StaffCosts,
-            investmentId = 1L,
+            reportInvestment = null,
             procurementId = 1L,
             internalReferenceNumber = "internalReferenceNumber",
             invoiceNumber = "invoiceNumber",

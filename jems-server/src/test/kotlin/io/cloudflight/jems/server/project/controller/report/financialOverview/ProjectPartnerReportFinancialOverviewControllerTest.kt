@@ -77,9 +77,11 @@ class ProjectPartnerReportFinancialOverviewControllerTest : UnitTest() {
         )
 
         private val dummyInvestmentLine = ExpenditureInvestmentBreakdownLine(
-            investmentId = 1L,
+            reportInvestmentId = 845L,
+            investmentId = 22L,
             investmentNumber = 1,
-            workPackageNumber = 1,
+            workPackageNumber = 2,
+            title = setOf(InputTranslation(SystemLanguage.EN, "investment title EN")),
             totalEligibleBudget = BigDecimal.ONE,
             previouslyReported = BigDecimal.TEN,
             currentReport = BigDecimal.ZERO,
@@ -182,9 +184,11 @@ class ProjectPartnerReportFinancialOverviewControllerTest : UnitTest() {
         )
 
         private val expectedDummyInvestmentLine = ExpenditureInvestmentBreakdownLineDTO(
-            investmentId = 1L,
+            reportInvestmentId = 845L,
+            investmentId = 22L,
             investmentNumber = 1,
-            workPackageNumber = 1,
+            workPackageNumber = 2,
+            title = setOf(InputTranslation(SystemLanguage.EN, "investment title EN")),
             totalEligibleBudget = BigDecimal.ONE,
             previouslyReported = BigDecimal.TEN,
             currentReport = BigDecimal.ZERO,

@@ -8,7 +8,7 @@ import java.math.RoundingMode
 
 fun Collection<ExpenditureInvestmentBreakdownLine>.fillInCurrent(current: Map<Long, BigDecimal>) = apply {
     forEach {
-        it.currentReport = current.getOrDefault(it.investmentId, BigDecimal.ZERO)
+        it.currentReport = current.getOrDefault(it.reportInvestmentId, BigDecimal.ZERO)
     }
 }
 
@@ -17,9 +17,11 @@ fun List<ExpenditureInvestmentBreakdownLine>.fillInOverviewFields() = apply {
 }
 
 private fun emptyLine() = ExpenditureInvestmentBreakdownLine(
+    reportInvestmentId = 0L,
     investmentId = 0L,
     investmentNumber = 0,
     workPackageNumber = 0,
+    title = emptySet(),
     totalEligibleBudget = BigDecimal.ZERO,
     previouslyReported = BigDecimal.ZERO,
     currentReport = BigDecimal.ZERO,

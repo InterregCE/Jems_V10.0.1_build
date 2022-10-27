@@ -6,7 +6,7 @@ import io.cloudflight.jems.server.project.authorization.CanViewPartnerReport
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.financialOverview.investments.ExpenditureInvestmentBreakdown
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectReportExpenditurePersistence
-import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureInvestmentPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportInvestmentPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown.fillActualCurrencyRates
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -14,7 +14,7 @@ import java.time.LocalDate
 
 @Service
 class GetReportExpenditureInvestmentsBreakdown(
-    private val expenditureInvestmentPersistence: ProjectReportExpenditureInvestmentPersistence,
+    private val expenditureInvestmentPersistence: ProjectReportInvestmentPersistence,
     private val reportExpenditurePersistence: ProjectReportExpenditurePersistence,
     private val currencyPersistence: CurrencyPersistence,
     private val reportPersistence: ProjectReportPersistence
