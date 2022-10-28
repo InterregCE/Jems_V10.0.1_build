@@ -21,9 +21,14 @@ class ExportApplicationForm(private val jemsPluginRegistry: JemsPluginRegistry,
     @ExceptionWrapper(ExportApplicationFormException::class)
     @CanRetrieveProjectForm
     override fun export(
-        projectId: Long, exportLanguage: SystemLanguage, inputLanguage: SystemLanguage, localDateTime: LocalDateTime, version: String?
+        projectId: Long,
+        exportLanguage: SystemLanguage,
+        inputLanguage: SystemLanguage,
+        localDateTime: LocalDateTime,
+        version: String?,
+        pluginKey: String?
     ): ExportResult =
-        jemsPluginRegistry.get(ApplicationFormExportPlugin::class, "standard-application-form-export-plugin").export(
+        jemsPluginRegistry.get(ApplicationFormExportPlugin::class, pluginKey).export(
             projectId,
             SystemLanguageData.valueOf(exportLanguage.toString()),
             SystemLanguageData.valueOf(inputLanguage.toString()),

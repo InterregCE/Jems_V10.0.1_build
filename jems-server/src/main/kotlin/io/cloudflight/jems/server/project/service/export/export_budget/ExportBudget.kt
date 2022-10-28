@@ -12,13 +12,16 @@ import org.springframework.stereotype.Service
 @Service
 class ExportBudget(private val jemsPluginRegistry: JemsPluginRegistry) : ExportBudgetInteractor {
 
-
     @ExceptionWrapper(ExportBudgetException::class)
     @CanRetrieveProjectForm
     override fun exportDataToCsv(
-        projectId: Long, exportLanguage: SystemLanguage, inputLanguage: SystemLanguage, version: String?
+        projectId: Long,
+        exportLanguage: SystemLanguage,
+        inputLanguage: SystemLanguage,
+        version: String?,
+        pluginKey: String?
     ): ExportResult =
-        jemsPluginRegistry.get(BudgetExportPlugin::class, "standard-budget-export-plugin").export(
+        jemsPluginRegistry.get(BudgetExportPlugin::class, pluginKey).export(
             projectId,
             SystemLanguageData.valueOf(exportLanguage.toString()),
             SystemLanguageData.valueOf(inputLanguage.toString()),
