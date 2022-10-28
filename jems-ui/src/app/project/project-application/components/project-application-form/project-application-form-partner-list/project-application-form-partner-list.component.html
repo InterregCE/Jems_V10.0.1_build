@@ -1,8 +1,8 @@
-<ng-container *ngIf="tableRows$ | async as tableRows">
-    <p *ngIf="!tableRows.length">{{'project.application.form.partner.list.empty' | translate}}</p>
-    <jems-table *ngIf="tableRows.length"
+<ng-container *ngIf="data$ | async as data">
+    <p *ngIf="!data.tableRows.length">{{'project.application.form.partner.list.empty' | translate}}</p>
+    <jems-table *ngIf="data.tableRows.length"
                [configuration]="tableConfiguration"
-               [rows]="tableRows"
+               [rows]="data.tableRows"
                [totalElements]="totalElements"
                [pageIndex]="pageIndex"
                (newPageIndex)="newPageIndex.emit($event)"

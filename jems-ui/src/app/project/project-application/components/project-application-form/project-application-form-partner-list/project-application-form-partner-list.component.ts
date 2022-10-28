@@ -10,14 +10,18 @@ import {
 } from '@angular/core';
 import {MatSort} from '@angular/material/sort';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
-import {PageProjectBudgetPartnerSummaryDTO, ProjectCallSettingsDTO, ProjectStatusDTO} from '@cat/api';
+import {
+  PageProjectBudgetPartnerSummaryDTO,
+  ProjectCallSettingsDTO,
+  ProjectStatusDTO
+} from '@cat/api';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
 import {Forms} from '@common/utils/forms';
 import {filter, map, take, tap} from 'rxjs/operators';
 import {MatDialog} from '@angular/material/dialog';
 import '@angular/common/locales/global/de';
 import {ProjectBudgetPartner} from '@project/model/ProjectBudgetPartner';
-import {Observable} from 'rxjs';
+import {combineLatest, Observable} from 'rxjs';
 import {ColumnWidth} from '@common/components/table/model/column-width';
 import {ProjectUtil} from '@project/common/project-util';
 import {FormVisibilityStatusService} from '@project/common/services/form-visibility-status.service';
@@ -68,7 +72,10 @@ export class ProjectApplicationFormPartnerListComponent implements OnInit {
 
   tableConfiguration: TableConfiguration;
 
-  tableRows$: Observable<ProjectBudgetPartner[]>;
+  data$: Observable<{
+    tableRows: ProjectBudgetPartner[];
+    projectCallType: CallTypeEnum;
+  }>;
 
   totalElements = 0;
   callType: CallTypeEnum;
@@ -80,14 +87,12 @@ export class ProjectApplicationFormPartnerListComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.tableRows$ = this.partnerPage$.pipe(
-      tap(pageProjectBudgetPartnerSummaryDTO => this.totalElements = pageProjectBudgetPartnerSummaryDTO.totalElements),
-      map(pageProjectBudgetPartnerSummaryDTO => this.getProjectPartnerSummary(pageProjectBudgetPartnerSummaryDTO))
-    );
-    this.projectStore.projectCallType$.subscribe(value => {
-      const prefixCallType: string = value === CallTypeEnum.STANDARD ? '' : 'spf.';
-      this.generateTableConfiguration(prefixCallType);
-    });
+    this.data$ = combineLatest([this.partnerPage$, this.projectStore.projectCallType$])
+      .pipe(
+        tap(data => this.totalElements = data[0].totalElements),
+        tap(data => this.generateTableConfiguration(data[1] === CallTypeEnum.STANDARD ? '' : 'spf.')),
+        map(data => ({tableRows: this.getProjectPartnerSummary(data[0]), projectCallType: data[1]}))
+      );
   }
 
   private generateTableConfiguration(prefixCallType: string) {
