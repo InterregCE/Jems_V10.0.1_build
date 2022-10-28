@@ -210,8 +210,8 @@ import {ContractPartnerComponent} from '@project/project-application/contract-pa
 import {
   PartnerControlReportControlIdentificationTabComponent
 } from '@project/project-application/report/partner-control-report/partner-control-report-identification-tab/partner-control-report-control-identification-tab.component';
+import {ControlReportGuard} from '../security/controlReport.guard';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
-import {ControlReportGuard} from "../security/controlReport.guard";
 
 export const routes: Routes = [
   {

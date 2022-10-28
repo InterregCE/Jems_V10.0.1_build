@@ -189,22 +189,6 @@ fun projectFileDownloadFailed(
         )
     )
 
-fun projectFileUploadSucceed(
-    context: Any, projectFileMetaData: ProjectFileMetadata, projectFileCategory: ProjectFileCategory
-): AuditCandidateEvent =
-    AuditCandidateEvent(
-        context = context,
-        auditCandidate = AuditCandidate(
-            action = AuditAction.PROJECT_FILE_UPLOADED_SUCCESSFULLY,
-            project = AuditProject(id = projectFileMetaData.projectId.toString()),
-            description = when (projectFileCategory.type) {
-                ProjectFileCategoryType.PARTNER -> "document ${projectFileMetaData.name} uploaded to project application ${projectFileMetaData.projectId} for Partner ${projectFileCategory.id} by ${projectFileMetaData.uploadedBy.id}"
-                ProjectFileCategoryType.INVESTMENT -> "document ${projectFileMetaData.name} uploaded to project application ${projectFileMetaData.projectId} for Investment ${projectFileCategory.id} by ${projectFileMetaData.uploadedBy.id}"
-                else -> "document ${projectFileMetaData.name} uploaded to project application ${projectFileMetaData.projectId} by ${projectFileMetaData.uploadedBy.id}"
-            }
-        )
-    )
-
 fun projectFileUploadFailed(
     context: Any,
     projectId: Long,
@@ -235,18 +219,6 @@ fun projectFileDeleteSucceed(
             project = AuditProject(id = projectFileMetadata.projectId.toString()),
             description = "document ${projectFileMetadata.name} deleted from project application ${projectFileMetadata.projectId} by ${projectFileMetadata.uploadedBy.id}"
 
-        )
-    )
-
-fun projectFileDescriptionChanged(
-    context: Any, projectFileMetadata: ProjectFileMetadata, oldValue: String
-): AuditCandidateEvent =
-    AuditCandidateEvent(
-        context = context,
-        auditCandidate = AuditCandidate(
-            action = AuditAction.PROJECT_FILE_DESCRIPTION_CHANGED,
-            project = AuditProject(id = projectFileMetadata.projectId.toString()),
-            description = "description of document ${projectFileMetadata.name} in project application ${projectFileMetadata.projectId} has changed from `$oldValue` to `${projectFileMetadata.description}` by ${projectFileMetadata.uploadedBy.id}"
         )
     )
 

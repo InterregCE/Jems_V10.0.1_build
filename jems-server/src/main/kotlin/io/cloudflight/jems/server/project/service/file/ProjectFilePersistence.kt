@@ -9,7 +9,7 @@ import org.springframework.data.domain.Pageable
 
 interface ProjectFilePersistence {
 
-    fun saveFile(projectId: Long, fileId: Long, userId: Long, projectFile: ProjectFile)
+    fun saveFile(projectId: Long, fileId: Long, userId: Long, projectFile: ProjectFile): String
 
     fun saveFileMetadata(
         projectId: Long, userId: Long, projectFile: ProjectFile, projectFileCategory: ProjectFileCategory
