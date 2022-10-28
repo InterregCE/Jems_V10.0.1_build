@@ -18,4 +18,5 @@ interface ProjectVersionPersistence {
     fun saveTimestampForApprovedApplication(projectId: Long)
 
     fun updateTimestampForApprovedModification(projectId: Long)
+
 }

@@ -160,6 +160,24 @@ val DEFAULT_TOP_NAVIGATION_PERMISSIONS =
                 )
             ),
             UserRolePermissionNode(
+                name = "Payments",
+                type = UserRolePermissionNodeType.SECTION_HEADER,
+                children = listOf(
+                    UserRolePermissionNode(
+                        name = "Payments to projects",
+                        viewPermissions = setOf(UserRolePermission.PaymentsRetrieve),
+                        editPermissions = setOf(UserRolePermission.PaymentsUpdate),
+                        type = UserRolePermissionNodeType.HIDDEN_VIEW_EDIT,
+                    ),
+                    UserRolePermissionNode(
+                        name = "Advance payments",
+                        viewPermissions = setOf(UserRolePermission.AdvancePaymentsRetrieve),
+                        editPermissions = setOf(UserRolePermission.AdvancePaymentsUpdate),
+                        type = UserRolePermissionNodeType.HIDDEN_VIEW_EDIT,
+                    )
+                )
+            ),
+            UserRolePermissionNode(
                 name = "Applications",
                 viewPermissions = setOf(UserRolePermission.ProjectRetrieve),
                 editPermissions = setOf(UserRolePermission.ProjectRetrieveEditUserAssignments),

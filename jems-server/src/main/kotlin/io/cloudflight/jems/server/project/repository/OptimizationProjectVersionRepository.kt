@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
+import java.time.LocalDateTime
 
 @Repository
 interface OptimizationProjectVersionRepository : JpaRepository<OptimizationProjectVersionEntity, Long> {
@@ -27,5 +28,14 @@ interface OptimizationProjectVersionRepository : JpaRepository<OptimizationProje
         nativeQuery = true
     )
     fun updateOptimizationProjectVersion(projectId: Long)
+
+
+    @Query(
+        """
+            SELECT installed_on FROM flyway_schema_history WHERE installed_rank = 1
+        """,
+        nativeQuery = true
+    )
+    fun getInitialMigrationTimeStamp(): LocalDateTime
 
 }
