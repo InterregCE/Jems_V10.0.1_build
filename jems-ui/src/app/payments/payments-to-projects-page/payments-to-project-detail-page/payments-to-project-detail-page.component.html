@@ -65,7 +65,7 @@
                             </div>
                             <div class="column-partner-name justify-left">{{partnerPayment.partnerAbbreviation}}</div>
                             <div class="column-amount-approved justify-end">{{partnerPayment.amountApproved | asMoney}}</div>
-                            <div class="column-payments-remaining justify-end">{{this.computeAvailableSum(index) | asMoney}}</div>
+                            <div class="column-payments-remaining justify-end">{{this.getUnauthorisedAmountForIndex(index) | asMoney}}</div>
                             <div class="column-action-buttons justify-end">
                                 <button mat-stroked-button *ngIf="installmentsArray(index).length === 0"
                                         (click)="addInstallmentButtonClicked(null, index);
@@ -74,6 +74,7 @@
                                         + {{'payments.detail.table.header.installment.add.button' | translate}}
                                 </button>
                                 <button mat-icon-button *ngIf="installmentsArray(index).length" class="button-expand"
+                                        [ngClass]="{'expanded' : getPaymentRowToggleStateAtIndex(index)}"
                                         (click)="togglePaymentRowAtIndex(index)">
                                     <mat-icon>expand_more</mat-icon>
                                 </button>
