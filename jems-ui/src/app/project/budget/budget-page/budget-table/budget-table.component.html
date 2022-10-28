@@ -20,7 +20,9 @@
 
     <ng-container *ngFor="let budget of budgets">
         <div>
-            <span>{{ 'common.label.project.partner.role.shortcut.' + budget.partner?.role | adaptTranslationKeyByCallType | async | translate : {partner: budget.partner?.sortNumber} }}</span>
+            <span>
+                <mat-icon *ngIf="!budget.partner?.active">person_off</mat-icon>
+                {{ 'common.label.project.partner.role.shortcut.' + budget.partner?.role | adaptTranslationKeyByCallType | async | translate : {partner: budget.partner?.sortNumber} }}</span>
             <span>{{ budget.partner?.abbreviation }}</span>
             <span *ngIf="displayedColumns.includes('country')">{{ budget.partner?.country }}</span>
             <span *ngIf="displayedColumns.includes('staffCosts')" class="justify-end">{{ budget.staffCosts | asMoney }}</span>
