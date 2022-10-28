@@ -14,4 +14,5 @@ data class ProjectSearchRequest(
     val objectives: Set<ProgrammeObjectivePolicy>?,
     val statuses: Set<ApplicationStatus>?,
     val calls: Set<Long>?,
+    val users: Set<Long>?
 )

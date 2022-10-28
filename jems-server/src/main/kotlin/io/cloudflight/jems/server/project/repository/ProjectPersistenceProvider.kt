@@ -12,6 +12,7 @@ import io.cloudflight.jems.server.project.entity.assessment.ProjectAssessmentEnt
 import io.cloudflight.jems.server.project.entity.assessment.ProjectAssessmentId
 import io.cloudflight.jems.server.project.repository.assessment.ProjectAssessmentEligibilityRepository
 import io.cloudflight.jems.server.project.repository.assessment.ProjectAssessmentQualityRepository
+import io.cloudflight.jems.server.project.repository.partneruser.UserPartnerCollaboratorRepository
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.ProjectApplicantAndStatus
@@ -19,14 +20,13 @@ import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectDetail
 import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
+import io.cloudflight.jems.server.project.service.model.ProjectSearchRequest
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.toApplicantAndStatus
 import io.cloudflight.jems.server.project.entity.projectuser.ProjectCollaboratorLevel.EDIT
 import io.cloudflight.jems.server.project.entity.projectuser.ProjectCollaboratorLevel.MANAGE
 import io.cloudflight.jems.server.project.entity.projectuser.ProjectCollaboratorLevel.VIEW
-import io.cloudflight.jems.server.project.repository.partneruser.UserPartnerCollaboratorRepository
 import io.cloudflight.jems.server.project.repository.projectuser.UserProjectCollaboratorRepository
-import io.cloudflight.jems.server.project.service.model.ProjectSearchRequest
 import io.cloudflight.jems.server.user.repository.user.UserRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
@@ -127,6 +127,13 @@ class ProjectPersistenceProvider(
     override fun getProjects(pageable: Pageable, searchRequest: ProjectSearchRequest?): Page<ProjectSummary> =
         projectRepository.findAll(
             ProjectRepository.buildSearchPredicate(searchRequest = searchRequest),
+            pageable
+        ).toModel()
+
+    @Transactional(readOnly = true)
+    override fun getAssignedProjects(pageable: Pageable, searchRequest: ProjectSearchRequest?): Page<ProjectSummary> =
+        projectRepository.findAll(
+            ProjectRepository.buildAssignedSearchPredicate(searchRequest = searchRequest),
             pageable
         ).toModel()
 

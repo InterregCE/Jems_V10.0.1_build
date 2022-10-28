@@ -54,6 +54,9 @@ interface ProjectRepository : JpaRepository<ProjectEntity, Long>, QuerydslPredic
         private fun hasAnyCallId(callIds: Set<Long>?) =
             if (callIds.isNullOrEmpty()) null else project.call.id.`in`(callIds)
 
+        private fun hasAnyAssignedUser(users: Set<Long>?) =
+            if (users.isNullOrEmpty()) null else project.assignedUsers.any().id.userId.`in`(users)
+
         fun buildSearchPredicate(searchRequest: ProjectSearchRequest?): Predicate =
             ExpressionUtils.allOf(
                 likeIdentifier(searchRequest?.id),
@@ -65,6 +68,15 @@ interface ProjectRepository : JpaRepository<ProjectEntity, Long>, QuerydslPredic
                 hasAnySpecificObjective(searchRequest?.objectives),
                 hasAnyStatus(searchRequest?.statuses),
                 hasAnyCallId(searchRequest?.calls)
+            ) ?: BooleanBuilder()
+
+        fun buildAssignedSearchPredicate(searchRequest: ProjectSearchRequest?): Predicate =
+            ExpressionUtils.allOf(
+                likeIdentifier(searchRequest?.id),
+                likeAcronym(searchRequest?.acronym),
+                hasAnyStatus(searchRequest?.statuses),
+                hasAnyCallId(searchRequest?.calls),
+                hasAnyAssignedUser(searchRequest?.users)
             ) ?: BooleanBuilder()
     }
 
