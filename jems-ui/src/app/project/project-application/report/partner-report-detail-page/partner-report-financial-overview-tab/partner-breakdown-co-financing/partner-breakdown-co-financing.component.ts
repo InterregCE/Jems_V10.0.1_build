@@ -31,9 +31,9 @@ export class PartnerBreakdownCoFinancingComponent implements OnChanges {
   ngOnChanges(changes: SimpleChanges): void {
     this.dataSource.data = [
       ...PartnerBreakdownCoFinancingComponent.addTranslationObjects(this.breakdown.funds, this.funds),
-      { ...this.breakdown.publicContribution, translation: 'project.application.partner.report.financial.contribution.public', isProgrammeLanguage: false },
-      { ...this.breakdown.automaticPublicContribution, translation: 'project.application.partner.report.financial.contribution.auto.public', isProgrammeLanguage: false },
-      { ...this.breakdown.privateContribution, translation: 'project.application.partner.report.financial.contribution.auto.private', isProgrammeLanguage: false },
+      { ...this.breakdown.publicContribution, translation: 'project.application.partner.report.financial.contribution.public', isProgrammeLanguage: false, subcomponent: true },
+      { ...this.breakdown.automaticPublicContribution, translation: 'project.application.partner.report.financial.contribution.auto.public', isProgrammeLanguage: false, subcomponent: true },
+      { ...this.breakdown.privateContribution, translation: 'project.application.partner.report.financial.contribution.auto.private', isProgrammeLanguage: false, subcomponent: true },
     ];
   }
 
@@ -48,6 +48,7 @@ export class PartnerBreakdownCoFinancingComponent implements OnChanges {
         ...fundCumulative,
         translation,
         isProgrammeLanguage: !isPartnerContribution,
+        subcomponent: false,
       });
     });
   }
@@ -57,4 +58,5 @@ export class PartnerBreakdownCoFinancingComponent implements OnChanges {
 interface ExpenditureLine extends ExpenditureCoFinancingBreakdownLineDTO {
   translation: string | InputTranslation[];
   isProgrammeLanguage: boolean;
+  subcomponent: boolean;
 }

@@ -318,6 +318,82 @@ internal class GetReportExpenditureCoFinancingBreakdownTest : UnitTest() {
                 remainingBudget = BigDecimal.valueOf(744),
             ),
         )
+
+        private val expectedRoundingTestResult = ExpenditureCoFinancingBreakdown(
+            funds = listOf(
+                ExpenditureCoFinancingBreakdownLine(
+                    fundId = 18L,
+                    totalEligibleBudget = BigDecimal.valueOf(4_620_000_000L),
+                    previouslyReported = BigDecimal.ZERO,
+                    previouslyPaid = BigDecimal.ZERO,
+                    currentReport = BigDecimal.valueOf(660_000_000_000_000_00L, 2),
+                    totalReportedSoFar = BigDecimal.valueOf(660_000_000_000_000_00L, 2),
+                    totalReportedSoFarPercentage = BigDecimal.valueOf(14_285_714_29L, 2),
+                    remainingBudget = BigDecimal.valueOf(-659_995_380_000_000_00L, 2),
+                ),
+                ExpenditureCoFinancingBreakdownLine(
+                    fundId = null,
+                    totalEligibleBudget = BigDecimal.valueOf(2_380_000_000L),
+                    previouslyReported = BigDecimal.ZERO,
+                    previouslyPaid = BigDecimal.ZERO,
+                    currentReport = BigDecimal.valueOf(340_000_000_000_000_00L, 2),
+                    totalReportedSoFar = BigDecimal.valueOf(340_000_000_000_000_00L, 2),
+                    totalReportedSoFarPercentage = BigDecimal.valueOf(14_285_714_29L, 2),
+                    remainingBudget = BigDecimal.valueOf(-339_997_620_000_000_00L, 2),
+                ),
+            ),
+            partnerContribution = ExpenditureCoFinancingBreakdownLine(
+                fundId = null,
+                totalEligibleBudget = BigDecimal.valueOf(2_380_000_000L),
+                previouslyReported = BigDecimal.ZERO,
+                previouslyPaid = BigDecimal.ZERO,
+                currentReport = BigDecimal.valueOf(340_000_000_000_000_00L, 2),
+                totalReportedSoFar = BigDecimal.valueOf(340_000_000_000_000_00L, 2),
+                totalReportedSoFarPercentage = BigDecimal.valueOf(14_285_714_29L, 2),
+                remainingBudget = BigDecimal.valueOf(-339_997_620_000_000_00L, 2),
+            ),
+            publicContribution = ExpenditureCoFinancingBreakdownLine(
+                fundId = null,
+                totalEligibleBudget = BigDecimal.valueOf(2_200_000_000L),
+                previouslyReported = BigDecimal.ZERO,
+                previouslyPaid = BigDecimal.ZERO,
+                currentReport = BigDecimal.valueOf(314_285_714_285_714_28L, 2),
+                totalReportedSoFar = BigDecimal.valueOf(314_285_714_285_714_28L, 2),
+                totalReportedSoFarPercentage = BigDecimal.valueOf(14_285_714_29L, 2),
+                remainingBudget = BigDecimal.valueOf(-314_283_514_285_714_28L, 2),
+            ),
+            automaticPublicContribution = ExpenditureCoFinancingBreakdownLine(
+                fundId = null,
+                totalEligibleBudget = BigDecimal.valueOf(180_000_000L),
+                previouslyReported = BigDecimal.ZERO,
+                previouslyPaid = BigDecimal.ZERO,
+                currentReport = BigDecimal.valueOf(25_714_285_714_285_71L, 2),
+                totalReportedSoFar = BigDecimal.valueOf(25_714_285_714_285_71L, 2),
+                totalReportedSoFarPercentage = BigDecimal.valueOf(14_285_714_29L, 2),
+                remainingBudget = BigDecimal.valueOf(-25_714_105_714_285_71L, 2),
+            ),
+            privateContribution = ExpenditureCoFinancingBreakdownLine(
+                fundId = null,
+                totalEligibleBudget = BigDecimal.ZERO,
+                previouslyReported = BigDecimal.ZERO,
+                previouslyPaid = BigDecimal.ZERO,
+                currentReport = BigDecimal.valueOf(0, 2),
+                totalReportedSoFar = BigDecimal.valueOf(0, 2),
+                totalReportedSoFarPercentage = BigDecimal.ZERO,
+                remainingBudget = BigDecimal.valueOf(0, 2),
+            ),
+            total = ExpenditureCoFinancingBreakdownLine(
+                fundId = null,
+                totalEligibleBudget = BigDecimal.valueOf(7_000_000_000L),
+                previouslyReported = BigDecimal.ZERO,
+                previouslyPaid = BigDecimal.ZERO,
+                currentReport = BigDecimal.valueOf(1_000_000_000_000_000_01L, 2),
+                totalReportedSoFar = BigDecimal.valueOf(1_000_000_000_000_000_01L, 2),
+                totalReportedSoFarPercentage = BigDecimal.valueOf(14_285_714_29L, 2),
+                remainingBudget = BigDecimal.valueOf(-999_993_000_000_000_01L, 2),
+            ),
+        )
+
     }
 
     @MockK
@@ -408,6 +484,89 @@ internal class GetReportExpenditureCoFinancingBreakdownTest : UnitTest() {
 
         every { reportContributionPersistence.getPartnerReportContribution(PARTNER_ID, reportId = reportId) } returns partnerContribution
         assertThat(interactor.get(PARTNER_ID, reportId = reportId)).isEqualTo(expectedSubmittedResult().copy(funds = emptyList()))
+    }
+
+    @Test
+    fun `get - not submitted - test rounding on lot of decimal places`() {
+        val reportId = 52048L
+
+        val identification = mockk<PartnerReportIdentification>()
+        every { identification.coFinancing } returns listOf(
+            ProjectPartnerCoFinancing(MainFund, fund(id = 18L), percentage = BigDecimal.valueOf(66)),
+            ProjectPartnerCoFinancing(PartnerContribution, null, percentage = BigDecimal.valueOf(34)),
+        )
+
+        val report = mockk<ProjectPartnerReport>()
+        every { report.status } returns ReportStatus.Draft
+        every { report.identification } returns identification
+
+        every { reportPersistence.getPartnerReportById(partnerId = PARTNER_ID, reportId) } returns report
+        val coFinancing = ReportExpenditureCoFinancing(
+            totalsFromAF = ReportExpenditureCoFinancingColumn(
+                funds = mapOf(
+                    18L to BigDecimal.valueOf(4_620_000_000L),
+                    null to BigDecimal.valueOf(2_380_000_000L),
+                ),
+                partnerContribution = BigDecimal.valueOf(2_380_000_000L),
+                publicContribution = BigDecimal.valueOf(2_200_000_000L),
+                automaticPublicContribution = BigDecimal.valueOf(180_000_000L),
+                privateContribution = BigDecimal.ZERO,
+                sum = BigDecimal.valueOf(7_000_000_000L),
+            ),
+            currentlyReported = ReportExpenditureCoFinancingColumn(
+                funds = mapOf(
+                    18L to BigDecimal.valueOf(660_000_000_000_000L),
+                    null to BigDecimal.valueOf(340_000_000_000_000L),
+                ),
+                partnerContribution = BigDecimal.valueOf(340_000_000_000_000L),
+                publicContribution = BigDecimal.valueOf(314_285_714_285_714_28L, 2),
+                automaticPublicContribution = BigDecimal.valueOf(25_714_285_714_285_71L, 2),
+                privateContribution = BigDecimal.ZERO,
+                sum = BigDecimal.valueOf(1_000_000_000_000_000_01, 2),
+            ),
+            previouslyReported = ReportExpenditureCoFinancingColumn(
+                funds = mapOf(
+                    18L to BigDecimal.ZERO,
+                    null to BigDecimal.ZERO,
+                ),
+                partnerContribution = BigDecimal.ZERO,
+                publicContribution = BigDecimal.ZERO,
+                automaticPublicContribution = BigDecimal.ZERO,
+                privateContribution = BigDecimal.ZERO,
+                sum = BigDecimal.ZERO,
+            ),
+            previouslyPaid = ReportExpenditureCoFinancingColumn(
+                funds = mapOf(
+                    18L to BigDecimal.ZERO,
+                    null to BigDecimal.ZERO,
+                ),
+                partnerContribution = BigDecimal.ZERO,
+                publicContribution = BigDecimal.ZERO,
+                automaticPublicContribution = BigDecimal.ZERO,
+                privateContribution = BigDecimal.ZERO,
+                sum = BigDecimal.ZERO,
+            ),
+        )
+
+        every { reportExpenditureCoFinancingPersistence.getCoFinancing(PARTNER_ID, reportId = reportId) } returns coFinancing
+
+        val currentCalculation = mockk<ExpenditureCostCategoryBreakdown>()
+        every { currentCalculation.total } returns ExpenditureCostCategoryBreakdownLine(
+            flatRate = null,
+            totalEligibleBudget = BigDecimal.valueOf(7_000_000_000L),
+            previouslyReported = BigDecimal.ZERO,
+            currentReport = BigDecimal.valueOf(1_000_000_000_000_000_01L, 2),
+            totalReportedSoFar = BigDecimal.valueOf(1_000_000_000_000_000_01L, 2),
+            totalReportedSoFarPercentage = BigDecimal.valueOf(14_285_714_29L, 2),
+            remainingBudget = BigDecimal.valueOf(-999_993_000_000_000_01L, 2),
+        )
+        every { reportExpenditureCostCategoryCalculatorService.getSubmittedOrCalculateCurrent(PARTNER_ID, reportId = reportId) } returns currentCalculation
+
+        every { reportContributionPersistence.getPartnerReportContribution(PARTNER_ID, reportId = reportId) } returns listOf(
+            contrib(Public, amount = BigDecimal.valueOf(2_200_000_000L), prev = BigDecimal.ZERO, current = BigDecimal.ZERO),
+            contrib(AutomaticPublic, amount = BigDecimal.valueOf(180_000_000L), prev = BigDecimal.ZERO, current = BigDecimal.ZERO),
+        )
+        assertThat(interactor.get(PARTNER_ID, reportId = reportId)).isEqualTo(expectedRoundingTestResult)
     }
 
 }
