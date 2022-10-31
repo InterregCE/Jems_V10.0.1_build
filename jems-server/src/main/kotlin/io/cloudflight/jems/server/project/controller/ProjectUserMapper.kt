@@ -11,7 +11,8 @@ fun ProjectWithUsers.toDto() = ProjectUserDTO(
     customIdentifier = customIdentifier,
     acronym = acronym,
     projectStatus = projectStatus.toDTO(),
-    assignedUserIds = assignedUserIds,
+    relatedCall = relatedCall,
+    users = users,
 )
 
 fun Page<ProjectWithUsers>.toDto() = map { it.toDto() }

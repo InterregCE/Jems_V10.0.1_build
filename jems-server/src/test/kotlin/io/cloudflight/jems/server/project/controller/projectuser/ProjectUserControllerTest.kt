@@ -5,10 +5,10 @@ import io.cloudflight.jems.api.project.dto.assignment.UpdateProjectUserDTO
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
-import io.cloudflight.jems.server.user.service.model.assignment.ProjectWithUsers
-import io.cloudflight.jems.server.user.service.model.assignment.UpdateProjectUser
 import io.cloudflight.jems.server.project.service.projectuser.assign_user_to_project.AssignUserToProjectInteractor
 import io.cloudflight.jems.server.project.service.projectuser.get_users_assigned_to_projects.GetUsersAssignedToProjectsInteractor
+import io.cloudflight.jems.server.user.service.model.assignment.ProjectWithUsers
+import io.cloudflight.jems.server.user.service.model.assignment.UpdateProjectUser
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -23,7 +23,7 @@ import org.springframework.data.domain.Pageable
 class ProjectUserControllerTest : UnitTest() {
 
     companion object {
-        private const val PROJECT_ID = 1489L
+        private const val PROJECT_ID = "1489"
         private val PAGE = Pageable.unpaged()
 
         private val dummyProjectUserDto = ProjectUserDTO(
@@ -31,7 +31,8 @@ class ProjectUserControllerTest : UnitTest() {
             customIdentifier = "FGR45_001",
             acronym = "P1 G4",
             projectStatus = ApplicationStatusDTO.DRAFT,
-            assignedUserIds = setOf(998L, 999L),
+            relatedCall = "1",
+            users = setOf(998L, 999L),
         )
 
         private val dummyProjectUser = ProjectWithUsers(
@@ -39,7 +40,8 @@ class ProjectUserControllerTest : UnitTest() {
             customIdentifier = "FGR45_001",
             acronym = "P1 G4",
             projectStatus = ApplicationStatus.DRAFT,
-            assignedUserIds = setOf(998L, 999L),
+            relatedCall = "1",
+            users = setOf(998L, 999L),
         )
     }
 
@@ -59,9 +61,9 @@ class ProjectUserControllerTest : UnitTest() {
 
     @Test
     fun listProjectsWithAssignedUsers() {
-        every { getUsersAssignedToProjectsInteractor.getProjectsWithAssignedUsers(PAGE) } returns
+        every { getUsersAssignedToProjectsInteractor.getProjectsWithAssignedUsers(PAGE, null) } returns
             PageImpl(listOf(dummyProjectUser))
-        assertThat(controller.listProjectsWithAssignedUsers(PAGE).content).containsExactly(dummyProjectUserDto)
+        assertThat(controller.listProjectsWithAssignedUsers(PAGE, null).content).containsExactly(dummyProjectUserDto)
     }
 
     @Test
@@ -95,5 +97,4 @@ class ProjectUserControllerTest : UnitTest() {
             ),
         )
     }
-
 }

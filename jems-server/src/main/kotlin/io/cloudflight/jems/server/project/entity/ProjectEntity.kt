@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.entity
 import io.cloudflight.jems.server.call.entity.CallEntity
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumEntity
+import io.cloudflight.jems.server.project.entity.projectuser.UserProjectEntity
 import io.cloudflight.jems.server.project.entity.result.ProjectResultEntity
 import io.cloudflight.jems.server.user.entity.UserEntity
 import javax.persistence.CascadeType
@@ -101,4 +102,7 @@ data class ProjectEntity(
 
     @OneToMany(mappedBy = "id.projectId", cascade = [CascadeType.ALL], orphanRemoval = true)
     val lumpSums: List<ProjectLumpSumEntity> = emptyList(),
+
+    @OneToMany(mappedBy = "id.projectId")
+    val assignedUsers: Set<UserProjectEntity> = emptySet(),
 )

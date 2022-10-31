@@ -3,6 +3,7 @@ import {TableConfiguration} from '@common/components/table/model/table.configura
 import {ColumnType} from '@common/components/table/model/column-type.enum';
 import {ColumnWidth} from '@common/components/table/model/column-width';
 import {
+  ProjectStatusDTO,
   ProjectUserDTO,
   ProjectUserService,
   UpdateProjectUserDTO,
@@ -17,6 +18,8 @@ import {COMMA, ENTER} from '@angular/cdk/keycodes';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {FormService} from '@common/components/section/form/form.service';
 import {ProjectApplicationListUserAssignmentsStore} from './project-application-list-user-assignments-store.service';
+import {TranslateService} from '@ngx-translate/core';
+import {Log} from '@common/utils/log';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 
 @UntilDestroy()
@@ -46,6 +49,20 @@ export class ProjectApplicationListUserAssignmentsComponent implements OnInit {
     totalElements: number;
   }>;
 
+  filterData$: Observable<{
+    calls: Map<number, string>;
+    statuses: Map<ProjectStatusDTO.StatusEnum, string>;
+    users: Map<number, string>;
+  }>;
+
+  filterForm = this.formBuilder.group({
+    id: '',
+    acronym: '',
+    statuses: [[]],
+    calls: [[]],
+    users: [[]]
+  });
+
   defaultUserPermissions: PermissionsEnum[] = [
     PermissionsEnum.ProjectRetrieve,
     PermissionsEnum.ProjectRetrieveEditUserAssignments,
@@ -68,7 +85,28 @@ export class ProjectApplicationListUserAssignmentsComponent implements OnInit {
     public projectUserStore: ProjectApplicationListUserAssignmentsStore,
     private userService: UserService,
     public formService: FormService,
+    private translateService: TranslateService
   ) {
+
+    this.filterData$ = combineLatest([
+      projectUserStore.publishedCalls$,
+      this.userService.getMonitorUsers()
+    ]).pipe(
+      tap(data => Log.info('ProjectApplicationListUserAssignmentsComponent', data)),
+      map( ([calls, monitorUsers]) =>({
+        calls: new Map(calls.map(call => [call.id, call.name])),
+        statuses: new Map(Object.values(ProjectStatusDTO.StatusEnum).map(status => [
+          status, translateService.instant(`common.label.projectapplicationstatus.${status}`)
+        ])),
+        users: new Map(monitorUsers.map(monitorUser => [monitorUser.id, `${monitorUser.name} ${monitorUser.surname}`])),
+      }))
+    );
+
+    this.filterForm.valueChanges.pipe(
+      tap(filters => this.projectUserStore.filter$.next(filters)),
+      untilDestroyed(this)
+    ).subscribe();
+
     this.formService.init(this.form);
     this.data$ = combineLatest([
       this.projectUserStore.page$,
@@ -80,7 +118,7 @@ export class ProjectApplicationListUserAssignmentsComponent implements OnInit {
         return {
           rows: page.content.map((project, index) => ({
             ...project,
-            assignedUserIds: project.assignedUserIds.filter(id => availableUsersIds.includes(id)),
+            assignedUserIds: project.users.filter(id => availableUsersIds.includes(id)),
             index,
             defaultUsers,
             availableUsers
@@ -113,10 +151,23 @@ export class ProjectApplicationListUserAssignmentsComponent implements OnInit {
           }
         },
         {
-          columnWidth: ColumnWidth.DateColumn,
+          columnWidth: ColumnWidth.ChipColumn,
           displayedColumn: 'project.table.column.name.acronym',
           elementProperty: 'acronym',
           sortProperty: 'acronym',
+        },
+        {
+          displayedColumn: 'project.table.column.name.status',
+          elementProperty: 'projectStatus',
+          elementTranslationKey: 'common.label.projectapplicationstatus',
+          sortProperty: 'currentStatus.status',
+          columnWidth: ColumnWidth.SmallColumn,
+        },
+        {
+          displayedColumn: 'project.table.column.name.related',
+          elementProperty: 'relatedCall',
+          sortProperty: 'callName',
+          columnWidth: ColumnWidth.MediumColumn,
         },
         {
           displayedColumn: 'project.table.column.name.users',
@@ -146,7 +197,7 @@ export class ProjectApplicationListUserAssignmentsComponent implements OnInit {
     projects.forEach(project => {
       this.form.push(this.formBuilder.group({
         projectId: this.formBuilder.control(project.id),
-        userIds: this.formBuilder.array(project.assignedUserIds),
+        userIds: this.formBuilder.array(project.users),
         userIdsToAdd: this.formBuilder.array([]),
         userIdsToRemove: this.formBuilder.array([]),
       }));
@@ -218,4 +269,11 @@ export class ProjectApplicationListUserAssignmentsComponent implements OnInit {
     return this.form.at(projectIndex).get('userIdsToAdd') as FormArray;
   }
 
+  isThereAnyActiveFilter(): boolean {
+    return this.filterForm.value.id?.length > 0 ||
+      this.filterForm.value.acronym?.length > 0 ||
+      this.filterForm.value.statuses?.length ||
+      this.filterForm.value.calls?.length ||
+      this.filterForm.value.users?.length;
+  }
 }

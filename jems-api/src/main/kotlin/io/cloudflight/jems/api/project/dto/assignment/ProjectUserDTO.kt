@@ -3,9 +3,10 @@ package io.cloudflight.jems.api.project.dto.assignment
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 
 data class ProjectUserDTO(
-    val id: Long?,
+    val id: String?,
     val customIdentifier: String,
     val acronym: String,
     val projectStatus: ApplicationStatusDTO,
-    val assignedUserIds: Set<Long>,
+    val relatedCall: String,
+    val users: Set<Long>,
 )

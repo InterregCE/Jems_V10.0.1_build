@@ -1,3 +1,43 @@
+<ng-container>
+    <jems-filter-template *ngIf="filterData$ | async as filterData"
+                          [formGroup]="filterForm"
+                          [isThereAnyActiveFilter]="isThereAnyActiveFilter()">
+        <div alignItems="start" jemsMultiColumnRow display="block">
+            <jems-filter-text-input
+                    formControlName="id"
+                    label="project.table.column.name.id">
+            </jems-filter-text-input>
+
+            <jems-filter-text-input
+                    formControlName="acronym"
+                    label="project.table.column.name.acronym">
+            </jems-filter-text-input>
+
+            <jems-filter-autocomplete-input
+                    [options]="filterData.statuses"
+                    [hasPartialLockingOfValues]="false"
+                    formControlName="statuses"
+                    label="project.table.column.name.status">
+            </jems-filter-autocomplete-input>
+
+            <jems-filter-autocomplete-input
+                    [isDisabled] = "filterData.calls.size === 0"
+                    [options]="filterData.calls"
+                    [hasPartialLockingOfValues]="false"
+                    formControlName="calls"
+                    label="project.table.column.name.related">
+            </jems-filter-autocomplete-input>
+
+            <jems-filter-autocomplete-input
+                    [options]="filterData.users"
+                    [hasPartialLockingOfValues]="false"
+                    formControlName="users"
+                    label="project.table.column.name.users">
+            </jems-filter-autocomplete-input>
+        </div>
+    </jems-filter-template>
+</ng-container>
+
 <ng-container *ngIf="data$ | async as data">
     <jems-form (discard)="resetForm(data.rows)" (save)="saveForm()">
         <p *ngIf="!data.rows.length">{{'project.list.empty' | translate}}</p>

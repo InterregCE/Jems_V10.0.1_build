@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.repository
 
 import com.querydsl.core.BooleanBuilder
+import com.querydsl.core.types.Predicate
 import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateType
 import io.cloudflight.jems.api.programme.dto.costoption.BudgetCategory
@@ -26,6 +27,7 @@ import io.cloudflight.jems.server.call.repository.CallPersistenceProvider
 import io.cloudflight.jems.server.call.repository.CallRepository
 import io.cloudflight.jems.server.call.repository.ProjectCallStateAidRepository
 import io.cloudflight.jems.server.call.repository.toModel
+import io.cloudflight.jems.server.call.service.model.CallCostOption
 import io.cloudflight.jems.server.call.service.model.FieldVisibilityStatus
 import io.cloudflight.jems.server.programme.entity.ProgrammePriorityEntity
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
@@ -85,11 +87,9 @@ import java.math.BigDecimal
 import java.sql.Timestamp
 import java.time.LocalDate
 import java.time.LocalDateTime
+import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.util.Optional
-import com.querydsl.core.types.Predicate
-import io.cloudflight.jems.server.call.service.model.CallCostOption
-import java.time.ZoneId
 
 /**
  * tests implementation of ProjectPersistenceProvider including mappings and projectVersionUtils
@@ -699,6 +699,7 @@ internal class ProjectPersistenceProviderTest : UnitTest() {
             objectives = setOf(ProgrammeObjectivePolicy.AdvancedTechnologies),
             statuses = setOf(ApplicationStatus.DRAFT),
             calls = setOf(CALL_ID),
+            users = null
         ))
 
         assertThat(predicate.captured.toString()).contains(
@@ -713,4 +714,31 @@ internal class ProjectPersistenceProviderTest : UnitTest() {
                 "&& projectEntity.currentStatus.status = DRAFT && projectEntity.call.id = 12")
     }
 
+    @Test
+    fun `should get assigned projects`() {
+        val predicate = slot<Predicate>()
+        every { projectRepository.findAll(capture(predicate), Pageable.unpaged()) } returns Page.empty()
+
+        persistence.getAssignedProjects(Pageable.unpaged(), ProjectSearchRequest(
+            id = "1",
+            acronym = "2",
+            firstSubmissionFrom = null,
+            firstSubmissionTo = null,
+            lastSubmissionFrom = null,
+            lastSubmissionTo = null,
+            objectives = null,
+            statuses = setOf(ApplicationStatus.CONTRACTED),
+            calls = setOf(CALL_ID),
+            users = setOf(99L)
+        ))
+
+        assertThat(predicate.captured.toString()).contains(
+            "(str(projectEntity.id) like %1% " +
+                "|| projectEntity.customIdentifier like %1%) " +
+                "&& lower(projectEntity.acronym) like %2% " +
+                "&& projectEntity.currentStatus.status = CONTRACTED " +
+                "&& projectEntity.call.id = 12 " +
+                "&& any(projectEntity.assignedUsers).id.userId = 99")
+    }
+    
 }
