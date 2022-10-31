@@ -99,6 +99,7 @@ class PaymentsControllerTest : UnitTest() {
             id = installmentFirstDTO.id,
             fundId = fund.id,
             lumpSumId = lumpSumId,
+            orderNr = 67,
             amountPaid = installmentFirstDTO.amountPaid,
             paymentDate = currentTime.toLocalDate(),
             comment = installmentFirstDTO.comment,

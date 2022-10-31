@@ -122,7 +122,7 @@ class PaymentPersistenceProviderTest: UnitTest() {
             project = dummyProject,
             amountApprovedPerFund = BigDecimal(100),
             fund = fund,
-            orderNr = 1,
+            orderNr = 13,
             programmeLumpSumId = lumpSumId
         )
 
@@ -160,6 +160,7 @@ class PaymentPersistenceProviderTest: UnitTest() {
             id = 3L,
             fundId = fundId,
             lumpSumId = lumpSumId,
+            orderNr = 13,
             amountPaid = BigDecimal.TEN,
             paymentDate = currentDate.minusDays(3),
             comment = "comment",
@@ -194,7 +195,7 @@ class PaymentPersistenceProviderTest: UnitTest() {
                 PartnerPayment(
                     id = 1L,
                     projectId = projectId,
-                    orderNr = 1,
+                    orderNr = 13,
                     programmeLumpSumId = lumpSumId,
                     programmeFundId = fund.id,
                     partnerId = partnerId,
@@ -239,7 +240,7 @@ class PaymentPersistenceProviderTest: UnitTest() {
             totalEligibleAmount = BigDecimal(10),
             lastApprovedVersionBeforeReadyForPayment = "v1.0"
         )
-        private val projectLumpSumId = ProjectLumpSumId(projectId = dummyProject.id, orderNr = 1)
+        private val projectLumpSumId = ProjectLumpSumId(projectId = dummyProject.id, orderNr = 13)
         val programmeLumpSum = programmeLumpSum(id = 50)
         private val contribution1 = ProjectPartnerLumpSumEntity(
             id = ProjectPartnerLumpSumId(
@@ -283,13 +284,13 @@ class PaymentPersistenceProviderTest: UnitTest() {
     @Test
     fun getAllPaymentToProject() {
         every { paymentRepository.findAll(Pageable.unpaged()) } returns PageImpl(mutableListOf(paymentEntity))
-        every { projectLumpSumRepository.getByIdProjectIdAndIdOrderNr(projectId, 1) } returns lumpSumEntity
+        every { projectLumpSumRepository.getByIdProjectIdAndIdOrderNr(projectId, 13) } returns lumpSumEntity
         every {
             projectPersistence.getProject(projectId, expectedPayments.lastApprovedVersionBeforeReadyForPayment)
         } returns dummyProject.toModel(null, null, mutableSetOf(), mutableSetOf())
 
         assertThat(paymentPersistenceProvider.getAllPaymentToProject(Pageable.unpaged()).content)
-            .containsAll(listOf(expectedPayments))
+            .containsExactly(expectedPayments)
     }
 
     @Test

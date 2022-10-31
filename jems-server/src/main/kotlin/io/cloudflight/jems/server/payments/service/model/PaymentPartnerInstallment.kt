@@ -8,6 +8,7 @@ data class PaymentPartnerInstallment(
     val id: Long? = null,
     val fundId: Long,
     val lumpSumId: Long,
+    val orderNr: Int,
     val amountPaid: BigDecimal?,
     val paymentDate: LocalDate?,
     val comment: String? = null,

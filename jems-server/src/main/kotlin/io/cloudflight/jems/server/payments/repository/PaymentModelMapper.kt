@@ -134,6 +134,7 @@ fun PaymentPartnerInstallmentEntity.toModel() = PaymentPartnerInstallment(
     id = id,
     fundId = paymentPartner.payment.fund.id,
     lumpSumId = paymentPartner.payment.programmeLumpSumId,
+    orderNr = paymentPartner.payment.orderNr,
     amountPaid = amountPaid,
     paymentDate = paymentDate,
     comment = comment,

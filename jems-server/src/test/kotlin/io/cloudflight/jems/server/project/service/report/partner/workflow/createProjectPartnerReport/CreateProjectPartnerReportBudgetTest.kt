@@ -143,7 +143,7 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
 
     private fun lumpSums(partnerId: Long) = listOf(
         ProjectLumpSum(
-            orderNr = 1,
+            orderNr = 14,
             programmeLumpSumId = 44L,
             period = 3,
             lumpSumContributions = listOf(
@@ -156,7 +156,7 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
             readyForPayment = false,
         ),
         ProjectLumpSum(
-            orderNr = 2,
+            orderNr = 15,
             programmeLumpSumId = 45L,
             period = 4,
             lumpSumContributions = listOf(
@@ -169,8 +169,8 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
             readyForPayment = false,
         ),
         ProjectLumpSum(
-            orderNr = 3,
-            programmeLumpSumId = 46L,
+            orderNr = 16,
+            programmeLumpSumId = 45L,
             period = 4,
             lumpSumContributions = listOf(
                 ProjectPartnerLumpSum(
@@ -423,6 +423,7 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         val installment = mockk<PaymentPartnerInstallment>()
         every { installment.fundId } returns fund.id
         every { installment.lumpSumId } returns 45L
+        every { installment.orderNr } returns 15
         every { installment.amountPaid } returns BigDecimal.valueOf(32)
         every { installment.isPaymentConfirmed } returns false
         return installment
@@ -431,7 +432,8 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
     private fun paymentInstallment_2(): PaymentPartnerInstallment {
         val installment = mockk<PaymentPartnerInstallment>()
         every { installment.fundId } returns fund.id
-        every { installment.lumpSumId } returns 46L
+        every { installment.lumpSumId } returns 45L
+        every { installment.orderNr } returns 16
         every { installment.amountPaid } returns BigDecimal.valueOf(11)
         every { installment.isPaymentConfirmed } returns true
         return installment
@@ -498,11 +500,11 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
 
         assertThat(result.contributions).hasSize(3)
         assertThat(result.availableLumpSums).containsExactly(
-            PartnerReportLumpSum(lumpSumId = 44L, orderNr = 1, period = 3,
+            PartnerReportLumpSum(lumpSumId = 44L, orderNr = 14, period = 3,
                 total = BigDecimal.TEN, previouslyReported = BigDecimal.TEN, previouslyPaid = BigDecimal.ZERO),
-            PartnerReportLumpSum(lumpSumId = 45L, orderNr = 2, period = 4,
+            PartnerReportLumpSum(lumpSumId = 45L, orderNr = 15, period = 4,
                 total = BigDecimal.valueOf(13), previouslyReported = BigDecimal.valueOf(100), previouslyPaid = BigDecimal.ZERO),
-            PartnerReportLumpSum(lumpSumId = 46L, orderNr = 3, period = 4,
+            PartnerReportLumpSum(lumpSumId = 45L, orderNr = 16, period = 4,
                 // is getting 200 from previous reports and 10.33 from ready fast track
                 total = BigDecimal.valueOf(1033, 2), previouslyReported = BigDecimal.valueOf(21033, 2), previouslyPaid = BigDecimal.valueOf(11)),
         )
@@ -568,7 +570,7 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
         // lump sums
         every { lumpSumPersistence.getLumpSums(projectId, version) } returns lumpSums(partnerId)
         every { reportLumpSumPersistence.getLumpSumCumulative(setOf(408L)) } returns
-            mapOf(1 to BigDecimal.TEN, 2 to BigDecimal.valueOf(100), 3 to BigDecimal.valueOf(200)) /* only 1 is used */
+            mapOf(14 to BigDecimal.TEN, 15 to BigDecimal.valueOf(100), 16 to BigDecimal.valueOf(200))
         // unit costs
         every { partnerBudgetCostsPersistence.getBudgetStaffCosts(partnerId, version) } returns staffCosts
         every { partnerBudgetCostsPersistence.getBudgetTravelAndAccommodationCosts(partnerId, version) } returns travelCosts
