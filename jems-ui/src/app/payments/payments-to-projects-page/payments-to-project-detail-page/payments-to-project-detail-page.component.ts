@@ -297,6 +297,17 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
     }
   }
 
+  getUnauthorisedAmountForIndex(paymentIndex: number): number {
+    let amountUnauthorised = this.partnerPayments.at(paymentIndex).value.amountApproved;
+
+    this.installmentsArray(paymentIndex).controls.forEach((formGroup: AbstractControl, index) => {
+      if (this.isPaymentAuthorised(paymentIndex, index))
+        amountUnauthorised -= formGroup?.get(this.constants.FORM_CONTROL_NAMES.amountPaid)?.value;
+    });
+
+    return amountUnauthorised;
+  }
+
   showPaymentIndicatorForIndex(paymentIndex:number): boolean {
     if (this.computeAvailableSum(paymentIndex) > 0)
       return true;
