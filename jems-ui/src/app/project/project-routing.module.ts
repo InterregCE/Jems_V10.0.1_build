@@ -211,6 +211,7 @@ import {
   PartnerControlReportControlIdentificationTabComponent
 } from '@project/project-application/report/partner-control-report/partner-control-report-identification-tab/partner-control-report-control-identification-tab.component';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
+import {ControlReportGuard} from "../security/controlReport.guard";
 
 export const routes: Routes = [
   {
@@ -309,15 +310,18 @@ export const routes: Routes = [
                           {
                             path: 'identificationTab',
                             component: PartnerControlReportControlIdentificationTabComponent,
+                            canActivate: [ControlReportGuard],
                           },
                           {
                             path: 'controlChecklistsTab',
-                            component: PartnerControlReportControlChecklistsTabComponent
+                            component: PartnerControlReportControlChecklistsTabComponent,
+                            canActivate: [ControlReportGuard],
                           },
                           {
                             path: 'controlChecklistsTab/checklist/:checklistId',
                             component: PartnerControlReportControlChecklistPageComponent,
-                            data: {breadcrumb: 'checklists.instance.title'}
+                            data: {breadcrumb: 'checklists.instance.title'},
+                            canActivate: [ControlReportGuard],
                           },
                           {
                             path: 'document',
