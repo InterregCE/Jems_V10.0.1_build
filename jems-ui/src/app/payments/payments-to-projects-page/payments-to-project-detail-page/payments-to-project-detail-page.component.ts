@@ -38,7 +38,7 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
   columnsToDisplay = ['partner', 'partnerName', 'amountApproved', 'addInstallment'];
   updateInstallmentsError$ = new Subject<HttpErrorResponse | null>();
   updateInstallmentsSuccess$ = new Subject<boolean>();
-  toggleStatesOfPaymentRows:boolean[] = [];
+  toggleStatesOfPaymentRows: boolean[] = [];
 
   partnerPaymentsForm = this.formBuilder.group({
     id: '',
@@ -277,11 +277,11 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
     return this.localeDatePipe.transform(value);
   }
 
-  togglePaymentRowAtIndex(index:number): void {
+  togglePaymentRowAtIndex(index: number): void {
     this.toggleStatesOfPaymentRows[index] = !this.toggleStatesOfPaymentRows[index];
   }
 
-  getPaymentRowToggleStateAtIndex(index: number) :boolean {
+  getPaymentRowToggleStateAtIndex(index: number): boolean {
     return this.toggleStatesOfPaymentRows[index];
   }
 
@@ -292,7 +292,7 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
     else {
       this.toggleStatesOfPaymentRows.forEach((toggleState, index) => {
         if (!this.installmentsArray(index).length)
-          this.toggleStatesOfPaymentRows[index] = false;
+          {this.toggleStatesOfPaymentRows[index] = false;}
       });
     }
   }
@@ -302,19 +302,19 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
 
     this.installmentsArray(paymentIndex).controls.forEach((formGroup: AbstractControl, index) => {
       if (this.isPaymentAuthorised(paymentIndex, index))
-        amountUnauthorised -= formGroup?.get(this.constants.FORM_CONTROL_NAMES.amountPaid)?.value;
+        {amountUnauthorised -= formGroup?.get(this.constants.FORM_CONTROL_NAMES.amountPaid)?.value;}
     });
 
     return amountUnauthorised;
   }
 
-  showPaymentIndicatorForIndex(paymentIndex:number): boolean {
+  showPaymentIndicatorForIndex(paymentIndex: number): boolean {
     if (this.computeAvailableSum(paymentIndex) > 0)
-      return true;
+      {return true;}
     else {
       for (let i=0; i<this.installmentsArray(paymentIndex).length; i++) {
         if (!this.isPaymentConfirmed(paymentIndex, i))
-          return true;
+          {return true;}
       }
     }
     return false;
