@@ -221,7 +221,7 @@ class CreateProjectPartnerReportBudget(
     private fun List<ProjectLumpSum>.toPartnerReportLumpSums(
         partnerId: Long,
         previouslyReported: Map<Int, BigDecimal>,
-        previouslyPaid: Map<Long, BigDecimal>,
+        previouslyPaid: Map<Long, Map<Int, BigDecimal>>,
     ) = map {
         val lumpSumPartnerShare = it.lumpSumContributions.firstOrNull { it.partnerId == partnerId }?.amount ?: ZERO
 
@@ -236,7 +236,7 @@ class CreateProjectPartnerReportBudget(
             period = it.period,
             total = lumpSumPartnerShare,
             previouslyReported = fromPrevious,
-            previouslyPaid = previouslyPaid.getOrDefault(it.programmeLumpSumId, ZERO),
+            previouslyPaid = previouslyPaid.get(it.programmeLumpSumId)?.get(it.orderNr) ?: ZERO,
         )
     }
 
@@ -390,7 +390,10 @@ class CreateProjectPartnerReportBudget(
 
     private fun List<PaymentPartnerInstallment>.byLumpSum() =
         groupBy { it.lumpSumId }
-            .mapValues { (_, installments) -> installments.sumOf { it.amountPaid ?: ZERO } }
+            .mapValues { (_, installments) ->
+                installments.groupBy { it.orderNr }
+                    .mapValues { (_, installments) -> installments.sumOf { it.amountPaid ?: ZERO } }
+            }
 
     private fun List<PaymentPartnerInstallment>.getOnlyPaid() =
         filter { it.isPaymentConfirmed!! }

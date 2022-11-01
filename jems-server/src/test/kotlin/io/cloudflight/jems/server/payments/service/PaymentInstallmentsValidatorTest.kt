@@ -39,6 +39,7 @@ class PaymentInstallmentsValidatorTest : UnitTest() {
             id = 3L,
             fundId = 1L,
             lumpSumId = 2L,
+            orderNr = 8,
             amountPaid = BigDecimal.TEN,
             paymentDate = currentDate,
             comment = "comment",
@@ -71,6 +72,7 @@ class PaymentInstallmentsValidatorTest : UnitTest() {
                 id = 4L,
                 fundId = 65L,
                 lumpSumId = 6458L,
+                orderNr = 9,
                 amountPaid = BigDecimal.TEN,
                 paymentDate = currentDate,
                 comment = "comment"
@@ -85,6 +87,7 @@ class PaymentInstallmentsValidatorTest : UnitTest() {
                 id = 4L,
                 fundId = 65L,
                 lumpSumId = 6459L,
+                orderNr = 10,
                 amountPaid = BigDecimal.TEN,
                 paymentDate = currentDate,
                 isSavePaymentInfo = true
