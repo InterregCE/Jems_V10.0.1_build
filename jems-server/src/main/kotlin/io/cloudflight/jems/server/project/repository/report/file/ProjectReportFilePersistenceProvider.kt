@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.repository.report.file
 
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.common.minio.GenericProjectFileRepository
 import io.cloudflight.jems.server.common.minio.MinioStorage
 import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
 import io.cloudflight.jems.server.project.entity.report.procurement.file.ProjectPartnerReportProcurementFileEntity
@@ -8,7 +9,6 @@ import io.cloudflight.jems.server.project.repository.report.contribution.Project
 import io.cloudflight.jems.server.project.repository.report.expenditure.ProjectPartnerReportExpenditureRepository
 import io.cloudflight.jems.server.project.repository.report.procurement.ProjectPartnerReportProcurementRepository
 import io.cloudflight.jems.server.project.repository.report.procurement.attachment.ProjectPartnerReportProcurementAttachmentRepository
-import io.cloudflight.jems.server.project.repository.report.toModel
 import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPartnerReportWorkPackageActivityDeliverableRepository
 import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPartnerReportWorkPackageActivityRepository
 import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPartnerReportWorkPackageOutputRepository
@@ -17,12 +17,10 @@ import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartn
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFile
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileCreate
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
-import io.cloudflight.jems.server.user.repository.user.UserRepository
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
-import java.time.ZonedDateTime
 
 @Repository
 class ProjectReportFilePersistenceProvider(
@@ -33,14 +31,10 @@ class ProjectReportFilePersistenceProvider(
     private val workPlanOutputRepository: ProjectPartnerReportWorkPackageOutputRepository,
     private val contributionRepository: ProjectPartnerReportContributionRepository,
     private val expenditureRepository: ProjectPartnerReportExpenditureRepository,
-    private val userRepository: UserRepository,
     private val reportProcurementAttachmentRepository: ProjectPartnerReportProcurementAttachmentRepository,
     private val procurementRepository: ProjectPartnerReportProcurementRepository,
+    private val genericFileRepository: GenericProjectFileRepository,
 ) : ProjectReportFilePersistence {
-
-    companion object {
-        const val BUCKET = "project-report"
-    }
 
     @Transactional(readOnly = true)
     override fun existsFile(exactPath: String, fileName: String) =
@@ -100,12 +94,8 @@ class ProjectReportFilePersistenceProvider(
             .deleteIfPresent()
 
     @Transactional
-    override fun setDescriptionToFile(fileId: Long, description: String) {
-        reportFileRepository.findById(fileId).ifPresentOrElse(
-            { it.description = description },
-            { throw ResourceNotFoundException("file") }
-        )
-    }
+    override fun setDescriptionToFile(fileId: Long, description: String) =
+        genericFileRepository.setDescription(fileId, description)
 
     @Transactional
     override fun updatePartnerReportActivityAttachment(
@@ -207,29 +197,12 @@ class ProjectReportFilePersistenceProvider(
     override fun getFileTypeByPartnerId(fileId: Long, partnerId: Long): ProjectPartnerReportFileType =
         reportFileRepository.findByPartnerIdAndId(partnerId, fileId)?.type ?: throw ResourceNotFoundException("projectPartnerReportFileType")
 
-    private fun persistFileAndUpdateLink(file: ProjectReportFileCreate, additionalStep: (ReportProjectFileEntity) -> Unit): ProjectReportFileMetadata {
-        return persistAttachmentAndMetadata(file = file, locationForMinio = file.getMinioFullPath())
-            .also { additionalStep.invoke(it) }
-            .toModel()
-    }
-
-    private fun persistAttachmentAndMetadata(file: ProjectReportFileCreate, locationForMinio: String): ReportProjectFileEntity {
-        minioStorage.saveFile(
-            bucket = BUCKET,
-            filePath = locationForMinio,
-            size = file.size,
-            stream = file.content,
-            overwriteIfExists = true,
+    private fun persistFileAndUpdateLink(file: ProjectReportFileCreate, additionalStep: (ReportProjectFileEntity) -> Unit) =
+        genericFileRepository.persistProjectFileAndPerformAction(
+            file = file,
+            locationForMinio = file.getMinioFullPath(),
+            additionalStep = additionalStep,
         )
-        return reportFileRepository.save(
-            file.toEntity(
-                bucketForMinio = BUCKET,
-                locationForMinio = locationForMinio,
-                userResolver = { userRepository.getById(it) },
-                uploaded = ZonedDateTime.now(),
-            )
-        )
-    }
 
     private fun ReportProjectFileEntity?.deleteIfPresent() {
         if (this != null) {

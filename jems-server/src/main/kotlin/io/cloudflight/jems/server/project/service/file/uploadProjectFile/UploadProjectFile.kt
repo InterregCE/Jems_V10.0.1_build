@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.service.file.uploadProjectFile
 
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
+import io.cloudflight.jems.server.common.minio.projectFileUploadSuccessOld
 import io.cloudflight.jems.server.project.authorization.CanUploadFileInCategory
 import io.cloudflight.jems.server.project.repository.file.ProjectFileTypeNotSupported
 import io.cloudflight.jems.server.project.service.ProjectPersistence
@@ -12,7 +13,6 @@ import io.cloudflight.jems.server.project.service.file.model.ProjectFileCategory
 import io.cloudflight.jems.server.project.service.file.model.ProjectFileMetadata
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.projectFileUploadFailed
-import io.cloudflight.jems.server.project.service.projectFileUploadSucceed
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import io.cloudflight.jems.server.user.service.UserPersistence
 import org.springframework.context.ApplicationEventPublisher
@@ -47,10 +47,13 @@ class UploadProjectFile(
             filePersistence.saveFileMetadata(
                 projectId, securityService.currentUser?.user?.id!!, projectFile, projectFileCategory
             ).also { fileMetadata ->
-                filePersistence.saveFile(
+                val location = filePersistence.saveFile(
                     projectId, fileMetadata.id, securityService.currentUser?.user?.id!!, projectFile
                 )
-                auditPublisher.publishEvent(projectFileUploadSucceed(this, fileMetadata, projectFileCategory))
+                val project = projectPersistence.getProjectSummary(projectId)
+                auditPublisher.publishEvent(projectFileUploadSuccessOld(
+                    this, fileMetadata, location, projectFileCategory, project
+                ))
             }
         }.onFailure {
             auditPublisher.publishEvent(

@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.repository.report.file
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.common.minio.GenericProjectFileRepository
 import io.cloudflight.jems.server.common.minio.MinioStorage
 import io.cloudflight.jems.server.project.entity.report.contribution.ProjectPartnerReportContributionEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportExpenditureCostEntity
@@ -23,10 +24,9 @@ import io.cloudflight.jems.server.project.service.report.model.expenditure.Repor
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFile
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileCreate
+import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
 import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
 import io.cloudflight.jems.server.user.entity.UserEntity
-import io.cloudflight.jems.server.user.repository.user.UserRepository
-import io.mockk.CapturingSlot
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -195,13 +195,13 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
     lateinit var expenditureRepository: ProjectPartnerReportExpenditureRepository
 
     @MockK
-    lateinit var userRepository: UserRepository
-
-    @MockK
     lateinit var reportProcurementAttachmentRepository: ProjectPartnerReportProcurementAttachmentRepository
 
     @MockK
     lateinit var procurementRepository: ProjectPartnerReportProcurementRepository
+
+    @MockK
+    lateinit var genericFileRepository: GenericProjectFileRepository
 
     @InjectMockKs
     lateinit var persistence: ProjectReportFilePersistenceProvider
@@ -210,6 +210,7 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
     fun reset() {
         clearMocks(minioStorage)
         clearMocks(reportFileRepository)
+        clearMocks(genericFileRepository)
     }
 
     @Test
@@ -371,168 +372,130 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
 
     @Test
     fun setDescription() {
-        val filePathFull = "sample/path/to/file-with-desc.txt"
-        val fileToUpdate = file(id = 20L, name = "file-with-desc.txt", filePathFull = filePathFull)
-        every { reportFileRepository.findById( 20L) } returns Optional.of(fileToUpdate)
-
-        persistence.setDescriptionToFile(fileId = 20L, "description new")
-        assertThat(fileToUpdate.description).isEqualTo("description new")
-    }
-
-    @Test
-    fun `setDescription - not existing`() {
-        every { reportFileRepository.findById(-1L) } returns Optional.empty()
-        assertThrows<ResourceNotFoundException> { persistence.setDescriptionToFile(fileId = -1L, "") }
+        every { genericFileRepository.setDescription(fileId = 20L, "new desc") } answers { }
+        persistence.setDescriptionToFile(fileId = 20L, "new desc")
+        verify(exactly = 1) { genericFileRepository.setDescription(fileId = 20L, "new desc") }
     }
 
     @Test
     fun updatePartnerReportActivityAttachment() {
-        val filePathMinio = slot<String>()
-        val fileEntity = slot<ReportProjectFileEntity>()
-
         val oldFile = mockk<ReportProjectFileEntity>()
 
         val activity = activity(id = 80L, attachment = oldFile)
         every { workPlanActivityRepository.findById(80L) } returns Optional.of(activity)
 
         val fileCreate = fileCreate(type = ProjectPartnerReportFileType.Activity)
-        mockFileDeletionAndSaving(oldFile, filePathMinio, fileEntity)
+        val resultMock = mockk<ProjectReportFileMetadata>()
+        every { genericFileRepository
+            .persistProjectFileAndPerformAction(fileCreate, "our/indexed/path/new_file.txt", any())
+        } returns resultMock
+        mockFileDeletion(oldFile)
 
-        assertThat(persistence.updatePartnerReportActivityAttachment(80L, file = fileCreate).name)
-            .isEqualTo("new_file.txt")
-
-        assertFile(filePathMinio.captured, fileEntity.captured)
+        assertThat(persistence.updatePartnerReportActivityAttachment(80L, file = fileCreate))
+            .isEqualTo(resultMock)
     }
 
     @Test
     fun updatePartnerReportDeliverableAttachment() {
-        val filePathMinio = slot<String>()
-        val fileEntity = slot<ReportProjectFileEntity>()
-
         val oldFile = mockk<ReportProjectFileEntity>()
 
         val deliverable = deliverable(id = 90L, attachment = oldFile)
         every { workPlanActivityDeliverableRepository.findById(90L) } returns Optional.of(deliverable)
 
         val fileCreate = fileCreate(type = ProjectPartnerReportFileType.Deliverable)
-        mockFileDeletionAndSaving(oldFile, filePathMinio, fileEntity)
+        val resultMock = mockk<ProjectReportFileMetadata>()
+        every { genericFileRepository
+            .persistProjectFileAndPerformAction(fileCreate, "our/indexed/path/new_file.txt", any())
+        } returns resultMock
+        mockFileDeletion(oldFile)
 
-        assertThat(persistence.updatePartnerReportDeliverableAttachment(90L, file = fileCreate).name)
-            .isEqualTo("new_file.txt")
-
-        assertFile(filePathMinio.captured, fileEntity.captured)
-        assertThat(fileEntity.captured.type).isEqualTo(ProjectPartnerReportFileType.Deliverable)
+        assertThat(persistence.updatePartnerReportDeliverableAttachment(90L, file = fileCreate))
+            .isEqualTo(resultMock)
     }
 
     @Test
     fun updatePartnerReportContributionAttachment() {
-        val filePathMinio = slot<String>()
-        val fileEntity = slot<ReportProjectFileEntity>()
-
         val oldFile = mockk<ReportProjectFileEntity>()
 
         val contribution = contribution(id = 88L, attachment = oldFile)
         every { contributionRepository.findById(50L) } returns Optional.of(contribution)
 
         val fileCreate = fileCreate(type = ProjectPartnerReportFileType.Contribution)
-        mockFileDeletionAndSaving(oldFile, filePathMinio, fileEntity)
+        val resultMock = mockk<ProjectReportFileMetadata>()
+        every { genericFileRepository
+            .persistProjectFileAndPerformAction(fileCreate, "our/indexed/path/new_file.txt", any())
+        } returns resultMock
+        mockFileDeletion(oldFile)
 
-        assertThat(persistence.updatePartnerReportContributionAttachment(50L, file = fileCreate).name)
-            .isEqualTo("new_file.txt")
-
-        assertFile(filePathMinio.captured, fileEntity.captured)
-        assertThat(fileEntity.captured.type).isEqualTo(ProjectPartnerReportFileType.Contribution)
+        assertThat(persistence.updatePartnerReportContributionAttachment(50L, file = fileCreate))
+            .isEqualTo(resultMock)
     }
 
     @Test
     fun updatePartnerReportOutputAttachment() {
-        val filePathMinio = slot<String>()
-        val fileEntity = slot<ReportProjectFileEntity>()
-
         val oldFile = mockk<ReportProjectFileEntity>()
 
         val output = output(id = 70L, attachment = oldFile)
         every { workPlanOutputRepository.findById(70L) } returns Optional.of(output)
 
         val fileCreate = fileCreate(type = ProjectPartnerReportFileType.Output)
-        mockFileDeletionAndSaving(oldFile, filePathMinio, fileEntity)
+        val resultMock = mockk<ProjectReportFileMetadata>()
+        every { genericFileRepository
+            .persistProjectFileAndPerformAction(fileCreate, "our/indexed/path/new_file.txt", any())
+        } returns resultMock
+        mockFileDeletion(oldFile)
 
-        assertThat(persistence.updatePartnerReportOutputAttachment(70L, file = fileCreate).name)
-            .isEqualTo("new_file.txt")
-
-        assertFile(filePathMinio.captured, fileEntity.captured)
-        assertThat(fileEntity.captured.type).isEqualTo(ProjectPartnerReportFileType.Output)
+        assertThat(persistence.updatePartnerReportOutputAttachment(70L, file = fileCreate))
+            .isEqualTo(resultMock)
     }
 
     @Test
     fun updatePartnerReportExpenditureAttachment() {
-        val filePathMinio = slot<String>()
-        val fileEntity = slot<ReportProjectFileEntity>()
-
         val oldFile = mockk<ReportProjectFileEntity>()
 
         val expenditure = expenditure(id = 90L, attachment = oldFile)
         every { expenditureRepository.findById(40L) } returns Optional.of(expenditure)
 
         val fileCreate = fileCreate(type = ProjectPartnerReportFileType.Expenditure)
-        mockFileDeletionAndSaving(oldFile, filePathMinio, fileEntity)
+        val resultMock = mockk<ProjectReportFileMetadata>()
+        every { genericFileRepository
+            .persistProjectFileAndPerformAction(fileCreate, "our/indexed/path/new_file.txt", any())
+        } returns resultMock
+        mockFileDeletion(oldFile)
 
-        assertThat(persistence.updatePartnerReportExpenditureAttachment(40L, file = fileCreate).name)
-            .isEqualTo("new_file.txt")
-
-        assertFile(filePathMinio.captured, fileEntity.captured)
-        assertThat(fileEntity.captured.type).isEqualTo(ProjectPartnerReportFileType.Expenditure)
+        assertThat(persistence.updatePartnerReportExpenditureAttachment(40L, file = fileCreate))
+            .isEqualTo(resultMock)
     }
 
     @Test
     fun addPartnerReportProcurementAttachment() {
-        val filePathMinio = slot<String>()
-        val fileEntity = slot<ReportProjectFileEntity>()
         val oldFile = mockk<ReportProjectFileEntity>() // this is not used here
-        mockFileDeletionAndSaving(oldFile, filePathMinio, fileEntity)
+        mockFileDeletion(oldFile)
 
         val procurementId = 500L
         val procurement = mockk<ProjectPartnerReportProcurementEntity>()
         every { procurementRepository.getById(procurementId) } returns procurement
-        val procurementFile = slot<ProjectPartnerReportProcurementFileEntity>()
-        every { reportProcurementAttachmentRepository.save(capture(procurementFile)) } returnsArgument 0
 
         val fileCreate = fileCreate(type = ProjectPartnerReportFileType.ProcurementAttachment)
+        val extraStep = slot<(ReportProjectFileEntity) -> Unit>()
+        val resultMock = mockk<ProjectReportFileMetadata>()
+        every { genericFileRepository
+            .persistProjectFileAndPerformAction(fileCreate, "our/indexed/path/new_file.txt", capture(extraStep))
+        } returns resultMock
+
         assertThat(persistence
-            .addPartnerReportProcurementAttachment(reportId = 48L, file = fileCreate, procurementId = procurementId).name
-        ).isEqualTo("new_file.txt")
-
-        assertFile(filePathMinio.captured, fileEntity.captured)
-        assertThat(fileEntity.captured.type).isEqualTo(ProjectPartnerReportFileType.ProcurementAttachment)
-
-        assertThat(procurementFile.captured.procurement).isEqualTo(procurement)
-        assertThat(procurementFile.captured.file).isEqualTo(fileEntity.captured)
-        assertThat(procurementFile.captured.createdInReportId).isEqualTo(48L)
+            .addPartnerReportProcurementAttachment(reportId = 48L, file = fileCreate, procurementId = procurementId)
+        ).isEqualTo(resultMock)
     }
 
-    private fun mockFileDeletionAndSaving(
+    private fun mockFileDeletion(
         oldFile: ReportProjectFileEntity,
-        filePathMinio: CapturingSlot<String>,
-        fileEntity: CapturingSlot<ReportProjectFileEntity>,
     ) {
         every { oldFile.minioBucket } returns "bucket"
         every { oldFile.minioLocation } returns "remove/me.pdf"
 
         every { minioStorage.deleteFile("bucket", "remove/me.pdf") } answers { }
         every { reportFileRepository.delete(oldFile) } answers { }
-
-        every { minioStorage.saveFile("project-report", capture(filePathMinio), any(), any(), true) } answers { }
-        every { userRepository.getById(270) } returns mockk()
-        every { reportFileRepository.save(capture(fileEntity)) } returnsArgument 0
-    }
-
-    private fun assertFile(filePathMinio: String, fileEntity: ReportProjectFileEntity) {
-        assertThat(filePathMinio).isEqualTo("our/indexed/path/new_file.txt")
-        assertThat(fileEntity.partnerId).isEqualTo(PARTNER_ID)
-        assertThat(fileEntity.path).isEqualTo("our/indexed/path/")
-        assertThat(fileEntity.minioBucket).isEqualTo("project-report")
-        assertThat(fileEntity.minioLocation).isEqualTo("our/indexed/path/new_file.txt")
-        assertThat(fileEntity.name).isEqualTo("new_file.txt")
     }
 
     @Test
@@ -553,27 +516,13 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
 
     @Test
     fun addAttachmentToPartnerReport() {
-        val filePathMinio = slot<String>()
-        val fileEntity = slot<ReportProjectFileEntity>()
-
         val fileCreate = fileCreate(type = ProjectPartnerReportFileType.PartnerReport).copy(name = "new_file_to_partner.txt")
+        val resultMock = mockk<ProjectReportFileMetadata>()
+        every { genericFileRepository
+            .persistProjectFileAndPerformAction(fileCreate, "our/indexed/path/new_file_to_partner.txt", any())
+        } returns resultMock
 
-        every { minioStorage.saveFile("project-report", capture(filePathMinio), any(), any(), true) } answers { }
-        every { userRepository.getById(270) } returns mockk()
-        every { reportFileRepository.save(capture(fileEntity)) } returnsArgument 0
-
-        assertThat(persistence.addAttachmentToPartnerReport(file = fileCreate).name)
-            .isEqualTo("new_file_to_partner.txt")
-
-        assertThat(filePathMinio.captured).isEqualTo("our/indexed/path/new_file_to_partner.txt")
-        assertThat(fileEntity.captured.partnerId).isEqualTo(PARTNER_ID)
-        assertThat(fileEntity.captured.path).isEqualTo("our/indexed/path/")
-        assertThat(fileEntity.captured.minioBucket).isEqualTo("project-report")
-        assertThat(fileEntity.captured.minioLocation).isEqualTo("our/indexed/path/new_file_to_partner.txt")
-        assertThat(fileEntity.captured.name).isEqualTo("new_file_to_partner.txt")
-        assertThat(fileEntity.captured.type).isEqualTo(ProjectPartnerReportFileType.PartnerReport)
-        assertThat(fileEntity.captured.size).isEqualTo(45L)
-        assertThat(fileEntity.captured.description).isEmpty()
+        assertThat(persistence.addAttachmentToPartnerReport(file = fileCreate)).isEqualTo(resultMock)
     }
 
     @Test

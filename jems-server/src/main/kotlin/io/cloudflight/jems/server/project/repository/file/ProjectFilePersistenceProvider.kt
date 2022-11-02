@@ -28,12 +28,17 @@ class ProjectFilePersistenceProvider(
     private val projectFileCategoryRepository: ProjectFileCategoryRepository
 ) : ProjectFilePersistence {
 
-    override fun saveFile(projectId: Long, fileId: Long, userId: Long, projectFile: ProjectFile) =
-        storage.saveFile(
-            PROJECT_FILES_BUCKET,
-            getObjectPath(projectId, fileId, projectFile.name),
-            projectFile.size, projectFile.stream
-        )
+    companion object {
+        fun getObjectPath(projectId: Long, fileId: Long, fileName: String): String =
+            "project-${projectId}/$fileId/${fileName}"
+
+    }
+
+    override fun saveFile(projectId: Long, fileId: Long, userId: Long, projectFile: ProjectFile): String {
+        val location = getObjectPath(projectId, fileId, projectFile.name)
+        storage.saveFile(PROJECT_FILES_BUCKET, location, projectFile.size, projectFile.stream)
+        return location
+    }
 
     @Transactional
     override fun saveFileMetadata(
@@ -125,9 +130,6 @@ class ProjectFilePersistenceProvider(
         if (this.parent == null || this.parent == ProjectFileCategoryType.ALL)
             mutableSetOf(this.name)
         else this.parent.getParentCategoryTypeStringSet().also { it.add(this.name) }
-
-    private fun getObjectPath(projectId: Long, fileId: Long, fileName: String): String =
-        "project-${projectId}/$fileId/${fileName}"
 
     private fun partnerIdLabel(id: Long) =
         "${ProjectFileCategoryType.PARTNER.name}=$id"

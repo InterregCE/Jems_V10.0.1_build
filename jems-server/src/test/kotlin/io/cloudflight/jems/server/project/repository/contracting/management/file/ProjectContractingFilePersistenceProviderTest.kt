@@ -1,13 +1,13 @@
 package io.cloudflight.jems.server.project.repository.contracting.management.file
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.common.minio.GenericProjectFileRepository
 import io.cloudflight.jems.server.common.minio.MinioStorage
 import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
-import io.cloudflight.jems.server.project.repository.report.contribution.ProjectReportContributionPersistenceProviderTest
 import io.cloudflight.jems.server.project.repository.report.file.ProjectReportFileRepository
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileCreate
-import io.cloudflight.jems.server.user.repository.user.UserRepository
+import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
 import io.mockk.*
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -60,7 +60,7 @@ class ProjectContractingFilePersistenceProviderTest : UnitTest() {
     lateinit var minioStorage: MinioStorage
 
     @MockK
-    lateinit var userRepository: UserRepository
+    lateinit var genericFileRepository: GenericProjectFileRepository
 
     @InjectMockKs
     lateinit var persistence: ProjectContractingFilePersistenceProvider
@@ -69,33 +69,17 @@ class ProjectContractingFilePersistenceProviderTest : UnitTest() {
     fun reset() {
         clearMocks(reportFileRepository)
         clearMocks(minioStorage)
+        clearMocks(genericFileRepository)
     }
 
     @Test
     fun uploadFile() {
-        val filePathMinio = slot<String>()
-        val fileEntity = slot<ReportProjectFileEntity>()
-
-        every { minioStorage.saveFile("project-report", capture(filePathMinio), any(), any(), true) } answers { }
-        every { userRepository.getById(270) } returns mockk()
-        every { reportFileRepository.save(capture(fileEntity)) } returnsArgument 0
-
         val fileCreate = fileCreate(type = ProjectPartnerReportFileType.Contract)
 
-        assertThat(persistence.uploadFile(file = fileCreate).name)
-            .isEqualTo("new_file.txt")
+        val metadataMock = mockk<ProjectReportFileMetadata>()
+        every { genericFileRepository.persistProjectFile(fileCreate, "our/indexed/path/new_file.txt") } returns metadataMock
 
-        assertFile(filePathMinio.captured, fileEntity.captured)
-        assertThat(fileEntity.captured.type).isEqualTo(ProjectPartnerReportFileType.Contract)
-    }
-
-    private fun assertFile(filePathMinio: String, fileEntity: ReportProjectFileEntity) {
-        assertThat(filePathMinio).isEqualTo("our/indexed/path/new_file.txt")
-        assertThat(fileEntity.partnerId).isEqualTo(null)
-        assertThat(fileEntity.path).isEqualTo("our/indexed/path/")
-        assertThat(fileEntity.minioBucket).isEqualTo("project-report")
-        assertThat(fileEntity.minioLocation).isEqualTo("our/indexed/path/new_file.txt")
-        assertThat(fileEntity.name).isEqualTo("new_file.txt")
+        assertThat(persistence.uploadFile(file = fileCreate)).isEqualTo(metadataMock)
     }
 
     @Test

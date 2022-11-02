@@ -9,16 +9,19 @@ import io.cloudflight.jems.server.project.repository.file.FileNameAlreadyExistsE
 import io.cloudflight.jems.server.project.repository.partner.PartnerNotFoundInProjectException
 import io.cloudflight.jems.server.project.repository.workpackage.InvestmentNotFoundInProjectException
 import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.utils.FILE_ID
 import io.cloudflight.jems.server.utils.FILE_NAME
 import io.cloudflight.jems.server.utils.INVESTMENT_ID
 import io.cloudflight.jems.server.utils.PARTNER_ID
 import io.cloudflight.jems.server.utils.PROJECT_ID
 import io.cloudflight.jems.server.project.service.file.ProjectFilePersistence
+import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.utils.USER_ID
 import io.cloudflight.jems.server.utils.currentUser
 import io.cloudflight.jems.server.utils.fileMetadata
 import io.cloudflight.jems.server.project.service.file.model.ProjectFileCategoryType
+import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.utils.projectFile
 import io.cloudflight.jems.server.utils.projectFileCategory
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
@@ -167,14 +170,18 @@ internal class UploadProjectFileTest : UnitTest() {
         every {
             filePersistence.saveFileMetadata(PROJECT_ID, USER_ID, projectFile, category)
         } returns fileMetadata
-        every { filePersistence.saveFile(PROJECT_ID, FILE_ID, USER_ID, projectFile) } returns Unit
+        every { filePersistence.saveFile(PROJECT_ID, FILE_ID, USER_ID, projectFile) } answers {
+            "project-${firstArg<Long>()}/${lastArg<ProjectFile>().name}"
+        }
+        every { projectPersistence.getProjectSummary(PROJECT_ID) } returns
+            ProjectSummary(PROJECT_ID, "custom_id", "", "acronym", ApplicationStatus.DRAFT)
         every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit
 
         uploadProjectFile.upload(PROJECT_ID, category, projectFile)
 
         assertThat(auditSlot.captured.auditCandidate.action).isEqualTo(AuditAction.PROJECT_FILE_UPLOADED_SUCCESSFULLY)
         assertThat(auditSlot.captured.auditCandidate.description).isEqualTo(
-            "document $FILE_NAME uploaded to project application $PROJECT_ID for Partner ${category.id} by $USER_ID"
+            "File (of type PARTNER) \"test.txt\" has been uploaded to project-1/test.txt"
         )
     }
 }
