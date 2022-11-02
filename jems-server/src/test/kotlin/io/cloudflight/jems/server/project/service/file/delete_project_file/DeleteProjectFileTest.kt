@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.service.file.delete_project_file
 import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
+import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.project.repository.ProjectNotFoundException
 import io.cloudflight.jems.server.project.repository.file.ProjectFileNotFoundException
 import io.cloudflight.jems.server.project.service.ProjectPersistence
@@ -80,8 +81,10 @@ internal class DeleteProjectFileTest : UnitTest() {
         deleteProjectFile.delete(PROJECT_ID, FILE_ID)
 
         assertThat(auditSlot.captured.auditCandidate.action).isEqualTo(AuditAction.PROJECT_FILE_DELETED)
+        assertThat(auditSlot.captured.auditCandidate.project).isEqualTo(AuditProject("1", "01", "project acronym"))
+        assertThat(auditSlot.captured.auditCandidate.entityRelatedId).isEqualTo(FILE_ID)
         assertThat(auditSlot.captured.auditCandidate.description).isEqualTo(
-            "document $FILE_NAME deleted from project application $PROJECT_ID by $USER_ID"
+            "project-1/2/test.txt"
         )
     }
 
@@ -98,8 +101,10 @@ internal class DeleteProjectFileTest : UnitTest() {
         deleteProjectFile.delete(PROJECT_ID, FILE_ID)
 
         assertThat(auditSlot.captured.auditCandidate.action).isEqualTo(AuditAction.PROJECT_FILE_DELETED)
+        assertThat(auditSlot.captured.auditCandidate.project).isEqualTo(AuditProject("1", "01", "project acronym"))
+        assertThat(auditSlot.captured.auditCandidate.entityRelatedId).isEqualTo(FILE_ID)
         assertThat(auditSlot.captured.auditCandidate.description).isEqualTo(
-            "document $FILE_NAME deleted from project application $PROJECT_ID by $USER_ID"
+            "project-1/2/test.txt"
         )
     }
 }

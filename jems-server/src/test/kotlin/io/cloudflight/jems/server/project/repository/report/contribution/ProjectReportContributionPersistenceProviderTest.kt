@@ -1,11 +1,10 @@
 package io.cloudflight.jems.server.project.repository.report.contribution
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.common.minio.MinioStorage
+import io.cloudflight.jems.server.common.minio.GenericProjectFileRepository
 import io.cloudflight.jems.server.project.entity.report.contribution.ProjectPartnerReportContributionEntity
 import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
 import io.cloudflight.jems.server.project.repository.report.ProjectPartnerReportRepository
-import io.cloudflight.jems.server.project.repository.report.file.ProjectReportFileRepository
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
 import io.cloudflight.jems.server.project.service.report.model.contribution.create.CreateProjectPartnerReportContribution
 import io.cloudflight.jems.server.project.service.report.model.contribution.update.UpdateProjectPartnerReportContributionExisting
@@ -107,10 +106,7 @@ class ProjectReportContributionPersistenceProviderTest : UnitTest() {
     lateinit var reportContributionRepository: ProjectPartnerReportContributionRepository
 
     @MockK
-    lateinit var reportFileRepository: ProjectReportFileRepository
-
-    @MockK
-    lateinit var minioStorage: MinioStorage
+    lateinit var genericFileRepository: GenericProjectFileRepository
 
     @InjectMockKs
     lateinit var persistence: ProjectReportContributionPersistenceProvider
@@ -119,8 +115,7 @@ class ProjectReportContributionPersistenceProviderTest : UnitTest() {
     fun reset() {
         clearMocks(reportRepository)
         clearMocks(reportContributionRepository)
-        clearMocks(reportFileRepository)
-        clearMocks(minioStorage)
+        clearMocks(genericFileRepository)
     }
 
     @Test
@@ -156,14 +151,12 @@ class ProjectReportContributionPersistenceProviderTest : UnitTest() {
     @Test
     fun deleteByIds() {
         every { reportContributionRepository.findAllById(setOf(contributionEntity.id)) } returns listOf(contributionEntity)
-        every { minioStorage.deleteFile(dummyAttachment.minioBucket, dummyAttachment.minioLocation) } answers { }
-        every { reportFileRepository.delete(dummyAttachment) } answers { }
+        every { genericFileRepository.delete(dummyAttachment) } answers { }
         every { reportContributionRepository.deleteAll(listOf(contributionEntity)) } answers { }
 
         persistence.deleteByIds(ids = setOf(contributionEntity.id))
 
-        verify(exactly = 1) { minioStorage.deleteFile(dummyAttachment.minioBucket, dummyAttachment.minioLocation) }
-        verify(exactly = 1) { reportFileRepository.delete(dummyAttachment) }
+        verify(exactly = 1) { genericFileRepository.delete(dummyAttachment) }
         verify(exactly = 1) { reportContributionRepository.deleteAll(listOf(contributionEntity)) }
     }
 

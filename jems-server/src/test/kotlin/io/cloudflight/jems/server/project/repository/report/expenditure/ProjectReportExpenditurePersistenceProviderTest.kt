@@ -6,7 +6,7 @@ import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.entity.TranslationId
-import io.cloudflight.jems.server.common.minio.MinioStorage
+import io.cloudflight.jems.server.common.minio.GenericProjectFileRepository
 import io.cloudflight.jems.server.programme.entity.costoption.*
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportExpenditureCostEntity
@@ -17,14 +17,12 @@ import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerRepor
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportUnitCostEntity
 import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
 import io.cloudflight.jems.server.project.repository.report.ProjectPartnerReportRepository
-import io.cloudflight.jems.server.project.repository.report.file.ProjectReportFileRepository
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportInvestment
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportLumpSum
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportUnitCost
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ReportBudgetCategory
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
-import io.cloudflight.jems.server.project.service.workpackage.model.InvestmentSummary
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -268,10 +266,7 @@ class ProjectReportExpenditurePersistenceProviderTest : UnitTest() {
     lateinit var reportInvestmentRepository: ProjectPartnerReportInvestmentRepository
 
     @MockK
-    lateinit var minioStorage: MinioStorage
-
-    @MockK
-    lateinit var reportFileRepository: ProjectReportFileRepository
+    lateinit var genericFileRepository: GenericProjectFileRepository
 
     @InjectMockKs
     lateinit var persistence: ProjectReportExpenditurePersistenceProvider
@@ -356,8 +351,7 @@ class ProjectReportExpenditurePersistenceProviderTest : UnitTest() {
         every { reportExpenditureRepository.findByPartnerReportOrderByIdDesc(report) } returns
             mutableListOf(entityToStay, entityToDelete, entityToUpdate)
 
-        every { minioStorage.deleteFile(dummyAttachment.minioBucket, dummyAttachment.minioLocation) } answers { }
-        every { reportFileRepository.delete(dummyAttachment) } answers { }
+        every { genericFileRepository.delete(dummyAttachment) } answers { }
         val slotDeleted = slot<Iterable<PartnerReportExpenditureCostEntity>>()
         every { reportExpenditureRepository.deleteAll(capture(slotDeleted)) } answers { }
 

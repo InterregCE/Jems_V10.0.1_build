@@ -1,13 +1,14 @@
 package io.cloudflight.jems.server.project.service.file.delete_project_file
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
+import io.cloudflight.jems.server.common.minio.fileDeleted
 import io.cloudflight.jems.server.project.authorization.CanDeleteFileInCategory
+import io.cloudflight.jems.server.project.repository.file.ProjectFilePersistenceProvider.Companion.getObjectPath
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.file.ProjectFilePersistence
 import io.cloudflight.jems.server.project.service.file.model.ProjectFileCategoryType
 import io.cloudflight.jems.server.project.service.file.model.ProjectFileMetadata
 import io.cloudflight.jems.server.project.service.model.ProjectFull
-import io.cloudflight.jems.server.project.service.projectFileDeleteSucceed
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -25,11 +26,14 @@ class DeleteProjectFile(
     override fun delete(projectId: Long, fileId: Long) {
         projectPersistence.throwIfNotExists(projectId)
         filePersistence.getFileMetadata(fileId).also { fileMetadata ->
-            throwIfFileCannotBeRemoved(
-                fileMetadata, filePersistence.getFileCategoryTypeSet(fileId), projectPersistence.getProject(projectId)
-            )
+            val project = projectPersistence.getProject(projectId)
+            throwIfFileCannotBeRemoved(fileMetadata, filePersistence.getFileCategoryTypeSet(fileId), project)
+
             filePersistence.deleteFile(projectId, fileId, fileMetadata.name)
-            auditPublisher.publishEvent(projectFileDeleteSucceed(this, fileMetadata))
+
+            val location = getObjectPath(projectId, fileId, fileMetadata.name)
+            auditPublisher.publishEvent(fileDeleted(this, fileId = fileMetadata.id,
+                location = location, project = project))
         }
     }
 
@@ -42,4 +46,5 @@ class DeleteProjectFile(
             && fileMetadata.uploadedAt.isBefore(project.projectStatus.updated)
         ) throw DeletingOldFileFromApplicationCategoryIsNotAllowedException()
     }
+
 }

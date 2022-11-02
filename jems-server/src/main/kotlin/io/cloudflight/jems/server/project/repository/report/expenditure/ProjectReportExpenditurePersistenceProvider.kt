@@ -2,14 +2,13 @@ package io.cloudflight.jems.server.project.repository.report.expenditure
 
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.server.common.entity.TranslationId
-import io.cloudflight.jems.server.common.minio.MinioStorage
+import io.cloudflight.jems.server.common.minio.GenericProjectFileRepository
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportExpenditureCostEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportExpenditureCostTranslEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportInvestmentEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportLumpSumEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportUnitCostEntity
 import io.cloudflight.jems.server.project.repository.report.ProjectPartnerReportRepository
-import io.cloudflight.jems.server.project.repository.report.file.ProjectReportFileRepository
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportInvestment
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportLumpSum
@@ -26,8 +25,7 @@ class ProjectReportExpenditurePersistenceProvider(
     private val reportLumpSumRepository: ProjectPartnerReportLumpSumRepository,
     private val reportUnitCostRepository: ProjectPartnerReportUnitCostRepository,
     private val reportInvestmentRepository: ProjectPartnerReportInvestmentRepository,
-    private val minioStorage: MinioStorage,
-    private val reportFileRepository: ProjectReportFileRepository,
+    private val genericFileRepository: GenericProjectFileRepository,
 ) : ProjectReportExpenditurePersistence {
 
     @Transactional(readOnly = true)
@@ -149,10 +147,7 @@ class ProjectReportExpenditurePersistenceProvider(
     }
 
     private fun Collection<PartnerReportExpenditureCostEntity>.deleteAttachments() = map {
-        it.attachment?.let { file ->
-            minioStorage.deleteFile(bucket = file.minioBucket, filePath = file.minioLocation)
-            reportFileRepository.delete(file)
-        }
+        it.attachment?.let { file -> genericFileRepository.delete(file) }
         it
     }
 }

@@ -45,7 +45,7 @@ class UpdatePriorityInteractorTest {
     private val inputErrorMap = mapOf("error" to I18nMessage("error.key"))
 
     companion object {
-        private val ID = 3L
+        private const val ID = 3L
         private val toUpdatePriority = ProgrammePriority(
             code = "PO-02",
             title = setOf(InputTranslation(SystemLanguage.EN, "PO-02 title")),

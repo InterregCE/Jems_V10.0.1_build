@@ -151,4 +151,39 @@ class GenericProjectFileRepositoryTest : UnitTest() {
         ))
     }
 
+    @Test
+    fun delete() {
+        val file = ReportProjectFileEntity(
+            id = 96L,
+            projectId = PROJECT_ID,
+            partnerId = null,
+            path = "",
+            minioBucket = "file-bucket",
+            minioLocation = "/sample/location",
+            name = "powerpoint.pptx",
+            type = ProjectPartnerReportFileType.Deliverable,
+            size = 324L,
+            user = mockk(),
+            uploaded = ZonedDateTime.now(),
+            description = "",
+        )
+
+        every { minioStorage.deleteFile("file-bucket", "/sample/location") } answers { }
+        every { reportFileRepository.delete(file) } answers { }
+        every { projectRepository.getById(PROJECT_ID) } returns project()
+        val auditSlot = slot<AuditCandidateEvent>()
+        every { auditPublisher.publishEvent(capture(auditSlot)) } answers { }
+
+        repository.delete(file)
+
+        verify(exactly = 1) { minioStorage.deleteFile("file-bucket", "/sample/location") }
+        verify(exactly = 1) { reportFileRepository.delete(file) }
+        assertThat(auditSlot.captured.auditCandidate).isEqualTo(AuditCandidate(
+            action = AuditAction.PROJECT_FILE_DELETED,
+            project = AuditProject(PROJECT_ID.toString(), "custom-id", "acronym"),
+            entityRelatedId = 96L,
+            description = "/sample/location",
+        ))
+    }
+
 }
