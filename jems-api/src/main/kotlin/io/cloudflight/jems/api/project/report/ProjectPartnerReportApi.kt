@@ -167,5 +167,5 @@ interface ProjectPartnerReportApi {
         @PathVariable reportId: Long,
         pageable: Pageable,
     ): Page<ProjectReportFileDTO>
-
 }
+
