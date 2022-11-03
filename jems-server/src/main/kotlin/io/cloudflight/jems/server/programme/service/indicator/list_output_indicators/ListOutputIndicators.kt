@@ -23,12 +23,11 @@ class ListOutputIndicators(
     @CanRetrieveProgrammeSetup
     @ExceptionWrapper(GetOutputIndicatorSummariesException::class)
     override fun getOutputIndicatorSummaries() =
-        persistence.getTop50OutputIndicators()
+        persistence.getTop250OutputIndicators()
 
     @Transactional(readOnly = true)
     @CanRetrieveProgrammeSetup
     @ExceptionWrapper(GetOutputIndicatorSummariesForSpecificObjectiveException::class)
     override fun getOutputIndicatorSummariesForSpecificObjective(programmeObjectivePolicy: ProgrammeObjectivePolicy) =
         persistence.getOutputIndicatorsForSpecificObjective(programmeObjectivePolicy)
-
 }

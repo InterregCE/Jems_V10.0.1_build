@@ -98,7 +98,7 @@ class ProjectServiceImpl(
             generalValidator.maxLength(inputProjectData.acronym, 25, "acronym"),
             generalValidator.maxLength(inputProjectData.title, 250, "title"),
             generalValidator.numberBetween(inputProjectData.duration, 1, 999, "duration"),
-            generalValidator.maxLength(inputProjectData.intro, 2000, "intro"),
+            generalValidator.maxLength(inputProjectData.intro, 5000, "intro"),
         )
 
     private fun validateContractedChanges(inputProjectData: InputProjectData, project: ProjectEntity) {

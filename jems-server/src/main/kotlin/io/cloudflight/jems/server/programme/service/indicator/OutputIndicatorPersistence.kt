@@ -10,7 +10,7 @@ import org.springframework.data.domain.Pageable
 interface OutputIndicatorPersistence {
     fun getCountOfOutputIndicators(): Long
     fun getOutputIndicator(id: Long): OutputIndicatorDetail
-    fun getTop50OutputIndicators(): Set<OutputIndicatorSummary>
+    fun getTop250OutputIndicators(): Set<OutputIndicatorSummary>
     fun getOutputIndicators(pageable: Pageable): Page<OutputIndicatorDetail>
     fun getOutputIndicatorsForSpecificObjective(programmeObjectivePolicy: ProgrammeObjectivePolicy): List<OutputIndicatorSummary>
     fun saveOutputIndicator(outputIndicator: OutputIndicator): OutputIndicatorDetail

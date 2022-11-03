@@ -31,7 +31,7 @@ fun validateWorkPackageActivities(workPackageActivities: Collection<WorkPackageA
 
     if (!workPackageActivities.all { it.title.all { (it.translation?.length ?: 0) <= 200 } })
         throw I18nValidationException(i18nKey = ACTIVITY_TITLE_SIZE_ERROR_KEY)
-    if (!workPackageActivities.all { it.description.all { (it.translation?.length ?: 0) <= 1000 } })
+    if (!workPackageActivities.all { it.description.all { (it.translation?.length ?: 0) <= 3000 } })
         throw I18nValidationException(i18nKey = ACTIVITY_DESCRIPTION_SIZE_ERROR_KEY)
 
     if (!workPackageActivities.all { it.deliverables.all { it.description.all { (it.translation?.length ?: 0) <= 300 } } })

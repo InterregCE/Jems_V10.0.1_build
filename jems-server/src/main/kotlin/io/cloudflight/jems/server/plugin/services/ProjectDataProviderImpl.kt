@@ -330,7 +330,7 @@ class ProjectDataProviderImpl(
         return ProjectResultIndicatorOverview(
             indicatorLines = ResultOverviewCalculator.calculateProjectResultOverview(
                 projectOutputs = workPackagePersistence.getAllOutputsForProjectIdSortedByNumbers(projectId, version),
-                programmeOutputIndicatorsById = listOutputIndicatorsPersistence.getTop50OutputIndicators()
+                programmeOutputIndicatorsById = listOutputIndicatorsPersistence.getTop250OutputIndicators()
                     .associateBy { it.id },
                 programmeResultIndicatorsById = listResultIndicatorsPersistence.getTop50ResultIndicators()
                     .associateBy { it.id },

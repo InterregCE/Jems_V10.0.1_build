@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
 
-private const val MAX_COUNT_OF_OUTPUT_INDICATORS = 50
+private const val MAX_COUNT_OF_OUTPUT_INDICATORS = 250
 
 @Service
 class CreateOutputIndicator(

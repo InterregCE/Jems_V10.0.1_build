@@ -1,10 +1,9 @@
 package io.cloudflight.jems.server.programme.service.indicator.create_output_indicator
 
+import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
-import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
-import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.programme.service.indicator.IndicatorsBaseTest
 import io.cloudflight.jems.server.programme.service.indicator.OutputIndicatorPersistence
 import io.cloudflight.jems.server.programme.service.indicator.ResultIndicatorPersistence
@@ -102,11 +101,10 @@ internal class CreateOutputIndicatorTest : IndicatorsBaseTest() {
         every {
             persistence.isIdentifierUsedByAnotherOutputIndicator(outputIndicator.id, outputIndicator.identifier)
         } returns false
-        every { persistence.getCountOfOutputIndicators() } returns 60
+        every { persistence.getCountOfOutputIndicators() } returns 260
 
         assertThatExceptionOfType(OutputIndicatorsCountExceedException::class.java).isThrownBy {
             createOutputIndicator.createOutputIndicator(outputIndicator)
         }
-
     }
 }

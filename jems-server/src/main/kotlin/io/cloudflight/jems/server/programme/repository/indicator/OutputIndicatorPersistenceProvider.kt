@@ -1,13 +1,11 @@
 package io.cloudflight.jems.server.programme.repository.indicator
 
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
-import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.programme.entity.indicator.ResultIndicatorEntity
 import io.cloudflight.jems.server.programme.repository.priority.ProgrammeSpecificObjectiveRepository
 import io.cloudflight.jems.server.programme.service.indicator.OutputIndicatorPersistence
 import io.cloudflight.jems.server.programme.service.indicator.model.OutputIndicator
 import io.cloudflight.jems.server.programme.service.indicator.model.OutputIndicatorDetail
-import io.cloudflight.jems.server.programme.service.indicator.model.ResultIndicator
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -29,8 +27,8 @@ class OutputIndicatorPersistenceProvider(
             .toOutputIndicatorDetail()
 
     @Transactional(readOnly = true)
-    override fun getTop50OutputIndicators() =
-        outputIndicatorRepository.findTop50ByOrderById().toOutputIndicatorSummarySet()
+    override fun getTop250OutputIndicators() =
+        outputIndicatorRepository.findTop250ByOrderById().toOutputIndicatorSummarySet()
 
     @Transactional(readOnly = true)
     override fun getOutputIndicators(pageable: Pageable) =

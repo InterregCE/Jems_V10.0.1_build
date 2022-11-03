@@ -18,8 +18,7 @@ interface OutputIndicatorRepository : JpaRepository<OutputIndicatorEntity, Long>
     @EntityGraph(attributePaths = ["programmePriorityPolicyEntity.programmePriority"])
     override fun findById(id: Long): Optional<OutputIndicatorEntity>
 
-    fun findTop50ByOrderById(): List<OutputIndicatorEntity>
+    fun findTop250ByOrderById(): List<OutputIndicatorEntity>
     fun findOneByIdentifier(identifier: String): OutputIndicatorEntity?
     fun findAllByProgrammePriorityPolicyEntityProgrammeObjectivePolicyOrderById(programmeObjectivePolicy: ProgrammeObjectivePolicy): Iterable<OutputIndicatorEntity>
-
 }

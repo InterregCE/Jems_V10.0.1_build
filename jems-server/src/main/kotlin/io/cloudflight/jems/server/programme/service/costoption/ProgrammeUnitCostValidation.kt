@@ -10,7 +10,7 @@ import org.springframework.http.HttpStatus
 import java.math.BigDecimal
 
 private val MAX_COST = BigDecimal.valueOf(999_999_999_99, 2)
-const val MAX_ALLOWED_UNIT_COSTS = 100
+const val MAX_ALLOWED_UNIT_COSTS = 200
 
 fun validateCreateUnitCost(unitCostToValidate: ProgrammeUnitCost, currentCount: Long, maxAllowed: Int) {
     if (unitCostToValidate.id != 0L)
