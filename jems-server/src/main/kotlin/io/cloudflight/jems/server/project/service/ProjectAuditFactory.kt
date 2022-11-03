@@ -209,19 +209,6 @@ fun projectFileUploadFailed(
         )
     )
 
-fun projectFileDeleteSucceed(
-    context: Any, projectFileMetadata: ProjectFileMetadata
-): AuditCandidateEvent =
-    AuditCandidateEvent(
-        context = context,
-        auditCandidate = AuditCandidate(
-            action = AuditAction.PROJECT_FILE_DELETED,
-            project = AuditProject(id = projectFileMetadata.projectId.toString()),
-            description = "document ${projectFileMetadata.name} deleted from project application ${projectFileMetadata.projectId} by ${projectFileMetadata.uploadedBy.id}"
-
-        )
-    )
-
 fun projectContractingMonitoringChanged(
     context: Any,
     project: ProjectSummary,

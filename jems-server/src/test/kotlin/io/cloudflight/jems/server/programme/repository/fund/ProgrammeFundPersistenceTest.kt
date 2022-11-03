@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test
 class ProgrammeFundPersistenceTest : UnitTest() {
 
     companion object {
-        private val ID = 1L
+        private const val ID = 1L
 
         private val fundEntity = ProgrammeFundEntity(id = ID, selected = true).apply {
             translatedValues.addAll(

@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test
 class ProgrammeLegalStatusPersistenceTest : UnitTest() {
 
     companion object {
-        private val ID = 1L
+        private const val ID = 1L
 
         private val legalStatusEntity = ProgrammeLegalStatusEntity(id = ID, ProgrammeLegalStatusType.OTHER).apply {
             translatedValues.addAll(

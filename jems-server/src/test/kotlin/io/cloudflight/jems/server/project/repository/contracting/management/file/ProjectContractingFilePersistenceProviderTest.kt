@@ -107,13 +107,11 @@ class ProjectContractingFilePersistenceProviderTest : UnitTest() {
         every { file.minioLocation } returns "location"
         every { reportFileRepository.findByProjectIdAndId(PROJECT_ID, fileId = 15L) } returns file
 
-        every { reportFileRepository.delete(any()) } answers { }
-        every { minioStorage.deleteFile(BUCKET, "location") } answers { }
+        every { genericFileRepository.delete(any()) } answers { }
 
         persistence.deleteFile(PROJECT_ID, fileId = 15L)
 
-        verify(exactly = 1) { reportFileRepository.delete(any()) }
-        verify(exactly = 1) { minioStorage.deleteFile(BUCKET, "location") }
+        verify(exactly = 1) { genericFileRepository.delete(file) }
     }
 
     @Test
@@ -122,8 +120,7 @@ class ProjectContractingFilePersistenceProviderTest : UnitTest() {
 
         persistence.deleteFile(PROJECT_ID, fileId = -1L)
 
-        verify(exactly = 0) { reportFileRepository.delete(any()) }
-        verify(exactly = 0) { minioStorage.deleteFile(any(), any()) }
+        verify(exactly = 0) { genericFileRepository.delete(any()) }
     }
 
     @Test
@@ -145,13 +142,11 @@ class ProjectContractingFilePersistenceProviderTest : UnitTest() {
         every { file.minioLocation } returns "location"
         every { reportFileRepository.findByPartnerIdAndId(partnerId = 1L, fileId = 15L) } returns file
 
-        every { reportFileRepository.delete(any()) } answers { }
-        every { minioStorage.deleteFile(BUCKET, "location") } answers { }
+        every { genericFileRepository.delete(any()) } answers { }
 
         persistence.deleteFileByPartnerId(1L, fileId = 15L)
 
-        verify(exactly = 1) { reportFileRepository.delete(any()) }
-        verify(exactly = 1) { minioStorage.deleteFile(BUCKET, "location") }
+        verify(exactly = 1) { genericFileRepository.delete(file) }
     }
 
 }

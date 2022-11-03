@@ -32,7 +32,7 @@ import java.util.Optional
 class ProgrammePriorityPersistenceTest : UnitTest() {
 
     companion object {
-        private val ID = 1L
+        private const val ID = 1L
         private val _priority = ProgrammePriorityEntity(
             id = ID,
             code = "Code 10",

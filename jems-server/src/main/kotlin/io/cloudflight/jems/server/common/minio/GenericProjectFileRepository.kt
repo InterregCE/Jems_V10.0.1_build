@@ -72,4 +72,17 @@ class GenericProjectFileRepository(
             location = file.minioLocation, oldValue = oldDescription, newValue = description, projectSummary = projectRelated))
     }
 
+    @Transactional
+    fun delete(file: ReportProjectFileEntity) {
+        val fileId = file.id
+        val projectId = file.projectId!!
+
+        minioStorage.deleteFile(bucket = file.minioBucket, filePath = file.minioLocation)
+        reportFileRepository.delete(file)
+
+        auditPublisher.publishEvent(fileDeleted(context = this, fileId = fileId,
+            location = file.minioLocation, projectSummary = projectRepository.getById(projectId).toSummaryModel())
+        )
+    }
+
 }

@@ -53,8 +53,7 @@ class ProjectContractingFilePersistenceProvider(
 
     private fun ReportProjectFileEntity?.deleteIfPresent() {
         if (this != null) {
-            minioStorage.deleteFile(bucket = minioBucket, filePath = minioLocation)
-            reportFileRepository.delete(this)
+            genericFileRepository.delete(this)
         }
     }
 

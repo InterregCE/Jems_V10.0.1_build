@@ -1,14 +1,12 @@
 package io.cloudflight.jems.server.project.repository.report.file
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.common.minio.GenericProjectFileRepository
 import io.cloudflight.jems.server.common.minio.MinioStorage
 import io.cloudflight.jems.server.project.entity.report.contribution.ProjectPartnerReportContributionEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportExpenditureCostEntity
 import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
 import io.cloudflight.jems.server.project.entity.report.procurement.ProjectPartnerReportProcurementEntity
-import io.cloudflight.jems.server.project.entity.report.procurement.file.ProjectPartnerReportProcurementFileEntity
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageActivityDeliverableEntity
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageActivityEntity
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageOutputEntity
@@ -37,7 +35,6 @@ import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import java.math.BigDecimal.ONE
@@ -329,13 +326,11 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
         val filePathFull = "sample/path/to/file-to-delete.txt"
         val fileToDelete = file(id = 20L, name = "file-to-delete.txt", filePathFull = filePathFull)
         every { reportFileRepository.findByTypeAndId(ProjectPartnerReportFileType.PaymentAttachment, fileId = 20L) } returns fileToDelete
-        every { minioStorage.deleteFile(BUCKET, filePathFull) } answers { }
-        every { reportFileRepository.delete(fileToDelete) } answers { }
+        every { genericFileRepository.delete(fileToDelete) } answers { }
 
         persistence.deleteFile(ProjectPartnerReportFileType.PaymentAttachment, fileId = 20L)
 
-        verify(exactly = 1) { minioStorage.deleteFile(BUCKET, filePathFull) }
-        verify(exactly = 1) { reportFileRepository.delete(fileToDelete) }
+        verify(exactly = 1) { genericFileRepository.delete(fileToDelete) }
     }
 
     @Test
@@ -343,8 +338,7 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
         every { reportFileRepository.findByPartnerIdAndId(PARTNER_ID, fileId = -1L) } returns null
         persistence.deleteFile(PARTNER_ID, fileId = -1L)
 
-        verify(exactly = 0) { minioStorage.deleteFile(any(), any()) }
-        verify(exactly = 0) { reportFileRepository.delete(any()) }
+        verify(exactly = 0) { genericFileRepository.delete(any()) }
     }
 
     @Test
@@ -352,13 +346,11 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
         val filePathFull = "sample/path/to/file-to-delete.txt"
         val fileToDelete = file(id = 21L, name = "file-to-delete.txt", filePathFull = filePathFull)
         every { reportFileRepository.findByTypeAndId(ProjectPartnerReportFileType.PaymentAttachment, fileId = 21L) } returns fileToDelete
-        every { minioStorage.deleteFile(BUCKET, filePathFull) } answers { }
-        every { reportFileRepository.delete(fileToDelete) } answers { }
+        every { genericFileRepository.delete(fileToDelete) } answers { }
 
         persistence.deleteFile(ProjectPartnerReportFileType.PaymentAttachment, fileId = 21L)
 
-        verify(exactly = 1) { minioStorage.deleteFile(BUCKET, filePathFull) }
-        verify(exactly = 1) { reportFileRepository.delete(fileToDelete) }
+        verify(exactly = 1) { genericFileRepository.delete(fileToDelete) }
     }
 
     @Test
@@ -366,8 +358,7 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
         every { reportFileRepository.findByTypeAndId(ProjectPartnerReportFileType.PaymentAttachment, fileId = -1L) } returns null
         persistence.deleteFile(ProjectPartnerReportFileType.PaymentAttachment, fileId = -1L)
 
-        verify(exactly = 0) { minioStorage.deleteFile(any(), any()) }
-        verify(exactly = 0) { reportFileRepository.delete(any()) }
+        verify(exactly = 0) { genericFileRepository.delete(any()) }
     }
 
     @Test
@@ -494,8 +485,7 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
         every { oldFile.minioBucket } returns "bucket"
         every { oldFile.minioLocation } returns "remove/me.pdf"
 
-        every { minioStorage.deleteFile("bucket", "remove/me.pdf") } answers { }
-        every { reportFileRepository.delete(oldFile) } answers { }
+        every { genericFileRepository.delete(oldFile) } answers { }
     }
 
     @Test

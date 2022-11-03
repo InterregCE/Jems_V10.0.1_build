@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditBuilder
 import io.cloudflight.jems.server.project.service.file.model.ProjectFileCategory
 import io.cloudflight.jems.server.project.service.file.model.ProjectFileMetadata
+import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
@@ -71,6 +72,36 @@ fun fileDescriptionChanged(
             .project(projectSummary)
             .entityRelatedId(fileMeta.id)
             .description("Description of file \"${fileMeta.name}\" uploaded to $location has changed from \"$oldValue\" to \"$newValue\"")
+            .build()
+    )
+
+fun fileDeleted(
+    context: Any,
+    fileId: Long,
+    location: String,
+    projectSummary: ProjectSummary,
+): AuditCandidateEvent =
+    AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditBuilder(AuditAction.PROJECT_FILE_DELETED)
+            .project(projectSummary)
+            .entityRelatedId(fileId)
+            .description(location)
+            .build()
+    )
+
+fun fileDeleted(
+    context: Any,
+    fileId: Long,
+    location: String,
+    project: ProjectFull,
+): AuditCandidateEvent =
+    AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditBuilder(AuditAction.PROJECT_FILE_DELETED)
+            .project(project)
+            .entityRelatedId(fileId)
+            .description(location)
             .build()
     )
 
