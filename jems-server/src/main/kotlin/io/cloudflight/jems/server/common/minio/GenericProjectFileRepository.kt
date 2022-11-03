@@ -50,8 +50,8 @@ class GenericProjectFileRepository(
                 locationForMinio = locationForMinio,
                 userResolver = { userRepository.getById(it) },
                 uploaded = ZonedDateTime.now(),
-            ).also { additionalStep.invoke(it) }
-        ).toModel()
+            )
+        ).also { additionalStep.invoke(it) }.toModel()
 
         val projectRelated = projectRepository.getById(file.projectId!!).toSummaryModel()
         auditPublisher.publishEvent(projectFileUploadSuccess(context = this, fileMeta = fileMeta,
