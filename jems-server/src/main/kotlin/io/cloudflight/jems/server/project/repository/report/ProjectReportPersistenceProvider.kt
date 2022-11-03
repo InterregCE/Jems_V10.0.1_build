@@ -81,4 +81,9 @@ class ProjectReportPersistenceProvider(
     @Transactional(readOnly = true)
     override fun isAnyReportCreated() =
         partnerReportRepository.count() > 0
+
+    @Transactional
+    override fun deletePartnerReportById(reportId: Long) {
+        partnerReportRepository.deleteById(reportId)
+    }
 }

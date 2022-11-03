@@ -1,9 +1,16 @@
-import {AfterViewInit, ChangeDetectionStrategy, Component, TemplateRef, ViewChild} from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  TemplateRef,
+  ViewChild
+} from '@angular/core';
 import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
 import {ProjectPartnerReportSummaryDTO, ProjectPartnerSummaryDTO, UserRoleDTO} from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
-import {catchError, distinctUntilChanged, filter, finalize, map, take, tap} from 'rxjs/operators';
+import {catchError, distinctUntilChanged, filter, finalize, map, switchMap, take, tap} from 'rxjs/operators';
 import {
   ProjectApplicationFormSidenavService
 } from '../containers/project-application-form-page/services/project-application-form-sidenav.service';
@@ -26,6 +33,8 @@ import {
   PartnerControlReportStore
 } from '@project/project-application/report/partner-control-report/partner-control-report-store.service';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
+import {ColumnWidth} from '@common/components/table/model/column-width';
+import StatusEnum = ProjectPartnerReportSummaryDTO.StatusEnum;
 
 @Component({
   selector: 'jems-contract-monitoring',
@@ -37,6 +46,7 @@ import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 export class PartnerReportComponent implements AfterViewInit {
   PermissionsEnum = PermissionsEnum;
   ProjectPartnerReportSummaryDTO = ProjectPartnerReportSummaryDTO;
+  successfulDeletionMessage: boolean;
 
   @ViewChild('numberingCell', {static: true})
   numberingCell: TemplateRef<any>;
@@ -50,6 +60,9 @@ export class PartnerReportComponent implements AfterViewInit {
   @ViewChild('actionCell', {static: true})
   actionCell: TemplateRef<any>;
 
+  @ViewChild('deleteCell', {static: true})
+  deleteCell: TemplateRef<any>;
+
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
   partnerId = this.activatedRoute?.snapshot?.params?.partnerId;
   tableConfiguration: TableConfiguration;
@@ -58,6 +71,7 @@ export class PartnerReportComponent implements AfterViewInit {
   error$ = new BehaviorSubject<APIError | null>(null);
   Alert = Alert;
   isStartControlButtonDisabled = false;
+  deletableReportId: number | null = null;
 
   data$: Observable<{
     totalElements: number;
@@ -90,7 +104,8 @@ export class PartnerReportComponent implements AfterViewInit {
       private partnerReportDetail: PartnerReportDetailPageStore,
       private translateService: TranslateService,
       private multiLanguageGlobalService: MultiLanguageGlobalService,
-      private dialog: MatDialog
+      private dialog: MatDialog,
+      private changeDetectorRef: ChangeDetectorRef
   ) {
     this.data$ = combineLatest([
       this.pageStore.partnerReports$,
@@ -112,6 +127,9 @@ export class PartnerReportComponent implements AfterViewInit {
       tap(data => {
         data.partnerReports.forEach((report) => {
           this.controlActionMap.set(report.id, new BehaviorSubject<boolean>(false));
+          if (report.status === StatusEnum.Draft && report.reportNumber === data.totalElements) {
+            this.deletableReportId = report.reportNumber;
+          }
         });
       })
     );
@@ -164,13 +182,20 @@ export class PartnerReportComponent implements AfterViewInit {
           elementProperty: 'firstSubmission',
           columnType: ColumnType.DateColumn
         },
-          // Disabled as per ticket [MP2-2868]; Will be reverted once Version 6 is released
+        // Disabled as per ticket [MP2-2868]; Will be reverted once Version 6 is released
         // {
         //   displayedColumn: 'project.application.partner.reports.table.control',
         //   columnType: ColumnType.CustomComponent,
         //   customCellTemplate: this.actionCell,
         //   clickable: false
         // },
+        {
+          displayedColumn: 'common.delete.entry',
+          customCellTemplate: this.deleteCell,
+          columnWidth: ColumnWidth.IdColumn,
+          infoMessage: 'project.application.partner.report.deletion.tooltip',
+          clickable: false
+        }
       ]
     });
 
@@ -234,8 +259,16 @@ export class PartnerReportComponent implements AfterViewInit {
     this.error$.next(error);
     setTimeout(() => {
       this.error$.next(null);
-    },         4000);
+    },4000);
     return of(null);
+  }
+
+  private showSuccessMessageAfterDeletion(): void {
+    this.successfulDeletionMessage = true;
+    setTimeout(() => {
+      this.successfulDeletionMessage = false;
+      this.changeDetectorRef.markForCheck();
+    }, 4000);
   }
 
   private changeStatusOfReport(partnerReport: ProjectPartnerReportSummaryDTO): void {
@@ -247,5 +280,20 @@ export class PartnerReportComponent implements AfterViewInit {
         finalize(() => this.getPendingActionStatus(partnerReport.id).next(false))
       ).subscribe();
   }
-}
 
+  delete(partnerReport: ProjectPartnerReportSummaryDTO): void {
+    Forms.confirm(
+      this.dialog, {
+        title: 'project.application.partner.report.confirm.deletion.header',
+        message: {i18nKey: 'project.application.partner.report.confirm.deletion.message', i18nArguments: {id: partnerReport.reportNumber.toString()}}
+      })
+      .pipe(
+        take(1),
+        filter(answer => !!answer),
+        switchMap(() => this.pageStore.deletePartnerReport(partnerReport.id)),
+        tap(() => this.showSuccessMessageAfterDeletion()),
+        catchError((error) => this.showErrorMessage(error.error)),
+      ).subscribe();
+  }
+
+}

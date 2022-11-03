@@ -24,9 +24,11 @@ import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerRep
 import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSummary
 import io.cloudflight.jems.server.project.service.report.model.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportPeriod
+import io.cloudflight.jems.server.project.service.report.partner.deleteProjectPartnerReport.DeleteProjectPartnerReportTest
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageImpl
@@ -298,5 +300,12 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
     fun countForPartner() {
         every { partnerReportRepository.countAllByPartnerId(PARTNER_ID) } returns 24
         assertThat(persistence.countForPartner(PARTNER_ID)).isEqualTo(24)
+    }
+
+    @Test
+    fun deletePartnerReportById() {
+        every { partnerReportRepository.deleteById(PARTNER_ID) } answers {}
+        persistence.deletePartnerReportById(PARTNER_ID)
+        verify(exactly = 1) { partnerReportRepository.deleteById(PARTNER_ID) }
     }
 }

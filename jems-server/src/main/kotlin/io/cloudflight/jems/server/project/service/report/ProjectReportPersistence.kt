@@ -31,4 +31,6 @@ interface ProjectReportPersistence {
     fun countForPartner(partnerId: Long): Int
 
     fun isAnyReportCreated(): Boolean
+
+    fun deletePartnerReportById(reportId: Long)
 }

@@ -64,6 +64,17 @@ export class PartnerReportPageStore {
       );
   }
 
+  deletePartnerReport(reportId: number) {
+    return this.partnerId$
+      .pipe(
+        switchMap((partnerId) => this.projectPartnerReportService.deleteProjectPartnerReport(partnerId as number, reportId)),
+        tap(() => {
+          Log.info('Partner report deleted');
+          this.refreshReports$.next();
+        }),
+      );
+  }
+
   private partnerReports(): Observable<PageProjectPartnerReportSummaryDTO> {
     return combineLatest([
       this.partnerId$,

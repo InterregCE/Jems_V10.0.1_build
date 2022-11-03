@@ -57,6 +57,10 @@ interface ProjectPartnerReportApi {
         @PathVariable partnerId: Long,
     ): ProjectPartnerReportSummaryDTO
 
+    @ApiOperation("Delete project partner report")
+    @DeleteMapping("$ENDPOINT_API_PROJECT_PARTNER_REPORT/byPartnerId/{partnerId}/byReportId/{reportId}")
+    fun deleteProjectPartnerReport(@PathVariable partnerId: Long, @PathVariable reportId: Long)
+
     @ApiOperation("Submit and lock partner report")
     @PostMapping("$ENDPOINT_API_PROJECT_PARTNER_REPORT/submit/{partnerId}/{reportId}")
     fun submitProjectPartnerReport(
@@ -167,5 +171,5 @@ interface ProjectPartnerReportApi {
         @PathVariable reportId: Long,
         pageable: Pageable,
     ): Page<ProjectReportFileDTO>
-}
 
+}
