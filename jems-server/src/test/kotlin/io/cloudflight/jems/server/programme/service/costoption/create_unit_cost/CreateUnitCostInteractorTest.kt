@@ -112,7 +112,7 @@ class CreateUnitCostInteractorTest : UnitTest() {
 
     @Test
     fun `create unit cost - reached max allowed amount`() {
-        every { persistence.getCount() } returns 100
+        every { persistence.getCount() } returns 200
         val unitCost = ProgrammeUnitCost(
             id = 0,
             projectId = null,
@@ -256,5 +256,4 @@ class CreateUnitCostInteractorTest : UnitTest() {
         }
         verify(exactly = 1) { generalValidator.maxLength(type, 25, "type") }
     }
-
 }

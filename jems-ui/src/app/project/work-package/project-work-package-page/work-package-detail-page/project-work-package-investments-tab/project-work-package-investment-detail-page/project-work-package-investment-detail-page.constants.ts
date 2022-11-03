@@ -57,8 +57,8 @@ export class ProjectWorkPackageInvestmentDetailPageConstants {
 
   public static OWNERSHIP_SITE_LOCATION: AppControl = {
     name: 'ownershipSiteLocation',
-    maxLength: 500,
-    validators: [Validators.maxLength(500)]
+    maxLength: 2000,
+    validators: [Validators.maxLength(2000)]
   };
 
   public static OWNERSHIP_MAINTENANCE: AppControl = {
@@ -69,7 +69,7 @@ export class ProjectWorkPackageInvestmentDetailPageConstants {
 
   public static OWNERSHIP_RETAIN: AppControl = {
     name: 'ownershipRetain',
-    maxLength: 500,
-    validators: [Validators.maxLength(500)]
+    maxLength: 2000,
+    validators: [Validators.maxLength(2000)]
   };
 }

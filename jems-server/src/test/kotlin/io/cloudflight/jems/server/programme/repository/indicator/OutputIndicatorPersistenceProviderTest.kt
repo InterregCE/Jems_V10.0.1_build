@@ -48,9 +48,9 @@ internal class OutputIndicatorPersistenceProviderTest : IndicatorsPersistenceBas
     @Test
     fun `should return set of output indicator summary`() {
         val outputIndicatorEntity = buildOutputIndicatorEntityInstance()
-        every { outputIndicatorRepository.findTop50ByOrderById() } returns listOf(outputIndicatorEntity)
+        every { outputIndicatorRepository.findTop250ByOrderById() } returns listOf(outputIndicatorEntity)
         assertThat(
-            outputIndicatorPersistenceProvider.getTop50OutputIndicators()
+            outputIndicatorPersistenceProvider.getTop250OutputIndicators()
         ).isEqualTo(listOf(outputIndicatorEntity).toOutputIndicatorSummarySet())
     }
 

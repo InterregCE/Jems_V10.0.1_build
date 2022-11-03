@@ -7,8 +7,12 @@ import {catchError, take, tap} from 'rxjs/operators';
 import {WorkPackagePageStore} from '../work-package-page-store.service';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {Observable} from 'rxjs';
-import {ProjectApplicationFormSidenavService} from '@project/project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
-import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {
+  ProjectApplicationFormSidenavService
+} from '@project/project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
+import {
+  ProjectStore
+} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
 
 @UntilDestroy()
@@ -30,8 +34,8 @@ export class ProjectWorkPackageObjectivesTabComponent {
   form: FormGroup = this.formBuilder.group({
     number: [''],
     name: ['', Validators.maxLength(100)],
-    specificObjective: ['', Validators.maxLength(250)],
-    objectiveAndAudience: ['', Validators.maxLength(500)],
+    specificObjective: ['', Validators.maxLength(1000)],
+    objectiveAndAudience: ['', Validators.maxLength(1000)],
   });
 
   constructor(private formBuilder: FormBuilder,
@@ -94,5 +98,4 @@ export class ProjectWorkPackageObjectivesTabComponent {
   private redirectToWorkPackageOverview(): void {
     this.router.navigate(['..'], {relativeTo: this.activatedRoute});
   }
-
 }
