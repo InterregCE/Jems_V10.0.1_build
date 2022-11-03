@@ -61,8 +61,8 @@ class UpdateContractingReporting(
             val previousApprovedVersion = allApprovedVersions[1]
             val previousDuration = projectPersistence.getProject(projectId, previousApprovedVersion.version).duration
             val currentDuration = projectPersistence.getProject(projectId).duration
-            if (currentDuration == null || (previousDuration != null &&  currentDuration!! < previousDuration!!)) {
-                val newMaxDuration = if (currentDuration == null) 0 else currentDuration!!
+            if (currentDuration == null || (previousDuration != null &&  currentDuration < previousDuration)) {
+                val newMaxDuration = currentDuration ?: 0
                 val schedules = contractingReportingPersistence.getScheduleIdsWhosePeriodsAndDatesNotProper(projectId, newMaxDuration)
                 if (schedules.isNotEmpty()) {
                     contractingReportingPersistence.clearPeriodAndDatesFor(schedules)
@@ -105,7 +105,7 @@ class UpdateContractingReporting(
             throw EmptyDeadlineDate()
         val periodLimits = periods.mapValues { it.value.toLimits(startDate) }
         val invalidDates = deadlines.filter {
-            it.date!!.isBefore(periodLimits.startLimit(it.periodNumber!!)) || it.date!!.isAfter(periodLimits.endLimit(it.periodNumber))
+            it.date!!.isBefore(periodLimits.startLimit(it.periodNumber!!)) || it.date.isAfter(periodLimits.endLimit(it.periodNumber))
         }
         if (invalidDates.isNotEmpty())
             throw DeadlinesDoNotFitPeriod(invalidDates.map { Triple(it, periodLimits.startLimit(it.periodNumber!!), periodLimits.endLimit(it.periodNumber)) })

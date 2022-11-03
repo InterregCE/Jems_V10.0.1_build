@@ -14,7 +14,7 @@ fun ContractingPartnerBeneficialOwner.toDto() = beneficialOwnerMapper.map(this)
 fun List<ContractingPartnerBeneficialOwnerDTO>.toModel() = map { it.toModel() }
 
 fun ContractingPartnerBeneficialOwnerDTO.toModel() = ContractingPartnerBeneficialOwner(
-    id = id ?: 0L,
+    id = id,
     partnerId = partnerId,
     firstName = firstName,
     lastName = lastName,

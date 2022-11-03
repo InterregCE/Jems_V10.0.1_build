@@ -70,6 +70,7 @@ class ChecklistTemplateValidator(private val validator: GeneralValidatorService)
                     "explanationLabel"
                 ),
             )
+            ProgrammeChecklistComponentType.SCORE -> { }
         }
     }
 
