@@ -164,12 +164,13 @@ export class PartnerReportComponent implements AfterViewInit {
           elementProperty: 'firstSubmission',
           columnType: ColumnType.DateColumn
         },
-        {
-          displayedColumn: 'project.application.partner.reports.table.control',
-          columnType: ColumnType.CustomComponent,
-          customCellTemplate: this.actionCell,
-          clickable: false
-        },
+          // Disabled as per ticket [MP2-2868]; Will be reverted once Version 6 is released
+        // {
+        //   displayedColumn: 'project.application.partner.reports.table.control',
+        //   columnType: ColumnType.CustomComponent,
+        //   customCellTemplate: this.actionCell,
+        //   clickable: false
+        // },
       ]
     });
 
@@ -246,5 +247,5 @@ export class PartnerReportComponent implements AfterViewInit {
         finalize(() => this.getPendingActionStatus(partnerReport.id).next(false))
       ).subscribe();
   }
-
 }
+

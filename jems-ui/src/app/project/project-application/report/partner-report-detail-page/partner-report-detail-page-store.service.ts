@@ -14,7 +14,9 @@ import {catchError, map, shareReplay, startWith, switchMap, tap} from 'rxjs/oper
 import {RoutingService} from '@common/services/routing.service';
 import {Log} from '@common/utils/log';
 import {ProjectPaths} from '@project/common/project-util';
-import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {
+  ProjectStore
+} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
 
 @Injectable({providedIn: 'root'})
@@ -179,3 +181,4 @@ export class PartnerReportDetailPageStore {
       );
   }
 }
+

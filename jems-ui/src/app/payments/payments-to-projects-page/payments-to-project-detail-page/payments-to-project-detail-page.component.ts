@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
 import {combineLatest, Observable, of, Subject} from 'rxjs';
 import {OutputUser, PaymentDetailDTO, PaymentPartnerDTO, PaymentPartnerInstallmentDTO, UserDTO} from '@cat/api';
 import {PaymentsToProjectPageStore} from '../payments-to-projects-page.store';
@@ -319,5 +319,5 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
     }
     return false;
   }
-
 }
+
