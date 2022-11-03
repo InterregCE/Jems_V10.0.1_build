@@ -239,6 +239,8 @@ private fun validateDimensionCodes(dimensionCodes: List<Map<ProgrammeObjectiveDi
                     }
                 }
 
+                ProgrammeObjectiveDimension.Location -> { }
+
                 ProgrammeObjectiveDimension.GenderEquality -> {
                     if (dimension.value.any {code -> code.toInt() > MAX_CODE_VALUE_GENDER_EQUALITY}) {
                         invalid("programme.priority.dimension.codes.value.invalid")

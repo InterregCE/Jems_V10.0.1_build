@@ -39,7 +39,7 @@ data class ProjectContractingMonitoring(
             changes["typologyPartnership"] = Pair(old?.typologyPartnership, typologyPartnership)
 
         val oldAddDates = old?.addDates?.sortedBy { it.number }?.map { it.entryIntoForceDate }
-        val newAddDates = addDates.sortedBy { it.number }?.map { it.entryIntoForceDate }
+        val newAddDates = addDates.sortedBy { it.number }.map { it.entryIntoForceDate }
         if (newAddDates != oldAddDates)
             changes["addSubContractDates"] = Pair(
                 oldAddDates?.map { it },

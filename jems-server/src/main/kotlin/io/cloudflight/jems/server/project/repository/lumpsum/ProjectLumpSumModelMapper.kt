@@ -55,7 +55,7 @@ fun List<ProjectLumpSum>.toEntity(
     projectId: Long,
     getProgrammeLumpSum: (Long) -> ProgrammeLumpSumEntity,
     getProjectPartner: (Long) -> ProjectPartnerEntity,
-) = mapIndexed { index, model ->
+) = map { model ->
     model.toEntity(ProjectLumpSumId(projectId, model.orderNr), getProgrammeLumpSum, getProjectPartner)
 }
 
