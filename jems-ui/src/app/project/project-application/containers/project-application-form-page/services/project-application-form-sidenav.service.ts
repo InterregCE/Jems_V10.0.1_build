@@ -187,7 +187,7 @@ export class ProjectApplicationFormSidenavService {
            hasRevertDecisionPermission, hasInstantiateChecklistPermission, hasSelectedAssessmentListView, canReadAssessmentFiles]: any) => {
       return (
           (canReadAssessmentFiles || hasAssessmentViewPermission || hasRevertDecisionPermission || hasInstantiateChecklistPermission || hasSelectedAssessmentListView) &&
-          ((callHas2Steps && projectStatus !== StatusEnum.STEP1DRAFT && projectStatus !== StatusEnum.DRAFT) || (!callHas2Steps && projectStatus !== StatusEnum.DRAFT))
+          ((callHas2Steps && projectStatus !== StatusEnum.STEP1DRAFT) || (!callHas2Steps && projectStatus !== StatusEnum.DRAFT))
         )
         || (
           hasStartStepTwoPermission &&
