@@ -3,7 +3,7 @@ import application from '../../../fixtures/api/application/application.json';
 import call from '../../../fixtures/api/call/1.step.call.json';
 import {faker} from '@faker-js/faker';
 
-context('Application contracting tests', () => {
+context('Application annexes tests', () => {
   it('TB-732 User can upload files to application annexes', () => {
     cy.loginByRequest(user.admin.email);
     cy.fixture('project/application-form/application-annexes/TB-732.json').then(testData => {
@@ -34,9 +34,11 @@ context('Application contracting tests', () => {
           cy.visit(`/app/project/detail/${applicationId}`, {failOnStatusCode: false});
           cy.contains('Application annexes').click();
           cy.contains('Application attachments').click();
-          cy.get('input[type=file]').selectFile('cypress/fixtures/project/application-form/application-annexes/application-attachment.txt', {force: true});
+          const file1 = 'application-attachment.txt';
+          cy.get('input[type=file]').selectFile(`cypress/fixtures/project/application-form/application-annexes/${file1}`, {force: true});
           cy.contains("button", "PP1").click();
-          cy.get('input[type=file]').selectFile('cypress/fixtures/project/application-form/application-annexes/partner-upload.txt', {force: true});
+          const file2 = 'partner-upload.txt';
+          cy.get('input[type=file]').selectFile(`cypress/fixtures/project/application-form/application-annexes/${file2}`, {force: true});
 
           cy.contains('Application attachments').click();
 
@@ -65,7 +67,7 @@ context('Application contracting tests', () => {
             cy.contains('mat-row', 'partner-upload').contains('mat-icon', 'delete').click();
           })
           cy.contains('button', 'Confirm').click();
-          cy.root().contains('div', 'File was deleted successfully.').should('be.visible');
+          cy.root().contains('div', `File '${file2}' has been deleted successfully.`).should('be.visible');
           cy.contains('partner-upload').should('not.exist');
 
           cy.loginByRequest(testData.applicationCollaborator.email);

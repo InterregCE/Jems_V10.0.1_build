@@ -170,6 +170,8 @@ context('Project budget tests', () => {
 
             // verify PDF export
             cy.visit(`app/project/detail/${applicationId}/export`, {failOnStatusCode: false});
+            cy.contains('div', 'Export Plugin').find('mat-select').click();
+            cy.contains('mat-option', 'Standard application form export').click();
             cy.contains('button', 'Export').clickToDownload('**/export/application?*', 'pdf').then(exportFile => {
               const templateFile = '/project/application-form/project-budget/TB-383-export-template.pdf';
               cy.comparePdf(templateFile, exportFile, comparePdfMask, baselinePath).then(x => {
@@ -178,7 +180,8 @@ context('Project budget tests', () => {
             });
 
             // verify CSV export
-            cy.contains('button', 'Partners budget').click();
+            cy.contains('div', 'Export Plugin').find('mat-select').click();
+            cy.contains('mat-option', 'Standard budget export').click();
             cy.contains('button', 'Export').clickToDownload('**/export/budget?*', 'xlsx').then(exportFile => {
               cy.fixture('project/application-form/project-budget/TB-383-export.xlsx', null).parseXLSX().then(testDataFile => {
                 const assertionMessage = 'Verify downloaded xlsx file';
