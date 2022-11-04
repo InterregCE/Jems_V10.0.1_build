@@ -10,15 +10,15 @@
   },
   "author": "Cloudflight GmbH",
   "devDependencies": {
-    "@faker-js/faker": "^7.3.0",
-    "@types/node": "^18.6.3",
-    "cy2": "^2.0.0",
-    "cypress": "^10.8.0",
+    "@faker-js/faker": "^7.6.0",
+    "@types/node": "^18.11.9",
+    "cy2": "^3.1.7",
+    "cypress": "^10.11.0",
     "date-and-time": "^2.4.1",
     "node-fetch": "^2.6.7",
     "node-xlsx": "^0.21.0",
     "compare-pdf": "^1.1.8",
-    "typescript": "^4.7.4",
+    "typescript": "^4.8.4",
     "wait-on": "^6.0.1"
   }
 }

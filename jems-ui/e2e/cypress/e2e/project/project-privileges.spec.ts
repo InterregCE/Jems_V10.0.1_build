@@ -134,7 +134,9 @@ context('Project privileges tests', () => {
         cy.get('mat-button-toggle-group:last').contains('span', 'view').click();
         cy.contains('button', 'Save changes').should('not.exist');
         cy.contains('Export').click();
-        cy.contains('button', 'Export').should('be.visible');
+        cy.contains('div', 'Export Plugin').find('mat-select').click();
+        cy.contains('mat-option', 'Standard application form export').click();
+        cy.contains('button', 'Export').should('be.enabled');
         cy.contains('Project privileges').click();
         cy.get('mat-button-toggle-group:last').contains('span', 'view').click();
         cy.contains('button', 'Save changes').should('not.exist');

@@ -46,6 +46,8 @@ context('Application form exports', () => {
       cy.createApprovedApplication(application, user.programmeUser.email).then(applicationId => {
         cy.visit(`app/project/detail/${applicationId}/export`, {failOnStatusCode: false});
 
+        cy.contains('div', 'Export Plugin').find('mat-select').click();
+        cy.contains('mat-option', 'Standard application form export').click();
         cy.contains('div', 'Input language').find('mat-select').click();
         cy.contains('mat-option', 'Deutsch').click();
 
@@ -139,6 +141,8 @@ context('Application form exports', () => {
             cy.visit(`app/project/detail/${applicationId}/export`, {failOnStatusCode: false});
 
             // export step 1 version
+            cy.contains('div', 'Export Plugin').find('mat-select').click();
+            cy.contains('mat-option', 'Standard application form export').click();
             cy.get('div#export-config').contains('div', 'Project version').find('mat-select').click();
             cy.contains('mat-option', 'V. 1.0').click();
 
@@ -230,6 +234,8 @@ context('Application form exports', () => {
 
             cy.approveApplication(applicationId, application2step.assessments, user.programmeUser.email);
             cy.visit(`app/project/detail/${applicationId}/export`, {failOnStatusCode: false});
+            cy.contains('div', 'Export Plugin').find('mat-select').click();
+            cy.contains('mat-option', 'Standard application form export').click();
 
             // export current step 2 (approved) version
             cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/application?*`, 'pdf').then(file => {
@@ -296,6 +302,8 @@ context('Application form exports', () => {
 
             cy.approveApplication(applicationId, application2step.assessments, user.programmeUser.email);
             cy.visit(`app/project/detail/${applicationId}/export`, {failOnStatusCode: false});
+            cy.contains('div', 'Export Plugin').find('mat-select').click();
+            cy.contains('mat-option', 'Standard application form export').click();
 
             // export current step 2 (approved) version
             cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/application?*`, 'pdf').then(file => {
@@ -356,6 +364,8 @@ context('Application form exports', () => {
           cy.contains('Save changes').click();
 
           cy.contains('Export').click();
+          cy.contains('div', 'Export Plugin').find('mat-select').click();
+          cy.contains('mat-option', 'Standard application form export').click();
           cy.contains('div', 'Input language').find('mat-select').click();
           cy.contains('mat-option', 'Deutsch').click();
 
@@ -395,6 +405,8 @@ context('Application form exports', () => {
           cy.contains('button', 'Save changes').click();
 
           cy.contains('Export').scrollIntoView().click();
+          cy.contains('div', 'Export Plugin').find('mat-select').click();
+          cy.contains('mat-option', 'Standard application form export').click();
           cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/application?exportLanguage=EN&inputLanguage=EN*`, 'pdf').then(actualFile => {
             const templateFile = 'TB-391-export-template.pdf';
             cy.comparePdf(templateFile, actualFile, comparePdfMask, baselinePath).then(x => {

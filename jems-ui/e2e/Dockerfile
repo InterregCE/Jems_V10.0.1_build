@@ -1,4 +1,4 @@
-FROM cypress/included:10.8.0
+FROM cypress/included:10.11.0
 
 WORKDIR e2e
 

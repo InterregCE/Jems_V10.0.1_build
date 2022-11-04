@@ -5,7 +5,7 @@ import call2step from '../../../fixtures/api/call/2.step.call.json';
 import application2step from '../../../fixtures/api/application/2.step.application.json';
 import partner from '../../../fixtures/api/application/partner/partner.json';
 import draftBudgetUnitCosts from '../../../fixtures/api/application/draft-budget/project.proposed.unit.costs.json';
-import date from "date-and-time";
+import date from 'date-and-time';
 
 context('Partners budget exports', () => {
   beforeEach(() => {
@@ -19,7 +19,8 @@ context('Partners budget exports', () => {
       cy.createApprovedApplication(application, user.programmeUser.email).then(applicationId => {
         cy.visit(`app/project/detail/${applicationId}/export`, {failOnStatusCode: false});
 
-        cy.contains('Partners budget').click();
+        cy.contains('div', 'Export Plugin').find('mat-select').click();
+        cy.contains('mat-option', 'Standard budget export').click();
         cy.contains('div', 'Input language').find('mat-select').click();
         cy.contains('mat-option', 'Deutsch').click();
 
@@ -144,7 +145,8 @@ context('Partners budget exports', () => {
             cy.visit(`app/project/detail/${applicationId}/export`, {failOnStatusCode: false});
 
             // export step 1 version
-            cy.contains('Partners budget').click();
+            cy.contains('div', 'Export Plugin').find('mat-select').click();
+            cy.contains('mat-option', 'Standard budget export').click();
             cy.get('div#export-config').contains('div', 'Project version').find('mat-select').click();
             cy.contains('mat-option', 'V. 1.0').click();
 
@@ -237,7 +239,8 @@ context('Partners budget exports', () => {
             cy.visit(`app/project/detail/${applicationId}/export`, {failOnStatusCode: false});
 
             // export current step 2 (approved) version
-            cy.contains('Partners budget').click();
+            cy.contains('div', 'Export Plugin').find('mat-select').click();
+            cy.contains('mat-option', 'Standard budget export').click();
             cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/budget?*`, 'xlsx').then(exportFile => {
               cy.fixture('project/exports/partners-budget/TB-686-v2.xlsx', null).parseXLSX().then(testDataFile => {
                 const assertionMessage = 'Verify downloaded xlsx file for rejected version';
@@ -302,7 +305,8 @@ context('Partners budget exports', () => {
             cy.visit(`app/project/detail/${applicationId}/export`, {failOnStatusCode: false});
 
             // export current step 2 (approved) version
-            cy.contains('Partners budget').click();
+            cy.contains('div', 'Export Plugin').find('mat-select').click();
+            cy.contains('mat-option', 'Standard budget export').click();
             cy.contains('button', 'Export').clickToDownload(`api/project/${applicationId}/export/budget?*`, 'xlsx').then(exportFile => {
               cy.fixture('project/exports/partners-budget/TB-368-v2.xlsx', null).parseXLSX().then(testDataFile => {
                 const assertionMessage = 'Verify downloaded xlsx file for step 2 version';

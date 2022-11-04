@@ -273,14 +273,13 @@ context('Project description tests', () => {
       });
 
       cy.contains('button', 'Create').click();
-      cy.get('jems-table mat-row').then(investmentItem => {
+      cy.get('jems-table mat-row').should(investmentItem => {
         expect(investmentItem).to.contain('I1.1');
         expect(investmentItem).to.contain(testData.title[0].translation);
         expect(investmentItem).to.contain(testData.address.region3);
       });
 
-      cy.contains(this.partnerAbbreviation).click();
-      cy.contains('Budget').click();
+      cy.visit(`/app/project/detail/133/applicationFormPartner/${this.applicationId}/budget`);
       cy.contains('mat-select', 'N/A').scrollIntoView().click();
       cy.contains('mat-option', 'I1.1').should('be.visible');
     });
