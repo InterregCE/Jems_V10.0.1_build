@@ -22,6 +22,11 @@
             </p>
     </ng-container>
 
+    <jems-alert [show]="successfulDeletionMessage"
+                [type]="Alert.SUCCESS">
+        <p>{{'project.application.partner.report.successful.deletion.message' | translate}}</p>
+    </jems-alert>
+
     <jems-alert *ngIf="error$ | async as error"
                 [show]="!!error.i18nMessage?.i18nKey"
                 [type]="Alert.ERROR">
@@ -76,4 +81,14 @@
         {{'project.application.partner.reports.open.control' | translate}}
         </button>
     </ng-container>
+</ng-template>
+
+<ng-template #deleteCell let-partnerReport>
+    <button
+            mat-icon-button color="accent"
+            [disabled]="!(partnerReport.reportNumber === deletableReportId && (pageStore.userCanEditReports$ | async))"
+            (click)="delete(partnerReport);$event.stopPropagation();"
+            matTooltip="{{'common.delete.entry.tooltip' | translate}}">
+        <mat-icon>delete</mat-icon>
+    </button>
 </ng-template>
