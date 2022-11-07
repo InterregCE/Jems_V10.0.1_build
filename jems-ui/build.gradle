@@ -7,7 +7,3 @@ dependencies {
     swaggerApi project(':jems-api')
     swaggerTemplate "io.cloudflight.swagger-template:swagger-template-angular10:$cloudflightTemplateVersion"
 }
-
-test.configure {
-    dependsOn('clfNpmTest')
-}
