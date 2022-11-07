@@ -473,13 +473,13 @@ abstract class PluginDataMapper {
 
     fun map(projectPartnerDetail: ProjectPartnerDetail): ProjectPartnerSummary =
         ProjectPartnerSummary(
-            projectPartnerDetail.id,
-            projectPartnerDetail.abbreviation,
-            projectPartnerDetail.active,
-            ProjectPartnerRole.valueOf(projectPartnerDetail.role.name),
-            projectPartnerDetail.sortNumber,
-            projectPartnerDetail.addresses.firstOrNull { it.type == ProjectPartnerAddressType.Organization }?.country,
-            projectPartnerDetail.addresses.firstOrNull { it.type == ProjectPartnerAddressType.Organization }?.nutsRegion2
+            id = projectPartnerDetail.id,
+            abbreviation = projectPartnerDetail.abbreviation,
+            active = projectPartnerDetail.active,
+            role = ProjectPartnerRole.valueOf(projectPartnerDetail.role.name),
+            sortNumber = projectPartnerDetail.sortNumber,
+            country = projectPartnerDetail.addresses.firstOrNull { it.type == ProjectPartnerAddressType.Organization }?.country,
+            region = projectPartnerDetail.addresses.firstOrNull { it.type == ProjectPartnerAddressType.Organization }?.nutsRegion2
         )
 
     fun map(programmeStrategy: ProgrammeStrategy): ProgrammeStrategyData {

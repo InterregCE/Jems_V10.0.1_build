@@ -70,13 +70,13 @@ interface ControllerInstitutionPartnerRepository: JpaRepository<ControllerInstit
     @Query(
         """
         SELECT new io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerAssignmentWithUsers(
-            cip.institutionId,
+            cip.institution.id,
             ciu.id.user.id,
             cip.partnerProjectId
         )
         FROM controller_institution_partner AS cip
         INNER JOIN controller_institution_user AS ciu
-            ON cip.institutionId = ciu.id.controllerInstitutionId
+            ON cip.institution.id = ciu.id.controllerInstitutionId
         WHERE cip.partnerProjectId IN :partnerProjectIds
         """
     )
@@ -87,7 +87,7 @@ interface ControllerInstitutionPartnerRepository: JpaRepository<ControllerInstit
         SELECT ciu.accessLevel
         FROM #{#entityName} AS cip
         INNER JOIN controller_institution_user AS ciu
-            ON cip.institutionId = ciu.id.controllerInstitutionId
+            ON cip.institution.id = ciu.id.controllerInstitutionId
         WHERE cip.partnerId = :partnerId AND ciu.id.user.id = :userId
         """
     )
@@ -108,7 +108,7 @@ interface ControllerInstitutionPartnerRepository: JpaRepository<ControllerInstit
                              ON nuts3.region2.id = nuts2.id
                   INNER JOIN nuts_region_1 nuts1
                              ON nuts2.region1.id = nuts1.id
-                  WHERE e.institutionId = cin.id.institutionId
+                  WHERE e.institution.id = cin.id.institutionId
                 )
             AND e.partnerProjectId = :projectId
         """

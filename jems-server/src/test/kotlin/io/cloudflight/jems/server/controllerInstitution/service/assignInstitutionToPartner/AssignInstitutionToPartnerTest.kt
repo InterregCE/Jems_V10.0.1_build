@@ -65,7 +65,7 @@ class AssignInstitutionToPartnerTest: UnitTest() {
             assignmentsPartnerIds, approvedAndAfterApprovedApplicationStatuses) } returns listOf(Pair(1L, 1L))
 
        every { controllerInstitutionPersistence.assignInstitutionToPartner(
-           assignmentsToRemove = emptyList(),
+           partnerIdsToRemove = emptySet(),
            assignmentsToSave = listOf(InstitutionPartnerAssignment(
                institutionId = 1L,
                partnerId = 1L,

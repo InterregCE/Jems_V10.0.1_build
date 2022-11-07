@@ -114,8 +114,9 @@ internal class ProjectAssociatedOrganizationServiceTest {
 
     private val projectPartnerDTO = ProjectPartnerSummaryDTO(
         id = 1,
-        active = true,
         abbreviation = projectPartner.abbreviation,
+        institutionName = null,
+        active = true,
         role = ProjectPartnerRoleDTO.LEAD_PARTNER,
         sortNumber = 1,
     )

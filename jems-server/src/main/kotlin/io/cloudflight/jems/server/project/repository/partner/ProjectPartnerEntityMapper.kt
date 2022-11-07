@@ -142,6 +142,7 @@ fun Iterable<ProjectPartnerEntity>.toProjectPartner() = map { it.toProjectPartne
 fun ProjectPartnerEntity.toModel() = ProjectPartnerSummary(
     id = id,
     abbreviation = abbreviation,
+    institutionName = null,
     active = active,
     role = role,
     sortNumber = sortNumber,

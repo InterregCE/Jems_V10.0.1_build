@@ -21,26 +21,31 @@ import java.util.Optional
 
 @Repository
 class ControllerInstitutionPersistenceProvider(
-    private val controllerRepo: ControllerInstitutionRepository,
     private val nutsRegion3Repository: NutsRegion3Repository,
+    private val institutionRepository: ControllerInstitutionRepository,
     private val institutionUserRepository: ControllerInstitutionUserRepository,
     private val institutionPartnerRepository: ControllerInstitutionPartnerRepository,
     private val userRepository: UserRepository,
-    ): ControllerInstitutionPersistence {
+): ControllerInstitutionPersistence {
 
     @Transactional(readOnly = true)
     override fun getControllerInstitutions(pageable: Pageable): Page<ControllerInstitutionList> =
-        controllerRepo.findAll(pageable).toListModel()
+        institutionRepository.findAll(pageable).toListModel()
+
+    @Transactional(readOnly = true)
+    override fun getControllerInstitutions(partnerIds: Set<Long>): Map<Long, ControllerInstitutionList> =
+        institutionPartnerRepository.findAllByPartnerIdIn(partnerIds)
+            .associate { Pair(it.partnerId, it.institution.toListModel()) }
 
     @Transactional(readOnly = true)
     override fun getAllControllerInstitutions(): List<ControllerInstitutionEntity> {
-        return controllerRepo.findAll()
+        return institutionRepository.findAll()
     }
 
     @Transactional(readOnly = true)
     override fun getControllerInstitutionsByUserId(userId: Long, pageable: Pageable): Page<ControllerInstitutionList> {
        val allowedControllerInstitutionIds = institutionUserRepository.findAllByUserId(userId).map { it.id.controllerInstitutionId }
-       return controllerRepo.findAllByIdIn(allowedControllerInstitutionIds, pageable).toListModel()
+       return institutionRepository.findAllByIdIn(allowedControllerInstitutionIds, pageable).toListModel()
     }
 
     @Transactional(readOnly = true)
@@ -52,7 +57,7 @@ class ControllerInstitutionPersistenceProvider(
 
     @Transactional
     override fun createControllerInstitution(controllerInstitution: UpdateControllerInstitution): ControllerInstitution {
-        val savedControllerInstitution = controllerRepo.save(controllerInstitution.toEntity())
+        val savedControllerInstitution = institutionRepository.save(controllerInstitution.toEntity())
         if (controllerInstitution.institutionNuts.isNotEmpty()) {
             savedControllerInstitution.institutionNuts = nutsRegion3Repository.findAllById(controllerInstitution.institutionNuts)
                 .toMutableSet()
@@ -118,13 +123,17 @@ class ControllerInstitutionPersistenceProvider(
 
     @Transactional
     override fun assignInstitutionToPartner(
-        assignmentsToRemove:  List<InstitutionPartnerAssignment>,
+        partnerIdsToRemove: Set<Long>,
         assignmentsToSave: List<InstitutionPartnerAssignment>
     ): List<InstitutionPartnerAssignment> {
-         if (assignmentsToRemove.isNotEmpty()) {
-             institutionPartnerRepository.deleteAllByIdInBatch(assignmentsToRemove.map { it.partnerId })
-         }
-        return institutionPartnerRepository.saveAll(assignmentsToSave.toEntities()).toModels()
+        if (partnerIdsToRemove.isNotEmpty()) {
+            institutionPartnerRepository.deleteAllByIdInBatch(partnerIdsToRemove)
+        }
+        val institutions = institutionRepository.findAllById(assignmentsToSave.mapTo(HashSet()) { it.institutionId })
+            .associateBy { it.id }
+        return institutionPartnerRepository.saveAll(
+            assignmentsToSave.toEntities(institutionResolver = { institutions[it]!! })
+        ).toModels()
     }
 
     @Transactional
@@ -145,7 +154,7 @@ class ControllerInstitutionPersistenceProvider(
          institutionPartnerRepository.getControllerUserAccessLevelForPartner(userId, partnerId)
 
     private fun getControllerInstitutionOrThrow(id: Long): ControllerInstitutionEntity =
-        controllerRepo.findById(id).orElseThrow { GetControllerInstitutionException() }
+        institutionRepository.findById(id).orElseThrow { GetControllerInstitutionException() }
 
     @Transactional(readOnly = true)
     override fun getInstitutionPartnerAssignmentsToDeleteByProjectId(projectId: Long): List<InstitutionPartnerAssignment> =

@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.service.partner.get_project_partner
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.repository.ApplicationVersionNotFoundException
@@ -34,8 +35,11 @@ internal class GetProjectPartnerInteractorTest : UnitTest() {
     @MockK
     lateinit var getProjectBudget: GetProjectBudget
 
+    @MockK
+    lateinit var institutionPersistence: ControllerInstitutionPersistence
+
     @InjectMockKs
-    lateinit var getInteractor: GetProjectPartner
+    lateinit var interactor: GetProjectPartner
 
     private val UNPAGED = Pageable.unpaged()
 
@@ -80,8 +84,8 @@ internal class GetProjectPartnerInteractorTest : UnitTest() {
         every { persistence.getById(-1) } throws ResourceNotFoundException("partner")
         every { persistence.getById(1) } returns projectPartnerDetail
 
-        assertThrows<ResourceNotFoundException> { getInteractor.getById(-1) }
-        Assertions.assertThat(getInteractor.getById(1)).isEqualTo(projectPartnerDetail)
+        assertThrows<ResourceNotFoundException> { interactor.getById(-1) }
+        Assertions.assertThat(interactor.getById(1)).isEqualTo(projectPartnerDetail)
     }
 
     @Test
@@ -89,8 +93,8 @@ internal class GetProjectPartnerInteractorTest : UnitTest() {
         every { persistence.getById(1, "404") } throws ApplicationVersionNotFoundException()
         every { persistence.getById(1, "1.0") } returns projectPartnerDetail
 
-        assertThrows<ApplicationVersionNotFoundException> { getInteractor.getById(1, "404") }
-        Assertions.assertThat(getInteractor.getById(1, "1.0")).isEqualTo(projectPartnerDetail)
+        assertThrows<ApplicationVersionNotFoundException> { interactor.getById(1, "404") }
+        Assertions.assertThat(interactor.getById(1, "1.0")).isEqualTo(projectPartnerDetail)
     }
 
     @Test
@@ -100,8 +104,8 @@ internal class GetProjectPartnerInteractorTest : UnitTest() {
         every { getProjectBudget.getBudget(any(), 0, any())} returns emptyList()
         every { getProjectBudget.getBudget(any(), 1, any())} returns listOf(partnerBudget)
 
-        Assertions.assertThat(getInteractor.findAllByProjectId(0, UNPAGED)).isEmpty()
-        Assertions.assertThat(getInteractor.findAllByProjectId(1, UNPAGED)).containsExactly(projectBudgetPartnerSummary)
+        Assertions.assertThat(interactor.findAllByProjectId(0, UNPAGED)).isEmpty()
+        Assertions.assertThat(interactor.findAllByProjectId(1, UNPAGED)).containsExactly(projectBudgetPartnerSummary)
     }
 
 }

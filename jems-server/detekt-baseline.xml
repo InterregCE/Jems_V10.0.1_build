@@ -560,6 +560,7 @@
     <ID>TooManyFunctions:ApplicationState.kt$ApplicationState</ID>
     <ID>TooManyFunctions:CallPersistence.kt$CallPersistence</ID>
     <ID>TooManyFunctions:CallPersistenceProvider.kt$CallPersistenceProvider : CallPersistence</ID>
+    <ID>TooManyFunctions:ControllerInstitutionPersistence.kt$ControllerInstitutionPersistence</ID>
     <ID>TooManyFunctions:ControllerInstitutionPersistenceProvider.kt$ControllerInstitutionPersistenceProvider : ControllerInstitutionPersistence</ID>
     <ID>TooManyFunctions:CreateProjectPartnerReportBudget.kt$CreateProjectPartnerReportBudget</ID>
     <ID>TooManyFunctions:GeneralValidatorDefaultImpl.kt$GeneralValidatorDefaultImpl : GeneralValidatorService</ID>

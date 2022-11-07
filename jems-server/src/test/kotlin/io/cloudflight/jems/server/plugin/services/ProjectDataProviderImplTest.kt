@@ -523,8 +523,9 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             active = true,
             partner = ProjectPartnerSummaryDTO(
                 id = projectPartner.id,
-                active = true,
                 abbreviation = projectPartner.abbreviation,
+                institutionName = "institution",
+                active = true,
                 role = ProjectPartnerRoleDTO.valueOf(projectPartner.role.name),
                 sortNumber = projectPartner.sortNumber,
                 country = "AT",
@@ -795,13 +796,13 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             partnersBudgetPerPeriod = listOf(
                 ProjectPartnerBudgetPerPeriod(
                     partner = ProjectPartnerSummary(
-                        projectPartner.id,
-                        projectPartner.abbreviation,
-                        projectPartner.active,
-                        projectPartner.role,
-                        projectPartner.sortNumber,
-                        projectPartner.addresses.first { it.type == ProjectPartnerAddressType.Organization }.country,
-                        projectPartner.addresses.first { it.type == ProjectPartnerAddressType.Organization }.nutsRegion2
+                        id = projectPartner.id,
+                        abbreviation = projectPartner.abbreviation,
+                        active = projectPartner.active,
+                        role = projectPartner.role,
+                        sortNumber = projectPartner.sortNumber,
+                        country = projectPartner.addresses.first { it.type == ProjectPartnerAddressType.Organization }.country,
+                        region = projectPartner.addresses.first { it.type == ProjectPartnerAddressType.Organization }.nutsRegion2
                     ),
                     periodBudgets = mutableListOf(
                         ProjectPeriodBudget(0, 0, 0, BigDecimal.ZERO, BudgetCostsDetail(), false),
