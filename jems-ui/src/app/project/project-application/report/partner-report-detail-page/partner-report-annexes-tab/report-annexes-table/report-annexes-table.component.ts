@@ -1,7 +1,8 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {AcceptedFileTypesConstants} from '@project/common/components/file-management/accepted-file-types.constants';
 import {
-  PageProjectReportFileDTO, ProjectPartnerReportService,
+  PageProjectReportFileDTO,
+  ProjectPartnerReportService,
   ProjectPartnerReportSummaryDTO,
   ProjectReportFileDTO,
   UserRoleDTO,
@@ -10,18 +11,18 @@ import {combineLatest, Observable, Subject} from 'rxjs';
 import {CategoryInfo} from '@project/common/components/category-tree/categoryModels';
 import {map, switchMap, take} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
-import { Alert } from '@common/components/forms/alert';
-import { Tables } from '@common/utils/tables';
+import {Alert} from '@common/components/forms/alert';
+import {Tables} from '@common/utils/tables';
 import {
   ReportFileManagementStore
 } from '@project/project-application/report/partner-report-detail-page/partner-report-annexes-tab/report-file-management-store';
-import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import {FileListItem} from '@common/components/file-list/file-list-item';
 import {FileDescriptionChange} from '@common/components/file-list/file-list-table/file-description-change';
 import {
   PartnerReportDetailPageStore
 } from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
 import {FileListComponent} from '@common/components/file-list/file-list.component';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @UntilDestroy()
 @Component({
@@ -68,7 +69,7 @@ export class ReportAnnexesTableComponent {
             author: file.author,
             sizeString: file.sizeString,
             description: file.description,
-            editable: reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.Draft && file.type === ProjectReportFileDTO.TypeEnum.PartnerReport,
+            editable: reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.Draft,
             deletable: file.type === ProjectReportFileDTO.TypeEnum.PartnerReport && reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.Draft,
             tooltipIfNotDeletable: 'file.table.action.delete.disabled.for.tab.tooltip',
             iconIfNotDeletable: 'delete_forever',
@@ -117,5 +118,4 @@ export class ReportAnnexesTableComponent {
       ),
     );
   };
-
 }
