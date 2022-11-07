@@ -37,7 +37,7 @@ This is configured by the property `SPRING_DATASOURCE_URL` or the default `jdbc:
 To simplify the startup of Jems, a docker compose file is available (docker-compose.yml).
 The following commands are used for development:
 
- - `gradle clean build` for building the project; specifically use `clean` if changes for generated files are necessary
+ - `gradlew clean build` for building the project; specifically use `clean` if changes for generated files are necessary
  - `spring boot` with MainClass `io.cloudflight.jems.server.Application` starts server (on default port `8080`)
  - `npm run serve:local` start the angular build watch (run for automatic reload after frontend changes)
  - `PUBLISH_BUILD=true PUBLISH_NPM_AUTH=x ./gradlew assemble` should generate the full executable jems-server.jar (no snapshot)
@@ -59,7 +59,7 @@ The build and deployment is managed within Teamcity [6].
 
 Manual deployment using docker compose:
 
- - execute `gradle clean build` for building the project
+ - execute `gradlew clean build` for building the project
  - run the following docker-compose services
    - jems-database (relational database for Jems configuration and input data)
    - jems-minio (Object storage for files) **WE DO NOT RECOMMEND THIS FOR PRODUCTION**, on production you should use
@@ -74,6 +74,8 @@ Manual deployment using docker compose:
    - by default Spring Management endpoints are enabled on server port + 10000, e.g. when `server.port=8080` then
    `management.server.port=18080`, so to retrieve version of build use
    [localhost:18080/actuator/info](http://localhost:18080/actuator/info)
+   - to use logging into file, you can specify parameter `--logging.file.name="file.log"`
+   - to use different log level, you can specify parameter e.g. `--logging.level.org.springframework=TRACE`
  - use the following environment variables to control
    - `AUDIT_ENABLED=false` to enable/disable logging into elastic search
    - `MAIL_ENABLED=false` to enable/disable sending mail notifications
