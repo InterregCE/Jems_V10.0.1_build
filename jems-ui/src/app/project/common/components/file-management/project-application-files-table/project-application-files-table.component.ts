@@ -106,7 +106,8 @@ export class ProjectApplicationFilesTableComponent {
         return canChangeModificationFile;
       case FileCategoryTypeEnum.ASSESSMENT:
         return canChangeAssessmentFile;
-      case FileCategoryTypeEnum.PARTNER: 
+      case FileCategoryTypeEnum.APPLICATION:
+      case FileCategoryTypeEnum.PARTNER:
       case FileCategoryTypeEnum.INVESTMENT:
         return canChangeApplicationFile || (isOwner && ProjectUtil.isOpenForModifications(status));
       default:
@@ -128,7 +129,8 @@ export class ProjectApplicationFilesTableComponent {
         return canChangeModificationFile;
       case FileCategoryTypeEnum.ASSESSMENT:
         return canChangeAssessmentFile;
-      case FileCategoryTypeEnum.PARTNER: 
+      case FileCategoryTypeEnum.APPLICATION:
+      case FileCategoryTypeEnum.PARTNER:
       case FileCategoryTypeEnum.INVESTMENT:
         return ProjectApplicationFilesTableComponent.isApplicationFileDeletable(status, uploadedAt, isOwner, canChangeApplicationFile);
       default:
