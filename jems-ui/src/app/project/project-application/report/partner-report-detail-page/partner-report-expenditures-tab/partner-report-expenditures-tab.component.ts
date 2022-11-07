@@ -633,9 +633,12 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     control.get('investmentId')?.disable();
     if (selectionType === 'unitCost') {
       control.get('numberOfUnits')?.enable();
-      if (this.isUnitCostForeignCurrencyAvailable(index) && !this.hasPartnerCurrencySetToEur()) {
-          control.get('currencyCode')?.enable();
-        }
+      if (this.isUnitCostForeignCurrencyAvailable(index)
+        && !this.hasPartnerCurrencySetToEur()
+        && this.currentReport.status == ProjectPartnerReportDTO.StatusEnum.Draft)
+      {
+        control.get('currencyCode')?.enable();
+      }
     }
   }
 
