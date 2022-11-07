@@ -4,15 +4,17 @@
         <mat-chip class="chip-option" *ngFor="let value of values"
                   [removable]="!isDisabled"
                   [selectable]="false">
-            {{options.get(value) || '' | translate}}
-            <mat-icon (click)="!isDisabled && removeFromFilters(value)" matChipRemove>cancel</mat-icon>
+            <div matTooltipClass="filter-text-tooltip" matTooltip="{{options.get(value) || '' | translate}}">
+                <span class="filter-text">{{options.get(value) || '' | translate}}</span>
+                <mat-icon (click)="!isDisabled && removeFromFilters(value)" matChipRemove>cancel</mat-icon>
+            </div>
         </mat-chip>
         <input #filterInput
                [matAutocomplete]="auto"
                [matChipInputFor]="filterChip"
                [placeholder]="placeholder | translate"
                matInput>
-        <jems-context-info *ngIf="tooltipContent.length > 0" infoText="{{tooltipContent}}" infoPosition="right">
+        <jems-context-info *ngIf="infoContent.length > 0" infoText="{{infoContent}}" infoPosition="right">
         </jems-context-info>
         <mat-autocomplete #auto="matAutocomplete"
                           (optionSelected)="addToFilters($event.option.value); filterInput.value = ''; filterInput.blur()">
@@ -31,15 +33,17 @@
         <mat-chip class="chip-option" *ngFor="let value of values"
                   [removable]="!isDisabled && value.canBeDeleted"
                   [selectable]="false">
-            {{value.value || '' | translate}}
-            <mat-icon *ngIf="!isDisabled && value.canBeDeleted" (click)="(!isDisabled && value.canBeDeleted) && removeFromFilters(value)" matChipRemove>cancel</mat-icon>
+            <div matTooltipClass="filter-text-tooltip" matTooltip="{{value.value || '' | translate}}">
+                <span class="filter-text">{{value.value || '' | translate}}</span>
+                <mat-icon *ngIf="!isDisabled && value.canBeDeleted" (click)="(!isDisabled && value.canBeDeleted) && removeFromFilters(value)" matChipRemove>cancel</mat-icon>
+            </div>
         </mat-chip>
         <input #filterInputWithPartiallyLockedData
                [matAutocomplete]="autoWithPartiallyLockedData"
                [matChipInputFor]="filterChipWithPartiallyLockedData"
                [placeholder]="placeholder | translate"
                matInput>
-        <jems-context-info *ngIf="tooltipContent.length > 0" infoText="{{tooltipContent}}" infoPosition="right">
+        <jems-context-info *ngIf="infoContent.length > 0" infoText="{{infoContent}}" infoPosition="right">
         </jems-context-info>
         <mat-autocomplete #autoWithPartiallyLockedData="matAutocomplete"
                           (optionSelected)="addToFiltersForPartiallyLockedData($event.option.value); filterInputWithPartiallyLockedData.value = ''; filterInputWithPartiallyLockedData.blur()">
