@@ -106,7 +106,8 @@ export class ProjectApplicationFilesTableComponent {
         return canChangeModificationFile;
       case FileCategoryTypeEnum.ASSESSMENT:
         return canChangeAssessmentFile;
-      case FileCategoryTypeEnum.APPLICATION:
+      case FileCategoryTypeEnum.PARTNER: 
+      case FileCategoryTypeEnum.INVESTMENT:
         return canChangeApplicationFile || (isOwner && ProjectUtil.isOpenForModifications(status));
       default:
         return false;
@@ -127,7 +128,8 @@ export class ProjectApplicationFilesTableComponent {
         return canChangeModificationFile;
       case FileCategoryTypeEnum.ASSESSMENT:
         return canChangeAssessmentFile;
-      case FileCategoryTypeEnum.APPLICATION:
+      case FileCategoryTypeEnum.PARTNER: 
+      case FileCategoryTypeEnum.INVESTMENT:
         return ProjectApplicationFilesTableComponent.isApplicationFileDeletable(status, uploadedAt, isOwner, canChangeApplicationFile);
       default:
         return false;
@@ -179,5 +181,4 @@ export class ProjectApplicationFilesTableComponent {
       switchMap((projectId) => this.projectFileService.deleteProjectFile(file.id, projectId)),
     );
   };
-
 }
