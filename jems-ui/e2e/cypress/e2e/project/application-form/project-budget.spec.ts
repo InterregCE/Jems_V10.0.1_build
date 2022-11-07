@@ -174,8 +174,8 @@ context('Project budget tests', () => {
             cy.contains('mat-option', 'Standard application form export').click();
             cy.contains('button', 'Export').clickToDownload('**/export/application?*', 'pdf').then(exportFile => {
               const templateFile = '/project/application-form/project-budget/TB-383-export-template.pdf';
-              cy.comparePdf(templateFile, exportFile, comparePdfMask, baselinePath).then(x => {
-                expect(x.status === "passed").to.be.true;
+              cy.comparePdf(templateFile, exportFile, comparePdfMask, baselinePath).then(result => {
+                expect(result.status === 'passed', 'Verify downloaded pdf file').to.be.true;
               });
             });
 

@@ -18,7 +18,12 @@ Cypress.Commands.add('parseXLSX', {prevSubject: true}, (subject) => {
 });
 
 Cypress.Commands.add('comparePdf', {prevSubject: false}, (templatePdf, actualPdf, masks, baselinePath) => {
-  cy.task('comparePdf', {templatePdf, actualPdf, masks, baselinePath});
+  cy.task('comparePdf', {templatePdf, actualPdf, masks, baselinePath}).then((result: any) => {
+    result.details?.forEach(detail => {
+      cy.log(detail.diffPng);
+    });
+    cy.wrap(result);
+  });
 })
 
 Cypress.Commands.add('clickToDownload', {prevSubject: true}, (subject, requestToIntercept, fileExtension) => {
