@@ -3,7 +3,7 @@ import call from "../../../fixtures/api/call/1.step.call.json";
 import application from "../../../fixtures/api/application/application.json";
 
 context('Project description tests', () => {
-  
+
   before(() => {
     cy.loginByRequest(user.applicantUser.email);
     cy.createCall(call, user.programmeUser.email).then(callId => {
@@ -16,7 +16,7 @@ context('Project description tests', () => {
     });
   });
 
-  beforeEach(function() {
+  beforeEach(function () {
     cy.loginByRequest(user.applicantUser.email);
     cy.visit(`app/project/detail/${this.applicationId}`, {failOnStatusCode: false});
     cy.wrap('WP1').as('workPlanId');
@@ -279,7 +279,7 @@ context('Project description tests', () => {
         expect(investmentItem).to.contain(testData.address.region3);
       });
 
-      cy.visit(`/app/project/detail/133/applicationFormPartner/${this.applicationId}/budget`);
+      cy.visit(`/app/project/detail/${this.applicationId}/applicationFormPartner/${this[this.partnerAbbreviation]}/budget`, {failOnStatusCode: false});
       cy.contains('mat-select', 'N/A').scrollIntoView().click();
       cy.contains('mat-option', 'I1.1').should('be.visible');
     });
@@ -336,7 +336,7 @@ context('Project description tests', () => {
 
       cy.contains('button', 'Save changes').click();
       cy.contains('The work package activities were saved successfully').should('be.visible');
-      
+
       cy.contains(this.partnerAbbreviation).click();
       cy.get('.mat-tab-header-pagination-after').click();
       cy.wait(500);

@@ -35,6 +35,7 @@ context('Application modification tests', () => {
         cy.loginByRequest(user.programmeUser.email);
         cy.visit(`app/project/detail/${applicationId}`, {failOnStatusCode: false});
         cy.get('jems-project-application-information').find('div').should('contain.text', 'Modification precontracted submitted');
+        cy.contains('span', 'Application form').click();
         cy.contains('span', 'Modification').click();
         cy.contains('Approve modification').click();
         cy.contains('mat-form-field', 'Decision date').find('button').click();
@@ -104,12 +105,14 @@ context('Application modification tests', () => {
       cy.visit(`app/project/detail/${applicationId}`, {failOnStatusCode: false});
       cy.get('jems-project-application-information').find('div').should('contain.text', 'Modification precontracted submitted');
 
-      cy.contains('.link', 'A - Project identification').click();
       cy.wait(1000);
+      cy.contains('span', 'Application form').should('be.visible').click();
+      cy.contains('A - Project identification').should('be.visible').click();
+      cy.contains('.link', 'A - Project identification').should('be.visible').click();
       cy.get('textarea').should('have.value', 'New title');
 
-      cy.contains('(current) V. 2.0').click();
       cy.wait(1000);
+      cy.contains('(current) V. 2.0').click();
       cy.contains('V. 1.0').should('be.visible').click();
       cy.contains('You are currently viewing an old version of this application').should('be.visible');
       cy.get('textarea').should('have.value', 'API generated application title DE');
@@ -136,6 +139,8 @@ context('Application modification tests', () => {
           cy.startModification(applicationId, user.programmeUser.email);
           
           cy.visit(`/app/project/detail/${applicationId}`, {failOnStatusCode: false});
+          cy.contains('span', 'Application form').click();
+          cy.contains('B - Project partners').should('be.visible').click();
           cy.contains('Partners overview').click();
           cy.contains('mat-row', testData.partner1.abbreviation).contains('button', 'Deactivate partner').should('be.enabled');
           cy.contains('mat-row', testData.partner2.abbreviation).contains('button', 'Deactivate partner').should('be.enabled');
