@@ -14,11 +14,6 @@ class UploadPaymentAttachmentException(cause: Throwable) : ApplicationException(
     cause = cause,
 )
 
-class PaymentNotFound : ApplicationNotFoundException(
-    code = "$UPLOAD_PAYMENT_ATTACHMENT_ERROR_CODE_PREFIX-001",
-    i18nMessage = I18nMessage("$UPLOAD_PAYMENT_ATTACHMENT_ERROR_KEY_PREFIX.not.found"),
-)
-
 class FileAlreadyExists : ApplicationUnprocessableException(
     code = "$UPLOAD_PAYMENT_ATTACHMENT_ERROR_CODE_PREFIX-002",
     i18nMessage = I18nMessage("$UPLOAD_PAYMENT_ATTACHMENT_ERROR_KEY_PREFIX.file.already.exists"),

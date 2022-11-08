@@ -100,6 +100,7 @@ fun PaymentEntity.toDetailModel(
 ) = PaymentDetail(
     id = id,
     paymentType = PaymentType.valueOf(type.name),
+    projectId = project.id,
     projectCustomIdentifier = project.customIdentifier,
     projectAcronym = project.acronym,
     fundName = fund.type.name,

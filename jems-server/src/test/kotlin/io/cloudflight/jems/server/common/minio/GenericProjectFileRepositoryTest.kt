@@ -98,12 +98,12 @@ class GenericProjectFileRepositoryTest : UnitTest() {
         var additionalStepInvoked = false
         repository.persistProjectFileAndPerformAction(file, "/minio/location", { additionalStepInvoked = true })
 
-        verify(exactly = 1) { minioStorage.saveFile("project-report", "/minio/location", any(), any(), true) }
+        verify(exactly = 1) { minioStorage.saveFile("application", "/minio/location", any(), any(), true) }
 
         assertThat(slotFileEntity.captured.projectId).isEqualTo(PROJECT_ID)
         assertThat(slotFileEntity.captured.partnerId).isNull()
         assertThat(slotFileEntity.captured.path).isEqualTo("/our/indexed/path/")
-        assertThat(slotFileEntity.captured.minioBucket).isEqualTo("project-report")
+        assertThat(slotFileEntity.captured.minioBucket).isEqualTo("application")
         assertThat(slotFileEntity.captured.minioLocation).isEqualTo("/minio/location")
         assertThat(slotFileEntity.captured.name).isEqualTo("new_file.txt")
         assertThat(slotFileEntity.captured.type).isEqualTo(ProjectPartnerReportFileType.ContractDoc)

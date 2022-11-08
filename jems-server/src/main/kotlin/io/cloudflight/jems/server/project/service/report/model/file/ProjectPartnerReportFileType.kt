@@ -6,6 +6,8 @@ enum class ProjectPartnerReportFileType(
 ) {
     Payment(null, true),
       PaymentAttachment(Payment, false),
+    PaymentAdvanced(null, true),
+      PaymentAdvancedAttachment(PaymentAdvanced, false),
 
     Project(null, true),
       Report(Project, false),
