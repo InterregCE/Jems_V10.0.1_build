@@ -67,7 +67,7 @@ class CheckInstitutionPartnerAssignmentsTest: UnitTest() {
         every { controllerInstitutionPersistence.getInstitutionPartnerAssignmentsToDeleteByProjectId(PROJECT_ID) } returns institutionPartnerAssignments
 
         every { controllerInstitutionPersistence.assignInstitutionToPartner(
-           assignmentsToRemove = institutionPartnerAssignments,
+           partnerIdsToRemove = setOf(1L, 2L, 3L),
            assignmentsToSave = emptyList()
         ) } returns institutionPartnerAssignments
 
@@ -75,7 +75,7 @@ class CheckInstitutionPartnerAssignmentsTest: UnitTest() {
         checkInstitutionPartnerAssignments.checkInstitutionAssignmentsToRemoveForUpdatedPartners(1L)
 
         verify(exactly = 1) {  controllerInstitutionPersistence.assignInstitutionToPartner(
-            assignmentsToRemove = institutionPartnerAssignments,
+            partnerIdsToRemove = setOf(1L, 2L, 3L),
             assignmentsToSave = emptyList()
         )}
         verify(exactly = 1) { updateInstitutionUsersProjectAssignment.updateInstitutionUsersProjectAssignment(
@@ -104,14 +104,14 @@ class CheckInstitutionPartnerAssignmentsTest: UnitTest() {
         every { controllerInstitutionPersistence.getInstitutionPartnerAssignmentsToDeleteByInstitutionId(INSTITUTION_ID) } returns institutionPartnerAssignments
 
         every { controllerInstitutionPersistence.assignInstitutionToPartner(
-            assignmentsToRemove = institutionPartnerAssignments,
+            partnerIdsToRemove = setOf(1L, 2L, 3L),
             assignmentsToSave = emptyList()
         ) } returns institutionPartnerAssignments
 
         checkInstitutionPartnerAssignments.checkInstitutionAssignmentsToRemoveForUpdatedInstitution(1L)
 
         verify(exactly = 1) {  controllerInstitutionPersistence.assignInstitutionToPartner(
-            assignmentsToRemove = institutionPartnerAssignments,
+            partnerIdsToRemove = setOf(1L, 2L, 3L),
             assignmentsToSave = emptyList()
         )}
         verify(exactly = 1) { updateInstitutionUsersProjectAssignment.updateInstitutionUsersProjectAssignment(

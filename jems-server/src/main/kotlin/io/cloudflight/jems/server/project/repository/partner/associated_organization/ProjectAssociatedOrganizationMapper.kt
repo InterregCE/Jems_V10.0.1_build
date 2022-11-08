@@ -196,6 +196,7 @@ fun List<AssociatedOrganizationDetailRow>.toModel() =
             active = groupedRows.value.first().active,
             partner = ProjectPartnerSummaryDTO(
                 id = groupedRows.value.first().partnerId,
+                institutionName = null,
                 active = groupedRows.value.first().partnerActive,
                 abbreviation = groupedRows.value.first().abbreviation,
                 role = groupedRows.value.first().role,

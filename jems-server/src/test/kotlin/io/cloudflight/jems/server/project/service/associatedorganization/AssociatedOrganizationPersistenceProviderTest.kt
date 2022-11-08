@@ -118,8 +118,9 @@ class AssociatedOrganizationPersistenceProviderTest {
             active = true,
             partner = ProjectPartnerSummaryDTO(
                 id = projectPartner.id,
-                active = true,
                 abbreviation = projectPartner.abbreviation,
+                institutionName = null,
+                active = true,
                 role = ProjectPartnerRoleDTO.valueOf(projectPartner.role.name),
                 sortNumber = projectPartner.sortNumber,
                 country = "country",
@@ -165,7 +166,7 @@ class AssociatedOrganizationPersistenceProviderTest {
 
     private lateinit var projectVersionUtils: ProjectVersionUtils
 
-    lateinit var persistence: AssociatedOrganizationPersistence
+    lateinit var persistence: AssociatedOrganizationPersistenceProvider
 
     @BeforeEach
     fun setup() {

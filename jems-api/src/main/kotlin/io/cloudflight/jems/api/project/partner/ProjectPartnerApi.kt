@@ -49,9 +49,11 @@ interface ProjectPartnerApi {
         ApiImplicitParam(paramType = "query", name = "sort", dataType = "string", allowMultiple = true)
     )
     @GetMapping("$ENDPOINT_API_PROJECT_PARTNER/byProjectId/{projectId}/ids")
-    fun getProjectPartnersForDropdown(@PathVariable projectId: Long,
-                                      pageable: Pageable,
-                                      @RequestParam(required = false) version: String? = null): List<ProjectPartnerSummaryDTO>
+    fun getProjectPartnersForDropdown(
+        @PathVariable projectId: Long,
+        pageable: Pageable,
+        @RequestParam(required = false) version: String? = null,
+    ): List<ProjectPartnerSummaryDTO>
 
     @ApiOperation("Returns a project partner by id")
     @GetMapping("$ENDPOINT_API_PROJECT_PARTNER/{partnerId}")

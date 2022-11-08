@@ -51,7 +51,7 @@ class AssignInstitutionToPartner(
 
 
         return controllerInstitutionPersistence.assignInstitutionToPartner(
-            assignmentsToRemove = assignmentsToRemove,
+            partnerIdsToRemove = assignmentsToRemove.mapTo(HashSet()) { it.partnerId },
             assignmentsToSave = assignmentsToSaveOrUpdate
         ).also {
             updateInstitutionUsersProjectAssignment.updateInstitutionUsersProjectAssignment(

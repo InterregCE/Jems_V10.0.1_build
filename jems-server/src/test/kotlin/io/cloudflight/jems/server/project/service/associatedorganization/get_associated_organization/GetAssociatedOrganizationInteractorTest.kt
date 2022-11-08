@@ -98,8 +98,9 @@ internal class GetAssociatedOrganizationInteractorTest : UnitTest() {
 
     private val projectPartnerDTO = ProjectPartnerSummaryDTO(
         id = 1,
-        active = true,
         abbreviation = projectPartner.abbreviation,
+        institutionName = "institution",
+        active = true,
         role = ProjectPartnerRoleDTO.LEAD_PARTNER,
         sortNumber = 1,
     )
@@ -142,7 +143,10 @@ internal class GetAssociatedOrganizationInteractorTest : UnitTest() {
     @Test
     fun getById() {
         val org = organization(1, projectPartner, "test", 1)
-        every { persistence.getById(1, 1) } returns org.toOutputProjectAssociatedOrganizationDetail()
+        val associatedOrg = org.toOutputProjectAssociatedOrganizationDetail()
+        val partner = associatedOrg.partner
+        every { persistence.getById(1, 1) } returns associatedOrg
+            .copy(partner = partner.copy(institutionName = "institution"))
 
         assertThat(getInteractor.getById(1, 1))
             .isEqualTo(outputOrganizationDetail(1, projectPartnerDTO, "test", 1))

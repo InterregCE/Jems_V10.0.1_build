@@ -39,7 +39,7 @@ class CheckInstitutionPartnerAssignments(
 
     private fun deleteInstitutionPartnerAssignments(assignmentsToDelete: List<InstitutionPartnerAssignment>) {
         controllerInstitutionPersistence.assignInstitutionToPartner(
-            assignmentsToRemove = assignmentsToDelete,
+            partnerIdsToRemove = assignmentsToDelete.mapTo(HashSet()) { it.partnerId },
             assignmentsToSave = emptyList()
         )
         auditPublisher.publishEvent(

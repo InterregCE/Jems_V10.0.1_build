@@ -1,6 +1,8 @@
 package io.cloudflight.jems.server.project.service.partner.get_project_partner
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
+import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
+import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionList
 import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectForm
 import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectPartner
 import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectPartnerSummaries
@@ -19,7 +21,8 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class GetProjectPartner(
     private val persistence: PartnerPersistence,
-    private val getProjectBudget: GetProjectBudget
+    private val getProjectBudget: GetProjectBudget,
+    private val institutionPersistence: ControllerInstitutionPersistence,
 ) : GetProjectPartnerInteractor {
 
     @CanRetrieveProjectForm
@@ -56,6 +59,18 @@ class GetProjectPartner(
     @ExceptionWrapper(GetProjectPartnerByProjectIdForDropdownException::class)
     override fun findAllByProjectIdForDropdown(
         projectId: Long, sort: Sort, version: String?
-    ): List<ProjectPartnerSummary> =
-        persistence.findAllByProjectIdForDropdown(projectId, sort, version)
+    ): List<ProjectPartnerSummary> {
+        val partners = persistence.findAllByProjectIdForDropdown(projectId, sort, version)
+
+        val institutionsByPartnerId = institutionPersistence
+            .getControllerInstitutions(partnerIds = partners.mapNotNullTo(HashSet()) { it.id })
+
+        return partners.fillInInstitutions(institutionsByPartnerId)
+    }
+
+    private fun List<ProjectPartnerSummary>.fillInInstitutions(institutions: Map<Long, ControllerInstitutionList>) =
+        this.apply {
+            this.forEach { it.institutionName = institutions[it.id!!]?.name }
+        }
+
 }

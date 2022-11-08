@@ -18,6 +18,8 @@ interface ControllerInstitutionPersistence {
 
     fun getControllerInstitutions(pageable: Pageable): Page<ControllerInstitutionList>
 
+    fun getControllerInstitutions(partnerIds: Set<Long>): Map<Long, ControllerInstitutionList>
+
     fun getAllControllerInstitutions(): List<ControllerInstitutionEntity>
 
     fun getControllerInstitutionById(controllerInstitutionId: Long): ControllerInstitution
@@ -45,7 +47,7 @@ interface ControllerInstitutionPersistence {
     fun getInstitutionPartnerAssignments(pageable: Pageable): Page<InstitutionPartnerDetails>
 
     fun assignInstitutionToPartner(
-        assignmentsToRemove: List<InstitutionPartnerAssignment>,
+        partnerIdsToRemove: Set<Long>,
         assignmentsToSave: List<InstitutionPartnerAssignment>
     ): List<InstitutionPartnerAssignment>
 

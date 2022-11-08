@@ -1,14 +1,17 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
 import {PrivilegesPageStore} from '@project/project-application/privileges-page/privileges-page-store.service';
 import {FormService} from '@common/components/section/form/form.service';
-import {PartnerUserCollaboratorDTO, ProjectPartnerSummaryDTO} from '@cat/api';
+import {PartnerUserCollaboratorDTO, ProjectPartnerSummaryDTO, ProjectStatusDTO} from '@cat/api';
 import {ProjectApplicationFormSidenavService} from '@project/project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {FormArray, FormBuilder, Validators} from '@angular/forms';
 import {TranslateService} from '@ngx-translate/core';
-import {catchError, tap} from 'rxjs/operators';
+import {catchError, map, tap} from 'rxjs/operators';
 import {APIError} from '@common/models/APIError';
 import {of} from 'rxjs';
 import {Alert} from '@common/components/forms/alert';
+import {
+  ProjectStore
+} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 
 @Component({
   selector: 'jems-partner-team-privileges-expansion-panel',
@@ -18,6 +21,15 @@ import {Alert} from '@common/components/forms/alert';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PartnerTeamPrivilegesExpansionPanelComponent implements OnInit {
+
+  AFTER_APPROVED_STATUSES: ProjectStatusDTO.StatusEnum[] = [
+    ProjectStatusDTO.StatusEnum.APPROVED,
+    ProjectStatusDTO.StatusEnum.CONTRACTED,
+    ProjectStatusDTO.StatusEnum.INMODIFICATION,
+    ProjectStatusDTO.StatusEnum.MODIFICATIONSUBMITTED,
+    ProjectStatusDTO.StatusEnum.MODIFICATIONREJECTED,
+  ];
+
   @Input()
   partner: ProjectPartnerSummaryDTO;
   @Input()
@@ -25,6 +37,10 @@ export class PartnerTeamPrivilegesExpansionPanelComponent implements OnInit {
 
   PARTNER_LEVEL = PartnerUserCollaboratorDTO.LevelEnum;
   Alert = Alert;
+  isAfterApproved$ = this.projectStore.projectStatus$.pipe(
+    map(status => status.status),
+    map(status => this.AFTER_APPROVED_STATUSES.includes(status))
+  );
 
   partnerForm = this.formBuilder.group({
     partnerCollaborators: this.formBuilder.array([], [])
@@ -35,12 +51,15 @@ export class PartnerTeamPrivilegesExpansionPanelComponent implements OnInit {
     uniqueEmails: 'project.application.form.section.privileges.unique.emails'
   };
 
-  constructor(private pageStore: PrivilegesPageStore,
-              public formService: FormService,
-              private projectSidenavService: ProjectApplicationFormSidenavService,
-              private formBuilder: FormBuilder,
-              private translateService: TranslateService,
-              private changeDetectorRef: ChangeDetectorRef) {
+  constructor(
+    private pageStore: PrivilegesPageStore,
+    public formService: FormService,
+    private projectSidenavService: ProjectApplicationFormSidenavService,
+    private formBuilder: FormBuilder,
+    private translateService: TranslateService,
+    private changeDetectorRef: ChangeDetectorRef,
+    public projectStore: ProjectStore,
+  ) {
   }
 
   ngOnInit(): void {

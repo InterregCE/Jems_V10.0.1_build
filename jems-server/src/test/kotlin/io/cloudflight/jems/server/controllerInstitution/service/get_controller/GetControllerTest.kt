@@ -53,11 +53,10 @@ class GetControllerTest: UnitTest() {
     }
 
 
-
     @Test
     fun getAllInstitutions() {
         every { controllerInstitutionAuthorization.hasPermission(UserRolePermission.InstitutionsUnlimited)} returns true
-        every {controllerInstitutionPersistence.getControllerInstitutions(any())} returns PageImpl(listOf(controllerInstitutionList))
+        every {controllerInstitutionPersistence.getControllerInstitutions(any<Pageable>())} returns PageImpl(listOf(controllerInstitutionList))
         assertThat(getController.getControllers(Pageable.unpaged()).content).containsExactly(controllerInstitutionList)
     }
 

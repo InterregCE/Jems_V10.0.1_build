@@ -45,16 +45,17 @@ class ControllerInstitutionPersistenceProviderTest: UnitTest() {
             partnerId = 1L,
             partnerProjectId = 1L
         )
-        private val assignmentToDelete = InstitutionPartnerAssignment(
-            institutionId = 1L,
-            partnerId = 3L,
-            partnerProjectId = 1L
-        )
-        private val dummyInstitutionAssignmentEntity = ControllerInstitutionPartnerEntity (
-            institutionId = 2L,
-            partnerId = 1L,
-            partnerProjectId = 1L
-        )
+
+        private fun dummyInstitutionAssignmentEntity(): ControllerInstitutionPartnerEntity {
+            val institution = mockk<ControllerInstitutionEntity>()
+            every { institution.id } returns 2L
+
+            val entity = mockk<ControllerInstitutionPartnerEntity>()
+            every { entity.partnerId } returns 1L
+            every { entity.institution } returns institution
+            every { entity.partnerProjectId } returns 10L
+            return entity
+        }
 
         private class InstitutionAssignmentImpl(
             override val institutionId: Long,
@@ -70,10 +71,10 @@ class ControllerInstitutionPersistenceProviderTest: UnitTest() {
     }
 
     @MockK
-    lateinit var controllerRepo: ControllerInstitutionRepository
+    lateinit var nutsRegion3Repository: NutsRegion3Repository
 
     @MockK
-    lateinit var nutsRegion3Repository: NutsRegion3Repository
+    lateinit var institutionRepository: ControllerInstitutionRepository
 
     @MockK
     lateinit var institutionUserRepository: ControllerInstitutionUserRepository
@@ -89,7 +90,7 @@ class ControllerInstitutionPersistenceProviderTest: UnitTest() {
 
     @BeforeEach
     fun reset() {
-        clearMocks(controllerRepo)
+        clearMocks(institutionRepository)
         clearMocks(nutsRegion3Repository)
         clearMocks(institutionUserRepository)
         clearMocks(institutionPartnerRepository)
@@ -98,31 +99,34 @@ class ControllerInstitutionPersistenceProviderTest: UnitTest() {
 
     @Test
     fun getControllerInstitutions() {
-        every { controllerRepo.findAll(Pageable.unpaged()) } returns PageImpl(listOf(dummyControllerEntity))
+        every { institutionRepository.findAll(Pageable.unpaged()) } returns PageImpl(listOf(dummyControllerEntity))
         assertThat(controllerInstitutionPersistenceProvider.getControllerInstitutions(Pageable.unpaged()).content).contains(expectedControllerInstitution)
     }
 
     @Test
     fun getInstitutionPartnerAssignments() {
         val entitySlot = slot<Iterable<ControllerInstitutionPartnerEntity>>()
-        every { institutionPartnerRepository.deleteAllByIdInBatch(listOf(assignmentToDelete.partnerId)) } just Runs
+        every { institutionPartnerRepository.deleteAllByIdInBatch(any()) } answers { }
+        val institution_2 = mockk<ControllerInstitutionEntity>()
+        every { institution_2.id } returns 2L
+        every { institutionRepository.findAllById(setOf(2L)) } returns listOf(institution_2)
         every { institutionPartnerRepository.saveAll(capture(entitySlot)) } returnsArgument 0
 
         assertThat(controllerInstitutionPersistenceProvider.assignInstitutionToPartner(
-            assignmentsToRemove = listOf(assignmentToDelete),
+            partnerIdsToRemove = setOf(3L),
             assignmentsToSave = listOf(assignmentToSave)
         )).containsExactly(assignmentToSave)
 
-        verify(exactly = 1) { institutionPartnerRepository.deleteAllByIdInBatch(listOf(assignmentToDelete.partnerId)) }
+        verify(exactly = 1) { institutionPartnerRepository.deleteAllByIdInBatch(setOf(3L)) }
     }
 
 
     @Test
     fun getInstitutionPartnerAssignmentsToDeleteByProjectId() {
         every { institutionPartnerRepository.getInstitutionPartnerAssignmentsToDeleteByProjectId(1L) } returns
-            listOf(dummyInstitutionAssignmentEntity)
+            listOf(dummyInstitutionAssignmentEntity())
         assertThat(controllerInstitutionPersistenceProvider.getInstitutionPartnerAssignmentsToDeleteByProjectId(1L))
-            .containsExactly(dummyInstitutionAssignmentEntity.toModel())
+            .containsExactly(InstitutionPartnerAssignment(institutionId = 2L, partnerId = 1L, partnerProjectId = 10L))
     }
 
     @Test
