@@ -1,86 +1,92 @@
-h2 {
-  margin-top: 1.5rem !important;
-  margin-bottom: 1.5rem !important;
-}
 
-p {
-  margin-bottom: 0.5rem !important;
-}
+#paymentToProjectsPage {
 
-::ng-deep {
-
-  #table-wrapper {
-    overflow: auto;
-    padding: 0 !important;
-    border: 1px solid var(--table-border-color);
-  }
-
-  .open-payment-indicator {
-    width: 0 !important;
-    height: 0 !important;
-    overflow: visible;
-
-    font-size: 0.67em;
-    color: var(--accent-color);
-  }
-
-  .mat-sort-header-content {
-    text-align: left !important;
-  }
-
-  .mat-table {
-    border: none !important;
-  }
-
-  .mat-cell, .mat-header-cell {
-    padding: 0.25rem 0.5rem !important;
-    margin: 0 !important;
-    &:last-child {
-      padding-right: 1rem !important;
+    h2 {
+      margin-top: 1.5rem !important;
+      margin-bottom: 1.5rem !important;
     }
-  }
 
-  .id-column-width {
-    min-width: 2.5rem !important;
-    max-width: 2.5rem !important;
-    padding-left: 1rem !important;
-    padding-right: 0.5rem !important;
-
-    position: sticky !important;
-    left: 0 !important;
-    z-index: 1000 !important;
-    border-right: 1px solid var(--table-border-color);
-    background-color: var(--table-backaground-color);
-
-    &:nth-child(even) {
-      background-color: var(--table-highlight-color);
+    p {
+      margin-bottom: 0.5rem !important;
     }
-  }
 
-  .medium-column-width {
-    min-width: 7rem !important;
-    max-width: 12rem !important;
-  }
+  ::ng-deep {
 
-  .small-column-width {
-    min-width: 4rem !important;
-    max-width: 4rem !important;
-  }
+    #table-wrapper {
+      overflow: auto;
+      padding: 0 !important;
+      border: 1px solid var(--table-border-color);
+    }
 
-  .date-column-width {
-    min-width: 6.5rem !important;
-    max-width: 6.5rem !important;
-  }
+    .open-payment-indicator {
+      width: 0 !important;
+      height: 0 !important;
+      overflow: visible;
 
-  .wide-column-width {
-    min-width: 9rem !important;
-  }
+      font-size: 0.67em;
+      color: var(--accent-color);
+    }
 
-  .chip-column-width {
-    min-width: 5rem !important;
-    max-width: 8rem !important;
-    text-align: right;
-    justify-content: end;
+    .mat-sort-header-content {
+      text-align: left !important;
+    }
+
+    .mat-table {
+      border: none !important;
+    }
+
+    .mat-cell, .mat-header-cell {
+      padding: 0.25rem 0.5rem !important;
+      margin: 0 !important;
+
+      &:last-child {
+        padding-right: 1rem !important;
+      }
+    }
+
+    .id-column-width {
+      min-width: 2.5rem !important;
+      max-width: 2.5rem !important;
+      padding-left: 1rem !important;
+      padding-right: 0.5rem !important;
+
+      position: sticky !important;
+      left: 0 !important;
+      z-index: 1000 !important;
+      border-right: 1px solid var(--table-border-color);
+      background-color: var(--table-backaground-color);
+
+      &:nth-child(even) {
+        background-color: var(--table-highlight-color);
+      }
+    }
+
+    .medium-column-width {
+      min-width: 7rem !important;
+      max-width: 12rem !important;
+    }
+
+    .small-column-width {
+      min-width: 4rem !important;
+      max-width: 4rem !important;
+    }
+
+    .date-column-width {
+      min-width: 6.5rem !important;
+      max-width: 6.5rem !important;
+    }
+
+    .wide-column-width {
+      min-width: 9rem !important;
+    }
+
+    .chip-column-width {
+      min-width: 5rem !important;
+      max-width: 8rem !important;
+      text-align: right;
+      justify-content: end;
+    }
+
   }
 
 }
