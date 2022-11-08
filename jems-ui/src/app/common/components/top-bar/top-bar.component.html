@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg" [ngClass]="{'no-user' : !currentUser}">
+<nav class="navbar navbar-expand-lg" [ngClass]="{'no-user' : !currentUser}" *ngIf="isAuthenticated">
         <div class="navbar-logos">
             <div class="programme-logo-container show-pointer"
                  (click)="router.navigate(['app'])">
