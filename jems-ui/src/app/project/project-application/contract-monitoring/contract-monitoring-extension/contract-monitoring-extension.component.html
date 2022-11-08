@@ -199,17 +199,20 @@
         </div>
 
         <ng-container *ngIf="areThereFastTrackLumpSums()">
-            <h3>{{'project.application.contract.monitoring.project.fast.track.lump.sums.title' | translate}}
-                <jems-context-info    infoText="{{ 'project.application.set.to.contracted.lump.sums.info' | translate }}"
-                                      infoPosition="right">
-                </jems-context-info>
-            </h3>
+            <h4>{{'project.application.contract.monitoring.project.fast.track.lump.sums.title' | translate}}</h4>
+            <p>{{'project.application.set.to.contracted.lump.sums.info.one' | translate }}</p>
+            <p>{{'project.application.set.to.contracted.lump.sums.info.two' | translate }}</p>
+            <p>{{'project.application.set.to.contracted.lump.sums.info.three' | translate }}</p>
+            <p>{{'project.application.set.to.contracted.lump.sums.info.four' | translate }}</p>
             <div [jemsTableConfig]="[{maxInRem:7}, {maxInRem:6}, {maxInRem:8}, {maxInRem:6}, {}]">
                 <div class="mat-body-strong">
                     <span>{{'project.application.contract.monitoring.project.fast.track.lump.sum' | translate }}</span>
                     <span>{{'project.application.contract.monitoring.project.total.amount.approved' | translate }}</span>
                     <span>{{'project.application.contract.monitoring.project.period' | translate }}</span>
-                    <span>{{'project.application.contract.monitoring.project.ready.for.payment' | translate }}</span>
+                    <span>
+                        {{'project.application.contract.monitoring.project.ready.for.payment' | translate }}
+                        <jems-context-info infoPosition="right" infoText="{{'project.application.contract.monitoring.project.ready.for.payment.info' | translate}}"></jems-context-info>
+                    </span>
                     <span>{{'project.application.contract.monitoring.project.topology.comment' | translate }}</span>
                 </div>
                 <div *ngFor="let lumpSum of fastTrackLumpSumsControls; let i=index">
