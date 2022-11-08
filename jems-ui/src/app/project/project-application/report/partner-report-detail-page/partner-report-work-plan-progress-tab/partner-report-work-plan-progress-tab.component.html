@@ -27,7 +27,7 @@
                         </jems-multi-language-container>
 
                         <div *ngIf="workPackage.activities.length || workPackage.outputs.length"
-                             class="mb-3 mt-4">{{'project.application.partner.report.workplan.contribution.description.subtitle' | translate}}</div>
+                             class="mb-3 mt-4"><p>{{'project.application.partner.report.workplan.contribution.description.subtitle' | translate}}</p></div>
 
                         <ng-container *ngIf="workPackage.activities.length">
                             <div jemsNoWidthLimit id="activities-table" class="mb-3 activity-container"
