@@ -186,8 +186,9 @@ class PaymentPersistenceProviderTest: UnitTest() {
         private val paymentDetail = PaymentDetail(
             id = paymentId,
             paymentType = PaymentType.FTLS,
-            projectCustomIdentifier = dummyProject.customIdentifier,
             fundName = fund.type.name,
+            projectId = projectId,
+            projectCustomIdentifier = dummyProject.customIdentifier,
             projectAcronym = dummyProject.acronym,
             amountApprovedPerFund = paymentEntity.amountApprovedPerFund!!,
             dateOfLastPayment = null,

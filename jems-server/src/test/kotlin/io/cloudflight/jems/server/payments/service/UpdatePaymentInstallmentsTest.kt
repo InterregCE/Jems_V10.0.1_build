@@ -44,8 +44,9 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
         private val paymentDetail = PaymentDetail(
             id = paymentId,
             paymentType = PaymentType.FTLS,
-            projectCustomIdentifier = "customIdentifier",
             fundName = "name",
+            projectId = projectId,
+            projectCustomIdentifier = "customIdentifier",
             projectAcronym = "acronym",
             amountApprovedPerFund = BigDecimal.TEN,
             partnerPayments = listOf(

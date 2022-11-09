@@ -7,6 +7,7 @@ data class PaymentDetail(
     val id: Long,
     val paymentType: PaymentType,
     val fundName: String,
+    val projectId: Long,
     val projectCustomIdentifier: String,
     val projectAcronym: String,
 

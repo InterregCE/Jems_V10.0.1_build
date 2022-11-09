@@ -42,8 +42,10 @@ interface PaymentPersistence {
 
     fun findByPartnerId(partnerId: Long): List<PaymentPartnerInstallment>
 
-    fun updatePaymentPartnerInstallments(paymentPartnerId: Long,
-                                         toDeleteInstallmentIds: Set<Long>,
-                                         paymentPartnerInstallments: List<PaymentPartnerInstallmentUpdate>
+    fun updatePaymentPartnerInstallments(
+        paymentPartnerId: Long,
+        toDeleteInstallmentIds: Set<Long>,
+        paymentPartnerInstallments: List<PaymentPartnerInstallmentUpdate>
     ): List<PaymentPartnerInstallment>
+
 }

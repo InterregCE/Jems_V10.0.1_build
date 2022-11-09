@@ -114,8 +114,9 @@ class PaymentsControllerTest : UnitTest() {
         private val paymentDetail = PaymentDetail(
             id = paymentId,
             paymentType = PaymentType.FTLS,
-            projectCustomIdentifier = project.customIdentifier,
             fundName = fund.type.name,
+            projectId = projectId,
+            projectCustomIdentifier = project.customIdentifier,
             projectAcronym = project.acronym,
             amountApprovedPerFund = BigDecimal.TEN,
             dateOfLastPayment = null,
