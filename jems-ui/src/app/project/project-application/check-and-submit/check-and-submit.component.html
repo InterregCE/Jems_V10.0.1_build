@@ -55,11 +55,14 @@
                     <span>{{'project.application.check.and.submit.pre.condition.failed' | translate}}</span>
                 </jems-alert>
 
-                <jems-project-application-pre-condition-check-result
-                        *ngIf="data.preConditionCheckResults"
-                        [preConditionCheckResult]="data.preConditionCheckResults"
-                        jemsNoWidthLimit>
-                </jems-project-application-pre-condition-check-result>
+                <div class="mt-3">
+                    <jems-project-application-pre-condition-check-result
+                            *ngIf="data.preConditionCheckResults"
+                            [preConditionCheckResult]="data.preConditionCheckResults"
+                            jemsNoWidthLimit>
+                    </jems-project-application-pre-condition-check-result>
+                </div>
+
 
             </div>
         </ng-container>
