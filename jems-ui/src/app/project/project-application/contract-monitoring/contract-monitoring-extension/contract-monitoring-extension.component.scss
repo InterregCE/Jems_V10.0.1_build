@@ -1,12 +1,32 @@
 button {
-  margin-bottom: 20px !important;
+  margin-bottom: 2rem !important;
 }
 
 mat-table {
-  margin-bottom: 0px !important;
+  margin-bottom: 0 !important;
 }
 
 .jems-table-config {
-  margin-top: 10px !important;
+  margin-top: 1rem !important;
+}
+.form-width-limit {
+  max-width: 50rem;
+
+  .date {
+    width: 20rem;
+    flex-grow: 0;
+  }
+  .comment {
+    flex-grow: 1;
+  }
+}
+
+#additional-entry-into-force-dates-table {
+  mat-cell:first-of-type, mat-header-cell:first-of-type {
+    border-right: 1px solid var(--table-border-color);
+  }
+}
+p {
+  max-width: 50rem !important;
 }
 
