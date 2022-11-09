@@ -1,5 +1,5 @@
 <ng-container *ngIf="data$ | async as data">
-    <div *ngIf="data.userCanView">
+    <div *ngIf="data.userCanView" id="paymentToProjectsPage">
         <h2>{{'payments.payment.to.project.header' | translate}}</h2>
         <p>{{'payments.payment.to.project.text.1' | translate}}</p>
         <p>{{'payments.payment.to.project.text.2' | translate}}</p>
