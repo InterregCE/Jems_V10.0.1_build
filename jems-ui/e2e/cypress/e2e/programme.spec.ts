@@ -497,6 +497,8 @@ context('Programme management tests', () => {
         });
       });
 
+      cy.wait(10000); // give some time to the system to make sure all created projects/partners are in the exports
+
       cy.loginByRequest(user.admin.email);
       testData.dataExportRole.name = `dataExportRole_${faker.random.alphaNumeric(5)}`;
       testData.dataExportUser.email = faker.internet.email();
@@ -507,8 +509,6 @@ context('Programme management tests', () => {
       cy.loginByRequest(testData.dataExportUser.email);
       cy.visit('app/programme', {failOnStatusCode: false});
       cy.contains('Data export').click();
-      
-      cy.wait(5000); // give some time to the system to make sure all created projects/partners are in the exports
       
       cy.contains('div', 'Programme data export plugin').find('mat-select').click();
       cy.contains('mat-option', 'Standard programme partner data export').click();
