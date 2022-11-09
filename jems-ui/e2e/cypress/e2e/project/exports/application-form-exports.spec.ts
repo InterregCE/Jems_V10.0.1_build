@@ -37,8 +37,8 @@ context('Application form exports', () => {
     currentMask.push({pageIndex: 15, coordinates: {x0: 400, x1: 760, y0: 701, y1: 725}});
     currentMask.push({pageIndex: 15, coordinates: {x0: 425, x1: 760, y0: 955, y1: 980}});
     currentMask.push({pageIndex: 15, coordinates: {x0: 400, x1: 760, y0: 978, y1: 1000}});
-    currentMask.push({pageIndex: 19, coordinates: {x0: 96, x1: 133, y0: 270, y1: 282}});
-    currentMask.push({pageIndex: 19, coordinates: {x0: 96, x1: 133, y0: 322, y1: 333}});
+    currentMask.push({pageIndex: 19, coordinates: {x0: 94, x1: 135, y0: 270, y1: 282}});
+    currentMask.push({pageIndex: 19, coordinates: {x0: 94, x1: 135, y0: 322, y1: 333}});
 
     cy.createCall(call, user.programmeUser.email).then(callId => {
       application.details.projectCallId = callId;
@@ -165,8 +165,8 @@ context('Application form exports', () => {
               currentMask.push({pageIndex: 15, coordinates: {x0: 400, x1: 760, y0: 646, y1: 670}});
               currentMask.push({pageIndex: 15, coordinates: {x0: 419, x1: 760, y0: 900, y1: 925}});
               currentMask.push({pageIndex: 15, coordinates: {x0: 400, x1: 760, y0: 923, y1: 945}});
-              currentMask.push({pageIndex: 19, coordinates: {x0: 96, x1: 133, y0: 270, y1: 282}});
-              currentMask.push({pageIndex: 19, coordinates: {x0: 96, x1: 133, y0: 322, y1: 333}});
+              currentMask.push({pageIndex: 19, coordinates: {x0: 94, x1: 135, y0: 270, y1: 282}});
+              currentMask.push({pageIndex: 19, coordinates: {x0: 94, x1: 135, y0: 322, y1: 333}});
               cy.comparePdf(templateFile, file, currentMask, baselinePath).then(result => {
                 expect(result.status === 'passed', 'Verify v2 export').to.be.true;
               });
@@ -184,8 +184,8 @@ context('Application form exports', () => {
               currentMask.push({pageIndex: 21, coordinates: {x0: 400, x1: 760, y0: 646, y1: 670}});
               currentMask.push({pageIndex: 21, coordinates: {x0: 419, x1: 760, y0: 900, y1: 925}});
               currentMask.push({pageIndex: 21, coordinates: {x0: 400, x1: 760, y0: 923, y1: 945}});
-              currentMask.push({pageIndex: 25, coordinates: {x0: 96, x1: 133, y0: 270, y1: 282}});
-              currentMask.push({pageIndex: 25, coordinates: {x0: 96, x1: 133, y0: 322, y1: 333}});
+              currentMask.push({pageIndex: 25, coordinates: {x0: 94, x1: 135, y0: 270, y1: 282}});
+              currentMask.push({pageIndex: 25, coordinates: {x0: 94, x1: 135, y0: 322, y1: 333}});
               cy.comparePdf(templateFile, file, currentMask, baselinePath).then(result => {
                 expect(result.status === 'passed', 'Verify v4 export').to.be.true;
               });
