@@ -1,0 +1,28 @@
+{
+  "name": [
+    {
+      "translation": "API generated Lump Sum DE",
+      "language": "DE"
+    }, {
+      "translation": "API generated Lump Sum EN",
+      "language": "EN"
+    }
+  ],
+  "description": [
+    {
+      "translation": "API generated Lump Sum description DE",
+      "language": "DE"
+    }, {
+      "translation": "API generated Lump Sum description EN",
+      "language": "EN"
+    }
+  ],
+  "cost": 1999,
+  "splittingAllowed": true,
+  "fastTrack": true,
+  "phase": "Implementation",
+  "categories": [
+    "StaffCosts", "OfficeAndAdministrationCosts", "TravelAndAccommodationCosts", "ExternalCosts", "EquipmentCosts",
+    "InfrastructureCosts"
+  ]
+}

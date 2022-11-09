@@ -35,6 +35,8 @@ context('Project budget tests', () => {
         tempPartner.cofinancing = partnerData.cofinancing;
         application.partners.push(tempPartner);
       });
+      
+      application.lumpSums[0].lumpSumContributions[0].partnerAbbreviation = testData.partners[0].abbreviation;
 
       cy.createApprovedApplication(application, user.programmeUser.email).then(applicationId => {
         cy.visit(`app/project/detail/${applicationId}/applicationFormOverviewTables`, {failOnStatusCode: false});

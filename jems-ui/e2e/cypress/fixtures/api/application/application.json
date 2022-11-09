@@ -1261,7 +1261,7 @@
       "period": 0,
       "lumpSumContributions": [
         {
-          "partnerId": null,
+          "partnerAbbreviation": "Lead Partner",
           "amount": 55555.56
         }
       ]

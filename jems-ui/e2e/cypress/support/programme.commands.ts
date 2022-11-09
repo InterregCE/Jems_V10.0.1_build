@@ -1,55 +1,58 @@
 import {faker} from '@faker-js/faker';
 
-
 declare global {
-
-  interface Checklist {
-    id:number,
-    type:string,
-    name:string,
-    minScore:number,
-    maxScore:number,
-    allowsDecimalScore:false,
-    lastModificationDate:string,
-    locked:boolean,
-    components?:ChecklistComponent[],
-  }
-
-  interface ChecklistComponent {
-    id:number,
-    type: string,
-    position: number,
-    metadata: ChecklistMetadata[]
-  }
-
-  interface ChecklistMetadata {
-    type?:string,
-    question?:string,
-    firstOption?:string,
-    secondOption?:string,
-    thirdOption?:string,
-    value?:string,
-    explanationLabel?:string,
-    explanationMaxLength?:string,
-    weight?:string
-  }
 
   namespace Cypress {
     interface Chainable {
       createChecklist(checklist);
+
+      addProgrammeFund(fund);
+
+      createLumpSum(lumpSum);
     }
   }
 }
 
-Cypress.Commands.add('createChecklist', (checklist: Checklist) => {
+Cypress.Commands.add('createChecklist', (checklist) => {
   createChecklist(checklist).then(checklistId => {
     checklist.id = checklistId;
     cy.wrap(checklist.id).as('checklistId');
   });
 });
 
+Cypress.Commands.add('addProgrammeFund', (fund) => {
+  getExistingFunds().then(existingFunds => {
+    const programmeAbbreviation = `${faker.hacker.adjective()} ${faker.hacker.noun()}`;
+    fund.abbreviation.forEach(item => {
+      item.translation = `${programmeAbbreviation} ${item.language}`;
+    });
+    existingFunds.push(fund);
+    cy.request({
+      method: 'PUT',
+      url: 'api/programmeFund',
+      body: existingFunds
+    }).then(response => {
+      cy.wrap(response.body[response.body.length - 1].id);
+    });
+  });
+});
 
-function createChecklist(checklist: Checklist) {
+Cypress.Commands.add('createLumpSum', (lumpSum) => {
+  const lumpSumName = `${faker.hacker.adjective()} ${faker.hacker.noun()}`;
+  lumpSum.name.forEach(item => {
+    item.translation = `${lumpSumName} ${item.language}`;
+  });
+  cy.request({
+    method: 'POST',
+    url: 'api/costOption/lumpSum',
+    body: lumpSum
+  }).then(response => {
+    cy.wrap(response.body.id);
+  });
+});
+
+
+function createChecklist(checklist) {
   checklist.name = `${faker.hacker.adjective()} ${faker.hacker.noun()}`;
   return cy.request({
     method: 'POST',
@@ -57,6 +60,15 @@ function createChecklist(checklist: Checklist) {
     body: checklist
   }).then(response => {
     return response.body.id
+  });
+}
+
+function getExistingFunds() {
+  return cy.request({
+    method: 'GET',
+    url: 'api/programmeFund'
+  }).then(response => {
+    return response.body;
   });
 }
 
