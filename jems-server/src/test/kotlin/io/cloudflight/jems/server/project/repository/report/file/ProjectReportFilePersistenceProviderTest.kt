@@ -377,9 +377,7 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
 
         val fileCreate = fileCreate(type = ProjectPartnerReportFileType.Activity)
         val resultMock = mockk<ProjectReportFileMetadata>()
-        every { genericFileRepository
-            .persistProjectFileAndPerformAction(fileCreate, "our/indexed/path/new_file.txt", any())
-        } returns resultMock
+        every { genericFileRepository.persistProjectFileAndPerformAction(fileCreate, any()) } returns resultMock
         mockFileDeletion(oldFile)
 
         assertThat(persistence.updatePartnerReportActivityAttachment(80L, file = fileCreate))
@@ -395,9 +393,7 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
 
         val fileCreate = fileCreate(type = ProjectPartnerReportFileType.Deliverable)
         val resultMock = mockk<ProjectReportFileMetadata>()
-        every { genericFileRepository
-            .persistProjectFileAndPerformAction(fileCreate, "our/indexed/path/new_file.txt", any())
-        } returns resultMock
+        every { genericFileRepository.persistProjectFileAndPerformAction(fileCreate, any()) } returns resultMock
         mockFileDeletion(oldFile)
 
         assertThat(persistence.updatePartnerReportDeliverableAttachment(90L, file = fileCreate))
@@ -413,9 +409,7 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
 
         val fileCreate = fileCreate(type = ProjectPartnerReportFileType.Contribution)
         val resultMock = mockk<ProjectReportFileMetadata>()
-        every { genericFileRepository
-            .persistProjectFileAndPerformAction(fileCreate, "our/indexed/path/new_file.txt", any())
-        } returns resultMock
+        every { genericFileRepository.persistProjectFileAndPerformAction(fileCreate, any()) } returns resultMock
         mockFileDeletion(oldFile)
 
         assertThat(persistence.updatePartnerReportContributionAttachment(50L, file = fileCreate))
@@ -431,9 +425,7 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
 
         val fileCreate = fileCreate(type = ProjectPartnerReportFileType.Output)
         val resultMock = mockk<ProjectReportFileMetadata>()
-        every { genericFileRepository
-            .persistProjectFileAndPerformAction(fileCreate, "our/indexed/path/new_file.txt", any())
-        } returns resultMock
+        every { genericFileRepository.persistProjectFileAndPerformAction(fileCreate, any()) } returns resultMock
         mockFileDeletion(oldFile)
 
         assertThat(persistence.updatePartnerReportOutputAttachment(70L, file = fileCreate))
@@ -449,9 +441,7 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
 
         val fileCreate = fileCreate(type = ProjectPartnerReportFileType.Expenditure)
         val resultMock = mockk<ProjectReportFileMetadata>()
-        every { genericFileRepository
-            .persistProjectFileAndPerformAction(fileCreate, "our/indexed/path/new_file.txt", any())
-        } returns resultMock
+        every { genericFileRepository.persistProjectFileAndPerformAction(fileCreate, any()) } returns resultMock
         mockFileDeletion(oldFile)
 
         assertThat(persistence.updatePartnerReportExpenditureAttachment(40L, file = fileCreate))
@@ -470,9 +460,7 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
         val fileCreate = fileCreate(type = ProjectPartnerReportFileType.ProcurementAttachment)
         val extraStep = slot<(ReportProjectFileEntity) -> Unit>()
         val resultMock = mockk<ProjectReportFileMetadata>()
-        every { genericFileRepository
-            .persistProjectFileAndPerformAction(fileCreate, "our/indexed/path/new_file.txt", capture(extraStep))
-        } returns resultMock
+        every { genericFileRepository.persistProjectFileAndPerformAction(fileCreate, capture(extraStep)) } returns resultMock
 
         assertThat(persistence
             .addPartnerReportProcurementAttachment(reportId = 48L, file = fileCreate, procurementId = procurementId)
@@ -508,9 +496,7 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
     fun addAttachmentToPartnerReport() {
         val fileCreate = fileCreate(type = ProjectPartnerReportFileType.PartnerReport).copy(name = "new_file_to_partner.txt")
         val resultMock = mockk<ProjectReportFileMetadata>()
-        every { genericFileRepository
-            .persistProjectFileAndPerformAction(fileCreate, "our/indexed/path/new_file_to_partner.txt", any())
-        } returns resultMock
+        every { genericFileRepository.persistProjectFileAndPerformAction(fileCreate, any()) } returns resultMock
 
         assertThat(persistence.addAttachmentToPartnerReport(file = fileCreate)).isEqualTo(resultMock)
     }

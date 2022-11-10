@@ -19,10 +19,7 @@ class ProjectContractingFilePersistenceProvider(
 
     @Transactional
     override fun uploadFile(file: ProjectReportFileCreate) =
-        genericFileRepository.persistProjectFile(
-            file = file,
-            locationForMinio = file.getMinioFullPath(),
-        )
+        genericFileRepository.persistProjectFile(file = file)
 
     @Transactional(readOnly = true)
     override fun downloadFile(projectId: Long, fileId: Long) =

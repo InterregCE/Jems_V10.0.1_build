@@ -2,10 +2,9 @@ package io.cloudflight.jems.server.payments.service.attachment.uploadPaymentAtta
 
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
-import io.cloudflight.jems.server.common.minio.GenericPaymentFileRepository
+import io.cloudflight.jems.server.common.minio.GenericProjectFileRepository
 import io.cloudflight.jems.server.payments.PaymentPersistence
 import io.cloudflight.jems.server.payments.authorization.CanUpdatePayments
-import io.cloudflight.jems.server.project.repository.report.file.getMinioFullPath
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.file.uploadProjectFile.isFileTypeInvalid
 import io.cloudflight.jems.server.project.service.report.file.ProjectReportFilePersistence
@@ -18,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional
 class UploadPaymentAttachment(
     private val paymentPersistence: PaymentPersistence,
     private val reportFilePersistence: ProjectReportFilePersistence,
-    private val genericFileRepository: GenericPaymentFileRepository,
+    private val genericFileRepository: GenericProjectFileRepository,
     private val securityService: SecurityService,
 ) : UploadPaymentAttachmentInteractor {
 
@@ -45,7 +44,7 @@ class UploadPaymentAttachment(
                 userId = securityService.getUserIdOrThrow(),
             )
 
-            return genericFileRepository.persistFile(fileToSave, fileToSave.getMinioFullPath())
+            return genericFileRepository.persistProjectFile(fileToSave)
         }
     }
 

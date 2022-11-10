@@ -34,7 +34,7 @@ class GetPaymentAttachmentTest : UnitTest() {
         every {
             reportFilePersistence.listAttachments(
                 pageable = any(),
-                indexPrefix = "Payment/000004/PaymentAttachment/",
+                indexPrefix = "Payment/Regular/000004/PaymentAttachment/",
                 filterSubtypes = emptySet(),
                 filterUserIds = emptySet(),
             )

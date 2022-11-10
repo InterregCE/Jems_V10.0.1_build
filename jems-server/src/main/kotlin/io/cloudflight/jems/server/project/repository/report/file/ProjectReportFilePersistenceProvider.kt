@@ -198,11 +198,7 @@ class ProjectReportFilePersistenceProvider(
         reportFileRepository.findByPartnerIdAndId(partnerId, fileId)?.type ?: throw ResourceNotFoundException("projectPartnerReportFileType")
 
     private fun persistFileAndUpdateLink(file: ProjectReportFileCreate, additionalStep: (ReportProjectFileEntity) -> Unit) =
-        genericFileRepository.persistProjectFileAndPerformAction(
-            file = file,
-            locationForMinio = file.getMinioFullPath(),
-            additionalStep = additionalStep,
-        )
+        genericFileRepository.persistProjectFileAndPerformAction(file = file, additionalStep = additionalStep)
 
     private fun ReportProjectFileEntity?.deleteIfPresent() {
         if (this != null) {

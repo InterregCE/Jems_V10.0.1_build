@@ -11,6 +11,8 @@ import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.report.file.ProjectReportFileRepository
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType
+import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType.PaymentAdvanceAttachment
+import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType.PaymentAttachment
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileCreate
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.repository.user.UserRepository
@@ -24,6 +26,9 @@ import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.context.ApplicationEventPublisher
 import java.time.ZonedDateTime
 import java.util.Optional
@@ -34,12 +39,12 @@ class GenericProjectFileRepositoryTest : UnitTest() {
         const val USER_ID = 9678L
         const val PROJECT_ID = 2475L
 
-        private fun file(name: String = "new_file.txt") = ProjectReportFileCreate(
+        private fun file(name: String = "new_file.txt", type: ProjectPartnerReportFileType) = ProjectReportFileCreate(
             projectId = PROJECT_ID,
             partnerId = null,
             name = name,
             path = "/our/indexed/path/",
-            type = ProjectPartnerReportFileType.ContractDoc,
+            type = type,
             size = 45L,
             content = mockk(),
             userId = USER_ID,
@@ -80,8 +85,28 @@ class GenericProjectFileRepositoryTest : UnitTest() {
         clearMocks(reportFileRepository, minioStorage, userRepository, projectRepository, auditPublisher)
     }
 
-    @Test
-    fun persistProjectFileAndPerformAction() {
+    @ParameterizedTest(name = "persistProjectFileAndPerformAction (type {0})")
+    @EnumSource(value = ProjectPartnerReportFileType::class, names = [
+        "PaymentAttachment",
+        "PaymentAdvanceAttachment",
+
+        "PartnerReport",
+        "Activity",
+        "Deliverable",
+        "Output",
+        "Expenditure",
+        "ProcurementAttachment",
+        "Contribution",
+
+        "ControlDocument",
+        "Contract",
+        "ContractDoc",
+        "ContractPartnerDoc",
+        "ContractInternal",
+    ])
+    fun persistProjectFileAndPerformAction(type: ProjectPartnerReportFileType) {
+        val expectedBucket = if (setOf(PaymentAttachment, PaymentAdvanceAttachment).contains(type)) "payment" else "application"
+
         every { minioStorage.saveFile(any(), any(), any(), any(), true) } returns Unit
 
         val userEntity = mockk<UserEntity>()
@@ -94,19 +119,19 @@ class GenericProjectFileRepositoryTest : UnitTest() {
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } answers { }
 
-        val file = file()
+        val file = file(type = type)
         var additionalStepInvoked = false
-        repository.persistProjectFileAndPerformAction(file, "/minio/location", { additionalStepInvoked = true })
+        repository.persistProjectFileAndPerformAction(file, { additionalStepInvoked = true })
 
-        verify(exactly = 1) { minioStorage.saveFile("application", "/minio/location", any(), any(), true) }
+        verify(exactly = 1) { minioStorage.saveFile(expectedBucket, "/our/indexed/path/new_file.txt", any(), any(), true) }
 
         assertThat(slotFileEntity.captured.projectId).isEqualTo(PROJECT_ID)
         assertThat(slotFileEntity.captured.partnerId).isNull()
         assertThat(slotFileEntity.captured.path).isEqualTo("/our/indexed/path/")
-        assertThat(slotFileEntity.captured.minioBucket).isEqualTo("application")
-        assertThat(slotFileEntity.captured.minioLocation).isEqualTo("/minio/location")
+        assertThat(slotFileEntity.captured.minioBucket).isEqualTo(expectedBucket)
+        assertThat(slotFileEntity.captured.minioLocation).isEqualTo("/our/indexed/path/new_file.txt")
         assertThat(slotFileEntity.captured.name).isEqualTo("new_file.txt")
-        assertThat(slotFileEntity.captured.type).isEqualTo(ProjectPartnerReportFileType.ContractDoc)
+        assertThat(slotFileEntity.captured.type).isEqualTo(type)
         assertThat(slotFileEntity.captured.size).isEqualTo(45L)
         assertThat(slotFileEntity.captured.user).isEqualTo(userEntity)
         assertThat(slotFileEntity.captured.description).isEmpty()
@@ -116,8 +141,34 @@ class GenericProjectFileRepositoryTest : UnitTest() {
             action = AuditAction.PROJECT_FILE_UPLOADED_SUCCESSFULLY,
             project = AuditProject(PROJECT_ID.toString(), "custom-id", "acronym"),
             entityRelatedId = 0L /* because DB mocked */,
-            description = "File (of type ContractDoc) \"new_file.txt\" has been uploaded to /minio/location",
+            description = "File (of type ${type.name}) \"new_file.txt\" has been uploaded to /our/indexed/path/new_file.txt",
         ))
+    }
+
+    @ParameterizedTest(name = "persistProjectFileAndPerformAction wrong type (type {0})")
+    @EnumSource(value = ProjectPartnerReportFileType::class, names = [
+        "PaymentAttachment",
+        "PaymentAdvanceAttachment",
+
+        "PartnerReport",
+        "Activity",
+        "Deliverable",
+        "Output",
+        "Expenditure",
+        "ProcurementAttachment",
+        "Contribution",
+
+        "ControlDocument",
+        "Contract",
+        "ContractDoc",
+        "ContractPartnerDoc",
+        "ContractInternal",
+    ], mode = EnumSource.Mode.EXCLUDE)
+    fun `persistProjectFileAndPerformAction wrong type`(type: ProjectPartnerReportFileType) {
+        val file = file(type = type)
+        assertThrows<WrongFileTypeException> {
+            repository.persistProjectFileAndPerformAction(file, { })
+        }
     }
 
     @Test

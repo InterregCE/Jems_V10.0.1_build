@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.payments.service.attachment.uploadPaymentAtta
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.authentication.service.SecurityService
-import io.cloudflight.jems.server.common.minio.GenericPaymentFileRepository
+import io.cloudflight.jems.server.common.minio.GenericProjectFileRepository
 import io.cloudflight.jems.server.payments.PaymentPersistence
 import io.cloudflight.jems.server.payments.service.model.PaymentDetail
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
@@ -38,7 +38,7 @@ class UploadPaymentAttachmentTest : UnitTest() {
     lateinit var reportFilePersistence: ProjectReportFilePersistence
 
     @MockK
-    lateinit var genericFileRepository: GenericPaymentFileRepository
+    lateinit var genericFileRepository: GenericProjectFileRepository
 
     @MockK
     lateinit var securityService: SecurityService
@@ -61,12 +61,11 @@ class UploadPaymentAttachmentTest : UnitTest() {
         every { payment.id } returns paymentId
         every { payment.projectId } returns 540L
         every { paymentPersistence.getPaymentDetails(paymentId) } returns payment
-        every { reportFilePersistence.existsFile("Payment/000004/PaymentAttachment/", "test.xlsx") } returns false
+        every { reportFilePersistence.existsFile("Payment/Regular/000004/PaymentAttachment/", "test.xlsx") } returns false
 
         val fileToAdd = slot<ProjectReportFileCreate>()
-        val fileLocation = slot<String>()
         val mockResult = mockk<ProjectReportFileMetadata>()
-        every { genericFileRepository.persistFile(capture(fileToAdd), capture(fileLocation)) } returns mockResult
+        every { genericFileRepository.persistProjectFile(capture(fileToAdd)) } returns mockResult
 
         val file = ProjectFile(stream = content, name = "test.xlsx", size = 20L)
         assertThat(interactor.upload(paymentId, file)).isEqualTo(mockResult)
@@ -76,14 +75,13 @@ class UploadPaymentAttachmentTest : UnitTest() {
                 projectId = 540L,
                 partnerId = null,
                 name = "test.xlsx",
-                path = "Payment/000004/PaymentAttachment/",
+                path = "Payment/Regular/000004/PaymentAttachment/",
                 type = ProjectPartnerReportFileType.PaymentAttachment,
                 size = 20L,
                 content = content,
                 userId = USER_ID,
             )
         )
-        assertThat(fileLocation.captured).isEqualTo("Payment/000004/PaymentAttachment/test.xlsx")
     }
 
     @Test
@@ -92,12 +90,12 @@ class UploadPaymentAttachmentTest : UnitTest() {
         val payment = mockk<PaymentDetail>()
         every { payment.id } returns paymentId
         every { paymentPersistence.getPaymentDetails(paymentId) } returns payment
-        every { reportFilePersistence.existsFile("Payment/000011/PaymentAttachment/", "test.xlsx") } returns true
+        every { reportFilePersistence.existsFile("Payment/Regular/000011/PaymentAttachment/", "test.xlsx") } returns true
 
         val file = ProjectFile(stream = content, name = "test.xlsx", size = 20L)
         assertThrows<FileAlreadyExists> { interactor.upload(paymentId, file) }
 
-        verify(exactly = 0) { genericFileRepository.persistFile(any(), any()) }
+        verify(exactly = 0) { genericFileRepository.persistProjectFile(any()) }
     }
 
     @Test
@@ -110,7 +108,7 @@ class UploadPaymentAttachmentTest : UnitTest() {
         val file = ProjectFile(stream = content, name = "test.exe", size = 20L)
         assertThrows<FileTypeNotSupported> { interactor.upload(paymentId, file) }
 
-        verify(exactly = 0) { genericFileRepository.persistFile(any(), any()) }
+        verify(exactly = 0) { genericFileRepository.persistProjectFile(any()) }
     }
 
 }

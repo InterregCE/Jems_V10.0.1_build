@@ -6,6 +6,8 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.user.dto.OutputUser
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.createTestCallEntity
+import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.common.minio.GenericProjectFileRepository
 import io.cloudflight.jems.server.payments.entity.PaymentEntity
 import io.cloudflight.jems.server.payments.entity.PaymentGroupingId
 import io.cloudflight.jems.server.payments.entity.PaymentPartnerEntity
@@ -33,24 +35,33 @@ import io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumId
 import io.cloudflight.jems.server.project.entity.lumpsum.ProjectPartnerLumpSumEntity
 import io.cloudflight.jems.server.project.entity.lumpsum.ProjectPartnerLumpSumId
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
+import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.lumpsum.ProjectLumpSumRepository
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
+import io.cloudflight.jems.server.project.repository.report.file.ProjectReportFileRepository
 import io.cloudflight.jems.server.project.repository.toModel
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
+import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import io.cloudflight.jems.server.user.repository.user.UserRepository
 import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.utils.projectEntity
+import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
+import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.mockk
 import io.mockk.slot
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import java.math.BigDecimal
@@ -78,6 +89,10 @@ class PaymentPersistenceProviderTest: UnitTest() {
     lateinit var userRepository: UserRepository
     @RelaxedMockK
     lateinit var fundRepository: ProgrammeFundRepository
+    @MockK
+    lateinit var reportFileRepository: ProjectReportFileRepository
+    @MockK
+    lateinit var genericFileRepository: GenericProjectFileRepository
 
     @InjectMockKs
     lateinit var paymentPersistenceProvider: PaymentPersistenceProvider
@@ -282,6 +297,11 @@ class PaymentPersistenceProviderTest: UnitTest() {
         )
     }
 
+    @BeforeEach
+    fun reset() {
+        clearMocks(reportFileRepository, genericFileRepository)
+    }
+
     @Test
     fun getAllPaymentToProject() {
         every { paymentRepository.findAll(Pageable.unpaged()) } returns PageImpl(mutableListOf(paymentEntity))
@@ -428,4 +448,37 @@ class PaymentPersistenceProviderTest: UnitTest() {
             listOf(installmentEntity)
         assertThat(paymentPersistenceProvider.findByPartnerId(64L)).containsExactly(installmentFirst)
     }
+
+    @Test
+    fun deletePaymentAttachment() {
+        val file = mockk<ReportProjectFileEntity>()
+        every { genericFileRepository.delete(file) } answers { }
+        every { reportFileRepository.findByTypeAndId(ProjectPartnerReportFileType.PaymentAttachment, 14L) } returns file
+        paymentPersistenceProvider.deletePaymentAttachment(14L)
+        verify(exactly = 1) { genericFileRepository.delete(file) }
+    }
+
+    @Test
+    fun `deletePaymentAttachment - not existing`() {
+        every { reportFileRepository.findByTypeAndId(ProjectPartnerReportFileType.PaymentAttachment, -1L) } returns null
+        assertThrows<ResourceNotFoundException> { paymentPersistenceProvider.deletePaymentAttachment(-1L) }
+        verify(exactly = 0) { genericFileRepository.delete(any()) }
+    }
+
+    @Test
+    fun deletePaymentAdvanceAttachment() {
+        val file = mockk<ReportProjectFileEntity>()
+        every { genericFileRepository.delete(file) } answers { }
+        every { reportFileRepository.findByTypeAndId(ProjectPartnerReportFileType.PaymentAdvanceAttachment, 16L) } returns file
+        paymentPersistenceProvider.deletePaymentAdvanceAttachment(16L)
+        verify(exactly = 1) { genericFileRepository.delete(file) }
+    }
+
+    @Test
+    fun `deletePaymentAdvanceAttachment - not existing`() {
+        every { reportFileRepository.findByTypeAndId(ProjectPartnerReportFileType.PaymentAdvanceAttachment, -1L) } returns null
+        assertThrows<ResourceNotFoundException> { paymentPersistenceProvider.deletePaymentAdvanceAttachment(-1L) }
+        verify(exactly = 0) { genericFileRepository.delete(any()) }
+    }
+
 }
