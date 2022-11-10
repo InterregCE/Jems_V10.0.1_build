@@ -8,6 +8,7 @@ import io.cloudflight.jems.server.common.validator.GeneralValidatorDefaultImpl
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.payments.service.AdvancePaymentValidator.Companion.PAYMENT_ADVANCE_AUTHORIZE_ERROR_KEY
 import io.cloudflight.jems.server.payments.service.AdvancePaymentValidator.Companion.PAYMENT_ADVANCE_DELETION_ERROR_KEY
+import io.cloudflight.jems.server.payments.service.AdvancePaymentValidator.Companion.PAYMENT_ADVANCE_NO_SOURCE_ERROR_KEY
 import io.cloudflight.jems.server.payments.service.AdvancePaymentValidator.Companion.PAYMENT_ADVANCE_SAVE_ERROR_KEY
 import io.cloudflight.jems.server.payments.service.model.AdvancePaymentDetail
 import io.cloudflight.jems.server.payments.service.model.AdvancePaymentUpdate
@@ -118,11 +119,39 @@ class AdvancePaymentValidatorTest : UnitTest() {
         assertDoesNotThrow {
             validator.validateDetail(
                 advancePaymentUpdate.copy(
+                    programmeFundId = 1L,
                     paymentConfirmed = false,
                     dateOfPayment = null
                 ), null
             )
         }
+    }
+
+    @Test
+    fun `should throw InputValidationException if no project is set`() {
+        val ex = assertThrows<AppInputValidationException> {
+            validator.validateDetail(
+                advancePaymentUpdate.copy(
+                    projectId = 0,
+                    paymentConfirmed = true,
+                    dateOfPayment = null
+                ), null
+            )
+        }
+        assertEquals(COMMON_INPUT_ERROR, ex.i18nMessage.i18nKey)
+    }
+
+    @Test
+    fun `should throw InputValidationException if no source of contribution is set`() {
+        val ex = assertThrows<I18nValidationException> {
+            validator.validateDetail(
+                advancePaymentUpdate.copy(
+                    paymentConfirmed = false,
+                    dateOfPayment = null
+                ), null
+            )
+        }
+        assertEquals(PAYMENT_ADVANCE_NO_SOURCE_ERROR_KEY, ex.i18nKey)
     }
 
     @Test

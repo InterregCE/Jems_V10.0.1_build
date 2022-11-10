@@ -21,6 +21,7 @@ class PaymentInstallmentsValidatorTest : UnitTest() {
 
     companion object {
         private const val COMMON_INPUT_ERROR = "common.error.input.invalid"
+        private const val COMMON_ERROR_REQUIRED = "common.error.field.required"
         private val currentDate = ZonedDateTime.now().toLocalDate()
 
         private val installmentUpdate = PaymentPartnerInstallmentUpdate(
@@ -136,6 +137,7 @@ class PaymentInstallmentsValidatorTest : UnitTest() {
             )
         }
         assertEquals(COMMON_INPUT_ERROR, ex.i18nMessage.i18nKey)
+        assertEquals(COMMON_ERROR_REQUIRED, ex.formErrors["paymentDate-1"]?.i18nKey)
     }
 
     @Test

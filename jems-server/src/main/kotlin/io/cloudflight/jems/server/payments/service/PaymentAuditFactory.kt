@@ -78,6 +78,7 @@ fun advancePaymentCreated(
 ): AuditCandidateEvent = AuditCandidateEvent(
     context = context,
     auditCandidate = AuditBuilder(AuditAction.ADVANCE_PAYMENT_IS_CREATED)
+        .project(paymentDetail.projectId, paymentDetail.projectCustomIdentifier, paymentDetail.projectAcronym)
         .description("Advance payment number ${paymentDetail.id} is created for " +
             "partner ${getPartnerName(paymentDetail.partnerType, paymentDetail.partnerNumber)} for funding source " +
             getFundingSourceName(paymentDetail))
@@ -89,6 +90,7 @@ fun advancePaymentDeleted(
 ): AuditCandidateEvent = AuditCandidateEvent(
     context = context,
     auditCandidate = AuditBuilder(AuditAction.ADVANCE_PAYMENT_IS_DELETED)
+        .project(paymentDetail.projectId, paymentDetail.projectCustomIdentifier, paymentDetail.projectAcronym)
         .description("Advance payment number ${paymentDetail.id} is deleted for " +
             "partner ${getPartnerName(paymentDetail.partnerType, paymentDetail.partnerNumber)} for funding source " +
             getFundingSourceName(paymentDetail))
@@ -101,6 +103,7 @@ fun advancePaymentAuthorized(
 ): AuditCandidateEvent = AuditCandidateEvent(
     context = context,
     auditCandidate = AuditBuilder(AuditAction.ADVANCE_PAYMENT_DETAIL_AUTHORISED)
+        .project(paymentDetail.projectId, paymentDetail.projectCustomIdentifier, paymentDetail.projectAcronym)
         .description("Advance payment details for advance number ${paymentDetail.id} of " +
             "partner ${getPartnerName(paymentDetail.partnerType, paymentDetail.partnerNumber)} are authorised")
         .build()
@@ -112,6 +115,7 @@ fun advancePaymentConfirmed(
 ): AuditCandidateEvent = AuditCandidateEvent(
     context = context,
     auditCandidate = AuditBuilder(AuditAction.ADVANCE_PAYMENT_DETAIL_CONFIRMED)
+        .project(paymentDetail.projectId, paymentDetail.projectCustomIdentifier, paymentDetail.projectAcronym)
         .description("Advance payment details for advance number ${paymentDetail.id} of " +
             "partner ${getPartnerName(paymentDetail.partnerType, paymentDetail.partnerNumber)} are confirmed")
         .build()

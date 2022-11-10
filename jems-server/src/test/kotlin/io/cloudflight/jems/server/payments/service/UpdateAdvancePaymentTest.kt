@@ -145,6 +145,10 @@ class UpdateAdvancePaymentTest : UnitTest() {
         every { securityService.getUserIdOrThrow() } returns currentUserId
         val result = mockk<AdvancePaymentDetail>()
         every { result.id } returns paymentId
+        every { result.projectId } returns projectId
+        every { result.projectCustomIdentifier } returns paymentSaved.projectCustomIdentifier
+        every { result.projectAcronym } returns paymentSaved.projectAcronym
+        every { result.partnerId } returns partnerId
         every { result.partnerType } returns paymentSaved.partnerType
         every { result.partnerNumber } returns paymentSaved.partnerNumber
         val toUpdateSlot = slot<AdvancePaymentUpdate>()

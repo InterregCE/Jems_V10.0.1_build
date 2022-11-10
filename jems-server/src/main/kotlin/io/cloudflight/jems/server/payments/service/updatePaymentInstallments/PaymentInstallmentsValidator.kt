@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service
 class PaymentInstallmentsValidator(private val validator: GeneralValidatorService) {
 
     companion object {
+        const val COMMON_ERROR_REQUIRED = "common.error.field.required"
         const val PAYMENT_PARTNER_INSTALLMENT_MAX = 5
         const val PAYMENT_PARTNER_INSTALLMENT_DELETION_ERROR_KEY = "payment.partner.installment.deletion.not.possible"
         const val PAYMENT_PARTNER_INSTALLMENT_SAVE_ERROR_KEY = "payment.partner.installment.save.invalid.fields"
@@ -35,13 +36,15 @@ class PaymentInstallmentsValidator(private val validator: GeneralValidatorServic
         savedInstallments: Collection<PaymentPartnerInstallment>
     ): List<Map<String, I18nMessage>> {
         val feedback = mutableListOf<Map<String, I18nMessage>>()
-        installments.forEach { installment ->
+        installments.forEachIndexed { index, installment ->
             val savedInstallment = savedInstallments.find { installment.id == it.id }
             if (isInstallmentAuthorized(savedInstallment) && installment.isSavePaymentInfo == false) {
                 throw I18nValidationException(i18nKey = PAYMENT_PARTNER_INSTALLMENT_DELETION_ERROR_KEY)
             }
-            if (installment.isPaymentConfirmed == true) {
-                feedback.add(validator.notNull(installment.paymentDate, "paymentDate"))
+            if (installment.isPaymentConfirmed == true && installment.paymentDate == null) {
+                feedback.add(mutableMapOf<String, I18nMessage>().apply {
+                   this["paymentDate-$index"] = I18nMessage(COMMON_ERROR_REQUIRED)
+                })
             }
             feedback.add(validator.maxLength(installment.comment, 500, "comment"))
         }
