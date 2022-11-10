@@ -17,7 +17,9 @@ import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {TableConfig} from '@common/directives/table-config/TableConfig';
 import {combineLatest, Observable} from 'rxjs';
 import CallTypeEnum = ProjectCallSettingsDTO.CallTypeEnum;
+import {UntilDestroy, untilDestroyed} from "@ngneat/until-destroy";
 
+@UntilDestroy()
 @Component({
   selector: 'jems-budget-page-per-partner',
   templateUrl: './budget-page-per-partner.component.html',
@@ -30,6 +32,7 @@ export class BudgetPagePerPartnerComponent {
   isCallTypeSpf$: Observable<boolean> = this.projectStore.projectCallType$.pipe(
     map(callType => callType === CallTypeEnum.SPF)
   );
+  projectId: number;
 
   chosenProjectFunds$ = this.pageStore.callFunds$
     .pipe(
@@ -56,6 +59,12 @@ export class BudgetPagePerPartnerComponent {
               private activatedRoute: ActivatedRoute,
               private pageStore: ProjectPartnerDetailPageStore,
               private visibilityStatusService: FormVisibilityStatusService) {
+
+    this.projectStore.projectId$.pipe(
+        tap(projectId => this.projectId = projectId),
+        untilDestroyed(this)
+    ).subscribe()
+
     this.tableConfig$ = combineLatest([this.chosenProjectFunds$, this.isCallTypeSpf$])
       .pipe(map( ([funds, isSpf]) => [
         {minInRem: 4, maxInRem: 4},  // partner id
@@ -110,6 +119,7 @@ export class BudgetPagePerPartnerComponent {
     this.budgetColumns = [];
     budgets.forEach((budget: ProjectPartnerBudgetPerFundDTO) => {
       this.budgetColumns.push({
+        partnerId: budget?.partner?.id,
         partnerSortNumber: budget?.partner?.sortNumber,
         partnerAbbreviation: budget?.partner?.abbreviation,
         partnerRole: budget?.partner?.role,

@@ -33,6 +33,7 @@ export class BudgetPagePartnerPerPeriodComponent {
     totalsPercentage: number[];
     periodsAvailable: boolean;
     isCallTypeSpf: boolean;
+    projectId: number;
   }>;
 
   private static sortByNumber(a: ProjectPartnerBudgetPerPeriodDTO, b: ProjectPartnerBudgetPerPeriodDTO): number {
@@ -46,9 +47,10 @@ export class BudgetPagePartnerPerPeriodComponent {
   ) {
     this.data$ = combineLatest([
       this.budgetPeriodStore.projectBudgetOverviewPerPartnerPerPeriods$,
-      this.projectStore.projectCallType$
+      this.projectStore.projectCallType$,
+      this.projectStore.projectId$,
     ]).pipe(
-        map(([projectBudgetOverviewPerPartnerPerPeriod, callType]) => {
+        map(([projectBudgetOverviewPerPartnerPerPeriod, callType, projectId]) => {
           const perPeriodSorted = [...projectBudgetOverviewPerPartnerPerPeriod.partnersBudgetPerPeriod]
             .sort(BudgetPagePartnerPerPeriodComponent.sortByNumber);
           return {
@@ -58,7 +60,8 @@ export class BudgetPagePartnerPerPeriodComponent {
             totals: projectBudgetOverviewPerPartnerPerPeriod.totals,
             totalsPercentage: projectBudgetOverviewPerPartnerPerPeriod.totalsPercentage,
             periodsAvailable: this.projectPeriodNumbers.length > 0,
-            isCallTypeSpf: callType === CallDetailDTO.TypeEnum.SPF
+            isCallTypeSpf: callType === CallDetailDTO.TypeEnum.SPF,
+            projectId
           };
         }),
       );

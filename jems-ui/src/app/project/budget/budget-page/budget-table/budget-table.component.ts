@@ -33,6 +33,9 @@ export class BudgetTableComponent implements OnInit, OnChanges {
   @Input()
   headerLinks: boolean;
 
+  @Input()
+  hidePartnerLink = false
+
   displayedColumns: string[];
 
   totalStaffCosts: number;
