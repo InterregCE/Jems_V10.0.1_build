@@ -2,28 +2,29 @@ package io.cloudflight.jems.server.project.controller.report.expenditureCosts
 
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.api.project.dto.partner.budget.ProjectPartnerBudgetOptionsDto
 import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadataDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.BudgetCategoryDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportExpenditureCostDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportInvestmentDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportLumpSumDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportUnitCostDTO
-import io.cloudflight.jems.api.project.dto.workpackage.investment.InvestmentSummaryDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportInvestment
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportLumpSum
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportUnitCost
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ReportBudgetCategory
 import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.partner.expenditure.getAvailableBudgetOptionsForReport.GetAvailableBudgetOptionsForReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.getAvailableInvestmentsForReport.GetAvailableInvestmentsForReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.getAvailableLumpSumsForReport.GetAvailableLumpSumsForReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.getAvailableUnitCostsForReport.GetAvailableUnitCostsForReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.getProjectPartnerReportExpenditure.GetProjectPartnerReportExpenditureInteractor
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.updateProjectPartnerReportExpenditure.UpdateProjectPartnerReportExpenditureInteractor
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.uploadFileToProjectPartnerReportExpenditure.UploadFileToProjectPartnerReportExpenditure
-import io.cloudflight.jems.server.project.service.workpackage.model.InvestmentSummary
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -164,6 +165,21 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
         title = setOf(InputTranslation(SystemLanguage.EN, "EN investment")),
     )
 
+    private val dummyBudgetOptions = ProjectPartnerBudgetOptions(
+        officeAndAdministrationOnStaffCostsFlatRate = 20,
+        officeAndAdministrationOnDirectCostsFlatRate = 22,
+        travelAndAccommodationOnStaffCostsFlatRate = 8,
+        staffCostsFlatRate = 1,
+        partnerId = PARTNER_ID
+    )
+
+    private val dummyBudgetOptionsDto = ProjectPartnerBudgetOptionsDto(
+        officeAndAdministrationOnStaffCostsFlatRate = 20,
+        officeAndAdministrationOnDirectCostsFlatRate = 22,
+        travelAndAccommodationOnStaffCostsFlatRate = 8,
+        staffCostsFlatRate = 1,
+    )
+
     @MockK
     lateinit var getProjectPartnerReportExpenditureInteractor: GetProjectPartnerReportExpenditureInteractor
 
@@ -181,6 +197,9 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
 
     @MockK
     lateinit var getAvailableInvestmentsForReportInteractor: GetAvailableInvestmentsForReportInteractor
+
+    @MockK
+    lateinit var getAvailableBudgetOptionsForReportInteractor: GetAvailableBudgetOptionsForReportInteractor
 
     @InjectMockKs
     private lateinit var controller: ProjectPartnerReportExpenditureCostsController
@@ -237,6 +256,13 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
         every { getAvailableInvestmentsForReportInteractor.getInvestments(PARTNER_ID, 38L) } returns
             listOf(dummyInvestment)
         assertThat(controller.getAvailableInvestments(PARTNER_ID, reportId = 38L)).containsExactly(dummyInvestmentDTO)
+    }
+
+    @Test
+    fun getAvailableBudgetOptions() {
+        every { getAvailableBudgetOptionsForReportInteractor.getBudgetOptions(PARTNER_ID, 38L) } returns
+            dummyBudgetOptions
+        assertThat(controller.getAvailableBudgetOptions(PARTNER_ID, reportId = 38L)).isEqualTo(dummyBudgetOptionsDto)
     }
 
 }
