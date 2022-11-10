@@ -72,17 +72,17 @@ export class PartnerReportIdentificationTabComponent {
               private projectSidenavService: ProjectApplicationFormSidenavService) {
     this.data$ = combineLatest([
       pageStore.partnerReport$,
-      projectStore.projectForm$,
+      this.projectStore.projectId$,
       pageStore.availablePeriods$,
       pageStore.partnerIdentification$,
       pageStore.partnerSummary$
     ]).pipe(
-      tap(([partnerReport, projectForm, availablePeriods, identification, partnerSummary]) =>
+      tap(([partnerReport, projectId, availablePeriods, identification, partnerSummary]) =>
         this.availablePeriods = availablePeriods
       ),
-      map(([partnerReport, projectForm, availablePeriods, identification, partnerSummary]) => ({
+      map(([partnerReport, projectId, availablePeriods, identification, partnerSummary]) => ({
         partnerReport,
-        periods: availablePeriods.map(p => ({...p, projectId: projectForm.id} as ProjectPeriodDTO)),
+        periods: availablePeriods.map(p => ({...p, projectId} as ProjectPeriodDTO)),
         identification,
         partnerSummary
       })),

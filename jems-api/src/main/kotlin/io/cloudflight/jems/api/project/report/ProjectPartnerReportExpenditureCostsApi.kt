@@ -1,5 +1,6 @@
 package io.cloudflight.jems.api.project.report
 
+import io.cloudflight.jems.api.project.dto.partner.budget.ProjectPartnerBudgetOptionsDto
 import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadataDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportExpenditureCostDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportInvestmentDTO
@@ -69,4 +70,10 @@ interface ProjectPartnerReportExpenditureCostsApi {
         @PathVariable reportId: Long,
     ): List<ProjectPartnerReportInvestmentDTO>
 
+    @ApiOperation("Returns all budget options available for this report")
+    @GetMapping("$ENDPOINT_API_PARTNER_REPORT_EXPENDITURE_COSTS/budgetOptions")
+    fun getAvailableBudgetOptions(
+        @PathVariable partnerId: Long,
+        @PathVariable reportId: Long,
+    ): ProjectPartnerBudgetOptionsDto
 }

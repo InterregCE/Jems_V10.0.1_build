@@ -112,8 +112,8 @@ export class PartnerReportExpendituresStore {
     ])
       .pipe(
         filter(([partnerId, partnerReport]) => partnerId !== null && partnerReport !== null),
-        switchMap(([partnerId, partnerReport]) => this.projectPartnerBudgetStore
-          .getBudgetOptions(partnerId as number, partnerReport.linkedFormVersion)),
+        switchMap(([partnerId, partnerReport]) => this.partnerReportExpenditureCostsService
+          .getAvailableBudgetOptions(partnerId as number, partnerReport.id)),
         map((it: ProjectPartnerBudgetOptionsDto) => BudgetOptions.fromDto(it)),
       );
   }

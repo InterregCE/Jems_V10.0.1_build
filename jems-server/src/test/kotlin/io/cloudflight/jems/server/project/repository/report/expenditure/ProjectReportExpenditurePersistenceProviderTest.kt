@@ -16,7 +16,10 @@ import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerRepor
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportLumpSumEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportUnitCostEntity
 import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
+import io.cloudflight.jems.server.project.entity.report.financialOverview.ReportProjectPartnerExpenditureCostCategoryEntity
 import io.cloudflight.jems.server.project.repository.report.ProjectPartnerReportRepository
+import io.cloudflight.jems.server.project.repository.report.financialOverview.costCategory.ReportProjectPartnerExpenditureCostCategoryRepository
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportInvestment
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportLumpSum
@@ -248,6 +251,14 @@ class ProjectReportExpenditurePersistenceProviderTest : UnitTest() {
             title = setOf(InputTranslation(SystemLanguage.EN, "inv title EN")),
             total = BigDecimal.ONE,
         )
+
+        private val dummyBudgetOptions = ProjectPartnerBudgetOptions(
+            officeAndAdministrationOnStaffCostsFlatRate = 20,
+            officeAndAdministrationOnDirectCostsFlatRate = 22,
+            travelAndAccommodationOnStaffCostsFlatRate = 8,
+            staffCostsFlatRate = 1,
+            partnerId = PARTNER_ID
+        )
     }
 
     @MockK
@@ -267,6 +278,9 @@ class ProjectReportExpenditurePersistenceProviderTest : UnitTest() {
 
     @MockK
     lateinit var genericFileRepository: GenericProjectFileRepository
+
+    @MockK
+    lateinit var reportCostCategoriesRepository: ReportProjectPartnerExpenditureCostCategoryRepository
 
     @InjectMockKs
     lateinit var persistence: ProjectReportExpenditurePersistenceProvider
@@ -328,6 +342,22 @@ class ProjectReportExpenditurePersistenceProviderTest : UnitTest() {
             .findByReportEntityPartnerIdAndReportEntityIdOrderByWorkPackageNumberAscInvestmentNumberAsc(PARTNER_ID, reportId = 20L)
         } returns mutableListOf(dummyInvestmentEntity(mockk()))
         assertThat(persistence.getAvailableInvestments(PARTNER_ID, reportId = 20L)).containsExactly(dummyInvestment)
+    }
+
+    @Test
+    fun getAvailableBudgetOptions() {
+        val budgetOptionsEntity = mockk<ReportProjectPartnerExpenditureCostCategoryEntity>()
+        every { budgetOptionsEntity.reportEntity } returns mockk()
+        every { budgetOptionsEntity.reportEntity.partnerId } returns PARTNER_ID
+        every { budgetOptionsEntity.officeAndAdministrationOnStaffCostsFlatRate } returns 20
+        every { budgetOptionsEntity.officeAndAdministrationOnDirectCostsFlatRate } returns 22
+        every { budgetOptionsEntity.travelAndAccommodationOnStaffCostsFlatRate } returns 8
+        every { budgetOptionsEntity.staffCostsFlatRate } returns 1
+        every { budgetOptionsEntity.otherCostsOnStaffCostsFlatRate } returns null
+        every { reportCostCategoriesRepository
+            .findFirstByReportEntityPartnerIdAndReportEntityId(PARTNER_ID, reportId = 20L)
+        } returns budgetOptionsEntity
+        assertThat(persistence.getAvailableBudgetOptions(PARTNER_ID, reportId = 20L)).isEqualTo(dummyBudgetOptions)
     }
 
     @Test

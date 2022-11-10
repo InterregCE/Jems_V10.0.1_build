@@ -9,6 +9,9 @@ import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerRepor
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportLumpSumEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportUnitCostEntity
 import io.cloudflight.jems.server.project.repository.report.ProjectPartnerReportRepository
+import io.cloudflight.jems.server.project.repository.report.financialOverview.costCategory.ReportProjectPartnerExpenditureCostCategoryRepository
+import io.cloudflight.jems.server.project.repository.report.financialOverview.costCategory.toBudgetOptionsModel
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportInvestment
 import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportLumpSum
@@ -26,6 +29,7 @@ class ProjectReportExpenditurePersistenceProvider(
     private val reportUnitCostRepository: ProjectPartnerReportUnitCostRepository,
     private val reportInvestmentRepository: ProjectPartnerReportInvestmentRepository,
     private val genericFileRepository: GenericProjectFileRepository,
+    private val reportCostCategoriesRepository: ReportProjectPartnerExpenditureCostCategoryRepository
 ) : ProjectReportExpenditurePersistence {
 
     @Transactional(readOnly = true)
@@ -98,6 +102,12 @@ class ProjectReportExpenditurePersistenceProvider(
             partnerId = partnerId,
             reportId = reportId,
         ).toModel()
+
+    @Transactional(readOnly = true)
+    override fun getAvailableBudgetOptions(partnerId: Long, reportId: Long): ProjectPartnerBudgetOptions =
+        reportCostCategoriesRepository.findFirstByReportEntityPartnerIdAndReportEntityId(partnerId, reportId)
+            .toBudgetOptionsModel()
+
 
     private fun PartnerReportExpenditureCostEntity.updateWith(
         newData: ProjectPartnerReportExpenditureCost,

@@ -51,3 +51,12 @@ fun ReportProjectPartnerExpenditureCostCategoryEntity.toModel() = ReportExpendit
         sum = sumPreviouslyReported,
     ),
 )
+
+fun ReportProjectPartnerExpenditureCostCategoryEntity.toBudgetOptionsModel() = ProjectPartnerBudgetOptions(
+    partnerId = reportEntity.partnerId,
+    officeAndAdministrationOnStaffCostsFlatRate = officeAndAdministrationOnStaffCostsFlatRate,
+    officeAndAdministrationOnDirectCostsFlatRate = officeAndAdministrationOnDirectCostsFlatRate,
+    travelAndAccommodationOnStaffCostsFlatRate = travelAndAccommodationOnStaffCostsFlatRate,
+    staffCostsFlatRate = staffCostsFlatRate,
+    otherCostsOnStaffCostsFlatRate = otherCostsOnStaffCostsFlatRate
+)
