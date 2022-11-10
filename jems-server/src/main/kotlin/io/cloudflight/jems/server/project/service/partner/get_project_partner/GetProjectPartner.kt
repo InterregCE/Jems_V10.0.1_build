@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.service.partner.get_project_partner
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionList
+import io.cloudflight.jems.server.payments.authorization.CanUpdatePayments
 import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectForm
 import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectPartner
 import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectPartnerSummaries
@@ -10,6 +11,7 @@ import io.cloudflight.jems.server.project.service.budget.get_project_budget.GetP
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.model.ProjectBudgetPartnerSummary
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerPaymentSummary
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
@@ -73,4 +75,11 @@ class GetProjectPartner(
             this.forEach { it.institutionName = institutions[it.id!!]?.name }
         }
 
+    @CanUpdatePayments
+    @Transactional(readOnly = true)
+    @ExceptionWrapper(GetProjectPartnerByProjectIdForDropdownException::class)
+    override fun findAllByProjectIdWithContributionsForDropdown(
+        projectId: Long
+    ): List<ProjectPartnerPaymentSummary> =
+        persistence.findAllByProjectIdWithContributionsForDropdown(projectId)
 }

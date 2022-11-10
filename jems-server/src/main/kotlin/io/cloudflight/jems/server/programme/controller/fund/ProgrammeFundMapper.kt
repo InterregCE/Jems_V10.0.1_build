@@ -16,12 +16,12 @@ fun ProgrammeFund.toDto() =
 
 fun Iterable<ProgrammeFund>.toDto() = map { it.toDto() }
 
-fun Iterable<ProgrammeFundDTO>.toModel() = map {
-    ProgrammeFund(
-        id = it.id ?: 0,
-        selected = it.selected,
-        type = ProgrammeFundType.valueOf(it.type.name),
-        abbreviation = it.abbreviation,
-        description = it.description
-    )
-}
+fun Iterable<ProgrammeFundDTO>.toModelList() = map { it.toModel() }
+
+fun ProgrammeFundDTO.toModel() = ProgrammeFund(
+    id = id ?: 0,
+    selected = selected,
+    type = ProgrammeFundType.valueOf(type.name),
+    abbreviation = abbreviation,
+    description = description
+)

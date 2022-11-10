@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.repository.partner
 
+import io.cloudflight.jems.server.payments.entity.PartnerWithContributionsRow
 import io.cloudflight.jems.server.project.entity.partner.PartnerAddressRow
 import io.cloudflight.jems.server.project.entity.partner.PartnerContactRow
 import io.cloudflight.jems.server.project.entity.partner.PartnerDetailRow
@@ -557,4 +558,41 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
         """
     )
     fun getPartnerProjectIdByPartnerIdAndProjectStatusIn(partnerIds: Set<Long>, projectStatuses: Set<ApplicationStatus>): List<Pair<Long, Long>>
+
+    @Query(
+        """
+        SELECT
+            partner.id AS partnerId,
+            partner.abbreviation AS partnerAbbreviation,
+            partner.role partnerRole,
+            partner.active AS partnerActive,
+            partner.sort_number AS partnerSortNumber,
+            partnerCoFinancing.programme_fund_id AS fundId,
+            programmeFundTransl.abbreviation AS fundAbbreviation,
+            programmeFundTransl.language,
+            partnerContribution.id AS partnerContributionId,
+            partnerContribution.name AS partnerContributionName,
+            partnerContribution.status AS partnerContributionStatus,
+            partnerContribution.amount AS partnerContributionAmount,
+            partnerContributionSpf.id AS partnerContributionSpfId,
+            partnerContributionSpf.name AS partnerContributionSpfName,
+            partnerContributionSpf.status AS partnerContributionSpfStatus,
+            partnerContributionSpf.amount AS partnerContributionSpfAmount
+        FROM optimization_project_version AS opv
+            INNER JOIN project_partner FOR SYSTEM_TIME AS OF TIMESTAMP opv.last_approved_version AS partner
+                ON partner.project_id = opv.project_id
+            INNER JOIN project_partner_contribution FOR SYSTEM_TIME AS OF TIMESTAMP opv.last_approved_version AS partnerContribution
+                ON partner.id = partnerContribution.partner_id
+            LEFT OUTER JOIN project_partner_contribution_spf FOR SYSTEM_TIME AS OF TIMESTAMP opv.last_approved_version AS partnerContributionSpf
+                ON partner.id = partnerContributionSpf.partner_id
+            INNER JOIN project_partner_co_financing FOR SYSTEM_TIME AS OF TIMESTAMP opv.last_approved_version AS partnerCoFinancing
+                ON partner.id = partnerCoFinancing.partner_id
+            INNER JOIN programme_fund AS programmeFund
+                ON partnerCoFinancing.programme_fund_id = programmeFund.id
+            INNER JOIN programme_fund_transl programmeFundTransl
+                ON programmeFund.id = programmeFundTransl.source_entity_id
+        WHERE partner.project_id = :projectId
+    """, nativeQuery = true
+    )
+    fun findAllByProjectIdWithContributionsForDropdown(projectId: Long): List<PartnerWithContributionsRow>
 }

@@ -110,10 +110,27 @@ class PaymentInstallmentsValidatorTest : UnitTest() {
     }
 
     @Test
-    fun `should throw InputValidationException if paymentDate is empty`() {
+    fun `should succeed if paymentDate is empty on unconfirmed payment`() {
+        assertDoesNotThrow {
+            validator.validateInstallments(
+                listOf(installmentNew, installmentUpdate.copy(
+                    isPaymentConfirmed = false,
+                    paymentDate = null
+                )),
+                emptyList(),
+                emptyList()
+            )
+        }
+    }
+
+    @Test
+    fun `should throw InputValidationException on confirmed payment if paymentDate is empty`() {
         val ex = assertThrows<AppInputValidationException> {
             validator.validateInstallments(
-                listOf(installmentNew, installmentUpdate.copy(paymentDate = null)),
+                listOf(installmentNew, installmentUpdate.copy(
+                    isPaymentConfirmed = true,
+                    paymentDate = null
+                )),
                 emptyList(),
                 emptyList()
             )

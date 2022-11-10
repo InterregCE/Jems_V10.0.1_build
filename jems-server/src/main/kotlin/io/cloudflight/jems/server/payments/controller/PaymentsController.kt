@@ -1,8 +1,8 @@
 package io.cloudflight.jems.server.payments.controller
 
-import io.cloudflight.jems.api.payments.PaymentDetailDTO
-import io.cloudflight.jems.api.payments.PaymentPartnerInstallmentDTO
-import io.cloudflight.jems.api.payments.PaymentToProjectDTO
+import io.cloudflight.jems.api.payments.dto.PaymentDetailDTO
+import io.cloudflight.jems.api.payments.dto.PaymentPartnerInstallmentDTO
+import io.cloudflight.jems.api.payments.dto.PaymentToProjectDTO
 import io.cloudflight.jems.api.payments.PaymentsApi
 import io.cloudflight.jems.server.payments.service.getPaymentDetail.GetPaymentDetailInteractor
 import io.cloudflight.jems.server.payments.service.getPayments.GetPaymentsInteractor

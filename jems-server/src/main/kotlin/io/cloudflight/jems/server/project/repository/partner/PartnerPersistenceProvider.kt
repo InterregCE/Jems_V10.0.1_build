@@ -21,6 +21,7 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerMo
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerStateAid
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerPaymentSummary
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
@@ -96,6 +97,10 @@ class PartnerPersistenceProvider(
             }
         ) ?: emptyList()
     }
+
+    @Transactional(readOnly = true)
+    override fun findAllByProjectIdWithContributionsForDropdown(projectId: Long): List<ProjectPartnerPaymentSummary> =
+        projectPartnerRepository.findAllByProjectIdWithContributionsForDropdown(projectId).toProjectPartnerPaymentSummaryList()
 
     // used for authorization
     @Transactional(readOnly = true)

@@ -1,9 +1,15 @@
 package io.cloudflight.jems.server.payments.repository
 
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
+import io.cloudflight.jems.server.call.service.model.IdNamePair
 import io.cloudflight.jems.server.common.entity.toInstant
+import io.cloudflight.jems.server.payments.entity.AdvancePaymentEntity
 import io.cloudflight.jems.server.payments.entity.PaymentEntity
 import io.cloudflight.jems.server.payments.entity.PaymentPartnerEntity
 import io.cloudflight.jems.server.payments.entity.PaymentPartnerInstallmentEntity
+import io.cloudflight.jems.server.payments.service.model.AdvancePayment
+import io.cloudflight.jems.server.payments.service.model.AdvancePaymentDetail
+import io.cloudflight.jems.server.payments.service.model.AdvancePaymentUpdate
 import io.cloudflight.jems.server.payments.service.model.PartnerPayment
 import io.cloudflight.jems.server.payments.service.model.PaymentConfirmedInfo
 import io.cloudflight.jems.server.payments.service.model.PaymentDetail
@@ -16,13 +22,16 @@ import io.cloudflight.jems.server.payments.service.model.PaymentToCreate
 import io.cloudflight.jems.server.payments.service.model.PaymentToProject
 import io.cloudflight.jems.server.payments.service.model.PaymentType
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
+import io.cloudflight.jems.server.programme.repository.fund.toModel
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumEntity
 import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.service.toOutputUser
 import org.springframework.data.domain.Page
+import java.math.BigDecimal
 import java.time.ZoneOffset.UTC
 import java.time.ZonedDateTime
 
@@ -32,14 +41,14 @@ fun Page<PaymentEntity>.toListModel(
     getConfirm: (Long) -> PaymentConfirmedInfo
 ) = map {
     val lumpSum = getLumpSum.invoke(it.project.id, it.orderNr)
-    it.toModel(
+    it.toDetailModel(
         lumpSum,
         getProject.invoke(it.project.id, lumpSum.lastApprovedVersionBeforeReadyForPayment),
         getConfirm.invoke(it.id)
     )
 }
 
-fun PaymentEntity.toModel(
+fun PaymentEntity.toDetailModel(
     lumpSum: ProjectLumpSumEntity,
     projectFull: ProjectFull,
     paymentConfirmedInfo: PaymentConfirmedInfo
@@ -61,8 +70,8 @@ fun PaymentEntity.toModel(
     lastApprovedVersionBeforeReadyForPayment = lumpSum.lastApprovedVersionBeforeReadyForPayment
 )
 
-fun List<PaymentRow>.toListModel() = map { it.toModel() }
-fun PaymentRow.toModel() = PaymentPerPartner(
+fun List<PaymentRow>.toListModel() = map { it.toDetailModel() }
+fun PaymentRow.toDetailModel() = PaymentPerPartner(
     projectId, partnerId, orderNr, programmeLumpSumId, programmeFundId, amountApprovedPerPartner
 )
 
@@ -86,15 +95,6 @@ fun PaymentPartnerToCreate.toEntity(paymentEntity: PaymentEntity) = PaymentPartn
     amountApprovedPerPartner = amountApprovedPerPartner
 )
 
-fun List<PaymentPerPartner>.toEntityList(payment: PaymentEntity) = map { it.toEntity(payment) }
-fun PaymentPerPartner.toEntity(
-    payment: PaymentEntity
-) = PaymentPartnerEntity(
-    payment = payment,
-    partnerId = partnerId,
-    amountApprovedPerPartner = amountApprovedPerPartner
-)
-
 fun PaymentEntity.toDetailModel(
     partnerPayments: List<PartnerPayment>
 ) = PaymentDetail(
@@ -111,7 +111,7 @@ fun PaymentEntity.toDetailModel(
 
 // Payment Partner
 
-fun PaymentPartnerEntity.toModel(
+fun PaymentPartnerEntity.toDetailModel(
     partnerDetail: ProjectPartnerDetail,
     installments: List<PaymentPartnerInstallment>
 ) = PartnerPayment(
@@ -130,8 +130,8 @@ fun PaymentPartnerEntity.toModel(
 
 // Payment Partner Installment
 
-fun List<PaymentPartnerInstallmentEntity>.toModelList() = map { it.toModel() }
-fun PaymentPartnerInstallmentEntity.toModel() = PaymentPartnerInstallment(
+fun List<PaymentPartnerInstallmentEntity>.toModelList() = map { it.toDetailModel() }
+fun PaymentPartnerInstallmentEntity.toDetailModel() = PaymentPartnerInstallment(
     id = id,
     fundId = paymentPartner.payment.fund.id,
     lumpSumId = paymentPartner.payment.programmeLumpSumId,
@@ -164,3 +164,81 @@ fun PaymentPartnerInstallmentUpdate.toEntity(
     paymentConfirmedUser = paymentConfirmedUser,
     paymentConfirmedDate = paymentConfirmedDate
 )
+
+// Advance Payment
+
+fun AdvancePaymentUpdate.toEntity(
+    project: ProjectFull,
+    projectVersion: String,
+    partner: ProjectPartnerSummary,
+    paymentAuthorizedUser: UserEntity?,
+    paymentConfirmedUser: UserEntity?
+) = AdvancePaymentEntity(
+    id = id ?: 0,
+    projectId = project.id!!,
+    projectCustomIdentifier = project.customIdentifier,
+    projectAcronym = project.acronym,
+    projectVersion = projectVersion,
+    partnerId = partner.id!!,
+    partnerRole = partner.role,
+    partnerSortNumber = partner.sortNumber,
+    partnerAbbreviation = partner.abbreviation,
+    amountPaid = amountAdvance,
+    paymentDate = dateOfPayment,
+    comment = comment,
+    isPaymentAuthorizedInfo = paymentAuthorized,
+    paymentAuthorizedInfoUser = paymentAuthorizedUser,
+    paymentAuthorizedDate = paymentAuthorizedDate,
+    isPaymentConfirmed = paymentConfirmed,
+    paymentConfirmedUser = paymentConfirmedUser,
+    paymentConfirmedDate = paymentConfirmedDate
+)
+
+fun AdvancePaymentEntity.toDetailModel() = AdvancePaymentDetail(
+    id = id,
+    projectId = projectId,
+    projectCustomIdentifier = projectCustomIdentifier,
+    projectAcronym = projectAcronym ?: "",
+    partnerId = partnerId,
+    partnerType = partnerRole,
+    partnerNumber = partnerSortNumber,
+    partnerAbbreviation = partnerAbbreviation ?: "",
+    programmeFund = programmeFund?.toModel(),
+    partnerContribution = idNamePairOrNull(partnerContributionId, partnerContributionName),
+    partnerContributionSpf = idNamePairOrNull(partnerContributionSpfId, partnerContributionSpfName),
+    amountAdvance = amountPaid,
+    dateOfPayment = paymentDate,
+    comment = comment,
+    paymentAuthorized = isPaymentAuthorizedInfo,
+    paymentAuthorizedUser = paymentAuthorizedInfoUser?.toOutputUser(),
+    paymentAuthorizedDate = paymentAuthorizedDate,
+    paymentConfirmed = isPaymentConfirmed,
+    paymentConfirmedUser = paymentConfirmedUser?.toOutputUser(),
+    paymentConfirmedDate = paymentConfirmedDate
+)
+
+private fun idNamePairOrNull(id: Long?, name: String?): IdNamePair? {
+    return if (id != null && name != null) {
+        IdNamePair(id, name)
+    } else null
+}
+
+fun Page<AdvancePaymentEntity>.toModelList() = map { it.toModel() }
+
+fun AdvancePaymentEntity.toModel(): AdvancePayment {
+    return AdvancePayment(
+        id = id,
+        projectCustomIdentifier = projectCustomIdentifier,
+        projectAcronym = projectAcronym ?: "",
+        partnerType = ProjectPartnerRoleDTO.valueOf(partnerRole.name),
+        partnerNumber = partnerSortNumber,
+        partnerAbbreviation = partnerAbbreviation ?: "",
+        paymentAuthorized = isPaymentAuthorizedInfo,
+        amountAdvance = amountPaid,
+        dateOfPayment = paymentDate,
+        amountSettled = BigDecimal.ZERO,
+        programmeFund = programmeFund?.toModel(),
+        partnerContribution = idNamePairOrNull(partnerContributionId, partnerContributionName),
+        partnerContributionSpf = idNamePairOrNull(partnerContributionSpfId, partnerContributionSpfName)
+    )
+}

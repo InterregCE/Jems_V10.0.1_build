@@ -104,11 +104,26 @@ fun ProjectPartnerContribution.toDto(partnerAbbreviation: String) = ProjectPartn
     amount = amount
 )
 
+fun ProjectPartnerContributionDTO.toModel() = ProjectPartnerContribution(
+    id = id,
+    name = name,
+    status = status,
+    amount = amount,
+    isPartner = partner
+)
+
 fun ProjectPartnerContributionSpf.toDto() = ProjectPartnerContributionDTO(
     id = id,
     name = name,
     status = status,
     partner = false,
+    amount = amount
+)
+
+fun ProjectPartnerContributionDTO.toModelSpf() = ProjectPartnerContributionSpf(
+    id = id,
+    name = name,
+    status = status,
     amount = amount
 )
 

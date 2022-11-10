@@ -40,7 +40,9 @@ class PaymentInstallmentsValidator(private val validator: GeneralValidatorServic
             if (isInstallmentAuthorized(savedInstallment) && installment.isSavePaymentInfo == false) {
                 throw I18nValidationException(i18nKey = PAYMENT_PARTNER_INSTALLMENT_DELETION_ERROR_KEY)
             }
-            feedback.add(validator.notNull(installment.paymentDate, "paymentDate"))
+            if (installment.isPaymentConfirmed == true) {
+                feedback.add(validator.notNull(installment.paymentDate, "paymentDate"))
+            }
             feedback.add(validator.maxLength(installment.comment, 500, "comment"))
         }
         return feedback
