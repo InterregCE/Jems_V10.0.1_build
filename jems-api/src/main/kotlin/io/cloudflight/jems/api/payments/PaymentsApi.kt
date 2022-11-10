@@ -1,5 +1,8 @@
 package io.cloudflight.jems.api.payments
 
+import io.cloudflight.jems.api.payments.dto.PaymentDetailDTO
+import io.cloudflight.jems.api.payments.dto.PaymentPartnerInstallmentDTO
+import io.cloudflight.jems.api.payments.dto.PaymentToProjectDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
 import io.swagger.annotations.ApiImplicitParams

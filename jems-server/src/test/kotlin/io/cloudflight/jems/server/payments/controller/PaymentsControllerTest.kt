@@ -1,10 +1,10 @@
 package io.cloudflight.jems.server.payments.controller
 
-import io.cloudflight.jems.api.payments.PaymentDetailDTO
-import io.cloudflight.jems.api.payments.PaymentPartnerDTO
-import io.cloudflight.jems.api.payments.PaymentPartnerInstallmentDTO
-import io.cloudflight.jems.api.payments.PaymentToProjectDTO
-import io.cloudflight.jems.api.payments.PaymentTypeDTO
+import io.cloudflight.jems.api.payments.dto.PaymentDetailDTO
+import io.cloudflight.jems.api.payments.dto.PaymentPartnerDTO
+import io.cloudflight.jems.api.payments.dto.PaymentPartnerInstallmentDTO
+import io.cloudflight.jems.api.payments.dto.PaymentToProjectDTO
+import io.cloudflight.jems.api.payments.dto.PaymentTypeDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.api.user.dto.OutputUser
 import io.cloudflight.jems.server.UnitTest
@@ -175,7 +175,8 @@ class PaymentsControllerTest : UnitTest() {
     fun getPaymentDetail() {
         every { getPaymentDetail.getPaymentDetail(paymentId) } returns paymentDetail
 
-        assertThat(controller.getPaymentDetail(paymentId)).isEqualTo(PaymentDetailDTO(
+        assertThat(controller.getPaymentDetail(paymentId)).isEqualTo(
+            PaymentDetailDTO(
             id = paymentId,
             paymentType = PaymentTypeDTO.FTLS,
             projectCustomIdentifier = project.customIdentifier,
@@ -183,7 +184,8 @@ class PaymentsControllerTest : UnitTest() {
             projectAcronym = project.acronym,
             amountApprovedPerFund = BigDecimal.TEN,
             dateOfLastPayment = null,
-            partnerPayments = listOf(PaymentPartnerDTO(
+            partnerPayments = listOf(
+                PaymentPartnerDTO(
                 id = 1L,
                 partnerId = partnerId,
                 partnerType = ProjectPartnerRoleDTO.LEAD_PARTNER,
@@ -191,8 +193,10 @@ class PaymentsControllerTest : UnitTest() {
                 partnerAbbreviation = "partner",
                 amountApproved = BigDecimal.ONE,
                 installments = listOf(installmentFirstDTO)
-            ))
-        ))
+            )
+            )
+        )
+        )
     }
 
     @Test

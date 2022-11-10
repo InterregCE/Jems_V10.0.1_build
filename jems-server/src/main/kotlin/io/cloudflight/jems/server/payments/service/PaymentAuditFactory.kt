@@ -1,8 +1,11 @@
 package io.cloudflight.jems.server.payments.service
 
 import io.cloudflight.jems.api.audit.dto.AuditAction
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditBuilder
+import io.cloudflight.jems.server.common.entity.extractTranslation
+import io.cloudflight.jems.server.payments.service.model.AdvancePaymentDetail
 import io.cloudflight.jems.server.payments.service.model.PartnerPayment
 import io.cloudflight.jems.server.payments.service.model.PaymentDetail
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
@@ -68,8 +71,64 @@ fun paymentInstallmentDeleted(
             .build()
     )
 
+
+fun advancePaymentCreated(
+    context: Any,
+    paymentDetail: AdvancePaymentDetail
+): AuditCandidateEvent = AuditCandidateEvent(
+    context = context,
+    auditCandidate = AuditBuilder(AuditAction.ADVANCE_PAYMENT_IS_CREATED)
+        .description("Advance payment number ${paymentDetail.id} is created for " +
+            "partner ${getPartnerName(paymentDetail.partnerType, paymentDetail.partnerNumber)} for funding source " +
+            getFundingSourceName(paymentDetail))
+        .build()
+)
+fun advancePaymentDeleted(
+    context: Any,
+    paymentDetail: AdvancePaymentDetail
+): AuditCandidateEvent = AuditCandidateEvent(
+    context = context,
+    auditCandidate = AuditBuilder(AuditAction.ADVANCE_PAYMENT_IS_DELETED)
+        .description("Advance payment number ${paymentDetail.id} is deleted for " +
+            "partner ${getPartnerName(paymentDetail.partnerType, paymentDetail.partnerNumber)} for funding source " +
+            getFundingSourceName(paymentDetail))
+        .build()
+)
+
+fun advancePaymentAuthorized(
+    context: Any,
+    paymentDetail: AdvancePaymentDetail
+): AuditCandidateEvent = AuditCandidateEvent(
+    context = context,
+    auditCandidate = AuditBuilder(AuditAction.ADVANCE_PAYMENT_DETAIL_AUTHORISED)
+        .description("Advance payment details for advance number ${paymentDetail.id} of " +
+            "partner ${getPartnerName(paymentDetail.partnerType, paymentDetail.partnerNumber)} are authorised")
+        .build()
+)
+
+fun advancePaymentConfirmed(
+    context: Any,
+    paymentDetail: AdvancePaymentDetail
+): AuditCandidateEvent = AuditCandidateEvent(
+    context = context,
+    auditCandidate = AuditBuilder(AuditAction.ADVANCE_PAYMENT_DETAIL_CONFIRMED)
+        .description("Advance payment details for advance number ${paymentDetail.id} of " +
+            "partner ${getPartnerName(paymentDetail.partnerType, paymentDetail.partnerNumber)} are confirmed")
+        .build()
+)
+
 private fun getAnswer(state: Boolean): String {
     return if (state) { "YES" } else { "NO" }
+}
+
+private fun getFundingSourceName(paymentDetail: AdvancePaymentDetail): String {
+    return when {
+        paymentDetail.programmeFund != null ->
+            paymentDetail.programmeFund.abbreviation.extractTranslation(SystemLanguage.EN)
+        paymentDetail.partnerContribution != null -> paymentDetail.partnerContribution.name
+        paymentDetail.partnerContributionSpf != null -> paymentDetail.partnerContributionSpf.name
+        else -> ""
+    }
 }
 
 private fun getPartnerName(partnerRole: ProjectPartnerRole, partnerNumber: Int?): String =

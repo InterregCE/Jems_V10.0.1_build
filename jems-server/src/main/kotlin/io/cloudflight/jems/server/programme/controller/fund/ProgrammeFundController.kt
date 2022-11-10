@@ -16,6 +16,6 @@ class ProgrammeFundController(
         getFundInteractor.getFunds().toDto()
 
     override fun updateProgrammeFundList(funds: Set<ProgrammeFundDTO>): List<ProgrammeFundDTO> =
-        updateFunds.update(funds.toModel()).toDto()
+        updateFunds.update(funds.toModelList()).toDto()
 
 }

@@ -1,4 +1,4 @@
-package io.cloudflight.jems.api.payments
+package io.cloudflight.jems.api.payments.dto
 
 import io.cloudflight.jems.api.user.dto.OutputUser
 import java.math.BigDecimal

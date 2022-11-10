@@ -1,4 +1,4 @@
-package io.cloudflight.jems.api.payments
+package io.cloudflight.jems.api.payments.dto
 
 import java.math.BigDecimal
 import java.time.ZonedDateTime

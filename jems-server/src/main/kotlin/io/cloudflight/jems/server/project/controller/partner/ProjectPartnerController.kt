@@ -1,21 +1,22 @@
 package io.cloudflight.jems.server.project.controller.partner
 
-import io.cloudflight.jems.api.project.partner.ProjectPartnerApi
 import io.cloudflight.jems.api.project.dto.ProjectContactDTO
 import io.cloudflight.jems.api.project.dto.ProjectPartnerMotivationDTO
 import io.cloudflight.jems.api.project.dto.ProjectPartnerStateAidDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectBudgetPartnerSummaryDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDTO
-import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerSummaryDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDetailDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerPaymentSummaryDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerSummaryDTO
+import io.cloudflight.jems.api.project.partner.ProjectPartnerApi
 import io.cloudflight.jems.server.project.service.partner.create_project_partner.CreateProjectPartnerInteractor
 import io.cloudflight.jems.server.project.service.partner.deactivate_project_partner.DeactivateProjectPartnerInteractor
 import io.cloudflight.jems.server.project.service.partner.delete_project_partner.DeleteProjectPartnerInteractor
 import io.cloudflight.jems.server.project.service.partner.get_project_partner.GetProjectPartnerInteractor
 import io.cloudflight.jems.server.project.service.partner.state_aid.get_project_partner_state_aid.GetProjectPartnerStateAidInteractor
-import io.cloudflight.jems.server.project.service.partner.update_project_partner.UpdateProjectPartnerInteractor
 import io.cloudflight.jems.server.project.service.partner.state_aid.update_project_partner_state_aid.UpdateProjectPartnerStateAidInteractor
+import io.cloudflight.jems.server.project.service.partner.update_project_partner.UpdateProjectPartnerInteractor
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.web.bind.annotation.RestController
@@ -32,10 +33,13 @@ class ProjectPartnerController(
 ) : ProjectPartnerApi {
 
     override fun getProjectPartners(projectId: Long, pageable: Pageable, version: String?): Page<ProjectBudgetPartnerSummaryDTO> =
-       getProjectPartner.findAllByProjectId(projectId, pageable, version).toDto()
+        getProjectPartner.findAllByProjectId(projectId, pageable, version).toDto()
 
     override fun getProjectPartnersForDropdown(projectId: Long, pageable: Pageable, version: String?): List<ProjectPartnerSummaryDTO> =
-       getProjectPartner.findAllByProjectIdForDropdown(projectId, pageable.sort, version).toDto()
+        getProjectPartner.findAllByProjectIdForDropdown(projectId, pageable.sort, version).toDto()
+
+    override fun getProjectPartnersAndContributions(projectId: Long): List<ProjectPartnerPaymentSummaryDTO> =
+        getProjectPartner.findAllByProjectIdWithContributionsForDropdown(projectId).toDtoList()
 
     override fun getProjectPartnerById(partnerId: Long, version: String?): ProjectPartnerDetailDTO =
         getProjectPartner.getById(partnerId, version).toDto()
