@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit} from '@angular/core';
 import {combineLatest, Observable, of, Subject} from 'rxjs';
 import {OutputUser, PaymentDetailDTO, PaymentPartnerDTO, PaymentPartnerInstallmentDTO, UserDTO} from '@cat/api';
 import {PaymentsToProjectPageStore} from '../payments-to-projects-page.store';
@@ -14,6 +14,8 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {HttpErrorResponse} from '@angular/common/http';
 import {LocaleDatePipe} from '@common/pipe/locale-date.pipe';
 import {Alert} from '@common/components/forms/alert';
+import {APIError} from '@common/models/APIError';
+import {TranslateService} from '@ngx-translate/core';
 
 @UntilDestroy()
 @Component({
@@ -62,7 +64,9 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
               private formService: FormService,
               private paymentsDetailPageStore: PaymentsDetailPageStore,
               private securityService: SecurityService,
-              private localeDatePipe: LocaleDatePipe) {
+              private localeDatePipe: LocaleDatePipe,
+              private translateService: TranslateService,
+              private changeDetectorRef: ChangeDetectorRef) {
   }
 
   ngOnInit(): void {
@@ -115,7 +119,7 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
     const group = this.formBuilder.group({
       id: installment?.id ? installment.id : null,
       amountPaid: installment?.amountPaid ? this.formBuilder.control(installment.amountPaid) : this.computeAvailableSum(paymentIndex),
-      paymentDate: this.formBuilder.control(installment?.paymentDate ? installment.paymentDate : null, Validators.required),
+      paymentDate: this.formBuilder.control(installment?.paymentDate ? installment.paymentDate : null),
       comment: this.formBuilder.control(installment?.comment ? installment.comment : '', [Validators.maxLength(500)]),
       savePaymentInfo: this.formBuilder.control(installment?.savePaymentInfo ? installment.savePaymentInfo : false),
       savePaymentInfoUser: this.formBuilder.control(installment?.savePaymentInfoUser ? this.getOutputUserObject(installment.savePaymentInfoUser) : null),
@@ -125,6 +129,7 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
       paymentConfirmedDate: this.formBuilder.control(installment?.paymentConfirmedDate ? installment.paymentConfirmedDate : null),
     });
     this.disableFieldsIfPaymentIsSaved(group);
+    this.disableFieldsIfPaymentIsConfirmed(group);
     this.installmentsArray(paymentIndex).push(group);
   }
 
@@ -158,6 +163,16 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
         tap(() => this.updateInstallmentsSuccess$.next(true)),
         catchError(error => {
           this.updateInstallmentsError$.next(error);
+          const apiError = error.error as APIError;
+          if (apiError?.formErrors) {
+            Object.keys(apiError.formErrors).forEach(field => {
+              const control = this.installmentsArray(index).get(field);
+              control?.setErrors({required: this.translateService.instant(apiError.formErrors[field].i18nKey)});
+              control?.markAsDirty();
+            });
+            this.changeDetectorRef.detectChanges();
+          }
+          this.formService.setError(error);
           throw error;
         }),
         untilDestroyed(this)
@@ -182,12 +197,10 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
   setSavePaymentDate(isChecked: boolean, paymentIndex: number, installmentIndex: number) {
     if (isChecked) {
       this.installmentsArray(paymentIndex).at(installmentIndex).get('amountPaid')?.disable();
-      this.installmentsArray(paymentIndex).at(installmentIndex).get('paymentDate')?.disable();
       this.installmentsArray(paymentIndex).at(installmentIndex).get('savePaymentDate')?.setValue(this.getFormattedCurrentLocaleDate());
       this.installmentsArray(paymentIndex).at(installmentIndex).get('savePaymentInfoUser')?.setValue(this.getOutputUserObject(this.currentUserDetails));
     } else {
       this.installmentsArray(paymentIndex).at(installmentIndex).get('amountPaid')?.enable();
-      this.installmentsArray(paymentIndex).at(installmentIndex).get('paymentDate')?.enable();
       this.installmentsArray(paymentIndex).at(installmentIndex).get('savePaymentDate')?.setValue(null);
       this.installmentsArray(paymentIndex).at(installmentIndex).get('savePaymentInfoUser')?.setValue(null);
     }
@@ -196,6 +209,11 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
   disableFieldsIfPaymentIsSaved(group: FormGroup) {
     if (group.get('savePaymentInfo')?.value) {
       group.get('amountPaid')?.disable();
+    }
+  }
+
+  disableFieldsIfPaymentIsConfirmed(group: FormGroup) {
+    if (group.get('paymentConfirmed')?.value) {
       group.get('paymentDate')?.disable();
     }
   }
@@ -218,10 +236,18 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
     if (isChecked) {
       this.installmentsArray(paymentIndex).at(installmentIndex).get('paymentConfirmedDate')?.setValue(this.getFormattedCurrentLocaleDate());
       this.installmentsArray(paymentIndex).at(installmentIndex).get('paymentConfirmedUser')?.setValue(this.getOutputUserObject(this.currentUserDetails));
+      if(!this.isPaymentDateEmpty(paymentIndex, installmentIndex)) {
+        this.installmentsArray(paymentIndex).at(installmentIndex).get(this.constants.FORM_CONTROL_NAMES.paymentDate)?.disable();
+      }
     } else {
       this.installmentsArray(paymentIndex).at(installmentIndex).get('paymentConfirmedDate')?.setValue(null);
       this.installmentsArray(paymentIndex).at(installmentIndex).get('paymentConfirmedUser')?.setValue(null);
+      this.installmentsArray(paymentIndex).at(installmentIndex).get(this.constants.FORM_CONTROL_NAMES.paymentDate)?.enable();
     }
+  }
+
+  isPaymentDateEmpty(paymentIndex: number, installmentIndex: number): boolean {
+    return !this.installmentsArray(paymentIndex).at(installmentIndex).get(this.constants.FORM_CONTROL_NAMES.paymentDate)?.value;
   }
 
   removeItem(paymentIndex: number, installmentIndex: number) {
@@ -246,14 +272,12 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
   }
 
   isPaymentAuthorisationDisabled(paymentIndex: number, installmentIndex: number): boolean {
-    return this.isPaymentDateEmpty(paymentIndex, installmentIndex) ||
-    this.isPaymentConfirmed(paymentIndex, installmentIndex) ||
+    return this.isPaymentConfirmed(paymentIndex, installmentIndex) ||
     this.isPaymentAlreadyConfirmed(paymentIndex, installmentIndex);
   }
 
-  isPaymentDateEmpty(paymentIndex: number, installmentIndex: number): boolean {
-    return !this.installmentsArray(paymentIndex).at(installmentIndex)
-      .get(this.constants.FORM_CONTROL_NAMES.paymentDate)?.value;
+  isPaymentConfirmationDisabled(paymentIndex: number, installmentIndex: number) {
+    return  !this.isPaymentAuthorised(paymentIndex, installmentIndex);
   }
 
   isPaymentConfirmed(paymentIndex: number, installmentIndex: number): boolean {

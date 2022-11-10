@@ -38,7 +38,9 @@ export class Permission {
 
   public static readonly PAYMENTS_PERMISSIONS = [
     PermissionsEnum.PaymentsRetrieve,
-    PermissionsEnum.PaymentsUpdate
+    PermissionsEnum.PaymentsUpdate,
+    PermissionsEnum.AdvancePaymentsRetrieve,
+    PermissionsEnum.AdvancePaymentsUpdate
   ];
 
   public static readonly DEFAULT_USER_CREATE_AND_COLLABORATE_PERMISSIONS: PermissionNode[] = [
@@ -381,6 +383,15 @@ export class Permission {
           editPermissions: [PermissionsEnum.PaymentsUpdate],
           viewTooltip: 'permission.payments.view.tooltip',
           editTooltip: 'permission.payments.edit.tooltip',
+        },
+        {
+          name: 'permission.advance.payments',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [PermissionsEnum.AdvancePaymentsRetrieve],
+          editPermissions: [PermissionsEnum.AdvancePaymentsUpdate],
+          hideTooltip: 'permission.advance.payments.hide.tooltip',
+          viewTooltip: 'permission.advance.payments.view.tooltip',
+          editTooltip: 'permission.advance.payments.edit.tooltip',
         },
       ],
     },

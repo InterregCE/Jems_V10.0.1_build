@@ -20,6 +20,7 @@ import io.cloudflight.jems.api.project.dto.ProjectCallSettingsDTO
 import io.cloudflight.jems.api.project.dto.ProjectDetailDTO
 import io.cloudflight.jems.api.project.dto.ProjectDetailFormDTO
 import io.cloudflight.jems.api.project.dto.ProjectPeriodDTO
+import io.cloudflight.jems.api.project.dto.ProjectSearchRequestDTO
 import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentEligibilityResult
 import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentQualityResult
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
@@ -31,6 +32,7 @@ import io.cloudflight.jems.api.project.dto.workpackage.activity.WorkPackageActiv
 import io.cloudflight.jems.server.call.controller.toDto
 import io.cloudflight.jems.server.call.service.model.CallCostOption
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
+import io.cloudflight.jems.server.payments.service.getContractedProjects.GetContractedProjectsInteractor
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.project.service.ProjectService
@@ -134,12 +136,36 @@ class ProjectControllerTest {
             programmePriorityCode = "P1",
         )
 
+        private val contractedProjectSummary = ProjectSummary(
+            id = 8L,
+            customIdentifier = "01",
+            callName = "call name",
+            acronym = "ACR",
+            status = ApplicationStatus.CONTRACTED,
+            firstSubmissionDate = ZonedDateTime.parse("2021-05-01T10:00:00+02:00"),
+            lastResubmissionDate = ZonedDateTime.parse("2021-05-14T23:30:00+02:00"),
+            specificObjectiveCode = "SO1.1",
+            programmePriorityCode = "P1",
+        )
+
         private val outputProjectSimple = OutputProjectSimple(
             id = 8L,
             customIdentifier = "01",
             callName = "call name",
             acronym = "ACR",
             projectStatus = ApplicationStatusDTO.SUBMITTED,
+            firstSubmissionDate = ZonedDateTime.parse("2021-05-01T10:00:00+02:00"),
+            lastResubmissionDate = ZonedDateTime.parse("2021-05-14T23:30:00+02:00"),
+            specificObjectiveCode = "SO1.1",
+            programmePriorityCode = "P1",
+        )
+
+        private val outputContractedProjectSimple = OutputProjectSimple(
+            id = 8L,
+            customIdentifier = "01",
+            callName = "call name",
+            acronym = "ACR",
+            projectStatus = ApplicationStatusDTO.CONTRACTED,
             firstSubmissionDate = ZonedDateTime.parse("2021-05-01T10:00:00+02:00"),
             lastResubmissionDate = ZonedDateTime.parse("2021-05-14T23:30:00+02:00"),
             specificObjectiveCode = "SO1.1",
@@ -207,13 +233,30 @@ class ProjectControllerTest {
     @MockK
     lateinit var getProjectActivitiesInteractor: GetActivityInteractor
 
+    @RelaxedMockK
+    lateinit var getContractedProjectsInteractor: GetContractedProjectsInteractor
+
     @InjectMockKs
     private lateinit var controller: ProjectController
 
     @Test
     fun getAllProjects() {
         every { getProjectInteractor.getAllProjects(any(), any()) } returns PageImpl(listOf(projectSummary))
-        assertThat(controller.getAllProjects(null,null, "id", "desc", null).content).containsExactly(outputProjectSimple)
+        assertThat(controller.getAllProjects(null, null, "id", "desc", null).content).containsExactly(
+            outputProjectSimple
+        )
+    }
+
+    @Test
+    fun getContractedProjects() {
+        every {
+            getContractedProjectsInteractor.getContractedProjects("")
+        } returns PageImpl(
+            listOf(
+                contractedProjectSummary
+            )
+        )
+        assertThat(controller.getContractedProjects("").content).containsExactly(outputContractedProjectSimple)
     }
 
     @Test
