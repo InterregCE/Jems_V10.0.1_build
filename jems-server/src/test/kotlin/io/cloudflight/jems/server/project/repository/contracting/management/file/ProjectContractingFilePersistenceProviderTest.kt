@@ -20,21 +20,9 @@ class ProjectContractingFilePersistenceProviderTest : UnitTest() {
 
     companion object {
         private const val PROJECT_ID = 389L
-        private const val USER_ID = 270L
 
         private val LAST_WEEK = ZonedDateTime.now().minusWeeks(1)
         private const val BUCKET = "bucket_buck_buck"
-
-        private fun fileCreate(name: String = "new_file.txt", type: ProjectPartnerReportFileType) = ProjectReportFileCreate(
-            projectId = 6666L,
-            partnerId = null,
-            name = name,
-            path = "our/indexed/path/",
-            type = type,
-            size = 45L,
-            content = mockk(),
-            userId = USER_ID,
-        )
 
         private fun file(id: Long, name: String = "file.txt", filePathFull: String = "path/to/file.txt") = ReportProjectFileEntity(
             id = id,
@@ -74,11 +62,10 @@ class ProjectContractingFilePersistenceProviderTest : UnitTest() {
 
     @Test
     fun uploadFile() {
-        val fileCreate = fileCreate(type = ProjectPartnerReportFileType.Contract)
-
+        val fileCreate = mockk<ProjectReportFileCreate>()
         val metadataMock = mockk<ProjectReportFileMetadata>()
-        every { genericFileRepository.persistProjectFile(fileCreate, "our/indexed/path/new_file.txt") } returns metadataMock
 
+        every { genericFileRepository.persistProjectFile(fileCreate) } returns metadataMock
         assertThat(persistence.uploadFile(file = fileCreate)).isEqualTo(metadataMock)
     }
 

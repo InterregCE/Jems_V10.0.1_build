@@ -2,14 +2,16 @@ package io.cloudflight.jems.server.project.service.report.model.file
 
 enum class ProjectPartnerReportFileType(
     private val parent: ProjectPartnerReportFileType?,
-    val needsId: Boolean,
+    private val needsId: Boolean,
+    private val topParentBucket: String? = null,
 ) {
-    Payment(null, true),
-      PaymentAttachment(Payment, false),
-    PaymentAdvanced(null, true),
-      PaymentAdvancedAttachment(PaymentAdvanced, false),
+    Payment(null, false, "payment"),
+      Regular(Payment, true),
+        PaymentAttachment(Regular, false),
+      Advance(Payment, true),
+        PaymentAdvanceAttachment(Advance, false),
 
-    Project(null, true),
+    Project(null, true, "application"),
       Report(Project, false),
         Partner(Report, true),
           PartnerReport(Partner, true),
@@ -47,6 +49,13 @@ enum class ProjectPartnerReportFileType(
         else
             parent.generatePath(*ids) +
                 "${this.name}/"
+    }
+
+    fun getBucket(): String {
+        if (topParentBucket != null) {
+            return topParentBucket
+        }
+        return parent!!.getBucket()
     }
 
     private fun Long.toFixedLength() = this.toString().padStart(6, '0')

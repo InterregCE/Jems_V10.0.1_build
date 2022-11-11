@@ -48,4 +48,8 @@ interface PaymentPersistence {
         paymentPartnerInstallments: List<PaymentPartnerInstallmentUpdate>
     ): List<PaymentPartnerInstallment>
 
+    fun deletePaymentAttachment(fileId: Long)
+
+    fun deletePaymentAdvanceAttachment(fileId: Long)
+
 }

@@ -2,7 +2,10 @@ package io.cloudflight.jems.api.project.dto.report.file
 
 enum class ProjectPartnerReportFileTypeDTO {
     Payment,
-      PaymentAttachment,
+      Regular,
+        PaymentAttachment,
+      Advance,
+        PaymentAdvanceAttachment,
 
     Project,
       Report,

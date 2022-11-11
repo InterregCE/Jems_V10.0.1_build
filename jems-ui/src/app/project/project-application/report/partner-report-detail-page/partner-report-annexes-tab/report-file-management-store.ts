@@ -171,7 +171,7 @@ export class ReportFileManagementStore {
             {
               reportId : Number(partnerReportId),
               treeNode: this.getTreeNodeFromCategory(selectedCategory),
-              filterSubtypes: this.getSubFiltersFromCategory(selectedCategory),
+              filterSubtypes: [ /* can be used in future for filtering */],
             } as ProjectReportFileSearchRequestDTO,
             pageIndex,
             pageSize,
@@ -267,26 +267,4 @@ export class ReportFileManagementStore {
     }
   }
 
-  private getSubFiltersFromCategory(category: CategoryInfo): ProjectReportFileSearchRequestDTO.FilterSubtypesEnum[] {
-    switch (category.type) {
-      case ReportFileCategoryTypeEnum.ALL:
-        return [];
-      case ReportFileCategoryTypeEnum.REPORT:
-        return [];
-      case ReportFileCategoryTypeEnum.WORKPLAN:
-        return [
-          ProjectReportFileSearchRequestDTO.TreeNodeEnum.WorkPackage,
-          ProjectReportFileSearchRequestDTO.TreeNodeEnum.Output,
-          ProjectReportFileSearchRequestDTO.TreeNodeEnum.Activity,
-          ProjectReportFileSearchRequestDTO.TreeNodeEnum.Deliverable];
-      case ReportFileCategoryTypeEnum.EXPENDITURE:
-        return [ProjectReportFileSearchRequestDTO.TreeNodeEnum.Expenditure];
-      case ReportFileCategoryTypeEnum.PROCUREMENT:
-        return [ProjectReportFileSearchRequestDTO.TreeNodeEnum.ProcurementAttachment];
-      case ReportFileCategoryTypeEnum.CONTRIBUTION:
-        return [ProjectReportFileSearchRequestDTO.TreeNodeEnum.Contribution];
-      default:
-        return [];
-    }
-  }
 }
