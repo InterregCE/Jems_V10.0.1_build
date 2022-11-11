@@ -4,14 +4,16 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.payments.service.getContractedProjects.GetContractedProjects
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.project.service.model.ProjectSearchRequest
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.RelaxedMockK
-import org.assertj.core.api.Assertions
+import io.mockk.mockk
+import io.mockk.slot
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.springframework.data.domain.PageImpl
-import java.time.ZonedDateTime
+import org.springframework.data.domain.Page
 
 internal class GetContractedProjectsTest : UnitTest() {
 
@@ -21,21 +23,28 @@ internal class GetContractedProjectsTest : UnitTest() {
     @InjectMockKs
     lateinit var getContractedProjects: GetContractedProjects
 
-    private val contractedProjectSummary = ProjectSummary(
-        id = 8L,
-        customIdentifier = "01",
-        callName = "call name",
-        acronym = "ACR",
-        status = ApplicationStatus.CONTRACTED,
-        firstSubmissionDate = ZonedDateTime.parse("2021-05-01T10:00:00+02:00"),
-        lastResubmissionDate = ZonedDateTime.parse("2021-05-14T23:30:00+02:00"),
-        specificObjectiveCode = "SO1.1",
-        programmePriorityCode = "P1",
+    private val expectedSearchRequest = ProjectSearchRequest(
+        id = "search-id-key",
+        acronym = null,
+        firstSubmissionFrom = null,
+        firstSubmissionTo = null,
+        lastSubmissionFrom = null,
+        lastSubmissionTo = null,
+        objectives = emptySet(),
+        statuses = setOf(ApplicationStatus.CONTRACTED, ApplicationStatus.IN_MODIFICATION),
+        calls = emptySet(),
+        users = emptySet(),
     )
 
     @Test
     fun getContractedProjects() {
-        every { projectPersistence.getProjects(any(), any()) } returns PageImpl(listOf(contractedProjectSummary))
-        Assertions.assertThat(getContractedProjects.getContractedProjects(" ")).isEqualTo(PageImpl(listOf(contractedProjectSummary)))
+        val searchSlot = slot<ProjectSearchRequest>()
+        val resultMock = mockk<Page<ProjectSummary>>()
+        every { projectPersistence.getProjects(any(), capture(searchSlot)) } returns resultMock
+
+        assertThat(getContractedProjects.getContractedProjects("search-id-key")).isEqualTo(resultMock)
+
+        assertThat(searchSlot.captured).isEqualTo(expectedSearchRequest)
     }
+
 }
