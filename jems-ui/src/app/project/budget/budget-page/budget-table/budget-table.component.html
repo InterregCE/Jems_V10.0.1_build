@@ -20,10 +20,10 @@
 
     <ng-container *ngFor="let budget of budgets">
         <div>
-            <span>
-                <mat-icon *ngIf="!budget.partner?.active">person_off</mat-icon>
-                {{ 'common.label.project.partner.role.shortcut.' + budget.partner?.role | adaptTranslationKeyByCallType | async | translate : {partner: budget.partner?.sortNumber} }}</span>
+
+            <ng-container *ngTemplateOutlet="partner; context:{$implicit: budget.partner}"></ng-container>
             <span>{{ budget.partner?.abbreviation }}</span>
+
             <span *ngIf="displayedColumns.includes('country')">{{ budget.partner?.country }}</span>
             <span *ngIf="displayedColumns.includes('staffCosts')" class="justify-end">{{ budget.staffCosts | asMoney }}</span>
             <span *ngIf="displayedColumns.includes('officeAndAdministrationCosts')" class="justify-end">{{ budget.officeAndAdministrationCosts | asMoney }}</span>
@@ -54,3 +54,20 @@
         <span class="justify-end">{{ total | asMoney }}</span>
     </div>
 </div>
+
+
+<ng-template let-partner #partner>
+     <span *ngIf="hidePartnerLink">
+            <mat-icon *ngIf="!partner?.active">person_off</mat-icon>
+         {{ 'common.label.project.partner.role.shortcut.' + partner?.role | adaptTranslationKeyByCallType | async | translate : {partner: partner?.sortNumber} }}
+    </span>
+
+    <a *ngIf="!hidePartnerLink"
+       [routerLink]="'/app/project/detail/'+ projectId +'/applicationFormPartner/' + partner.id + '/budget'">
+        <span>
+            <mat-icon *ngIf="!partner?.active">person_off</mat-icon>
+            {{ 'common.label.project.partner.role.shortcut.' + partner?.role | adaptTranslationKeyByCallType | async | translate : {partner: partner?.sortNumber} }}
+        </span>
+    </a>
+</ng-template>
+
