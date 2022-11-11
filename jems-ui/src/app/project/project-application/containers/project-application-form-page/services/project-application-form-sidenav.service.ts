@@ -669,7 +669,7 @@ export class ProjectApplicationFormSidenavService {
       route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/modification`,
       scrollToTop: true,
       scrollRoute: '',
-      icon: 'update'
+      icon: 'lock_open'
     }];
   }
 
