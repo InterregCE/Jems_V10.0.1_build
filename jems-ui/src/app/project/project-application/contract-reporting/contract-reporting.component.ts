@@ -95,8 +95,8 @@ export class ContractReportingComponent implements OnInit {
         deadlinePeriod: [isDeadlineApplicable ? reportingDeadline.periodNumber : '', Validators.required],
         deadlineDate: [isDeadlineApplicable ? reportingDeadline.date : '', Validators.required],
         deadlineComment: [reportingDeadline.comment, Validators.maxLength(1000)],
-        deadlinePeriodStartDate: [periods.find(p => p.number == reportingDeadline.periodNumber)?.startDate],
-        deadlinePeriodEndDate: [periods.find(p => p.number == reportingDeadline.periodNumber)?.endDate],
+        deadlinePeriodStartDate: [periods.find(p => p.number === reportingDeadline.periodNumber)?.startDate],
+        deadlinePeriodEndDate: [periods.find(p => p.number === reportingDeadline.periodNumber)?.endDate],
       });
       this.deadlines.push(item);
     }
@@ -121,7 +121,7 @@ export class ContractReportingComponent implements OnInit {
   }
 
   updateDatePicker(index: number, periods: ProjectPeriodForMonitoringDTO[], periodNum: number): void {
-    const period = periods.find(p => p.number == periodNum);
+    const period = periods.find(p => p.number === periodNum);
     this.deadlines.at(index).patchValue({deadlinePeriodStartDate: period?.startDate});
     this.deadlines.at(index).patchValue({deadlinePeriodEndDate: period?.endDate});
     this.formService.setDirty(true);

@@ -313,11 +313,6 @@ export class ProjectProposedUnitCostDetailComponent implements OnInit {
     if (this.unitCost.oneCostCategory === this.projectUnitCostForm?.controls?.isOneCostCategory?.value && this.unitCost.oneCostCategory) {
       return !this.areCategoriesEqual(this.unitCost.categories, this.selectionSingle.selected);
     }
-
-    // if (this.unitCost.oneCostCategory === this.projectUnitCostForm?.controls?.isOneCostCategory?.value && !this.unitCost.oneCostCategory) {
-    //   return !this.areCategoriesEqual(this.unitCost.categories, this.selectionMultiple.selected);
-    // }
-
     return this.unitCost.oneCostCategory !== this.projectUnitCostForm?.controls?.isOneCostCategory?.value;
   }
 

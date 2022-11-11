@@ -130,7 +130,7 @@
                                                            [formControlName]="constants.FORM_CONTROL_NAMES.paymentDate" matInput
                                                            [matDatepicker]="paymentDatePicker">
                                                     <mat-error>
-                                                        <jems-form-field-errors [errors]="installment.get(constants.FORM_CONTROL_NAMES.paymentDate)?.errors"></jems-form-field-errors>
+                                                        <jems-form-field-errors condensed="true" [errors]="installment.get(constants.FORM_CONTROL_NAMES.paymentDate)?.errors"></jems-form-field-errors>
                                                     </mat-error>
                                                     <mat-datepicker-toggle matSuffix [for]="paymentDatePicker"></mat-datepicker-toggle>
                                                     <mat-datepicker #paymentDatePicker></mat-datepicker>

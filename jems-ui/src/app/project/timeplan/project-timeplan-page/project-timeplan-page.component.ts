@@ -155,9 +155,9 @@ export class ProjectTimeplanPageComponent implements OnInit {
         const group = value as ProjectContractingReportingScheduleDTO[];
         this.timeline.addCustomTime(moment(START_DATE).add(key, 'M').endOf('month').toDate(), randomId);
         const customTimes = timelineCustomTimes.filter((component: { options: { id: string}}) => randomId === component.options.id);
-        const financialReports = group.filter(d => d.type == TypeEnum.Finance);
-        const contentReports = group.filter(d => d.type == TypeEnum.Content);
-        const bothReports = group.filter(d => d.type == TypeEnum.Both);
+        const financialReports = group.filter(d => d.type === TypeEnum.Finance);
+        const contentReports = group.filter(d => d.type === TypeEnum.Content);
+        const bothReports = group.filter(d => d.type === TypeEnum.Both);
         let markerContent = '';
         let markerType = TypeEnum.Both;
         if (financialReports.length > 0) {
@@ -165,14 +165,14 @@ export class ProjectTimeplanPageComponent implements OnInit {
           for (const deadline of financialReports) {
             markerContent += deadline.date + '\n';
           }
-          markerType = contentReports.length == 0 && bothReports.length == 0 ? TypeEnum.Finance : TypeEnum.Both;
+          markerType = contentReports.length === 0 && bothReports.length === 0 ? TypeEnum.Finance : TypeEnum.Both;
         }
         if (contentReports.length > 0) {
           markerContent += '\nContent Deadline\n';
           for (const deadline of contentReports) {
             markerContent += deadline.date + '\n';
           }
-          markerType = financialReports.length == 0 && bothReports.length == 0 ? TypeEnum.Content : TypeEnum.Both;
+          markerType = financialReports.length === 0 && bothReports.length === 0 ? TypeEnum.Content : TypeEnum.Both;
         }
         if (bothReports.length > 0) {
           markerContent += '\nBoth Deadline\n';
@@ -237,12 +237,12 @@ export class ProjectTimeplanPageComponent implements OnInit {
     const marker = document.createElement('div');
     marker.title = content;
     marker.style.position = 'absolute';
-    if (type == TypeEnum.Finance) {
+    if (type === TypeEnum.Finance) {
       marker.innerHTML = '<span class="material-icons">savings</span>';
       marker.className = `vis-custom-time-marker finance`;
       bar.className = 'vis-custom-time finance';
       bar.appendChild(marker);
-    } else if (type == TypeEnum.Content) {
+    } else if (type === TypeEnum.Content) {
       marker.innerHTML = '<span class="material-icons">description</span>';
       marker.className = `vis-custom-time-marker content`;
       bar.className = 'vis-custom-time content';

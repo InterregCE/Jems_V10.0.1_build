@@ -169,7 +169,7 @@ export class ProgrammeChecklistDetailPageComponent implements OnInit {
   }
 
   isTabChanged($event: MatTabChangeEvent): void {
-    if($event.index == 1) {
+    if($event.index === 1) {
       this.formService.setShowMenu(false);
     } else {
       this.formService.setShowMenu(true);

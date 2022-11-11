@@ -2,7 +2,7 @@ import {AfterViewInit, ChangeDetectionStrategy, Component, OnInit, TemplateRef, 
 import {combineLatest, Observable} from 'rxjs';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
-import {PageAdvancePaymentDTO, PagePaymentToProjectDTO} from '@cat/api';
+import {PageAdvancePaymentDTO} from '@cat/api';
 import {ColumnWidth} from '@common/components/table/model/column-width';
 import {map} from 'rxjs/operators';
 import {AdvancePaymentsPageStore} from './advance-payments-page.store';

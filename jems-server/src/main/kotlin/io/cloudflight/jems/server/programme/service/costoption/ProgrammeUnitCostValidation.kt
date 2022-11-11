@@ -75,12 +75,13 @@ private fun validateCostPerUnitForeignCurrency(
     costPerUnitForeignCurrency: BigDecimal?,
     errors: MutableMap<String, I18nMessage>
 ) {
-    if (costPerUnitForeignCurrency != null) {
-        if (costPerUnitForeignCurrency <= BigDecimal.ZERO || costPerUnitForeignCurrency > MAX_COST || costPerUnitForeignCurrency.scale() > 2) {
-            errors["costPerUnitForeignCurrency"] = I18nMessage(
-                i18nKey = "programme.unitCost.costPerUnit.invalid",
-                mapOf("costPerUnitForeignCurrency" to costPerUnitForeignCurrency.toString())
-            )
-        }
+    if (costPerUnitForeignCurrency != null && isInvalidCostValue(costPerUnitForeignCurrency)) {
+        errors["costPerUnitForeignCurrency"] = I18nMessage(
+            i18nKey = "programme.unitCost.costPerUnit.invalid",
+            mapOf("costPerUnitForeignCurrency" to costPerUnitForeignCurrency.toString())
+        )
     }
 }
+
+private fun isInvalidCostValue(value: BigDecimal): Boolean =
+    value <= BigDecimal.ZERO || value > MAX_COST || value.scale() > 2

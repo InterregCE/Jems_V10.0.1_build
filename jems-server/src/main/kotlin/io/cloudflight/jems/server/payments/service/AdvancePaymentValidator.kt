@@ -13,6 +13,7 @@ class AdvancePaymentValidator(private val validator: GeneralValidatorService) {
     companion object {
         const val PAYMENT_ADVANCE_DELETION_ERROR_KEY = "payment.advance.deletion.not.possible"
         const val PAYMENT_ADVANCE_SAVE_ERROR_KEY = "payment.advance.save.invalid.fields"
+        const val PAYMENT_ADVANCE_NO_SOURCE_ERROR_KEY = "payment.advance.save.without.contribution.not.possible"
         const val PAYMENT_ADVANCE_AUTHORIZE_ERROR_KEY = "payment.advance.save.unauthorize.not.possible"
     }
 
@@ -24,10 +25,13 @@ class AdvancePaymentValidator(private val validator: GeneralValidatorService) {
         validator.throwIfAnyIsInvalid(
             *validateDetails(update).toTypedArray()
         )
+        validateContributionSource(update)
     }
 
     private fun validateDetails(update: AdvancePaymentUpdate): List<Map<String, I18nMessage>> {
         val feedback = mutableListOf<Map<String, I18nMessage>>()
+        feedback.add(validator.notNull(update.projectId, "projectId"))
+        feedback.add(validator.notNull(update.partnerId, "partnerId"))
         if (update.paymentConfirmed == true) {
             feedback.add(validator.notNull(update.dateOfPayment, "dateOfPayment"))
         }
@@ -50,5 +54,17 @@ class AdvancePaymentValidator(private val validator: GeneralValidatorService) {
             throw I18nValidationException(i18nKey = PAYMENT_ADVANCE_SAVE_ERROR_KEY)
         }
     }
+
+    fun validateContributionSource(it: AdvancePaymentUpdate) {
+        if (isNotSet(it.programmeFundId)
+            && isNotSet(it.partnerContributionId)
+            && isNotSet(it.partnerContributionSpfId)) {
+                throw I18nValidationException(i18nKey = PAYMENT_ADVANCE_NO_SOURCE_ERROR_KEY)
+        }
+    }
+
+    private fun isNotSet(id: Long?): Boolean =
+        id == null || id <= 0
+
 }
 

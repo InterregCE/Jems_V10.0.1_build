@@ -333,7 +333,7 @@ export class ContractMonitoringExtensionComponent {
   }
 
   getIndexForCurrentLumpSum(lumpSum: AbstractControl) {
-    return this.lumpSumsForm.controls.indexOf(this.fastTrackLumpSumsControls.filter(it => it.value.orderNr == lumpSum.value.orderNr)[0]);
+    return this.lumpSumsForm.controls.indexOf(this.fastTrackLumpSumsControls.filter(it => it.value.orderNr === lumpSum.value.orderNr)[0]);
   }
 
   tableChanged(): void {

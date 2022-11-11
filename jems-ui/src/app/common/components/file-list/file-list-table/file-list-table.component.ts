@@ -162,7 +162,7 @@ export class FileListTableComponent implements OnChanges, AfterViewInit {
   }
 
   dismissAlert(id: string) {
-    const alerts = this.alerts$.value.filter(that => that.id != id);
+    const alerts = this.alerts$.value.filter(that => that.id !== id);
     this.alerts$.next(alerts);
   }
 
