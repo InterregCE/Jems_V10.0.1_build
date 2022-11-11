@@ -49,6 +49,7 @@ import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectDetail
 import io.cloudflight.jems.server.project.service.model.ProjectForm
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
+import io.cloudflight.jems.server.project.service.model.ProjectSearchRequest
 import io.cloudflight.jems.server.project.service.model.ProjectStatus
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssessmentEligibility
@@ -68,6 +69,7 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit5.MockKExtension
+import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -203,6 +205,32 @@ class ProjectControllerTest {
             programmePriority = projectForm.programmePriority,
             periods = listOf(ProjectPeriodDTO(projectId = projectId, number = 1, start = 1, end = 12))
         )
+
+        private val dummySearchRequest = ProjectSearchRequestDTO(
+            id = "search-id",
+            acronym = "search-acronym",
+            firstSubmissionFrom = startDate,
+            firstSubmissionTo = endDate,
+            lastSubmissionFrom = startDate.minusDays(1),
+            lastSubmissionTo = endDate.minusDays(1),
+            objectives = setOf(ProgrammeObjectivePolicy.EnvDevelopment, ProgrammeObjectivePolicy.LocalEnvDevelopment),
+            statuses = setOf(ApplicationStatusDTO.SUBMITTED, ApplicationStatusDTO.CONDITIONS_SUBMITTED),
+            calls = setOf(45L),
+        )
+
+        private val expectedSearchRequest = ProjectSearchRequest(
+            id = "search-id",
+            acronym = "search-acronym",
+            firstSubmissionFrom = startDate,
+            firstSubmissionTo = endDate,
+            lastSubmissionFrom = startDate.minusDays(1),
+            lastSubmissionTo = endDate.minusDays(1),
+            objectives = setOf(ProgrammeObjectivePolicy.EnvDevelopment, ProgrammeObjectivePolicy.LocalEnvDevelopment),
+            statuses = setOf(ApplicationStatus.SUBMITTED, ApplicationStatus.CONDITIONS_SUBMITTED),
+            calls = setOf(45L),
+            users = null,
+        )
+
     }
 
 
@@ -241,10 +269,20 @@ class ProjectControllerTest {
 
     @Test
     fun getAllProjects() {
-        every { getProjectInteractor.getAllProjects(any(), any()) } returns PageImpl(listOf(projectSummary))
-        assertThat(controller.getAllProjects(null, null, "id", "desc", null).content).containsExactly(
-            outputProjectSimple
-        )
+        val pageSlot = slot<Pageable>()
+        val requestSlot = slot<ProjectSearchRequest>()
+        every { getProjectInteractor.getAllProjects(capture(pageSlot), capture(requestSlot)) } returns PageImpl(listOf(projectSummary))
+
+        assertThat(
+            controller.getAllProjects(0, 15, "id", "desc", dummySearchRequest).content
+        ).containsExactly(outputProjectSimple)
+
+        assertThat(pageSlot.captured.pageNumber).isEqualTo(0)
+        assertThat(pageSlot.captured.pageSize).isEqualTo(15)
+        assertThat(pageSlot.captured.sort.stream().findFirst().get().isDescending).isTrue()
+        assertThat(pageSlot.captured.sort.stream().findFirst().get().property).isEqualTo("id")
+
+        assertThat(requestSlot.captured).isEqualTo(expectedSearchRequest)
     }
 
     @Test
