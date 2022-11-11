@@ -28,6 +28,11 @@
     {{ payment.partnerType === 'LEAD_PARTNER' ? 'LP' : 'PP' + payment.partnerNumber }}
 </ng-template>
 
+<ng-template #sourceForAdvanceCell let-payment>
+    <span *ngIf="getSourceType(payment) === SOURCE_TYPE.fund">{{getFundName(payment) | translateBySystemLanguage | async}}</span>
+    <span *ngIf="getSourceType(payment) === SOURCE_TYPE.contribution">{{getContributionName(payment)}}</span>
+</ng-template>
+
 <ng-template #remainingToBeSettledCell let-payment>
     {{(payment.amountAdvance - payment.amountSettled) | asMoney}}
 </ng-template>

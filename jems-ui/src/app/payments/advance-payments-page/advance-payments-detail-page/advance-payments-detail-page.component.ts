@@ -335,7 +335,7 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
     };
   }
 
-  getProjectToDisplay(attribute1: any, attribute2: any) {
+  getProjectToDisplay(attribute1: OutputProjectSimple, attribute2: OutputProjectSimple) {
     if (attribute1?.id === attribute2?.id) {
       return attribute1;
     } else {
@@ -366,14 +366,11 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
       this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.paymentConfirmed)?.enable();
       this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.paymentAuthorizedDate)?.setValue(this.getFormattedCurrentLocaleDate());
       this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.paymentAuthorizedUser)?.setValue(this.getOutputUserObject(this.currentUserDetails));
-      this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.dateOfPayment)?.setValidators([Validators.required]);
     } else {
       this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.amountAdvance)?.enable();
       this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.paymentConfirmed)?.disable();
       this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.paymentAuthorizedDate)?.setValue(null);
       this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.paymentAuthorizedUser)?.setValue(null);
-
-      this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.dateOfPayment)?.removeValidators([Validators.required]);
     }
   }
 

@@ -2,7 +2,7 @@ import {AfterViewInit, ChangeDetectionStrategy, Component, OnInit, TemplateRef, 
 import {combineLatest, Observable} from 'rxjs';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
-import {PageAdvancePaymentDTO} from '@cat/api';
+import {AdvancePaymentDTO, InputTranslation, PageAdvancePaymentDTO} from '@cat/api';
 import {ColumnWidth} from '@common/components/table/model/column-width';
 import {map} from 'rxjs/operators';
 import {AdvancePaymentsPageStore} from './advance-payments-page.store';
@@ -18,11 +18,19 @@ export class AdvancePaymentsPageComponent implements OnInit, AfterViewInit {
   @ViewChild('partnerRoleCell', {static: true})
   partnerRoleCell: TemplateRef<any>;
 
+  @ViewChild('sourceForAdvanceCell', {static: true})
+  sourceForAdvanceCell: TemplateRef<any>;
+
   @ViewChild('remainingToBeSettledCell', {static: true})
   remainingToBeSettledCell: TemplateRef<any>;
 
   @ViewChild('deleteButtonCell', {static: true})
   deleteButtonCell: TemplateRef<any>;
+
+  SOURCE_TYPE = {
+    fund: 'fund',
+    contribution: 'contribution'
+  }
 
   data$: Observable<{
     userCanView: boolean;
@@ -86,9 +94,8 @@ export class AdvancePaymentsPageComponent implements OnInit, AfterViewInit {
         },
         {
           displayedColumn: 'payments.advance.payment.table.header.source.advance.granted',
-          elementProperty: 'sourceOrFundName',
-          sortProperty:'sourceOrFundName',
           columnWidth: ColumnWidth.SmallColumn,
+          customCellTemplate: this.sourceForAdvanceCell,
         },
         {
           displayedColumn: 'payments.advance.payment.table.header.advance.amount',
@@ -128,6 +135,35 @@ export class AdvancePaymentsPageComponent implements OnInit, AfterViewInit {
 
   removeItem(paymentId: number) {
       this.advancePaymentsStore.deleteAdvancedPayment(paymentId);
+  }
+
+  getContributionName(paymentAdvance: AdvancePaymentDTO): String {
+    if (paymentAdvance.partnerContribution?.id) {
+      return paymentAdvance.partnerContribution?.name;
+    } else if (paymentAdvance.partnerContributionSpf?.id) {
+      return paymentAdvance.partnerContributionSpf.name;
+    }
+    return '';
+  }
+
+  getFundName(paymentAdvance: any): InputTranslation[] | null {
+    return paymentAdvance.programmeFund?.abbreviation;
+  }
+
+  getContributions(paymentAdvance: any): String {
+    if (paymentAdvance.partnerContribution?.id) {
+      return paymentAdvance.partnerContribution?.name;
+    } else if (paymentAdvance.partnerContributionSpf?.id) {
+      return paymentAdvance.partnerContributionSpf.name;
+    }
+    return '';
+  }
+
+  getSourceType(paymentAdvance: any): string {
+    if(paymentAdvance.programmeFund?.id) {
+      return 'fund';
+    } else
+      return 'contribution';
   }
 }
 
