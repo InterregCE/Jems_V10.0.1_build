@@ -8,12 +8,18 @@ table {
 }
 .table-row {
   padding: 0.5rem 0;
-  max-width: 100%;
+
   > :first-child {
     padding-left: 1rem
   }
   > * {
-    padding: 0.5rem;
+    padding: 0.25rem;
+  }
+}
+.jems-multi-column-row {
+  column-gap: 0;
+  > * {
+    margin-right: 0 !important;
   }
 }
 
@@ -95,14 +101,12 @@ table {
 .normal-row:hover {
   background: var(--table-hover-color) !important;
 }
-
 .mat-form-field {
   max-height: 4.75rem !important; // fixes the 1px vertical height shift on disabling/enabling inputs
 }
 .mat-datepicker-input.placeholder-required::placeholder {
   color: var(--error-color) !important;
 }
-
 
 .icon-back {
   font-size: 2rem;
@@ -112,24 +116,21 @@ table {
   display: inline-block;
   margin-top: 1.3rem !important;
 }
-
 .advance-payment-container {
   border: 1px solid var(--light-blue-gray);
   overflow: auto !important;
   width: 100%;
 
   .advance-payment-header {
-    min-width: 135rem;
-
     color: var(--table-header-text-color);
     font-size: var(--body-strong-font-size);
     font-weight: var(--body-strong-font-weight);
     background-color: var(--light-blue-gray);
-    overflow: hidden;
+    min-width: fit-content;
+    width: available;
   }
 }
 .header {
-  width: 100%;
   background-color: var(--light-blue-gray);
 }
 .settlements-table-container {
