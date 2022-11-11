@@ -30,7 +30,7 @@ export class AdvancePaymentsPageComponent implements OnInit, AfterViewInit {
   SOURCE_TYPE = {
     fund: 'fund',
     contribution: 'contribution'
-  }
+  };
 
   data$: Observable<{
     userCanView: boolean;
@@ -163,7 +163,7 @@ export class AdvancePaymentsPageComponent implements OnInit, AfterViewInit {
     if(paymentAdvance.programmeFund?.id) {
       return 'fund';
     } else
-      return 'contribution';
+      {return 'contribution';}
   }
 }
 

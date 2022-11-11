@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, merge, Observable, of, Subject} from 'rxjs';
+import {merge, Observable, of, ReplaySubject, Subject} from 'rxjs';
 import {
   AdvancePaymentDetailDTO,
   AdvancePaymentsService, AdvancePaymentUpdateDTO,
@@ -9,11 +9,13 @@ import {
 } from '@cat/api';
 import {PermissionService} from '../../../security/permissions/permission.service';
 import {RoutingService} from '@common/services/routing.service';
-import {map, startWith, switchMap, tap} from 'rxjs/operators';
+import {map, shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 import {MatSort} from '@angular/material/sort';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
+@UntilDestroy()
 @Injectable({
   providedIn: 'root'
 })
@@ -22,8 +24,8 @@ export class AdvancePaymentsDetailPageStoreStore {
 
   advancePaymentDetail$: Observable<AdvancePaymentDetailDTO>;
   savedAdvancePaymentDetail$ = new Subject<AdvancePaymentDetailDTO>();
-  searchProjectsByName$ = new BehaviorSubject<string>('');
-  getProjectPartnersByProjectId$ = new BehaviorSubject<number>(0);
+  searchProjectsByName$ = new ReplaySubject<string>(1);
+  getProjectPartnersByProjectId$ = new ReplaySubject<number>(1);
   newPageSize$ = new Subject<number>();
   newPageIndex$ = new Subject<number>();
   newSort$ = new Subject<Partial<MatSort>>();
@@ -56,6 +58,8 @@ export class AdvancePaymentsDetailPageStoreStore {
         this.projectService.getContractedProjects(acronym)),
       map(page => page.content),
       tap(page => Log.info('Fetched filtered contracted projects:', this, page)),
+      untilDestroyed(this),
+      shareReplay(1)
     );
   }
 
@@ -79,6 +83,8 @@ export class AdvancePaymentsDetailPageStoreStore {
       switchMap((projectId) =>
         this.projectPartnerService.getProjectPartnersAndContributions(projectId)),
       tap(partnerList => Log.info('Fetched filtered partners for project:', this, partnerList)),
+      untilDestroyed(this),
+      shareReplay(1)
     );
   }
 }

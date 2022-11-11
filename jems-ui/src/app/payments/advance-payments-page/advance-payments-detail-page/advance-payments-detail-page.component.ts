@@ -126,7 +126,7 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
         tap(data => this.currentUserDetails = data.currentUser),
         tap(data => this.loadData(data.paymentDetail)),
         tap(data => this.getSelectedProject(data.paymentDetail.projectCustomIdentifier)),
-        tap(data => this.getSelectedPartner(data.paymentDetail.partnerAbbreviation)),
+        tap(data => this.getSelectedPartner(data.paymentDetail.partnerId)),
         tap(data => this.resetForm(data.paymentDetail))
       );
     this.formService.init(this.advancePaymentForm, of(true));
@@ -145,9 +145,9 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
     );
   }
 
-  getSelectedPartner(partnerName: string) {
+  getSelectedPartner(partnerId: number) {
     this.selectedPartner$ = this.partnerData$.pipe(
-      map((partnerData) => partnerData.find(item => item.partnerSummary.abbreviation === partnerName)),
+      map((partnerData) => partnerData.find(item => item.partnerSummary.id === partnerId)),
       untilDestroyed(this)
     );
   }
