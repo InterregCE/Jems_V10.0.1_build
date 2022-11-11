@@ -6,16 +6,20 @@
     <jems-form *ngIf="projectManagers$ | async as managers"
                (save)="onSubmit()"
                (discard)="resetForm(managers)">
+
+        <h3>{{'project.application.contract.management.title' | translate}}</h3>
+        <p class="mb-4">{{'project.application.contract.management.intro' | translate}}</p>
+
         <form jemsFormLayout [formGroup]="projectManagersForm">
-            <h3 class="mb-3">{{'project.application.contract.management.type.projectManager' | translate}}</h3>
+            <h4 class="mb-2">{{'project.application.contract.management.type.projectManager' | translate}}</h4>
             <ng-container [ngTemplateOutlet]="managementContact"
                           [ngTemplateOutletContext]="{controls: projectManagersForm.get('ProjectManager')}">
             </ng-container>
-            <h3 class="mb-3">{{'project.application.contract.management.type.financeManager' | translate}}</h3>
+            <h4 class="mb-2">{{'project.application.contract.management.type.financeManager' | translate}}</h4>
             <ng-container [ngTemplateOutlet]="managementContact"
                           [ngTemplateOutletContext]="{controls: projectManagersForm.get('FinanceManager')}">
             </ng-container>
-            <h3 class="mb-3">{{'project.application.contract.management.type.communicationManager' | translate}}</h3>
+            <h4 class="mb-2">{{'project.application.contract.management.type.communicationManager' | translate}}</h4>
             <ng-container [ngTemplateOutlet]="managementContact"
                           [ngTemplateOutletContext]="{controls: projectManagersForm.get('CommunicationManager')}">
             </ng-container>

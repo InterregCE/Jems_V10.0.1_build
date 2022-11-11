@@ -4,7 +4,7 @@
     <mat-table *ngIf="dimensionCodesTableData.length > 0" jemsNoWidthLimit
                class="table-condensed mt-3 mb-3"
                id="monitoring-dimension-codes-table"
-               [jemsTableConfig]="[{minInRem:9},{minInRem:6, maxInRem:10},{minInRem:8, maxInRem:8},{minInRem: 6,maxInRem:6}, {minInRem:2, maxInRem: 2}]"
+               [jemsTableConfig]="[{minInRem:9},{minInRem:6, maxInRem:12},{minInRem:8, maxInRem:10},{minInRem: 4,maxInRem:8}, {minInRem:2, maxInRem: 2}]"
                [dataSource]="dimensionCodesTableData"
                formArrayName="dimensionCodesItems">
         <ng-container matColumnDef="dimension">
@@ -84,7 +84,7 @@
                           maxLines="2">{{'project.application.contract.monitoring.project.dimension.budget.share.percent' | translate}}</span>
             </mat-header-cell>
             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                <mat-form-field class="w-100">
+                <mat-form-field class="w-100" class="mat-form-field-disabled">
                     <input formControlName="projectBudgetPercentShare"
                            matInput
                            readonly>
@@ -108,7 +108,7 @@
     </mat-table>
 
     <button *ngIf="editable"
-            mat-stroked-button type="button" class="mt-2 mb-2"
+            mat-stroked-button type="button" class="mb-2"
             (click)="addDimensionCodeData()">
         <mat-icon>add</mat-icon>
         <span>&nbsp;{{'project.application.contract.monitoring.project.intervention.code.add' | translate}}</span>

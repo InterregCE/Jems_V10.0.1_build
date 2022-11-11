@@ -1,7 +1,7 @@
 <jems-project-page-template
         titleKey="project.application.contracting.title"
         [subTitleText]="'project.application.contract.contracts.title' | translate"
-        [needsCard]="true"
+        [needsCard]="false"
         [isVersionedData]="false">
 
 
@@ -10,6 +10,7 @@
                (discard)="resetForm(contractInfo)">
         <form jemsFormLayout [formGroup]="contractInfoForm">
             <h3>{{'project.application.contract.contracts.title' | translate}}</h3>
+            <p>{{'project.application.contract.contracts.intro' | translate}}</p>
             <div jemsMultiColumnRow>
                 <mat-form-field jemsFormFieldWidth="half" *ngIf="contractInfo.projectStartDate !== null">
                     <mat-label>{{'project.application.contract.monitoring.project.start.date' | translate  | dateFormatInfo}}</mat-label>
@@ -81,6 +82,8 @@
         </form>
     </jems-form>
 
-    <jems-contract-files class="mt-5"
-    [isEditable]="canEdit$ | async"></jems-contract-files>
+    <mat-card class="mt-2">
+        <jems-contract-files class="mt-2 mb-2"
+        [isEditable]="canEdit$ | async"></jems-contract-files>
+    </mat-card>
 </jems-project-page-template>
