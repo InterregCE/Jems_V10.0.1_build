@@ -50,6 +50,10 @@ subprojects {
     }
 }
 
+allprojects {
+    configurations.all { exclude group: 'junit' }
+}
+
 // prevent local compile error
 apply plugin: "org.sonarqube"
 // add rules for sonarqube
