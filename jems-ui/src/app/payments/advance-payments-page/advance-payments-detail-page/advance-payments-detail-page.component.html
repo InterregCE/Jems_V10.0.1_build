@@ -24,7 +24,7 @@
         <ng-container>
                 <div jemsNoWidthLimit id="advance-payment-table" class="mb-3 advance-payment-container">
 
-                    <div class="advance-payment-header table-row" jemsNoWidthLimit jemsMultiColumnRow justifyContent="start">
+                    <div class="advance-payment-header table-row" jemsMultiColumnRow justifyContent="start">
                         <div class="column-project-id justify-start">
                             {{ 'payments.advance.payment.table.header.project.id' | translate }}
                         </div>
@@ -84,7 +84,7 @@
                     <ng-container>
                         <div  jemsMultiColumnRow class="table-row full-payment-row">
                             <div class="column-project-id">
-                                <mat-form-field>
+                                <mat-form-field class="w-100">
                                     <mat-select class="placeholder-required"
                                                 [formControlName]="constants.FORM_CONTROL_NAMES.projectCustomIdentifier" [compareWith]="getProjectToDisplay"
                                                 placeholder="{{'payments.advance.payments.detail.project.id.dropdown.placeholder' | translate}}"
@@ -106,7 +106,7 @@
                             </div>
 
                             <div class="column-partner-name">
-                                <mat-form-field jemsFormFieldWidth="medium">
+                                <mat-form-field class="w-100">
                                     <mat-select class="placeholder-required"
                                                 [formControlName]="constants.FORM_CONTROL_NAMES.partnerAbbreviation"
                                                 (selectionChange)="setFundsAndContributionData($event.value)"
@@ -124,7 +124,7 @@
                             </div>
 
                             <div class="column-advance-source">
-                                <mat-form-field  jemsFormFieldWidth="medium">
+                                <mat-form-field  class="w-100">
                                     <mat-select
                                             class="placeholder-required"
                                             [formControlName]="constants.FORM_CONTROL_NAMES.sourceOrFundName"
