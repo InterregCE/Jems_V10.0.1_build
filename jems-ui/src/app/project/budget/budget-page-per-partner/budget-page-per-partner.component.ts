@@ -17,7 +17,7 @@ import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {TableConfig} from '@common/directives/table-config/TableConfig';
 import {combineLatest, Observable} from 'rxjs';
 import CallTypeEnum = ProjectCallSettingsDTO.CallTypeEnum;
-import {UntilDestroy, untilDestroyed} from "@ngneat/until-destroy";
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
 @UntilDestroy()
 @Component({
@@ -63,7 +63,7 @@ export class BudgetPagePerPartnerComponent {
     this.projectStore.projectId$.pipe(
         tap(projectId => this.projectId = projectId),
         untilDestroyed(this)
-    ).subscribe()
+    ).subscribe();
 
     this.tableConfig$ = combineLatest([this.chosenProjectFunds$, this.isCallTypeSpf$])
       .pipe(map( ([funds, isSpf]) => [
