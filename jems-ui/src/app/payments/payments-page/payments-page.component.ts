@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {PermissionService} from '../../security/permissions/permission.service';
 import {Observable} from 'rxjs';
 import {UserRoleDTO} from '@cat/api';
@@ -13,8 +13,8 @@ export class PaymentsPageComponent{
 
   PermissionEnum = UserRoleDTO.PermissionsEnum;
 
-  userHasAccessToAdvancePayments$: Observable<Boolean>;
-  userHasAccessToPaymentsToProjects$: Observable<Boolean>;
+  userHasAccessToAdvancePayments$: Observable<boolean>;
+  userHasAccessToPaymentsToProjects$: Observable<boolean>;
   static selectedTabIndex = 0;
 
   constructor(private permissionService: PermissionService) {

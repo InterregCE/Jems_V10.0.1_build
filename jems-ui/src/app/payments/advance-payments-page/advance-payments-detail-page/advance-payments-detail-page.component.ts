@@ -336,7 +336,7 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
   }
 
   getProjectToDisplay(attribute1: any, attribute2: any) {
-    if (attribute1?.id == attribute2?.id) {
+    if (attribute1?.id === attribute2?.id) {
       return attribute1;
     } else {
       return '';
@@ -344,7 +344,7 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
   }
 
   getPartnerToDisplay(attribute1: ProjectPartnerPaymentSummaryDTO, attribute2: ProjectPartnerPaymentSummaryDTO) {
-    if (attribute1?.partnerSummary?.id == attribute2?.partnerSummary?.id) {
+    if (attribute1?.partnerSummary?.id === attribute2?.partnerSummary?.id) {
       return attribute1;
     } else {
       return '';
@@ -352,7 +352,7 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
   }
 
   getSourceToDisplay(attribute1: any, attribute2: any) {
-    if (attribute1?.data?.id == attribute2?.data?.id && attribute1?.type === attribute2?.type) {
+    if (attribute1?.data?.id === attribute2?.data?.id && attribute1?.type === attribute2?.type) {
       return attribute1;
     } else {
       return '';

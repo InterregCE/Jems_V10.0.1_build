@@ -166,10 +166,10 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
           const apiError = error.error as APIError;
           if (apiError?.formErrors) {
             Object.keys(apiError.formErrors).forEach(key => {
-              let fieldAndIndexArr = key.split('-');
+              const fieldAndIndexArr = key.split('-');
               if(fieldAndIndexArr.length == 2) {
-                let field = fieldAndIndexArr[0];
-                let installmentIndex = Number(fieldAndIndexArr[1]);
+                const field = fieldAndIndexArr[0];
+                const installmentIndex = Number(fieldAndIndexArr[1]);
                 const control = this.installmentsArray(index).at(installmentIndex).get(field);
                 control?.setErrors({required: this.translateService.instant(apiError.formErrors[key].i18nKey)});
                 control?.markAsDirty();

@@ -15,6 +15,7 @@ const val MAX_CODE_VALUE_TERRITORIAL_DELIVERY_MECHANISM = 33
 const val MAX_CODE_VALUE_ECONOMIC_ACTIVITY = 26
 const val MAX_CODE_VALUE_GENDER_EQUALITY = 3
 const val MAX_CODE_VALUE_REGIONAL_AND_SEA_BASIN_STRATEGY = 11
+const val DIMENSION_CODES_INVALID = "programme.priority.dimension.codes.value.invalid"
 
 fun validateCreateProgrammePriority(
     programmePriority: ProgrammePriority,
@@ -210,32 +211,32 @@ private fun validateDimensionCodes(dimensionCodes: List<Map<ProgrammeObjectiveDi
         invalid("programme.priority.dimension.codes.size.invalid")
     }
     if (flattenedDimensionCodes.flatten().any { it.toIntOrNull() == null || it.toInt() < 1}) {
-        invalid("programme.priority.dimension.codes.value.invalid")
+        invalid(DIMENSION_CODES_INVALID)
     }
 
     dimensionCodes.flatMap { it.entries}.forEach {
             dimension -> when (dimension.key) {
                 ProgrammeObjectiveDimension.TypesOfIntervention -> {
                     if (dimension.value.any {code -> code.toInt() > MAX_CODE_VALUE_TYPE_OF_INTERVENTION}) {
-                        invalid("programme.priority.dimension.codes.value.invalid")
+                        invalid(DIMENSION_CODES_INVALID)
                     }
                 }
 
                 ProgrammeObjectiveDimension.FormOfSupport -> {
                     if (dimension.value.any {code -> code.toInt() > MAX_CODE_VALUE_FORM_OF_SUPPORT}) {
-                        invalid("programme.priority.dimension.codes.value.invalid")
+                        invalid(DIMENSION_CODES_INVALID)
                     }
                 }
 
                 ProgrammeObjectiveDimension.TerritorialDeliveryMechanism -> {
                     if (dimension.value.any {code -> code.toInt() > MAX_CODE_VALUE_TERRITORIAL_DELIVERY_MECHANISM}) {
-                        invalid("programme.priority.dimension.codes.value.invalid")
+                        invalid(DIMENSION_CODES_INVALID)
                     }
                 }
 
                 ProgrammeObjectiveDimension.EconomicActivity -> {
                     if (dimension.value.any {code -> code.toInt() > MAX_CODE_VALUE_ECONOMIC_ACTIVITY}) {
-                        invalid("programme.priority.dimension.codes.value.invalid")
+                        invalid(DIMENSION_CODES_INVALID)
                     }
                 }
 
@@ -243,13 +244,13 @@ private fun validateDimensionCodes(dimensionCodes: List<Map<ProgrammeObjectiveDi
 
                 ProgrammeObjectiveDimension.GenderEquality -> {
                     if (dimension.value.any {code -> code.toInt() > MAX_CODE_VALUE_GENDER_EQUALITY}) {
-                        invalid("programme.priority.dimension.codes.value.invalid")
+                        invalid(DIMENSION_CODES_INVALID)
                     }
                 }
 
                 ProgrammeObjectiveDimension.RegionalAndSeaBasinStrategy -> {
                     if (dimension.value.any {code -> code.toInt() > MAX_CODE_VALUE_REGIONAL_AND_SEA_BASIN_STRATEGY}) {
-                        invalid("programme.priority.dimension.codes.value.invalid")
+                        invalid(DIMENSION_CODES_INVALID)
                     }
                 }
             }

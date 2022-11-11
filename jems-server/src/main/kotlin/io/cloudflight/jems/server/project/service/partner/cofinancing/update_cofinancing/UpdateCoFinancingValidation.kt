@@ -78,10 +78,11 @@ private fun validateCoFinancingPercentageRange(financing: Collection<UpdateProje
         invalid("project.partner.coFinancing.percentage.invalid")
     val financingFromFunds = financing.filter{ it.fundId != null }
     val fixedFundRates = fundRates.filter{ !it.adjustable }
-    if (financingFromFunds.isNotEmpty()) {
-        if (!financingFromFunds.all { validateFixedFundRate(it, fixedFundRates.firstOrNull { rate -> rate.programmeFund.id == it.fundId }) })
+    if (financingFromFunds.isNotEmpty()
+        && !financingFromFunds.all {
+            validateFixedFundRate(it, fixedFundRates.firstOrNull { rate -> rate.programmeFund.id == it.fundId })
+        })
             invalid("project.partner.coFinancing.fixed.percentage.invalid")
-    }
 }
 
 private fun validateFixedFundRate(coFinancing: UpdateProjectPartnerCoFinancing, rate: CallFundRate?): Boolean {

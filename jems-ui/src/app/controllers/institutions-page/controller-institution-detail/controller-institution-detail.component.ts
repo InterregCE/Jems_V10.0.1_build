@@ -79,7 +79,8 @@ export class ControllerInstitutionDetailComponent extends BaseComponent implemen
   }
 
   ngAfterContentChecked(): void {
-    this.disableNotEmptyUserEmailInput(this.controllerForm.get('institutionUsers') as FormArray);
+    ControllerInstitutionDetailComponent
+      .disableNotEmptyUserEmailInput(this.controllerForm.get('institutionUsers') as FormArray);
   }
 
   resetForm(controllerData: ControllerInstitutionDTO) {
@@ -165,10 +166,10 @@ export class ControllerInstitutionDetailComponent extends BaseComponent implemen
       this.permissionService.hasPermission(PermissionsEnum.InstitutionsUnlimited);
   }
 
-  private disableNotEmptyUserEmailInput(institutionUsersFormGroup: FormArray) {
+  private static disableNotEmptyUserEmailInput(institutionUsersFormGroup: FormArray) {
     institutionUsersFormGroup.controls.filter(control =>
       !!control.get('userEmail')?.value &&
-      control.get('userEmail')?.status == 'VALID' &&
+      control.get('userEmail')?.status === 'VALID' &&
       control.get('userId')?.value != null)
       .forEach(control => control.get('userEmail')?.disable());
   }

@@ -137,7 +137,7 @@ export class ContractPartnerStore {
       ),
       map(([partnerId, partnerLevel, userIsPartnerCollaborator, hasContractingPartnerView, userIsProjectOwner, partners, projectStatus]:
       [number, string, boolean, boolean, boolean, ProjectPartnerSummaryDTO[], ProjectStatusDTO]) =>
-          (partners.map(partner => partner.id).find(id => id == partnerId) != undefined) && ProjectUtil.isInApprovedOrAnyStatusAfterApproved(projectStatus) &&
+          (partners.map(partner => partner.id).find(id => id === partnerId) !== undefined) && ProjectUtil.isInApprovedOrAnyStatusAfterApproved(projectStatus) &&
           (userIsProjectOwner || hasContractingPartnerView || (userIsPartnerCollaborator && (partnerLevel === LevelEnum.EDIT || partnerLevel === LevelEnum.VIEW)))),
       shareReplay(1)
     );
