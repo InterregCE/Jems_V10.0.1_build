@@ -11,7 +11,7 @@
         <div>{{'project.application.form.section.part.b.deactivated.partner.warning' | translate}}</div>
     </jems-alert>
 
-    <ng-container *ngIf="pageStore.userCanEditReports$ | async">
+    <ng-container *ngIf="pageStore.userCanEditReport$ | async">
             <p>
                 <jems-pending-button jemsText class="mb-3"
                                      icon="add"
@@ -75,7 +75,7 @@
                 [pending]="getPendingActionStatus(partnerReport.id) | async">
             {{'project.application.partner.reports.start.control' | translate}}
         </jems-pending-button>
-        <button jemsText *ngIf="partnerReport.status === ProjectPartnerReportSummaryDTO.StatusEnum.InControl && ((pageStore.userCanEditReports$ | async) || (pageStore.userCanViewReports$ | async))" mat-stroked-button type="submit" class="ml-1"
+        <button jemsText *ngIf="partnerReport.status === ProjectPartnerReportSummaryDTO.StatusEnum.InControl && ((pageStore.userCanEditReport$ | async) || (pageStore.userCanViewReport$ | async))" mat-stroked-button type="submit" class="ml-1"
                 [disabled]="false"
                 [routerLink]="partnerReport.id + '/controlReport/' + ((store.fullControlReportView$ | async) ? 'identificationTab' : 'document')">
         {{'project.application.partner.reports.open.control' | translate}}
@@ -86,7 +86,7 @@
 <ng-template #deleteCell let-partnerReport>
     <button
             mat-icon-button color="accent"
-            [disabled]="!(partnerReport.reportNumber === deletableReportId && (pageStore.userCanEditReports$ | async))"
+            [disabled]="!(partnerReport.reportNumber === deletableReportId && (pageStore.userCanEditReport$ | async))"
             (click)="delete(partnerReport);$event.stopPropagation();"
             matTooltip="{{'common.delete.entry.tooltip' | translate}}">
         <mat-icon>delete</mat-icon>

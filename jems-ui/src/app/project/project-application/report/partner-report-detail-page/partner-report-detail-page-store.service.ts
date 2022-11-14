@@ -173,7 +173,7 @@ export class PartnerReportDetailPageStore {
 
   private reportEditable(): Observable<boolean> {
     return combineLatest([
-      this.partnerReportPageStore.userCanEditReports$,
+      this.partnerReportPageStore.userCanEditReport$,
       this.reportStatus$
     ])
       .pipe(

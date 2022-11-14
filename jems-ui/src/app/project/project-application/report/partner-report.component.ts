@@ -84,8 +84,8 @@ export class PartnerReportComponent implements AfterViewInit {
   readonly isControlButtonVisible$: Observable<boolean> = combineLatest([
     this.pageStore.institutionUserCanViewControlReports$,
     this.pageStore.institutionUserCanEditControlReports$,
-    this.pageStore.userCanViewReports$,
-    this.pageStore.userCanEditReports$
+    this.pageStore.userCanViewReport$,
+    this.pageStore.userCanEditReport$
   ]).pipe(
     map(([
            canViewFromInstitution,

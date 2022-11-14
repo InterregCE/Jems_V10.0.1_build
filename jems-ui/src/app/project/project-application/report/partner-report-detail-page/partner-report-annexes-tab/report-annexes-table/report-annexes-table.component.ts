@@ -1,10 +1,7 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
 import {AcceptedFileTypesConstants} from '@project/common/components/file-management/accepted-file-types.constants';
 import {
-  AuthenticationService,
-  OutputCurrentUser,
   PageProjectReportFileDTO,
-  PartnerUserCollaboratorDTO,
   ProjectPartnerReportService,
   ProjectPartnerReportSummaryDTO,
   ProjectReportFileDTO,
@@ -25,8 +22,7 @@ import {
   PartnerReportDetailPageStore
 } from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
 import {FileListComponent} from '@common/components/file-list/file-list.component';
-import {PermissionService} from '../../../../../../security/permissions/permission.service';
-import {PrivilegesPageStore} from '@project/project-application/privileges-page/privileges-page-store.service';
+import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @UntilDestroy()
@@ -34,7 +30,6 @@ import PermissionsEnum = UserRoleDTO.PermissionsEnum;
   selector: 'jems-report-annexes-table',
   templateUrl: './report-annexes-table.component.html',
   styleUrls: ['./report-annexes-table.component.scss'],
-  providers: [PrivilegesPageStore],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ReportAnnexesTableComponent {
@@ -46,34 +41,29 @@ export class ReportAnnexesTableComponent {
   acceptedFilesTypes = AcceptedFileTypesConstants.acceptedFilesTypes;
   maximumAllowedFileSizeInMB: number;
   fileSizeOverLimitError$ = new Subject<boolean>();
-  isPartnerCollaborator: boolean;
-  hasPermission: boolean;
 
   data$: Observable<{
     files: PageProjectReportFileDTO;
     fileList: FileListItem[];
     reportStatus: ProjectPartnerReportSummaryDTO.StatusEnum;
     selectedCategory: CategoryInfo | undefined;
+    canUserEdit: boolean;
   }>;
 
   constructor(
     public fileManagementStore: ReportFileManagementStore,
     private projectPartnerReportService: ProjectPartnerReportService,
     private partnerReportDetailPageStore: PartnerReportDetailPageStore,
-    private permissionService: PermissionService,
-    private pageStore: PrivilegesPageStore,
-    private authenticationService: AuthenticationService
+    private reportPageStore: PartnerReportPageStore,
   ) {
-    this.permissionService.hasPermission(PermissionsEnum.ProjectReportingEdit).pipe().subscribe(hasPermission => this.hasPermission = hasPermission);
     this.data$ = combineLatest([
       this.fileManagementStore.reportFileList$,
       this.fileManagementStore.reportStatus$,
       this.fileManagementStore.selectedCategory$,
-      this.pageStore.partnerCollaborators$,
-      this.authenticationService.getCurrentUser()
+      this.reportPageStore.userCanEditReport$,
     ])
       .pipe(
-        map(([files, reportStatus, selectedCategory, partnerCollaborators, currentUser]) => ({
+        map(([files, reportStatus, selectedCategory, canEdit]) => ({
           files,
           fileList: files.content.map((file: ProjectReportFileDTO) => ({
             id: file.id,
@@ -83,32 +73,19 @@ export class ReportAnnexesTableComponent {
             author: file.author,
             sizeString: file.sizeString,
             description: file.description,
-            editable: reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.Draft && (this.hasPermission || this.isPartnerCollaboratorWithEdit(partnerCollaborators.values(), currentUser)),
-            deletable: file.type === ProjectReportFileDTO.TypeEnum.PartnerReport && reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.Draft && (this.hasPermission || this.isPartnerCollaboratorWithEdit(partnerCollaborators.values(), currentUser)),
+            editable: reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.Draft && canEdit,
+            deletable: file.type === ProjectReportFileDTO.TypeEnum.PartnerReport
+              && reportStatus === ProjectPartnerReportSummaryDTO.StatusEnum.Draft
+              && canEdit,
             tooltipIfNotDeletable: 'file.table.action.delete.disabled.for.tab.tooltip',
             iconIfNotDeletable: 'delete_forever',
           })),
           reportStatus,
-          selectedCategory
+          selectedCategory,
+          canUserEdit: canEdit,
         })),
       );
     this.fileManagementStore.getMaximumAllowedFileSize().pipe(untilDestroyed(this)).subscribe((maxAllowedSize) => this.maximumAllowedFileSizeInMB = maxAllowedSize);
-  }
-
-  private isPartnerCollaboratorWithEdit(partnerCollaborators:  IterableIterator<PartnerUserCollaboratorDTO[]>, currentUser: OutputCurrentUser): boolean {
-    let hasPermission = false;
-    for (const partnerCollaboratorList of partnerCollaborators) {
-      Array.from(partnerCollaboratorList.values()).forEach(
-          partnerCollaborator => hasPermission = partnerCollaborator.level === 'EDIT'
-          && partnerCollaborator.userId === currentUser.id);
-          if (hasPermission) {
-            this.isPartnerCollaborator = true;
-            return true;
-          }
-    }
-
-    this.isPartnerCollaborator = false;
-    return false;
   }
 
   uploadFile(target: any): void {

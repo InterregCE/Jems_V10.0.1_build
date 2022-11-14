@@ -28,8 +28,8 @@ export class PartnerReportPageStore {
   partnerSummary$: Observable<ProjectPartnerSummaryDTO>;
   partnerReportLevel$: Observable<string>;
   partnerId$: Observable<string | number | null>;
-  userCanViewReports$: Observable<boolean>;
-  userCanEditReports$: Observable<boolean>;
+  userCanViewReport$: Observable<boolean>;
+  userCanEditReport$: Observable<boolean>;
   institutionUserCanViewControlReports$: Observable<boolean>;
   institutionUserCanEditControlReports$: Observable<boolean>;
 
@@ -49,8 +49,8 @@ export class PartnerReportPageStore {
     this.partnerReports$ = this.partnerReports();
     this.partnerSummary$ = this.partnerSummary();
     this.partnerReportLevel$ = this.partnerReportLevel();
-    this.userCanViewReports$ = this.userCanViewReports();
-    this.userCanEditReports$ = this.userCanEditReports();
+    this.userCanViewReport$ = this.userCanViewReports();
+    this.userCanEditReport$ = this.userCanEditReports();
     this.institutionUserCanViewControlReports$ = this.institutionUserCanViewControlReports();
     this.institutionUserCanEditControlReports$ = this.institutionUserCanEditControlReports();
   }
@@ -78,14 +78,13 @@ export class PartnerReportPageStore {
   private partnerReports(): Observable<PageProjectPartnerReportSummaryDTO> {
     return combineLatest([
       this.partnerId$,
-      this.partnerProjectStore.lastContractedVersionASObservable(),
       this.newPageIndex$,
       this.newPageSize$,
       this.refreshReports$.pipe(startWith(null)),
     ])
       .pipe(
-        filter(([partnerId, lastContractedVersion, pageIndex, pageSize]) => !!partnerId),
-        switchMap(([partnerId, lastContractedVersion, pageIndex, pageSize]) =>
+        filter(([partnerId]) => !!partnerId),
+        switchMap(([partnerId, pageIndex, pageSize]) =>
           this.projectPartnerReportService.getProjectPartnerReports(Number(partnerId), pageIndex, pageSize, `number,desc`)),
         tap((data: PageProjectPartnerReportSummaryDTO) => Log.info('Fetched partner reports for partner:', this, data))
       );
@@ -96,7 +95,7 @@ export class PartnerReportPageStore {
       this.partnerId$,
       this.partnerProjectStore.partnerReportSummaries$
     ]).pipe(
-      filter(([partnerId, partnerSummaries]) => !!partnerId),
+      filter(([partnerId]) => !!partnerId),
       map(([partnerId, partnerSummaries]) =>
         partnerSummaries.find(value => value.id === Number(partnerId)) || {} as any
     ));
