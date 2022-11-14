@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
 import {PrivilegesPageStore} from '@project/project-application/privileges-page/privileges-page-store.service';
 import {FormService} from '@common/components/section/form/form.service';
-import {PartnerUserCollaboratorDTO, ProjectPartnerSummaryDTO, ProjectStatusDTO} from '@cat/api';
+import {PartnerUserCollaboratorDTO, ProjectCallSettingsDTO, ProjectPartnerSummaryDTO, ProjectStatusDTO} from '@cat/api';
 import {ProjectApplicationFormSidenavService} from '@project/project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {FormArray, FormBuilder, Validators} from '@angular/forms';
 import {TranslateService} from '@ngx-translate/core';
@@ -12,6 +12,7 @@ import {Alert} from '@common/components/forms/alert';
 import {
   ProjectStore
 } from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import CallTypeEnum = ProjectCallSettingsDTO.CallTypeEnum;
 
 @Component({
   selector: 'jems-partner-team-privileges-expansion-panel',
@@ -41,6 +42,7 @@ export class PartnerTeamPrivilegesExpansionPanelComponent implements OnInit {
     map(status => status.status),
     map(status => this.AFTER_APPROVED_STATUSES.includes(status))
   );
+  isCallSpf$ = this.projectStore.projectCallType$.pipe(map((type) => type === CallTypeEnum.SPF));
 
   partnerForm = this.formBuilder.group({
     partnerCollaborators: this.formBuilder.array([], [])
