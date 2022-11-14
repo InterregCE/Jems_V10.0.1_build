@@ -91,6 +91,17 @@ table {
   max-width: 6rem !important;
   font-weight: var(--body-strong-font-weight);
 }
+.marked-as-required::after{
+  content: "*";
+  color: var(--error-color);
+
+  position: absolute;
+  left: 0;
+  top: -0.2em;
+
+  font-size: 1.25em;
+  font-weight: 500;
+}
 
 .colored-row {
   background: var(--table-highlight-color);

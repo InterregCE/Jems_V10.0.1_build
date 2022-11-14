@@ -158,9 +158,11 @@
 
                             <div class="column-advance-amount justify-center">
                                 <mat-form-field class="w-100">
-                                    <input matInput type="decimal" currencyMask required
-                                           [options]="{max: constants.MAX_VALUE, align:'right'}"
-                                           [formControlName]="constants.FORM_CONTROL_NAMES.amountAdvance">
+                                    <span [ngClass]="{'marked-as-required' : !isPaymentValueValid(inputAdvanceAmount.value)}">
+                                        <input #inputAdvanceAmount matInput type="decimal" currencyMask required
+                                               [options]="{max: constants.MAX_VALUE, align:'right'}"
+                                               [formControlName]="constants.FORM_CONTROL_NAMES.amountAdvance">
+                                    </span>
                                     <mat-error>
                                         <jems-form-field-errors [errors]="advancePayment.get(constants.FORM_CONTROL_NAMES.amountAdvance)?.errors" [messages]="constants.inputErrorMessages"></jems-form-field-errors>
                                     </mat-error>
