@@ -43,7 +43,7 @@ export class PartnerReportSubmitTabComponent {
       pageStore.partnerSummary$,
       detailPageStore.partnerReport$,
       detailPageStore.reportStatus$,
-      pageStore.userCanEditReports$,
+      pageStore.userCanEditReport$,
     ]).pipe(
       map(([projectId, partnerSummary, partnerReport, reportStatus, userCanEditReport]) => ({
         projectId,

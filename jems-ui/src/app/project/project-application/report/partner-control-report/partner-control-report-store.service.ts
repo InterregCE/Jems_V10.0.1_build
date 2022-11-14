@@ -33,8 +33,8 @@ export class PartnerControlReportStore {
   private projectId: number;
 
   readonly fullControlReportView$ = combineLatest([
-    this.partnerReportDetailPageStore.partnerReportPageStore.userCanViewReports$,
-    this.partnerReportDetailPageStore.partnerReportPageStore.userCanEditReports$,
+    this.partnerReportDetailPageStore.partnerReportPageStore.userCanViewReport$,
+    this.partnerReportDetailPageStore.partnerReportPageStore.userCanEditReport$,
     this.partnerReportDetailPageStore.partnerReportPageStore.institutionUserCanViewControlReports$,
     this.partnerReportDetailPageStore.partnerReportPageStore.institutionUserCanEditControlReports$
   ]).pipe(
@@ -44,8 +44,8 @@ export class PartnerControlReportStore {
   );
 
   readonly limitedControlReportView$ = combineLatest([
-    this.partnerReportDetailPageStore.partnerReportPageStore.userCanViewReports$,
-    this.partnerReportDetailPageStore.partnerReportPageStore.userCanEditReports$,
+    this.partnerReportDetailPageStore.partnerReportPageStore.userCanViewReport$,
+    this.partnerReportDetailPageStore.partnerReportPageStore.userCanEditReport$,
     this.partnerReportDetailPageStore.partnerReportPageStore.institutionUserCanViewControlReports$,
     this.partnerReportDetailPageStore.partnerReportPageStore.institutionUserCanEditControlReports$
   ]).pipe(

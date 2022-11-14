@@ -30,8 +30,8 @@ class GetMyPartnerCollaboratorLevel(
         val highestFromCollaborators = getHighestReportingLevelFromCollaborators(partnerId = partnerId)
 
         return when(true) {
-            highestFromCollaborators == EDIT || highestFromPermissions == EDIT -> EDIT
-            highestFromCollaborators == VIEW || highestFromPermissions == VIEW -> VIEW
+            (highestFromCollaborators == EDIT || highestFromPermissions == EDIT) -> EDIT
+            (highestFromCollaborators == VIEW || highestFromPermissions == VIEW) -> VIEW
             else -> null
         }
     }
