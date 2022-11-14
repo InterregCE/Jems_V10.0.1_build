@@ -101,12 +101,12 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceSpecialTest : Un
             ),
             other = ExpenditureCostCategoryBreakdownLine(
                 flatRate = null,
-                totalEligibleBudget = BigDecimal.valueOf(160),
-                previouslyReported = BigDecimal.valueOf(360),
+                totalEligibleBudget = BigDecimal.ZERO,
+                previouslyReported = BigDecimal.ZERO,
                 currentReport = BigDecimal.ZERO,
-                totalReportedSoFar = BigDecimal.valueOf(360),
-                totalReportedSoFarPercentage = BigDecimal.valueOf(22500, 2),
-                remainingBudget = BigDecimal.valueOf(-200),
+                totalReportedSoFar = BigDecimal.ZERO,
+                totalReportedSoFarPercentage = BigDecimal.ZERO,
+                remainingBudget = BigDecimal.ZERO,
             ),
             lumpSum = ExpenditureCostCategoryBreakdownLine(
                 flatRate = null,
@@ -121,19 +121,19 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceSpecialTest : Un
                 flatRate = null,
                 totalEligibleBudget = BigDecimal.valueOf(180),
                 previouslyReported = BigDecimal.valueOf(380),
-                currentReport = BigDecimal.valueOf(1535, 2),
-                totalReportedSoFar = BigDecimal.valueOf(39535, 2),
-                totalReportedSoFarPercentage = BigDecimal.valueOf(21964, 2),
-                remainingBudget = BigDecimal.valueOf(-21535, 2),
+                currentReport = BigDecimal.valueOf(12785, 2),
+                totalReportedSoFar = BigDecimal.valueOf(50785, 2),
+                totalReportedSoFarPercentage = BigDecimal.valueOf(28214, 2),
+                remainingBudget = BigDecimal.valueOf(-32785, 2),
             ),
             total = ExpenditureCostCategoryBreakdownLine(
                 flatRate = null,
                 totalEligibleBudget = BigDecimal.valueOf(1260),
                 previouslyReported = BigDecimal.valueOf(3060),
-                currentReport = BigDecimal.valueOf(105528, 2),
-                totalReportedSoFar = BigDecimal.valueOf(411528, 2),
-                totalReportedSoFarPercentage = BigDecimal.valueOf(32661, 2),
-                remainingBudget = BigDecimal.valueOf(-285528, 2),
+                currentReport = BigDecimal.valueOf(116778, 2),
+                totalReportedSoFar = BigDecimal.valueOf(422778, 2),
+                totalReportedSoFarPercentage = BigDecimal.valueOf(33554, 2),
+                remainingBudget = BigDecimal.valueOf(-296778, 2),
             ),
         )
 
@@ -167,7 +167,11 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceSpecialTest : Un
         every { reportPersistence.getPartnerReportById(PARTNER_ID, reportId = 28L) } returns
             reportWithStatus(status = ReportStatus.Draft)
         every { reportExpenditureCostCategoryPersistence.getCostCategories(PARTNER_ID, reportId = 28L) } returns data
-            .copy(options = data.options.copy(officeAndAdministrationOnDirectCostsFlatRate = 25))
+            .copy(
+                options = data.options.copy(officeAndAdministrationOnDirectCostsFlatRate = 25),
+                totalsFromAF = data.totalsFromAF.copy(other = BigDecimal.ZERO),
+                previouslyReported = data.previouslyReported.copy(other = BigDecimal.ZERO),
+            )
         every { reportExpenditurePersistence.getPartnerReportExpenditureCosts(PARTNER_ID, reportId = 28L) } returns listOf(
             expenditureLumpSum,
             expenditureUnitCost,
@@ -182,9 +186,7 @@ internal class GetReportExpenditureCostCategoryCalculatorServiceSpecialTest : Un
             expenditureMultipleCost,
         )
 
-        assertThat(service.getSubmittedOrCalculateCurrent(PARTNER_ID, reportId = 28L)).isEqualTo(
-            expectedOnDirect2Output
-        )
+        assertThat(service.getSubmittedOrCalculateCurrent(PARTNER_ID, reportId = 28L)).isEqualTo(expectedOnDirect2Output)
     }
 
 }

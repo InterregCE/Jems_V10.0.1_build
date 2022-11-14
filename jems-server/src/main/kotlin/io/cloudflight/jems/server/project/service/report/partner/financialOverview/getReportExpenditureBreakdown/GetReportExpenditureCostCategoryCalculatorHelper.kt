@@ -8,7 +8,6 @@ import io.cloudflight.jems.server.project.service.budget.calculator.BudgetCostCa
 import io.cloudflight.jems.server.project.service.budget.calculator.BudgetCostCategory.External
 import io.cloudflight.jems.server.project.service.budget.calculator.BudgetCostCategory.Equipment
 import io.cloudflight.jems.server.project.service.budget.calculator.BudgetCostCategory.Infrastructure
-import io.cloudflight.jems.server.project.service.budget.calculator.BudgetCostCategory.Other
 import io.cloudflight.jems.server.project.service.budget.calculator.BudgetCostCategory.LumpSum
 import io.cloudflight.jems.server.project.service.budget.calculator.BudgetCostCategory.UnitCost
 import io.cloudflight.jems.server.project.service.budget.calculator.calculateBudget
@@ -127,14 +126,13 @@ private fun ReportBudgetCategory.translateCostCategory(): BudgetCostCategory {
         ReportBudgetCategory.ExternalCosts -> External
         ReportBudgetCategory.EquipmentCosts -> Equipment
         ReportBudgetCategory.InfrastructureCosts -> Infrastructure
-        ReportBudgetCategory.Multiple -> Other
+        ReportBudgetCategory.Multiple -> UnitCost
     }
 }
 
 private fun ProjectPartnerReportExpenditureCost.getCategory(): BudgetCostCategory =
     when {
         lumpSumId != null -> LumpSum
-        unitCostId != null -> UnitCost
         else -> costCategory.translateCostCategory()
     }
 

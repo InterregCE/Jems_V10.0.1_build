@@ -147,15 +147,15 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
 
         private val expectedPersistedExpenditureCostCategory = BudgetCostsCalculationResultFull(
             staff = BigDecimal.valueOf(999, 2),
-            office = BigDecimal.valueOf(114, 2),
+            office = BigDecimal.valueOf(279, 2),
             travel = BigDecimal.valueOf(149, 2),
             external = BigDecimal.ZERO,
             equipment = BigDecimal.ZERO,
-            infrastructure = BigDecimal.ZERO,
+            infrastructure = BigDecimal.valueOf(1650, 2),
             other = BigDecimal.ZERO,
             lumpSum = BigDecimal.valueOf(4850, 2),
-            unitCost = BigDecimal.valueOf(1650, 2),
-            sum = BigDecimal.valueOf(7762, 2),
+            unitCost = BigDecimal.ZERO,
+            sum = BigDecimal.valueOf(7927, 2),
         )
 
         private fun fund(id: Long): ProgrammeFund {
@@ -191,15 +191,15 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
 
         private val expectedCoFinancing = ReportExpenditureCoFinancingColumn(
             funds = mapOf(
-                29L to BigDecimal.valueOf(1084, 2),
-                35L to BigDecimal.valueOf(4899, 2),
-                null to BigDecimal.valueOf(1778, 2),
+                29L to BigDecimal.valueOf(1107, 2),
+                35L to BigDecimal.valueOf(5003, 2),
+                null to BigDecimal.valueOf(1816, 2),
             ),
-            partnerContribution = BigDecimal.valueOf(1778, 2),
-            publicContribution = BigDecimal.valueOf(465, 2),
-            automaticPublicContribution = BigDecimal.valueOf(620, 2),
-            privateContribution = BigDecimal.valueOf(776, 2),
-            sum = BigDecimal.valueOf(7762, 2),
+            partnerContribution = BigDecimal.valueOf(1816, 2),
+            publicContribution = BigDecimal.valueOf(475, 2),
+            automaticPublicContribution = BigDecimal.valueOf(634, 2),
+            privateContribution = BigDecimal.valueOf(792, 2),
+            sum = BigDecimal.valueOf(7927, 2),
         )
 
     }
