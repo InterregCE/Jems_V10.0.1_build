@@ -64,16 +64,15 @@ Manual deployment using docker compose:
    - jems-database (relational database for Jems configuration and input data)
    - jems-minio (Object storage for files) [**WE DO NOT RECOMMEND THIS FOR PRODUCTION**, there you should use
      [MinIO operator](https://github.com/minio/operator)]
-   - audit-database (logging into elasticsearch, needed for Audit Logs) [**WE DO NOT RECOMMEND THIS FOR PRODUCTION**, there 
+   - audit-database (logging into elasticsearch, needed for Audit Logs) [**WE DO NOT RECOMMEND THIS FOR PRODUCTION**, there
    you should use multi-node cluster, see [ES images in Docker in production env](https://www.elastic.co/guide/en/elasticsearch/reference/current/docker.html#docker-prod-prerequisites)]
    - audit-analyzer (Kibana for additional Audit Log access)
    - mailhog (mail server to test sending mail notifications)
  - run the jar (jems-server `./build/libs`) as Spring Boot application
    - the webapp uses flyway to automatically migrate the relational database (mariaDB)
    - `--audit-service.url-and-port=127.0.0.1:9200` can be specified to use a local elasticsearch instance
-   - by default, Spring Management endpoints are enabled on server port + 10000, e.g. when `server.port=8080` then
-   `management.server.port=18080`, so to retrieve the build version use
-   [localhost:18080/actuator/info](http://localhost:18080/actuator/info)
+   - by default, Spring Management endpoints are enabled on server port + 10000 (e.g. when `server.port=8080`, then
+   `management.server.port=18080`)
    - to use logging into file, you can specify the following parameter: `--logging.file.name="file.log"`
    - to use different log level, you can specify the following parameter example: `--logging.level.org.springframework=TRACE`
  - use the following environment variables to control:
@@ -102,7 +101,7 @@ in the Kibana web interface [localhost:5601](http://localhost:5601)
 - [jems-minio](.idea/runConfigurations/jems_minio.xml) - to start the MinIO file storage. MinIO is then accessible on
 [localhost:9000](http://localhost:9000)
 
-There is no need to start anything besides MariaDB, as spring-boot will also start without MinIO and 
+There is no need to start anything besides MariaDB, as spring-boot will also start without MinIO and
 Audit (ES). There is an environment variable (`AUDIT_ENABLED=true`) that if you set to `false`, the audits will be written
 as _info \[LOG\]_ to stdout.
 
