@@ -23,7 +23,11 @@ class GetContractedProjects(
             lastSubmissionFrom = null,
             lastSubmissionTo = null,
             objectives = emptySet(),
-            statuses = setOf(ApplicationStatus.CONTRACTED, ApplicationStatus.IN_MODIFICATION),
+            statuses = setOf(
+                ApplicationStatus.CONTRACTED,
+                ApplicationStatus.IN_MODIFICATION,
+                ApplicationStatus.MODIFICATION_SUBMITTED
+            ),
             calls = emptySet(),
             users = emptySet(),
         )
