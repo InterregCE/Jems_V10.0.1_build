@@ -40,8 +40,8 @@ class UpdateAdvancePaymentDetail(
         paymentDetail.fillInCurrentAuthorizedUser(currentUser, existing)
         paymentDetail.fillInCurrentConfirmedUser(currentUser, existing)
 
-        val newlyAuthorized = paymentDetail.paymentAuthorizedDate != existing?.paymentAuthorizedDate
-        val newlyConfirmed = paymentDetail.paymentConfirmedDate != existing?.paymentConfirmedDate
+        val newlyAuthorized = (paymentDetail.paymentAuthorizedDate != null) && (paymentDetail.paymentAuthorizedDate != existing?.paymentAuthorizedDate)
+        val newlyConfirmed = (paymentDetail.paymentConfirmedDate != null) && paymentDetail.paymentConfirmedDate != existing?.paymentConfirmedDate
 
         return advancePaymentPersistence.updatePaymentDetail(paymentDetail).also {
             if (existing == null) {

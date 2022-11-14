@@ -4,8 +4,10 @@ import {TableConfiguration} from '@common/components/table/model/table.configura
 import {ColumnType} from '@common/components/table/model/column-type.enum';
 import {AdvancePaymentDTO, InputTranslation, PageAdvancePaymentDTO} from '@cat/api';
 import {ColumnWidth} from '@common/components/table/model/column-width';
-import {map} from 'rxjs/operators';
+import {filter, map, take, tap} from 'rxjs/operators';
 import {AdvancePaymentsPageStore} from './advance-payments-page.store';
+import {Forms} from '@common/utils/forms';
+import {MatDialog} from '@angular/material/dialog';
 
 @Component({
   selector: 'jems-advanced-payments-page',
@@ -41,9 +43,8 @@ export class AdvancePaymentsPageComponent implements OnInit, AfterViewInit {
 
   tableConfiguration: TableConfiguration;
 
-  constructor(public advancePaymentsStore: AdvancePaymentsPageStore) {
-
-  }
+  constructor(public advancePaymentsStore: AdvancePaymentsPageStore,
+              private dialog: MatDialog) { }
 
   ngOnInit(): void {
     this.userCanEdit$ = this.advancePaymentsStore.userCanEdit$;
@@ -134,7 +135,15 @@ export class AdvancePaymentsPageComponent implements OnInit, AfterViewInit {
   }
 
   removeItem(paymentId: number) {
-      this.advancePaymentsStore.deleteAdvancedPayment(paymentId);
+    Forms.confirm(this.dialog, {
+      title: 'payments.advance.table.action.delete.dialog.header',
+      message: 'payments.advance.table.action.delete.dialog.message',
+      warnMessage: 'payments.advance.table.action.delete.dialog.warning'
+    }).pipe(
+      take(1),
+      filter(yes => yes),
+      tap(() => this.advancePaymentsStore.deleteAdvancedPayment(paymentId))
+    ).subscribe();
   }
 
   getContributionName(paymentAdvance: AdvancePaymentDTO): String {
