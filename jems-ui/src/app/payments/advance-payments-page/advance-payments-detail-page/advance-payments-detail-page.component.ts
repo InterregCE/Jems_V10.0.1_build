@@ -298,7 +298,7 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
         if (apiError?.formErrors) {
           Object.keys(apiError.formErrors).forEach(field => {
             const control = this.advancePayment.get(field);
-            control?.setErrors({required: this.translateService.instant(apiError.formErrors[field].i18nKey)});
+            control?.setErrors({error: this.translateService.instant(apiError.formErrors[field].i18nKey)});
             control?.markAsDirty();
           });
           this.changeDetectorRef.detectChanges();
@@ -456,10 +456,11 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
   loadPartnerAndFundsData(project: OutputProjectSimple) {
     this.advancePaymentsDetailPageStore.getProjectPartnersByProjectId$.next(project.id);
     this.resetFundsAndContributionData();
-
     this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.partnerAbbreviation)?.enable();
     this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.sourceOrFundName)?.enable();
 
+    this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.sourceOrFundName)?.setValue('');
+    this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.partnerAbbreviation)?.setValue('');
     this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.projectAcronym)?.setValue(project.acronym);
   }
 

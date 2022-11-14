@@ -15,6 +15,7 @@ import io.cloudflight.jems.server.payments.service.updateAdvancePaymentDetail.Up
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.mockk.Runs
+import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -24,6 +25,7 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.context.ApplicationEventPublisher
@@ -94,6 +96,11 @@ class UpdateAdvancePaymentTest : UnitTest() {
 
     @InjectMockKs
     lateinit var updateAdvancePayment: UpdateAdvancePaymentDetail
+
+    @BeforeEach
+    fun resetMocks() {
+        clearMocks(auditPublisher)
+    }
 
     @Test
     fun `update advance payment new created`() {
@@ -190,5 +197,85 @@ class UpdateAdvancePaymentTest : UnitTest() {
         assertThrows<I18nValidationException> {
             updateAdvancePayment.updateDetail(paymentUpdate)
         }
+    }
+
+
+    @Test
+    fun `update advance payment - unconfirm payment should not display audit log`() {
+        val paymentUnconfirmed = paymentUpdate.copy(
+            paymentConfirmed = false
+        )
+        every { paymentPersistence.getPaymentDetail(paymentId) } returns paymentDetail
+        every { validator.validateDetail(paymentUnconfirmed, paymentDetail) } returns Unit
+        every { securityService.getUserIdOrThrow() } returns currentUserId
+        val result = mockk<AdvancePaymentDetail>()
+        every { result.id } returns paymentId
+        every { result.projectId } returns projectId
+        every { result.projectCustomIdentifier } returns paymentDetail.projectCustomIdentifier
+        every { result.projectAcronym } returns paymentDetail.projectAcronym
+        every { result.partnerId } returns partnerId
+        every { result.partnerType } returns paymentDetail.partnerType
+        every { result.partnerNumber } returns paymentDetail.partnerNumber
+        val toUpdateSlot = slot<AdvancePaymentUpdate>()
+        every {
+            paymentPersistence.updatePaymentDetail(capture(toUpdateSlot))
+        } returns result
+
+        val auditSlot = mutableListOf<AuditCandidateEvent>()
+        every { auditPublisher.publishEvent(capture(auditSlot)) } just Runs
+
+        assertThat(updateAdvancePayment.updateDetail(paymentUnconfirmed)).isEqualTo(result)
+        assertThat(toUpdateSlot.captured).isEqualTo(paymentUnconfirmed.copy(
+            paymentAuthorized = true,
+            paymentAuthorizedUserId = userId,
+            paymentAuthorizedDate = currentDate.minusDays(3),
+            paymentConfirmed = false,
+            paymentConfirmedUserId = null,
+            paymentConfirmedDate = null
+        ))
+
+        verify(exactly = 0) { auditPublisher.publishEvent(any<AuditCandidateEvent>()) }
+    }
+
+    @Test
+    fun `update advance payment - unauthorise payment should not display audit log`() {
+        val paymentUnconfirmed = paymentUpdate.copy(
+            paymentAuthorized = false,
+            paymentAuthorizedUserId = null,
+            paymentAuthorizedDate = null,
+            paymentConfirmed = false,
+            paymentConfirmedUserId = null,
+            paymentConfirmedDate = null
+            )
+        every { paymentPersistence.getPaymentDetail(paymentId) } returns paymentDetail
+        every { validator.validateDetail(paymentUnconfirmed, paymentDetail) } returns Unit
+        every { securityService.getUserIdOrThrow() } returns currentUserId
+        val result = mockk<AdvancePaymentDetail>()
+        every { result.id } returns paymentId
+        every { result.projectId } returns projectId
+        every { result.projectCustomIdentifier } returns paymentDetail.projectCustomIdentifier
+        every { result.projectAcronym } returns paymentDetail.projectAcronym
+        every { result.partnerId } returns partnerId
+        every { result.partnerType } returns paymentDetail.partnerType
+        every { result.partnerNumber } returns paymentDetail.partnerNumber
+        val toUpdateSlot = slot<AdvancePaymentUpdate>()
+        every {
+            paymentPersistence.updatePaymentDetail(capture(toUpdateSlot))
+        } returns result
+
+        val auditSlot = mutableListOf<AuditCandidateEvent>()
+        every { auditPublisher.publishEvent(capture(auditSlot)) } just Runs
+
+        assertThat(updateAdvancePayment.updateDetail(paymentUnconfirmed)).isEqualTo(result)
+        assertThat(toUpdateSlot.captured).isEqualTo(paymentUnconfirmed.copy(
+            paymentAuthorized = false,
+            paymentAuthorizedUserId = null,
+            paymentAuthorizedDate = null,
+            paymentConfirmed = false,
+            paymentConfirmedUserId = null,
+            paymentConfirmedDate = null
+        ))
+
+        verify(exactly = 0) { auditPublisher.publishEvent(any<AuditCandidateEvent>()) }
     }
 }
