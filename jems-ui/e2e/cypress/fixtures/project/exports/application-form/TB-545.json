@@ -1155,6 +1155,30 @@
             ]
           }
         ],
+        "projectSynergies": [
+          {
+            "synergy": [
+              {
+                "translation": "API generated application synergy DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated application synergy EN",
+                "language": "EN"
+              }
+            ],
+            "specification": [
+              {
+                "translation": "API generated application project or initiative DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated application project or initiative EN",
+                "language": "EN"
+              }
+            ]
+          }
+        ],
         "availableKnowledge": [
           {
             "translation": "API generated application available knowledge DE",

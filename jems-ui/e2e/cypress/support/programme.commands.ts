@@ -14,9 +14,13 @@ declare global {
 }
 
 Cypress.Commands.add('createChecklist', (checklist) => {
-  createChecklist(checklist).then(checklistId => {
-    checklist.id = checklistId;
-    cy.wrap(checklist.id).as('checklistId');
+  checklist.name = `${faker.hacker.adjective()} ${faker.hacker.noun()}`;
+  cy.request({
+    method: 'POST',
+    url: 'api/programme/checklist/create',
+    body: checklist
+  }).then(response => {
+    cy.wrap(response.body.id).as('checklistId');
   });
 });
 
@@ -32,7 +36,7 @@ Cypress.Commands.add('addProgrammeFund', (fund) => {
       url: 'api/programmeFund',
       body: existingFunds
     }).then(response => {
-      cy.wrap(response.body[response.body.length - 1].id);
+      cy.wrap(response.body[response.body.length - 1].id).as('fundId');
     });
   });
 });
@@ -47,21 +51,9 @@ Cypress.Commands.add('createLumpSum', (lumpSum) => {
     url: 'api/costOption/lumpSum',
     body: lumpSum
   }).then(response => {
-    cy.wrap(response.body.id);
+    cy.wrap(response.body.id).as('lumpSumId');
   });
 });
-
-
-function createChecklist(checklist) {
-  checklist.name = `${faker.hacker.adjective()} ${faker.hacker.noun()}`;
-  return cy.request({
-    method: 'POST',
-    url: 'api/programme/checklist/create',
-    body: checklist
-  }).then(response => {
-    return response.body.id
-  });
-}
 
 function getExistingFunds() {
   return cy.request({

@@ -114,7 +114,7 @@
   "preSubmissionCheckSettings": {
     "pluginKey": "standard-pre-condition-check-plugin",
     "callHasTwoSteps": true,
-    "firstStepPluginKey": "jems-pre-condition-check-off"
+    "firstStepPluginKey": "standard-pre-condition-check-plugin"
   },
   "applicationFormConfiguration": [
     {

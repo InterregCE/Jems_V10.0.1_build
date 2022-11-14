@@ -27,7 +27,7 @@ Cypress.Commands.add('createRole', (role: Role, userEmail?: string) => {
         loginByRequest(currentUser.name);
       });
     }
-    cy.wrap(response.body.id);
+    cy.wrap(response.body.id).as('roleId');
   });
 });
 
