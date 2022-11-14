@@ -387,7 +387,9 @@ context('Application form exports', () => {
         cy.publishCall(callId);
         application.details.projectCallId = callId;
         cy.loginByRequest(user.applicantUser.email);
+        application.description.relevanceAndContext.projectSpfRecipients = testData.projectSpfRecipients;
         cy.createApplication(application).then(applicationId => {
+          cy.updateProjectRelevanceAndContext(applicationId, application.description.relevanceAndContext);
           cy.visit('/app/project/detail/' + applicationId, {failOnStatusCode: false});
 
           cy.contains('Partners overview').click();

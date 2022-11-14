@@ -111,9 +111,6 @@ context('Call management tests', () => {
 
   it("TB-754 Create a new 2-step call", () => {
     const callName = `${faker.word.adjective()} ${faker.word.noun()}`;
-    cy.intercept('/api/call/byId/*/preSubmissionCheck').as('preSubmissionCheck');
-    cy.intercept('/api/project/*/workPackage').as('workPackage');
-
     cy.loginByRequest(user.programmeUser.email);
     cy.visit('/app/call', {failOnStatusCode: false});
     cy.contains('button', 'Add new call').click();
@@ -133,16 +130,16 @@ context('Call management tests', () => {
     cy.contains('div.mat-calendar-body-cell-content', '5').click({force: true});
     cy.contains('button', 'done').click();
     cy.contains('div.mat-form-field-flex', 'Start date (MM/DD/YYYY h:mm A)').find('svg').click();
-    cy.root().find('button[aria-label="Previous Month"]').click();
+    cy.get('button[aria-label="Previous Month"]').click();
     cy.contains('div.mat-calendar-body-cell-content', '1').click({force: true});
     cy.contains('button', 'done').click();
     cy.contains('div.mat-form-field-flex', 'End date (MM/DD/YYYY h:mm A)').find('svg').click();
-    cy.root().find('button[aria-label="Next Month"]').click();
-    cy.root().find('button[aria-label="Next Month"]').click();
+    cy.get('button[aria-label="Next Month"]').click();
+    cy.get('button[aria-label="Next Month"]').click();
     cy.contains('div.mat-calendar-body-cell-content', '20').click({force: true});
     cy.contains('button', 'done').click();
     cy.contains('div.mat-form-field-flex', 'End date Step 1 (MM/DD/YYYY h:mm A)').find('svg').click();
-    cy.root().find('button[aria-label="Next Month"]').click();
+    cy.get('button[aria-label="Next Month"]').click();
     cy.contains('div.mat-calendar-body-cell-content', '20').click({force: true});
     cy.contains('button', 'done').click();
     cy.get('jems-call-priority-tree').scrollIntoView().find('mat-checkbox:first').find('input').check({force: true});
@@ -153,7 +150,7 @@ context('Call management tests', () => {
     cy.contains('Application form configuration').click();
     cy.contains('span.mat-button-toggle-label-content', '1 & 2').should('be.visible');
     cy.contains('span.mat-button-toggle-label-content', '2 only').should('be.visible');
-    cy.root().find('input.mat-slide-toggle-input').should('have.attr', 'disabled');
+    cy.get('input.mat-slide-toggle-input').should('have.attr', 'disabled');
     cy.contains('tr', 'Project title').scrollIntoView().contains('span', '1 & 2').click();
     cy.contains('button', 'Save changes').click();
     cy.contains('Pre-submission check settings').click();
@@ -171,22 +168,21 @@ context('Call management tests', () => {
     cy.contains('No-Check').click();
     cy.get('div.mat-form-field-flex').first().click();
     cy.contains('Blocked').click();
-    cy.wait(100);
     cy.contains('button', 'Save changes').click();
-    cy.wait('@preSubmissionCheck');
+    cy.contains('Application form configuration was saved successfully.').should('be.visible');
+    cy.contains('Application form configuration was saved successfully.').should('not.exist');
     cy.contains('General call settings').click();
-    cy.contains('button', 'Publish call').click();
-    cy.contains('button', 'Confirm').click();
-
-    cy.wait(1000);
+    cy.contains('button', 'Publish call').should('be.visible').click();
+    cy.contains('button', 'Confirm').should('be.visible').click();
+    cy.contains('Successfully published Call').should('be.visible');
+    cy.contains('Successfully published Call').should('not.exist');
 
     cy.loginByRequest(user.applicantUser.email);
     cy.visit('/');
 
-    cy.contains('mat-row', callName).contains('button', 'Apply').click();
+    cy.contains('mat-row', callName).scrollIntoView().contains('button', 'Apply').click();
     cy.contains('div.mat-form-field-flex', 'Project acronym').type(faker.word.noun());
     cy.contains('button', 'Create project application').click();
-    cy.wait('@workPackage');
     cy.contains('div.mat-form-field-flex', 'Project title').should('be.visible');
     cy.contains('div.mat-form-field-flex', 'Project summary').should('not.exist');
   })

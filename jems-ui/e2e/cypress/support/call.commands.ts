@@ -87,7 +87,7 @@ function createCall(call: Call, creatingUserEmail?: string) {
         loginByRequest(currentUser.name);
       });
     }
-    cy.wrap(callId);
+    cy.wrap(callId).as('callId');
   });
 }
 
