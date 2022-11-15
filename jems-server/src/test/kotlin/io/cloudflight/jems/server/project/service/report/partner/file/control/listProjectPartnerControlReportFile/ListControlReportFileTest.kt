@@ -3,8 +3,8 @@ package io.cloudflight.jems.server.project.service.report.partner.file.control.l
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectPartnerReportFileType.ControlDocument
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFile
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.ControlDocument
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFile
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -41,7 +41,7 @@ class ListControlReportFileTest : UnitTest() {
 
     @Test
     fun list() {
-        val reportFile = mockk<ProjectReportFile>()
+        val reportFile = mockk<JemsFile>()
         every { reportFilePersistence.listAttachments(
             pageable = any(),
             indexPrefix = "Project/000644/Report/Partner/000224/PartnerControlReport/000004/",

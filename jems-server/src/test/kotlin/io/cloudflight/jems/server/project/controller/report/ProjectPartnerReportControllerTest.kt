@@ -34,10 +34,10 @@ import io.cloudflight.jems.server.project.service.report.model.partner.PartnerRe
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectPartnerReportFileType
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFile
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFileSearchRequest
-import io.cloudflight.jems.server.project.service.report.model.partner.file.UserSimple
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFile
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileSearchRequest
+import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportPeriod
 import io.cloudflight.jems.server.project.service.report.partner.base.deleteProjectPartnerReport.DeleteProjectPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.control.deleteControlReportFile.DeleteControlReportFileInteractor
@@ -186,10 +186,10 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
             )
         )
 
-        private val reportFile = ProjectReportFile(
+        private val reportFile = JemsFile(
             id = 478L,
             name = "attachment.pdf",
-            type = ProjectPartnerReportFileType.Contribution,
+            type = JemsFileType.Contribution,
             uploaded = YESTERDAY,
             author = UserSimple(45L, email = "admin@cloudflight.io", name = "Admin", surname = "Big"),
             size = 47889L,
@@ -350,7 +350,7 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
 
     @Test
     fun listReportFiles() {
-        val searchRequest = slot<ProjectReportFileSearchRequest>()
+        val searchRequest = slot<JemsFileSearchRequest>()
         every { listPartnerReportFile.list(29L, Pageable.unpaged(), capture(searchRequest)) } returns
             PageImpl(listOf(reportFile))
 
@@ -363,10 +363,10 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
         assertThat(controller.listReportFiles(29L, Pageable.unpaged(), searchRequestDto).content)
             .containsExactly(reportFileDto)
         assertThat(searchRequest.captured).isEqualTo(
-            ProjectReportFileSearchRequest(
+            JemsFileSearchRequest(
                 reportId = 80L,
-                treeNode = ProjectPartnerReportFileType.PartnerReport,
-                filterSubtypes = setOf(ProjectPartnerReportFileType.Activity),
+                treeNode = JemsFileType.PartnerReport,
+                filterSubtypes = setOf(JemsFileType.Activity),
             )
         )
     }

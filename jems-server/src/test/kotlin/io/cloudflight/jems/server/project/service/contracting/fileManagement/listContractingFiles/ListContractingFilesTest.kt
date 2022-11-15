@@ -6,8 +6,8 @@ import io.cloudflight.jems.server.project.authorization.ProjectMonitoringAuthori
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingFileSearchRequest
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectPartnerReportFileType
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFile
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFile
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -54,15 +54,15 @@ internal class ListContractingFilesTest : UnitTest() {
 
     @Test
     fun `list contracting files for project monitoring info section`() {
-        val filters = setOf(ProjectPartnerReportFileType.Contract, ProjectPartnerReportFileType.ContractDoc)
+        val filters = setOf(JemsFileType.Contract, JemsFileType.ContractDoc)
         val indexPrefix = slot<String>()
-        val result = mockk<Page<ProjectReportFile>>()
+        val result = mockk<Page<JemsFile>>()
         every { reportFilePersistence.listAttachments(Pageable.unpaged(), capture(indexPrefix), filters, any()) } returns result
         every { projectMonitoringAuthorization.canViewProjectMonitoring(PROJECT_ID) } returns true
         every { contractInfoAuth.canViewContractInfo(PROJECT_ID) } returns true
 
         val searchRequest = ProjectContractingFileSearchRequest(
-            treeNode = ProjectPartnerReportFileType.Contracting,
+            treeNode = JemsFileType.Contracting,
             filterSubtypes = filters,
         )
         assertThat(interactor.list(PROJECT_ID, partnerId = null, Pageable.unpaged(), searchRequest)).isEqualTo(result)
@@ -72,35 +72,35 @@ internal class ListContractingFilesTest : UnitTest() {
 
     @Test
     fun `list contracting files for project monitoring info section - contracts hidden for monitoring user`() {
-        val filters = slot<Set<ProjectPartnerReportFileType>>()
+        val filters = slot<Set<JemsFileType>>()
         val indexPrefix = slot<String>()
-        val result = mockk<Page<ProjectReportFile>>()
+        val result = mockk<Page<JemsFile>>()
         every { reportFilePersistence.listAttachments(Pageable.unpaged(), capture(indexPrefix), capture(filters), any()) } returns result
         every { projectMonitoringAuthorization.canViewProjectMonitoring(PROJECT_ID) } returns true
         every { contractInfoAuth.canViewContractInfo(PROJECT_ID) } returns false
         every { contractInfoAuth.canEditContractInfo(PROJECT_ID) } returns false
 
         val searchRequest = ProjectContractingFileSearchRequest(
-            treeNode = ProjectPartnerReportFileType.Contracting,
+            treeNode = JemsFileType.Contracting,
             filterSubtypes = emptySet(),
         )
         assertThat(interactor.list(PROJECT_ID, partnerId = null, Pageable.unpaged(), searchRequest)).isEqualTo(result)
         assertThat(filters.captured.size == 1).isTrue
-        assertThat(filters.captured.first()).isEqualTo(ProjectPartnerReportFileType.ContractInternal)
+        assertThat(filters.captured.first()).isEqualTo(JemsFileType.ContractInternal)
         assertThat(indexPrefix.captured).isEqualTo("Project/000450/Contracting/")
     }
 
     @Test
     fun `list contracting files for project contract info section`() {
-        val filters = setOf(ProjectPartnerReportFileType.Contract, ProjectPartnerReportFileType.ContractDoc)
+        val filters = setOf(JemsFileType.Contract, JemsFileType.ContractDoc)
         val indexPrefix = slot<String>()
-        val result = mockk<Page<ProjectReportFile>>()
+        val result = mockk<Page<JemsFile>>()
         every { reportFilePersistence.listAttachments(Pageable.unpaged(), capture(indexPrefix), filters, any()) } returns result
         every { projectMonitoringAuthorization.canViewProjectMonitoring(PROJECT_ID) } returns false
         every { contractInfoAuth.canViewContractInfo(PROJECT_ID) } returns true
 
         val searchRequest = ProjectContractingFileSearchRequest(
-            treeNode = ProjectPartnerReportFileType.ContractSupport,
+            treeNode = JemsFileType.ContractSupport,
             filterSubtypes = filters,
         )
         assertThat(interactor.list(PROJECT_ID, partnerId = null, Pageable.unpaged(), searchRequest)).isEqualTo(result)
@@ -113,13 +113,13 @@ internal class ListContractingFilesTest : UnitTest() {
         every { partnerPersistence.getProjectIdForPartnerId(20L) } returns PROJECT_ID
         every { projectMonitoringAuthorization.canViewProjectMonitoring(PROJECT_ID) } returns true
 
-        val filters = emptySet<ProjectPartnerReportFileType>()
+        val filters = emptySet<JemsFileType>()
         val indexPrefix = slot<String>()
-        val result = mockk<Page<ProjectReportFile>>()
+        val result = mockk<Page<JemsFile>>()
         every { reportFilePersistence.listAttachments(Pageable.unpaged(), capture(indexPrefix), filters, any()) } returns result
 
         val searchRequest = ProjectContractingFileSearchRequest(
-            treeNode = ProjectPartnerReportFileType.ContractPartnerDoc,
+            treeNode = JemsFileType.ContractPartnerDoc,
             filterSubtypes = filters,
         )
         assertThat(interactor.list(PROJECT_ID, partnerId = 20L, Pageable.unpaged(), searchRequest)).isEqualTo(result)
@@ -128,10 +128,10 @@ internal class ListContractingFilesTest : UnitTest() {
     }
 
     @ParameterizedTest(name = "list - invalid search config with {0}")
-    @EnumSource(value = ProjectPartnerReportFileType::class, mode = EnumSource.Mode.EXCLUDE,
+    @EnumSource(value = JemsFileType::class, mode = EnumSource.Mode.EXCLUDE,
         names = ["Contracting", "ContractSupport", "Contract", "ContractDoc", "ContractPartner", "ContractPartnerDoc", "ContractInternal"],
     )
-    fun `list - invalid search config`(invalidType: ProjectPartnerReportFileType) {
+    fun `list - invalid search config`(invalidType: JemsFileType) {
         every { projectMonitoringAuthorization.canViewProjectMonitoring(PROJECT_ID) } returns true
         val searchRequest = ProjectContractingFileSearchRequest(treeNode = invalidType, filterSubtypes = emptySet())
         assertThrows<InvalidSearchConfiguration> { interactor.list(PROJECT_ID, partnerId = null, Pageable.unpaged(), searchRequest) }
@@ -140,8 +140,8 @@ internal class ListContractingFilesTest : UnitTest() {
     @Test
     fun `list - invalid filters`() {
         val searchRequest = ProjectContractingFileSearchRequest(
-            treeNode = ProjectPartnerReportFileType.ContractSupport,
-            filterSubtypes = setOf(ProjectPartnerReportFileType.ContractInternal),
+            treeNode = JemsFileType.ContractSupport,
+            filterSubtypes = setOf(JemsFileType.ContractInternal),
         )
         every { projectMonitoringAuthorization.canViewProjectMonitoring(PROJECT_ID) } returns true
         assertThrows<InvalidSearchFilterConfiguration> { interactor.list(PROJECT_ID, partnerId = null, Pageable.unpaged(), searchRequest) }
@@ -149,7 +149,7 @@ internal class ListContractingFilesTest : UnitTest() {
 
     @Test
     fun `list - missing partner id`() {
-        val searchRequest = ProjectContractingFileSearchRequest(treeNode = ProjectPartnerReportFileType.ContractPartnerDoc, filterSubtypes = emptySet())
+        val searchRequest = ProjectContractingFileSearchRequest(treeNode = JemsFileType.ContractPartnerDoc, filterSubtypes = emptySet())
         every { projectMonitoringAuthorization.canViewProjectMonitoring(PROJECT_ID) } returns true
         assertThrows<InvalidSearchFilterPartnerWithoutId> { interactor.list(PROJECT_ID, partnerId = null, Pageable.unpaged(), searchRequest) }
     }
@@ -159,7 +159,7 @@ internal class ListContractingFilesTest : UnitTest() {
         every { partnerPersistence.getProjectIdForPartnerId(25L) } returns 0L
         every { projectMonitoringAuthorization.canViewProjectMonitoring(PROJECT_ID) } returns true
 
-        val searchRequest = ProjectContractingFileSearchRequest(treeNode = ProjectPartnerReportFileType.ContractPartnerDoc, filterSubtypes = emptySet())
+        val searchRequest = ProjectContractingFileSearchRequest(treeNode = JemsFileType.ContractPartnerDoc, filterSubtypes = emptySet())
         assertThrows<NullPointerException> { interactor.list(PROJECT_ID, partnerId = 25L, Pageable.unpaged(), searchRequest) }
     }
 

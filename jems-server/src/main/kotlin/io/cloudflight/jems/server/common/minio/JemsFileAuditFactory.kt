@@ -7,14 +7,14 @@ import io.cloudflight.jems.server.project.service.file.model.ProjectFileCategory
 import io.cloudflight.jems.server.project.service.file.model.ProjectFileMetadata
 import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectPartnerReportFileType
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 
 fun projectFileUploadSuccess(
     context: Any,
-    fileMeta: ProjectReportFileMetadata,
+    fileMeta: JemsFileMetadata,
     location: String,
-    type: ProjectPartnerReportFileType,
+    type: JemsFileType,
     projectSummary: ProjectSummary,
 ): AuditCandidateEvent = fileUploadSuccess(
     context = context,
@@ -60,7 +60,7 @@ private fun fileUploadSuccess(
 
 fun fileDescriptionChanged(
     context: Any,
-    fileMeta: ProjectReportFileMetadata,
+    fileMeta: JemsFileMetadata,
     location: String,
     oldValue: String,
     newValue: String,

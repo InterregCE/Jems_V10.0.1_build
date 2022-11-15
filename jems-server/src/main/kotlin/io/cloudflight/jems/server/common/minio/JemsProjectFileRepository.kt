@@ -10,9 +10,9 @@ import io.cloudflight.jems.server.project.repository.report.file.getMinioFullPat
 import io.cloudflight.jems.server.project.repository.report.file.toEntity
 import io.cloudflight.jems.server.project.repository.report.toModel
 import io.cloudflight.jems.server.project.repository.toSummaryModel
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectPartnerReportFileType
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFileCreate
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileCreate
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import io.cloudflight.jems.server.user.repository.user.UserRepository
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Repository
@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional
 import java.time.ZonedDateTime
 
 @Repository
-class GenericProjectFileRepository(
+class JemsProjectFileRepository(
     private val reportFileRepository: ProjectReportFileRepository,
     private val minioStorage: MinioStorage,
     private val userRepository: UserRepository,
@@ -29,34 +29,34 @@ class GenericProjectFileRepository(
 ) {
     companion object {
         private val allowedFileTypes = setOf(
-            ProjectPartnerReportFileType.PaymentAttachment,
-            ProjectPartnerReportFileType.PaymentAdvanceAttachment,
+            JemsFileType.PaymentAttachment,
+            JemsFileType.PaymentAdvanceAttachment,
 
-            ProjectPartnerReportFileType.PartnerReport,
-            ProjectPartnerReportFileType.Activity,
-            ProjectPartnerReportFileType.Deliverable,
-            ProjectPartnerReportFileType.Output,
-            ProjectPartnerReportFileType.Expenditure,
-            ProjectPartnerReportFileType.ProcurementAttachment,
-            ProjectPartnerReportFileType.Contribution,
+            JemsFileType.PartnerReport,
+            JemsFileType.Activity,
+            JemsFileType.Deliverable,
+            JemsFileType.Output,
+            JemsFileType.Expenditure,
+            JemsFileType.ProcurementAttachment,
+            JemsFileType.Contribution,
 
-            ProjectPartnerReportFileType.ControlDocument,
-            ProjectPartnerReportFileType.Contract,
-            ProjectPartnerReportFileType.ContractDoc,
-            ProjectPartnerReportFileType.ContractPartnerDoc,
-            ProjectPartnerReportFileType.ContractInternal,
+            JemsFileType.ControlDocument,
+            JemsFileType.Contract,
+            JemsFileType.ContractDoc,
+            JemsFileType.ContractPartnerDoc,
+            JemsFileType.ContractInternal,
         )
     }
 
     @Transactional
-    fun persistProjectFile(file: ProjectReportFileCreate) =
+    fun persistProjectFile(file: JemsFileCreate) =
         persistProjectFileAndPerformAction(file) { /* do nothing */ }
 
     @Transactional
     fun persistProjectFileAndPerformAction(
-        file: ProjectReportFileCreate,
+        file: JemsFileCreate,
         additionalStep: (ReportProjectFileEntity) -> Unit,
-    ): ProjectReportFileMetadata {
+    ): JemsFileMetadata {
         validateType(file.type)
 
         val bucket = file.type.getBucket()
@@ -114,7 +114,7 @@ class GenericProjectFileRepository(
         )
     }
 
-    private fun validateType(type: ProjectPartnerReportFileType) {
+    private fun validateType(type: JemsFileType) {
         if (type !in allowedFileTypes) {
             throw WrongFileTypeException(type)
         }
@@ -122,7 +122,7 @@ class GenericProjectFileRepository(
 
 }
 
-class WrongFileTypeException(type: ProjectPartnerReportFileType): ApplicationUnprocessableException(
+class WrongFileTypeException(type: JemsFileType): ApplicationUnprocessableException(
     code = "GENERIC-FILE-EXCEPTION",
     i18nMessage = I18nMessage("not.allowed.file.type.in.generic.project.file.repository"),
     message = type.name,

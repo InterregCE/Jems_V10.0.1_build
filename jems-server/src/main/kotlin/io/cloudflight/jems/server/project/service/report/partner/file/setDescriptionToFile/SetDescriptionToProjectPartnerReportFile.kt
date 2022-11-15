@@ -5,7 +5,7 @@ import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.authorization.CanEditPartnerReport
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectPartnerReportFileType.PartnerReport
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.PartnerReport
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 

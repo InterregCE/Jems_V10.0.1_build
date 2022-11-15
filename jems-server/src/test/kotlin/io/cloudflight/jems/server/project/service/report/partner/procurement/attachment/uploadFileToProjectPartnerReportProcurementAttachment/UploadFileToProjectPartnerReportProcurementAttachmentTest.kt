@@ -6,9 +6,9 @@ import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectPartnerReportFileType
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFileCreate
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileCreate
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectPartnerReportProcurement
 import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectReportProcurementPersistence
 import io.cloudflight.jems.server.project.service.report.partner.procurement.attachment.ProjectReportProcurementAttachmentPersistence
@@ -75,8 +75,8 @@ internal class UploadFileToProjectPartnerReportProcurementAttachmentTest : UnitT
         val file = ProjectFile(stream = stream, name = "filename.docx", size = 5L)
 
         every { reportFilePersistence.existsFile(exactPath = expectedPath, fileName = "filename.docx") } returns false
-        val slotFile = slot<ProjectReportFileCreate>()
-        val mockResult = mockk<ProjectReportFileMetadata>()
+        val slotFile = slot<JemsFileCreate>()
+        val mockResult = mockk<JemsFileMetadata>()
         every { reportFilePersistence
             .addPartnerReportProcurementAttachment(reportId = reportId, procurementId, capture(slotFile))
         } returns mockResult
@@ -87,7 +87,7 @@ internal class UploadFileToProjectPartnerReportProcurementAttachmentTest : UnitT
         assertThat(slotFile.captured.partnerId).isEqualTo(PARTNER_ID)
         assertThat(slotFile.captured.name).isEqualTo("filename.docx")
         assertThat(slotFile.captured.path).isEqualTo(expectedPath)
-        assertThat(slotFile.captured.type).isEqualTo(ProjectPartnerReportFileType.ProcurementAttachment)
+        assertThat(slotFile.captured.type).isEqualTo(JemsFileType.ProcurementAttachment)
         assertThat(slotFile.captured.size).isEqualTo(5L)
         assertThat(slotFile.captured.userId).isEqualTo(USER_ID)
     }

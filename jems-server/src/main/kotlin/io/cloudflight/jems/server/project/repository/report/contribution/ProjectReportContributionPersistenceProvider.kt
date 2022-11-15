@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.repository.report.contribution
 
-import io.cloudflight.jems.server.common.minio.GenericProjectFileRepository
+import io.cloudflight.jems.server.common.minio.JemsProjectFileRepository
 import io.cloudflight.jems.server.project.entity.report.contribution.ProjectPartnerReportContributionEntity
 import io.cloudflight.jems.server.project.repository.report.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.create.CreateProjectPartnerReportContribution
@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional
 class ProjectReportContributionPersistenceProvider(
     private val reportRepository: ProjectPartnerReportRepository,
     private val reportContributionRepository: ProjectPartnerReportContributionRepository,
-    private val genericFileRepository: GenericProjectFileRepository,
+    private val fileRepository: JemsProjectFileRepository,
 ) : ProjectReportContributionPersistence {
 
     @Transactional(readOnly = true)
@@ -65,7 +65,7 @@ class ProjectReportContributionPersistenceProvider(
     }
 
     private fun Collection<ProjectPartnerReportContributionEntity>.deleteAttachments() = map {
-        it.attachment?.let { file -> genericFileRepository.delete(file) }
+        it.attachment?.let { file -> fileRepository.delete(file) }
         it
     }
 

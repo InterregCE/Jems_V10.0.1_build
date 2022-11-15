@@ -2,14 +2,14 @@ package io.cloudflight.jems.server.payments.service.attachment.uploadPaymentAtta
 
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
-import io.cloudflight.jems.server.common.minio.GenericProjectFileRepository
+import io.cloudflight.jems.server.common.minio.JemsProjectFileRepository
 import io.cloudflight.jems.server.payments.PaymentPersistence
 import io.cloudflight.jems.server.payments.authorization.CanUpdatePayments
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.file.uploadProjectFile.isFileTypeInvalid
 import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectPartnerReportFileType
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -17,20 +17,20 @@ import org.springframework.transaction.annotation.Transactional
 class UploadPaymentAttachment(
     private val paymentPersistence: PaymentPersistence,
     private val reportFilePersistence: ProjectReportFilePersistence,
-    private val genericFileRepository: GenericProjectFileRepository,
+    private val fileRepository: JemsProjectFileRepository,
     private val securityService: SecurityService,
 ) : UploadPaymentAttachmentInteractor {
 
     @CanUpdatePayments
     @Transactional
     @ExceptionWrapper(UploadPaymentAttachmentException::class)
-    override fun upload(paymentId: Long, file: ProjectFile): ProjectReportFileMetadata {
+    override fun upload(paymentId: Long, file: ProjectFile): JemsFileMetadata {
         val payment = paymentPersistence.getPaymentDetails(paymentId)
 
         if (isFileTypeInvalid(file))
             throw FileTypeNotSupported()
 
-        with(ProjectPartnerReportFileType.PaymentAttachment) {
+        with(JemsFileType.PaymentAttachment) {
             val location = generatePath(paymentId)
 
             if (reportFilePersistence.existsFile(exactPath = location, fileName = file.name))
@@ -44,7 +44,7 @@ class UploadPaymentAttachment(
                 userId = securityService.getUserIdOrThrow(),
             )
 
-            return genericFileRepository.persistProjectFile(fileToSave)
+            return fileRepository.persistProjectFile(fileToSave)
         }
     }
 

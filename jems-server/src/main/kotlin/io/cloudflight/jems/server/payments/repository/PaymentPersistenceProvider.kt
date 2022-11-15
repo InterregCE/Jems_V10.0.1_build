@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.payments.repository
 
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.common.minio.GenericProjectFileRepository
+import io.cloudflight.jems.server.common.minio.JemsProjectFileRepository
 import io.cloudflight.jems.server.payments.PaymentPersistence
 import io.cloudflight.jems.server.payments.entity.PaymentGroupingId
 import io.cloudflight.jems.server.payments.service.model.PartnerPayment
@@ -21,9 +21,9 @@ import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepos
 import io.cloudflight.jems.server.project.repository.partner.toProjectPartnerDetail
 import io.cloudflight.jems.server.project.repository.report.file.ProjectReportFileRepository
 import io.cloudflight.jems.server.project.service.ProjectPersistence
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectPartnerReportFileType
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectPartnerReportFileType.PaymentAdvanceAttachment
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectPartnerReportFileType.PaymentAttachment
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.PaymentAdvanceAttachment
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.PaymentAttachment
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.repository.user.UserRepository
 import org.springframework.data.domain.Page
@@ -45,7 +45,7 @@ class PaymentPersistenceProvider(
     private val userRepository: UserRepository,
     private val fundRepository: ProgrammeFundRepository,
     private val reportFileRepository: ProjectReportFileRepository,
-    private val genericFileRepository: GenericProjectFileRepository,
+    private val fileRepository: JemsProjectFileRepository,
 ) : PaymentPersistence {
 
     @Transactional(readOnly = true)
@@ -174,8 +174,8 @@ class PaymentPersistenceProvider(
         deleteAttachment(PaymentAdvanceAttachment, fileId)
     }
 
-    private fun deleteAttachment(type: ProjectPartnerReportFileType, fileId: Long) {
-        genericFileRepository.delete(
+    private fun deleteAttachment(type: JemsFileType, fileId: Long) {
+        fileRepository.delete(
             reportFileRepository.findByTypeAndId(type, fileId) ?: throw ResourceNotFoundException("file")
         )
     }

@@ -12,7 +12,7 @@ import io.cloudflight.jems.api.project.dto.report.partner.workPlan.UpdateProject
 import io.cloudflight.jems.api.project.dto.report.partner.workPlan.UpdateProjectPartnerReportWorkPackageDTO
 import io.cloudflight.jems.api.project.dto.report.partner.workPlan.UpdateProjectPartnerReportWorkPackageOutputDTO
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.ProjectPartnerReportWorkPackage
 import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.ProjectPartnerReportWorkPackageActivity
 import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.ProjectPartnerReportWorkPackageActivityDeliverable
@@ -63,7 +63,7 @@ class ProjectPartnerReportWorkPlanControllerTest {
                             title = setOf(InputTranslation(SystemLanguage.EN, "D1.1.1")),
                             contribution = true,
                             evidence = false,
-                            attachment = ProjectReportFileMetadata(
+                            attachment = JemsFileMetadata(
                                 id = 980L,
                                 name = "cat.gif",
                                 uploaded = UPLOADED,
@@ -176,7 +176,7 @@ class ProjectPartnerReportWorkPlanControllerTest {
 
         private val stream = ByteArray(5).inputStream()
 
-        private val dummyFile = ProjectReportFileMetadata(id = 80L, "file_name.ext", uploaded = UPLOADED)
+        private val dummyFile = JemsFileMetadata(id = 80L, "file_name.ext", uploaded = UPLOADED)
         private val dummyFileDto = ProjectReportFileMetadataDTO(id = 80L, "file_name.ext", uploaded = UPLOADED)
         private val dummyFileExpected = ProjectFile(stream, "file_name.ext", 50L)
         private fun dummyMultipartFile(name: String = "file_name.ext", originalName: String? = null): MultipartFile {

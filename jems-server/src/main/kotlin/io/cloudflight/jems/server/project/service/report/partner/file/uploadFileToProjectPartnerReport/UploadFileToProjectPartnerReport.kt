@@ -8,8 +8,8 @@ import io.cloudflight.jems.server.project.service.file.uploadProjectFile.isFileT
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectPartnerReportFileType
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -24,14 +24,14 @@ class UploadFileToProjectPartnerReport(
     @CanEditPartnerReport
     @Transactional
     @ExceptionWrapper(UploadFileToProjectPartnerReportException::class)
-    override fun uploadToReport(partnerId: Long, reportId: Long, file: ProjectFile): ProjectReportFileMetadata {
+    override fun uploadToReport(partnerId: Long, reportId: Long, file: ProjectFile): JemsFileMetadata {
         if (!reportPersistence.exists(partnerId, reportId = reportId))
             throw PartnerReportNotFound()
 
         if (isFileTypeInvalid(file))
             throw FileTypeNotSupported()
 
-        with(ProjectPartnerReportFileType.PartnerReport) {
+        with(JemsFileType.PartnerReport) {
             val projectId = partnerPersistence.getProjectIdForPartnerId(partnerId)
             val location = generatePath(projectId, partnerId, reportId)
 

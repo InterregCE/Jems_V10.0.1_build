@@ -11,7 +11,7 @@ import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPa
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectReportExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectReportProcurementPersistence
 import io.mockk.clearMocks
@@ -60,7 +60,7 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
         currencyCode = "GBP",
         currencyConversionRate = BigDecimal.valueOf(0.84),
         declaredAmountAfterSubmission = BigDecimal.valueOf(8.4),
-        attachment = ProjectReportFileMetadata(47L, "file.xlsx", UPLOADED),
+        attachment = JemsFileMetadata(47L, "file.xlsx", UPLOADED),
     )
 
     private fun reportWithCurrency(id: Long, status: ReportStatus, version: String, currency: String?): ProjectPartnerReport {

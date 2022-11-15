@@ -1,10 +1,10 @@
 package io.cloudflight.jems.server.project.service.report
 
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectPartnerReportFileType
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFile
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFileCreate
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFileMetadata
-import io.cloudflight.jems.server.project.service.report.model.partner.file.UserSimple
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFile
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileCreate
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 
@@ -14,67 +14,67 @@ interface ProjectReportFilePersistence {
 
     fun existsFile(partnerId: Long, pathPrefix: String, fileId: Long): Boolean
 
-    fun existsFile(type: ProjectPartnerReportFileType, fileId: Long): Boolean
+    fun existsFile(type: JemsFileType, fileId: Long): Boolean
 
     fun existsFileByProjectIdAndFileIdAndFileTypeIn(
         projectId: Long,
         fileId: Long,
-        fileTypes: Set<ProjectPartnerReportFileType>
+        fileTypes: Set<JemsFileType>
     ): Boolean
 
-    fun existsFileByPartnerIdAndFileIdAndFileTypeIn(partnerId: Long, fileId: Long, fileTypes: Set<ProjectPartnerReportFileType>): Boolean
+    fun existsFileByPartnerIdAndFileIdAndFileTypeIn(partnerId: Long, fileId: Long, fileTypes: Set<JemsFileType>): Boolean
 
     fun getFileAuthor(partnerId: Long, pathPrefix: String, fileId: Long): UserSimple?
 
     fun downloadFile(partnerId: Long, fileId: Long): Pair<String, ByteArray>?
 
-    fun downloadFile(type: ProjectPartnerReportFileType, fileId: Long): Pair<String, ByteArray>?
+    fun downloadFile(type: JemsFileType, fileId: Long): Pair<String, ByteArray>?
 
     fun deleteFile(partnerId: Long, fileId: Long)
 
-    fun deleteFile(type: ProjectPartnerReportFileType, fileId: Long)
+    fun deleteFile(type: JemsFileType, fileId: Long)
 
     fun setDescriptionToFile(fileId: Long, description: String)
 
     fun updatePartnerReportActivityAttachment(
         activityId: Long,
-        file: ProjectReportFileCreate
-    ): ProjectReportFileMetadata
+        file: JemsFileCreate
+    ): JemsFileMetadata
 
     fun updatePartnerReportDeliverableAttachment(
         deliverableId: Long,
-        file: ProjectReportFileCreate
-    ): ProjectReportFileMetadata
+        file: JemsFileCreate
+    ): JemsFileMetadata
 
-    fun updatePartnerReportOutputAttachment(outputId: Long, file: ProjectReportFileCreate): ProjectReportFileMetadata
+    fun updatePartnerReportOutputAttachment(outputId: Long, file: JemsFileCreate): JemsFileMetadata
 
     fun updatePartnerReportContributionAttachment(
         contributionId: Long,
-        file: ProjectReportFileCreate
-    ): ProjectReportFileMetadata
+        file: JemsFileCreate
+    ): JemsFileMetadata
 
     fun updatePartnerReportExpenditureAttachment(
         expenditureId: Long,
-        file: ProjectReportFileCreate
-    ): ProjectReportFileMetadata
+        file: JemsFileCreate
+    ): JemsFileMetadata
 
     fun addPartnerReportProcurementAttachment(
         reportId: Long,
         procurementId: Long,
-        file: ProjectReportFileCreate
-    ): ProjectReportFileMetadata
+        file: JemsFileCreate
+    ): JemsFileMetadata
 
     fun listAttachments(
         pageable: Pageable,
         indexPrefix: String,
-        filterSubtypes: Set<ProjectPartnerReportFileType>,
+        filterSubtypes: Set<JemsFileType>,
         filterUserIds: Set<Long>,
-    ): Page<ProjectReportFile>
+    ): Page<JemsFile>
 
-    fun addAttachmentToPartnerReport(file: ProjectReportFileCreate): ProjectReportFileMetadata
+    fun addAttachmentToPartnerReport(file: JemsFileCreate): JemsFileMetadata
 
-    fun getFileType(fileId: Long, projectId: Long): ProjectPartnerReportFileType?
+    fun getFileType(fileId: Long, projectId: Long): JemsFileType?
 
-    fun getFileTypeByPartnerId(fileId: Long, partnerId: Long): ProjectPartnerReportFileType
+    fun getFileTypeByPartnerId(fileId: Long, partnerId: Long): JemsFileType
 
 }

@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.partner.expenditure.uploadFileToProjectPartnerReportExpenditure
 
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 
 interface UploadFileToProjectPartnerReportExpenditureInteractor {
     fun uploadToExpenditure(
@@ -9,5 +9,5 @@ interface UploadFileToProjectPartnerReportExpenditureInteractor {
         reportId: Long,
         expenditureId: Long,
         file: ProjectFile
-    ): ProjectReportFileMetadata
+    ): JemsFileMetadata
 }

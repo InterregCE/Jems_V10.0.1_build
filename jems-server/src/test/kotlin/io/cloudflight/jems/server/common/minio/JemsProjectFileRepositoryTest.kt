@@ -10,10 +10,10 @@ import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEn
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.report.file.ProjectReportFileRepository
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectPartnerReportFileType
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectPartnerReportFileType.PaymentAdvanceAttachment
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectPartnerReportFileType.PaymentAttachment
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFileCreate
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.PaymentAdvanceAttachment
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.PaymentAttachment
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileCreate
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.repository.user.UserRepository
 import io.mockk.clearMocks
@@ -33,13 +33,13 @@ import org.springframework.context.ApplicationEventPublisher
 import java.time.ZonedDateTime
 import java.util.Optional
 
-class GenericProjectFileRepositoryTest : UnitTest() {
+class JemsProjectFileRepositoryTest : UnitTest() {
 
     companion object {
         const val USER_ID = 9678L
         const val PROJECT_ID = 2475L
 
-        private fun file(name: String = "new_file.txt", type: ProjectPartnerReportFileType) = ProjectReportFileCreate(
+        private fun file(name: String = "new_file.txt", type: JemsFileType) = JemsFileCreate(
             projectId = PROJECT_ID,
             partnerId = null,
             name = name,
@@ -78,7 +78,7 @@ class GenericProjectFileRepositoryTest : UnitTest() {
     lateinit var auditPublisher: ApplicationEventPublisher
 
     @InjectMockKs
-    private lateinit var repository: GenericProjectFileRepository
+    private lateinit var repository: JemsProjectFileRepository
 
     @BeforeEach
     fun resetMocks() {
@@ -86,7 +86,7 @@ class GenericProjectFileRepositoryTest : UnitTest() {
     }
 
     @ParameterizedTest(name = "persistProjectFileAndPerformAction (type {0})")
-    @EnumSource(value = ProjectPartnerReportFileType::class, names = [
+    @EnumSource(value = JemsFileType::class, names = [
         "PaymentAttachment",
         "PaymentAdvanceAttachment",
 
@@ -104,7 +104,7 @@ class GenericProjectFileRepositoryTest : UnitTest() {
         "ContractPartnerDoc",
         "ContractInternal",
     ])
-    fun persistProjectFileAndPerformAction(type: ProjectPartnerReportFileType) {
+    fun persistProjectFileAndPerformAction(type: JemsFileType) {
         val expectedBucket = if (setOf(PaymentAttachment, PaymentAdvanceAttachment).contains(type)) "payment" else "application"
 
         every { minioStorage.saveFile(any(), any(), any(), any(), true) } returns Unit
@@ -146,7 +146,7 @@ class GenericProjectFileRepositoryTest : UnitTest() {
     }
 
     @ParameterizedTest(name = "persistProjectFileAndPerformAction wrong type (type {0})")
-    @EnumSource(value = ProjectPartnerReportFileType::class, names = [
+    @EnumSource(value = JemsFileType::class, names = [
         "PaymentAttachment",
         "PaymentAdvanceAttachment",
 
@@ -164,7 +164,7 @@ class GenericProjectFileRepositoryTest : UnitTest() {
         "ContractPartnerDoc",
         "ContractInternal",
     ], mode = EnumSource.Mode.EXCLUDE)
-    fun `persistProjectFileAndPerformAction wrong type`(type: ProjectPartnerReportFileType) {
+    fun `persistProjectFileAndPerformAction wrong type`(type: JemsFileType) {
         val file = file(type = type)
         assertThrows<WrongFileTypeException> {
             repository.persistProjectFileAndPerformAction(file, { })
@@ -181,7 +181,7 @@ class GenericProjectFileRepositoryTest : UnitTest() {
             minioBucket = "",
             minioLocation = "",
             name = "word.docx",
-            type = ProjectPartnerReportFileType.ContractInternal,
+            type = JemsFileType.ContractInternal,
             size = 400L,
             user = mockk(),
             uploaded = ZonedDateTime.now(),
@@ -212,7 +212,7 @@ class GenericProjectFileRepositoryTest : UnitTest() {
             minioBucket = "file-bucket",
             minioLocation = "/sample/location",
             name = "powerpoint.pptx",
-            type = ProjectPartnerReportFileType.Deliverable,
+            type = JemsFileType.Deliverable,
             size = 324L,
             user = mockk(),
             uploaded = ZonedDateTime.now(),

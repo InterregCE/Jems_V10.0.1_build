@@ -4,9 +4,9 @@ import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanViewPartnerControlReportFile
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectPartnerReportFileType.ControlDocument
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectPartnerReportFileType.PartnerControlReport
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFile
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.ControlDocument
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.PartnerControlReport
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFile
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -21,7 +21,7 @@ class ListControlReportFile(
     @CanViewPartnerControlReportFile
     @Transactional(readOnly = true)
     @ExceptionWrapper(ListControlReportFileException::class)
-    override fun list(partnerId: Long, reportId: Long, pageable: Pageable): Page<ProjectReportFile> {
+    override fun list(partnerId: Long, reportId: Long, pageable: Pageable): Page<JemsFile> {
         val projectId = partnerPersistence.getProjectIdForPartnerId(partnerId)
 
         return reportFilePersistence.listAttachments(

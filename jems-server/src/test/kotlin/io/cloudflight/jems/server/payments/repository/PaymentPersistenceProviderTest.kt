@@ -7,7 +7,7 @@ import io.cloudflight.jems.api.user.dto.OutputUser
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.createTestCallEntity
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.common.minio.GenericProjectFileRepository
+import io.cloudflight.jems.server.common.minio.JemsProjectFileRepository
 import io.cloudflight.jems.server.payments.entity.PaymentEntity
 import io.cloudflight.jems.server.payments.entity.PaymentGroupingId
 import io.cloudflight.jems.server.payments.entity.PaymentPartnerEntity
@@ -44,7 +44,7 @@ import io.cloudflight.jems.server.project.repository.toModel
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectPartnerReportFileType
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import io.cloudflight.jems.server.user.repository.user.UserRepository
@@ -92,7 +92,7 @@ class PaymentPersistenceProviderTest: UnitTest() {
     @MockK
     lateinit var reportFileRepository: ProjectReportFileRepository
     @MockK
-    lateinit var genericFileRepository: GenericProjectFileRepository
+    lateinit var fileRepository: JemsProjectFileRepository
 
     @InjectMockKs
     lateinit var paymentPersistenceProvider: PaymentPersistenceProvider
@@ -299,7 +299,7 @@ class PaymentPersistenceProviderTest: UnitTest() {
 
     @BeforeEach
     fun reset() {
-        clearMocks(reportFileRepository, genericFileRepository)
+        clearMocks(reportFileRepository, fileRepository)
     }
 
     @Test
@@ -452,33 +452,33 @@ class PaymentPersistenceProviderTest: UnitTest() {
     @Test
     fun deletePaymentAttachment() {
         val file = mockk<ReportProjectFileEntity>()
-        every { genericFileRepository.delete(file) } answers { }
-        every { reportFileRepository.findByTypeAndId(ProjectPartnerReportFileType.PaymentAttachment, 14L) } returns file
+        every { fileRepository.delete(file) } answers { }
+        every { reportFileRepository.findByTypeAndId(JemsFileType.PaymentAttachment, 14L) } returns file
         paymentPersistenceProvider.deletePaymentAttachment(14L)
-        verify(exactly = 1) { genericFileRepository.delete(file) }
+        verify(exactly = 1) { fileRepository.delete(file) }
     }
 
     @Test
     fun `deletePaymentAttachment - not existing`() {
-        every { reportFileRepository.findByTypeAndId(ProjectPartnerReportFileType.PaymentAttachment, -1L) } returns null
+        every { reportFileRepository.findByTypeAndId(JemsFileType.PaymentAttachment, -1L) } returns null
         assertThrows<ResourceNotFoundException> { paymentPersistenceProvider.deletePaymentAttachment(-1L) }
-        verify(exactly = 0) { genericFileRepository.delete(any()) }
+        verify(exactly = 0) { fileRepository.delete(any()) }
     }
 
     @Test
     fun deletePaymentAdvanceAttachment() {
         val file = mockk<ReportProjectFileEntity>()
-        every { genericFileRepository.delete(file) } answers { }
-        every { reportFileRepository.findByTypeAndId(ProjectPartnerReportFileType.PaymentAdvanceAttachment, 16L) } returns file
+        every { fileRepository.delete(file) } answers { }
+        every { reportFileRepository.findByTypeAndId(JemsFileType.PaymentAdvanceAttachment, 16L) } returns file
         paymentPersistenceProvider.deletePaymentAdvanceAttachment(16L)
-        verify(exactly = 1) { genericFileRepository.delete(file) }
+        verify(exactly = 1) { fileRepository.delete(file) }
     }
 
     @Test
     fun `deletePaymentAdvanceAttachment - not existing`() {
-        every { reportFileRepository.findByTypeAndId(ProjectPartnerReportFileType.PaymentAdvanceAttachment, -1L) } returns null
+        every { reportFileRepository.findByTypeAndId(JemsFileType.PaymentAdvanceAttachment, -1L) } returns null
         assertThrows<ResourceNotFoundException> { paymentPersistenceProvider.deletePaymentAdvanceAttachment(-1L) }
-        verify(exactly = 0) { genericFileRepository.delete(any()) }
+        verify(exactly = 0) { fileRepository.delete(any()) }
     }
 
 }

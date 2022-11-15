@@ -3,9 +3,9 @@ package io.cloudflight.jems.server.project.service.report.partner.procurement.at
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectPartnerReportFileType
-import io.cloudflight.jems.server.project.service.report.model.partner.file.UserSimple
-import io.cloudflight.jems.server.project.service.report.model.partner.file.procurement.ProjectReportProcurementFile
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
+import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
+import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectReportProcurementFile
 import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectPartnerReportProcurement
 import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectReportProcurementPersistence
 import io.cloudflight.jems.server.project.service.report.partner.procurement.attachment.ProjectReportProcurementAttachmentPersistence
@@ -30,7 +30,7 @@ internal class GetProjectPartnerReportProcurementAttachmentTest : UnitTest() {
             reportId = 528L,
             createdInThisReport = true,
             name = "name 270",
-            type = ProjectPartnerReportFileType.ProcurementAttachment,
+            type = JemsFileType.ProcurementAttachment,
             uploaded = YEARS_AGO_50,
             author = UserSimple(45L, "dummy@email", name = "Dummy", surname = "Surname"),
             size = 6281245L,
@@ -41,7 +41,7 @@ internal class GetProjectPartnerReportProcurementAttachmentTest : UnitTest() {
             reportId = 244L,
             createdInThisReport = true,
             name = "name 271",
-            type = ProjectPartnerReportFileType.ProcurementAttachment,
+            type = JemsFileType.ProcurementAttachment,
             uploaded = YEARS_AGO_50,
             author = UserSimple(48L, "dummy@email48", name = "Dummy", surname = "Surname"),
             size = 2968954L,

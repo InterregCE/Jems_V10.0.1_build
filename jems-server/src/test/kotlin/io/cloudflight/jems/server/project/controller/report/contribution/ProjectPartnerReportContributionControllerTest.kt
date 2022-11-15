@@ -22,7 +22,7 @@ import io.cloudflight.jems.server.project.service.report.model.partner.contribut
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.update.UpdateProjectPartnerReportContributionExisting
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.update.UpdateProjectPartnerReportContributionCustom
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.update.UpdateProjectPartnerReportContributionWrapper
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import io.cloudflight.jems.server.project.service.report.partner.contribution.getProjectPartnerReportContribution.GetProjectPartnerReportContributionInteractor
 import io.cloudflight.jems.server.project.service.report.partner.contribution.updateProjectPartnerReportContribution.UpdateProjectPartnerReportContributionInteractor
 import io.cloudflight.jems.server.project.service.report.partner.contribution.uploadFileToProjectPartnerReportContribution.UploadFileToProjectPartnerReportContributionInteractor
@@ -54,7 +54,7 @@ class ProjectPartnerReportContributionControllerTest : UnitTest() {
             currentlyReported = BigDecimal.ONE,
             totalReportedSoFar = BigDecimal.ONE,
         ),
-        attachment = ProjectReportFileMetadata(510L, "file.txt", UPLOADED),
+        attachment = JemsFileMetadata(510L, "file.txt", UPLOADED),
     )
 
     private val dummyOverview = ProjectPartnerReportContributionOverview(

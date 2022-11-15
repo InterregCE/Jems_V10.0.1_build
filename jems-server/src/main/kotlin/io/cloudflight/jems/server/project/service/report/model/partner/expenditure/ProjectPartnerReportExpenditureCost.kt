@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.model.partner.expenditure
 
 import io.cloudflight.jems.api.project.dto.InputTranslation
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import java.math.BigDecimal
 import java.math.RoundingMode
 import java.time.LocalDate
@@ -27,7 +27,7 @@ data class ProjectPartnerReportExpenditureCost(
     var currencyCode: String,
     var currencyConversionRate: BigDecimal?,
     var declaredAmountAfterSubmission: BigDecimal?,
-    val attachment: ProjectReportFileMetadata?,
+    val attachment: JemsFileMetadata?,
 ) {
     fun clearConversions() {
         currencyConversionRate = null

@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.model.partner.workPlan
 
 import io.cloudflight.jems.api.project.dto.InputTranslation
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 
 data class ProjectPartnerReportWorkPackageActivity(
     val id: Long,
@@ -9,7 +9,7 @@ data class ProjectPartnerReportWorkPackageActivity(
     val title: Set<InputTranslation>,
 
     val progress: Set<InputTranslation>,
-    val attachment: ProjectReportFileMetadata?,
+    val attachment: JemsFileMetadata?,
 
     val deliverables: List<ProjectPartnerReportWorkPackageActivityDeliverable>,
 )

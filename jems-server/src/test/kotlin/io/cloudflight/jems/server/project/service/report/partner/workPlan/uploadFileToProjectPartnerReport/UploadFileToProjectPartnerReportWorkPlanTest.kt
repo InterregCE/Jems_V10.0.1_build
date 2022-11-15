@@ -5,9 +5,9 @@ import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectPartnerReportFileType
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFileCreate
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileCreate
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import io.cloudflight.jems.server.project.service.report.partner.workPlan.ProjectReportWorkPlanPersistence
 import io.mockk.CapturingSlot
 import io.mockk.clearMocks
@@ -57,8 +57,8 @@ internal class UploadFileToProjectPartnerReportWorkPlanTest : UnitTest() {
     fun uploadToActivity() {
         every { reportWorkPlanPersistence.existsByActivityId(PARTNER_ID, REPORT_ID, WP_ID, activityId = 10L) } returns true
 
-        val newFile = slot<ProjectReportFileCreate>()
-        val mockedResult = mockk<ProjectReportFileMetadata>()
+        val newFile = slot<JemsFileCreate>()
+        val mockedResult = mockk<JemsFileMetadata>()
         every { reportFilePersistence.updatePartnerReportActivityAttachment(10L, capture(newFile)) } returns mockedResult
 
         assertThat(
@@ -68,7 +68,7 @@ internal class UploadFileToProjectPartnerReportWorkPlanTest : UnitTest() {
         assertBasicFileAttributes(newFile)
         with(newFile.captured) {
             assertThat(path).isEqualTo("Project/000450/Report/Partner/000478/PartnerReport/000462/WorkPlan/WorkPackage/000481/Activity/000010/")
-            assertThat(type).isEqualTo(ProjectPartnerReportFileType.Activity)
+            assertThat(type).isEqualTo(JemsFileType.Activity)
         }
     }
 
@@ -96,8 +96,8 @@ internal class UploadFileToProjectPartnerReportWorkPlanTest : UnitTest() {
     fun uploadToDeliverable() {
         every { reportWorkPlanPersistence.existsByDeliverableId(PARTNER_ID, REPORT_ID, WP_ID, activityId = 10L, deliverableId = 12L) } returns true
 
-        val newFile = slot<ProjectReportFileCreate>()
-        val mockedResult = mockk<ProjectReportFileMetadata>()
+        val newFile = slot<JemsFileCreate>()
+        val mockedResult = mockk<JemsFileMetadata>()
         every { reportFilePersistence.updatePartnerReportDeliverableAttachment(12L, capture(newFile)) } returns mockedResult
 
         assertThat(
@@ -107,7 +107,7 @@ internal class UploadFileToProjectPartnerReportWorkPlanTest : UnitTest() {
         assertBasicFileAttributes(newFile)
         with(newFile.captured) {
             assertThat(path).isEqualTo("Project/000450/Report/Partner/000478/PartnerReport/000462/WorkPlan/WorkPackage/000481/Activity/000010/Deliverable/000012/")
-            assertThat(type).isEqualTo(ProjectPartnerReportFileType.Deliverable)
+            assertThat(type).isEqualTo(JemsFileType.Deliverable)
         }
     }
 
@@ -135,8 +135,8 @@ internal class UploadFileToProjectPartnerReportWorkPlanTest : UnitTest() {
     fun uploadToOutput() {
         every { reportWorkPlanPersistence.existsByOutputId(PARTNER_ID, REPORT_ID, WP_ID, outputId = 15L) } returns true
 
-        val newFile = slot<ProjectReportFileCreate>()
-        val mockedResult = mockk<ProjectReportFileMetadata>()
+        val newFile = slot<JemsFileCreate>()
+        val mockedResult = mockk<JemsFileMetadata>()
         every { reportFilePersistence.updatePartnerReportOutputAttachment(15L, capture(newFile)) } returns mockedResult
 
         assertThat(
@@ -146,7 +146,7 @@ internal class UploadFileToProjectPartnerReportWorkPlanTest : UnitTest() {
         assertBasicFileAttributes(newFile)
         with(newFile.captured) {
             assertThat(path).isEqualTo("Project/000450/Report/Partner/000478/PartnerReport/000462/WorkPlan/WorkPackage/000481/Output/000015/")
-            assertThat(type).isEqualTo(ProjectPartnerReportFileType.Output)
+            assertThat(type).isEqualTo(JemsFileType.Output)
         }
     }
 
@@ -170,7 +170,7 @@ internal class UploadFileToProjectPartnerReportWorkPlanTest : UnitTest() {
         }
     }
 
-    private fun assertBasicFileAttributes(newFile: CapturingSlot<ProjectReportFileCreate>) {
+    private fun assertBasicFileAttributes(newFile: CapturingSlot<JemsFileCreate>) {
         with(newFile.captured) {
             assertThat(projectId).isEqualTo(PROJECT_ID)
             assertThat(partnerId).isEqualTo(PARTNER_ID)

@@ -31,9 +31,9 @@ import io.cloudflight.jems.server.project.service.contracting.fileManagement.set
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.uploadFileToContracting.UploadFileToContractingInteractor
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingFileSearchRequest
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectPartnerReportFileType
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFile
-import io.cloudflight.jems.server.project.service.report.model.partner.file.UserSimple
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFile
+import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -58,10 +58,10 @@ class ContractingFileControllerTest : UnitTest() {
         private const val PROJECT_ID = 656L
         private val YESTERDAY = ZonedDateTime.now().minusDays(1)
 
-        private val contractingFile = ProjectReportFile(
+        private val contractingFile = JemsFile(
             id = 478L,
             name = "attachment.pdf",
-            type = ProjectPartnerReportFileType.Contract,
+            type = JemsFileType.Contract,
             uploaded = YESTERDAY,
             author = UserSimple(45L, email = "admin@cloudflight.io", name = "Admin", surname = "Big"),
             size = 47889L,
@@ -79,10 +79,10 @@ class ContractingFileControllerTest : UnitTest() {
             description = "example desc",
         )
 
-        private val partnerFile = ProjectReportFile(
+        private val partnerFile = JemsFile(
             id = 479L,
             name = "partner-attachment.pdf",
-            type = ProjectPartnerReportFileType.ContractPartnerDoc,
+            type = JemsFileType.ContractPartnerDoc,
             uploaded = YESTERDAY,
             author = UserSimple(45L, email = "admin@cloudflight.io", name = "Admin", surname = "Big"),
             size = 47889L,
@@ -206,8 +206,8 @@ class ContractingFileControllerTest : UnitTest() {
             .containsExactly(contractingFileDto)
         assertThat(searchRequest.captured).isEqualTo(
             ProjectContractingFileSearchRequest(
-                treeNode = ProjectPartnerReportFileType.ContractSupport,
-                filterSubtypes = setOf(ProjectPartnerReportFileType.Contract),
+                treeNode = JemsFileType.ContractSupport,
+                filterSubtypes = setOf(JemsFileType.Contract),
             )
         )
     }
@@ -344,8 +344,8 @@ class ContractingFileControllerTest : UnitTest() {
             .containsExactly(partnerFileDto)
         assertThat(searchRequest.captured).isEqualTo(
             ProjectContractingFileSearchRequest(
-                treeNode = ProjectPartnerReportFileType.ContractPartnerDoc,
-                filterSubtypes = setOf(ProjectPartnerReportFileType.ContractPartnerDoc),
+                treeNode = JemsFileType.ContractPartnerDoc,
+                filterSubtypes = setOf(JemsFileType.ContractPartnerDoc),
             )
         )
     }

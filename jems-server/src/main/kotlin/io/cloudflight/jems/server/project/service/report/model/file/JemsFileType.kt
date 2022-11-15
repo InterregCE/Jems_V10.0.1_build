@@ -1,7 +1,7 @@
-package io.cloudflight.jems.server.project.service.report.model.partner.file
+package io.cloudflight.jems.server.project.service.report.model.file
 
-enum class ProjectPartnerReportFileType(
-    private val parent: ProjectPartnerReportFileType?,
+enum class JemsFileType(
+    private val parent: JemsFileType?,
     private val needsId: Boolean,
     private val topParentBucket: String? = null,
 ) {

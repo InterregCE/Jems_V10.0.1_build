@@ -6,9 +6,11 @@ import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileCreate
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
-import io.cloudflight.jems.server.project.service.report.model.partner.file.*
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -67,8 +69,8 @@ class UploadFileToControlReportTest : UnitTest() {
             .existsFile("Project/000360/Report/Partner/000434/PartnerControlReport/000049/ControlDocument/", "test.xlsx")
         } returns false
 
-        val fileToAdd = slot<ProjectReportFileCreate>()
-        val mockResult = mockk<ProjectReportFileMetadata>()
+        val fileToAdd = slot<JemsFileCreate>()
+        val mockResult = mockk<JemsFileMetadata>()
         every { reportFilePersistence.addAttachmentToPartnerReport(capture(fileToAdd)) } returns mockResult
 
         val file = ProjectFile(
@@ -79,12 +81,12 @@ class UploadFileToControlReportTest : UnitTest() {
         assertThat(interactor.uploadToControlReport(PARTNER_ID, reportId, file)).isEqualTo(mockResult)
 
         assertThat(fileToAdd.captured).isEqualTo(
-            ProjectReportFileCreate(
+            JemsFileCreate(
                 projectId = PROJECT_ID,
                 partnerId = PARTNER_ID,
                 name = "test.xlsx",
                 path = "Project/000360/Report/Partner/000434/PartnerControlReport/000049/ControlDocument/",
-                type = ProjectPartnerReportFileType.ControlDocument,
+                type = JemsFileType.ControlDocument,
                 size = 20L,
                 content = content,
                 userId = USER_ID,
@@ -137,8 +139,8 @@ class UploadFileToControlReportTest : UnitTest() {
             .existsFile("Project/000360/Report/Partner/000434/PartnerControlReport/000028/ControlDocument/", "duplicate.xlsx")
         } returns true
 
-        val fileToAdd = slot<ProjectReportFileCreate>()
-        val mockResult = mockk<ProjectReportFileMetadata>()
+        val fileToAdd = slot<JemsFileCreate>()
+        val mockResult = mockk<JemsFileMetadata>()
         every { reportFilePersistence.addAttachmentToPartnerReport(capture(fileToAdd)) } returns mockResult
 
         val file = ProjectFile(

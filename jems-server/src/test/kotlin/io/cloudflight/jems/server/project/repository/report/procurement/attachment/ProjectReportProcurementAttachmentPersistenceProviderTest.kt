@@ -4,9 +4,9 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
 import io.cloudflight.jems.server.project.entity.report.procurement.ProjectPartnerReportProcurementEntity
 import io.cloudflight.jems.server.project.entity.report.procurement.file.ProjectPartnerReportProcurementFileEntity
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectPartnerReportFileType
-import io.cloudflight.jems.server.project.service.report.model.partner.file.UserSimple
-import io.cloudflight.jems.server.project.service.report.model.partner.file.procurement.ProjectReportProcurementFile
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
+import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
+import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectReportProcurementFile
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.mockk.*
@@ -38,7 +38,7 @@ class ProjectReportProcurementAttachmentPersistenceProviderTest : UnitTest() {
                 minioBucket = "not-used also",
                 minioLocation = "not-used as well",
                 name = "filename.ext",
-                type = ProjectPartnerReportFileType.ProcurementAttachment,
+                type = JemsFileType.ProcurementAttachment,
                 size = 989656189L,
                 user = UserEntity(
                     id = 45L,
@@ -59,7 +59,7 @@ class ProjectReportProcurementAttachmentPersistenceProviderTest : UnitTest() {
             reportId = reportId,
             createdInThisReport = false,
             name = "filename.ext",
-            type = ProjectPartnerReportFileType.ProcurementAttachment,
+            type = JemsFileType.ProcurementAttachment,
             uploaded = YEARS_AGO_20,
             author = UserSimple(45L, email = "admin@cloudflight.io", name = "Admin", surname = "Big"),
             size = 989656189L,

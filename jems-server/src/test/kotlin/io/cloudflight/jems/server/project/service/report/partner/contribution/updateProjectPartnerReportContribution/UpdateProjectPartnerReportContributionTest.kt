@@ -14,9 +14,8 @@ import io.cloudflight.jems.server.project.service.report.model.partner.contribut
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.update.UpdateProjectPartnerReportContributionExisting
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.update.UpdateProjectPartnerReportContributionWrapper
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.withoutCalculations.ProjectPartnerReportEntityContribution
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectReportContributionPersistence
-import io.cloudflight.jems.server.project.service.report.partner.procurement.updateProjectPartnerReportProcurement.UpdateProjectPartnerReportProcurementTest
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -49,7 +48,7 @@ internal class UpdateProjectPartnerReportContributionTest : UnitTest() {
 
         private val UPLOADED = ZonedDateTime.now()
 
-        private fun file(id: Long) = ProjectReportFileMetadata(id, "file_$id.xlsx", UPLOADED)
+        private fun file(id: Long) = JemsFileMetadata(id, "file_$id.xlsx", UPLOADED)
 
         private val oldContribution = ProjectPartnerReportEntityContribution(
             id = 45L,

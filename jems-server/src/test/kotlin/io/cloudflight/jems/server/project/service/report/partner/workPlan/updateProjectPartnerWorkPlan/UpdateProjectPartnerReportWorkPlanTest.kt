@@ -7,7 +7,7 @@ import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportStatusAndVersion
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.ProjectPartnerReportWorkPackage
 import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.ProjectPartnerReportWorkPackageActivity
 import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.ProjectPartnerReportWorkPackageActivityDeliverable
@@ -34,7 +34,7 @@ internal class UpdateProjectPartnerReportWorkPlanTest : UnitTest() {
     companion object {
         private const val PARTNER_ID = 489L
 
-        private val dummyFile = ProjectReportFileMetadata(750L, "cat_gif.gif", ZonedDateTime.now())
+        private val dummyFile = JemsFileMetadata(750L, "cat_gif.gif", ZonedDateTime.now())
 
         private val oldWorkPlan = ProjectPartnerReportWorkPackage(
             id = 45L,

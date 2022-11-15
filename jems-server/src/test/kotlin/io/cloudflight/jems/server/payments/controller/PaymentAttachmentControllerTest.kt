@@ -11,10 +11,10 @@ import io.cloudflight.jems.server.payments.service.attachment.getPaymentAttchame
 import io.cloudflight.jems.server.payments.service.attachment.setDescriptionToPaymentAttachment.SetDescriptionToPaymentAttachmentInteractor
 import io.cloudflight.jems.server.payments.service.attachment.uploadPaymentAttachment.UploadPaymentAttachmentInteractor
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectPartnerReportFileType
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFile
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFileMetadata
-import io.cloudflight.jems.server.project.service.report.model.partner.file.UserSimple
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFile
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
 import io.cloudflight.jems.server.utils.FILE_NAME
 import io.cloudflight.jems.server.utils.file
 import io.mockk.clearMocks
@@ -39,10 +39,10 @@ class PaymentAttachmentControllerTest : UnitTest() {
     companion object {
         private val YEARS_AGO_10 = ZonedDateTime.now().minusYears(10)
 
-        private fun dummyAttachment(id: Long) = ProjectReportFile(
+        private fun dummyAttachment(id: Long) = JemsFile(
             id = id,
             name = "name $id",
-            type = ProjectPartnerReportFileType.PaymentAttachment,
+            type = JemsFileType.PaymentAttachment,
             uploaded = YEARS_AGO_10,
             author = UserSimple(45L, "dummy@email", name = "Dummy", surname = "Surname"),
             size = 653225L,
@@ -60,7 +60,7 @@ class PaymentAttachmentControllerTest : UnitTest() {
             description = "desc $id",
         )
 
-        private val fileMetadata = ProjectReportFileMetadata(
+        private val fileMetadata = JemsFileMetadata(
             id = 904L,
             name = FILE_NAME,
             uploaded = YEARS_AGO_10,

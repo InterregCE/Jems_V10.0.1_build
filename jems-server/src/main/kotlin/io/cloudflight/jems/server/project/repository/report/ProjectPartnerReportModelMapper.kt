@@ -28,7 +28,7 @@ import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPa
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PreviouslyReportedCoFinancing
 import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PreviouslyReportedFund
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.costCategory.ReportExpenditureCostCategory
 import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.ProjectPartnerReportWorkPackage
 import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.ProjectPartnerReportWorkPackageActivity
@@ -242,7 +242,7 @@ fun List<ProjectPartnerReportWorkPackageOutputEntity>.toOutputsModel() = map {
     )
 }
 
-fun ReportProjectFileEntity.toModel() = ProjectReportFileMetadata(
+fun ReportProjectFileEntity.toModel() = JemsFileMetadata(
     id = id,
     name = name,
     uploaded = uploaded,

@@ -8,7 +8,7 @@ import io.cloudflight.jems.server.project.repository.file.ProjectFilePersistence
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.file.ProjectFilePersistence
 import io.cloudflight.jems.server.project.service.file.model.ProjectFileMetadata
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -34,7 +34,7 @@ class SetProjectFileDescription(
         return filePersistence.setFileDescription(fileId, description).also {
             val location = getObjectPath(projectId, file.id, file.name)
             auditPublisher.publishEvent(
-                fileDescriptionChanged(context = this, fileMeta = ProjectReportFileMetadata(file.id, file.name, file.uploadedAt),
+                fileDescriptionChanged(context = this, fileMeta = JemsFileMetadata(file.id, file.name, file.uploadedAt),
                     location = location, oldDescription, description ?: "", projectPersistence.getProjectSummary(projectId))
             )
         }

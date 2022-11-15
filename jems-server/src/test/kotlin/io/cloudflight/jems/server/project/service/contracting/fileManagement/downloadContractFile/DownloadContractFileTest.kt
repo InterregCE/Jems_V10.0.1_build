@@ -4,7 +4,7 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.FileNotFound
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.ProjectContractingFilePersistence
 import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectPartnerReportFileType
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -38,7 +38,7 @@ internal class DownloadContractFileTest : UnitTest() {
     @Test
     fun `download contract file`() {
         val file = mockk<Pair<String, ByteArray>>()
-        every { reportFilePersistence.getFileType(14L, PROJECT_ID) } returns ProjectPartnerReportFileType.Contract
+        every { reportFilePersistence.getFileType(14L, PROJECT_ID) } returns JemsFileType.Contract
         every { contractingFilePersistence.downloadFile(PROJECT_ID, fileId = 14L) } returns file
         assertThat(interactor.download(PROJECT_ID, 14L)).isEqualTo(file)
     }

@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.service.report.partner.file.control.listProjectPartnerControlReportFile
 
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFile
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFile
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 
@@ -10,6 +10,6 @@ interface ListControlReportFileInteractor {
         partnerId: Long,
         reportId: Long,
         pageable: Pageable,
-    ): Page<ProjectReportFile>
+    ): Page<JemsFile>
 
 }

@@ -6,7 +6,7 @@ import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.entity.TranslationId
-import io.cloudflight.jems.server.common.minio.GenericProjectFileRepository
+import io.cloudflight.jems.server.common.minio.JemsProjectFileRepository
 import io.cloudflight.jems.server.programme.entity.costoption.*
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportExpenditureCostEntity
@@ -25,7 +25,7 @@ import io.cloudflight.jems.server.project.service.report.model.partner.expenditu
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportLumpSum
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportUnitCost
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -129,7 +129,7 @@ class ProjectReportExpenditurePersistenceProviderTest : UnitTest() {
             currencyCode = "HUF",
             currencyConversionRate = BigDecimal.valueOf(368),
             declaredAmountAfterSubmission = BigDecimal.valueOf(3680),
-            attachment = ProjectReportFileMetadata(dummyAttachment.id, dummyAttachment.name, dummyAttachment.uploaded),
+            attachment = JemsFileMetadata(dummyAttachment.id, dummyAttachment.name, dummyAttachment.uploaded),
         )
 
         private fun dummyExpectedExpenditureNew(id: Long, lumpSumId: Long?, unitCostId: Long?, investmentId: Long?) = ProjectPartnerReportExpenditureCost(
@@ -277,7 +277,7 @@ class ProjectReportExpenditurePersistenceProviderTest : UnitTest() {
     lateinit var reportInvestmentRepository: ProjectPartnerReportInvestmentRepository
 
     @MockK
-    lateinit var genericFileRepository: GenericProjectFileRepository
+    lateinit var fileRepository: JemsProjectFileRepository
 
     @MockK
     lateinit var reportCostCategoriesRepository: ReportProjectPartnerExpenditureCostCategoryRepository
@@ -381,7 +381,7 @@ class ProjectReportExpenditurePersistenceProviderTest : UnitTest() {
         every { reportExpenditureRepository.findByPartnerReportOrderByIdDesc(report) } returns
             mutableListOf(entityToStay, entityToDelete, entityToUpdate)
 
-        every { genericFileRepository.delete(dummyAttachment) } answers { }
+        every { fileRepository.delete(dummyAttachment) } answers { }
         val slotDeleted = slot<Iterable<PartnerReportExpenditureCostEntity>>()
         every { reportExpenditureRepository.deleteAll(capture(slotDeleted)) } answers { }
 

@@ -5,9 +5,9 @@ import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectPartnerReportFileType
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFileCreate
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileCreate
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectReportContributionPersistence
 import io.mockk.clearMocks
 import io.mockk.every
@@ -49,8 +49,8 @@ internal class UploadFileToProjectPartnerReportProcurementTest : UnitTest() {
         every { reportContributionPersistence.existsByContributionId(PARTNER_ID, REPORT_ID, 25L) } returns true
         every { partnerPersistence.getProjectIdForPartnerId(PARTNER_ID) } returns 700L
 
-        val slotFile = slot<ProjectReportFileCreate>()
-        val mockResult = mockk<ProjectReportFileMetadata>()
+        val slotFile = slot<JemsFileCreate>()
+        val mockResult = mockk<JemsFileMetadata>()
         every { reportFilePersistence.updatePartnerReportContributionAttachment(25L, capture(slotFile)) } returns mockResult
 
         val file = ProjectFile(ByteArray(5).inputStream(), "file_name.xlsx", 55L)
@@ -62,7 +62,7 @@ internal class UploadFileToProjectPartnerReportProcurementTest : UnitTest() {
             assertThat(partnerId).isEqualTo(PARTNER_ID)
             assertThat(name).isEqualTo("file_name.xlsx")
             assertThat(path).isEqualTo("Project/000700/Report/Partner/003520/PartnerReport/000362/Contribution/000025/")
-            assertThat(type).isEqualTo(ProjectPartnerReportFileType.Contribution)
+            assertThat(type).isEqualTo(JemsFileType.Contribution)
             assertThat(size).isEqualTo(55L)
             assertThat(userId).isEqualTo(USER_ID)
         }

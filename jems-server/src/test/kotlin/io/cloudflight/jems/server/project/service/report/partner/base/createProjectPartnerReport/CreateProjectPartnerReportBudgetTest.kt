@@ -32,10 +32,9 @@ import io.cloudflight.jems.server.project.service.report.model.partner.base.crea
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.create.CreateProjectPartnerReportContribution
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.withoutCalculations.ProjectPartnerReportEntityContribution
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.PartnerReportInvestmentSummary
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportPeriod
-import io.cloudflight.jems.server.project.service.report.partner.base.createProjectPartnerReport.CreateProjectPartnerReportBudget
 import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectReportContributionPersistence
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectReportExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureCoFinancingPersistence
@@ -117,7 +116,7 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
             amount = BigDecimal.ZERO, // should be ignored
             previouslyReported = BigDecimal.ZERO,
             currentlyReported = BigDecimal.ONE,
-            attachment = ProjectReportFileMetadata(780L, "this_is_ignored", mockk()),
+            attachment = JemsFileMetadata(780L, "this_is_ignored", mockk()),
         ),
         ProjectPartnerReportEntityContribution(
             id = 2L,

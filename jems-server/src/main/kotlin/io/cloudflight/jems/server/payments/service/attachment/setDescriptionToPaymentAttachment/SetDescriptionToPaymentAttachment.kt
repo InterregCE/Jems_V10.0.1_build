@@ -1,18 +1,18 @@
 package io.cloudflight.jems.server.payments.service.attachment.setDescriptionToPaymentAttachment
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
-import io.cloudflight.jems.server.common.minio.GenericProjectFileRepository
+import io.cloudflight.jems.server.common.minio.JemsProjectFileRepository
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.payments.authorization.CanUpdatePayments
 import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectPartnerReportFileType.PaymentAttachment
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.PaymentAttachment
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 class SetDescriptionToPaymentAttachment(
     private val reportFilePersistence: ProjectReportFilePersistence,
-    private val genericFileRepository: GenericProjectFileRepository,
+    private val fileRepository: JemsProjectFileRepository,
     private val generalValidator: GeneralValidatorService,
 ) : SetDescriptionToPaymentAttachmentInteractor {
 
@@ -25,7 +25,7 @@ class SetDescriptionToPaymentAttachment(
         if (!reportFilePersistence.existsFile(type = PaymentAttachment, fileId = fileId))
             throw FileNotFound()
 
-        genericFileRepository.setDescription(fileId = fileId, description = description)
+        fileRepository.setDescription(fileId = fileId, description = description)
     }
 
     private fun validateDescription(text: String) {

@@ -8,8 +8,8 @@ import io.cloudflight.jems.server.project.service.file.uploadProjectFile.isFileT
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectPartnerReportFileType
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import io.cloudflight.jems.server.project.service.report.partner.file.uploadFileToProjectPartnerReport.FileAlreadyExists
 import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectReportProcurementPersistence
 import io.cloudflight.jems.server.project.service.report.partner.procurement.attachment.MAX_AMOUNT_OF_ATTACHMENT
@@ -35,7 +35,7 @@ class UploadFileToProjectPartnerReportProcurementAttachment(
         reportId: Long,
         procurementId: Long,
         file: ProjectFile,
-    ): ProjectReportFileMetadata {
+    ): JemsFileMetadata {
         // we need to fetch those 2 because of security
         val procurement = reportProcurementPersistence.getById(partnerId, procurementId)
         if (!reportPersistence.exists(partnerId, reportId = reportId))
@@ -46,7 +46,7 @@ class UploadFileToProjectPartnerReportProcurementAttachment(
 
         validateMaxAmountOfAttachments(procurementId = procurement.id, reportId)
 
-        with(ProjectPartnerReportFileType.ProcurementAttachment) {
+        with(JemsFileType.ProcurementAttachment) {
             val projectId = partnerPersistence.getProjectIdForPartnerId(partnerId)
             val location = generatePath(projectId, partnerId, reportId, procurement.id)
 

@@ -4,7 +4,7 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectPartnerReportFileType
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.cloudflight.jems.server.project.service.report.partner.file.setDescriptionToFile.FileNotFound
 import io.mockk.clearMocks
 import io.mockk.every
@@ -47,7 +47,7 @@ class SetPartnerFileDescriptionTest: UnitTest() {
             reportFilePersistence.existsFileByPartnerIdAndFileIdAndFileTypeIn(
                 PARTNER_ID,
                 FILE_ID,
-                setOf(ProjectPartnerReportFileType.ContractPartnerDoc)
+                setOf(JemsFileType.ContractPartnerDoc)
             )
         } returns true
         every { reportFilePersistence.setDescriptionToFile(FILE_ID, "new desc") } answers { }
@@ -62,7 +62,7 @@ class SetPartnerFileDescriptionTest: UnitTest() {
             reportFilePersistence.existsFileByPartnerIdAndFileIdAndFileTypeIn(
                 PARTNER_ID,
                 FILE_ID,
-                setOf(ProjectPartnerReportFileType.ContractPartnerDoc)
+                setOf(JemsFileType.ContractPartnerDoc)
             )
         } returns false
         assertThrows<FileNotFound> { setPartnerFileDescription.setPartnerFileDescription(PARTNER_ID, FILE_ID, "new desc") }

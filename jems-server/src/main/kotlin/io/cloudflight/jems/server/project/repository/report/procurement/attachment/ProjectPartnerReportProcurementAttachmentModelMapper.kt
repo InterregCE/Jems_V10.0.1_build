@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.project.repository.report.procurement.attachm
 
 import io.cloudflight.jems.server.project.entity.report.procurement.file.ProjectPartnerReportProcurementFileEntity
 import io.cloudflight.jems.server.project.repository.report.file.toModel
-import io.cloudflight.jems.server.project.service.report.model.partner.file.procurement.ProjectReportProcurementFile
+import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectReportProcurementFile
 
 fun List<ProjectPartnerReportProcurementFileEntity>.toModel() = map {
     ProjectReportProcurementFile(

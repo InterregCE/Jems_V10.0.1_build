@@ -15,7 +15,7 @@ import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerR
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageOutputTranslEntity
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageTranslEntity
 import io.cloudflight.jems.server.project.repository.report.ProjectPartnerReportRepository
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.ProjectPartnerReportWorkPackage
 import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.ProjectPartnerReportWorkPackageActivity
 import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.ProjectPartnerReportWorkPackageActivityDeliverable
@@ -137,7 +137,7 @@ class ProjectReportWorkPlanPersistenceProviderTest : UnitTest() {
                                 attachment = null,
                             )
                         ),
-                        attachment = ProjectReportFileMetadata(
+                        attachment = JemsFileMetadata(
                             dummyAttachment.id,
                             dummyAttachment.name,
                             dummyAttachment.uploaded,
@@ -151,7 +151,7 @@ class ProjectReportWorkPlanPersistenceProviderTest : UnitTest() {
                         title = setOf(InputTranslation(SystemLanguage.EN, "[$outputId] title")),
                         contribution = false,
                         evidence = null,
-                        attachment = ProjectReportFileMetadata(
+                        attachment = JemsFileMetadata(
                             dummyAttachment.id,
                             dummyAttachment.name,
                             dummyAttachment.uploaded,

@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.model.partner.contribution.withoutCalculations
 
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import java.math.BigDecimal
 import java.util.UUID
 
@@ -15,5 +15,5 @@ data class ProjectPartnerReportEntityContribution(
     val amount: BigDecimal,
     val previouslyReported: BigDecimal,
     val currentlyReported: BigDecimal,
-    val attachment: ProjectReportFileMetadata?,
+    val attachment: JemsFileMetadata?,
 )

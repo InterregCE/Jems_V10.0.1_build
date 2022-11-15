@@ -1,10 +1,10 @@
 package io.cloudflight.jems.server.payments.service.attachment.uploadPaymentAttachment
 
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 
 interface UploadPaymentAttachmentInteractor {
 
-    fun upload(paymentId: Long, file: ProjectFile): ProjectReportFileMetadata
+    fun upload(paymentId: Long, file: ProjectFile): JemsFileMetadata
 
 }

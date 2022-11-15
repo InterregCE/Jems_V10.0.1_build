@@ -1,13 +1,13 @@
 package io.cloudflight.jems.server.project.service.report.partner.file.listProjectPartnerReportFile
 
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectPartnerReportFileType
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 
 fun validateSearchConfiguration(
-    treeNode: ProjectPartnerReportFileType,
-    filterSubtypes: Set<ProjectPartnerReportFileType>,
-    allowedFilters: Map<ProjectPartnerReportFileType, Set<ProjectPartnerReportFileType>>,
+    treeNode: JemsFileType,
+    filterSubtypes: Set<JemsFileType>,
+    allowedFilters: Map<JemsFileType, Set<JemsFileType>>,
     invalidSearchExceptionResolver: () -> Exception,
-    invalidFilterExceptionResolver: (Set<ProjectPartnerReportFileType>) -> Exception,
+    invalidFilterExceptionResolver: (Set<JemsFileType>) -> Exception,
 ) {
     if (treeNode !in allowedFilters.keys)
         throw invalidSearchExceptionResolver.invoke()

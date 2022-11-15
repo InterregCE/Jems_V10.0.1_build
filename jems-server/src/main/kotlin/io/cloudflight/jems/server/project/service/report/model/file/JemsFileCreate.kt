@@ -1,13 +1,13 @@
-package io.cloudflight.jems.server.project.service.report.model.partner.file
+package io.cloudflight.jems.server.project.service.report.model.file
 
 import java.io.InputStream
 
-data class ProjectReportFileCreate(
+data class JemsFileCreate(
     val projectId: Long?,
     val partnerId: Long?,
     val name: String,
     val path: String,
-    val type: ProjectPartnerReportFileType,
+    val type: JemsFileType,
     val size: Long,
     val content: InputStream,
     val userId: Long,

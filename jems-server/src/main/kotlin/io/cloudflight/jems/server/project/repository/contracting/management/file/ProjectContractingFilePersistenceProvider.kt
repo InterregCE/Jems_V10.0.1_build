@@ -1,12 +1,11 @@
 package io.cloudflight.jems.server.project.repository.contracting.management.file
 
-import io.cloudflight.jems.server.common.minio.GenericProjectFileRepository
+import io.cloudflight.jems.server.common.minio.JemsProjectFileRepository
 import io.cloudflight.jems.server.common.minio.MinioStorage
 import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
 import io.cloudflight.jems.server.project.repository.report.file.ProjectReportFileRepository
-import io.cloudflight.jems.server.project.repository.report.file.getMinioFullPath
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.ProjectContractingFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFileCreate
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileCreate
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 
@@ -14,12 +13,12 @@ import org.springframework.transaction.annotation.Transactional
 class ProjectContractingFilePersistenceProvider(
     private val reportFileRepository: ProjectReportFileRepository,
     private val minioStorage: MinioStorage,
-    private val genericFileRepository: GenericProjectFileRepository,
+    private val fileRepository: JemsProjectFileRepository,
 ) : ProjectContractingFilePersistence {
 
     @Transactional
-    override fun uploadFile(file: ProjectReportFileCreate) =
-        genericFileRepository.persistProjectFile(file = file)
+    override fun uploadFile(file: JemsFileCreate) =
+        fileRepository.persistProjectFile(file = file)
 
     @Transactional(readOnly = true)
     override fun downloadFile(projectId: Long, fileId: Long) =
@@ -50,7 +49,7 @@ class ProjectContractingFilePersistenceProvider(
 
     private fun ReportProjectFileEntity?.deleteIfPresent() {
         if (this != null) {
-            genericFileRepository.delete(this)
+            fileRepository.delete(this)
         }
     }
 

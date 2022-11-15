@@ -3,8 +3,8 @@ package io.cloudflight.jems.server.payments.service.attachment.getPaymentAttcham
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.payments.authorization.CanRetrievePayments
 import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectPartnerReportFileType.PaymentAttachment
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFile
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.PaymentAttachment
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFile
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -18,7 +18,7 @@ class GetPaymentAttachment(
     @CanRetrievePayments
     @Transactional(readOnly = true)
     @ExceptionWrapper(GetPaymentAttachmentException::class)
-    override fun list(paymentId: Long, pageable: Pageable): Page<ProjectReportFile> =
+    override fun list(paymentId: Long, pageable: Pageable): Page<JemsFile> =
         reportFilePersistence.listAttachments(
             pageable = pageable,
             indexPrefix = PaymentAttachment.generatePath(paymentId),

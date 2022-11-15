@@ -5,7 +5,7 @@ import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectPartnerReportFileType
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import org.springframework.stereotype.Service
 
 
@@ -25,7 +25,7 @@ class ControlReportFileAuthorizationService(
 
         val projectId = partnerPersistence.getProjectIdForPartnerId(partnerId)
         // to make sure fileId corresponds to correct report, we need to verify it through location path
-        val reportPrefix = ProjectPartnerReportFileType.PartnerControlReport.generatePath(projectId, partnerId, reportId)
+        val reportPrefix = JemsFileType.PartnerControlReport.generatePath(projectId, partnerId, reportId)
 
         val author = reportFilePersistence.getFileAuthor(partnerId = partnerId, pathPrefix = reportPrefix, fileId = fileId)
             ?: throw FileNotFound()

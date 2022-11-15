@@ -2,14 +2,14 @@ package io.cloudflight.jems.server.payments.service.attachment.uploadPaymentAtta
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.authentication.service.SecurityService
-import io.cloudflight.jems.server.common.minio.GenericProjectFileRepository
+import io.cloudflight.jems.server.common.minio.JemsProjectFileRepository
 import io.cloudflight.jems.server.payments.PaymentPersistence
 import io.cloudflight.jems.server.payments.service.model.PaymentDetail
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectPartnerReportFileType
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFileCreate
-import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileCreate
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -38,7 +38,7 @@ class UploadPaymentAttachmentTest : UnitTest() {
     lateinit var reportFilePersistence: ProjectReportFilePersistence
 
     @MockK
-    lateinit var genericFileRepository: GenericProjectFileRepository
+    lateinit var fileRepository: JemsProjectFileRepository
 
     @MockK
     lateinit var securityService: SecurityService
@@ -50,7 +50,7 @@ class UploadPaymentAttachmentTest : UnitTest() {
     fun reset() {
         clearMocks(paymentPersistence)
         clearMocks(reportFilePersistence)
-        clearMocks(genericFileRepository)
+        clearMocks(fileRepository)
         every { securityService.getUserIdOrThrow() } returns USER_ID
     }
 
@@ -63,20 +63,20 @@ class UploadPaymentAttachmentTest : UnitTest() {
         every { paymentPersistence.getPaymentDetails(paymentId) } returns payment
         every { reportFilePersistence.existsFile("Payment/Regular/000004/PaymentAttachment/", "test.xlsx") } returns false
 
-        val fileToAdd = slot<ProjectReportFileCreate>()
-        val mockResult = mockk<ProjectReportFileMetadata>()
-        every { genericFileRepository.persistProjectFile(capture(fileToAdd)) } returns mockResult
+        val fileToAdd = slot<JemsFileCreate>()
+        val mockResult = mockk<JemsFileMetadata>()
+        every { fileRepository.persistProjectFile(capture(fileToAdd)) } returns mockResult
 
         val file = ProjectFile(stream = content, name = "test.xlsx", size = 20L)
         assertThat(interactor.upload(paymentId, file)).isEqualTo(mockResult)
 
         assertThat(fileToAdd.captured).isEqualTo(
-            ProjectReportFileCreate(
+            JemsFileCreate(
                 projectId = 540L,
                 partnerId = null,
                 name = "test.xlsx",
                 path = "Payment/Regular/000004/PaymentAttachment/",
-                type = ProjectPartnerReportFileType.PaymentAttachment,
+                type = JemsFileType.PaymentAttachment,
                 size = 20L,
                 content = content,
                 userId = USER_ID,
@@ -95,7 +95,7 @@ class UploadPaymentAttachmentTest : UnitTest() {
         val file = ProjectFile(stream = content, name = "test.xlsx", size = 20L)
         assertThrows<FileAlreadyExists> { interactor.upload(paymentId, file) }
 
-        verify(exactly = 0) { genericFileRepository.persistProjectFile(any()) }
+        verify(exactly = 0) { fileRepository.persistProjectFile(any()) }
     }
 
     @Test
@@ -108,7 +108,7 @@ class UploadPaymentAttachmentTest : UnitTest() {
         val file = ProjectFile(stream = content, name = "test.exe", size = 20L)
         assertThrows<FileTypeNotSupported> { interactor.upload(paymentId, file) }
 
-        verify(exactly = 0) { genericFileRepository.persistProjectFile(any()) }
+        verify(exactly = 0) { fileRepository.persistProjectFile(any()) }
     }
 
 }
