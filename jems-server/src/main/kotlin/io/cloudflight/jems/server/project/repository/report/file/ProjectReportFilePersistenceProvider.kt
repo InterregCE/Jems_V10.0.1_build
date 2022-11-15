@@ -12,11 +12,11 @@ import io.cloudflight.jems.server.project.repository.report.procurement.attachme
 import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPartnerReportWorkPackageActivityDeliverableRepository
 import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPartnerReportWorkPackageActivityRepository
 import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPartnerReportWorkPackageOutputRepository
-import io.cloudflight.jems.server.project.service.report.file.ProjectReportFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFile
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileCreate
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
+import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectPartnerReportFileType
+import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFile
+import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFileCreate
+import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFileMetadata
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository

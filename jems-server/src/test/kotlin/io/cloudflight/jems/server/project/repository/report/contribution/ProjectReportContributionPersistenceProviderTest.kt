@@ -6,10 +6,10 @@ import io.cloudflight.jems.server.project.entity.report.contribution.ProjectPart
 import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
 import io.cloudflight.jems.server.project.repository.report.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
-import io.cloudflight.jems.server.project.service.report.model.contribution.create.CreateProjectPartnerReportContribution
-import io.cloudflight.jems.server.project.service.report.model.contribution.update.UpdateProjectPartnerReportContributionExisting
-import io.cloudflight.jems.server.project.service.report.model.contribution.withoutCalculations.ProjectPartnerReportEntityContribution
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.partner.contribution.create.CreateProjectPartnerReportContribution
+import io.cloudflight.jems.server.project.service.report.model.partner.contribution.update.UpdateProjectPartnerReportContributionExisting
+import io.cloudflight.jems.server.project.service.report.model.partner.contribution.withoutCalculations.ProjectPartnerReportEntityContribution
+import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFileMetadata
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs

@@ -10,10 +10,10 @@ import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEn
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.report.file.ProjectReportFileRepository
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType.PaymentAdvanceAttachment
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType.PaymentAttachment
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileCreate
+import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectPartnerReportFileType
+import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectPartnerReportFileType.PaymentAdvanceAttachment
+import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectPartnerReportFileType.PaymentAttachment
+import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFileCreate
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.repository.user.UserRepository
 import io.mockk.clearMocks

@@ -6,8 +6,8 @@ import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCon
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContribution
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
-import io.cloudflight.jems.server.project.service.report.model.contribution.ProjectPartnerReportContributionOverview
-import io.cloudflight.jems.server.project.service.report.model.financialOverview.coFinancing.*
+import io.cloudflight.jems.server.project.service.report.model.partner.contribution.ProjectPartnerReportContributionOverview
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.*
 import java.math.BigDecimal
 import java.math.RoundingMode
 

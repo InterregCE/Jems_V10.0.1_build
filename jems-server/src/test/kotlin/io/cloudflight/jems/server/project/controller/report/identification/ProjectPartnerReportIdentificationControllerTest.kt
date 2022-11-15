@@ -9,10 +9,10 @@ import io.cloudflight.jems.api.project.dto.report.partner.identification.control
 import io.cloudflight.jems.api.project.dto.report.partner.identification.control.ReportTypeDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
-import io.cloudflight.jems.server.project.service.report.model.identification.*
-import io.cloudflight.jems.server.project.service.report.model.identification.control.ProjectPartnerControlReport
-import io.cloudflight.jems.server.project.service.report.model.identification.control.ReportFileFormat
-import io.cloudflight.jems.server.project.service.report.model.identification.control.ReportType
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.*
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ProjectPartnerControlReport
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportFileFormat
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportType
 import io.cloudflight.jems.server.project.service.report.partner.identification.control.getProjectPartnerControlReportIdentification.GetProjectPartnerControlReportIdentificationInteractor
 import io.cloudflight.jems.server.project.service.report.partner.identification.control.updateProjectPartnerControlReportIdentification.UpdateProjectPartnerControlReportIdentificationInteractor
 import io.cloudflight.jems.server.project.service.report.partner.identification.getProjectPartnerReportAvailablePeriods.GetProjectPartnerReportAvailablePeriodsInteractor

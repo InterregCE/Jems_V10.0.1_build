@@ -13,8 +13,7 @@ import io.cloudflight.jems.server.project.service.model.ProjectApplicantAndStatu
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.UserPartnerCollaboratorPersistence
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
-import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReport
-import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectFormRetrieve
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectReportingEdit
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectReportingView
 import io.mockk.clearMocks

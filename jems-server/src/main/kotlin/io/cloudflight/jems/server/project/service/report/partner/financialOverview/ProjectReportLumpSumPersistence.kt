@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.service.report.partner.financialOverview
 
-import io.cloudflight.jems.server.project.service.report.model.financialOverview.lumpSum.ExpenditureLumpSumBreakdownLine
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.lumpSum.ExpenditureLumpSumBreakdownLine
 import java.math.BigDecimal
 
 interface ProjectReportLumpSumPersistence {

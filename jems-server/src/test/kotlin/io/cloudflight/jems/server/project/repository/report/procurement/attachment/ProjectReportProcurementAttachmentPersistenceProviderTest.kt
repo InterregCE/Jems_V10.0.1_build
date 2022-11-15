@@ -4,9 +4,9 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
 import io.cloudflight.jems.server.project.entity.report.procurement.ProjectPartnerReportProcurementEntity
 import io.cloudflight.jems.server.project.entity.report.procurement.file.ProjectPartnerReportProcurementFileEntity
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType
-import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
-import io.cloudflight.jems.server.project.service.report.model.file.procurement.ProjectReportProcurementFile
+import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectPartnerReportFileType
+import io.cloudflight.jems.server.project.service.report.model.partner.file.UserSimple
+import io.cloudflight.jems.server.project.service.report.model.partner.file.procurement.ProjectReportProcurementFile
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.mockk.*

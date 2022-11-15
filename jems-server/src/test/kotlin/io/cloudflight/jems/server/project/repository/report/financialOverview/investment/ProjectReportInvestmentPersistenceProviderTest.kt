@@ -7,7 +7,7 @@ import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportInvestmentEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportInvestmentTranslEntity
 import io.cloudflight.jems.server.project.repository.report.expenditure.ProjectPartnerReportInvestmentRepository
-import io.cloudflight.jems.server.project.service.report.model.financialOverview.investments.ExpenditureInvestmentBreakdownLine
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.investments.ExpenditureInvestmentBreakdownLine
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs

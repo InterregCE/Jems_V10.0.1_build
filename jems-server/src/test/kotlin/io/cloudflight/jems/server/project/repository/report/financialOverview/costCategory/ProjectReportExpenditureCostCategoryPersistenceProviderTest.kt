@@ -5,7 +5,7 @@ import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEnti
 import io.cloudflight.jems.server.project.entity.report.financialOverview.ReportProjectPartnerExpenditureCostCategoryEntity
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
-import io.cloudflight.jems.server.project.service.report.model.financialOverview.costCategory.ReportExpenditureCostCategory
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.costCategory.ReportExpenditureCostCategory
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs

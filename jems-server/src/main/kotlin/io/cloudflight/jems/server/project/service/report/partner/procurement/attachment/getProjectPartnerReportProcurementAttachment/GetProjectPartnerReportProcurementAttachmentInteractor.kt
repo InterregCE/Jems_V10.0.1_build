@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.service.report.partner.procurement.attachment.getProjectPartnerReportProcurementAttachment
 
-import io.cloudflight.jems.server.project.service.report.model.file.procurement.ProjectReportProcurementFile
+import io.cloudflight.jems.server.project.service.report.model.partner.file.procurement.ProjectReportProcurementFile
 
 interface GetProjectPartnerReportProcurementAttachmentInteractor {
 

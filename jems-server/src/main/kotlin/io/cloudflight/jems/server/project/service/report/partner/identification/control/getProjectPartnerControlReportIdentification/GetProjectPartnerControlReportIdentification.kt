@@ -7,8 +7,8 @@ import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.contracting.monitoring.getProjectContractingMonitoring.GetContractingMonitoringService
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
-import io.cloudflight.jems.server.project.service.report.model.ReportStatus
-import io.cloudflight.jems.server.project.service.report.model.identification.control.ProjectPartnerControlReport
+import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ProjectPartnerControlReport
 import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectReportIdentificationPersistence
 import io.cloudflight.jems.server.project.service.report.partner.identification.control.toModelObject
 import io.cloudflight.jems.server.project.service.report.partner.identification.getProjectPartnerReportIdentification.GetProjectPartnerReportIdentification.Companion.emptyIdentification

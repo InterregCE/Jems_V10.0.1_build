@@ -2,8 +2,8 @@ package io.cloudflight.jems.server.project.service.report.partner.procurement.de
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
-import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportStatusAndVersion
-import io.cloudflight.jems.server.project.service.report.model.ReportStatus
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportStatusAndVersion
+import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectReportProcurementPersistence
 import io.mockk.clearMocks
 import io.mockk.every

@@ -4,8 +4,8 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.setInternalFileDescription.SetInternalFileDescription
-import io.cloudflight.jems.server.project.service.report.file.ProjectReportFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType
+import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
+import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectPartnerReportFileType
 import io.cloudflight.jems.server.project.service.report.partner.file.setDescriptionToFile.FileNotFound
 import io.mockk.clearMocks
 import io.mockk.every

@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.project.service.report.partner.procurement.be
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanViewPartnerReport
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
-import io.cloudflight.jems.server.project.service.report.model.procurement.beneficial.ProjectPartnerReportProcurementBeneficialOwner
+import io.cloudflight.jems.server.project.service.report.model.partner.procurement.beneficial.ProjectPartnerReportProcurementBeneficialOwner
 import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectReportProcurementPersistence
 import io.cloudflight.jems.server.project.service.report.partner.procurement.beneficial.ProjectReportProcurementBeneficialPersistence
 import io.cloudflight.jems.server.project.service.report.partner.procurement.beneficial.fillThisReportFlag

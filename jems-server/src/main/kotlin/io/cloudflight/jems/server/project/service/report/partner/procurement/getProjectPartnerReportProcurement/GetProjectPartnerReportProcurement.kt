@@ -4,7 +4,7 @@ import io.cloudflight.jems.server.call.service.model.IdNamePair
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanViewPartnerReport
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
-import io.cloudflight.jems.server.project.service.report.model.procurement.ProjectPartnerReportProcurementSummary
+import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectPartnerReportProcurementSummary
 import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectReportProcurementPersistence
 import io.cloudflight.jems.server.project.service.report.partner.procurement.fillThisReportFlag
 import org.springframework.data.domain.Page

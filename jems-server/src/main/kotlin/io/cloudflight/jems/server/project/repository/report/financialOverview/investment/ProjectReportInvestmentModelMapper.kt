@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.project.repository.report.financialOverview.i
 
 import io.cloudflight.jems.server.common.entity.extractField
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportInvestmentEntity
-import io.cloudflight.jems.server.project.service.report.model.financialOverview.investments.ExpenditureInvestmentBreakdownLine
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.investments.ExpenditureInvestmentBreakdownLine
 
 fun PartnerReportInvestmentEntity.toModel() = ExpenditureInvestmentBreakdownLine(
     reportInvestmentId = id,

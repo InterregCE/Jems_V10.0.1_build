@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.project.repository.report.financialOverview.l
 
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.project.repository.report.expenditure.ProjectPartnerReportLumpSumRepository
-import io.cloudflight.jems.server.project.service.report.model.financialOverview.lumpSum.ExpenditureLumpSumBreakdownLine
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.lumpSum.ExpenditureLumpSumBreakdownLine
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportLumpSumPersistence
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional

@@ -5,11 +5,11 @@ import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
-import io.cloudflight.jems.server.project.service.report.file.ProjectReportFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileCreate
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
-import io.cloudflight.jems.server.project.service.report.model.procurement.ProjectPartnerReportProcurement
+import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
+import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectPartnerReportFileType
+import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFileCreate
+import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectPartnerReportProcurement
 import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectReportProcurementPersistence
 import io.cloudflight.jems.server.project.service.report.partner.procurement.attachment.ProjectReportProcurementAttachmentPersistence
 import io.mockk.clearMocks

@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.entity.report.file
 
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType
+import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectPartnerReportFileType
 import io.cloudflight.jems.server.user.entity.UserEntity
 import java.time.ZonedDateTime
 import javax.persistence.Entity

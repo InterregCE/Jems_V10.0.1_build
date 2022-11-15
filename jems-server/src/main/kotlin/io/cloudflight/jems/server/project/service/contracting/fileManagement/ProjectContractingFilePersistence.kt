@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.contracting.fileManagement
 
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileCreate
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFileCreate
+import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFileMetadata
 
 interface ProjectContractingFilePersistence {
 

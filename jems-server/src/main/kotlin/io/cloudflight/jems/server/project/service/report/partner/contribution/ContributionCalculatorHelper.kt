@@ -1,11 +1,11 @@
 package io.cloudflight.jems.server.project.service.report.partner.contribution
 
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
-import io.cloudflight.jems.server.project.service.report.model.contribution.ProjectPartnerReportContribution
-import io.cloudflight.jems.server.project.service.report.model.contribution.ProjectPartnerReportContributionData
-import io.cloudflight.jems.server.project.service.report.model.contribution.ProjectPartnerReportContributionOverview
-import io.cloudflight.jems.server.project.service.report.model.contribution.ProjectPartnerReportContributionRow
-import io.cloudflight.jems.server.project.service.report.model.contribution.withoutCalculations.ProjectPartnerReportEntityContribution
+import io.cloudflight.jems.server.project.service.report.model.partner.contribution.ProjectPartnerReportContribution
+import io.cloudflight.jems.server.project.service.report.model.partner.contribution.ProjectPartnerReportContributionData
+import io.cloudflight.jems.server.project.service.report.model.partner.contribution.ProjectPartnerReportContributionOverview
+import io.cloudflight.jems.server.project.service.report.model.partner.contribution.ProjectPartnerReportContributionRow
+import io.cloudflight.jems.server.project.service.report.model.partner.contribution.withoutCalculations.ProjectPartnerReportEntityContribution
 import java.math.BigDecimal
 
 private val emptySumUp = ProjectPartnerReportContributionRow(

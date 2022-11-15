@@ -2,8 +2,8 @@ package io.cloudflight.jems.server.project.repository.report.procurement.benefic
 
 import io.cloudflight.jems.server.project.entity.report.procurement.ProjectPartnerReportProcurementEntity
 import io.cloudflight.jems.server.project.entity.report.procurement.beneficial.ProjectPartnerReportProcurementBeneficialEntity
-import io.cloudflight.jems.server.project.service.report.model.procurement.beneficial.ProjectPartnerReportProcurementBeneficialChange
-import io.cloudflight.jems.server.project.service.report.model.procurement.beneficial.ProjectPartnerReportProcurementBeneficialOwner
+import io.cloudflight.jems.server.project.service.report.model.partner.procurement.beneficial.ProjectPartnerReportProcurementBeneficialChange
+import io.cloudflight.jems.server.project.service.report.model.partner.procurement.beneficial.ProjectPartnerReportProcurementBeneficialOwner
 
 fun List<ProjectPartnerReportProcurementBeneficialEntity>.toModel() = map {
     ProjectPartnerReportProcurementBeneficialOwner(

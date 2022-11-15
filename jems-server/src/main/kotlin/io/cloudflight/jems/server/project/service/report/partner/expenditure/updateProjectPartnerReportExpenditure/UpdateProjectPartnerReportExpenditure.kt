@@ -4,11 +4,11 @@ import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.authorization.CanEditPartnerReport
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
-import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportExpenditureCost
-import io.cloudflight.jems.server.project.service.report.model.ReportStatus
-import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportLumpSum
-import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportUnitCost
-import io.cloudflight.jems.server.project.service.report.model.expenditure.ReportBudgetCategory
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
+import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportLumpSum
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportUnitCost
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectReportExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.clearConversions
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.fillInLumpSum

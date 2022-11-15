@@ -7,8 +7,8 @@ import io.cloudflight.jems.server.project.service.file.model.ProjectFileCategory
 import io.cloudflight.jems.server.project.service.file.model.ProjectFileMetadata
 import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectPartnerReportFileType
+import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFileMetadata
 
 fun projectFileUploadSuccess(
     context: Any,

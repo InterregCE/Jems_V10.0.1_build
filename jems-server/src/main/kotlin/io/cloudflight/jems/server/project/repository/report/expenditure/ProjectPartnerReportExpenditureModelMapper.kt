@@ -11,7 +11,7 @@ import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerRepor
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportLumpSumEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportUnitCostEntity
 import io.cloudflight.jems.server.project.repository.report.toModel
-import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportExpenditureCost
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
 
 fun List<PartnerReportExpenditureCostEntity>.toModel() = map {
     ProjectPartnerReportExpenditureCost(

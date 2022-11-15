@@ -5,7 +5,7 @@ import io.cloudflight.jems.server.project.authorization.CanViewContractInfo
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.FileNotFound
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.ProjectContractingFilePersistence
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.validateContractFile
-import io.cloudflight.jems.server.project.service.report.file.ProjectReportFilePersistence
+import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 

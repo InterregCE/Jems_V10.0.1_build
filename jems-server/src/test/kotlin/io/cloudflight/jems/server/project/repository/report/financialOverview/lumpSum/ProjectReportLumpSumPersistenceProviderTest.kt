@@ -9,7 +9,7 @@ import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumTr
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportLumpSumEntity
 import io.cloudflight.jems.server.project.repository.report.expenditure.ProjectPartnerReportLumpSumRepository
-import io.cloudflight.jems.server.project.service.report.model.financialOverview.lumpSum.ExpenditureLumpSumBreakdownLine
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.lumpSum.ExpenditureLumpSumBreakdownLine
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs

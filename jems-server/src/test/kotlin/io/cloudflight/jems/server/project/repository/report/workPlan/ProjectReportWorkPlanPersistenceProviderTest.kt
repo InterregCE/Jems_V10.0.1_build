@@ -15,11 +15,11 @@ import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerR
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageOutputTranslEntity
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageTranslEntity
 import io.cloudflight.jems.server.project.repository.report.ProjectPartnerReportRepository
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
-import io.cloudflight.jems.server.project.service.report.model.workPlan.ProjectPartnerReportWorkPackage
-import io.cloudflight.jems.server.project.service.report.model.workPlan.ProjectPartnerReportWorkPackageActivity
-import io.cloudflight.jems.server.project.service.report.model.workPlan.ProjectPartnerReportWorkPackageActivityDeliverable
-import io.cloudflight.jems.server.project.service.report.model.workPlan.ProjectPartnerReportWorkPackageOutput
+import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.ProjectPartnerReportWorkPackage
+import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.ProjectPartnerReportWorkPackageActivity
+import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.ProjectPartnerReportWorkPackageActivityDeliverable
+import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.ProjectPartnerReportWorkPackageOutput
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK

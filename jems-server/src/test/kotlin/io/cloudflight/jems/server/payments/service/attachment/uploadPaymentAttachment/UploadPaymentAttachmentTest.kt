@@ -6,10 +6,10 @@ import io.cloudflight.jems.server.common.minio.GenericProjectFileRepository
 import io.cloudflight.jems.server.payments.PaymentPersistence
 import io.cloudflight.jems.server.payments.service.model.PaymentDetail
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
-import io.cloudflight.jems.server.project.service.report.file.ProjectReportFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileCreate
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
+import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectPartnerReportFileType
+import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFileCreate
+import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFileMetadata
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs

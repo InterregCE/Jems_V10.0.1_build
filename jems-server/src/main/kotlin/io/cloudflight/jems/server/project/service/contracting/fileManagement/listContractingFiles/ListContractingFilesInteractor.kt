@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.contracting.fileManagement.listContractingFiles
 
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingFileSearchRequest
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFile
+import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFile
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 

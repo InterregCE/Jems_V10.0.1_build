@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.project.repository.report
 
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.repository.report.repositoryModel.ReportSummary
-import io.cloudflight.jems.server.project.service.report.model.ReportStatus
+import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.JpaRepository

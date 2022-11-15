@@ -31,9 +31,9 @@ import io.cloudflight.jems.server.project.service.contracting.fileManagement.set
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.uploadFileToContracting.UploadFileToContractingInteractor
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingFileSearchRequest
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFile
-import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
+import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectPartnerReportFileType
+import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFile
+import io.cloudflight.jems.server.project.service.report.model.partner.file.UserSimple
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs

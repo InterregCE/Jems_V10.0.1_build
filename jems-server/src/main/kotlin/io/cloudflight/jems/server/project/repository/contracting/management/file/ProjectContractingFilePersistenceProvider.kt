@@ -6,7 +6,7 @@ import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEn
 import io.cloudflight.jems.server.project.repository.report.file.ProjectReportFileRepository
 import io.cloudflight.jems.server.project.repository.report.file.getMinioFullPath
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.ProjectContractingFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileCreate
+import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFileCreate
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 

@@ -1,9 +1,9 @@
 package io.cloudflight.jems.server.project.service.report
 
-import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReport
-import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportStatusAndVersion
-import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSubmissionSummary
-import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSummary
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportStatusAndVersion
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSummary
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import java.time.ZonedDateTime

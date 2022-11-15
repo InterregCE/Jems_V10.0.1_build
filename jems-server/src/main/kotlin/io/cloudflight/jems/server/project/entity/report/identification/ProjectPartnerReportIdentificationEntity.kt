@@ -1,12 +1,11 @@
 package io.cloudflight.jems.server.project.entity.report.identification
 
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
-import io.cloudflight.jems.server.project.service.report.model.identification.control.ReportType
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportType
 import java.io.Serializable
 import java.math.BigDecimal
 import java.time.LocalDate
 import javax.persistence.CascadeType
-import javax.persistence.Embedded
 import javax.persistence.Entity
 import javax.persistence.EnumType
 import javax.persistence.Enumerated

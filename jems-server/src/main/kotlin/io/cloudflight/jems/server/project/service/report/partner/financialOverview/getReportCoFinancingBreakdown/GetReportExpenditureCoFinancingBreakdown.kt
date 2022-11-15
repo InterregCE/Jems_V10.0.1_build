@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.project.service.report.partner.financialOverv
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanViewPartnerReport
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
-import io.cloudflight.jems.server.project.service.report.model.financialOverview.coFinancing.ExpenditureCoFinancingBreakdown
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ExpenditureCoFinancingBreakdown
 import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectReportContributionPersistence
 import io.cloudflight.jems.server.project.service.report.partner.contribution.extractOverview
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureCoFinancingPersistence

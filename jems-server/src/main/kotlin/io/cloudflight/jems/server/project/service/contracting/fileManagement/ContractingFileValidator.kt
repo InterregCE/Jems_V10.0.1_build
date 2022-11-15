@@ -4,7 +4,7 @@ import io.cloudflight.jems.server.project.service.contracting.fileManagement.lis
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.listContractingFiles.InvalidSearchFilterConfiguration
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.listContractingFiles.InvalidSearchFilterPartnerWithoutId
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingFileSearchRequest
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType
+import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectPartnerReportFileType
 import io.cloudflight.jems.server.project.service.report.partner.file.listProjectPartnerReportFile.validateSearchConfiguration
 
 val MONITORING_ALLOWED_FILE_TYPES = mapOf(

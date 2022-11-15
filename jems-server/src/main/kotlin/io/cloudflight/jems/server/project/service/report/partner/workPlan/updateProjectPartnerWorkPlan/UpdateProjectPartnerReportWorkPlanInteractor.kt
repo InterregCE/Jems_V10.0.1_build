@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.partner.workPlan.updateProjectPartnerWorkPlan
 
-import io.cloudflight.jems.server.project.service.report.model.workPlan.ProjectPartnerReportWorkPackage
-import io.cloudflight.jems.server.project.service.report.model.workPlan.update.UpdateProjectPartnerReportWorkPackage
+import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.ProjectPartnerReportWorkPackage
+import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.update.UpdateProjectPartnerReportWorkPackage
 
 interface UpdateProjectPartnerReportWorkPlanInteractor {
 

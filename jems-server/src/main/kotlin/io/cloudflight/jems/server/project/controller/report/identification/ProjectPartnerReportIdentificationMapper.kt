@@ -5,11 +5,11 @@ import io.cloudflight.jems.api.project.dto.report.partner.identification.Project
 import io.cloudflight.jems.api.project.dto.report.partner.identification.UpdateProjectPartnerReportIdentificationDTO
 import io.cloudflight.jems.api.project.dto.report.partner.identification.control.ProjectPartnerControlReportChangeDTO
 import io.cloudflight.jems.api.project.dto.report.partner.identification.control.ProjectPartnerControlReportDTO
-import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportIdentification
-import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportPeriod
-import io.cloudflight.jems.server.project.service.report.model.identification.UpdateProjectPartnerReportIdentification
-import io.cloudflight.jems.server.project.service.report.model.identification.control.ProjectPartnerControlReport
-import io.cloudflight.jems.server.project.service.report.model.identification.control.ProjectPartnerControlReportChange
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportIdentification
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportPeriod
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.UpdateProjectPartnerReportIdentification
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ProjectPartnerControlReport
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ProjectPartnerControlReportChange
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping
 import org.mapstruct.factory.Mappers

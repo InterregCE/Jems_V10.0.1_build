@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.project.controller.report
 
 import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadataDTO
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFileMetadata
 import io.mockk.every
 import io.mockk.mockk
 import org.springframework.web.multipart.MultipartFile

@@ -3,8 +3,8 @@ package io.cloudflight.jems.server.payments.service.attachment.setDescriptionToP
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.minio.GenericProjectFileRepository
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
-import io.cloudflight.jems.server.project.service.report.file.ProjectReportFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType.PaymentAttachment
+import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
+import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectPartnerReportFileType.PaymentAttachment
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs

@@ -9,10 +9,10 @@ import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEnti
 import io.cloudflight.jems.server.project.entity.report.identification.*
 import io.cloudflight.jems.server.project.repository.report.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
-import io.cloudflight.jems.server.project.service.report.model.identification.*
-import io.cloudflight.jems.server.project.service.report.model.identification.control.ProjectPartnerControlReportChange
-import io.cloudflight.jems.server.project.service.report.model.identification.control.ReportFileFormat
-import io.cloudflight.jems.server.project.service.report.model.identification.control.ReportType
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.*
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ProjectPartnerControlReportChange
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportFileFormat
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportType
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs

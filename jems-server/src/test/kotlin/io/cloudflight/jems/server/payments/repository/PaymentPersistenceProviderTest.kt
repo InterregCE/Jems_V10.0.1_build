@@ -44,7 +44,7 @@ import io.cloudflight.jems.server.project.repository.toModel
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType
+import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectPartnerReportFileType
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import io.cloudflight.jems.server.user.repository.user.UserRepository

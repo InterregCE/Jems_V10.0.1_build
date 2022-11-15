@@ -8,7 +8,7 @@ import io.cloudflight.jems.server.project.repository.file.ProjectFilePersistence
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.file.ProjectFilePersistence
 import io.cloudflight.jems.server.project.service.file.model.ProjectFileMetadata
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFileMetadata
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional

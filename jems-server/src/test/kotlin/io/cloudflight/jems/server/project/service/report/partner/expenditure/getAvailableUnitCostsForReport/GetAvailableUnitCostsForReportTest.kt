@@ -3,8 +3,8 @@ package io.cloudflight.jems.server.project.service.report.partner.expenditure.ge
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportUnitCost
-import io.cloudflight.jems.server.project.service.report.model.expenditure.ReportBudgetCategory
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportUnitCost
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectReportExpenditurePersistence
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs

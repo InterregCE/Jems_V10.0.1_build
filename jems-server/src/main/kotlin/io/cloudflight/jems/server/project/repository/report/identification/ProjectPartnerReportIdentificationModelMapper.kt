@@ -4,11 +4,11 @@ import io.cloudflight.jems.server.common.entity.extractField
 import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportBudgetPerPeriodEntity
 import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportIdentificationEntity
 import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportIdentificationTargetGroupEntity
-import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportIdentification
-import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportIdentificationTargetGroup
-import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportPeriod
-import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportSpendingProfile
-import io.cloudflight.jems.server.project.service.report.model.identification.control.ReportFileFormat
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportIdentification
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportIdentificationTargetGroup
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportPeriod
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportSpendingProfile
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportFileFormat
 import java.math.BigDecimal
 
 fun ProjectPartnerReportIdentificationEntity.toModel(

@@ -1,9 +1,9 @@
 package io.cloudflight.jems.server.project.service.report.partner.identification
 
-import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportIdentification
-import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportPeriod
-import io.cloudflight.jems.server.project.service.report.model.identification.UpdateProjectPartnerReportIdentification
-import io.cloudflight.jems.server.project.service.report.model.identification.control.ProjectPartnerControlReportChange
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportIdentification
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportPeriod
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.UpdateProjectPartnerReportIdentification
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ProjectPartnerControlReportChange
 import java.util.Optional
 
 interface ProjectReportIdentificationPersistence {

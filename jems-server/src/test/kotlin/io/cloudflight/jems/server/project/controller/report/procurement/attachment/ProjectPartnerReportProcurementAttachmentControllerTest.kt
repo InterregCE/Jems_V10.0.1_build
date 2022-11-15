@@ -6,10 +6,10 @@ import io.cloudflight.jems.api.project.dto.report.file.UserSimpleDTO
 import io.cloudflight.jems.api.project.dto.report.partner.procurement.attachment.ProjectReportProcurementFileDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
-import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
-import io.cloudflight.jems.server.project.service.report.model.file.procurement.ProjectReportProcurementFile
+import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectPartnerReportFileType
+import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.partner.file.UserSimple
+import io.cloudflight.jems.server.project.service.report.model.partner.file.procurement.ProjectReportProcurementFile
 import io.cloudflight.jems.server.project.service.report.partner.procurement.attachment.getProjectPartnerReportProcurementAttachment.GetProjectPartnerReportProcurementAttachmentInteractor
 import io.cloudflight.jems.server.project.service.report.partner.procurement.attachment.uploadFileToProjectPartnerReportProcurementAttachment.UploadFileToProjectPartnerReportProcurementAttachmentInteractor
 import io.cloudflight.jems.server.utils.FILE_NAME

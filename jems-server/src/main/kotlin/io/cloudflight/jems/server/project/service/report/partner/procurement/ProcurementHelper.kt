@@ -1,10 +1,10 @@
 package io.cloudflight.jems.server.project.service.report.partner.procurement
 
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
-import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportStatusAndVersion
-import io.cloudflight.jems.server.project.service.report.model.procurement.ProjectPartnerReportProcurement
-import io.cloudflight.jems.server.project.service.report.model.procurement.ProjectPartnerReportProcurementChange
-import io.cloudflight.jems.server.project.service.report.model.procurement.ProjectPartnerReportProcurementSummary
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportStatusAndVersion
+import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectPartnerReportProcurement
+import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectPartnerReportProcurementChange
+import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectPartnerReportProcurementSummary
 import org.springframework.data.domain.Page
 import java.math.BigDecimal
 

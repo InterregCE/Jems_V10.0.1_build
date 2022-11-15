@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.project.repository.report.financialOverview.c
 import io.cloudflight.jems.server.project.entity.report.financialOverview.ReportProjectPartnerExpenditureCostCategoryEntity
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
-import io.cloudflight.jems.server.project.service.report.model.financialOverview.costCategory.ReportExpenditureCostCategory
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.costCategory.ReportExpenditureCostCategory
 
 fun ReportProjectPartnerExpenditureCostCategoryEntity.toModel() = ReportExpenditureCostCategory(
     options = ProjectPartnerBudgetOptions(

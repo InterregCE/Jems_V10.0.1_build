@@ -21,9 +21,9 @@ import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepos
 import io.cloudflight.jems.server.project.repository.partner.toProjectPartnerDetail
 import io.cloudflight.jems.server.project.repository.report.file.ProjectReportFileRepository
 import io.cloudflight.jems.server.project.service.ProjectPersistence
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType.PaymentAdvanceAttachment
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType.PaymentAttachment
+import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectPartnerReportFileType
+import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectPartnerReportFileType.PaymentAdvanceAttachment
+import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectPartnerReportFileType.PaymentAttachment
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.repository.user.UserRepository
 import org.springframework.data.domain.Page

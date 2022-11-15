@@ -6,9 +6,9 @@ import io.cloudflight.jems.api.project.dto.report.partner.procurement.ProjectPar
 import io.cloudflight.jems.api.project.dto.report.partner.procurement.ProjectPartnerReportProcurementSummaryDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.service.model.IdNamePair
-import io.cloudflight.jems.server.project.service.report.model.procurement.ProjectPartnerReportProcurement
-import io.cloudflight.jems.server.project.service.report.model.procurement.ProjectPartnerReportProcurementChange
-import io.cloudflight.jems.server.project.service.report.model.procurement.ProjectPartnerReportProcurementSummary
+import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectPartnerReportProcurement
+import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectPartnerReportProcurementChange
+import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectPartnerReportProcurementSummary
 import io.cloudflight.jems.server.project.service.report.partner.procurement.createProjectPartnerReportProcurement.CreateProjectPartnerReportProcurementInteractor
 import io.cloudflight.jems.server.project.service.report.partner.procurement.deleteProjectPartnerReportProcurement.DeleteProjectPartnerReportProcurementInteractor
 import io.cloudflight.jems.server.project.service.report.partner.procurement.getProjectPartnerReportProcurement.GetProjectPartnerReportProcurementInteractor

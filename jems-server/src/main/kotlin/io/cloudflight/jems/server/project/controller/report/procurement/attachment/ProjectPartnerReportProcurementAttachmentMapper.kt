@@ -4,7 +4,7 @@ import io.cloudflight.jems.api.project.dto.report.file.ProjectPartnerReportFileT
 import io.cloudflight.jems.api.project.dto.report.partner.procurement.attachment.ProjectReportProcurementFileDTO
 import io.cloudflight.jems.server.project.controller.report.partnerReportMapper
 import io.cloudflight.jems.server.project.controller.report.sizeToString
-import io.cloudflight.jems.server.project.service.report.model.file.procurement.ProjectReportProcurementFile
+import io.cloudflight.jems.server.project.service.report.model.partner.file.procurement.ProjectReportProcurementFile
 
 fun ProjectReportProcurementFile.toDto() = ProjectReportProcurementFileDTO(
     id = id,

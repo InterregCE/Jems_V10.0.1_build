@@ -11,10 +11,10 @@ import io.cloudflight.jems.server.payments.service.attachment.getPaymentAttchame
 import io.cloudflight.jems.server.payments.service.attachment.setDescriptionToPaymentAttachment.SetDescriptionToPaymentAttachmentInteractor
 import io.cloudflight.jems.server.payments.service.attachment.uploadPaymentAttachment.UploadPaymentAttachmentInteractor
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFile
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
-import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
+import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectPartnerReportFileType
+import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFile
+import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.partner.file.UserSimple
 import io.cloudflight.jems.server.utils.FILE_NAME
 import io.cloudflight.jems.server.utils.file
 import io.mockk.clearMocks

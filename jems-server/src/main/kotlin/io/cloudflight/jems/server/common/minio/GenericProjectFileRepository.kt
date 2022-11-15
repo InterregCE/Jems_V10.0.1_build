@@ -10,9 +10,9 @@ import io.cloudflight.jems.server.project.repository.report.file.getMinioFullPat
 import io.cloudflight.jems.server.project.repository.report.file.toEntity
 import io.cloudflight.jems.server.project.repository.report.toModel
 import io.cloudflight.jems.server.project.repository.toSummaryModel
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileCreate
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectPartnerReportFileType
+import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFileCreate
+import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFileMetadata
 import io.cloudflight.jems.server.user.repository.user.UserRepository
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Repository

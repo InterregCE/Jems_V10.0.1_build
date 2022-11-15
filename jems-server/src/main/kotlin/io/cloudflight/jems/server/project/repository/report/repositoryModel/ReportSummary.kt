@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.repository.report.repositoryModel
 
-import io.cloudflight.jems.server.project.service.report.model.ReportStatus
-import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportPeriod
+import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportPeriod
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.ZonedDateTime

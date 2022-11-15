@@ -2,8 +2,8 @@ package io.cloudflight.jems.server.project.repository.report.financialOverview.c
 
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportCoFinancingEntity
 import io.cloudflight.jems.server.project.entity.report.financialOverview.ReportProjectPartnerExpenditureCoFinancingEntity
-import io.cloudflight.jems.server.project.service.report.model.financialOverview.coFinancing.ReportExpenditureCoFinancing
-import io.cloudflight.jems.server.project.service.report.model.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancing
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn
 import java.math.BigDecimal
 
 fun ReportProjectPartnerExpenditureCoFinancingEntity.toModel(

@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.service.report.partner.identification.getProjectPartnerReportIdentification
 
-import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportIdentification
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportIdentification
 import java.math.BigDecimal
 import java.math.RoundingMode
 

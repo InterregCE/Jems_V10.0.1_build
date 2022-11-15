@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.project.controller.report
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
-import io.cloudflight.jems.server.project.service.report.getProjectReportPartnerList.GetProjectReportPartnerListInteractor
+import io.cloudflight.jems.server.project.service.report.partner.base.getProjectReportPartnerList.GetProjectReportPartnerListInteractor
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK

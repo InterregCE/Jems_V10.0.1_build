@@ -1,10 +1,10 @@
 package io.cloudflight.jems.server.project.repository.report.file
 
 import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFile
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileCreate
+import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFile
+import io.cloudflight.jems.server.project.service.report.model.partner.file.ProjectReportFileCreate
 import io.cloudflight.jems.server.user.entity.UserEntity
-import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
+import io.cloudflight.jems.server.project.service.report.model.partner.file.UserSimple
 import org.springframework.data.domain.Page
 import java.time.ZonedDateTime
 

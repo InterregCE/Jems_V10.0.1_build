@@ -3,8 +3,8 @@ package io.cloudflight.jems.server.project.service.report.partner.procurement.ge
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.service.model.IdNamePair
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
-import io.cloudflight.jems.server.project.service.report.model.procurement.ProjectPartnerReportProcurement
-import io.cloudflight.jems.server.project.service.report.model.procurement.ProjectPartnerReportProcurementSummary
+import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectPartnerReportProcurement
+import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectPartnerReportProcurementSummary
 import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectReportProcurementPersistence
 import io.mockk.clearMocks
 import io.mockk.every
