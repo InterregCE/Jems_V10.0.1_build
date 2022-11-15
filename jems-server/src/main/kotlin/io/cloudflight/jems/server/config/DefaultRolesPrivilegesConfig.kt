@@ -33,7 +33,7 @@ class DefaultRolesPrivilegesConfig(
                          UserRole(
                              id = it.id,
                              name = it.name,
-                             permissions = UserRolePermission.getProgrammeUserRoleDefaultPermissions(),
+                             permissions = UserRolePermission.programmeUserRoleDefaultPermissions,
                              isDefault = it.isDefault
                          )
                      )

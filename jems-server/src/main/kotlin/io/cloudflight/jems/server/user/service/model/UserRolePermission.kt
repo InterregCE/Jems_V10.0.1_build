@@ -135,7 +135,8 @@ enum class UserRolePermission(val key: String, val projectRelated: Boolean = fal
             ProjectModificationFileAssessmentRetrieve
         )
 
-        fun getProgrammeUserRoleDefaultPermissions() = setOf(
+       val programmeUserRoleDefaultPermissions = setOf(
+            ProjectReportingView,
             ProjectContractingPartnerView,
             ProjectContractingView,
             ProjectSetToContracted,
