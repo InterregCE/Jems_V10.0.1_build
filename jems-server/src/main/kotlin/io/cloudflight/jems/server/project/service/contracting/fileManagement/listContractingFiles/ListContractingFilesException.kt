@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.project.service.contracting.fileManagement.li
 import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.server.common.exception.ApplicationException
 import io.cloudflight.jems.server.common.exception.ApplicationUnprocessableException
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 
 private const val LIST_CONTRACTING_FILES_ERROR_CODE_PREFIX = "S-LCF"
 private const val LIST_CONTRACTING_FILES_ERROR_KEY_PREFIX = "use.case.list.contracting.files"
@@ -19,7 +19,7 @@ class InvalidSearchConfiguration : ApplicationUnprocessableException(
     i18nMessage = I18nMessage("$LIST_CONTRACTING_FILES_ERROR_KEY_PREFIX.invalid.search.configuration"),
 )
 
-class InvalidSearchFilterConfiguration(invalidFilters: Set<ProjectPartnerReportFileType>) : ApplicationUnprocessableException(
+class InvalidSearchFilterConfiguration(invalidFilters: Set<JemsFileType>) : ApplicationUnprocessableException(
     code = "$LIST_CONTRACTING_FILES_ERROR_CODE_PREFIX-002",
     i18nMessage = I18nMessage("$LIST_CONTRACTING_FILES_ERROR_KEY_PREFIX.invalid.search.filter.configuration"),
     message = "Following filters cannot be applied: $invalidFilters",

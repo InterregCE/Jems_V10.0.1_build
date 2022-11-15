@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.service.report.partner.financialOverview
 
-import io.cloudflight.jems.server.project.service.report.model.financialOverview.unitCost.ExpenditureUnitCostBreakdownLine
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.unitCost.ExpenditureUnitCostBreakdownLine
 import java.math.BigDecimal
 
 interface ProjectReportUnitCostPersistence {

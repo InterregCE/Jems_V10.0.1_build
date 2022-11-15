@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.project.service.report.partner.procurement.su
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanViewPartnerReport
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
-import io.cloudflight.jems.server.project.service.report.model.procurement.subcontract.ProjectPartnerReportProcurementSubcontract
+import io.cloudflight.jems.server.project.service.report.model.partner.procurement.subcontract.ProjectPartnerReportProcurementSubcontract
 import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectReportProcurementPersistence
 import io.cloudflight.jems.server.project.service.report.partner.procurement.subcontract.ProjectReportProcurementSubcontractPersistence
 import io.cloudflight.jems.server.project.service.report.partner.procurement.subcontract.fillThisReportFlag

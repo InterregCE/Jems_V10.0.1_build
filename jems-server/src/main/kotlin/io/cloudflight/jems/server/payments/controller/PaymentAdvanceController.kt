@@ -4,12 +4,12 @@ import io.cloudflight.jems.api.payments.dto.AdvancePaymentDTO
 import io.cloudflight.jems.api.payments.dto.AdvancePaymentDetailDTO
 import io.cloudflight.jems.api.payments.dto.AdvancePaymentUpdateDTO
 import io.cloudflight.jems.api.payments.PaymentAdvanceApi
-import io.cloudflight.jems.server.payments.service.deleteAdvancePayment.DeleteAdvancePaymentInteractor
-import io.cloudflight.jems.server.payments.service.getAdvancePaymentDetail.GetAdvancePaymentDetailInteractor
-import io.cloudflight.jems.server.payments.service.getAdvancePayments.GetAdvancePaymentsInteractor
+import io.cloudflight.jems.server.payments.service.advance.deleteAdvancePayment.DeleteAdvancePaymentInteractor
+import io.cloudflight.jems.server.payments.service.advance.getAdvancePaymentDetail.GetAdvancePaymentDetailInteractor
+import io.cloudflight.jems.server.payments.service.advance.getAdvancePayments.GetAdvancePaymentsInteractor
 import io.cloudflight.jems.server.payments.service.toDTO
 import io.cloudflight.jems.server.payments.service.toModel
-import io.cloudflight.jems.server.payments.service.updateAdvancePaymentDetail.UpdateAdvancePaymentDetailInteractor
+import io.cloudflight.jems.server.payments.service.advance.updateAdvancePaymentDetail.UpdateAdvancePaymentDetailInteractor
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.web.bind.annotation.RestController

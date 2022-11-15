@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.project.service.report.partner.file.control.s
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
-import io.cloudflight.jems.server.project.service.report.file.ProjectReportFilePersistence
+import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
 import io.cloudflight.jems.server.project.service.report.partner.file.control.ControlReportFileAuthorizationService
 import io.mockk.clearMocks
 import io.mockk.every

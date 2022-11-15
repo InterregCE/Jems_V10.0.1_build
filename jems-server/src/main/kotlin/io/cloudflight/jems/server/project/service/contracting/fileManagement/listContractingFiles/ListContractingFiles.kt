@@ -8,10 +8,10 @@ import io.cloudflight.jems.server.project.service.contracting.fileManagement.MON
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.validateConfiguration
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingFileSearchRequest
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
-import io.cloudflight.jems.server.project.service.report.file.ProjectReportFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType.*
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFile
+import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.*
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFile
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -33,7 +33,7 @@ class ListContractingFiles(
         partnerId: Long?,
         pageable: Pageable,
         searchRequest: ProjectContractingFileSearchRequest,
-    ): Page<ProjectReportFile> {
+    ): Page<JemsFile> {
 
         if (projectMonitoringAuthorization.canViewProjectMonitoring(projectId)) {
             validateConfiguration(searchRequest = searchRequest, partnerId, MONITORING_ALLOWED_FILE_TYPES)
@@ -62,7 +62,7 @@ class ListContractingFiles(
     }
 
     private fun generateSearchString(
-        treeNode: ProjectPartnerReportFileType,
+        treeNode: JemsFileType,
         projectId: Long,
         partnerId: Long?,
     ): String {
@@ -77,9 +77,9 @@ class ListContractingFiles(
     }
 
     private fun getFileSubTypesBasedOnContractInfoPermission(
-        filterSubtypes: Set<ProjectPartnerReportFileType>,
+        filterSubtypes: Set<JemsFileType>,
         projectId: Long
-    ): Set<ProjectPartnerReportFileType> {
+    ): Set<JemsFileType> {
         return if (contractInfoAuth.canViewContractInfo(projectId) || contractInfoAuth.canEditContractInfo(projectId)) {
             filterSubtypes
         } else {

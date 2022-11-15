@@ -5,8 +5,10 @@ import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
-import io.cloudflight.jems.server.project.service.report.file.ProjectReportFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.file.*
+import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileCreate
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -48,8 +50,8 @@ class UploadFileToProjectPartnerReportTest : UnitTest() {
         every { reportPersistence.exists(45L, 900L) } returns true
         every { partnerPersistence.getProjectIdForPartnerId(45L) } returns PROJECT_ID
         every { reportFilePersistence.existsFile(expectedPath, "test.xlsx") } returns false
-        val fileToAdd = slot<ProjectReportFileCreate>()
-        val mockResult = mockk<ProjectReportFileMetadata>()
+        val fileToAdd = slot<JemsFileCreate>()
+        val mockResult = mockk<JemsFileMetadata>()
         every { securityService.getUserIdOrThrow() } returns USER_ID
         every { reportFilePersistence.addAttachmentToPartnerReport(capture(fileToAdd)) } returns mockResult
 
@@ -61,12 +63,12 @@ class UploadFileToProjectPartnerReportTest : UnitTest() {
         assertThat(interactor.uploadToReport(45L, 900L, file)).isEqualTo(mockResult)
 
         assertThat(fileToAdd.captured).isEqualTo(
-            ProjectReportFileCreate(
+            JemsFileCreate(
                 projectId = PROJECT_ID,
                 partnerId = 45L,
                 name = "test.xlsx",
                 path = expectedPath,
-                type = ProjectPartnerReportFileType.PartnerReport,
+                type = JemsFileType.PartnerReport,
                 size = 8L,
                 content = content,
                 userId = USER_ID,

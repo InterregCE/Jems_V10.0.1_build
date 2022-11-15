@@ -1,13 +1,13 @@
 package io.cloudflight.jems.server.project.repository.contracting.management.file
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.common.minio.GenericProjectFileRepository
+import io.cloudflight.jems.server.common.minio.JemsProjectFileRepository
 import io.cloudflight.jems.server.common.minio.MinioStorage
 import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
 import io.cloudflight.jems.server.project.repository.report.file.ProjectReportFileRepository
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileCreate
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileCreate
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import io.mockk.*
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -32,7 +32,7 @@ class ProjectContractingFilePersistenceProviderTest : UnitTest() {
             minioBucket = BUCKET,
             minioLocation = filePathFull,
             name = name,
-            type = ProjectPartnerReportFileType.Contract,
+            type = JemsFileType.Contract,
             size = 45L,
             user = mockk(),
             uploaded = LAST_WEEK,
@@ -48,7 +48,7 @@ class ProjectContractingFilePersistenceProviderTest : UnitTest() {
     lateinit var minioStorage: MinioStorage
 
     @MockK
-    lateinit var genericFileRepository: GenericProjectFileRepository
+    lateinit var fileRepository: JemsProjectFileRepository
 
     @InjectMockKs
     lateinit var persistence: ProjectContractingFilePersistenceProvider
@@ -57,15 +57,15 @@ class ProjectContractingFilePersistenceProviderTest : UnitTest() {
     fun reset() {
         clearMocks(reportFileRepository)
         clearMocks(minioStorage)
-        clearMocks(genericFileRepository)
+        clearMocks(fileRepository)
     }
 
     @Test
     fun uploadFile() {
-        val fileCreate = mockk<ProjectReportFileCreate>()
-        val metadataMock = mockk<ProjectReportFileMetadata>()
+        val fileCreate = mockk<JemsFileCreate>()
+        val metadataMock = mockk<JemsFileMetadata>()
 
-        every { genericFileRepository.persistProjectFile(fileCreate) } returns metadataMock
+        every { fileRepository.persistProjectFile(fileCreate) } returns metadataMock
         assertThat(persistence.uploadFile(file = fileCreate)).isEqualTo(metadataMock)
     }
 
@@ -94,11 +94,11 @@ class ProjectContractingFilePersistenceProviderTest : UnitTest() {
         every { file.minioLocation } returns "location"
         every { reportFileRepository.findByProjectIdAndId(PROJECT_ID, fileId = 15L) } returns file
 
-        every { genericFileRepository.delete(any()) } answers { }
+        every { fileRepository.delete(any()) } answers { }
 
         persistence.deleteFile(PROJECT_ID, fileId = 15L)
 
-        verify(exactly = 1) { genericFileRepository.delete(file) }
+        verify(exactly = 1) { fileRepository.delete(file) }
     }
 
     @Test
@@ -107,7 +107,7 @@ class ProjectContractingFilePersistenceProviderTest : UnitTest() {
 
         persistence.deleteFile(PROJECT_ID, fileId = -1L)
 
-        verify(exactly = 0) { genericFileRepository.delete(any()) }
+        verify(exactly = 0) { fileRepository.delete(any()) }
     }
 
     @Test
@@ -129,11 +129,11 @@ class ProjectContractingFilePersistenceProviderTest : UnitTest() {
         every { file.minioLocation } returns "location"
         every { reportFileRepository.findByPartnerIdAndId(partnerId = 1L, fileId = 15L) } returns file
 
-        every { genericFileRepository.delete(any()) } answers { }
+        every { fileRepository.delete(any()) } answers { }
 
         persistence.deleteFileByPartnerId(1L, fileId = 15L)
 
-        verify(exactly = 1) { genericFileRepository.delete(file) }
+        verify(exactly = 1) { fileRepository.delete(file) }
     }
 
 }

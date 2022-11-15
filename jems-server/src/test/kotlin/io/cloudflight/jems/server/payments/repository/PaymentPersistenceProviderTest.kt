@@ -7,21 +7,25 @@ import io.cloudflight.jems.api.user.dto.OutputUser
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.createTestCallEntity
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.common.minio.GenericProjectFileRepository
+import io.cloudflight.jems.server.common.minio.JemsProjectFileRepository
 import io.cloudflight.jems.server.payments.entity.PaymentEntity
 import io.cloudflight.jems.server.payments.entity.PaymentGroupingId
 import io.cloudflight.jems.server.payments.entity.PaymentPartnerEntity
 import io.cloudflight.jems.server.payments.entity.PaymentPartnerInstallmentEntity
-import io.cloudflight.jems.server.payments.service.model.PartnerPayment
-import io.cloudflight.jems.server.payments.service.model.PartnerPaymentSimple
-import io.cloudflight.jems.server.payments.service.model.PaymentConfirmedInfo
-import io.cloudflight.jems.server.payments.service.model.PaymentDetail
-import io.cloudflight.jems.server.payments.service.model.PaymentPartnerInstallment
-import io.cloudflight.jems.server.payments.service.model.PaymentPartnerInstallmentUpdate
-import io.cloudflight.jems.server.payments.service.model.PaymentPartnerToCreate
-import io.cloudflight.jems.server.payments.service.model.PaymentToCreate
-import io.cloudflight.jems.server.payments.service.model.PaymentToProject
-import io.cloudflight.jems.server.payments.service.model.PaymentType
+import io.cloudflight.jems.server.payments.model.regular.PartnerPayment
+import io.cloudflight.jems.server.payments.model.regular.PartnerPaymentSimple
+import io.cloudflight.jems.server.payments.model.regular.PaymentConfirmedInfo
+import io.cloudflight.jems.server.payments.model.regular.PaymentDetail
+import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallment
+import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallmentUpdate
+import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerToCreate
+import io.cloudflight.jems.server.payments.model.regular.PaymentToCreate
+import io.cloudflight.jems.server.payments.model.regular.PaymentToProject
+import io.cloudflight.jems.server.payments.model.regular.PaymentType
+import io.cloudflight.jems.server.payments.repository.regular.PaymentPartnerInstallmentRepository
+import io.cloudflight.jems.server.payments.repository.regular.PaymentPartnerRepository
+import io.cloudflight.jems.server.payments.repository.regular.PaymentRegularPersistenceProvider
+import io.cloudflight.jems.server.payments.repository.regular.PaymentRepository
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumEntity
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
@@ -44,7 +48,7 @@ import io.cloudflight.jems.server.project.repository.toModel
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import io.cloudflight.jems.server.user.repository.user.UserRepository
@@ -92,10 +96,10 @@ class PaymentPersistenceProviderTest: UnitTest() {
     @MockK
     lateinit var reportFileRepository: ProjectReportFileRepository
     @MockK
-    lateinit var genericFileRepository: GenericProjectFileRepository
+    lateinit var fileRepository: JemsProjectFileRepository
 
     @InjectMockKs
-    lateinit var paymentPersistenceProvider: PaymentPersistenceProvider
+    lateinit var paymentPersistenceProvider: PaymentRegularPersistenceProvider
 
     companion object {
         private val currentTime = ZonedDateTime.now()
@@ -299,7 +303,7 @@ class PaymentPersistenceProviderTest: UnitTest() {
 
     @BeforeEach
     fun reset() {
-        clearMocks(reportFileRepository, genericFileRepository)
+        clearMocks(reportFileRepository, fileRepository)
     }
 
     @Test
@@ -359,11 +363,13 @@ class PaymentPersistenceProviderTest: UnitTest() {
             paymentConfirmedDate = currentDate.plusDays(2)
         ))
 
-        assertThat(paymentPersistenceProvider.getConfirmedInfosForPayment(paymentId)).isEqualTo(PaymentConfirmedInfo(
+        assertThat(paymentPersistenceProvider.getConfirmedInfosForPayment(paymentId)).isEqualTo(
+            PaymentConfirmedInfo(
             id = paymentId,
             amountPaidPerFund = BigDecimal("27.11"),
             dateOfLastPayment = currentDate.minusDays(2)
-        ))
+        )
+        )
     }
 
     @Test
@@ -452,33 +458,33 @@ class PaymentPersistenceProviderTest: UnitTest() {
     @Test
     fun deletePaymentAttachment() {
         val file = mockk<ReportProjectFileEntity>()
-        every { genericFileRepository.delete(file) } answers { }
-        every { reportFileRepository.findByTypeAndId(ProjectPartnerReportFileType.PaymentAttachment, 14L) } returns file
+        every { fileRepository.delete(file) } answers { }
+        every { reportFileRepository.findByTypeAndId(JemsFileType.PaymentAttachment, 14L) } returns file
         paymentPersistenceProvider.deletePaymentAttachment(14L)
-        verify(exactly = 1) { genericFileRepository.delete(file) }
+        verify(exactly = 1) { fileRepository.delete(file) }
     }
 
     @Test
     fun `deletePaymentAttachment - not existing`() {
-        every { reportFileRepository.findByTypeAndId(ProjectPartnerReportFileType.PaymentAttachment, -1L) } returns null
+        every { reportFileRepository.findByTypeAndId(JemsFileType.PaymentAttachment, -1L) } returns null
         assertThrows<ResourceNotFoundException> { paymentPersistenceProvider.deletePaymentAttachment(-1L) }
-        verify(exactly = 0) { genericFileRepository.delete(any()) }
+        verify(exactly = 0) { fileRepository.delete(any()) }
     }
 
     @Test
     fun deletePaymentAdvanceAttachment() {
         val file = mockk<ReportProjectFileEntity>()
-        every { genericFileRepository.delete(file) } answers { }
-        every { reportFileRepository.findByTypeAndId(ProjectPartnerReportFileType.PaymentAdvanceAttachment, 16L) } returns file
+        every { fileRepository.delete(file) } answers { }
+        every { reportFileRepository.findByTypeAndId(JemsFileType.PaymentAdvanceAttachment, 16L) } returns file
         paymentPersistenceProvider.deletePaymentAdvanceAttachment(16L)
-        verify(exactly = 1) { genericFileRepository.delete(file) }
+        verify(exactly = 1) { fileRepository.delete(file) }
     }
 
     @Test
     fun `deletePaymentAdvanceAttachment - not existing`() {
-        every { reportFileRepository.findByTypeAndId(ProjectPartnerReportFileType.PaymentAdvanceAttachment, -1L) } returns null
+        every { reportFileRepository.findByTypeAndId(JemsFileType.PaymentAdvanceAttachment, -1L) } returns null
         assertThrows<ResourceNotFoundException> { paymentPersistenceProvider.deletePaymentAdvanceAttachment(-1L) }
-        verify(exactly = 0) { genericFileRepository.delete(any()) }
+        verify(exactly = 0) { fileRepository.delete(any()) }
     }
 
 }

@@ -10,16 +10,16 @@ import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.service.priority.getStringOfLength
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
-import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportStatusAndVersion
-import io.cloudflight.jems.server.project.service.report.model.ReportStatus
-import io.cloudflight.jems.server.project.service.report.model.financialOverview.costCategory.ExpenditureCostCategoryBreakdown
-import io.cloudflight.jems.server.project.service.report.model.financialOverview.costCategory.ExpenditureCostCategoryBreakdownLine
-import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportIdentification
-import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportIdentificationTargetGroup
-import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportPeriod
-import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportSpendingProfile
-import io.cloudflight.jems.server.project.service.report.model.identification.control.ReportFileFormat
-import io.cloudflight.jems.server.project.service.report.model.identification.control.ReportType
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportStatusAndVersion
+import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.costCategory.ExpenditureCostCategoryBreakdown
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.costCategory.ExpenditureCostCategoryBreakdownLine
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportIdentification
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportIdentificationTargetGroup
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportPeriod
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportSpendingProfile
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportFileFormat
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportType
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown.GetReportExpenditureCostCategoryCalculatorService
 import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectReportIdentificationPersistence
 import io.mockk.MockKAnnotations
@@ -49,7 +49,7 @@ internal class UpdateProjectPartnerReportIdentificationTest : UnitTest() {
             ProjectPartnerReportPeriod(number = 3, periodBudget = BigDecimal.valueOf(18), BigDecimal.valueOf(35), 7, 9),
         )
 
-        private val updateData = io.cloudflight.jems.server.project.service.report.model.identification.UpdateProjectPartnerReportIdentification(
+        private val updateData = io.cloudflight.jems.server.project.service.report.model.partner.identification.UpdateProjectPartnerReportIdentification(
             startDate = YESTERDAY,
             endDate = TOMORROW,
             period = 2,
@@ -63,7 +63,7 @@ internal class UpdateProjectPartnerReportIdentificationTest : UnitTest() {
             spendingDeviations = setOf(InputTranslation(EN, "spendingDeviations EN")),
         )
 
-        private val updateDataInvalid = io.cloudflight.jems.server.project.service.report.model.identification.UpdateProjectPartnerReportIdentification(
+        private val updateDataInvalid = io.cloudflight.jems.server.project.service.report.model.partner.identification.UpdateProjectPartnerReportIdentification(
             startDate = TOMORROW,
             endDate = YESTERDAY,
             period = 2,
@@ -143,7 +143,7 @@ internal class UpdateProjectPartnerReportIdentificationTest : UnitTest() {
         every { reportPersistence.getPartnerReportStatusAndVersion(PARTNER_ID, reportId = reportId) } returns
             ProjectPartnerReportStatusAndVersion(ReportStatus.Draft, "17.0.1")
         every { reportIdentificationPersistence.getAvailablePeriods(PARTNER_ID, reportId = reportId) } returns periods
-        val slotData = slot<io.cloudflight.jems.server.project.service.report.model.identification.UpdateProjectPartnerReportIdentification>()
+        val slotData = slot<io.cloudflight.jems.server.project.service.report.model.partner.identification.UpdateProjectPartnerReportIdentification>()
         every { reportIdentificationPersistence.updatePartnerReportIdentification(PARTNER_ID, reportId = reportId, capture(slotData)) } returns saveResult()
 
         val expenditures = mockk<ExpenditureCostCategoryBreakdown>()

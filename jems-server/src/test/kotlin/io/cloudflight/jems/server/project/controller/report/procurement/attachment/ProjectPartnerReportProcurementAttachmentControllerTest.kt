@@ -6,10 +6,10 @@ import io.cloudflight.jems.api.project.dto.report.file.UserSimpleDTO
 import io.cloudflight.jems.api.project.dto.report.partner.procurement.attachment.ProjectReportProcurementFileDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
-import io.cloudflight.jems.server.project.service.report.model.file.procurement.ProjectReportProcurementFile
+import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectReportProcurementFile
 import io.cloudflight.jems.server.project.service.report.partner.procurement.attachment.getProjectPartnerReportProcurementAttachment.GetProjectPartnerReportProcurementAttachmentInteractor
 import io.cloudflight.jems.server.project.service.report.partner.procurement.attachment.uploadFileToProjectPartnerReportProcurementAttachment.UploadFileToProjectPartnerReportProcurementAttachmentInteractor
 import io.cloudflight.jems.server.utils.FILE_NAME
@@ -33,7 +33,7 @@ class ProjectPartnerReportProcurementAttachmentControllerTest : UnitTest() {
             reportId = reportId,
             createdInThisReport = true,
             name = "name 270",
-            type = ProjectPartnerReportFileType.ProcurementAttachment,
+            type = JemsFileType.ProcurementAttachment,
             uploaded = YEARS_AGO_10,
             author = UserSimple(45L, "dummy@email", name = "Dummy", surname = "Surname"),
             size = 653245L,
@@ -53,7 +53,7 @@ class ProjectPartnerReportProcurementAttachmentControllerTest : UnitTest() {
             description = "desc 270",
         )
 
-        private val fileMetadata = ProjectReportFileMetadata(
+        private val fileMetadata = JemsFileMetadata(
             id = 904L,
             name = FILE_NAME,
             uploaded = YEARS_AGO_10,

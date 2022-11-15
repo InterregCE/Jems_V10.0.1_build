@@ -8,10 +8,11 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.exception.I18nValidationException
-import io.cloudflight.jems.server.payments.AdvancePaymentPersistence
-import io.cloudflight.jems.server.payments.service.model.AdvancePaymentDetail
-import io.cloudflight.jems.server.payments.service.model.AdvancePaymentUpdate
-import io.cloudflight.jems.server.payments.service.updateAdvancePaymentDetail.UpdateAdvancePaymentDetail
+import io.cloudflight.jems.server.payments.service.advance.AdvancePaymentValidator
+import io.cloudflight.jems.server.payments.service.advance.PaymentAdvancePersistence
+import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentDetail
+import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentUpdate
+import io.cloudflight.jems.server.payments.service.advance.updateAdvancePaymentDetail.UpdateAdvancePaymentDetail
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.mockk.Runs
@@ -83,7 +84,7 @@ class UpdateAdvancePaymentTest : UnitTest() {
     }
 
     @MockK
-    lateinit var paymentPersistence: AdvancePaymentPersistence
+    lateinit var paymentPersistence: PaymentAdvancePersistence
 
     @MockK
     lateinit var securityService: SecurityService

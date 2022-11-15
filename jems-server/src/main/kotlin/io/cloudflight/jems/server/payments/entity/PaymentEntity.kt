@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.payments.entity
 
-import io.cloudflight.jems.server.payments.service.model.PaymentType
+import io.cloudflight.jems.server.payments.model.regular.PaymentType
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.project.entity.ProjectEntity
 import java.math.BigDecimal

@@ -4,8 +4,6 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostEntity
-import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostTranslEntity
-import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostTranslId
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.contribution.ProjectPartnerReportContributionEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportInvestmentEntity
@@ -13,11 +11,11 @@ import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerRepor
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportLumpSumEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportUnitCostEntity
 import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
-import io.cloudflight.jems.server.project.service.report.model.contribution.create.CreateProjectPartnerReportContribution
-import io.cloudflight.jems.server.project.service.report.model.contribution.withoutCalculations.ProjectPartnerReportEntityContribution
-import io.cloudflight.jems.server.project.service.report.model.create.PartnerReportInvestment
-import io.cloudflight.jems.server.project.service.report.model.create.PartnerReportLumpSum
-import io.cloudflight.jems.server.project.service.report.model.create.PartnerReportUnitCostBase
+import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PartnerReportInvestment
+import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PartnerReportLumpSum
+import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PartnerReportUnitCostBase
+import io.cloudflight.jems.server.project.service.report.model.partner.contribution.create.CreateProjectPartnerReportContribution
+import io.cloudflight.jems.server.project.service.report.model.partner.contribution.withoutCalculations.ProjectPartnerReportEntityContribution
 import org.mapstruct.Mapper
 import org.mapstruct.factory.Mappers
 import java.math.BigDecimal

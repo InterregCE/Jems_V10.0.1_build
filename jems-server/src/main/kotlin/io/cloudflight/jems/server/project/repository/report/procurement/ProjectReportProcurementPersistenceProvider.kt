@@ -1,8 +1,8 @@
 package io.cloudflight.jems.server.project.repository.report.procurement
 
 import io.cloudflight.jems.server.project.repository.report.ProjectPartnerReportRepository
-import io.cloudflight.jems.server.project.service.report.model.procurement.ProjectPartnerReportProcurement
-import io.cloudflight.jems.server.project.service.report.model.procurement.ProjectPartnerReportProcurementChange
+import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectPartnerReportProcurement
+import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectPartnerReportProcurementChange
 import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectReportProcurementPersistence
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository

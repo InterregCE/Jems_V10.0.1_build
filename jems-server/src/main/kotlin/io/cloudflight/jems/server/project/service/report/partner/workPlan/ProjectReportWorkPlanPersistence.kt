@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.partner.workPlan
 
 import io.cloudflight.jems.api.project.dto.InputTranslation
-import io.cloudflight.jems.server.project.service.report.model.workPlan.ProjectPartnerReportWorkPackage
+import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.ProjectPartnerReportWorkPackage
 
 interface ProjectReportWorkPlanPersistence {
 

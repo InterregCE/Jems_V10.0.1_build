@@ -1,8 +1,8 @@
 package io.cloudflight.jems.server.project.repository.report.financialOverview.coFinancing
 
 import io.cloudflight.jems.server.project.repository.report.ProjectPartnerReportCoFinancingRepository
-import io.cloudflight.jems.server.project.service.report.model.financialOverview.coFinancing.ReportExpenditureCoFinancing
-import io.cloudflight.jems.server.project.service.report.model.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancing
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureCoFinancingPersistence
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional

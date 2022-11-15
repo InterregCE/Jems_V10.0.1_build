@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.project.service.report.partner.financialOverv
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanViewPartnerReport
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
-import io.cloudflight.jems.server.project.service.report.model.financialOverview.lumpSum.ExpenditureLumpSumBreakdown
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.lumpSum.ExpenditureLumpSumBreakdown
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectReportExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportLumpSumPersistence
 import org.springframework.stereotype.Service

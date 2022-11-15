@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.partner.file.control.downloadControlReportFile
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.project.service.report.file.ProjectReportFilePersistence
+import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK

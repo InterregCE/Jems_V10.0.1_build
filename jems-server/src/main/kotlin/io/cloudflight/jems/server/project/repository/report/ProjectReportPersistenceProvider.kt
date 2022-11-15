@@ -1,11 +1,11 @@
 package io.cloudflight.jems.server.project.repository.report
 
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
-import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReport
-import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportStatusAndVersion
-import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSubmissionSummary
-import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSummary
-import io.cloudflight.jems.server.project.service.report.model.ReportStatus
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportStatusAndVersion
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSummary
+import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository

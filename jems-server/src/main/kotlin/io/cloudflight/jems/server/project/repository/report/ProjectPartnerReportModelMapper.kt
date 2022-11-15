@@ -21,82 +21,85 @@ import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerR
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageOutputEntity
 import io.cloudflight.jems.server.project.repository.report.repositoryModel.ReportSummary
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
-import io.cloudflight.jems.server.project.service.report.model.PartnerReportIdentification
-import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReport
-import io.cloudflight.jems.server.project.service.report.model.create.ProjectPartnerReportCreate
-import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSubmissionSummary
-import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSummary
-import io.cloudflight.jems.server.project.service.report.model.create.PartnerReportInvestment
-import io.cloudflight.jems.server.project.service.report.model.create.PreviouslyReportedCoFinancing
-import io.cloudflight.jems.server.project.service.report.model.create.PreviouslyReportedFund
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
-import io.cloudflight.jems.server.project.service.report.model.financialOverview.costCategory.ReportExpenditureCostCategory
-import io.cloudflight.jems.server.project.service.report.model.workPlan.ProjectPartnerReportWorkPackage
-import io.cloudflight.jems.server.project.service.report.model.workPlan.ProjectPartnerReportWorkPackageActivity
-import io.cloudflight.jems.server.project.service.report.model.workPlan.ProjectPartnerReportWorkPackageActivityDeliverable
-import io.cloudflight.jems.server.project.service.report.model.workPlan.ProjectPartnerReportWorkPackageOutput
+import io.cloudflight.jems.server.project.service.report.model.partner.PartnerReportIdentification
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
+import io.cloudflight.jems.server.project.service.report.model.partner.base.create.ProjectPartnerReportCreate
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSummary
+import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PreviouslyReportedCoFinancing
+import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PreviouslyReportedFund
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.costCategory.ReportExpenditureCostCategory
+import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.ProjectPartnerReportWorkPackage
+import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.ProjectPartnerReportWorkPackageActivity
+import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.ProjectPartnerReportWorkPackageActivityDeliverable
+import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.ProjectPartnerReportWorkPackageOutput
 import java.math.BigDecimal.ZERO
 
-fun ReportSummary.toModelSummary() = ProjectPartnerReportSummary(
-    id = id,
-    reportNumber = number,
-    status = status,
-    version = version,
-    firstSubmission = firstSubmission,
-    createdAt = createdAt,
-    startDate = startDate,
-    endDate = endDate,
-    periodDetail = getPeriodData(),
-)
+fun ReportSummary.toModelSummary() =
+    ProjectPartnerReportSummary(
+        id = id,
+        reportNumber = number,
+        status = status,
+        version = version,
+        firstSubmission = firstSubmission,
+        createdAt = createdAt,
+        startDate = startDate,
+        endDate = endDate,
+        periodDetail = getPeriodData(),
+    )
 
-fun ProjectPartnerReportEntity.toCreateModelSummary() = ProjectPartnerReportSummary(
-    id = id,
-    reportNumber = number,
-    status = status,
-    version = applicationFormVersion,
-    firstSubmission = firstSubmission,
-    createdAt = createdAt,
-    startDate = null,
-    endDate = null,
-    periodDetail = null,
-)
+fun ProjectPartnerReportEntity.toCreateModelSummary() =
+    ProjectPartnerReportSummary(
+        id = id,
+        reportNumber = number,
+        status = status,
+        version = applicationFormVersion,
+        firstSubmission = firstSubmission,
+        createdAt = createdAt,
+        startDate = null,
+        endDate = null,
+        periodDetail = null,
+    )
 
-fun ProjectPartnerReportEntity.toSubmissionSummary() = ProjectPartnerReportSubmissionSummary(
-    id = id,
-    reportNumber = number,
-    status = status,
-    version = applicationFormVersion,
-    firstSubmission = firstSubmission,
-    createdAt = createdAt,
-    projectIdentifier = identification.projectIdentifier,
-    projectAcronym = identification.projectAcronym,
-    partnerNumber = identification.partnerNumber,
-    partnerRole = identification.partnerRole,
-)
-
-fun ProjectPartnerReportEntity.toModel(coFinancing: List<ProjectPartnerReportCoFinancingEntity>) = ProjectPartnerReport(
-    id = id,
-    reportNumber = number,
-    status = status,
-    version = applicationFormVersion,
-    firstSubmission = firstSubmission,
-
-    identification = PartnerReportIdentification(
+fun ProjectPartnerReportEntity.toSubmissionSummary() =
+    ProjectPartnerReportSubmissionSummary(
+        id = id,
+        reportNumber = number,
+        status = status,
+        version = applicationFormVersion,
+        firstSubmission = firstSubmission,
+        createdAt = createdAt,
         projectIdentifier = identification.projectIdentifier,
         projectAcronym = identification.projectAcronym,
         partnerNumber = identification.partnerNumber,
-        partnerAbbreviation = identification.partnerAbbreviation,
         partnerRole = identification.partnerRole,
-        nameInOriginalLanguage = identification.nameInOriginalLanguage,
-        nameInEnglish = identification.nameInEnglish,
-        legalStatus = identification.legalStatus?.toStatusModel(),
-        partnerType = identification.partnerType,
-        vatRecovery = identification.vatRecovery,
-        coFinancing = coFinancing.toModel(),
-        country = identification.country,
-        currency = identification.currency
     )
-)
+
+fun ProjectPartnerReportEntity.toModel(coFinancing: List<ProjectPartnerReportCoFinancingEntity>) =
+    ProjectPartnerReport(
+        id = id,
+        reportNumber = number,
+        status = status,
+        version = applicationFormVersion,
+        firstSubmission = firstSubmission,
+
+        identification = PartnerReportIdentification(
+            projectIdentifier = identification.projectIdentifier,
+            projectAcronym = identification.projectAcronym,
+            partnerNumber = identification.partnerNumber,
+            partnerAbbreviation = identification.partnerAbbreviation,
+            partnerRole = identification.partnerRole,
+            nameInOriginalLanguage = identification.nameInOriginalLanguage,
+            nameInEnglish = identification.nameInEnglish,
+            legalStatus = identification.legalStatus?.toStatusModel(),
+            partnerType = identification.partnerType,
+            vatRecovery = identification.vatRecovery,
+            coFinancing = coFinancing.toModel(),
+            country = identification.country,
+            currency = identification.currency
+        )
+    )
 
 
 fun PartnerReportIdentification.toEntity() = PartnerReportIdentificationEntity(
@@ -239,50 +242,51 @@ fun List<ProjectPartnerReportWorkPackageOutputEntity>.toOutputsModel() = map {
     )
 }
 
-fun ReportProjectFileEntity.toModel() = ProjectReportFileMetadata(
+fun ReportProjectFileEntity.toModel() = JemsFileMetadata(
     id = id,
     name = name,
     uploaded = uploaded,
 )
 
-fun ReportExpenditureCostCategory.toCreateEntity(report: ProjectPartnerReportEntity) = ReportProjectPartnerExpenditureCostCategoryEntity(
-    reportEntity = report,
-    officeAndAdministrationOnStaffCostsFlatRate = options.officeAndAdministrationOnStaffCostsFlatRate,
-    officeAndAdministrationOnDirectCostsFlatRate = options.officeAndAdministrationOnDirectCostsFlatRate,
-    travelAndAccommodationOnStaffCostsFlatRate = options.travelAndAccommodationOnStaffCostsFlatRate,
-    staffCostsFlatRate = options.staffCostsFlatRate,
-    otherCostsOnStaffCostsFlatRate = options.otherCostsOnStaffCostsFlatRate,
+fun ReportExpenditureCostCategory.toCreateEntity(report: ProjectPartnerReportEntity) =
+    ReportProjectPartnerExpenditureCostCategoryEntity(
+        reportEntity = report,
+        officeAndAdministrationOnStaffCostsFlatRate = options.officeAndAdministrationOnStaffCostsFlatRate,
+        officeAndAdministrationOnDirectCostsFlatRate = options.officeAndAdministrationOnDirectCostsFlatRate,
+        travelAndAccommodationOnStaffCostsFlatRate = options.travelAndAccommodationOnStaffCostsFlatRate,
+        staffCostsFlatRate = options.staffCostsFlatRate,
+        otherCostsOnStaffCostsFlatRate = options.otherCostsOnStaffCostsFlatRate,
 
-    staffTotal = totalsFromAF.staff,
-    officeTotal = totalsFromAF.office,
-    travelTotal = totalsFromAF.travel,
-    externalTotal = totalsFromAF.external,
-    equipmentTotal = totalsFromAF.equipment,
-    infrastructureTotal = totalsFromAF.infrastructure,
-    otherTotal = totalsFromAF.other,
-    lumpSumTotal = totalsFromAF.lumpSum,
-    unitCostTotal = totalsFromAF.unitCost,
-    sumTotal = totalsFromAF.sum,
+        staffTotal = totalsFromAF.staff,
+        officeTotal = totalsFromAF.office,
+        travelTotal = totalsFromAF.travel,
+        externalTotal = totalsFromAF.external,
+        equipmentTotal = totalsFromAF.equipment,
+        infrastructureTotal = totalsFromAF.infrastructure,
+        otherTotal = totalsFromAF.other,
+        lumpSumTotal = totalsFromAF.lumpSum,
+        unitCostTotal = totalsFromAF.unitCost,
+        sumTotal = totalsFromAF.sum,
 
-    staffCurrent = ZERO,
-    officeCurrent = ZERO,
-    travelCurrent = ZERO,
-    externalCurrent = ZERO,
-    equipmentCurrent = ZERO,
-    infrastructureCurrent = ZERO,
-    otherCurrent = ZERO,
-    lumpSumCurrent = ZERO,
-    unitCostCurrent = ZERO,
-    sumCurrent = ZERO,
+        staffCurrent = ZERO,
+        officeCurrent = ZERO,
+        travelCurrent = ZERO,
+        externalCurrent = ZERO,
+        equipmentCurrent = ZERO,
+        infrastructureCurrent = ZERO,
+        otherCurrent = ZERO,
+        lumpSumCurrent = ZERO,
+        unitCostCurrent = ZERO,
+        sumCurrent = ZERO,
 
-    staffPreviouslyReported = previouslyReported.staff,
-    officePreviouslyReported = previouslyReported.office,
-    travelPreviouslyReported = previouslyReported.travel,
-    externalPreviouslyReported = previouslyReported.external,
-    equipmentPreviouslyReported = previouslyReported.equipment,
-    infrastructurePreviouslyReported = previouslyReported.infrastructure,
-    otherPreviouslyReported = previouslyReported.other,
-    lumpSumPreviouslyReported = previouslyReported.lumpSum,
-    unitCostPreviouslyReported = previouslyReported.unitCost,
-    sumPreviouslyReported = previouslyReported.sum,
-)
+        staffPreviouslyReported = previouslyReported.staff,
+        officePreviouslyReported = previouslyReported.office,
+        travelPreviouslyReported = previouslyReported.travel,
+        externalPreviouslyReported = previouslyReported.external,
+        equipmentPreviouslyReported = previouslyReported.equipment,
+        infrastructurePreviouslyReported = previouslyReported.infrastructure,
+        otherPreviouslyReported = previouslyReported.other,
+        lumpSumPreviouslyReported = previouslyReported.lumpSum,
+        unitCostPreviouslyReported = previouslyReported.unitCost,
+        sumPreviouslyReported = previouslyReported.sum,
+    )

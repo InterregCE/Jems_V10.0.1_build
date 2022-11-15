@@ -4,8 +4,8 @@ import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.authorization.CanEditPartnerReport
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
-import io.cloudflight.jems.server.project.service.report.model.procurement.beneficial.ProjectPartnerReportProcurementBeneficialChange
-import io.cloudflight.jems.server.project.service.report.model.procurement.beneficial.ProjectPartnerReportProcurementBeneficialOwner
+import io.cloudflight.jems.server.project.service.report.model.partner.procurement.beneficial.ProjectPartnerReportProcurementBeneficialChange
+import io.cloudflight.jems.server.project.service.report.model.partner.procurement.beneficial.ProjectPartnerReportProcurementBeneficialOwner
 import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectReportProcurementPersistence
 import io.cloudflight.jems.server.project.service.report.partner.procurement.beneficial.MAX_AMOUNT_OF_BENEFICIAL
 import io.cloudflight.jems.server.project.service.report.partner.procurement.beneficial.ProjectReportProcurementBeneficialPersistence

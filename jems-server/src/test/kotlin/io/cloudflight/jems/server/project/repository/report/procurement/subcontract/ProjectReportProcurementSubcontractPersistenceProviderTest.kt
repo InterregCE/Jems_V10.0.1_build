@@ -4,8 +4,8 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.entity.report.procurement.ProjectPartnerReportProcurementEntity
 import io.cloudflight.jems.server.project.entity.report.procurement.subcontract.ProjectPartnerReportProcurementSubcontractEntity
 import io.cloudflight.jems.server.project.repository.report.procurement.ProjectPartnerReportProcurementRepository
-import io.cloudflight.jems.server.project.service.report.model.procurement.subcontract.ProjectPartnerReportProcurementSubcontract
-import io.cloudflight.jems.server.project.service.report.model.procurement.subcontract.ProjectPartnerReportProcurementSubcontractChange
+import io.cloudflight.jems.server.project.service.report.model.partner.procurement.subcontract.ProjectPartnerReportProcurementSubcontract
+import io.cloudflight.jems.server.project.service.report.model.partner.procurement.subcontract.ProjectPartnerReportProcurementSubcontractChange
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs

@@ -3,8 +3,8 @@ package io.cloudflight.jems.server.project.controller.report.procurement.subcont
 import io.cloudflight.jems.api.project.dto.report.partner.procurement.subcontract.ProjectPartnerReportProcurementSubcontractChangeDTO
 import io.cloudflight.jems.api.project.dto.report.partner.procurement.subcontract.ProjectPartnerReportProcurementSubcontractDTO
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.project.service.report.model.procurement.subcontract.ProjectPartnerReportProcurementSubcontract
-import io.cloudflight.jems.server.project.service.report.model.procurement.subcontract.ProjectPartnerReportProcurementSubcontractChange
+import io.cloudflight.jems.server.project.service.report.model.partner.procurement.subcontract.ProjectPartnerReportProcurementSubcontract
+import io.cloudflight.jems.server.project.service.report.model.partner.procurement.subcontract.ProjectPartnerReportProcurementSubcontractChange
 import io.cloudflight.jems.server.project.service.report.partner.procurement.subcontract.getProjectPartnerReportProcurementSubcontract.GetProjectPartnerReportProcurementSubcontractInteractor
 import io.cloudflight.jems.server.project.service.report.partner.procurement.subcontract.updateProjectPartnerReportProcurementSubcontract.UpdateProjectPartnerReportProcurementSubcontractInteractor
 import io.mockk.every

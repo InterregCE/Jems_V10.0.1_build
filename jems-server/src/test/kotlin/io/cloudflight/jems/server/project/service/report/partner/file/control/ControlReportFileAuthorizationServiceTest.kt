@@ -2,23 +2,18 @@ package io.cloudflight.jems.server.project.service.report.partner.file.control
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.authentication.service.SecurityService
-import io.cloudflight.jems.server.controllerInstitution.service.model.UserInstitutionAccessLevel
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
-import io.cloudflight.jems.server.project.service.report.file.ProjectReportFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReport
-import io.cloudflight.jems.server.project.service.report.model.ReportStatus
+import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
+import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.mockk
-import io.mockk.slot
-import io.mockk.verify
-import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import org.junit.jupiter.params.ParameterizedTest

@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.file.model
 
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileCreate
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileCreate
 import java.io.InputStream
 
 data class ProjectFile(
@@ -13,9 +13,9 @@ data class ProjectFile(
         projectId: Long?,
         partnerId: Long?,
         location: String,
-        type: ProjectPartnerReportFileType,
+        type: JemsFileType,
         userId: Long,
-    ) = ProjectReportFileCreate(
+    ) = JemsFileCreate(
         projectId = projectId,
         partnerId = partnerId,
         name = name,

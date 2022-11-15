@@ -4,7 +4,7 @@ import com.querydsl.core.types.Predicate
 import com.querydsl.core.types.dsl.BooleanExpression
 import io.cloudflight.jems.server.project.entity.report.file.QReportProjectFileEntity
 import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.repository.EntityGraph
@@ -29,15 +29,15 @@ interface ProjectReportFileRepository : JpaRepository<ReportProjectFileEntity, L
     )
     fun existsByPartnerIdAndPathPrefixAndId(partnerId: Long, pathPrefix: String, id: Long): Boolean
 
-    fun existsByTypeAndId(type: ProjectPartnerReportFileType, id: Long): Boolean
+    fun existsByTypeAndId(type: JemsFileType, id: Long): Boolean
 
     fun existsByProjectIdAndIdAndTypeIn(
         projectId: Long,
         fileId: Long,
-        fileTypes: Set<ProjectPartnerReportFileType>
+        fileTypes: Set<JemsFileType>
     ): Boolean
 
-    fun existsByPartnerIdAndIdAndTypeIn(partnerId: Long, fileId: Long, fileTypes: Set<ProjectPartnerReportFileType>): Boolean
+    fun existsByPartnerIdAndIdAndTypeIn(partnerId: Long, fileId: Long, fileTypes: Set<JemsFileType>): Boolean
 
     @Query(
         """
@@ -49,7 +49,7 @@ interface ProjectReportFileRepository : JpaRepository<ReportProjectFileEntity, L
 
     fun findByPartnerIdAndId(partnerId: Long, fileId: Long): ReportProjectFileEntity?
 
-    fun findByTypeAndId(type: ProjectPartnerReportFileType, fileId: Long): ReportProjectFileEntity?
+    fun findByTypeAndId(type: JemsFileType, fileId: Long): ReportProjectFileEntity?
 
     fun findByProjectIdAndId(projectId: Long, fileId: Long): ReportProjectFileEntity?
 
@@ -62,7 +62,7 @@ interface ProjectReportFileRepository : JpaRepository<ReportProjectFileEntity, L
 fun ProjectReportFileRepository.filterAttachment(
     pageable: Pageable,
     indexPrefix: String,
-    filterSubtypes: Set<ProjectPartnerReportFileType>,
+    filterSubtypes: Set<JemsFileType>,
     filterUserIds: Set<Long>,
 ): Page<ReportProjectFileEntity> {
     val spec = QReportProjectFileEntity.reportProjectFileEntity

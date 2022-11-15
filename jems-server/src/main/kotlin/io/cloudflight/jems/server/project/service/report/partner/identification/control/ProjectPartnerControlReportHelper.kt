@@ -1,9 +1,9 @@
 package io.cloudflight.jems.server.project.service.report.partner.identification.control
 
 import io.cloudflight.jems.api.project.dto.InputTranslation
-import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReport
-import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportIdentification
-import io.cloudflight.jems.server.project.service.report.model.identification.control.ProjectPartnerControlReport
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportIdentification
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ProjectPartnerControlReport
 import java.time.LocalDate
 
 fun toModelObject(

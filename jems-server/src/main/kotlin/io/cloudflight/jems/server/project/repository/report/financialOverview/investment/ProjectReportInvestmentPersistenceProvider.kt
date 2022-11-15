@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.repository.report.financialOverview.investment
 
 import io.cloudflight.jems.server.project.repository.report.expenditure.ProjectPartnerReportInvestmentRepository
-import io.cloudflight.jems.server.project.service.report.model.financialOverview.investments.ExpenditureInvestmentBreakdownLine
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.investments.ExpenditureInvestmentBreakdownLine
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportInvestmentPersistence
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional

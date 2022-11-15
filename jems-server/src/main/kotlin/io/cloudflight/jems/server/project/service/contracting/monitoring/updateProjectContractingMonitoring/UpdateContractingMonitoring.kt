@@ -2,10 +2,10 @@ package io.cloudflight.jems.server.project.service.contracting.monitoring.update
 
 import io.cloudflight.jems.server.common.audit.fromOldToNewChanges
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
-import io.cloudflight.jems.server.payments.PaymentPersistence
+import io.cloudflight.jems.server.payments.service.regular.PaymentRegularPersistence
 import io.cloudflight.jems.server.payments.entity.PaymentGroupingId
-import io.cloudflight.jems.server.payments.service.model.PaymentPartnerToCreate
-import io.cloudflight.jems.server.payments.service.model.PaymentToCreate
+import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerToCreate
+import io.cloudflight.jems.server.payments.model.regular.PaymentToCreate
 import io.cloudflight.jems.server.payments.service.monitoringFtlsReadyForPayment
 import io.cloudflight.jems.server.project.authorization.CanSetProjectToContracted
 import io.cloudflight.jems.server.project.repository.ProjectPersistenceProvider
@@ -32,7 +32,7 @@ class UpdateContractingMonitoring(
     private val projectLumpSumPersistence: ProjectLumpSumPersistence,
     private val validator: ContractingValidator,
     private val auditPublisher: ApplicationEventPublisher,
-    private val paymentPersistence: PaymentPersistence,
+    private val paymentPersistence: PaymentRegularPersistence,
 ): UpdateContractingMonitoringInteractor {
 
     @CanSetProjectToContracted

@@ -3,8 +3,8 @@ package io.cloudflight.jems.server.project.service.contracting.fileManagement.se
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectContractingPartner
-import io.cloudflight.jems.server.project.service.report.file.ProjectReportFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType
+import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.cloudflight.jems.server.project.service.report.partner.file.setDescriptionToFile.FileNotFound
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -28,7 +28,7 @@ class SetPartnerFileDescription(
         val isFileExists = reportFilePersistence.existsFileByPartnerIdAndFileIdAndFileTypeIn(
             partnerId = partnerId,
             fileId = fileId,
-            setOf(ProjectPartnerReportFileType.ContractPartnerDoc)
+            setOf(JemsFileType.ContractPartnerDoc)
         )
         if (!isFileExists)
             throw FileNotFound()

@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.project.repository.report.expenditure
 
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.server.common.entity.TranslationId
-import io.cloudflight.jems.server.common.minio.GenericProjectFileRepository
+import io.cloudflight.jems.server.common.minio.JemsProjectFileRepository
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportExpenditureCostEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportExpenditureCostTranslEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportInvestmentEntity
@@ -12,10 +12,10 @@ import io.cloudflight.jems.server.project.repository.report.ProjectPartnerReport
 import io.cloudflight.jems.server.project.repository.report.financialOverview.costCategory.ReportProjectPartnerExpenditureCostCategoryRepository
 import io.cloudflight.jems.server.project.repository.report.financialOverview.costCategory.toBudgetOptionsModel
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
-import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportExpenditureCost
-import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportInvestment
-import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportLumpSum
-import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportUnitCost
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportInvestment
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportLumpSum
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportUnitCost
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectReportExpenditurePersistence
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -28,7 +28,7 @@ class ProjectReportExpenditurePersistenceProvider(
     private val reportLumpSumRepository: ProjectPartnerReportLumpSumRepository,
     private val reportUnitCostRepository: ProjectPartnerReportUnitCostRepository,
     private val reportInvestmentRepository: ProjectPartnerReportInvestmentRepository,
-    private val genericFileRepository: GenericProjectFileRepository,
+    private val fileRepository: JemsProjectFileRepository,
     private val reportCostCategoriesRepository: ReportProjectPartnerExpenditureCostCategoryRepository
 ) : ProjectReportExpenditurePersistence {
 
@@ -157,7 +157,7 @@ class ProjectReportExpenditurePersistenceProvider(
     }
 
     private fun Collection<PartnerReportExpenditureCostEntity>.deleteAttachments() = map {
-        it.attachment?.let { file -> genericFileRepository.delete(file) }
+        it.attachment?.let { file -> fileRepository.delete(file) }
         it
     }
 }

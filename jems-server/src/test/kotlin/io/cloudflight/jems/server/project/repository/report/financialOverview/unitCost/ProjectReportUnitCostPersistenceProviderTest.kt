@@ -9,7 +9,7 @@ import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeUnitCostT
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportUnitCostEntity
 import io.cloudflight.jems.server.project.repository.report.expenditure.ProjectPartnerReportUnitCostRepository
-import io.cloudflight.jems.server.project.service.report.model.financialOverview.unitCost.ExpenditureUnitCostBreakdownLine
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.unitCost.ExpenditureUnitCostBreakdownLine
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs

@@ -8,9 +8,9 @@ import io.cloudflight.jems.server.project.service.contracting.fileManagement.Pro
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileCreate
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileCreate
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -56,7 +56,7 @@ internal class UploadFileToContractingTest : UnitTest() {
         testUpload(
             { interactor.uploadContract(PROJECT_ID, file) },
             expectedPath = "Project/000440/Contracting/ContractSupport/Contract/",
-            expectedType = ProjectPartnerReportFileType.Contract,
+            expectedType = JemsFileType.Contract,
         )
     }
 
@@ -66,7 +66,7 @@ internal class UploadFileToContractingTest : UnitTest() {
         testUpload(
             { interactor.uploadContractDocument(PROJECT_ID, file) },
             expectedPath = "Project/000440/Contracting/ContractSupport/ContractDoc/",
-            expectedType = ProjectPartnerReportFileType.ContractDoc,
+            expectedType = JemsFileType.ContractDoc,
         )
     }
 
@@ -77,7 +77,7 @@ internal class UploadFileToContractingTest : UnitTest() {
         testUpload(
             { interactor.uploadContractPartnerFile(PROJECT_ID, partnerId = 60L, file) },
             expectedPath = "Project/000440/Contracting/ContractPartner/ContractPartnerDoc/000060/",
-            expectedType = ProjectPartnerReportFileType.ContractPartnerDoc,
+            expectedType = JemsFileType.ContractPartnerDoc,
             expectedPartnerId = 60L,
         )
     }
@@ -88,19 +88,19 @@ internal class UploadFileToContractingTest : UnitTest() {
         testUpload(
             { interactor.uploadContractInternalFile(PROJECT_ID, file) },
             expectedPath = "Project/000440/Contracting/ContractInternal/",
-            expectedType = ProjectPartnerReportFileType.ContractInternal,
+            expectedType = JemsFileType.ContractInternal,
         )
     }
 
     private fun testUpload(
-        testFunction: () -> ProjectReportFileMetadata,
+        testFunction: () -> JemsFileMetadata,
         expectedPath: String,
-        expectedType: ProjectPartnerReportFileType,
+        expectedType: JemsFileType,
         expectedPartnerId: Long? = null,
     ) {
-        val result = mockk<ProjectReportFileMetadata>()
+        val result = mockk<JemsFileMetadata>()
 
-        val fileSlot = slot<ProjectReportFileCreate>()
+        val fileSlot = slot<JemsFileCreate>()
         every { contractingFilePersistence.uploadFile(capture(fileSlot)) } returns result
 
         assertThat(testFunction.invoke()).isEqualTo(result)

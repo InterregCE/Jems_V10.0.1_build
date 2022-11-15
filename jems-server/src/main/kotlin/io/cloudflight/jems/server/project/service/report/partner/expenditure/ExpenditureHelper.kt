@@ -1,10 +1,10 @@
 package io.cloudflight.jems.server.project.service.report.partner.expenditure
 
 import io.cloudflight.jems.server.currency.service.model.CurrencyConversion
-import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportExpenditureCost
-import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportLumpSum
-import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportUnitCost
-import io.cloudflight.jems.server.project.service.report.model.expenditure.ReportBudgetCategory
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportLumpSum
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportUnitCost
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import java.math.BigDecimal
 import java.math.RoundingMode
 

@@ -3,8 +3,8 @@ package io.cloudflight.jems.server.project.controller.report.procurement.benefic
 import io.cloudflight.jems.api.project.dto.report.partner.procurement.beneficial.ProjectPartnerReportProcurementBeneficialChangeDTO
 import io.cloudflight.jems.api.project.dto.report.partner.procurement.beneficial.ProjectPartnerReportProcurementBeneficialDTO
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.project.service.report.model.procurement.beneficial.ProjectPartnerReportProcurementBeneficialChange
-import io.cloudflight.jems.server.project.service.report.model.procurement.beneficial.ProjectPartnerReportProcurementBeneficialOwner
+import io.cloudflight.jems.server.project.service.report.model.partner.procurement.beneficial.ProjectPartnerReportProcurementBeneficialChange
+import io.cloudflight.jems.server.project.service.report.model.partner.procurement.beneficial.ProjectPartnerReportProcurementBeneficialOwner
 import io.cloudflight.jems.server.project.service.report.partner.procurement.beneficial.getProjectPartnerReportProcurementBeneficial.GetProjectPartnerReportProcurementBeneficialInteractor
 import io.cloudflight.jems.server.project.service.report.partner.procurement.beneficial.updateProjectPartnerReportProcurement.UpdateProjectPartnerReportProcurementBeneficialInteractor
 import io.mockk.every

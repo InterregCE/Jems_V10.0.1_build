@@ -1,11 +1,11 @@
 package io.cloudflight.jems.server.project.service.contracting.fileManagement
 
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileCreate
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileCreate
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 
 interface ProjectContractingFilePersistence {
 
-    fun uploadFile(file: ProjectReportFileCreate): ProjectReportFileMetadata
+    fun uploadFile(file: JemsFileCreate): JemsFileMetadata
 
     fun downloadFile(projectId: Long, fileId: Long): Pair<String, ByteArray>?
 

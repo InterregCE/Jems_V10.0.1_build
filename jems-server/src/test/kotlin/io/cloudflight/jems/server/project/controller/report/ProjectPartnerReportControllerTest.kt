@@ -30,30 +30,30 @@ import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVatRecovery
-import io.cloudflight.jems.server.project.service.report.model.PartnerReportIdentification
-import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReport
-import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSummary
-import io.cloudflight.jems.server.project.service.report.model.ReportStatus
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFile
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileSearchRequest
+import io.cloudflight.jems.server.project.service.report.model.partner.PartnerReportIdentification
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSummary
+import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFile
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileSearchRequest
 import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
-import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportPeriod
-import io.cloudflight.jems.server.project.service.report.partner.deleteProjectPartnerReport.DeleteProjectPartnerReportInteractor
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportPeriod
+import io.cloudflight.jems.server.project.service.report.partner.base.deleteProjectPartnerReport.DeleteProjectPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.control.deleteControlReportFile.DeleteControlReportFileInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.control.downloadControlReportFile.DownloadControlReportFileInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.control.listProjectPartnerControlReportFile.ListControlReportFileInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.control.setDescriptionToControlReportFile.SetDescriptionToControlReportFileInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.control.uploadFileToControlReport.UploadFileToControlReportInteractor
-import io.cloudflight.jems.server.project.service.report.partner.workflow.createProjectPartnerReport.CreateProjectPartnerReportInteractor
+import io.cloudflight.jems.server.project.service.report.partner.base.createProjectPartnerReport.CreateProjectPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.deleteProjectPartnerReportFile.DeleteProjectPartnerReportFileInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.downloadProjectPartnerReportFile.DownloadProjectPartnerReportFileInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.listProjectPartnerReportFile.ListProjectPartnerReportFileInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.setDescriptionToFile.SetDescriptionToProjectPartnerReportFileInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.uploadFileToProjectPartnerReport.UploadFileToProjectPartnerReportInteractor
-import io.cloudflight.jems.server.project.service.report.partner.getProjectPartnerReport.GetProjectPartnerReportInteractor
-import io.cloudflight.jems.server.project.service.report.partner.workflow.startControlPartnerReport.StartControlPartnerReportInteractor
-import io.cloudflight.jems.server.project.service.report.partner.workflow.submitProjectPartnerReport.SubmitProjectPartnerReportInteractor
+import io.cloudflight.jems.server.project.service.report.partner.base.getProjectPartnerReport.GetProjectPartnerReportInteractor
+import io.cloudflight.jems.server.project.service.report.partner.base.startControlPartnerReport.StartControlPartnerReportInteractor
+import io.cloudflight.jems.server.project.service.report.partner.base.submitProjectPartnerReport.SubmitProjectPartnerReportInteractor
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -186,10 +186,10 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
             )
         )
 
-        private val reportFile = ProjectReportFile(
+        private val reportFile = JemsFile(
             id = 478L,
             name = "attachment.pdf",
-            type = ProjectPartnerReportFileType.Contribution,
+            type = JemsFileType.Contribution,
             uploaded = YESTERDAY,
             author = UserSimple(45L, email = "admin@cloudflight.io", name = "Admin", surname = "Big"),
             size = 47889L,
@@ -350,7 +350,7 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
 
     @Test
     fun listReportFiles() {
-        val searchRequest = slot<ProjectReportFileSearchRequest>()
+        val searchRequest = slot<JemsFileSearchRequest>()
         every { listPartnerReportFile.list(29L, Pageable.unpaged(), capture(searchRequest)) } returns
             PageImpl(listOf(reportFile))
 
@@ -363,10 +363,10 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
         assertThat(controller.listReportFiles(29L, Pageable.unpaged(), searchRequestDto).content)
             .containsExactly(reportFileDto)
         assertThat(searchRequest.captured).isEqualTo(
-            ProjectReportFileSearchRequest(
+            JemsFileSearchRequest(
                 reportId = 80L,
-                treeNode = ProjectPartnerReportFileType.PartnerReport,
-                filterSubtypes = setOf(ProjectPartnerReportFileType.Activity),
+                treeNode = JemsFileType.PartnerReport,
+                filterSubtypes = setOf(JemsFileType.Activity),
             )
         )
     }

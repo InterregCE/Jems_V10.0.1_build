@@ -2,8 +2,8 @@ package io.cloudflight.jems.server.project.repository.report.procurement.subcont
 
 import io.cloudflight.jems.server.project.entity.report.procurement.subcontract.ProjectPartnerReportProcurementSubcontractEntity
 import io.cloudflight.jems.server.project.repository.report.procurement.ProjectPartnerReportProcurementRepository
-import io.cloudflight.jems.server.project.service.report.model.procurement.subcontract.ProjectPartnerReportProcurementSubcontract
-import io.cloudflight.jems.server.project.service.report.model.procurement.subcontract.ProjectPartnerReportProcurementSubcontractChange
+import io.cloudflight.jems.server.project.service.report.model.partner.procurement.subcontract.ProjectPartnerReportProcurementSubcontract
+import io.cloudflight.jems.server.project.service.report.model.partner.procurement.subcontract.ProjectPartnerReportProcurementSubcontractChange
 import io.cloudflight.jems.server.project.service.report.partner.procurement.subcontract.ProjectReportProcurementSubcontractPersistence
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional

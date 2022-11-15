@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.payments.service
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.payments.service.getContractedProjects.GetContractedProjects
+import io.cloudflight.jems.server.payments.service.advance.getContractedProjects.GetContractedProjects
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.ProjectSearchRequest

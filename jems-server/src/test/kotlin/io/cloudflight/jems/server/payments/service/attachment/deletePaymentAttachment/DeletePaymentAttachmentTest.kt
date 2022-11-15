@@ -1,7 +1,8 @@
 package io.cloudflight.jems.server.payments.service.attachment.deletePaymentAttachment
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.payments.PaymentPersistence
+import io.cloudflight.jems.server.payments.service.regular.PaymentRegularPersistence
+import io.cloudflight.jems.server.payments.service.regular.attachment.deletePaymentAttachment.DeletePaymentAttachment
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -13,7 +14,7 @@ import org.junit.jupiter.api.Test
 class DeletePaymentAttachmentTest : UnitTest() {
 
     @MockK
-    lateinit var paymentPersistence: PaymentPersistence
+    lateinit var paymentPersistence: PaymentRegularPersistence
 
     @InjectMockKs
     lateinit var interactor: DeletePaymentAttachment

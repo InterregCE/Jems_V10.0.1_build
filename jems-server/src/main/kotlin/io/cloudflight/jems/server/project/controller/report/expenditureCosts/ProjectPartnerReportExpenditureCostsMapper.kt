@@ -4,10 +4,10 @@ import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPar
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportInvestmentDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportLumpSumDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportUnitCostDTO
-import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportExpenditureCost
-import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportInvestment
-import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportLumpSum
-import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportUnitCost
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportInvestment
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportLumpSum
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportUnitCost
 import org.mapstruct.Mapper
 import org.mapstruct.factory.Mappers
 

@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.partner.financialOverview
 
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
-import io.cloudflight.jems.server.project.service.report.model.financialOverview.costCategory.ReportExpenditureCostCategory
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.costCategory.ReportExpenditureCostCategory
 
 interface ProjectReportExpenditureCostCategoryPersistence {
 

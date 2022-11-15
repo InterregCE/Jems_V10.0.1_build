@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.partner.workPlan.getProjectPartnerWorkPlan
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.project.service.report.model.workPlan.ProjectPartnerReportWorkPackage
+import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.ProjectPartnerReportWorkPackage
 import io.cloudflight.jems.server.project.service.report.partner.workPlan.ProjectReportWorkPlanPersistence
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs

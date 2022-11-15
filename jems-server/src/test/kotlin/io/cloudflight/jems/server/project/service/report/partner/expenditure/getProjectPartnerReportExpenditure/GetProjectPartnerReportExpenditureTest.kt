@@ -4,11 +4,11 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.currency.repository.CurrencyPersistence
 import io.cloudflight.jems.server.currency.service.model.CurrencyConversion
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
-import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReport
-import io.cloudflight.jems.server.project.service.report.model.ReportStatus
-import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportExpenditureCost
-import io.cloudflight.jems.server.project.service.report.model.expenditure.ReportBudgetCategory
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
+import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectReportExpenditurePersistence
 import io.mockk.clearMocks
 import io.mockk.every
@@ -51,7 +51,7 @@ internal class GetProjectPartnerReportExpenditureTest : UnitTest() {
             currencyCode = "CST",
             currencyConversionRate = null,
             declaredAmountAfterSubmission = null,
-            attachment = ProjectReportFileMetadata(45L, "file.txt", MOMENT),
+            attachment = JemsFileMetadata(45L, "file.txt", MOMENT),
         )
 
         private fun filledInExpenditure(id: Long) = ProjectPartnerReportExpenditureCost(
@@ -71,7 +71,7 @@ internal class GetProjectPartnerReportExpenditureTest : UnitTest() {
             currencyCode = "CST",
             currencyConversionRate = BigDecimal.valueOf(24302, 4),
             declaredAmountAfterSubmission = BigDecimal.valueOf(1000, 2),
-            attachment = ProjectReportFileMetadata(45L, "file.txt", MOMENT),
+            attachment = JemsFileMetadata(45L, "file.txt", MOMENT),
         )
 
         private val cstCurrency = CurrencyConversion(

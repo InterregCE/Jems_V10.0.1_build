@@ -7,10 +7,10 @@ import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.file.uploadProjectFile.isFileTypeInvalid
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
-import io.cloudflight.jems.server.project.service.report.file.ProjectReportFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.ReportStatus
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
+import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
@@ -25,7 +25,7 @@ class UploadFileToControlReport(
     @CanEditPartnerControlReportFile
     @Transactional
     @ExceptionWrapper(UploadFileToControlReportException::class)
-    override fun uploadToControlReport(partnerId: Long, reportId: Long, file: ProjectFile): ProjectReportFileMetadata {
+    override fun uploadToControlReport(partnerId: Long, reportId: Long, file: ProjectFile): JemsFileMetadata {
         val report = reportPersistence.getPartnerReportById(partnerId, reportId = reportId)
 
         if (report.status != ReportStatus.InControl)
@@ -34,7 +34,7 @@ class UploadFileToControlReport(
         if (isFileTypeInvalid(file))
             throw FileTypeNotSupported()
 
-        with(ProjectPartnerReportFileType.ControlDocument) {
+        with(JemsFileType.ControlDocument) {
             val projectId = partnerPersistence.getProjectIdForPartnerId(partnerId)
             val location = generatePath(projectId, partnerId, reportId)
 

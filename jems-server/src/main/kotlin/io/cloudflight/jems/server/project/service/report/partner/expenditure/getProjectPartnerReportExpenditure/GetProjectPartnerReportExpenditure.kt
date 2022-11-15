@@ -4,7 +4,7 @@ import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.currency.repository.CurrencyPersistence
 import io.cloudflight.jems.server.project.authorization.CanViewPartnerReport
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
-import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportExpenditureCost
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectReportExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.fillCurrencyRates
 import org.springframework.stereotype.Service

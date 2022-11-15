@@ -1,15 +1,15 @@
 package io.cloudflight.jems.server.project.repository.report.contribution
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.common.minio.GenericProjectFileRepository
+import io.cloudflight.jems.server.common.minio.JemsProjectFileRepository
 import io.cloudflight.jems.server.project.entity.report.contribution.ProjectPartnerReportContributionEntity
 import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
 import io.cloudflight.jems.server.project.repository.report.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
-import io.cloudflight.jems.server.project.service.report.model.contribution.create.CreateProjectPartnerReportContribution
-import io.cloudflight.jems.server.project.service.report.model.contribution.update.UpdateProjectPartnerReportContributionExisting
-import io.cloudflight.jems.server.project.service.report.model.contribution.withoutCalculations.ProjectPartnerReportEntityContribution
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.partner.contribution.create.CreateProjectPartnerReportContribution
+import io.cloudflight.jems.server.project.service.report.model.partner.contribution.update.UpdateProjectPartnerReportContributionExisting
+import io.cloudflight.jems.server.project.service.report.model.partner.contribution.withoutCalculations.ProjectPartnerReportEntityContribution
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -69,7 +69,7 @@ class ProjectReportContributionPersistenceProviderTest : UnitTest() {
             amount = BigDecimal.TEN,
             previouslyReported = BigDecimal.ONE,
             currentlyReported = BigDecimal.ZERO,
-            attachment = ProjectReportFileMetadata(dummyAttachment.id, dummyAttachment.name, dummyAttachment.uploaded),
+            attachment = JemsFileMetadata(dummyAttachment.id, dummyAttachment.name, dummyAttachment.uploaded),
         )
 
         private fun contributionEntity(id: Long, current: BigDecimal) = ProjectPartnerReportContributionEntity(
@@ -106,7 +106,7 @@ class ProjectReportContributionPersistenceProviderTest : UnitTest() {
     lateinit var reportContributionRepository: ProjectPartnerReportContributionRepository
 
     @MockK
-    lateinit var genericFileRepository: GenericProjectFileRepository
+    lateinit var fileRepository: JemsProjectFileRepository
 
     @InjectMockKs
     lateinit var persistence: ProjectReportContributionPersistenceProvider
@@ -115,7 +115,7 @@ class ProjectReportContributionPersistenceProviderTest : UnitTest() {
     fun reset() {
         clearMocks(reportRepository)
         clearMocks(reportContributionRepository)
-        clearMocks(genericFileRepository)
+        clearMocks(fileRepository)
     }
 
     @Test
@@ -151,12 +151,12 @@ class ProjectReportContributionPersistenceProviderTest : UnitTest() {
     @Test
     fun deleteByIds() {
         every { reportContributionRepository.findAllById(setOf(contributionEntity.id)) } returns listOf(contributionEntity)
-        every { genericFileRepository.delete(dummyAttachment) } answers { }
+        every { fileRepository.delete(dummyAttachment) } answers { }
         every { reportContributionRepository.deleteAll(listOf(contributionEntity)) } answers { }
 
         persistence.deleteByIds(ids = setOf(contributionEntity.id))
 
-        verify(exactly = 1) { genericFileRepository.delete(dummyAttachment) }
+        verify(exactly = 1) { fileRepository.delete(dummyAttachment) }
         verify(exactly = 1) { reportContributionRepository.deleteAll(listOf(contributionEntity)) }
     }
 

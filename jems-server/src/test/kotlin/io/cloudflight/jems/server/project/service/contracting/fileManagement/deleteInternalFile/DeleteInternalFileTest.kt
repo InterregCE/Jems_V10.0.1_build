@@ -3,8 +3,8 @@ package io.cloudflight.jems.server.project.service.contracting.fileManagement.de
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.FileNotFound
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.ProjectContractingFilePersistence
-import io.cloudflight.jems.server.project.service.report.file.ProjectReportFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType
+import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -39,7 +39,7 @@ internal class DeleteInternalFileTest : UnitTest() {
 
     @Test
     fun `delete internal file`() {
-        every { reportFilePersistence.getFileType(18L, PROJECT_ID) } returns ProjectPartnerReportFileType.ContractInternal
+        every { reportFilePersistence.getFileType(18L, PROJECT_ID) } returns JemsFileType.ContractInternal
         every { contractingFilePersistence.deleteFile(PROJECT_ID, fileId = 18L) } answers { }
         interactor.delete(PROJECT_ID, fileId = 18L)
         verify(exactly =  1) { contractingFilePersistence.deleteFile(PROJECT_ID, fileId = 18L) }

@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.project.service.report.partner.contribution.g
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanViewPartnerReport
-import io.cloudflight.jems.server.project.service.report.model.contribution.ProjectPartnerReportContributionData
+import io.cloudflight.jems.server.project.service.report.model.partner.contribution.ProjectPartnerReportContributionData
 import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectReportContributionPersistence
 import io.cloudflight.jems.server.project.service.report.partner.contribution.toModelData
 import org.springframework.stereotype.Service

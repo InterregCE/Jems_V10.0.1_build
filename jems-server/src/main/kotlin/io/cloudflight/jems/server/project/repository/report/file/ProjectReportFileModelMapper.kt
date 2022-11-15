@@ -1,14 +1,14 @@
 package io.cloudflight.jems.server.project.repository.report.file
 
 import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFile
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileCreate
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFile
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileCreate
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
 import org.springframework.data.domain.Page
 import java.time.ZonedDateTime
 
-fun ProjectReportFileCreate.toEntity(
+fun JemsFileCreate.toEntity(
     userResolver: (Long) -> UserEntity,
     uploaded: ZonedDateTime,
     bucketForMinio: String,
@@ -28,7 +28,7 @@ fun ProjectReportFileCreate.toEntity(
 )
 
 fun Page<ReportProjectFileEntity>.toModel() = map {
-    ProjectReportFile(
+    JemsFile(
         id = it.id,
         name = it.name,
         type = it.type,

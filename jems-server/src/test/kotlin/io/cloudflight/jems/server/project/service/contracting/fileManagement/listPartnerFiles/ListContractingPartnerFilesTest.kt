@@ -3,9 +3,9 @@ package io.cloudflight.jems.server.project.service.contracting.fileManagement.li
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingFileSearchRequest
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
-import io.cloudflight.jems.server.project.service.report.file.ProjectReportFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFile
+import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFile
 import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
 import io.mockk.clearMocks
 import io.mockk.every
@@ -26,10 +26,10 @@ internal class ListContractingPartnerFilesTest : UnitTest() {
         private const val PROJECT_ID = 10L
         private const val PARTNER_ID = 20L
 
-        private val projectReportFile = ProjectReportFile(
+        private val projectReportFile = JemsFile(
             id = 1L,
             name = "test",
-            type = ProjectPartnerReportFileType.ContractPartnerDoc,
+            type = JemsFileType.ContractPartnerDoc,
             uploaded = ZonedDateTime.of(2020,1,30,15,10,10,10, ZoneId.systemDefault()),
             author = UserSimple(45L, "dummy@email", name = "Dummy", surname = "Surname"),
             size = 6281245L,
@@ -55,14 +55,14 @@ internal class ListContractingPartnerFilesTest : UnitTest() {
 
     @Test
     fun `list partner files`() {
-        val filters = setOf(ProjectPartnerReportFileType.ContractPartnerDoc)
+        val filters = setOf(JemsFileType.ContractPartnerDoc)
         val indexPrefix = slot<String>()
         val result = PageImpl(listOf(projectReportFile))
         every { reportFilePersistence.listAttachments(Pageable.unpaged(), capture(indexPrefix), filters, any()) } returns PageImpl(listOf(projectReportFile))
         every { partnerPersistence.getProjectIdForPartnerId(PARTNER_ID) } returns PROJECT_ID
 
         val searchRequest = ProjectContractingFileSearchRequest(
-            treeNode = ProjectPartnerReportFileType.ContractPartnerDoc,
+            treeNode = JemsFileType.ContractPartnerDoc,
             filterSubtypes = filters,
         )
         Assertions.assertThat(interactor.listPartner(PARTNER_ID, Pageable.unpaged(), searchRequest)).isEqualTo(result)

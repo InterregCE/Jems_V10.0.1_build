@@ -1,8 +1,10 @@
 package io.cloudflight.jems.server.payments.service.attachment.downloadPaymentAttachment
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.project.service.report.file.ProjectReportFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType
+import io.cloudflight.jems.server.payments.service.regular.attachment.downloadPaymentAttachment.DownloadPaymentAttachment
+import io.cloudflight.jems.server.payments.service.regular.attachment.downloadPaymentAttachment.FileNotFound
+import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -29,13 +31,13 @@ class DownloadPaymentAttachmentTest : UnitTest() {
     @Test
     fun download() {
         val file = mockk<Pair<String, ByteArray>>()
-        every { reportFilePersistence.downloadFile(ProjectPartnerReportFileType.PaymentAttachment, 45L) } returns file
+        every { reportFilePersistence.downloadFile(JemsFileType.PaymentAttachment, 45L) } returns file
         assertThat(interactor.download(45L)).isEqualTo(file)
     }
 
     @Test
     fun `download - not existing`() {
-        every { reportFilePersistence.downloadFile(ProjectPartnerReportFileType.PaymentAttachment, -1L) } returns null
+        every { reportFilePersistence.downloadFile(JemsFileType.PaymentAttachment, -1L) } returns null
         assertThrows<FileNotFound> { interactor.download(-1L) }
     }
 

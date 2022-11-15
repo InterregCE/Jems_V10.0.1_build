@@ -1,10 +1,12 @@
 package io.cloudflight.jems.server.payments.service.attachment.setDescriptionToPaymentAttachment
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.common.minio.GenericProjectFileRepository
+import io.cloudflight.jems.server.common.minio.JemsProjectFileRepository
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
-import io.cloudflight.jems.server.project.service.report.file.ProjectReportFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType.PaymentAttachment
+import io.cloudflight.jems.server.payments.service.regular.attachment.setDescriptionToPaymentAttachment.FileNotFound
+import io.cloudflight.jems.server.payments.service.regular.attachment.setDescriptionToPaymentAttachment.SetDescriptionToPaymentAttachment
+import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.PaymentAttachment
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -20,7 +22,7 @@ class SetDescriptionToPaymentAttachmentTest : UnitTest() {
     lateinit var reportFilePersistence: ProjectReportFilePersistence
 
     @MockK
-    lateinit var genericFileRepository: GenericProjectFileRepository
+    lateinit var fileRepository: JemsProjectFileRepository
 
     @MockK
     lateinit var generalValidator: GeneralValidatorService
@@ -30,7 +32,7 @@ class SetDescriptionToPaymentAttachmentTest : UnitTest() {
 
     @BeforeEach
     fun setup() {
-        clearMocks(generalValidator, genericFileRepository)
+        clearMocks(generalValidator, fileRepository)
         every { generalValidator.throwIfAnyIsInvalid(*varargAny { it.isEmpty() }) } returns Unit
         every { generalValidator.maxLength(any<String>(), 250, "description") } returns emptyMap()
     }
@@ -38,11 +40,11 @@ class SetDescriptionToPaymentAttachmentTest : UnitTest() {
     @Test
     fun setDescription() {
         every { reportFilePersistence.existsFile(PaymentAttachment, 261L) } returns true
-        every { genericFileRepository.setDescription(261L, "new desc") } answers { }
+        every { fileRepository.setDescription(261L, "new desc") } answers { }
 
         interactor.setDescription(fileId = 261L, "new desc")
 
-        verify(exactly = 1) { genericFileRepository.setDescription(261L, "new desc") }
+        verify(exactly = 1) { fileRepository.setDescription(261L, "new desc") }
         verify(exactly = 1) { generalValidator.maxLength("new desc", 250, "description") }
         verify(exactly = 1) { generalValidator.throwIfAnyIsInvalid(*varargAny { it.isEmpty() }) }
     }
@@ -53,7 +55,7 @@ class SetDescriptionToPaymentAttachmentTest : UnitTest() {
 
         assertThrows<FileNotFound> { interactor.setDescription(fileId = -1L, "new desc") }
 
-        verify(exactly = 0) { genericFileRepository.setDescription(-1L, "new desc") }
+        verify(exactly = 0) { fileRepository.setDescription(-1L, "new desc") }
     }
 
 }

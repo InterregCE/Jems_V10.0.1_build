@@ -6,9 +6,9 @@ import io.cloudflight.jems.server.project.service.contracting.fileManagement.PAR
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.validateConfiguration
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingFileSearchRequest
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
-import io.cloudflight.jems.server.project.service.report.file.ProjectReportFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFile
+import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFile
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -27,11 +27,11 @@ class ListContractingPartnerFiles(
         partnerId: Long,
         pageable: Pageable,
         searchRequest: ProjectContractingFileSearchRequest
-    ): Page<ProjectReportFile> {
+    ): Page<JemsFile> {
 
         validateConfiguration(searchRequest = searchRequest, partnerId, PARTNER_ALLOWED_FILE_TYPES)
         val projectId = partnerPersistence.getProjectIdForPartnerId(partnerId)
-        val filePathPrefix = ProjectPartnerReportFileType.ContractPartnerDoc.generatePath(projectId, partnerId)
+        val filePathPrefix = JemsFileType.ContractPartnerDoc.generatePath(projectId, partnerId)
 
         return reportFilePersistence.listAttachments(
             pageable = pageable,

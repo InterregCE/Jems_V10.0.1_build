@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.partner.identification.getProjectPartnerReportAvailablePeriods
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportPeriod
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportPeriod
 import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectReportIdentificationPersistence
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs

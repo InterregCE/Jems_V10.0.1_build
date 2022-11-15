@@ -7,9 +7,10 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.call.createTestCallEntity
 import io.cloudflight.jems.server.common.exception.I18nValidationException
-import io.cloudflight.jems.server.payments.AdvancePaymentPersistence
-import io.cloudflight.jems.server.payments.service.deleteAdvancePayment.DeleteAdvancePayment
-import io.cloudflight.jems.server.payments.service.model.AdvancePaymentDetail
+import io.cloudflight.jems.server.payments.service.advance.AdvancePaymentValidator
+import io.cloudflight.jems.server.payments.service.advance.PaymentAdvancePersistence
+import io.cloudflight.jems.server.payments.service.advance.deleteAdvancePayment.DeleteAdvancePayment
+import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentDetail
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.project.repository.toSettingsModel
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
@@ -118,7 +119,7 @@ class DeleteAdvancePaymentTest: UnitTest() {
     }
 
     @MockK
-    lateinit var  advancePaymentPersistence: AdvancePaymentPersistence
+    lateinit var  advancePaymentPersistence: PaymentAdvancePersistence
 
     @RelaxedMockK
     lateinit var  validator: AdvancePaymentValidator

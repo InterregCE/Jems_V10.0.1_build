@@ -6,9 +6,11 @@ import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCon
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.createTestCallEntity
 import io.cloudflight.jems.server.payments.entity.AdvancePaymentEntity
-import io.cloudflight.jems.server.payments.service.model.AdvancePayment
-import io.cloudflight.jems.server.payments.service.model.AdvancePaymentDetail
-import io.cloudflight.jems.server.payments.service.model.AdvancePaymentUpdate
+import io.cloudflight.jems.server.payments.model.advance.AdvancePayment
+import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentDetail
+import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentUpdate
+import io.cloudflight.jems.server.payments.repository.advance.AdvancePaymentRepository
+import io.cloudflight.jems.server.payments.repository.advance.PaymentAdvancePersistenceProvider
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
@@ -70,7 +72,7 @@ class AdvancePaymentPersistenceProviderTest: UnitTest() {
     lateinit var programmeFundRepository: ProgrammeFundRepository
 
     @InjectMockKs
-    lateinit var advancePaymentPersistenceProvider: AdvancePaymentPersistenceProvider
+    lateinit var advancePaymentPersistenceProvider: PaymentAdvancePersistenceProvider
 
     companion object {
         private val currentDate = ZonedDateTime.now().toLocalDate()
@@ -308,7 +310,8 @@ class AdvancePaymentPersistenceProviderTest: UnitTest() {
         every { userRepository.getById(userEntity2.id) } returns userEntity2
         every { advancePaymentRepository.save( any() ) } returns advancePaymentEntity
 
-        assertThat(advancePaymentPersistenceProvider.updatePaymentDetail(AdvancePaymentUpdate(
+        assertThat(advancePaymentPersistenceProvider.updatePaymentDetail(
+            AdvancePaymentUpdate(
             id = null,
             projectId = projectId,
             partnerId = partnerId,
@@ -322,7 +325,8 @@ class AdvancePaymentPersistenceProviderTest: UnitTest() {
             paymentConfirmed = true,
             paymentConfirmedUserId = paymentConfirmedUser.id,
             paymentConfirmedDate = currentDate.minusDays(2)
-        ))).isEqualTo(advancePaymentDetail)
+        )
+        )).isEqualTo(advancePaymentDetail)
     }
 
     @Test

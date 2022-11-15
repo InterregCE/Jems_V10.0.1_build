@@ -13,16 +13,16 @@ import io.cloudflight.jems.api.project.dto.report.partner.identification.Project
 import io.cloudflight.jems.server.programme.controller.fund.toDto
 import io.cloudflight.jems.server.programme.controller.legalstatus.toDto
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
-import io.cloudflight.jems.server.project.service.report.model.PartnerReportIdentification
-import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReport
-import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSummary
-import io.cloudflight.jems.server.project.service.report.model.ReportStatus
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFile
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileSearchRequest
+import io.cloudflight.jems.server.project.service.report.model.partner.PartnerReportIdentification
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSummary
+import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFile
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileSearchRequest
 import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
-import io.cloudflight.jems.server.project.service.report.model.identification.ProjectPartnerReportPeriod
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportPeriod
 import org.mapstruct.Mapper
 import org.mapstruct.factory.Mappers
 import org.springframework.data.domain.Page
@@ -85,7 +85,7 @@ fun PartnerReportIdentification.toDto() = PartnerReportIdentificationDTO(
     }
 )
 
-fun ProjectReportFile.toDto() = ProjectReportFileDTO(
+fun JemsFile.toDto() = ProjectReportFileDTO(
     id = id,
     name = name,
     type = ProjectPartnerReportFileTypeDTO.valueOf(type.name),
@@ -105,20 +105,20 @@ fun Long.sizeToString(): String {
     return sizeFormat.format(this / 1024.0.pow(digitGroups.toDouble())) + "\u0020" + sizeUnits[digitGroups]
 }
 
-fun ProjectReportFileSearchRequestDTO.toModel() = ProjectReportFileSearchRequest(
+fun ProjectReportFileSearchRequestDTO.toModel() = JemsFileSearchRequest(
     reportId = reportId,
-    treeNode = ProjectPartnerReportFileType.valueOf(treeNode.name),
-    filterSubtypes = filterSubtypes.mapTo(HashSet()) { ProjectPartnerReportFileType.valueOf(it.name) }
+    treeNode = JemsFileType.valueOf(treeNode.name),
+    filterSubtypes = filterSubtypes.mapTo(HashSet()) { JemsFileType.valueOf(it.name) }
 )
 
 fun MultipartFile.toProjectFile() = ProjectFile(inputStream, originalFilename ?: name, size)
 
 val partnerReportMapper = Mappers.getMapper(ProjectPartnerReportMapper::class.java)
 
-fun ProjectReportFileMetadata.toDto() = partnerReportMapper.map(this)
+fun JemsFileMetadata.toDto() = partnerReportMapper.map(this)
 
 @Mapper
 interface ProjectPartnerReportMapper {
-    fun map(model: ProjectReportFileMetadata): ProjectReportFileMetadataDTO
+    fun map(model: JemsFileMetadata): ProjectReportFileMetadataDTO
     fun map(model: UserSimple): UserSimpleDTO
 }

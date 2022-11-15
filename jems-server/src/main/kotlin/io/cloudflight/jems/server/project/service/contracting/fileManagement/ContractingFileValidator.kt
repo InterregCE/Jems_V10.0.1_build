@@ -4,48 +4,48 @@ import io.cloudflight.jems.server.project.service.contracting.fileManagement.lis
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.listContractingFiles.InvalidSearchFilterConfiguration
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.listContractingFiles.InvalidSearchFilterPartnerWithoutId
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingFileSearchRequest
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.cloudflight.jems.server.project.service.report.partner.file.listProjectPartnerReportFile.validateSearchConfiguration
 
 val MONITORING_ALLOWED_FILE_TYPES = mapOf(
-    ProjectPartnerReportFileType.Contracting to setOf(
-        ProjectPartnerReportFileType.Contract,
-        ProjectPartnerReportFileType.ContractDoc,
-        ProjectPartnerReportFileType.ContractPartnerDoc,
-        ProjectPartnerReportFileType.ContractInternal
+    JemsFileType.Contracting to setOf(
+        JemsFileType.Contract,
+        JemsFileType.ContractDoc,
+        JemsFileType.ContractPartnerDoc,
+        JemsFileType.ContractInternal
     ),
-    ProjectPartnerReportFileType.ContractSupport to setOf(
-        ProjectPartnerReportFileType.Contract,
-        ProjectPartnerReportFileType.ContractDoc
+    JemsFileType.ContractSupport to setOf(
+        JemsFileType.Contract,
+        JemsFileType.ContractDoc
     ),
-    ProjectPartnerReportFileType.Contract to setOf(ProjectPartnerReportFileType.Contract),
-    ProjectPartnerReportFileType.ContractDoc to setOf(ProjectPartnerReportFileType.ContractDoc),
-    ProjectPartnerReportFileType.ContractPartner to setOf(ProjectPartnerReportFileType.ContractPartnerDoc),
-    ProjectPartnerReportFileType.ContractPartnerDoc to setOf(ProjectPartnerReportFileType.ContractPartnerDoc),
-    ProjectPartnerReportFileType.ContractInternal to setOf(ProjectPartnerReportFileType.ContractInternal),
+    JemsFileType.Contract to setOf(JemsFileType.Contract),
+    JemsFileType.ContractDoc to setOf(JemsFileType.ContractDoc),
+    JemsFileType.ContractPartner to setOf(JemsFileType.ContractPartnerDoc),
+    JemsFileType.ContractPartnerDoc to setOf(JemsFileType.ContractPartnerDoc),
+    JemsFileType.ContractInternal to setOf(JemsFileType.ContractInternal),
 )
 
 val CONTRACT_ALLOWED_FILE_TYPES = mapOf(
-    ProjectPartnerReportFileType.ContractSupport to setOf(
-        ProjectPartnerReportFileType.Contract,
-        ProjectPartnerReportFileType.ContractDoc
+    JemsFileType.ContractSupport to setOf(
+        JemsFileType.Contract,
+        JemsFileType.ContractDoc
     ),
-    ProjectPartnerReportFileType.Contract to setOf(ProjectPartnerReportFileType.Contract),
-    ProjectPartnerReportFileType.ContractDoc to setOf(ProjectPartnerReportFileType.ContractDoc),
+    JemsFileType.Contract to setOf(JemsFileType.Contract),
+    JemsFileType.ContractDoc to setOf(JemsFileType.ContractDoc),
 )
 
 val PARTNER_ALLOWED_FILE_TYPES = mapOf(
-    ProjectPartnerReportFileType.ContractPartner to setOf(ProjectPartnerReportFileType.ContractPartnerDoc),
-    ProjectPartnerReportFileType.ContractPartnerDoc to setOf(ProjectPartnerReportFileType.ContractPartnerDoc),
+    JemsFileType.ContractPartner to setOf(JemsFileType.ContractPartnerDoc),
+    JemsFileType.ContractPartnerDoc to setOf(JemsFileType.ContractPartnerDoc),
 )
 
-fun validateInternalFile(fileType:  ProjectPartnerReportFileType?) {
-    if (fileType == null || fileType != ProjectPartnerReportFileType.ContractInternal) {
+fun validateInternalFile(fileType:  JemsFileType?) {
+    if (fileType == null || fileType != JemsFileType.ContractInternal) {
         throw FileNotFound()
     }
 }
 
-fun validateContractFile(fileType:  ProjectPartnerReportFileType?) {
+fun validateContractFile(fileType:  JemsFileType?) {
     if (fileType == null || fileType !in CONTRACT_ALLOWED_FILE_TYPES) {
         throw FileNotFound()
     }
@@ -54,7 +54,7 @@ fun validateContractFile(fileType:  ProjectPartnerReportFileType?) {
 fun validateConfiguration(
     searchRequest: ProjectContractingFileSearchRequest,
     partnerId: Long?,
-    allowedFilers: Map<ProjectPartnerReportFileType, Set<ProjectPartnerReportFileType>>
+    allowedFilers: Map<JemsFileType, Set<JemsFileType>>
 ) {
     validateSearchConfiguration(
         treeNode = searchRequest.treeNode,
@@ -64,6 +64,6 @@ fun validateConfiguration(
         { invalidFilters -> InvalidSearchFilterConfiguration(invalidFilters) },
     )
 
-    if (searchRequest.treeNode == ProjectPartnerReportFileType.ContractPartnerDoc && partnerId == null)
+    if (searchRequest.treeNode == JemsFileType.ContractPartnerDoc && partnerId == null)
         throw InvalidSearchFilterPartnerWithoutId()
 }

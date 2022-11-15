@@ -5,9 +5,9 @@ import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditBuilder
 import io.cloudflight.jems.server.project.service.model.ProjectFull
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
-import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReport
-import io.cloudflight.jems.server.project.service.report.model.create.ProjectPartnerReportCreate
-import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSubmissionSummary
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
+import io.cloudflight.jems.server.project.service.report.model.partner.base.create.ProjectPartnerReportCreate
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
 
 fun partnerReportCreated(
     context: Any,

@@ -12,12 +12,12 @@ import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPar
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
-import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportExpenditureCost
-import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportInvestment
-import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportLumpSum
-import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportUnitCost
-import io.cloudflight.jems.server.project.service.report.model.expenditure.ReportBudgetCategory
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportInvestment
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportLumpSum
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportUnitCost
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.getAvailableBudgetOptionsForReport.GetAvailableBudgetOptionsForReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.getAvailableInvestmentsForReport.GetAvailableInvestmentsForReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.getAvailableLumpSumsForReport.GetAvailableLumpSumsForReportInteractor
@@ -64,7 +64,7 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
         currencyCode = "CZK",
         currencyConversionRate = BigDecimal.valueOf(24),
         declaredAmountAfterSubmission = BigDecimal.valueOf(1.3),
-        attachment = ProjectReportFileMetadata(500L, "file.txt", UPLOADED),
+        attachment = JemsFileMetadata(500L, "file.txt", UPLOADED),
     )
 
     private val reportExpenditureCostDto = ProjectPartnerReportExpenditureCostDTO(
@@ -93,7 +93,7 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
 
     private val stream = ByteArray(5).inputStream()
 
-    private val dummyFile = ProjectReportFileMetadata(id = 90L, "file_name.ext", uploaded = UPLOADED)
+    private val dummyFile = JemsFileMetadata(id = 90L, "file_name.ext", uploaded = UPLOADED)
     private val dummyFileDto = ProjectReportFileMetadataDTO(id = 90L, "file_name.ext", uploaded = UPLOADED)
     private val dummyFileExpected = ProjectFile(stream, "file_name.ext", 50L)
     private fun dummyMultipartFile(name: String = "file_name.ext", originalName: String? = null): MultipartFile {

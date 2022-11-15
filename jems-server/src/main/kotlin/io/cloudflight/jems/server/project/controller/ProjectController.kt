@@ -14,7 +14,7 @@ import io.cloudflight.jems.api.project.dto.cofinancing.ProjectCoFinancingOvervie
 import io.cloudflight.jems.api.project.dto.cofinancing.ProjectPartnerBudgetCoFinancingDTO
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.api.project.dto.workpackage.activity.WorkPackageActivitySummaryDTO
-import io.cloudflight.jems.server.payments.service.getContractedProjects.GetContractedProjectsInteractor
+import io.cloudflight.jems.server.payments.service.advance.getContractedProjects.GetContractedProjectsInteractor
 import io.cloudflight.jems.server.project.controller.workpackage.toInvestmentSummaryDTOs
 import io.cloudflight.jems.server.project.controller.workpackage.toSummariesDto
 import io.cloudflight.jems.server.project.service.ProjectService

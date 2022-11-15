@@ -4,7 +4,7 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
-import io.cloudflight.jems.server.project.service.report.file.ProjectReportFilePersistence
+import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs

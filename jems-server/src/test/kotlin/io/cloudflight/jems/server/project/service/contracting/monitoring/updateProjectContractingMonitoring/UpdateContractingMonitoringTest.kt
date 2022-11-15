@@ -5,8 +5,8 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
-import io.cloudflight.jems.server.payments.PaymentPersistence
-import io.cloudflight.jems.server.payments.service.model.PaymentPerPartner
+import io.cloudflight.jems.server.payments.service.regular.PaymentRegularPersistence
+import io.cloudflight.jems.server.payments.model.regular.PaymentPerPartner
 import io.cloudflight.jems.server.project.repository.ProjectPersistenceProvider
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
@@ -145,7 +145,7 @@ class UpdateContractingMonitoringTest : UnitTest() {
     lateinit var auditPublisher: ApplicationEventPublisher
 
     @MockK
-    lateinit var paymentPersistence: PaymentPersistence
+    lateinit var paymentPersistence: PaymentRegularPersistence
 
     @InjectMockKs
     lateinit var updateContractingMonitoring: UpdateContractingMonitoring
