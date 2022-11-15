@@ -16,6 +16,12 @@
                         {{'project.application.partner.report.tab.controlChecklists' | translate}}
                     </span>
                 </a>
+                <a [active]="activeTab('expenditureVerificationTab')" mat-tab-link
+                   (click)="routeTo('expenditureVerificationTab')">
+                    <span jemsText maxWidth="230">
+                        {{'project.application.partner.report.tab.expenditure.verification' | translate}}
+                    </span>
+                </a>
                 <a [active]="activeTab('document')" mat-tab-link
                    (click)="routeTo('document')">
                     <span jemsText maxWidth="230">

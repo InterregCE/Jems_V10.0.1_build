@@ -439,6 +439,9 @@ import {
 import {
   PartnerBreakdownInvestmentComponent
 } from '@project/project-application/report/partner-report-detail-page/partner-report-financial-overview-tab/partner-breakdown-investment/partner-breakdown-investment.component';
+import {
+  PartnerControlReportExpenditureVerificationTabComponent
+} from "@project/project-application/report/partner-control-report/partner-control-expenditure-verification-tab/partner-control-report-expenditure-verification-tab.component";
 
 @NgModule({
   declarations: [
@@ -580,6 +583,7 @@ import {
     PartnerControlReportControlIdentificationTabComponent,
     PartnerControlReportControlChecklistsTabComponent,
     PartnerControlReportControlChecklistPageComponent,
+    PartnerControlReportExpenditureVerificationTabComponent,
     PartnerControlReportDocumentTabComponent,
     ProjectProposedUnitCostsComponent,
     ProjectProposedUnitCostDetailComponent,
