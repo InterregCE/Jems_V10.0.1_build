@@ -3,8 +3,11 @@ package io.cloudflight.jems.server.payments.service.attachment.uploadPaymentAtta
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.minio.JemsProjectFileRepository
-import io.cloudflight.jems.server.payments.PaymentPersistence
-import io.cloudflight.jems.server.payments.service.model.PaymentDetail
+import io.cloudflight.jems.server.payments.service.regular.PaymentRegularPersistence
+import io.cloudflight.jems.server.payments.model.regular.PaymentDetail
+import io.cloudflight.jems.server.payments.service.regular.attachment.uploadPaymentAttachment.FileAlreadyExists
+import io.cloudflight.jems.server.payments.service.regular.attachment.uploadPaymentAttachment.FileTypeNotSupported
+import io.cloudflight.jems.server.payments.service.regular.attachment.uploadPaymentAttachment.UploadPaymentAttachment
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
@@ -32,7 +35,7 @@ class UploadPaymentAttachmentTest : UnitTest() {
     }
 
     @MockK
-    lateinit var paymentPersistence: PaymentPersistence
+    lateinit var paymentPersistence: PaymentRegularPersistence
 
     @MockK
     lateinit var reportFilePersistence: ProjectReportFilePersistence

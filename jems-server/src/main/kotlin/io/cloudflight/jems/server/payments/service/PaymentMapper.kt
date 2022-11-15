@@ -11,14 +11,14 @@ import io.cloudflight.jems.api.payments.dto.PaymentToProjectDTO
 import io.cloudflight.jems.api.payments.dto.PaymentTypeDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.server.call.service.model.IdNamePair
-import io.cloudflight.jems.server.payments.service.model.AdvancePayment
-import io.cloudflight.jems.server.payments.service.model.AdvancePaymentDetail
-import io.cloudflight.jems.server.payments.service.model.AdvancePaymentUpdate
-import io.cloudflight.jems.server.payments.service.model.PartnerPayment
-import io.cloudflight.jems.server.payments.service.model.PaymentDetail
-import io.cloudflight.jems.server.payments.service.model.PaymentPartnerInstallment
-import io.cloudflight.jems.server.payments.service.model.PaymentPartnerInstallmentUpdate
-import io.cloudflight.jems.server.payments.service.model.PaymentToProject
+import io.cloudflight.jems.server.payments.model.advance.AdvancePayment
+import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentDetail
+import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentUpdate
+import io.cloudflight.jems.server.payments.model.regular.PartnerPayment
+import io.cloudflight.jems.server.payments.model.regular.PaymentDetail
+import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallment
+import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallmentUpdate
+import io.cloudflight.jems.server.payments.model.regular.PaymentToProject
 import io.cloudflight.jems.server.programme.controller.fund.toDto
 
 fun PaymentToProject.toDTO() = PaymentToProjectDTO(

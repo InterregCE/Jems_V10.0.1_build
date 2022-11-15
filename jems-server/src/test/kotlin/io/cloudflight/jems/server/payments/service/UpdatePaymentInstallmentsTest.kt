@@ -8,15 +8,15 @@ import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.exception.I18nValidationException
-import io.cloudflight.jems.server.payments.PaymentPersistence
-import io.cloudflight.jems.server.payments.service.model.PartnerPayment
-import io.cloudflight.jems.server.payments.service.model.PaymentDetail
-import io.cloudflight.jems.server.payments.service.model.PaymentPartnerInstallment
-import io.cloudflight.jems.server.payments.service.model.PaymentPartnerInstallmentUpdate
-import io.cloudflight.jems.server.payments.service.model.PaymentType
-import io.cloudflight.jems.server.payments.service.updatePaymentInstallments.PaymentInstallmentsValidator
-import io.cloudflight.jems.server.payments.service.updatePaymentInstallments.UpdatePaymentInstallments
-import io.cloudflight.jems.server.payments.service.updatePaymentInstallments.UpdatePaymentInstallmentsException
+import io.cloudflight.jems.server.payments.service.regular.PaymentRegularPersistence
+import io.cloudflight.jems.server.payments.model.regular.PartnerPayment
+import io.cloudflight.jems.server.payments.model.regular.PaymentDetail
+import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallment
+import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallmentUpdate
+import io.cloudflight.jems.server.payments.model.regular.PaymentType
+import io.cloudflight.jems.server.payments.service.regular.updatePaymentInstallments.PaymentInstallmentsValidator
+import io.cloudflight.jems.server.payments.service.regular.updatePaymentInstallments.UpdatePaymentInstallments
+import io.cloudflight.jems.server.payments.service.regular.updatePaymentInstallments.UpdatePaymentInstallmentsException
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -128,7 +128,7 @@ class UpdatePaymentInstallmentsTest : UnitTest() {
     }
 
     @MockK
-    lateinit var paymentPersistence: PaymentPersistence
+    lateinit var paymentPersistence: PaymentRegularPersistence
 
     @MockK
     lateinit var securityService: SecurityService

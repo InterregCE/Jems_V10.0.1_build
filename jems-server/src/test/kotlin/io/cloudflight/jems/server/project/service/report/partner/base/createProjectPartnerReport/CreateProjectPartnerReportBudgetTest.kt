@@ -6,8 +6,8 @@ import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoF
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.payments.PaymentPersistence
-import io.cloudflight.jems.server.payments.service.model.PaymentPartnerInstallment
+import io.cloudflight.jems.server.payments.service.regular.PaymentRegularPersistence
+import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallment
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_period.GetPartnerBudgetPerPeriodInteractor
 import io.cloudflight.jems.server.project.service.budget.get_project_budget.GetProjectBudget
@@ -473,7 +473,7 @@ internal class CreateProjectPartnerReportBudgetTest : UnitTest() {
     @MockK
     lateinit var reportExpenditureCoFinancingPersistence: ProjectReportExpenditureCoFinancingPersistence
     @MockK
-    lateinit var paymentPersistence: PaymentPersistence
+    lateinit var paymentPersistence: PaymentRegularPersistence
     @MockK
     lateinit var reportLumpSumPersistence: ProjectReportLumpSumPersistence
     @MockK

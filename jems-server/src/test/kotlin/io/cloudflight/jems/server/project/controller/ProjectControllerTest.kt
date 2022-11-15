@@ -32,7 +32,7 @@ import io.cloudflight.jems.api.project.dto.workpackage.activity.WorkPackageActiv
 import io.cloudflight.jems.server.call.controller.toDto
 import io.cloudflight.jems.server.call.service.model.CallCostOption
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
-import io.cloudflight.jems.server.payments.service.getContractedProjects.GetContractedProjectsInteractor
+import io.cloudflight.jems.server.payments.service.advance.getContractedProjects.GetContractedProjectsInteractor
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.project.service.ProjectService

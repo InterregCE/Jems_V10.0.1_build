@@ -5,11 +5,11 @@ import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileDTO
 import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadataDTO
 import io.cloudflight.jems.api.project.dto.report.file.UserSimpleDTO
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.payments.service.attachment.deletePaymentAttachment.DeletePaymentAttachmentInteractor
-import io.cloudflight.jems.server.payments.service.attachment.downloadPaymentAttachment.DownloadPaymentAttachmentInteractor
-import io.cloudflight.jems.server.payments.service.attachment.getPaymentAttchament.GetPaymentAttachmentInteractor
-import io.cloudflight.jems.server.payments.service.attachment.setDescriptionToPaymentAttachment.SetDescriptionToPaymentAttachmentInteractor
-import io.cloudflight.jems.server.payments.service.attachment.uploadPaymentAttachment.UploadPaymentAttachmentInteractor
+import io.cloudflight.jems.server.payments.service.regular.attachment.deletePaymentAttachment.DeletePaymentAttachmentInteractor
+import io.cloudflight.jems.server.payments.service.regular.attachment.downloadPaymentAttachment.DownloadPaymentAttachmentInteractor
+import io.cloudflight.jems.server.payments.service.regular.attachment.getPaymentAttchament.GetPaymentAttachmentInteractor
+import io.cloudflight.jems.server.payments.service.regular.attachment.setDescriptionToPaymentAttachment.SetDescriptionToPaymentAttachmentInteractor
+import io.cloudflight.jems.server.payments.service.regular.attachment.uploadPaymentAttachment.UploadPaymentAttachmentInteractor
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFile

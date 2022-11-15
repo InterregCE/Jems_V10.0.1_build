@@ -1,8 +1,8 @@
 package io.cloudflight.jems.server.project.service.report.partner.base.createProjectPartnerReport
 
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO.MainFund
-import io.cloudflight.jems.server.payments.PaymentPersistence
-import io.cloudflight.jems.server.payments.service.model.PaymentPartnerInstallment
+import io.cloudflight.jems.server.payments.service.regular.PaymentRegularPersistence
+import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallment
 import io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_period.GetPartnerBudgetPerPeriodInteractor
 import io.cloudflight.jems.server.project.service.budget.get_project_budget.GetProjectBudget
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
@@ -32,7 +32,6 @@ import io.cloudflight.jems.server.project.service.report.model.partner.base.crea
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.create.CreateProjectPartnerReportContribution
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.withoutCalculations.ProjectPartnerReportEntityContribution
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.PartnerReportInvestmentSummary
-import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.costCategory.ReportExpenditureCostCategory
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportPeriod
@@ -63,7 +62,7 @@ class CreateProjectPartnerReportBudget(
     private val getProjectBudget: GetProjectBudget,
     private val reportExpenditureCostCategoryPersistence: ProjectReportExpenditureCostCategoryPersistence,
     private val reportExpenditureCoFinancingPersistence: ProjectReportExpenditureCoFinancingPersistence,
-    private val paymentPersistence: PaymentPersistence,
+    private val paymentPersistence: PaymentRegularPersistence,
     private val reportLumpSumPersistence: ProjectReportLumpSumPersistence,
     private val reportUnitCostPersistence: ProjectReportUnitCostPersistence,
     private val reportInvestmentPersistence: ProjectReportInvestmentPersistence,

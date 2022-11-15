@@ -3,6 +3,8 @@ package io.cloudflight.jems.server.payments.service.attachment.setDescriptionToP
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.minio.JemsProjectFileRepository
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
+import io.cloudflight.jems.server.payments.service.regular.attachment.setDescriptionToPaymentAttachment.FileNotFound
+import io.cloudflight.jems.server.payments.service.regular.attachment.setDescriptionToPaymentAttachment.SetDescriptionToPaymentAttachment
 import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.PaymentAttachment
 import io.mockk.clearMocks

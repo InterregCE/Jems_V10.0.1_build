@@ -12,16 +12,20 @@ import io.cloudflight.jems.server.payments.entity.PaymentEntity
 import io.cloudflight.jems.server.payments.entity.PaymentGroupingId
 import io.cloudflight.jems.server.payments.entity.PaymentPartnerEntity
 import io.cloudflight.jems.server.payments.entity.PaymentPartnerInstallmentEntity
-import io.cloudflight.jems.server.payments.service.model.PartnerPayment
-import io.cloudflight.jems.server.payments.service.model.PartnerPaymentSimple
-import io.cloudflight.jems.server.payments.service.model.PaymentConfirmedInfo
-import io.cloudflight.jems.server.payments.service.model.PaymentDetail
-import io.cloudflight.jems.server.payments.service.model.PaymentPartnerInstallment
-import io.cloudflight.jems.server.payments.service.model.PaymentPartnerInstallmentUpdate
-import io.cloudflight.jems.server.payments.service.model.PaymentPartnerToCreate
-import io.cloudflight.jems.server.payments.service.model.PaymentToCreate
-import io.cloudflight.jems.server.payments.service.model.PaymentToProject
-import io.cloudflight.jems.server.payments.service.model.PaymentType
+import io.cloudflight.jems.server.payments.model.regular.PartnerPayment
+import io.cloudflight.jems.server.payments.model.regular.PartnerPaymentSimple
+import io.cloudflight.jems.server.payments.model.regular.PaymentConfirmedInfo
+import io.cloudflight.jems.server.payments.model.regular.PaymentDetail
+import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallment
+import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallmentUpdate
+import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerToCreate
+import io.cloudflight.jems.server.payments.model.regular.PaymentToCreate
+import io.cloudflight.jems.server.payments.model.regular.PaymentToProject
+import io.cloudflight.jems.server.payments.model.regular.PaymentType
+import io.cloudflight.jems.server.payments.repository.regular.PaymentPartnerInstallmentRepository
+import io.cloudflight.jems.server.payments.repository.regular.PaymentPartnerRepository
+import io.cloudflight.jems.server.payments.repository.regular.PaymentRegularPersistenceProvider
+import io.cloudflight.jems.server.payments.repository.regular.PaymentRepository
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumEntity
 import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
@@ -95,7 +99,7 @@ class PaymentPersistenceProviderTest: UnitTest() {
     lateinit var fileRepository: JemsProjectFileRepository
 
     @InjectMockKs
-    lateinit var paymentPersistenceProvider: PaymentPersistenceProvider
+    lateinit var paymentPersistenceProvider: PaymentRegularPersistenceProvider
 
     companion object {
         private val currentTime = ZonedDateTime.now()
@@ -359,11 +363,13 @@ class PaymentPersistenceProviderTest: UnitTest() {
             paymentConfirmedDate = currentDate.plusDays(2)
         ))
 
-        assertThat(paymentPersistenceProvider.getConfirmedInfosForPayment(paymentId)).isEqualTo(PaymentConfirmedInfo(
+        assertThat(paymentPersistenceProvider.getConfirmedInfosForPayment(paymentId)).isEqualTo(
+            PaymentConfirmedInfo(
             id = paymentId,
             amountPaidPerFund = BigDecimal("27.11"),
             dateOfLastPayment = currentDate.minusDays(2)
-        ))
+        )
+        )
     }
 
     @Test

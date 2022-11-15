@@ -5,9 +5,9 @@ import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorDefaultImpl
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
-import io.cloudflight.jems.server.payments.service.model.PaymentPartnerInstallment
-import io.cloudflight.jems.server.payments.service.model.PaymentPartnerInstallmentUpdate
-import io.cloudflight.jems.server.payments.service.updatePaymentInstallments.PaymentInstallmentsValidator
+import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallment
+import io.cloudflight.jems.server.payments.model.regular.PaymentPartnerInstallmentUpdate
+import io.cloudflight.jems.server.payments.service.regular.updatePaymentInstallments.PaymentInstallmentsValidator
 import io.mockk.MockKAnnotations
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -77,14 +77,16 @@ class PaymentInstallmentsValidatorTest : UnitTest() {
                 amountPaid = BigDecimal.TEN,
                 paymentDate = currentDate,
                 comment = "comment"
-            )))
+            )
+            ))
         }
     }
 
     @Test
     fun `should throw InputValidationException at deletion of already checked`() {
         val ex = assertThrows<I18nValidationException> {
-            validator.validateInstallmentDeletion(listOf(PaymentPartnerInstallment(
+            validator.validateInstallmentDeletion(listOf(
+                PaymentPartnerInstallment(
                 id = 4L,
                 fundId = 65L,
                 lumpSumId = 6459L,
@@ -92,7 +94,8 @@ class PaymentInstallmentsValidatorTest : UnitTest() {
                 amountPaid = BigDecimal.TEN,
                 paymentDate = currentDate,
                 isSavePaymentInfo = true
-            )))
+            )
+            ))
         }
         assertEquals(PaymentInstallmentsValidator.PAYMENT_PARTNER_INSTALLMENT_DELETION_ERROR_KEY, ex.i18nKey)
 
@@ -175,14 +178,16 @@ class PaymentInstallmentsValidatorTest : UnitTest() {
     fun `should throw I18nValidationException if checkbox states are wrong`() {
         val ex = assertThrows<I18nValidationException> {
             validator.validateCheckboxStates(
-                listOf(PaymentPartnerInstallmentUpdate(
+                listOf(
+                    PaymentPartnerInstallmentUpdate(
                     id = 3L,
                     amountPaid = BigDecimal.TEN,
                     paymentDate = currentDate,
                     comment = "comment",
                     isSavePaymentInfo = false,
                     isPaymentConfirmed = true
-                ))
+                )
+                )
             )
         }
         assertEquals(PaymentInstallmentsValidator.PAYMENT_PARTNER_INSTALLMENT_SAVE_ERROR_KEY, ex.i18nKey)

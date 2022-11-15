@@ -4,11 +4,11 @@ import io.cloudflight.jems.api.payments.dto.PaymentDetailDTO
 import io.cloudflight.jems.api.payments.dto.PaymentPartnerInstallmentDTO
 import io.cloudflight.jems.api.payments.dto.PaymentToProjectDTO
 import io.cloudflight.jems.api.payments.PaymentsApi
-import io.cloudflight.jems.server.payments.service.getPaymentDetail.GetPaymentDetailInteractor
-import io.cloudflight.jems.server.payments.service.getPayments.GetPaymentsInteractor
+import io.cloudflight.jems.server.payments.service.regular.getPaymentDetail.GetPaymentDetailInteractor
+import io.cloudflight.jems.server.payments.service.regular.getPayments.GetPaymentsInteractor
 import io.cloudflight.jems.server.payments.service.toDTO
 import io.cloudflight.jems.server.payments.service.toModelList
-import io.cloudflight.jems.server.payments.service.updatePaymentInstallments.UpdatePaymentInstallmentsInteractor
+import io.cloudflight.jems.server.payments.service.regular.updatePaymentInstallments.UpdatePaymentInstallmentsInteractor
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.web.bind.annotation.RestController

@@ -5,9 +5,9 @@ import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditBuilder
 import io.cloudflight.jems.server.common.entity.extractTranslation
-import io.cloudflight.jems.server.payments.service.model.AdvancePaymentDetail
-import io.cloudflight.jems.server.payments.service.model.PartnerPayment
-import io.cloudflight.jems.server.payments.service.model.PaymentDetail
+import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentDetail
+import io.cloudflight.jems.server.payments.model.regular.PartnerPayment
+import io.cloudflight.jems.server.payments.model.regular.PaymentDetail
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 
