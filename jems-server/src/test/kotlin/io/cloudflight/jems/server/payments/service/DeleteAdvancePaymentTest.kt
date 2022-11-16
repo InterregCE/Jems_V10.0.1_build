@@ -143,7 +143,7 @@ class DeleteAdvancePaymentTest: UnitTest() {
         verify(exactly = 1) { auditPublisher.publishEvent(capture(auditSlot)) }
         assertThat(auditSlot.captured.auditCandidate.action).isEqualTo(AuditAction.ADVANCE_PAYMENT_IS_DELETED)
         assertThat(auditSlot.captured.auditCandidate.description)
-            .isEqualTo("Advance payment number ${paymentId} is deleted for partner PP2 for funding source FUND")
+            .isEqualTo("Advance payment number ${paymentId} is deleted for partner PP2 for funding source (4, OTHER)")
     }
 
     @Test

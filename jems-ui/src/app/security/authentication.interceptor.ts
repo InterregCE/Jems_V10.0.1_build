@@ -4,7 +4,7 @@ import {Observable, throwError} from 'rxjs';
 import {catchError} from 'rxjs/operators';
 import {Router} from '@angular/router';
 import {AuthenticationStore} from '../authentication/service/authentication-store.service';
-import {SecurityService} from "./security.service";
+import {SecurityService} from './security.service';
 
 @Injectable()
 export class AuthenticationInterceptor implements HttpInterceptor {
@@ -20,8 +20,8 @@ export class AuthenticationInterceptor implements HttpInterceptor {
           if (err.status === 401) {
             // go to login when unauthorized status codes are intercepted
             if (this.router.url !== '/login') {
-              const securityService = this.injector.get(SecurityService)
-              securityService.clearAuthentication()
+              const securityService = this.injector.get(SecurityService);
+              securityService.clearAuthentication();
               this.authenticationStore.newAuthenticationError({i18nKey: 'authentication.expired', httpStatus: 401});
               this.router.navigate(['/login']);
             }

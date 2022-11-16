@@ -104,8 +104,9 @@ fun advancePaymentAuthorized(
     context = context,
     auditCandidate = AuditBuilder(AuditAction.ADVANCE_PAYMENT_DETAIL_AUTHORISED)
         .project(paymentDetail.projectId, paymentDetail.projectCustomIdentifier, paymentDetail.projectAcronym)
-        .description("Advance payment details for advance number ${paymentDetail.id} of " +
-            "partner ${getPartnerName(paymentDetail.partnerType, paymentDetail.partnerNumber)} are authorised")
+        .description("Advance payment details for advance payment ${paymentDetail.id} of " +
+            "partner ${getPartnerName(paymentDetail.partnerType, paymentDetail.partnerNumber)} " +
+            "for funding source ${getFundingSourceName(paymentDetail)} are authorised")
         .build()
 )
 
@@ -116,8 +117,9 @@ fun advancePaymentConfirmed(
     context = context,
     auditCandidate = AuditBuilder(AuditAction.ADVANCE_PAYMENT_DETAIL_CONFIRMED)
         .project(paymentDetail.projectId, paymentDetail.projectCustomIdentifier, paymentDetail.projectAcronym)
-        .description("Advance payment details for advance number ${paymentDetail.id} of " +
-            "partner ${getPartnerName(paymentDetail.partnerType, paymentDetail.partnerNumber)} are confirmed")
+        .description("Advance payment details for advance payment ${paymentDetail.id} of " +
+            "partner ${getPartnerName(paymentDetail.partnerType, paymentDetail.partnerNumber)} " +
+            "for funding source ${getFundingSourceName(paymentDetail)} are confirmed")
         .build()
 )
 
@@ -128,7 +130,7 @@ private fun getAnswer(state: Boolean): String {
 private fun getFundingSourceName(paymentDetail: AdvancePaymentDetail): String {
     return when {
         paymentDetail.programmeFund != null ->
-            paymentDetail.programmeFund.abbreviation.extractTranslation(SystemLanguage.EN)
+            "(${paymentDetail.programmeFund.id}, ${paymentDetail.programmeFund.type})"
         paymentDetail.partnerContribution != null -> paymentDetail.partnerContribution.name
         paymentDetail.partnerContributionSpf != null -> paymentDetail.partnerContributionSpf.name
         else -> ""
