@@ -6,28 +6,35 @@ import {
   ProjectFileMetadataDTO,
   ProjectFileService,
   ProjectPartnerSummaryDTO,
-  ProjectStatusDTO, SettingsService,
+  ProjectStatusDTO,
+  SettingsService,
   UserRoleDTO
 } from '@cat/api';
-import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
-import {catchError, map, startWith, switchMap, take, tap, withLatestFrom} from 'rxjs/operators';
+import {
+  ProjectStore
+} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {catchError, finalize, map, startWith, switchMap, take, tap, withLatestFrom} from 'rxjs/operators';
 import {MatSort} from '@angular/material/sort';
 import {Tables} from '@common/utils/tables';
 import {CategoryInfo, CategoryNode} from '@project/common/components/category-tree/categoryModels';
 import {FileCategoryTypeEnum} from '@project/common/components/file-management/file-category-type';
 import {APIError} from '@common/models/APIError';
-import {InvestmentSummary} from '@project/work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
+import {
+  InvestmentSummary
+} from '@project/work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
 import {PermissionService} from '../../../../security/permissions/permission.service';
 import {ProjectUtil} from '@project/common/project-util';
 import {I18nMessage} from '@common/models/I18nMessage';
-import {ProjectPartnerStore} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
+import {
+  ProjectPartnerStore
+} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
 import {FormVisibilityStatusService} from '@project/common/services/form-visibility-status.service';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
-import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import {DownloadService} from '@common/services/download.service';
-import CallTypeEnum = ProjectCallSettingsDTO.CallTypeEnum;
 import {RoutingService} from '@common/services/routing.service';
-import { v4 as uuid } from 'uuid';
+import {v4 as uuid} from 'uuid';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
+import CallTypeEnum = ProjectCallSettingsDTO.CallTypeEnum;
 
 @Injectable({
   providedIn: 'root'
@@ -97,11 +104,11 @@ export class FileManagementStore {
         switchMap(([category, projectId]) => this.projectFileService.uploadFileForm(file, projectId, (category as any)?.id, (category as any)?.type)),
         tap(() => this.filesChanged$.next()),
         tap(() => this.error$.next(null)),
-        tap(() => this.routingService.confirmLeaveMap.delete(serviceId)),
         catchError(error => {
           this.error$.next(error.error);
           return of({} as ProjectFileMetadataDTO);
-        })
+        }),
+        finalize(() => this.routingService.confirmLeaveMap.delete(serviceId))
       );
   }
 
@@ -286,6 +293,7 @@ export class FileManagementStore {
         }
       }
     }
+
     return null;
   }
 
