@@ -121,6 +121,25 @@ internal class UploadFileToProjectPartnerReportProcurementAttachmentTest : UnitT
     }
 
     @Test
+    fun `uploadToProcurement - file already exists`() {
+        val procurementId = 449L
+        mockProcurement(procurementId)
+
+        val reportId = 239L
+        every { reportPersistence.exists(partnerId = PARTNER_ID, reportId = reportId) } returns true
+        every { reportProcurementAttachmentPersistence.countAttachmentsCreatedUpUntilNow(procurementId, reportId) } returns 0L
+
+        val file = ProjectFile(stream = stream, name = "existing.pptx", size = 5L)
+
+        every { reportFilePersistence.existsFile(
+            exactPath = "Project/004877/Report/Partner/005920/PartnerReport/000239/Procurement/000449/ProcurementAttachment/",
+            fileName = "existing.pptx",
+        ) } returns true
+        assertThrows<FileAlreadyExists> { interactor.uploadToProcurement(PARTNER_ID, reportId, procurementId, file) }
+        verify(exactly = 0) { reportFilePersistence.addPartnerReportProcurementAttachment(any(), any(), any()) }
+    }
+
+    @Test
     fun `uploadToProcurement - max amount of attachments`() {
         val procurementId = 441L
         mockProcurement(procurementId)
