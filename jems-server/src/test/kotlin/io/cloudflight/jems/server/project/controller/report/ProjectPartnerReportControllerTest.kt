@@ -93,7 +93,8 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
                 periodBudgetCumulative = BigDecimal.TEN,
                 start = 4,
                 end = 6,
-            )
+            ),
+            deletable = false,
         )
 
         private val reportSummaryDTO = ProjectPartnerReportSummaryDTO(
@@ -111,7 +112,8 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
                 periodBudgetCumulative = BigDecimal.TEN,
                 start = 4,
                 end = 6,
-            )
+            ),
+            deletable = false,
         )
 
         private val report = ProjectPartnerReport(

@@ -70,8 +70,8 @@ class ProjectReportPersistenceProvider(
         partnerReportRepository.existsByPartnerIdAndId(partnerId = partnerId, id = reportId)
 
     @Transactional(readOnly = true)
-    override fun getCurrentLatestReportNumberForPartner(partnerId: Long): Int =
-        partnerReportRepository.getMaxNumberForPartner(partnerId = partnerId)
+    override fun getCurrentLatestReportForPartner(partnerId: Long): ProjectPartnerReport? =
+        partnerReportRepository.findFirstByPartnerIdOrderByIdDesc(partnerId = partnerId)?.toModel(emptyList())
 
     @Transactional(readOnly = true)
     override fun countForPartner(partnerId: Long): Int =

@@ -24,7 +24,14 @@ class GetProjectPartnerReport(
     @CanViewPartnerReport
     @Transactional(readOnly = true)
     @ExceptionWrapper(GetProjectPartnerReportListException::class)
-    override fun findAll(partnerId: Long, pageable: Pageable): Page<ProjectPartnerReportSummary> =
-        reportPersistence.listPartnerReports(partnerId, pageable)
+    override fun findAll(partnerId: Long, pageable: Pageable): Page<ProjectPartnerReportSummary> {
+        val latestReportId = reportPersistence.getCurrentLatestReportForPartner(partnerId)?.id
+
+        return reportPersistence.listPartnerReports(partnerId, pageable)
+            .fillInDeletableFor(latestReportId)
+    }
+
+    private fun Page<ProjectPartnerReportSummary>.fillInDeletableFor(latestReportId: Long?) =
+        this.onEach { it.deletable = it.id == latestReportId && it.status.isOpen() }
 
 }

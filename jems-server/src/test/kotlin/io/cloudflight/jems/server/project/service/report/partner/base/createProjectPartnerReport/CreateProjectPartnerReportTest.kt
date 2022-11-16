@@ -32,6 +32,7 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSu
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVatRecovery
 import io.cloudflight.jems.server.project.service.report.ProjectReportCreatePersistence
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PartnerReportIdentificationCreate
 import io.cloudflight.jems.server.project.service.report.model.partner.base.create.ProjectPartnerReportCreate
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSummary
@@ -217,7 +218,7 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
         private fun expectedCreationObjectLimited(partnerId: Long, budget: PartnerReportBudget) = ProjectPartnerReportCreate(
             baseData = PartnerReportBaseData(
                 partnerId = partnerId,
-                reportNumber = 7 + 1,
+                reportNumber = 9 + 1,
                 status = ReportStatus.Draft,
                 version = "14.2.0",
             ),
@@ -333,7 +334,9 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
         every { versionPersistence.getLatestApprovedOrCurrent(PROJECT_ID) } returns "14.2.0"
         every { projectPersistence.getProject(PROJECT_ID, "14.2.0") } returns projectSummary(status)
         every { reportPersistence.countForPartner(partnerId) } returns 24
-        every { reportPersistence.getCurrentLatestReportNumberForPartner(partnerId) } returns 7
+        val report = mockk<ProjectPartnerReport>()
+        every { report.reportNumber } returns 7
+        every { reportPersistence.getCurrentLatestReportForPartner(partnerId) } returns report
         val coFinancingWrapper = ProjectPartnerCoFinancingAndContribution(coFinancing, contributions, "")
         every { partnerCoFinancingPersistence.getCoFinancingAndContributions(partnerId, "14.2.0") } returns coFinancingWrapper
         every { projectPartnerPersistence.getById(partnerId, "14.2.0") } returns detail
@@ -382,7 +385,9 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
         every { versionPersistence.getLatestApprovedOrCurrent(PROJECT_ID) } returns "14.2.0"
         every { projectPersistence.getProject(PROJECT_ID, "14.2.0") } returns projectSummary(ApplicationStatus.CONTRACTED)
         every { reportPersistence.countForPartner(partnerId) } returns 24
-        every { reportPersistence.getCurrentLatestReportNumberForPartner(partnerId) } returns 7
+        val report = mockk<ProjectPartnerReport>()
+        every { report.reportNumber } returns 9
+        every { reportPersistence.getCurrentLatestReportForPartner(partnerId) } returns report
         every { partnerCoFinancingPersistence.getCoFinancingAndContributions(partnerId, "14.2.0") } returns
             ProjectPartnerCoFinancingAndContribution(coFinancing, emptyList(), "")
         every { projectPartnerPersistence.getById(partnerId, "14.2.0") } returns detail
@@ -417,7 +422,7 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
         assertThat(auditSlot.captured.auditCandidate.project?.name).isEqualTo("project acronym")
         assertThat(auditSlot.captured.auditCandidate.entityRelatedId).isEqualTo(50L)
         assertThat(auditSlot.captured.auditCandidate.description).isEqualTo(
-            "[XE.1_0001] [PP4] Partner report R.8 added"
+            "[XE.1_0001] [PP4] Partner report R.10 added"
         )
 
         assertThat(partnerSummary.captured).isEqualTo(partnerSummary(partnerId))

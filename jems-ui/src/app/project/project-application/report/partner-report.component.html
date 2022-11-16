@@ -84,11 +84,12 @@
 </ng-template>
 
 <ng-template #deleteCell let-partnerReport>
-    <button
-            mat-icon-button color="accent"
-            [disabled]="!(partnerReport.reportNumber === deletableReportId && (pageStore.userCanEditReport$ | async))"
-            (click)="delete(partnerReport);$event.stopPropagation();"
-            matTooltip="{{'common.delete.entry.tooltip' | translate}}">
-        <mat-icon>delete</mat-icon>
-    </button>
+    <span matTooltip="{{ (partnerReport.deletable ? 'common.delete.entry.tooltip' : 'project.application.partner.report.deletion.not.possible.tooltip') | translate }}">
+        <button *ngIf="partnerReport.status === ProjectPartnerReportSummaryDTO.StatusEnum.Draft"
+                mat-icon-button color="accent"
+                [disabled]="!partnerReport.deletable"
+                (click)="delete(partnerReport);$event.stopPropagation();">
+            <mat-icon>delete</mat-icon>
+        </button>
+    </span>
 </ng-template>
