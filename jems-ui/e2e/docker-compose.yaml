@@ -2,7 +2,7 @@ version: '3.6'
 
 services:
   mongo:
-    image: mongo:4.2
+    image: mongo:4.4
     volumes:
       - ./data/data-mongo-cypress:/data/db
   
@@ -13,16 +13,20 @@ services:
       EXECUTION_DRIVER: '../execution/mongo/driver'
       MONGODB_URI: 'mongodb://mongo:27017'
       MONGODB_DATABASE: 'sorry-cypress'
+      
       SCREENSHOTS_DRIVER: '../screenshots/minio.driver'
+      GITLAB_JOB_RETRIES: 'false'
       MINIO_ACCESS_KEY: '<change-me>'
       MINIO_SECRET_KEY: '<change-me>'
-      MINIO_ENDPOINT: 'storage'
-      MINIO_URL: 'https://jems.interact-eu.net/'
+      MINIO_ENDPOINT: 'localhost'
+      MINIO_URL: 'http://localhost'
       MINIO_PORT: '9111'
-      MINIO_USESSL: 'true'
+      MINIO_USESSL: 'false'
       MINIO_BUCKET: sorry-cypress
+      PROBE_LOGGER: "false"
     ports:
       - 1212:1234
+      - 9111:9000
     depends_on:
       - mongo
 
@@ -40,7 +44,7 @@ services:
   dashboard:
     image: agoldis/sorry-cypress-dashboard:2.4.2
     environment:
-      GRAPHQL_SCHEMA_URL: http://jems.interact-eu.net:4040
+      GRAPHQL_SCHEMA_URL: "https://bucharest.interact-eu.net"
       GRAPHQL_CLIENT_CREDENTIALS: ''
       PORT: 8080
       CI_URL: ''
@@ -52,28 +56,26 @@ services:
 
   storage:
     image: minio/minio
-    hostname: 'storage'
+    network_mode: service:director
     environment:
       MINIO_ROOT_USER: '<change-me>'
       MINIO_ROOT_PASSWORD: '<change-me>'
     volumes:
       - ./data/data-minio-cypress:/data
-    command: server /data --address ":9111" --console-address ":9112"
-    ports:
-      - 9111:9111
-      - 9112:9112
+    command: server /data
 
-#  createbuckets:
-#    image: minio/mc
-#    depends_on:
-#      - storage
-#    entrypoint: >
-#      /bin/sh -c "
-#      sleep 10;
-#      /usr/bin/mc config host add myminio http://storage:9111 <change-me> <change-me>;
-#      /usr/bin/mc rm -r --dangerous --force myminio/sorry-cypress;
-#      /usr/bin/mc mb myminio/sorry-cypress;
-#      /usr/bin/mc policy set download myminio/sorry-cypress;
-#      /usr/bin/mc policy set public myminio/sorry-cypress;
-#      exit 0;
-#      "
+  createbuckets:
+    image: minio/mc
+    network_mode: service:director
+    depends_on:
+      - storage
+    entrypoint: >
+      /bin/sh -c "
+      sleep 3;
+      /usr/bin/mc config host add myminio http://localhost:9111 <change-me> <change-me>;
+      /usr/bin/mc rm -r --dangerous --force myminio/sorry-cypress;
+      /usr/bin/mc mb myminio/sorry-cypress;
+      /usr/bin/mc policy set download myminio/sorry-cypress;
+      /usr/bin/mc policy set public myminio/sorry-cypress;
+      exit 0;
+      "
