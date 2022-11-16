@@ -13,6 +13,7 @@ import {
   catchError,
   distinctUntilChanged,
   filter,
+  finalize,
   map,
   startWith,
   switchMap,
@@ -90,11 +91,11 @@ export class ReportFileManagementStore {
         switchMap(([category, reportId, partnerId]) => this.projectPartnerReportService.uploadReportFileForm(file, Number(partnerId), reportId)),
         tap(() => this.reportFilesChanged$.next()),
         tap(() => this.error$.next(null)),
-        tap(() => this.routingService.confirmLeaveMap.delete(serviceId)),
         catchError(error => {
           this.error$.next(error.error);
           return of({} as ProjectReportFileMetadataDTO);
-        })
+        }),
+        finalize(() => this.routingService.confirmLeaveMap.delete(serviceId))
       );
   }
 
