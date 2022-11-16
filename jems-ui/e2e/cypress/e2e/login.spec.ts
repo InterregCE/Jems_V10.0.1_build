@@ -1,11 +1,14 @@
 import {faker} from '@faker-js/faker';
 import user from '../fixtures/users.json';
+import updatedDefaultProgrammeRole from '../fixtures/api/roles/updatedDefaultProgrammeRole.json';
 
 context('Login tests', () => {
 
   before(() => {
     cy.loginByRequest(user.admin.email);
     cy.createUser(user.applicantUser);
+    // change default programme role so that it can edit calls
+    cy.updateRole(updatedDefaultProgrammeRole);
     cy.createUser(user.programmeUser);
     cy.logoutByRequest();
   });

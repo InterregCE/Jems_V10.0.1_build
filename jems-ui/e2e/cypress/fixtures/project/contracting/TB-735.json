@@ -1,6 +1,6 @@
 {
   "contractingRole": {
-    "name": "randomize",
+    "name": "contractingRole",
     "permissions": [
       "ProjectSetToContracted", "ProjectContractingView", "ProjectContractsEdit", "ProjectContractsView",
       "ProjectContractingManagementEdit", "ProjectContractingManagementView", "ProjectContractingReportingEdit",

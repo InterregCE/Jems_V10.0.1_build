@@ -1,8 +1,8 @@
 import user from '../../fixtures/users.json';
 import application from '../../fixtures/api/application/application.json';
 import approvalInfo from '../../fixtures/api/application/modification/approval.info.json';
-import call from "../../fixtures/api/call/1.step.call.json";
-import {faker} from "@faker-js/faker";
+import call from '../../fixtures/api/call/1.step.call.json';
+import {faker} from '@faker-js/faker';
 
 context('Application contracting tests', () => {
 
@@ -14,28 +14,28 @@ context('Application contracting tests', () => {
     });
   });
 
-  it('TB-519 A project can be set to contracted and partner report created', () => {
+  it('TB-519 A project can be set to contracted', () => {
     cy.loginByRequest(user.applicantUser.email);
     cy.createApprovedApplication(application, user.programmeUser.email).then(applicationId => {
       cy.loginByRequest(user.programmeUser.email);
       cy.visit(`app/project/detail/${applicationId}/contractMonitoring`, {failOnStatusCode: false});
-      cy.contains('Add entry into force date').should('be.visible');
+      cy.contains('Add amendment entry into force date').should('be.visible');
 
       cy.startModification(applicationId);
       cy.reload();
-      cy.contains('Add entry into force date').should('be.visible');
+      cy.contains('Add amendment entry into force date').should('be.visible');
       cy.contains('button', 'Set project to contracted').should('be.disabled');
       cy.loginByRequest(user.applicantUser.email);
       cy.submitProjectApplication(applicationId);
 
       cy.loginByRequest(user.programmeUser.email);
       cy.visit(`app/project/detail/${applicationId}/contractMonitoring`, {failOnStatusCode: false});
-      cy.contains('Add entry into force date').should('be.visible');
+      cy.contains('Add amendment entry into force date').should('be.visible');
       cy.contains('button', 'Set project to contracted').should('be.disabled');
 
       cy.approveModification(applicationId, approvalInfo);
       cy.reload();
-      cy.contains('Add entry into force date').should('be.visible');
+      cy.contains('Add amendment entry into force date').should('be.visible');
       cy.contains('button', 'Set project to contracted').should('be.enabled');
       cy.contains('button', 'Set project to contracted').click();
       cy.contains('button', 'Confirm').click();
@@ -46,8 +46,7 @@ context('Application contracting tests', () => {
       cy.contains('mat-panel-title', 'Reporting').should('be.visible');
 
       cy.contains('mat-expansion-panel', 'Partner reports').should('contain', 'Lead Partner').contains('Lead Partner').click();
-      cy.contains('button', 'Add Partner Report').click();
-      cy.contains('Partner progress report identification').should('be.visible');
+      cy.contains('No Reports').should('be.visible');
     });
   });
 
@@ -76,16 +75,16 @@ context('Application contracting tests', () => {
         cy.reload();
         cy.contains('Contracting').scrollIntoView().should('be.visible');
         cy.contains('Contract monitoring').should('be.visible');
-        cy.contains('Project management').should('be.visible');
-        cy.contains('Reporting schedule').should('be.visible');
+        cy.contains('Project managers').should('be.visible');
+        cy.contains('Project reporting schedule').should('be.visible');
         
         cy.startModification(applicationId, user.programmeUser.email);
         cy.reload();
         
         cy.contains('Contracting').scrollIntoView().should('be.visible');
         cy.contains('Contract monitoring').should('be.visible');
-        cy.contains('Project management').should('be.visible');
-        cy.contains('Reporting schedule').should('be.visible');
+        cy.contains('Project managers').should('be.visible');
+        cy.contains('Project reporting schedule').should('be.visible');
         
         cy.contains('Contract monitoring').click();
         cy.contains('div', 'Comment').find('textarea').should('not.have.attr', 'disabled');
@@ -136,7 +135,6 @@ context('Application contracting tests', () => {
 
         cy.loginByRequest(user.programmeUser.email);
         cy.visit(`/app/project/detail/${applicationId}`, {failOnStatusCode: false});
-        cy.wait(2000);
         cy.contains('mat-expansion-panel', 'Contracting').contains('Project Monitoring').should('not.exist');
       });
     });

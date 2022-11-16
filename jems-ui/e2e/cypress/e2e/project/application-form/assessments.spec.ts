@@ -2,6 +2,11 @@ import user from '../../../fixtures/users.json';
 import call from '../../../fixtures/api/call/1.step.call.json';
 import application from '../../../fixtures/api/application/application.json';
 import assessmentChecklist from '../../../fixtures/api/checklist/assessmentChecklist.json';
+import revertDecisionRole from '../../../fixtures/api/roles/revertDecisionRole.json';
+import revertDecisionUser from '../../../fixtures/api/users/revertDecisionUser.json';
+import {faker} from "@faker-js/faker";
+import programmeEditorRole from "../../../fixtures/api/roles/programmeEditorRole.json";
+import programmeEditorUser from "../../../fixtures/api/users/programmeEditorUser.json";
 
 context('Assessments & decision tests', () => {
 
@@ -70,19 +75,28 @@ context('Assessments & decision tests', () => {
 
   it('TB-361 Revert decision to submitted', () => {
     cy.fixture('project/application-form/assessments/TB-361.json').then(testData => {
+      cy.loginByRequest(user.admin.email);
+      revertDecisionUser.email = faker.internet.email();
+      cy.createRole(revertDecisionRole).then(roleId => {
+        revertDecisionUser.userRoleId = roleId;
+        cy.createUser(revertDecisionUser);
+      });
       cy.loginByRequest(user.applicantUser.email);
       cy.createSubmittedApplication(application).then(applicationId => {
         cy.loginByRequest(user.programmeUser.email);
         cy.enterEligibilityAssessment(applicationId, application.assessments.eligibilityAssessment);
         cy.enterQualityAssessment(applicationId, application.assessments.qualityAssessment);
         cy.enterEligibilityDecision(applicationId, application.assessments.eligibilityDecision);
+        
+        cy.loginByRequest(revertDecisionUser.email);
         cy.visit(`app/project/detail/${applicationId}`, {failOnStatusCode: false});
         cy.contains('Assessment & Decision').click();
         cy.contains('Enter eligibility decision').should('not.exist');
         cy.contains('Revert decision back to Submitted').click();
         cy.contains('Confirm').click();
-        cy.contains('Enter eligibility decision').should('be.visible');
+        cy.contains('Reverting the decision is not possible').should('be.visible');
 
+        cy.loginByRequest(user.programmeUser.email);
         cy.visit(`/app/project/detail/${applicationId}`, {failOnStatusCode: false});
         cy.contains('Submitted').should('be.visible');
 
@@ -100,12 +114,16 @@ context('Assessments & decision tests', () => {
         cy.visit(`/app/project/detail/${applicationId}`, {failOnStatusCode: false});
         cy.contains('Ineligible').should('be.visible');
 
+        cy.loginByRequest(revertDecisionUser.email);
         cy.visit(`/app/project/detail/${applicationId}/assessmentAndDecision`, {failOnStatusCode: false});
         cy.contains('Revert decision back to Submitted').click();
         cy.contains('Confirm').should('be.visible').click();
+        cy.contains('Reverting the decision is not possible').should('be.visible');
+
+        cy.loginByRequest(user.programmeUser.email);
+        cy.visit(`/app/project/detail/${applicationId}/assessmentAndDecision`, {failOnStatusCode: false});
         cy.contains('Enter eligibility decision').should('be.visible');
         cy.contains('Return to applicant').should('be.visible');
-        cy.contains('Reverting the decision is not possible').should('be.visible');
 
         cy.visit(`/app/project/detail/${applicationId}`, {failOnStatusCode: false});
         cy.contains('Submitted').should('be.visible');
@@ -114,10 +132,17 @@ context('Assessments & decision tests', () => {
   });
 
   it('TB-580 User can instantiate, fill out, delete and submit assessments', () => {
+    cy.loginByRequest(user.admin.email);
+    cy.createRole(programmeEditorRole).then(roleId => {
+      programmeEditorUser.userRoleId = roleId;
+      programmeEditorUser.email = faker.internet.email();
+      cy.createUser(programmeEditorUser);
+      cy.loginByRequest(programmeEditorUser.email);
+      cy.createChecklist(assessmentChecklist);
+    });
     cy.loginByRequest(user.applicantUser.email);
     cy.createSubmittedApplication(application).then(applicationId => {
       cy.loginByRequest(user.programmeUser.email);
-      cy.createChecklist(assessmentChecklist)
       cy.visit(`app/project/detail/${applicationId}`, {failOnStatusCode: false});
       cy.contains('Assessment & Decision').click();
       cy.contains('mat-select', 'Select checklist template').click();

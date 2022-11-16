@@ -14,7 +14,7 @@
     "userStatus": "ACTIVE"
   },
   "controllerCreatorRole": {
-    "name": "randomize",
+    "name": "controllerCreatorRole",
     "permissions": [
       "ProjectContractingView",
       "InstitutionsUpdate",

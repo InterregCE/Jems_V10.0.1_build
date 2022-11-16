@@ -1,62 +1,91 @@
-[
-  {
-    "identifier": "RI1",
-    "code": "RCR01",
-    "programmeObjectivePolicy": "SO1.1 - Developing and enhancing research and innovation capacities and the uptake of advanced technologies",
-    "measurementUnit": "annual FTEs",
-    "baseline": 0,
-    "referenceYear": "2020",
-    "finalTarget": "9999,99",
-    "sourceOfData": [
-      {
-        "translation": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. DE",
-        "language": "DE"
-      },
-      {
-        "translation": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. EN",
-        "language": "EN"
-      }
-    ],
-    "comment": "Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-  },
-  {
-    "identifier": "RI2",
-    "code": "RCR02",
-    "programmeObjectivePolicy": "SO2.1 - Promoting energy efficiency and reducing greenhouse gas emissions",
-    "measurementUnit": "euro",
-    "baseline": 0,
-    "referenceYear": "2020",
-    "finalTarget": "9999,99",
-    "sourceOfData": [
-      {
-        "translation": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. DE",
-        "language": "DE"
-      },
-      {
-        "translation": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. EN",
-        "language": "EN"
-      }
-    ],
-    "comment": "Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-  },
-  {
-    "identifier": "RI3",
-    "code": "RCR03",
-    "programmeObjectivePolicy": "SO2.1 - Promoting energy efficiency and reducing greenhouse gas emissions",
-    "measurementUnit": "enterprises",
-    "baseline": 0,
-    "referenceYear": "2020",
-    "finalTarget": "9999999,99",
-    "sourceOfData": [
-      {
-        "translation": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. DE",
-        "language": "DE"
-      },
-      {
-        "translation": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. EN",
-        "language": "EN"
-      }
-    ],
-    "comment": "Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-  }
-]
+{
+  "resultIndicators": [
+    {
+      "identifier": "RI1",
+      "code": "RCR01",
+      "programmeObjectivePolicy": "SO1.1 - Developing and enhancing research and innovation capacities and the uptake of advanced technologies",
+      "measurementUnit": "annual FTEs",
+      "baseline": 0,
+      "referenceYear": "2020",
+      "finalTarget": "9999,99",
+      "sourceOfData": [
+        {
+          "translation": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. DE",
+          "language": "DE"
+        },
+        {
+          "translation": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. EN",
+          "language": "EN"
+        }
+      ],
+      "comments": [
+        {
+          "translation": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. DE",
+          "language": "DE"
+        },
+        {
+          "translation": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. EN",
+          "language": "EN"
+        }
+      ]
+    },
+    {
+      "identifier": "RI2",
+      "code": "RCR02",
+      "programmeObjectivePolicy": "SO2.1 - Promoting energy efficiency and reducing greenhouse gas emissions",
+      "measurementUnit": "euro",
+      "baseline": 0,
+      "referenceYear": "2020",
+      "finalTarget": "9999,99",
+      "sourceOfData": [
+        {
+          "translation": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. DE",
+          "language": "DE"
+        },
+        {
+          "translation": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. EN",
+          "language": "EN"
+        }
+      ],
+      "comments": [
+        {
+          "translation": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. DE",
+          "language": "DE"
+        },
+        {
+          "translation": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. EN",
+          "language": "EN"
+        }
+      ]
+    },
+    {
+      "identifier": "RI3",
+      "code": "RCR03",
+      "programmeObjectivePolicy": "SO2.1 - Promoting energy efficiency and reducing greenhouse gas emissions",
+      "measurementUnit": "enterprises",
+      "baseline": 0,
+      "referenceYear": "2020",
+      "finalTarget": "9999999,99",
+      "sourceOfData": [
+        {
+          "translation": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. DE",
+          "language": "DE"
+        },
+        {
+          "translation": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. EN",
+          "language": "EN"
+        }
+      ],
+      "comments": [
+        {
+          "translation": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. DE",
+          "language": "DE"
+        },
+        {
+          "translation": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. EN",
+          "language": "EN"
+        }
+      ]
+    }
+  ]
+}
