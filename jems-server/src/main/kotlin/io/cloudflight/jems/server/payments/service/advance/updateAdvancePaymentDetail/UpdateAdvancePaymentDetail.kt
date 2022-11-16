@@ -51,7 +51,7 @@ class UpdateAdvancePaymentDetail(
                 auditPublisher.publishEvent(advancePaymentAuthorized(context = this, paymentDetail = it))
             }
             if (newlyConfirmed) {
-                auditPublisher.publishEvent(advancePaymentConfirmed(this, paymentDetail = it))
+                auditPublisher.publishEvent(advancePaymentConfirmed(context = this, paymentDetail = it))
             }
         }
     }

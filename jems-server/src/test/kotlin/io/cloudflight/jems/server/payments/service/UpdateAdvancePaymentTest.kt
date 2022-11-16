@@ -139,7 +139,7 @@ class UpdateAdvancePaymentTest : UnitTest() {
         ))
         assertThat(auditSlot.captured.auditCandidate.action).isEqualTo(AuditAction.ADVANCE_PAYMENT_IS_CREATED)
         assertThat(auditSlot.captured.auditCandidate.description)
-            .isEqualTo("Advance payment number $paymentId is created for partner PP5 for funding source FUND")
+            .isEqualTo("Advance payment number $paymentId is created for partner PP5 for funding source (4, OTHER)")
     }
 
     @Test
@@ -159,6 +159,7 @@ class UpdateAdvancePaymentTest : UnitTest() {
         every { result.partnerId } returns partnerId
         every { result.partnerType } returns paymentSaved.partnerType
         every { result.partnerNumber } returns paymentSaved.partnerNumber
+        every { result.programmeFund } returns paymentSaved.programmeFund
         val toUpdateSlot = slot<AdvancePaymentUpdate>()
         every {
             paymentPersistence.updatePaymentDetail(capture(toUpdateSlot))
@@ -182,10 +183,10 @@ class UpdateAdvancePaymentTest : UnitTest() {
 
         assertThat(auditSlot[0].auditCandidate.action).isEqualTo(AuditAction.ADVANCE_PAYMENT_DETAIL_AUTHORISED)
         assertThat(auditSlot[0].auditCandidate.description)
-            .isEqualTo("Advance payment details for advance number $paymentId of partner PP5 are authorised")
+            .isEqualTo("Advance payment details for advance payment $paymentId of partner PP5 for funding source (4, OTHER) are authorised")
         assertThat(auditSlot[1].auditCandidate.action).isEqualTo(AuditAction.ADVANCE_PAYMENT_DETAIL_CONFIRMED)
         assertThat(auditSlot[1].auditCandidate.description)
-            .isEqualTo("Advance payment details for advance number $paymentId of partner PP5 are confirmed")
+            .isEqualTo("Advance payment details for advance payment $paymentId of partner PP5 for funding source (4, OTHER) are confirmed")
     }
 
     @Test
