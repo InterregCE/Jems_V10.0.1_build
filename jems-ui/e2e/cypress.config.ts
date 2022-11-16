@@ -21,6 +21,8 @@ export default defineConfig({
     defaultPassword: '<change-me>',
   },
   e2e: {
+    baseUrl: 'http://localhost:4200',
+    specPattern: ['cypress/e2e/login.spec.ts', 'cypress/e2e/programme.spec.ts', 'cypress/e2e/**'],
     async setupNodeEvents(on, config) {
       on('task', {
         async parseXLSX(subject) {
@@ -33,7 +35,7 @@ export default defineConfig({
           let config = {
             paths: {
               actualPdfRootFolder: 'cypress/downloads',
-              baselinePdfRootFolder: 'cypress/fixtures/' +  baselinePath,
+              baselinePdfRootFolder: 'cypress/fixtures/' + baselinePath,
               actualPngRootFolder: 'cypress/downloads/compare-pdf/actual-png',
               baselinePngRootFolder: 'cypress/downloads/compare-pdf/baseline-png',
               diffPngRootFolder: 'cypress/downloads/compare-pdf/diff-png'
@@ -51,7 +53,7 @@ export default defineConfig({
 
           // adding masks to hide the header on every page
           for (let i = 0; i < 50; i++) {
-            masks.push({ pageIndex: i, coordinates: { x0: 0, y0: 0, x1: 2000, y1: 60 } });
+            masks.push({pageIndex: i, coordinates: {x0: 0, y0: 0, x1: 2000, y1: 60}});
           }
 
           return new comparePdf(config)
@@ -119,8 +121,6 @@ export default defineConfig({
 
       console.log('JIRA executionKey set to: ' + config.env.executionKey);
       return config;
-    },
-    baseUrl: 'http://localhost:4200',
-    specPattern: ['cypress/e2e/login.spec.ts', 'cypress/e2e/programme.spec.ts', 'cypress/e2e/**']
+    }
   },
 })
