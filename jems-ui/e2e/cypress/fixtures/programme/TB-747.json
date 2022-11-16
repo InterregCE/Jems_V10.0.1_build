@@ -1,6 +1,6 @@
 {
   "dataExportRole": {
-    "name": "randomize",
+    "name": "dataExportRole",
     "permissions": [
       "ProgrammeDataExportRetrieve"
     ]

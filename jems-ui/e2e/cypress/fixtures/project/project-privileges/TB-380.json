@@ -1,6 +1,6 @@
 {
   "monitorRole": {
-    "name": "randomize",
+    "name": "monitorRole",
     "permissions": [
       "ProjectReportingEdit",
       "ProjectReportingView",

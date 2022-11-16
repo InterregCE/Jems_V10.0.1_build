@@ -6,22 +6,33 @@ import lumpSum from '../fixtures/api/programme/lumpSum.json';
 import approvalInfo from '../fixtures/api/application/modification/approval.info.json';
 import {faker} from '@faker-js/faker';
 import date from 'date-and-time';
+import programmeEditorRole from "../fixtures/api/roles/programmeEditorRole.json";
+import programmeEditorUser from "../fixtures/api/users/programmeEditorUser.json";
 
 context('Payments tests', () => {
+
+  before(() => {
+    cy.loginByRequest(user.admin.email);
+    cy.createRole(programmeEditorRole).then(roleId => {
+      programmeEditorUser.userRoleId = roleId;
+      programmeEditorUser.email = faker.internet.email();
+      cy.createUser(programmeEditorUser);
+    });
+  });
+  
   it('TB-775 Payment section population with FTLS info', () => {
     cy.fixture('payments/TB-775.json').then(testData => {
 
       // create a user with contracting and payments access 
       cy.loginByRequest(user.admin.email);
-      testData.paymentsRole.name = `paymentsRole_${faker.random.alphaNumeric(5)}`;
       testData.paymentsUser.email = faker.internet.email();
       cy.createRole(testData.paymentsRole).then(roleId => {
         testData.paymentsUser.userRoleId = roleId;
         cy.createUser(testData.paymentsUser);
       })
-      cy.loginByRequest(user.programmeUser.email);
 
       // create additional fund for the second partner
+      cy.loginByRequest(programmeEditorUser.email);
       cy.addProgrammeFund(testData.programmeFund).then(fundId => {
         // create two FTLS, first one to be used twice
         cy.createLumpSum(lumpSum).then(lumpSumId1 => {

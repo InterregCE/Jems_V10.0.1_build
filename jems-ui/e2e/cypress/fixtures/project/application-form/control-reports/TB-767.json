@@ -6,7 +6,7 @@
     }
   ],
   "controllerRole": {
-    "name": "randomize",
+    "name": "controllerRole",
     "permissions": ["ProjectReportingView", "ProjectFormRetrieve", "ProjectsWithOwnershipRetrieve"]
   },
   "controllerUser": {

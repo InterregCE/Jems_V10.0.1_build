@@ -1,9 +1,9 @@
 {
   "paymentsRole": {
-    "name": "randomize",
+    "name": "paymentsRole",
     "permissions": [
       "ProjectSetToContracted", "ProjectContractingView", "ProjectFormRetrieve", "PaymentsUpdate", "PaymentsRetrieve",
-      "ProjectRetrieve"
+      "AdvancePaymentsUpdate", "AdvancePaymentsRetrieve", "ProjectRetrieve"
     ]
   },
   "paymentsUser": {

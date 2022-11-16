@@ -1,0 +1,21 @@
+{
+  "id": 2,
+  "name": "programme user",
+  "defaultForRegisteredUser": false,
+  "permissions": [
+    "ProjectReportingView", "ProjectSetToContracted", "ProjectContractingView", "ProjectContractsView",
+    "ProjectContractingManagementView", "ProjectContractingReportingView", "ProjectContractingPartnerView",
+    "ProjectFormRetrieve", "ProjectFileApplicationRetrieve", "ProjectCheckApplicationForm",
+    "ProjectAssessmentQualityEnter", "ProjectAssessmentEligibilityEnter", "ProjectStatusDecideEligible",
+    "ProjectStatusDecideIneligible", "ProjectStatusDecideApproved", "ProjectStatusDecideApprovedWithConditions",
+    "ProjectStatusDecideNotApproved", "ProjectAssessmentView", "ProjectStatusReturnToApplicant", "ProjectStartStepTwo",
+    "ProjectFileAssessmentUpdate", "ProjectFileAssessmentRetrieve", "ProjectAssessmentChecklistUpdate",
+    "ProjectAssessmentChecklistSelectedRetrieve", "ProjectStatusDecideModificationApproved",
+    "ProjectStatusDecideModificationNotApproved", "ProjectModificationView", "ProjectOpenModification",
+    "ProjectModificationFileAssessmentUpdate", "ProjectModificationFileAssessmentRetrieve",
+    "ProjectMonitorCollaboratorsUpdate", "ProjectMonitorCollaboratorsRetrieve", "ProjectsWithOwnershipRetrieve",
+    "CallPublishedRetrieve", "PaymentsRetrieve", "AdvancePaymentsRetrieve", "ProjectRetrieve", "CallUpdate",
+    "CallRetrieve", "ProgrammeSetupRetrieve", "ProgrammeDataExportRetrieve", "InstitutionsRetrieve",
+    "InstitutionsAssignmentRetrieve", "AuditRetrieve"
+  ]
+}
