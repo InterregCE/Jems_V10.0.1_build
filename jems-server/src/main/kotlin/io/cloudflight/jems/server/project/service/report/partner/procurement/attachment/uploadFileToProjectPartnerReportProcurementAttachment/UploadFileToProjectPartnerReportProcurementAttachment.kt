@@ -10,7 +10,6 @@ import io.cloudflight.jems.server.project.service.report.ProjectReportPersistenc
 import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
-import io.cloudflight.jems.server.project.service.report.partner.file.uploadFileToProjectPartnerReport.FileAlreadyExists
 import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectReportProcurementPersistence
 import io.cloudflight.jems.server.project.service.report.partner.procurement.attachment.MAX_AMOUNT_OF_ATTACHMENT
 import io.cloudflight.jems.server.project.service.report.partner.procurement.attachment.ProjectReportProcurementAttachmentPersistence
@@ -51,7 +50,7 @@ class UploadFileToProjectPartnerReportProcurementAttachment(
             val location = generatePath(projectId, partnerId, reportId, procurement.id)
 
             if (reportFilePersistence.existsFile(exactPath = location, fileName = file.name))
-                throw FileAlreadyExists()
+                throw FileAlreadyExists(file.name)
 
             return reportFilePersistence.addPartnerReportProcurementAttachment(
                 reportId = reportId,

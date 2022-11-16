@@ -5,7 +5,6 @@ import io.cloudflight.jems.server.common.minio.MinioStorage
 import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
 import io.cloudflight.jems.server.project.repository.report.file.ProjectReportFileRepository
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.ProjectContractingFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileCreate
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 
@@ -15,10 +14,6 @@ class ProjectContractingFilePersistenceProvider(
     private val minioStorage: MinioStorage,
     private val fileRepository: JemsProjectFileRepository,
 ) : ProjectContractingFilePersistence {
-
-    @Transactional
-    override fun uploadFile(file: JemsFileCreate) =
-        fileRepository.persistProjectFile(file = file)
 
     @Transactional(readOnly = true)
     override fun downloadFile(projectId: Long, fileId: Long) =

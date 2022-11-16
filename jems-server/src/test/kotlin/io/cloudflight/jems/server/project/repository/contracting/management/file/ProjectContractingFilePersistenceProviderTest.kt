@@ -6,8 +6,6 @@ import io.cloudflight.jems.server.common.minio.MinioStorage
 import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
 import io.cloudflight.jems.server.project.repository.report.file.ProjectReportFileRepository
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileCreate
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import io.mockk.*
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -58,15 +56,6 @@ class ProjectContractingFilePersistenceProviderTest : UnitTest() {
         clearMocks(reportFileRepository)
         clearMocks(minioStorage)
         clearMocks(fileRepository)
-    }
-
-    @Test
-    fun uploadFile() {
-        val fileCreate = mockk<JemsFileCreate>()
-        val metadataMock = mockk<JemsFileMetadata>()
-
-        every { fileRepository.persistProjectFile(fileCreate) } returns metadataMock
-        assertThat(persistence.uploadFile(file = fileCreate)).isEqualTo(metadataMock)
     }
 
     @Test

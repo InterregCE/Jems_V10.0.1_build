@@ -39,7 +39,7 @@ class UploadFileToControlReport(
             val location = generatePath(projectId, partnerId, reportId)
 
             if (reportFilePersistence.existsFile(exactPath = location, fileName = file.name))
-                throw FileAlreadyExists()
+                throw FileAlreadyExists(file.name)
 
             return reportFilePersistence.addAttachmentToPartnerReport(
                 file = file.getFileMetadata(projectId, partnerId, location, type = this, securityService.getUserIdOrThrow()),

@@ -33,3 +33,11 @@ class FileTypeNotSupported : ApplicationUnprocessableException(
     code = "$UPLOAD_FILE_TO_PROJECT_PARTNER_REPORT_PROCUREMENT_ATTACHMENT_ERROR_CODE_PREFIX-003",
     i18nMessage = I18nMessage("$UPLOAD_FILE_TO_PROJECT_PARTNER_REPORT_PROCUREMENT_ATTACHMENT_ERROR_KEY_PREFIX.type.not.supported")
 )
+
+class FileAlreadyExists(fileName: String) : ApplicationUnprocessableException(
+    code = "$UPLOAD_FILE_TO_PROJECT_PARTNER_REPORT_PROCUREMENT_ATTACHMENT_ERROR_CODE_PREFIX-004",
+    i18nMessage = I18nMessage(
+        i18nKey = "$UPLOAD_FILE_TO_PROJECT_PARTNER_REPORT_PROCUREMENT_ATTACHMENT_ERROR_KEY_PREFIX.file.already.exists",
+        i18nArguments = mapOf("fileName" to fileName),
+    ),
+)

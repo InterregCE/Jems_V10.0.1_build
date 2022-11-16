@@ -29,3 +29,11 @@ class PartnerNotFound(partnerId: Long, projectId: Long): ApplicationNotFoundExce
     i18nMessage = I18nMessage("$UPLOAD_FILE_TO_CONTRACTING_ERROR_KEY_PREFIX.partner.not.found"),
     message = "There is no partner ID=$partnerId related to project ID=$projectId",
 )
+
+class FileAlreadyExists(fileName: String) : ApplicationUnprocessableException(
+    code = "$UPLOAD_FILE_TO_CONTRACTING_ERROR_CODE_PREFIX-004",
+    i18nMessage = I18nMessage(
+        i18nKey = "$UPLOAD_FILE_TO_CONTRACTING_ERROR_KEY_PREFIX.file.already.exists",
+        i18nArguments = mapOf("fileName" to fileName),
+    ),
+)
