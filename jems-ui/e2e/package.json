@@ -6,7 +6,7 @@
     "run": "cypress run --browser chrome",
     "open": "cypress open --e2e --browser chrome",
     "pretest": "wait-on $CYPRESS_BASE_URL -t 20000",
-    "test": "cy2 run --parallel --record --key xxx --ci-build-id $CI_BUILD_ID"
+    "test": "cy2 run --parallel --record --key xxx --ci-build-id $CYPRESS_BUILD_ID"
   },
   "author": "Cloudflight GmbH",
   "devDependencies": {
