@@ -1,32 +1,25 @@
-package io.cloudflight.jems.server.payments.service.attachment.uploadPaymentAttachment
+package io.cloudflight.jems.server.payments.service.advance.attachment.uploadPaymentAdvanceAttachment
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.minio.JemsProjectFileRepository
-import io.cloudflight.jems.server.payments.service.regular.PaymentRegularPersistence
-import io.cloudflight.jems.server.payments.model.regular.PaymentDetail
-import io.cloudflight.jems.server.payments.service.regular.attachment.uploadPaymentAttachment.FileAlreadyExists
-import io.cloudflight.jems.server.payments.service.regular.attachment.uploadPaymentAttachment.FileTypeNotSupported
-import io.cloudflight.jems.server.payments.service.regular.attachment.uploadPaymentAttachment.UploadPaymentAttachment
+import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentDetail
+import io.cloudflight.jems.server.payments.service.advance.PaymentAdvancePersistence
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileCreate
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
-import io.mockk.clearMocks
-import io.mockk.every
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
+import io.mockk.*
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
-import io.mockk.mockk
-import io.mockk.slot
-import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.io.InputStream
 
-class UploadPaymentAttachmentTest : UnitTest() {
+class UploadPaymentAdvAttachmentTest : UnitTest() {
 
     companion object {
         private const val USER_ID = 9L
@@ -35,7 +28,7 @@ class UploadPaymentAttachmentTest : UnitTest() {
     }
 
     @MockK
-    lateinit var paymentPersistence: PaymentRegularPersistence
+    lateinit var paymentPersistence: PaymentAdvancePersistence
 
     @MockK
     lateinit var reportFilePersistence: ProjectReportFilePersistence
@@ -47,7 +40,7 @@ class UploadPaymentAttachmentTest : UnitTest() {
     lateinit var securityService: SecurityService
 
     @InjectMockKs
-    lateinit var interactor: UploadPaymentAttachment
+    lateinit var interactor: UploadPaymentAdvanceAttachment
 
     @BeforeEach
     fun reset() {
@@ -60,11 +53,11 @@ class UploadPaymentAttachmentTest : UnitTest() {
     @Test
     fun upload() {
         val paymentId = 4L
-        val payment = mockk<PaymentDetail>()
+        val payment = mockk<AdvancePaymentDetail>()
         every { payment.id } returns paymentId
         every { payment.projectId } returns 540L
-        every { paymentPersistence.getPaymentDetails(paymentId) } returns payment
-        every { reportFilePersistence.existsFile("Payment/Regular/000004/PaymentAttachment/", "test.xlsx") } returns false
+        every { paymentPersistence.getPaymentDetail(paymentId) } returns payment
+        every { reportFilePersistence.existsFile("Payment/Advance/000004/PaymentAdvanceAttachment/", "test.xlsx") } returns false
 
         val fileToAdd = slot<JemsFileCreate>()
         val mockResult = mockk<JemsFileMetadata>()
@@ -78,8 +71,8 @@ class UploadPaymentAttachmentTest : UnitTest() {
                 projectId = 540L,
                 partnerId = null,
                 name = "test.xlsx",
-                path = "Payment/Regular/000004/PaymentAttachment/",
-                type = JemsFileType.PaymentAttachment,
+                path = "Payment/Advance/000004/PaymentAdvanceAttachment/",
+                type = JemsFileType.PaymentAdvanceAttachment,
                 size = 20L,
                 content = content,
                 userId = USER_ID,
@@ -90,10 +83,10 @@ class UploadPaymentAttachmentTest : UnitTest() {
     @Test
     fun `upload - duplicate`() {
         val paymentId = 11L
-        val payment = mockk<PaymentDetail>()
+        val payment = mockk<AdvancePaymentDetail>()
         every { payment.id } returns paymentId
-        every { paymentPersistence.getPaymentDetails(paymentId) } returns payment
-        every { reportFilePersistence.existsFile("Payment/Regular/000011/PaymentAttachment/", "test.xlsx") } returns true
+        every { paymentPersistence.getPaymentDetail(paymentId) } returns payment
+        every { reportFilePersistence.existsFile("Payment/Advance/000011/PaymentAdvanceAttachment/", "test.xlsx") } returns true
 
         val file = ProjectFile(stream = content, name = "test.xlsx", size = 20L)
         assertThrows<FileAlreadyExists> { interactor.upload(paymentId, file) }
@@ -104,9 +97,9 @@ class UploadPaymentAttachmentTest : UnitTest() {
     @Test
     fun `upload - file type invalid`() {
         val paymentId = 15L
-        val payment = mockk<PaymentDetail>()
+        val payment = mockk<AdvancePaymentDetail>()
         every { payment.id } returns paymentId
-        every { paymentPersistence.getPaymentDetails(paymentId) } returns payment
+        every { paymentPersistence.getPaymentDetail(paymentId) } returns payment
 
         val file = ProjectFile(stream = content, name = "test.exe", size = 20L)
         assertThrows<FileTypeNotSupported> { interactor.upload(paymentId, file) }

@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.payments.service
+package io.cloudflight.jems.server.payments.service.advance
 
 import io.cloudflight.jems.api.user.dto.OutputUser
 import io.cloudflight.jems.server.UnitTest
@@ -6,7 +6,6 @@ import io.cloudflight.jems.server.common.exception.I18nValidationException
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorDefaultImpl
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
-import io.cloudflight.jems.server.payments.service.advance.AdvancePaymentValidator
 import io.cloudflight.jems.server.payments.service.advance.AdvancePaymentValidator.Companion.PAYMENT_ADVANCE_AUTHORIZE_ERROR_KEY
 import io.cloudflight.jems.server.payments.service.advance.AdvancePaymentValidator.Companion.PAYMENT_ADVANCE_DELETION_ERROR_KEY
 import io.cloudflight.jems.server.payments.service.advance.AdvancePaymentValidator.Companion.PAYMENT_ADVANCE_NO_SOURCE_ERROR_KEY
@@ -86,7 +85,8 @@ class AdvancePaymentValidatorTest : UnitTest() {
     @Test
     fun `should succeed deletion check on correct data`() {
         assertDoesNotThrow {
-            validator.validateDeletion(advancePaymentDetail.copy(
+            validator.validateDeletion(
+                advancePaymentDetail.copy(
                 paymentAuthorized = false,
                 paymentConfirmed = false
             ))
@@ -96,7 +96,8 @@ class AdvancePaymentValidatorTest : UnitTest() {
     @Test
     fun `should throw InputValidationException at deletion of already checked`() {
         val ex = assertThrows<I18nValidationException> {
-            validator.validateDeletion(advancePaymentDetail.copy(
+            validator.validateDeletion(
+                advancePaymentDetail.copy(
                 paymentAuthorized = true,
                 paymentConfirmed = false
             ))
@@ -182,7 +183,8 @@ class AdvancePaymentValidatorTest : UnitTest() {
     @Test
     fun `should throw I18nValidationException if checkbox states are wrong`() {
         val ex = assertThrows<I18nValidationException> {
-            validator.validateCheckboxStates(advancePaymentUpdate.copy(
+            validator.validateCheckboxStates(
+                advancePaymentUpdate.copy(
                 paymentAuthorized = false,
                 paymentConfirmed = true
             ))

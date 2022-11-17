@@ -25,8 +25,6 @@ import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepos
 import io.cloudflight.jems.server.project.repository.partner.toProjectPartnerDetail
 import io.cloudflight.jems.server.project.repository.report.file.ProjectReportFileRepository
 import io.cloudflight.jems.server.project.service.ProjectPersistence
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.PaymentAdvanceAttachment
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.PaymentAttachment
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.repository.user.UserRepository
@@ -59,7 +57,12 @@ class PaymentRegularPersistenceProvider(
     @Transactional(readOnly = true)
     override fun getAllPaymentToProject(pageable: Pageable): Page<PaymentToProject> {
         return paymentRepository.findAll(pageable).toListModel(
-            getLumpSum = { projectId, orderNr -> projectLumpSumRepository.getByIdProjectIdAndIdOrderNr(projectId, orderNr) },
+            getLumpSum = { projectId, orderNr ->
+                projectLumpSumRepository.getByIdProjectIdAndIdOrderNr(
+                    projectId,
+                    orderNr
+                )
+            },
             getProject = { projectId, version -> projectPersistence.getProject(projectId, version) },
             getConfirm = { id -> getConfirmedInfosForPayment(id) }
         )
@@ -77,7 +80,8 @@ class PaymentRegularPersistenceProvider(
                 .forEach { installment ->
                     amountPaid = amountPaid.add(installment.amountPaid)
                     if (installment.paymentDate != null &&
-                        (lastPaymentDate == null || installment.paymentDate!!.isAfter(lastPaymentDate))) {
+                        (lastPaymentDate == null || installment.paymentDate!!.isAfter(lastPaymentDate))
+                    ) {
                         lastPaymentDate = installment.paymentDate
                     }
                 }
@@ -105,9 +109,10 @@ class PaymentRegularPersistenceProvider(
         val paymentEntities = paymentRepository.saveAll(paymentsToBeSaved.map { (id, model) ->
             model.toEntity(
                 projectEntity = projectEntity,
-                paymentType =  PaymentType.FTLS,
+                paymentType = PaymentType.FTLS,
                 orderNr = id.orderNr,
-                fundEntity = fundRepository.getById(id.programmeFundId))
+                fundEntity = fundRepository.getById(id.programmeFundId)
+            )
         }).associateBy { PaymentGroupingId(it.orderNr, it.fund.id) }
 
         paymentEntities.forEach { (paymentId, entity) ->
@@ -126,10 +131,12 @@ class PaymentRegularPersistenceProvider(
     @Transactional(readOnly = true)
     override fun getAllPartnerPayments(paymentId: Long): List<PartnerPayment> =
         paymentPartnerRepository.findAllByPaymentId(paymentId)
-            .map { it.toDetailModel(
-                projectPartnerRepository.getById(it.partnerId).toProjectPartnerDetail(),
-                findPaymentPartnerInstallments(it.id)
-            ) }
+            .map {
+                it.toDetailModel(
+                    projectPartnerRepository.getById(it.partnerId).toProjectPartnerDetail(),
+                    findPaymentPartnerInstallments(it.id)
+                )
+            }
 
     @Transactional(readOnly = true)
     override fun getAllPartnerPaymentsForPartner(partnerId: Long) =
@@ -142,7 +149,7 @@ class PaymentRegularPersistenceProvider(
         this.paymentPartnerRepository.getIdByPaymentIdAndPartnerId(paymentId, partnerId)
 
     @Transactional(readOnly = true)
-    override fun findPaymentPartnerInstallments(paymentPartnerId: Long): List <PaymentPartnerInstallment> =
+    override fun findPaymentPartnerInstallments(paymentPartnerId: Long): List<PaymentPartnerInstallment> =
         this.paymentPartnerInstallmentRepository.findAllByPaymentPartnerId(paymentPartnerId).toModelList()
 
     @Transactional(readOnly = true)
@@ -170,19 +177,11 @@ class PaymentRegularPersistenceProvider(
 
     @Transactional
     override fun deletePaymentAttachment(fileId: Long) {
-        deleteAttachment(PaymentAttachment, fileId)
-    }
-
-    @Transactional
-    override fun deletePaymentAdvanceAttachment(fileId: Long) {
-        deleteAttachment(PaymentAdvanceAttachment, fileId)
-    }
-
-    private fun deleteAttachment(type: JemsFileType, fileId: Long) {
         fileRepository.delete(
-            reportFileRepository.findByTypeAndId(type, fileId) ?: throw ResourceNotFoundException("file")
+            reportFileRepository.findByTypeAndId(PaymentAttachment, fileId) ?: throw ResourceNotFoundException("file")
         )
     }
+
 
     private fun getUserOrNull(userId: Long?): UserEntity? =
         if (userId != null) {

@@ -1,12 +1,10 @@
-package io.cloudflight.jems.server.payments.service.attachment.setDescriptionToPaymentAttachment
+package io.cloudflight.jems.server.payments.service.advance.attachment.setDescriptionToPaymentAdvAttachment
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.minio.JemsProjectFileRepository
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
-import io.cloudflight.jems.server.payments.service.regular.attachment.setDescriptionToPaymentAttachment.FileNotFound
-import io.cloudflight.jems.server.payments.service.regular.attachment.setDescriptionToPaymentAttachment.SetDescriptionToPaymentAttachment
 import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.PaymentAttachment
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.PaymentAdvanceAttachment
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -16,7 +14,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 
-class SetDescriptionToPaymentAttachmentTest : UnitTest() {
+class SetDescriptionToPaymentAdvAttachmentTest : UnitTest() {
 
     @MockK
     lateinit var reportFilePersistence: ProjectReportFilePersistence
@@ -28,7 +26,7 @@ class SetDescriptionToPaymentAttachmentTest : UnitTest() {
     lateinit var generalValidator: GeneralValidatorService
 
     @InjectMockKs
-    lateinit var interactor: SetDescriptionToPaymentAttachment
+    lateinit var interactor: SetDescriptionToPaymentAdvAttachment
 
     @BeforeEach
     fun setup() {
@@ -39,19 +37,19 @@ class SetDescriptionToPaymentAttachmentTest : UnitTest() {
 
     @Test
     fun setDescription() {
-        every { reportFilePersistence.existsFile(PaymentAttachment, 261L) } returns true
-        every { fileRepository.setDescription(261L, "new desc") } answers { }
+        every { reportFilePersistence.existsFile(PaymentAdvanceAttachment, 91L) } returns true
+        every { fileRepository.setDescription(91L, "new desc") } answers { }
 
-        interactor.setDescription(fileId = 261L, "new desc")
+        interactor.setDescription(fileId = 91L, "new desc")
 
-        verify(exactly = 1) { fileRepository.setDescription(261L, "new desc") }
+        verify(exactly = 1) { fileRepository.setDescription(91L, "new desc") }
         verify(exactly = 1) { generalValidator.maxLength("new desc", 250, "description") }
         verify(exactly = 1) { generalValidator.throwIfAnyIsInvalid(*varargAny { it.isEmpty() }) }
     }
 
     @Test
     fun `setDescription - not existing`() {
-        every { reportFilePersistence.existsFile(PaymentAttachment, -1L) } returns false
+        every { reportFilePersistence.existsFile(PaymentAdvanceAttachment, -1L) } returns false
 
         assertThrows<FileNotFound> { interactor.setDescription(fileId = -1L, "new desc") }
 

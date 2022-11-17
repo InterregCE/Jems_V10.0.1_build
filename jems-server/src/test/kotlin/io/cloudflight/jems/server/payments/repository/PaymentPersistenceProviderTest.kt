@@ -471,20 +471,4 @@ class PaymentPersistenceProviderTest: UnitTest() {
         verify(exactly = 0) { fileRepository.delete(any()) }
     }
 
-    @Test
-    fun deletePaymentAdvanceAttachment() {
-        val file = mockk<ReportProjectFileEntity>()
-        every { fileRepository.delete(file) } answers { }
-        every { reportFileRepository.findByTypeAndId(JemsFileType.PaymentAdvanceAttachment, 16L) } returns file
-        paymentPersistenceProvider.deletePaymentAdvanceAttachment(16L)
-        verify(exactly = 1) { fileRepository.delete(file) }
-    }
-
-    @Test
-    fun `deletePaymentAdvanceAttachment - not existing`() {
-        every { reportFileRepository.findByTypeAndId(JemsFileType.PaymentAdvanceAttachment, -1L) } returns null
-        assertThrows<ResourceNotFoundException> { paymentPersistenceProvider.deletePaymentAdvanceAttachment(-1L) }
-        verify(exactly = 0) { fileRepository.delete(any()) }
-    }
-
 }

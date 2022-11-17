@@ -1,8 +1,7 @@
-package io.cloudflight.jems.server.payments.service
+package io.cloudflight.jems.server.payments.service.advance
 
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.payments.service.advance.PaymentAdvancePersistence
 import io.cloudflight.jems.server.payments.service.advance.getAdvancePayments.GetAdvancePayments
 import io.cloudflight.jems.server.payments.model.advance.AdvancePayment
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund

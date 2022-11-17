@@ -50,6 +50,5 @@ interface PaymentRegularPersistence {
 
     fun deletePaymentAttachment(fileId: Long)
 
-    fun deletePaymentAdvanceAttachment(fileId: Long)
 
 }

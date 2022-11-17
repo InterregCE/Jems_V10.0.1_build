@@ -1,7 +1,6 @@
-package io.cloudflight.jems.server.payments.service.attachment.getPaymentAttachment
+package io.cloudflight.jems.server.payments.service.advance.attachment.getPaymentAdvanceAttachment
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.payments.service.regular.attachment.getPaymentAttchament.GetPaymentAttachment
 import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFile
 import io.mockk.clearMocks
@@ -15,13 +14,13 @@ import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 
-class GetPaymentAttachmentTest : UnitTest() {
+class GetPaymentAdvanceAttachmentTest : UnitTest() {
 
     @MockK
     lateinit var reportFilePersistence: ProjectReportFilePersistence
 
     @InjectMockKs
-    lateinit var interactor: GetPaymentAttachment
+    lateinit var interactor: GetPaymentAdvanceAttachment
 
     @BeforeEach
     fun reset() {
@@ -34,7 +33,7 @@ class GetPaymentAttachmentTest : UnitTest() {
         every {
             reportFilePersistence.listAttachments(
                 pageable = any(),
-                indexPrefix = "Payment/Regular/000004/PaymentAttachment/",
+                indexPrefix = "Payment/Advance/000004/PaymentAdvanceAttachment/",
                 filterSubtypes = emptySet(),
                 filterUserIds = emptySet(),
             )

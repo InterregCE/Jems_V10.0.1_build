@@ -18,4 +18,6 @@ interface PaymentAdvancePersistence {
 
     fun updatePaymentDetail(paymentDetail: AdvancePaymentUpdate): AdvancePaymentDetail
 
+    fun deletePaymentAdvanceAttachment(fileId: Long)
+
 }

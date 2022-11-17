@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.payments.service
+package io.cloudflight.jems.server.payments.service.advance
 
 import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
@@ -7,8 +7,6 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.call.createTestCallEntity
 import io.cloudflight.jems.server.common.exception.I18nValidationException
-import io.cloudflight.jems.server.payments.service.advance.AdvancePaymentValidator
-import io.cloudflight.jems.server.payments.service.advance.PaymentAdvancePersistence
 import io.cloudflight.jems.server.payments.service.advance.deleteAdvancePayment.DeleteAdvancePayment
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentDetail
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
