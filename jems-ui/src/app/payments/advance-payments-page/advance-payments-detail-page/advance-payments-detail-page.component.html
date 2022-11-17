@@ -225,4 +225,7 @@
                 </div>
         </ng-container>
     </jems-form>
+
+    <jems-advance-payments-attachments *ngIf="data.paymentDetail.id > 0"
+                                          [paymentId]="data.paymentDetail.id"></jems-advance-payments-attachments>
 </jems-main-page-template>

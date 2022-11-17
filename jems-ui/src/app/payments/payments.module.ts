@@ -6,38 +6,41 @@ import {paymentsRoutes} from './payments-routing.module';
 import {PaymentsToProjectPageComponent} from './payments-to-projects-page/payments-to-project-page.component';
 import {AdvancePaymentsPageComponent} from './advance-payments-page/advance-payments-page.component';
 import {
-  PaymentsToProjectDetailPageComponent
+    PaymentsToProjectDetailPageComponent
 } from './payments-to-projects-page/payments-to-project-detail-page/payments-to-project-detail-page.component';
 import {
-  PaymentsToProjectDetailBreadcrumbResolver
+    PaymentsToProjectDetailBreadcrumbResolver
 } from './payments-to-projects-page/payments-to-project-detail.resolver';
 import {
-  PaymentsToProjectAttachmentsComponent
+    PaymentsToProjectAttachmentsComponent
 } from './payments-to-projects-page/payments-to-project-detail-page/payments-to-project-attachments/payments-to-project-attachments.component';
 import {
-  AdvancePaymentsDetailPageComponent
+    AdvancePaymentsDetailPageComponent
 } from './advance-payments-page/advance-payments-detail-page/advance-payments-detail-page.component';
+
 import {NgxMatSelectSearchModule} from 'ngx-mat-select-search';
-
-
+import {
+    AdvancePaymentsAttachmentsComponent
+} from './advance-payments-page/advance-payments-detail-page/advance-payments-attachments/advance-payments-attachments.component';
 
 @NgModule({
-  declarations: [
-    PaymentsPageComponent,
-    PaymentsToProjectPageComponent,
-    AdvancePaymentsPageComponent,
-    PaymentsToProjectDetailPageComponent,
-    PaymentsToProjectAttachmentsComponent,
-    AdvancePaymentsDetailPageComponent
-  ],
-  imports: [
-    SharedModule,
-    RouterModule.forChild(paymentsRoutes),
-    NgxMatSelectSearchModule
-  ],
-  providers: [
-    PaymentsToProjectDetailBreadcrumbResolver
-  ]
+    declarations: [
+        PaymentsPageComponent,
+        PaymentsToProjectPageComponent,
+        AdvancePaymentsPageComponent,
+        PaymentsToProjectDetailPageComponent,
+        PaymentsToProjectAttachmentsComponent,
+        AdvancePaymentsDetailPageComponent,
+        AdvancePaymentsAttachmentsComponent
+    ],
+    imports: [
+        SharedModule,
+        RouterModule.forChild(paymentsRoutes),
+        NgxMatSelectSearchModule
+    ],
+    providers: [
+        PaymentsToProjectDetailBreadcrumbResolver
+    ]
 })
 export class PaymentsModule {
 }

@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.payments.service
+package io.cloudflight.jems.server.payments.service.advance
 
 import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
@@ -8,8 +8,6 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.exception.I18nValidationException
-import io.cloudflight.jems.server.payments.service.advance.AdvancePaymentValidator
-import io.cloudflight.jems.server.payments.service.advance.PaymentAdvancePersistence
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentDetail
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentUpdate
 import io.cloudflight.jems.server.payments.service.advance.updateAdvancePaymentDetail.UpdateAdvancePaymentDetail
@@ -128,7 +126,8 @@ class UpdateAdvancePaymentTest : UnitTest() {
         every { auditPublisher.publishEvent(capture(auditSlot)) } just Runs
 
         assertThat(updateAdvancePayment.updateDetail(newPayment)).isEqualTo(savedPayment)
-        assertThat(toSaveSlot.captured).isEqualTo(paymentUpdate.copy(
+        assertThat(toSaveSlot.captured).isEqualTo(
+            paymentUpdate.copy(
             id = null,
             paymentAuthorized = false,
             paymentAuthorizedUserId = null,
@@ -169,7 +168,8 @@ class UpdateAdvancePaymentTest : UnitTest() {
         every { auditPublisher.publishEvent(capture(auditSlot)) } just Runs
 
         assertThat(updateAdvancePayment.updateDetail(paymentUpdate)).isEqualTo(result)
-        assertThat(toUpdateSlot.captured).isEqualTo(paymentUpdate.copy(
+        assertThat(toUpdateSlot.captured).isEqualTo(
+            paymentUpdate.copy(
             paymentAuthorized = true,
             paymentAuthorizedUserId = currentUserId,
             paymentAuthorizedDate = currentDate,

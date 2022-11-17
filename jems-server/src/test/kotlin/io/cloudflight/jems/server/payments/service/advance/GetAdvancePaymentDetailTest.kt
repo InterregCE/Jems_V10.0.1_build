@@ -1,7 +1,6 @@
-package io.cloudflight.jems.server.payments.service
+package io.cloudflight.jems.server.payments.service.advance
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.payments.service.advance.PaymentAdvancePersistence
 import io.cloudflight.jems.server.payments.service.advance.getAdvancePaymentDetail.GetAdvancePaymentDetail
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentDetail
 import io.mockk.every

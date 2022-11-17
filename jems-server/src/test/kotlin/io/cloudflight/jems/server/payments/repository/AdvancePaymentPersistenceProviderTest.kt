@@ -5,6 +5,8 @@ import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoF
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.createTestCallEntity
+import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.common.minio.JemsProjectFileRepository
 import io.cloudflight.jems.server.payments.entity.AdvancePaymentEntity
 import io.cloudflight.jems.server.payments.model.advance.AdvancePayment
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentDetail
@@ -15,9 +17,11 @@ import io.cloudflight.jems.server.programme.entity.fund.ProgrammeFundEntity
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
+import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
 import io.cloudflight.jems.server.project.repository.ProjectVersionPersistenceProvider
 import io.cloudflight.jems.server.project.repository.partner.PartnerPersistenceProvider
 import io.cloudflight.jems.server.project.repository.partner.cofinancing.ProjectPartnerCoFinancingPersistenceProvider
+import io.cloudflight.jems.server.project.repository.report.file.ProjectReportFileRepository
 import io.cloudflight.jems.server.project.repository.toSettingsModel
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
@@ -34,6 +38,7 @@ import io.cloudflight.jems.server.project.service.partner.model.PartnerSubType
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVatRecovery
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import io.cloudflight.jems.server.user.repository.user.UserRepository
@@ -42,11 +47,14 @@ import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.user.service.toOutputUser
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
+import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.mockk
 import io.mockk.slot
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
 import java.math.BigDecimal
@@ -70,6 +78,11 @@ class AdvancePaymentPersistenceProviderTest: UnitTest() {
     lateinit var userRepository: UserRepository
     @RelaxedMockK
     lateinit var programmeFundRepository: ProgrammeFundRepository
+
+    @MockK
+    lateinit var reportFileRepository: ProjectReportFileRepository
+    @MockK
+    lateinit var fileRepository: JemsProjectFileRepository
 
     @InjectMockKs
     lateinit var advancePaymentPersistenceProvider: PaymentAdvancePersistenceProvider
@@ -394,5 +407,21 @@ class AdvancePaymentPersistenceProviderTest: UnitTest() {
         assertThat(toBeSavedSlot.captured.partnerContributionName).isNull()
         assertThat(toBeSavedSlot.captured.partnerContributionSpfId).isEqualTo(contribSourceId)
         assertThat(toBeSavedSlot.captured.partnerContributionSpfName).isEqualTo("name")
+    }
+
+    @Test
+    fun deletePaymentAdvanceAttachment() {
+        val file = mockk<ReportProjectFileEntity>()
+        every { fileRepository.delete(file) } answers { }
+        every { reportFileRepository.findByTypeAndId(JemsFileType.PaymentAdvanceAttachment, 16L) } returns file
+        advancePaymentPersistenceProvider.deletePaymentAdvanceAttachment(16L)
+        verify(exactly = 1) { fileRepository.delete(file) }
+    }
+
+    @Test
+    fun `deletePaymentAdvanceAttachment - not existing`() {
+        every { reportFileRepository.findByTypeAndId(JemsFileType.PaymentAdvanceAttachment, -1L) } returns null
+        assertThrows<ResourceNotFoundException> { advancePaymentPersistenceProvider.deletePaymentAdvanceAttachment(-1L) }
+        verify(exactly = 0) { fileRepository.delete(any()) }
     }
 }

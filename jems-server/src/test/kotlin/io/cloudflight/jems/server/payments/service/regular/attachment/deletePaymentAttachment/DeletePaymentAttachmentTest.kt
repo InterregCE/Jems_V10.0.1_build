@@ -1,8 +1,7 @@
-package io.cloudflight.jems.server.payments.service.attachment.deletePaymentAttachment
+package io.cloudflight.jems.server.payments.service.regular.attachment.deletePaymentAttachment
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.payments.service.regular.PaymentRegularPersistence
-import io.cloudflight.jems.server.payments.service.regular.attachment.deletePaymentAttachment.DeletePaymentAttachment
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
