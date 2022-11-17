@@ -187,13 +187,12 @@ export class PartnerReportComponent {
           elementProperty: 'firstSubmission',
           columnType: ColumnType.DateColumn
         },
-        // Disabled as per ticket [MP2-2868]; Will be reverted once Version 6 is released
-        // {
-        //   displayedColumn: 'project.application.partner.reports.table.control',
-        //   columnType: ColumnType.CustomComponent,
-        //   customCellTemplate: this.actionCell,
-        //   clickable: false
-        // },
+        {
+          displayedColumn: 'project.application.partner.reports.table.control',
+          columnType: ColumnType.CustomComponent,
+          customCellTemplate: this.actionCell,
+          clickable: false
+        },
         ...((canEditReport && thereIsDraft) ? [{
           displayedColumn: 'common.delete.entry',
           customCellTemplate: this.deleteCell,
