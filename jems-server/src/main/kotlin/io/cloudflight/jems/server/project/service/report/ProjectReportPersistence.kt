@@ -26,7 +26,7 @@ interface ProjectReportPersistence {
 
     fun exists(partnerId: Long, reportId: Long): Boolean
 
-    fun getCurrentLatestReportNumberForPartner(partnerId: Long): Int
+    fun getCurrentLatestReportForPartner(partnerId: Long): ProjectPartnerReport?
 
     fun countForPartner(partnerId: Long): Int
 

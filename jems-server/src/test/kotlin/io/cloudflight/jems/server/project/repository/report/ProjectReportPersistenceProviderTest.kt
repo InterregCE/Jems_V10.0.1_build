@@ -166,7 +166,8 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
                 periodBudgetCumulative = TEN,
                 start = 4,
                 end = 6,
-            )
+            ),
+            deletable = false,
         )
 
         private fun coFinancingEntities(report: ProjectPartnerReportEntity) = listOf(
@@ -277,9 +278,9 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
     }
 
     @Test
-    fun listSubmittedPartnerReports() {
+    fun getSubmittedPartnerReportIds() {
         every { partnerReportRepository
-            .findAllIdsByPartnerIdAndStatusIn(PARTNER_ID, setOf(ReportStatus.Submitted, ReportStatus.InControl))
+            .findAllIdsByPartnerIdAndStatusIn(PARTNER_ID, setOf(ReportStatus.Submitted, ReportStatus.InControl, ReportStatus.Certified))
         } returns setOf(18L)
         assertThat(persistence.getSubmittedPartnerReportIds(PARTNER_ID)).containsExactly(18L)
     }
@@ -291,9 +292,10 @@ class ProjectReportPersistenceProviderTest : UnitTest() {
     }
 
     @Test
-    fun getCurrentLatestReportNumberForPartner() {
-        every { partnerReportRepository.getMaxNumberForPartner(PARTNER_ID) } returns 7
-        assertThat(persistence.getCurrentLatestReportNumberForPartner(PARTNER_ID)).isEqualTo(7)
+    fun getCurrentLatestReportForPartner() {
+        val report = reportEntity(id = 48L)
+        every { partnerReportRepository.findFirstByPartnerIdOrderByIdDesc(PARTNER_ID) } returns report
+        assertThat(persistence.getCurrentLatestReportForPartner(PARTNER_ID)).isEqualTo(draftReport(48L, emptyList()))
     }
 
     @Test

@@ -14,4 +14,5 @@ data class ProjectPartnerReportSummaryDTO(
     val startDate: LocalDate?,
     val endDate: LocalDate?,
     val periodDetail: ProjectPartnerReportPeriodDTO?,
+    val deletable: Boolean,
 )

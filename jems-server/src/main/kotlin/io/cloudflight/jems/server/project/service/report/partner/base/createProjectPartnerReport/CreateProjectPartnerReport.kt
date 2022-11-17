@@ -64,7 +64,7 @@ class CreateProjectPartnerReport(
 
         val baseData = generateReportBaseData(
             partnerId = partnerId,
-            latestReportNumber = reportPersistence.getCurrentLatestReportNumberForPartner(partnerId),
+            latestReportNumber = reportPersistence.getCurrentLatestReportForPartner(partnerId)?.reportNumber ?: 0,
             version = version,
         )
 

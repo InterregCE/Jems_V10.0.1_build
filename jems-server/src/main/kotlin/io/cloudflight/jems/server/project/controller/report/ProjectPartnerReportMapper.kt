@@ -41,6 +41,7 @@ fun ProjectPartnerReportSummary.toDto() = ProjectPartnerReportSummaryDTO(
     startDate = startDate,
     endDate = endDate,
     periodDetail = periodDetail?.toDto(),
+    deletable = deletable,
 )
 
 fun ProjectPartnerReportPeriod.toDto() = ProjectPartnerReportPeriodDTO(

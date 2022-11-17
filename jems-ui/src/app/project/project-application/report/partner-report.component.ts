@@ -1,5 +1,4 @@
 import {
-  AfterViewInit,
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
@@ -43,7 +42,7 @@ import StatusEnum = ProjectPartnerReportSummaryDTO.StatusEnum;
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 @UntilDestroy()
-export class PartnerReportComponent implements AfterViewInit {
+export class PartnerReportComponent {
   PermissionsEnum = PermissionsEnum;
   ProjectPartnerReportSummaryDTO = ProjectPartnerReportSummaryDTO;
   successfulDeletionMessage: boolean;
@@ -79,6 +78,7 @@ export class PartnerReportComponent implements AfterViewInit {
     partner: ProjectPartnerSummaryDTO;
     canUserViewControlReports: boolean;
     canUserEditControlReports: boolean;
+    canEditReport: boolean;
   }>;
 
   readonly isControlButtonVisible$: Observable<boolean> = combineLatest([
@@ -113,14 +113,16 @@ export class PartnerReportComponent implements AfterViewInit {
       this.multiLanguageGlobalService.activeSystemLanguage$,
       this.pageStore.institutionUserCanViewControlReports$,
       this.pageStore.institutionUserCanEditControlReports$,
+      this.pageStore.userCanEditReport$,
     ]).pipe(
-      map(([partnerReports, partner, systemLanguage, canUserViewControlReports, canUserEditControlReports]) => {
+      map(([partnerReports, partner, systemLanguage, canUserViewControlReports, canUserEditControlReports, canEditReport]) => {
         return {
             totalElements: partnerReports.totalElements,
             partnerReports: partnerReports.content,
             partner,
             canUserViewControlReports,
-            canUserEditControlReports
+            canUserEditControlReports,
+            canEditReport,
           };
         }
       ),
@@ -130,6 +132,9 @@ export class PartnerReportComponent implements AfterViewInit {
           if (report.status === StatusEnum.Draft && report.reportNumber === data.totalElements) {
             this.deletableReportId = report.reportNumber;
           }
+          const someDraft = data.partnerReports
+            .find((x) => x.status === ProjectPartnerReportSummaryDTO.StatusEnum.Draft);
+          this.refreshColumns(data.canEditReport, !!someDraft);
         });
       })
     );
@@ -148,7 +153,7 @@ export class PartnerReportComponent implements AfterViewInit {
     ).subscribe();
   }
 
-  ngAfterViewInit(): void {
+  private refreshColumns(canEditReport: boolean, thereIsDraft: boolean) {
     this.tableConfiguration = new TableConfiguration({
       isTableClickable: true,
       sortable: true,
@@ -189,13 +194,12 @@ export class PartnerReportComponent implements AfterViewInit {
         //   customCellTemplate: this.actionCell,
         //   clickable: false
         // },
-        {
+        ...((canEditReport && thereIsDraft) ? [{
           displayedColumn: 'common.delete.entry',
           customCellTemplate: this.deleteCell,
           columnWidth: ColumnWidth.IdColumn,
-          infoMessage: 'project.application.partner.report.deletion.tooltip',
           clickable: false
-        }
+        }] : []),
       ]
     });
 

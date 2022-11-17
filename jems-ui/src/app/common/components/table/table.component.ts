@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
 import {TableConfiguration} from './model/table.configuration';
 import {ColumnConfiguration} from './model/column.configuration';
 import {ColumnType} from './model/column-type.enum';
@@ -23,7 +23,7 @@ import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
   templateUrl: './table.component.html',
   styleUrls: ['./table.component.scss']
 })
-export class TableComponent implements OnInit {
+export class TableComponent implements OnInit, OnChanges {
   ColumnType = ColumnType;
   ColumnWidth = ColumnWidth;
 
@@ -146,5 +146,11 @@ export class TableComponent implements OnInit {
     }
 
     this.routingService.navigate([this.configuration.routerLink, row.id ], {...queryParams, relativeTo: this.activatedRoute});
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.configuration) {
+      this.columnsToDisplay = this.configuration.columns.map(col => col.displayedColumn);
+    }
   }
 }

@@ -47,9 +47,10 @@ fun ReportSummary.toModelSummary() =
         startDate = startDate,
         endDate = endDate,
         periodDetail = getPeriodData(),
+        deletable = false,
     )
 
-fun ProjectPartnerReportEntity.toCreateModelSummary() =
+fun ProjectPartnerReportEntity.toModelSummary() =
     ProjectPartnerReportSummary(
         id = id,
         reportNumber = number,
@@ -60,6 +61,7 @@ fun ProjectPartnerReportEntity.toCreateModelSummary() =
         startDate = null,
         endDate = null,
         periodDetail = null,
+        deletable = false,
     )
 
 fun ProjectPartnerReportEntity.toSubmissionSummary() =

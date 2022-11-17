@@ -14,4 +14,5 @@ data class ProjectPartnerReportSummary(
     val startDate: LocalDate?,
     val endDate: LocalDate?,
     val periodDetail: ProjectPartnerReportPeriod?,
+    var deletable: Boolean,
 )
