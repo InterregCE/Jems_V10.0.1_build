@@ -6,6 +6,7 @@ import java.math.BigDecimal
 data class ProjectPartnerReportUnitCostDTO(
     val id: Long,
     val unitCostProgrammeId: Long,
+    val projectDefined: Boolean,
     val costPerUnit: BigDecimal,
     val total: BigDecimal,
     val numberOfUnits: BigDecimal,

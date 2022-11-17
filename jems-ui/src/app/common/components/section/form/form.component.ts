@@ -32,9 +32,9 @@ export class FormComponent {
   @Output()
   discard = new EventEmitter<void>();
 
-  showSaveDiscard$ = combineLatest([this.formService.dirty$, this.formService.pending$])
+  showSaveDiscard$ = combineLatest([this.formService.dirty$, this.formService.pending$, this.formService.showMenu$])
     .pipe(
-      map(([dirty, pending]) => dirty || pending)
+      map(([dirty, pending, showMenu]) => (dirty || pending) && showMenu)
     );
 
   constructor(public formService: FormService) {

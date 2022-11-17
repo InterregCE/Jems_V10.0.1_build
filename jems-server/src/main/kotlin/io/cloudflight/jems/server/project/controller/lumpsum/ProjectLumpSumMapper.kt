@@ -8,9 +8,15 @@ import java.math.BigDecimal
 
 fun List<ProjectLumpSum>.toDto() = map {
     ProjectLumpSumDTO(
+        orderNr = it.orderNr,
         programmeLumpSumId = it.programmeLumpSumId,
         period = it.period,
         lumpSumContributions = it.lumpSumContributions.map { it.toDto() },
+        readyForPayment = it.readyForPayment,
+        comment = it.comment,
+        fastTrack = it.fastTrack,
+        paymentEnabledDate = it.paymentEnabledDate,
+        lastApprovedVersionBeforeReadyForPayment = it.lastApprovedVersionBeforeReadyForPayment
     )
 }
 
@@ -21,9 +27,15 @@ fun ProjectPartnerLumpSum.toDto() = ProjectPartnerLumpSumDTO(
 
 fun List<ProjectLumpSumDTO>.toModel() = map {
     ProjectLumpSum(
+        orderNr = it.orderNr,
         programmeLumpSumId = it.programmeLumpSumId,
         period = it.period,
-        lumpSumContributions = it.lumpSumContributions.toPartnerContributionModel()
+        lumpSumContributions = it.lumpSumContributions.toPartnerContributionModel(),
+        readyForPayment = it.readyForPayment,
+        comment = it.comment,
+        fastTrack = it.fastTrack,
+        paymentEnabledDate = it.paymentEnabledDate,
+        lastApprovedVersionBeforeReadyForPayment = it.lastApprovedVersionBeforeReadyForPayment
     )
 }
 

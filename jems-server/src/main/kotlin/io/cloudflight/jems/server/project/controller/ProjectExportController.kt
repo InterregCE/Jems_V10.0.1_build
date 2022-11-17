@@ -8,6 +8,7 @@ import io.cloudflight.jems.server.project.service.export.export_budget.ExportBud
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.RestController
+import java.time.LocalDateTime
 
 @RestController
 class ProjectExportController(
@@ -16,12 +17,28 @@ class ProjectExportController(
 ) : ProjectExportApi {
 
     override fun exportBudget(
-        projectId: Long, exportLanguage: SystemLanguage, inputLanguage: SystemLanguage, version: String?
+        projectId: Long,
+        exportLanguage: SystemLanguage,
+        inputLanguage: SystemLanguage,
+        version: String?,
+        pluginKey: String?,
     ): ResponseEntity<ByteArrayResource> =
-        exportBudget.exportDataToCsv(projectId, exportLanguage, inputLanguage, version).toResponseEntity()
+        exportBudget.exportDataToCsv(projectId, exportLanguage, inputLanguage, version, pluginKey).toResponseEntity()
 
     override fun exportApplicationForm(
-        projectId: Long, exportLanguage: SystemLanguage, inputLanguage: SystemLanguage, version: String?
+        projectId: Long,
+        exportLanguage: SystemLanguage,
+        inputLanguage: SystemLanguage,
+        localDateTime: LocalDateTime,
+        version: String?,
+        pluginKey: String?,
     ): ResponseEntity<ByteArrayResource> =
-        exportApplicationForm.export(projectId, exportLanguage, inputLanguage, version).toResponseEntity()
+        exportApplicationForm.export(
+            projectId,
+            exportLanguage,
+            inputLanguage,
+            localDateTime,
+            version,
+            pluginKey
+        ).toResponseEntity()
 }

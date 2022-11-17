@@ -7,14 +7,27 @@ enum class UserRolePermissionDTO(val key: String) {
 
     ProjectCreatorCollaboratorsRetrieve("ProjectCreatorCollaboratorsRetrieve"),
     ProjectCreatorCollaboratorsUpdate("ProjectCreatorCollaboratorsUpdate"),
+
+    ProjectCreatorContractingReportingView("ProjectCreatorContractingReportingView"),
+    ProjectCreatorContractingReportingEdit("ProjectCreatorContractingReportingEdit"),
     // endregion Creator
 
     // region Monitor
     ProjectReportingView("ProjectReportingView"),
     ProjectReportingEdit("ProjectReportingEdit"),
 
+    ProjectContractingPartnerView("ProjectContractingPartnerView"),
+    ProjectContractingPartnerEdit("ProjectContractingPartnerEdit"),
+
     ProjectContractingView("ProjectContractingView"),
     ProjectSetToContracted("ProjectSetToContracted"),
+
+    ProjectContractingManagementView("ProjectContractingManagementView"),
+    ProjectContractingManagementEdit("ProjectContractingManagementEdit"),
+    ProjectContractingReportingView("ProjectContractingReportingView"),
+    ProjectContractingReportingEdit("ProjectContractingReportingEdit"),
+    ProjectContractsView("ProjectContractsView"),
+    ProjectContractsEdit("ProjectContractsEdit"),
 
     ProjectFormRetrieve("ProjectFormRetrieve"),
     ProjectFormUpdate("ProjectFormUpdate"),
@@ -71,6 +84,18 @@ enum class UserRolePermissionDTO(val key: String) {
 
     ProgrammeSetupRetrieve("ProgrammeSetupRetrieve"),
     ProgrammeSetupUpdate("ProgrammeSetupUpdate"),
+
+    InstitutionsRetrieve("InstitutionsRetrieve"),
+    InstitutionsUpdate("InstitutionsUpdate"),
+    InstitutionsUnlimited("InstitutionsUnlimited"),
+
+    InstitutionsAssignmentRetrieve("InstitutionsAssignmentRetrieve"),
+    InstitutionsAssignmentUpdate("InstitutionsAssignmentUpdate"),
+
+    PaymentsRetrieve("PaymentsRetrieve"),
+    PaymentsUpdate("PaymentsUpdate"),
+    AdvancePaymentsRetrieve("AdvancePaymentsRetrieve"),
+    AdvancePaymentsUpdate("AdvancePaymentsUpdate"),
 
     ProgrammeDataExportRetrieve("ProgrammeDataExportRetrieve"),
 

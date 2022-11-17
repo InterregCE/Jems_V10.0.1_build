@@ -1,7 +1,9 @@
 package io.cloudflight.jems.api.project.report
 
+import io.cloudflight.jems.api.project.dto.partner.budget.ProjectPartnerBudgetOptionsDto
 import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadataDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportExpenditureCostDTO
+import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportInvestmentDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportLumpSumDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportUnitCostDTO
 import io.swagger.annotations.Api
@@ -61,4 +63,17 @@ interface ProjectPartnerReportExpenditureCostsApi {
         @PathVariable reportId: Long,
     ): List<ProjectPartnerReportUnitCostDTO>
 
+    @ApiOperation("Returns all Investments available for this report")
+    @GetMapping("$ENDPOINT_API_PARTNER_REPORT_EXPENDITURE_COSTS/investments")
+    fun getAvailableInvestments(
+        @PathVariable partnerId: Long,
+        @PathVariable reportId: Long,
+    ): List<ProjectPartnerReportInvestmentDTO>
+
+    @ApiOperation("Returns all budget options available for this report")
+    @GetMapping("$ENDPOINT_API_PARTNER_REPORT_EXPENDITURE_COSTS/budgetOptions")
+    fun getAvailableBudgetOptions(
+        @PathVariable partnerId: Long,
+        @PathVariable reportId: Long,
+    ): ProjectPartnerBudgetOptionsDto
 }

@@ -1,8 +1,13 @@
 package io.cloudflight.jems.server.project.service.partner.get_project_partner
 
+import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
+import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
+import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.repository.ApplicationVersionNotFoundException
 import io.cloudflight.jems.server.project.repository.partner.toModel
@@ -11,11 +16,14 @@ import io.cloudflight.jems.server.project.service.budget.get_project_budget.GetP
 import io.cloudflight.jems.server.project.service.budget.model.PartnerBudget
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
-import io.cloudflight.jems.server.project.service.partner.model.NaceGroupLevel
-import io.cloudflight.jems.server.project.service.partner.model.PartnerSubType
-import io.cloudflight.jems.server.project.service.partner.model.ProjectBudgetPartnerSummary
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
+import io.cloudflight.jems.server.project.service.partner.model.PartnerSubType
+import io.cloudflight.jems.server.project.service.partner.model.NaceGroupLevel
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVatRecovery
+import io.cloudflight.jems.server.project.service.partner.model.ProjectBudgetPartnerSummary
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerPaymentSummary
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import io.cloudflight.jems.server.utils.partner.ProjectPartnerTestUtil
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -34,8 +42,11 @@ internal class GetProjectPartnerInteractorTest : UnitTest() {
     @MockK
     lateinit var getProjectBudget: GetProjectBudget
 
+    @MockK
+    lateinit var institutionPersistence: ControllerInstitutionPersistence
+
     @InjectMockKs
-    lateinit var getInteractor: GetProjectPartner
+    lateinit var interactor: GetProjectPartner
 
     private val UNPAGED = Pageable.unpaged()
 
@@ -73,15 +84,44 @@ internal class GetProjectPartnerInteractorTest : UnitTest() {
         lumpSumContribution = BigDecimal.ZERO,
         unitCosts = BigDecimal.ZERO,
         totalCosts = BigDecimal.ZERO,
+    )
+
+    private val projectPartnerPaymentSummary = ProjectPartnerPaymentSummary(
+        partnerSummary = ProjectPartnerSummary(
+            id = 1L,
+            abbreviation = "A",
+            role = ProjectPartnerRole.PARTNER,
+            active = true,
+            sortNumber = 1
+        ),
+        partnerCoFinancing = listOf(
+            ProgrammeFund(
+                id = 2L,
+                selected = true,
+                abbreviation = setOf(
+                    InputTranslation(language = SystemLanguage.EN, translation = "ERDF"),
+                    InputTranslation(language = SystemLanguage.DE, translation = "ERDF DE")
+                )
+            )
+        ),
+        partnerContributions = listOf(
+            ProjectPartnerContribution(
+                id = 1,
+                name = "contribution 1 test",
+                status = ProjectPartnerContributionStatusDTO.Public,
+                isPartner = true,
+                amount = BigDecimal(100)
+            )
         )
+    )
 
     @Test
     fun getById() {
         every { persistence.getById(-1) } throws ResourceNotFoundException("partner")
         every { persistence.getById(1) } returns projectPartnerDetail
 
-        assertThrows<ResourceNotFoundException> { getInteractor.getById(-1) }
-        Assertions.assertThat(getInteractor.getById(1)).isEqualTo(projectPartnerDetail)
+        assertThrows<ResourceNotFoundException> { interactor.getById(-1) }
+        Assertions.assertThat(interactor.getById(1)).isEqualTo(projectPartnerDetail)
     }
 
     @Test
@@ -89,19 +129,28 @@ internal class GetProjectPartnerInteractorTest : UnitTest() {
         every { persistence.getById(1, "404") } throws ApplicationVersionNotFoundException()
         every { persistence.getById(1, "1.0") } returns projectPartnerDetail
 
-        assertThrows<ApplicationVersionNotFoundException> { getInteractor.getById(1, "404") }
-        Assertions.assertThat(getInteractor.getById(1, "1.0")).isEqualTo(projectPartnerDetail)
+        assertThrows<ApplicationVersionNotFoundException> { interactor.getById(1, "404") }
+        Assertions.assertThat(interactor.getById(1, "1.0")).isEqualTo(projectPartnerDetail)
     }
 
     @Test
     fun findAllByProjectId() {
         every { persistence.findAllByProjectId(0, UNPAGED) } returns PageImpl(emptyList())
         every { persistence.findAllByProjectId(1, UNPAGED) } returns PageImpl(mutableListOf(projectPartner))
-        every { getProjectBudget.getBudget(any(), 0, any())} returns emptyList()
-        every { getProjectBudget.getBudget(any(), 1, any())} returns listOf(partnerBudget)
+        every { getProjectBudget.getBudget(any(), 0, any()) } returns emptyList()
+        every { getProjectBudget.getBudget(any(), 1, any()) } returns listOf(partnerBudget)
 
-        Assertions.assertThat(getInteractor.findAllByProjectId(0, UNPAGED)).isEmpty()
-        Assertions.assertThat(getInteractor.findAllByProjectId(1, UNPAGED)).containsExactly(projectBudgetPartnerSummary)
+        Assertions.assertThat(interactor.findAllByProjectId(0, UNPAGED)).isEmpty()
+        Assertions.assertThat(interactor.findAllByProjectId(1, UNPAGED)).containsExactly(projectBudgetPartnerSummary)
+    }
+
+    @Test
+    fun findAllByProjectIdWithContributionsForDropdown() {
+        every { persistence.findAllByProjectIdWithContributionsForDropdown(1) } returns listOf(
+            projectPartnerPaymentSummary
+        )
+        Assertions.assertThat(interactor.findAllByProjectIdWithContributionsForDropdown(1))
+            .containsExactly(projectPartnerPaymentSummary)
     }
 
 }

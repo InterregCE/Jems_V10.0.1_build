@@ -1,0 +1,51 @@
+<div>
+    <h3>{{'programme.area.nuts.explorer.header' | translate}}
+        <button jemsText mat-raised-button color="primary"
+                *ngIf="formState === FormState.VIEW && (programmeEditableStateStore.hasEditPermission$ | async)"
+                (click)="changeFormState$.next(FormState.EDIT)">
+            {{'common.edit.label' | translate}}
+        </button>
+    </h3>
+    <div [ngSwitch]="isSavedByParent">
+        <p *ngSwitchCase="false">{{'programme.area.nuts.explorer.select' | translate}}</p>
+        <p *ngSwitchCase="true">{{'controller.institutions.nuts.explorer.subheader' | translate}}</p>
+    </div>
+    <div id="nuts-explorer-container">
+        <div class="scroll-area">
+            <div class="pt-3">
+                <jems-regions-tree
+                        [dataSource]="dataSource"
+                        [disabled]="formState === FormState.VIEW"
+                        [isLocked]="(isEditable$ | async)"
+                        (selectionChanged)="selectionChanged.emit($event)">
+                </jems-regions-tree>
+            </div>
+        </div>
+        <div class="scroll-area selected-areas">
+            <div [ngSwitch]="isSavedByParent">
+                <p *ngSwitchCase="false" class="mat-body-strong">{{'programme.area.nuts.explorer.selected' | translate}}</p>
+                <p *ngSwitchCase="true" class="mat-body-strong">{{'controller.institutions.nuts.explorer.selected' | translate}}</p>
+            </div>
+                <div class="pt-3 pl-3">
+                <jems-selected-regions
+                        [selectedRegions]="selectedRegions">
+                </jems-selected-regions>
+            </div>
+        </div>
+    </div>
+    <div  *ngIf="(formState === FormState.EDIT && (programmeEditableStateStore.hasEditPermission$ | async)) && !isSavedByParent" class="mt-3">
+        <button jemsText mat-stroked-button class="mr-3"
+                (click)="onCancel()">
+            {{'common.cancel.label' | translate}}
+        </button>
+        <button jemsText mat-raised-button color="primary"
+                (click)="onSubmit()">
+            {{'common.save.label' | translate}}
+        </button>
+    </div>
+    <jems-alert
+            [show]="!submitted && (showSuccessMessage$ | async)"
+            [type]="Alert.SUCCESS">
+        <p>{{'programme.area.nuts.explorer.save.success' | translate}}</p>
+    </jems-alert>
+</div>

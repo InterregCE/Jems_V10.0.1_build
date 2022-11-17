@@ -86,17 +86,20 @@ internal class ProjectWorkflowPersistenceTest : UnitTest() {
                             category = BudgetCategory.TravelAndAccommodationCosts
                         ),
                     ),
+                    isFastTrack = false
                 )
             )
             call.unitCosts.clear()
             call.unitCosts.add(
                 ProgrammeUnitCostEntity(
                     id = 4,
+                    projectId = null,
                     translatedValues = combineUnitCostTranslatedValues(
                         programmeUnitCostId = 32,
                         name = setOf(InputTranslation(SystemLanguage.EN, "UnitCost")),
                         description = setOf(InputTranslation(SystemLanguage.EN, "plus 4")),
-                        type = setOf(InputTranslation(SystemLanguage.EN, "type of unit cost"))
+                        type = setOf(InputTranslation(SystemLanguage.EN, "type of unit cost")),
+                        justification = setOf(InputTranslation(SystemLanguage.EN, "justification of unit cost")),
                     ),
                     costPerUnit = BigDecimal.ONE,
                     isOneCostCategory = false,

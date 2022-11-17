@@ -91,6 +91,7 @@
         <mat-form-field *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.IDENTITY.TYPE">
             <mat-label>{{'project.partner.type' | translate}}</mat-label>
             <mat-select name="partnerType" formControlName="partnerType" (selectionChange)="setSpfBeneficiaryTypeValue($event.value)">
+                <mat-option [value]="0">{{ 'common.not.applicable.option' | translate }}</mat-option>
                 <mat-option *ngFor="let type of ProjectApplicationFormPartnerEditConstants.partnerTypeEnums"
                             [value]="type">
                     {{'project.application.form.relevance.target.group.' + type | translate}}
@@ -110,7 +111,7 @@
             <mat-select name="partnerSubType" formControlName="partnerSubType">
                 <mat-option *ngFor="let subType of ProjectApplicationFormPartnerEditConstants.partnerSubTypeEnums"
                             [value]="subType.value">
-                    {{subType.value ? ('project.application.form.relevance.target.group.' + subType.key | translate) : ''}}
+                    {{ (subType.value ? ('project.application.form.relevance.target.group.' + subType.key) : 'common.not.applicable.option') | translate}}
                 </mat-option>
             </mat-select>
         </mat-form-field>

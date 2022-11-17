@@ -68,6 +68,7 @@ export class ProjectPartnerBudgetOverviewComponent {
       {
         partner: {
           id: partner.id,
+          active: partner.active,
           abbreviation: partner.abbreviation,
           role: partner.role,
           sortNumber: partner.sortNumber,

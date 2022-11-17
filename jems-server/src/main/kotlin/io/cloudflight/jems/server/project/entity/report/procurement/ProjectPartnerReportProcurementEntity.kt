@@ -1,16 +1,15 @@
 package io.cloudflight.jems.server.project.entity.report.procurement
 
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
-import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
 import java.math.BigDecimal
-import javax.persistence.CascadeType
+import java.time.LocalDate
+import java.time.ZonedDateTime
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
 import javax.persistence.JoinColumn
 import javax.persistence.ManyToOne
-import javax.persistence.OneToMany
 import javax.validation.constraints.NotNull
 
 @Entity(name = "report_project_partner_procurement")
@@ -26,7 +25,15 @@ class ProjectPartnerReportProcurementEntity(
     val reportEntity: ProjectPartnerReportEntity,
 
     @field:NotNull
-    var contractId: String,
+    var contractName: String,
+
+    @field:NotNull
+    var referenceNumber: String,
+
+    var contractDate: LocalDate?,
+
+    @field:NotNull
+    var contractType: String,
 
     @field:NotNull
     var contractAmount: BigDecimal,
@@ -37,11 +44,13 @@ class ProjectPartnerReportProcurementEntity(
     @field:NotNull
     var supplierName: String,
 
-    @ManyToOne
-    @JoinColumn(name = "file_id")
-    var attachment: ReportProjectFileEntity?,
+    @field:NotNull
+    var vatNumber: String,
 
-    @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.sourceEntity")
-    val translatedValues: MutableSet<ProjectPartnerReportProcurementTranslEntity> = mutableSetOf(),
+    @field:NotNull
+    var comment: String,
+
+    @field:NotNull
+    var lastChanged: ZonedDateTime,
 
 )

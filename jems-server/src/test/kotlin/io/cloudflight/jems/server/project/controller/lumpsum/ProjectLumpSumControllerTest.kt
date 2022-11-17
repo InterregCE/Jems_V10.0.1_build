@@ -14,11 +14,17 @@ import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
+import java.time.ZoneId
+import java.time.ZonedDateTime
 
 internal class ProjectLumpSumControllerTest : UnitTest() {
 
     companion object {
+        private val paymentEnabledDate = ZonedDateTime.of(2022, 1, 1, 0, 0, 0, 0, ZoneId.of("UTC").normalized())
+        private const val version = "v2.0"
+
         private val lumpSum1 = ProjectLumpSum(
+            orderNr = 1,
             programmeLumpSumId = 1,
             period = 3,
             lumpSumContributions = listOf(
@@ -27,8 +33,17 @@ internal class ProjectLumpSumControllerTest : UnitTest() {
             )
         )
         private val lumpSum2 = ProjectLumpSum(
+            orderNr = 2,
             programmeLumpSumId = 2,
             period = 4,
+        )
+        private val lumpSum3 = ProjectLumpSum(
+            orderNr = 3,
+            programmeLumpSumId = 3,
+            period = 4,
+            readyForPayment = true,
+            lastApprovedVersionBeforeReadyForPayment = version,
+            paymentEnabledDate = paymentEnabledDate
         )
     }
 
@@ -43,20 +58,38 @@ internal class ProjectLumpSumControllerTest : UnitTest() {
 
     @Test
     fun getLumpSums() {
-        every { getLumpSumInteractor.getLumpSums(1L) } returns listOf(lumpSum1, lumpSum2)
+        every { getLumpSumInteractor.getLumpSums(1L) } returns listOf(lumpSum1, lumpSum2, lumpSum3)
 
         assertThat(controller.getProjectLumpSums(1L)).containsExactly(
             ProjectLumpSumDTO(
+                orderNr = 1,
                 programmeLumpSumId = 1,
                 period = 3,
                 lumpSumContributions = listOf(
                     ProjectPartnerLumpSumDTO(partnerId = 13, amount = BigDecimal.TEN),
                     ProjectPartnerLumpSumDTO(partnerId = 14, amount = BigDecimal.ONE),
-                )
+                ),
+                readyForPayment = false,
+                comment = null,
+                fastTrack = false
             ),
             ProjectLumpSumDTO(
+                orderNr = 2,
                 programmeLumpSumId = 2,
                 period = 4,
+                readyForPayment = false,
+                comment = null,
+                fastTrack = false
+            ),
+            ProjectLumpSumDTO(
+                orderNr = 3,
+                programmeLumpSumId = 3,
+                period = 4,
+                readyForPayment = true,
+                comment = null,
+                fastTrack = false,
+                paymentEnabledDate = paymentEnabledDate,
+                lastApprovedVersionBeforeReadyForPayment = version
             ),
         )
     }
@@ -74,38 +107,74 @@ internal class ProjectLumpSumControllerTest : UnitTest() {
         every { updateLumpSumInteractor.updateLumpSums(2L, capture(lumpSumsSlot)) } returns emptyList()
 
         val lumpSumDto1 = ProjectLumpSumDTO(
+            orderNr = 1,
             programmeLumpSumId = 5,
             period = 7,
             lumpSumContributions = listOf(
                 ProjectPartnerLumpSumDTO(partnerId = 23, amount = BigDecimal.valueOf(-1)),
                 ProjectPartnerLumpSumDTO(partnerId = 24, amount = BigDecimal.valueOf(-1, 2)),
                 ProjectPartnerLumpSumDTO(partnerId = 24, amount = BigDecimal.valueOf(-1, 1)),
-            )
+            ),
+            readyForPayment = false,
+            comment = null,
+            fastTrack = false,
         )
         val lumpSumDto2 = ProjectLumpSumDTO(
+            orderNr = 2,
             programmeLumpSumId = 6,
             period = 8,
             lumpSumContributions = listOf(
                 ProjectPartnerLumpSumDTO(partnerId = 23, amount = BigDecimal.ONE),
                 ProjectPartnerLumpSumDTO(partnerId = 24, amount = BigDecimal.TEN),
             ),
+            readyForPayment = false,
+            comment = null,
+            fastTrack = false,
+        )
+        val lumpSumDto3 = ProjectLumpSumDTO(
+            orderNr = 3,
+            programmeLumpSumId = 7,
+            period = 2,
+            lumpSumContributions = listOf(
+                ProjectPartnerLumpSumDTO(partnerId = 23, amount = BigDecimal.ONE),
+                ProjectPartnerLumpSumDTO(partnerId = 24, amount = BigDecimal.TEN),
+            ),
+            readyForPayment = true,
+            comment = null,
+            fastTrack = false,
+            paymentEnabledDate = paymentEnabledDate,
+            lastApprovedVersionBeforeReadyForPayment = version
         )
 
-        controller.updateProjectLumpSums(2L, listOf(lumpSumDto1, lumpSumDto2))
+        controller.updateProjectLumpSums(2L, listOf(lumpSumDto1, lumpSumDto2, lumpSumDto3))
 
         assertThat(lumpSumsSlot.captured).containsExactly(
             ProjectLumpSum(
+                orderNr = 1,
                 programmeLumpSumId = 5,
                 period = 7,
                 lumpSumContributions = emptyList(), // negative contributions are not allowed
             ),
             ProjectLumpSum(
+                orderNr = 2,
                 programmeLumpSumId = 6,
                 period = 8,
                 lumpSumContributions = listOf(
                     ProjectPartnerLumpSum(partnerId = 23, amount = BigDecimal.ONE),
                     ProjectPartnerLumpSum(partnerId = 24, amount = BigDecimal.TEN),
                 ),
+            ),
+            ProjectLumpSum(
+                orderNr = 3,
+                programmeLumpSumId = 7,
+                period = 2,
+                lumpSumContributions = listOf(
+                    ProjectPartnerLumpSum(partnerId = 23, amount = BigDecimal.ONE),
+                    ProjectPartnerLumpSum(partnerId = 24, amount = BigDecimal.TEN),
+                ),
+                paymentEnabledDate = paymentEnabledDate,
+                lastApprovedVersionBeforeReadyForPayment = version,
+                readyForPayment = true
             ),
         )
     }

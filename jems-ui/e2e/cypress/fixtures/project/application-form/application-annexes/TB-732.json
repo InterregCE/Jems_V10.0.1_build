@@ -1,0 +1,22 @@
+{
+  "partner": {
+    "abbreviation": "randomize",
+    "role": "PARTNER",
+    "nameInEnglish": "",
+    "legalStatusId": 1
+  },
+  "applicationCreator": {
+    "email": "randomize",
+    "name": "application",
+    "surname": "creator",
+    "userRoleId": 3,
+    "userStatus": "ACTIVE"
+  },
+  "applicationCollaborator": {
+    "email": "randomize",
+    "name": "application",
+    "surname": "collaborator",
+    "userRoleId": 3,
+    "userStatus": "ACTIVE"
+  }
+}

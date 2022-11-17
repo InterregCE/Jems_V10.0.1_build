@@ -52,4 +52,8 @@ class ResultIndicatorPersistenceProvider(
         resultIndicatorRepository.findOneByIdentifier(identifier).run {
             !(this == null || this.id == resultIndicatorId)
         }
+
+    @Transactional
+    override fun deleteResultIndicator(id: Long) =
+        resultIndicatorRepository.deleteById(id)
 }

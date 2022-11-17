@@ -1,12 +1,15 @@
+$tree-width: 20rem;
+
 #project-files {
   display: flex;
 
   #project-files-tree {
-    width: 20rem;
+    width: $tree-width;
     border: 1px solid var(--table-border-color);
   }
 
   #project-files-table {
+    width: calc(100% - #{$tree-width});
     flex: auto;
   }
 }

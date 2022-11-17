@@ -1,0 +1,32 @@
+{
+  "workPlanTitle": [
+    {
+      "language": "DE",
+      "translation": "Work plan title DE"
+    },
+    {
+      "language": "EN",
+      "translation": "Work plan title EN"
+    }
+  ],
+  "specificObjective": [
+    {
+      "language": "EN",
+      "translation": "Work plan specific objective EN"
+    },
+    {
+      "language": "DE",
+      "translation": "Work plan specific objective DE"
+    }
+  ],
+  "objectiveAndAudience": [
+    {
+      "language": "DE",
+      "translation": "Work plan objective and audience DE"
+    },
+    {
+      "language": "EN",
+      "translation": "Work plan objective and audience EN"
+    }
+  ]
+}

@@ -42,7 +42,9 @@ class CallFactory(
                 lengthOfPeriod = 1,
                 allowedRealCosts = defaultAllowedRealCostsByCallType(CallType.STANDARD),
                 preSubmissionCheckPluginKey = null,
-                firstStepPreSubmissionCheckPluginKey = null
+                firstStepPreSubmissionCheckPluginKey = null,
+                projectDefinedUnitCostAllowed = true,
+                projectDefinedLumpSumAllowed = false,
             )
         )
     }

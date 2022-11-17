@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.project.controller.report
 
 import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadataDTO
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import io.mockk.every
 import io.mockk.mockk
 import org.springframework.web.multipart.MultipartFile
@@ -12,7 +12,7 @@ private val UPLOADED = ZonedDateTime.now().minusWeeks(1)
 
 val stream = ByteArray(5).inputStream()
 
-val dummyFile = ProjectReportFileMetadata(id = 90L, "file_name.ext", uploaded = UPLOADED)
+val dummyFile = JemsFileMetadata(id = 90L, "file_name.ext", uploaded = UPLOADED)
 
 val dummyFileDto = ProjectReportFileMetadataDTO(id = 90L, "file_name.ext", uploaded = UPLOADED)
 

@@ -1,0 +1,4 @@
+{
+  "name": "revertDecisionRole",
+  "permissions": ["ProjectStatusDecisionRevert", "ProjectRetrieve"]
+}

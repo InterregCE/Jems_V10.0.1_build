@@ -1,0 +1,11 @@
+<jems-form *ngIf="data$ | async as data">
+    <div jemsFormLayout>
+        <ng-container>
+            <h3 class="mt-3">{{'project.application.partner.report.tab.controlChecklists' | translate}}</h3>
+            <jems-control-checklist-instance-list [relatedType]="ChecklistType.CONTROL"
+                                          [relatedId]="data.partnerControlReport.id"
+                                          jemsNoWidthLimit>
+            </jems-control-checklist-instance-list>
+        </ng-container>
+    </div>
+</jems-form>

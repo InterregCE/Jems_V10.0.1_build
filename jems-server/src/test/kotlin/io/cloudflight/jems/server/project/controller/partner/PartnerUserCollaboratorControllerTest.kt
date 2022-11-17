@@ -6,6 +6,7 @@ import io.cloudflight.jems.server.project.entity.partneruser.PartnerCollaborator
 import io.cloudflight.jems.server.project.service.partner.assign_user_collaborator_to_partner.AssignUserCollaboratorToPartnerInteractor
 import io.cloudflight.jems.server.project.service.partner.get_partner_user_collaborator.GetPartnerUserCollaboratorsInteractor
 import io.cloudflight.jems.server.project.service.partnerUser.getMyPartnerCollaboratorLevel.GetMyPartnerCollaboratorLevelInteractor
+import io.cloudflight.jems.server.project.service.partnerUser.getUserPartnerCollaborations.GetUserPartnerCollaborationsInteractor
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -26,6 +27,9 @@ class PartnerUserCollaboratorControllerTest: UnitTest() {
 
     @MockK
     lateinit var  checkMyPartnerCollaboratorLevel: GetMyPartnerCollaboratorLevelInteractor
+
+    @MockK
+    lateinit var  getUserPartnerCollaborations: GetUserPartnerCollaborationsInteractor
 
     @InjectMockKs
     private lateinit var controller: PartnerUserCollaboratorController

@@ -4,7 +4,7 @@
                         subTitleKey="programme.tab.indicators">
     <jems-programme-result-indicator-detail
             [resultIndicator]="details"
-            [priorities]="priorities$ | async"
+            [priorities$]="priorities$"
             [success$]="resultIndicatorSaveSuccess$"
             [error$]="resultIndicatorSaveError$"
             [isCreate]="isCreate"

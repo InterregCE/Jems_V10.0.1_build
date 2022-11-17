@@ -1,0 +1,15 @@
+{
+  "eligibility": {
+    "assessment": "Project has passed eligibility assessment.",
+    "decision": "Project is eligible",
+    "explanatoryNotes": "Some explanatory notes for eligibility"
+  },
+  "quality": {
+    "assessment": "Project is recommended for funding.",
+    "explanatoryNotes": "Some explanatory notes for quality assessment"
+  },
+  "funding": {
+    "decision": "Project is approved with conditions.",
+    "explanatoryNotes": "Some explanatory notes for funding decision with conditions"
+  }
+}

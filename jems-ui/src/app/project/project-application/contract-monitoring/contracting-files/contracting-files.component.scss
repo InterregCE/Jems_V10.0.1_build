@@ -1,0 +1,23 @@
+:host {
+  display: inline-block;
+  width: 100%;
+}
+
+#contracting-files {
+  display: flex;
+
+  jems-category-tree {
+    width: 20rem;
+    border: 1px solid var(--table-border-color);
+    margin-right: 1rem;
+  }
+  .file-list {
+    display: flex;
+    flex-flow: column;
+    width: calc(100% - 21rem);
+  }
+}
+
+.overflow-auto {
+  overflow: auto;
+}

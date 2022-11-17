@@ -8,9 +8,12 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionB.ProjectDataSe
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.ProjectPartnerData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.PartnerBudgetData
 import io.cloudflight.jems.plugin.contract.models.project.sectionD.ProjectDataSectionD
+import io.cloudflight.jems.plugin.contract.models.project.sectionE.ProjectDataSectionE
 import io.cloudflight.jems.plugin.contract.models.project.versions.ProjectVersionData
 import io.cloudflight.jems.plugin.contract.services.ProjectDataProvider
 import io.cloudflight.jems.server.call.service.CallPersistence
+import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.programme.repository.ProgrammeDataRepository
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeLumpSumPersistence
 import io.cloudflight.jems.server.programme.service.indicator.OutputIndicatorPersistence
 import io.cloudflight.jems.server.programme.service.indicator.ResultIndicatorPersistence
@@ -29,7 +32,11 @@ import io.cloudflight.jems.server.project.service.cofinancing.model.ProjectCoFin
 import io.cloudflight.jems.server.project.service.cofinancing.model.ProjectCoFinancingOverview
 import io.cloudflight.jems.server.project.service.common.BudgetCostsCalculatorService
 import io.cloudflight.jems.server.project.service.common.PartnerBudgetPerFundCalculatorService
+import io.cloudflight.jems.server.project.service.contracting.monitoring.ContractingMonitoringPersistence
+import io.cloudflight.jems.server.project.service.customCostOptions.ProjectUnitCostPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
+import io.cloudflight.jems.server.project.service.model.ProjectPartnerBudgetPerPeriod
+import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetCostsPersistence
 import io.cloudflight.jems.server.project.service.partner.budget.ProjectPartnerBudgetOptionsPersistence
@@ -38,6 +45,8 @@ import io.cloudflight.jems.server.project.service.partner.cofinancing.model.Proj
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancingAndContributionSpf
 import io.cloudflight.jems.server.project.service.partner.model.BudgetCosts
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import io.cloudflight.jems.server.project.service.result.ProjectResultPersistence
 import io.cloudflight.jems.server.project.service.result.get_project_result_indicators_overview.ResultOverviewCalculator
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
@@ -69,7 +78,10 @@ class ProjectDataProviderImpl(
     private val programmeLegalStatusPersistence: ProgrammeLegalStatusPersistence,
     private val projectResultPersistence: ProjectResultPersistence,
     private val listOutputIndicatorsPersistence: OutputIndicatorPersistence,
-    private val listResultIndicatorsPersistence: ResultIndicatorPersistence
+    private val listResultIndicatorsPersistence: ResultIndicatorPersistence,
+    private val programmeDataRepository: ProgrammeDataRepository,
+    private val projectUnitCostPersistence: ProjectUnitCostPersistence,
+    private val contractingMonitoringPersistence: ContractingMonitoringPersistence
 ) : ProjectDataProvider {
 
     companion object {
@@ -163,6 +175,16 @@ class ProjectDataProviderImpl(
             workPackages = workPackagePersistence.getWorkPackagesWithAllDataByProjectId(projectId, version),
             results = resultPersistence.getResultsForProject(projectId, version)
         )
+
+        val projectPeriods = projectPersistence.getProjectPeriods(projectId, version)
+        val spfPartnerBudgetPerPeriod = getSpfPartnerBudgetPerPeriod(
+            partnerSummary = partnersSummary
+                .firstOrNull { isSpfCall && it.active && it.role == ProjectPartnerRole.LEAD_PARTNER },
+            projectPeriods = projectPeriods,
+            projectId = projectId,
+            version = version
+        )
+
         val sectionD = ProjectDataSectionD(
             projectPartnerBudgetPerFundData = partnersSummary.let { partnerSummaries ->
                 partnerBudgetPerFundCalculator.calculate(
@@ -175,7 +197,7 @@ class ProjectDataProviderImpl(
                             total = partner.budget.projectBudgetCostsCalculationResult.totalCosts
                         )
                     },
-                    spfCoFinancing = null
+                    spfCoFinancing = emptyList()
                 ).toProjectPartnerBudgetPerFundData()
             },
             projectPartnerBudgetPerPeriodData = partnerBudgetPerPeriodCalculator.calculate(
@@ -185,13 +207,15 @@ class ProjectDataProviderImpl(
                     projectBudgetPersistence.getBudgetTotalForPartners(partnerIds, projectId, version)
                 ),
                 lumpSums = lumpSums,
-                projectPeriods = projectPersistence.getProjectPeriods(projectId, version),
+                projectPeriods = projectPeriods,
+                spfPartnerBudgetPerPeriod = spfPartnerBudgetPerPeriod
             ).toProjectBudgetOverviewPerPartnerPerPeriod()
         )
 
-        val sectionE = with(lumpSums) {
-            this.toDataModel(programmeLumpSumPersistence.getLumpSums(this.map { it.programmeLumpSumId }))
-        }
+        val sectionE = ProjectDataSectionE(
+            projectLumpSums = lumpSums.toDataModel(programmeLumpSumPersistence.getLumpSums(lumpSums.map { it.programmeLumpSumId })),
+            projectDefinedUnitCosts = projectUnitCostPersistence.getProjectUnitCostList(projectId, version).toListDataModel(),
+        )
 
         logger.info("Retrieved project data for project id=$projectId via plugin.")
 
@@ -206,8 +230,30 @@ class ProjectDataProviderImpl(
                 assessmentStep1 = project.assessmentStep1?.toDataModel(),
                 assessmentStep2 = project.assessmentStep2?.toDataModel()
             ),
-            versions = projectVersionPersistence.getAllVersionsByProjectId(projectId).toDataModel()
+            versions = projectVersionPersistence.getAllVersionsByProjectId(projectId).toDataModel(),
+            programmeTitle = programmeDataRepository.findById(1)
+                .orElseThrow { ResourceNotFoundException("programmeData") }.title ?: "",
+            dimensionCodes = contractingMonitoringPersistence.getContractingMonitoring(projectId).dimensionCodes.toContractingDimensionCodeDataList()
         )
+    }
+
+    private fun getSpfPartnerBudgetPerPeriod(
+        partnerSummary: ProjectPartnerSummary?,
+        projectPeriods: List<ProjectPeriod>,
+        projectId: Long,
+        version: String?
+    ): List<ProjectPartnerBudgetPerPeriod> {
+
+        return if (partnerSummary?.id != null) {
+            partnerBudgetPerPeriodCalculator.calculateSpfPartnerBudgetPerPeriod(
+                spfBeneficiary = partnerSummary,
+                projectPeriods = projectPeriods,
+                spfBudgetPerPeriod = projectBudgetPersistence.getSpfBudgetPerPeriod(partnerSummary.id, projectId, version).toMutableList(),
+                spfTotalBudget = getBudgetCostsPersistence.getBudgetSpfCostTotal(partnerSummary.id, version)
+            )
+        } else {
+            emptyList()
+        }
     }
 
     private fun getBudgetTotalCosts(
@@ -284,7 +330,7 @@ class ProjectDataProviderImpl(
         return ProjectResultIndicatorOverview(
             indicatorLines = ResultOverviewCalculator.calculateProjectResultOverview(
                 projectOutputs = workPackagePersistence.getAllOutputsForProjectIdSortedByNumbers(projectId, version),
-                programmeOutputIndicatorsById = listOutputIndicatorsPersistence.getTop50OutputIndicators()
+                programmeOutputIndicatorsById = listOutputIndicatorsPersistence.getTop250OutputIndicators()
                     .associateBy { it.id },
                 programmeResultIndicatorsById = listResultIndicatorsPersistence.getTop50ResultIndicators()
                     .associateBy { it.id },

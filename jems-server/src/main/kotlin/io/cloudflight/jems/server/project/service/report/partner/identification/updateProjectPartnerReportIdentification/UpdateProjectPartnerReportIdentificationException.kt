@@ -18,7 +18,7 @@ class ReportAlreadyClosed : ApplicationUnprocessableException(
     i18nMessage = I18nMessage(i18nKey = "$UPDATE_PROJECT_PARTNER_REPORT_IDENTIFICATION_ERROR_KEY_PREFIX.report.already.closed"),
 )
 
-class InvalidPeriodNumber(periodNumber: Int) : ApplicationUnprocessableException(
+class InvalidPeriodNumber(periodNumber: Int?) : ApplicationUnprocessableException(
     code = "$UPDATE_PROJECT_PARTNER_REPORT_IDENTIFICATION_ERROR_CODE_PREFIX-002",
     i18nMessage = I18nMessage(i18nKey = "$UPDATE_PROJECT_PARTNER_REPORT_IDENTIFICATION_ERROR_KEY_PREFIX.period.invalid"),
     message = "Period number $periodNumber is not valid."

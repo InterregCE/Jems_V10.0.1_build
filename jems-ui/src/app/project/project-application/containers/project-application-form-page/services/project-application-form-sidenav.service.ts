@@ -12,7 +12,12 @@ import {
   tap,
   withLatestFrom
 } from 'rxjs/operators';
-import {ProjectStatusDTO, UserRoleDTO, WorkPackageService} from '@cat/api';
+import {
+  ProjectPartnerUserCollaboratorService,
+  ProjectStatusDTO,
+  UserRoleDTO,
+  WorkPackageService
+} from '@cat/api';
 import {HeadlineRoute} from '@common/components/side-nav/headline-route';
 import {Log} from '@common/utils/log';
 import {TranslateService} from '@ngx-translate/core';
@@ -24,7 +29,9 @@ import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 import {RoutingService} from '@common/services/routing.service';
 import {FileManagementStore} from '@project/common/components/file-management/file-management-store';
-import {ProjectPartnerStore} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
+import {
+  ProjectPartnerStore
+} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
 import {ProjectPaths, ProjectUtil} from '@project/common/project-util';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import StatusEnum = ProjectStatusDTO.StatusEnum;
@@ -38,14 +45,69 @@ export class ProjectApplicationFormSidenavService {
   private readonly fetchPartners$ = new Subject<number>();
   private readonly fetchPackages$ = new Subject<number>();
 
-  private readonly canSeeContracting$: Observable<boolean> = combineLatest([
-    this.projectStore.currentVersionOfProjectStatus$,
+  private readonly canSeeContractMonitoring$: Observable<boolean> = combineLatest([
     this.permissionService.hasPermission(PermissionsEnum.ProjectContractingView),
     this.permissionService.hasPermission(PermissionsEnum.ProjectSetToContracted),
-    this.projectStore.userIsProjectOwner$,
+    this.projectStore.currentVersionOfProjectStatus$,
   ]).pipe(
-    map(([projectStatus, hasContractingViewPermission, hasSetToContractedPermission, isOwner]) =>
+    map(([hasContractingViewPermission, hasSetToContractedPermission, projectStatus]) =>
       (hasContractingViewPermission || hasSetToContractedPermission) && ProjectUtil.isInApprovedOrAnyStatusAfterApproved(projectStatus)
+    ),
+  );
+
+  private readonly canSeeProjectManagement$: Observable<boolean> = combineLatest([
+    this.permissionService.hasPermission(PermissionsEnum.ProjectContractingManagementView),
+    this.permissionService.hasPermission(PermissionsEnum.ProjectContractingManagementEdit),
+    this.projectStore.userIsProjectOwner$,
+    this.projectStore.userIsPartnerCollaborator$,
+    this.projectStore.currentVersionOfProjectStatus$,
+  ]).pipe(
+    map(([hasProjectManagementViewPermission, hasProjectManagementEditPermission, isOwner, isPartnerCollaborator, projectStatus]) =>
+      (hasProjectManagementViewPermission || hasProjectManagementEditPermission || isOwner || isPartnerCollaborator) &&
+      ProjectUtil.isInApprovedOrAnyStatusAfterApproved(projectStatus)
+    )
+  );
+
+  private readonly canSeeProjectContracts$: Observable<boolean> = combineLatest([
+    this.permissionService.hasPermission(PermissionsEnum.ProjectContractsView),
+    this.permissionService.hasPermission(PermissionsEnum.ProjectContractsEdit),
+    this.projectStore.userIsProjectOwner$,
+    this.projectStore.userIsPartnerCollaborator$,
+    this.projectStore.currentVersionOfProjectStatus$,
+  ]).pipe(
+    map(([hasProjectManagementViewPermission, hasProjectManagementEditPermission, isOwner, isPartnerCollaborator, projectStatus]) =>
+      (hasProjectManagementViewPermission || hasProjectManagementEditPermission || isOwner || isPartnerCollaborator) &&
+      ProjectUtil.isInApprovedOrAnyStatusAfterApproved(projectStatus)
+    )
+  );
+
+  private readonly canSeeContractReporting$: Observable<boolean> = combineLatest([
+    this.permissionService.hasPermission(PermissionsEnum.ProjectContractingReportingView),
+    this.permissionService.hasPermission(PermissionsEnum.ProjectContractingReportingEdit),
+    this.permissionService.hasPermission(PermissionsEnum.ProjectCreatorContractingReportingView),
+    this.permissionService.hasPermission(PermissionsEnum.ProjectCreatorContractingReportingEdit),
+    this.projectStore.userIsProjectOwner$,
+    this.projectStore.userIsPartnerCollaborator$,
+    this.projectStore.currentVersionOfProjectStatus$,
+  ]).pipe(
+    map(([hasViewPermission, hasEditPermission, hasCreatorViewPermission, hasCreatorEditPermission, isOwner, isPartnerCollaborator, projectStatus]:
+           [boolean, boolean, boolean, boolean, boolean, boolean, ProjectStatusDTO]) =>
+      ((hasViewPermission || hasEditPermission) || ((hasCreatorViewPermission || hasCreatorEditPermission) && (isOwner || isPartnerCollaborator))) &&
+        ProjectUtil.isInApprovedOrAnyStatusAfterApproved(projectStatus),
+    ),
+  );
+
+  private readonly canSeeContractPartner$: Observable<boolean> = combineLatest([
+    this.permissionService.hasPermission(PermissionsEnum.ProjectContractingPartnerView),
+    this.permissionService.hasPermission(PermissionsEnum.ProjectContractingPartnerEdit),
+    this.projectStore.userIsProjectOwner$,
+    this.projectStore.userIsPartnerCollaborator$,
+    this.projectStore.currentVersionOfProjectStatus$,
+  ]).pipe(
+    map(([hasViewPermission, hasEditPermission, userIsProjectOwner, isPartnerCollaborator, projectStatus]:
+           [boolean, boolean, boolean, boolean, ProjectStatusDTO]) =>
+      ((hasViewPermission || hasEditPermission) || isPartnerCollaborator || userIsProjectOwner) &&
+      ProjectUtil.isInApprovedOrAnyStatusAfterApproved(projectStatus),
     ),
   );
 
@@ -125,7 +187,7 @@ export class ProjectApplicationFormSidenavService {
            hasRevertDecisionPermission, hasInstantiateChecklistPermission, hasSelectedAssessmentListView, canReadAssessmentFiles]: any) => {
       return (
           (canReadAssessmentFiles || hasAssessmentViewPermission || hasRevertDecisionPermission || hasInstantiateChecklistPermission || hasSelectedAssessmentListView) &&
-          ((callHas2Steps && projectStatus !== StatusEnum.STEP1DRAFT && projectStatus !== StatusEnum.DRAFT) || (!callHas2Steps && projectStatus !== StatusEnum.DRAFT))
+          ((callHas2Steps && projectStatus !== StatusEnum.STEP1DRAFT) || (!callHas2Steps && projectStatus !== StatusEnum.DRAFT))
         )
         || (
           hasStartStepTwoPermission &&
@@ -186,6 +248,35 @@ export class ProjectApplicationFormSidenavService {
       startWith([])
     );
 
+  private readonly contractingPartnerSection$: Observable<HeadlineRoute[]> =
+    combineLatest([this.canSeeContractPartner$, this.projectStore.projectId$, this.projectStore.projectCallType$]).pipe(
+      switchMap(([canSeeContractPartner, projectId, callType]) => {
+        return (canSeeContractPartner) ?
+          combineLatest([
+            this.partnerStore.partnerSummariesOfLastApprovedVersion$,
+            this.projectStore.userIsPartnerCollaborator$,
+            this.projectStore.projectId$,
+            this.partnerUserCollaboratorService.listCurrentUserPartnerCollaborations(projectId)
+          ])
+            .pipe(
+              map(([partners, isUserPartnerCollaborator, projectID, collaborators]) =>
+                partners.filter(p => isUserPartnerCollaborator ? collaborators.some(c => c.partnerId === p.id) : true)
+                .map(partner => ({
+                    headline: {
+                      i18nKey: ProjectPartnerStore.getPartnerTranslationKey(partner.role, callType),
+                      i18nArguments: {partner: `${partner.sortNumber || ''} ${partner.abbreviation}`}
+                    },
+                    icon: partner.active ? '' : 'person_off',
+                    route: `/app/project/detail/${projectID}/contractPartner/${partner.id}`
+                  }
+                ))
+              )
+            ) : of([]);
+      }),
+      catchError(() => of([])),
+      startWith([])
+    );
+
   private readonly packages$: Observable<HeadlineRoute[]> =
     this.canSeeProjectForm$.pipe(
       switchMap(canSeeProject => {
@@ -225,14 +316,19 @@ export class ProjectApplicationFormSidenavService {
               private translate: TranslateService,
               private permissionService: PermissionService,
               private routingService: RoutingService,
-              private visibilityStatusService: FormVisibilityStatusService
+              private visibilityStatusService: FormVisibilityStatusService,
+              private partnerUserCollaboratorService: ProjectPartnerUserCollaboratorService,
   ) {
 
     const headlines$ = combineLatest([
       this.projectStore.project$,
       this.canSeeReporting$,
       this.reportSectionPartners$,
-      this.canSeeContracting$,
+      this.canSeeContractMonitoring$,
+      this.canSeeProjectContracts$,
+      this.canSeeProjectManagement$,
+      this.canSeeContractReporting$,
+      this.canSeeContractPartner$,
       this.canSeeAssessments$,
       this.canSubmitApplication$,
       this.canCheckApplication$,
@@ -242,7 +338,8 @@ export class ProjectApplicationFormSidenavService {
       this.versionSelectTemplate$,
       this.canSeeProjectForm$,
       this.canSeeModificationSection$,
-      this.canSeePrivilegesSection$
+      this.canSeePrivilegesSection$,
+      this.contractingPartnerSection$
     ])
       .pipe(
         debounceTime(50), // there's race condition with SidenavService.resetOnLeave
@@ -251,7 +348,11 @@ export class ProjectApplicationFormSidenavService {
                project,
                canSeeReporting,
                reportSectionPartners,
-               canSeeContracting,
+               canSeeContractMonitoring,
+               canSeeProjectContracts,
+               canSeeProjectManagement,
+               canSeeContractReporting,
+               canSeeContractPartner,
                canSeeAssessments,
                canSubmitApplication,
                canCheckApplication,
@@ -261,12 +362,15 @@ export class ProjectApplicationFormSidenavService {
                versionTemplate,
                canSeeProjectForm,
                canSeeModificationSection,
-               canSeePrivilegesSection
+               canSeePrivilegesSection,
+               contractingPartnerSection
              ]: any) => {
           this.sideNavService.setHeadlines(ProjectPaths.PROJECT_DETAIL_PATH, [
             this.getProjectOverviewHeadline(project.id),
             ...canSeeReporting ? this.getReportingHeadline(reportSectionPartners) : [],
-            ...canSeeContracting ? this.getContractingHeadline(project.id) : [],
+            ...(canSeeProjectManagement || canSeeContractMonitoring || canSeeContractReporting || canSeeContractPartner) ?
+              this.getContractingHeadlines(project.id, canSeeContractMonitoring, canSeeProjectContracts, canSeeProjectManagement, canSeeContractReporting,
+                canSeeContractPartner, contractingPartnerSection) : [],
             this.getApplicationFormHeadline(project.id, partners, packages, versionTemplate, canReadApplicationFiles,
               canSeeAssessments, canSubmitApplication || canCheckApplication, canSeeProjectForm, canSeeModificationSection),
             ...canSeeProjectForm ? this.getExportHeadline(project.id) : [],
@@ -301,19 +405,66 @@ export class ProjectApplicationFormSidenavService {
     };
   }
 
-  private getContractingHeadline(projectId: number): HeadlineRoute[] {
+
+  private getContractingHeadlines(projectId: number, canSeeContractMonitoring: boolean, canSeeProjectContracts: boolean,
+                                  canSeeProjectManagement: boolean, canSeeContractReporting: boolean, canSeeContractPartner: boolean,
+                                  partners: HeadlineRoute[]): HeadlineRoute[] {
     return [{
       headline: {i18nKey: 'project.application.contracting.title'},
       bullets: [
-        {
-          headline: {i18nKey: 'project.application.contract.monitoring.title'},
-          route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/contractMonitoring`,
-          scrollToTop: true,
-          scrollRoute: ''
-        }
+        ...canSeeContractMonitoring ? this.getContractMonitoringHeadline(projectId) : [],
+        ...canSeeProjectContracts ? this.getProjectContractsHeadline(projectId) : [],
+        ...canSeeProjectManagement ? this.getProjectManagementHeadline(projectId) : [],
+        ...canSeeContractReporting ? this.getContractReportingHeadline(projectId) : [],
+        ...canSeeContractPartner ? this.getContractPartnerHeadline(projectId, partners) : [],
       ]
     }];
   }
+
+  private getContractMonitoringHeadline(projectId: number): HeadlineRoute[] {
+    return [{
+      headline: {i18nKey: 'project.application.contract.monitoring.title'},
+      route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/contractMonitoring`,
+      scrollToTop: true,
+      scrollRoute: ''
+    }];
+  }
+
+  private getProjectContractsHeadline(projectId: number): HeadlineRoute[] {
+    return [{
+      headline: {i18nKey: 'project.application.contract.contracts.title'},
+      route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/contract`,
+      scrollToTop: true,
+      scrollRoute: ''
+    }];
+  }
+
+  private getProjectManagementHeadline(projectId: number): HeadlineRoute[] {
+    return [{
+      headline: {i18nKey: 'project.application.contract.management.title'},
+      route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/projectManagement`,
+      scrollToTop: true,
+      scrollRoute: ''
+    }];
+  }
+
+  private getContractReportingHeadline(projectId: number): HeadlineRoute[] {
+    return [{
+      headline: {i18nKey: 'project.application.contract.reporting.title'},
+      route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/contractReporting`,
+      scrollToTop: true,
+      scrollRoute: ''
+    }];
+  }
+
+  private getContractPartnerHeadline(projectId: number, partners: HeadlineRoute[]): HeadlineRoute[] {
+    return [{
+      headline: {i18nKey: 'project.application.contract.partner.section.title'},
+      badgeText: 'test',
+      bullets: [...partners],
+    }];
+  }
+
 
   private getReportingHeadline(partners: HeadlineRoute[]): HeadlineRoute[] {
     return [{
@@ -383,11 +534,12 @@ export class ProjectApplicationFormSidenavService {
         ],
         versionedSection: true
       },
-      {
-        headline: {i18nKey: 'project.application.form.section.part.c'},
-        bullets: this.getSectionCHeadlines(projectId, packages),
-        versionedSection: true
-      },
+      ...this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_C) ?
+        [{
+          headline: {i18nKey: 'project.application.form.section.part.c'},
+          bullets: this.getSectionCHeadlines(projectId, packages),
+          versionedSection: true
+        }] : [],
       ...this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING) ?
         [
           {
@@ -416,10 +568,16 @@ export class ProjectApplicationFormSidenavService {
                 headline: {i18nKey: 'project.application.form.section.part.e.subsection.one'},
                 route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormLumpSums`,
               },
-              ...this.visibilityStatusService.shouldBeVisibleIfUnitCostsSelected() ?
+              ...(this.visibilityStatusService.shouldBeVisibleIfUnitCostsSelected() || this.visibilityStatusService.shouldBeVisibleIfProjectDefinedUnitCostsAllowed()) ?
                 [{
                   headline: {i18nKey: 'project.application.form.section.part.e.subsection.two'},
                   route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormUnitCosts`,
+                  bullets: this.visibilityStatusService.shouldBeVisibleIfProjectDefinedUnitCostsAllowed() ? [
+                    {
+                      headline: {i18nKey: 'project.application.form.section.part.e.subsection.two.subsection.one'},
+                      route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormUnitCosts/projectProposed`,
+                    }
+                  ] : []
                 }] : []
             ],
             versionedSection: true
@@ -430,10 +588,11 @@ export class ProjectApplicationFormSidenavService {
 
   private getSectionCHeadlines(projectId: number, packages: HeadlineRoute[]): HeadlineRoute[] {
     return [
-      {
+      ...this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_C.PROJECT_OVERALL_OBJECTIVE) ?
+      [{
         headline: {i18nKey: 'project.application.form.section.part.c.subsection.one'},
         route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/applicationFormOverallObjective`,
-      },
+      }] : [],
       ...this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_C.PROJECT_RELEVANCE_AND_CONTEXT) ?
         [{
           headline: {i18nKey: 'project.application.form.section.part.c.subsection.two'},
@@ -510,7 +669,7 @@ export class ProjectApplicationFormSidenavService {
       route: `${ProjectApplicationFormSidenavService.PROJECT_DETAIL_URL}/${projectId}/modification`,
       scrollToTop: true,
       scrollRoute: '',
-      icon: 'autorenew'
+      icon: 'lock_open'
     }];
   }
 

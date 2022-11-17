@@ -14,4 +14,9 @@ interface ProjectVersionPersistence {
     fun getLatestApprovedOrCurrent(projectId: Long): String
 
     fun getAllVersions(): List<ProjectVersion>
+
+    fun saveTimestampForApprovedApplication(projectId: Long)
+
+    fun updateTimestampForApprovedModification(projectId: Long)
+
 }

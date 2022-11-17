@@ -1,0 +1,13 @@
+<jems-regions class="margin-before"
+              *ngIf="regionsAvailable$ | async"
+              [isSavedByParent]="true"
+              [success$]="regionSaveSuccess$"
+              [dataSource]="regionTreeDataSource"
+              [selectedRegions]="selectedRegions$ | async"
+              (selectionChanged)="selectionChanged$.next(regionTreeDataSource.data)"
+              (saveRegions)="saveSelectedRegions$.next()"
+              [cancelEditFormParent]="cancelEdit$"
+              [formIsEditableByDefault]="isEditable"
+              [isEditable$]="isLocked$"
+>
+</jems-regions>

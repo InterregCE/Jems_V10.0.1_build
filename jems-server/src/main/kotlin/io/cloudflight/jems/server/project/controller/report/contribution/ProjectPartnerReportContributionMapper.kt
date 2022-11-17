@@ -3,9 +3,9 @@ package io.cloudflight.jems.server.project.controller.report.contribution
 import io.cloudflight.jems.api.project.dto.report.partner.contribution.ProjectPartnerReportContributionDTO
 import io.cloudflight.jems.api.project.dto.report.partner.contribution.ProjectPartnerReportContributionOverviewDTO
 import io.cloudflight.jems.api.project.dto.report.partner.contribution.UpdateProjectPartnerReportContributionDataDTO
-import io.cloudflight.jems.server.project.service.report.model.contribution.ProjectPartnerReportContribution
-import io.cloudflight.jems.server.project.service.report.model.contribution.ProjectPartnerReportContributionOverview
-import io.cloudflight.jems.server.project.service.report.model.contribution.update.UpdateProjectPartnerReportContributionWrapper
+import io.cloudflight.jems.server.project.service.report.model.partner.contribution.ProjectPartnerReportContribution
+import io.cloudflight.jems.server.project.service.report.model.partner.contribution.ProjectPartnerReportContributionOverview
+import io.cloudflight.jems.server.project.service.report.model.partner.contribution.update.UpdateProjectPartnerReportContributionWrapper
 import org.mapstruct.Mapper
 import org.mapstruct.Mapping
 import org.mapstruct.Mappings

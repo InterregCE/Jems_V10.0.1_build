@@ -1,13 +1,8 @@
 package io.cloudflight.jems.server.user.controller
 
-import io.cloudflight.jems.api.user.dto.OutputUser
-import io.cloudflight.jems.api.user.dto.PasswordDTO
-import io.cloudflight.jems.api.user.dto.UserChangeDTO
-import io.cloudflight.jems.api.user.dto.UserDTO
-import io.cloudflight.jems.api.user.dto.UserRegistrationDTO
-import io.cloudflight.jems.api.user.dto.UserSearchRequestDTO
-import io.cloudflight.jems.api.user.dto.UserStatusDTO
-import io.cloudflight.jems.api.user.dto.UserSummaryDTO
+import io.cloudflight.jems.api.user.dto.*
+import io.cloudflight.jems.server.captcha.Captcha
+import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.service.model.Password
 import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.model.UserChange
@@ -15,7 +10,6 @@ import io.cloudflight.jems.server.user.service.model.UserRegistration
 import io.cloudflight.jems.server.user.service.model.UserSearchRequest
 import io.cloudflight.jems.server.user.service.model.UserStatus
 import io.cloudflight.jems.server.user.service.model.UserSummary
-import org.springframework.data.domain.Page
 
 fun UserChangeDTO.toModel() = UserChange(
     id = id ?: 0,
@@ -39,6 +33,7 @@ fun UserRegistrationDTO.toModel() = UserRegistration(
     name = name,
     surname = surname,
     password = password,
+    captcha = captcha ?: "",
 )
 
 fun UserSummary.toSummaryDto() = UserSummaryDTO(
@@ -74,3 +69,17 @@ fun PasswordDTO.toModel() = Password(
 fun UserStatusDTO.toModel() = UserStatus.valueOf(name)
 
 fun UserStatus.toDto() = UserStatusDTO.valueOf(name)
+
+fun Captcha.toDto() = CaptchaDTO(
+    captcha, realCaptcha
+)
+
+fun UserSummary.toEntity() = UserEntity(
+    id = id,
+    email = email,
+    userRole = userRole.toEntity(),
+    name = name,
+    surname = surname,
+    userStatus = userStatus,
+    password = "",
+)

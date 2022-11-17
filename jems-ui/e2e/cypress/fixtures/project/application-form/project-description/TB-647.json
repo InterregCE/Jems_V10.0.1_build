@@ -1,0 +1,73 @@
+{
+  "title": [
+    {
+      "translation": "Activity 1 title DE",
+      "language": "DE"
+    },
+    {
+      "translation": "Activity 1 title EN",
+      "language": "EN"
+    }
+  ],
+  "startPeriod": "Period 1, month 1 - 3",
+  "endPeriod": "Period 4, month 10 - 12",
+  "description": [
+    {
+      "translation": "Activity description DE",
+      "language": "DE"
+    },
+    {
+      "translation": "Activity description EN",
+      "language": "EN"
+    }
+  ],
+  "partnerInvolved": "Lead Partner",
+  "deliverables": [
+    {
+      "title": [
+        {
+          "translation": "First activity deliverable title DE",
+          "language": "DE"
+        },
+        {
+          "translation": "First activity deliverable title EN",
+          "language": "EN"
+        }
+      ],
+      "description": [
+        {
+          "translation": "First activity deliverable description DE",
+          "language": "DE"
+        },
+        {
+          "translation": "First activity deliverable description EN",
+          "language": "EN"
+        }
+      ],
+      "period": "Period 2, month 4 - 6"
+    },
+    {
+      "title": [
+        {
+          "translation": "Second activity deliverable title DE",
+          "language": "DE"
+        },
+        {
+          "translation": "Second activity deliverable title EN",
+          "language": "EN"
+        }
+      ],
+      "description": [
+        {
+          "translation": "Second activity deliverable description DE",
+          "language": "DE"
+        },
+        {
+          "translation": "Second activity deliverable description EN",
+          "language": "EN"
+        }
+      ],
+      "period": "Period 3, month 7 - 9"
+    }
+  ]
+}

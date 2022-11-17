@@ -9,12 +9,14 @@ import {HttpErrorResponse} from '@angular/common/http';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {TranslateService} from '@ngx-translate/core';
 import {APIError} from '@common/models/APIError';
+import {v4 as uuid} from 'uuid';
 
 @UntilDestroy()
 @Injectable()
 export class FormService {
   private resetSubject = new Subject();
   private editable = true;
+  private serviceId = uuid();
 
   form: FormGroup | FormArray;
   saveLabel = 'common.save.label';
@@ -24,6 +26,7 @@ export class FormService {
   pending$ = new BehaviorSubject<boolean>(false);
   error$ = new Subject<APIError | null>();
   reset$ = this.resetSubject.asObservable();
+  showMenu$ = new BehaviorSubject<boolean>(true);
 
   constructor(private routingService: RoutingService, private translateService: TranslateService) {
   }
@@ -84,12 +87,14 @@ export class FormService {
         this.form.markAsPristine();
         this.form.markAsUntouched();
       }
-      this.routingService.confirmLeave = false;
+      this.routingService.confirmLeaveMap.set(this.serviceId, false);
     } else if (this.saveLabel !== 'common.create.label') {
       // confirm page leave unless the form is in create mode
-      this.routingService.confirmLeave = true;
+      this.routingService.confirmLeaveMap.set(this.serviceId, true);
     }
-    this.setSuccess(null);
+    if(dirty){
+      this.setSuccess(null);
+    }
     this.setValid(this.form?.valid);
     this.dirty$.next(dirty);
   }
@@ -110,6 +115,10 @@ export class FormService {
       this.form?.disable();
     }
     this.editable = editable;
+  }
+
+  isEditable(): boolean {
+    return this.editable;
   }
 
   resetEditable(): void {
@@ -133,5 +142,9 @@ export class FormService {
       (this.form as FormGroup)?.controls[key].setErrors({error: this.translateService.instant(error.formErrors[key].i18nKey, error.formErrors[key].i18nArguments)});
       (this.form as FormGroup)?.controls[key].markAsTouched();
     });
+  }
+
+  setShowMenu(value: boolean): void {
+    this.showMenu$.next(value);
   }
 }

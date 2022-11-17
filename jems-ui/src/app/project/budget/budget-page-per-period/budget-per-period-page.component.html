@@ -8,13 +8,14 @@
         <span>{{ 'project.application.form.work.package.output.delivery.period.required' | translate}}</span>
     </jems-alert>
 
-    <div class="mb-5">
+    <div class="mb-5" *ngIf="data.isAFPeriodsEnabled">
         <jems-budget-page-partner-per-period [tableConfig]="data.tableConfig"
                                             [projectPeriodNumbers]="data.projectPeriodNumbers">
         </jems-budget-page-partner-per-period>
     </div>
 
-    <jems-budget-page-funds-per-period [tableConfig]="data.tableConfig"
+    <jems-budget-page-funds-per-period *ngIf="data.isAFPeriodsEnabled"
+                                       [tableConfig]="data.tableConfig"
                                       [projectPeriodNumbers]="data.projectPeriodNumbers">
     </jems-budget-page-funds-per-period>
 

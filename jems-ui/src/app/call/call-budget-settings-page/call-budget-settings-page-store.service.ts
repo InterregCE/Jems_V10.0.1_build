@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {AllowedRealCostsDTO, CallService} from '@cat/api';
+import {AllowedRealCostsDTO, CallCostOptionDTO, CallService} from '@cat/api';
 import {merge, Observable, Subject} from 'rxjs';
 import {CallStore} from '../services/call-store.service';
 import {filter, switchMap, tap} from 'rxjs/operators';
@@ -9,15 +9,18 @@ import {Log} from '@common/utils/log';
 export class CallBudgetSettingsPageStore {
 
   allowedRealCosts$: Observable<AllowedRealCostsDTO>;
+  allowedCostOptions$: Observable<CallCostOptionDTO>;
   callIsEditable$: Observable<boolean>;
   callIsPublished$: Observable<boolean>;
   isSPFCall$: Observable<boolean>;
 
   private allowedRealCostsSaved$ = new Subject<AllowedRealCostsDTO>();
+  private allowedCostOptionsSaved$ = new Subject<CallCostOptionDTO>();
 
   constructor(private callService: CallService,
               private callStore: CallStore) {
     this.allowedRealCosts$ = this.allowedRealCosts();
+    this.allowedCostOptions$ = this.allowedCostOptions();
     this.callIsEditable$ = this.callStore.callIsEditable$;
     this.callIsPublished$ = this.callStore.callIsPublished$;
     this.isSPFCall$ = this.callStore.isSPFCall();
@@ -33,6 +36,16 @@ export class CallBudgetSettingsPageStore {
       );
   }
 
+  updateAllowedCostOptions(allowedCostOptions: CallCostOptionDTO): Observable<CallCostOptionDTO> {
+    return this.callStore.call$
+      .pipe(
+        filter(call => !!call?.id),
+        switchMap(call => this.callService.updateAllowedCostOption(call.id, allowedCostOptions)),
+        tap(costOptions => this.allowedCostOptionsSaved$.next(costOptions)),
+        tap(costOptions => Log.info('Updated call allow cost options', this, costOptions))
+      );
+  }
+
   private allowedRealCosts(): Observable<AllowedRealCostsDTO> {
     const initialAllowedRealCosts$ = this.callStore.call$
       .pipe(
@@ -42,5 +55,16 @@ export class CallBudgetSettingsPageStore {
       );
 
     return merge(initialAllowedRealCosts$, this.allowedRealCostsSaved$);
+  }
+
+  private allowedCostOptions(): Observable<CallCostOptionDTO> {
+    const initialAllowedRealCosts$ = this.callStore.call$
+      .pipe(
+        filter(call => !!call?.id),
+        switchMap(call => this.callService.getAllowedCostOptions(call.id)),
+        tap(allowedCostOptions => Log.info('Fetched call allow cost options', this, allowedCostOptions))
+      );
+
+    return merge(initialAllowedRealCosts$, this.allowedCostOptionsSaved$);
   }
 }

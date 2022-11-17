@@ -24,7 +24,8 @@ fun ProjectBudgetOverviewPerPartnerPerPeriod.toDto() = ProjectBudgetOverviewPerP
 fun ProjectPartnerBudgetPerPeriod.toDto() = ProjectPartnerBudgetPerPeriodDTO(
     partner = this.partner.toDto(),
     periodBudgets = this.periodBudgets.map {it.toDto()}.toSet(),
-    totalPartnerBudget = this.totalPartnerBudget
+    totalPartnerBudget = this.totalPartnerBudget,
+    costType = this.costType.toDto(),
 )
 
 fun ProjectPeriodBudget.toDto() = ProjectPeriodBudgetDTO(

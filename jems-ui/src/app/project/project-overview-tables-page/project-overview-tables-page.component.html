@@ -1,6 +1,7 @@
 <jems-project-page-template
         [needsCard]="true"
-        [titleText]="'project.application.form.acronym' | translate : {projectTitle: projectStore.projectTitle$ | async} ">
+        [titleText]="'project.application.form.acronym' | translate : {projectTitle: projectStore.projectTitle$ | async} "
+        subTitleKey="project.application.form.section.part.a.overview.tables">
 
     <div jemsNoWidthLimit>
         <ng-container *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_A.PROJECT_OVERVIEW_TABLES.A3">

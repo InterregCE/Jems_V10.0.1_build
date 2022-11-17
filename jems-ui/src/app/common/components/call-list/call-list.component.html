@@ -1,5 +1,5 @@
 <ng-container *ngIf="data$ | async as data">
-    <p *ngIf="!data.page?.content.length">{{'call.no.calls.submited' | translate}}</p>
+    <p *ngIf="!data.page?.content.length">{{'call.no.calls.submitted' | translate}}</p>
     <jems-table *ngIf="data.page.content.length"
                [configuration]="data.tableConfiguration"
                [rows]="data.page.content"
@@ -14,7 +14,7 @@
 <ng-template #callActionsCell let-call>
     <button jemsText mat-raised-button color="primary"
             [disabled]="!isOpen(call)"
-            (click)="applyToCall(call.id)">
+            (click)="$event.stopPropagation();applyToCall(call.id)">
         {{'call.table.column.action.apply' | translate}} <mat-icon>arrow_forward</mat-icon>
     </button>
 </ng-template>

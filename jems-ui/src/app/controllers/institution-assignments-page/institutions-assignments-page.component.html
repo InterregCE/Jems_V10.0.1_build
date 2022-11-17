@@ -1,0 +1,62 @@
+<jems-main-page-template *ngIf="data$ | async as data"
+                         [needsCard]="false"
+                         titleKey="topbar.main.controllers">
+
+    <jems-form (discard)="resetForm(data.rows, true)" (save)="saveForm()">
+        <h3>{{'topbar.main.institutions.assignment' | translate}}</h3>
+        <jems-table class="overflow-auto" *ngIf="data.rows.length"
+                    [configuration]="data.tableConfiguration"
+                    [rows]="data.rows"
+                    [totalElements]="data.totalElements"
+                    [pageIndex]="institutionAssignmentStore.newPageIndex$ | async"
+                    (newPageIndex)="institutionAssignmentStore.newPageIndex$.next($event)"
+                    (newPageSize)="institutionAssignmentStore.newPageSize$.next($event)"
+                    (sortRows)="institutionAssignmentStore.newSort$.next($event)">
+        </jems-table>
+    </jems-form>
+
+</jems-main-page-template>
+
+
+<ng-template #statusCell let-institutionAssignmentEntry>
+    <mat-chip-list>
+        <mat-chip  [removable]="false" [selectable]="false">
+            <ng-container *ngIf="institutionAssignmentEntry.partnerStatus">
+                <mat-icon>person</mat-icon>
+                <span>{{'project.application.form.partner.table.status.active' | translate}}</span>
+            </ng-container>
+
+            <ng-container *ngIf="!institutionAssignmentEntry.partnerStatus">
+                <mat-icon>person_off</mat-icon>
+                <span>{{'project.application.form.partner.table.status.inactive' | translate}}</span>
+            </ng-container>
+        </mat-chip>
+    </mat-chip-list>
+</ng-template>
+
+<ng-template #institutionDropdownCell let-institutionAssignmentEntry>
+    <mat-form-field>
+        <mat-select #institutionAssignmentSelect *ngIf="data$ | async as data"
+                    [disabled]="!data.editAssignmentPermission"
+                    placeholder="{{'controller.institutions.assignment.table.institution.column.dropdown.placeholder' | translate}}"
+                    (selectionChange)="onInstitutionChange(institutionAssignmentEntry.index, $event)"
+                    [value]="institutionAssignmentEntry.institutionId"
+                    [matTooltip]="institutionAssignmentSelect.triggerValue"
+                    [ngStyle]="institutionAssignmentEntry.partnerNutsCompatibleInstitutions.length === 0 && {'font-style': 'italic'}">
+            <mat-option *ngIf="institutionAssignmentEntry.partnerNutsCompatibleInstitutions.length > 0"
+                        [value]="null">{{'common.not.applicable.option' | translate}}</mat-option>
+            <mat-option *ngFor="let institution of institutionAssignmentEntry.partnerNutsCompatibleInstitutions"
+                        [value]="institution.id">{{institution.name}}</mat-option>
+        </mat-select>
+    </mat-form-field>
+</ng-template>
+
+<ng-template #partnerNumberCell let-institutionAssignmentEntry>
+    <p>{{institutionAssignmentEntry.partnerRole === 'LEAD_PARTNER' ? 'LP' : 'PP'}}{{institutionAssignmentEntry.partnerSortNumber}}</p>
+</ng-template>
+
+<ng-template #institutionNutsCell let-institutionAssignmentEntry>
+    <p>{{institutionAssignmentEntry.partnerNuts3 ? institutionAssignmentEntry.partnerNuts3 : institutionAssignmentEntry.partnerAddress}}</p>
+</ng-template>
+
+

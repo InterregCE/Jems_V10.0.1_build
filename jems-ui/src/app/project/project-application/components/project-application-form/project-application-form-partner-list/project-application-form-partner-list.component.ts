@@ -10,14 +10,18 @@ import {
 } from '@angular/core';
 import {MatSort} from '@angular/material/sort';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
-import {PageProjectBudgetPartnerSummaryDTO, ProjectCallSettingsDTO, ProjectStatusDTO} from '@cat/api';
+import {
+  PageProjectBudgetPartnerSummaryDTO,
+  ProjectCallSettingsDTO,
+  ProjectStatusDTO
+} from '@cat/api';
 import {ColumnType} from '@common/components/table/model/column-type.enum';
 import {Forms} from '@common/utils/forms';
 import {filter, map, take, tap} from 'rxjs/operators';
 import {MatDialog} from '@angular/material/dialog';
 import '@angular/common/locales/global/de';
 import {ProjectBudgetPartner} from '@project/model/ProjectBudgetPartner';
-import {Observable} from 'rxjs';
+import {combineLatest, Observable} from 'rxjs';
 import {ColumnWidth} from '@common/components/table/model/column-width';
 import {ProjectUtil} from '@project/common/project-util';
 import {FormVisibilityStatusService} from '@project/common/services/form-visibility-status.service';
@@ -68,7 +72,10 @@ export class ProjectApplicationFormPartnerListComponent implements OnInit {
 
   tableConfiguration: TableConfiguration;
 
-  tableRows$: Observable<ProjectBudgetPartner[]>;
+  data$: Observable<{
+    tableRows: ProjectBudgetPartner[];
+    projectCallType: CallTypeEnum;
+  }>;
 
   totalElements = 0;
   callType: CallTypeEnum;
@@ -77,16 +84,18 @@ export class ProjectApplicationFormPartnerListComponent implements OnInit {
   constructor(private dialog: MatDialog,
               private projectStore: ProjectStore,
               private formVisibilityStatusService: FormVisibilityStatusService) {
-    this.projectStore.projectCallType$.subscribe(value => this.callType = value);
   }
 
   ngOnInit(): void {
-    const prefixCallType: string = this.callType === CallTypeEnum.STANDARD ? '' : 'spf.';
-    this.tableRows$ = this.partnerPage$.pipe(
-      tap(pageProjectBudgetPartnerSummaryDTO => this.totalElements = pageProjectBudgetPartnerSummaryDTO.totalElements),
-      map(pageProjectBudgetPartnerSummaryDTO => this.getProjectPartnerSummary(pageProjectBudgetPartnerSummaryDTO))
-    );
+    this.data$ = combineLatest([this.partnerPage$, this.projectStore.projectCallType$])
+      .pipe(
+        tap(data => this.totalElements = data[0].totalElements),
+        tap(data => this.generateTableConfiguration(data[1] === CallTypeEnum.STANDARD ? '' : 'spf.')),
+        map(data => ({tableRows: this.getProjectPartnerSummary(data[0]), projectCallType: data[1]}))
+      );
+  }
 
+  private generateTableConfiguration(prefixCallType: string) {
     this.tableConfiguration = new TableConfiguration({
       routerLink: '..',
       isTableClickable: true,
@@ -99,7 +108,7 @@ export class ProjectApplicationFormPartnerListComponent implements OnInit {
           },
           alternativeValue: 'project.application.form.partner.number.info.auto',
           sortProperty: 'sortNumber',
-          columnWidth : ColumnWidth.NarrowColumn
+          columnWidth: ColumnWidth.NarrowColumn
         },
         {
           displayedColumn: 'project.application.form.partner.table.status',
@@ -123,25 +132,25 @@ export class ProjectApplicationFormPartnerListComponent implements OnInit {
           sortProperty: 'addresses.address.country',
         },
         ...this.formVisibilityStatusService.isVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING) ?
-          [ {
+          [{
             displayedColumn: 'project.partner.coFinancing.total',
             columnType: ColumnType.CustomComponent,
             customCellTemplate: this.budgetCell,
           },] : [],
         ...ProjectUtil.isInModifiableStatusBeforeApproved(this.projectStatus) ?
-        [{
-          displayedColumn: ' ',
-          columnType: ColumnType.CustomComponent,
-          customCellTemplate: this.deletionCell,
-          columnWidth : ColumnWidth.NarrowColumn
-        }] : [],
+          [{
+            displayedColumn: ' ',
+            columnType: ColumnType.CustomComponent,
+            customCellTemplate: this.deletionCell,
+            columnWidth: ColumnWidth.NarrowColumn
+          }] : [],
         ...ProjectUtil.isInModifiableStatusAfterApproved(this.projectStatus) ?
           [{
-          displayedColumn: '   ',
-          columnType: ColumnType.CustomComponent,
-          columnWidth: ColumnWidth.WideColumn,
-          customCellTemplate: this.deactivationCell
-        }] : []
+            displayedColumn: '   ',
+            columnType: ColumnType.CustomComponent,
+            columnWidth: ColumnWidth.WideColumn,
+            customCellTemplate: this.deactivationCell
+          }] : []
       ]
     });
   }

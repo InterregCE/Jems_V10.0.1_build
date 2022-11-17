@@ -9,7 +9,7 @@
             <jems-multi-language-container>
                 <mat-table [jemsTableConfig]="tableConfig"
                            [dataSource]="dataSource" [formArrayName]="constants.SPF_FORM_CONTROL_NAMES.items"
-                           class="staff-budget-table">
+                           class="small-project-fund-table table-condensed">
 
                     <ng-container matColumnDef="description" sticky>
                         <mat-header-cell *matHeaderCellDef>
@@ -183,8 +183,7 @@
                 <jems-form-field-errors
                         [args]="constants.FORM_ERRORS_ARGS.total"
                         [errors]="total.errors"
-                        [messages]="constants.FORM_ERRORS.total"
-                        condensed="true">
+                        [messages]="constants.FORM_ERRORS.total">
                 </jems-form-field-errors>
             </mat-error>
         </ng-container>

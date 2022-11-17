@@ -7,10 +7,11 @@ import io.cloudflight.jems.server.common.entity.extractTranslation
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportExpenditureCostEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportExpenditureCostTranslEntity
+import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportInvestmentEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportLumpSumEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportUnitCostEntity
 import io.cloudflight.jems.server.project.repository.report.toModel
-import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportExpenditureCost
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
 
 fun List<PartnerReportExpenditureCostEntity>.toModel() = map {
     ProjectPartnerReportExpenditureCost(
@@ -18,7 +19,7 @@ fun List<PartnerReportExpenditureCostEntity>.toModel() = map {
         lumpSumId = it.reportLumpSum?.id,
         unitCostId = it.reportUnitCost?.id,
         costCategory = it.costCategory,
-        investmentId = it.investmentId,
+        investmentId = it.reportInvestment?.id,
         contractId = it.procurementId,
         internalReferenceNumber = it.internalReferenceNumber,
         invoiceNumber = it.invoiceNumber,
@@ -42,6 +43,7 @@ fun ProjectPartnerReportExpenditureCost.toEntity(
     reportEntity: ProjectPartnerReportEntity,
     lumpSums: Map<Long, PartnerReportLumpSumEntity>,
     unitCosts: Map<Long, PartnerReportUnitCostEntity>,
+    investments: Map<Long, PartnerReportInvestmentEntity>,
 ) =
     PartnerReportExpenditureCostEntity(
         id = id ?: 0L,
@@ -49,7 +51,7 @@ fun ProjectPartnerReportExpenditureCost.toEntity(
         reportLumpSum = if (lumpSumId != null) lumpSums[lumpSumId] else null,
         reportUnitCost = if (unitCostId != null) unitCosts[unitCostId] else null,
         costCategory = costCategory,
-        investmentId = investmentId,
+        reportInvestment = if (investmentId != null) investments[investmentId] else null,
         procurementId = contractId,
         internalReferenceNumber = internalReferenceNumber,
         invoiceNumber = invoiceNumber,

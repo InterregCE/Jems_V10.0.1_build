@@ -25,6 +25,24 @@ export class Permission {
     PermissionsEnum.ProgrammeDataExportRetrieve
   ];
 
+  public static readonly CONTROLLERS_PERMISSIONS = [
+    PermissionsEnum.InstitutionsRetrieve,
+    PermissionsEnum.InstitutionsUpdate,
+    PermissionsEnum.InstitutionsUnlimited
+  ];
+
+  public static readonly CONTROLLERS_ASSIGNMENT_PERMISSIONS = [
+    PermissionsEnum.InstitutionsAssignmentRetrieve,
+    PermissionsEnum.InstitutionsAssignmentUpdate,
+  ];
+
+  public static readonly PAYMENTS_PERMISSIONS = [
+    PermissionsEnum.PaymentsRetrieve,
+    PermissionsEnum.PaymentsUpdate,
+    PermissionsEnum.AdvancePaymentsRetrieve,
+    PermissionsEnum.AdvancePaymentsUpdate
+  ];
+
   public static readonly DEFAULT_USER_CREATE_AND_COLLABORATE_PERMISSIONS: PermissionNode[] = [
     {
       name: 'project.application.reporting.title',
@@ -51,8 +69,43 @@ export class Permission {
           disabled: true,
           state: PermissionState.HIDDEN,
           hideTooltip: 'permission.create.contracting'
+        },
+        {
+          name: 'project.application.contract.contracts.title',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [],
+          editPermissions: [],
+          disabled: true,
+          state: PermissionState.EDIT,
+          editTooltip: 'permission.inspect.contracting.contracts'
+        },
+        {
+          name: 'project.application.contract.management.title',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [],
+          editPermissions: [],
+          disabled: true,
+          state: PermissionState.EDIT,
+          editTooltip: 'permission.inspect.contracting.management'
+        },
+        {
+          name: 'project.application.contract.reporting.title',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [PermissionsEnum.ProjectCreatorContractingReportingView],
+          editPermissions: [PermissionsEnum.ProjectCreatorContractingReportingEdit],
+          disabled: false,
+          editTooltip: 'permission.inspect.contracting.reporting'
+        },
+        {
+          name: 'project.application.contract.partner.section.title',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [],
+          editPermissions: [],
+          disabled: true,
+          state: PermissionState.EDIT,
+          editTooltip: 'permission.inspect.contracting.partner.section'
         }
-        ]
+      ]
     },
     {
       name: Permission.PROJECT_APPLICATION_FORM_TITLE_NAME,
@@ -134,6 +187,34 @@ export class Permission {
           viewPermissions: [PermissionsEnum.ProjectContractingView],
           editPermissions: [PermissionsEnum.ProjectSetToContracted],
           editTooltip: 'permission.inspect.contracting'
+        },
+        {
+          name: 'project.application.contract.contracts.title',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [PermissionsEnum.ProjectContractsView],
+          editPermissions: [PermissionsEnum.ProjectContractsEdit],
+          editTooltip: 'permission.inspect.contracting.contracts'
+        },
+        {
+          name: 'project.application.contract.management.title',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [PermissionsEnum.ProjectContractingManagementView],
+          editPermissions: [PermissionsEnum.ProjectContractingManagementEdit],
+          editTooltip: 'permission.inspect.contracting.management'
+        },
+        {
+          name: 'project.application.contract.reporting.title',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [PermissionsEnum.ProjectContractingReportingView],
+          editPermissions: [PermissionsEnum.ProjectContractingReportingEdit],
+          editTooltip: 'permission.inspect.contracting.reporting'
+        },
+        {
+          name: 'project.application.contract.partner.section.title',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [PermissionsEnum.ProjectContractingPartnerView],
+          editPermissions: [PermissionsEnum.ProjectContractingPartnerEdit],
+          editTooltip: 'permission.inspect.contracting.partner.section'
         }
       ]
     },
@@ -291,6 +372,30 @@ export class Permission {
       ],
     },
     {
+      name: 'topbar.main.payments',
+      mode: PermissionMode.HIDDEN_VIEW,
+      icon: 'payments',
+      children: [
+        {
+          name: 'permission.payments.projects',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [PermissionsEnum.PaymentsRetrieve],
+          editPermissions: [PermissionsEnum.PaymentsUpdate],
+          viewTooltip: 'permission.payments.view.tooltip',
+          editTooltip: 'permission.payments.edit.tooltip',
+        },
+        {
+          name: 'permission.advance.payments',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [PermissionsEnum.AdvancePaymentsRetrieve],
+          editPermissions: [PermissionsEnum.AdvancePaymentsUpdate],
+          hideTooltip: 'permission.advance.payments.hide.tooltip',
+          viewTooltip: 'permission.advance.payments.view.tooltip',
+          editTooltip: 'permission.advance.payments.edit.tooltip',
+        },
+      ],
+    },
+    {
       name: 'topbar.main.project',
       mode: PermissionMode.HIDDEN_VIEW_EDIT,
       viewPermissions: [PermissionsEnum.ProjectRetrieve],
@@ -321,6 +426,32 @@ export class Permission {
           name: 'topbar.main.programme.data.export',
           mode: PermissionMode.HIDDEN_VIEW,
           viewPermissions: [PermissionsEnum.ProgrammeDataExportRetrieve],
+        },
+      ]
+    },
+    {
+      name: 'topbar.main.controllers',
+      icon: 'rule_folder',
+      children: [
+        {
+          name: 'topbar.main.institutions',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [PermissionsEnum.InstitutionsRetrieve],
+          editPermissions: [PermissionsEnum.InstitutionsUpdate],
+          editTooltip: 'permission.top.bar.institutions.data.edit',
+        },
+        {
+          name: 'permission.top.bar.institutions.all.toggle',
+          mode: PermissionMode.TOGGLE_EDIT,
+          editPermissions: [PermissionsEnum.InstitutionsUnlimited],
+          infoMessage: 'permission.top.bar.institutions.all.info'
+        },
+        {
+          name: 'topbar.main.institutions.assignment',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [PermissionsEnum.InstitutionsAssignmentRetrieve],
+          editPermissions: [PermissionsEnum.InstitutionsAssignmentUpdate],
+          editTooltip: 'permission.top.bar.institutions.assignment.data',
         },
       ]
     },

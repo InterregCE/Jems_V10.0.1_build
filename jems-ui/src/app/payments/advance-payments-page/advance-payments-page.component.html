@@ -1,0 +1,49 @@
+<ng-container *ngIf="data$ | async as data">
+    <div *ngIf="data.userCanView">
+        <h2>{{'payments.advance.payment.header' | translate}}</h2>
+        <p>{{'payments.advance.payment.subheader' | translate}}</p>
+
+        <div class="add-advance-payment-button">
+            <button *ngIf="userCanEdit$ | async"
+                    mat-stroked-button color="primary"
+                    [routerLink]="'/app/payments/advancePayments/create'">
+                + {{'payments.advance.payment.add.button' | translate}}
+            </button>
+        </div>
+        <ng-container>
+            <jems-table id="paymentToProjectsTable"
+                        [configuration]="tableConfiguration"
+                        [rows]="data.page.content"
+                        [totalElements]="data.page?.totalElements"
+                        [pageIndex]="advancePaymentsStore.newPageIndex$ | async"
+                        (newPageIndex)="advancePaymentsStore.newPageIndex$.next($event)"
+                        (newPageSize)="advancePaymentsStore.newPageSize$.next($event)"
+                        (sortRows)="advancePaymentsStore.newSort$.next($event)">
+            </jems-table>
+        </ng-container>
+    </div>
+</ng-container>
+
+<ng-template #partnerRoleCell let-payment>
+    {{ payment.partnerType === 'LEAD_PARTNER' ? 'LP' : 'PP' + payment.partnerNumber }}
+</ng-template>
+
+<ng-template #sourceForAdvanceCell let-payment>
+    <span *ngIf="getSourceType(payment) === SOURCE_TYPE.fund">{{getFundName(payment) | translateBySystemLanguage | async}}</span>
+    <span *ngIf="getSourceType(payment) === SOURCE_TYPE.contribution">{{getContributionName(payment)}}</span>
+</ng-template>
+
+<ng-template #remainingToBeSettledCell let-payment>
+    {{(payment.amountAdvance - payment.amountSettled) | asMoney}}
+</ng-template>
+
+<ng-template #deleteButtonCell let-payment>
+    <button *ngIf="!payment.paymentAuthorized"
+            (click)="$event.stopPropagation(); removeItem(payment.id);"
+            class="delete-button"
+            color="accent" mat-icon-button
+            matTooltip="{{'common.delete.entry.tooltip' | translate}}"
+            type="button">
+        <mat-icon>delete</mat-icon>
+    </button>
+</ng-template>

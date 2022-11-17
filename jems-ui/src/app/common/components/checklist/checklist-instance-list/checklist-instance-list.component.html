@@ -14,7 +14,8 @@
             <button [disabled]="!selectedTemplate"
                     jemsText mat-raised-button color="primary" class="mb-3 mt-3"
                     (click)="createInstance()">
-                + {{'checklists.instance.list.new.button' | translate}}
+                <mat-icon>add</mat-icon>
+                {{'checklists.instance.list.new.button' | translate}}
             </button>
         </span>
 
@@ -38,6 +39,7 @@
                             (sortRows)="onSelectedSortChange($event)"
                             [rows]="selections">
                 </jems-table>
+                <p *ngIf="!selections.length">{{'checklists.instance.selected.tab.empty' | translate}}</p>
             </form>
         </jems-form>
     </mat-tab>
@@ -55,7 +57,8 @@
 <ng-template #visibleCell let-checklist>
     <mat-checkbox class="text-right"
                   [checked]="visibilities.value.includes(checklist.id)"
-                  (change)="onVisibilityChange($event, checklist.id)">
+                  (change)="onVisibilityChange($event, checklist.id)"
+                  [disabled]="!isEditable()">
     </mat-checkbox>
 </ng-template>
 

@@ -63,9 +63,18 @@ import {
   ChecklistInstanceListComponent
 } from '@common/components/checklist/checklist-instance-list/checklist-instance-list.component';
 import {
+  ControlChecklistInstanceListComponent
+} from '@common/components/checklist/control-checklist-instance-list/control-checklist-instance-list.component';
+import {
   ChecklistConsolidatorOptionsComponent
 } from '@common/components/checklist/checklist-consolidator-options/checklist-consolidator-options.component';
 import {MatSliderModule} from '@angular/material/slider';
+import {FileListComponent} from '@common/components/file-list/file-list.component';
+import {JemsRegionsComponent} from '@common/components/jems-regions/jems-regions.component';
+import {JemsNutsInfoComponent} from '@common/components/jems-nuts-info/jems-nuts-info.component';
+import {JemsRegionsTreeComponent} from '@common/components/jems-regions-tree/jems-regions-tree.component';
+import {JemsSelectedRegionsComponent} from '@common/components/jems-selected-regions/jems-selected-regions.component';
+import {FileListTableComponent} from '@common/components/file-list/file-list-table/file-list-table.component';
 
 const modules = [
   CommonModule,
@@ -84,6 +93,8 @@ const modules = [
 const declarations = [
   ProjectApplicationListComponent,
   CallListComponent,
+  FileListComponent,
+  FileListTableComponent,
   TableComponent,
   PaginatorComponent,
   FormComponent,
@@ -131,8 +142,13 @@ const declarations = [
   SecondsToTimePipePipe,
   ChecklistAnswersComponent,
   ChecklistInstanceListComponent,
+  ControlChecklistInstanceListComponent,
   ChecklistConsolidatorOptionsComponent,
-  PublicPageTemplateComponent
+  PublicPageTemplateComponent,
+  JemsRegionsComponent,
+  JemsNutsInfoComponent,
+  JemsRegionsTreeComponent,
+  JemsSelectedRegionsComponent
 ];
 
 const providers = [

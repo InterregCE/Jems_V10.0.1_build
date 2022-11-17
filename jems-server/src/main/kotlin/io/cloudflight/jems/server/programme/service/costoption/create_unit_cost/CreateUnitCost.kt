@@ -6,7 +6,9 @@ import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.audit.service.AuditService
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.authorization.CanUpdateProgrammeSetup
+import io.cloudflight.jems.server.programme.service.costoption.MAX_ALLOWED_UNIT_COSTS
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeUnitCostPersistence
+import io.cloudflight.jems.server.programme.service.costoption.getStaticValidationResults
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.programme.service.costoption.validateCreateUnitCost
 import org.springframework.stereotype.Service
@@ -23,7 +25,7 @@ class CreateUnitCost(
     @Transactional
     override fun createUnitCost(unitCost: ProgrammeUnitCost): ProgrammeUnitCost {
         validateInput(unitCost)
-        validateCreateUnitCost(unitCostToValidate = unitCost, currentCount = persistence.getCount())
+        validateCreateUnitCost(unitCostToValidate = unitCost, currentCount = persistence.getCount(), MAX_ALLOWED_UNIT_COSTS)
         val saved = persistence.createUnitCost(unitCost)
 
         unitCostCreatedAudit(saved).logWith(audit)
@@ -38,8 +40,6 @@ class CreateUnitCost(
 
     private fun validateInput(programmeUnitCost: ProgrammeUnitCost) =
         generalValidator.throwIfAnyIsInvalid(
-            generalValidator.maxLength(programmeUnitCost.name, 50, "name"),
-            generalValidator.maxLength(programmeUnitCost.description, 255, "description"),
-            generalValidator.maxLength(programmeUnitCost.type, 25, "type"),
+            *programmeUnitCost.getStaticValidationResults(generalValidator).toTypedArray(),
         )
 }

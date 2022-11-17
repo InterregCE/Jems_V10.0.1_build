@@ -2,18 +2,24 @@ package io.cloudflight.jems.server.project.controller.report.expenditureCosts
 
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.api.project.dto.partner.budget.ProjectPartnerBudgetOptionsDto
 import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadataDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.BudgetCategoryDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportExpenditureCostDTO
+import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportInvestmentDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportLumpSumDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.ProjectPartnerReportUnitCostDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
-import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportExpenditureCost
-import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportLumpSum
-import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportUnitCost
-import io.cloudflight.jems.server.project.service.report.model.expenditure.ReportBudgetCategory
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportInvestment
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportLumpSum
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportUnitCost
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
+import io.cloudflight.jems.server.project.service.report.partner.expenditure.getAvailableBudgetOptionsForReport.GetAvailableBudgetOptionsForReportInteractor
+import io.cloudflight.jems.server.project.service.report.partner.expenditure.getAvailableInvestmentsForReport.GetAvailableInvestmentsForReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.getAvailableLumpSumsForReport.GetAvailableLumpSumsForReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.getAvailableUnitCostsForReport.GetAvailableUnitCostsForReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.getProjectPartnerReportExpenditure.GetProjectPartnerReportExpenditureInteractor
@@ -58,7 +64,7 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
         currencyCode = "CZK",
         currencyConversionRate = BigDecimal.valueOf(24),
         declaredAmountAfterSubmission = BigDecimal.valueOf(1.3),
-        attachment = ProjectReportFileMetadata(500L, "file.txt", UPLOADED),
+        attachment = JemsFileMetadata(500L, "file.txt", UPLOADED),
     )
 
     private val reportExpenditureCostDto = ProjectPartnerReportExpenditureCostDTO(
@@ -87,7 +93,7 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
 
     private val stream = ByteArray(5).inputStream()
 
-    private val dummyFile = ProjectReportFileMetadata(id = 90L, "file_name.ext", uploaded = UPLOADED)
+    private val dummyFile = JemsFileMetadata(id = 90L, "file_name.ext", uploaded = UPLOADED)
     private val dummyFileDto = ProjectReportFileMetadataDTO(id = 90L, "file_name.ext", uploaded = UPLOADED)
     private val dummyFileExpected = ProjectFile(stream, "file_name.ext", 50L)
     private fun dummyMultipartFile(name: String = "file_name.ext", originalName: String? = null): MultipartFile {
@@ -102,6 +108,7 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
     private val dummyLumpSum = ProjectPartnerReportLumpSum(
         id = 18L,
         lumpSumProgrammeId = 140L,
+        fastTrack = false,
         period = 4,
         cost = BigDecimal.ONE,
         name = setOf(InputTranslation(SystemLanguage.EN, "EN lump sum"))
@@ -118,6 +125,7 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
     private val dummyUnitCost = ProjectPartnerReportUnitCost(
         id = 18L,
         unitCostProgrammeId = 140L,
+        projectDefined = true,
         costPerUnit = BigDecimal.ONE,
         numberOfUnits = BigDecimal.ONE,
         total = BigDecimal.ONE,
@@ -127,9 +135,19 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
         category = ReportBudgetCategory.Multiple
     )
 
+    private val dummyInvestment = ProjectPartnerReportInvestment(
+        id = 256L,
+        investmentId = 678L,
+        workPackageNumber = 6,
+        investmentNumber = 4,
+        title = setOf(InputTranslation(SystemLanguage.EN, "EN investment")),
+        total = BigDecimal.ONE,
+    )
+
     private val dummyUnitCostDTO = ProjectPartnerReportUnitCostDTO(
         id = 18L,
         unitCostProgrammeId = 140L,
+        projectDefined = true,
         costPerUnit = BigDecimal.ONE,
         numberOfUnits = BigDecimal.ONE,
         total = BigDecimal.ONE,
@@ -137,6 +155,29 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
         foreignCurrencyCode = "RON",
         name = setOf(InputTranslation(SystemLanguage.EN, "EN unit cost")),
         category = BudgetCategoryDTO.Multiple
+    )
+
+    private val dummyInvestmentDTO = ProjectPartnerReportInvestmentDTO(
+        id = 256L,
+        investmentId = 678L,
+        workPackageNumber = 6,
+        investmentNumber = 4,
+        title = setOf(InputTranslation(SystemLanguage.EN, "EN investment")),
+    )
+
+    private val dummyBudgetOptions = ProjectPartnerBudgetOptions(
+        officeAndAdministrationOnStaffCostsFlatRate = 20,
+        officeAndAdministrationOnDirectCostsFlatRate = 22,
+        travelAndAccommodationOnStaffCostsFlatRate = 8,
+        staffCostsFlatRate = 1,
+        partnerId = PARTNER_ID
+    )
+
+    private val dummyBudgetOptionsDto = ProjectPartnerBudgetOptionsDto(
+        officeAndAdministrationOnStaffCostsFlatRate = 20,
+        officeAndAdministrationOnDirectCostsFlatRate = 22,
+        travelAndAccommodationOnStaffCostsFlatRate = 8,
+        staffCostsFlatRate = 1,
     )
 
     @MockK
@@ -153,6 +194,12 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
 
     @MockK
     lateinit var getAvailableUnitCostsForReportInteractor: GetAvailableUnitCostsForReportInteractor
+
+    @MockK
+    lateinit var getAvailableInvestmentsForReportInteractor: GetAvailableInvestmentsForReportInteractor
+
+    @MockK
+    lateinit var getAvailableBudgetOptionsForReportInteractor: GetAvailableBudgetOptionsForReportInteractor
 
     @InjectMockKs
     private lateinit var controller: ProjectPartnerReportExpenditureCostsController
@@ -202,6 +249,20 @@ internal class ProjectPartnerReportExpenditureCostsControllerTest : UnitTest() {
         every { getAvailableUnitCostsForReportInteractor.getUnitCosts(PARTNER_ID, 38L) } returns
             listOf(dummyUnitCost)
         assertThat(controller.getAvailableUnitCosts(PARTNER_ID, reportId = 38L)).containsExactly(dummyUnitCostDTO)
+    }
+
+    @Test
+    fun getAvailableInvestments() {
+        every { getAvailableInvestmentsForReportInteractor.getInvestments(PARTNER_ID, 38L) } returns
+            listOf(dummyInvestment)
+        assertThat(controller.getAvailableInvestments(PARTNER_ID, reportId = 38L)).containsExactly(dummyInvestmentDTO)
+    }
+
+    @Test
+    fun getAvailableBudgetOptions() {
+        every { getAvailableBudgetOptionsForReportInteractor.getBudgetOptions(PARTNER_ID, 38L) } returns
+            dummyBudgetOptions
+        assertThat(controller.getAvailableBudgetOptions(PARTNER_ID, reportId = 38L)).isEqualTo(dummyBudgetOptionsDto)
     }
 
 }

@@ -28,6 +28,7 @@ export class ProjectWorkPackagePageStore {
         take(1),
         switchMap(projectId => this.workPackageService.deleteWorkPackage(projectId, workPackageId)),
         tap(() => this.refreshPackages$.next()),
+        tap(() => this.projectStore.investmentChangeEvent$.next()),
         tap(() => Log.info('Deleted work package: ', this, workPackageId))
       );
   }

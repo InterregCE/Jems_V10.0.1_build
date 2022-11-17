@@ -19,6 +19,8 @@ export class ProjectPeriodsSelectComponent {
   control: AbstractControl;
   @Input()
   label: string;
+  @Input()
+  required: boolean;
 
   @Output()
   selectionChanged = new EventEmitter<void>();

@@ -17,6 +17,7 @@ import io.mockk.confirmVerified
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.verify
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeAll
@@ -54,7 +55,8 @@ internal class UpdateBudgetSpfCostsTest : UnitTest() {
             stateAids = emptyList(),
             applicationFormFieldConfigurations = mutableSetOf(),
             preSubmissionCheckPluginKey = null,
-            firstStepPreSubmissionCheckPluginKey = null
+            firstStepPreSubmissionCheckPluginKey = null,
+            costOption = mockk(),
         )
     }
 
@@ -95,6 +97,7 @@ internal class UpdateBudgetSpfCostsTest : UnitTest() {
         ) } returns Unit
         every { budgetCostValidator.validateBaseEntries(spfCostEntries) } returns Unit
         every { budgetCostValidator.validatePricePerUnits(pricePerUnits) } returns Unit
+        every { budgetCostValidator.validateAllowedUnitCosts(emptyList(), emptyList()) } returns Unit
         every { budgetCostValidator.validateBudgetPeriods(periods, validPeriodNumbers) } returns Unit
         every { projectPersistence.getProjectPeriods(projectId) } returns projectPeriods
         every { persistence.deleteAllBudgetSpfCostsExceptFor(partnerId, listBudgetEntriesIds) } returns Unit
@@ -116,6 +119,7 @@ internal class UpdateBudgetSpfCostsTest : UnitTest() {
         verify { projectPersistence.getProjectCallSettings(projectId) }
         verify { budgetCostValidator.validateBaseEntries(spfCostEntries) }
         verify { budgetCostValidator.validatePricePerUnits(pricePerUnits) }
+        verify { budgetCostValidator.validateAllowedUnitCosts(emptyList(), emptyList()) }
         verify { budgetCostValidator.validateBudgetPeriods(periods, validPeriodNumbers) }
         verify { budgetCostValidator.validateAllowedSpfCosts(callSettings) }
         verify { projectPersistence.getProjectPeriods(projectId) }
@@ -201,6 +205,7 @@ internal class UpdateBudgetSpfCostsTest : UnitTest() {
         ) } returns Unit
         every { budgetCostValidator.validateBaseEntries(spfCostEntriesWithInvalidPeriods) } returns Unit
         every { budgetCostValidator.validatePricePerUnits(spfCostEntriesWithInvalidPeriods.map { it.pricePerUnit }) } returns Unit
+        every { budgetCostValidator.validateAllowedUnitCosts(emptyList(), emptyList()) } returns Unit
         every {
             budgetCostValidator.validateBudgetPeriods(budgetPeriods, validPeriodNumbers)
         } throws I18nValidationException()
@@ -221,6 +226,7 @@ internal class UpdateBudgetSpfCostsTest : UnitTest() {
         ) }
         verify { budgetCostValidator.validateBaseEntries(spfCostEntriesWithInvalidPeriods) }
         verify { budgetCostValidator.validatePricePerUnits(spfCostEntriesWithInvalidPeriods.map { it.pricePerUnit }) }
+        verify { budgetCostValidator.validateAllowedUnitCosts(emptyList(), emptyList()) }
         verify { budgetCostValidator.validateBudgetPeriods(budgetPeriods, validPeriodNumbers) }
         verify { projectPersistence.getProjectCallSettings(projectId) }
         verify { budgetCostValidator.validateAllowedSpfCosts(callSettings) }

@@ -7,14 +7,27 @@ enum class UserRolePermission(val key: String, val projectRelated: Boolean = fal
 
     ProjectCreatorCollaboratorsRetrieve("ProjectCreatorCollaboratorsRetrieve", false),
     ProjectCreatorCollaboratorsUpdate("ProjectCreatorCollaboratorsUpdate", false),
+
+    ProjectCreatorContractingReportingView("ProjectCreatorContractingReportingView"),
+    ProjectCreatorContractingReportingEdit("ProjectCreatorContractingReportingEdit"),
     // endregion Creator
 
     // region Monitor
     ProjectReportingView("ProjectReportingView", true),
     ProjectReportingEdit("ProjectReportingEdit", true),
 
+    ProjectContractingPartnerView("ProjectContractingPartnerView", true),
+    ProjectContractingPartnerEdit("ProjectContractingPartnerEdit", true),
+
     ProjectContractingView("ProjectContractingView", true),
     ProjectSetToContracted("ProjectSetToContracted", true),
+
+    ProjectContractingManagementView("ProjectContractingManagementView", true),
+    ProjectContractingManagementEdit("ProjectContractingManagementEdit", true),
+    ProjectContractingReportingView("ProjectContractingReportingView", true),
+    ProjectContractingReportingEdit("ProjectContractingReportingEdit", true),
+    ProjectContractsView("ProjectContractsView", true),
+    ProjectContractsEdit("ProjectContractsEdit", true),
 
     ProjectFormRetrieve("ProjectFormRetrieve", true),
     ProjectFormUpdate("ProjectFormUpdate", true),
@@ -72,6 +85,18 @@ enum class UserRolePermission(val key: String, val projectRelated: Boolean = fal
     ProgrammeSetupRetrieve("ProgrammeSetupRetrieve"),
     ProgrammeSetupUpdate("ProgrammeSetupUpdate"),
 
+    InstitutionsRetrieve("InstitutionsRetrieve"),
+    InstitutionsUpdate("InstitutionsUpdate"),
+    InstitutionsUnlimited("InstitutionsUnlimited"),
+
+    InstitutionsAssignmentRetrieve("InstitutionsAssignmentRetrieve"),
+    InstitutionsAssignmentUpdate("InstitutionsAssignmentUpdate"),
+
+    PaymentsRetrieve("PaymentsRetrieve"),
+    PaymentsUpdate("PaymentsUpdate"),
+    AdvancePaymentsRetrieve("AdvancePaymentsRetrieve"),
+    AdvancePaymentsUpdate("AdvancePaymentsUpdate"),
+
     ProgrammeDataExportRetrieve("ProgrammeDataExportRetrieve"),
 
     UserRetrieve("UserRetrieve"),
@@ -83,7 +108,77 @@ enum class UserRolePermission(val key: String, val projectRelated: Boolean = fal
     RoleCreate("RoleCreate"),
     RoleUpdate("RoleUpdate"),
 
-    AuditRetrieve("AuditRetrieve"),
+    AuditRetrieve("AuditRetrieve");
     // endregion top navigation
 
+    companion object {
+        fun getGlobalProjectRetrievePermissions() = setOf(
+            ProjectRetrieve,
+            ProjectRetrieveEditUserAssignments,
+        )
+
+        fun getProjectMonitorPermissions() = setOf(
+            ProjectFormRetrieve,
+            ProjectFileApplicationRetrieve,
+            ProjectCheckApplicationForm,
+            ProjectAssessmentView,
+            ProjectStatusDecisionRevert,
+            ProjectStatusReturnToApplicant,
+            ProjectStartStepTwo,
+            ProjectFileAssessmentRetrieve,
+            ProjectContractingView,
+            ProjectSetToContracted,
+            ProjectReportingView,
+            ProjectReportingEdit,
+            ProjectModificationView,
+            ProjectOpenModification,
+            ProjectModificationFileAssessmentRetrieve
+        )
+
+       val programmeUserRoleDefaultPermissions = setOf(
+            ProjectReportingView,
+            ProjectContractingPartnerView,
+            ProjectContractingView,
+            ProjectSetToContracted,
+            ProjectContractingManagementView,
+            ProjectContractingReportingView,
+            ProjectContractsView,
+            ProjectFormRetrieve,
+            ProjectFileApplicationRetrieve,
+            ProjectCheckApplicationForm,
+            ProjectAssessmentView,
+            ProjectAssessmentQualityEnter,
+            ProjectAssessmentEligibilityEnter,
+            ProjectStatusDecideEligible,
+            ProjectStatusDecideIneligible,
+            ProjectStatusDecideApproved,
+            ProjectStatusDecideApprovedWithConditions,
+            ProjectStatusDecideNotApproved,
+            ProjectStatusReturnToApplicant,
+            ProjectStartStepTwo,
+            ProjectFileAssessmentRetrieve,
+            ProjectFileAssessmentUpdate,
+            ProjectAssessmentChecklistUpdate,
+            ProjectAssessmentChecklistSelectedRetrieve,
+            ProjectModificationView,
+            ProjectStatusDecideModificationApproved,
+            ProjectStatusDecideModificationNotApproved,
+            ProjectOpenModification,
+            ProjectModificationFileAssessmentRetrieve,
+            ProjectModificationFileAssessmentUpdate,
+            ProjectMonitorCollaboratorsRetrieve,
+            ProjectMonitorCollaboratorsUpdate,
+            ProjectsWithOwnershipRetrieve,
+            CallPublishedRetrieve,
+            ProjectRetrieve,
+            CallRetrieve,
+            ProgrammeSetupRetrieve,
+            InstitutionsRetrieve,
+            InstitutionsAssignmentRetrieve,
+            PaymentsRetrieve,
+            AdvancePaymentsRetrieve,
+            ProgrammeDataExportRetrieve,
+            AuditRetrieve
+        )
+    }
 }

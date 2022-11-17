@@ -44,11 +44,12 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditFormCompone
 
   programmeOutputIndicatorConstants = ProgrammeOutputIndicatorConstants;
   isProgrammeSetupLocked: boolean;
+  isSpecificObjectivesLocked: boolean;
 
   @Input()
   outputIndicator: OutputIndicatorDetailDTO;
   @Input()
-  priorities: ProgrammePriorityDTO[];
+  priorities$: Observable<ProgrammePriorityDTO[]>;
   @Input()
   isCreate: boolean;
   @Output()
@@ -67,14 +68,14 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditFormCompone
   filteredResultIndicators$: Observable<ResultIndicatorDetailDTO[]>;
 
   outputIndicatorForm = this.formBuilder.group({
-    identifier: ['', [Validators.required, Validators.maxLength(10)]],
+    identifier: ['', [Validators.required, Validators.pattern(/(?!^\s+$)^.*$/m), Validators.maxLength(10)]],
     indicatorCode: ['', Validators.maxLength(6)],
     indicatorName: [[]],
     specificObjective: ['', Validators.required],
     measurementUnit: [[]],
     milestone: [0],
     finalTarget: [0],
-    resultIndicatorId: [null]
+    resultIndicatorId: [0]
   });
 
   inputErrorMessages = {
@@ -91,22 +92,26 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditFormCompone
               public programmeEditableStateStore: ProgrammeEditableStateStore,
   ) {
     super(changeDetectorRef, translationService);
+  }
+
+  ngOnInit(): void {
+    super.ngOnInit();
 
     this.programmeEditableStateStore.isProgrammeEditableDependingOnCall$.pipe(
       tap(isProgrammeEditingLimited => this.isProgrammeSetupLocked = isProgrammeEditingLimited),
       untilDestroyed(this)
     ).subscribe();
+
+    this.priorities$.pipe(
+      untilDestroyed(this)
+    ).subscribe(priorities => this.resetForm(priorities.length < 1));
   }
 
-  ngOnInit(): void {
-    super.ngOnInit();
-    this.resetForm();
-  }
-
-  resetForm(): void {
+  resetForm(isProjectSpecificObjectivesLocked: boolean): void {
     this.filteredResultIndicators$ = combineLatest([this.resultIndicators$, this.outputIndicatorForm.controls.specificObjective.valueChanges.pipe(startWith(this.outputIndicator.programmePriorityPolicySpecificObjective))])
       .pipe(
         map(([resultIndicators, specificObjective]) => resultIndicators.filter((it: ResultIndicatorDetailDTO) => it.programmePriorityPolicySpecificObjective === specificObjective) || []),
+        tap(data => data.length < 1 || this.formState === FormState.VIEW ? this.outputIndicatorForm.controls.resultIndicatorId.disable() : this.outputIndicatorForm.controls.resultIndicatorId.enable())
       );
 
     this.outputIndicatorForm.controls.specificObjective.valueChanges.pipe(
@@ -114,13 +119,16 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditFormCompone
       withLatestFrom(this.filteredResultIndicators$),
       tap(([, filteredResultIndicators]) => {
         if (filteredResultIndicators.every(it => it.id !== this.outputIndicatorForm.controls.resultIndicatorId.value)) {
-          this.outputIndicatorForm.controls.resultIndicatorId.setValue(null);
+          this.outputIndicatorForm.controls.resultIndicatorId.setValue(0);
         }
       })
     ).subscribe();
 
     if (this.isCreate) {
       this.changeFormState$.next(FormState.EDIT);
+      if(isProjectSpecificObjectivesLocked) {
+        this.outputIndicatorForm.controls.specificObjective.disable();
+      }
     } else {
       this.outputIndicatorForm.controls.identifier.setValue(this.outputIndicator.identifier);
       this.outputIndicatorForm.controls.indicatorCode.setValue(
@@ -131,7 +139,7 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditFormCompone
       this.outputIndicatorForm.controls.measurementUnit.setValue(this.outputIndicator.measurementUnit);
       this.outputIndicatorForm.controls.milestone.setValue(this.outputIndicator.milestone || 0);
       this.outputIndicatorForm.controls.finalTarget.setValue(this.outputIndicator.finalTarget || 0);
-      this.outputIndicatorForm.controls.resultIndicatorId.setValue(this.outputIndicator.resultIndicatorId);
+      this.outputIndicatorForm.controls.resultIndicatorId.setValue(this.outputIndicator.resultIndicatorId || 0);
       this.changeFormState$.next(FormState.VIEW);
     }
   }
@@ -150,6 +158,8 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditFormCompone
       takeUntil(this.destroyed$),
       filter(yes => !!yes)
     ).subscribe(() => {
+      let resultIndicatorId = this.outputIndicatorForm?.controls?.resultIndicatorId.value;
+      resultIndicatorId = resultIndicatorId ? resultIndicatorId : null;
       if (this.isCreate) {
         this.createOutputIndicator.emit({
           identifier: this.outputIndicatorForm?.controls?.identifier?.value,
@@ -159,7 +169,7 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditFormCompone
           measurementUnit: this.outputIndicatorForm?.controls?.measurementUnit?.value,
           milestone: this.outputIndicatorForm?.controls?.milestone?.value,
           finalTarget: this.outputIndicatorForm?.controls?.finalTarget?.value,
-          resultIndicatorId: this.outputIndicatorForm?.controls?.resultIndicatorId.value
+          resultIndicatorId,
         });
       } else {
         this.updateOutputIndicator.emit({
@@ -171,7 +181,7 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditFormCompone
           measurementUnit: this.outputIndicatorForm?.controls?.measurementUnit?.value,
           milestone: this.outputIndicatorForm?.controls?.milestone?.value,
           finalTarget: this.outputIndicatorForm?.controls?.finalTarget?.value,
-          resultIndicatorId: this.outputIndicatorForm?.controls?.resultIndicatorId.value
+          resultIndicatorId,
         });
       }
     });
@@ -181,7 +191,7 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditFormCompone
     if (this.isCreate) {
       this.cancelCreate.emit();
     } else {
-      this.resetForm();
+      this.resetForm(this.isSpecificObjectivesLocked);
     }
   }
 
@@ -212,5 +222,4 @@ export class ProgrammeOutputIndicatorDetailComponent extends ViewEditFormCompone
       translation: extract(codeRelation),
     } as InputTranslation));
   }
-
 }

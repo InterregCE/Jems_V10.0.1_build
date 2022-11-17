@@ -30,7 +30,7 @@ export class ProjectWorkPackageActivitiesTabConstants {
 
   public static DESCRIPTION: AppControl = {
     name: 'description',
-    maxLength: 1000
+    maxLength: 3000
   };
 
   public static DELIVERABLES: AppControl = {

@@ -3,15 +3,18 @@
                            subTitleKey="project.application.form.section.export"
                            [isVersionedData]="false">
 
-    <div id="export-container" *ngIf="selectedCategory$ | async as selectedCategory">
-        <jems-category-tree id="export-category-tree" class="mr-3"
-                           [categories]="data.categories"
-                           (categorySelected)="onCategoryChanged($event)"
-                           [selectedCategory]="selectedCategory"
-        ></jems-category-tree>
+    <div id="export-container">
         <div id="export-config">
-            <h3>{{'export.header.' + selectedCategory?.type?.toLowerCase() | translate}}</h3>
             <form jemsFormLayout [formGroup]="exportForm">
+                <mat-form-field jemsFormFieldWidth="xx-large">
+                    <mat-label>{{'export.label.plugin' | translate}}</mat-label>
+                    <mat-select formControlName="plugin" required>
+                        <mat-option *ngFor="let plugin of data.availablePlugins" [value]="plugin" role="option">
+                            {{plugin.plugin.name}} {{plugin.plugin.version?.length > 0 ? '- ' + plugin.plugin.version : ''}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+
                 <mat-form-field jemsFormFieldWidth="xx-large">
                     <mat-label>{{'export.label.project.version' | translate}}</mat-label>
                     <mat-select formControlName="version">
@@ -47,8 +50,8 @@
                 </mat-form-field>
             </form>
             <jems-pending-button jemsText
-                                [disabled]="!selectedCategory || !exportLanguage || !inputLanguage || !data.projectId"
-                                (click)="exportData(selectedCategory, exportLanguage, inputLanguage, data.projectId, getVersion(data.versions))"
+                                [disabled]="!exportForm.valid || !exportLanguage || !inputLanguage || !data.projectId"
+                                (click)="exportData(exportLanguage, inputLanguage, data.projectId, getVersion(data.versions))"
                                 [pending]="isExportingInProgress$ | async">
                 {{'export.label.export.button' | translate}}
             </jems-pending-button>

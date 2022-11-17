@@ -21,7 +21,7 @@
                                         [matTooltip]="select.triggerValue"
                                         [formControlName]="constants.FORM_CONTROL_NAMES.unitCost">
                                     <mat-option *ngFor="let unitCost of availableUnitCosts" [value]="unitCost">
-                                        {{ unitCost.name| translateByInputLanguage | async}}
+                                        {{ (unitCost.isProjectUnitCost ? 'E.2.1_' : '') + (unitCost.name| translateByInputLanguage | async)}}
                                     </mat-option>
                                 </mat-select>
                                 <mat-error>

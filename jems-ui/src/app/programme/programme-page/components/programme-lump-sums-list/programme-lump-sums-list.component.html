@@ -1,9 +1,3 @@
-<jems-alert
-        [show]="!!lumpSum"
-        [type]="Alert.SUCCESS">
-    <p>{{'lump.sum.save.success' | translate: {lumpSum: lumpSum} }}</p>
-</jems-alert>
-
 <p *ngIf="!dataSource.data.length">{{'lump.sum.empty.list' | translate}}</p>
 <jems-multi-language-container [switchButtonsVisible]="!!dataSource.data.length" jemsNoWidthLimit>
     <mat-table jemsNoWidthLimit *ngIf="dataSource.data.length" [dataSource]="dataSource">
@@ -22,9 +16,37 @@
             <mat-cell *matCellDef="let element" class="justify-end">{{ element?.cost | asMoney }}</mat-cell>
         </ng-container>
 
+        <ng-container matColumnDef="delete" *ngIf="permissionService.hasPermission(PermissionsEnum.ProgrammeSetupUpdate)">
+            <mat-header-cell *matHeaderCellDef
+                    class="justify-end">
+                <span>{{ 'common.delete.entry.tooltip' | translate }}</span>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let element" class="justify-end">
+                <button mat-icon-button color="accent"
+                        type="button"
+                        [disabled]="isProgrammeSetupRestricted() | async"
+                        (click)="deleteLumpSum(element);$event.stopPropagation();"
+                        [matTooltip]="'common.delete.entry.tooltip' | translate">
+                    <mat-icon>delete</mat-icon>
+                </button>
+            </mat-cell>
+
+        </ng-container>
+
         <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
         <mat-row *matRowDef="let row; columns: displayedColumns;"
                  [routerLink]="['lumpSum', 'detail', row.id]"></mat-row>
-
     </mat-table>
+    <jems-alert *ngIf="lumpSumDeleteError$ | async as error"
+                [show]="!!error"
+                [type]="Alert.ERROR"
+                (closed)="lumpSumDeleteError$.next(null);">
+        <jems-api-error-content [error]="error"></jems-api-error-content>
+    </jems-alert>
+    <jems-alert
+            [show]="lumpSumDeleteSuccess$ | async"
+            [type]="Alert.SUCCESS">
+        <p>{{'lump.sum.delete.success' | translate}}</p>
+    </jems-alert>
+
 </jems-multi-language-container>

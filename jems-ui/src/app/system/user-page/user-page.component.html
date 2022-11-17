@@ -18,7 +18,7 @@
     <jems-filter-template *ngIf="data$ | async as data"
                          [formGroup]="filterForm"
                          [isThereAnyActiveFilter]="isThereAnyActiveFilter()">
-        <div alignItems="start" jemsMultiColumnRow>
+        <div alignItems="start" jemsMultiColumnRow display="block">
             <jems-filter-text-input
                     formControlName="name"
                     label="user.detail.field.name">
@@ -36,6 +36,7 @@
 
             <jems-filter-autocomplete-input
                     [options]="data.roles"
+                    [hasPartialLockingOfValues]="false"
                     formControlName="roles"
                     label="user.detail.field.role"
                     placeholder="user.detail.search.for.roles">
@@ -44,6 +45,7 @@
             <jems-filter-autocomplete-input
                     [filterable]="false"
                     [options]="data.userStatuses"
+                    [hasPartialLockingOfValues]="false"
                     formControlName="userStatuses"
                     label="user.detail.field.status"
                     placeholder="user.detail.search.for.status">

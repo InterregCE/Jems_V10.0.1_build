@@ -1,5 +1,6 @@
 import {Injectable} from '@angular/core';
 import {
+  ControllerInstitutionsApiService,
   PageProjectPartnerReportSummaryDTO,
   ProjectPartnerReportService,
   ProjectPartnerReportSummaryDTO,
@@ -15,17 +16,22 @@ import {Log} from '@common/utils/log';
 import {Tables} from '@common/utils/tables';
 import {PermissionService} from 'src/app/security/permissions/permission.service';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
+import {
+  ProgrammeEditableStateStore
+} from '../../../programme/programme-page/services/programme-editable-state-store.service';
 
 @Injectable({providedIn: 'root'})
 export class PartnerReportPageStore {
   public static PARTNER_REPORT_DETAIL_PATH = '/reporting/';
 
-  partnerReports$: Observable<ProjectPartnerReportSummaryDTO[]>;
+  partnerReports$: Observable<PageProjectPartnerReportSummaryDTO>;
   partnerSummary$: Observable<ProjectPartnerSummaryDTO>;
   partnerReportLevel$: Observable<string>;
   partnerId$: Observable<string | number | null>;
-  userCanViewReports$: Observable<boolean>;
-  userCanEditReports$: Observable<boolean>;
+  userCanViewReport$: Observable<boolean>;
+  userCanEditReport$: Observable<boolean>;
+  institutionUserCanViewControlReports$: Observable<boolean>;
+  institutionUserCanEditControlReports$: Observable<boolean>;
 
   newPageSize$ = new BehaviorSubject<number>(Tables.DEFAULT_INITIAL_PAGE_SIZE);
   newPageIndex$ = new BehaviorSubject<number>(Tables.DEFAULT_INITIAL_PAGE_INDEX);
@@ -36,38 +42,51 @@ export class PartnerReportPageStore {
               private partnerProjectStore: ProjectPartnerStore,
               private projectPartnerReportService: ProjectPartnerReportService,
               private projectPartnerUserCollaboratorService: ProjectPartnerUserCollaboratorService,
-              private permissionService: PermissionService) {
+              private permissionService: PermissionService,
+              private programmeEditableStateStore: ProgrammeEditableStateStore,
+              private controllerInstitutionService: ControllerInstitutionsApiService) {
     this.partnerId$ = this.partnerId();
     this.partnerReports$ = this.partnerReports();
     this.partnerSummary$ = this.partnerSummary();
     this.partnerReportLevel$ = this.partnerReportLevel();
-    this.userCanViewReports$ = this.userCanViewReports();
-    this.userCanEditReports$ = this.userCanEditReports();
+    this.userCanViewReport$ = this.userCanViewReports();
+    this.userCanEditReport$ = this.userCanEditReports();
+    this.institutionUserCanViewControlReports$ = this.institutionUserCanViewControlReports();
+    this.institutionUserCanEditControlReports$ = this.institutionUserCanEditControlReports();
   }
 
   createPartnerReport(): Observable<ProjectPartnerReportSummaryDTO> {
     return this.partnerId$
       .pipe(
-        switchMap(partnerId => this.projectPartnerReportService.createProjectPartnerReport(partnerId as any)),
+        switchMap((partnerId) => this.projectPartnerReportService.createProjectPartnerReport(partnerId as any)),
         tap(() => this.refreshReports$.next()),
         tap(created => Log.info('Created partnerReport:', this, created)),
       );
   }
 
-  private partnerReports(): Observable<ProjectPartnerReportSummaryDTO[]> {
+  deletePartnerReport(reportId: number) {
+    return this.partnerId$
+      .pipe(
+        switchMap((partnerId) => this.projectPartnerReportService.deleteProjectPartnerReport(partnerId as number, reportId)),
+        tap(() => {
+          Log.info('Partner report deleted');
+          this.refreshReports$.next();
+        }),
+      );
+  }
+
+  private partnerReports(): Observable<PageProjectPartnerReportSummaryDTO> {
     return combineLatest([
       this.partnerId$,
-      this.partnerProjectStore.lastContractedVersionASObservable(),
       this.newPageIndex$,
       this.newPageSize$,
       this.refreshReports$.pipe(startWith(null)),
     ])
       .pipe(
-        filter(([partnerId, lastContractedVersion, pageIndex, pageSize]) => !!partnerId),
-        switchMap(([partnerId, lastContractedVersion, pageIndex, pageSize]) =>
+        filter(([partnerId]) => !!partnerId),
+        switchMap(([partnerId, pageIndex, pageSize]) =>
           this.projectPartnerReportService.getProjectPartnerReports(Number(partnerId), pageIndex, pageSize, `number,desc`)),
-        map((data: PageProjectPartnerReportSummaryDTO) => data.content),
-        tap((data: ProjectPartnerReportSummaryDTO[]) => Log.info('Fetched partner reports for partner:', this, data))
+        tap((data: PageProjectPartnerReportSummaryDTO) => Log.info('Fetched partner reports for partner:', this, data))
       );
   }
 
@@ -76,7 +95,7 @@ export class PartnerReportPageStore {
       this.partnerId$,
       this.partnerProjectStore.partnerReportSummaries$
     ]).pipe(
-      filter(([partnerId, partnerSummaries]) => !!partnerId),
+      filter(([partnerId]) => !!partnerId),
       map(([partnerId, partnerSummaries]) =>
         partnerSummaries.find(value => value.id === Number(partnerId)) || {} as any
     ));
@@ -92,8 +111,32 @@ export class PartnerReportPageStore {
       );
   }
 
+  private institutionUserControlReportLevel(): Observable<string> {
+    return this.partnerId$
+      .pipe(
+        filter((partnerId) => !!partnerId),
+        switchMap((partnerId) => this.controllerInstitutionService.getControllerUserAccessLevelForPartner(Number(partnerId))),
+        map((level: string) => level),
+        shareReplay(1)
+      );
+  }
+
   private partnerId(): Observable<number | string | null> {
     return this.routingService.routeParameterChanges(PartnerReportPageStore.PARTNER_REPORT_DETAIL_PATH, 'partnerId');
+  }
+
+  private institutionUserCanViewControlReports(): Observable<boolean> {
+    return this.institutionUserControlReportLevel()
+      .pipe(
+        map((level) => level === 'View')
+      );
+  }
+
+  private institutionUserCanEditControlReports(): Observable<boolean> {
+    return this.institutionUserControlReportLevel()
+      .pipe(
+        map((level) => level === 'Edit')
+      );
   }
 
   private userCanEditReports(): Observable<boolean> {
@@ -109,7 +152,7 @@ export class PartnerReportPageStore {
   private userCanViewReports(): Observable<boolean> {
     return combineLatest([
       this.partnerReportLevel(),
-      this.userCanEditReports$,
+      this.permissionService.hasPermission(PermissionsEnum.ProjectReportingEdit),
       this.permissionService.hasPermission(PermissionsEnum.ProjectReportingView)
     ])
       .pipe(

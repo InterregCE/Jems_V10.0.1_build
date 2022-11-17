@@ -129,14 +129,16 @@ class GetBudgetFundsPerPeriodInteractorTest : UnitTest() {
             ),
         ),
         lumpSums = listOf(
-            ProgrammeLumpSum(splittingAllowed = true),
+            ProgrammeLumpSum(splittingAllowed = true, fastTrack = false),
         ),
         unitCosts = listOf(
-            ProgrammeUnitCost(isOneCostCategory = true),
+            ProgrammeUnitCost(projectId = null, isOneCostCategory = true),
         ),
         applicationFormFieldConfigurations = mutableSetOf(),
         preSubmissionCheckPluginKey = null,
-        firstStepPreSubmissionCheckPluginKey = null
+        firstStepPreSubmissionCheckPluginKey = null,
+        projectDefinedUnitCostAllowed = false,
+        projectDefinedLumpSumAllowed = true,
     )
 
     private val spfCallDetail = CallDetail(
@@ -181,7 +183,9 @@ class GetBudgetFundsPerPeriodInteractorTest : UnitTest() {
         ),
         applicationFormFieldConfigurations = mutableSetOf(),
         preSubmissionCheckPluginKey = null,
-        firstStepPreSubmissionCheckPluginKey = null
+        firstStepPreSubmissionCheckPluginKey = null,
+        projectDefinedUnitCostAllowed = false,
+        projectDefinedLumpSumAllowed = true,
     )
 
     @MockK
@@ -217,7 +221,8 @@ class GetBudgetFundsPerPeriodInteractorTest : UnitTest() {
                     ProjectPeriodBudget(255, 0, 0, BigDecimal.ZERO, BudgetCostsDetail(),true)
                 ),
                 totalPartnerBudget = BigDecimal.ZERO,
-                totalPartnerBudgetDetail = BudgetCostsDetail()
+                totalPartnerBudgetDetail = BudgetCostsDetail(),
+                costType = ProjectPartnerCostType.Management
             ),
         )
 
@@ -280,7 +285,8 @@ class GetBudgetFundsPerPeriodInteractorTest : UnitTest() {
                     ProjectPeriodBudget(255, 0, 0, BigDecimal.ZERO, BudgetCostsDetail(), true)
                 ),
                 totalPartnerBudget = 562.5.toScaledBigDecimal(),
-                totalPartnerBudgetDetail = BudgetCostsDetail()
+                totalPartnerBudgetDetail = BudgetCostsDetail(),
+                costType = ProjectPartnerCostType.Management
             ),
         )
 
@@ -372,7 +378,8 @@ class GetBudgetFundsPerPeriodInteractorTest : UnitTest() {
                     0.toScaledBigDecimal(),
                 ),
                 totalPartnerBudget = 56826.22.toBigDecimal(),
-                totalPartnerBudgetDetail = BudgetCostsDetail()
+                totalPartnerBudgetDetail = BudgetCostsDetail(),
+                costType = ProjectPartnerCostType.Management
             ),
             ProjectPartnerBudgetPerPeriod(
                 partner2,
@@ -390,7 +397,8 @@ class GetBudgetFundsPerPeriodInteractorTest : UnitTest() {
                     0.toScaledBigDecimal(),
                 ),
                 totalPartnerBudget = 56826.22.toBigDecimal(),
-                totalPartnerBudgetDetail = BudgetCostsDetail()
+                totalPartnerBudgetDetail = BudgetCostsDetail(),
+                costType = ProjectPartnerCostType.Management
             )
         )
 
@@ -513,7 +521,8 @@ class GetBudgetFundsPerPeriodInteractorTest : UnitTest() {
                     5555.56.toScaledBigDecimal(),
                 ),
                 totalPartnerBudget = 56826.22.toBigDecimal(),
-                totalPartnerBudgetDetail = BudgetCostsDetail()
+                totalPartnerBudgetDetail = BudgetCostsDetail(),
+                costType = ProjectPartnerCostType.Management
             ),
             ProjectPartnerBudgetPerPeriod(
                 partner2,
@@ -531,7 +540,8 @@ class GetBudgetFundsPerPeriodInteractorTest : UnitTest() {
                     0.toScaledBigDecimal(),
                 ),
                 totalPartnerBudget = 56826.22.toBigDecimal(),
-                totalPartnerBudgetDetail = BudgetCostsDetail()
+                totalPartnerBudgetDetail = BudgetCostsDetail(),
+                costType = ProjectPartnerCostType.Management
             )
         )
 
@@ -667,14 +677,15 @@ class GetBudgetFundsPerPeriodInteractorTest : UnitTest() {
                 spfBeneficiary,
                 mutableListOf(),
                 totalPartnerBudget = BigDecimal.ZERO,
-                totalPartnerBudgetDetail = BudgetCostsDetail()
-
+                totalPartnerBudgetDetail = BudgetCostsDetail(),
+                costType = ProjectPartnerCostType.Spf
             ),
             ProjectPartnerBudgetPerPeriod(
                 spfBeneficiary,
                 mutableListOf(),
                 totalPartnerBudget = BigDecimal.ZERO,
-                totalPartnerBudgetDetail = BudgetCostsDetail()
+                totalPartnerBudgetDetail = BudgetCostsDetail(),
+                costType = ProjectPartnerCostType.Spf
             )
         )
 
@@ -774,14 +785,15 @@ class GetBudgetFundsPerPeriodInteractorTest : UnitTest() {
                 spfBeneficiary,
                 mutableListOf(),
                 totalPartnerBudget = BigDecimal.ZERO,
-                totalPartnerBudgetDetail = BudgetCostsDetail()
-
+                totalPartnerBudgetDetail = BudgetCostsDetail(),
+                costType = ProjectPartnerCostType.Spf
             ),
             ProjectPartnerBudgetPerPeriod(
                 spfBeneficiary,
                 mutableListOf(),
                 totalPartnerBudget = BigDecimal.ZERO,
-                totalPartnerBudgetDetail = BudgetCostsDetail()
+                totalPartnerBudgetDetail = BudgetCostsDetail(),
+                costType = ProjectPartnerCostType.Spf
             )
         )
 

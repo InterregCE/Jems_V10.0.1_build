@@ -4,6 +4,7 @@ import io.cloudflight.jems.api.project.dto.file.ProjectFileCategoryDTO
 import io.cloudflight.jems.api.project.dto.file.ProjectFileCategoryTypeDTO
 import io.cloudflight.jems.api.project.dto.file.ProjectFileMetadataDTO
 import io.cloudflight.jems.server.common.CommonDTOMapper
+import io.cloudflight.jems.server.project.controller.report.sizeToString
 import io.cloudflight.jems.server.project.service.file.model.ProjectFileCategory
 import io.cloudflight.jems.server.project.service.file.model.ProjectFileCategoryType
 import io.cloudflight.jems.server.project.service.file.model.ProjectFileMetadata
@@ -30,6 +31,7 @@ abstract class ProjectFileMapper {
             fileMetadata.projectId,
             fileMetadata.name,
             fileMetadata.size,
+            fileMetadata.size.sizeToString(),
             fileMetadata.uploadedAt,
             fileMetadata.uploadedBy.toDto(),
             fileMetadata.description

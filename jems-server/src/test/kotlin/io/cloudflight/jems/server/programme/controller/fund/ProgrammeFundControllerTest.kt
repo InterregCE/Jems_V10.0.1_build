@@ -9,7 +9,7 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.programme.service.fund.get_fund.GetFundInteractor
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
-import io.cloudflight.jems.server.programme.service.fund.update_funds.UpdateFundsInteractor
+import io.cloudflight.jems.server.programme.service.fund.updateFunds.UpdateFundsInteractor
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK

@@ -8,7 +8,6 @@ import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.authorization.CanUpdateProgrammeSetup
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeLumpSumPersistence
-import io.cloudflight.jems.server.programme.service.costoption.UpdateLumpSumWhenProgrammeSetupRestricted
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.costoption.validateUpdateLumpSum
 import io.cloudflight.jems.server.programme.service.info.isSetupLocked.IsProgrammeSetupLockedInteractor
@@ -35,6 +34,9 @@ class UpdateLumpSum(
         if (isProgrammeSetupLocked.isLocked()) {
             lumpSumUpdateRestrictions(existingLumpSum = existingLumpSum, updatedLumpSum = lumpSum)
         }
+        if (isProgrammeSetupLocked.isAnyReportCreated()) {
+            fastTrackLumpSumUpdateRestrictions(existingLumpSum = existingLumpSum, updatedLumpSum = lumpSum)
+        }
         val saved = persistence.updateLumpSum(lumpSum)
 
         lumpSumChangedAudit(saved).logWith(audit)
@@ -53,6 +55,11 @@ class UpdateLumpSum(
             existingLumpSum.phase != updatedLumpSum.phase ||
             existingLumpSum.categories != updatedLumpSum.categories
         )
+            throw UpdateLumpSumWhenProgrammeSetupRestricted()
+    }
+
+    private fun fastTrackLumpSumUpdateRestrictions(existingLumpSum: ProgrammeLumpSum, updatedLumpSum: ProgrammeLumpSum) {
+        if (existingLumpSum.fastTrack != updatedLumpSum.fastTrack)
             throw UpdateLumpSumWhenProgrammeSetupRestricted()
     }
 

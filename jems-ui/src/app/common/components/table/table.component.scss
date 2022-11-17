@@ -3,6 +3,14 @@
   width: 100%;
 }
 
+table {
+  width: 100% !important;
+}
+
+#table-wrapper {
+  overflow: auto;
+}
+
 mat-header-cell,
 mat-cell,
 mat-footer-cell {
@@ -44,4 +52,27 @@ mat-footer-cell {
 }
 .extra-wide-column-width {
   min-width: 20rem;
+}
+
+.chip-column-width {
+  min-width: 9rem;
+  max-width: 12rem;
+}
+
+.small-column-width {
+  min-width: 4rem;
+  max-width: 7rem;
+}
+
+.medium-column-width {
+  min-width: 5rem;
+  max-width: 9rem;
+}
+
+.medium-column-no-limit {
+  min-width: 5rem;
+}
+
+.multi-languages-table {
+  background: initial;
 }

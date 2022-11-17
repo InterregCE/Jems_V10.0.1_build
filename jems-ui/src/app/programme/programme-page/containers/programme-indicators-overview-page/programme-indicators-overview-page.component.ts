@@ -1,13 +1,14 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {combineLatest, Subject} from 'rxjs';
+import {combineLatest, Observable, Subject} from 'rxjs';
 import {MatSort} from '@angular/material/sort';
-import {mergeMap, map, startWith, tap} from 'rxjs/operators';
-import {Tables} from '../../../../common/utils/tables';
-import {Log} from '../../../../common/utils/log';
+import {map, mergeMap, startWith, tap} from 'rxjs/operators';
+import {Tables} from '@common/utils/tables';
+import {Log} from '@common/utils/log';
 import {IndicatorsStore} from '../../services/indicators-store.service';
 import {ProgrammeIndicatorOutputService, ProgrammeIndicatorResultService, UserRoleDTO} from '@cat/api';
 import {BaseComponent} from '@common/components/base-component';
 import {ProgrammePageSidenavService} from '../../services/programme-page-sidenav.service';
+import {ProgrammeEditableStateStore} from '../../services/programme-editable-state-store.service';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
 @Component({
@@ -19,16 +20,20 @@ import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 export class ProgrammeIndicatorsOverviewPageComponent extends BaseComponent {
 
   PermissionsEnum = PermissionsEnum;
-  outputIndicator$ = this.indicatorsStore.outputIndicator();
-  resultIndicator$ = this.indicatorsStore.resultIndicator();
 
   newOutputIndicatorPageSize$ = new Subject<number>();
   newOutputIndicatorPageIndex$ = new Subject<number>();
   newOutputIndicatorSort$ = new Subject<Partial<MatSort>>();
+  outputIndicatorDeleted$ = new Subject<void>();
 
   newResultIndicatorPageSize$ = new Subject<number>();
   newResultIndicatorPageIndex$ = new Subject<number>();
   newResultIndicatorSort$ = new Subject<Partial<MatSort>>();
+  resultIndicatorDeleted$ = new Subject<void>();
+
+  isProgrammeSetupRestricted(): Observable<boolean> {
+    return this.programmeEditableStateStore.isProgrammeEditableDependingOnCall$;
+  }
 
   currentOutputIndicatorPage$ =
     combineLatest([
@@ -38,7 +43,8 @@ export class ProgrammeIndicatorsOverviewPageComponent extends BaseComponent {
         startWith(Tables.DEFAULT_INITIAL_SORT),
         map(sort => sort?.direction ? sort : Tables.DEFAULT_INITIAL_SORT),
         map(sort => `${sort.active},${sort.direction}`)
-      )
+      ),
+      this.outputIndicatorDeleted$.pipe(startWith(null))
     ])
       .pipe(
         mergeMap(([pageIndex, pageSize, sort]) =>
@@ -54,7 +60,8 @@ export class ProgrammeIndicatorsOverviewPageComponent extends BaseComponent {
         startWith(Tables.DEFAULT_INITIAL_SORT),
         map(sort => sort?.direction ? sort : Tables.DEFAULT_INITIAL_SORT),
         map(sort => `${sort.active},${sort.direction}`)
-      )
+      ),
+      this.resultIndicatorDeleted$.pipe(startWith(null))
     ])
       .pipe(
         mergeMap(([pageIndex, pageSize, sort]) =>
@@ -65,7 +72,8 @@ export class ProgrammeIndicatorsOverviewPageComponent extends BaseComponent {
   constructor(private indicatorsStore: IndicatorsStore,
               private programmeIndicatorOutputService: ProgrammeIndicatorOutputService,
               private programmeIndicatorResultService: ProgrammeIndicatorResultService,
-              private programmePageSidenavService: ProgrammePageSidenavService) {
+              private programmePageSidenavService: ProgrammePageSidenavService,
+              private programmeEditableStateStore: ProgrammeEditableStateStore) {
     super();
   }
 

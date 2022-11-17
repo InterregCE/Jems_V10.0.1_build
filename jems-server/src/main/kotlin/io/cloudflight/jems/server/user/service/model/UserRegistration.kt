@@ -5,4 +5,5 @@ data class UserRegistration (
     val name: String,
     val surname: String,
     val password: String,
+    val captcha: String
 )

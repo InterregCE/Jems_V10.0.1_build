@@ -5,14 +5,18 @@
     <label *ngIf="helpdeskUrl || helpdeskEmail" class="help-category">{{'topbar.help.title' | translate}}</label>
     <ng-container *ngIf="helpdeskUrl">
         <a mat-menu-item
-           [href]="helpdeskUrl" target="_blank" rel="noopener">
+           [href]="helpdeskUrl" matTooltip="{{'topbar.help.legal.helpdesk' | translate}}" target="_blank" rel="noopener">
             {{'topbar.help.legal.helpdesk' | translate}}
         </a>
     </ng-container>
-    <a *ngIf="helpdeskEmail" mat-menu-item>{{'topbar.help.contact' | translate}} <a href="mailto:{{ helpdeskEmail }}">{{ helpdeskEmail }}</a></a>
+    <a *ngIf="helpdeskEmail" mat-menu-item matTooltip="{{'topbar.help.contact' | translate}}">
+        {{'topbar.help.contact' | translate}} <a href="mailto:{{ helpdeskEmail }}">{{ helpdeskEmail }}</a>
+    </a>
     <label class="help-category">{{'topbar.help.legal' | translate}}</label>
-    <a mat-menu-item [href]="termsAndPrivacyPolicyUrl">{{'topbar.help.legal.terms.and.privacy' | translate}}</a>
-    <a mat-menu-item [href]="accessibilityStatementUrl">{{'topbar.help.legal.accessibility' | translate}}</a>
+    <a mat-menu-item [href]="termsAndPrivacyPolicyUrl" matTooltip="{{'topbar.help.legal.terms.and.privacy' | translate}}">
+        {{'topbar.help.legal.terms.and.privacy' | translate}}</a>
+    <a mat-menu-item [href]="accessibilityStatementUrl" matTooltip="{{'topbar.help.legal.accessibility' | translate}}">
+        {{'topbar.help.legal.accessibility' | translate}}</a>
     <ng-container *ngIf="version">
         <label class="help-category">{{'topbar.help.version' | translate}}</label>
         <a disabled mat-menu-item>{{ version }}</a>

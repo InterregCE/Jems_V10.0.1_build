@@ -17,6 +17,7 @@ import {FormService} from '@common/components/section/form/form.service';
 import {BaseComponent} from '@common/components/base-component';
 import {catchError, tap} from 'rxjs/operators';
 import {ProjectStore} from '../../../containers/project-application-detail/services/project-store.service';
+import {ProjectApplicationFormStore} from '@project/project-application/containers/project-application-form-page/services/project-application-form-store.service';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {Log} from '@common/utils/log';
 
@@ -59,6 +60,7 @@ export class ProjectApplicationFormManagementDetailComponent extends BaseCompone
   constructor(private formBuilder: FormBuilder,
               private formService: FormService,
               private projectStore: ProjectStore,
+              private projectApplicationFormStore: ProjectApplicationFormStore,
               private projectDescriptionService: ProjectDescriptionService) {
     super();
   }
@@ -77,6 +79,7 @@ export class ProjectApplicationFormManagementDetailComponent extends BaseCompone
     this.projectDescriptionService.updateProjectManagement(this.projectId, this.createInputProjectManagement())
       .pipe(
         tap(saved => Log.info('Updated project management:', this, saved)),
+        tap(saved => this.projectApplicationFormStore.savedProjectManagement$.next(saved)),
         tap(() => this.formService.setSuccess('project.application.form.save.success')),
         catchError(error => this.formService.setError(error))
       ).subscribe();

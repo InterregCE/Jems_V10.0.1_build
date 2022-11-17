@@ -28,3 +28,10 @@ body {
   margin: 0;
   image-rendering: auto;
 }
+
+// For past commpatibility with changes to the translations
+// where we had no line breaks, but instead a separate entry per each list item.
+// If those are left empty now in the translations, they no longer will take space in the layout.
+ul li:empty {
+  display: none;
+}

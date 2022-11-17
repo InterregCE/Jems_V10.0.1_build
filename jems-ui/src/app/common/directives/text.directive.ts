@@ -32,7 +32,7 @@ export class TextDirective implements OnInit {
     if (this.minWidth) {
       this.el.nativeElement.style.minWidth = '5em';
     }
-    this.el.nativeElement.style.maxWidth = '100%';
+    this.el.nativeElement.style.maxWidth = 'auto';
     new ResizeObserver(res => {
       if (this.maxWidth && this.el.nativeElement.getBoundingClientRect().width > this.maxWidth) {
         this.el.nativeElement.style.width = `${this.maxWidth}px`;

@@ -8,6 +8,7 @@ data class ProjectFileMetadataDTO(
     val projectId: Long,
     val name: String,
     val size: Long,
+    val sizeString: String,
     val uploadedAt: ZonedDateTime,
     val uploadedBy: OutputUser,
     val description: String?

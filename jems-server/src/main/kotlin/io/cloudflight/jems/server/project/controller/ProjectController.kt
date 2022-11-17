@@ -12,7 +12,9 @@ import io.cloudflight.jems.api.project.dto.ProjectVersionDTO
 import io.cloudflight.jems.api.project.dto.budget.ProjectPartnerBudgetDTO
 import io.cloudflight.jems.api.project.dto.cofinancing.ProjectCoFinancingOverviewDTO
 import io.cloudflight.jems.api.project.dto.cofinancing.ProjectPartnerBudgetCoFinancingDTO
+import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.api.project.dto.workpackage.activity.WorkPackageActivitySummaryDTO
+import io.cloudflight.jems.server.payments.service.advance.getContractedProjects.GetContractedProjectsInteractor
 import io.cloudflight.jems.server.project.controller.workpackage.toInvestmentSummaryDTOs
 import io.cloudflight.jems.server.project.controller.workpackage.toSummariesDto
 import io.cloudflight.jems.server.project.service.ProjectService
@@ -42,7 +44,8 @@ class ProjectController(
     private val createProjectInteractor: CreateProjectInteractor,
     private val getProjectVersionsInteractor: GetProjectVersionsInteractor,
     private val getProjectInvestmentSummaries: GetProjectInvestmentSummariesInteractor,
-    private val getProjectActivitiesInteractor: GetActivityInteractor
+    private val getProjectActivitiesInteractor: GetActivityInteractor,
+    private val getContractedProjectsInteractor: GetContractedProjectsInteractor
 ) : ProjectApi {
 
     override fun getAllProjects(
@@ -54,6 +57,9 @@ class ProjectController(
 
         return getProjectInteractor.getAllProjects(pageRequest, searchRequest?.toModel()).toDto()
     }
+
+    override fun getContractedProjects(searchId: String): Page<OutputProjectSimple> =
+        this.getContractedProjectsInteractor.getContractedProjects(searchId).toDto()
 
     override fun getMyProjects(pageable: Pageable): Page<OutputProjectSimple> =
         getProjectInteractor.getMyProjects(pageable).toDto()

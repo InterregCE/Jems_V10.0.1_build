@@ -15,6 +15,7 @@ import {take, tap} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {CdkTextareaAutosize} from '@angular/cdk/text-field';
 import {FormService} from '@common/components/section/form/form.service';
+import {Tools} from '@common/utils/tools';
 
 @UntilDestroy()
 @Component({
@@ -39,6 +40,7 @@ export class ProgrammeChecklistTextInputComponent implements ControlValueAccesso
 
   metadata: TextInputMetadataDTO;
   form: FormGroup;
+  tools = Tools;
 
   @ViewChild('autosize', {static: false}) autosize: CdkTextareaAutosize;
 

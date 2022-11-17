@@ -1,10 +1,14 @@
 import {ChangeDetectionStrategy, Component, Input} from '@angular/core';
-import {Observable} from 'rxjs';
-import {ProjectPartnerBudgetPerPeriodDTO} from '@cat/api';
+import {combineLatest, Observable} from 'rxjs';
+import {CallDetailDTO, ProjectPartnerBudgetPerPeriodDTO} from '@cat/api';
 import {map} from 'rxjs/operators';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {TableConfig} from '@common/directives/table-config/TableConfig';
 import {ProjectBudgetPeriodPageStore} from '@project/budget/budget-page-per-period/budget-period-page.store';
+import {
+  ProjectStore
+} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import CostTypeEnum = ProjectPartnerBudgetPerPeriodDTO.CostTypeEnum;
 
 
 @Component({
@@ -28,6 +32,8 @@ export class BudgetPagePartnerPerPeriodComponent {
     totals: number[];
     totalsPercentage: number[];
     periodsAvailable: boolean;
+    isCallTypeSpf: boolean;
+    projectId: number;
   }>;
 
   private static sortByNumber(a: ProjectPartnerBudgetPerPeriodDTO, b: ProjectPartnerBudgetPerPeriodDTO): number {
@@ -37,17 +43,25 @@ export class BudgetPagePartnerPerPeriodComponent {
 
   constructor(
     private budgetPeriodStore: ProjectBudgetPeriodPageStore,
+    private projectStore: ProjectStore
   ) {
-    this.data$ = this.budgetPeriodStore.projectBudgetOverviewPerPartnerPerPeriods$
-      .pipe(
-        map((projectBudgetOverviewPerPartnerPerPeriod) => {
+    this.data$ = combineLatest([
+      this.budgetPeriodStore.projectBudgetOverviewPerPartnerPerPeriods$,
+      this.projectStore.projectCallType$,
+      this.projectStore.projectId$,
+    ]).pipe(
+        map(([projectBudgetOverviewPerPartnerPerPeriod, callType, projectId]) => {
           const perPeriodSorted = [...projectBudgetOverviewPerPartnerPerPeriod.partnersBudgetPerPeriod]
             .sort(BudgetPagePartnerPerPeriodComponent.sortByNumber);
           return {
-            partnersBudgetPerPeriod: perPeriodSorted,
+            partnersBudgetPerPeriod: callType === CallDetailDTO.TypeEnum.SPF
+              ? perPeriodSorted
+              : perPeriodSorted.filter(perPeriod => perPeriod.costType === CostTypeEnum.Management),
             totals: projectBudgetOverviewPerPartnerPerPeriod.totals,
             totalsPercentage: projectBudgetOverviewPerPartnerPerPeriod.totalsPercentage,
-            periodsAvailable: this.projectPeriodNumbers.length > 0
+            periodsAvailable: this.projectPeriodNumbers.length > 0,
+            isCallTypeSpf: callType === CallDetailDTO.TypeEnum.SPF,
+            projectId
           };
         }),
       );

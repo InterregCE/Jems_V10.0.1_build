@@ -17,6 +17,9 @@ data class ProgrammeUnitCostTranslEntity(
     val description: String? = null,
 
     @Column
-    val type: String? = null
+    val type: String? = null,
+
+    @Column
+    val justification: String? = null,
 
 )

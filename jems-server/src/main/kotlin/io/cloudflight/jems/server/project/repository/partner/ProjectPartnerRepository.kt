@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.repository.partner
 
+import io.cloudflight.jems.server.payments.entity.PartnerWithContributionsRow
 import io.cloudflight.jems.server.project.entity.partner.PartnerAddressRow
 import io.cloudflight.jems.server.project.entity.partner.PartnerContactRow
 import io.cloudflight.jems.server.project.entity.partner.PartnerDetailRow
@@ -10,6 +11,7 @@ import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.entity.partner.budget.ProjectPartnerBudgetPerPeriodRow
 import io.cloudflight.jems.server.project.entity.partner.budget.spf.ProjectSpfBeneficiaryBudgetPerPeriodRow
 import io.cloudflight.jems.server.project.entity.partner.cofinancing.PartnerContributionRow
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerTotalBudgetEntry
 import org.springframework.data.domain.Page
@@ -285,8 +287,9 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
              entity.sort_number as sortNumber,
              addresses.country
              FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
-             LEFT JOIN #{#entityName}_address FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS addresses ON entity.id = addresses.partner_id
-             WHERE entity.project_id = :projectId AND (addresses.type = 'Organization' || addresses.type IS NULL)
+               LEFT JOIN #{#entityName}_address FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS addresses
+                 ON entity.id = addresses.partner_id AND addresses.type = 'Organization'
+             WHERE entity.project_id = :projectId
              """,
         countQuery = """
              SELECT
@@ -302,20 +305,20 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
         timestamp: Timestamp
     ): Page<PartnerSimpleRow>
 
-    @Query(
-        """
-             SELECT
-             entity.*,
-             entity.sort_number as sortNumber,
-             addresses.*
-             FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
-             LEFT JOIN #{#entityName}_address FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS addresses ON entity.id = addresses.partner_id
-             WHERE entity.project_id = :projectId AND (addresses.type = 'Organization' || addresses.type IS NULL)
-             ORDER BY entity.sort_number ASC
-             LIMIT 30
-             """,
-        nativeQuery = true
-    )
+    @Query("""
+        SELECT
+          entity.*,
+          entity.sort_number as sortNumber,
+          addresses.country,
+          addresses.nuts_region2 as nutsRegion2,
+          addresses.nuts_region3 as nutsRegion3
+        FROM #{#entityName} FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS entity
+            LEFT JOIN #{#entityName}_address FOR SYSTEM_TIME AS OF TIMESTAMP :timestamp AS addresses
+                ON entity.id = addresses.partner_id AND addresses.type = 'Organization'
+        WHERE entity.project_id = :projectId
+        ORDER BY entity.sort_number ASC
+        LIMIT 30
+    """, nativeQuery = true)
     fun findTop30ByProjectIdSortBySortNumberAsOfTimestamp(
         projectId: Long,
         timestamp: Timestamp
@@ -542,4 +545,54 @@ interface ProjectPartnerRepository : JpaRepository<ProjectPartnerEntity, Long> {
         nativeQuery = true
     )
     fun getSpfBudgetByBeneficiaryIdAsOfTimestamp(partnerId: Long, timestamp: Timestamp):  List<ProjectSpfBeneficiaryBudgetPerPeriodRow>
+
+    @Query(
+        """
+        SELECT new kotlin.Pair(pp.id, pp.project.id)
+        FROM project_partner AS pp
+        INNER JOIN project AS p
+            ON pp.project.id = p.id
+        INNER JOIN project_status AS ps
+            ON p.currentStatus.id = ps.id
+        WHERE pp.id IN :partnerIds AND ps.status IN :projectStatuses
+        """
+    )
+    fun getPartnerProjectIdByPartnerIdAndProjectStatusIn(partnerIds: Set<Long>, projectStatuses: Set<ApplicationStatus>): List<Pair<Long, Long>>
+
+    @Query(
+        """
+        SELECT
+            partner.id AS partnerId,
+            partner.abbreviation AS partnerAbbreviation,
+            partner.role partnerRole,
+            partner.active AS partnerActive,
+            partner.sort_number AS partnerSortNumber,
+            partnerCoFinancing.programme_fund_id AS fundId,
+            programmeFundTransl.abbreviation AS fundAbbreviation,
+            programmeFundTransl.language,
+            partnerContribution.id AS partnerContributionId,
+            partnerContribution.name AS partnerContributionName,
+            partnerContribution.status AS partnerContributionStatus,
+            partnerContribution.amount AS partnerContributionAmount,
+            partnerContributionSpf.id AS partnerContributionSpfId,
+            partnerContributionSpf.name AS partnerContributionSpfName,
+            partnerContributionSpf.status AS partnerContributionSpfStatus,
+            partnerContributionSpf.amount AS partnerContributionSpfAmount
+        FROM optimization_project_version AS opv
+            INNER JOIN project_partner FOR SYSTEM_TIME AS OF TIMESTAMP opv.last_approved_version AS partner
+                ON partner.project_id = opv.project_id
+            INNER JOIN project_partner_contribution FOR SYSTEM_TIME AS OF TIMESTAMP opv.last_approved_version AS partnerContribution
+                ON partner.id = partnerContribution.partner_id
+            LEFT OUTER JOIN project_partner_contribution_spf FOR SYSTEM_TIME AS OF TIMESTAMP opv.last_approved_version AS partnerContributionSpf
+                ON partner.id = partnerContributionSpf.partner_id
+            INNER JOIN project_partner_co_financing FOR SYSTEM_TIME AS OF TIMESTAMP opv.last_approved_version AS partnerCoFinancing
+                ON partner.id = partnerCoFinancing.partner_id
+            INNER JOIN programme_fund AS programmeFund
+                ON partnerCoFinancing.programme_fund_id = programmeFund.id
+            INNER JOIN programme_fund_transl programmeFundTransl
+                ON programmeFund.id = programmeFundTransl.source_entity_id
+        WHERE partner.project_id = :projectId
+    """, nativeQuery = true
+    )
+    fun findAllByProjectIdWithContributionsForDropdown(projectId: Long): List<PartnerWithContributionsRow>
 }

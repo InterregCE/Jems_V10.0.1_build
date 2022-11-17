@@ -2,57 +2,69 @@
                            [titleText]="'project.application.form.acronym' | translate : {projectTitle: data.currentVersionOfProjectTitle} "
                            subTitleKey="project.application.form.section.modification"
                            [isVersionedData]="false">
-    <h3 *ngIf="data.canHandBackModification || data.canOpenModification">
-        {{'project.application.form.section.modification.open' | translate}}
-        <jems-pending-button
-                *ngIf="data.canHandBackModification"
-                class="ml-2"
-                [pending]="pendingButtonProgress"
-                (clicked)="handBackToApplicant()">
-            {{'project.detail.button.hand.back.applicant' | translate}}
-        </jems-pending-button>
-    </h3>
 
-    <jems-alert [show]="successMessage"
-               [type]="Alert.SUCCESS">
-        <p>{{'project.application.form.section.modification.open.button.success.message' | translate}}</p>
-    </jems-alert>
+    <mat-card>
+        <h3 *ngIf="data.canHandBackModification || data.canOpenModification">
+            {{'project.application.form.section.modification.open' | translate}}
+            <jems-pending-button
+                    *ngIf="data.canHandBackModification"
+                    class="ml-2"
+                    [pending]="pendingButtonProgress"
+                    (clicked)="handBackToApplicant()">
+                {{'project.detail.button.hand.back.applicant' | translate}}
+            </jems-pending-button>
+        </h3>
 
-    <jems-pending-button
-            *ngIf="data.canOpenModification"
-            class="mr-2 mt-2"
-            [pending]="pendingButtonProgress"
-            (clicked)="startModification()">
-        {{'project.application.form.section.modification.open.button' | translate}}
-    </jems-pending-button>
+        <jems-alert [show]="successMessage"
+                   [type]="Alert.SUCCESS">
+            <p>{{'project.application.form.section.modification.open.button.success.message' | translate}}</p>
+        </jems-alert>
 
-    <ng-container
-            *jemsHasPermission="[PermissionsEnum.ProjectStatusDecideModificationApproved, PermissionsEnum.ProjectStatusDecideModificationNotApproved]">
-        <jems-modification-confirmation
-                *ngIf="isModificationOpenedOrSubmitted(data.currentVersionOfProjectStatus)"
-                [index]="data.modificationDecisions.length + 1"
-                [projectStatus]="data.currentVersionOfProjectStatus">
-        </jems-modification-confirmation>
-    </ng-container>
+        <div *ngIf="data.canOpenModification">
+            <p>{{'project.application.form.section.modification.open.empty' | translate}}</p>
+            <jems-pending-button
+                    class="mr-2 mt-2"
+                    [pending]="pendingButtonProgress"
+                    (clicked)="startModification()"
+                    icon="lock_open">
+                    {{'project.application.form.section.modification.open.button' | translate}}
+            </jems-pending-button>
+        </div>
 
-    <ng-container *ngIf="data.modificationDecisions.length">
-        <h3>{{'project.application.form.section.modification.past' | translate}}</h3>
+        <ng-container
+                *jemsHasPermission="[PermissionsEnum.ProjectStatusDecideModificationApproved, PermissionsEnum.ProjectStatusDecideModificationNotApproved]">
+            <div *ngIf="isModificationOpenedOrSubmitted(data.currentVersionOfProjectStatus)">
+                <h3 *ngIf="!(data.canHandBackModification || data.canOpenModification)">
+                    {{'project.application.form.section.modification.open' | translate}}
+                </h3>
+                <jems-modification-confirmation
+                        [index]="data.modificationDecisions.length + 1"
+                        [projectStatus]="data.currentVersionOfProjectStatus">
+                </jems-modification-confirmation>
+            </div>
+        </ng-container>
 
-        <jems-modification-confirmation
-                *ngFor="let decision of data.modificationDecisions; let i=index"
-                [index]="data.modificationDecisions.length - i"
-                [decision]="decision"
-                [version]="data.versions[i]"
-                [projectStatus]="data.currentVersionOfProjectStatus">
-        </jems-modification-confirmation>
-    </ng-container>
+        <ng-container *ngIf="data.modificationDecisions.length">
+            <h3>{{'project.application.form.section.modification.past' | translate}}</h3>
+
+            <jems-modification-confirmation
+                    *ngFor="let decision of data.modificationDecisions; let i=index"
+                    [index]="data.modificationDecisions.length - i"
+                    [decision]="decision"
+                    [version]="data.versions[i]"
+                    [projectStatus]="data.currentVersionOfProjectStatus">
+            </jems-modification-confirmation>
+        </ng-container>
+    </mat-card>
 
     <ng-container *jemsHasPermission="PermissionsEnum.ProjectModificationFileAssessmentRetrieve">
-        <h3>
-            {{'file.tab.header' | translate}}
-            <jems-context-info infoPosition="right" infoText="{{'file.tab.info' | translate}}"></jems-context-info>
-        </h3>
-        <jems-file-management [section]="fileManagementSection" jemsNoWidthLimit></jems-file-management>
+        <mat-card class="mt-4">
+            <h3>
+                {{'file.tab.header' | translate}}
+                <jems-context-info infoPosition="right" infoText="{{'file.tab.info' | translate}}"></jems-context-info>
+            </h3>
+            <jems-file-management [section]="fileManagementSection" jemsNoWidthLimit></jems-file-management>
+        </mat-card>
     </ng-container>
 
 </jems-project-page-template>

@@ -6,9 +6,9 @@ import io.cloudflight.jems.server.project.authorization.CanEditPartnerReport
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.file.uploadProjectFile.isFileTypeInvalid
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
-import io.cloudflight.jems.server.project.service.report.file.ProjectReportFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import io.cloudflight.jems.server.project.service.report.partner.workPlan.ProjectReportWorkPlanPersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -30,13 +30,13 @@ class UploadFileToProjectPartnerReportWorkPlan(
         workPackageId: Long,
         activityId: Long,
         file: ProjectFile,
-    ): ProjectReportFileMetadata {
+    ): JemsFileMetadata {
         if (!reportWorkPlanPersistence.existsByActivityId(partnerId, reportId = reportId, workPackageId, activityId = activityId))
             throw ActivityNotFoundException(activityId = activityId)
 
         validateFile(file)
 
-        with(ProjectPartnerReportFileType.Activity) {
+        with(JemsFileType.Activity) {
             val projectId = partnerPersistence.getProjectIdForPartnerId(partnerId)
             val location = generatePath(projectId, partnerId, reportId, workPackageId, activityId)
 
@@ -57,7 +57,7 @@ class UploadFileToProjectPartnerReportWorkPlan(
         activityId: Long,
         deliverableId: Long,
         file: ProjectFile,
-    ): ProjectReportFileMetadata {
+    ): JemsFileMetadata {
         if (!reportWorkPlanPersistence.existsByDeliverableId(
                 partnerId,
                 reportId = reportId,
@@ -69,7 +69,7 @@ class UploadFileToProjectPartnerReportWorkPlan(
 
         validateFile(file)
 
-        with(ProjectPartnerReportFileType.Deliverable) {
+        with(JemsFileType.Deliverable) {
             val projectId = partnerPersistence.getProjectIdForPartnerId(partnerId)
             val location = generatePath(projectId, partnerId, reportId, workPackageId, activityId, deliverableId)
 
@@ -89,13 +89,13 @@ class UploadFileToProjectPartnerReportWorkPlan(
         workPackageId: Long,
         outputId: Long,
         file: ProjectFile,
-    ): ProjectReportFileMetadata {
+    ): JemsFileMetadata {
         if (!reportWorkPlanPersistence.existsByOutputId(partnerId, reportId = reportId, workPackageId, outputId = outputId))
             throw OutputNotFoundException(outputId = outputId)
 
         validateFile(file)
 
-        with(ProjectPartnerReportFileType.Output) {
+        with(JemsFileType.Output) {
             val projectId = partnerPersistence.getProjectIdForPartnerId(partnerId)
             val location = generatePath(projectId, partnerId, reportId, workPackageId, outputId)
 

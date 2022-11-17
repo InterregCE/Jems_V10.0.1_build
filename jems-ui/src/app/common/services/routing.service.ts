@@ -10,7 +10,7 @@ import {Observable, ReplaySubject} from 'rxjs';
 export class RoutingService {
 
   currentRoute = new ReplaySubject<ActivatedRoute>(1);
-  confirmLeave: boolean;
+  confirmLeaveMap = new Map<string, boolean>();
 
   constructor(private router: Router,
               private dialog: MatDialog,
@@ -18,7 +18,7 @@ export class RoutingService {
     this.router.events
       .pipe(
         filter(val => val instanceof ResolveEnd),
-        tap(() => this.confirmLeave = false)
+        tap(() => this.confirmLeaveMap.clear()),
       ).subscribe();
 
     this.router.events
@@ -35,7 +35,7 @@ export class RoutingService {
 
   navigate(commands: any[], extras?: NavigationExtras): void {
     const navigationExtras = extras || {queryParamsHandling: 'merge'} as NavigationExtras;
-    if (!this.confirmLeave) {
+    if (![...this.confirmLeaveMap.values()].some(val => val)) {
       this.router.navigate(commands, navigationExtras);
       return;
     }

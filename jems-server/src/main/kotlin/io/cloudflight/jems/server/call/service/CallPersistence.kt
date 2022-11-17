@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.call.service.model.AllowedRealCosts
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.Call
 import io.cloudflight.jems.server.call.service.model.CallApplicationFormFieldsConfiguration
+import io.cloudflight.jems.server.call.service.model.CallCostOption
 import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.call.service.model.CallSummary
 import io.cloudflight.jems.server.call.service.model.IdNamePair
@@ -45,4 +46,9 @@ interface CallPersistence {
     fun updateProjectCallStateAids(callId: Long, stateAids: Set<Long>): CallDetail
 
     fun updateProjectCallPreSubmissionCheckPlugin(callId: Long, pluginKeys: PreSubmissionPlugins) : CallDetail
+
+    fun getCallCostOptionForProject(projectId: Long): CallCostOption
+    fun getCallCostOption(callId: Long): CallCostOption
+    fun updateCallCostOption(callId: Long, costOption: CallCostOption): CallCostOption
+
 }

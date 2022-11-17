@@ -27,4 +27,14 @@ data class ProjectPartnerDetail(
     val addresses: List<ProjectPartnerAddress> = emptyList(),
     val contacts: List<ProjectPartnerContact> = emptyList(),
     val motivation: ProjectPartnerMotivation? = null,
-)
+) {
+    fun toSummary() = ProjectPartnerSummary(
+        id = id,
+        abbreviation = abbreviation,
+        active = active,
+        role = role,
+        sortNumber = sortNumber,
+        country = addresses.firstOrNull { it.type == ProjectPartnerAddressType.Organization }?.country,
+        region = addresses.firstOrNull { it.type == ProjectPartnerAddressType.Organization }?.nutsRegion3,
+    )
+}

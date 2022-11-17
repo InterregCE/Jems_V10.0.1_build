@@ -1,16 +1,15 @@
 package io.cloudflight.jems.server.project.service.report.partner.procurement.updateProjectPartnerReportProcurement
 
-import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
-import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
-import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReport
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
-import io.cloudflight.jems.server.project.service.report.model.procurement.ProjectPartnerReportProcurement
-import io.cloudflight.jems.server.project.service.report.model.procurement.ProjectPartnerReportProcurementUpdate
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
+import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
+import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectPartnerReportProcurement
+import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectPartnerReportProcurementChange
 import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectReportProcurementPersistence
-import io.mockk.CapturingSlot
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -22,54 +21,13 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.math.BigDecimal
-import java.time.ZonedDateTime
+import java.time.LocalDate
 
 internal class UpdateProjectPartnerReportProcurementTest : UnitTest() {
 
     companion object {
         private const val PARTNER_ID = 5922L
-
-        private const val EXISTING_CONTRACT_ID = "already existing"
-        private val UPLOADED = ZonedDateTime.now()
-
-        private fun procurement(id: Long, reportId: Long) = ProjectPartnerReportProcurement(
-            id = id,
-            reportId = reportId,
-            reportNumber = 1,
-            createdInThisReport = false,
-            contractId = "contract",
-            contractType = setOf(InputTranslation(SystemLanguage.EN, "contractType EN")),
-            contractAmount = BigDecimal.TEN,
-            currencyCode = "MAD",
-            supplierName = "supplierName",
-            comment = setOf(InputTranslation(SystemLanguage.EN, "comment EN")),
-            attachment = ProjectReportFileMetadata(47L, "file.xlsx", UPLOADED),
-        )
-
-        private fun procurementUpdate(id: Long) = ProjectPartnerReportProcurementUpdate(
-            id = id,
-            contractId = "contract NEW",
-            contractType = setOf(InputTranslation(SystemLanguage.EN, "contractType EN NEW")),
-            contractAmount = BigDecimal.ONE,
-            currencyCode = "MAD",
-            supplierName = "supplierName NEW",
-            comment = setOf(InputTranslation(SystemLanguage.EN, "comment EN NEW")),
-        )
-
-        private fun procurementNew(id: Long, reportId: Long) = ProjectPartnerReportProcurement(
-            id = id,
-            reportId = reportId,
-            reportNumber = 1,
-            createdInThisReport = false,
-            contractId = "contract NEW",
-            contractType = setOf(InputTranslation(SystemLanguage.EN, "contractType EN NEW")),
-            contractAmount = BigDecimal.ONE,
-            currencyCode = "MAD",
-            supplierName = "supplierName NEW",
-            comment = setOf(InputTranslation(SystemLanguage.EN, "comment EN NEW")),
-            attachment = null,
-        )
-
+        private val NEXT_WEEK = LocalDate.now().plusWeeks(1)
     }
 
     @MockK
@@ -90,235 +48,175 @@ internal class UpdateProjectPartnerReportProcurementTest : UnitTest() {
         clearMocks(generalValidator)
         every { generalValidator.throwIfAnyIsInvalid(*varargAny { true }) } returns Unit
         every { generalValidator.maxLength(any<String>(), any(), any()) } returns emptyMap()
-        every { generalValidator.maxLength(any<Set<InputTranslation>>(), any(), any()) } returns emptyMap()
+        every { generalValidator.notBlank(any<String>(), any()) } returns emptyMap()
         every { generalValidator.numberBetween(any<BigDecimal>(), any(), any(), any()) } returns emptyMap()
-        every { generalValidator.onlyValidCurrencies(any<Set<String>>(), any()) } returns emptyMap()
-    }
-
-
-    @Test
-    fun `update successful - ignore not existing, create new one, update existing one`() {
-        val existingProcurementId = 757L
-        val currentReportId = 85L
-        val previousReportId = 84L
-
-        // validation is not validated, but we will verify it has been called
-        val slotString = mutableListOf<String>()
-        val slotStringName = mutableListOf<String>()
-        val slotTranslatedString = mutableListOf<Set<InputTranslation>>()
-        val slotTranslatedStringName = mutableListOf<String>()
-        val slotBigDecimal = mutableListOf<BigDecimal>()
-        val slotBigDecimalName = mutableListOf<String>()
-        val slotCurrencies = slot<Set<String>>()
-        val slotCurrenciesName = slot<String>()
-        every { generalValidator.maxLength(capture(slotString), any(), capture(slotStringName)) } returns emptyMap()
-        every { generalValidator.maxLength(capture(slotTranslatedString), any(), capture(slotTranslatedStringName)) } returns emptyMap()
-        every { generalValidator.numberBetween(capture(slotBigDecimal), any(), any(), capture(slotBigDecimalName)) } returns emptyMap()
-        every { generalValidator.onlyValidCurrencies(capture(slotCurrencies), capture(slotCurrenciesName)) } returns emptyMap()
-        // end of validation mock
-
-        val report = mockk<ProjectPartnerReport>()
-        every { report.id } returns currentReportId
-        every { report.identification.currency } returns null
-
-        every { reportPersistence.getPartnerReportById(PARTNER_ID, currentReportId) } returns report
-        every { reportPersistence.getReportIdsBefore(PARTNER_ID, beforeReportId = currentReportId) } returns setOf(previousReportId)
-        every { reportProcurementPersistence.countProcurementsForReportIds(reportIds = setOf(previousReportId)) } returns 1
-        every { reportProcurementPersistence.getProcurementContractIdsForReportIds(reportIds = setOf(previousReportId)) } returns setOf(EXISTING_CONTRACT_ID)
-        every { reportProcurementPersistence.getProcurementIdsForReport(PARTNER_ID, reportId = currentReportId) } returns setOf(existingProcurementId)
-
-        val dataSaved = slot<List<ProjectPartnerReportProcurementUpdate>>()
-        every {
-            reportProcurementPersistence.updatePartnerReportProcurement(
-                PARTNER_ID,
-                reportId = currentReportId,
-                procurementNew = capture(dataSaved),
-            )
-        } answers { }
-
-        // after update mock correct result
-        every { reportProcurementPersistence.getProcurementsForReportIds(setOf(previousReportId, currentReportId)) } returns
-            listOf(
-                procurementNew(id = 0L, reportId = currentReportId) /* has just been created */,
-                procurementNew(id = existingProcurementId, reportId = currentReportId) /* existing before from current report */,
-                procurement(id = 52L, reportId = previousReportId) /* from older report */,
-            )
-
-        // test update here:
-        val toBeChanged = listOf(
-            procurementUpdate(id = -1L).copy(contractId = "something unique") /* not existing - should be ignored */,
-            procurementUpdate(id = existingProcurementId) /* existing - should be updated */,
-            procurementUpdate(id = 0L).copy(contractId = "created") /* not - existing - should be created */,
-        )
-        assertThat(interactor.update(PARTNER_ID, reportId = currentReportId, procurementNew = toBeChanged))
-            .containsExactly(
-                procurementNew(id = 0L, reportId = currentReportId).copy(createdInThisReport = true) /* has just been created */,
-                procurementNew(id = existingProcurementId, reportId = currentReportId)
-                    .copy(createdInThisReport = true) /* existing before from current report */,
-                procurement(id = 52L, reportId = previousReportId) /* from older report */,
-            )
-
-        assertUpdatedData(dataSaved.captured, existingProcurementId)
-
-        assertValidationsCalledString(slotString = slotString, slotStringName = slotStringName)
-        assertValidationsCalledTranslatedStrings(slotTranslatedString = slotTranslatedString, slotTranslatedStringName = slotTranslatedStringName)
-        assertValidationsCalledAmount(slotBigDecimal = slotBigDecimal, slotBigDecimalName = slotBigDecimalName)
-        assertValidationsCurrencies(slotCurrencies = slotCurrencies, slotCurrenciesName = slotCurrenciesName)
-    }
-
-    private fun assertUpdatedData(
-        dataSaved: List<ProjectPartnerReportProcurementUpdate>,
-        existingProcurementId: Long,
-    ) {
-        assertThat(dataSaved).containsExactly(
-            procurementUpdate(id = existingProcurementId),
-            procurementUpdate(id = 0L).copy(contractId = "created"),
-        )
-        assertThat(dataSaved.map { it.id }).doesNotContain(-1L)
-    }
-
-    private fun assertValidationsCalledString(
-        slotString: MutableList<String>,
-        slotStringName: MutableList<String>,
-    ) {
-        assertThat(slotString).containsExactly(
-            "something unique" /* -1L */,
-            "contract NEW" /* existingProcurementId */,
-            "created" /* 0L */,
-            "supplierName NEW" /* -1L */,
-            "supplierName NEW" /* existingProcurementId */,
-            "supplierName NEW" /* 0L */,
-        )
-        assertThat(slotStringName).containsExactly(
-            "contractId[0]",
-            "contractId[1]",
-            "contractId[2]",
-            "supplierName[0]",
-            "supplierName[1]",
-            "supplierName[2]",
-        )
-    }
-
-    private fun assertValidationsCalledTranslatedStrings(
-        slotTranslatedString: MutableList<Set<InputTranslation>>,
-        slotTranslatedStringName: MutableList<String>,
-    ) {
-        assertThat(slotTranslatedString).containsExactly(
-            setOf(InputTranslation(SystemLanguage.EN, "contractType EN NEW")) /* -1L */,
-            setOf(InputTranslation(SystemLanguage.EN, "contractType EN NEW")) /* existingProcurementId */,
-            setOf(InputTranslation(SystemLanguage.EN, "contractType EN NEW")) /* 0L */,
-            setOf(InputTranslation(SystemLanguage.EN, "comment EN NEW")) /* -1L */,
-            setOf(InputTranslation(SystemLanguage.EN, "comment EN NEW")) /* existingProcurementId */,
-            setOf(InputTranslation(SystemLanguage.EN, "comment EN NEW")) /* 0L */,
-        )
-        assertThat(slotTranslatedStringName).containsExactly(
-            "contractType[0]",
-            "contractType[1]",
-            "contractType[2]",
-            "comment[0]",
-            "comment[1]",
-            "comment[2]",
-        )
-    }
-
-    private fun assertValidationsCalledAmount(
-        slotBigDecimal: MutableList<BigDecimal>,
-        slotBigDecimalName: MutableList<String>,
-    ) {
-        assertThat(slotBigDecimal).containsExactly(
-            BigDecimal.ONE /* -1L */,
-            BigDecimal.ONE /* existingProcurementId */,
-            BigDecimal.ONE /* 0L */,
-        )
-        assertThat(slotBigDecimalName).containsExactly("contractAmount[0]", "contractAmount[1]", "contractAmount[2]")
-    }
-
-    private fun assertValidationsCurrencies(
-        slotCurrencies: CapturingSlot<Set<String>>,
-        slotCurrenciesName: CapturingSlot<String>,
-    ) {
-        assertThat(slotCurrencies.captured).containsExactly("MAD")
-        assertThat(slotCurrenciesName.captured).isEqualTo("currencyCode")
+        every { generalValidator.onlyValidCurrencies(any(), any()) } returns emptyMap()
     }
 
     @Test
-    fun `update unsuccessful - max amount reached`() {
-        val MAX_AMOUNT = 50L
-
-        val report = mockk<ProjectPartnerReport>()
-        every { report.id } returns 71L
-        every { report.identification.currency } returns null
-
-        every { reportPersistence.getPartnerReportById(PARTNER_ID, 71L) } returns report
-        every { reportPersistence.getReportIdsBefore(PARTNER_ID, beforeReportId = 71L) } returns setOf(70L)
-        every { reportProcurementPersistence.countProcurementsForReportIds(reportIds = setOf(70L)) } returns MAX_AMOUNT
-
-        val toBeChanged = listOf(
-            procurementUpdate(id = 0L).copy(contractId = "created"), /* not - existing - should be created */
-        )
-        assertThrows<MaxAmountOfProcurementsReachedException> {
-            interactor.update(PARTNER_ID, reportId = 71L, procurementNew = toBeChanged)
-        }
-    }
-
-    @Test
-    fun `update unsuccessful - currency cannot be changed when partner in EUR`() {
+    fun `update - successful`() {
         val report = mockk<ProjectPartnerReport>()
         every { report.id } returns 18L
+        every { report.status } returns ReportStatus.Draft
+        every { report.identification.currency } returns "PLN"
+
+        every { reportPersistence.getPartnerReportById(PARTNER_ID, reportId = 18L) } returns report
+        every { reportPersistence.getReportIdsBefore(PARTNER_ID, beforeReportId = 18L) } returns setOf(17L)
+        every { reportProcurementPersistence.getProcurementContractNamesForReportIds(setOf(17L, 18L)) } returns
+            setOf(Pair(45L, "unique 1"), Pair(46L, "unique 2"))
+
+        val mockedResult = mockk<ProjectPartnerReportProcurement>()
+        val updateSlot = slot<ProjectPartnerReportProcurementChange>()
+        every { reportProcurementPersistence.updatePartnerReportProcurement(PARTNER_ID, reportId = 18L, capture(updateSlot)) } returns mockedResult
+
+        val change = ProjectPartnerReportProcurementChange(
+            id = 47L,
+            contractName = "contractName NEW",
+            referenceNumber = "referenceNumber NEW",
+            contractDate = NEXT_WEEK,
+            contractType = "contractType NEW",
+            contractAmount = BigDecimal.ZERO,
+            currencyCode = "HUF",
+            supplierName = "supplierName NEW",
+            vatNumber = "vatNumber NEW",
+            comment = "comment NEW",
+        )
+
+        assertThat(interactor.update(PARTNER_ID, reportId = 18L, change)).isEqualTo(mockedResult)
+        assertThat(updateSlot.captured).isEqualTo(change)
+    }
+
+    @Test
+    fun `update - test input field validations`() {
+        val validationSlot = mutableListOf<Map<String, I18nMessage>?>()
+        every { generalValidator.throwIfAnyIsInvalid(*varargAllNullable { validationSlot.add(it) }) } throws
+            AppInputValidationException(emptyMap())
+
+        every { generalValidator.maxLength(any<String>(), any(), any()) } answers {
+            mapOf(thirdArg<String>()
+                to I18nMessage(i18nKey = "${firstArg<String>()}---${secondArg<Int>()}")
+            )
+        }
+        every { generalValidator.notBlank(any<String>(), any()) } answers {
+            mapOf(secondArg<String>() to I18nMessage(i18nKey = "${firstArg<String>()}---not blank"))
+        }
+        every { generalValidator.numberBetween(any<BigDecimal>(), any(), any(), any()) } answers {
+            mapOf(lastArg<String>()
+                to I18nMessage(i18nKey = "${firstArg<BigDecimal>()}---${secondArg<BigDecimal>()}-${thirdArg<BigDecimal>()}")
+            )
+        }
+        every { generalValidator.onlyValidCurrencies(any(), any()) } answers {
+            mapOf(secondArg<String>()
+                to I18nMessage(i18nKey = firstArg<Set<String>>().joinToString(","))
+            )
+        }
+
+        val change = ProjectPartnerReportProcurementChange(
+            id = 51L,
+            contractName = "contractName NEW",
+            referenceNumber = "referenceNumber NEW",
+            contractDate = NEXT_WEEK,
+            contractType = "contractType NEW",
+            contractAmount = BigDecimal.ZERO,
+            currencyCode = "HUF",
+            supplierName = "supplierName NEW",
+            vatNumber = "vatNumber NEW",
+            comment = "comment NEW",
+        )
+
+        assertThrows<AppInputValidationException> { interactor.update(PARTNER_ID, reportId = 0L, change) }
+        assertThat(validationSlot).containsExactly(
+            mapOf("contractName" to I18nMessage("contractName NEW---not blank")),
+            mapOf("contractName" to I18nMessage("contractName NEW---50")),
+            mapOf("referenceNumber" to I18nMessage("referenceNumber NEW---30")),
+            mapOf("contractType" to I18nMessage("contractType NEW---30")),
+            mapOf("supplierName" to I18nMessage("supplierName NEW---30")),
+            mapOf("vatNumber" to I18nMessage("vatNumber NEW---not blank")),
+            mapOf("vatNumber" to I18nMessage("vatNumber NEW---30")),
+            mapOf("comment" to I18nMessage("comment NEW---2000")),
+            mapOf("contractAmount" to I18nMessage("0---0-999999999.99")),
+            mapOf("currencyCode" to I18nMessage("HUF---not blank")),
+            mapOf("currencyCode" to I18nMessage("HUF")),
+        )
+    }
+
+    @Test
+    fun `update - wrong report status`() {
+        val report = mockk<ProjectPartnerReport>()
+        every { report.id } returns 40L
+        every { report.status } returns ReportStatus.Submitted
+
+        every { reportPersistence.getPartnerReportById(PARTNER_ID, reportId = 40L) } returns report
+
+        val change = ProjectPartnerReportProcurementChange(
+            id = 66358L,
+            contractName = "",
+            referenceNumber = "",
+            contractDate = NEXT_WEEK,
+            contractType = "",
+            contractAmount = BigDecimal.ZERO,
+            currencyCode = "",
+            supplierName = "",
+            vatNumber = "",
+            comment = "",
+        )
+
+        assertThrows<ReportAlreadyClosed> { interactor.update(PARTNER_ID, reportId = 40L, change) }
+    }
+
+    @Test
+    fun `update - invalid currencies`() {
+        val report = mockk<ProjectPartnerReport>()
+        every { report.id } returns 45L
+        every { report.status } returns ReportStatus.Draft
         every { report.identification.currency } returns "EUR"
 
-        every { reportPersistence.getPartnerReportById(PARTNER_ID, 18L) } returns report
-        every { reportPersistence.getReportIdsBefore(PARTNER_ID, beforeReportId = 18L) } returns emptySet()
-        every { reportProcurementPersistence.countProcurementsForReportIds(reportIds = emptySet()) } returns 0
-        every { reportProcurementPersistence.getProcurementContractIdsForReportIds(reportIds = setOf(18L)) } returns emptySet()
+        every { reportPersistence.getPartnerReportById(PARTNER_ID, reportId = 45L) } returns report
+        every { reportPersistence.getReportIdsBefore(PARTNER_ID, beforeReportId = 45L) } returns emptySet()
+        every { reportProcurementPersistence.getProcurementContractNamesForReportIds(setOf(45L)) } returns emptySet()
 
-        val toBeChanged = listOf(
-            procurementUpdate(id = 1L).copy(contractId = "same", currencyCode = "PLN"),
+        val change = ProjectPartnerReportProcurementChange(
+            id = 47L,
+            contractName = "",
+            referenceNumber = "",
+            contractDate = NEXT_WEEK,
+            contractType = "",
+            contractAmount = BigDecimal.ZERO,
+            currencyCode = "HUF",
+            supplierName = "",
+            vatNumber = "",
+            comment = "",
         )
-        assertThrows<InvalidCurrency> {
-            interactor.update(PARTNER_ID, reportId = 18L, procurementNew = toBeChanged)
-        }
+
+        assertThrows<InvalidCurrency> { interactor.update(PARTNER_ID, reportId = 45L, change) }
     }
 
     @Test
-    fun `update unsuccessful - provided contractIds are not unique`() {
+    fun `update - contract name is not unique`() {
         val report = mockk<ProjectPartnerReport>()
-        every { report.id } returns 21L
-        every { report.identification.currency } returns null
+        every { report.id } returns 48L
+        every { report.status } returns ReportStatus.Draft
+        every { report.identification.currency } returns "GBP"
 
-        every { reportPersistence.getPartnerReportById(PARTNER_ID, 21L) } returns report
-        every { reportPersistence.getReportIdsBefore(PARTNER_ID, beforeReportId = 21L) } returns setOf(20L)
-        every { reportProcurementPersistence.countProcurementsForReportIds(reportIds = setOf(20L)) } returns 0
-        every { reportProcurementPersistence.getProcurementContractIdsForReportIds(reportIds = setOf(20L)) } returns emptySet()
+        every { reportPersistence.getPartnerReportById(PARTNER_ID, reportId = 48L) } returns report
+        every { reportPersistence.getReportIdsBefore(PARTNER_ID, beforeReportId = 48L) } returns setOf(47L)
+        every { reportProcurementPersistence.getProcurementContractNamesForReportIds(setOf(47L, 48L)) } returns
+            setOf(Pair(147L, "name 147"), Pair(148L, "name 148"))
 
-        val toBeChanged = listOf(
-            procurementUpdate(id = 1L).copy(contractId = "same"),
-            procurementUpdate(id = 2L).copy(contractId = "same"),
+        val change = ProjectPartnerReportProcurementChange(
+            id = 148L,
+            contractName = "name 147",
+            referenceNumber = "",
+            contractDate = NEXT_WEEK,
+            contractType = "",
+            contractAmount = BigDecimal.ZERO,
+            currencyCode = "PLN",
+            supplierName = "",
+            vatNumber = "",
+            comment = "",
         )
-        val ex = assertThrows<ContractIdsAreNotUnique> {
-            interactor.update(PARTNER_ID, reportId = 21L, procurementNew = toBeChanged)
-        }
-        assertThat(ex.message).isEqualTo("duplicates: [same]")
-    }
 
-    @Test
-    fun `update unsuccessful - provided contractId is already in use`() {
-        val report = mockk<ProjectPartnerReport>()
-        every { report.id } returns 31L
-        every { report.identification.currency } returns null
-
-        every { reportPersistence.getPartnerReportById(PARTNER_ID, 31L) } returns report
-        every { reportPersistence.getReportIdsBefore(PARTNER_ID, beforeReportId = 31L) } returns setOf(30L)
-        every { reportProcurementPersistence.countProcurementsForReportIds(reportIds = setOf(30L)) } returns 1
-        every { reportProcurementPersistence.getProcurementContractIdsForReportIds(reportIds = setOf(30L)) } returns
-            setOf("used")
-
-        val ex = assertThrows<ContractIdsAreNotUnique> {
-            interactor.update(PARTNER_ID, reportId = 31L, procurementNew = listOf(
-                procurementUpdate(id = 0L).copy(contractId = "used"),
-            ))
-        }
-        assertThat(ex.message).isEqualTo("duplicates: [used]")
+        assertThrows<ContractNameIsNotUnique> { interactor.update(PARTNER_ID, reportId = 48L, change) }
     }
 
 }

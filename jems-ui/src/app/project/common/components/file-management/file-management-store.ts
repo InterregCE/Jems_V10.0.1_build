@@ -6,25 +6,34 @@ import {
   ProjectFileMetadataDTO,
   ProjectFileService,
   ProjectPartnerSummaryDTO,
-  ProjectStatusDTO, SettingsService,
+  ProjectStatusDTO,
+  SettingsService,
   UserRoleDTO
 } from '@cat/api';
-import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
-import {catchError, map, startWith, switchMap, take, tap, withLatestFrom} from 'rxjs/operators';
+import {
+  ProjectStore
+} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {catchError, finalize, map, startWith, switchMap, take, tap, withLatestFrom} from 'rxjs/operators';
 import {MatSort} from '@angular/material/sort';
 import {Tables} from '@common/utils/tables';
 import {CategoryInfo, CategoryNode} from '@project/common/components/category-tree/categoryModels';
 import {FileCategoryTypeEnum} from '@project/common/components/file-management/file-category-type';
 import {APIError} from '@common/models/APIError';
-import {InvestmentSummary} from '@project/work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
+import {
+  InvestmentSummary
+} from '@project/work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
 import {PermissionService} from '../../../../security/permissions/permission.service';
 import {ProjectUtil} from '@project/common/project-util';
 import {I18nMessage} from '@common/models/I18nMessage';
-import {ProjectPartnerStore} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
+import {
+  ProjectPartnerStore
+} from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
 import {FormVisibilityStatusService} from '@project/common/services/form-visibility-status.service';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
-import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import {DownloadService} from '@common/services/download.service';
+import {RoutingService} from '@common/services/routing.service';
+import {v4 as uuid} from 'uuid';
+import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import CallTypeEnum = ProjectCallSettingsDTO.CallTypeEnum;
 
 @Injectable({
@@ -43,8 +52,10 @@ export class FileManagementStore {
   canUpload$: Observable<boolean>;
   canChangeAssessmentFile$: Observable<boolean>;
   canChangeApplicationFile$: Observable<boolean>;
+  canChangeModificationFile$: Observable<boolean>;
   canReadAssessmentFile$: Observable<boolean>;
   canReadApplicationFile$: Observable<boolean>;
+  canReadModificationFile$: Observable<boolean>;
   canReadFiles$: Observable<boolean>;
 
   deleteSuccess$ = new Subject<boolean>();
@@ -61,14 +72,17 @@ export class FileManagementStore {
               private projectPartnerStore: ProjectPartnerStore,
               private permissionService: PermissionService,
               private visibilityStatusService: FormVisibilityStatusService,
-              private downloadService: DownloadService
+              private downloadService: DownloadService,
+              private routingService: RoutingService
   ) {
     this.projectStatus$ = this.projectStore.projectStatus$;
     this.userIsProjectOwnerOrEditCollaborator$ = this.projectStore.userIsProjectOwnerOrEditCollaborator$;
     this.canChangeAssessmentFile$ = this.permissionService.hasPermission(PermissionsEnum.ProjectFileAssessmentUpdate);
     this.canChangeApplicationFile$ = this.permissionService.hasPermission(PermissionsEnum.ProjectFileApplicationUpdate);
+    this.canChangeModificationFile$ = this.permissionService.hasPermission(PermissionsEnum.ProjectModificationFileAssessmentUpdate);
     this.canReadApplicationFile$ = this.canReadApplicationFile();
     this.canReadAssessmentFile$ = this.permissionService.hasPermission(PermissionsEnum.ProjectFileAssessmentRetrieve);
+    this.canReadModificationFile$ = this.permissionService.hasPermission(PermissionsEnum.ProjectModificationFileAssessmentRetrieve);
     this.canUpload$ = this.canUpload();
     this.canReadFiles$ = this.canReadFiles();
     this.selectedCategoryPath$ = this.selectedCategoryPath();
@@ -81,6 +95,8 @@ export class FileManagementStore {
   }
 
   uploadFile(file: File): Observable<ProjectFileMetadataDTO> {
+    const serviceId = uuid();
+    this.routingService.confirmLeaveMap.set(serviceId, true);
     return this.selectedCategory$
       .pipe(
         take(1),
@@ -91,34 +107,8 @@ export class FileManagementStore {
         catchError(error => {
           this.error$.next(error.error);
           return of({} as ProjectFileMetadataDTO);
-        })
-      );
-  }
-
-  deleteFile(fileId: number): Observable<void> {
-    return this.projectStore.projectId$
-      .pipe(
-        take(1),
-        switchMap(projectId => this.projectFileService.deleteProjectFile(fileId, projectId)),
-        tap(() => this.filesChanged$.next()),
-        tap(() => this.deleteSuccess$.next(true)),
-        tap(() => setTimeout(() => this.deleteSuccess$.next(false), 3000)),
-        catchError(error => {
-          this.error$.next(error.error);
-          return of({} as ProjectFileMetadataDTO);
-        })
-      );
-  }
-
-  setFileDescription(fileId: number, description: string): Observable<ProjectFileMetadataDTO> {
-    return this.projectStore.projectId$
-      .pipe(
-        take(1),
-        switchMap(projectId => this.projectFileService.setProjectFileDescription(fileId, projectId, description)),
-        catchError(error => {
-          this.error$.next(error.error);
-          return of({} as ProjectFileMetadataDTO);
-        })
+        }),
+        finalize(() => this.routingService.confirmLeaveMap.delete(serviceId))
       );
   }
 
@@ -127,7 +117,7 @@ export class FileManagementStore {
       .pipe(
         take(1),
         switchMap(projectId => {
-         this.downloadService.download(`/api/project/${projectId}/file/download/${fileId}`, 'translation.properties');
+          this.downloadService.download(`/api/project/${projectId}/file/download/${fileId}`, 'translation.properties');
           return of(null);
         })
       );
@@ -146,7 +136,7 @@ export class FileManagementStore {
       this.projectStatus$,
       this.canChangeAssessmentFile$,
       this.canChangeApplicationFile$,
-      this.permissionService.hasPermission(PermissionsEnum.ProjectModificationFileAssessmentUpdate),
+      this.canChangeModificationFile$,
       this.userIsProjectOwnerOrEditCollaborator$,
     ]).pipe(
       map(([selectedCategory, projectStatus, canUploadAssessmentFile, canUploadApplicationFile, canUploadModificationFile, userIsProjectOwnerOrEditCollaborator]) => {
@@ -170,9 +160,10 @@ export class FileManagementStore {
   private canReadFiles(): Observable<boolean> {
     return combineLatest([
       this.permissionService.hasPermission(PermissionsEnum.ProjectFileAssessmentRetrieve),
-      this.canReadApplicationFile$
+      this.canReadApplicationFile$,
+      this.canReadModificationFile$
     ]).pipe(
-      map(([canReadAssessment, canReadApplication]) => canReadAssessment || canReadApplication)
+      map(([canReadAssessment, canReadApplication, canReadModification]) => canReadAssessment || canReadApplication || canReadModification)
     );
   }
 
@@ -207,10 +198,20 @@ export class FileManagementStore {
       this.canReadApplicationFile$.pipe(switchMap(canReadApplicationFile => this.shouldFetchApplicationCategories(section, canReadApplicationFile) ? this.projectPartnerStore.latestPartnerSummaries$ : of([]))),
       this.canReadApplicationFile$.pipe(switchMap(canReadApplicationFile => this.shouldFetchApplicationCategories(section, canReadApplicationFile) ? this.projectStore.investmentSummariesForFiles$ : of([]))),
       this.canReadApplicationFile$,
-      this.canReadAssessmentFile$
+      this.canReadAssessmentFile$,
+      this.canReadModificationFile$
     ]).pipe(
-      map(([projectTitle, callType, partners, investments, canReadApplicationFiles, canReadAssessmentFiles]) =>
-        this.getCategories(section, projectTitle, partners, investments, canReadApplicationFiles, canReadAssessmentFiles, callType)
+      map(([projectTitle, callType, partners, investments, canReadApplicationFiles, canReadAssessmentFiles, canReadModificationFiles]) => {
+          return this.getCategories(
+            section,
+            projectTitle as string,
+            partners as ProjectPartnerSummaryDTO[],
+            investments as InvestmentSummary[],
+            canReadApplicationFiles as boolean,
+            canReadAssessmentFiles as boolean,
+            canReadModificationFiles as boolean,
+            callType as CallTypeEnum);
+        }
       ),
       tap(filters => this.setParent(filters)),
     );
@@ -222,6 +223,7 @@ export class FileManagementStore {
                         investments: InvestmentSummary[],
                         canReadApplicationFiles: boolean,
                         canReadAssessmentFiles: boolean,
+                        canReadModificationFiles: boolean,
                         callType: CallTypeEnum): CategoryNode {
     const fullTree: CategoryNode = {
       name: {i18nKey: projectTitle},
@@ -267,11 +269,15 @@ export class FileManagementStore {
         children: []
       });
     }
-    fullTree.children?.push({
-      name: {i18nKey: 'file.tree.type.modification'},
-      info: {type: FileCategoryTypeEnum.MODIFICATION},
-      children: []
-    });
+
+    if(canReadModificationFiles) {
+      fullTree.children?.push({
+        name: {i18nKey: 'file.tree.type.modification'},
+        info: {type: FileCategoryTypeEnum.MODIFICATION},
+        children: []
+      });
+    }
+
     return this.findRootForSection(fullTree, section) || {};
   }
 
@@ -287,6 +293,7 @@ export class FileManagementStore {
         }
       }
     }
+
     return null;
   }
 

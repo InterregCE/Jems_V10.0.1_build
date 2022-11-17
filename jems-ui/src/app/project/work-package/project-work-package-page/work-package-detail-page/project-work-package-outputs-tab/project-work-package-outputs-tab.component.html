@@ -30,8 +30,13 @@
 
                     <jems-alert [closable]="false"
                                [type]="Alert.WARNING"
-                               [show]="!data.outputIndicators?.length">
+                               [show]="!data.specificObjective">
                             {{'project.application.form.overall.objective.specific.objective.required' | translate}}
+                    </jems-alert>
+                    <jems-alert [closable]="false"
+                                [type]="Alert.WARNING"
+                                [show]="data.specificObjective && !data.outputIndicators?.length">
+                            {{'project.application.form.overall.objective.specific.objective.no.output.indicator.available' | translate}}
                     </jems-alert>
                     <mat-form-field *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_C.PROJECT_WORK_PLAN.OUTPUTS.PROGRAMME_OUTPUT_INDICATOR_AND_MEASUREMENT_UNIT">
                         <mat-label>{{'project.application.form.work.package.output.programme.output.indicator' | translate}}</mat-label>

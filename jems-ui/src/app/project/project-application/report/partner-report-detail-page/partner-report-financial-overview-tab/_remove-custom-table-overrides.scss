@@ -1,0 +1,29 @@
+mat-table {
+  overflow: auto;
+}
+
+mat-row {
+  align-items: stretch;
+}
+
+mat-header-row {
+  border-bottom: none;
+}
+mat-header-cell {
+  border-bottom: .0625rem solid var(--table-border-color);
+}
+
+mat-footer-row {
+  border-top: none !important;
+}
+mat-footer-cell {
+  border-top: .0625rem solid var(--table-border-color);
+}
+
+.text-center {
+  text-align: center !important;
+  justify-content: center;
+  span {
+    text-align: center;
+  }
+}

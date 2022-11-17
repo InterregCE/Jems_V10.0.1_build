@@ -39,7 +39,9 @@ class UpdateCallLumpSumsTest {
             lengthOfPeriod = 7,
             applicationFormFieldConfigurations = mutableSetOf(),
             preSubmissionCheckPluginKey = null,
-            firstStepPreSubmissionCheckPluginKey = null
+            firstStepPreSubmissionCheckPluginKey = null,
+            projectDefinedUnitCostAllowed = false,
+            projectDefinedLumpSumAllowed = true,
         )
     }
 
@@ -57,7 +59,18 @@ class UpdateCallLumpSumsTest {
         val ID = 1L
         val call = callWithStatus(id = ID, CallStatus.PUBLISHED, CallType.STANDARD)
         every { persistence.existsAllProgrammeLumpSumsByIds(setOf(2, 3)) } returns true
-        every { persistence.updateProjectCallLumpSum(ID, setOf(2, 3)) } returns call.copy(lumpSums = listOf(ProgrammeLumpSum(id = 2, splittingAllowed = true), ProgrammeLumpSum(id = 3, splittingAllowed = true)))
+        every { persistence.updateProjectCallLumpSum(ID, setOf(2, 3)) } returns call.copy(
+            lumpSums = listOf(
+                ProgrammeLumpSum(
+                    id = 2,
+                    splittingAllowed = true,
+                    fastTrack = false
+                ),
+                ProgrammeLumpSum(
+                    id = 3,
+                    splittingAllowed = true,
+                    fastTrack = false
+                )))
         every { persistence.getCallById(ID) } returns call
         updateCallLumpSums.updateLumpSums(ID, setOf(2, 3))
 
@@ -93,8 +106,8 @@ class UpdateCallLumpSumsTest {
         every { persistence.existsAllProgrammeLumpSumsByIds(setOf(3)) } returns true
         every { persistence.getCallById(ID) } returns callWithStatus(id = ID, CallStatus.PUBLISHED, CallType.STANDARD).copy(
             lumpSums = listOf(
-                ProgrammeLumpSum(id = 2, splittingAllowed = true),
-                ProgrammeLumpSum(id = 3, splittingAllowed = true),
+                ProgrammeLumpSum(id = 2, splittingAllowed = true, fastTrack = false),
+                ProgrammeLumpSum(id = 3, splittingAllowed = true, fastTrack = false),
             )
         )
         assertThrows<LumpSumsRemovedAfterCallPublished> { updateCallLumpSums.updateLumpSums(ID, setOf(3)) }

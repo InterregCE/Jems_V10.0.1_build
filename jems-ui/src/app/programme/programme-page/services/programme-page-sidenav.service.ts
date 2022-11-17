@@ -82,6 +82,10 @@ export class ProgrammePageSidenavService {
               headline: {i18nKey: 'programme.tab.legal.status'},
               route: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/legalStatus`,
             },
+            {
+              headline: {i18nKey: 'programme.tab.typology.errors'},
+              route: `${ProgrammePageSidenavService.PROGRAMME_DETAIL_PATH}/typologyErrors`,
+            },
             this.costsPage,
             {
               headline: {i18nKey: 'programme.tab.state.aid'},

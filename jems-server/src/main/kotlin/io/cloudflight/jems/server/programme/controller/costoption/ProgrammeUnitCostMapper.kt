@@ -6,9 +6,11 @@ import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUn
 
 fun ProgrammeUnitCost.toDto() = ProgrammeUnitCostDTO(
     id = id,
+    projectDefined = projectId != null,
     name = name,
     description = description,
     type = type,
+    justification = justification,
     costPerUnit = costPerUnit,
     costPerUnitForeignCurrency = costPerUnitForeignCurrency,
     foreignCurrencyCode = foreignCurrencyCode,
@@ -26,11 +28,15 @@ fun Iterable<ProgrammeUnitCost>.toDto() = sorted().map {
     )
 }
 
+fun Iterable<ProgrammeUnitCost>.toDetailDto() = sorted().map { it.toDto() }
+
 fun ProgrammeUnitCostDTO.toModel() = ProgrammeUnitCost(
     id = id ?: 0,
+    projectId = null,
     name = name,
     description = description,
     type = type,
+    justification = justification,
     costPerUnit = costPerUnit,
     costPerUnitForeignCurrency = costPerUnitForeignCurrency,
     foreignCurrencyCode = foreignCurrencyCode,

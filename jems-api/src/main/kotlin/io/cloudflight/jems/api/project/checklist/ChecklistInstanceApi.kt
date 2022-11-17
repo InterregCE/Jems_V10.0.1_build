@@ -47,7 +47,7 @@ interface ChecklistInstanceApi {
 
     @ApiOperation("Retrieve detailed checklist instance")
     @GetMapping("$ENDPOINT_API_CHECKLIST_INSTANCE/{relatedToId}/detail/{checklistId}")
-    fun getChecklistInstanceDetail(@PathVariable relatedToId: Long, @PathVariable checklistId: Long): ChecklistInstanceDetailDTO
+    fun getChecklistInstanceDetail(@PathVariable checklistId: Long, @PathVariable relatedToId: Long): ChecklistInstanceDetailDTO
 
     @ApiOperation("Create a checklist instance")
     @PostMapping(ENDPOINT_API_CHECKLIST_INSTANCE, consumes = [MediaType.APPLICATION_JSON_VALUE])

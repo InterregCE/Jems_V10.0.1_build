@@ -2,12 +2,12 @@ package io.cloudflight.jems.server.project.service.report.partner.contribution.g
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
-import io.cloudflight.jems.server.project.service.report.model.contribution.ProjectPartnerReportContribution
-import io.cloudflight.jems.server.project.service.report.model.contribution.ProjectPartnerReportContributionData
-import io.cloudflight.jems.server.project.service.report.model.contribution.ProjectPartnerReportContributionOverview
-import io.cloudflight.jems.server.project.service.report.model.contribution.ProjectPartnerReportContributionRow
-import io.cloudflight.jems.server.project.service.report.model.contribution.withoutCalculations.ProjectPartnerReportEntityContribution
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.partner.contribution.ProjectPartnerReportContribution
+import io.cloudflight.jems.server.project.service.report.model.partner.contribution.ProjectPartnerReportContributionData
+import io.cloudflight.jems.server.project.service.report.model.partner.contribution.ProjectPartnerReportContributionOverview
+import io.cloudflight.jems.server.project.service.report.model.partner.contribution.ProjectPartnerReportContributionRow
+import io.cloudflight.jems.server.project.service.report.model.partner.contribution.withoutCalculations.ProjectPartnerReportEntityContribution
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectReportContributionPersistence
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -33,7 +33,7 @@ internal class GetProjectPartnerReportContributionTest : UnitTest() {
             amount = 5L.toBigDecimal(),
             previouslyReported = 2L.toBigDecimal(),
             currentlyReported = 1L.toBigDecimal(),
-            attachment = ProjectReportFileMetadata(45L, "file_pub_1.txt", UPLOADED),
+            attachment = JemsFileMetadata(45L, "file_pub_1.txt", UPLOADED),
         )
         private val contributionPublic2 = ProjectPartnerReportEntityContribution(
             id = 2L,
@@ -45,7 +45,7 @@ internal class GetProjectPartnerReportContributionTest : UnitTest() {
             amount = 15L.toBigDecimal(),
             previouslyReported = 3L.toBigDecimal(),
             currentlyReported = 3L.toBigDecimal(),
-            attachment = ProjectReportFileMetadata(46L, "file_pub_2.txt", UPLOADED),
+            attachment = JemsFileMetadata(46L, "file_pub_2.txt", UPLOADED),
         )
         private val contributionPrivate = ProjectPartnerReportEntityContribution(
             id = 3L,
@@ -57,7 +57,7 @@ internal class GetProjectPartnerReportContributionTest : UnitTest() {
             amount = 60L.toBigDecimal(),
             previouslyReported = 20L.toBigDecimal(),
             currentlyReported = 12L.toBigDecimal(),
-            attachment = ProjectReportFileMetadata(47L, "file_private.txt", UPLOADED),
+            attachment = JemsFileMetadata(47L, "file_private.txt", UPLOADED),
         )
         private val contributionAutomatic = ProjectPartnerReportEntityContribution(
             id = 4L,
@@ -69,7 +69,7 @@ internal class GetProjectPartnerReportContributionTest : UnitTest() {
             amount = 100L.toBigDecimal(),
             previouslyReported = 40L.toBigDecimal(),
             currentlyReported = 30L.toBigDecimal(),
-            attachment = ProjectReportFileMetadata(48L, "file_automatic.txt", UPLOADED),
+            attachment = JemsFileMetadata(48L, "file_automatic.txt", UPLOADED),
         )
 
         private val expectedContribution1 = ProjectPartnerReportContribution(
@@ -83,7 +83,7 @@ internal class GetProjectPartnerReportContributionTest : UnitTest() {
                 currentlyReported = 1L.toBigDecimal(),
                 totalReportedSoFar = 3L.toBigDecimal(),
             ),
-            attachment = ProjectReportFileMetadata(45L, "file_pub_1.txt", UPLOADED),
+            attachment = JemsFileMetadata(45L, "file_pub_1.txt", UPLOADED),
         )
 
         private val expectedContribution2 = ProjectPartnerReportContribution(
@@ -97,7 +97,7 @@ internal class GetProjectPartnerReportContributionTest : UnitTest() {
                 currentlyReported = 3L.toBigDecimal(),
                 totalReportedSoFar = 6L.toBigDecimal(),
             ),
-            attachment = ProjectReportFileMetadata(46L, "file_pub_2.txt", UPLOADED),
+            attachment = JemsFileMetadata(46L, "file_pub_2.txt", UPLOADED),
         )
 
         private val expectedContribution3 = ProjectPartnerReportContribution(
@@ -111,7 +111,7 @@ internal class GetProjectPartnerReportContributionTest : UnitTest() {
                 currentlyReported = 12L.toBigDecimal(),
                 totalReportedSoFar = 32L.toBigDecimal(),
             ),
-            attachment = ProjectReportFileMetadata(47L, "file_private.txt", UPLOADED),
+            attachment = JemsFileMetadata(47L, "file_private.txt", UPLOADED),
         )
 
         private val expectedContribution4 = ProjectPartnerReportContribution(
@@ -125,7 +125,7 @@ internal class GetProjectPartnerReportContributionTest : UnitTest() {
                 currentlyReported = 30L.toBigDecimal(),
                 totalReportedSoFar = 70L.toBigDecimal(),
             ),
-            attachment = ProjectReportFileMetadata(48L, "file_automatic.txt", UPLOADED),
+            attachment = JemsFileMetadata(48L, "file_automatic.txt", UPLOADED),
         )
 
         private val expectedOverview = ProjectPartnerReportContributionOverview(

@@ -2,20 +2,26 @@ package io.cloudflight.jems.server.programme.service
 
 import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
+import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditBuilder
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.nuts.service.NutsIdentifier
+import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistDetail
+import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.language.model.ProgrammeLanguage
 import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatus
+import io.cloudflight.jems.server.programme.service.priority.model.ProgrammeObjectiveDimension
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
 import io.cloudflight.jems.server.programme.service.stateaid.model.ProgrammeStateAid
+import io.cloudflight.jems.server.programme.service.typologyerrors.model.TypologyErrors
 import java.util.stream.Collectors
 
 fun programmePriorityAdded(programmePriority: ProgrammePriority): AuditCandidate {
     return AuditBuilder(AuditAction.PROGRAMME_PRIORITY_ADDED)
-        .description("New programme priority '${programmePriority.code}' '${programmePriority.title}'\nobjective = ${programmePriority.objective}\nspecificObjectives = ${programmePriority.specificObjectives.map { it.programmeObjectivePolicy }.joinToString(",\n")} was created")
+        .description("New programme priority '${programmePriority.code}' '${programmePriority.title}'\nobjective = ${programmePriority.objective}\nspecificObjectives = " +
+            "${priorityObjectives(programmePriority)} was created")
         .build()
 }
 
@@ -27,6 +33,12 @@ fun programmePriorityUpdated(oldPriority: ProgrammePriority, changes: Map<String
     return AuditBuilder(AuditAction.PROGRAMME_PRIORITY_UPDATED)
         .description("Programme priority data changed for '${oldPriority.code}' '${oldPriority.title}':\n$changedString")
         .build()
+}
+
+fun programmePriorityDeleted(context: Any, programmePriority: ProgrammePriority): AuditCandidateEvent {
+    return AuditCandidateEvent(context, AuditBuilder(AuditAction.PROGRAMME_PRIORITY_DELETED)
+        .description("Programme priority '${programmePriority.code}' '${programmePriority.title}' has been deleted")
+        .build())
 }
 
 fun programmeBasicDataChanged(changes: Map<String, Pair<Any?, Any?>>): AuditCandidate {
@@ -64,6 +76,14 @@ fun programmeLegalStatusesChanged(context: Any, statuses: List<ProgrammeLegalSta
 
     return AuditCandidateEvent(context, AuditBuilder(AuditAction.LEGAL_STATUS_EDITED)
         .description("Values for partner legal status set to:\n$statusesAsString")
+        .build())
+}
+
+fun programmeTypologyErrorsChanged(context: Any, errors: List<TypologyErrors>): AuditCandidateEvent {
+    val typologyErrorsAsString = errors.joinToString(",\n") { typologyError -> typologyError.description }
+
+    return AuditCandidateEvent(context, AuditBuilder(AuditAction.PROGRAMME_TYPOLOGY_ERRORS)
+        .description("Values for typology errors set to:\n$typologyErrorsAsString")
         .build())
 }
 
@@ -107,6 +127,14 @@ fun programmeTranslationFileUploaded(
             .build()
     )
 
+fun lumpSumDeleted(context: Any, lumpSum: ProgrammeLumpSum): AuditCandidateEvent =
+    AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditBuilder(AuditAction.PROGRAMME_LUMP_SUM_DELETED)
+        .description("Programme lump sum (id=${lumpSum.id}) '${lumpSum.name}' has been deleted")
+        .build()
+    )
+
 fun unitCostChangedAudit(context: Any, unitCost: ProgrammeUnitCost): AuditCandidateEvent =
     AuditCandidateEvent(
         context = context,
@@ -115,3 +143,42 @@ fun unitCostChangedAudit(context: Any, unitCost: ProgrammeUnitCost): AuditCandid
             .build()
     )
 
+fun unitCostDeleted(context: Any, unitCost: ProgrammeUnitCost): AuditCandidateEvent =
+    AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditBuilder(AuditAction.PROGRAMME_UNIT_COST_DELETED)
+            .description("Programme unit cost (id=${unitCost.id}) '${unitCost.name}' has been deleted")
+            .build()
+    )
+
+fun checklistCreated(context: Any, checklist: ProgrammeChecklistDetail): AuditCandidateEvent =
+    AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditCandidate(
+            action = AuditAction.CHECKLIST_IS_CREATED,
+            project = AuditProject(id = checklist.id.toString()),
+            description = "[" + checklist.type + "]" +
+                " [" + checklist.name + "]" + " created"
+        )
+    )
+
+fun checklistDeleted(context: Any, checklist: ProgrammeChecklistDetail): AuditCandidateEvent =
+    AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditCandidate(
+            action = AuditAction.CHECKLIST_IS_DELETED,
+            project = AuditProject(id = checklist.id.toString()),
+            description = "[" + checklist.id + "] [" + checklist.type + "]" +
+                " [" + checklist.name + "]" + " deleted"
+        )
+    )
+
+private fun priorityObjectives(programmePriority: ProgrammePriority) =
+    programmePriority.specificObjectives.joinToString(",\n") {
+        "${it.programmeObjectivePolicy} - Dimensions: ${dimensions(it.dimensionCodes)}"
+    }
+
+private fun dimensions(dimensionCodes: Map<ProgrammeObjectiveDimension, List<String>>) =
+    dimensionCodes.entries.joinToString(", ") {
+            "${it.key.name} (${it.value.joinToString(" ")})"
+    }

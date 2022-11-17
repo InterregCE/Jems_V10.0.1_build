@@ -18,6 +18,7 @@ import io.cloudflight.jems.api.project.dto.ProjectDetailFormDTO
 import io.cloudflight.jems.api.project.dto.ProjectPeriodDTO
 import io.cloudflight.jems.api.project.dto.ProjectSearchRequestDTO
 import io.cloudflight.jems.api.project.dto.ProjectVersionDTO
+import io.cloudflight.jems.api.project.dto.assignment.ProjectWithUsersDTO
 import io.cloudflight.jems.api.project.dto.budget.ProjectPartnerBudgetDTO
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
 import io.cloudflight.jems.api.project.dto.status.ProjectStatusDTO
@@ -54,6 +55,7 @@ import org.mapstruct.factory.Mappers
 import org.springframework.data.domain.Page
 
 fun ApplicationStatus.toDTO() = projectMapper.map(this)
+fun ApplicationStatusDTO.toModel() = projectMapper.map(this)
 fun ProjectStatus.toDTO() = projectMapper.map(this)
 fun ApplicationActionInfoDTO.toModel() = projectMapper.map(this)
 fun PreConditionCheckResult.toDTO() = projectMapper.map(this).also { result ->
@@ -138,12 +140,16 @@ fun Page<ProjectSummary>.toDto() = map {
 
 fun ProjectSearchRequestDTO.toModel() = projectMapper.map(this)
 
+fun ProjectWithUsersDTO.map() = projectMapper.map(this)
+
 private val projectMapper = Mappers.getMapper(ProjectMapper::class.java)
 
 @Mapper(uses = [CallDTOMapper::class])
 abstract class ProjectMapper {
 
     abstract fun map(applicationStatus: ApplicationStatus): ApplicationStatusDTO
+    abstract fun map(applicationStatus: ApplicationStatusDTO): ApplicationStatus
+    abstract fun mapToApplicationStatus(applicationStatus: Set<ApplicationStatusDTO>?): Set<ApplicationStatus>
     abstract fun map(projectStatus: ProjectStatus): ProjectStatusDTO
     abstract fun map(applicationActionInfoDTO: ApplicationActionInfoDTO): ApplicationActionInfo
     abstract fun map(projectVersion: ProjectVersion): ProjectVersionDTO
@@ -191,8 +197,8 @@ abstract class ProjectMapper {
             lumpSums = this.mapToLumpSumDTO(projectCallSettings.lumpSums),
             unitCosts = this.mapToUnitCostDTO(projectCallSettings.unitCosts),
             stateAids = this.mapToStateAidsDTO(projectCallSettings.stateAids),
-            applicationFormFieldConfigurations = projectCallSettings.applicationFormFieldConfigurations.toDto(projectCallSettings.callType)
-
+            applicationFormFieldConfigurations = projectCallSettings.applicationFormFieldConfigurations.toDto(projectCallSettings.callType),
+            costOption = projectCallSettings.costOption.toDto(),
         )
     }
 
@@ -205,5 +211,19 @@ abstract class ProjectMapper {
             availableInStep = applicationFormFieldConfiguration.visibilityStatus.toDTO(),
             stepSelectionLocked = !applicationFormFieldConfiguration.getValidVisibilityStatusSet(callType)
                 .containsAll(listOf(FieldVisibilityStatus.STEP_ONE_AND_TWO, FieldVisibilityStatus.STEP_TWO_ONLY))
+        )
+
+    fun map(searchRequest: ProjectWithUsersDTO?): ProjectSearchRequest =
+        ProjectSearchRequest(
+            id = if(searchRequest?.id == null) "" else searchRequest.id,
+            acronym = searchRequest?.acronym,
+            statuses = this.mapToApplicationStatus(searchRequest?.statuses),
+            calls = searchRequest?.calls,
+            users = searchRequest?.users,
+            firstSubmissionFrom = null,
+            firstSubmissionTo = null,
+            lastSubmissionFrom = null,
+            lastSubmissionTo = null,
+            objectives = null
         )
 }

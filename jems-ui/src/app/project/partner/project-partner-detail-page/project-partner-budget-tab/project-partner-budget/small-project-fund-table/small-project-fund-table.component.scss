@@ -1,0 +1,9 @@
+.small-project-fund-table{
+  .invalid{
+    color: var(--error-color);
+  }
+
+  .allocation-warn{
+    background-color: var(--pale-yellow) !important;
+  }
+}

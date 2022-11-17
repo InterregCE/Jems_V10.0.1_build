@@ -16,7 +16,8 @@
 }
 
 .text-left {
-  text-align: left;
+  text-align: left !important;
+  justify-content: flex-start;
 }
 
 .text-overflow-ellipsis {
@@ -560,4 +561,8 @@
   flex-wrap: wrap;
   margin-right: -15px;
   margin-left: -15px;
+}
+
+.respect-line-break {
+  white-space: pre-wrap;
 }

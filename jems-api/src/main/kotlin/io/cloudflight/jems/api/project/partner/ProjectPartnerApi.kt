@@ -8,6 +8,7 @@ import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerSummaryDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDetailDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerPaymentSummaryDTO
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
 import io.swagger.annotations.ApiImplicitParams
@@ -49,9 +50,17 @@ interface ProjectPartnerApi {
         ApiImplicitParam(paramType = "query", name = "sort", dataType = "string", allowMultiple = true)
     )
     @GetMapping("$ENDPOINT_API_PROJECT_PARTNER/byProjectId/{projectId}/ids")
-    fun getProjectPartnersForDropdown(@PathVariable projectId: Long,
-                                      pageable: Pageable,
-                                      @RequestParam(required = false) version: String? = null): List<ProjectPartnerSummaryDTO>
+    fun getProjectPartnersForDropdown(
+        @PathVariable projectId: Long,
+        pageable: Pageable,
+        @RequestParam(required = false) version: String? = null,
+    ): List<ProjectPartnerSummaryDTO>
+
+    @ApiOperation("Returns all project partners and funds by the latest approved version")
+    @GetMapping("$ENDPOINT_API_PROJECT_PARTNER/byProjectId/{projectId}/withContributionSources")
+    fun getProjectPartnersAndContributions(
+        @PathVariable projectId: Long
+    ): List<ProjectPartnerPaymentSummaryDTO>
 
     @ApiOperation("Returns a project partner by id")
     @GetMapping("$ENDPOINT_API_PROJECT_PARTNER/{partnerId}")

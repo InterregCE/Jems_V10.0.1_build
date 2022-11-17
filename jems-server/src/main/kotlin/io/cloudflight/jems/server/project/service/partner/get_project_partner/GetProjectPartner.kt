@@ -1,6 +1,9 @@
 package io.cloudflight.jems.server.project.service.partner.get_project_partner
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
+import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
+import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionList
+import io.cloudflight.jems.server.payments.authorization.CanUpdatePayments
 import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectForm
 import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectPartner
 import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectPartnerSummaries
@@ -8,6 +11,7 @@ import io.cloudflight.jems.server.project.service.budget.get_project_budget.GetP
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.model.ProjectBudgetPartnerSummary
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerPaymentSummary
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageImpl
@@ -19,7 +23,8 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class GetProjectPartner(
     private val persistence: PartnerPersistence,
-    private val getProjectBudget: GetProjectBudget
+    private val getProjectBudget: GetProjectBudget,
+    private val institutionPersistence: ControllerInstitutionPersistence,
 ) : GetProjectPartnerInteractor {
 
     @CanRetrieveProjectForm
@@ -27,9 +32,22 @@ class GetProjectPartner(
     @ExceptionWrapper(GetProjectPartnersByProjectIdException::class)
     override fun findAllByProjectId(projectId: Long, page: Pageable, version: String?): Page<ProjectBudgetPartnerSummary>  {
         val partnersPage = persistence.findAllByProjectId(projectId, page, version)
-        val partnerBudgets = getProjectBudget.getBudget(partnersPage.content, projectId, version);
+        val partnerBudgets = getProjectBudget.getBudget(partnersPage.content, projectId, version)
 
-        return PageImpl(partnerBudgets.map { ProjectBudgetPartnerSummary(partnerSummary =  ProjectPartnerSummary(it.partner.id, it.partner.abbreviation, it.partner.active, it.partner.role, it.partner.sortNumber, it.partner.country, it.partner.region), totalBudget = it.totalCosts)  }, page, partnerBudgets.size.toLong())
+        return PageImpl(partnerBudgets.map {
+            ProjectBudgetPartnerSummary(
+                partnerSummary = ProjectPartnerSummary(
+                    id = it.partner.id,
+                    abbreviation = it.partner.abbreviation,
+                    active = it.partner.active,
+                    role = it.partner.role,
+                    sortNumber = it.partner.sortNumber,
+                    country = it.partner.country,
+                    region = it.partner.region
+                ),
+                totalBudget = it.totalCosts
+            )
+        }, page, partnerBudgets.size.toLong())
     }
 
     @CanRetrieveProjectPartner
@@ -43,6 +61,25 @@ class GetProjectPartner(
     @ExceptionWrapper(GetProjectPartnerByProjectIdForDropdownException::class)
     override fun findAllByProjectIdForDropdown(
         projectId: Long, sort: Sort, version: String?
-    ): List<ProjectPartnerSummary> =
-        persistence.findAllByProjectIdForDropdown(projectId, sort, version)
+    ): List<ProjectPartnerSummary> {
+        val partners = persistence.findAllByProjectIdForDropdown(projectId, sort, version)
+
+        val institutionsByPartnerId = institutionPersistence
+            .getControllerInstitutions(partnerIds = partners.mapNotNullTo(HashSet()) { it.id })
+
+        return partners.fillInInstitutions(institutionsByPartnerId)
+    }
+
+    private fun List<ProjectPartnerSummary>.fillInInstitutions(institutions: Map<Long, ControllerInstitutionList>) =
+        this.apply {
+            this.forEach { it.institutionName = institutions[it.id!!]?.name }
+        }
+
+    @CanUpdatePayments
+    @Transactional(readOnly = true)
+    @ExceptionWrapper(GetProjectPartnerByProjectIdForDropdownException::class)
+    override fun findAllByProjectIdWithContributionsForDropdown(
+        projectId: Long
+    ): List<ProjectPartnerPaymentSummary> =
+        persistence.findAllByProjectIdWithContributionsForDropdown(projectId)
 }

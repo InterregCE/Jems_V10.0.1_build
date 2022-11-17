@@ -57,12 +57,12 @@ export class ApplicationFormPrivilegesExpansionPanelComponent implements OnInit 
   }
 
   ngOnInit(): void {
-      if (this.projectCollaboratorsData) {
-        this.formService.init(this.form, this.pageStore.projectCollaboratorsEditable$);
-        this.resetForm(this.projectCollaboratorsData);
-        this.formService.resetEditable();
-      }
+    if (this.projectCollaboratorsData) {
+      this.formService.init(this.form, this.pageStore.projectCollaboratorsEditable$);
+      this.resetForm(this.projectCollaboratorsData);
+      this.formService.resetEditable();
     }
+  }
 
   saveCollaborators(): void {
     this.pageStore.saveProjectCollaborators(this.projectCollaborators.value)
@@ -96,7 +96,7 @@ export class ApplicationFormPrivilegesExpansionPanelComponent implements OnInit 
 
   addCollaborator(projectCollaborator?: ProjectUserCollaboratorDTO): void {
     this.projectCollaborators.push(this.formBuilder.group({
-      userEmail: [projectCollaborator?.userEmail, [Validators.required, Validators.maxLength(255)]],
+      userEmail: [projectCollaborator?.userEmail, [Validators.required, Validators.pattern(/(?!^\s+$)^.*$/m), Validators.maxLength(255)]],
       level: [projectCollaborator?.level || this.PROJECT_LEVEL.VIEW, Validators.required]
     }));
   }

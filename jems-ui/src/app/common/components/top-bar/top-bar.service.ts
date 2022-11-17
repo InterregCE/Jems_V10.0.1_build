@@ -39,6 +39,23 @@ export class TopBarService {
     route: '/app/system',
     icon: 'settings'
   };
+  private controllersItem: MenuItemConfiguration = {
+    name: 'topbar.main.controllers',
+    route: '/app/controller',
+    icon: 'rule_folder'
+  };
+
+  private controllerAssignmentItem: MenuItemConfiguration = {
+    name: 'topbar.main.controllers',
+    route: '/app/controller/assignment',
+    icon: 'rule_folder'
+  };
+
+  private paymentsItem: MenuItemConfiguration = {
+    name: 'topbar.main.payments',
+    route: '/app/payments',
+    icon: 'payments'
+  };
 
   constructor(private permissionService: PermissionService,
               private securityService: SecurityService) {
@@ -72,7 +89,6 @@ export class TopBarService {
       .pipe(
         map(([permissions, editUserItem]) => {
           const menuItems: MenuItemConfiguration[] = [this.dashboardItem];
-
           if (permissions.includes(PermissionsEnum.ProjectRetrieve)) {
             menuItems.push(this.applicationsItem);
           }
@@ -81,6 +97,16 @@ export class TopBarService {
           }
           if (Permission.PROGRAMME_SETUP_MODULE_PERMISSIONS.some(perm => permissions.includes(perm))) {
             menuItems.push(this.programmeItem);
+          }
+
+          if(Permission.CONTROLLERS_PERMISSIONS.some(perm => permissions.includes(perm))) {
+            menuItems.push(this.controllersItem);
+          } else
+          if (Permission.CONTROLLERS_ASSIGNMENT_PERMISSIONS.some(perm => permissions.includes(perm))) {
+            menuItems.push(this.controllerAssignmentItem);
+          }
+          if (permissions.includes(PermissionsEnum.PaymentsRetrieve) || permissions.includes(PermissionsEnum.AdvancePaymentsRetrieve)) {
+            menuItems.push(this.paymentsItem);
           }
           if (Permission.SYSTEM_MODULE_PERMISSIONS.some(perm => permissions.includes(perm))) {
             if (permissions.includes(PermissionsEnum.AuditRetrieve)) {

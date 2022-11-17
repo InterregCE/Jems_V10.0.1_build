@@ -27,7 +27,7 @@ export class ProjectApplyToCallComponent {
   Alert = Alert;
 
   submissionForm = this.formBuilder.group({
-    acronym: ['', [Validators.required, Validators.maxLength(25)]]
+    acronym: ['', [Validators.required, Validators.pattern(/(?!^\s+$)^.*$/m), Validators.maxLength(25)]]
   });
   callId = this.activatedRoute.snapshot.params.callId;
   saveError$ = new Subject<APIError>();

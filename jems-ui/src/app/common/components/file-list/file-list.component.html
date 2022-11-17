@@ -1,0 +1,19 @@
+<div>
+    <jems-file-list-table
+            [fileList]="fileList?.content || []"
+            sortingEnabled="true"
+            [setDescriptionCallback]="setDescriptionCallback"
+            [deleteCallback]="deleteCallback"
+            (onSortChange)="this.onSortChange.next($event)"
+            (onDownload)="onDownload.emit($event)"
+            (refresh)="refresh.emit()">
+    </jems-file-list-table>
+
+    <jems-paginator *ngIf="fileList?.content?.length"
+            (pageIndexChanged)="onPageIndexChange.emit($event)"
+            (pageSizeChanged)="onPageSizeChange.emit($event)"
+            [currentPageIndex]="Tables.DEFAULT_INITIAL_PAGE_INDEX"
+            [currentPageSize]="Tables.DEFAULT_INITIAL_PAGE_SIZE"
+            [length]="fileList.totalElements">
+    </jems-paginator>
+</div>

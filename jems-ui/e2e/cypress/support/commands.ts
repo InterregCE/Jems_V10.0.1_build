@@ -1,83 +1,57 @@
-// ***********************************************
-// This example commands.js shows you how to
-// create various custom commands and overwrite
-// existing commands.
-//
-// For more comprehensive examples of custom
-// commands please read more here:
-// https://on.cypress.io/custom-commands
-// ***********************************************
-//
-//
-// -- This is a parent command --
-// Cypress.Commands.add("login", (email, password) => { ... })
-//
-//
-// -- This is a child command --
-// Cypress.Commands.add("drag", { prevSubject: 'element'}, (subject, options) => { ... })
-//
-//
-// -- This is a dual command --
-// Cypress.Commands.add("dismiss", { prevSubject: 'optional'}, (subject, options) => { ... })
-//
-//
-// -- This will overwrite an existing command --
-// Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
-import faker from '@faker-js/faker';
+import {faker} from '@faker-js/faker';
 
 declare global {
 
   namespace Cypress {
     interface Chainable {
-      parsePDF();
-
-      parseCSV();
-
       parseXLSX();
+
+      comparePdf(templatePdf: string, actualPdf: string, masks: any, baselinePath: string);
 
       clickToDownload(requestToIntercept: string, fileExtension: string);
     }
   }
 }
 
-Cypress.Commands.add('parsePDF', {prevSubject: true}, (subject) => {
-  cy.task('parsePDF', subject);
-});
-
-Cypress.Commands.add('parseCSV', {prevSubject: true}, (subject) => {
-  cy.task('parseCSV', subject);
-});
-
 Cypress.Commands.add('parseXLSX', {prevSubject: true}, (subject) => {
   cy.task('parseXLSX', subject);
 });
 
+Cypress.Commands.add('comparePdf', {prevSubject: false}, (templatePdf, actualPdf, masks, baselinePath) => {
+  cy.task('comparePdf', {templatePdf, actualPdf, masks, baselinePath}).then((result: any) => {
+    result.details?.forEach(detail => {
+      cy.log(detail.diffPng);
+    });
+    cy.wrap(result);
+  });
+})
+
 Cypress.Commands.add('clickToDownload', {prevSubject: true}, (subject, requestToIntercept, fileExtension) => {
-  const randomizeDownload = `downloadRequest ${faker.random.alphaNumeric(5)}`;
+  const randomizeDownload = `downloadRequest_${faker.random.alphaNumeric(5)}`;
   cy.intercept(requestToIntercept).as(randomizeDownload);
   cy.wrap(subject).click();
   cy.wait(`@${randomizeDownload}`).then(result => {
     const regex = new RegExp(`filename="(.*\.${fileExtension})"`);
+    const localDateTime = new URLSearchParams(result.request.url).get('localDateTime');
     const fileNameMatch = regex.exec(result.response.headers['content-disposition'].toString());
     if (!fileNameMatch) {
       throw new Error(`Downloaded file does not have ${fileExtension} extension`);
     }
     const fileName = fileNameMatch[1];
     if (fileExtension === 'pdf') {
-      cy.readFile('./cypress/downloads/' + fileName, null).parsePDF().then(file => {
+      cy.readFile('./cypress/downloads/' + fileName, null).then(file => {
         file.fileName = fileName;
-        cy.wrap(file);
-      });
-    } else if (fileExtension === 'csv') {
-      cy.readFile('./cypress/downloads/' + fileName).parseCSV().then(content => {
-        const file = {fileName: fileName, content: content};
-        cy.wrap(file);
-      });
+        file.localDateTime = localDateTime;
+        cy.wrap(fileName);
+      })
     } else if (fileExtension === 'xlsx') {
       cy.readFile('./cypress/downloads/' + fileName, null).parseXLSX().then(content => {
         const file = {fileName: fileName, content: content};
         cy.wrap(file);
       });
+    } else if (fileExtension === 'txt') {
+      const returnValue = {fileName: fileName}
+      cy.wrap(returnValue);
     } else {
       throw new Error('No implementation for: ' + fileExtension);
     }

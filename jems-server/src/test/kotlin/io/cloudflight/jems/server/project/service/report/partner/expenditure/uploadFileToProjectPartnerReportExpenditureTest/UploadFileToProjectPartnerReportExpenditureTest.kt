@@ -4,10 +4,10 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
-import io.cloudflight.jems.server.project.service.report.file.ProjectReportFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileCreate
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileCreate
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectReportExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.uploadFileToProjectPartnerReportExpenditure.ExpenditureNotFoundException
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.uploadFileToProjectPartnerReportExpenditure.FileTypeNotSupported
@@ -52,8 +52,8 @@ class UploadFileToProjectPartnerReportExpenditureTest : UnitTest() {
         every { reportExpenditurePersistence.existsByExpenditureId(PARTNER_ID, REPORT_ID, 22L) } returns true
         every { partnerPersistence.getProjectIdForPartnerId(PARTNER_ID) } returns 800L
 
-        val slotFile = slot<ProjectReportFileCreate>()
-        val mockResult = mockk<ProjectReportFileMetadata>()
+        val slotFile = slot<JemsFileCreate>()
+        val mockResult = mockk<JemsFileMetadata>()
         every { reportFilePersistence.updatePartnerReportExpenditureAttachment(22L, capture(slotFile)) } returns mockResult
 
         val file = ProjectFile(ByteArray(5).inputStream(), "file_name.xlsx", 50L)
@@ -65,7 +65,7 @@ class UploadFileToProjectPartnerReportExpenditureTest : UnitTest() {
             assertThat(partnerId).isEqualTo(PARTNER_ID)
             assertThat(name).isEqualTo("file_name.xlsx")
             assertThat(path).isEqualTo("Project/000800/Report/Partner/003500/PartnerReport/000360/Expenditure/000022/")
-            assertThat(type).isEqualTo(ProjectPartnerReportFileType.Expenditure)
+            assertThat(type).isEqualTo(JemsFileType.Expenditure)
             assertThat(size).isEqualTo(50L)
             assertThat(userId).isEqualTo(USER_ID)
         }

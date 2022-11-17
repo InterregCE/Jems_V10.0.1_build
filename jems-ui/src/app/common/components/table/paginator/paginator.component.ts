@@ -1,9 +1,8 @@
 import {ChangeDetectionStrategy, Component, EventEmitter, Input, Output, ViewChild} from '@angular/core';
-import {Tables} from '../../../utils/tables';
+import {Tables} from '@common/utils/tables';
 import {MatPaginator, PageEvent} from '@angular/material/paginator';
 import {Forms} from '@common/utils/forms';
-import {filter, take, tap} from 'rxjs/operators';
-import {Log} from '@common/utils/log';
+import {take, tap} from 'rxjs/operators';
 import {MatDialog} from '@angular/material/dialog';
 
 @Component({

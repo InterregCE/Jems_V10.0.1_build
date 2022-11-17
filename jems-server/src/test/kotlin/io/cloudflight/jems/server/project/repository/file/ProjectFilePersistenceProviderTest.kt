@@ -37,7 +37,7 @@ import org.junit.jupiter.api.TestFactory
 import org.junit.jupiter.api.assertThrows
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
-import java.util.*
+import java.util.Optional
 
 internal class ProjectFilePersistenceProviderTest : UnitTest() {
 
@@ -76,7 +76,7 @@ internal class ProjectFilePersistenceProviderTest : UnitTest() {
                     projectFilesBucket, capture(objectPathSlot), FILE_SIZE, projectFile.stream
                 )
             } returns Unit
-            projectFilePersistenceProvider.saveFile(PROJECT_ID, FILE_ID, USER_ID, projectFile)
+            assertThat(projectFilePersistenceProvider.saveFile(PROJECT_ID, FILE_ID, USER_ID, projectFile)).isEqualTo("project-1/2/test.txt")
             verify(exactly = 1) {
                 storage.saveFile(
                     projectFilesBucket, objectPathSlot.captured, FILE_SIZE, projectFile.stream
@@ -92,7 +92,7 @@ internal class ProjectFilePersistenceProviderTest : UnitTest() {
                     projectFilesBucket, capture(objectPathSlot), FILE_SIZE, projectFile.stream
                 )
             } returns Unit
-            projectFilePersistenceProvider.saveFile(PROJECT_ID, FILE_ID, USER_ID, projectFile)
+            assertThat(projectFilePersistenceProvider.saveFile(PROJECT_ID, FILE_ID, USER_ID, projectFile)).isEqualTo("project-1/2/test.txt")
             assertThat(objectPathSlot.captured).isEqualTo("project-$PROJECT_ID/$FILE_ID/$FILE_NAME")
         }
     }
@@ -328,7 +328,7 @@ internal class ProjectFilePersistenceProviderTest : UnitTest() {
     }
 
     @Nested
-    inner class SetFileDescription {
+    inner class SetContractFileDescription {
         @Test
         fun `should set description for file when there is no problem`() {
             val projectFileEntity = projectFileEntity(FILE_ID)

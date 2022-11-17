@@ -35,8 +35,8 @@ class UpdateProjectPartner(
             if (oldPartner.role != ProjectPartnerRole.LEAD_PARTNER && projectPartner.role!!.isLead)
                 persistence.changeRoleOfLeadPartnerToPartnerIfItExists(oldPartner.projectId)
 
-            if (oldPartner.abbreviation != projectPartner.abbreviation)
-                persistence.throwIfPartnerAbbreviationAlreadyExists(oldPartner.projectId, projectPartner.abbreviation!!)
+            if (oldPartner.abbreviation.lowercase() != projectPartner.abbreviation!!.lowercase())
+                persistence.throwIfPartnerAbbreviationAlreadyExists(oldPartner.projectId, projectPartner.abbreviation)
 
             persistence.update(projectPartner, shouldResortPartnersByRole(projectPartner.id))
         }

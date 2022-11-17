@@ -15,5 +15,7 @@ data class ProjectSummary(
     val programmePriorityCode: String? = null,
 ) {
     fun isInStep2() = status.isInStep2()
+
+    fun isInStep1() = status.isInStep1()
 }
 

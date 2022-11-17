@@ -6,9 +6,11 @@ import java.math.BigDecimal
 
 data class ProgrammeUnitCost(
     val id: Long = 0,
+    var projectId: Long?,
     val name: Set<InputTranslation> = emptySet(),
     val description: Set<InputTranslation> = emptySet(),
     val type: Set<InputTranslation> = emptySet(),
+    val justification: Set<InputTranslation> = emptySet(),
     val costPerUnit: BigDecimal? = null,
     val costPerUnitForeignCurrency: BigDecimal? = null,
     val foreignCurrencyCode: String? = null,

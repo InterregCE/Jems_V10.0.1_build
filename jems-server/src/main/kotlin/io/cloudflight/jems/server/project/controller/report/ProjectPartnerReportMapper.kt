@@ -9,17 +9,20 @@ import io.cloudflight.jems.api.project.dto.report.ReportStatusDTO
 import io.cloudflight.jems.api.project.dto.report.file.*
 import io.cloudflight.jems.api.project.dto.report.partner.PartnerReportIdentificationCoFinancingDTO
 import io.cloudflight.jems.api.project.dto.report.partner.PartnerReportIdentificationDTO
+import io.cloudflight.jems.api.project.dto.report.partner.identification.ProjectPartnerReportPeriodDTO
 import io.cloudflight.jems.server.programme.controller.fund.toDto
 import io.cloudflight.jems.server.programme.controller.legalstatus.toDto
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
-import io.cloudflight.jems.server.project.service.report.model.PartnerReportIdentification
-import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReport
-import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSummary
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFile
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileSearchRequest
+import io.cloudflight.jems.server.project.service.report.model.partner.PartnerReportIdentification
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSummary
+import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFile
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileSearchRequest
 import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportPeriod
 import org.mapstruct.Mapper
 import org.mapstruct.factory.Mappers
 import org.springframework.data.domain.Page
@@ -35,6 +38,18 @@ fun ProjectPartnerReportSummary.toDto() = ProjectPartnerReportSummaryDTO(
     linkedFormVersion = version,
     firstSubmission = firstSubmission,
     createdAt = createdAt,
+    startDate = startDate,
+    endDate = endDate,
+    periodDetail = periodDetail?.toDto(),
+    deletable = deletable,
+)
+
+fun ProjectPartnerReportPeriod.toDto() = ProjectPartnerReportPeriodDTO(
+    number = number,
+    periodBudget = periodBudget,
+    periodBudgetCumulative = periodBudgetCumulative,
+    start = start,
+    end = end,
 )
 
 fun Page<ProjectPartnerReportSummary>.toDto() = map { it.toDto() }
@@ -47,6 +62,8 @@ fun ProjectPartnerReport.toDto() = ProjectPartnerReportDTO(
 
     identification = identification.toDto()
 )
+
+fun ReportStatus.toDto() = ReportStatusDTO.valueOf(name)
 
 fun PartnerReportIdentification.toDto() = PartnerReportIdentificationDTO(
     projectIdentifier = projectIdentifier,
@@ -69,39 +86,40 @@ fun PartnerReportIdentification.toDto() = PartnerReportIdentificationDTO(
     }
 )
 
-fun ProjectReportFile.toDto() = ProjectReportFileDTO(
+fun JemsFile.toDto() = ProjectReportFileDTO(
     id = id,
     name = name,
     type = ProjectPartnerReportFileTypeDTO.valueOf(type.name),
     uploaded = uploaded,
-    author = mapper.map(author),
+    author = partnerReportMapper.map(author),
     size = size,
     sizeString = size.sizeToString(),
+    description = description,
 )
 
 private val sizeUnits = arrayOf("B", "kB", "MB", "GB", "TB")
 private val sizeFormat = DecimalFormat("#,##0.#")
-private fun Long.sizeToString(): String {
+fun Long.sizeToString(): String {
     if (this <= 0)
         return "0"
     val digitGroups = (log10(toDouble()) / log10(1024.0)).toInt()
     return sizeFormat.format(this / 1024.0.pow(digitGroups.toDouble())) + "\u0020" + sizeUnits[digitGroups]
 }
 
-fun ProjectReportFileSearchRequestDTO.toModel() = ProjectReportFileSearchRequest(
+fun ProjectReportFileSearchRequestDTO.toModel() = JemsFileSearchRequest(
     reportId = reportId,
-    treeNode = ProjectPartnerReportFileType.valueOf(treeNode.name),
-    filterSubtypes = filterSubtypes.mapTo(HashSet()) { ProjectPartnerReportFileType.valueOf(it.name) }
+    treeNode = JemsFileType.valueOf(treeNode.name),
+    filterSubtypes = filterSubtypes.mapTo(HashSet()) { JemsFileType.valueOf(it.name) }
 )
 
 fun MultipartFile.toProjectFile() = ProjectFile(inputStream, originalFilename ?: name, size)
 
-private val mapper = Mappers.getMapper(ProjectPartnerReportMapper::class.java)
+val partnerReportMapper = Mappers.getMapper(ProjectPartnerReportMapper::class.java)
 
-fun ProjectReportFileMetadata.toDto() = mapper.map(this)
+fun JemsFileMetadata.toDto() = partnerReportMapper.map(this)
 
 @Mapper
 interface ProjectPartnerReportMapper {
-    fun map(model: ProjectReportFileMetadata): ProjectReportFileMetadataDTO
+    fun map(model: JemsFileMetadata): ProjectReportFileMetadataDTO
     fun map(model: UserSimple): UserSimpleDTO
 }

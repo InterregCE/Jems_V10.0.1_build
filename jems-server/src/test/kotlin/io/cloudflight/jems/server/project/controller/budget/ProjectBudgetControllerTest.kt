@@ -4,6 +4,7 @@ import io.cloudflight.jems.api.project.dto.budget.ProjectBudgetOverviewPerPartne
 import io.cloudflight.jems.api.project.dto.budget.ProjectPartnerBudgetPerPeriodDTO
 import io.cloudflight.jems.api.project.dto.budget.ProjectPeriodBudgetDTO
 import io.cloudflight.jems.api.project.dto.budget.ProjectUnitCostDTO
+import io.cloudflight.jems.api.project.dto.budget.ProjectPartnerCostTypeDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerSummaryDTO
 import io.cloudflight.jems.server.UnitTest
@@ -13,6 +14,7 @@ import io.cloudflight.jems.server.project.service.model.BudgetCostsDetail
 import io.cloudflight.jems.server.project.service.model.ProjectBudgetOverviewPerPartnerPerPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectPartnerBudgetPerPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectPeriodBudget
+import io.cloudflight.jems.server.project.service.model.ProjectPartnerCostType
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import io.cloudflight.jems.server.project.service.unitcost.get_project_unit_costs.GetProjectUnitCostsInteractor
@@ -30,8 +32,9 @@ internal class ProjectBudgetControllerTest : UnitTest() {
         private val budgetPerPeriod = ProjectPartnerBudgetPerPeriod(
             partner = ProjectPartnerSummary(
                 id = 2L,
-                active = true,
                 abbreviation = "partner",
+                institutionName = "institution",
+                active = true,
                 role = ProjectPartnerRole.LEAD_PARTNER,
                 sortNumber = 3,
                 country = "country",
@@ -48,7 +51,8 @@ internal class ProjectBudgetControllerTest : UnitTest() {
                 )
             ),
             totalPartnerBudget = BigDecimal.TEN,
-            totalPartnerBudgetDetail = BudgetCostsDetail()
+            totalPartnerBudgetDetail = BudgetCostsDetail(),
+            costType = ProjectPartnerCostType.Management
         )
 
         private val budgetOverviewPerPartnerPerPeriod =
@@ -91,8 +95,9 @@ internal class ProjectBudgetControllerTest : UnitTest() {
                     ProjectPartnerBudgetPerPeriodDTO(
                         partner = ProjectPartnerSummaryDTO(
                             id = budgetPerPeriod.partner.id,
-                            active = true,
                             abbreviation = budgetPerPeriod.partner.abbreviation,
+                            institutionName = "institution",
+                            active = true,
                             role = ProjectPartnerRoleDTO.LEAD_PARTNER,
                             sortNumber = budgetPerPeriod.partner.sortNumber,
                             country = budgetPerPeriod.partner.country,
@@ -107,7 +112,8 @@ internal class ProjectBudgetControllerTest : UnitTest() {
                                 isLastPeriod = true
                             )
                         ),
-                        totalPartnerBudget = budgetPerPeriod.totalPartnerBudget
+                        totalPartnerBudget = budgetPerPeriod.totalPartnerBudget,
+                        costType = ProjectPartnerCostTypeDTO.Management
                     )
                 ),
                 totals = listOf(BigDecimal.TEN),

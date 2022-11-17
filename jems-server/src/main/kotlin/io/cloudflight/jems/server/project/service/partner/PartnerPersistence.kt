@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.service.partner
 
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAddress
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerContact
@@ -7,6 +8,7 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDe
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerMotivation
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerStateAid
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerPaymentSummary
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
@@ -31,6 +33,8 @@ interface PartnerPersistence {
 
     fun findAllByProjectIdForDropdown(projectId: Long, sort: Sort, version: String? = null): List<ProjectPartnerSummary>
 
+    fun findAllByProjectIdWithContributionsForDropdown(projectId: Long): List<ProjectPartnerPaymentSummary>
+
     // used for authorization
     fun getProjectIdForPartnerId(id: Long, version: String? = null): Long
 
@@ -51,4 +55,6 @@ interface PartnerPersistence {
     fun deletePartner(partnerId: Long)
 
     fun deactivatePartner(partnerId: Long)
+
+    fun getPartnerProjectIdByPartnerIdAndProjectStatusIn(partnerIds: Set<Long>, projectStatuses: Set<ApplicationStatus>): List<Pair<Long, Long>>
 }

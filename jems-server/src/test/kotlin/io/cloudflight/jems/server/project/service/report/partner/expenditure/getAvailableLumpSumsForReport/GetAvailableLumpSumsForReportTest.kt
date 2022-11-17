@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.project.service.report.partner.expenditure.ge
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportLumpSum
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportLumpSum
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectReportExpenditurePersistence
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -19,6 +19,7 @@ internal class GetAvailableLumpSumsForReportTest : UnitTest() {
     private val lumpSumZero = ProjectPartnerReportLumpSum(
         id = 1L,
         lumpSumProgrammeId = 45L,
+        fastTrack = false,
         period = null,
         cost = BigDecimal.valueOf(0, 1),
         name = setOf(InputTranslation(SystemLanguage.EN, "first EN")),
@@ -26,9 +27,18 @@ internal class GetAvailableLumpSumsForReportTest : UnitTest() {
     private val lumpSumNonZero = ProjectPartnerReportLumpSum(
         id = 2L,
         lumpSumProgrammeId = 46L,
+        fastTrack = false,
         period = null,
         cost = BigDecimal.valueOf(10, 1),
         name = setOf(InputTranslation(SystemLanguage.EN, "second EN")),
+    )
+    private val lumpSumFastTrack = ProjectPartnerReportLumpSum(
+        id = 3L,
+        lumpSumProgrammeId = 47L,
+        fastTrack = true,
+        period = null,
+        cost = BigDecimal.valueOf(101, 2),
+        name = setOf(InputTranslation(SystemLanguage.EN, "third EN")),
     )
 
     @MockK
@@ -40,7 +50,7 @@ internal class GetAvailableLumpSumsForReportTest : UnitTest() {
     @Test
     fun getLumpSums() {
         every { reportExpenditurePersistence.getAvailableLumpSums(PARTNER_ID, 10L) } returns
-            listOf(lumpSumZero, lumpSumNonZero)
+            listOf(lumpSumZero, lumpSumNonZero, lumpSumFastTrack)
         assertThat(interactor.getLumpSums(PARTNER_ID, 10L)).containsExactly(lumpSumNonZero)
     }
 

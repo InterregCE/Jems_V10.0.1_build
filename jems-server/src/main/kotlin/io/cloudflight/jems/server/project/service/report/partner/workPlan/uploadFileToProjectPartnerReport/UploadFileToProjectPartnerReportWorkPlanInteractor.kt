@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.partner.workPlan.uploadFileToProjectPartnerReport
 
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 
 interface UploadFileToProjectPartnerReportWorkPlanInteractor {
 
@@ -11,7 +11,7 @@ interface UploadFileToProjectPartnerReportWorkPlanInteractor {
         workPackageId: Long,
         activityId: Long,
         file: ProjectFile,
-    ): ProjectReportFileMetadata
+    ): JemsFileMetadata
 
     fun uploadToDeliverable(
         partnerId: Long,
@@ -20,7 +20,7 @@ interface UploadFileToProjectPartnerReportWorkPlanInteractor {
         activityId: Long,
         deliverableId: Long,
         file: ProjectFile,
-    ): ProjectReportFileMetadata
+    ): JemsFileMetadata
 
     fun uploadToOutput(
         partnerId: Long,
@@ -28,6 +28,6 @@ interface UploadFileToProjectPartnerReportWorkPlanInteractor {
         workPackageId: Long,
         outputId: Long,
         file: ProjectFile,
-    ): ProjectReportFileMetadata
+    ): JemsFileMetadata
 
 }

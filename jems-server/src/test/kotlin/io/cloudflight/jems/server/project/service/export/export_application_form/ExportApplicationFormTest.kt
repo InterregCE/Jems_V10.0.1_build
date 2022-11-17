@@ -1,16 +1,19 @@
 package io.cloudflight.jems.server.project.service.export.export_application_form
 
+import io.cloudflight.jems.api.common.dto.LogoDTO
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.plugin.contract.export.ApplicationFormExportPlugin
 import io.cloudflight.jems.plugin.contract.export.ExportResult
 import io.cloudflight.jems.plugin.contract.models.common.SystemLanguageData
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.plugin.JemsPluginRegistry
+import io.cloudflight.jems.server.resources.service.get_logos.GetLogosInteractor
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
+import java.time.LocalDateTime
 
 internal class ExportApplicationFormTest : UnitTest() {
 
@@ -18,6 +21,9 @@ internal class ExportApplicationFormTest : UnitTest() {
 
     @MockK
     lateinit var jemsPluginRegistry: JemsPluginRegistry
+
+    @MockK
+    lateinit var getLogosInteractor: GetLogosInteractor
 
     @MockK
     lateinit var applicationFormExportPlugin: ApplicationFormExportPlugin
@@ -28,13 +34,31 @@ internal class ExportApplicationFormTest : UnitTest() {
     @Test
     fun `should execute export application form plugin when there is no problem`() {
         val exportResult = ExportResult("pdf", "filename", byteArrayOf())
+        val localDateTime = LocalDateTime.now()
         every {
             jemsPluginRegistry.get(ApplicationFormExportPlugin::class, pluginKey)
         } returns applicationFormExportPlugin
         every {
-            applicationFormExportPlugin.export(1L, SystemLanguageData.EN, SystemLanguageData.DE)
+            applicationFormExportPlugin.export(
+                projectId = 1L,
+                exportLanguage = SystemLanguageData.EN,
+                dataLanguage = SystemLanguageData.DE,
+                version = "1",
+                logo = null,
+                localDateTime = localDateTime)
         } returns exportResult
+        every {
+            getLogosInteractor.getLogos()
+        } returns listOf<LogoDTO>()
 
-        assertThat(exportApplicationForm.export(1L, SystemLanguage.EN, SystemLanguage.DE)).isEqualTo(exportResult)
+        assertThat(exportApplicationForm.export(
+            projectId = 1L,
+            exportLanguage = SystemLanguage.EN,
+            inputLanguage = SystemLanguage.DE,
+            localDateTime = localDateTime,
+            version = "1",
+            pluginKey = pluginKey,
+        ))
+            .isEqualTo(exportResult)
     }
 }

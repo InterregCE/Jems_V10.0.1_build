@@ -1,0 +1,328 @@
+{
+  "budget": {
+    "staffCosts": [
+      {
+        "staffFunction": [
+          {
+            "translation": "Staff cost item function DE",
+            "language": "DE"
+          },
+          {
+            "translation": "Staff cost item function EN",
+            "language": "EN"
+          }
+        ],
+        "comments": [
+          {
+            "translation": "Staff cost item comments DE",
+            "language": "DE"
+          },
+          {
+            "translation": "Staff cost item comments EN",
+            "language": "EN"
+          }
+        ],
+        "unitType": [
+          {
+            "translation": "Staff cost item unit type DE",
+            "language": "DE"
+          },
+          {
+            "translation": "Staff cost item unit type EN",
+            "language": "EN"
+          }
+        ],
+        "numberOfUnits": 2,
+        "pricePerUnit": 1234.56,
+        "budgetPeriods": [
+          {
+            "amount": 541.67,
+            "number": 1
+          },
+          {
+            "amount": 785.24,
+            "number": 2
+          },
+          {
+            "amount": 298.44,
+            "number": 3
+          },
+          {
+            "amount": 379.44,
+            "number": 4
+          },
+          {
+            "amount": 56.12,
+            "number": 5
+          },
+          {
+            "amount": 123.98,
+            "number": 6
+          },
+          {
+            "amount": 234.44,
+            "number": 7
+          },
+          {
+            "amount": 49.79,
+            "number": 8
+          }
+        ]
+      },
+      {
+        "unitCost": "Unit cost SC1",
+        "comments": [
+          {
+            "translation": "Staff cost item 2 comments DE",
+            "language": "DE"
+          },
+          {
+            "translation": "Staff cost item 2 comments EN",
+            "language": "EN"
+          }
+        ],
+        "numberOfUnits": 13,
+        "budgetPeriods": [
+          {
+            "amount": 722.27,
+            "number": 8
+          }
+        ]
+      }
+    ],
+    "travelCosts": [
+      {
+        "description": [
+          {
+            "translation": "Travel and accommodation cost item description DE",
+            "language": "DE"
+          },
+          {
+            "translation": "Travel and accommodation cost item description EN",
+            "language": "EN"
+          }
+        ],
+        "comments": [
+          {
+            "translation": "Travel and accommodation cost item comments DE",
+            "language": "DE"
+          },
+          {
+            "translation": "Travel and accommodation cost item comments EN",
+            "language": "EN"
+          }
+        ],
+        "unitType": [
+          {
+            "translation": "Travel and accommodation cost item unit type DE",
+            "language": "DE"
+          },
+          {
+            "translation": "Travel and accommodation cost item unit type EN",
+            "language": "EN"
+          }
+        ],
+        "numberOfUnits": 3,
+        "pricePerUnit": 299.99,
+        "budgetPeriods": [
+          {
+            "amount": 400,
+            "number": 4
+          },
+          {
+            "amount": 499.97,
+            "number": 7
+          }
+        ]
+      }
+    ],
+    "externalCosts": [
+      {
+        "description": [
+          {
+            "translation": "External expertise and services cost item description DE",
+            "language": "DE"
+          },
+          {
+            "translation": "External expertise and services cost item description EN",
+            "language": "EN"
+          }
+        ],
+        "comments": [
+          {
+            "translation": "External expertise and services cost item comments DE",
+            "language": "DE"
+          },
+          {
+            "translation": "External expertise and services cost item comments EN",
+            "language": "EN"
+          }
+        ],
+        "awardProcedures": [
+          {
+            "translation": "External expertise and services cost item award procedures DE",
+            "language": "DE"
+          },
+          {
+            "translation": "External expertise and services cost item award procedures EN",
+            "language": "EN"
+          }
+        ],
+        "unitType": [
+          {
+            "translation": "External expertise and services cost item unit type DE",
+            "language": "DE"
+          },
+          {
+            "translation": "External expertise and services cost item unit type EN",
+            "language": "EN"
+          }
+        ],
+        "numberOfUnits": 5,
+        "pricePerUnit": 5438.50,
+        "budgetPeriods": [
+          {
+            "amount": 27192.50,
+            "number": 1
+          }
+        ]
+      }
+    ],
+    "equipmentCosts": [
+      {
+        "unitCost": "Unit cost EQ1",
+        "description": [
+          {
+            "translation": "Equipment cost item comments DE",
+            "language": "DE"
+          },
+          {
+            "translation": "Equipment cost item comments EN",
+            "language": "EN"
+          }
+        ],
+        "comments": [
+          {
+            "translation": "Equipment cost item comments DE",
+            "language": "DE"
+          },
+          {
+            "translation": "Equipment cost item comments EN",
+            "language": "EN"
+          }
+        ],
+        "awardProcedures": [
+          {
+            "translation": "Equipment cost item award procedures DE",
+            "language": "DE"
+          },
+          {
+            "translation": "Equipment cost item award procedures EN",
+            "language": "EN"
+          }
+        ],
+        "numberOfUnits": 10,
+        "budgetPeriods": [
+          {
+            "amount": 5555.60,
+            "number": 5
+          }
+        ]
+      }
+    ],
+    "infrastructureCosts": [
+      {
+        "description": [
+          {
+            "translation": "Infrastructure and works cost item description DE",
+            "language": "DE"
+          },
+          {
+            "translation": "Infrastructure and works cost item description EN",
+            "language": "EN"
+          }
+        ],
+        "comments": [
+          {
+            "translation": "Infrastructure and works cost item comments DE",
+            "language": "DE"
+          },
+          {
+            "translation": "Infrastructure and works cost item comments EN",
+            "language": "EN"
+          }
+        ],
+        "awardProcedures": [
+          {
+            "translation": "Infrastructure and works cost item award procedures DE",
+            "language": "DE"
+          },
+          {
+            "translation": "Infrastructure and works cost item award procedures EN",
+            "language": "EN"
+          }
+        ],
+        "unitType": [
+          {
+            "translation": "Infrastructure and works cost item unit type DE",
+            "language": "DE"
+          },
+          {
+            "translation": "Infrastructure and works cost item unit type EN",
+            "language": "EN"
+          }
+        ],
+        "numberOfUnits": 8,
+        "pricePerUnit": 100.99,
+        "budgetPeriods": [
+          {
+            "amount": 100.99,
+            "number": 1
+          },
+          {
+            "amount": 100.99,
+            "number": 2
+          },
+          {
+            "amount": 100.99,
+            "number": 3
+          },
+          {
+            "amount": 100.99,
+            "number": 4
+          },
+          {
+            "amount": 100.99,
+            "number": 5
+          },
+          {
+            "amount": 100.99,
+            "number": 6
+          },
+          {
+            "amount": 100.99,
+            "number": 7
+          },
+          {
+            "amount": 100.99,
+            "number": 8
+          }
+        ]
+      }
+    ],
+    "unitCosts": [
+      {
+        "unitCost": "Unit cost MCC1",
+        "numberOfUnits": 10.5,
+        "budgetPeriods": [
+          {
+            "amount": 583.38,
+            "number": 2
+          }
+        ]
+      }
+    ]
+  },
+  "staffCostsFlatRate": 15,
+  "staffCostsFlatRateAmount": 5168.39
+}

@@ -1,11 +1,11 @@
 package io.cloudflight.jems.server.project.repository.report
 
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
-import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReport
-import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportStatusAndVersion
-import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSubmissionSummary
-import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSummary
-import io.cloudflight.jems.server.project.service.report.model.ReportStatus
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportStatusAndVersion
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSummary
+import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
@@ -30,6 +30,13 @@ class ProjectReportPersistenceProvider(
                 firstSubmission = submissionTime
             }.toSubmissionSummary()
 
+    @Transactional
+    override fun startControlOnReportById(partnerId: Long, reportId: Long) =
+        partnerReportRepository.findByIdAndPartnerId(id = reportId, partnerId = partnerId)
+            .apply {
+                status = ReportStatus.InControl
+            }.toSubmissionSummary()
+
     @Transactional(readOnly = true)
     override fun getPartnerReportStatusAndVersion(
         partnerId: Long,
@@ -51,8 +58,8 @@ class ProjectReportPersistenceProvider(
             .map { it.toModelSummary() }
 
     @Transactional(readOnly = true)
-    override fun listSubmittedPartnerReports(partnerId: Long): List<ProjectPartnerReportSummary> =
-        partnerReportRepository.findAllByPartnerIdAndStatus(partnerId, ReportStatus.Submitted).map { it.toModelSummary() }
+    override fun getSubmittedPartnerReportIds(partnerId: Long): Set<Long> =
+        partnerReportRepository.findAllIdsByPartnerIdAndStatusIn(partnerId, ReportStatus.SUBMITTED_STATUSES)
 
     @Transactional(readOnly = true)
     override fun getReportIdsBefore(partnerId: Long, beforeReportId: Long): Set<Long> =
@@ -63,11 +70,20 @@ class ProjectReportPersistenceProvider(
         partnerReportRepository.existsByPartnerIdAndId(partnerId = partnerId, id = reportId)
 
     @Transactional(readOnly = true)
-    override fun getCurrentLatestReportNumberForPartner(partnerId: Long): Int =
-        partnerReportRepository.getMaxNumberForPartner(partnerId = partnerId)
+    override fun getCurrentLatestReportForPartner(partnerId: Long): ProjectPartnerReport? =
+        partnerReportRepository.findFirstByPartnerIdOrderByIdDesc(partnerId = partnerId)?.toModel(emptyList())
 
     @Transactional(readOnly = true)
     override fun countForPartner(partnerId: Long): Int =
         partnerReportRepository.countAllByPartnerId(partnerId)
 
+
+    @Transactional(readOnly = true)
+    override fun isAnyReportCreated() =
+        partnerReportRepository.count() > 0
+
+    @Transactional
+    override fun deletePartnerReportById(reportId: Long) {
+        partnerReportRepository.deleteById(reportId)
+    }
 }

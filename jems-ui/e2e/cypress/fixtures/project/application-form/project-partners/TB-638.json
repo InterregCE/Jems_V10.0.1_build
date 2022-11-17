@@ -1,0 +1,38 @@
+{
+  "associatedOrganisation": {
+    "nameInOriginalLanguage": "Name in original language",
+    "nameInEnglish": "Name in English",
+    "partnerId": 1,
+    "address": {
+      "country": "Magyarország",
+      "nutsRegion2": "Észak-Alföld",
+      "nutsRegion3": "Jász-Nagykun-Szolnok",
+      "street": "Organisation street",
+      "houseNumber": "13",
+      "postalCode": "1010",
+      "city": "Szegedin"
+    },
+    "legalRepresentative": {
+      "title": "Mr",
+      "firstName": "John",
+      "lastName": "Deer"
+    },
+    "contactPerson": {
+      "title": "Ms",
+      "firstName": "Johanna",
+      "lastName": "Deery",
+      "email": "johanna@deery.com",
+      "telephone": "+1234567890"
+    },
+    "roleDescription": [
+      {
+        "translation": "Role of the organisation DE",
+        "language": "DE"
+      },
+      {
+        "translation": "Role of the organisation EN",
+        "language": "EN"
+      }
+    ]
+  }
+}

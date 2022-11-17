@@ -13,7 +13,8 @@ import {
   InputTranslation,
   OutputProgrammePrioritySimple,
   ProjectDetailDTO,
-  ProjectDetailFormDTO, ProjectPartnerDetailDTO
+  ProjectDetailFormDTO,
+  ProjectPartnerDetailDTO
 } from '@cat/api';
 import {Permission} from '../../../../security/permissions/permission';
 import {Tools} from '@common/utils/tools';
@@ -22,7 +23,7 @@ import {BaseComponent} from '@common/components/base-component';
 import {FormService} from '@common/components/section/form/form.service';
 import {ProjectStore} from '../../containers/project-application-detail/services/project-store.service';
 import {LanguageStore} from '@common/services/language-store.service';
-import { APPLICATION_FORM } from '@project/common/application-form-model';
+import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {Alert} from '@common/components/forms/alert';
 import {ProjectUtil} from '@project/common/project-util';
 
@@ -61,7 +62,8 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
     nameOfTheLeadPartnerInEnglish: [''],
     acronym: ['', Validators.compose([
       Validators.maxLength(25),
-      Validators.required])
+      Validators.required,
+      Validators.pattern(/(?!^\s+$)^.*$/m)])
     ],
     title: ['', Validators.maxLength(250)],
     duration: ['', Validators.compose([
@@ -70,8 +72,8 @@ export class ProjectApplicationFormComponent extends BaseComponent implements On
     ])],
     projectPeriodLength: [''],
     projectPeriodCount: [''],
-    introEn: [[], Validators.maxLength(2000)],
-    intro: ['', Validators.maxLength(2000)],
+    introEn: [[], Validators.maxLength(5000)],
+    intro: ['', Validators.maxLength(5000)],
     programmePriority: ['', Validators.required],
     specificObjective: ['', Validators.required]
   });

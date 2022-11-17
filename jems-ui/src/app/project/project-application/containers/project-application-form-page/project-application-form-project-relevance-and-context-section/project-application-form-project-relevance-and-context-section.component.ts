@@ -1,8 +1,8 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {combineLatest, Subject} from 'rxjs';
+import {combineLatest} from 'rxjs';
 import {map, mergeMap, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
-import {CallService, InputProjectRelevance, ProjectDescriptionService} from '@cat/api';
+import {CallService, ProjectDescriptionService} from '@cat/api';
 import {ProjectApplicationFormStore} from '../services/project-application-form-store.service';
 import {ProjectStore} from '../../project-application-detail/services/project-store.service';
 import {ActivatedRoute} from '@angular/router';
@@ -15,10 +15,7 @@ import {ActivatedRoute} from '@angular/router';
 })
 export class ProjectApplicationFormProjectRelevanceAndContextSectionComponent {
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
-  projectRelevance$ = this.projectApplicationFormStore.projectDescription$
-    .pipe(
-      map(project => project.projectRelevance)
-    );
+  projectRelevance$ = this.projectApplicationFormStore.projectRelevance$;
 
   private callStrategies$ = this.projectStore.project$
     .pipe(

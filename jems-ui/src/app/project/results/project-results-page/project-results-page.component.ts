@@ -5,7 +5,13 @@ import {ProjectResultsPageConstants} from './project-results-page.constants';
 import {combineLatest, Observable} from 'rxjs';
 import {FormArray, FormBuilder} from '@angular/forms';
 import {catchError, map, take,tap} from 'rxjs/operators';
-import {InputTranslation, ProjectPeriodDTO, ProjectResultDTO, ResultIndicatorSummaryDTO} from '@cat/api';
+import {
+  InputTranslation,
+  OutputProgrammePriorityPolicySimpleDTO,
+  ProjectPeriodDTO,
+  ProjectResultDTO,
+  ResultIndicatorSummaryDTO,
+} from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {MatSelectChange} from '@angular/material/select/select';
@@ -33,6 +39,7 @@ export class ProjectResultsPageComponent implements OnInit {
     periods: ProjectPeriodDTO[];
     projectId: number;
     projectTitle: string;
+    specificObjective: OutputProgrammePriorityPolicySimpleDTO;
   }>;
   Alert = Alert;
 
@@ -50,11 +57,12 @@ export class ProjectResultsPageComponent implements OnInit {
       this.projectResultsPageStore.resultIndicators$,
       this.projectResultsPageStore.periods$,
       this.projectResultsPageStore.projectId$,
-      this.projectResultsPageStore.projectTitle$
+      this.projectResultsPageStore.projectTitle$,
+      this.projectResultsPageStore.projectForm$,
     ])
       .pipe(
-        map(([results, resultIndicators, periods, projectId, projectTitle]) => (
-          {results, resultIndicators, periods, projectId, projectTitle})
+        map(([results, resultIndicators, periods, projectId, projectTitle, projectForm$]) => (
+          {results, resultIndicators, periods, projectId, projectTitle, specificObjective: projectForm$.specificObjective})
         ),
         tap(data => this.resetForm(data.results, data.resultIndicators))
       );

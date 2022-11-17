@@ -92,11 +92,13 @@ fun ResultIndicator.toResultIndicatorEntity(
         baseline = baseline,
         referenceYear = referenceYear,
         finalTarget = finalTarget,
-        comment = comment,
         translatedValues = mutableSetOf()
     ).apply {
         translatedValues.addAll(
-            name.filter { !it.translation.isNullOrBlank() }.plus(measurementUnit.filter { !it.translation.isNullOrBlank() }).plus(sourceOfData.filter { !it.translation.isNullOrBlank() })
+            name.filter { !it.translation.isNullOrBlank() }
+                .plus(measurementUnit.filter { !it.translation.isNullOrBlank() })
+                .plus(sourceOfData.filter { !it.translation.isNullOrBlank() })
+                .plus(comment.filter { !it.translation.isNullOrBlank() })
                 .mapTo(HashSet()) { it.language }
                 .map { language ->
                     ResultIndicatorTranslEntity(
@@ -107,6 +109,7 @@ fun ResultIndicator.toResultIndicatorEntity(
                         name = name.firstOrNull { it.language == language }?.translation,
                         measurementUnit = measurementUnit.firstOrNull { it.language == language }?.translation,
                         sourceOfData = sourceOfData.firstOrNull { it.language == language }?.translation,
+                        comment = comment.firstOrNull { it.language == language }?.translation
                     )
                 }.toMutableSet()
         )
@@ -124,6 +127,10 @@ fun ResultIndicatorEntity.getSourceOfData() = translatedValues.mapTo(HashSet()) 
     InputTranslation(it.translationId.language, it.sourceOfData)
 }
 
+fun ResultIndicatorEntity.getComment() = translatedValues.mapTo(HashSet()) {
+    InputTranslation(it.translationId.language, it.comment)
+}
+
 fun Page<ResultIndicatorEntity>.toResultIndicatorDetailPage() = map { it.toResultIndicatorDetail() }
 fun ResultIndicatorEntity.toResultIndicatorDetail() =
     ResultIndicatorDetail(
@@ -139,7 +146,7 @@ fun ResultIndicatorEntity.toResultIndicatorDetail() =
         referenceYear = referenceYear,
         finalTarget = finalTarget,
         sourceOfData = getSourceOfData(),
-        comment = comment
+        comment = getComment()
     )
 
 

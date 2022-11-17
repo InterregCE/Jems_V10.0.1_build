@@ -1,25 +1,29 @@
-<div appNoWidthLimit id="budget-table"
+<div jemsNoWidthLimit id="budget-table"
      [jemsTableConfig]="tableConfig"
      *ngIf="budget$ | async as budgets">
 
     <div class="header-center">
-        <span jemsText maxLines="2" >{{ 'project.breadcrumb.partnerName' | translate }}</span>
+        <span jemsText maxLines="2">{{ 'project.breadcrumb.partnerName' | translate }}</span>
+        <span jemsText maxLines="2">{{ 'project.application.form.partner.table.name' | translate }}</span>
         <span jemsText maxLines="2" *ngIf="displayedColumns.includes('country')">{{ 'project.partner.main-address.country' | translate }}</span>
-        <span jemsText maxLines="2" *ngIf="displayedColumns.includes('staffCosts')" class="justify-end">{{ 'project.partner.budget.staff' | translate }}</span>
-        <span jemsText maxLines="2" *ngIf="displayedColumns.includes('officeAndAdministrationCosts')" class="justify-end">{{ 'project.partner.budget.office.and.admin.header' | translate }}</span>
-        <span jemsText maxLines="2" *ngIf="displayedColumns.includes('travelCosts')" class="justify-end">{{ 'project.partner.budget.travel' | translate }}</span>
-        <span jemsText maxLines="2" *ngIf="displayedColumns.includes('externalCosts')" class="justify-end">{{ 'project.partner.budget.external' | translate }}</span>
-        <span jemsText maxLines="2" *ngIf="displayedColumns.includes('equipmentCosts')" class="justify-end">{{ 'project.partner.budget.equipment' | translate }}</span>
-        <span jemsText maxLines="2" *ngIf="displayedColumns.includes('infrastructureCosts')" class="justify-end">{{ 'project.partner.budget.infrastructure' | translate }}</span>
-        <span jemsText maxLines="2" *ngIf="displayedColumns.includes('otherCosts')" class="justify-end">{{ 'project.partner.budget.other' | translate }}</span>
-        <span jemsText maxLines="2" *ngIf="displayedColumns.includes('lumpSums')" class="justify-end">{{ 'project.partner.budget.lumpSum' | translate }}</span>
-        <span jemsText maxLines="2" *ngIf="displayedColumns.includes('unitCosts')" class="justify-end">{{ 'project.partner.budget.unitCosts' | translate }}</span>
+        <span jemsText maxLines="2" *ngIf="displayedColumns.includes('staffCosts')" [class.section-link]="headerLinks" class="justify-end" (click)="scrollTo('staffCosts')">{{ 'project.partner.budget.staff' | translate }}</span>
+        <span jemsText maxLines="2" *ngIf="displayedColumns.includes('officeAndAdministrationCosts')" [class.section-link]="headerLinks" class="justify-end" (click)="scrollTo('officeAdministrativeCosts')">{{ 'project.partner.budget.office.and.admin.header' | translate }}</span>
+        <span jemsText maxLines="2" *ngIf="displayedColumns.includes('travelCosts')" [class.section-link]="headerLinks" class="justify-end" (click)="scrollTo('travelAccommodation')">{{ 'project.partner.budget.travel' | translate }}</span>
+        <span jemsText maxLines="2" *ngIf="displayedColumns.includes('externalCosts')" [class.section-link]="headerLinks" class="justify-end" (click)="scrollTo('externalBudget')">{{ 'project.partner.budget.external' | translate }}</span>
+        <span jemsText maxLines="2" *ngIf="displayedColumns.includes('equipmentCosts')" [class.section-link]="headerLinks" class="justify-end" (click)="scrollTo('equipment')">{{ 'project.partner.budget.equipment' | translate }}</span>
+        <span jemsText maxLines="2" *ngIf="displayedColumns.includes('infrastructureCosts')" [class.section-link]="headerLinks" class="justify-end" (click)="scrollTo('infrastructure')">{{ 'project.partner.budget.infrastructure' | translate }}</span>
+        <span jemsText maxLines="2" *ngIf="displayedColumns.includes('otherCosts')" [class.section-link]="headerLinks" class="justify-end" (click)="scrollTo('otherCosts')">{{ 'project.partner.budget.other' | translate }}</span>
+        <span jemsText maxLines="2" *ngIf="displayedColumns.includes('lumpSums')" [class.section-link]="headerLinks" class="justify-end" (click)="scrollTo('lumpSums')">{{ 'project.partner.budget.lumpSum' | translate }}</span>
+        <span jemsText maxLines="2" *ngIf="displayedColumns.includes('unitCosts')" [class.section-link]="headerLinks" class="justify-end" (click)="scrollTo('unitCosts')">{{ 'project.partner.budget.unitCosts' | translate }}</span>
         <span jemsText maxLines="2" class="justify-end">{{ 'project.partner.budget.table.total' | adaptTranslationKeyByCallType | async | translate }}</span>
     </div>
 
     <ng-container *ngFor="let budget of budgets">
         <div>
-            <span >{{ 'common.label.project.partner.role.shortcut.' + budget.partner?.role | adaptTranslationKeyByCallType | async | translate : {partner: budget.partner?.sortNumber} }}</span>
+
+            <ng-container *ngTemplateOutlet="partner; context:{$implicit: budget.partner}"></ng-container>
+            <span>{{ budget.partner?.abbreviation }}</span>
+
             <span *ngIf="displayedColumns.includes('country')">{{ budget.partner?.country }}</span>
             <span *ngIf="displayedColumns.includes('staffCosts')" class="justify-end">{{ budget.staffCosts | asMoney }}</span>
             <span *ngIf="displayedColumns.includes('officeAndAdministrationCosts')" class="justify-end">{{ budget.officeAndAdministrationCosts | asMoney }}</span>
@@ -36,6 +40,7 @@
 
     <div class="footer">
         <span>{{ 'project.partner.budget.table.total' | translate }}</span>
+        <span><!--blank cell for partner abbreviation--></span>
         <span *ngIf="displayedColumns.includes('country')" ><!--blank cell--></span>
         <span *ngIf="displayedColumns.includes('staffCosts')" class="justify-end">{{ totalStaffCosts | asMoney }}</span>
         <span *ngIf="displayedColumns.includes('officeAndAdministrationCosts')" class="justify-end">{{ totalOfficeAndAdministrationCosts | asMoney }}</span>
@@ -49,3 +54,20 @@
         <span class="justify-end">{{ total | asMoney }}</span>
     </div>
 </div>
+
+
+<ng-template let-partner #partner>
+     <span *ngIf="hidePartnerLink">
+            <mat-icon *ngIf="!partner?.active">person_off</mat-icon>
+         {{ 'common.label.project.partner.role.shortcut.' + partner?.role | adaptTranslationKeyByCallType | async | translate : {partner: partner?.sortNumber} }}
+    </span>
+
+    <a *ngIf="!hidePartnerLink"
+       [routerLink]="'/app/project/detail/'+ projectId +'/applicationFormPartner/' + partner.id + '/budget'">
+        <span>
+            <mat-icon *ngIf="!partner?.active">person_off</mat-icon>
+            {{ 'common.label.project.partner.role.shortcut.' + partner?.role | adaptTranslationKeyByCallType | async | translate : {partner: partner?.sortNumber} }}
+        </span>
+    </a>
+</ng-template>
+

@@ -1,12 +1,14 @@
 package io.cloudflight.jems.server.project.service.file.set_project_file_description
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
+import io.cloudflight.jems.server.common.minio.fileDescriptionChanged
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.authorization.CanUpdateFileDescriptionInCategory
+import io.cloudflight.jems.server.project.repository.file.ProjectFilePersistenceProvider.Companion.getObjectPath
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.file.ProjectFilePersistence
 import io.cloudflight.jems.server.project.service.file.model.ProjectFileMetadata
-import io.cloudflight.jems.server.project.service.projectFileDescriptionChanged
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -25,19 +27,22 @@ class SetProjectFileDescription(
     override fun setDescription(
         projectId: Long, fileId: Long, description: String?
     ): ProjectFileMetadata {
-        throwIdDescriptionIsNotValid(description)
+        throwIfDescriptionIsNotValid(description)
         projectPersistence.throwIfNotExists(projectId)
-        val oldDescription = filePersistence.getFileMetadata(fileId).description ?: ""
+        val file = filePersistence.getFileMetadata(fileId)
+        val oldDescription = file.description ?: ""
         return filePersistence.setFileDescription(fileId, description).also {
+            val location = getObjectPath(projectId, file.id, file.name)
             auditPublisher.publishEvent(
-                projectFileDescriptionChanged(this, it, oldDescription)
+                fileDescriptionChanged(context = this, fileMeta = JemsFileMetadata(file.id, file.name, file.uploadedAt),
+                    location = location, oldDescription, description ?: "", projectPersistence.getProjectSummary(projectId))
             )
         }
     }
 
-    fun throwIdDescriptionIsNotValid(description: String?) {
+    private fun throwIfDescriptionIsNotValid(description: String?) {
         generalValidatorService.throwIfAnyIsInvalid(
-            generalValidatorService.maxLength(description, 100, "description")
+            generalValidatorService.maxLength(description, 250, "description")
         )
     }
 }

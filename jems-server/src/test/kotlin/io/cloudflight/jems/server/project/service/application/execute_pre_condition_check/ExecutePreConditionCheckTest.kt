@@ -19,10 +19,9 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.BeforeAll
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import java.time.ZonedDateTime
 import java.util.Optional
 
@@ -136,7 +135,8 @@ internal class ExecutePreConditionCheckTest : UnitTest() {
             lengthOfPeriod, isAdditionalFundAllowed, flatRates, lumpSums, unitCosts, stateAids,
             applicationFormFieldConfigurations = mutableSetOf(),
             preSubmissionCheckPluginKey = preSubmissionCheckPluginKey,
-            firstStepPreSubmissionCheckPluginKey = firstStepPreSubmissionCheckPluginKey
+            firstStepPreSubmissionCheckPluginKey = firstStepPreSubmissionCheckPluginKey,
+            costOption = mockk(),
         )
 
     private fun buildProjectSummary(

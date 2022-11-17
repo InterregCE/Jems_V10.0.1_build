@@ -75,18 +75,68 @@ class GetBudgetFundsPerPeriod(
         projectId: Long,
         version: String?
     ): List<ProjectFundBudgetPerPeriod> {
-        val spfBeneficiary = projectBudgetPersistence.getPartnersForProjectId(projectId)
-            .firstOrNull { it.active && it.role == ProjectPartnerRole.LEAD_PARTNER }
-        if (spfBeneficiary?.id != null) {
-            val spfBudgetPerPeriod =
-                projectBudgetPersistence.getSpfBudgetPerPeriod(spfBeneficiary.id, projectId, version).toMutableList()
-            val spfCoFinancing = getCoFinancing.getSpfCoFinancing(spfBeneficiary.id, version)
-            val spfTotalBudget = budgetCostsPersistence.getBudgetSpfCostTotal(spfBeneficiary.id, version)
-            return callFunds.map {
-                getSpfBudgetPerPeriodForFund(it, projectPeriods, spfBudgetPerPeriod, spfTotalBudget, spfCoFinancing)
-            }.toList()
-        }
-        return emptyList()
+        val spfBeneficiaries = projectBudgetPersistence.getPartnersForProjectId(projectId)
+
+        val spfBudgetsPerPeriod = spfBeneficiaries.associateBy({it.id}, {
+            if (it.id != null)
+                projectBudgetPersistence.getSpfBudgetPerPeriod(it.id, projectId, version).toMutableList()
+            else
+                emptyList()
+        })
+
+        val spfPartnersCofinancing = spfBeneficiaries.associateBy({it.id}, {
+            if (it.id != null)
+                getCoFinancing.getSpfCoFinancing(it.id, version)
+            else
+                null
+        })
+
+        val spfTotalBudgets = spfBeneficiaries.associateBy({it.id}, {
+            if (it.id != null)
+                budgetCostsPersistence.getBudgetSpfCostTotal(it.id, version)
+            else
+                BigDecimal.ZERO
+        })
+
+        val budgetsPerPeriod = spfBeneficiaries.associateBy({it.id}, {
+            if (it.id != null)
+                callFunds.map { cost ->
+                    getSpfBudgetPerPeriodForFund(
+                        cost,
+                        projectPeriods,
+                        spfBudgetsPerPeriod[it.id]!!,
+                        spfTotalBudgets[it.id]!!,
+                        spfPartnersCofinancing[it.id]!!
+                    )
+                }.toList()
+            else
+                emptyList()
+        })
+
+        return budgetsPerPeriod.entries
+            .map { it.value }
+            .flatten()
+            .groupBy {it.fund}
+            .map {
+                ProjectFundBudgetPerPeriod(
+                    fund = it.value[0].fund,
+                    costType = it.value[0].costType,
+                    periodFunds = getTotalFundPerPeriodForPartners(it.value),
+                    totalFundBudget = it.value.sumOf { value -> value.totalFundBudget }
+        ) }
+    }
+
+    private fun getTotalFundPerPeriodForPartners(fundsPerPeriods: List<ProjectFundBudgetPerPeriod>): MutableList<ProjectPeriodFund> {
+       return fundsPerPeriods
+           .map {it.periodFunds}
+           .flatten()
+           .groupBy { it.periodNumber }
+           .entries.map {
+               ProjectPeriodFund(
+                   periodNumber = it.key,
+                   totalFundsPerPeriod = it.value.sumOf { period -> period.totalFundsPerPeriod }
+               )
+           }.toMutableList()
     }
 
     private fun getBudgetPerPeriodForFund(

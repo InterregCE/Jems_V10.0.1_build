@@ -4,5 +4,8 @@ export enum ColumnWidth {
     DescriptionColumn,
     WideColumn = 3,
     extraWideColumn = 4,
-    NarrowColumn
+    NarrowColumn,
+    ChipColumn,
+    MediumColumn,
+    SmallColumn
 }

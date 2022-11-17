@@ -13,11 +13,13 @@ import {
 } from '@project/partner/project-partner-detail-page/project-partner-budget-tab/project-partner-budget/project-partner-budget.constants';
 import {NumberService} from '@common/services/number.service';
 import {RoutingService} from '@common/services/routing.service';
+import {v4 as uuid} from 'uuid';
 
 @UntilDestroy()
 @Injectable()
 export class ProjectPartnerBudgetTabService {
 
+  private serviceId = uuid();
   private isBudgetOptionsFormInEditModeSubject = new Subject<boolean>();
   private isBudgetFormInEditModeSubject = new Subject<boolean>();
   private isSPFBudgetFormInEditModeSubject = new Subject<boolean>();
@@ -27,7 +29,9 @@ export class ProjectPartnerBudgetTabService {
 
   constructor(private formVisibilityStatusService: FormVisibilityStatusService, private formBuilder: FormBuilder, private routingService: RoutingService) {
     combineLatest([this.isBudgetOptionsFormInEditMode$, this.isBudgetFormInEditMode$]).pipe(
-      tap(([optionsDirty, budgetsDirty]) => this.routingService.confirmLeave = optionsDirty || budgetsDirty),
+      tap(([optionsDirty, budgetsDirty]) =>
+        this.routingService.confirmLeaveMap.set(this.serviceId, optionsDirty || budgetsDirty)
+      ),
       untilDestroyed(this)
     ).subscribe();
   }

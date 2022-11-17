@@ -35,7 +35,7 @@ export class ProgrammeChecklistDetailPageStore {
               )
             )
         ),
-        tap((saved: ProgrammeChecklistDetailDTO) => this.savedChecklist$.next(saved)),
+        tap((saved: ProgrammeChecklistDetailDTO) => setTimeout(() => this.savedChecklist$.next(saved),3000)),
         tap(saved => Log.info('Checklist saved', this, saved))
       );
   }

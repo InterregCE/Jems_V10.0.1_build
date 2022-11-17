@@ -4,7 +4,7 @@
             <h3>{{'project.application.form.workpackage.investment.form.list.title' | translate}}</h3>
             <div>{{'project.work.package.tab.investment.intro' | translate}}</div>
 
-            <button *ngIf="projectStore.projectEditable$ | async"
+            <button *ngIf="projectEditable$ | async"
                     jemsText mat-stroked-button
                     routerLink="create">
                 + {{'project.application.form.add.workpackage.investment' | translate}}
@@ -31,7 +31,7 @@
 </ng-template>
 
 <ng-template #deletionCell let-workPackageInvestment>
-    <ng-container *ngIf="projectStore.projectEditable$ | async" >
+    <ng-container *ngIf="projectEditable$ | async" >
         <button *ngIf="(workPackageInvestment.title | translateContainerLessInputsBySystemLanguage | async) as title; else noTitle"
                 mat-icon-button color="accent"
                 (click)="$event.stopPropagation();delete(workPackageInvestment, title)"

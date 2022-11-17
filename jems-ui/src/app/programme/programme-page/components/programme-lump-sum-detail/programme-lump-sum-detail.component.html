@@ -1,6 +1,11 @@
 <form jemsFormLayout [formGroup]="lumpSumForm">
     <div jemsMultiColumnRow>
-        <h3 class="mb-0">{{'lump.sum.title' | translate}}</h3>
+        <a color="primary" class="mr-1" mat-icon-button *ngIf="formState !== FormState.EDIT"
+           routerLink="../../.."
+           matTooltip="{{ 'programme.simplified.cost.options.back.to.list' | translate }}">
+            <mat-icon class="icon-back" fontSet="material-icons-outlined">arrow_circle_left</mat-icon>
+        </a>
+        <h3 class="mb-0 put-icon-to-header-line">{{'lump.sum.title' | translate}}</h3>
         <button mat-raised-button color="primary"
                 *ngIf="formState === FormState.VIEW && (programmeEditableStateStore.hasEditPermission$ | async)"
                 (click)="changeFormState$.next(FormState.EDIT)">
@@ -54,6 +59,29 @@
                     value="No"
                     [checked]="previousSplitting === 'No'"
                     (change)="changeSplitting($event.value)">
+                <span jemsText maxWidth="230">{{'common.no' | translate}}</span>
+            </mat-button-toggle>
+        </mat-button-toggle-group>
+    </div>
+    <br>
+
+    <div>
+        <div jemsLabel class="mat-required-marker"
+             [ngClass]="{'empty': lumpSumForm?.controls?.isFastTrack?.errors}">
+            {{'lump.sum.is.fast.track' | translate}}
+        </div>
+        <mat-button-toggle-group
+                [disabled]="formState === FormState.VIEW || (isProgrammeSetupLocked && !isCreate && isFastTrackLumpSumLocked)">
+            <mat-button-toggle
+                    value="Yes"
+                    [checked]="isFastTrack === 'Yes'"
+                    (change)="changeFastTrack($event.value)">
+                <span jemsText maxWidth="230">{{'common.yes' | translate}}</span>
+            </mat-button-toggle>
+            <mat-button-toggle
+                    value="No"
+                    [checked]="isFastTrack === 'No'"
+                    (change)="changeFastTrack($event.value)">
                 <span jemsText maxWidth="230">{{'common.no' | translate}}</span>
             </mat-button-toggle>
         </mat-button-toggle-group>

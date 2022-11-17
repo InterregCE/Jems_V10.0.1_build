@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.call.controller
 
 import io.cloudflight.jems.api.call.dto.AllowedRealCostsDTO
+import io.cloudflight.jems.api.call.dto.CallCostOptionDTO
 import io.cloudflight.jems.api.call.dto.CallDTO
 import io.cloudflight.jems.api.call.dto.CallDetailDTO
 import io.cloudflight.jems.api.call.dto.CallFundRateDTO
@@ -14,6 +15,7 @@ import io.cloudflight.jems.server.call.service.model.AllowedRealCosts
 import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldConfiguration
 import io.cloudflight.jems.server.call.service.model.Call
 import io.cloudflight.jems.server.call.service.model.CallApplicationFormFieldsConfiguration
+import io.cloudflight.jems.server.call.service.model.CallCostOption
 import io.cloudflight.jems.server.call.service.model.CallDetail
 import io.cloudflight.jems.server.call.service.model.CallFundRate
 import io.cloudflight.jems.server.call.service.model.CallSummary
@@ -81,6 +83,15 @@ fun PreSubmissionPluginsDTO.toDTO() = callDTOMapper.map(this)
 fun PreSubmissionPluginsDTO.toModel() = PreSubmissionPlugins(
     pluginKey = pluginKey,
     firstStepPluginKey = firstStepPluginKey,
+)
+
+fun CallCostOptionDTO.toModel() = CallCostOption(
+    projectDefinedUnitCostAllowed = projectDefinedUnitCostAllowed,
+    projectDefinedLumpSumAllowed = projectDefinedLumpSumAllowed,
+)
+fun CallCostOption.toDto() = CallCostOptionDTO(
+    projectDefinedUnitCostAllowed = projectDefinedUnitCostAllowed,
+    projectDefinedLumpSumAllowed = projectDefinedLumpSumAllowed,
 )
 
 fun CallApplicationFormFieldsConfiguration.toDto() =

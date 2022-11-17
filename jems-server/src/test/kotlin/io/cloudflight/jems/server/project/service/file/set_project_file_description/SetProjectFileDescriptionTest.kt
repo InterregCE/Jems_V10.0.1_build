@@ -9,11 +9,11 @@ import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.repository.ProjectNotFoundException
 import io.cloudflight.jems.server.project.repository.file.ProjectFileNotFoundException
 import io.cloudflight.jems.server.project.service.ProjectPersistence
+import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.utils.FILE_ID
-import io.cloudflight.jems.server.utils.FILE_NAME
 import io.cloudflight.jems.server.utils.PROJECT_ID
 import io.cloudflight.jems.server.project.service.file.ProjectFilePersistence
-import io.cloudflight.jems.server.utils.USER_ID
+import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.utils.fileMetadata
 import io.mockk.clearMocks
 import io.mockk.every
@@ -60,11 +60,11 @@ internal class SetProjectFileDescriptionTest : UnitTest() {
     @Test
     fun `should throw AppInputValidationException when description length is not valid`() {
         val descriptionSlot = slot<String>()
-        val validLength = 100
+        val validLength = 250
         val fieldName = "description"
         every { generalValidator.maxLength(capture(descriptionSlot), validLength, fieldName) } returns inputErrorMap
         assertThrows<AppInputValidationException> {
-            setProjectFileDescription.setDescription(PROJECT_ID, FILE_ID, getStringOfLength(101))
+            setProjectFileDescription.setDescription(PROJECT_ID, FILE_ID, getStringOfLength(251))
         }
         verify(exactly = 1) { generalValidator.maxLength(descriptionSlot.captured, validLength, fieldName) }
 
@@ -90,11 +90,13 @@ internal class SetProjectFileDescriptionTest : UnitTest() {
     @Test
     fun `should set project file description when there is no problem`() {
         val newDescription = "latest version"
-        val fileMetadata = fileMetadata(description = newDescription)
+        val fileMetadata = fileMetadata(description = "old desc")
         val auditSlot = slot<AuditCandidateEvent>()
         every { projectPersistence.throwIfNotExists(PROJECT_ID) } returns Unit
         every { filePersistence.getFileMetadata(FILE_ID) } returns fileMetadata
         every { filePersistence.setFileDescription(FILE_ID, newDescription) } returns fileMetadata
+        every { projectPersistence.getProjectSummary(PROJECT_ID) } returns
+            ProjectSummary(PROJECT_ID, "custom_id", "", "acronym", ApplicationStatus.DRAFT)
         every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit
 
         assertThat(
@@ -103,7 +105,7 @@ internal class SetProjectFileDescriptionTest : UnitTest() {
 
         assertThat(auditSlot.captured.auditCandidate.action).isEqualTo(AuditAction.PROJECT_FILE_DESCRIPTION_CHANGED)
         assertThat(auditSlot.captured.auditCandidate.description).isEqualTo(
-            "description of document $FILE_NAME in project application $PROJECT_ID has changed from `${fileMetadata.description}` to `$newDescription` by $USER_ID"
+            "Description of file \"test.txt\" uploaded to project-1/2/test.txt has changed from \"old desc\" to \"latest version\""
         )
 
     }

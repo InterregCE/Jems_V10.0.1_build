@@ -1,22 +1,18 @@
-import {
-  ChangeDetectionStrategy,
-  ChangeDetectorRef,
-  Component,
-  Input,
-  OnChanges,
-  OnInit,
-  SimpleChanges
-} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit} from '@angular/core';
 import {PrivilegesPageStore} from '@project/project-application/privileges-page/privileges-page-store.service';
 import {FormService} from '@common/components/section/form/form.service';
-import {PartnerUserCollaboratorDTO, ProjectPartnerSummaryDTO} from '@cat/api';
+import {PartnerUserCollaboratorDTO, ProjectCallSettingsDTO, ProjectPartnerSummaryDTO, ProjectStatusDTO} from '@cat/api';
 import {ProjectApplicationFormSidenavService} from '@project/project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {FormArray, FormBuilder, Validators} from '@angular/forms';
 import {TranslateService} from '@ngx-translate/core';
-import {catchError, tap} from 'rxjs/operators';
+import {catchError, map, tap} from 'rxjs/operators';
 import {APIError} from '@common/models/APIError';
 import {of} from 'rxjs';
 import {Alert} from '@common/components/forms/alert';
+import {
+  ProjectStore
+} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import CallTypeEnum = ProjectCallSettingsDTO.CallTypeEnum;
 
 @Component({
   selector: 'jems-partner-team-privileges-expansion-panel',
@@ -25,7 +21,16 @@ import {Alert} from '@common/components/forms/alert';
   providers: [FormService],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class PartnerTeamPrivilegesExpansionPanelComponent implements OnInit, OnChanges {
+export class PartnerTeamPrivilegesExpansionPanelComponent implements OnInit {
+
+  AFTER_APPROVED_STATUSES: ProjectStatusDTO.StatusEnum[] = [
+    ProjectStatusDTO.StatusEnum.APPROVED,
+    ProjectStatusDTO.StatusEnum.CONTRACTED,
+    ProjectStatusDTO.StatusEnum.INMODIFICATION,
+    ProjectStatusDTO.StatusEnum.MODIFICATIONSUBMITTED,
+    ProjectStatusDTO.StatusEnum.MODIFICATIONREJECTED,
+  ];
+
   @Input()
   partner: ProjectPartnerSummaryDTO;
   @Input()
@@ -33,6 +38,11 @@ export class PartnerTeamPrivilegesExpansionPanelComponent implements OnInit, OnC
 
   PARTNER_LEVEL = PartnerUserCollaboratorDTO.LevelEnum;
   Alert = Alert;
+  isAfterApproved$ = this.projectStore.projectStatus$.pipe(
+    map(status => status.status),
+    map(status => this.AFTER_APPROVED_STATUSES.includes(status))
+  );
+  isCallSpf$ = this.projectStore.projectCallType$.pipe(map((type) => type === CallTypeEnum.SPF));
 
   partnerForm = this.formBuilder.group({
     partnerCollaborators: this.formBuilder.array([], [])
@@ -43,27 +53,21 @@ export class PartnerTeamPrivilegesExpansionPanelComponent implements OnInit, OnC
     uniqueEmails: 'project.application.form.section.privileges.unique.emails'
   };
 
-  constructor(private pageStore: PrivilegesPageStore,
-              public formService: FormService,
-              private projectSidenavService: ProjectApplicationFormSidenavService,
-              private formBuilder: FormBuilder,
-              private translateService: TranslateService,
-              private changeDetectorRef: ChangeDetectorRef) {
+  constructor(
+    private pageStore: PrivilegesPageStore,
+    public formService: FormService,
+    private projectSidenavService: ProjectApplicationFormSidenavService,
+    private formBuilder: FormBuilder,
+    private translateService: TranslateService,
+    private changeDetectorRef: ChangeDetectorRef,
+    public projectStore: ProjectStore,
+  ) {
   }
 
   ngOnInit(): void {
     this.formService.init(this.partnerForm, this.pageStore.projectCollaboratorsEditable$);
     this.resetPartnerForm(this.collaborators);
-    if (this.collaborators.length === 0) {
-      this.addPartnerCollaborator();
-    }
     this.formService.resetEditable();
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    if (changes.collaborators) {
-      this.resetPartnerForm(this.collaborators);
-    }
   }
 
   savePartnerCollaborators(partnerId: number): void {
@@ -87,6 +91,9 @@ export class PartnerTeamPrivilegesExpansionPanelComponent implements OnInit, OnC
   resetPartnerForm(partnerCollaborators: PartnerUserCollaboratorDTO[]): void {
     this.partnerCollaborators.clear();
     partnerCollaborators.forEach(partnerCollaborator => this.addPartnerCollaborator(partnerCollaborator));
+    if (this.partnerCollaborators.length === 0) {
+      this.addPartnerCollaborator();
+    }
   }
 
   get partnerCollaborators(): FormArray {
@@ -95,7 +102,7 @@ export class PartnerTeamPrivilegesExpansionPanelComponent implements OnInit, OnC
 
   addPartnerCollaborator(partnerCollaborator?: PartnerUserCollaboratorDTO): void {
     this.partnerCollaborators.push(this.formBuilder.group({
-      userEmail: [partnerCollaborator?.userEmail, [Validators.required, Validators.maxLength(255)]],
+      userEmail: [partnerCollaborator?.userEmail, [Validators.required, Validators.pattern(/(?!^\s+$)^.*$/m), Validators.maxLength(255)]],
       level: [partnerCollaborator?.level || this.PARTNER_LEVEL.VIEW, Validators.required]
     }));
   }

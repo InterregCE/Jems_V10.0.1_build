@@ -1,7 +1,5 @@
 import {ChangeDetectionStrategy, Component} from '@angular/core';
-import {Observable, Subject} from 'rxjs';
-import {InputProjectLongTermPlans, OutputProjectLongTermPlans, ProjectDescriptionService} from '@cat/api';
-import {map} from 'rxjs/operators';
+import {ProjectDescriptionService} from '@cat/api';
 import {ProjectApplicationFormStore} from '../services/project-application-form-store.service';
 import {ActivatedRoute} from '@angular/router';
 import {ProjectStore} from '../../project-application-detail/services/project-store.service';
@@ -15,10 +13,7 @@ import {ProjectStore} from '../../project-application-detail/services/project-st
 export class ProjectApplicationFormFuturePlansSectionComponent {
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
 
-  projectLongTermPlans$: Observable<OutputProjectLongTermPlans> = this.projectApplicationFormStore.projectDescription$
-    .pipe(
-      map(project => project.projectLongTermPlans || {})
-    );
+  projectLongTermPlans$ = this.projectApplicationFormStore.projectLongTermPlans$;
 
   constructor(public projectStore: ProjectStore,
               private activatedRoute: ActivatedRoute,

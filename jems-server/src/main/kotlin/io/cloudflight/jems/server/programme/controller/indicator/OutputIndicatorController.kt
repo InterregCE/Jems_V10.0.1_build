@@ -6,6 +6,7 @@ import io.cloudflight.jems.api.programme.dto.indicator.OutputIndicatorSummaryDTO
 import io.cloudflight.jems.api.programme.dto.indicator.OutputIndicatorUpdateRequestDTO
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.cloudflight.jems.server.programme.service.indicator.create_output_indicator.CreateOutputIndicatorInteractor
+import io.cloudflight.jems.server.programme.service.indicator.deleteOutputIndicator.DeleteOutputIndicatorInteractor
 import io.cloudflight.jems.server.programme.service.indicator.get_output_indicator.GetOutputIndicatorInteractor
 import io.cloudflight.jems.server.programme.service.indicator.list_output_indicators.ListOutputIndicatorsInteractor
 import io.cloudflight.jems.server.programme.service.indicator.update_output_indicator.UpdateOutputIndicatorInteractor
@@ -18,6 +19,7 @@ class OutputIndicatorController(
     private val getOutputIndicator: GetOutputIndicatorInteractor,
     private val createOutputIndicator: CreateOutputIndicatorInteractor,
     private val updateOutputIndicator: UpdateOutputIndicatorInteractor,
+    private val deleteOutputIndicator: DeleteOutputIndicatorInteractor
 ) : OutputIndicatorApi {
 
     override fun getOutputIndicatorDetails(pageable: Pageable) =
@@ -40,4 +42,7 @@ class OutputIndicatorController(
     override fun updateOutputIndicator(outputIndicatorUpdateRequestDTO: OutputIndicatorUpdateRequestDTO) =
         updateOutputIndicator.updateOutputIndicator(outputIndicatorUpdateRequestDTO.toOutputIndicator())
             .toOutputIndicatorDetailDTO()
+
+    override fun deleteOutputIndicator(id: Long) =
+        deleteOutputIndicator.deleteOutputIndicator(id)
 }

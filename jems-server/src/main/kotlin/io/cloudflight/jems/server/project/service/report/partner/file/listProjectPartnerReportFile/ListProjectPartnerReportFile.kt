@@ -3,19 +3,19 @@ package io.cloudflight.jems.server.project.service.report.partner.file.listProje
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanViewPartnerReport
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
-import io.cloudflight.jems.server.project.service.report.file.ProjectReportFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType.PartnerReport
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType.WorkPlan
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType.WorkPackage
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType.Activity
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType.Deliverable
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType.Output
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType.Expenditure
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType.Procurement
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType.Contribution
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFile
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileSearchRequest
+import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.PartnerReport
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.WorkPlan
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.Activity
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.Deliverable
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.Output
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.Expenditure
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.Procurement
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.Contribution
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.ProcurementAttachment
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFile
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileSearchRequest
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -31,10 +31,10 @@ class ListProjectPartnerReportFile(
         private val REMOVE_LAST_ID_REGEX = Regex("\\d+\\/\$")
 
         private val ALLOWED_FILTERS = mapOf(
-            PartnerReport to setOf(WorkPackage, Activity, Deliverable, Output, Expenditure, Procurement, Contribution),
-            WorkPlan to setOf(WorkPackage, Activity, Deliverable, Output),
+            PartnerReport to setOf(PartnerReport, Activity, Deliverable, Output, Expenditure, ProcurementAttachment, Contribution),
+            WorkPlan to setOf(Activity, Deliverable, Output),
             Expenditure to setOf(Expenditure),
-            Procurement to setOf(Procurement),
+            Procurement to setOf(ProcurementAttachment),
             Contribution to setOf(Contribution),
         )
     }
@@ -45,9 +45,9 @@ class ListProjectPartnerReportFile(
     override fun list(
         partnerId: Long,
         pageable: Pageable,
-        searchRequest: ProjectReportFileSearchRequest,
-    ): Page<ProjectReportFile> {
-        validateSearchConfiguration(searchRequest = searchRequest)
+        searchRequest: JemsFileSearchRequest,
+    ): Page<JemsFile> {
+        validateConfiguration(searchRequest = searchRequest)
 
         val filePathPrefix = generateSearchString(
             treeNode = searchRequest.treeNode,
@@ -65,7 +65,7 @@ class ListProjectPartnerReportFile(
     }
 
     private fun generateSearchString(
-        treeNode: ProjectPartnerReportFileType,
+        treeNode: JemsFileType,
         projectId: Long,
         partnerId: Long,
         reportId: Long,
@@ -80,15 +80,14 @@ class ListProjectPartnerReportFile(
         }
     }
 
-    private fun validateSearchConfiguration(searchRequest: ProjectReportFileSearchRequest) {
-        if (searchRequest.treeNode !in ALLOWED_FILTERS.keys)
-            throw InvalidSearchConfiguration()
-
-        val allowedFileTypes = ALLOWED_FILTERS[searchRequest.treeNode]!!
-        val invalidFileTypeFilters = searchRequest.filterSubtypes.minus(allowedFileTypes)
-
-        if (invalidFileTypeFilters.isNotEmpty())
-            throw InvalidSearchFilterConfiguration(invalidFilters = invalidFileTypeFilters)
+    private fun validateConfiguration(searchRequest: JemsFileSearchRequest) {
+        validateSearchConfiguration(
+            treeNode = searchRequest.treeNode,
+            filterSubtypes = searchRequest.filterSubtypes,
+            allowedFilters = ALLOWED_FILTERS,
+            { InvalidSearchConfiguration() },
+            { invalidFilters -> InvalidSearchFilterConfiguration(invalidFilters) },
+        )
     }
 
 }

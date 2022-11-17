@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional
 class DeleteChecklistInstance(
     private val persistence: ChecklistInstancePersistence,
     private val auditPublisher: ApplicationEventPublisher
-) : DeleteChecklistInstanceInteractor {
+    ) : DeleteChecklistInstanceInteractor {
 
     @CanDeleteChecklistAssessment
     @Transactional

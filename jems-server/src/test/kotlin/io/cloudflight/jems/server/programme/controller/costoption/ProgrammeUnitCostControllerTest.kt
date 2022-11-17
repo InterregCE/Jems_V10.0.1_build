@@ -7,7 +7,7 @@ import io.cloudflight.jems.api.programme.dto.costoption.ProgrammeUnitCostListDTO
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.programme.service.costoption.create_unit_cost.CreateUnitCostInteractor
-import io.cloudflight.jems.server.programme.service.costoption.delete_unit_cost.DeleteUnitCostInteractor
+import io.cloudflight.jems.server.programme.service.costoption.deleteUnitCost.DeleteUnitCostInteractor
 import io.cloudflight.jems.server.programme.service.costoption.get_unit_cost.GetUnitCostInteractor
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.programme.service.costoption.update_unit_cost.UpdateUnitCostInteractor
@@ -29,6 +29,7 @@ class ProgrammeUnitCostControllerTest {
 
         private val testUnitCost = ProgrammeUnitCost(
             id = 1,
+            projectId = null,
             name = setOf(InputTranslation(SystemLanguage.EN, "UC1")),
             description = setOf(InputTranslation(SystemLanguage.EN, "test unit cost 1")),
             type = setOf(InputTranslation(SystemLanguage.EN, "type 1")),
@@ -39,6 +40,7 @@ class ProgrammeUnitCostControllerTest {
 
         private val expectedUnitCostDTO = ProgrammeUnitCostDTO(
             id = 1,
+            projectDefined = false,
             name = setOf(InputTranslation(SystemLanguage.EN, "UC1")),
             description = setOf(InputTranslation(SystemLanguage.EN, "test unit cost 1")),
             type = setOf(InputTranslation(SystemLanguage.EN, "type 1")),

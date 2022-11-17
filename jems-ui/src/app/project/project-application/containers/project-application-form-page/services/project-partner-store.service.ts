@@ -36,8 +36,10 @@ export class ProjectPartnerStore {
   partners$: Observable<ProjectPartner[]>;
   leadPartner$: Observable<ProjectPartnerDetailDTO | null>;
   partnerSummaries$: Observable<ProjectPartnerSummaryDTO[]>;
+  partnerSummariesOfLastApprovedProjectVersion$: Observable<ProjectPartnerSummaryDTO[]>;
   partnerReportSummaries$: Observable<ProjectPartnerSummaryDTO[]>;
   latestPartnerSummaries$: Observable<ProjectPartnerSummaryDTO[]>;
+  partnerSummariesOfLastApprovedVersion$: Observable<ProjectPartnerSummaryDTO[]>;
   private partnerId: number;
   private projectId: number;
   private lastContractedVersion$ = new ReplaySubject<string>(1);
@@ -53,8 +55,10 @@ export class ProjectPartnerStore {
     this.projectCallType$ = this.projectStore.projectCallType$;
     this.isProjectCallTypeSpf$ = this.projectCallType$.pipe(map(type => type === CallTypeEnum.SPF));
     this.partnerSummaries$ = this.partnerSummaries();
+    this.partnerSummariesOfLastApprovedProjectVersion$ = this.partnerSummariesOfLastApprovedVersion();
     this.latestPartnerSummaries$ = this.partnerSummariesFromVersion();
     this.partnerReportSummaries$ = this.partnerReportSummaries();
+    this.partnerSummariesOfLastApprovedVersion$ = this.getPartnerSummariesOfLastApprovedVersion();
     this.partners$ = combineLatest([
       this.projectStore.project$,
       this.projectVersionStore.selectedVersionParam$,
@@ -196,6 +200,17 @@ export class ProjectPartnerStore {
       );
   }
 
+  private partnerSummariesOfLastApprovedVersion(): Observable<ProjectPartnerSummaryDTO[]> {
+    return combineLatest([
+      this.projectStore.projectId$,
+      this.projectVersionStore.lastApprovedOrContractedVersion$,
+      this.partnerUpdateEvent$
+    ])
+      .pipe(
+        switchMap(([projectId, version]) => this.partnerService.getProjectPartnersForDropdown(projectId, ['sortNumber'], version?.version))
+      );
+  }
+
   private partnerReportSummaries(): Observable<ProjectPartnerSummaryDTO[]> {
     return combineLatest([this.projectStore.projectId$, this.projectVersionStore.versions$])
       .pipe(
@@ -218,6 +233,16 @@ export class ProjectPartnerStore {
     return Tools.first(versions.filter(version => version.status === StatusEnum.CONTRACTED)
       .sort((a, b) => a.createdAt > b.createdAt ? -1 : 1))?.version;
   }
+
+  private getPartnerSummariesOfLastApprovedVersion(): Observable<ProjectPartnerSummaryDTO[]> {
+    return this.projectVersionStore.lastApprovedOrContractedVersion$
+      .pipe(
+        map(lastApprovedVersion => lastApprovedVersion?.version),
+        filter(version => !!version),
+        switchMap(version => this.partnerSummariesFromVersion(version)),
+      );
+  }
+
 
   static getPartnerTranslationKey(role: ProjectPartnerDTO.RoleEnum, callType: CallTypeEnum) {
     const prefix = (callType === CallTypeEnum.STANDARD) ? '' : callType.toLocaleLowerCase() + '.';

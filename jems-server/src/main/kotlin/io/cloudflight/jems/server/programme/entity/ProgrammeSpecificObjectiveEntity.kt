@@ -2,14 +2,7 @@ package io.cloudflight.jems.server.programme.entity
 
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import java.util.Objects
-import javax.persistence.Column
-import javax.persistence.Entity
-import javax.persistence.EnumType
-import javax.persistence.Enumerated
-import javax.persistence.FetchType
-import javax.persistence.Id
-import javax.persistence.JoinColumn
-import javax.persistence.ManyToOne
+import javax.persistence.*
 import javax.validation.constraints.NotNull
 
 @Entity(name = "programme_priority_specific_objective")
@@ -27,7 +20,10 @@ data class ProgrammeSpecificObjectiveEntity(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "programme_priority_id", insertable = false, updatable = false)
-    val programmePriority: ProgrammePriorityEntity? = null    // here null is because of hibernate, but when retrieved it cannot be null
+    val programmePriority: ProgrammePriorityEntity? = null,    // here null is because of hibernate, but when retrieved it cannot be null
+
+    @OneToMany(mappedBy = "dimensionCodeId.specificObjectiveEntity", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.LAZY)
+    val dimensionCodes: MutableSet<ProgrammeObjectiveDimensionCodeEntity> = mutableSetOf()
 
 ) {
     override fun hashCode(): Int {

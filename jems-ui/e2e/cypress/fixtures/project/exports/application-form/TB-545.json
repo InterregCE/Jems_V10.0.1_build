@@ -957,11 +957,9 @@
   },
   "application": {
     "details": {
-      "acronym": "tb-545",
       "projectCallId": null
     },
     "identification": {
-      "acronym": "tb-545",
       "intro": [
         {
           "translation": "Summary DE",
@@ -1152,6 +1150,30 @@
               },
               {
                 "translation": "API generated application strategy contribution EN",
+                "language": "EN"
+              }
+            ]
+          }
+        ],
+        "projectSynergies": [
+          {
+            "synergy": [
+              {
+                "translation": "API generated application synergy DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated application synergy EN",
+                "language": "EN"
+              }
+            ],
+            "specification": [
+              {
+                "translation": "API generated application project or initiative DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated application project or initiative EN",
                 "language": "EN"
               }
             ]

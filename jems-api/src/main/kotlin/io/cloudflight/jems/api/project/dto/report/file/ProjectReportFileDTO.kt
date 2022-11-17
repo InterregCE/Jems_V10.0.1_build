@@ -10,4 +10,5 @@ data class ProjectReportFileDTO(
     val author: UserSimpleDTO,
     val size: Long,
     val sizeString: String,
+    val description: String,
 )

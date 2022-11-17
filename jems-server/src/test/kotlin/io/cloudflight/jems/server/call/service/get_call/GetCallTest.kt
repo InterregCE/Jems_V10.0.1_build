@@ -69,14 +69,16 @@ class GetCallTest : UnitTest() {
                 ),
             ),
             lumpSums = listOf(
-                ProgrammeLumpSum(splittingAllowed = true),
+                ProgrammeLumpSum(splittingAllowed = true, fastTrack = false),
             ),
             unitCosts = listOf(
-                ProgrammeUnitCost(isOneCostCategory = true),
+                ProgrammeUnitCost(projectId = null, isOneCostCategory = true),
             ),
             applicationFormFieldConfigurations = mutableSetOf(),
             preSubmissionCheckPluginKey = null,
-            firstStepPreSubmissionCheckPluginKey = null
+            firstStepPreSubmissionCheckPluginKey = null,
+            projectDefinedUnitCostAllowed = false,
+            projectDefinedLumpSumAllowed = true,
         )
 
         private val call = CallSummary(

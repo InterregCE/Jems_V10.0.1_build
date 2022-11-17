@@ -3,17 +3,20 @@ import {
   ProjectPartnerReportDTO,
   ProjectPartnerReportIdentificationDTO,
   ProjectPartnerReportIdentificationService,
+  ProjectPartnerReportPeriodDTO,
   ProjectPartnerReportService,
   ProjectPartnerReportSummaryDTO,
   ProjectPartnerSummaryDTO,
   UpdateProjectPartnerReportIdentificationDTO
 } from '@cat/api';
-import {combineLatest, merge, Observable, of, Subject} from 'rxjs';
+import {BehaviorSubject, combineLatest, merge, Observable, of, Subject} from 'rxjs';
 import {catchError, map, shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
 import {RoutingService} from '@common/services/routing.service';
 import {Log} from '@common/utils/log';
 import {ProjectPaths} from '@project/common/project-util';
-import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {
+  ProjectStore
+} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
 
 @Injectable({providedIn: 'root'})
@@ -26,18 +29,20 @@ export class PartnerReportDetailPageStore {
   partnerReportId$: Observable<number>;
   partnerReportLevel$: Observable<string>;
   partnerIdentification$: Observable<ProjectPartnerReportIdentificationDTO>;
+  refreshIdentification$ = new BehaviorSubject<any>(null);
+  availablePeriods$: Observable<ProjectPartnerReportPeriodDTO[]>;
   reportStatus$: Observable<ProjectPartnerReportSummaryDTO.StatusEnum>;
   reportEditable$: Observable<boolean>;
 
   newPageSize$ = new Subject<number>();
   newPageIndex$ = new Subject<number>();
+  updatedReportStatus$ = new Subject<ProjectPartnerReportSummaryDTO.StatusEnum>();
 
   private updatedReport$ = new Subject<ProjectPartnerReportDTO>();
   private updatedIdentification$ = new Subject<ProjectPartnerReportIdentificationDTO>();
-  private updatedReportStatus$ = new Subject<ProjectPartnerReportSummaryDTO.StatusEnum>();
 
   constructor(private routingService: RoutingService,
-              private partnerReportPageStore: PartnerReportPageStore,
+              public partnerReportPageStore: PartnerReportPageStore,
               private projectPartnerReportService: ProjectPartnerReportService,
               private projectStore: ProjectStore,
               private reportIdentificationService: ProjectPartnerReportIdentificationService) {
@@ -47,6 +52,7 @@ export class PartnerReportDetailPageStore {
     this.partnerSummary$ = this.partnerReportPageStore.partnerSummary$;
     this.partnerReport$ = this.partnerReport();
     this.partnerIdentification$ = this.reportIdentification();
+    this.availablePeriods$ = this.availablePeriods();
     this.reportStatus$ = this.reportStatus();
     this.reportEditable$ = this.reportEditable();
   }
@@ -81,10 +87,20 @@ export class PartnerReportDetailPageStore {
       );
   }
 
-  submitReport(partnerId: number, reportId: number): Observable<ProjectPartnerReportSummaryDTO> {
+  submitReport(partnerId: number, reportId: number): Observable<ProjectPartnerReportSummaryDTO.StatusEnum> {
     return this.projectPartnerReportService.submitProjectPartnerReport(partnerId, reportId)
       .pipe(
-        tap(summary => this.updatedReportStatus$.next(summary.status)),
+        map(status => status as ProjectPartnerReportSummaryDTO.StatusEnum),
+        tap(status => this.updatedReportStatus$.next(status)),
+        tap(status => Log.info('Changed status for report', reportId, status))
+      );
+  }
+
+  startControlOnPartnerReport(partnerId: number, reportId: number): Observable<ProjectPartnerReportSummaryDTO.StatusEnum> {
+    return this.projectPartnerReportService.startControlOnPartnerReport(partnerId, reportId)
+      .pipe(
+        map(status => status as ProjectPartnerReportSummaryDTO.StatusEnum),
+        tap(status => this.updatedReportStatus$.next(status)),
         tap(status => Log.info('Changed status for report', reportId, status))
       );
   }
@@ -93,7 +109,8 @@ export class PartnerReportDetailPageStore {
     const initialIdentification$ = combineLatest([
       this.partnerId$,
       this.routingService.routeParameterChanges(PartnerReportDetailPageStore.REPORT_DETAIL_PATH, 'reportId'),
-      this.projectStore.projectId$
+      this.projectStore.projectId$,
+      this.refreshIdentification$,
     ]).pipe(
       switchMap(([partnerId, reportId, projectId]) => !!partnerId && !!projectId && !!reportId
         ? this.reportIdentificationService.getIdentification(Number(partnerId), Number(reportId))
@@ -112,6 +129,27 @@ export class PartnerReportDetailPageStore {
       .pipe(
         shareReplay(1)
       );
+  }
+
+  availablePeriods(): Observable<ProjectPartnerReportPeriodDTO[]> {
+    return combineLatest([
+      this.partnerId$,
+      this.routingService.routeParameterChanges(PartnerReportDetailPageStore.REPORT_DETAIL_PATH, 'reportId'),
+      this.projectStore.projectId$,
+    ]).pipe(
+      switchMap(([partnerId, reportId, projectId]) => !!partnerId && !!projectId && !!reportId
+        ? this.reportIdentificationService.getAvailablePeriods(Number(partnerId), Number(reportId))
+          .pipe(
+            catchError(() => {
+              this.routingService.navigate([ProjectPaths.PROJECT_DETAIL_PATH, projectId, 'reporting']);
+              return of([] as ProjectPartnerReportPeriodDTO[]);
+            })
+          )
+        : of([] as ProjectPartnerReportPeriodDTO[])
+      ),
+      tap(periods => Log.info('Fetched the partner report available periods:', this, periods)),
+      shareReplay(1),
+    );
   }
 
   public saveIdentification(identification: UpdateProjectPartnerReportIdentificationDTO): Observable<ProjectPartnerReportIdentificationDTO> {
@@ -135,7 +173,7 @@ export class PartnerReportDetailPageStore {
 
   private reportEditable(): Observable<boolean> {
     return combineLatest([
-      this.partnerReportPageStore.userCanEditReports$,
+      this.partnerReportPageStore.userCanEditReport$,
       this.reportStatus$
     ])
       .pipe(
@@ -143,3 +181,4 @@ export class PartnerReportDetailPageStore {
       );
   }
 }
+

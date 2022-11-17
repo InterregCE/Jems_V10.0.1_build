@@ -11,7 +11,7 @@ import {
   ProjectPartnerStateAidDTO,
   WorkPackageActivitySummaryDTO
 } from '@cat/api';
-import {combineLatest, Observable, of} from 'rxjs';
+import {combineLatest, Observable} from 'rxjs';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {WorkPackagePageStore} from '@project/work-package/project-work-package-page/work-package-detail-page/work-package-page-store.service';
 import {COMMA, ENTER} from '@angular/cdk/keycodes';
@@ -59,7 +59,7 @@ export class ProjectPartnerStateAidTabComponent {
     answer4: [],
     justification4: [],
     activities: this.formBuilder.array([]),
-    stateAidScheme: [],
+    stateAidScheme: [0],
   });
 
   constructor(private formBuilder: FormBuilder,
@@ -81,9 +81,7 @@ export class ProjectPartnerStateAidTabComponent {
     this.formService.init(this.form, this.pageStore.isProjectEditable$);
     this.data$ = combineLatest([
       this.pageStore.stateAid$,
-      this.projectStore.projectEditable$.pipe(
-        switchMap(isEditable => isEditable ? this.projectStore.activities$ : of([]))
-      ),
+      this.projectStore.activities$,
       this.workPackageProjectStore.workPackages$,
       this.projectStore.project$,
       this.projectStore.projectEditable$
@@ -91,10 +89,10 @@ export class ProjectPartnerStateAidTabComponent {
       map(([stateAid, activities, workpackages, project, isEditable]) => ({
         stateAid,
         displayActivities: this.mapWorkpackagesAndActivities(isEditable ? activities : stateAid.activities, workpackages),
-        activities: isEditable ? activities : stateAid.activities,
+        activities,
         project,
         isEditable,
-        stateAidsForDropdown: [{id: null} as any, ...project.callSettings.stateAids]
+        stateAidsForDropdown: project.callSettings.stateAids,
       })),
       tap(stateAid => this.resetForm(stateAid.stateAid)),
     );
@@ -103,7 +101,7 @@ export class ProjectPartnerStateAidTabComponent {
   updateStateAid(stateAids: ProgrammeStateAidDTO[]): void {
     const stateAidToSave = {
       ...this.form.value,
-      stateAidScheme: stateAids.find(stateAid => this.form.controls?.stateAidScheme.value === stateAid.id)
+      stateAidScheme: stateAids.find(stateAid => this.form.controls?.stateAidScheme.value === stateAid.id),
     };
     this.pageStore.partner$
       .pipe(
@@ -124,7 +122,7 @@ export class ProjectPartnerStateAidTabComponent {
     stateAid?.activities?.forEach((activity: WorkPackageActivitySummaryDTO) => {
       this.addActivity(activity);
     });
-    this.form.controls.stateAidScheme.setValue(stateAid.stateAidScheme?.id);
+    this.form.controls.stateAidScheme.setValue(stateAid.stateAidScheme?.id || 0);
     this.formService.setDirty(false);
   }
 

@@ -1,0 +1,32 @@
+{
+  "projectOwnership": [
+    {
+      "translation": "Project ownership DE",
+      "language": "DE"
+    },
+    {
+      "translation": "Project ownership EN",
+      "language": "EN"
+    }
+  ],
+  "projectDurability": [
+    {
+      "translation": "Project durability DE",
+      "language": "DE"
+    },
+    {
+      "translation": "Project durability EN",
+      "language": "EN"
+    }
+  ],
+  "projectTransferability": [
+    {
+      "translation": "Project transferability DE",
+      "language": "DE"
+    },
+    {
+      "translation": "Project transferability EN",
+      "language": "EN"
+    }
+  ]
+}

@@ -24,6 +24,8 @@ import {
 import {
   PartnerFileManagementStore
 } from '@project/project-application/report/partner-report-detail-page/partner-file-management-store';
+import {RoutingService} from '@common/services/routing.service';
+import {v4 as uuid} from 'uuid';
 
 @Component({
   selector: 'jems-partner-report-work-plan-progress-tab',
@@ -52,7 +54,8 @@ export class PartnerReportWorkPlanProgressTabComponent {
               private projectSidenavService: ProjectApplicationFormSidenavService,
               private partnerReportDetailPageStore: PartnerReportDetailPageStore,
               private pageStore: PartnerReportWorkPlanPageStore,
-              private partnerFileManagementStore: PartnerFileManagementStore) {
+              private partnerFileManagementStore: PartnerFileManagementStore,
+              private routingService: RoutingService) {
 
     this.savedWorkPackages$ = this.pageStore.partnerWorkPackages$
       .pipe(
@@ -121,6 +124,8 @@ export class PartnerReportWorkPlanProgressTabComponent {
     if (!target) {
       return;
     }
+    const serviceId = uuid();
+    this.routingService.confirmLeaveMap.set(serviceId, true);
     this.pageStore.uploadDeliverableFile(target?.files[0], activityId, deliverableId, workPackageId)
       .pipe(
         take(1),
@@ -128,6 +133,7 @@ export class PartnerReportWorkPlanProgressTabComponent {
       )
       .subscribe(value => {
         this.deliverableFileMetadata(workPackageIndex, activityIndex, deliverableIndex)?.patchValue(value);
+        this.routingService.confirmLeaveMap.delete(serviceId);
       });
   }
 
@@ -201,7 +207,6 @@ export class PartnerReportWorkPlanProgressTabComponent {
       id: existing?.id,
       title: this.formBuilder.control(existing?.title || []),
       contribution: this.formBuilder.control(existing?.contribution || false),
-      evidence: this.formBuilder.control(existing?.evidence || false),
       fileMetadata: this.formBuilder.control(existing?.attachment || '')
     }));
   }
@@ -211,7 +216,6 @@ export class PartnerReportWorkPlanProgressTabComponent {
       id: existing?.id,
       title: this.formBuilder.control(existing?.title || []),
       contribution: this.formBuilder.control(existing?.contribution || false),
-      evidence: this.formBuilder.control(existing?.evidence || false),
       fileMetadata: this.formBuilder.control(existing?.attachment || '')
     }));
   }

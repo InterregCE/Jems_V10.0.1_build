@@ -1,0 +1,10 @@
+ALTER TABLE report_project_partner_lump_sum
+    ADD COLUMN order_nr TINYINT UNSIGNED NOT NULL AFTER programme_lump_sum_id,
+    CHANGE COLUMN cost total DECIMAL(17, 2) UNSIGNED NOT NULL DEFAULT 0.00,
+    ADD COLUMN current DECIMAL(17, 2) UNSIGNED NOT NULL DEFAULT 0.00 AFTER total,
+    ADD COLUMN previously_reported DECIMAL(17, 2) UNSIGNED NOT NULL DEFAULT 0.00 AFTER current;
+
+ALTER TABLE report_project_partner_unit_cost
+    CHANGE COLUMN total_cost total DECIMAL(17, 2) UNSIGNED NOT NULL DEFAULT 0.00,
+    ADD COLUMN current DECIMAL(17, 2) UNSIGNED NOT NULL DEFAULT 0.00 AFTER total,
+    ADD COLUMN previously_reported DECIMAL(17, 2) UNSIGNED NOT NULL DEFAULT 0.00 AFTER current;

@@ -5,9 +5,11 @@ import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.common.entity.addTranslationEntities
 import io.cloudflight.jems.server.common.entity.extractField
 import io.cloudflight.jems.server.common.entity.extractTranslation
+import io.cloudflight.jems.server.payments.entity.PartnerWithContributionsRow
 import io.cloudflight.jems.server.programme.entity.legalstatus.ProgrammeLegalStatusEntity
 import io.cloudflight.jems.server.programme.entity.stateaid.ProgrammeStateAidEntity
 import io.cloudflight.jems.server.programme.repository.stateaid.toModel
+import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.project.entity.AddressEntity
 import io.cloudflight.jems.server.project.entity.Contact
 import io.cloudflight.jems.server.project.entity.ProjectEntity
@@ -39,6 +41,7 @@ import io.cloudflight.jems.server.project.repository.workpackage.activity.toSumm
 import io.cloudflight.jems.server.project.service.budget.model.ProjectPartnerBudget
 import io.cloudflight.jems.server.project.service.budget.model.ProjectSpfBudgetPerPeriod
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionSpf
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAddress
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAddressType
@@ -47,6 +50,7 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDe
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerMotivation
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerStateAid
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerPaymentSummary
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
 import java.math.BigDecimal
 import java.time.ZoneOffset
@@ -131,6 +135,7 @@ fun ProjectPartnerEntity.copy(
 ).apply {
     if(projectPartner != null) {
         partnerSubType = projectPartner.partnerSubType
+        partnerType = projectPartner.partnerType
         translatedValues.addPartnerTranslations(this, projectPartner.department, projectPartner.otherIdentifierDescription)
     }
 }
@@ -141,6 +146,7 @@ fun Iterable<ProjectPartnerEntity>.toProjectPartner() = map { it.toProjectPartne
 fun ProjectPartnerEntity.toModel() = ProjectPartnerSummary(
     id = id,
     abbreviation = abbreviation,
+    institutionName = null,
     active = active,
     role = role,
     sortNumber = sortNumber,
@@ -356,7 +362,7 @@ fun PartnerSimpleRow.toProjectPartnerHistoricalData() = ProjectPartnerSummary(
     role = role,
     sortNumber = sortNumber,
     country = country,
-    region = nutsRegion2
+    region = nutsRegion3
 )
 
 fun PartnerSimpleRow.toProjectPartnerDTOHistoricalData() = ProjectPartnerSummary(
@@ -366,7 +372,7 @@ fun PartnerSimpleRow.toProjectPartnerDTOHistoricalData() = ProjectPartnerSummary
     role = role,
     sortNumber = sortNumber,
     country = country,
-    region = nutsRegion2
+    region = nutsRegion3
 )
 
 fun ProjectPartnerStateAid.toEntity(
@@ -536,3 +542,54 @@ fun ProjectSpfBeneficiaryBudgetPerPeriodRow.toModel() = ProjectSpfBudgetPerPerio
     periodNumber = periodNumber ?: 0,
     spfCostPerPeriod = spfCostPerPeriod ?: BigDecimal.ZERO
 )
+
+fun List<PartnerWithContributionsRow>.toProjectPartnerPaymentSummaryList(): List<ProjectPartnerPaymentSummary> =
+    this.groupBy { it.partnerId }.map { groupedRows ->
+        extractPaymentSummaryFromRows(groupedRows.value)
+    }
+
+
+fun extractPaymentSummaryFromRows(rows: List<PartnerWithContributionsRow>): ProjectPartnerPaymentSummary {
+    val funds = rows.groupBy { it.fundId }.map {
+        ProgrammeFund(
+            id = it.key,
+            selected = true,
+            abbreviation = it.value.extractField { it.fundAbbreviation }
+        )
+    }
+    val contributions = rows.filter { it.partnerContributionName != null }
+        .groupBy { it.partnerContributionId }.map {
+        val contribution = it.value.first()
+        ProjectPartnerContribution(
+            id = contribution.partnerContributionId,
+            name = contribution.partnerContributionName,
+            status = contribution.partnerContributionStatus,
+            isPartner = true,
+            amount = contribution.partnerContributionAmount
+        )
+    }
+
+    val spfContributions = rows.filter { it.partnerContributionSpfId != null }
+        .groupBy { it.partnerContributionSpfId }.map {
+        val contribution = it.value.first()
+        ProjectPartnerContributionSpf(
+            id = contribution.partnerContributionSpfId,
+            name = contribution.partnerContributionSpfName,
+            status = contribution.partnerContributionSpfStatus,
+            amount = contribution.partnerContributionSpfAmount
+        )
+    }
+    val partnerData = rows.first()
+    return ProjectPartnerPaymentSummary(
+        partnerSummary = ProjectPartnerSummary(
+            id = partnerData.partnerId,
+            abbreviation = partnerData.partnerAbbreviation,
+            role = partnerData.partnerRole,
+            active = partnerData.partnerActive,
+            sortNumber = partnerData.partnerSortNumber
+        ),
+        partnerCoFinancing = funds,
+        partnerContributions = contributions,
+        partnerContributionsSpf = spfContributions
+    )
+}

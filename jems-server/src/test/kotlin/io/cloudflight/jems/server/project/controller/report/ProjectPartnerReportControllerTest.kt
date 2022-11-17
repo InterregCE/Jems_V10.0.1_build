@@ -19,8 +19,8 @@ import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileSearchRe
 import io.cloudflight.jems.api.project.dto.report.file.UserSimpleDTO
 import io.cloudflight.jems.api.project.dto.report.partner.PartnerReportIdentificationCoFinancingDTO
 import io.cloudflight.jems.api.project.dto.report.partner.PartnerReportIdentificationDTO
+import io.cloudflight.jems.api.project.dto.report.partner.identification.ProjectPartnerReportPeriodDTO
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.common.exception.ApplicationException
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
 import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatus
@@ -30,21 +30,30 @@ import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVatRecovery
-import io.cloudflight.jems.server.project.service.report.model.PartnerReportIdentification
-import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReport
-import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSummary
-import io.cloudflight.jems.server.project.service.report.model.ReportStatus
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFile
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileSearchRequest
+import io.cloudflight.jems.server.project.service.report.model.partner.PartnerReportIdentification
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSummary
+import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFile
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileSearchRequest
 import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
-import io.cloudflight.jems.server.project.service.report.partner.createProjectPartnerReport.CreateProjectPartnerReportInteractor
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportPeriod
+import io.cloudflight.jems.server.project.service.report.partner.base.deleteProjectPartnerReport.DeleteProjectPartnerReportInteractor
+import io.cloudflight.jems.server.project.service.report.partner.file.control.deleteControlReportFile.DeleteControlReportFileInteractor
+import io.cloudflight.jems.server.project.service.report.partner.file.control.downloadControlReportFile.DownloadControlReportFileInteractor
+import io.cloudflight.jems.server.project.service.report.partner.file.control.listProjectPartnerControlReportFile.ListControlReportFileInteractor
+import io.cloudflight.jems.server.project.service.report.partner.file.control.setDescriptionToControlReportFile.SetDescriptionToControlReportFileInteractor
+import io.cloudflight.jems.server.project.service.report.partner.file.control.uploadFileToControlReport.UploadFileToControlReportInteractor
+import io.cloudflight.jems.server.project.service.report.partner.base.createProjectPartnerReport.CreateProjectPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.deleteProjectPartnerReportFile.DeleteProjectPartnerReportFileInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.downloadProjectPartnerReportFile.DownloadProjectPartnerReportFileInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.listProjectPartnerReportFile.ListProjectPartnerReportFileInteractor
+import io.cloudflight.jems.server.project.service.report.partner.file.setDescriptionToFile.SetDescriptionToProjectPartnerReportFileInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.uploadFileToProjectPartnerReport.UploadFileToProjectPartnerReportInteractor
-import io.cloudflight.jems.server.project.service.report.partner.getProjectPartnerReport.GetProjectPartnerReportInteractor
-import io.cloudflight.jems.server.project.service.report.partner.submitProjectPartnerReport.SubmitProjectPartnerReportInteractor
+import io.cloudflight.jems.server.project.service.report.partner.base.getProjectPartnerReport.GetProjectPartnerReportInteractor
+import io.cloudflight.jems.server.project.service.report.partner.base.startControlPartnerReport.StartControlPartnerReportInteractor
+import io.cloudflight.jems.server.project.service.report.partner.base.submitProjectPartnerReport.SubmitProjectPartnerReportInteractor
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -52,7 +61,6 @@ import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
@@ -60,12 +68,15 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import java.math.BigDecimal
+import java.time.LocalDate
 import java.time.ZonedDateTime
 
 internal class ProjectPartnerReportControllerTest : UnitTest() {
 
     companion object {
         private val YESTERDAY = ZonedDateTime.now().minusDays(1)
+        private val LAST_WEEK = LocalDate.now().minusWeeks(1)
+        private val NEXT_WEEK = LocalDate.now().plusWeeks(1)
 
         private val reportSummary = ProjectPartnerReportSummary(
             id = 754,
@@ -74,6 +85,16 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
             version = "6.1",
             firstSubmission = null,
             createdAt = YESTERDAY,
+            startDate = LAST_WEEK,
+            endDate = NEXT_WEEK,
+            periodDetail = ProjectPartnerReportPeriod(
+                number = 2,
+                periodBudget = BigDecimal.ONE,
+                periodBudgetCumulative = BigDecimal.TEN,
+                start = 4,
+                end = 6,
+            ),
+            deletable = false,
         )
 
         private val reportSummaryDTO = ProjectPartnerReportSummaryDTO(
@@ -83,6 +104,16 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
             linkedFormVersion = reportSummary.version,
             firstSubmission = null,
             createdAt = reportSummary.createdAt,
+            startDate = reportSummary.startDate,
+            endDate = reportSummary.endDate,
+            periodDetail = ProjectPartnerReportPeriodDTO(
+                number = 2,
+                periodBudget = BigDecimal.ONE,
+                periodBudgetCumulative = BigDecimal.TEN,
+                start = 4,
+                end = 6,
+            ),
+            deletable = false,
         )
 
         private val report = ProjectPartnerReport(
@@ -90,6 +121,7 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
             reportNumber = reportSummary.reportNumber,
             status = reportSummary.status,
             version = reportSummary.version,
+            firstSubmission = YESTERDAY,
             identification = PartnerReportIdentification(
                 projectIdentifier = "projectIdentifier",
                 projectAcronym = "projectAcronym",
@@ -156,13 +188,14 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
             )
         )
 
-        private val reportFile = ProjectReportFile(
+        private val reportFile = JemsFile(
             id = 478L,
             name = "attachment.pdf",
-            type = ProjectPartnerReportFileType.Contribution,
+            type = JemsFileType.Contribution,
             uploaded = YESTERDAY,
             author = UserSimple(45L, email = "admin@cloudflight.io", name = "Admin", surname = "Big"),
             size = 47889L,
+            description = "desc",
         )
 
         private val reportFileDto = ProjectReportFileDTO(
@@ -173,6 +206,7 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
             author = UserSimpleDTO(45L, email = "admin@cloudflight.io", name = "Admin", surname = "Big"),
             size = 47889L,
             sizeString = "46.8\u0020kB",
+            description = "desc",
         )
     }
 
@@ -183,19 +217,43 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
     lateinit var submitPartnerReport: SubmitProjectPartnerReportInteractor
 
     @MockK
+    lateinit var startControlReport: StartControlPartnerReportInteractor
+
+    @MockK
     lateinit var getPartnerReport: GetProjectPartnerReportInteractor
 
     @MockK
-    lateinit var downloadPartnerReportFile: DownloadProjectPartnerReportFileInteractor
+    lateinit var downloadReportFile: DownloadProjectPartnerReportFileInteractor
 
     @MockK
-    lateinit var deletePartnerReportFile: DeleteProjectPartnerReportFileInteractor
+    lateinit var deleteReportFile: DeleteProjectPartnerReportFileInteractor
+
+    @MockK
+    lateinit var setDescriptionToReportFile: SetDescriptionToProjectPartnerReportFileInteractor
 
     @MockK
     lateinit var listPartnerReportFile: ListProjectPartnerReportFileInteractor
 
     @MockK
     lateinit var uploadPartnerReportFile: UploadFileToProjectPartnerReportInteractor
+
+    @MockK
+    lateinit var downloadControlReportFile: DownloadControlReportFileInteractor
+
+    @MockK
+    lateinit var deleteControlReportFile: DeleteControlReportFileInteractor
+
+    @MockK
+    lateinit var setDescriptionToControlReportFile: SetDescriptionToControlReportFileInteractor
+
+    @MockK
+    lateinit var listPartnerControlReportFile: ListControlReportFileInteractor
+
+    @MockK
+    lateinit var uploadPartnerControlReportFile: UploadFileToControlReportInteractor
+
+    @MockK
+    lateinit var deleteProjectPartnerReportInteractor: DeleteProjectPartnerReportInteractor
 
     @InjectMockKs
     private lateinit var controller: ProjectPartnerReportController
@@ -239,30 +297,28 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
 
     @Test
     fun createProjectPartnerReport() {
-        assertThrows<ApplicationException> { controller.createProjectPartnerReport(18) }
+        every { createPartnerReport.createReportFor(18) } returns reportSummary
+        assertThat(controller.createProjectPartnerReport(18)).isEqualTo(reportSummaryDTO)
     }
 
     @Test
     fun submitProjectPartnerReport() {
-        val thisMoment = ZonedDateTime.now()
-        every { submitPartnerReport.submit(18, 310) } returns reportSummary.copy(
-            status = ReportStatus.Submitted,
-            firstSubmission = thisMoment,
-        )
-        assertThat(controller.submitProjectPartnerReport(18, 310)).isEqualTo(
-            reportSummaryDTO.copy(
-                status = ReportStatusDTO.Submitted,
-                firstSubmission = thisMoment,
-            )
-        )
+        every { submitPartnerReport.submit(18, 310) } returns ReportStatus.Submitted
+        assertThat(controller.submitProjectPartnerReport(18, 310)).isEqualTo(ReportStatusDTO.Submitted)
     }
 
     @Test
-    fun downloadAttachment() {
-        val fileContentArray = ByteArray(5)
-        every { downloadPartnerReportFile.download(partnerId = 20L, fileId = 350L) } returns Pair("fileName.txt", fileContentArray)
+    fun startControlOnPartnerReport() {
+        every { startControlReport.startControl(19, 320) } returns ReportStatus.InControl
+        assertThat(controller.startControlOnPartnerReport(19, 320)).isEqualTo(ReportStatusDTO.InControl)
+    }
 
-        assertThat(controller.downloadAttachment(partnerId = 20L, fileId = 350L))
+    @Test
+    fun downloadReportFile() {
+        val fileContentArray = ByteArray(5)
+        every { downloadReportFile.download(partnerId = 20L, fileId = 350L) } returns Pair("fileName.txt", fileContentArray)
+
+        assertThat(controller.downloadReportFile(partnerId = 20L, fileId = 350L))
             .isEqualTo(
                 ResponseEntity.ok()
                     .contentLength(5)
@@ -273,23 +329,30 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
     }
 
     @Test
-    fun deleteAttachment() {
-        every { deletePartnerReportFile.delete(partnerId = 24L, fileId = 300L) } answers { }
-        controller.deleteAttachment(partnerId = 24L, fileId = 300L)
-        verify(exactly = 1) { deletePartnerReportFile.delete(partnerId = 24L, fileId = 300L) }
+    fun deleteReportFile() {
+        every { deleteReportFile.delete(partnerId = 24L, reportId = 99L, fileId = 300L) } answers { }
+        controller.deleteReportFile(partnerId = 24L, reportId = 99L, fileId = 300L)
+        verify(exactly = 1) { deleteReportFile.delete(partnerId = 24L, reportId = 99L, fileId = 300L) }
     }
 
     @Test
-    fun uploadAttachment() {
+    fun updateReportFileDescription() {
+        every { setDescriptionToReportFile.setDescription(partnerId = 25L, reportId = 80L, fileId = 14L, "desc to set") } answers { }
+        controller.updateReportFileDescription(partnerId = 25L, reportId = 80L, fileId = 14L, "desc to set")
+        verify(exactly = 1) { setDescriptionToReportFile.setDescription(partnerId = 25L, reportId = 80L, fileId = 14L, "desc to set") }
+    }
+
+    @Test
+    fun uploadReportFile() {
         val slotFile = slot<ProjectFile>()
         every { uploadPartnerReportFile.uploadToReport(27L, reportId = 35L, capture(slotFile)) } returns dummyFile
-        assertThat(controller.uploadAttachment(27L, 35L, dummyMultipartFile())).isEqualTo(dummyFileDto)
+        assertThat(controller.uploadReportFile(27L, 35L, dummyMultipartFile())).isEqualTo(dummyFileDto)
         assertThat(slotFile.captured).isEqualTo(dummyFileExpected)
     }
 
     @Test
-    fun listAttachments() {
-        val searchRequest = slot<ProjectReportFileSearchRequest>()
+    fun listReportFiles() {
+        val searchRequest = slot<JemsFileSearchRequest>()
         every { listPartnerReportFile.list(29L, Pageable.unpaged(), capture(searchRequest)) } returns
             PageImpl(listOf(reportFile))
 
@@ -299,15 +362,51 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
             filterSubtypes = setOf(ProjectPartnerReportFileTypeDTO.Activity),
         )
 
-        assertThat(controller.listAttachments(29L, Pageable.unpaged(), searchRequestDto).content)
+        assertThat(controller.listReportFiles(29L, Pageable.unpaged(), searchRequestDto).content)
             .containsExactly(reportFileDto)
         assertThat(searchRequest.captured).isEqualTo(
-            ProjectReportFileSearchRequest(
+            JemsFileSearchRequest(
                 reportId = 80L,
-                treeNode = ProjectPartnerReportFileType.PartnerReport,
-                filterSubtypes = setOf(ProjectPartnerReportFileType.Activity),
+                treeNode = JemsFileType.PartnerReport,
+                filterSubtypes = setOf(JemsFileType.Activity),
             )
         )
+    }
+
+    @Test
+    fun downloadControlReportFile() {
+        val fileContentArray = ByteArray(5)
+        every { downloadControlReportFile.download(partnerId = 30L, fileId = 450L) } returns Pair("fileName.txt", fileContentArray)
+
+        assertThat(controller.downloadControlReportFile(partnerId = 30L, fileId = 450L))
+            .isEqualTo(
+                ResponseEntity.ok()
+                    .contentLength(5)
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"fileName.txt\"")
+                    .body(ByteArrayResource(fileContentArray))
+            )
+    }
+
+    @Test
+    fun deleteControlReportFile() {
+        every { deleteControlReportFile.delete(partnerId = 124L, reportId = 99L, fileId = 300L) } answers { }
+        controller.deleteControlReportFile(partnerId = 124L, reportId = 99L, fileId = 300L)
+        verify(exactly = 1) { deleteControlReportFile.delete(partnerId = 124L, reportId = 99L, fileId = 300L) }
+    }
+
+    @Test
+    fun updateControlReportFileDescription() {
+        every { setDescriptionToControlReportFile.setDescription(partnerId = 125L, reportId = 80L, fileId = 13L, "desc to set") } answers { }
+        controller.updateControlReportFileDescription(partnerId = 125L, reportId = 80L, fileId = 13L, "desc to set")
+        verify(exactly = 1) { setDescriptionToControlReportFile.setDescription(partnerId = 125L, reportId = 80L, fileId = 13L, "desc to set") }
+    }
+
+    @Test
+    fun deleteProjectPartnerReport() {
+        every { deleteProjectPartnerReportInteractor.delete(partnerId = 24L, reportId = 99L) } answers { }
+        controller.deleteProjectPartnerReport(partnerId = 24L, reportId = 99L)
+        verify(exactly = 1) { deleteProjectPartnerReportInteractor.delete(partnerId = 24L, reportId = 99L) }
     }
 
 }

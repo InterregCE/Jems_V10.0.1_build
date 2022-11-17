@@ -12,7 +12,7 @@ if (!(System.getenv("TEAMCITY_BUILD") != null && System.getenv("TEAMCITY_BUILD")
 
 description "Jems Project"
 group "io.cloudflight.jems"
-version "5.0.1$customerPostfix"
+version "6.0.0$customerPostfix"
 
 cloudflight {
     softwareProjectKey = "interact/ems"
@@ -24,6 +24,7 @@ subprojects {
         tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
             kotlinOptions {
                 freeCompilerArgs += "-opt-in=kotlin.RequiresOptIn"
+                freeCompilerArgs += "-Xjvm-default=all"
             }
         }
 
@@ -47,6 +48,10 @@ subprojects {
             }
         }
     }
+}
+
+allprojects {
+    configurations.all { exclude group: 'junit' }
 }
 
 // prevent local compile error

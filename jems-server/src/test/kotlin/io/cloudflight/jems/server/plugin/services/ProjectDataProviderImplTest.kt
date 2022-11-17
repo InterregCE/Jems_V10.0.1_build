@@ -25,6 +25,7 @@ import io.cloudflight.jems.plugin.contract.models.programme.lumpsum.ProgrammeLum
 import io.cloudflight.jems.plugin.contract.models.programme.lumpsum.ProgrammeLumpSumPhaseData
 import io.cloudflight.jems.plugin.contract.models.programme.strategy.ProgrammeStrategyData
 import io.cloudflight.jems.plugin.contract.models.programme.unitcost.BudgetCategoryData
+import io.cloudflight.jems.plugin.contract.models.programme.unitcost.ProgrammeUnitCostListData
 import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ApplicationStatusData
 import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ProjectAssessmentEligibilityData
 import io.cloudflight.jems.plugin.contract.models.project.lifecycle.ProjectAssessmentEligibilityResultData
@@ -94,9 +95,13 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionE.lumpsum.Proje
 import io.cloudflight.jems.plugin.contract.models.project.versions.ProjectVersionData
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.service.CallPersistence
+import io.cloudflight.jems.server.call.service.model.CallCostOption
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.programme.entity.ProgrammeDataEntity
+import io.cloudflight.jems.server.programme.repository.ProgrammeDataRepository
 import io.cloudflight.jems.server.programme.service.costoption.ProgrammeLumpSumPersistence
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
+import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
 import io.cloudflight.jems.server.programme.service.indicator.OutputIndicatorPersistence
@@ -106,6 +111,7 @@ import io.cloudflight.jems.server.programme.service.indicator.model.ResultIndica
 import io.cloudflight.jems.server.programme.service.legalstatus.ProgrammeLegalStatusPersistence
 import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatus
 import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatusType
+import io.cloudflight.jems.server.programme.service.priority.model.ProgrammeObjectiveDimension
 import io.cloudflight.jems.server.project.service.ProjectDescriptionPersistence
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
@@ -116,6 +122,9 @@ import io.cloudflight.jems.server.project.service.budget.get_partner_budget_per_
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResult
 import io.cloudflight.jems.server.project.service.common.BudgetCostsCalculatorService
 import io.cloudflight.jems.server.project.service.common.PartnerBudgetPerFundCalculatorService
+import io.cloudflight.jems.server.project.service.contracting.model.ContractingDimensionCode
+import io.cloudflight.jems.server.project.service.contracting.monitoring.ContractingMonitoringPersistence
+import io.cloudflight.jems.server.project.service.customCostOptions.ProjectUnitCostPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.ProjectLumpSumPersistence
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectPartnerLumpSum
@@ -132,6 +141,7 @@ import io.cloudflight.jems.server.project.service.model.ProjectLongTermPlans
 import io.cloudflight.jems.server.project.service.model.ProjectManagement
 import io.cloudflight.jems.server.project.service.model.ProjectOverallObjective
 import io.cloudflight.jems.server.project.service.model.ProjectPartnerBudgetPerPeriod
+import io.cloudflight.jems.server.project.service.model.ProjectPartnerCostType
 import io.cloudflight.jems.server.project.service.model.ProjectPartnership
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.cloudflight.jems.server.project.service.model.ProjectPeriodBudget
@@ -181,11 +191,13 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import java.math.BigDecimal
 import java.time.ZonedDateTime
+import java.util.Optional
 
 internal class ProjectDataProviderImplTest : UnitTest() {
     @RelaxedMockK
@@ -251,8 +263,17 @@ internal class ProjectDataProviderImplTest : UnitTest() {
     @MockK
     lateinit var projectBudgetPersistence: ProjectBudgetPersistence
 
+    @MockK
+    lateinit var contractingMonitoringPersistence: ContractingMonitoringPersistence
+
     @InjectMockKs
     lateinit var projectDataProvider: ProjectDataProviderImpl
+
+    @RelaxedMockK
+    lateinit var programmeDataRepository: ProgrammeDataRepository
+
+    @MockK
+    lateinit var projectUnitCostPersistence: ProjectUnitCostPersistence
 
     companion object {
         private val startDate = ZonedDateTime.now().minusDays(2)
@@ -284,7 +305,11 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             isAdditionalFundAllowed = false,
             applicationFormFieldConfigurations = mutableSetOf(),
             preSubmissionCheckPluginKey = null,
-            firstStepPreSubmissionCheckPluginKey = null
+            firstStepPreSubmissionCheckPluginKey = null,
+            costOption = CallCostOption(
+                projectDefinedUnitCostAllowed = true,
+                projectDefinedLumpSumAllowed = false,
+            ),
         )
         private val legalStatuse = listOf(
             ProgrammeLegalStatus(
@@ -498,8 +523,9 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             active = true,
             partner = ProjectPartnerSummaryDTO(
                 id = projectPartner.id,
-                active = true,
                 abbreviation = projectPartner.abbreviation,
+                institutionName = "institution",
+                active = true,
                 role = ProjectPartnerRoleDTO.valueOf(projectPartner.role.name),
                 sortNumber = projectPartner.sortNumber,
                 country = "AT",
@@ -614,6 +640,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             investments = listOf(investment)
         )
         private val projectLumpSum = ProjectLumpSum(
+            orderNr = 1,
             programmeLumpSumId = 1L,
             period = 2,
             lumpSumContributions = listOf(ProjectPartnerLumpSum(3L, BigDecimal.ZERO))
@@ -625,7 +652,29 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             cost = BigDecimal.TEN,
             splittingAllowed = true,
             phase = ProgrammeLumpSumPhase.Preparation,
-            categories = setOf(BudgetCategory.StaffCosts)
+            categories = setOf(BudgetCategory.StaffCosts),
+            fastTrack = false
+        )
+        private val projectDefinedUnitCost = ProgrammeUnitCost(
+            id = 51L,
+            projectId = project.id,
+            name = setOf(InputTranslation(SystemLanguage.ET, "name-ET")),
+            description = setOf(InputTranslation(SystemLanguage.ET, "description-ET")),
+            type = setOf(InputTranslation(SystemLanguage.ET, "type-ET")),
+            justification = emptySet(),
+            costPerUnit = BigDecimal.ONE,
+            costPerUnitForeignCurrency = BigDecimal.TEN,
+            foreignCurrencyCode = "CZK",
+            isOneCostCategory = true,
+            categories = setOf(BudgetCategory.ExternalCosts),
+        )
+        private val projectDefinedUnitCostData = ProgrammeUnitCostListData(
+            id = 51L,
+            name = setOf(InputTranslationData(SystemLanguageData.ET, "E.2.1_name-ET")),
+            type = setOf(InputTranslationData(SystemLanguageData.ET, "type-ET")),
+            description = setOf(InputTranslationData(SystemLanguageData.ET, "description-ET")),
+            costPerUnit = BigDecimal.ONE,
+            categories = setOf(BudgetCategoryData.ExternalCosts),
         )
 
         // data for tableA4/output-result
@@ -703,6 +752,23 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                 description = setOf(InputTranslation(SystemLanguage.EN, "description2")),
             )
         )
+
+        val contractingDimensionCodes = listOf(
+            ContractingDimensionCode(
+                id = 1L,
+                projectId = 1L,
+                programmeObjectiveDimension = ProgrammeObjectiveDimension.TypesOfIntervention,
+                dimensionCode = "001",
+                projectBudgetAmountShare = BigDecimal(100)
+            ),
+            ContractingDimensionCode(
+                id = 2L,
+                projectId = 1L,
+                programmeObjectiveDimension = ProgrammeObjectiveDimension.RegionalAndSeaBasinStrategy,
+                dimensionCode = "003",
+                projectBudgetAmountShare = BigDecimal(100)
+            )
+        )
     }
 
     @Test
@@ -730,20 +796,21 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             partnersBudgetPerPeriod = listOf(
                 ProjectPartnerBudgetPerPeriod(
                     partner = ProjectPartnerSummary(
-                        projectPartner.id,
-                        projectPartner.abbreviation,
-                        projectPartner.active,
-                        projectPartner.role,
-                        projectPartner.sortNumber,
-                        projectPartner.addresses.first { it.type == ProjectPartnerAddressType.Organization }.country,
-                        projectPartner.addresses.first { it.type == ProjectPartnerAddressType.Organization }.nutsRegion2
+                        id = projectPartner.id,
+                        abbreviation = projectPartner.abbreviation,
+                        active = projectPartner.active,
+                        role = projectPartner.role,
+                        sortNumber = projectPartner.sortNumber,
+                        country = projectPartner.addresses.first { it.type == ProjectPartnerAddressType.Organization }.country,
+                        region = projectPartner.addresses.first { it.type == ProjectPartnerAddressType.Organization }.nutsRegion2
                     ),
                     periodBudgets = mutableListOf(
                         ProjectPeriodBudget(0, 0, 0, BigDecimal.ZERO, BudgetCostsDetail(), false),
                         ProjectPeriodBudget(255, 0, 0, BigDecimal.ZERO, BudgetCostsDetail(), true)
                     ),
                     totalPartnerBudget = BigDecimal.ZERO,
-                    totalPartnerBudgetDetail = BudgetCostsDetail()
+                    totalPartnerBudgetDetail = BudgetCostsDetail(),
+                    costType = ProjectPartnerCostType.Management
                 )
             ),
             totals = listOf(BigDecimal.ZERO, BigDecimal.ZERO, BigDecimal.ZERO),
@@ -795,6 +862,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             partnerBudgetPerPeriodCalculator.calculate(
                 any(),
                 any(),
+                any(),
                 any()
             )
         } returns budgetOverviewPerPartnerPerPeriod
@@ -804,6 +872,9 @@ internal class ProjectDataProviderImplTest : UnitTest() {
         every { projectLumpSumPersistence.getLumpSums(id) } returns listOf(projectLumpSum)
         every { programmeLumpSumPersistence.getLumpSums(listOf(projectLumpSum.programmeLumpSumId)) } returns listOf(
             programmeLumpSum
+        )
+        every { projectUnitCostPersistence.getProjectUnitCostList(id, null) } returns listOf(
+            projectDefinedUnitCost
         )
         every { partnerPersistence.getPartnerStateAid(partnerId = projectPartner.id) } returns
             ProjectPartnerStateAid(
@@ -817,11 +888,15 @@ internal class ProjectDataProviderImplTest : UnitTest() {
         every { coFinancingPersistence.getAvailableFunds(projectPartner.id) } returns setOf(ERDF_FUND)
         // data for tableA4/output-result
         every { workPackagePersistence.getAllOutputsForProjectIdSortedByNumbers(id) } returns projectOutputs
-        every { listOutputIndicatorsPersistence.getTop50OutputIndicators() } returns outputIndicatorSet
+        every { listOutputIndicatorsPersistence.getTop250OutputIndicators() } returns outputIndicatorSet
         every { listResultIndicatorsPersistence.getTop50ResultIndicators() } returns resultIndicatorSet
         every { projectResultPersistence.getResultsForProject(id, null) } returns projectResults
         every { projectBudgetPersistence.getBudgetPerPartner(setOf(2), id, null) } returns emptyList()
         every { projectBudgetPersistence.getBudgetTotalForPartners(setOf(2), id, null) } returns emptyMap()
+        val programmeData = mockk<ProgrammeDataEntity>()
+        every { programmeData.title } returns "programme title"
+        every { programmeDataRepository.findById(1L) } returns Optional.of(programmeData)
+        every { contractingMonitoringPersistence.getContractingMonitoring(1L).dimensionCodes } returns contractingDimensionCodes
 
         // test getByProjectId and its mappings..
         val projectData = projectDataProvider.getProjectDataForProjectId(id)
@@ -1352,7 +1427,8 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                         period = projectLumpSum.period,
                         lumpSumContributions = listOf(ProjectPartnerLumpSumData(3L, BigDecimal.ZERO))
                     )
-                )
+                ),
+                projectDefinedUnitCosts = listOf(projectDefinedUnitCostData),
             )
         )
 
@@ -1428,11 +1504,13 @@ internal class ProjectDataProviderImplTest : UnitTest() {
                 )
             )
         )
+        assertThat(projectData.programmeTitle).isEqualTo("programme title")
     }
 
     @Test
     fun `project data provider get for project Id - with empty values`() {
         val id = project.id!!
+        every { contractingMonitoringPersistence.getContractingMonitoring(id).dimensionCodes } returns emptyList()
         every { projectPersistence.getProject(id) } returns ProjectFull(
             id = 1L,
             customIdentifier = "01",
@@ -1493,7 +1571,7 @@ internal class ProjectDataProviderImplTest : UnitTest() {
         every { programmeLegalStatusPersistence.getMax20Statuses() } returns legalStatuse
         // data for tableA4/output-result
         every { workPackagePersistence.getAllOutputsForProjectIdSortedByNumbers(id) } returns emptyList()
-        every { listOutputIndicatorsPersistence.getTop50OutputIndicators() } returns emptySet()
+        every { listOutputIndicatorsPersistence.getTop250OutputIndicators() } returns emptySet()
         every { listResultIndicatorsPersistence.getTop50ResultIndicators() } returns emptySet()
         every { projectResultPersistence.getResultsForProject(id, null) } returns emptyList()
         every { projectBudgetPersistence.getBudgetPerPartner(emptySet(), id, null) } returns emptyList()
@@ -1589,10 +1667,11 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             )
         )
         assertThat(projectData.sectionE).isEqualTo(
-            ProjectDataSectionE(projectLumpSums = emptyList())
+            ProjectDataSectionE(projectLumpSums = emptyList(), projectDefinedUnitCosts = listOf(projectDefinedUnitCostData))
         )
 
         assertThat(projectData.versions).isEqualTo(projectVersions.toDataModel())
+
     }
 
     @Test
@@ -1637,5 +1716,4 @@ internal class ProjectDataProviderImplTest : UnitTest() {
             entryIntoForceDate,
             note
         )
-
 }

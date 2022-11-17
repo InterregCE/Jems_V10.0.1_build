@@ -1,0 +1,27 @@
+{
+  "coFinancing": {
+    "fund": "Neighbourhood CBC",
+    "rate": 45,
+    "partnerContribution": {
+      "amount": "22.114,27",
+      "rate": "55,00"
+    },
+    "originsOfPartnerContribution": [
+      {
+        "legalStatus": "Public",
+        "amount": 17500.99
+      },
+      {
+        "source": "Random private contribution",
+        "legalStatus": "Private",
+        "amount": 3000
+      },
+      {
+        "source": "Random auto public contribution",
+        "legalStatus": "Automatic Public",
+        "amount": 1613.28
+      }
+    ],
+    "originOfPartnerContributionDifference": "22.114,27"
+  }
+}

@@ -8,7 +8,7 @@
             </h3>
 
             <ng-container *ngIf="!data.isStaffCostFlatRateActive && allowedBudgetCategories.staff.realOrUnitCosts()">
-                <h4>{{'project.partner.budget.staff' | translate}}</h4>
+                <h4 id="staffCosts">{{'project.partner.budget.staff' | translate}}</h4>
                 <jems-staff-costs-budget-table
                         *ngIf="staff"
                         [allowedBudgetCategory]="allowedBudgetCategories.staff"
@@ -19,7 +19,7 @@
                         jemsNoWidthLimit></jems-staff-costs-budget-table>
             </ng-container>
             <ng-container *ngIf="data.isStaffCostFlatRateActive && !data.isOtherFlatRateBasedOnStaffCostActive">
-                <h4>{{'project.partner.budget.staff.costs.flat.rate.header' | translate}}</h4>
+                <h4 id="staffCosts">{{'project.partner.budget.staff.costs.flat.rate.header' | translate}}</h4>
                 <p>{{'project.partner.budget.other.staff.costs.flat.rate.description' | translate}}</p>
                 <jems-budget-flat-rate-table
                         [description]="'project.partner.budget.staff.costs.flat.rate' | translate"
@@ -29,7 +29,7 @@
 
             <ng-container *ngIf="!data.isOtherFlatRateBasedOnStaffCostActive">
                 <ng-container *ngIf="data.isOfficeOnStaffFlatRateActive || data.isOfficeOnDirectFlatRateActive">
-                    <h4>{{'project.partner.budget.office.and.admin.header' | translate}}</h4>
+                    <h4 id="officeAdministrativeCosts">{{'project.partner.budget.office.and.admin.header' | translate}}</h4>
                     <p>
                         {{data.isOfficeOnStaffFlatRateActive ?
                         ('project.partner.budget.office.and.admin.on.staff.description' | translate) :
@@ -42,7 +42,7 @@
                 </ng-container>
                 <ng-container
                         *ngIf="!data.isTravelAndAccommodationFlatRateActive && allowedBudgetCategories.travel.realOrUnitCosts()">
-                    <h4>{{'project.partner.budget.travel' | translate}}</h4>
+                    <h4 id="travelAccommodation">{{'project.partner.budget.travel' | translate}}</h4>
                     <jems-travel-and-accommodation-costs-budget-table
                             *ngIf="travel"
                             [allowedBudgetCategory]="allowedBudgetCategories.travel"
@@ -54,7 +54,7 @@
                     </jems-travel-and-accommodation-costs-budget-table>
                 </ng-container>
                 <ng-container *ngIf="data.isTravelAndAccommodationFlatRateActive">
-                    <h4>{{'project.partner.budget.travel.and.accommodation.flat.rate.header' | translate}}</h4>
+                    <h4 id="travelAccommodation">{{'project.partner.budget.travel.and.accommodation.flat.rate.header' | translate}}</h4>
                     <p>{{'project.partner.budget.travel.and.accommodation.flat.rate.description' | translate}}</p>
                     <jems-budget-flat-rate-table
                             [description]="'project.partner.budget.travel.and.accommodation.flat.rate.header' | translate"
@@ -63,7 +63,7 @@
                 </ng-container>
 
                 <ng-container *ngIf="allowedBudgetCategories.external.realOrUnitCosts()">
-                    <h4>{{'project.partner.budget.external' | translate}}</h4>
+                    <h4 id="externalBudget">{{'project.partner.budget.external' | translate}}</h4>
                     <jems-general-budget-table
                             *ngIf="external"
                             [allowedBudgetCategory]="allowedBudgetCategories.external"
@@ -78,7 +78,7 @@
                 </ng-container>
 
                 <ng-container *ngIf="allowedBudgetCategories.equipment.realOrUnitCosts()">
-                    <h4>{{'project.partner.budget.equipment' | translate}}</h4>
+                    <h4 id="equipment">{{'project.partner.budget.equipment' | translate}}</h4>
                     <jems-general-budget-table
                             *ngIf="equipment"
                             [allowedBudgetCategory]="allowedBudgetCategories.equipment"
@@ -93,7 +93,7 @@
                 </ng-container>
 
                 <ng-container *ngIf="allowedBudgetCategories.infrastructure.realOrUnitCosts()">
-                    <h4>{{'project.partner.budget.infrastructure' | translate}}</h4>
+                    <h4 id="infrastructure">{{'project.partner.budget.infrastructure' | translate}}</h4>
                     <jems-general-budget-table
                             *ngIf="infrastructure"
                             [allowedBudgetCategory]="allowedBudgetCategories.infrastructure"
@@ -108,7 +108,7 @@
                 </ng-container>
 
                 <ng-container *ngIf="data.unitCostsWithMultipleCategoriesDefined">
-                    <h4>{{'project.partner.budget.unitcosts' | translate}}</h4>
+                    <h4 id="unitCosts">{{'project.partner.budget.unitcosts' | translate}}</h4>
                     <jems-unit-costs-budget-table
                             *ngIf="unitCosts"
                             [availableUnitCosts]="data.unitCosts | filterUnitCosts:  false"
@@ -121,7 +121,7 @@
             </ng-container>
 
             <ng-container *ngIf="data.isOtherFlatRateBasedOnStaffCostActive">
-                <h4>{{'project.partner.budget.other.costs.flat.rate.header' | translate}}</h4>
+                <h4 id="otherCosts">{{'project.partner.budget.other.costs.flat.rate.header' | translate}}</h4>
                 <p>{{'project.partner.budget.other.costs.flat.rate.description' | translate}}</p>
                 <jems-budget-flat-rate-table
                         [description]="'project.partner.budget.other.costs.flat.rate' | translate"
@@ -130,7 +130,7 @@
             </ng-container>
 
             <ng-container *ngIf="data.lumpSumsDefinedInCall">
-                <h4>{{'project.partner.budget.lump.sums.overview.header' | translate}}</h4>
+                <h4 id="lumpSums">{{'project.partner.budget.lump.sums.overview.header' | translate}}</h4>
                 <jems-lumpsum-budget-table jemsNoWidthLimit></jems-lumpsum-budget-table>
             </ng-container>
         </form>

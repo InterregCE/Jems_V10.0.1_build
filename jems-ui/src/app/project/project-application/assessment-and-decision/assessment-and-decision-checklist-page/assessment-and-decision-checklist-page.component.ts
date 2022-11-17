@@ -81,4 +81,8 @@ export class AssessmentAndDecisionChecklistPageComponent {
   updateConsolidatedFlag(consolidated: boolean) {
     this.isConsolidated = consolidated;
   }
+
+  saveDiscardMenuIsActive(): boolean {
+    return this.formService.form.dirty;
+  }
 }

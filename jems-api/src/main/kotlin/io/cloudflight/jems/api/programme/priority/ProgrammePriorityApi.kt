@@ -36,7 +36,7 @@ interface ProgrammePriorityApi {
     fun update(@PathVariable id: Long, @RequestBody priority: ProgrammePriorityDTO): ProgrammePriorityDTO
 
     @ApiOperation("Delete programme priority")
-    @DeleteMapping("$ENDPOINT_API_PROGRAMME_PRIORITY/{id}", consumes = [MediaType.APPLICATION_JSON_VALUE])
+    @DeleteMapping("$ENDPOINT_API_PROGRAMME_PRIORITY/{id}")
     fun delete(@PathVariable id: Long)
 
     @ApiOperation("Get free possibilities for priorities and objectives")

@@ -33,3 +33,12 @@
     min-width: 100%;
   }
 }
+
+.table-padding {
+  > * {
+    > * {
+      padding-right:  0.5em;
+      padding-left:  0.5em;
+    }
+  }
+}

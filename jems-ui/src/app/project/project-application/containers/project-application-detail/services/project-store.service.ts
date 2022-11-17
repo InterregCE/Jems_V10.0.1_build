@@ -4,12 +4,16 @@ import {
   CallService,
   InputProjectData,
   InvestmentSummaryDTO,
+  OutputProgrammePrioritySimple,
+  ProgrammePriorityDTO,
+  ProgrammeSpecificObjectiveDTO,
   ProjectBudgetService,
   ProjectCallSettingsDTO,
   ProjectDecisionDTO,
   ProjectDetailDTO,
   ProjectDetailFormDTO,
   ProjectPartnerBudgetPerFundDTO,
+  ProjectPartnerUserCollaboratorService,
   ProjectPeriodDTO,
   ProjectService,
   ProjectStatusDTO,
@@ -18,7 +22,7 @@ import {
   UserRoleCreateDTO,
   WorkPackageActivitySummaryDTO
 } from '@cat/api';
-import {filter, map, shareReplay, startWith, switchMap, tap, withLatestFrom} from 'rxjs/operators';
+import {filter, map, mergeMap, shareReplay, startWith, switchMap, tap, withLatestFrom} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
 import {PermissionService} from '../../../../../security/permissions/permission.service';
 import {ProjectCallSettings} from '@project/model/projectCallSettings';
@@ -35,6 +39,7 @@ import {
   InvestmentSummary
 } from '@project/work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
 import {AllowedBudgetCategories, AllowedBudgetCategory} from '@project/model/allowed-budget-category';
+import {NumberService} from '@common/services/number.service';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
 import CallTypeEnum = ProjectCallSettingsDTO.CallTypeEnum;
 
@@ -65,6 +70,7 @@ export class ProjectStore {
   investmentSummaries$: Observable<InvestmentSummary[]>;
   investmentSummariesForFiles$: Observable<InvestmentSummary[]>;
   userIsProjectOwner$: Observable<boolean>;
+  userIsPartnerCollaborator$: Observable<boolean>;
   userIsProjectOwnerOrEditCollaborator$: Observable<boolean>;
   allowedBudgetCategories$: Observable<AllowedBudgetCategories>;
   activities$: Observable<WorkPackageActivitySummaryDTO[]>;
@@ -75,6 +81,14 @@ export class ProjectStore {
   projectCall$: Observable<ProjectCallSettings>;
 
   investmentChangeEvent$ = new Subject<void>();
+
+  projectCallObjectives$: Observable<{
+    priorities: OutputProgrammePrioritySimple[];
+    objectivesWithPolicies: { [p: string]: ProgrammeSpecificObjectiveDTO[] };
+  }>;
+
+  projectBudget$: Observable<number>;
+
 
   private projectAcronym$ = new ReplaySubject<string>(1);
   private updatedProjectData$ = new Subject<void>();
@@ -87,7 +101,8 @@ export class ProjectStore {
               private projectVersionStore: ProjectVersionStore,
               private callService: CallService,
               private projectUserCollaboratorService: ProjectUserCollaboratorService,
-              private projectBudgetService: ProjectBudgetService) {
+              private projectBudgetService: ProjectBudgetService,
+              private partnerUserCollaboratorService: ProjectPartnerUserCollaboratorService) {
     this.router.routeParameterChanges(ProjectPaths.PROJECT_DETAIL_PATH, 'projectId')
       .pipe(
         // TODO: remove init make projectId$ just an observable
@@ -116,12 +131,15 @@ export class ProjectStore {
     this.investmentSummaries$ = this.investmentSummaries();
     this.investmentSummariesForFiles$ = this.investmentSummariesForFiles();
     this.userIsProjectOwner$ = this.userIsProjectOwner();
+    this.userIsPartnerCollaborator$ = this.userIsPartnerCollaborator();
     this.userIsProjectOwnerOrEditCollaborator$ = this.userIsProjectOwnerOrEditCollaborator();
     this.allowedBudgetCategories$ = this.allowedBudgetCategories();
     this.activities$ = this.projectActivities();
     this.projectPeriods$ = this.projectForm$.pipe(
       map(projectForm => projectForm.periods)
     );
+    this.projectCallObjectives$ = this.projectCallObjectives();
+    this.projectBudget$ = this.getProjectBudget();
   }
 
   updateProjectData(data: InputProjectData): Observable<ProjectDetailFormDTO> {
@@ -140,6 +158,22 @@ export class ProjectStore {
         switchMap(([id, version]) => this.projectBudgetService.getProjectPartnerBudgetPerFund(id, version)),
         tap((data: ProjectPartnerBudgetPerFundDTO[]) => Log.info('Fetched project budget per fund:', this, data))
       );
+  }
+
+  /* returns the last approved version of project total budget */
+  getProjectBudget(): Observable<number> {
+    return combineLatest([
+      this.projectId$,
+      this.projectVersionStore.lastApprovedOrContractedVersion$,
+    ]).pipe(
+      switchMap(([projectId, version]) =>
+        this.projectService.getProjectCoFinancingOverview(projectId, version?.version)
+      ),
+      map(data => NumberService.sum([
+        data.projectManagementCoFinancing.totalFundAndContribution,
+        data.projectSpfCoFinancing.totalFundAndContribution
+      ])),
+    );
   }
 
   projectDecisions(step: number | undefined): Observable<ProjectDecisionDTO> {
@@ -273,7 +307,7 @@ export class ProjectStore {
           callSetting.lumpSums.map(lumpSum =>
             new ProgrammeLumpSum(lumpSum.id, lumpSum.name, lumpSum.description, lumpSum.cost, lumpSum.splittingAllowed, LumpSumPhaseEnumUtils.toLumpSumPhaseEnum(lumpSum.phase), BudgetCostCategoryEnumUtils.toBudgetCostCategoryEnums(lumpSum.categories))),
           callSetting.unitCosts
-            .map(unitCost => new ProgrammeUnitCost(unitCost.id, unitCost.name, unitCost.description, unitCost.type, unitCost.costPerUnit, unitCost.oneCostCategory, BudgetCostCategoryEnumUtils.toBudgetCostCategoryEnums(unitCost.categories))),
+            .map(unitCost => new ProgrammeUnitCost(unitCost.id, unitCost.name, unitCost.description, unitCost.type, unitCost.costPerUnit, unitCost.oneCostCategory, BudgetCostCategoryEnumUtils.toBudgetCostCategoryEnums(unitCost.categories), unitCost.projectDefined)),
           callSetting.additionalFundAllowed,
           callSetting.applicationFormFieldConfigurations
         )),
@@ -382,6 +416,47 @@ export class ProjectStore {
         ),
         tap(activities => Log.info('Fetched project activities', activities))
       );
+  }
+
+  private userIsPartnerCollaborator(): Observable<boolean> {
+    return this.projectId$
+      .pipe(
+        switchMap(projectId => this.partnerUserCollaboratorService.listCurrentUserPartnerCollaborations(projectId)),
+        tap(collaborators => Log.info('Fetched current user partner collaborations', this, collaborators)),
+        map(userPartnerCollaborations => {
+          return userPartnerCollaborations.length > 0;
+        }),
+        shareReplay(1)
+      );
+  }
+
+  private projectCallObjectives(): Observable<{
+    priorities: OutputProgrammePrioritySimple[];
+    objectivesWithPolicies: { [p: string]: ProgrammeSpecificObjectiveDTO[] };
+  }> {
+    return this.project$
+      .pipe(
+        mergeMap(project => this.callService.getCallById(project.callSettings.callId)),
+        map(call => call.objectives),
+        tap(objectives => Log.info('Fetched objectives', this, objectives)),
+        map(objectives => ({
+          priorities: objectives
+            .sort((a, b) => {
+              const orderBool = a.code.toLocaleLowerCase() > b.code.toLocaleLowerCase();
+              return orderBool ? 1 : -1;
+            })
+            .map(objective => ({title: objective.title, code: objective.code}) as OutputProgrammePrioritySimple),
+          objectivesWithPolicies: this.getObjectivesWithPolicies(objectives)
+        }))
+      );
+  }
+
+  private getObjectivesWithPolicies(objectives: ProgrammePriorityDTO[]): { [key: string]: ProgrammeSpecificObjectiveDTO[] } {
+    const objectivesWithPolicies: { [key: string]: ProgrammeSpecificObjectiveDTO[] } = {};
+    objectives.forEach(objective =>
+      objectivesWithPolicies[objective.code] =
+        objective.specificObjectives.map(priority => priority));
+    return objectivesWithPolicies;
   }
 
 }

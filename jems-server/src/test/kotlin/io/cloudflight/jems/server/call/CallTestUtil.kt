@@ -54,8 +54,8 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.util.*
 
-private val START = ZonedDateTime.now().withSecond(0).withNano(0)
-private val END = ZonedDateTime.now().plusDays(5).withSecond(0).withNano(0).plusMinutes(1).minusNanos(1)
+val START = ZonedDateTime.now().withSecond(0).withNano(0)
+val END = ZonedDateTime.now().plusDays(5).withSecond(0).withNano(0).plusMinutes(1).minusNanos(1)
 private const val STATE_AID_ID = 23L
 private const val LUMP_SUM_ID = 4L
 private const val UNIT_COST_ID = 3L
@@ -109,7 +109,9 @@ fun createTestCallEntity(
         allowedRealCosts = allowedRealCosts,
         preSubmissionCheckPluginKey = null,
         firstStepPreSubmissionCheckPluginKey = null,
-        unitCosts = unitCosts
+        unitCosts = unitCosts,
+        projectDefinedUnitCostAllowed = true,
+        projectDefinedLumpSumAllowed = false,
     ).apply {
         translatedValues.add(CallTranslEntity(TranslationId(this, SystemLanguage.EN), "This is a dummy call"))
         flatRates.add(
@@ -167,7 +169,9 @@ fun createCallDetailModel(
         unitCosts = unitCosts,
         applicationFormFieldConfigurations = applicationFormFieldConfigurations,
         preSubmissionCheckPluginKey = preSubmissionCheckPluginKey,
-        firstStepPreSubmissionCheckPluginKey = firstStepPreSubmissionCheckPluginKey
+        firstStepPreSubmissionCheckPluginKey = firstStepPreSubmissionCheckPluginKey,
+        projectDefinedUnitCostAllowed = true,
+        projectDefinedLumpSumAllowed = false,
     )
 }
 
@@ -196,6 +200,12 @@ fun callFundRate(fundId: Long) = CallFundRate(
     programmeFund = ProgrammeFund(id = fundId, selected = true),
     rate = BigDecimal.TEN,
     adjustable = true
+)
+
+fun callFundRateFixed(fundId: Long) = CallFundRate(
+    programmeFund = ProgrammeFund(id = fundId, selected = true),
+    rate = BigDecimal.TEN,
+    adjustable = false
 )
 
 fun callFundRateEntity(call: CallEntity, fundId: Long) = CallFundRateEntity(
@@ -251,7 +261,9 @@ fun callDetail(
     lengthOfPeriod = lengthOfPeriod,
     applicationFormFieldConfigurations =  applicationFormFieldConfigurations,
     preSubmissionCheckPluginKey = preSubmissionCheckPluginKey,
-    firstStepPreSubmissionCheckPluginKey = firstStepPreSubmissionCheckPluginKey
+    firstStepPreSubmissionCheckPluginKey = firstStepPreSubmissionCheckPluginKey,
+    projectDefinedUnitCostAllowed = false,
+    projectDefinedLumpSumAllowed = true,
 )
 
 fun defaultAllowedRealCostsByCallType(callType: CallType) : AllowedRealCostsEntity {
@@ -319,12 +331,14 @@ private val defaultLumpSums = listOf(
         splittingAllowed = true,
         phase = ProgrammeLumpSumPhase.Closure,
         categories = setOf(BudgetCategory.InfrastructureCosts),
+        fastTrack = false
     )
 )
 
 private val defaultUnitCosts = listOf(
     ProgrammeUnitCost(
         id = UNIT_COST_ID,
+        projectId = null,
         costPerUnit = BigDecimal.TEN,
         isOneCostCategory = true,
         categories = setOf(BudgetCategory.InfrastructureCosts),
@@ -339,7 +353,3 @@ private fun applicationFormFieldConfigurationEntities(callEntity: CallEntity) = 
         FieldVisibilityStatus.STEP_ONE_AND_TWO
     )
 )
-
-
-
-

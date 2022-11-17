@@ -2,8 +2,15 @@
     <mat-expansion-panel-header>
         <mat-panel-title class="mt-2">
             <mat-icon  *ngIf="!partner.active">person_off</mat-icon>
-            {{'common.label.project.partner.role.shortcut.' + partner.role | translate: {partner: getPartnerTranslationString(partner)} }}
+            {{((isCallSpf$ | async) ? 'spf.common.label.project.partner.role.shortcut.' : 'common.label.project.partner.role.shortcut.') + partner.role | translate: {partner: getPartnerTranslationString(partner)} }}
         </mat-panel-title>
+        <mat-panel-description *ngIf="isAfterApproved$ | async">
+            <mat-chip-list>
+                <mat-chip *ngIf="partner.institutionName">{{ partner.institutionName }}</mat-chip>
+                <mat-chip *ngIf="!partner.institutionName" color="accent" selected>
+                    <mat-icon class="mr-2">help</mat-icon>{{ 'project.application.form.section.privileges.no.institution' | translate }}</mat-chip>
+            </mat-chip-list>
+        </mat-panel-description>
     </mat-expansion-panel-header>
 
     <jems-form (save)="savePartnerCollaborators(partner.id)"
@@ -55,7 +62,7 @@
         </form>
         <button jemsText *ngIf="partnerForm.enabled" mat-stroked-button class="mt-2"
                 (click)="addPartnerCollaborator(); formService.setDirty(true)">
-            +
+            <mat-icon>add</mat-icon>
         </button>
     </jems-form>
 </mat-expansion-panel>

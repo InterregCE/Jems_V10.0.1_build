@@ -13,10 +13,7 @@ import io.cloudflight.jems.api.programme.dto.indicator.OutputIndicatorCreateRequ
 import io.cloudflight.jems.api.programme.dto.indicator.ResultIndicatorCreateRequestDTO
 import io.cloudflight.jems.api.programme.dto.language.ProgrammeLanguageDTO
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
-import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjective
-import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
-import io.cloudflight.jems.api.programme.dto.priority.ProgrammePriorityDTO
-import io.cloudflight.jems.api.programme.dto.priority.ProgrammeSpecificObjectiveDTO
+import io.cloudflight.jems.api.programme.dto.priority.*
 import io.cloudflight.jems.api.programme.dto.strategy.InputProgrammeStrategy
 import io.cloudflight.jems.api.programme.fund.ProgrammeFundApi
 import io.cloudflight.jems.api.programme.language.ProgrammeLanguageApi
@@ -92,7 +89,7 @@ class ProgrammeDataGeneratorTest(@LocalServerPort private val port: Int) : DataG
     }
 
     @Test
-    @ExpectSelect(11)
+    @ExpectSelect(12)
     @ExpectUpdate(7)
     @ExpectInsert(0)
     @ExpectDelete(2)
@@ -139,7 +136,8 @@ class ProgrammeDataGeneratorTest(@LocalServerPort private val port: Int) : DataG
                         BudgetCategory.EquipmentCosts,
                         BudgetCategory.ExternalCosts,
                         BudgetCategory.StaffCosts
-                    )
+                    ),
+                    fastTrack = false
                 )
             )
         )
@@ -156,6 +154,7 @@ class ProgrammeDataGeneratorTest(@LocalServerPort private val port: Int) : DataG
             programmeUnitCostApi.createProgrammeUnitCost(
                 ProgrammeUnitCostDTO(
                     id = null,
+                    projectDefined = false,
                     name = inputTranslation("name"),
                     description = inputTranslation("description"),
                     type = inputTranslation("type"),
@@ -182,8 +181,8 @@ class ProgrammeDataGeneratorTest(@LocalServerPort private val port: Int) : DataG
 
     @Test
     @Order(2)
-    @ExpectSelect(11)
-    @ExpectInsert(6)
+    @ExpectSelect(17)
+    @ExpectInsert(12)
     @ExpectUpdate(1)
     @ExpectDelete(1)
     fun `should add programme priority to the programme`() {
@@ -195,7 +194,14 @@ class ProgrammeDataGeneratorTest(@LocalServerPort private val port: Int) : DataG
                 objective = ProgrammeObjective.PO2,
                 specificObjectives = listOf(
                     ProgrammeSpecificObjectiveDTO(
-                        ProgrammeObjectivePolicy.EnergyEfficiency, "1.1", "RSO2.1"
+                        ProgrammeObjectivePolicy.EnergyEfficiency, "1.1", "RSO2.1", mapOf(
+                            ProgrammeObjectiveDimensionDTO.EconomicActivity to listOf("001"),
+                            ProgrammeObjectiveDimensionDTO.FormOfSupport to listOf("002"),
+                            ProgrammeObjectiveDimensionDTO.GenderEquality to listOf("003"),
+                            ProgrammeObjectiveDimensionDTO.RegionalAndSeaBasinStrategy to listOf("004"),
+                            ProgrammeObjectiveDimensionDTO.TerritorialDeliveryMechanism to listOf("005"),
+                            ProgrammeObjectiveDimensionDTO.TypesOfIntervention to listOf("006"),
+                        )
                     )
                 )
             )
@@ -222,7 +228,7 @@ class ProgrammeDataGeneratorTest(@LocalServerPort private val port: Int) : DataG
                 finalTarget = BigDecimal.valueOf(54365, 2),
                 referenceYear = "2022",
                 sourceOfData = emptySet(),
-                comment = "result indicator comment"
+                comment = inputTranslation("result indicator comment")
             )
         )
 

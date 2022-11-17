@@ -10,6 +10,7 @@ import io.cloudflight.jems.api.project.dto.partner.ProjectBudgetPartnerSummaryDT
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerAddressDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerDetailDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerPaymentSummaryDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerSummaryDTO
 import io.cloudflight.jems.server.project.entity.partneruser.PartnerCollaboratorLevel
 import io.cloudflight.jems.server.project.service.partner.model.ProjectBudgetPartnerSummary
@@ -20,20 +21,22 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDe
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerMotivation
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerStateAid
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerPaymentSummary
 import io.cloudflight.jems.server.user.service.model.assignment.PartnerCollaborator
 import org.mapstruct.Mapper
 import org.mapstruct.factory.Mappers
 import org.springframework.data.domain.Page
-
 
 fun ProjectPartnerStateAidDTO.toModel() = partnerDTOMapper.map(this)
 
 fun ProjectPartnerStateAid.toDto() = partnerDTOMapper.map(this)
 
 fun ProjectPartnerSummary.toDto() = partnerDTOMapper.map(this)
+fun ProjectPartnerSummary.toPaymentDto() = partnerDTOMapper.mapPayments(this)
 fun ProjectBudgetPartnerSummary.toDto() = partnerDTOMapper.map(this)
 fun Page<ProjectBudgetPartnerSummary>.toDto(): Page<ProjectBudgetPartnerSummaryDTO> = map { it.toDto() }
 fun List<ProjectPartnerSummary>.toDto() = map { it.toDto() }
+fun List<ProjectPartnerSummary>.toPaymentDto() = map { it.toPaymentDto() }
 
 fun ProjectPartnerDetail.toDto() = partnerDTOMapper.map(this)
 
@@ -50,6 +53,8 @@ fun Set<UpdatePartnerUserCollaboratorDTO>.toModel() = mapTo(HashSet()) {
 
 fun PartnerCollaboratorLevel.toDto() = PartnerCollaboratorLevelDTO.valueOf(name)
 
+fun List<ProjectPartnerPaymentSummary>.toDtoList() = map { partnerDTOMapper.map(it) }
+
 private val partnerDTOMapper = Mappers.getMapper(ProjectPartnerDTOMapper::class.java)
 
 
@@ -58,12 +63,15 @@ abstract class ProjectPartnerDTOMapper {
     abstract fun map(projectPartnerStateAid: ProjectPartnerStateAid): ProjectPartnerStateAidDTO
     abstract fun map(projectPartnerStateAidDTO: ProjectPartnerStateAidDTO): ProjectPartnerStateAid
     abstract fun map(projectPartnerSummary: ProjectPartnerSummary): ProjectPartnerSummaryDTO
+    abstract fun mapPayments(projectPartnerSummary: ProjectPartnerSummary): ProjectPartnerPaymentSummaryDTO
     abstract fun map(projectBudgetPartnerSummary: ProjectBudgetPartnerSummary): ProjectBudgetPartnerSummaryDTO
     abstract fun map(projectPartnerDetail: ProjectPartnerDetail): ProjectPartnerDetailDTO
     abstract fun map(projectPartnerDTO: ProjectPartnerDTO): ProjectPartner
     abstract fun map(projectPartnerAddressDTO: ProjectPartnerAddressDTO): ProjectPartnerAddress
     abstract fun map(projectContactDTO: ProjectContactDTO): ProjectPartnerContact
     abstract fun map(partnerUser: PartnerCollaborator): PartnerUserCollaboratorDTO
+
+    abstract fun map(partnerPaymentSummary: ProjectPartnerPaymentSummary): ProjectPartnerPaymentSummaryDTO
 
     fun map(projectPartnerMotivationDTO: ProjectPartnerMotivationDTO?): ProjectPartnerMotivation =
         ProjectPartnerMotivation(

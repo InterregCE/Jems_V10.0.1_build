@@ -46,6 +46,10 @@ class UserPersistenceProvider(
             it.toModelWithPassword(userRolePermissionRepo.findAllByIdUserRoleId(it.userRole.id).toModel())
         }
 
+    @Transactional
+    override fun getSummaryByEmail(email: String): UserSummary? =
+        userRepo.getOneByEmail(email)?.toUserSummary()
+
     @Transactional(readOnly = true)
     override fun findAll(pageable: Pageable, userSearchRequest: UserSearchRequest?): Page<UserSummary> {
         val searchPredicate = UserRepository.buildSearchPredicate(searchRequest = userSearchRequest)
@@ -77,7 +81,6 @@ class UserPersistenceProvider(
                 permissions = userRolePermissionRepo.findAllByIdUserRoleId(it.userRole.id).toModel(),
             )
         }
-
 
     @Transactional
     override fun update(user: UserChange): User {

@@ -1,4 +1,4 @@
-import {Component, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild} from '@angular/core';
 import {TableConfiguration} from './model/table.configuration';
 import {ColumnConfiguration} from './model/column.configuration';
 import {ColumnType} from './model/column-type.enum';
@@ -8,18 +8,22 @@ import {MatSort} from '@angular/material/sort';
 import {Tables} from '../../utils/tables';
 import {MoneyPipe} from '../../pipe/money.pipe';
 import {LanguageStore} from '../../services/language-store.service';
-import {InputTranslation} from '@cat/api';
+import {InputTranslation, ProjectVersionDTO} from '@cat/api';
 import {ColumnWidth} from './model/column-width';
 import {LocaleDatePipe} from '../../pipe/locale-date.pipe';
 import {RoutingService} from '@common/services/routing.service';
 import {ActivatedRoute} from '@angular/router';
+import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
+
+@UntilDestroy()
 
 @Component({
   selector: 'jems-table',
   templateUrl: './table.component.html',
   styleUrls: ['./table.component.scss']
 })
-export class TableComponent implements OnInit {
+export class TableComponent implements OnInit, OnChanges {
   ColumnType = ColumnType;
   ColumnWidth = ColumnWidth;
 
@@ -33,6 +37,8 @@ export class TableComponent implements OnInit {
   pageIndex: number;
   @Input()
   confirmPageChange = false;
+  @Input()
+  isMultiLanguage = false;
 
   @Output()
   sortRows = new EventEmitter<Partial<MatSort>>();
@@ -45,16 +51,20 @@ export class TableComponent implements OnInit {
 
   columnsToDisplay: string[] = [];
   currentPageSize = Tables.DEFAULT_INITIAL_PAGE_SIZE;
+  selectedVersion: ProjectVersionDTO | undefined;
 
   constructor(private moneyPipe: MoneyPipe,
               private localeDatePipe: LocaleDatePipe,
               public languageStore: LanguageStore,
               private routingService: RoutingService,
-              private activatedRoute: ActivatedRoute) {
+              private activatedRoute: ActivatedRoute,
+              private versionStore: ProjectVersionStore) {
   }
 
   ngOnInit(): void {
     this.columnsToDisplay = this.configuration.columns.map(col => col.displayedColumn);
+    this.versionStore.selectedVersion$.pipe(untilDestroyed(this))
+      .subscribe((selectedVersion) => this.selectedVersion = selectedVersion);
   }
 
   /**
@@ -95,6 +105,9 @@ export class TableComponent implements OnInit {
     if (column.columnType === ColumnType.Decimal) {
       return this.moneyPipe.transform(elementValue);
     }
+    if (column.columnType === ColumnType.DecimalWithJustifiedStart) {
+      return this.moneyPipe.transform(elementValue);
+    }
     return elementValue;
   }
 
@@ -122,10 +135,22 @@ export class TableComponent implements OnInit {
     return elementTitle;
   }
 
-  cellClicked(row: any, column: ColumnConfiguration): void {
-    if (column.clickable === false || !this.configuration.isTableClickable) {
+  rowClicked(row: any): void {
+    if(!this.configuration.isTableClickable) {
       return;
     }
-    this.routingService.navigate([this.configuration.routerLink, row.id], {relativeTo: this.activatedRoute});
+
+    let queryParams = {};
+    if(this.selectedVersion !== undefined && !this.selectedVersion?.current) {
+      queryParams = {queryParams: {version: this.selectedVersion?.version}};
+    }
+
+    this.routingService.navigate([this.configuration.routerLink, row.id ], {...queryParams, relativeTo: this.activatedRoute});
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes.configuration) {
+      this.columnsToDisplay = this.configuration.columns.map(col => col.displayedColumn);
+    }
   }
 }

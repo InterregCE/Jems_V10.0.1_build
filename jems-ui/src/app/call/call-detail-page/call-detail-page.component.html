@@ -6,21 +6,25 @@
                    [type]="Alert.WARNING">
             <span>{{'call.detail.edit.published.warning' | translate}}</span>
         </jems-alert>
-        <jems-alert [show]="published && data.userCanApply && !isOpen(data.call)"
+        <jems-alert [show]="published && data.userCanApply && !hasNotExpired(data.call)"
                    [type]="Alert.WARNING">
-            <span>{{'call.table.column.action.apply.inactive.note' | translate}}</span>
+            <span>{{'call.table.column.action.apply.has.ended.note' | translate}}</span>
+        </jems-alert>
+        <jems-alert [show]="published && data.userCanApply && !hasStarted(data.call)"
+                    [type]="Alert.WARNING">
+            <span>{{'call.table.column.action.apply.not.started.note' | translate}}</span>
         </jems-alert>
         <form [formGroup]="callForm" jemsFormLayout>
             <jems-pending-button
                     (clicked)="publishCall()"
                     *ngIf="data.call?.id && data.callIsEditable && !published"
                     [confirm]="confirmData() | async"
-                    [disabled]="isPublishDisabled(data.call) | async"
+                    [disabled]="isPublishDisabled(data.call, data.callHasTwoSteps) | async"
                     [pending]="publishPending">
                 {{'call.detail.button.publish' | translate}}
             </jems-pending-button>
 
-            <ng-container *ngIf="(isPublishDisabled(data.call) | async) && data.call?.id && data.callIsEditable && !published">
+            <ng-container *ngIf="(isPublishDisabled(data.call, data.callHasTwoSteps) | async) && data.call?.id && data.callIsEditable && !published">
 
                 <jems-alert [closable]="false" [show]="!data.call.funds || !data.call.funds.length" [type]="Alert.INFO" disableMargins="true">
                     <span>{{ 'call.detail.button.publish.disabled.because.funds' | translate }}</span>
@@ -30,7 +34,7 @@
                     <span>{{ 'call.detail.button.publish.disabled.because.priority' | translate }}</span>
                 </jems-alert>
 
-                <jems-alert [closable]="false" [show]="!data.call.preSubmissionCheckPluginKey || !data.call.preSubmissionCheckPluginKey.length" [type]="Alert.INFO" disableMargins="true">
+                <jems-alert [closable]="false" [show]="!data.call.preSubmissionCheckPluginKey || !data.call.preSubmissionCheckPluginKey.length || (data.callHasTwoSteps && (!data.call.firstStepPreSubmissionCheckPluginKey || !data.call.firstStepPreSubmissionCheckPluginKey.length))" [type]="Alert.INFO" disableMargins="true">
                     <span>
                         {{'call.detail.button.publish.disabled.because.presubmissionCheck' | translate}}
                         <a [routerLink]="['preSubmissionCheckSettings']">{{'call.detail.button.publish.disabled.because.presubmissionCheck.link' | translate}}</a>

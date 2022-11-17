@@ -1,15 +1,13 @@
 package io.cloudflight.jems.server.user.service.user.register_user
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.captcha.CaptchaService
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
+import io.cloudflight.jems.server.config.AppCaptchaProperties
 import io.cloudflight.jems.server.programme.service.userrole.ProgrammeDataPersistence
 import io.cloudflight.jems.server.user.service.UserPersistence
 import io.cloudflight.jems.server.user.service.confirmation.UserConfirmationPersistence
-import io.cloudflight.jems.server.user.service.model.User
-import io.cloudflight.jems.server.user.service.model.UserChange
-import io.cloudflight.jems.server.user.service.model.UserRegistration
-import io.cloudflight.jems.server.user.service.model.UserRole
-import io.cloudflight.jems.server.user.service.model.UserStatus
+import io.cloudflight.jems.server.user.service.model.*
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -22,6 +20,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.security.crypto.password.PasswordEncoder
+import javax.servlet.http.HttpSession
 
 internal class RegisterUserTest : UnitTest() {
 
@@ -48,6 +47,15 @@ internal class RegisterUserTest : UnitTest() {
     @RelaxedMockK
     lateinit var userConfirmationPersistence: UserConfirmationPersistence
 
+    @RelaxedMockK
+    lateinit var appCaptchaProperties: AppCaptchaProperties
+
+    @RelaxedMockK
+    lateinit var HttpSession: HttpSession
+
+    @RelaxedMockK
+    lateinit var captchaService: CaptchaService
+
     @InjectMockKs
     lateinit var registerUser: RegisterUser
 
@@ -63,6 +71,7 @@ internal class RegisterUserTest : UnitTest() {
             name = "Michael",
             surname = "Schumacher",
             password = "my_plain_pass",
+            captcha = "testCaptcha"
         )
         val userChange = UserChange(
             id = 0L,
@@ -105,7 +114,8 @@ internal class RegisterUserTest : UnitTest() {
             email = "applicant@interact.eu",
             name = "Michael",
             surname = "Schumacher",
-            password = "my_plain_pass"
+            password = "my_plain_pass",
+            captcha = "testCaptcha"
         )
         every { programmeDataPersistence.getDefaultUserRole() } returns null
 
@@ -118,7 +128,8 @@ internal class RegisterUserTest : UnitTest() {
             email = "applicant@interact.eu",
             name = "Michael",
             surname = "Schumacher",
-            password = "my_plain_pass"
+            password = "my_plain_pass",
+            captcha = "testCaptcha"
         )
         every { programmeDataPersistence.getDefaultUserRole() } returns null
 
@@ -132,6 +143,7 @@ internal class RegisterUserTest : UnitTest() {
             name = "Michael",
             surname = "Schumacher",
             password = "my_plain_pass",
+            captcha = "testCaptcha"
         )
         every { programmeDataPersistence.getDefaultUserRole() } returns defaultUserRoleId
         every { persistence.userRoleExists(defaultUserRoleId) } returns true

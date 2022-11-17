@@ -2,10 +2,10 @@ package io.cloudflight.jems.server.project.service.report.partner.file.listProje
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
-import io.cloudflight.jems.server.project.service.report.file.ProjectReportFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFile
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileSearchRequest
+import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFile
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileSearchRequest
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -37,8 +37,8 @@ class ListProjectPartnerReportFileTest : UnitTest() {
         testValidConfig(
             partnerId = 25L,
             reportId = 65L,
-            type = ProjectPartnerReportFileType.PartnerReport,
-            filterSubtypes = setOf(ProjectPartnerReportFileType.Activity, ProjectPartnerReportFileType.Procurement),
+            type = JemsFileType.PartnerReport,
+            filterSubtypes = setOf(JemsFileType.Activity, JemsFileType.ProcurementAttachment),
             expectedIndexSearch = "Project/000640/Report/Partner/000025/PartnerReport/000065/"
         )
     }
@@ -48,8 +48,8 @@ class ListProjectPartnerReportFileTest : UnitTest() {
         testValidConfig(
             partnerId = 26L,
             reportId = 66L,
-            type = ProjectPartnerReportFileType.WorkPlan,
-            filterSubtypes = setOf(ProjectPartnerReportFileType.Output),
+            type = JemsFileType.WorkPlan,
+            filterSubtypes = setOf(JemsFileType.Output),
             expectedIndexSearch = "Project/000640/Report/Partner/000026/PartnerReport/000066/WorkPlan/"
         )
     }
@@ -59,8 +59,8 @@ class ListProjectPartnerReportFileTest : UnitTest() {
         testValidConfig(
             partnerId = 27L,
             reportId = 67L,
-            type = ProjectPartnerReportFileType.Expenditure,
-            filterSubtypes = setOf(ProjectPartnerReportFileType.Expenditure),
+            type = JemsFileType.Expenditure,
+            filterSubtypes = setOf(JemsFileType.Expenditure),
             expectedIndexSearch = "Project/000640/Report/Partner/000027/PartnerReport/000067/Expenditure/"
         )
     }
@@ -70,7 +70,7 @@ class ListProjectPartnerReportFileTest : UnitTest() {
         testValidConfig(
             partnerId = 28L,
             reportId = 68L,
-            type = ProjectPartnerReportFileType.Procurement,
+            type = JemsFileType.Procurement,
             filterSubtypes = emptySet(),
             expectedIndexSearch = "Project/000640/Report/Partner/000028/PartnerReport/000068/Procurement/"
         )
@@ -81,7 +81,7 @@ class ListProjectPartnerReportFileTest : UnitTest() {
         testValidConfig(
             partnerId = 29L,
             reportId = 69L,
-            type = ProjectPartnerReportFileType.Contribution,
+            type = JemsFileType.Contribution,
             filterSubtypes = emptySet(),
             expectedIndexSearch = "Project/000640/Report/Partner/000029/PartnerReport/000069/Contribution/"
         )
@@ -89,20 +89,20 @@ class ListProjectPartnerReportFileTest : UnitTest() {
 
     @Test
     fun `test invalid filter`() {
-        val searchRequest = ProjectReportFileSearchRequest(
+        val searchRequest = JemsFileSearchRequest(
             reportId = 1L,
-            treeNode = ProjectPartnerReportFileType.Activity,
+            treeNode = JemsFileType.Activity,
         )
         assertThrows<InvalidSearchConfiguration> { interactor.list(1L, Pageable.unpaged(), searchRequest) }
     }
 
     @Test
     fun `test invalid search filter config`() {
-        val searchRequest = ProjectReportFileSearchRequest(
+        val searchRequest = JemsFileSearchRequest(
             reportId = 1L,
-            treeNode = ProjectPartnerReportFileType.WorkPlan,
+            treeNode = JemsFileType.WorkPlan,
             // filter subtype is not actually a subtype of treeNode
-            filterSubtypes = setOf(ProjectPartnerReportFileType.Activity, ProjectPartnerReportFileType.Procurement),
+            filterSubtypes = setOf(JemsFileType.Activity, JemsFileType.Procurement),
         )
         val ex = assertThrows<InvalidSearchFilterConfiguration> {
             interactor.list(1L, Pageable.unpaged(), searchRequest)
@@ -113,20 +113,20 @@ class ListProjectPartnerReportFileTest : UnitTest() {
     private fun testValidConfig(
         partnerId: Long,
         reportId: Long,
-        type: ProjectPartnerReportFileType,
-        filterSubtypes: Set<ProjectPartnerReportFileType>,
+        type: JemsFileType,
+        filterSubtypes: Set<JemsFileType>,
         expectedIndexSearch: String,
     ) {
         every { partnerPersistence.getProjectIdForPartnerId(partnerId, null) } returns PROJECT_ID
-        val reportFile = mockk<ProjectReportFile>()
+        val reportFile = mockk<JemsFile>()
 
         val indexPrefix = slot<String>()
-        val filterSubtypesSlot = slot<Set<ProjectPartnerReportFileType>>()
+        val filterSubtypesSlot = slot<Set<JemsFileType>>()
         val filterUsers = slot<Set<Long>>()
         every { reportFilePersistence.listAttachments(any(), capture(indexPrefix), capture(filterSubtypesSlot), capture(filterUsers)) } returns
             PageImpl(listOf(reportFile))
 
-        val searchRequest = ProjectReportFileSearchRequest(
+        val searchRequest = JemsFileSearchRequest(
             reportId = reportId,
             treeNode = type,
             filterSubtypes = filterSubtypes,

@@ -24,6 +24,8 @@ import {NumberService} from '@common/services/number.service';
 import {
   PartnerFileManagementStore
 } from '@project/project-application/report/partner-report-detail-page/partner-file-management-store';
+import {RoutingService} from '@common/services/routing.service';
+import {v4 as uuid} from 'uuid';
 
 @UntilDestroy()
 @Component({
@@ -42,14 +44,14 @@ export class PartnerReportContributionTabComponent {
   toBeDeletedIds: number[] = [];
   columns: string[] = [];
   widths: TableConfig[] = [
-    {},
-    {},
-    {maxInRem: 8, minInRem: 8},
-    {maxInRem: 8, minInRem: 8},
-    {maxInRem: 9, minInRem: 9},
-    {maxInRem: 8, minInRem: 8},
-    {maxInRem: 15, minInRem: 15},
-    {maxInRem: 3, minInRem: 3},
+    {minInRem: 10},  // name of org/contribution
+    {minInRem:  8},  // legal status
+    {minInRem:  8},  // amount in AF
+    {minInRem:  8},  // previously reported
+    {minInRem:  9},  // current report
+    {minInRem:  8},  // total reported
+    {minInRem: 15},  // attachment
+    {minInRem:  3}   // actions
   ];
   tableData: AbstractControl[] = [];
 
@@ -90,6 +92,7 @@ export class PartnerReportContributionTabComponent {
     public partnerReportDetailPageStore: PartnerReportDetailPageStore,
     private pageStore: PartnerReportContributionStore,
     private partnerFileManagementStore: PartnerFileManagementStore,
+    private routingService: RoutingService
   ) {
     this.savedContribution$ = combineLatest([
       this.pageStore.partnerContribution$,
@@ -136,7 +139,9 @@ export class PartnerReportContributionTabComponent {
 
     const item = this.formBuilder.group({
       id: this.formBuilder.control(contrib?.id || 0),
-      sourceOfContribution: this.formBuilder.control(contrib?.sourceOfContribution, createdInThisReport ? Validators.required : []),
+      sourceOfContribution: this.formBuilder.control(contrib?.sourceOfContribution, createdInThisReport
+        ? Validators.compose([Validators.maxLength(255), Validators.required, Validators.pattern(/(?!^\s+$)^.*$/m)])
+        : []),
       legalStatus: this.formBuilder.control(contrib?.legalStatus, createdInThisReport ? Validators.required : []),
       createdInThisReport: this.formBuilder.control(createdInThisReport),
       amount: this.formBuilder.control(contrib?.numbers.amount || 0),
@@ -200,12 +205,17 @@ export class PartnerReportContributionTabComponent {
 
   onUploadFile(target: any, procurementId: number, index: number): void {
     if (target && procurementId !== 0) {
+      const serviceId = uuid();
+      this.routingService.confirmLeaveMap.set(serviceId, true);
       this.pageStore.uploadFile(target?.files[0], procurementId)
         .pipe(
           take(1),
           catchError(err => this.formService.setError(err))
         )
-        .subscribe(value => this.attachment(index)?.patchValue(value));
+        .subscribe(value => {
+          this.attachment(index)?.patchValue(value);
+          this.routingService.confirmLeaveMap.delete(serviceId);
+        });
     }
   }
 

@@ -3,7 +3,7 @@
         subTitleKey="project.application.form.section.part.c">
     <jems-project-application-form-overall-objective-detail
             *ngIf="details$ | async as details"
-            [inputProjectOverallObjective]="details.projectDescription?.projectOverallObjective"
+            [inputProjectOverallObjective]="details.projectOverallObjective"
             [projectId]="projectId"
             [specificObjective]="details.project.specificObjective"
             [editable]="projectStore.projectEditable$ | async">

@@ -15,7 +15,7 @@ data class ResultIndicator(
     val referenceYear: String?,
     val finalTarget: BigDecimal?,
     val sourceOfData: Set<InputTranslation> = emptySet(),
-    val comment: String?
+    val comment: Set<InputTranslation> = emptySet()
 ) {
     fun getBaselineOrDefault(): BigDecimal = this.baseline ?: BigDecimal.ZERO
 }

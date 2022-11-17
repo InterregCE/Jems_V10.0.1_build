@@ -4,6 +4,7 @@ import io.cloudflight.jems.api.user.dto.UserRoleCreateDTO
 import io.cloudflight.jems.api.user.dto.UserRoleDTO
 import io.cloudflight.jems.api.user.dto.UserRolePermissionDTO
 import io.cloudflight.jems.api.user.dto.UserRoleSummaryDTO
+import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import io.cloudflight.jems.server.user.service.model.UserRole
 import io.cloudflight.jems.server.user.service.model.UserRoleCreate
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
@@ -29,7 +30,7 @@ fun UserRoleDTO.toModel() = UserRole(
     id = id!!,
     name = name,
     isDefault = defaultForRegisteredUser ?: false,
-    permissions = permissions.mapTo(HashSet()) { UserRolePermission.valueOf(it.name) }
+    permissions = permissions.toModel()
 )
 
 fun UserRoleCreateDTO.toCreateModel() = UserRoleCreate(
@@ -38,4 +39,9 @@ fun UserRoleCreateDTO.toCreateModel() = UserRoleCreate(
     permissions = permissions.toModel(),
 )
 
-fun Set<UserRolePermissionDTO>.toModel() = mapTo(HashSet()) { UserRolePermission.valueOf(it.name) }
+fun Collection<UserRolePermissionDTO>.toModel() = mapTo(HashSet()) { UserRolePermission.valueOf(it.name) }
+
+fun UserRoleSummary.toEntity() = UserRoleEntity(
+    id = id,
+    name = name
+)

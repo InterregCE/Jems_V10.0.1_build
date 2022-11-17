@@ -2,7 +2,9 @@
   display: flex;
   flex-direction: column;
 }
-
+.activity-text-size {
+  font-size: inherit;
+}
 #check-result{
   display: flex;
   align-items: center;

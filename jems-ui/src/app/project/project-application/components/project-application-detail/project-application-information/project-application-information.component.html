@@ -57,6 +57,12 @@
             {{'project.detail.overview.applicant' | translate : getSubmission(project?.firstSubmissionStep1)}}
         </span>
     </div>
+    <div *ngIf="project?.firstStepDecision?.finalFundingDecision" class="project-row">
+        <span class="header p-1 pr-3">{{'project.detail.table.step.one.funding' | translate}}</span>
+        <span class="p-1">
+            {{ project?.firstStepDecision?.finalFundingDecision?.updated | localeDate }}
+        </span>
+    </div>
     <div *ngIf="project?.firstSubmission" class="project-row">
         <span class="header p-1 pr-3">{{'project.detail.table.submission.first' | translate}}</span>
         <span class="p-1">
@@ -69,10 +75,16 @@
             {{'project.detail.overview.applicant' | translate : getSubmission(project?.lastResubmission)}}
         </span>
     </div>
+    <div *ngIf="project?.secondStepDecision?.finalFundingDecision" class="project-row">
+        <span class="header p-1 pr-3">{{'project.detail.table.funding' | translate}}</span>
+        <span class="p-1">
+            {{ project?.secondStepDecision?.finalFundingDecision?.updated | localeDate }}
+        </span>
+    </div>
     <div *ngIf="project?.contractedDecision" class="project-row">
         <span class="header p-1 pr-3">{{'project.table.column.name.contracted' | translate}}</span>
         <span class="p-1">
-            {{'project.detail.overview.applicant' | translate : getSubmission(project?.contractedDecision)}}
+            {{ project?.contractedDecision?.updated | localeDate }}
         </span>
     </div>
 </div>

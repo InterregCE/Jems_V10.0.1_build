@@ -36,7 +36,7 @@ open class ApplicationBadRequestException(
 
 open class ApplicationAuthenticationException(
     override val code: String, override val i18nMessage: I18nMessage,
-    override val cause: Throwable?, override val message: String = "",
+    override val cause: Throwable? = null, override val message: String = "",
 ) : ApplicationException(code, i18nMessage, HttpStatus.UNAUTHORIZED, cause, message)
 
 open class ApplicationAccessDeniedException(

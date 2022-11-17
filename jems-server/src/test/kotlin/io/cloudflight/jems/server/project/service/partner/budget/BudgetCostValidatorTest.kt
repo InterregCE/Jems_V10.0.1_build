@@ -12,12 +12,15 @@ import io.cloudflight.jems.server.call.service.model.ApplicationFormFieldSetting
 import io.cloudflight.jems.server.call.service.model.CallApplicationFormFieldsConfiguration
 import io.cloudflight.jems.server.call.service.model.FieldVisibilityStatus
 import io.cloudflight.jems.server.common.exception.I18nValidationException
+import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
+import io.cloudflight.jems.server.project.service.partner.budget.BudgetCostValidator.UnitCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.BaseBudgetEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetPeriod
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.mockk
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.DynamicTest
 import org.junit.jupiter.api.Test
@@ -33,6 +36,14 @@ internal class BudgetCostValidatorTest : UnitTest() {
 
     companion object {
         private const val callId = 2L
+
+        fun getProgrammeUnitCost(id: Long, price: BigDecimal, type: Set<InputTranslation>) = ProgrammeUnitCost(
+            id = id,
+            projectId = null,
+            costPerUnit = price,
+            isOneCostCategory = true,
+            type = type
+        )
     }
 
     @RelaxedMockK
@@ -364,6 +375,75 @@ internal class BudgetCostValidatorTest : UnitTest() {
         }
     }
 
+    @Test
+    fun `should be successful when unitCost data equal to programme unitCost`() {
+        val programmeUnitCosts = listOf(
+            getProgrammeUnitCost(1, BigDecimal.TEN, setOf(InputTranslation(SystemLanguage.EN, "translation"))),
+            getProgrammeUnitCost(2, BigDecimal.ONE, emptySet()),
+            getProgrammeUnitCost(3, BigDecimal.ZERO, setOf(InputTranslation(SystemLanguage.DE, null)))
+        )
+        val unitCostEntries = listOf(
+            UnitCostEntry(1, BigDecimal.TEN, setOf(InputTranslation(SystemLanguage.EN, "translation"))),
+            UnitCostEntry(2, BigDecimal.ONE, emptySet())
+        )
+
+        assertDoesNotThrow { budgetCostValidator.validateAllowedUnitCosts(programmeUnitCosts, unitCostEntries) }
+    }
+
+    @Test
+    fun `should throw I18nValidationException when unitCost price is set manually`() {
+        val programmeUnitCosts = listOf(getProgrammeUnitCost(
+            id = 1,
+            price = BigDecimal.TEN,
+            type = setOf(InputTranslation(SystemLanguage.EN, "translation"))
+        ))
+        val unitCostEntries = listOf(
+            UnitCostEntry(
+            id = 1,
+            pricePerUnit = BigDecimal.ONE,
+            unitType = setOf(InputTranslation(SystemLanguage.EN, "translation")))
+        )
+
+        val ex = assertThrows<I18nValidationException> {
+            budgetCostValidator.validateAllowedUnitCosts(programmeUnitCosts, unitCostEntries)
+        }
+        assertEquals(BUDGET_COST_INVALID_UNIT_COST_ERROR_KEY, ex.i18nKey)
+    }
+
+    @Test
+    fun `should throw I18nValidationException when unitCost type is set manually`() {
+        val programmeUnitCosts = listOf(
+            getProgrammeUnitCost(1, BigDecimal.TEN, setOf(
+                InputTranslation(SystemLanguage.EN, "translation"),
+                InputTranslation(SystemLanguage.DE, null)))
+        )
+        val unitCostEntries = listOf(
+            UnitCostEntry(1, BigDecimal.TEN, setOf(
+                InputTranslation(SystemLanguage.EN, "translation"),
+                InputTranslation(SystemLanguage.DE, "")))
+        )
+
+        val ex = assertThrows<I18nValidationException> {
+            budgetCostValidator.validateAllowedUnitCosts(programmeUnitCosts, unitCostEntries)
+        }
+        assertEquals(BUDGET_COST_INVALID_UNIT_COST_ERROR_KEY, ex.i18nKey)
+    }
+
+    @Test
+    fun `should throw I18nValidationException when unitCostId is not defined`() {
+        val programmeUnitCosts = listOf(
+            getProgrammeUnitCost(1, BigDecimal.TEN, setOf(InputTranslation(SystemLanguage.EN, "translation")))
+        )
+        val unitCostEntries = listOf(
+            UnitCostEntry(2, BigDecimal.TEN, setOf(InputTranslation(SystemLanguage.EN, "translation")))
+        )
+
+        val ex = assertThrows<I18nValidationException> {
+            budgetCostValidator.validateAllowedUnitCosts(programmeUnitCosts, unitCostEntries)
+        }
+        assertEquals(BUDGET_COST_INVALID_UNIT_COST_ERROR_KEY, ex.i18nKey)
+    }
+
     @TestFactory
     fun `should throw I18nValidationException when at least one of number of units is more than allowed`() =
         listOf(
@@ -424,7 +504,8 @@ internal class BudgetCostValidatorTest : UnitTest() {
             stateAids = emptyList(),
             applicationFormFieldConfigurations = mutableSetOf(),
             preSubmissionCheckPluginKey = null,
-            firstStepPreSubmissionCheckPluginKey = null
+            firstStepPreSubmissionCheckPluginKey = null,
+            costOption = mockk(),
         )
     }
 }

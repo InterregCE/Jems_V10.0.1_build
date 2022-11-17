@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.project.entity.report.expenditure
 
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
-import io.cloudflight.jems.server.project.service.report.model.expenditure.ReportBudgetCategory
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import java.math.BigDecimal
 import java.time.LocalDate
 import javax.persistence.CascadeType
@@ -40,7 +40,9 @@ class PartnerReportExpenditureCostEntity(
     @field:NotNull
     var costCategory: ReportBudgetCategory,
 
-    var investmentId: Long?,
+    @ManyToOne
+    var reportInvestment: PartnerReportInvestmentEntity?,
+
     var procurementId: Long?,
     var internalReferenceNumber: String?,
     var invoiceNumber: String?,

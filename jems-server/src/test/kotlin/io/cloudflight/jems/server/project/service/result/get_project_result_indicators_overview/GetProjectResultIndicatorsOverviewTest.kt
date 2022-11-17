@@ -84,7 +84,7 @@ class GetProjectResultIndicatorsOverviewTest: UnitTest() {
         )
 
         // all programme output indicators
-        every { listOutputIndicatorsPersistence.getTop50OutputIndicators() } returns setOf(
+        every { listOutputIndicatorsPersistence.getTop250OutputIndicators() } returns setOf(
             OutputIndicatorSummary(
                 id = OUTPUT_1_ID,
                 identifier = "O1",
@@ -119,7 +119,7 @@ class GetProjectResultIndicatorsOverviewTest: UnitTest() {
         val overviewTableLines = getProjectResultIndicatorsOverview.getProjectResultIndicatorOverview(1L, "1.0")
         assertThat(overviewTableLines).hasSize(3)
 
-        with(overviewTableLines.get(0)) {
+        with(overviewTableLines[0]) {
             assertThat(outputIndicator?.id).isEqualTo(OUTPUT_1_ID)
             assertThat(outputIndicator?.identifier).isEqualTo("O1")
             assertThat(outputIndicator?.name).containsExactlyInAnyOrder(InputTranslation(EN, "O1 indicator"))
@@ -139,7 +139,7 @@ class GetProjectResultIndicatorsOverviewTest: UnitTest() {
 
             assertThat(onlyResultWithoutOutputs).isFalse
         }
-        with(overviewTableLines.get(1)) {
+        with(overviewTableLines[1]) {
             assertThat(outputIndicator?.id).isEqualTo(OUTPUT_1_ID)
             assertThat(outputIndicator?.identifier).isEqualTo("O1")
             assertThat(outputIndicator?.name).containsExactlyInAnyOrder(InputTranslation(EN, "O1 indicator"))
@@ -159,7 +159,7 @@ class GetProjectResultIndicatorsOverviewTest: UnitTest() {
 
             assertThat(onlyResultWithoutOutputs).isFalse
         }
-        with(overviewTableLines.get(2)) {
+        with(overviewTableLines[2]) {
             assertThat(outputIndicator).isNull()
             assertThat(projectOutput).isNull()
 

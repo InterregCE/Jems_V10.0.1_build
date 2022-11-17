@@ -84,7 +84,9 @@ class CreateCallTest : UnitTest() {
             funds = sortedSetOf(callFundRate(FUND_ID)),
             applicationFormFieldConfigurations = ApplicationFormFieldSetting.getDefaultApplicationFormFieldConfigurations(CallType.STANDARD),
             preSubmissionCheckPluginKey = null,
-            firstStepPreSubmissionCheckPluginKey = null
+            firstStepPreSubmissionCheckPluginKey = null,
+            projectDefinedUnitCostAllowed = false,
+            projectDefinedLumpSumAllowed = true,
         )
     }
 

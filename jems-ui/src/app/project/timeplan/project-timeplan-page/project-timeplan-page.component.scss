@@ -26,6 +26,8 @@ $color-blue-light: #81D4FA;
     font-size: .875rem;
     line-height: 2.5rem;
     font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .vis-item.vis-background {
@@ -232,6 +234,42 @@ $color-blue-light: #81D4FA;
 
   .vis-label .vis-inner {
     height: 1.25rem;
+  }
+
+  .vis-custom-time {
+    pointer-events: none;
+    background-color: var(--status-approved-with-conditions);
+    &.finance {
+      background-color: var(--status-contracted);
+    }
+    &.content {
+      background-color: var(--status-submitted);
+    }
+  }
+
+  .vis-custom-time-marker {
+    pointer-events: auto;
+    padding: 0 !important;
+    border-radius: 1.8rem;
+    height: 1.8rem;
+    width: 1.8rem;
+    left: -0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--status-approved-with-conditions) !important;
+    &.content {
+      background-color: var(--status-submitted) !important;
+    }
+    &.finance {
+      background-color: var(--status-contracted) !important;
+    }
+    span.material-icons {
+      margin-left: -0.1em;
+      font-size: 1.25em;
+      width: 0.9em;
+      opacity: 0.9;
+    }
   }
 
 }

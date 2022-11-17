@@ -5,7 +5,7 @@ import java.time.ZonedDateTime
 
 class ProgrammeChecklistDetail(
     id: Long?,
-    type: ProgrammeChecklistType = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
+    type: ProgrammeChecklistType,
     name: String?,
     minScore: BigDecimal?,
     maxScore: BigDecimal?,

@@ -1,0 +1,30 @@
+{
+  "projectOwner": {
+    "email": "test@jems.eu",
+    "name": "projectOwner",
+    "surname": "owner",
+    "userRoleId": 3,
+    "userStatus": "ACTIVE"
+  },
+  "applicantView": {
+    "email": "randomize",
+    "name": "ApplicantView",
+    "surname": "view",
+    "userRoleId": 3,
+    "userStatus": "ACTIVE"
+  },
+  "applicantEdit": {
+    "email": "randomize",
+    "name": "ApplicantEdit",
+    "surname": "edit",
+    "userRoleId": 3,
+    "userStatus": "ACTIVE"
+  },
+  "applicantManage": {
+    "email": "randomize",
+    "name": "ApplicantManage",
+    "surname": "manage",
+    "userRoleId": 3,
+    "userStatus": "ACTIVE"
+  }
+}

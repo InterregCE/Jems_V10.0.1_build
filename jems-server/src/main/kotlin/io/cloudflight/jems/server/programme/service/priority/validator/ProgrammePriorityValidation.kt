@@ -4,9 +4,18 @@ import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjective
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.cloudflight.jems.server.common.exception.I18nFieldError
 import io.cloudflight.jems.server.common.exception.I18nValidationException
+import io.cloudflight.jems.server.programme.service.priority.model.ProgrammeObjectiveDimension
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammePriority
 import io.cloudflight.jems.server.programme.service.priority.model.ProgrammeSpecificObjective
 import org.springframework.http.HttpStatus
+
+const val MAX_CODE_VALUE_TYPE_OF_INTERVENTION = 182
+const val MAX_CODE_VALUE_FORM_OF_SUPPORT = 6
+const val MAX_CODE_VALUE_TERRITORIAL_DELIVERY_MECHANISM = 33
+const val MAX_CODE_VALUE_ECONOMIC_ACTIVITY = 26
+const val MAX_CODE_VALUE_GENDER_EQUALITY = 3
+const val MAX_CODE_VALUE_REGIONAL_AND_SEA_BASIN_STRATEGY = 11
+const val DIMENSION_CODES_INVALID = "programme.priority.dimension.codes.value.invalid"
 
 fun validateCreateProgrammePriority(
     programmePriority: ProgrammePriority,
@@ -28,6 +37,8 @@ fun validateCreateProgrammePriority(
         policyCodes = programmePriority.specificObjectives.mapTo(HashSet()) { it.code },
         getSpecificObjectivesByCodes = getSpecificObjectivesByCodes,
     )
+
+    validateDimensionCodes(programmePriority.specificObjectives.map { it.dimensionCodes })
 }
 
 fun validateUpdateProgrammePriority(
@@ -54,6 +65,8 @@ fun validateUpdateProgrammePriority(
         policyCodes = programmePriority.specificObjectives.mapTo(HashSet()) { it.code },
         getPrioritiesBySpecificObjectiveCodes = getPrioritiesBySpecificObjectiveCodes,
     )
+
+    validateDimensionCodes(programmePriority.specificObjectives.map { it.dimensionCodes })
 }
 
 private fun validateCommonRestrictions(programmePriority: ProgrammePriority) {
@@ -182,24 +195,64 @@ private fun validateEveryPolicyCodeIsFreeOrLinkedToThisPriority(
         )
 }
 
-fun checkNoCallExistsForRemovedSpecificObjectives(
-    objectivePoliciesToBeRemoved: Set<ProgrammeObjectivePolicy>,
-    alreadyUsedObjectivePolicies: Iterable<ProgrammeObjectivePolicy>
-) {
-    val policiesThatCannotBeRemoved = alreadyUsedObjectivePolicies intersect objectivePoliciesToBeRemoved
-    if (policiesThatCannotBeRemoved.isNotEmpty())
-        invalid(fieldErrors = mapOf(
-            "specificObjectives" to I18nFieldError(
-                i18nKey = "programme.priority.specificObjective.already.used.in.call",
-                i18nArguments = policiesThatCannotBeRemoved.map { it.name }
-            )
-        ))
-}
-
 private fun invalid(message: String? = null, fieldErrors: Map<String, I18nFieldError> = emptyMap()) {
     throw I18nValidationException(
         httpStatus = HttpStatus.UNPROCESSABLE_ENTITY,
         i18nKey = message,
         i18nFieldErrors = fieldErrors
     )
+}
+
+@Suppress("ComplexMethod")
+private fun validateDimensionCodes(dimensionCodes: List<Map<ProgrammeObjectiveDimension, List<String>>>) {
+    val flattenedDimensionCodes = dimensionCodes.flatMap { it.values }
+
+    if (flattenedDimensionCodes.any { it.isEmpty() || it.size > 20}) {
+        invalid("programme.priority.dimension.codes.size.invalid")
+    }
+    if (flattenedDimensionCodes.flatten().any { it.toIntOrNull() == null || it.toInt() < 1}) {
+        invalid(DIMENSION_CODES_INVALID)
+    }
+
+    dimensionCodes.flatMap { it.entries}.forEach {
+            dimension -> when (dimension.key) {
+                ProgrammeObjectiveDimension.TypesOfIntervention -> {
+                    if (dimension.value.any {code -> code.toInt() > MAX_CODE_VALUE_TYPE_OF_INTERVENTION}) {
+                        invalid(DIMENSION_CODES_INVALID)
+                    }
+                }
+
+                ProgrammeObjectiveDimension.FormOfSupport -> {
+                    if (dimension.value.any {code -> code.toInt() > MAX_CODE_VALUE_FORM_OF_SUPPORT}) {
+                        invalid(DIMENSION_CODES_INVALID)
+                    }
+                }
+
+                ProgrammeObjectiveDimension.TerritorialDeliveryMechanism -> {
+                    if (dimension.value.any {code -> code.toInt() > MAX_CODE_VALUE_TERRITORIAL_DELIVERY_MECHANISM}) {
+                        invalid(DIMENSION_CODES_INVALID)
+                    }
+                }
+
+                ProgrammeObjectiveDimension.EconomicActivity -> {
+                    if (dimension.value.any {code -> code.toInt() > MAX_CODE_VALUE_ECONOMIC_ACTIVITY}) {
+                        invalid(DIMENSION_CODES_INVALID)
+                    }
+                }
+
+                ProgrammeObjectiveDimension.Location -> { }
+
+                ProgrammeObjectiveDimension.GenderEquality -> {
+                    if (dimension.value.any {code -> code.toInt() > MAX_CODE_VALUE_GENDER_EQUALITY}) {
+                        invalid(DIMENSION_CODES_INVALID)
+                    }
+                }
+
+                ProgrammeObjectiveDimension.RegionalAndSeaBasinStrategy -> {
+                    if (dimension.value.any {code -> code.toInt() > MAX_CODE_VALUE_REGIONAL_AND_SEA_BASIN_STRATEGY}) {
+                        invalid(DIMENSION_CODES_INVALID)
+                    }
+                }
+            }
+        }
 }

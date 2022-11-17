@@ -1,9 +1,3 @@
-<jems-alert
-        [show]="!!indicator"
-        [type]="Alert.SUCCESS">
-    <p>Successfully saved Result Indicator {{indicator}}</p>
-</jems-alert>
-
 <p *ngIf="!indicatorPage?.content.length">No Result Indicators Saved</p>
 <jems-table *ngIf="indicatorPage.content.length"
            [configuration]="indicatorTableConfiguration"
@@ -14,4 +8,24 @@
            (newPageSize)="newPageSize.emit($event)"
            (sortRows)="newSort.emit($event)">>
 </jems-table>
+<jems-alert *ngIf="resultIndicatorDeleteError$ | async as error"
+            [show]="!!error"
+            [type]="Alert.ERROR"
+            (closed)="resultIndicatorDeleteError$.next(null);">
+    <jems-api-error-content [error]="error"></jems-api-error-content>
+</jems-alert>
+<jems-alert
+        [show]="resultIndicatorDeleteSuccess$ | async"
+        [type]="Alert.SUCCESS">
+    <p>{{'result.indicator.delete.success' | translate}}</p>
+</jems-alert>
 
+<ng-template #deleteCell let-resultIndicator>
+    <button
+            mat-icon-button color="accent"
+            [disabled]="isProgrammeSetupRestricted"
+            (click)="delete(resultIndicator);$event.stopPropagation();"
+            matTooltip="{{'common.delete.entry.tooltip' | translate}}">
+        <mat-icon>delete</mat-icon>
+    </button>
+</ng-template>

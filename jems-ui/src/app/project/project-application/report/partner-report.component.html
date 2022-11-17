@@ -1,35 +1,43 @@
 <jems-project-page-template *ngIf="data$ | async as data"
                             [needsCard]="true"
-                            titleKey="project.application.partner.reports.title"
-                            [subTitleText]="'common.label.project.partner.role.shortcut.' + data.partner.role | adaptTranslationKeyByCallType | async | translate
-            : {partner: getPartnerTranslationString(data.partner)}"
+                            titleKey="project.application.reporting.title"
+                            subTitleKey="project.application.partner.reports.title"
                             [isVersionedData]="false">
+    <h3>{{'common.label.project.partner.role.shortcut.' + data.partner.role | adaptTranslationKeyByCallType | async | translate
+        : {partner: getPartnerTranslationString(data.partner)} }}</h3>
     <jems-alert [type]="Alert.WARNING"
                 [closable]="false"
                 [show]="!data.partner.active">
         <div>{{'project.application.form.section.part.b.deactivated.partner.warning' | translate}}</div>
     </jems-alert>
 
-    <ng-container *ngIf="pageStore.userCanEditReports$ | async">
-        <jems-pending-button jemsText class="mb-3"
-                             [disabled]="true" matTooltip="Feature is not yet supported 😞 You can check it out on our testing environment and/or stay tuned for next release 🎉🍸"
-                             (click)="createPartnerReport()"
-                             [pending]="actionPending">
-            + {{'project.application.partner.reports.add' | translate}}
-        </jems-pending-button>
+    <ng-container *ngIf="pageStore.userCanEditReport$ | async">
+            <p>
+                <jems-pending-button jemsText class="mb-3"
+                                     icon="add"
+                                     (clicked)="createPartnerReport()"
+                                     [pending]="actionPending">
+                    {{'project.application.partner.reports.add' | translate}}
+                </jems-pending-button>
+            </p>
     </ng-container>
+
+    <jems-alert [show]="successfulDeletionMessage"
+                [type]="Alert.SUCCESS">
+        <p>{{'project.application.partner.report.successful.deletion.message' | translate}}</p>
+    </jems-alert>
 
     <jems-alert *ngIf="error$ | async as error"
                 [show]="!!error.i18nMessage?.i18nKey"
                 [type]="Alert.ERROR">
-        <jems-api-error-content [error]="error"></jems-api-error-content>
+            <jems-api-error-content [error]="error"></jems-api-error-content>
     </jems-alert>
 
     <ng-container *ngIf="data.partnerReports as partnerReports">
         <jems-table *ngIf="partnerReports.length > 0"
                     [configuration]="tableConfiguration"
                     [rows]="partnerReports"
-                    [totalElements]="partnerReports.length"
+                    [totalElements]="data.totalElements"
                     [pageIndex]="pageStore.newPageIndex$ | async"
                     (newPageIndex)="pageStore.newPageIndex$.next($event)"
                     (newPageSize)="pageStore.newPageSize$.next($event)">
@@ -43,4 +51,45 @@
 <ng-template #numberingCell let-partnerReport>
     <span *ngIf="partnerReport.reportNumber">
         R.{{partnerReport.reportNumber}}</span>
+</ng-template>
+
+<ng-template #periodCell let-partnerReport>
+    <span *ngIf="partnerReport.periodDetail"
+          matTooltip="{{ (partnerReport.startDate | localeDate) || 'X' }} - {{ (partnerReport.endDate | localeDate) || 'X' }}">
+        {{ 'project.application.form.work.package.output.delivery.period.entry' | translate : {
+            periodNumber: partnerReport.periodDetail.number,
+            start: partnerReport.periodDetail.start,
+            end: partnerReport.periodDetail.end } }}
+    </span>
+</ng-template>
+
+<ng-template #statusCell let-partnerReport>
+    <jems-partner-report-status [status]="partnerReport.status"></jems-partner-report-status>
+</ng-template>
+
+<ng-template #actionCell let-partnerReport>
+    <ng-container *ngIf="partnerReport.status !== ProjectPartnerReportSummaryDTO.StatusEnum.Draft && (isControlButtonVisible$ | async)">
+        <jems-pending-button *ngIf="!(partnerReport.status === ProjectPartnerReportSummaryDTO.StatusEnum.InControl)" class="ml-1"
+                [disabled]="isStartControlButtonDisabled"
+                (clicked)="createControlReportForPartnerReport(partnerReport)"
+                [pending]="getPendingActionStatus(partnerReport.id) | async">
+            {{'project.application.partner.reports.start.control' | translate}}
+        </jems-pending-button>
+        <button jemsText *ngIf="partnerReport.status === ProjectPartnerReportSummaryDTO.StatusEnum.InControl && ((pageStore.userCanEditReport$ | async) || (pageStore.userCanViewReport$ | async))" mat-stroked-button type="submit" class="ml-1"
+                [disabled]="false"
+                [routerLink]="partnerReport.id + '/controlReport/' + ((store.fullControlReportView$ | async) ? 'identificationTab' : 'document')">
+        {{'project.application.partner.reports.open.control' | translate}}
+        </button>
+    </ng-container>
+</ng-template>
+
+<ng-template #deleteCell let-partnerReport>
+    <span matTooltip="{{ (partnerReport.deletable ? 'common.delete.entry.tooltip' : 'project.application.partner.report.deletion.not.possible.tooltip') | translate }}">
+        <button *ngIf="partnerReport.status === ProjectPartnerReportSummaryDTO.StatusEnum.Draft"
+                mat-icon-button color="accent"
+                [disabled]="!partnerReport.deletable"
+                (click)="delete(partnerReport);$event.stopPropagation();">
+            <mat-icon>delete</mat-icon>
+        </button>
+    </span>
 </ng-template>

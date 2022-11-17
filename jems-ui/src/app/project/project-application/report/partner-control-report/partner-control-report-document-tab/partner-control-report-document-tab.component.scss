@@ -1,0 +1,23 @@
+$tree-width: 20rem;
+
+mat-card {
+  padding: 2rem;
+}
+
+#report-control-files {
+  display: flex;
+
+  #report-control-files-tree {
+    width: $tree-width;
+    border: 1px solid var(--table-border-color);
+  }
+
+  #report-control-files-table {
+    width: calc(100% - #{$tree-width});
+    flex: auto;
+  }
+}
+
+.overflow-auto {
+  overflow: auto;
+}

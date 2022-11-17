@@ -71,6 +71,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
     showPeriodMissingWarning: boolean;
     costIsNotSplittableError: ValidationErrors | null;
     partnerColumnsTotal: number[];
+    sumColumnTotal: number;
     loading: boolean;
   }>;
   tableConfiguration$: Observable<{
@@ -81,6 +82,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
   private showAddButton$: Observable<boolean>;
   private costIsNotSplittableError$: Observable<ValidationErrors | null>;
   private partnerColumnsTotal$: Observable<number[]>;
+  private sumColumnTotal$: Observable<number>;
   private showGapExistsWarning$: Observable<boolean>;
   private showPeriodMissingWarning$: Observable<boolean>;
   private loading = new BehaviorSubject(false);
@@ -98,7 +100,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
       'lumpSum',
       ...this.formVisibilityStatusService.isVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_BUDGET_PERIODS) ? ['period'] : [],
       'isSplittingLumpSumAllowed', 'lumpSumCost',
-      ...partners?.map(partner => partner.partnerNumber),
+      ...partners?.map(partner => partner.id + ''),
       'rowSum',
       'gap',
       ...this.formVisibilityStatusService.isVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PROJECT_LUMP_SUMS_DESCRIPTION) ? ['description'] : [],
@@ -148,6 +150,9 @@ export class ProjectLumpSumsPageComponent implements OnInit {
     this.partnerColumnsTotal$ = combineLatest(
       [this.formService.reset$.pipe(startWith(null)), this.items.valueChanges.pipe(startWith(null))]
     ).pipe(map(() => this.calculatePartnerColumnsTotal()));
+    this.sumColumnTotal$ = this.partnerColumnsTotal$.pipe(
+      map(partnerColumnsTotal => partnerColumnsTotal.reduce((acc, curr) => acc + curr, 0))
+    );
 
     this.data$ = combineLatest([
       this.pageStore.projectTitle$,
@@ -159,10 +164,11 @@ export class ProjectLumpSumsPageComponent implements OnInit {
       this.showPeriodMissingWarning$,
       this.costIsNotSplittableError$,
       this.partnerColumnsTotal$,
+      this.sumColumnTotal$,
       this.loading,
       this.tableConfiguration$,
     ]).pipe(
-      map(([projectTitle, partners, lumpSums, periods, showAddButton, showGapExistsWarning, showPeriodMissingWarning, costIsNotSplittableError, partnerColumnsTotal, loading, tableConfiguration]: any) => {
+      map(([projectTitle, partners, lumpSums, periods, showAddButton, showGapExistsWarning, showPeriodMissingWarning, costIsNotSplittableError, partnerColumnsTotal, sumColumnTotal, loading, tableConfiguration]: any) => {
         return {
           projectTitle,
           partners,
@@ -173,6 +179,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
           showPeriodMissingWarning,
           costIsNotSplittableError,
           partnerColumnsTotal,
+          sumColumnTotal,
           loading,
           ...tableConfiguration
         };
@@ -198,6 +205,9 @@ export class ProjectLumpSumsPageComponent implements OnInit {
       }))),
       rowSum: [0],
       gap: [0],
+      readyForPayment: [false],
+      comment: [''],
+      fastTrack: [false]
     });
     this.addItemToItems(item);
     this.tableData = [...this.items.controls];
@@ -298,6 +308,7 @@ export class ProjectLumpSumsPageComponent implements OnInit {
       const lumpSum = projectCallLumpSums.find(it => it.id === projectLumpSum.programmeLumpSumId);
       const rowSum = ProjectLumpSumsPageComponent.calculateRowSum(projectLumpSum.lumpSumContributions.map(it => it.amount));
       const item = this.formBuilder.group({
+        orderNr: projectLumpSum.orderNr,
         rowId: this.newRowId(),
         id: null,
         lumpSum: [lumpSum, Validators.required],
@@ -308,6 +319,11 @@ export class ProjectLumpSumsPageComponent implements OnInit {
         }))),
         rowSum: [rowSum],
         gap: [ProjectLumpSumsPageComponent.calculateGap(lumpSum?.cost || 0, rowSum)],
+        readyForPayment: [projectLumpSum.readyForPayment],
+        comment: [projectLumpSum.comment],
+        fastTrack: [projectLumpSum.fastTrack],
+        paymentEnabledDate: projectLumpSum.paymentEnabledDate,
+        lastApprovedVersionBeforeReadyForPayment: projectLumpSum.lastApprovedVersionBeforeReadyForPayment
       });
       this.addItemToItems(item);
     });
@@ -318,6 +334,18 @@ export class ProjectLumpSumsPageComponent implements OnInit {
       this.loading.next(false);
     }, 0);
     this.formService.resetEditable();
+    setTimeout(() => {
+      this.items.controls.forEach((formGroup: FormGroup) => {
+        if (formGroup.get(this.constants.FORM_CONTROL_NAMES.readyForPayment)?.value === true) {
+          this.getLumpSumControl(formGroup)?.disable();
+          formGroup.get(this.constants.FORM_CONTROL_NAMES.periodNumber)?.disable();
+          this.getPartnerContributionFormArray(formGroup)?.controls.forEach((partner: FormGroup) => partner.disable());
+          formGroup.get(this.constants.FORM_CONTROL_NAMES.comment)?.disable();
+          formGroup.get(this.constants.FORM_CONTROL_NAMES.readyForPayment)?.disable();
+          formGroup.get(this.constants.FORM_CONTROL_NAMES.fastTrack)?.disable();
+        }
+      });
+      }, 0);
   }
 
   private addItemToItems(item: FormGroup): void {
@@ -331,9 +359,16 @@ export class ProjectLumpSumsPageComponent implements OnInit {
   private formToProjectLumpSums(): ProjectLumpSum[] {
     return this.items.controls.map((formGroup: FormGroup) => {
       return new ProjectLumpSum(
+        formGroup.get(this.constants.FORM_CONTROL_NAMES.orderNr)?.value,
         this.getLumpSumControl(formGroup)?.value?.id,
         formGroup.get(this.constants.FORM_CONTROL_NAMES.periodNumber)?.value,
         this.getPartnerContributionFormArray(formGroup)?.value,
+        formGroup.get(this.constants.FORM_CONTROL_NAMES.comment)?.value,
+        formGroup.get(this.constants.FORM_CONTROL_NAMES.readyForPayment)?.value,
+        formGroup.get(this.constants.FORM_CONTROL_NAMES.fastTrack)?.value,
+        formGroup.get(this.constants.FORM_CONTROL_NAMES.paymentEnabledDate)?.value,
+        formGroup.get(this.constants.FORM_CONTROL_NAMES.lastApprovedVersionBeforeReadyForPayment)?.value,
+        formGroup.get(this.constants.FORM_CONTROL_NAMES.installmentsAlreadyCreated)?.value
       );
     });
   }

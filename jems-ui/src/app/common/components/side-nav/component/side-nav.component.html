@@ -1,7 +1,8 @@
 <div class="menu">
-    <div *ngFor="let data of headlines" class="level-1">
+    <div *ngFor="let data of headlines; let index = index" class="level-1">
         <mat-expansion-panel class="mat-elevation-z0"
-                             [expanded]="data.bullets?.length"
+                             [expanded]="(currentUrl$.getValue() === projectOverviewUrl$ && index === 1) ||
+                             (currentUrl$.getValue() !== projectOverviewUrl$)"
                              [disabled]="!data.bullets?.length"
                              [class.link]="data.route"
                              (click)="sideNavService.navigate(data)"
@@ -21,12 +22,12 @@
 
                 <mat-expansion-panel *ngIf="!subtitle.headlineTemplate"
                                      class="mat-elevation-z0"
-                                     [expanded]="subtitle.bullets?.length"
+                                     [expanded]="(currentUrl$.getValue() === projectOverviewUrl$ && index === 1) ||
+                                     (currentUrl$.getValue() !== projectOverviewUrl$)"
                                      [disabled]="!subtitle.bullets?.length"
                                      [class.link]="subtitle.route"
                                      [class.route-active]="(currentUrl$ | async) | IsMenuActive : (subtitle.baseRoute || subtitle.route) : !subtitle.baseRoute"
-                                     (click)="sideNavService.navigate(subtitle)"
-                >
+                                     (click)="sideNavService.navigate(subtitle)">
                     <mat-expansion-panel-header>
                         <mat-panel-title>
                             <span class="title">

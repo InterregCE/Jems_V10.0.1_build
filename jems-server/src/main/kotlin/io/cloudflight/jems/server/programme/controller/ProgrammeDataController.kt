@@ -35,4 +35,10 @@ class ProgrammeDataController(
 
     override fun hasProjectsInStatus(projectStatus: ApplicationStatusDTO): Boolean =
         hasProjectsInStatus.programmeHasProjectsInStatus(projectStatus)
+
+    override fun isAnyReportCreated(): Boolean =
+        isProgrammeSetupLocked.isAnyReportCreated()
+
+    override fun isFastTrackLumpSumReadyForPayment(programmeLumpSumId: Long): Boolean =
+        isProgrammeSetupLocked.isFastTrackLumpSumReadyForPayment(programmeLumpSumId)
 }

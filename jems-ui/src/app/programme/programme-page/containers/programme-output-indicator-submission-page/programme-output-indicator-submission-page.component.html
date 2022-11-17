@@ -1,10 +1,10 @@
 <jems-main-page-template [needsCard]="true"
-                        *ngIf="outputIndicator$ | async as details"
-                        titleKey="programme.data.page.title"
-                        subTitleKey="programme.tab.indicators">
+                         *ngIf="outputIndicator$ | async as details"
+                         titleKey="programme.data.page.title"
+                         subTitleKey="programme.tab.indicators">
     <jems-programme-output-indicator-detail
             [outputIndicator]="details"
-            [priorities]="priorities$ | async"
+            [priorities$]="priorities$"
             [success$]="outputIndicatorSaveSuccess$"
             [error$]="outputIndicatorSaveError$"
             [isCreate]="isCreate"

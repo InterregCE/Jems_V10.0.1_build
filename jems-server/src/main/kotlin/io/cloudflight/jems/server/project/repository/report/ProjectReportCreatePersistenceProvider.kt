@@ -6,13 +6,19 @@ import io.cloudflight.jems.server.programme.repository.costoption.ProgrammeUnitC
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
 import io.cloudflight.jems.server.programme.repository.legalstatus.ProgrammeLegalStatusRepository
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
+import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportBudgetPerPeriodEntity
+import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportBudgetPerPeriodId
 import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportIdentificationEntity
 import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportIdentificationTargetGroupEntity
 import io.cloudflight.jems.server.project.entity.report.identification.ProjectPartnerReportIdentificationTargetGroupTranslEntity
 import io.cloudflight.jems.server.project.repository.report.contribution.ProjectPartnerReportContributionRepository
 import io.cloudflight.jems.server.project.repository.report.contribution.toEntity
+import io.cloudflight.jems.server.project.repository.report.expenditure.ProjectPartnerReportInvestmentRepository
 import io.cloudflight.jems.server.project.repository.report.expenditure.ProjectPartnerReportLumpSumRepository
 import io.cloudflight.jems.server.project.repository.report.expenditure.ProjectPartnerReportUnitCostRepository
+import io.cloudflight.jems.server.project.repository.report.financialOverview.coFinancing.ReportProjectPartnerExpenditureCoFinancingRepository
+import io.cloudflight.jems.server.project.repository.report.financialOverview.costCategory.ReportProjectPartnerExpenditureCostCategoryRepository
+import io.cloudflight.jems.server.project.repository.report.identification.ProjectPartnerReportBudgetPerPeriodRepository
 import io.cloudflight.jems.server.project.repository.report.identification.ProjectPartnerReportIdentificationRepository
 import io.cloudflight.jems.server.project.repository.report.identification.ProjectPartnerReportIdentificationTargetGroupRepository
 import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPartnerReportWorkPackageActivityDeliverableRepository
@@ -22,21 +28,26 @@ import io.cloudflight.jems.server.project.repository.report.workPlan.ProjectPart
 import io.cloudflight.jems.server.project.repository.report.workPlan.toEntity
 import io.cloudflight.jems.server.project.service.model.ProjectRelevanceBenefit
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
-import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.report.ProjectReportCreatePersistence
-import io.cloudflight.jems.server.project.service.report.model.create.ProjectPartnerReportCreate
-import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReportSummary
-import io.cloudflight.jems.server.project.service.report.model.contribution.create.CreateProjectPartnerReportContribution
-import io.cloudflight.jems.server.project.service.report.model.create.PartnerReportLumpSum
-import io.cloudflight.jems.server.project.service.report.model.create.PartnerReportUnitCostBase
-import io.cloudflight.jems.server.project.service.report.model.workPlan.create.CreateProjectPartnerReportWorkPackage
+import io.cloudflight.jems.server.project.service.report.model.partner.base.create.ProjectPartnerReportCreate
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSummary
+import io.cloudflight.jems.server.project.service.report.model.partner.contribution.create.CreateProjectPartnerReportContribution
+import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PartnerReportLumpSum
+import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PartnerReportInvestment
+import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PartnerReportUnitCostBase
+import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.costCategory.ReportExpenditureCostCategory
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportPeriod
+import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportType
+import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.create.CreateProjectPartnerReportWorkPackage
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
+import java.math.BigDecimal
 
 @Repository
 class ProjectReportCreatePersistenceProvider(
     private val partnerReportRepository: ProjectPartnerReportRepository,
     private val partnerReportCoFinancingRepository: ProjectPartnerReportCoFinancingRepository,
+    private val reportProjectPartnerExpenditureCoFinancingRepository: ReportProjectPartnerExpenditureCoFinancingRepository,
     private val legalStatusRepository: ProgrammeLegalStatusRepository,
     private val programmeFundRepository: ProgrammeFundRepository,
     private val programmeLumpSumRepository: ProgrammeLumpSumRepository,
@@ -50,17 +61,23 @@ class ProjectReportCreatePersistenceProvider(
     private val contributionRepository: ProjectPartnerReportContributionRepository,
     private val reportLumpSumRepository: ProjectPartnerReportLumpSumRepository,
     private val reportUnitCostRepository: ProjectPartnerReportUnitCostRepository,
+    private val reportInvestmentRepository: ProjectPartnerReportInvestmentRepository,
+    private val reportBudgetPerPeriodRepository: ProjectPartnerReportBudgetPerPeriodRepository,
+    private val reportBudgetExpenditureRepository: ReportProjectPartnerExpenditureCostCategoryRepository,
 ) : ProjectReportCreatePersistence {
 
     @Transactional
     override fun createPartnerReport(report: ProjectPartnerReportCreate): ProjectPartnerReportSummary {
         val reportEntity = persistReport(report)
-        persistCoFinancingToReport(report.identification.coFinancing, report = reportEntity)
+        persistCoFinancingToReport(report, report = reportEntity)
         persistWorkPlanToReport(report.workPackages, report = reportEntity)
-        persistTargetGroupsToReport(report.targetGroups, report = reportEntity)
+        persistTargetGroupsAndSpendingToReport(report.targetGroups, report = reportEntity)
         persistContributionsToReport(report.budget.contributions, report = reportEntity)
-        persistAvailableLumpSumsToReport(report.budget.lumpSums, report = reportEntity)
+        persistAvailableLumpSumsToReport(report.budget.availableLumpSums, report = reportEntity)
         persistAvailableUnitCostsToReport(report.budget.unitCosts, report = reportEntity)
+        persistAvailableInvestmentsToReport(report.budget.investments, report = reportEntity)
+        persistBudgetPerPeriodToReport(report.budget.budgetPerPeriod, report = reportEntity)
+        persistBudgetExpenditureSetupToReport(report.budget.expenditureSetup, report = reportEntity)
         return reportEntity.toModelSummary()
     }
 
@@ -72,14 +89,18 @@ class ProjectReportCreatePersistenceProvider(
         )
 
     private fun persistCoFinancingToReport(
-        coFinancing: List<ProjectPartnerCoFinancing>,
+        reportData: ProjectPartnerReportCreate,
         report: ProjectPartnerReportEntity,
     ) {
         partnerReportCoFinancingRepository.saveAll(
-            coFinancing.toEntity(
+            reportData.budget.previouslyReportedCoFinancing.fundsSorted.toEntity(
                 reportEntity = report,
                 programmeFundResolver = { programmeFundRepository.getById(it) },
             )
+        )
+
+        reportProjectPartnerExpenditureCoFinancingRepository.save(
+            reportData.budget.previouslyReportedCoFinancing.toEntity(report),
         )
     }
 
@@ -101,7 +122,7 @@ class ProjectReportCreatePersistenceProvider(
         }
     }
 
-    private fun persistTargetGroupsToReport(
+    private fun persistTargetGroupsAndSpendingToReport(
         targetGroups: List<ProjectRelevanceBenefit>,
         report: ProjectPartnerReportEntity,
     ) {
@@ -112,6 +133,11 @@ class ProjectReportCreatePersistenceProvider(
                 endDate = null,
                 periodNumber = null,
                 translatedValues = mutableSetOf(),
+                nextReportForecast = BigDecimal.ZERO,
+                formatOriginals = false,
+                formatCopy = false,
+                formatElectronic = false,
+                type = ReportType.PartnerReport,
             )
         )
         identificationTargetGroupRepository.saveAll(
@@ -159,5 +185,38 @@ class ProjectReportCreatePersistenceProvider(
         reportUnitCostRepository.saveAll(
             unitCosts.map { uc -> uc.toEntity(report, unitCostResolver = { programmeUnitCostRepository.getById(it) }) }
         )
+
+    private fun persistAvailableInvestmentsToReport(
+        investments: List<PartnerReportInvestment>,
+        report: ProjectPartnerReportEntity,
+    ) =
+        reportInvestmentRepository.saveAll(
+            investments.map { investment -> investment.toEntity(report = report) }
+        )
+
+    private fun persistBudgetPerPeriodToReport(
+        budgetPerPeriod: Collection<ProjectPartnerReportPeriod>,
+        report: ProjectPartnerReportEntity,
+    ) =
+        reportBudgetPerPeriodRepository.saveAll(
+            budgetPerPeriod.map {
+                ProjectPartnerReportBudgetPerPeriodEntity(
+                    id = ProjectPartnerReportBudgetPerPeriodId(
+                        report = report,
+                        periodNumber = it.number,
+                    ),
+                    periodBudget = it.periodBudget,
+                    periodBudgetCumulative = it.periodBudgetCumulative,
+                    startMonth = it.start,
+                    endMonth = it.end,
+                )
+            }
+        )
+
+    private fun persistBudgetExpenditureSetupToReport(
+        expenditureCostCategory: ReportExpenditureCostCategory,
+        report: ProjectPartnerReportEntity,
+    ) =
+        reportBudgetExpenditureRepository.save(expenditureCostCategory.toCreateEntity(report = report))
 
 }

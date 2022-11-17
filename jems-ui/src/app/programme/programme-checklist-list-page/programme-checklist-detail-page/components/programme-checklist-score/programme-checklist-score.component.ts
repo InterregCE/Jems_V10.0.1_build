@@ -1,5 +1,5 @@
 import {ChangeDetectionStrategy, Component, forwardRef, NgZone, ViewChild} from '@angular/core';
-import {ProgrammeChecklistComponentDTO, ScoreMetadataDTO, TextInputMetadataDTO} from '@cat/api';
+import {ProgrammeChecklistComponentDTO, ScoreMetadataDTO} from '@cat/api';
 import {
   AbstractControl,
   ControlValueAccessor,
@@ -76,7 +76,7 @@ export class ProgrammeChecklistScoreComponent implements ControlValueAccessor, V
   writeValue(obj: any[]): void {
     this.metadata = obj as any;
     this.form = this.formBuilder.group({
-      question: [this.metadata?.question, [Validators.required, Validators.maxLength(1000)]],
+      question: [this.metadata?.question, [Validators.required, Validators.pattern(/(?!^\s+$)^.*$/m), Validators.maxLength(1000)]],
       weight: [this.metadata?.weight || 1, [Validators.required, Validators.min(0), Validators.max(100)]],
     });
 

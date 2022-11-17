@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.programme.service.checklist.create_checklist
 
 import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.programme.service.checklist.ChecklistTemplateValidator
@@ -18,15 +19,17 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.mockk
+import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.springframework.context.ApplicationEventPublisher
 import java.math.BigDecimal
 import java.time.ZoneId
 import java.time.ZonedDateTime
-import java.util.*
+import java.util.Collections
 
 internal class CreateChecklistTest : UnitTest() {
 
@@ -53,6 +56,9 @@ internal class CreateChecklistTest : UnitTest() {
     @RelaxedMockK
     lateinit var checklistTemplateValidator: ChecklistTemplateValidator
 
+    @MockK
+    lateinit var auditPublisher: ApplicationEventPublisher
+
     @InjectMockKs
     lateinit var createProgrammeChecklist: CreateProgrammeChecklist
 
@@ -68,6 +74,8 @@ internal class CreateChecklistTest : UnitTest() {
     @Test
     fun `create - successfully`() {
         every { persistence.countAll() } returns 1
+        val auditSlot = slot<AuditCandidateEvent>()
+        every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit
         every { persistence.createOrUpdate(checkList) } returns checkList
         Assertions.assertThat(createProgrammeChecklist.create(checkList)).isEqualTo(checkList)
     }

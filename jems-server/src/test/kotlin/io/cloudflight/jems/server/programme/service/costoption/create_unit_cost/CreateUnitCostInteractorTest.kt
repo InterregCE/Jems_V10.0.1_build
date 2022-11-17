@@ -56,6 +56,7 @@ class CreateUnitCostInteractorTest : UnitTest() {
         every { persistence.getCount() } returns 15
         val wrongUnitCost = ProgrammeUnitCost(
             id = 0,
+            projectId = null,
             name = setOf(InputTranslation(SystemLanguage.EN, " ")),
             description = setOf(InputTranslation(SystemLanguage.EN, "test unit cost 1")),
             type = setOf(InputTranslation(SystemLanguage.EN, "this type is longer than25")),
@@ -75,6 +76,7 @@ class CreateUnitCostInteractorTest : UnitTest() {
         every { persistence.getCount() } returns 15
         val wrongUnitCost = ProgrammeUnitCost(
             id = 0,
+            projectId = null,
             name = setOf(InputTranslation(SystemLanguage.EN, " ")),
             description = setOf(InputTranslation(SystemLanguage.EN, "test unit cost 1")),
             type = setOf(InputTranslation(SystemLanguage.EN, "this type is longer than25")),
@@ -94,6 +96,7 @@ class CreateUnitCostInteractorTest : UnitTest() {
         every { persistence.getCount() } returns 15
         val wrongUnitCost = ProgrammeUnitCost(
             id = 0,
+            projectId = null,
             name = setOf(InputTranslation(SystemLanguage.EN, "test")),
             description = setOf(InputTranslation(SystemLanguage.EN, "test unit cost 1")),
             type = setOf(InputTranslation(SystemLanguage.EN, "test type")),
@@ -109,9 +112,10 @@ class CreateUnitCostInteractorTest : UnitTest() {
 
     @Test
     fun `create unit cost - reached max allowed amount`() {
-        every { persistence.getCount() } returns 100
+        every { persistence.getCount() } returns 200
         val unitCost = ProgrammeUnitCost(
             id = 0,
+            projectId = null,
             name = setOf(InputTranslation(SystemLanguage.EN, "UC1")),
             description = setOf(InputTranslation(SystemLanguage.EN, "test unit cost 1")),
             type = setOf(InputTranslation(SystemLanguage.EN, "type 1")),
@@ -129,6 +133,7 @@ class CreateUnitCostInteractorTest : UnitTest() {
         every { persistence.createUnitCost(any()) } returnsArgument 0
         val unitCost = ProgrammeUnitCost(
             id = 0,
+            projectId = null,
             name = setOf(InputTranslation(SystemLanguage.EN, "UC1")),
             description = setOf(InputTranslation(SystemLanguage.EN, "test unit cost 1")),
             type = setOf(InputTranslation(SystemLanguage.EN, "type 1")),
@@ -152,6 +157,7 @@ class CreateUnitCostInteractorTest : UnitTest() {
         every { persistence.createUnitCost(any()) } returnsArgument 0
         val unitCost = ProgrammeUnitCost(
             id = 0,
+            projectId = null,
             name = setOf(InputTranslation(SystemLanguage.EN, "UC1")),
             description = setOf(InputTranslation(SystemLanguage.EN, "test unit cost 1")),
             type = setOf(InputTranslation(SystemLanguage.EN, "type 1")),
@@ -174,6 +180,7 @@ class CreateUnitCostInteractorTest : UnitTest() {
         every { persistence.getCount() } returns 10
         val unitCost = ProgrammeUnitCost(
             id = 1L,
+            projectId = null,
             name = setOf(InputTranslation(SystemLanguage.EN, "UC1")),
             type = setOf(InputTranslation(SystemLanguage.EN, "UC1 type")),
             costPerUnit = BigDecimal.ONE,
@@ -188,6 +195,7 @@ class CreateUnitCostInteractorTest : UnitTest() {
     fun `create unit cost - check if description length is validated`() {
         val unitCost = ProgrammeUnitCost(
             id = 0,
+            projectId = null,
             name = setOf(InputTranslation(SystemLanguage.EN, "UC1")),
             description = setOf(InputTranslation(SystemLanguage.EN, "test unit cost 1")),
             type = setOf(InputTranslation(SystemLanguage.EN, "type 1")),
@@ -209,6 +217,7 @@ class CreateUnitCostInteractorTest : UnitTest() {
     fun `create unit cost - check if name length is validated`() {
         val unitCost = ProgrammeUnitCost(
             id = 0,
+            projectId = null,
             name = setOf(InputTranslation(SystemLanguage.EN, "UC1")),
             description = setOf(InputTranslation(SystemLanguage.EN, "test unit cost 1")),
             type = setOf(InputTranslation(SystemLanguage.EN, "type 1")),
@@ -230,6 +239,7 @@ class CreateUnitCostInteractorTest : UnitTest() {
     fun `create unit cost - check if type length is validated`() {
         val unitCost = ProgrammeUnitCost(
             id = 0,
+            projectId = null,
             name = setOf(InputTranslation(SystemLanguage.EN, "UC1")),
             description = setOf(InputTranslation(SystemLanguage.EN, "test unit cost 1")),
             type = setOf(InputTranslation(SystemLanguage.EN, "type 1")),
@@ -246,5 +256,4 @@ class CreateUnitCostInteractorTest : UnitTest() {
         }
         verify(exactly = 1) { generalValidator.maxLength(type, 25, "type") }
     }
-
 }

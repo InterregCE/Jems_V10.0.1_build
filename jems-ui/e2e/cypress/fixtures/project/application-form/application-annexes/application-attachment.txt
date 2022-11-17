@@ -1,0 +1,1 @@
+This file is only for the purpose of testing the upload and download function within the application annexes for application attachments

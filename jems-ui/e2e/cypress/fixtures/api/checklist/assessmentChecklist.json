@@ -1,0 +1,47 @@
+{
+  "type": "APPLICATION_FORM_ASSESSMENT",
+  "name": "randomize",
+  "minScore": 0,
+  "maxScore": 10,
+  "allowsDecimalScore": false,
+  "components": [
+    {
+      "type": "HEADLINE",
+      "position": 0,
+      "metadata": {
+        "value": "A checklist headline",
+        "type": "HEADLINE"
+      }
+    },
+    {
+      "type": "OPTIONS_TOGGLE",
+      "position": 1,
+      "metadata": {
+        "type": "OPTIONS_TOGGLE",
+        "question": "Is this a question?",
+        "firstOption": "Yes",
+        "secondOption": "Yes?",
+        "thirdOption": null
+      }
+    },
+    {
+      "type": "TEXT_INPUT",
+      "position": 2,
+      "metadata": {
+        "type": "TEXT_INPUT",
+        "question": "Write something about yourself.",
+        "explanationLabel": "Text goes here",
+        "explanationMaxLength": 5000
+      }
+    },
+    {
+      "type": "SCORE",
+      "position": 3,
+      "metadata": {
+        "type": "SCORE",
+        "question": "I don't even know what these checklists are for",
+        "weight": 1
+      }
+    }
+  ]
+}

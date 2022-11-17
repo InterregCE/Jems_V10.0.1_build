@@ -1,0 +1,10 @@
+<jems-main-page-template [needsCard]="true">
+    <mat-tab-group [selectedIndex]="selectedTabIndex" (selectedTabChange)="setDefaultTabIndex($event)">
+        <mat-tab *jemsHasPermission="PermissionEnum.PaymentsRetrieve"  label="{{'payments.projects.header' | translate}}" id="paymentsToProjects" >
+            <jems-payments-to-projects-page jemsNoWidthLimit></jems-payments-to-projects-page>
+        </mat-tab>
+        <mat-tab *jemsHasPermission="PermissionEnum.AdvancePaymentsRetrieve" id="advancePayments"  label="{{'payments.advance.header' | translate}}"  >
+            <jems-advanced-payments-page jemsNoWidthLimit></jems-advanced-payments-page>
+        </mat-tab>
+    </mat-tab-group>
+</jems-main-page-template>

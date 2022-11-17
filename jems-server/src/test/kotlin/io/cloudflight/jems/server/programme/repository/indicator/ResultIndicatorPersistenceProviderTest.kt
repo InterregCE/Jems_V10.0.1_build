@@ -7,6 +7,7 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.slot
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageImpl
@@ -112,5 +113,12 @@ internal class ResultIndicatorPersistenceProviderTest : IndicatorsPersistenceBas
                 resultIndicatorEntity.identifier
             )
         ).isEqualTo(true)
+    }
+
+    @Test
+    fun testDeleteResultIndicator() {
+        every { resultIndicatorRepository.deleteById(1L) } returns Unit
+        resultIndicatorPersistenceProvider.deleteResultIndicator(1L)
+        verify { resultIndicatorRepository.deleteById(1L) }
     }
 }

@@ -1,7 +1,11 @@
 package io.cloudflight.jems.server.project.service.checklist.delete
 
+import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
+import io.cloudflight.jems.server.audit.model.AuditProject
+import io.cloudflight.jems.server.audit.service.AuditCandidate
+import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.programme.service.checklist.delete.DeleteChecklistInstance
 import io.cloudflight.jems.server.programme.service.checklist.delete.DeleteChecklistInstanceStatusNotAllowedException
 import io.cloudflight.jems.server.project.service.checklist.getInstances.GetChecklistInstanceDetailNotFoundException
@@ -13,11 +17,14 @@ import io.cloudflight.jems.server.programme.service.checklist.model.metadata.*
 import io.cloudflight.jems.server.project.service.checklist.ChecklistInstancePersistence
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceStatus
 import io.cloudflight.jems.server.project.service.checklist.model.metadata.TextInputInstanceMetadata
+import io.cloudflight.jems.server.user.service.authorization.UserAuthorization
+import io.cloudflight.jems.server.utils.user
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.slot
 import io.mockk.verify
+import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import org.springframework.context.ApplicationEventPublisher
@@ -92,17 +99,34 @@ internal class DeleteChecklistInstanceTest : UnitTest() {
     @MockK
     lateinit var auditPublisher: ApplicationEventPublisher
 
+    @MockK
+    lateinit var userAuthorization: UserAuthorization
+
+    @MockK
+    lateinit var securityService: SecurityService
+
     @InjectMockKs
     lateinit var deleteChecklistInstance: DeleteChecklistInstance
 
     @Test
     fun `delete checklist - OK`() {
+        every { userAuthorization.getUser() } returns user
+        every { securityService.getUserIdOrThrow() } returns user.id
         every { persistence.getChecklistDetail(CHECKLIST_ID) } returns checkLisDetail
         val auditSlot = slot<AuditCandidateEvent>()
-        every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit
+        every { auditPublisher.publishEvent(capture(auditSlot)) } answers {}
         every { persistence.deleteById(CHECKLIST_ID) } answers {}
         deleteChecklistInstance.deleteById(CHECKLIST_ID)
         verify { persistence.deleteById(CHECKLIST_ID) }
+
+        verify(exactly = 1) { auditPublisher.publishEvent(capture(auditSlot)) }
+        Assertions.assertThat(auditSlot.captured.auditCandidate).isEqualTo(
+            AuditCandidate(
+                action = AuditAction.ASSESSMENT_CHECKLIST_DELETED,
+                project = AuditProject(id = checkLisDetail.relatedToId.toString()),
+                description = "[${checkLisDetail.id}] [${checkLisDetail.type}] [${checkLisDetail.name}] deleted"
+            )
+        )
     }
 
     @Test

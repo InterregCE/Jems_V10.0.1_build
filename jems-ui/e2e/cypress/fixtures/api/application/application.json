@@ -1,5 +1,4 @@
 {
-  "id": null,
   "details": {
     "acronym": "randomize",
     "projectCallId": null
@@ -32,7 +31,6 @@
   "partners": [
     {
       "details": {
-        "id": null,
         "abbreviation": "Lead Partner",
         "role": "LEAD_PARTNER",
         "nameInOriginalLanguage": "Lead Partner in original language",
@@ -488,7 +486,6 @@
         ],
         "partnerContributions": [
           {
-            "id": null,
             "name": "Lead Partner",
             "status": "Public",
             "amount": 25372.32,
@@ -541,13 +538,7 @@
             "language": "EN"
           }
         ],
-        "activities": [
-          {
-            "activityId": 1,
-            "workPackageNumber": 1,
-            "activityNumber": 1
-          }
-        ],
+        "activities": [],
         "stateAidScheme": {
           "id": 1,
           "measure": "GENERAL_DE_MINIMIS",
@@ -1270,7 +1261,7 @@
       "period": 0,
       "lumpSumContributions": [
         {
-          "partnerId": null,
+          "partnerAbbreviation": "Lead Partner",
           "amount": 55555.56
         }
       ]

@@ -19,9 +19,12 @@ class PartnerReportNotFound : ApplicationNotFoundException(
     i18nMessage = I18nMessage("$UPLOAD_FILE_TO_PROJECT_PARTNER_REPORT_ERROR_KEY_PREFIX.not.found"),
 )
 
-class FileAlreadyExists : ApplicationUnprocessableException(
+class FileAlreadyExists(fileName: String) : ApplicationUnprocessableException(
     code = "$UPLOAD_FILE_TO_PROJECT_PARTNER_REPORT_ERROR_CODE_PREFIX-002",
-    i18nMessage = I18nMessage("$UPLOAD_FILE_TO_PROJECT_PARTNER_REPORT_ERROR_KEY_PREFIX.file.already.exists"),
+    i18nMessage = I18nMessage(
+        i18nKey = "$UPLOAD_FILE_TO_PROJECT_PARTNER_REPORT_ERROR_KEY_PREFIX.file.already.exists",
+        i18nArguments = mapOf("fileName" to fileName),
+    ),
 )
 
 class FileTypeNotSupported : ApplicationUnprocessableException(

@@ -3,9 +3,12 @@ package io.cloudflight.jems.server.project.repository.partner
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage.EN
 import io.cloudflight.jems.api.project.dto.InputTranslation
+import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerContributionStatusDTO
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.payments.entity.PartnerWithContributionsRow
 import io.cloudflight.jems.server.programme.repository.legalstatus.ProgrammeLegalStatusRepository
 import io.cloudflight.jems.server.programme.repository.stateaid.ProgrammeStateAidRepository
+import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.project.entity.partner.PartnerIdentityRow
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
 import io.cloudflight.jems.server.project.entity.partner.state_aid.ProjectPartnerStateAidEntity
@@ -18,11 +21,9 @@ import io.cloudflight.jems.server.project.repository.ProjectVersionUtils
 import io.cloudflight.jems.server.project.repository.workpackage.activity.WorkPackageActivityRepository
 import io.cloudflight.jems.server.project.service.associatedorganization.ProjectAssociatedOrganizationService
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
-import io.cloudflight.jems.server.project.service.partner.model.NaceGroupLevel
-import io.cloudflight.jems.server.project.service.partner.model.PartnerSubType
-import io.cloudflight.jems.server.project.service.partner.model.ProjectPartner
-import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
-import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVatRecovery
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContribution
+import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionSpf
+import io.cloudflight.jems.server.project.service.partner.model.*
 import io.cloudflight.jems.server.utils.partner.CREATED_AT_TIMESTAMP
 import io.cloudflight.jems.server.utils.partner.PARTNER_ID
 import io.cloudflight.jems.server.utils.partner.PROJECT_ID
@@ -41,12 +42,12 @@ import io.cloudflight.jems.server.utils.partner.stateAid
 import io.cloudflight.jems.server.utils.partner.stateAidActivity
 import io.cloudflight.jems.server.utils.partner.stateAidEmpty
 import io.cloudflight.jems.server.utils.partner.stateAidEntity
-import io.mockk.MockKAnnotations
 import io.mockk.every
-import io.mockk.impl.annotations.MockK
+import io.mockk.MockKAnnotations
 import io.mockk.mockk
-import io.mockk.slot
 import io.mockk.verify
+import io.mockk.slot
+import io.mockk.impl.annotations.MockK
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -54,6 +55,7 @@ import org.junit.jupiter.api.assertDoesNotThrow
 import org.junit.jupiter.api.assertThrows
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
+import java.math.BigDecimal
 import java.sql.Timestamp
 import java.time.LocalDateTime
 import java.time.ZonedDateTime
@@ -485,5 +487,87 @@ class PartnerPersistenceProviderTest {
         every { projectPartnerRepository.getById(PARTNER_ID) } returns partnerEntity
         assertDoesNotThrow {(persistence.deactivatePartner(PARTNER_ID))}
         verify(exactly = 1) { partnerEntity.active = false  }
+    }
+
+
+    @Test
+    fun findAllByProjectIdWithContributionsForDropdown() {
+        val partnerWithContributionsRow1: PartnerWithContributionsRow = mockk()
+        every { partnerWithContributionsRow1.partnerId } returns 1L
+        every { partnerWithContributionsRow1.partnerAbbreviation } returns "A"
+        every { partnerWithContributionsRow1.partnerRole } returns ProjectPartnerRole.PARTNER
+        every { partnerWithContributionsRow1.partnerActive } returns true
+        every { partnerWithContributionsRow1.partnerSortNumber } returns 1
+        every { partnerWithContributionsRow1.fundId } returns 2L
+        every { partnerWithContributionsRow1.fundAbbreviation } returns "ERDF"
+        every { partnerWithContributionsRow1.language } returns EN
+        every { partnerWithContributionsRow1.partnerContributionId } returns 2L
+        every { partnerWithContributionsRow1.partnerContributionName } returns "contribution source"
+        every { partnerWithContributionsRow1.partnerContributionStatus } returns ProjectPartnerContributionStatusDTO.Public
+        every { partnerWithContributionsRow1.partnerContributionAmount } returns BigDecimal(100)
+        every { partnerWithContributionsRow1.partnerContributionSpfId } returns 1L
+        every { partnerWithContributionsRow1.partnerContributionSpfName } returns "spf contribution"
+        every { partnerWithContributionsRow1.partnerContributionSpfStatus } returns ProjectPartnerContributionStatusDTO.Public
+        every { partnerWithContributionsRow1.partnerContributionSpfAmount } returns BigDecimal(150)
+
+        val partnerWithContributionsRow2: PartnerWithContributionsRow = mockk()
+        every { partnerWithContributionsRow2.partnerId } returns 1L
+        every { partnerWithContributionsRow2.partnerAbbreviation } returns "A"
+        every { partnerWithContributionsRow2.partnerRole } returns ProjectPartnerRole.PARTNER
+        every { partnerWithContributionsRow2.partnerActive } returns true
+        every { partnerWithContributionsRow2.partnerSortNumber } returns 1
+        every { partnerWithContributionsRow2.fundId } returns 2L
+        every { partnerWithContributionsRow2.fundAbbreviation } returns "ERDF DE"
+        every { partnerWithContributionsRow2.language } returns SystemLanguage.DE
+        every { partnerWithContributionsRow2.partnerContributionId } returns 2L
+        every { partnerWithContributionsRow2.partnerContributionName } returns "contribution source"
+        every { partnerWithContributionsRow2.partnerContributionStatus } returns ProjectPartnerContributionStatusDTO.Public
+        every { partnerWithContributionsRow2.partnerContributionAmount } returns BigDecimal(100)
+        every { partnerWithContributionsRow2.partnerContributionSpfId } returns 1L
+        every { partnerWithContributionsRow2.partnerContributionSpfName } returns "spf contribution"
+        every { partnerWithContributionsRow2.partnerContributionSpfStatus } returns ProjectPartnerContributionStatusDTO.Public
+        every { partnerWithContributionsRow2.partnerContributionSpfAmount } returns BigDecimal(150)
+
+        every { projectPartnerRepository.findAllByProjectIdWithContributionsForDropdown(1L) } returns listOf(
+            partnerWithContributionsRow1,
+            partnerWithContributionsRow2
+        )
+
+        assertThat(persistence.findAllByProjectIdWithContributionsForDropdown(1L)).containsExactly(
+            ProjectPartnerPaymentSummary(
+                partnerSummary = ProjectPartnerSummary(
+                    id = 1L,
+                    abbreviation = "A",
+                    role = ProjectPartnerRole.PARTNER,
+                    active = true,
+                    sortNumber = 1
+                ),
+                partnerCoFinancing = listOf(
+                    ProgrammeFund(
+                        id = 2L,
+                        selected = true,
+                        abbreviation = setOf(
+                            InputTranslation(language = EN, translation = "ERDF"),
+                            InputTranslation(language = SystemLanguage.DE, translation = "ERDF DE")
+                        )
+                    )
+                ),
+                partnerContributions = listOf(
+                    ProjectPartnerContribution(
+                        id = 2L,
+                        name = "contribution source",
+                        status = ProjectPartnerContributionStatusDTO.Public,
+                        isPartner = true,
+                        amount = BigDecimal(100)
+                    )
+                ),
+                partnerContributionsSpf = listOf(ProjectPartnerContributionSpf(
+                    id = 1L,
+                    name = "spf contribution",
+                    status = ProjectPartnerContributionStatusDTO.Public,
+                    amount = BigDecimal(150)
+                ))
+            )
+        )
     }
 }

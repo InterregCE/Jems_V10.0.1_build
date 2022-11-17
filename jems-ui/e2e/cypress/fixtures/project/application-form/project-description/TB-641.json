@@ -1,0 +1,144 @@
+{
+  "territorialChallenge": [
+    {
+      "translation": "Territorial challenge DE",
+      "language": "DE"
+    },
+    {
+      "translation": "Territorial challenge EN",
+      "language": "EN"
+    }
+  ],
+  "commonChallenge": [
+    {
+      "translation": "Common challenge DE",
+      "language": "DE"
+    },
+    {
+      "translation": "Common challenge EN",
+      "language": "EN"
+    }
+  ],
+  "transnationalCooperation": [
+    {
+      "translation": "Transitional cooperation DE",
+      "language": "DE"
+    },
+    {
+      "translation": "Transitional cooperation EN",
+      "language": "EN"
+    }
+  ],
+  "projectBenefits": [
+    {
+      "group": "Local public authority",
+      "specification": [
+        {
+          "translation": "Project benefits - Local public authority DE",
+          "language": "DE"
+        },
+        {
+          "translation": "Project benefits - Local public authority EN",
+          "language": "EN"
+        }
+      ]
+    },
+    {
+      "group": "Cross-border legal body",
+      "specification": [
+        {
+          "translation": "Project benefits - Cross-border legal body DE",
+          "language": "DE"
+        },
+        {
+          "translation": "Project benefits - Cross-border legal body EN",
+          "language": "EN"
+        }
+      ]
+    }
+  ],
+  "projectStrategies": [
+    {
+      "strategy": "EU Strategy for the Adriatic and Ionian Region",
+      "specification": [
+        {
+          "translation": "Project strategy for the Adriatic and Ionian region DE",
+          "language": "DE"
+        },
+        {
+          "translation": "Project strategy for the Adriatic and Ionian region EN",
+          "language": "EN"
+        }
+      ]
+    },
+    {
+      "strategy": "Other",
+      "specification": [
+        {
+          "translation": "Other project strategy DE",
+          "language": "DE"
+        },
+        {
+          "translation": "Other project strategy EN",
+          "language": "EN"
+        }
+      ]
+    }
+  ],
+  "projectSynergies": [
+    {
+      "initiative": [
+        {
+          "translation": "Project first initiative DE ",
+          "language": "DE"
+        },
+        {
+          "translation": "Project first initiative EN",
+          "language": "EN"
+        }
+      ],
+      "synergy": [
+        {
+          "translation": "Project first synergy DE",
+          "language": "DE"
+        },
+        {
+          "translation": "Project first synergy EN",
+          "language": "EN"
+        }
+      ]
+    },
+    {
+      "initiative": [
+        {
+          "translation": "Project second initiative DE ",
+          "language": "DE"
+        },
+        {
+          "translation": "Project second initiative EN",
+          "language": "EN"
+        }
+      ],
+      "synergy": [
+        {
+          "translation": "Project second synergy DE",
+          "language": "DE"
+        },
+        {
+          "translation": "Project second synergy EN",
+          "language": "EN"
+        }
+      ]
+    }
+  ],
+  "availableKnowledge": [
+    {
+      "translation": "Available knowledge DE",
+      "language": "DE"
+    },
+    {
+      "translation": "Available knowledge EN",
+      "language": "EN"
+    }
+  ]
+}

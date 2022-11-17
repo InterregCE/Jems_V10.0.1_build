@@ -61,6 +61,9 @@ server:
 management:
   endpoints:
     enabled-by-default: false
+    web:
+      exposure:
+        include: info
   endpoint:
     info:
       enabled: true
@@ -69,6 +72,9 @@ management:
   health:
     elasticsearch:
       enabled: "${AUDIT_ENABLED:true}"
+  info:
+    env:
+      enabled: true
 info:
   helpdesk-url: "${HELPDESK_URL:}"
   helpdesk-email: "${HELPDESK_EMAIL:}"
@@ -84,3 +90,5 @@ app:
       enabled: "${MAIL_ENABLED:false}"
       sender: jems@jems.com
       bcc-list:
+  captcha:
+    enabled: "${REGISTRATION_CAPTCHA_ENABLED:true}"

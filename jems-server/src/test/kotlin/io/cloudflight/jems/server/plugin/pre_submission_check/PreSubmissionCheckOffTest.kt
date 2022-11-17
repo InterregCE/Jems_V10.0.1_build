@@ -6,7 +6,7 @@ import io.cloudflight.jems.plugin.contract.pre_condition_check.models.PreConditi
 import io.cloudflight.jems.plugin.contract.pre_condition_check.models.PreConditionCheckResult
 import io.cloudflight.jems.server.UnitTest
 import org.assertj.core.api.AssertionsForClassTypes.assertThat
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 
 internal class PreSubmissionCheckOffTest : UnitTest(){

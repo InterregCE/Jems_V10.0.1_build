@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.checklist.create
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
@@ -22,9 +23,11 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.slot
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.springframework.context.ApplicationEventPublisher
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import java.math.BigDecimal
 
@@ -86,6 +89,9 @@ internal class CreateChecklistInstanceTest : UnitTest() {
     @MockK
     lateinit var securityService: SecurityService
 
+    @MockK
+    lateinit var auditPublisher: ApplicationEventPublisher
+
     @RelaxedMockK
     lateinit var generalValidator: GeneralValidatorService
 
@@ -109,6 +115,8 @@ internal class CreateChecklistInstanceTest : UnitTest() {
         )
         every { securityService.currentUser } returns currentUser
         every { persistence.create(createChecklist, CREATOR_ID) } returns createdCheckLisDetail
+        val auditSlot = slot<AuditCandidateEvent>()
+        every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit
 
         Assertions.assertThat(createChecklistInstance.create(createChecklist))
             .usingRecursiveComparison()

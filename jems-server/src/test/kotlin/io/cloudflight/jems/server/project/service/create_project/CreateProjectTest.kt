@@ -39,6 +39,7 @@ import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
+import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
@@ -71,7 +72,9 @@ internal class CreateProjectTest : UnitTest() {
             lengthOfPeriod = 12,
             applicationFormFieldConfigurations = mutableSetOf(),
             preSubmissionCheckPluginKey = null,
-            firstStepPreSubmissionCheckPluginKey = null
+            firstStepPreSubmissionCheckPluginKey = null,
+            projectDefinedUnitCostAllowed = false,
+            projectDefinedLumpSumAllowed = true,
         )
 
         val callSettings = ProjectCallSettings(
@@ -89,7 +92,8 @@ internal class CreateProjectTest : UnitTest() {
             stateAids = emptyList(),
             applicationFormFieldConfigurations = mutableSetOf(),
             preSubmissionCheckPluginKey = null,
-            firstStepPreSubmissionCheckPluginKey = null
+            firstStepPreSubmissionCheckPluginKey = null,
+            costOption = mockk(),
         )
 
         private val userEntity = UserEntity(
@@ -101,17 +105,6 @@ internal class CreateProjectTest : UnitTest() {
             password = "",
             userStatus = UserStatus.ACTIVE
         )
-
-        private fun projectVersion(status: ApplicationStatus): ProjectVersion {
-            return ProjectVersion(
-                version = "1.0",
-                projectId = PROJECT_ID,
-                createdAt = ZonedDateTime.now(),
-                user = userEntity,
-                status = status,
-                current = true
-            )
-        }
 
         private fun projectVersionSummary(): ProjectVersionSummary {
             return ProjectVersionSummary(

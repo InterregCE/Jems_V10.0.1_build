@@ -118,8 +118,9 @@ class AssociatedOrganizationPersistenceProviderTest {
             active = true,
             partner = ProjectPartnerSummaryDTO(
                 id = projectPartner.id,
-                active = true,
                 abbreviation = projectPartner.abbreviation,
+                institutionName = null,
+                active = true,
                 role = ProjectPartnerRoleDTO.valueOf(projectPartner.role.name),
                 sortNumber = projectPartner.sortNumber,
                 country = "country",
@@ -165,7 +166,7 @@ class AssociatedOrganizationPersistenceProviderTest {
 
     private lateinit var projectVersionUtils: ProjectVersionUtils
 
-    lateinit var persistence: AssociatedOrganizationPersistence
+    lateinit var persistence: AssociatedOrganizationPersistenceProvider
 
     @BeforeEach
     fun setup() {
@@ -200,7 +201,8 @@ class AssociatedOrganizationPersistenceProviderTest {
         every { mockPPRow.role } returns ProjectPartnerRole.LEAD_PARTNER
         every { mockPPRow.sortNumber } returns 1
         every { mockPPRow.country } returns "country"
-        every { mockPPRow.nutsRegion2 } returns "nutsRegion3"
+        every { mockPPRow.nutsRegion2 } returns "nutsRegion2"
+        every { mockPPRow.nutsRegion3 } returns "nutsRegion3"
         val mockAOARow: AssociatedOrganizationAddressRow = mockk()
         every { mockAOARow.id } returns projectAssociatedOrganization.id
         every { mockAOARow.country } returns "country"

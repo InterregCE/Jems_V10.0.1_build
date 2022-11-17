@@ -40,7 +40,7 @@ internal class ListOutputIndicatorsTest : IndicatorsBaseTest() {
 
     @Test
     fun `should return a set of output indicator summaries`() {
-        every { persistence.getTop50OutputIndicators() } returns setOf(outputIndicatorSummary)
+        every { persistence.getTop250OutputIndicators() } returns setOf(outputIndicatorSummary)
         assertThat(listOutputIndicators.getOutputIndicatorSummaries())
             .isEqualTo(setOf(outputIndicatorSummary))
     }
@@ -53,5 +53,4 @@ internal class ListOutputIndicatorsTest : IndicatorsBaseTest() {
         assertThat(listOutputIndicators.getOutputIndicatorSummariesForSpecificObjective(ProgrammeObjectivePolicy.RenewableEnergy))
             .isEqualTo(listOf(outputIndicatorSummary))
     }
-
 }

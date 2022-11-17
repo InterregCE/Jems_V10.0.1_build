@@ -5,7 +5,7 @@ import java.time.ZonedDateTime
 
 class ProgrammeChecklistDetailDTO(
     id: Long? = null,
-    type: ProgrammeChecklistTypeDTO = ProgrammeChecklistTypeDTO.APPLICATION_FORM_ASSESSMENT,
+    type: ProgrammeChecklistTypeDTO,
     name: String?,
     minScore: BigDecimal?,
     maxScore: BigDecimal?,

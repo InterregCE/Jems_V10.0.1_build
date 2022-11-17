@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {combineLatest, Observable, of, ReplaySubject, Subject} from 'rxjs';
+import {BehaviorSubject, combineLatest, Observable, of, ReplaySubject, Subject} from 'rxjs';
 import {
   PageProjectReportFileDTO,
   ProjectPartnerReportDTO,
@@ -9,7 +9,18 @@ import {
   ProjectReportFileSearchRequestDTO,
   SettingsService
 } from '@cat/api';
-import {catchError, filter, map, startWith, switchMap, take, tap, withLatestFrom} from 'rxjs/operators';
+import {
+  catchError,
+  distinctUntilChanged,
+  filter,
+  finalize,
+  map,
+  startWith,
+  switchMap,
+  take,
+  tap,
+  withLatestFrom
+} from 'rxjs/operators';
 import {MatSort} from '@angular/material/sort';
 import {Tables} from '@common/utils/tables';
 import {CategoryInfo, CategoryNode} from '@project/common/components/category-tree/categoryModels';
@@ -23,6 +34,9 @@ import {
   ReportFileCategoryTypeEnum
 } from '@project/project-application/report/partner-report-detail-page/partner-report-annexes-tab/report-file-category-type';
 import {FileManagementStore} from '@project/common/components/file-management/file-management-store';
+import {RoutingService} from '@common/services/routing.service';
+import {v4 as uuid} from 'uuid';
+import {FileListTableConstants} from '@common/components/file-list/file-list-table/file-list-table-constants';
 
 @Injectable({
   providedIn: 'root'
@@ -44,14 +58,16 @@ export class ReportFileManagementStore {
 
   newPageSize$ = new Subject<number>();
   newPageIndex$ = new Subject<number>();
-  newSort$ = new Subject<Partial<MatSort>>();
+  newSort$ = new BehaviorSubject<Partial<MatSort>>(FileListTableConstants.DEFAULT_SORT);
   reportFilesChanged$ = new Subject<void>();
 
-  constructor(private settingsService: SettingsService,
-              private downloadService: DownloadService,
-              private partnerReportDetailPageStore: PartnerReportDetailPageStore,
-              private projectPartnerReportService: ProjectPartnerReportService,
-              private fileManagementStore: FileManagementStore
+  constructor(
+    private settingsService: SettingsService,
+    private downloadService: DownloadService,
+    private partnerReportDetailPageStore: PartnerReportDetailPageStore,
+    private projectPartnerReportService: ProjectPartnerReportService,
+    private fileManagementStore: FileManagementStore,
+    private routingService: RoutingService
   ) {
     this.reportStatus$ = this.partnerReportDetailPageStore.reportStatus$;
     this.canUpload$ = this.canUpload();
@@ -65,27 +81,35 @@ export class ReportFileManagementStore {
   }
 
   uploadFile(file: File): Observable<ProjectReportFileMetadataDTO> {
+    const serviceId = uuid();
+    this.routingService.confirmLeaveMap.set(serviceId, true);
     return this.selectedCategory$
       .pipe(
         take(1),
         withLatestFrom(this.partnerReportDetailPageStore.partnerReportId$, this.partnerReportDetailPageStore.partnerId$),
         filter(([category, reportId, partnerId]) => !!partnerId && !!reportId),
-        switchMap(([category, reportId, partnerId]) => this.projectPartnerReportService.uploadAttachmentForm(file, Number(partnerId), reportId)),
+        switchMap(([category, reportId, partnerId]) => this.projectPartnerReportService.uploadReportFileForm(file, Number(partnerId), reportId)),
         tap(() => this.reportFilesChanged$.next()),
         tap(() => this.error$.next(null)),
         catchError(error => {
           this.error$.next(error.error);
           return of({} as ProjectReportFileMetadataDTO);
-        })
+        }),
+        finalize(() => this.routingService.confirmLeaveMap.delete(serviceId))
       );
   }
 
   deleteFile(fileId: number): Observable<void> {
-    return this.partnerReportDetailPageStore.partnerId$
+    return combineLatest([
+      this.partnerReportDetailPageStore.partnerId$,
+      this.partnerReportDetailPageStore.partnerReportId$,
+    ])
       .pipe(
         take(1),
-        filter(partnerId => !!partnerId),
-        switchMap(partnerId => this.projectPartnerReportService.deleteAttachment(fileId, Number(partnerId))),
+        filter(([partnerId, reportId]) => !!partnerId),
+        switchMap(([partnerId, reportId]) =>
+          this.projectPartnerReportService.deleteReportFile(fileId, Number(partnerId), reportId)
+        ),
         tap(() => this.reportFilesChanged$.next()),
         tap(() => this.deleteSuccess$.next(true)),
         tap(() => setTimeout(() => this.deleteSuccess$.next(false), 3000)),
@@ -134,21 +158,21 @@ export class ReportFileManagementStore {
       this.newPageIndex$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
       this.newPageSize$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_SIZE)),
       this.newSort$.pipe(
-        startWith(Tables.DEFAULT_INITIAL_SORT),
-        map(sort => sort?.direction ? sort : Tables.DEFAULT_INITIAL_SORT),
-        map(sort => `${sort.active},${sort.direction}`)
+        map(sort => sort?.direction ? sort : FileListTableConstants.DEFAULT_SORT),
+        map(sort => `${sort.active},${sort.direction}`),
+        distinctUntilChanged(),
       ),
       this.reportFilesChanged$.pipe(startWith(null))
     ])
       .pipe(
         filter(([selectedCategory, partnerId, partnerReportId, pageIndex, pageSize, sort]: any) => !!partnerId && !!partnerReportId),
         switchMap(([selectedCategory, partnerId, partnerReportId, pageIndex, pageSize, sort]) =>
-          this.projectPartnerReportService.listAttachments(
+          this.projectPartnerReportService.listReportFiles(
             Number(partnerId),
             {
               reportId : Number(partnerReportId),
               treeNode: this.getTreeNodeFromCategory(selectedCategory),
-              filterSubtypes: this.getSubFiltersFromCategory(selectedCategory),
+              filterSubtypes: [ /* can be used in future for filtering */],
             } as ProjectReportFileSearchRequestDTO,
             pageIndex,
             pageSize,
@@ -201,7 +225,7 @@ export class ReportFileManagementStore {
         info: {type: ReportFileCategoryTypeEnum.CONTRIBUTION},
         children: []
       }
-      );
+    );
 
     return this.fileManagementStore.findRootForSection(reportFiles, section) || {};
   }
@@ -244,26 +268,4 @@ export class ReportFileManagementStore {
     }
   }
 
-  private getSubFiltersFromCategory(category: CategoryInfo): ProjectReportFileSearchRequestDTO.FilterSubtypesEnum[] {
-    switch (category.type) {
-      case ReportFileCategoryTypeEnum.ALL:
-        return [];
-      case ReportFileCategoryTypeEnum.REPORT:
-        return [];
-      case ReportFileCategoryTypeEnum.WORKPLAN:
-        return [
-          ProjectReportFileSearchRequestDTO.TreeNodeEnum.WorkPackage,
-          ProjectReportFileSearchRequestDTO.TreeNodeEnum.Output,
-          ProjectReportFileSearchRequestDTO.TreeNodeEnum.Activity,
-          ProjectReportFileSearchRequestDTO.TreeNodeEnum.Deliverable];
-      case ReportFileCategoryTypeEnum.EXPENDITURE:
-        return [ProjectReportFileSearchRequestDTO.TreeNodeEnum.Expenditure];
-      case ReportFileCategoryTypeEnum.PROCUREMENT:
-        return [ProjectReportFileSearchRequestDTO.TreeNodeEnum.Procurement];
-      case ReportFileCategoryTypeEnum.CONTRIBUTION:
-        return [ProjectReportFileSearchRequestDTO.TreeNodeEnum.Contribution];
-      default:
-        return [];
-    }
-  }
 }

@@ -9,11 +9,14 @@ import io.cloudflight.jems.server.user.entity.UserEntity
 import io.cloudflight.jems.server.user.entity.UserRoleEntity
 import io.cloudflight.jems.server.user.repository.user.UserRepository
 import io.cloudflight.jems.server.user.service.model.UserStatus
+import io.mockk.Runs
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.just
 import io.mockk.mockk
 import io.mockk.slot
+import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.sql.Timestamp
@@ -45,6 +48,9 @@ class ProjectVersionPersistenceProviderTest : UnitTest() {
 
     @MockK
     lateinit var userRepository: UserRepository
+
+    @MockK
+    lateinit var optimizationProjectVersionRepository: OptimizationProjectVersionRepository
 
     @InjectMockKs
     lateinit var projectVersionPersistenceProvider: ProjectVersionPersistenceProvider
@@ -153,5 +159,21 @@ class ProjectVersionPersistenceProviderTest : UnitTest() {
         assertThat(result[1].user.userStatus).isEqualTo(UserStatus.ACTIVE)
         assertThat(result[1].status).isEqualTo(ApplicationStatus.SUBMITTED)
         assertThat(result[1].current).isEqualTo(true)
+    }
+
+    @Test
+    fun `should add new row with timestamp for the approved application`() {
+        every { optimizationProjectVersionRepository.saveOptimizationProjectVersion(projectId) } just Runs
+
+        projectVersionPersistenceProvider.saveTimestampForApprovedApplication(projectId)
+        verify(atLeast = 1) { optimizationProjectVersionRepository.saveOptimizationProjectVersion(projectId) }
+    }
+
+    @Test
+    fun `should update timestamp for the approved modification`() {
+        every { optimizationProjectVersionRepository.updateOptimizationProjectVersion(projectId) } just Runs
+
+        projectVersionPersistenceProvider.updateTimestampForApprovedModification(projectId)
+        verify(atLeast = 1) { optimizationProjectVersionRepository.updateOptimizationProjectVersion(projectId) }
     }
 }

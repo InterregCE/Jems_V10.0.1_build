@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.programme.controller.indicator
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.cloudflight.jems.server.programme.service.indicator.create_output_indicator.CreateOutputIndicatorException
 import io.cloudflight.jems.server.programme.service.indicator.create_output_indicator.CreateOutputIndicatorInteractor
+import io.cloudflight.jems.server.programme.service.indicator.deleteOutputIndicator.DeleteOutputIndicatorInteractor
 import io.cloudflight.jems.server.programme.service.indicator.get_output_indicator.GetOutputIndicatorException
 import io.cloudflight.jems.server.programme.service.indicator.get_output_indicator.GetOutputIndicatorInteractor
 import io.cloudflight.jems.server.programme.service.indicator.list_output_indicators.GetOutputIndicatorDetailsException
@@ -14,6 +15,7 @@ import io.cloudflight.jems.server.programme.service.indicator.update_output_indi
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.verify
 import org.assertj.core.api.Assertions
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
@@ -34,6 +36,9 @@ internal class OutputIndicatorControllerTest : IndicatorsControllerBaseTest() {
 
     @MockK
     private lateinit var updateOutputIndicator: UpdateOutputIndicatorInteractor
+
+    @MockK
+    private lateinit var deleteOutputIndicator: DeleteOutputIndicatorInteractor
 
     @InjectMockKs
     private lateinit var outputIndicatorController: OutputIndicatorController
@@ -160,4 +165,10 @@ internal class OutputIndicatorControllerTest : IndicatorsControllerBaseTest() {
         }
     }
 
+    @Test
+    fun `should delete Output Indicator successfully`() {
+        every { deleteOutputIndicator.deleteOutputIndicator(1L) } returns Unit
+        outputIndicatorController.deleteOutputIndicator(1L)
+        verify { deleteOutputIndicator.deleteOutputIndicator(1L) }
+    }
 }

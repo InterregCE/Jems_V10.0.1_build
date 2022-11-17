@@ -5,20 +5,15 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
-import io.cloudflight.jems.server.project.service.application.ApplicationStatus
-import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
-import io.cloudflight.jems.server.project.service.report.model.PartnerReportIdentification
-import io.cloudflight.jems.server.project.service.report.model.ProjectPartnerReport
-import io.cloudflight.jems.server.project.service.report.model.ReportStatus
-import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportExpenditureCost
-import io.cloudflight.jems.server.project.service.report.model.expenditure.ReportBudgetCategory
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
-import io.cloudflight.jems.server.project.service.report.model.procurement.ProjectPartnerReportProcurement
+import io.cloudflight.jems.server.project.service.report.model.partner.PartnerReportIdentification
+import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
+import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectReportExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectReportProcurementPersistence
-import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
-import io.cloudflight.jems.server.project.service.workpackage.model.InvestmentSummary
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -41,7 +36,6 @@ import kotlin.collections.ArrayList
 
 internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
 
-    private val PROJECT_ID = 350L
     private val PARTNER_ID = 489L
     private val UPLOADED = ZonedDateTime.now()
 
@@ -66,7 +60,7 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
         currencyCode = "GBP",
         currencyConversionRate = BigDecimal.valueOf(0.84),
         declaredAmountAfterSubmission = BigDecimal.valueOf(8.4),
-        attachment = ProjectReportFileMetadata(47L, "file.xlsx", UPLOADED),
+        attachment = JemsFileMetadata(47L, "file.xlsx", UPLOADED),
     )
 
     private fun reportWithCurrency(id: Long, status: ReportStatus, version: String, currency: String?): ProjectPartnerReport {
@@ -78,6 +72,7 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
             status = status,
             version = version,
             identification = identification,
+            firstSubmission = UPLOADED,
         )
     }
 
@@ -89,12 +84,6 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
 
     @MockK
     lateinit var reportProcurementPersistence: ProjectReportProcurementPersistence
-
-    @MockK
-    lateinit var workPackagePersistence: WorkPackagePersistence
-
-    @MockK
-    lateinit var partnerPersistence: PartnerPersistence
 
     @RelaxedMockK
     lateinit var generalValidator: GeneralValidatorService
@@ -109,7 +98,6 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
         every { generalValidator.throwIfAnyIsInvalid(*varargAny { it.isEmpty() }) } returns Unit
         every { generalValidator.throwIfAnyIsInvalid(*varargAny { it.isNotEmpty() }) } throws
             AppInputValidationException(emptyMap())
-        every { partnerPersistence.getProjectIdForPartnerId(PARTNER_ID, any()) } returns PROJECT_ID
     }
 
     @Test
@@ -127,17 +115,11 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
             reportWithCurrency(id = 84L, ReportStatus.Draft, "0.8", "GBP")
         every { reportPersistence.getReportIdsBefore(PARTNER_ID, 84L) } returns setOf(83L)
 
-        val procurement26 = mockk<ProjectPartnerReportProcurement>()
-        every { procurement26.id } returns 26L
-        every { reportProcurementPersistence.getProcurementsForReportIds(setOf(83L, 84L)) } returns listOf(procurement26)
-
-        val investment50 = mockk<InvestmentSummary>()
-        every { investment50.id } returns 50L
-        every { workPackagePersistence.getProjectInvestmentSummaries(projectId = PROJECT_ID, "0.8") } returns listOf(investment50)
+        every { reportProcurementPersistence.getProcurementContractNamesForReportIds(setOf(83L, 84L)) } returns setOf(Pair(26L, "Proc26"))
 
         every { reportExpenditurePersistence.getAvailableLumpSums(PARTNER_ID, reportId = 84L) } returns emptyList()
-
         every { reportExpenditurePersistence.getAvailableUnitCosts(PARTNER_ID, reportId = 84L) } returns emptyList()
+        every { reportExpenditurePersistence.getAvailableInvestments(PARTNER_ID, reportId = 84L) } returns emptyList()
 
         every {
             reportExpenditurePersistence.updatePartnerReportExpenditureCosts(
@@ -170,17 +152,11 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
             reportWithCurrency(90L, status = ReportStatus.Draft, version = "0.9", currency = "HUF")
         every { reportPersistence.getReportIdsBefore(PARTNER_ID, 90L) } returns setOf(89L)
 
-        val procurement30 = mockk<ProjectPartnerReportProcurement>()
-        every { procurement30.id } returns 30L
-        every { reportProcurementPersistence.getProcurementsForReportIds(setOf(90L, 89L)) } returns listOf(procurement30)
-
-        val investment60 = mockk<InvestmentSummary>()
-        every { investment60.id } returns 60L
-        every { workPackagePersistence.getProjectInvestmentSummaries(projectId = PROJECT_ID, "0.9") } returns listOf(investment60)
+        every { reportProcurementPersistence.getProcurementContractNamesForReportIds(setOf(90L, 89L)) } returns setOf(Pair(30L, "Proc30"))
 
         every { reportExpenditurePersistence.getAvailableLumpSums(PARTNER_ID, reportId = 90L) } returns emptyList()
-
         every { reportExpenditurePersistence.getAvailableUnitCosts(PARTNER_ID, reportId = 90L) } returns emptyList()
+        every { reportExpenditurePersistence.getAvailableInvestments(PARTNER_ID, reportId = 90L) } returns emptyList()
 
         every {
             reportExpenditurePersistence.updatePartnerReportExpenditureCosts(
@@ -235,7 +211,6 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
         mockGeneralStuffForTestingCategories(
             reportId = 92L,
             procurementId = 1015L,
-            investmentId = 1016L,
         )
 
         val input = reportExpenditureCost.copy(
@@ -270,7 +245,6 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
         mockGeneralStuffForTestingCategories(
             reportId = 95L,
             procurementId = 1020L,
-            investmentId = 1021L,
         )
 
         val input = reportExpenditureCost.copy(
@@ -303,7 +277,6 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
         mockGeneralStuffForTestingCategories(
             reportId = 96L + category.ordinal,
             procurementId = 500L,
-            investmentId = 666L,
         )
 
         val input = reportExpenditureCost.copy(
@@ -323,6 +296,7 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
         )
 
         assertThat(result).containsExactly(input.copy(
+            investmentId = null /* not available investment */,
             // these next are always cleared, so nothing should be specifically extra removed now
             currencyConversionRate = null,
             declaredAmountAfterSubmission = null,
@@ -331,24 +305,17 @@ internal class UpdateProjectPartnerReportExpenditureTest : UnitTest() {
 
     private fun mockGeneralStuffForTestingCategories(
         reportId: Long,
-        investmentId: Long,
         procurementId: Long,
     ) {
         every { reportPersistence.getPartnerReportById(PARTNER_ID, reportId) } returns
             reportWithCurrency(reportId, status = ReportStatus.Draft, version = "1", currency = null)
         every { reportPersistence.getReportIdsBefore(PARTNER_ID, reportId) } returns emptySet()
 
-        val procurement = mockk<ProjectPartnerReportProcurement>()
-        every { procurement.id } returns procurementId
-        every { reportProcurementPersistence.getProcurementsForReportIds(setOf(reportId)) } returns listOf(procurement)
-
-        val investment = mockk<InvestmentSummary>()
-        every { investment.id } returns investmentId
-        every { workPackagePersistence.getProjectInvestmentSummaries(projectId = PROJECT_ID, "1") } returns listOf(investment)
+        every { reportProcurementPersistence.getProcurementContractNamesForReportIds(setOf(reportId)) } returns setOf(Pair(procurementId, "contractName"))
 
         every { reportExpenditurePersistence.getAvailableLumpSums(PARTNER_ID, reportId = reportId) } returns emptyList()
-
         every { reportExpenditurePersistence.getAvailableUnitCosts(PARTNER_ID, reportId = reportId) } returns emptyList()
+        every { reportExpenditurePersistence.getAvailableInvestments(PARTNER_ID, reportId = reportId) } returns emptyList()
 
         every { reportExpenditurePersistence.updatePartnerReportExpenditureCosts(PARTNER_ID, reportId = reportId, any()) } returnsArgument 2
     }

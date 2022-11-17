@@ -45,6 +45,7 @@ export class UserRoleDetailPageComponent {
   userRoleForm = this.formBuilder.group({
     name: ['', [
       Validators.required,
+      Validators.pattern(/(?!^\s+$)^.*$/m),
       Validators.maxLength(50),
       Validators.minLength(1),
     ]],
@@ -191,6 +192,9 @@ export class UserRoleDetailPageComponent {
       this.formService.setCreation(true);
     }
 
+    this.adaptDependentPermissions();
+    this.adaptLimitedControllerInstitutionPermissions();
+
     if (!isUpdateAllowed) {
       this.userRoleForm.disable();
     }
@@ -199,6 +203,7 @@ export class UserRoleDetailPageComponent {
   changeState(permission: AbstractControl, value: PermissionState): void {
     if (this.state(permission).value !== value) {
       this.state(permission)?.setValue(value);
+      this.adaptLimitedControllerInstitutionPermissions();
       this.formChanged();
     }
   }
@@ -209,7 +214,7 @@ export class UserRoleDetailPageComponent {
     } else {
       this.state(permission)?.setValue(PermissionState.EDIT);
     }
-    this.adaptDependentPermissions(permission);
+    this.adaptDependentPermissions();
     this.formChanged();
   }
 
@@ -267,7 +272,7 @@ export class UserRoleDetailPageComponent {
                                         currentRolePermissions: PermissionsEnum[],
                                         parentIndex: number): FormGroup {
     if (!perm.children?.length) {
-      const formGroup = this.formBuilder.group({
+      return this.formBuilder.group({
         name: perm.name,
         parentIndex,
         mode: perm.mode,
@@ -280,7 +285,6 @@ export class UserRoleDetailPageComponent {
         infoMessage: perm.infoMessage,
         icon: perm.icon
       });
-      return formGroup;
     } else {
       return this.formBuilder.group({
         name: perm.name,
@@ -303,7 +307,7 @@ export class UserRoleDetailPageComponent {
     return PermissionState.HIDDEN;
   }
 
-  private getPermissionsForState(state: PermissionState, permissionNode: PermissionNode): PermissionsEnum[] {
+  private static getPermissionsForState(state: PermissionState, permissionNode: PermissionNode): PermissionsEnum[] {
     if (state === PermissionState.EDIT) {
       return (permissionNode.editPermissions || []).concat(permissionNode.viewPermissions || []);
     }
@@ -343,7 +347,7 @@ export class UserRoleDetailPageComponent {
   private extractChildrenPermissions(nodeForm: AbstractControl, permissionNode: PermissionNode): PermissionsEnum[] {
     if (!permissionNode.children?.length) {
       const state = this.state(nodeForm)?.value;
-      return this.getPermissionsForState(state, permissionNode);
+      return UserRoleDetailPageComponent.getPermissionsForState(state, permissionNode);
     }
 
     return permissionNode.children.flatMap((node: PermissionNode, index: number) =>
@@ -365,17 +369,33 @@ export class UserRoleDetailPageComponent {
       this.hasAnyStateNotHidden(this.subtree(nodeForm).at(index), node));
   }
 
-  private adaptDependentPermissions(permission: AbstractControl): void {
-    if (!(permission.get('name')?.value === 'permission.assessment.instantiate')) {
+  private adaptDependentPermissions(): void {
+    const instantiateGroup = this.treeControlInspect?.dataNodes
+      ?.find(node => node.name === 'permission.assessment.instantiate') as any;
+    const consolidateGroup = this.treeControlInspect?.dataNodes
+      ?.find(node => node.name === 'permission.assessment.consolidate') as any;
+    if (!consolidateGroup || !instantiateGroup) {
       return;
     }
-    const consolidateGroup = this.treeControlInspect.dataNodes
-      .find(node => node.name === 'permission.assessment.consolidate') as any;
-    if (this.state(permission)?.value === PermissionState.HIDDEN) {
+    if (this.state(instantiateGroup.form)?.value === PermissionState.HIDDEN) {
       this.state(consolidateGroup.form)?.setValue(PermissionState.HIDDEN);
       consolidateGroup.disabled = true;
     } else {
       consolidateGroup.disabled = false;
+    }
+  }
+
+  private adaptLimitedControllerInstitutionPermissions(): void {
+    const institutionsPermission = this.treeControlTopNavigation?.dataNodes
+      ?.find(node => node.name === 'topbar.main.institutions') as any;
+    const limitInstitutionsPermission = this.treeControlTopNavigation?.dataNodes
+      ?.find(node => node.name === 'permission.top.bar.institutions.all.toggle') as any;
+
+    if(this.state(institutionsPermission.form)?.value === PermissionState.HIDDEN) {
+      this.state(limitInstitutionsPermission.form)?.setValue(PermissionState.HIDDEN);
+      limitInstitutionsPermission.disabled = true;
+    } else {
+      limitInstitutionsPermission.disabled = false;
     }
   }
 }

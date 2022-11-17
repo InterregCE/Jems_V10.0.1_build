@@ -6,4 +6,29 @@
 .chip-option {
   height: auto;
   line-height: 1.1em;
+  display: block;
 }
+
+
+::ng-deep {
+  .context-info .mat-icon {
+    margin-top: -0.6rem !important;
+  }
+
+  mat-chip {
+    overflow: hidden;
+  }
+
+  .filter-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+    max-width: 90%
+  }
+
+  .filter-text-tooltip {
+    max-width: 100% !important;
+  }
+
+}
+

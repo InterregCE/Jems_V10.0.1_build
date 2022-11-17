@@ -1,0 +1,1128 @@
+{
+  "firstLumpSum": {
+    "name": "Closure Lump sum DE",
+    "firstPartnerSplitAmount": "2000",
+    "secondPartnerAmount": "3555,56",
+    "firstPartnerTooFewAmount": "5550",
+    "firstPartnerCorrectAmount": "5555,56"
+  },
+  "secondLumpSum": {
+    "name": "Preparation Lump sum DE",
+    "firstPartnerAmount": "20000",
+    "secondPartnerAmount": "35555,56"
+  },
+  "partners": [
+    {
+      "details": {
+        "abbreviation": "First Partner",
+        "role": "PARTNER",
+        "nameInOriginalLanguage": "Partner in original language",
+        "nameInEnglish": "Partner in english",
+        "department": [
+          {
+            "translation": "API generated department / unit / division DE",
+            "language": "DE"
+          },
+          {
+            "translation": "API generated department / unit / division EN",
+            "language": "EN"
+          }
+        ],
+        "partnerType": "LocalPublicAuthority",
+        "partnerSubType": "MICRO_ENTERPRISE",
+        "nace": "A_03_22",
+        "otherIdentifierNumber": "654321",
+        "otherIdentifierDescription": [
+          {
+            "translation": "API generated other identifier description DE",
+            "language": "DE"
+          },
+          {
+            "translation": "API generated other identifier description EN",
+            "language": "EN"
+          }
+        ],
+        "pic": "123456789",
+        "legalStatusId": 1,
+        "vat": "123456",
+        "vatRecovery": "Yes"
+      },
+      "address": [
+        {
+          "type": "Organization",
+          "country": "Österreich (AT)",
+          "nutsRegion2": "Wien (AT13)",
+          "nutsRegion3": "Wien (AT130)",
+          "street": "Partnerstreet",
+          "houseNumber": "2",
+          "postalCode": "1020",
+          "city": "Partner city",
+          "homepage": "partner@test.com"
+        },
+        {
+          "type": "Department",
+          "country": "Österreich (AT)",
+          "nutsRegion2": "Oberösterreich (AT31)",
+          "nutsRegion3": "Linz-Wels (AT312)",
+          "street": "Departmentstreet",
+          "houseNumber": "5",
+          "postalCode": "4020",
+          "city": "Department city",
+          "homepage": ""
+        }
+      ],
+      "contact": [
+        {
+          "type": "LegalRepresentative",
+          "title": "Mr",
+          "firstName": "Legal",
+          "lastName": "Representative",
+          "email": "",
+          "telephone": ""
+        },
+        {
+          "type": "ContactPerson",
+          "title": "Ms",
+          "firstName": "Contact",
+          "lastName": "Person",
+          "email": "contact@person.com",
+          "telephone": "+1234567890"
+        }
+      ],
+      "motivation": {
+        "organizationRelevance": [
+          {
+            "translation": "API generated partner motivation DE",
+            "language": "DE"
+          },
+          {
+            "translation": "API generated partner motivation EN",
+            "language": "EN"
+          }
+        ],
+        "organizationRole": [
+          {
+            "translation": "API generated partner role DE",
+            "language": "DE"
+          },
+          {
+            "translation": "API generated partner role EN",
+            "language": "EN"
+          }
+        ],
+        "organizationExperience": [
+          {
+            "translation": "API generated partner experience DE",
+            "language": "DE"
+          },
+          {
+            "translation": "API generated partner experience EN",
+            "language": "EN"
+          }
+        ]
+      },
+      "budget": {
+        "options": {
+          "officeAndAdministrationOnStaffCostsFlatRate": 10,
+          "officeAndAdministrationOnDirectCostsFlatRate": null,
+          "staffCostsFlatRate": 20,
+          "travelAndAccommodationOnStaffCostsFlatRate": null,
+          "otherCostsOnStaffCostsFlatRate": null
+        },
+        "external": [
+          {
+            "id": null,
+            "description": [
+              {
+                "translation": "API generated external cost description DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated external cost description EN",
+                "language": "EN"
+              }
+            ],
+            "comments": [
+              {
+                "translation": "API generated external cost comments DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated external cost comments EN",
+                "language": "EN"
+              }
+            ],
+            "awardProcedures": [
+              {
+                "translation": "API generated external cost award procedures DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated external cost award procedures EN",
+                "language": "EN"
+              }
+            ],
+            "investmentId": null,
+            "unitType": [
+              {
+                "translation": "API generated external cost unit type DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated external cost unit type EN",
+                "language": "EN"
+              }
+            ],
+            "numberOfUnits": 1,
+            "pricePerUnit": 100,
+            "rowSum": 100,
+            "budgetPeriods": [
+              {
+                "amount": 50,
+                "number": 1
+              },
+              {
+                "amount": 0,
+                "number": 2
+              },
+              {
+                "amount": 0,
+                "number": 3
+              },
+              {
+                "amount": 0,
+                "number": 4
+              },
+              {
+                "amount": 0,
+                "number": 5
+              },
+              {
+                "amount": 0,
+                "number": 6
+              },
+              {
+                "amount": 0,
+                "number": 7
+              },
+              {
+                "amount": 50,
+                "number": 8
+              }
+            ],
+            "unitCostId": null
+          }
+        ],
+        "equipment": [
+          {
+            "id": null,
+            "description": [
+              {
+                "translation": "API generated equipment cost description DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated equipment cost description EN",
+                "language": "EN"
+              }
+            ],
+            "comments": [
+              {
+                "translation": "API generated equipment cost comments DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated equipment cost comments EN",
+                "language": "EN"
+              }
+            ],
+            "unitType": [
+              {
+                "translation": "API generated equipment cost unit type DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated equipment cost unit type EN",
+                "language": "EN"
+              }
+            ],
+            "awardProcedures": [
+              {
+                "translation": "API generated equipment cost award procedures DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated equipment cost award procedures EN",
+                "language": "EN"
+              }
+            ],
+            "investmentId": null,
+            "numberOfUnits": 5,
+            "pricePerUnit": 150.66,
+            "rowSum": 753.3,
+            "budgetPeriods": [
+              {
+                "amount": 10.3,
+                "number": 1
+              },
+              {
+                "amount": 50,
+                "number": 2
+              },
+              {
+                "amount": 400,
+                "number": 3
+              },
+              {
+                "amount": 100,
+                "number": 4
+              },
+              {
+                "amount": 0,
+                "number": 5
+              },
+              {
+                "amount": 0,
+                "number": 6
+              },
+              {
+                "amount": 0,
+                "number": 7
+              },
+              {
+                "amount": 193,
+                "number": 8
+              }
+            ],
+            "unitCostId": null
+          }
+        ],
+        "infrastructure": [
+          {
+            "id": null,
+            "description": [
+              {
+                "translation": "API generated infrastructure and works cost description DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated infrastructure and works cost description EN",
+                "language": "EN"
+              }
+            ],
+            "comments": [
+              {
+                "translation": "API generated infrastructure and works cost comments DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated infrastructure and works cost comments EN",
+                "language": "EN"
+              }
+            ],
+            "unitType": [
+              {
+                "translation": "API generated infrastructure and works cost unit type DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated infrastructure and works cost unit type EN",
+                "language": "EN"
+              }
+            ],
+            "awardProcedures": [
+              {
+                "translation": "API generated infrastructure and works cost award procedures DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated infrastructure and works cost award procedures EN",
+                "language": "EN"
+              }
+            ],
+            "investmentId": null,
+            "numberOfUnits": 5.5,
+            "pricePerUnit": 1000.33,
+            "rowSum": 5501.81,
+            "budgetPeriods": [
+              {
+                "amount": 0,
+                "number": 1
+              },
+              {
+                "amount": 0,
+                "number": 2
+              },
+              {
+                "amount": 0,
+                "number": 3
+              },
+              {
+                "amount": 0,
+                "number": 4
+              },
+              {
+                "amount": 0,
+                "number": 5
+              },
+              {
+                "amount": 0,
+                "number": 6
+              },
+              {
+                "amount": 0,
+                "number": 7
+              },
+              {
+                "amount": 5501.81,
+                "number": 8
+              }
+            ],
+            "unitCostId": null
+          }
+        ],
+        "travel": [
+          {
+            "id": null,
+            "description": [
+              {
+                "translation": "API generated travel and accommodation cost description DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated travel and accommodation cost description EN",
+                "language": "EN"
+              }
+            ],
+            "comments": [
+              {
+                "translation": "API generated travel and accommodation cost comments DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated travel and accommodation cost comments EN",
+                "language": "EN"
+              }
+            ],
+            "unitType": [
+              {
+                "translation": "API generated travel and accommodation cost unit type DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated travel and accommodation cost unit type EN",
+                "language": "EN"
+              }
+            ],
+            "numberOfUnits": 1,
+            "pricePerUnit": 100,
+            "rowSum": 100,
+            "budgetPeriods": [
+              {
+                "amount": 50,
+                "number": 1
+              },
+              {
+                "amount": 0,
+                "number": 2
+              },
+              {
+                "amount": 0,
+                "number": 3
+              },
+              {
+                "amount": 0,
+                "number": 4
+              },
+              {
+                "amount": 0,
+                "number": 5
+              },
+              {
+                "amount": 0,
+                "number": 6
+              },
+              {
+                "amount": 0,
+                "number": 7
+              },
+              {
+                "amount": 50,
+                "number": 8
+              }
+            ],
+            "unitCostId": null
+          }
+        ]
+      },
+      "cofinancing": {
+        "finances": [
+          {
+            "fundId": 1,
+            "fundType": "MainFund",
+            "percentage": 60
+          },
+          {
+            "percentage": 40,
+            "fundType": "PartnerContribution"
+          }
+        ],
+        "partnerContributions": [
+          {
+            "id": null,
+            "name": "Lead Partner",
+            "status": "Public",
+            "amount": 25372.32,
+            "partner": true
+          }
+        ]
+      },
+      "stateAid": {
+        "answer1": true,
+        "justification1": [
+          {
+            "translation": "API generated partner state aid criterium 1 justification 1 DE",
+            "language": "DE"
+          },
+          {
+            "translation": "API generated partner state aid criterium 1 justification 1 EN",
+            "language": "EN"
+          }
+        ],
+        "answer2": false,
+        "justification2": [
+          {
+            "translation": "API generated partner state aid criterium 1 justification 2 DE",
+            "language": "DE"
+          },
+          {
+            "translation": "API generated partner state aid criterium 1 justification 2 EN",
+            "language": "EN"
+          }
+        ],
+        "answer3": false,
+        "justification3": [
+          {
+            "translation": "API generated partner state aid criterium 2 justification 1 DE",
+            "language": "DE"
+          },
+          {
+            "translation": "API generated partner state aid criterium 2 justification 1 EN",
+            "language": "EN"
+          }
+        ],
+        "answer4": true,
+        "justification4": [
+          {
+            "translation": "API generated partner state aid criterium 2 justification 2 DE",
+            "language": "DE"
+          },
+          {
+            "translation": "API generated partner state aid criterium 2 justification 2 EN",
+            "language": "EN"
+          }
+        ],
+        "activities": [
+          {
+            "activityId": 1,
+            "workPackageNumber": 1,
+            "activityNumber": 1
+          }
+        ],
+        "stateAidScheme": {
+          "id": 1,
+          "measure": "GENERAL_DE_MINIMIS",
+          "name": [
+            {
+              "language": "DE",
+              "translation": "General de minimis DE"
+            },
+            {
+              "language": "EN",
+              "translation": "General de minimis"
+            }
+          ],
+          "abbreviatedName": [
+            {
+              "language": "DE",
+              "translation": "General de minimis DE"
+            },
+            {
+              "language": "EN",
+              "translation": "General de minimis"
+            }
+          ],
+          "schemeNumber": "",
+          "maxIntensity": null,
+          "threshold": 200000,
+          "comments": [
+            {
+              "language": "DE",
+              "translation": "Per MS DE"
+            },
+            {
+              "language": "EN",
+              "translation": "per MS"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "details": {
+        "abbreviation": "Second Partner",
+        "role": "PARTNER",
+        "nameInOriginalLanguage": "Partner in original language",
+        "nameInEnglish": "Partner in english",
+        "department": [
+          {
+            "translation": "API generated department / unit / division DE",
+            "language": "DE"
+          },
+          {
+            "translation": "API generated department / unit / division EN",
+            "language": "EN"
+          }
+        ],
+        "partnerType": "LocalPublicAuthority",
+        "partnerSubType": "MICRO_ENTERPRISE",
+        "nace": "A_03_22",
+        "otherIdentifierNumber": "654321",
+        "otherIdentifierDescription": [
+          {
+            "translation": "API generated other identifier description DE",
+            "language": "DE"
+          },
+          {
+            "translation": "API generated other identifier description EN",
+            "language": "EN"
+          }
+        ],
+        "pic": "123456789",
+        "legalStatusId": 1,
+        "vat": "123456",
+        "vatRecovery": "Yes"
+      },
+      "address": [
+        {
+          "type": "Organization",
+          "country": "Österreich (AT)",
+          "nutsRegion2": "Wien (AT13)",
+          "nutsRegion3": "Wien (AT130)",
+          "street": "Partnerstreet",
+          "houseNumber": "2",
+          "postalCode": "1020",
+          "city": "Partner city",
+          "homepage": "partner@test.com"
+        },
+        {
+          "type": "Department",
+          "country": "Österreich (AT)",
+          "nutsRegion2": "Oberösterreich (AT31)",
+          "nutsRegion3": "Linz-Wels (AT312)",
+          "street": "Departmentstreet",
+          "houseNumber": "5",
+          "postalCode": "4020",
+          "city": "Department city",
+          "homepage": ""
+        }
+      ],
+      "contact": [
+        {
+          "type": "LegalRepresentative",
+          "title": "Mr",
+          "firstName": "Legal",
+          "lastName": "Representative",
+          "email": "",
+          "telephone": ""
+        },
+        {
+          "type": "ContactPerson",
+          "title": "Ms",
+          "firstName": "Contact",
+          "lastName": "Person",
+          "email": "contact@person.com",
+          "telephone": "+1234567890"
+        }
+      ],
+      "motivation": {
+        "organizationRelevance": [
+          {
+            "translation": "API generated partner motivation DE",
+            "language": "DE"
+          },
+          {
+            "translation": "API generated partner motivation EN",
+            "language": "EN"
+          }
+        ],
+        "organizationRole": [
+          {
+            "translation": "API generated partner role DE",
+            "language": "DE"
+          },
+          {
+            "translation": "API generated partner role EN",
+            "language": "EN"
+          }
+        ],
+        "organizationExperience": [
+          {
+            "translation": "API generated partner experience DE",
+            "language": "DE"
+          },
+          {
+            "translation": "API generated partner experience EN",
+            "language": "EN"
+          }
+        ]
+      },
+      "budget": {
+        "options": {
+          "officeAndAdministrationOnStaffCostsFlatRate": 10,
+          "officeAndAdministrationOnDirectCostsFlatRate": null,
+          "staffCostsFlatRate": 20,
+          "travelAndAccommodationOnStaffCostsFlatRate": null,
+          "otherCostsOnStaffCostsFlatRate": null
+        },
+        "external": [
+          {
+            "id": null,
+            "description": [
+              {
+                "translation": "API generated external cost description DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated external cost description EN",
+                "language": "EN"
+              }
+            ],
+            "comments": [
+              {
+                "translation": "API generated external cost comments DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated external cost comments EN",
+                "language": "EN"
+              }
+            ],
+            "awardProcedures": [
+              {
+                "translation": "API generated external cost award procedures DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated external cost award procedures EN",
+                "language": "EN"
+              }
+            ],
+            "investmentId": null,
+            "unitType": [
+              {
+                "translation": "API generated external cost unit type DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated external cost unit type EN",
+                "language": "EN"
+              }
+            ],
+            "numberOfUnits": 1,
+            "pricePerUnit": 100,
+            "rowSum": 100,
+            "budgetPeriods": [
+              {
+                "amount": 50,
+                "number": 1
+              },
+              {
+                "amount": 0,
+                "number": 2
+              },
+              {
+                "amount": 0,
+                "number": 3
+              },
+              {
+                "amount": 0,
+                "number": 4
+              },
+              {
+                "amount": 0,
+                "number": 5
+              },
+              {
+                "amount": 0,
+                "number": 6
+              },
+              {
+                "amount": 0,
+                "number": 7
+              },
+              {
+                "amount": 50,
+                "number": 8
+              }
+            ],
+            "unitCostId": null
+          }
+        ],
+        "equipment": [
+          {
+            "id": null,
+            "description": [
+              {
+                "translation": "API generated equipment cost description DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated equipment cost description EN",
+                "language": "EN"
+              }
+            ],
+            "comments": [
+              {
+                "translation": "API generated equipment cost comments DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated equipment cost comments EN",
+                "language": "EN"
+              }
+            ],
+            "unitType": [
+              {
+                "translation": "API generated equipment cost unit type DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated equipment cost unit type EN",
+                "language": "EN"
+              }
+            ],
+            "awardProcedures": [
+              {
+                "translation": "API generated equipment cost award procedures DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated equipment cost award procedures EN",
+                "language": "EN"
+              }
+            ],
+            "investmentId": null,
+            "numberOfUnits": 5,
+            "pricePerUnit": 150.66,
+            "rowSum": 753.3,
+            "budgetPeriods": [
+              {
+                "amount": 10.3,
+                "number": 1
+              },
+              {
+                "amount": 50,
+                "number": 2
+              },
+              {
+                "amount": 400,
+                "number": 3
+              },
+              {
+                "amount": 100,
+                "number": 4
+              },
+              {
+                "amount": 0,
+                "number": 5
+              },
+              {
+                "amount": 0,
+                "number": 6
+              },
+              {
+                "amount": 0,
+                "number": 7
+              },
+              {
+                "amount": 193,
+                "number": 8
+              }
+            ],
+            "unitCostId": null
+          }
+        ],
+        "infrastructure": [
+          {
+            "id": null,
+            "description": [
+              {
+                "translation": "API generated infrastructure and works cost description DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated infrastructure and works cost description EN",
+                "language": "EN"
+              }
+            ],
+            "comments": [
+              {
+                "translation": "API generated infrastructure and works cost comments DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated infrastructure and works cost comments EN",
+                "language": "EN"
+              }
+            ],
+            "unitType": [
+              {
+                "translation": "API generated infrastructure and works cost unit type DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated infrastructure and works cost unit type EN",
+                "language": "EN"
+              }
+            ],
+            "awardProcedures": [
+              {
+                "translation": "API generated infrastructure and works cost award procedures DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated infrastructure and works cost award procedures EN",
+                "language": "EN"
+              }
+            ],
+            "investmentId": null,
+            "numberOfUnits": 5.5,
+            "pricePerUnit": 1000.33,
+            "rowSum": 5501.81,
+            "budgetPeriods": [
+              {
+                "amount": 0,
+                "number": 1
+              },
+              {
+                "amount": 0,
+                "number": 2
+              },
+              {
+                "amount": 0,
+                "number": 3
+              },
+              {
+                "amount": 0,
+                "number": 4
+              },
+              {
+                "amount": 0,
+                "number": 5
+              },
+              {
+                "amount": 0,
+                "number": 6
+              },
+              {
+                "amount": 0,
+                "number": 7
+              },
+              {
+                "amount": 5501.81,
+                "number": 8
+              }
+            ],
+            "unitCostId": null
+          }
+        ],
+        "travel": [
+          {
+            "id": null,
+            "description": [
+              {
+                "translation": "API generated travel and accommodation cost description DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated travel and accommodation cost description EN",
+                "language": "EN"
+              }
+            ],
+            "comments": [
+              {
+                "translation": "API generated travel and accommodation cost comments DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated travel and accommodation cost comments EN",
+                "language": "EN"
+              }
+            ],
+            "unitType": [
+              {
+                "translation": "API generated travel and accommodation cost unit type DE",
+                "language": "DE"
+              },
+              {
+                "translation": "API generated travel and accommodation cost unit type EN",
+                "language": "EN"
+              }
+            ],
+            "numberOfUnits": 1,
+            "pricePerUnit": 100,
+            "rowSum": 100,
+            "budgetPeriods": [
+              {
+                "amount": 50,
+                "number": 1
+              },
+              {
+                "amount": 0,
+                "number": 2
+              },
+              {
+                "amount": 0,
+                "number": 3
+              },
+              {
+                "amount": 0,
+                "number": 4
+              },
+              {
+                "amount": 0,
+                "number": 5
+              },
+              {
+                "amount": 0,
+                "number": 6
+              },
+              {
+                "amount": 0,
+                "number": 7
+              },
+              {
+                "amount": 50,
+                "number": 8
+              }
+            ],
+            "unitCostId": null
+          }
+        ]
+      },
+      "cofinancing": {
+        "finances": [
+          {
+            "fundId": 1,
+            "fundType": "MainFund",
+            "percentage": 60
+          },
+          {
+            "percentage": 40,
+            "fundType": "PartnerContribution"
+          }
+        ],
+        "partnerContributions": [
+          {
+            "id": null,
+            "name": "Lead Partner",
+            "status": "Public",
+            "amount": 25372.32,
+            "partner": true
+          }
+        ]
+      },
+      "stateAid": {
+        "answer1": true,
+        "justification1": [
+          {
+            "translation": "API generated partner state aid criterium 1 justification 1 DE",
+            "language": "DE"
+          },
+          {
+            "translation": "API generated partner state aid criterium 1 justification 1 EN",
+            "language": "EN"
+          }
+        ],
+        "answer2": false,
+        "justification2": [
+          {
+            "translation": "API generated partner state aid criterium 1 justification 2 DE",
+            "language": "DE"
+          },
+          {
+            "translation": "API generated partner state aid criterium 1 justification 2 EN",
+            "language": "EN"
+          }
+        ],
+        "answer3": false,
+        "justification3": [
+          {
+            "translation": "API generated partner state aid criterium 2 justification 1 DE",
+            "language": "DE"
+          },
+          {
+            "translation": "API generated partner state aid criterium 2 justification 1 EN",
+            "language": "EN"
+          }
+        ],
+        "answer4": true,
+        "justification4": [
+          {
+            "translation": "API generated partner state aid criterium 2 justification 2 DE",
+            "language": "DE"
+          },
+          {
+            "translation": "API generated partner state aid criterium 2 justification 2 EN",
+            "language": "EN"
+          }
+        ],
+        "activities": [
+          {
+            "activityId": 1,
+            "workPackageNumber": 1,
+            "activityNumber": 1
+          }
+        ],
+        "stateAidScheme": {
+          "id": 1,
+          "measure": "GENERAL_DE_MINIMIS",
+          "name": [
+            {
+              "language": "DE",
+              "translation": "General de minimis DE"
+            },
+            {
+              "language": "EN",
+              "translation": "General de minimis"
+            }
+          ],
+          "abbreviatedName": [
+            {
+              "language": "DE",
+              "translation": "General de minimis DE"
+            },
+            {
+              "language": "EN",
+              "translation": "General de minimis"
+            }
+          ],
+          "schemeNumber": "",
+          "maxIntensity": null,
+          "threshold": 200000,
+          "comments": [
+            {
+              "language": "DE",
+              "translation": "Per MS DE"
+            },
+            {
+              "language": "EN",
+              "translation": "per MS"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

@@ -6,9 +6,9 @@ import io.cloudflight.jems.server.project.authorization.CanEditPartnerReport
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.file.uploadProjectFile.isFileTypeInvalid
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
-import io.cloudflight.jems.server.project.service.report.file.ProjectReportFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectReportFileMetadata
+import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectReportExpenditurePersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -29,14 +29,14 @@ class UploadFileToProjectPartnerReportExpenditure(
         reportId: Long,
         expenditureId: Long,
         file: ProjectFile,
-    ): ProjectReportFileMetadata {
+    ): JemsFileMetadata {
         if (!reportExpenditurePersistence.existsByExpenditureId(partnerId, reportId = reportId, expenditureId = expenditureId))
             throw ExpenditureNotFoundException(expenditureId = expenditureId)
 
         if (isFileTypeInvalid(file))
             throw FileTypeNotSupported()
 
-        with(ProjectPartnerReportFileType.Expenditure) {
+        with(JemsFileType.Expenditure) {
             val projectId = partnerPersistence.getProjectIdForPartnerId(partnerId)
             val location = generatePath(projectId, partnerId, reportId, expenditureId)
 

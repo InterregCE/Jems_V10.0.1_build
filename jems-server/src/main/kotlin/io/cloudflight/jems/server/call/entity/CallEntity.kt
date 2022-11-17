@@ -110,5 +110,12 @@ class CallEntity(
     var preSubmissionCheckPluginKey: String?,
 
     @Column
-    var firstStepPreSubmissionCheckPluginKey: String?
+    var firstStepPreSubmissionCheckPluginKey: String?,
+
+    @field:NotNull
+    var projectDefinedUnitCostAllowed: Boolean,
+
+    @field:NotNull
+    var projectDefinedLumpSumAllowed: Boolean,
+
 )

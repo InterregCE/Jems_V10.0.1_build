@@ -22,7 +22,7 @@ abstract class IndicatorsControllerBaseTest : UnitTest() {
     private val indicatorNameSet = setOf(InputTranslation(SystemLanguage.EN, "indicator title"))
     private val indicatorMeasurementUnitSet = setOf(InputTranslation(SystemLanguage.EN, "measurement unit"))
     private val indicatorSourceOfDataSet = setOf(InputTranslation(SystemLanguage.EN, "test source of data"))
-    private val indicatorComment = "test comment"
+    private val indicatorComment = setOf(InputTranslation(SystemLanguage.EN, "test comment"))
     private val indicatorIdentifier = "ID01"
     private val indicatorReferenceYear = "2022/2023"
     private val indicatorProgrammePriorityCode = "prio_01"
@@ -155,7 +155,7 @@ abstract class IndicatorsControllerBaseTest : UnitTest() {
         referenceYear: String = indicatorReferenceYear,
         finalTarget: BigDecimal = BigDecimal.ONE,
         sourceOfData: Set<InputTranslation> = indicatorSourceOfDataSet,
-        comment: String = indicatorComment
+        comment: Set<InputTranslation> = indicatorComment
     ) =
         ResultIndicatorDetail(
             id,

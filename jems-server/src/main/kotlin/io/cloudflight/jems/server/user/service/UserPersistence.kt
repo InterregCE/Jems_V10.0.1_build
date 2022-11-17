@@ -1,10 +1,6 @@
 package io.cloudflight.jems.server.user.service
 
-import io.cloudflight.jems.server.user.service.model.User
-import io.cloudflight.jems.server.user.service.model.UserChange
-import io.cloudflight.jems.server.user.service.model.UserSearchRequest
-import io.cloudflight.jems.server.user.service.model.UserSummary
-import io.cloudflight.jems.server.user.service.model.UserWithPassword
+import io.cloudflight.jems.server.user.service.model.*
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 
@@ -15,6 +11,8 @@ interface UserPersistence {
     fun throwIfNotExists(id: Long)
 
     fun getByEmail(email: String): UserWithPassword?
+
+    fun getSummaryByEmail(email: String): UserSummary?
 
     fun findAll(pageable: Pageable, userSearchRequest: UserSearchRequest?): Page<UserSummary>
 

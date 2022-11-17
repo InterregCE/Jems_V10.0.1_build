@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.application
 
 import io.cloudflight.jems.api.call.dto.CallType
+import io.cloudflight.jems.server.call.service.model.CallCostOption
 import io.cloudflight.jems.server.project.service.application.workflow.states.ApprovedApplicationState
 import io.cloudflight.jems.server.project.service.application.workflow.states.ApprovedApplicationWithConditionsState
 import io.cloudflight.jems.server.project.service.application.workflow.states.ConditionsSubmittedApplicationState
@@ -46,7 +47,11 @@ val callSettings = ProjectCallSettings(
     stateAids = emptyList(),
     applicationFormFieldConfigurations = mutableSetOf(),
     preSubmissionCheckPluginKey = null,
-    firstStepPreSubmissionCheckPluginKey = null
+    firstStepPreSubmissionCheckPluginKey = null,
+    costOption = CallCostOption(
+        projectDefinedUnitCostAllowed = true,
+        projectDefinedLumpSumAllowed = false,
+    ),
 )
 
 fun projectWithId(id: Long, status: ApplicationStatus = ApplicationStatus.SUBMITTED) = ProjectFull(

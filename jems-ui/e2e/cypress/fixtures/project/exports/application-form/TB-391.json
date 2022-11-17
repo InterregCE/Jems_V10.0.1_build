@@ -1,0 +1,87 @@
+{
+  "spfCall": {
+    "generalCallSettings": {
+      "name": "randomize",
+      "is2Step": null,
+      "startDateTime": "randomize",
+      "endDateTimeStep1": null,
+      "endDateTime": "randomize",
+      "description": [
+        {
+          "translation": "API generated SPF call DE",
+          "language": "DE"
+        },
+        {
+          "translation": "API generated SPF call EN",
+          "language": "EN"
+        }
+      ],
+      "lengthOfPeriod": 12,
+      "funds": [
+        {
+          "programmeFund": {
+            "id": 1,
+            "selected": true,
+            "type": "ERDF",
+            "abbreviation": [
+              {
+                "language": "EN",
+                "translation": "ERDF"
+              },
+              {
+                "language": "DE",
+                "translation": "ERDF DE"
+              }
+            ],
+            "description": [
+              {
+                "language": "EN",
+                "translation": "Territorial cooperation Goal (Interreg)"
+              },
+              {
+                "language": "DE",
+                "translation": "Territorial cooperation Goal (Interreg) DE"
+              }
+            ]
+          },
+          "selected": true,
+          "rate": 60,
+          "adjustable": false
+        }
+      ],
+      "additionalFundAllowed": false,
+      "priorityPolicies": [
+        "EnvDevelopment",
+        "LocalEnvDevelopment"
+      ],
+      "strategies": [
+        "EUStrategyAdriaticIonianRegion",
+        "EUStrategyAlpineRegion",
+        "TerritorialAgenda2030"
+      ],
+      "stateAidIds": [
+        1
+      ],
+      "type": "SPF"
+    },
+    "preSubmissionCheckSettings": {
+      "pluginKey": "jems-pre-condition-check-off",
+      "callHasTwoSteps": false
+    }
+  },
+  "projectSpfRecipients": [
+    {
+      "recipientGroup": "SectoralAgency",
+      "specification": [
+        {
+          "translation": "API generated SPF recipient DE",
+          "language": "DE"
+        }, {
+          "translation": "API generated SPF recipient EN",
+          "language": "EN"
+        }
+      ]
+    }
+  ],
+  "organisationAbbreviation": "organisation AG"
+}

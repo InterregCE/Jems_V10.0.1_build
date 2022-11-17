@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.controller.projectuser
 
 import io.cloudflight.jems.api.project.ProjectUserApi
 import io.cloudflight.jems.api.project.dto.assignment.ProjectUserDTO
+import io.cloudflight.jems.api.project.dto.assignment.ProjectWithUsersDTO
 import io.cloudflight.jems.api.project.dto.assignment.UpdateProjectUserDTO
 import io.cloudflight.jems.server.project.controller.toDto
 import io.cloudflight.jems.server.project.controller.toModel
@@ -17,8 +18,8 @@ class ProjectUserController(
     private val getUsersAssignedToProjectsInteractor: GetUsersAssignedToProjectsInteractor,
 ) : ProjectUserApi {
 
-    override fun listProjectsWithAssignedUsers(pageable: Pageable): Page<ProjectUserDTO> =
-        getUsersAssignedToProjectsInteractor.getProjectsWithAssignedUsers(pageable).toDto()
+    override fun listProjectsWithAssignedUsers(pageable: Pageable, searchRequest: ProjectWithUsersDTO?): Page<ProjectUserDTO> =
+        getUsersAssignedToProjectsInteractor.getProjectsWithAssignedUsers(pageable, searchRequest).toDto()
 
     override fun updateProjectUserAssignments(projectUsers: Set<UpdateProjectUserDTO>) =
         assignUserToProjectInteractor.updateUserAssignmentsOnProject(projectUsers.toModel())

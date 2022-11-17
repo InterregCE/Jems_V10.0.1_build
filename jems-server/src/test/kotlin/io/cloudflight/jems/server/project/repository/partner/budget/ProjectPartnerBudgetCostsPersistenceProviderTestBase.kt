@@ -473,6 +473,7 @@ open class ProjectPartnerBudgetCostsPersistenceProviderTestBase : UnitTest() {
             budgetPeriodEntities = mutableSetOf(),
             unitCost = ProgrammeUnitCostEntity(
                 id = entityId,
+                projectId = null,
                 costPerUnit = BigDecimal.TEN,
                 isOneCostCategory = true,
                 costPerUnitForeignCurrency = BigDecimal.ZERO,

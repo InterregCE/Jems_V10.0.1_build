@@ -2,8 +2,7 @@
     <jems-form (discard)="resetForm(savedWorkPackages)"
                (save)="saveWorkPlan()">
 
-        <h2 class="mb-5">{{'project.application.partner.report.sub.title.workplan' | translate}}</h2>
-
+        <h3>{{'project.application.partner.report.sub.title.workplan' | translate}}</h3>
         <form [formGroup]="workPlanForm" jemsFormLayout>
             <ng-container *ngFor="let workPackage of savedWorkPackages; let workPackageIndex = index "
                           [formArrayName]="constants.WORK_PACKAGES.name">
@@ -23,12 +22,12 @@
                                     type="textarea"
                                     label="common.textarea.enter.text"
                                     [formControlName]="constants.WORK_PACKAGE_DESCRIPTION.name"
-                                    [maxLength]="200">
+                                    [maxLength]="2000">
                             </jems-multi-language-form-field>
                         </jems-multi-language-container>
 
                         <div *ngIf="workPackage.activities.length || workPackage.outputs.length"
-                             class="mb-3 mt-4">{{'project.application.partner.report.workplan.contribution.description.subtitle' | translate}}</div>
+                             class="mb-3 mt-4"><p>{{'project.application.partner.report.workplan.contribution.description.subtitle' | translate}}</p></div>
 
                         <ng-container *ngIf="workPackage.activities.length">
                             <div jemsNoWidthLimit id="activities-table" class="mb-3 activity-container"
@@ -55,7 +54,6 @@
                                             <span class="justify-center" jemsFormFieldWidth="xx-large">
                                                        <jems-multi-language-form-field
                                                                type="textarea"
-                                                               label="common.textarea.enter.text"
                                                                [disabled]="true"
                                                                [formControlName]="constants.ACTIVITY_TITLE.name">
                                                        </jems-multi-language-form-field>
@@ -92,9 +90,6 @@
                                                 <span  class="justify-start">
                                                     {{ 'project.application.partner.report.workplan.output.table.contribution' | translate }}
                                                 </span>
-                                                <span jemsText class="justify-start">
-                                                    {{ 'project.application.partner.report.workplan.output.table.evidence' | translate }}
-                                                </span>
                                                 <span jemsText class="justify-start attachments-header-column">
                                                     {{ 'project.application.partner.report.attachments' | translate }}
                                                 </span>
@@ -115,7 +110,6 @@
                                                                    <jems-multi-language-form-field
                                                                            type="textarea"
                                                                            jemsFormFieldWidth="xx-large"
-                                                                           label="common.textarea.enter.text"
                                                                            [disabled]="true"
                                                                            [formControlName]="constants.DELIVERABLE_TITLE.name">
                                                                    </jems-multi-language-form-field>
@@ -127,11 +121,6 @@
                                                             </mat-checkbox>
                                                         </span>
 
-                                                        <span class="justify-center">
-                                                            <mat-checkbox
-                                                                    [formControlName]='constants.DELIVERABLE_EVIDENCE.name'>
-                                                            </mat-checkbox>
-                                                        </span>
                                                         <span class="justify-start attachments-element-deliverable" >
                                                             <jems-partner-actions-cell
                                                                     [formControlName]="constants.DELIVERABLE_FILE.name"
@@ -167,9 +156,6 @@
                                             {{ 'project.application.partner.report.workplan.output.table.contribution' | translate }}
                                         </span>
                                         <span class="justify-center">
-                                            {{ 'project.application.partner.report.workplan.output.table.evidence' | translate }}
-                                        </span>
-                                        <span class="justify-center">
                                             {{ 'project.application.partner.report.attachments' | translate }}
                                         </span>
                                     </div>
@@ -184,8 +170,6 @@
                                             <span>
                                                 <jems-multi-language-form-field
                                                         type="textarea"
-                                                        minRows="1"
-                                                        label="common.textarea.enter.text"
                                                         [disabled]="true"
                                                         [formControlName]="constants.OUTPUT_TITLE.name"
                                                         [maxLength]="200">
@@ -195,12 +179,6 @@
                                             <span class="justify-center">
                                             <mat-checkbox
                                                     [formControlName]="constants.OUTPUT_CONTRIBUTION.name">
-                                            </mat-checkbox>
-                                        </span>
-
-                                            <span class="justify-center">
-                                            <mat-checkbox
-                                                    [formControlName]='constants.OUTPUT_EVIDENCE.name'>
                                             </mat-checkbox>
                                         </span>
 

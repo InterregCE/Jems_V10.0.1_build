@@ -27,6 +27,7 @@ export class CallDetailPageStore {
   allStateAids$: Observable<ProgrammeStateAidDTO[]>;
   callIsReadable$: Observable<boolean>;
   callIsEditable$: Observable<boolean>;
+  callHasTwoSteps$: Observable<boolean>;
   isFirstCall$: Observable<boolean>;
   callIsPublished$: Observable<boolean>;
 
@@ -48,6 +49,7 @@ export class CallDetailPageStore {
     this.allStateAids$ = this.allStateAids();
     this.callIsReadable$ = this.callStore.callIsReadable$;
     this.callIsEditable$ = this.callStore.callIsEditable$;
+    this.callHasTwoSteps$ = this.callStore.call$.pipe(map(call => !!call.endDateTimeStep1));
     this.isFirstCall$ = this.isFirstCall();
     this.callIsPublished$ = this.callStore.callIsPublished$;
   }

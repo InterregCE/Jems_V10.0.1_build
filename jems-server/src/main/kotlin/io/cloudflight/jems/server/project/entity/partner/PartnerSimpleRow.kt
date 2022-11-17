@@ -10,4 +10,5 @@ interface PartnerSimpleRow {
     val sortNumber: Int?
     val country: String?
     val nutsRegion2: String?
+    val nutsRegion3: String?
 }

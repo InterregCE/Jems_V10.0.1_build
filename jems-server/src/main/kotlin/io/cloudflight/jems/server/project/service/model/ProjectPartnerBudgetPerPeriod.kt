@@ -7,5 +7,6 @@ data class ProjectPartnerBudgetPerPeriod(
     val partner: ProjectPartnerSummary,
     val periodBudgets: MutableList<ProjectPeriodBudget>,
     val totalPartnerBudget: BigDecimal = BigDecimal.ZERO,
-    val totalPartnerBudgetDetail: BudgetCostsDetail
+    val totalPartnerBudgetDetail: BudgetCostsDetail,
+    val costType: ProjectPartnerCostType
 )

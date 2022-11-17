@@ -68,7 +68,9 @@ class GetPartnerBudgetPerFundInteractorTest : UnitTest() {
         lengthOfPeriod = null,
         applicationFormFieldConfigurations = mutableSetOf(),
         preSubmissionCheckPluginKey = null,
-        firstStepPreSubmissionCheckPluginKey = null
+        firstStepPreSubmissionCheckPluginKey = null,
+        projectDefinedUnitCostAllowed = false,
+        projectDefinedLumpSumAllowed = true,
     )
     private val spfCall = CallDetail(
         id = 2,
@@ -82,7 +84,9 @@ class GetPartnerBudgetPerFundInteractorTest : UnitTest() {
         lengthOfPeriod = 2,
         applicationFormFieldConfigurations = mutableSetOf(),
         preSubmissionCheckPluginKey = null,
-        firstStepPreSubmissionCheckPluginKey = null
+        firstStepPreSubmissionCheckPluginKey = null,
+        projectDefinedUnitCostAllowed = false,
+        projectDefinedLumpSumAllowed = true,
     )
 
     private val totalCostPartner1 = 80.toScaledBigDecimal()
@@ -164,7 +168,12 @@ class GetPartnerBudgetPerFundInteractorTest : UnitTest() {
         every { getBudgetTotalCost.getBudgetTotalCost(partner1Id) } returns totalCostPartner1
         every { getBudgetTotalCost.getBudgetTotalCost(partner2Id) } returns totalCostPartner2
 
-        every { partnerBudgetPerFundCalculator.calculate(listOf(partner1, partner2), emptyList(), listOf(cof1, cof2), null)} returns listOf(result1, result2)
+        every { partnerBudgetPerFundCalculator.calculate(
+            listOf(partner1, partner2),
+            emptyList(),
+            listOf(cof1, cof2),
+            emptyList()
+        )} returns listOf(result1, result2)
 
         assertThat(getPartnerBudgetPerFund.getProjectPartnerBudgetPerFund(1, null))
             .containsExactlyInAnyOrder(
@@ -236,7 +245,7 @@ class GetPartnerBudgetPerFundInteractorTest : UnitTest() {
         every { getBudgetTotalCost.getBudgetTotalSpfCost(partnerId, version) } returns totalCostSpf
 
         every { partnerBudgetPerFundCalculator
-            .calculate(listOf(beneficiary), emptyList(), listOf(coFinancing), coFinancingSpf)
+            .calculate(listOf(beneficiary), emptyList(), listOf(coFinancing), listOf(coFinancingSpf))
         } returns listOf(partnerBudgetPerFund, spfBudgetPerFund)
 
         assertThat(getPartnerBudgetPerFund.getProjectPartnerBudgetPerFund(projectId, version))

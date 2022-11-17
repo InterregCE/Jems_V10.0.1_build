@@ -58,6 +58,15 @@ class UpdateProjectResultsTest : UnitTest() {
     }
 
     @Test
+    fun `updateResultsForProject - empty periods`() {
+        every { persistence.updateResultsForProject(2L, any()) } returnsArgument 1
+        every { persistence.getAvailablePeriodNumbers(2L) } returns emptySet()
+        val result = result1.copy(periodNumber = null)
+        Assertions.assertThat(updateProjectResult.updateResultsForProject(2L, listOf(result)))
+            .containsExactly(result)
+    }
+
+    @Test
     fun `update results when max allowed results amount reached`() {
         every { veryBigResultsList.size } returns 21
         val exception = assertThrows<MaxNumberOrResultPerProjectException> {

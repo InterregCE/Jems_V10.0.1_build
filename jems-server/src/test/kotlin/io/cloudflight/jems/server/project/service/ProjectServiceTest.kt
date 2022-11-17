@@ -102,7 +102,9 @@ class ProjectServiceTest : UnitTest() {
         lengthOfPeriod = 1,
         allowedRealCosts = defaultAllowedRealCostsByCallType(CallType.STANDARD),
         preSubmissionCheckPluginKey = null,
-        firstStepPreSubmissionCheckPluginKey = null
+        firstStepPreSubmissionCheckPluginKey = null,
+        projectDefinedUnitCostAllowed = true,
+        projectDefinedLumpSumAllowed = false,
     )
 
     private fun wpWithActivity(id: Long, project: ProjectEntity, activityStartPeriod: Int, activityEndPeriod: Int, deliverablePeriod: Int) =
@@ -142,7 +144,9 @@ class ProjectServiceTest : UnitTest() {
         lengthOfPeriod = lengthOfPeriod,
         allowedRealCosts = defaultAllowedRealCostsByCallType(CallType.STANDARD),
         preSubmissionCheckPluginKey = null,
-        firstStepPreSubmissionCheckPluginKey = null
+        firstStepPreSubmissionCheckPluginKey = null,
+        projectDefinedUnitCostAllowed = true,
+        projectDefinedLumpSumAllowed = false,
     )
 
     private fun project(call: CallEntity, status: ProjectStatusHistoryEntity, acronym: String, resultPeriodNumber: Int) = ProjectEntity(
@@ -151,7 +155,10 @@ class ProjectServiceTest : UnitTest() {
         acronym = acronym,
         applicant = account,
         currentStatus = status,
-        results = setOf(ProjectResultEntity(ProjectResultId(10, 1), periodNumber = resultPeriodNumber))
+        results = setOf(
+            ProjectResultEntity(ProjectResultId(10, 1), periodNumber = resultPeriodNumber),
+            ProjectResultEntity(ProjectResultId(10, 2), periodNumber = 255),
+        ),
     )
 
     private fun mockLatestProjectFormRetrieval(projectId: Long) {
@@ -300,9 +307,10 @@ class ProjectServiceTest : UnitTest() {
         assertThat(workPackage.activities.first().endPeriod).isNull()
         assertThat(workPackage.activities.first().deliverables.first().startPeriod).isNull()
         assertThat(output.periodNumber).isNull()
-        assertThat(project.results.first().periodNumber).isNull()
+        assertThat(project.results.first { it.resultId.resultNumber == 1 }.periodNumber).isNull()
+        assertThat(project.results.first { it.resultId.resultNumber == 2 }.periodNumber).isEqualTo(255)
 
-        assertThat(project.results.first().programmeResultIndicatorEntity).isNull()
+        assertThat(project.results.first { it.resultId.resultNumber == 1 }.programmeResultIndicatorEntity).isNull()
         assertThat(output.programmeOutputIndicatorEntity).isNull()
 
         // additional

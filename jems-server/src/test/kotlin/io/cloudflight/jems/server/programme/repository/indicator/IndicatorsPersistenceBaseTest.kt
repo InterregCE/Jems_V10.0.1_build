@@ -36,7 +36,7 @@ abstract class IndicatorsPersistenceBaseTest : UnitTest() {
     private val indicatorNameSet = setOf(InputTranslation(SystemLanguage.EN, "indicator title"))
     private val indicatorMeasurementUnitSet = setOf(InputTranslation(SystemLanguage.EN, "measurement unit"))
     private val indicatorSourceOfDataSet = setOf(InputTranslation(SystemLanguage.EN, "test source of data"))
-    private val indicatorComment = "test comment"
+    private val indicatorComment = setOf(InputTranslation(SystemLanguage.EN, "test comment"))
     protected val indicatorIdentifier = "ID01"
     private val indicatorReferenceYear = "2022/2023"
     private val indicatorResultIndicatorId = 2L
@@ -78,7 +78,7 @@ abstract class IndicatorsPersistenceBaseTest : UnitTest() {
         referenceYear: String = indicatorReferenceYear,
         finalTarget: BigDecimal = BigDecimal.ONE,
         sourceOfData: Set<InputTranslation> = indicatorSourceOfDataSet,
-        comment: String = indicatorComment
+        comment: Set<InputTranslation> = indicatorComment
     ) =
         ResultIndicator(
             id,
@@ -136,7 +136,7 @@ abstract class IndicatorsPersistenceBaseTest : UnitTest() {
         referenceYear: String = indicatorReferenceYear,
         finalTarget: BigDecimal = BigDecimal.ONE,
         sourceOfData: Set<InputTranslation> = indicatorSourceOfDataSet,
-        comment: String = indicatorComment
+        comment: Set<InputTranslation> = indicatorComment
     ) =
         ResultIndicatorEntity(
             id,
@@ -146,7 +146,6 @@ abstract class IndicatorsPersistenceBaseTest : UnitTest() {
             baseline,
             referenceYear,
             finalTarget,
-            comment
         ).apply {
             translatedValues.add(
                 ResultIndicatorTranslEntity(
@@ -155,7 +154,8 @@ abstract class IndicatorsPersistenceBaseTest : UnitTest() {
                     ),
                     name = name.first { it.language == SystemLanguage.EN }.translation!!,
                     measurementUnit = measurementUnit.first { it.language == SystemLanguage.EN }.translation,
-                    sourceOfData = sourceOfData.first { it.language == SystemLanguage.EN }.translation
+                    sourceOfData = sourceOfData.first { it.language == SystemLanguage.EN }.translation,
+                    comment = comment.first { it.language == SystemLanguage.EN }.translation
                 )
             )
         }

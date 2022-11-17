@@ -13,6 +13,7 @@ import io.cloudflight.jems.server.project.service.model.ProjectPeriod
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -26,6 +27,7 @@ internal class UpdateProjectLumpSumsTest : UnitTest() {
         private const val PROGRAMME_LUMP_SUM_ID: Long = 19L
 
         private val lumpSum = ProjectLumpSum(
+            orderNr = 1,
             programmeLumpSumId = PROGRAMME_LUMP_SUM_ID,
             period = 2,
             lumpSumContributions = listOf(
@@ -49,7 +51,8 @@ internal class UpdateProjectLumpSumsTest : UnitTest() {
             stateAids = emptyList(),
             applicationFormFieldConfigurations = mutableSetOf(),
             preSubmissionCheckPluginKey = null,
-            firstStepPreSubmissionCheckPluginKey = null
+            firstStepPreSubmissionCheckPluginKey = null,
+            costOption = mockk(),
         )
 
         private val periods = listOf(
@@ -73,7 +76,11 @@ internal class UpdateProjectLumpSumsTest : UnitTest() {
 
     @Test
     fun `updateLumpSums - everything OK - splitting allowed`() {
-        val programmeLumpSum = ProgrammeLumpSum(id = PROGRAMME_LUMP_SUM_ID, splittingAllowed = true)
+        val programmeLumpSum = ProgrammeLumpSum(
+            id = PROGRAMME_LUMP_SUM_ID,
+            splittingAllowed = true,
+            fastTrack = false
+        )
         every { projectPersistence.getProjectCallSettings(PROJECT_ID) } returns
             callSettings(lumpSums = listOf(programmeLumpSum))
         every { projectPersistence.getProjectPeriods(PROJECT_ID) } returns periods
@@ -85,7 +92,11 @@ internal class UpdateProjectLumpSumsTest : UnitTest() {
 
     @Test
     fun `updateLumpSums - everything OK - splitting not allowed`() {
-        val programmeLumpSum = ProgrammeLumpSum(id = PROGRAMME_LUMP_SUM_ID, splittingAllowed = false)
+        val programmeLumpSum = ProgrammeLumpSum(
+            id = PROGRAMME_LUMP_SUM_ID,
+            splittingAllowed = false,
+            fastTrack = false
+        )
         val lumpSumNonSplittable = lumpSum.copy(
             lumpSumContributions = listOf(
                 ProjectPartnerLumpSum(partnerId = 1, amount = BigDecimal.ZERO),
@@ -105,7 +116,11 @@ internal class UpdateProjectLumpSumsTest : UnitTest() {
 
     @Test
     fun `updateLumpSums - empty is OK`() {
-        val programmeLumpSum = ProgrammeLumpSum(id = PROGRAMME_LUMP_SUM_ID, splittingAllowed = true)
+        val programmeLumpSum = ProgrammeLumpSum(
+            id = PROGRAMME_LUMP_SUM_ID,
+            splittingAllowed = true,
+            fastTrack = false
+        )
         every { projectPersistence.getProjectCallSettings(PROJECT_ID) } returns
             callSettings(lumpSums = listOf(programmeLumpSum))
         every { projectPersistence.getProjectPeriods(PROJECT_ID) } returns periods
@@ -117,7 +132,11 @@ internal class UpdateProjectLumpSumsTest : UnitTest() {
 
     @Test
     fun `updateLumpSums - splitting not allowed`() {
-        val programmeLumpSum = ProgrammeLumpSum(id = PROGRAMME_LUMP_SUM_ID, splittingAllowed = false)
+        val programmeLumpSum = ProgrammeLumpSum(
+            id = PROGRAMME_LUMP_SUM_ID,
+            splittingAllowed = false,
+            fastTrack = false
+        )
         every { projectPersistence.getProjectCallSettings(PROJECT_ID) } returns
             callSettings(lumpSums = listOf(programmeLumpSum))
 
@@ -131,7 +150,11 @@ internal class UpdateProjectLumpSumsTest : UnitTest() {
 
     @Test
     fun `updateLumpSums - period number out of bounds`() {
-        val programmeLumpSum = ProgrammeLumpSum(id = PROGRAMME_LUMP_SUM_ID, splittingAllowed = true)
+        val programmeLumpSum = ProgrammeLumpSum(
+            id = PROGRAMME_LUMP_SUM_ID,
+            splittingAllowed = true,
+            fastTrack = false
+        )
         every { projectPersistence.getProjectCallSettings(PROJECT_ID) } returns
             callSettings(lumpSums = listOf(programmeLumpSum))
         every { projectPersistence.getProjectPeriods(PROJECT_ID) } returns listOf(
@@ -152,7 +175,11 @@ internal class UpdateProjectLumpSumsTest : UnitTest() {
 
     @Test
     fun `updateLumpSums - period number is optional`() {
-        val programmeLumpSum = ProgrammeLumpSum(id = PROGRAMME_LUMP_SUM_ID, splittingAllowed = true)
+        val programmeLumpSum = ProgrammeLumpSum(
+            id = PROGRAMME_LUMP_SUM_ID,
+            splittingAllowed = true,
+            fastTrack = false
+        )
         every { projectPersistence.getProjectCallSettings(PROJECT_ID) } returns
             callSettings(lumpSums = listOf(programmeLumpSum))
         every { projectPersistence.getProjectPeriods(PROJECT_ID) } returns periods

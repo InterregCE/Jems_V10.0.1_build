@@ -81,7 +81,7 @@ class PartnerBudgetPerFundCalculatorTest : UnitTest() {
                     ),
                     total = BigDecimal(2900))
             ),
-            spfCoFinancing = null
+            spfCoFinancing = emptyList()
         )
 
         val expectedResult = listOf(ProjectPartnerBudgetPerFund(
@@ -229,7 +229,7 @@ class PartnerBudgetPerFundCalculatorTest : UnitTest() {
                     total = BigDecimal(3000)
                 )
             ),
-            spfCoFinancing = PartnerBudgetSpfCoFinancing(
+            spfCoFinancing = listOf(PartnerBudgetSpfCoFinancing(
                 partnerSpf,
                 ProjectPartnerCoFinancingAndContributionSpf(
                     finances = listOf(
@@ -253,7 +253,7 @@ class PartnerBudgetPerFundCalculatorTest : UnitTest() {
                     )
                 ),
                 total = BigDecimal(30))
-        )
+        ))
 
         val expectedResult = listOf(ProjectPartnerBudgetPerFund(
             partner = partnerSpf,

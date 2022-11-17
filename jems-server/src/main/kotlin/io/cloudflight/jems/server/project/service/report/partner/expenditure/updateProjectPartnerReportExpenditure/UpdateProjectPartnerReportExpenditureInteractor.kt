@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.service.report.partner.expenditure.updateProjectPartnerReportExpenditure
 
-import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportExpenditureCost
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
 
 interface UpdateProjectPartnerReportExpenditureInteractor {
 

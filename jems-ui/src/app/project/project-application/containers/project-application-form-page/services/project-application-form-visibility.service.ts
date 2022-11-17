@@ -1,12 +1,10 @@
 import {Injectable} from '@angular/core';
-import {ActivatedRouteSnapshot, Router} from '@angular/router';
+import {ActivatedRouteSnapshot} from '@angular/router';
 import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {Log} from '@common/utils/log';
 import {ProjectPaths} from '@project/common/project-util';
 import {FormVisibilityStatusService} from '@project/common/services/form-visibility-status.service';
-import {
-  ProjectStore
-} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {combineLatest} from 'rxjs';
 import {tap} from 'rxjs/operators';
 import {RoutingService} from '@common/services/routing.service';
@@ -32,8 +30,8 @@ export class ProjectApplicationFormVisibilityService {
     let allowed = true;
 
     if (childRoute.data.breadcrumb === 'project.breadcrumb.applicationForm.unit.costs') {
-      allowed = this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING) &&
-        this.visibilityStatusService.shouldBeVisibleIfUnitCostsSelected();
+      allowed = (this.visibilityStatusService.isVisible(APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING) &&
+        this.visibilityStatusService.shouldBeVisibleIfUnitCostsSelected()) || this.visibilityStatusService.shouldBeVisibleIfProjectDefinedUnitCostsAllowed();
     }
 
     if (childRoute.data.visibleOnly) {

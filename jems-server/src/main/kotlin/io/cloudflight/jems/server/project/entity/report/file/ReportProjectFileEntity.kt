@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.entity.report.file
 
-import io.cloudflight.jems.server.project.service.report.model.file.ProjectPartnerReportFileType
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.cloudflight.jems.server.user.entity.UserEntity
 import java.time.ZonedDateTime
 import javax.persistence.Entity
@@ -49,7 +49,7 @@ class ReportProjectFileEntity(
 
     @Enumerated(EnumType.STRING)
     @field:NotNull
-    val type: ProjectPartnerReportFileType,
+    val type: JemsFileType,
 
     @field:NotNull
     val size: Long,
@@ -62,4 +62,7 @@ class ReportProjectFileEntity(
     @field:NotNull
     val uploaded: ZonedDateTime,
 
-)
+    @field:NotNull
+    var description: String,
+
+    )

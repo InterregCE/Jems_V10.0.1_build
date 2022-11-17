@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional
 @Repository
 class ProjectVersionPersistenceProvider(
     private val projectVersionRepository: ProjectVersionRepository,
+    private val optimizationProjectVersionRepository: OptimizationProjectVersionRepository,
     private val userRepository: UserRepository,
 ) : ProjectVersionPersistence {
 
@@ -45,4 +46,11 @@ class ProjectVersionPersistenceProvider(
     override fun getAllVersions(): List<ProjectVersion> =
         projectVersionRepository.findAllVersions().toProjectVersion()
 
+    @Transactional
+    override fun saveTimestampForApprovedApplication(projectId: Long) =
+        optimizationProjectVersionRepository.saveOptimizationProjectVersion(projectId)
+
+    @Transactional
+    override fun updateTimestampForApprovedModification(projectId: Long) =
+        optimizationProjectVersionRepository.updateOptimizationProjectVersion(projectId)
 }

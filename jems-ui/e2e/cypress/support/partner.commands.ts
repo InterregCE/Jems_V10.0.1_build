@@ -1,21 +1,26 @@
-import {ProjectPartnerDTO} from '../../../build/swagger-code-jems-api/model/projectPartnerDTO'
-import {ProjectPartnerAddressDTO} from '../../../build/swagger-code-jems-api/model/projectPartnerAddressDTO'
-import {ProjectContactDTO} from '../../../build/swagger-code-jems-api/model/projectContactDTO'
-import {ProjectPartnerMotivationDTO} from '../../../build/swagger-code-jems-api/model/projectPartnerMotivationDTO'
-import {ProjectPartnerStateAidDTO} from '../../../build/swagger-code-jems-api/model/projectPartnerStateAidDTO'
+import {ProjectPartnerDTO} from '../../../build/swagger-code-jems-api/model/projectPartnerDTO';
+import {ProjectPartnerAddressDTO} from '../../../build/swagger-code-jems-api/model/projectPartnerAddressDTO';
+import {ProjectContactDTO} from '../../../build/swagger-code-jems-api/model/projectContactDTO';
+import {ProjectPartnerMotivationDTO} from '../../../build/swagger-code-jems-api/model/projectPartnerMotivationDTO';
+import {ProjectPartnerStateAidDTO} from '../../../build/swagger-code-jems-api/model/projectPartnerStateAidDTO';
 import {
   ProjectPartnerCoFinancingAndContributionInputDTO
-} from '../../../build/swagger-code-jems-api/model/projectPartnerCoFinancingAndContributionInputDTO'
-import {ProjectPartnerBudgetOptionsDto} from '../../../build/swagger-code-jems-api/model/projectPartnerBudgetOptionsDto'
-import {BudgetGeneralCostEntryDTO} from '../../../build/swagger-code-jems-api/model/budgetGeneralCostEntryDTO'
-import {BudgetUnitCostEntryDTO} from '../../../build/swagger-code-jems-api/model/budgetUnitCostEntryDTO'
-import {BudgetStaffCostEntryDTO} from '../../../build/swagger-code-jems-api/model/budgetStaffCostEntryDTO'
+} from '../../../build/swagger-code-jems-api/model/projectPartnerCoFinancingAndContributionInputDTO';
+import {
+  ProjectPartnerBudgetOptionsDto
+} from '../../../build/swagger-code-jems-api/model/projectPartnerBudgetOptionsDto';
+import {BudgetGeneralCostEntryDTO} from '../../../build/swagger-code-jems-api/model/budgetGeneralCostEntryDTO';
+import {BudgetUnitCostEntryDTO} from '../../../build/swagger-code-jems-api/model/budgetUnitCostEntryDTO';
+import {BudgetStaffCostEntryDTO} from '../../../build/swagger-code-jems-api/model/budgetStaffCostEntryDTO';
 import {
   InputProjectAssociatedOrganization
-} from '../../../build/swagger-code-jems-api/model/inputProjectAssociatedOrganization'
+} from '../../../build/swagger-code-jems-api/model/inputProjectAssociatedOrganization';
 import {
   BudgetTravelAndAccommodationCostEntryDTO
-} from '../../../build/swagger-code-jems-api/model/budgetTravelAndAccommodationCostEntryDTO'
+} from '../../../build/swagger-code-jems-api/model/budgetTravelAndAccommodationCostEntryDTO';
+import {
+  BudgetSpfCostEntryDTO
+} from '../../../build/swagger-code-jems-api/model/BudgetSpfCostEntryDTO';
 
 declare global {
 
@@ -26,6 +31,7 @@ declare global {
     motivation?: ProjectPartnerMotivationDTO,
     budget?: PartnerBudget,
     cofinancing?: ProjectPartnerCoFinancingAndContributionInputDTO,
+    spfCofinancing?: ProjectPartnerCoFinancingAndContributionInputDTO;
     stateAid?: ProjectPartnerStateAidDTO
   }
 
@@ -36,7 +42,8 @@ declare global {
     equipment?: BudgetGeneralCostEntryDTO[],
     infrastructure?: BudgetGeneralCostEntryDTO[],
     unit?: BudgetUnitCostEntryDTO[],
-    travel?: BudgetTravelAndAccommodationCostEntryDTO[]
+    travel?: BudgetTravelAndAccommodationCostEntryDTO[],
+    spf?: BudgetSpfCostEntryDTO[];
   }
 
   namespace Cypress {
@@ -60,7 +67,7 @@ declare global {
 
       updatePartnerCofinancing(partnerId: number, cofinancing);
 
-      updatePartnerStateAid(partnerId: number, stateAid);
+      updatePartnerStateAid(partnerId: number, stateAid, options?: any);
 
       deactivatePartner(partnerId: number);
 
@@ -112,8 +119,8 @@ Cypress.Commands.add('updatePartnerCofinancing', (partnerId: number, cofinancing
   updateCofinancing(partnerId, cofinancing);
 });
 
-Cypress.Commands.add('updatePartnerStateAid', (partnerId: number, stateAid: ProjectPartnerStateAidDTO) => {
-  updateStateAid(partnerId, stateAid);
+Cypress.Commands.add('updatePartnerStateAid', (partnerId: number, stateAid: ProjectPartnerStateAidDTO, options?) => {
+  updateStateAid(partnerId, stateAid, options);
 });
 
 Cypress.Commands.add('deactivatePartner', (partnerId: number) => {
@@ -135,7 +142,7 @@ export function createPartner(applicationId: number, partner: ProjectPartnerDTO)
   });
 }
 
-export function createPartners(applicationId: number, partners: ProjectPartner[]) {
+export function createPartners(applicationId: number, partners: ProjectPartner[], options?) {
   partners.forEach(partner => {
     createPartner(applicationId, partner.details).then(response => {
       cy.wrap(response.body.id).as(partner.details.abbreviation);
@@ -144,7 +151,9 @@ export function createPartners(applicationId: number, partners: ProjectPartner[]
       updateMotivation(response.body.id, partner.motivation);
       updateBudget(response.body.id, partner.budget);
       updateCofinancing(response.body.id, partner.cofinancing);
-      updateStateAid(response.body.id, partner.stateAid);
+      if (partner.spfCofinancing)
+        updateSpfCofinancing(response.body.id, partner.spfCofinancing);
+      updateStateAid(response.body.id, partner.stateAid, options);
     });
   });
 }
@@ -224,6 +233,13 @@ function updateBudget(partnerId: number, budget: PartnerBudget, investmentId?: n
   if (budget.travel) {
     addTravelCosts(partnerId, budget.travel);
   }
+  if (budget.spf) {
+    cy.request({
+      method: 'PUT',
+      url: `api/project/partner/${partnerId}/budget/spf`,
+      body: budget.spf
+    });
+  }
 }
 
 function addTravelCosts(partnerId: number, travelCosts: BudgetTravelAndAccommodationCostEntryDTO[]) {
@@ -242,13 +258,28 @@ function updateCofinancing(partnerId: number, cofinancing: ProjectPartnerCoFinan
   });
 }
 
-function updateStateAid(partnerId: number, stateAid: ProjectPartnerStateAidDTO, activityId?: number) {
-  if (activityId)
-    stateAid.activities[0].activityId = activityId;
+function updateSpfCofinancing(partnerId: number, spfCofinancing: ProjectPartnerCoFinancingAndContributionInputDTO) {
+  cy.request({
+    method: 'PUT',
+    url: `api/project/partner/${partnerId}/budget/spf/cofinancing`,
+    body: spfCofinancing
+  });
+}
+
+function updateStateAid(partnerId: number, stateAid: ProjectPartnerStateAidDTO, options?) {
+  const stateAidCopy = JSON.parse(JSON.stringify(stateAid));
+  if (options?.workPlanId) {
+    const activity = {
+      "activityId": options.activityId,
+      "workPackageNumber": options.workPlanId,
+      "activityNumber": null
+    }
+    stateAidCopy.activities.push(activity);
+  }
   cy.request({
     method: 'PUT',
     url: `api/project/partner/${partnerId}/stateAid`,
-    body: stateAid
+    body: stateAidCopy
   });
 }
 

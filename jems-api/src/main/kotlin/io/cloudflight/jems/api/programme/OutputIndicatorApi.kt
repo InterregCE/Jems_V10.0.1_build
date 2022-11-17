@@ -1,8 +1,8 @@
 package io.cloudflight.jems.api.programme
 
 import io.cloudflight.jems.api.programme.dto.indicator.OutputIndicatorCreateRequestDTO
-import io.cloudflight.jems.api.programme.dto.indicator.OutputIndicatorSummaryDTO
 import io.cloudflight.jems.api.programme.dto.indicator.OutputIndicatorDetailDTO
+import io.cloudflight.jems.api.programme.dto.indicator.OutputIndicatorSummaryDTO
 import io.cloudflight.jems.api.programme.dto.indicator.OutputIndicatorUpdateRequestDTO
 import io.cloudflight.jems.api.programme.dto.priority.ProgrammeObjectivePolicy
 import io.swagger.annotations.Api
@@ -12,6 +12,7 @@ import io.swagger.annotations.ApiOperation
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.http.MediaType
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
@@ -36,6 +37,10 @@ interface OutputIndicatorApi {
     fun updateOutputIndicator(
         @RequestBody outputIndicatorUpdateRequestDTO: OutputIndicatorUpdateRequestDTO
     ): OutputIndicatorDetailDTO
+
+    @ApiOperation("Delete OUTPUT indicator")
+    @DeleteMapping("${ENDPOINT_API_PROGRAMME_INDICATOR_OUTPUT}/{id}")
+    fun deleteOutputIndicator(@PathVariable id: Long)
 
     @ApiOperation("Returns all OUTPUT indicators")
     @ApiImplicitParams(

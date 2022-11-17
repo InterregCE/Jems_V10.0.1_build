@@ -64,9 +64,9 @@ export class ProgrammeChecklistOptionsToggleComponent implements ControlValueAcc
     this.metadata = obj as any;
 
     this.form = this.formBuilder.group({
-      question: [this.metadata?.question, [Validators.required, Validators.maxLength(1000)]],
-      firstOption: [this.metadata?.firstOption, [Validators.required, Validators.maxLength(100)]],
-      secondOption: [this.metadata?.secondOption, [Validators.required, Validators.maxLength(100)]],
+      question: [this.metadata?.question, [Validators.required, Validators.pattern(/(?!^\s+$)^.*$/m), Validators.maxLength(1000)]],
+      firstOption: [this.metadata?.firstOption, [Validators.required, Validators.pattern(/(?!^\s+$)^.*$/m), Validators.maxLength(100)]],
+      secondOption: [this.metadata?.secondOption, [Validators.required, Validators.pattern(/(?!^\s+$)^.*$/m), Validators.maxLength(100)]],
       thirdOption: [this.metadata?.thirdOption, Validators.maxLength(100)],
     });
 

@@ -2,16 +2,20 @@ package io.cloudflight.jems.server.project.repository.report.expenditure
 
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.server.common.entity.TranslationId
-import io.cloudflight.jems.server.common.minio.MinioStorage
+import io.cloudflight.jems.server.common.minio.JemsProjectFileRepository
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportExpenditureCostEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportExpenditureCostTranslEntity
+import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportInvestmentEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportLumpSumEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportUnitCostEntity
 import io.cloudflight.jems.server.project.repository.report.ProjectPartnerReportRepository
-import io.cloudflight.jems.server.project.repository.report.file.ProjectReportFileRepository
-import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportExpenditureCost
-import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportLumpSum
-import io.cloudflight.jems.server.project.service.report.model.expenditure.ProjectPartnerReportUnitCost
+import io.cloudflight.jems.server.project.repository.report.financialOverview.costCategory.ReportProjectPartnerExpenditureCostCategoryRepository
+import io.cloudflight.jems.server.project.repository.report.financialOverview.costCategory.toBudgetOptionsModel
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportInvestment
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportLumpSum
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportUnitCost
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectReportExpenditurePersistence
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -23,8 +27,9 @@ class ProjectReportExpenditurePersistenceProvider(
     private val reportExpenditureRepository: ProjectPartnerReportExpenditureRepository,
     private val reportLumpSumRepository: ProjectPartnerReportLumpSumRepository,
     private val reportUnitCostRepository: ProjectPartnerReportUnitCostRepository,
-    private val minioStorage: MinioStorage,
-    private val reportFileRepository: ProjectReportFileRepository,
+    private val reportInvestmentRepository: ProjectPartnerReportInvestmentRepository,
+    private val fileRepository: JemsProjectFileRepository,
+    private val reportCostCategoriesRepository: ReportProjectPartnerExpenditureCostCategoryRepository
 ) : ProjectReportExpenditurePersistence {
 
     @Transactional(readOnly = true)
@@ -51,17 +56,22 @@ class ProjectReportExpenditurePersistenceProvider(
         reportExpenditureRepository.deleteAll(
             existingIds.minus(toNotBeDeletedIds).values.deleteAttachments()
         )
+
+        val lumpSumsById = reportLumpSumRepository
+            .findByReportEntityPartnerIdAndReportEntityIdOrderByOrderNrAscIdAsc(partnerId, reportId)
+            .associateBy { it.id }
+        val unitCostsById = reportUnitCostRepository
+            .findByReportEntityPartnerIdAndReportEntityIdOrderByIdAsc(partnerId, reportId)
+            .associateBy { it.id }
+        val investmentsById = reportInvestmentRepository
+            .findByReportEntityPartnerIdAndReportEntityIdOrderByWorkPackageNumberAscInvestmentNumberAsc(partnerId, reportId)
+            .associateBy { it.id }
+
         return expenditureCosts.map { newData ->
             existingIds[newData.id].let { existing ->
-                val lumpSumsById = reportLumpSumRepository
-                    .findByReportEntityPartnerIdAndReportEntityIdOrderByPeriodAscIdAsc(partnerId, reportId)
-                    .associateBy { it.id }
-                val unitCostsById = reportUnitCostRepository
-                    .findByReportEntityPartnerIdAndReportEntityIdOrderByIdAsc(partnerId, reportId)
-                    .associateBy { it.id }
                 when {
-                    existing != null -> existing.apply { updateWith(newData, lumpSumsById, unitCostsById) }
-                    else -> reportExpenditureRepository.save(newData.toEntity(reportEntity, lumpSumsById, unitCostsById))
+                    existing != null -> existing.apply { updateWith(newData, lumpSumsById, unitCostsById, investmentsById) }
+                    else -> reportExpenditureRepository.save(newData.toEntity(reportEntity, lumpSumsById, unitCostsById, investmentsById))
                 }
             }
         }.toModel()
@@ -74,7 +84,7 @@ class ProjectReportExpenditurePersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getAvailableLumpSums(partnerId: Long, reportId: Long): List<ProjectPartnerReportLumpSum> =
-        reportLumpSumRepository.findByReportEntityPartnerIdAndReportEntityIdOrderByPeriodAscIdAsc(
+        reportLumpSumRepository.findByReportEntityPartnerIdAndReportEntityIdOrderByOrderNrAscIdAsc(
             partnerId = partnerId,
             reportId = reportId,
         ).toModel()
@@ -86,15 +96,30 @@ class ProjectReportExpenditurePersistenceProvider(
             reportId = reportId,
         ).toModel()
 
+    @Transactional(readOnly = true)
+    override fun getAvailableInvestments(partnerId: Long, reportId: Long): List<ProjectPartnerReportInvestment> =
+        reportInvestmentRepository.findByReportEntityPartnerIdAndReportEntityIdOrderByWorkPackageNumberAscInvestmentNumberAsc(
+            partnerId = partnerId,
+            reportId = reportId,
+        ).toModel()
+
+    @Transactional(readOnly = true)
+    override fun getAvailableBudgetOptions(partnerId: Long, reportId: Long): ProjectPartnerBudgetOptions =
+        reportCostCategoriesRepository.findFirstByReportEntityPartnerIdAndReportEntityId(partnerId, reportId)
+            .toBudgetOptionsModel()
+
+
     private fun PartnerReportExpenditureCostEntity.updateWith(
         newData: ProjectPartnerReportExpenditureCost,
         lumpSums: Map<Long, PartnerReportLumpSumEntity>,
         unitCosts: Map<Long, PartnerReportUnitCostEntity>,
+        investments: Map<Long, PartnerReportInvestmentEntity>,
     ) {
         reportLumpSum = if (newData.lumpSumId != null) lumpSums[newData.lumpSumId] else null
         reportUnitCost = if (newData.unitCostId != null) unitCosts[newData.unitCostId] else null
         costCategory = newData.costCategory
-        investmentId = newData.investmentId
+        reportInvestment = if (newData.investmentId != null) investments[newData.investmentId] else null
+        procurementId = newData.contractId
         internalReferenceNumber = newData.internalReferenceNumber
         invoiceNumber = newData.invoiceNumber
         invoiceDate = newData.invoiceDate
@@ -132,10 +157,7 @@ class ProjectReportExpenditurePersistenceProvider(
     }
 
     private fun Collection<PartnerReportExpenditureCostEntity>.deleteAttachments() = map {
-        it.attachment?.let { file ->
-            minioStorage.deleteFile(bucket = file.minioBucket, filePath = file.minioLocation)
-            reportFileRepository.delete(file)
-        }
+        it.attachment?.let { file -> fileRepository.delete(file) }
         it
     }
 }

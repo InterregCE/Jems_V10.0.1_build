@@ -14,7 +14,7 @@ data class AssignUserEvent(val project: ProjectSummary, val users: List<UserSumm
 
 @Service
 data class AssignUserEventListeners(
-    private val eventPublisher: ApplicationEventPublisher, private val appProperties: AppProperties
+    private val eventPublisher: ApplicationEventPublisher,
 ) {
 
     @TransactionalEventListener

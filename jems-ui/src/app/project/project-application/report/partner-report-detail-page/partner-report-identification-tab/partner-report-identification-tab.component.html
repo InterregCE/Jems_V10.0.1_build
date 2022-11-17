@@ -15,7 +15,7 @@
         </div>
         <div class="project-row">
             <span class="header p-1 pr-3">{{'project.application.partner.report.status' | translate}}</span>
-            <span class="p-1">{{'project.application.partner.report.table.status.' + data.partnerReport.status.toLowerCase() | translate}}</span>
+            <span class="p-1"><jems-partner-report-status [status]="data.partnerReport.status" [longVersion]="true"></jems-partner-report-status></span>
         </div>
         <div class="project-row">
             <span class="header p-1 pr-3">{{'project.application.form.partner.table.number' | translate}}</span>
@@ -112,7 +112,7 @@
 
         <h3 >{{'project.application.partner.report.sub.title.two' | translate}}</h3>
         <p>{{'project.application.partner.report.sub.title.two.description' | translate}}</p>
-        <div jemsFormFieldWidth="full">
+        <div>
             <jems-multi-language-container>
                 <jems-multi-language-form-field
                         [maxLength]="2000"
@@ -125,7 +125,7 @@
 
         <h3>{{'project.application.partner.report.sub.title.three' | translate}}</h3>
         <p>{{'project.application.partner.report.sub.title.three.description' | translate}}</p>
-        <div jemsFormFieldWidth="full">
+        <div>
             <jems-multi-language-container>
                 <jems-multi-language-form-field
                         [maxLength]="2000"
@@ -136,9 +136,110 @@
             </jems-multi-language-container>
         </div>
 
-        <ng-container *ngIf="data.identification.targetGroups.length>0">
-            <h3>{{'project.application.partner.report.sub.title.four' | translate}}</h3>
-            <p>{{'project.application.partner.report.sub.title.four.description' | translate}}</p>
+        <ng-container *jemsFormFieldVisibilityStatus="APPLICATION_FORM.SECTION_B.BUDGET_AND_CO_FINANCING.PARTNER_BUDGET_PERIODS">
+            <h3>{{ 'project.application.partner.report.sub.title.four' | translate }}</h3>
+
+            <mat-table [dataSource]="[{}]" [jemsTableConfig]="[{maxInRem: 2},{}, {}, {}, {}, {}, {}, {minInRem: 16}]" jemsNoWidthLimit class="table-padding">
+                <ng-container matColumnDef="partnerNumber">
+                    <th *matHeaderCellDef mat-header-cell scope="col" class="text-left">
+                        {{ 'project.application.form.partner.table.number' | translate }}
+                    </th>
+                    <td *matCellDef mat-cell class="text-left">
+                        {{ 'common.label.project.partner.role.shortcut.' + data.partnerReport?.identification?.partnerRole | adaptTranslationKeyByCallType | async | translate : {partner: data.partnerReport?.identification?.partnerNumber} }}
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="periodBudget">
+                    <th *matHeaderCellDef mat-header-cell scope="col" class="text-right">
+                        {{ 'project.report.partner.spending.periodBudget' | translate }}
+                    </th>
+                    <td *matCellDef="let data; let i = index" mat-cell class="text-right">
+                        {{ selectedPeriod?.periodBudget | asMoney }}
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="currentReport">
+                    <th *matHeaderCellDef mat-header-cell scope="col" class="text-right">
+                        {{ 'project.report.partner.spending.currentReport' | translate }}
+                    </th>
+                    <td *matCellDef="let data; let i = index" mat-cell class="text-right">
+                        {{ form.get('spendingProfile')?.value?.currentReport | asMoney }}
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="periodBudgetCumulative">
+                    <th *matHeaderCellDef mat-header-cell scope="col" class="text-right">
+                        {{ 'project.report.partner.spending.periodBudgetCumulative' | translate }}
+                    </th>
+                    <td *matCellDef="let data; let i = index" mat-cell class="text-right">
+                        {{ selectedPeriod?.periodBudgetCumulative | asMoney }}
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="totalReportedSoFar">
+                    <th *matHeaderCellDef mat-header-cell scope="col" class="text-right">
+                        {{ 'project.report.partner.spending.totalReportedSoFar' | translate }}
+                    </th>
+                    <td *matCellDef="let data; let i = index" mat-cell  class="text-right">
+                        {{ (form.get('spendingProfile')?.value?.previouslyReported + form.get('spendingProfile')?.value?.currentReport) | asMoney }}
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="differenceFromPlan">
+                    <th *matHeaderCellDef mat-header-cell scope="col" class="text-right respect-line-break">
+                        {{ 'project.report.partner.spending.differenceFromPlan' | translate }}
+                    </th>
+                    <td *matCellDef="let data; let i = index" mat-cell  class="text-right">
+                        {{ form.get('spendingProfile')?.value?.differenceFromPlan | asMoney }}
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="differenceFromPlanPercentage">
+                    <th *matHeaderCellDef mat-header-cell scope="col" class="text-right respect-line-break">
+                        {{ 'project.report.partner.spending.differenceFromPlanPercentage' | translate }}
+                    </th>
+                    <td *matCellDef="let data; let i = index" mat-cell  class="text-right">
+                        {{ form.get('spendingProfile')?.value?.differenceFromPlanPercentage | asMoney }}%
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="nextReportForecast">
+                    <th *matHeaderCellDef mat-header-cell scope="col" class="text-right">
+                        {{ 'project.report.partner.spending.nextReportForecast' | translate }}
+                    </th>
+                    <td *matCellDef="let data; let i = index" mat-cell  class="text-right">
+                        <ng-container formGroupName="spendingProfile">
+                            <mat-form-field>
+                                <input formControlName="nextReportForecast"
+                                       [options]="{min: 0, max: 999999999.99, align: 'right'}"
+                                       currencyMask matInput
+                                       type="decimal">
+                            </mat-form-field>
+                        </ng-container>
+                    </td>
+                </ng-container>
+
+                <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+
+            </mat-table>
+
+            <p class="mt-4">{{ 'project.application.partner.report.sub.title.four.description' | translate }}</p>
+            <div>
+                <jems-multi-language-container>
+                    <jems-multi-language-form-field
+                            [maxLength]="2000"
+                            label="common.textarea.enter.text"
+                            formControlName="spendingDeviations"
+                            type="textarea">
+                    </jems-multi-language-form-field>
+                </jems-multi-language-container>
+            </div>
+        </ng-container>
+
+        <ng-container *ngIf="data.identification?.targetGroups?.length > 0">
+            <h3>{{'project.application.partner.report.sub.title.five' | translate}}</h3>
+            <p>{{'project.application.partner.report.sub.title.five.description' | translate}}</p>
 
             <jems-multi-language-container jemsNoWidthLimit >
                 <div formArrayName="targetGroups" [jemsTableConfig]="[{maxInRem: 20},{}]">
@@ -165,5 +266,6 @@
                 </div>
             </jems-multi-language-container>
         </ng-container>
+
     </form>
 </jems-form>

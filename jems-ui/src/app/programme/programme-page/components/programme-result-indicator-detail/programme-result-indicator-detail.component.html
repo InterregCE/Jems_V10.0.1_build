@@ -1,6 +1,11 @@
 <form jemsFormLayout [formGroup]="resultIndicatorForm">
     <div jemsMultiColumnRow>
-        <h3 class="mb-0">{{'result.indicator.title' | translate}}</h3>
+        <a color="primary" class="mr-1" mat-icon-button *ngIf="formState !== FormState.EDIT"
+           routerLink="../../.."
+           matTooltip="{{ 'programme.indicator.back.to.list' | translate }}">
+            <mat-icon class="icon-back" fontSet="material-icons-outlined">arrow_circle_left</mat-icon>
+        </a>
+        <h3 class="mb-0 put-icon-to-header-line">{{'result.indicator.title' | translate}}</h3>
         <button mat-raised-button color="primary"
                 *ngIf="formState === FormState.VIEW && (programmeEditableStateStore.hasEditPermission$ | async)"
                 (click)="changeFormState$.next(FormState.EDIT)">
@@ -38,11 +43,15 @@
         <jems-multi-language-form-field label="result.indicator.form.field.name" formControlName="indicatorName">
         </jems-multi-language-form-field>
     </jems-multi-language-container>
-
+    <jems-alert [show]="!(priorities$ | async)?.length"
+                [type]="Alert.WARNING"
+                [closable]="false">
+        <span>{{'indicator.specific.objective.empty.warning' | translate}}</span>
+    </jems-alert>
     <mat-form-field>
         <mat-label>{{'result.indicator.form.field.specific.objective' | translate}}</mat-label>
         <mat-select name="specificObjective" formControlName="specificObjective" required>
-            <mat-optgroup *ngFor="let priority of priorities"
+            <mat-optgroup *ngFor="let priority of priorities$ | async"
                           [label]="priority.title | translateBySystemLanguage | async">
                 <mat-option *ngFor="let objective of priority.specificObjectives"
                             [value]="objective.programmeObjectivePolicy">
@@ -101,14 +110,13 @@
         </jems-multi-language-form-field>
     </jems-multi-language-container>
 
-    <jems-expandable-textarea
-            [control]="resultIndicatorForm?.controls?.comments"
-            [errors]="resultIndicatorForm?.controls?.comments?.errors"
-            [messages]="inputErrorMessages"
-            [characterLimit]="1000"
-            [label]="'result.indicator.form.field.comments'"
-            [disabled]="formState === FormState.VIEW">
-    </jems-expandable-textarea>
+    <jems-multi-language-container [useSystemLanguages]="true"
+                                   [switchButtonsVisible]="formState === FormState.EDIT">
+        <jems-multi-language-form-field [disabled]="formState === FormState.VIEW" [maxLength]="1000" type="textarea"
+                                        label="result.indicator.form.field.comments"
+                                        formControlName="comment">
+        </jems-multi-language-form-field>
+    </jems-multi-language-container>
     <div jemsMultiColumnRow *ngIf="formState === FormState.EDIT">
         <button mat-stroked-button
                 type="button"

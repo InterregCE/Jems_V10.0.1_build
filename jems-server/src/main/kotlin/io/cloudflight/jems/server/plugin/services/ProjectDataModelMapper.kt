@@ -62,6 +62,8 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budg
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.BudgetUnitCostEntryData
 import io.cloudflight.jems.plugin.contract.models.project.sectionB.partners.budget.PartnerBudgetData
 import io.cloudflight.jems.plugin.contract.models.programme.fund.ProgrammeFundTypeData
+import io.cloudflight.jems.plugin.contract.models.programme.unitcost.ProgrammeUnitCostListData
+import io.cloudflight.jems.plugin.contract.models.project.contracting.ContractingDimensionCodeData
 import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA3.ProjectCoFinancingCategoryOverviewData
 import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA3.ProjectCoFinancingOverviewData
 import io.cloudflight.jems.plugin.contract.models.project.sectionA.tableA3.ProjectCoFinancingByFundOverviewData
@@ -98,11 +100,11 @@ import io.cloudflight.jems.plugin.contract.models.project.sectionC.workpackage.W
 import io.cloudflight.jems.plugin.contract.models.project.sectionD.BudgetCostsDetailData
 import io.cloudflight.jems.plugin.contract.models.project.sectionD.ProjectBudgetOverviewPerPartnerPerPeriodData
 import io.cloudflight.jems.plugin.contract.models.project.sectionD.ProjectPartnerBudgetPerFundData
-import io.cloudflight.jems.plugin.contract.models.project.sectionE.ProjectDataSectionE
 import io.cloudflight.jems.plugin.contract.models.project.sectionE.lumpsum.ProjectLumpSumData
 import io.cloudflight.jems.plugin.contract.models.project.sectionE.lumpsum.ProjectPartnerLumpSumData
 import io.cloudflight.jems.plugin.contract.models.project.versions.ProjectVersionData
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
+import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
 import io.cloudflight.jems.server.programme.service.stateaid.model.ProgrammeStateAid
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
@@ -110,6 +112,7 @@ import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalcul
 import io.cloudflight.jems.server.project.service.cofinancing.model.ProjectCoFinancingByFundOverview
 import io.cloudflight.jems.server.project.service.cofinancing.model.ProjectCoFinancingCategoryOverview
 import io.cloudflight.jems.server.project.service.cofinancing.model.ProjectCoFinancingOverview
+import io.cloudflight.jems.server.project.service.contracting.model.ContractingDimensionCode
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectLumpSum
 import io.cloudflight.jems.server.project.service.lumpsum.model.ProjectPartnerLumpSum
 import io.cloudflight.jems.server.project.service.model.Address
@@ -257,9 +260,20 @@ fun ProjectPartnerDetail.toDataModel(stateAid: ProjectPartnerStateAid, budget: P
 fun Iterable<OutputProjectAssociatedOrganizationDetail>.toDataModel() = map { pluginDataMapper.map(it) }.toSet()
 
 fun List<ProjectLumpSum>.toDataModel(lumpSumsDetail: List<ProgrammeLumpSum>) =
-    ProjectDataSectionE(
-        map { projectLumpSum -> pluginDataMapper.map(projectLumpSum, lumpSumsDetail.firstOrNull { it.id == projectLumpSum.programmeLumpSumId }) }
+    map { projectLumpSum -> pluginDataMapper.map(projectLumpSum, lumpSumsDetail.firstOrNull { it.id == projectLumpSum.programmeLumpSumId }) }
+
+fun List<ProgrammeUnitCost>.toListDataModel() = map {
+    ProgrammeUnitCostListData(
+        id = it.id,
+        name = it.name.mapTo(HashSet()) {
+            InputTranslationData(it.language.toDataModel(), "E.2.1_${it.translation}")
+        },
+        type = it.type.toDataModel(),
+        description = it.description.toDataModel(),
+        costPerUnit = it.costPerUnit,
+        categories = it.categories.mapTo(HashSet()) { BudgetCategoryData.valueOf(it.name) },
     )
+}
 
 fun List<ProjectVersion>.toDataModel() =
     map{pluginDataMapper.map(it)}
@@ -304,6 +318,8 @@ fun List<ProjectCoFinancingByFundOverview>.projectCoFinancingByFundOverviewListT
             totalFundAndContribution= it.totalFundAndContribution
         )
     }.toList()
+
+fun List<ContractingDimensionCode>.toContractingDimensionCodeDataList() = map { pluginDataMapper.map(it) }
 
 private val pluginDataMapper = Mappers.getMapper(PluginDataMapper::class.java)
 
@@ -384,6 +400,7 @@ abstract class PluginDataMapper {
     abstract fun map(projectPartnerBudgetPerFund: ProjectPartnerBudgetPerFund): ProjectPartnerBudgetPerFundData
     abstract fun map(budgetCostsDetail: BudgetCostsDetail): BudgetCostsDetailData
     abstract fun map(projectBudgetOverviewPerPartnerPerPeriod: ProjectBudgetOverviewPerPartnerPerPeriod): ProjectBudgetOverviewPerPartnerPerPeriodData
+    abstract fun map(contractingDimensionCodes: ContractingDimensionCode): ContractingDimensionCodeData
 
     @Mappings(
         Mapping(target = "programmeLumpSum", source = "lumpSumsDetail")
@@ -456,13 +473,13 @@ abstract class PluginDataMapper {
 
     fun map(projectPartnerDetail: ProjectPartnerDetail): ProjectPartnerSummary =
         ProjectPartnerSummary(
-            projectPartnerDetail.id,
-            projectPartnerDetail.abbreviation,
-            projectPartnerDetail.active,
-            ProjectPartnerRole.valueOf(projectPartnerDetail.role.name),
-            projectPartnerDetail.sortNumber,
-            projectPartnerDetail.addresses.firstOrNull { it.type == ProjectPartnerAddressType.Organization }?.country,
-            projectPartnerDetail.addresses.firstOrNull { it.type == ProjectPartnerAddressType.Organization }?.nutsRegion2
+            id = projectPartnerDetail.id,
+            abbreviation = projectPartnerDetail.abbreviation,
+            active = projectPartnerDetail.active,
+            role = ProjectPartnerRole.valueOf(projectPartnerDetail.role.name),
+            sortNumber = projectPartnerDetail.sortNumber,
+            country = projectPartnerDetail.addresses.firstOrNull { it.type == ProjectPartnerAddressType.Organization }?.country,
+            region = projectPartnerDetail.addresses.firstOrNull { it.type == ProjectPartnerAddressType.Organization }?.nutsRegion2
         )
 
     fun map(programmeStrategy: ProgrammeStrategy): ProgrammeStrategyData {

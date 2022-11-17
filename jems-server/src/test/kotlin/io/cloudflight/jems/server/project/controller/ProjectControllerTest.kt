@@ -1,5 +1,6 @@
 package io.cloudflight.jems.server.project.controller
 
+import io.cloudflight.jems.api.call.dto.CallCostOptionDTO
 import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateDTO
 import io.cloudflight.jems.api.call.dto.flatrate.FlatRateSetupDTO
@@ -19,6 +20,7 @@ import io.cloudflight.jems.api.project.dto.ProjectCallSettingsDTO
 import io.cloudflight.jems.api.project.dto.ProjectDetailDTO
 import io.cloudflight.jems.api.project.dto.ProjectDetailFormDTO
 import io.cloudflight.jems.api.project.dto.ProjectPeriodDTO
+import io.cloudflight.jems.api.project.dto.ProjectSearchRequestDTO
 import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentEligibilityResult
 import io.cloudflight.jems.api.project.dto.assessment.ProjectAssessmentQualityResult
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
@@ -28,7 +30,9 @@ import io.cloudflight.jems.api.project.dto.status.ProjectDecisionDTO
 import io.cloudflight.jems.api.project.dto.status.ProjectStatusDTO
 import io.cloudflight.jems.api.project.dto.workpackage.activity.WorkPackageActivitySummaryDTO
 import io.cloudflight.jems.server.call.controller.toDto
+import io.cloudflight.jems.server.call.service.model.CallCostOption
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
+import io.cloudflight.jems.server.payments.service.advance.getContractedProjects.GetContractedProjectsInteractor
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeLumpSum
 import io.cloudflight.jems.server.programme.service.costoption.model.ProgrammeUnitCost
 import io.cloudflight.jems.server.project.service.ProjectService
@@ -45,6 +49,7 @@ import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectDetail
 import io.cloudflight.jems.server.project.service.model.ProjectForm
 import io.cloudflight.jems.server.project.service.model.ProjectPeriod
+import io.cloudflight.jems.server.project.service.model.ProjectSearchRequest
 import io.cloudflight.jems.server.project.service.model.ProjectStatus
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.model.assessment.ProjectAssessmentEligibility
@@ -64,6 +69,7 @@ import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import io.mockk.junit5.MockKExtension
+import io.mockk.slot
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -95,7 +101,11 @@ class ProjectControllerTest {
             isAdditionalFundAllowed = false,
             applicationFormFieldConfigurations = mutableSetOf(),
             preSubmissionCheckPluginKey = null,
-            firstStepPreSubmissionCheckPluginKey = null
+            firstStepPreSubmissionCheckPluginKey = null,
+            costOption = CallCostOption(
+                projectDefinedUnitCostAllowed = true,
+                projectDefinedLumpSumAllowed = false,
+            ),
         )
 
         private val partner1 = ProjectPartnerSummary(
@@ -128,12 +138,36 @@ class ProjectControllerTest {
             programmePriorityCode = "P1",
         )
 
+        private val contractedProjectSummary = ProjectSummary(
+            id = 8L,
+            customIdentifier = "01",
+            callName = "call name",
+            acronym = "ACR",
+            status = ApplicationStatus.CONTRACTED,
+            firstSubmissionDate = ZonedDateTime.parse("2021-05-01T10:00:00+02:00"),
+            lastResubmissionDate = ZonedDateTime.parse("2021-05-14T23:30:00+02:00"),
+            specificObjectiveCode = "SO1.1",
+            programmePriorityCode = "P1",
+        )
+
         private val outputProjectSimple = OutputProjectSimple(
             id = 8L,
             customIdentifier = "01",
             callName = "call name",
             acronym = "ACR",
             projectStatus = ApplicationStatusDTO.SUBMITTED,
+            firstSubmissionDate = ZonedDateTime.parse("2021-05-01T10:00:00+02:00"),
+            lastResubmissionDate = ZonedDateTime.parse("2021-05-14T23:30:00+02:00"),
+            specificObjectiveCode = "SO1.1",
+            programmePriorityCode = "P1",
+        )
+
+        private val outputContractedProjectSimple = OutputProjectSimple(
+            id = 8L,
+            customIdentifier = "01",
+            callName = "call name",
+            acronym = "ACR",
+            projectStatus = ApplicationStatusDTO.CONTRACTED,
             firstSubmissionDate = ZonedDateTime.parse("2021-05-01T10:00:00+02:00"),
             lastResubmissionDate = ZonedDateTime.parse("2021-05-14T23:30:00+02:00"),
             specificObjectiveCode = "SO1.1",
@@ -171,6 +205,32 @@ class ProjectControllerTest {
             programmePriority = projectForm.programmePriority,
             periods = listOf(ProjectPeriodDTO(projectId = projectId, number = 1, start = 1, end = 12))
         )
+
+        private val dummySearchRequest = ProjectSearchRequestDTO(
+            id = "search-id",
+            acronym = "search-acronym",
+            firstSubmissionFrom = startDate,
+            firstSubmissionTo = endDate,
+            lastSubmissionFrom = startDate.minusDays(1),
+            lastSubmissionTo = endDate.minusDays(1),
+            objectives = setOf(ProgrammeObjectivePolicy.EnvDevelopment, ProgrammeObjectivePolicy.LocalEnvDevelopment),
+            statuses = setOf(ApplicationStatusDTO.SUBMITTED, ApplicationStatusDTO.CONDITIONS_SUBMITTED),
+            calls = setOf(45L),
+        )
+
+        private val expectedSearchRequest = ProjectSearchRequest(
+            id = "search-id",
+            acronym = "search-acronym",
+            firstSubmissionFrom = startDate,
+            firstSubmissionTo = endDate,
+            lastSubmissionFrom = startDate.minusDays(1),
+            lastSubmissionTo = endDate.minusDays(1),
+            objectives = setOf(ProgrammeObjectivePolicy.EnvDevelopment, ProgrammeObjectivePolicy.LocalEnvDevelopment),
+            statuses = setOf(ApplicationStatus.SUBMITTED, ApplicationStatus.CONDITIONS_SUBMITTED),
+            calls = setOf(45L),
+            users = null,
+        )
+
     }
 
 
@@ -201,13 +261,40 @@ class ProjectControllerTest {
     @MockK
     lateinit var getProjectActivitiesInteractor: GetActivityInteractor
 
+    @RelaxedMockK
+    lateinit var getContractedProjectsInteractor: GetContractedProjectsInteractor
+
     @InjectMockKs
     private lateinit var controller: ProjectController
 
     @Test
     fun getAllProjects() {
-        every { getProjectInteractor.getAllProjects(any(), any()) } returns PageImpl(listOf(projectSummary))
-        assertThat(controller.getAllProjects(null,null, "id", "desc", null).content).containsExactly(outputProjectSimple)
+        val pageSlot = slot<Pageable>()
+        val requestSlot = slot<ProjectSearchRequest>()
+        every { getProjectInteractor.getAllProjects(capture(pageSlot), capture(requestSlot)) } returns PageImpl(listOf(projectSummary))
+
+        assertThat(
+            controller.getAllProjects(0, 15, "id", "desc", dummySearchRequest).content
+        ).containsExactly(outputProjectSimple)
+
+        assertThat(pageSlot.captured.pageNumber).isEqualTo(0)
+        assertThat(pageSlot.captured.pageSize).isEqualTo(15)
+        assertThat(pageSlot.captured.sort.stream().findFirst().get().isDescending).isTrue()
+        assertThat(pageSlot.captured.sort.stream().findFirst().get().property).isEqualTo("id")
+
+        assertThat(requestSlot.captured).isEqualTo(expectedSearchRequest)
+    }
+
+    @Test
+    fun getContractedProjects() {
+        every {
+            getContractedProjectsInteractor.getContractedProjects("")
+        } returns PageImpl(
+            listOf(
+                contractedProjectSummary
+            )
+        )
+        assertThat(controller.getContractedProjects("").content).containsExactly(outputContractedProjectSimple)
     }
 
     @Test
@@ -239,11 +326,13 @@ class ProjectControllerTest {
                     splittingAllowed = false,
                     phase = ProgrammeLumpSumPhase.Preparation,
                     categories = setOf(BudgetCategory.EquipmentCosts, BudgetCategory.TravelAndAccommodationCosts),
+                    fastTrack = false
                 ),
             ),
             unitCosts = listOf(
                 ProgrammeUnitCost(
                     id = 4,
+                    projectId = null,
                     name = setOf(InputTranslation(SystemLanguage.EN, "UnitCost")),
                     description = setOf(InputTranslation(SystemLanguage.EN, "pus 4")),
                     type = setOf(InputTranslation(SystemLanguage.EN, "type of unit cost")),
@@ -255,7 +344,11 @@ class ProjectControllerTest {
             stateAids = emptyList(),
             applicationFormFieldConfigurations = mutableSetOf(),
             preSubmissionCheckPluginKey = null,
-            firstStepPreSubmissionCheckPluginKey = null
+            firstStepPreSubmissionCheckPluginKey = null,
+            costOption = CallCostOption(
+                projectDefinedUnitCostAllowed = true,
+                projectDefinedLumpSumAllowed = false,
+            ),
         )
         every { getProjectInteractor.getProjectCallSettings(1L) } returns callSettings
         assertThat(controller.getProjectCallSettingsById(1L)).isEqualTo(
@@ -280,21 +373,27 @@ class ProjectControllerTest {
                         splittingAllowed = false,
                         phase = ProgrammeLumpSumPhase.Preparation,
                         categories = setOf(BudgetCategory.EquipmentCosts, BudgetCategory.TravelAndAccommodationCosts),
+                        fastTrack = false
                     ),
                 ),
                 unitCosts = listOf(
                     ProgrammeUnitCostDTO(
                         id = 4,
+                        projectDefined = false,
                         name = setOf(InputTranslation(SystemLanguage.EN, "UnitCost")),
                         description = setOf(InputTranslation(SystemLanguage.EN, "pus 4")),
                         type = setOf(InputTranslation(SystemLanguage.EN, "type of unit cost")),
                         costPerUnit = BigDecimal.ONE,
                         oneCostCategory = false,
-                        categories = setOf(BudgetCategory.ExternalCosts, BudgetCategory.OfficeAndAdministrationCosts),
+                        categories = setOf(BudgetCategory.ExternalCosts, BudgetCategory.OfficeAndAdministrationCosts)
                     )
                 ),
                 stateAids = emptyList(),
-                applicationFormFieldConfigurations = mutableSetOf()
+                applicationFormFieldConfigurations = mutableSetOf(),
+                costOption = CallCostOptionDTO(
+                    projectDefinedUnitCostAllowed = true,
+                    projectDefinedLumpSumAllowed = false,
+                ),
             )
         )
     }
@@ -369,7 +468,11 @@ class ProjectControllerTest {
                     emptyList(),
                     emptyList(),
                     emptyList(),
-                    callSettings.applicationFormFieldConfigurations.toDto(callSettings.callType)
+                    callSettings.applicationFormFieldConfigurations.toDto(callSettings.callType),
+                    costOption = CallCostOptionDTO(
+                        projectDefinedUnitCostAllowed = true,
+                        projectDefinedLumpSumAllowed = false,
+                    ),
                 ),
                 acronym = project.acronym,
                 title = project.title,

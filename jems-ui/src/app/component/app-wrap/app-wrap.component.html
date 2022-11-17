@@ -7,6 +7,7 @@
     <mat-sidenav #sidenav  *ngIf="headlines$ | async as headlines"
                  [ngClass]="{'stayVisible' : !!headlines.length}"
                  [opened]="!!headlines.length"
+                 (openedChange)="dispatchResizeEvent()"
                  class="side-nav-container" mode="side">
         <jems-side-nav
                 [headlines]="headlines">

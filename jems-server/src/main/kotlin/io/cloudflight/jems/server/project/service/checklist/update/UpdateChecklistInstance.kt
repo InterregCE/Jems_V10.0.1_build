@@ -21,7 +21,7 @@ class UpdateChecklistInstance(
     private val persistence: ChecklistInstancePersistence,
     private val auditPublisher: ApplicationEventPublisher,
     private val checklistInstanceValidator: ChecklistInstanceValidator,
-    private val userAuthorization: UserAuthorization,
+    private val userAuthorization: UserAuthorization
 ) : UpdateChecklistInstanceInteractor {
 
     @CanUpdateChecklistAssessment
@@ -61,7 +61,7 @@ class UpdateChecklistInstance(
                 checklistStatusChanged(
                     context = this,
                     checklist = it,
-                    oldStatus = existing.status,
+                    oldStatus = existing.status
                 )
             )
         }

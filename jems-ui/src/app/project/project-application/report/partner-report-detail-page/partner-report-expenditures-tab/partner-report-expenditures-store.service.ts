@@ -73,7 +73,8 @@ export class PartnerReportExpendituresStore {
       switchMap(([partnerId, reportId]) =>
         this.partnerReportExpenditureCostsService.updatePartnerReportExpenditures(partnerId as number, reportId, partnerExpenditures)
       ),
-      tap(updatedExpenditureCosts => this.expendituresUpdated$.next(updatedExpenditureCosts))
+      tap(updatedExpenditureCosts => this.expendituresUpdated$.next(updatedExpenditureCosts)),
+      tap(() => this.partnerReportDetailPageStore.refreshIdentification$.next(null)),
     );
   }
 
@@ -111,20 +112,20 @@ export class PartnerReportExpendituresStore {
     ])
       .pipe(
         filter(([partnerId, partnerReport]) => partnerId !== null && partnerReport !== null),
-        switchMap(([partnerId, partnerReport]) => this.projectPartnerBudgetStore
-          .getBudgetOptions(partnerId as number, partnerReport.linkedFormVersion)),
+        switchMap(([partnerId, partnerReport]) => this.partnerReportExpenditureCostsService
+          .getAvailableBudgetOptions(partnerId as number, partnerReport.id)),
         map((it: ProjectPartnerBudgetOptionsDto) => BudgetOptions.fromDto(it)),
       );
   }
 
   private investmentSummariesForReport(): Observable<InvestmentSummary[]> {
     return combineLatest([
-      this.projectStore.project$,
+      this.partnerReportDetailPageStore.partnerId$,
       this.projectStore.investmentChangeEvent$.pipe(startWith(null)),
       this.partnerReportDetailPageStore.partnerReport$])
       .pipe(
-        switchMap(([project, changeEvent, partnerReport]) =>
-          this.projectStore.getProjectInvestmentSummaries(project, partnerReport.linkedFormVersion)),
+        switchMap(([partnerId, changeEvent, partnerReport]) =>
+          this.partnerReportExpenditureCostsService.getAvailableInvestments(partnerId as number, partnerReport.id)),
         map((investmentSummaryDTOs: InvestmentSummaryDTO[]) => investmentSummaryDTOs
           .map(it => new InvestmentSummary(it.id, it.investmentNumber, it.workPackageNumber))),
         map((investmentSummaries: InvestmentSummary[]) => investmentSummaries),

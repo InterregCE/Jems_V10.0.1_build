@@ -86,7 +86,9 @@ internal class ProjectAssociatedOrganizationServiceTest {
         lengthOfPeriod = 1,
         allowedRealCosts = defaultAllowedRealCostsByCallType(CallType.STANDARD),
         preSubmissionCheckPluginKey = null,
-        firstStepPreSubmissionCheckPluginKey = null
+        firstStepPreSubmissionCheckPluginKey = null,
+        projectDefinedUnitCostAllowed = true,
+        projectDefinedLumpSumAllowed = false,
     )
     private val projectStatus = ProjectStatusHistoryEntity(
         status = ApplicationStatus.APPROVED,
@@ -112,8 +114,9 @@ internal class ProjectAssociatedOrganizationServiceTest {
 
     private val projectPartnerDTO = ProjectPartnerSummaryDTO(
         id = 1,
-        active = true,
         abbreviation = projectPartner.abbreviation,
+        institutionName = null,
+        active = true,
         role = ProjectPartnerRoleDTO.LEAD_PARTNER,
         sortNumber = 1,
     )

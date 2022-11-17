@@ -1,10 +1,11 @@
 import {CallUpdateRequestDTO} from '../../../build/swagger-code-jems-api/model/callUpdateRequestDTO';
 import {PreSubmissionPluginsDTO} from '../../../build/swagger-code-jems-api/model/preSubmissionPluginsDTO';
 import {FlatRateSetupDTO} from '../../../build/swagger-code-jems-api/model/flatRateSetupDTO';
+import {CallCostOptionDTO} from '../../../build/swagger-code-jems-api/model/callCostOptionDTO';
 import {
   UpdateApplicationFormFieldConfigurationRequestDTO
 } from '../../../build/swagger-code-jems-api/model/updateApplicationFormFieldConfigurationRequestDTO';
-import faker from '@faker-js/faker';
+import {faker} from '@faker-js/faker';
 import {loginByRequest} from './login.commands';
 
 declare global {
@@ -14,7 +15,8 @@ declare global {
     budgetSettings: {
       flatRates: FlatRateSetupDTO,
       lumpSums: number[],
-      unitCosts: number[]
+      unitCosts: number[],
+      allowedCostOption: CallCostOptionDTO
     },
     applicationFormConfiguration: UpdateApplicationFormFieldConfigurationRequestDTO[],
     preSubmissionCheckSettings: PreSubmissionPluginsDTO
@@ -68,17 +70,24 @@ function createCall(call: Call, creatingUserEmail?: string) {
     body: call.generalCallSettings
   }).then(function (response) {
     const callId = response.body.id;
-    setCallFlatRates(callId, call.budgetSettings.flatRates);
-    setCallLumpSums(callId, call.budgetSettings.lumpSums);
-    setCallUnitCosts(callId, call.budgetSettings.unitCosts);
-    setCallApplicationFormConfiguration(callId, call.applicationFormConfiguration);
-    setCallPreSubmissionCheckSettings(callId, call.preSubmissionCheckSettings);
+    if (call.budgetSettings?.flatRates)
+      setCallFlatRates(callId, call.budgetSettings.flatRates);
+    if (call.budgetSettings?.lumpSums)
+      setCallLumpSums(callId, call.budgetSettings.lumpSums);
+    if (call.budgetSettings?.unitCosts)
+      setCallUnitCosts(callId, call.budgetSettings.unitCosts);
+    if (call.budgetSettings?.allowedCostOption)
+      allowedCostOption(callId, call.budgetSettings.allowedCostOption);
+    if (call.applicationFormConfiguration)
+      setCallApplicationFormConfiguration(callId, call.applicationFormConfiguration);
+    if (call.preSubmissionCheckSettings)
+      setCallPreSubmissionCheckSettings(callId, call.preSubmissionCheckSettings);
     if (creatingUserEmail) {
       cy.get('@currentUser').then((currentUser: any) => {
         loginByRequest(currentUser.name);
       });
     }
-    cy.wrap(callId);
+    cy.wrap(callId).as('callId');
   });
 }
 
@@ -103,6 +112,14 @@ function setCallUnitCosts(callId: number, unitCosts: number[]) {
     method: 'PUT',
     url: `api/call/byId/${callId}/unitCost`,
     body: unitCosts
+  });
+}
+
+function allowedCostOption(callId: number, allowedCostOption: CallCostOptionDTO) {
+  cy.request({
+    method: 'PUT',
+    url: `api/call/byId/${callId}/allowedCostOption`,
+    body: allowedCostOption
   });
 }
 
