@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.project.service.partner.get_project_partner
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionList
-import io.cloudflight.jems.server.payments.authorization.CanUpdatePayments
+import io.cloudflight.jems.server.payments.authorization.CanRetrieveAdvancePayments
 import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectForm
 import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectPartner
 import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectPartnerSummaries
@@ -75,9 +75,9 @@ class GetProjectPartner(
             this.forEach { it.institutionName = institutions[it.id!!]?.name }
         }
 
-    @CanUpdatePayments
+    @CanRetrieveAdvancePayments
     @Transactional(readOnly = true)
-    @ExceptionWrapper(GetProjectPartnerByProjectIdForDropdownException::class)
+    @ExceptionWrapper(GetProjectPartnerByProjectIdForPaymentsException::class)
     override fun findAllByProjectIdWithContributionsForDropdown(
         projectId: Long
     ): List<ProjectPartnerPaymentSummary> =

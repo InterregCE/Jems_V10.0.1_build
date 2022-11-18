@@ -23,3 +23,9 @@ class GetProjectPartnerByProjectIdForDropdownException(cause: Throwable) : Appli
     i18nMessage = I18nMessage("$GET_PROJECT_PARTNER_ERROR_KEY_PREFIX.by.project.id.for.dropdown.failed"),
     cause = cause
 )
+
+class GetProjectPartnerByProjectIdForPaymentsException(cause: Throwable) : ApplicationException(
+    code = "$GET_PROJECT_PARTNER_ERROR_CODE_PREFIX-004",
+    i18nMessage = I18nMessage("$GET_PROJECT_PARTNER_ERROR_KEY_PREFIX.by.project.id.for.payments.failed"),
+    cause = cause
+)

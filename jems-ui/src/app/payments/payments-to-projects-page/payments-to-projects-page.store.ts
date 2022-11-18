@@ -21,6 +21,7 @@ export class PaymentsToProjectPageStore {
   private paymentId: number;
 
   userCanView$: Observable<boolean>;
+  userCanEdit$: Observable<boolean>;
   newPageSize$ = new Subject<number>();
   newPageIndex$ = new Subject<number>();
   newSort$ = new Subject<Partial<MatSort>>();
@@ -34,6 +35,7 @@ export class PaymentsToProjectPageStore {
               private routingService: RoutingService) {
     this.paymentToProjectDTO$ = this.paymentsToProjects();
     this.userCanView$ = this.userCanView();
+    this.userCanEdit$ = this.userCanEdit();
     this.payment$ = this.payment();
   }
 
@@ -61,6 +63,15 @@ export class PaymentsToProjectPageStore {
     ])
       .pipe(
         map(([canRetrieve, canUpdate]) => canRetrieve || canUpdate)
+      );
+  }
+
+  private userCanEdit(): Observable<boolean> {
+    return combineLatest([
+      this.permissionService.hasPermission(PermissionsEnum.PaymentsUpdate),
+    ])
+      .pipe(
+        map(([canUpdate]) => canUpdate)
       );
   }
 

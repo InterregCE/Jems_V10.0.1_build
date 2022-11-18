@@ -243,6 +243,17 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
     this.disableFieldsIfProjectNotSelected(paymentDetail);
     this.disableAuthorizationCheckbox(paymentDetail);
     this.disableConfirmationCheckbox();
+
+    this.advancePaymentsDetailPageStore.userCanEdit$.pipe(
+      tap(userCanEdit => this.disableAllFields(userCanEdit)),
+      untilDestroyed(this)
+    ).subscribe();
+  }
+
+  disableAllFields(userCanEdit: boolean) {
+    if(!userCanEdit) {
+      this.advancePaymentForm.disable();
+    }
   }
 
   setValidators() {
@@ -482,6 +493,7 @@ export class AdvancePaymentsDetailPageComponent implements OnInit {
 
   setFundsAndContributionData(selection: any) {
     this.fundsAndContributions = selection;
+    this.advancePayment.get(this.constants.FORM_CONTROL_NAMES.sourceOrFundName)?.setValue('');
   }
 
   resetFundsAndContributionData() {
