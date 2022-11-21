@@ -19,7 +19,6 @@ internal class ProjectContractInfoAuthorizationTest: UnitTest() {
 
     companion object {
         private const val PROJECT_ID = 9L
-        private const val PROJECT_CREATOR_USER_ID = 3L
 
         private const val PROJECT_COLLABORATOR_VIEW_USER_ID = 4L
         private const val PROJECT_COLLABORATOR_EDIT_USER_ID = 5L
@@ -32,7 +31,7 @@ internal class ProjectContractInfoAuthorizationTest: UnitTest() {
 
         private val applicantAndStatus = ProjectApplicantAndStatus(
             projectId = PROJECT_ID,
-            applicantId = PROJECT_CREATOR_USER_ID,
+            applicantId = 2645L,
             collaboratorViewIds = setOf(PROJECT_COLLABORATOR_VIEW_USER_ID),
             collaboratorEditIds = setOf(PROJECT_COLLABORATOR_EDIT_USER_ID),
             collaboratorManageIds = setOf(PROJECT_COLLABORATOR_MANAGE_USER_ID),
@@ -66,24 +65,16 @@ internal class ProjectContractInfoAuthorizationTest: UnitTest() {
 
 
     @Test
-    fun `project creator can view and edit`() {
+    fun `project creator can NOT view and edit, if he is not collaborator`() {
         every { currentUser.hasPermission(UserRolePermission.ProjectContractsView) } returns false
         every { currentUser.hasPermission(UserRolePermission.ProjectContractsEdit) } returns false
-        every { securityService.getUserIdOrThrow() } returns PROJECT_CREATOR_USER_ID
+        every { securityService.getUserIdOrThrow() } returns 2645L
         every { projectPersistence.getApplicantAndStatusById(PROJECT_ID)} returns applicantAndStatus
-        every { authorizationUtilService.userIsPartnerCollaboratorForProject(
-            userId = PROJECT_CREATOR_USER_ID,
-            projectId = PROJECT_ID
-        )
+        every {
+            authorizationUtilService.userIsPartnerCollaboratorForProject(userId = 2645L, projectId = PROJECT_ID)
         } returns false
-        every {
-            authorizationUtilService.userIsProjectOwnerOrProjectCollaborator(userId = PROJECT_CREATOR_USER_ID, applicantAndStatus)
-        } returns true
-        every {
-            authorizationUtilService.userIsProjectCollaboratorWithEditPrivilege(userId = PROJECT_CREATOR_USER_ID, applicantAndStatus)
-        } returns true
-        Assertions.assertThat(projectContractInfoAuthorization.canViewContractInfo(PROJECT_ID)).isTrue
-        Assertions.assertThat(projectContractInfoAuthorization.canEditContractInfo(PROJECT_ID)).isTrue
+        Assertions.assertThat(projectContractInfoAuthorization.canViewContractInfo(PROJECT_ID)).isFalse()
+        Assertions.assertThat(projectContractInfoAuthorization.canEditContractInfo(PROJECT_ID)).isFalse()
     }
 
     @Test
@@ -97,12 +88,6 @@ internal class ProjectContractInfoAuthorizationTest: UnitTest() {
             projectId = PROJECT_ID
         )
         } returns true
-        every {
-            authorizationUtilService.userIsProjectOwnerOrProjectCollaborator(userId = PARTNER_COLLABORATOR_USER_ID, applicantAndStatus)
-        } returns false
-        every {
-            authorizationUtilService.userIsProjectCollaboratorWithEditPrivilege(userId = PARTNER_COLLABORATOR_USER_ID, applicantAndStatus)
-        } returns false
         Assertions.assertThat(projectContractInfoAuthorization.canViewContractInfo(PROJECT_ID)).isTrue
         Assertions.assertThat(projectContractInfoAuthorization.canEditContractInfo(PROJECT_ID)).isFalse
     }
@@ -121,12 +106,6 @@ internal class ProjectContractInfoAuthorizationTest: UnitTest() {
             projectId = PROJECT_ID
         )
         } returns false
-        every {
-            authorizationUtilService.userIsProjectOwnerOrProjectCollaborator(userId = PROGRAMME_USER_ID, applicantAndStatus)
-        } returns false
-        every {
-            authorizationUtilService.userIsProjectCollaboratorWithEditPrivilege(userId = PROGRAMME_USER_ID, applicantAndStatus)
-        } returns false
         Assertions.assertThat(projectContractInfoAuthorization.canViewContractInfo(PROJECT_ID)).isTrue
         Assertions.assertThat(projectContractInfoAuthorization.canEditContractInfo(PROJECT_ID)).isFalse
     }
@@ -144,12 +123,6 @@ internal class ProjectContractInfoAuthorizationTest: UnitTest() {
             userId = PROGRAMME_USER_ID,
             projectId = PROJECT_ID
         )
-        } returns false
-        every {
-            authorizationUtilService.userIsProjectOwnerOrProjectCollaborator(userId = PROGRAMME_USER_ID, applicantAndStatus)
-        } returns false
-        every {
-            authorizationUtilService.userIsProjectCollaboratorWithEditPrivilege(userId = PROGRAMME_USER_ID, applicantAndStatus)
         } returns false
         Assertions.assertThat(projectContractInfoAuthorization.canViewContractInfo(PROJECT_ID)).isTrue
         Assertions.assertThat(projectContractInfoAuthorization.canEditContractInfo(PROJECT_ID)).isTrue
