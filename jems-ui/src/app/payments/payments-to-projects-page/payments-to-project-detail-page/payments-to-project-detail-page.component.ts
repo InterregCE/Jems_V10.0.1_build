@@ -41,6 +41,7 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
   updateInstallmentsError$ = new Subject<HttpErrorResponse | null>();
   updateInstallmentsSuccess$ = new Subject<boolean>();
   toggleStatesOfPaymentRows: boolean[] = [];
+  userCanEdit$: Observable<boolean>;
 
   partnerPaymentsForm = this.formBuilder.group({
     id: '',
@@ -67,6 +68,7 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
               private localeDatePipe: LocaleDatePipe,
               private translateService: TranslateService,
               private changeDetectorRef: ChangeDetectorRef) {
+    this.userCanEdit$ = this.paymentToProjectsStore.userCanEdit$;
   }
 
   ngOnInit(): void {
@@ -113,6 +115,17 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
     paymentDetail.partnerPayments.forEach((partnerPayment, index) => this.addPartnerPayment(partnerPayment, index));
 
     this.updateAllPaymentRowToggleStates();
+
+    this.userCanEdit$.pipe(
+      tap(userCanEdit => this.disableAllFields(userCanEdit)),
+      untilDestroyed(this)
+    ).subscribe()
+  }
+
+  disableAllFields(userCanEdit: boolean) {
+    if(!userCanEdit) {
+      this.partnerPaymentsForm.disable();
+    }
   }
 
   addInstallment(installment: PaymentPartnerInstallmentDTO | null, paymentIndex: number): void {

@@ -108,7 +108,7 @@
                                     </div>
                                     <div class="column-installment-confirm-user justify-start">{{ 'payments.detail.table.header.installment.user.confirming.payment' | translate }}</div>
                                     <div class="column-installment-confirm-date justify-start">{{ 'payments.detail.table.header.installment.payment.confirmation.date' | translate }}</div>
-                                    <div class="column-installment-delete justify-center">{{ 'common.delete.entry' | translate }}</div>
+                                    <div *ngIf="userCanEdit$ | async" class="column-installment-delete justify-center">{{ 'common.delete.entry' | translate }}</div>
                                 </div>
 
                                 <ng-container [formGroupName]="index">
@@ -167,7 +167,7 @@
                                             </div>
                                             <div><span jemsText class="text-overflow-ellipsis">{{installment.get(constants.FORM_CONTROL_NAMES.paymentConfirmedUser).value?.email}}</span></div>
                                             <div>{{getFormattedDate(installment.get(constants.FORM_CONTROL_NAMES.paymentConfirmedDate).value)}}</div>
-                                            <div>
+                                            <div *ngIf="userCanEdit$ | async">
                                                 <button *ngIf="canInstallmentBeDeleted(index, installmentIndex)"
                                                         (click)="removeItem(index, installmentIndex)"
                                                         class="delete-button"
@@ -181,7 +181,7 @@
                                     </ng-container>
                                 </ng-container>
                             </div>
-                            <div *ngIf="installmentsArray(index).length>0 && installmentsArray(index).length<5" class="footer-with-button justify-start">
+                            <div *ngIf="installmentsArray(index).length>0 && installmentsArray(index).length<5 && (userCanEdit$ | async)" class="footer-with-button justify-start">
                                 <button mat-stroked-button class="button-add-installment"
                                         (click)="addInstallmentButtonClicked(null, index);">
                                         + {{'payments.detail.table.header.installment.add.button' | translate}}

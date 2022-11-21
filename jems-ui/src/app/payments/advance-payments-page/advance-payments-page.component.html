@@ -38,7 +38,7 @@
 </ng-template>
 
 <ng-template #deleteButtonCell let-payment>
-    <button *ngIf="!payment.paymentAuthorized"
+    <button *ngIf="!payment.paymentAuthorized && (userCanEdit$ | async)"
             (click)="$event.stopPropagation(); removeItem(payment.id);"
             class="delete-button"
             color="accent" mat-icon-button

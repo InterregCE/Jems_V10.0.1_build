@@ -8,7 +8,9 @@ import {filter, map, take, tap} from 'rxjs/operators';
 import {AdvancePaymentsPageStore} from './advance-payments-page.store';
 import {Forms} from '@common/utils/forms';
 import {MatDialog} from '@angular/material/dialog';
+import {UntilDestroy, untilDestroyed} from "@ngneat/until-destroy";
 
+@UntilDestroy()
 @Component({
   selector: 'jems-advanced-payments-page',
   templateUrl: './advance-payments-page.component.html',
@@ -40,7 +42,6 @@ export class AdvancePaymentsPageComponent implements OnInit, AfterViewInit {
     tableConfiguration: TableConfiguration;
   }>;
   userCanEdit$: Observable<boolean>;
-
   tableConfiguration: TableConfiguration;
 
   constructor(public advancePaymentsStore: AdvancePaymentsPageStore,
@@ -48,7 +49,6 @@ export class AdvancePaymentsPageComponent implements OnInit, AfterViewInit {
 
   ngOnInit(): void {
     this.userCanEdit$ = this.advancePaymentsStore.userCanEdit$;
-
     this.data$ = combineLatest([
       this.advancePaymentsStore.advancePaymentDTO$,
       this.advancePaymentsStore.userCanView$,
@@ -122,14 +122,23 @@ export class AdvancePaymentsPageComponent implements OnInit, AfterViewInit {
           columnWidth: ColumnWidth.ChipColumn,
           customCellTemplate: this.remainingToBeSettledCell
         },
-        {
-          displayedColumn: 'payments.advance.payment.table.header.actions.delete',
-          columnType: ColumnType.CustomComponent,
-          columnWidth: ColumnWidth.SmallColumn,
-          customCellTemplate: this.deleteButtonCell
-        },
       ]
     });
+
+    this.advancePaymentsStore.userCanEdit$.pipe(
+      tap(userCanEdit => {
+          if (userCanEdit) {
+            this.tableConfiguration.columns.push({
+              displayedColumn: 'payments.advance.payment.table.header.actions.delete',
+              columnType: ColumnType.CustomComponent,
+              columnWidth: ColumnWidth.SmallColumn,
+              customCellTemplate: this.deleteButtonCell
+            })
+          }
+        }
+      ),
+      untilDestroyed(this)
+    ).subscribe();
 
     this.tableConfiguration.routerLink = `/app/payments/advancePayments/`;
   }
