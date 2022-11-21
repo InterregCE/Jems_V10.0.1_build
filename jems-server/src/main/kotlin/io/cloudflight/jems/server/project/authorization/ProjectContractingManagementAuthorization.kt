@@ -36,37 +36,33 @@ class ProjectContractingManagementAuthorization(
 ): Authorization(securityService) {
 
     fun canViewProjectManagement(projectId: Long): Boolean {
-        val currentUserId = securityService.getUserIdOrThrow()
         val applicantAndStatus = projectPersistence.getApplicantAndStatusById(projectId)
 
         return hasPermissionForProject(UserRolePermission.ProjectContractingManagementView, projectId) ||
             hasPermissionForProject(UserRolePermission.ProjectContractingManagementEdit, projectId) ||
-            authorizationUtilService.userIsProjectOwnerOrProjectCollaborator(currentUserId, applicantAndStatus) ||
+            isActiveUserIdEqualToOneOf(applicantAndStatus.getUserIdsWithViewLevel()) ||
             authorizationUtilService.userIsPartnerCollaboratorForProject(
                 userId = securityService.getUserIdOrThrow(),
                 projectId = projectId)
     }
 
     fun canEditProjectManagement(projectId: Long): Boolean {
-        val currentUserId = securityService.getUserIdOrThrow()
-        val applicantAndStatus = projectPersistence.getApplicantAndStatusById(projectId)
+        val project = projectPersistence.getApplicantAndStatusById(projectId)
         return hasPermissionForProject(UserRolePermission.ProjectContractingManagementEdit, projectId) ||
-            authorizationUtilService.userIsProjectCollaboratorWithEditPrivilege(currentUserId, applicantAndStatus)
+            isActiveUserIdEqualToOneOf(project.getUserIdsWithEditLevel())
     }
 
     fun canEditReportingAndIsCollaborator(projectId: Long): Boolean {
         val applicantAndStatus = projectPersistence.getApplicantAndStatusById(projectId)
-        val isProjectOwnerOrProjectCollaborator = authorizationUtilService.userIsProjectOwnerOrProjectCollaborator(securityService.getUserIdOrThrow(),
-            applicantAndStatus)
-        return hasPermission(UserRolePermission.ProjectCreatorContractingReportingEdit) && isProjectOwnerOrProjectCollaborator
+        return hasPermission(UserRolePermission.ProjectCreatorContractingReportingEdit) &&
+            isActiveUserIdEqualToOneOf(applicantAndStatus.getUserIdsWithViewLevel())
     }
 
 
     fun canViewReportingAndIsCollaborator(projectId: Long): Boolean {
         val applicantAndStatus = projectPersistence.getApplicantAndStatusById(projectId)
-        val isProjectOwnerOrProjectCollaborator = authorizationUtilService.userIsProjectOwnerOrProjectCollaborator(securityService.getUserIdOrThrow(),
-            applicantAndStatus)
-        return hasPermission(UserRolePermission.ProjectCreatorContractingReportingView) && isProjectOwnerOrProjectCollaborator
+        return hasPermission(UserRolePermission.ProjectCreatorContractingReportingView) &&
+            isActiveUserIdEqualToOneOf(applicantAndStatus.getUserIdsWithViewLevel())
     }
 
 }

@@ -28,16 +28,14 @@ class ProjectContractInfoAuthorization(
         val applicantAndStatus = projectPersistence.getApplicantAndStatusById(projectId)
         return hasPermissionForProject(UserRolePermission.ProjectContractsView, projectId) ||
             hasPermissionForProject(UserRolePermission.ProjectContractsEdit, projectId) ||
-            authorizationUtilService.userIsProjectOwnerOrProjectCollaborator(userId = currentUserId, applicantAndStatus) ||
+            isActiveUserIdEqualToOneOf(applicantAndStatus.getUserIdsWithViewLevel()) ||
             authorizationUtilService.userIsPartnerCollaboratorForProject(userId = currentUserId, projectId = projectId)
     }
 
     fun canEditContractInfo(projectId: Long): Boolean {
-        val currentUserId = securityService.getUserIdOrThrow()
         val applicantAndStatus = projectPersistence.getApplicantAndStatusById(projectId)
         return hasPermissionForProject(UserRolePermission.ProjectContractsEdit, projectId) ||
-            authorizationUtilService.userIsProjectCollaboratorWithEditPrivilege(userId = currentUserId, applicantAndStatus)
+            isActiveUserIdEqualToOneOf(applicantAndStatus.getUserIdsWithEditLevel())
     }
-
 
 }
