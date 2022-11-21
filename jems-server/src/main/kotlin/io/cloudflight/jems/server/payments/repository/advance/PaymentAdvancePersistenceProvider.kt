@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.payments.repository.advance
 
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.common.minio.JemsProjectFileRepository
+import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.payments.service.advance.PaymentAdvancePersistence
 import io.cloudflight.jems.server.payments.entity.AdvancePaymentEntity
 import io.cloudflight.jems.server.payments.model.advance.AdvancePayment
@@ -11,7 +11,7 @@ import io.cloudflight.jems.server.payments.repository.toDetailModel
 import io.cloudflight.jems.server.payments.repository.toEntity
 import io.cloudflight.jems.server.payments.repository.toModelList
 import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundRepository
-import io.cloudflight.jems.server.project.repository.report.file.ProjectReportFileRepository
+import io.cloudflight.jems.server.common.file.repository.JemsFileMetadataRepository
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
@@ -33,8 +33,8 @@ class PaymentAdvancePersistenceProvider(
     private val partnerCoFinancingPersistence: ProjectPartnerCoFinancingPersistence,
     private val userRepository: UserRepository,
     private val programmeFundRepository: ProgrammeFundRepository,
-    private val fileRepository: JemsProjectFileRepository,
-    private val reportFileRepository: ProjectReportFileRepository,
+    private val fileRepository: JemsProjectFileService,
+    private val reportFileRepository: JemsFileMetadataRepository,
 ): PaymentAdvancePersistence {
 
     @Transactional(readOnly = true)

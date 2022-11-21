@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.project.repository.report.expenditure
 
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.server.common.entity.TranslationId
-import io.cloudflight.jems.server.common.minio.JemsProjectFileRepository
+import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportExpenditureCostEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportExpenditureCostTranslEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportInvestmentEntity
@@ -28,7 +28,7 @@ class ProjectReportExpenditurePersistenceProvider(
     private val reportLumpSumRepository: ProjectPartnerReportLumpSumRepository,
     private val reportUnitCostRepository: ProjectPartnerReportUnitCostRepository,
     private val reportInvestmentRepository: ProjectPartnerReportInvestmentRepository,
-    private val fileRepository: JemsProjectFileRepository,
+    private val fileRepository: JemsProjectFileService,
     private val reportCostCategoriesRepository: ReportProjectPartnerExpenditureCostCategoryRepository
 ) : ProjectReportExpenditurePersistence {
 

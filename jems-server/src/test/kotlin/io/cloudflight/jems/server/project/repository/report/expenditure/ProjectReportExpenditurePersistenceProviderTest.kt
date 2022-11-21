@@ -6,7 +6,7 @@ import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.entity.TranslationId
-import io.cloudflight.jems.server.common.minio.JemsProjectFileRepository
+import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.programme.entity.costoption.*
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportExpenditureCostEntity
@@ -15,7 +15,7 @@ import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerRepor
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportInvestmentTranslEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportLumpSumEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportUnitCostEntity
-import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
+import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
 import io.cloudflight.jems.server.project.entity.report.financialOverview.ReportProjectPartnerExpenditureCostCategoryEntity
 import io.cloudflight.jems.server.project.repository.report.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.repository.report.financialOverview.costCategory.ReportProjectPartnerExpenditureCostCategoryRepository
@@ -55,7 +55,7 @@ class ProjectReportExpenditurePersistenceProviderTest : UnitTest() {
         private val YESTERDAY = LocalDate.now().minusDays(1)
         private val TOMORROW = LocalDate.now().plusDays(1)
 
-        val dummyAttachment = ReportProjectFileEntity(
+        val dummyAttachment = JemsFileMetadataEntity(
             id = 970L,
             projectId = 4L,
             partnerId = PARTNER_ID,
@@ -282,7 +282,7 @@ class ProjectReportExpenditurePersistenceProviderTest : UnitTest() {
     lateinit var reportInvestmentRepository: ProjectPartnerReportInvestmentRepository
 
     @MockK
-    lateinit var fileRepository: JemsProjectFileRepository
+    lateinit var fileRepository: JemsProjectFileService
 
     @MockK
     lateinit var reportCostCategoriesRepository: ReportProjectPartnerExpenditureCostCategoryRepository

@@ -1,6 +1,6 @@
-package io.cloudflight.jems.server.project.repository.report.file
+package io.cloudflight.jems.server.common.file.service
 
-import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
+import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFile
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileCreate
 import io.cloudflight.jems.server.user.entity.UserEntity
@@ -13,7 +13,7 @@ fun JemsFileCreate.toEntity(
     uploaded: ZonedDateTime,
     bucketForMinio: String,
     locationForMinio: String,
-) = ReportProjectFileEntity(
+) = JemsFileMetadataEntity(
     projectId = projectId,
     partnerId = partnerId,
     path = path,
@@ -27,7 +27,7 @@ fun JemsFileCreate.toEntity(
     description = "",
 )
 
-fun Page<ReportProjectFileEntity>.toModel() = map {
+fun Page<JemsFileMetadataEntity>.toModel() = map {
     JemsFile(
         id = it.id,
         name = it.name,

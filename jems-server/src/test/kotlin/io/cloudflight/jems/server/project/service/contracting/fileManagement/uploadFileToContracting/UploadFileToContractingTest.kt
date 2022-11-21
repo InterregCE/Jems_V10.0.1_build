@@ -2,16 +2,16 @@ package io.cloudflight.jems.server.project.service.contracting.fileManagement.up
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.authentication.service.SecurityService
-import io.cloudflight.jems.server.common.minio.JemsProjectFileRepository
+import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
+import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
-import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileCreate
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -37,20 +37,20 @@ internal class UploadFileToContractingTest : UnitTest() {
     @MockK
     lateinit var securityService: SecurityService
     @MockK
-    lateinit var reportFilePersistence: ProjectReportFilePersistence
+    lateinit var filePersistence: JemsFilePersistence
     @MockK
-    lateinit var fileRepository: JemsProjectFileRepository
+    lateinit var fileRepository: JemsProjectFileService
 
     @InjectMockKs
     lateinit var interactor: UploadFileToContracting
 
     @BeforeEach
     fun setup() {
-        clearMocks(reportFilePersistence, fileRepository)
+        clearMocks(filePersistence, fileRepository)
         val summary = mockk<ProjectSummary>()
         every { summary.status } returns ApplicationStatus.CONTRACTED
         every { projectPersistence.getProjectSummary(PROJECT_ID) } returns summary
-        every { reportFilePersistence.existsFile(any(), "file_name.xlsx") } returns false
+        every { filePersistence.existsFile(any(), "file_name.xlsx") } returns false
         every { securityService.getUserIdOrThrow() } returns USER_ID
     }
 
@@ -147,7 +147,7 @@ internal class UploadFileToContractingTest : UnitTest() {
 
     @Test
     fun `uploadContract - file already exists`() {
-        every { reportFilePersistence.existsFile("Project/000440/Contracting/ContractSupport/Contract/", "already-there.xlsx") } returns true
+        every { filePersistence.existsFile("Project/000440/Contracting/ContractSupport/Contract/", "already-there.xlsx") } returns true
 
         val file = mockk<ProjectFile>()
         every { file.name } returns "already-there.xlsx"

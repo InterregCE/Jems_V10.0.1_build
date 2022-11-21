@@ -5,7 +5,7 @@ import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
-import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
+import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageActivityDeliverableEntity
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageActivityDeliverableTranslEntity
 import io.cloudflight.jems.server.project.entity.report.workPlan.ProjectPartnerReportWorkPackageActivityEntity
@@ -34,7 +34,7 @@ class ProjectReportWorkPlanPersistenceProviderTest : UnitTest() {
     companion object {
         private const val PARTNER_ID = 362L
 
-        private val dummyAttachment = ReportProjectFileEntity(
+        private val dummyAttachment = JemsFileMetadataEntity(
             id = 970L,
             projectId = 4L,
             partnerId = PARTNER_ID,

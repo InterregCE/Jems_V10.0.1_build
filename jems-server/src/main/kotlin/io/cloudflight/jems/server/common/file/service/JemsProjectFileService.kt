@@ -1,13 +1,12 @@
-package io.cloudflight.jems.server.common.minio
+package io.cloudflight.jems.server.common.file.service
 
 import io.cloudflight.jems.api.common.dto.I18nMessage
 import io.cloudflight.jems.server.common.exception.ApplicationUnprocessableException
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
+import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
+import io.cloudflight.jems.server.common.file.minio.*
 import io.cloudflight.jems.server.project.repository.ProjectRepository
-import io.cloudflight.jems.server.project.repository.report.file.ProjectReportFileRepository
-import io.cloudflight.jems.server.project.repository.report.file.getMinioFullPath
-import io.cloudflight.jems.server.project.repository.report.file.toEntity
+import io.cloudflight.jems.server.common.file.repository.JemsFileMetadataRepository
 import io.cloudflight.jems.server.project.repository.report.toModel
 import io.cloudflight.jems.server.project.repository.toSummaryModel
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
@@ -20,8 +19,8 @@ import org.springframework.transaction.annotation.Transactional
 import java.time.ZonedDateTime
 
 @Repository
-class JemsProjectFileRepository(
-    private val reportFileRepository: ProjectReportFileRepository,
+class JemsProjectFileService(
+    private val projectFileMetadataRepository: JemsFileMetadataRepository,
     private val minioStorage: MinioStorage,
     private val userRepository: UserRepository,
     private val projectRepository: ProjectRepository,
@@ -46,6 +45,9 @@ class JemsProjectFileRepository(
             JemsFileType.ContractPartnerDoc,
             JemsFileType.ContractInternal,
         )
+
+        fun JemsFileCreate.getDefaultMinioFullPath() = "$path$name"
+
     }
 
     @Transactional
@@ -55,12 +57,12 @@ class JemsProjectFileRepository(
     @Transactional
     fun persistProjectFileAndPerformAction(
         file: JemsFileCreate,
-        additionalStep: (ReportProjectFileEntity) -> Unit,
+        additionalStep: (JemsFileMetadataEntity) -> Unit,
     ): JemsFileMetadata {
         validateType(file.type)
 
         val bucket = file.type.getBucket()
-        val locationForMinio = file.getMinioFullPath()
+        val locationForMinio = file.getDefaultMinioFullPath()
 
         minioStorage.saveFile(
             bucket = bucket,
@@ -69,7 +71,7 @@ class JemsProjectFileRepository(
             stream = file.content,
             overwriteIfExists = true,
         )
-        val fileMeta = reportFileRepository.save(
+        val fileMeta = projectFileMetadataRepository.save(
             file.toEntity(
                 bucketForMinio = bucket,
                 locationForMinio = locationForMinio,
@@ -79,15 +81,17 @@ class JemsProjectFileRepository(
         ).also { additionalStep.invoke(it) }.toModel()
 
         val projectRelated = projectRepository.getById(file.projectId!!).toSummaryModel()
-        auditPublisher.publishEvent(projectFileUploadSuccess(context = this, fileMeta = fileMeta,
-            location = locationForMinio, type = file.type, projectSummary = projectRelated))
+        auditPublisher.publishEvent(
+            projectFileUploadSuccess(context = this, fileMeta = fileMeta,
+            location = locationForMinio, type = file.type, projectSummary = projectRelated)
+        )
 
         return fileMeta
     }
 
     @Transactional
     fun setDescription(fileId: Long, description: String) {
-        val file = reportFileRepository.findById(fileId).orElseThrow { ResourceNotFoundException("file") }
+        val file = projectFileMetadataRepository.findById(fileId).orElseThrow { ResourceNotFoundException("file") }
         validateType(file.type)
 
         val oldDescription = file.description
@@ -95,21 +99,24 @@ class JemsProjectFileRepository(
 
         val projectRelated = projectRepository.getById(file.projectId!!).toSummaryModel()
 
-        auditPublisher.publishEvent(fileDescriptionChanged(context = this, fileMeta = file.toModel(),
-            location = file.minioLocation, oldValue = oldDescription, newValue = description, projectSummary = projectRelated))
+        auditPublisher.publishEvent(
+            fileDescriptionChanged(context = this, fileMeta = file.toModel(),
+            location = file.minioLocation, oldValue = oldDescription, newValue = description, projectSummary = projectRelated)
+        )
     }
 
     @Transactional
-    fun delete(file: ReportProjectFileEntity) {
+    fun delete(file: JemsFileMetadataEntity) {
         validateType(file.type)
 
         val fileId = file.id
         val projectId = file.projectId!!
 
         minioStorage.deleteFile(bucket = file.minioBucket, filePath = file.minioLocation)
-        reportFileRepository.delete(file)
+        projectFileMetadataRepository.delete(file)
 
-        auditPublisher.publishEvent(fileDeleted(context = this, fileId = fileId,
+        auditPublisher.publishEvent(
+            fileDeleted(context = this, fileId = fileId,
             location = file.minioLocation, projectSummary = projectRepository.getById(projectId).toSummaryModel())
         )
     }

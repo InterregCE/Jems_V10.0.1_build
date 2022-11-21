@@ -1,8 +1,8 @@
 package io.cloudflight.jems.server.payments.service.advance.attachment.getPaymentAdvanceAttachment
 
+import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.payments.authorization.CanRetrieveAdvancePayments
-import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFile
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.PaymentAdvanceAttachment
 
@@ -13,14 +13,14 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class GetPaymentAdvanceAttachment(
-    private val reportFilePersistence: ProjectReportFilePersistence
+    private val filePersistence: JemsFilePersistence
 ): GetPaymentAdvAttachmentInteractor {
 
     @CanRetrieveAdvancePayments
     @Transactional(readOnly = true)
     @ExceptionWrapper(GetPaymentAdvAttachmentException::class)
     override fun list(paymentId: Long, pageable: Pageable): Page<JemsFile> =
-        reportFilePersistence.listAttachments(
+        filePersistence.listAttachments(
             pageable = pageable,
             indexPrefix = PaymentAdvanceAttachment.generatePath(paymentId),
             filterSubtypes = emptySet(),

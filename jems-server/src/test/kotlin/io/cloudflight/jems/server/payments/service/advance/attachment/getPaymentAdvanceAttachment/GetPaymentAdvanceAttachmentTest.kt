@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.payments.service.advance.attachment.getPaymentAdvanceAttachment
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
+import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFile
 import io.mockk.clearMocks
 import io.mockk.every
@@ -17,21 +17,21 @@ import org.springframework.data.domain.Pageable
 class GetPaymentAdvanceAttachmentTest : UnitTest() {
 
     @MockK
-    lateinit var reportFilePersistence: ProjectReportFilePersistence
+    lateinit var filePersistence: JemsFilePersistence
 
     @InjectMockKs
     lateinit var interactor: GetPaymentAdvanceAttachment
 
     @BeforeEach
     fun reset() {
-        clearMocks(reportFilePersistence)
+        clearMocks(filePersistence)
     }
 
     @Test
     fun list() {
         val reportFile = mockk<JemsFile>()
         every {
-            reportFilePersistence.listAttachments(
+            filePersistence.listAttachments(
                 pageable = any(),
                 indexPrefix = "Payment/Advance/000004/PaymentAdvanceAttachment/",
                 filterSubtypes = emptySet(),

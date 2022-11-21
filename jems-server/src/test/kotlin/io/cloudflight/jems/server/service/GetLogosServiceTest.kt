@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.service
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.common.minio.MinioStorage
+import io.cloudflight.jems.server.common.file.minio.MinioStorage
 import io.cloudflight.jems.server.resources.repository.GetLogosPersistenceProvider
 import io.mockk.clearMocks
 import io.mockk.every

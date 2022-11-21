@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.programme.repository
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.common.minio.MinioStorage
+import io.cloudflight.jems.server.common.file.minio.MinioStorage
 import io.cloudflight.jems.server.programme.entity.ProgrammeDataEntity
 import io.cloudflight.jems.server.programme.service.EXPORT_LANGUAGE
 import io.cloudflight.jems.server.programme.service.INPUT_LANGUAGE

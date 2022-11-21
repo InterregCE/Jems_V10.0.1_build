@@ -1,10 +1,11 @@
 package io.cloudflight.jems.server.project.service.report.partner.file.setDescriptionToFile
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
+import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
-import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -23,7 +24,10 @@ class SetDescriptionToProjectPartnerReportFileTest : UnitTest() {
     @MockK
     lateinit var partnerPersistence: PartnerPersistence
     @MockK
-    lateinit var reportFilePersistence: ProjectReportFilePersistence
+    lateinit var filePersistence: JemsFilePersistence
+
+    @MockK
+    lateinit var fileService: JemsProjectFileService
 
     @MockK
     lateinit var generalValidator: GeneralValidatorService
@@ -33,7 +37,7 @@ class SetDescriptionToProjectPartnerReportFileTest : UnitTest() {
 
     @BeforeEach
     fun setup() {
-        clearMocks(generalValidator, reportFilePersistence)
+        clearMocks(generalValidator, filePersistence, fileService)
         every { generalValidator.throwIfAnyIsInvalid(*varargAny { it.isEmpty() }) } returns Unit
         every { generalValidator.throwIfAnyIsInvalid(*varargAny { it.isNotEmpty() }) } throws
             AppInputValidationException(emptyMap())
@@ -45,11 +49,11 @@ class SetDescriptionToProjectPartnerReportFileTest : UnitTest() {
         val partnerId = 640L
         val projectId = 8L
         every { partnerPersistence.getProjectIdForPartnerId(partnerId) } returns projectId
-        every { reportFilePersistence.existsFile(partnerId, expectedPath, 200L) } returns true
-        every { reportFilePersistence.setDescriptionToFile(200L, "new desc") } answers { }
+        every { filePersistence.existsFile(partnerId, expectedPath, 200L) } returns true
+        every { fileService.setDescription(200L, "new desc") } answers { }
 
         interactor.setDescription(partnerId, reportId = 477L, fileId = 200L, "new desc")
-        verify(exactly = 1) { reportFilePersistence.setDescriptionToFile(200L, "new desc") }
+        verify(exactly = 1) { fileService.setDescription(200L, "new desc") }
     }
 
     @Test
@@ -57,7 +61,7 @@ class SetDescriptionToProjectPartnerReportFileTest : UnitTest() {
         val partnerId = 645L
         val projectId = 9L
         every { partnerPersistence.getProjectIdForPartnerId(partnerId) } returns projectId
-        every { reportFilePersistence
+        every { filePersistence
             .existsFile(partnerId, "Project/000009/Report/Partner/000645/PartnerReport/000000/", -1L)
         } returns false
 

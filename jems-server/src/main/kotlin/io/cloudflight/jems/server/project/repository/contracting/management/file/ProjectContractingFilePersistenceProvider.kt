@@ -1,18 +1,18 @@
 package io.cloudflight.jems.server.project.repository.contracting.management.file
 
-import io.cloudflight.jems.server.common.minio.JemsProjectFileRepository
-import io.cloudflight.jems.server.common.minio.MinioStorage
-import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
-import io.cloudflight.jems.server.project.repository.report.file.ProjectReportFileRepository
+import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
+import io.cloudflight.jems.server.common.file.minio.MinioStorage
+import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
+import io.cloudflight.jems.server.common.file.repository.JemsFileMetadataRepository
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.ProjectContractingFilePersistence
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
 
 @Repository
 class ProjectContractingFilePersistenceProvider(
-    private val reportFileRepository: ProjectReportFileRepository,
+    private val reportFileRepository: JemsFileMetadataRepository,
     private val minioStorage: MinioStorage,
-    private val fileRepository: JemsProjectFileRepository,
+    private val fileRepository: JemsProjectFileService,
 ) : ProjectContractingFilePersistence {
 
     @Transactional(readOnly = true)
@@ -42,7 +42,7 @@ class ProjectContractingFilePersistenceProvider(
             .deleteIfPresent()
     }
 
-    private fun ReportProjectFileEntity?.deleteIfPresent() {
+    private fun JemsFileMetadataEntity?.deleteIfPresent() {
         if (this != null) {
             fileRepository.delete(this)
         }

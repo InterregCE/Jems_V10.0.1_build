@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.call.service.get_call
 
-import io.cloudflight.jems.server.call.service.model.CallSummary
 import io.cloudflight.jems.server.call.service.model.CallDetail
+import io.cloudflight.jems.server.call.service.model.CallSummary
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 

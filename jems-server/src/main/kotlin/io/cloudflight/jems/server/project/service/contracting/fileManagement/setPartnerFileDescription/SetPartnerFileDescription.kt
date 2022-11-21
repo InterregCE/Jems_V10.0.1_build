@@ -1,9 +1,10 @@
 package io.cloudflight.jems.server.project.service.contracting.fileManagement.setPartnerFileDescription
 
+import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
+import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectContractingPartner
-import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.cloudflight.jems.server.project.service.report.partner.file.setDescriptionToFile.FileNotFound
 import org.springframework.stereotype.Service
@@ -11,7 +12,8 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class SetPartnerFileDescription(
-    private val reportFilePersistence: ProjectReportFilePersistence,
+    private val filePersistence: JemsFilePersistence,
+    private val fileService: JemsProjectFileService,
     private val generalValidator: GeneralValidatorService
 ) : SetPartnerFileDescriptionInteractor {
 
@@ -25,7 +27,7 @@ class SetPartnerFileDescription(
     override fun setPartnerFileDescription(partnerId: Long, fileId: Long, description: String) {
         validateDescription(description)
 
-        val isFileExists = reportFilePersistence.existsFileByPartnerIdAndFileIdAndFileTypeIn(
+        val isFileExists = filePersistence.existsFileByPartnerIdAndFileIdAndFileTypeIn(
             partnerId = partnerId,
             fileId = fileId,
             setOf(JemsFileType.ContractPartnerDoc)
@@ -33,7 +35,7 @@ class SetPartnerFileDescription(
         if (!isFileExists)
             throw FileNotFound()
 
-        reportFilePersistence.setDescriptionToFile(fileId, description)
+        fileService.setDescription(fileId, description)
     }
 
     private fun validateDescription(description: String) {

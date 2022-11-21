@@ -1,9 +1,9 @@
 package io.cloudflight.jems.server.project.service.contracting.fileManagement.downloadInternalFile
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.FileNotFound
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.ProjectContractingFilePersistence
-import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.mockk.clearMocks
 import io.mockk.every
@@ -25,7 +25,7 @@ internal class DownloadInternalFileTest : UnitTest() {
     lateinit var contractingFilePersistence: ProjectContractingFilePersistence
 
     @MockK
-    lateinit var reportFilePersistence: ProjectReportFilePersistence
+    lateinit var filePersistence: JemsFilePersistence
 
 
     @InjectMockKs
@@ -39,13 +39,13 @@ internal class DownloadInternalFileTest : UnitTest() {
     @Test
     fun `download internal file`() {
         val file = mockk<Pair<String, ByteArray>>()
-        every { reportFilePersistence.getFileType(14L, PROJECT_ID) } returns JemsFileType.ContractInternal
+        every { filePersistence.getFileType(14L, PROJECT_ID) } returns JemsFileType.ContractInternal
         every { contractingFilePersistence.downloadFile(PROJECT_ID, fileId = 14L) } returns file
         assertThat(interactor.download(PROJECT_ID, 14L)).isEqualTo(file)
     }
     @Test
     fun `download - not found`() {
-        every { reportFilePersistence.getFileType(-1, PROJECT_ID) } returns null
+        every { filePersistence.getFileType(-1, PROJECT_ID) } returns null
         every { contractingFilePersistence.downloadFile(PROJECT_ID, fileId = -1L) } returns null
         assertThrows<FileNotFound> { interactor.download(PROJECT_ID, -1L) }
     }

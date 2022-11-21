@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.repository.report.procurement.attachment
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
+import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
 import io.cloudflight.jems.server.project.entity.report.procurement.ProjectPartnerReportProcurementEntity
 import io.cloudflight.jems.server.project.entity.report.procurement.file.ProjectPartnerReportProcurementFileEntity
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
@@ -30,7 +30,7 @@ class ProjectReportProcurementAttachmentPersistenceProviderTest : UnitTest() {
             id = id,
             procurement = procurement,
             createdInReportId = createdIn,
-            file = ReportProjectFileEntity(
+            file = JemsFileMetadataEntity(
                 id = 658L,
                 projectId = 189L,
                 partnerId = 391L,

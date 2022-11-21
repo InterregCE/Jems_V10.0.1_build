@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.contracting.fileManagement.listContractingFiles
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
+import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.project.authorization.ProjectContractInfoAuthorization
 import io.cloudflight.jems.server.project.authorization.ProjectMonitoringAuthorization
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.CONTRACT_ALLOWED_FILE_TYPES
@@ -8,10 +9,9 @@ import io.cloudflight.jems.server.project.service.contracting.fileManagement.MON
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.validateConfiguration
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingFileSearchRequest
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
-import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFile
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.*
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFile
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class ListContractingFiles(
     private val partnerPersistence: PartnerPersistence,
-    private val reportFilePersistence: ProjectReportFilePersistence,
+    private val filePersistence: JemsFilePersistence,
     private val contractInfoAuth: ProjectContractInfoAuthorization,
     private val projectMonitoringAuthorization: ProjectMonitoringAuthorization
 ): ListContractingFilesInteractor {
@@ -42,7 +42,7 @@ class ListContractingFiles(
                 projectId = projectId,
                 partnerId = partnerId?.let { if (partnerPersistence.getProjectIdForPartnerId(it) == projectId) it else null },
             )
-            return reportFilePersistence.listAttachments(
+            return filePersistence.listAttachments(
                 pageable = pageable,
                 indexPrefix = filePathPrefix,
                 filterSubtypes = getFileSubTypesBasedOnContractInfoPermission(searchRequest.filterSubtypes, projectId),
@@ -50,7 +50,7 @@ class ListContractingFiles(
             )
         } else if (contractInfoAuth.canViewContractInfo(projectId)) {
             validateConfiguration(searchRequest = searchRequest, partnerId, CONTRACT_ALLOWED_FILE_TYPES)
-           return reportFilePersistence.listAttachments(
+           return filePersistence.listAttachments(
                 pageable = pageable,
                 indexPrefix = searchRequest.treeNode.generatePath(projectId),
                 filterSubtypes = searchRequest.filterSubtypes,

@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.partner.procurement.attachment.uploadFileToProjectPartnerReportProcurementAttachment
 
 import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanEditPartnerReport
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
@@ -22,6 +23,7 @@ class UploadFileToProjectPartnerReportProcurementAttachment(
     private val reportProcurementPersistence: ProjectReportProcurementPersistence,
     private val partnerPersistence: PartnerPersistence,
     private val reportFilePersistence: ProjectReportFilePersistence,
+    private val filePersistence: JemsFilePersistence,
     private val reportProcurementAttachmentPersistence: ProjectReportProcurementAttachmentPersistence,
     private val securityService: SecurityService,
 ) : UploadFileToProjectPartnerReportProcurementAttachmentInteractor {
@@ -49,7 +51,7 @@ class UploadFileToProjectPartnerReportProcurementAttachment(
             val projectId = partnerPersistence.getProjectIdForPartnerId(partnerId)
             val location = generatePath(projectId, partnerId, reportId, procurement.id)
 
-            if (reportFilePersistence.existsFile(exactPath = location, fileName = file.name))
+            if (filePersistence.existsFile(exactPath = location, fileName = file.name))
                 throw FileAlreadyExists(file.name)
 
             return reportFilePersistence.addPartnerReportProcurementAttachment(

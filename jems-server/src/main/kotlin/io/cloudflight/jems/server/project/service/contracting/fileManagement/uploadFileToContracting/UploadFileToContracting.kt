@@ -1,8 +1,9 @@
 package io.cloudflight.jems.server.project.service.contracting.fileManagement.uploadFileToContracting
 
 import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
-import io.cloudflight.jems.server.common.minio.JemsProjectFileRepository
+import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.project.authorization.CanEditContractsAndAgreements
 import io.cloudflight.jems.server.project.authorization.CanEditProjectMonitoring
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectContractingPartner
@@ -11,7 +12,6 @@ import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.file.uploadProjectFile.isFileTypeInvalid
 import io.cloudflight.jems.server.project.service.model.ProjectSummary
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
-import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.*
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
@@ -23,8 +23,8 @@ class UploadFileToContracting(
     private val projectPersistence: ProjectPersistence,
     private val partnerPersistence: PartnerPersistence,
     private val securityService: SecurityService,
-    private val reportFilePersistence: ProjectReportFilePersistence,
-    private val fileRepository: JemsProjectFileRepository,
+    private val filePersistence: JemsFilePersistence,
+    private val fileRepository: JemsProjectFileService,
 ): UploadFileToContractingInteractor {
 
     @CanEditContractsAndAgreements
@@ -67,7 +67,7 @@ class UploadFileToContracting(
         with(type) {
             val location = generatePath(*listOf(projectId, partnerId).mapNotNull { it }.toLongArray())
 
-            if (reportFilePersistence.existsFile(exactPath = location, fileName = file.name))
+            if (filePersistence.existsFile(exactPath = location, fileName = file.name))
                 throw FileAlreadyExists(file.name)
 
             val fileToSave = file.getFileMetadata(

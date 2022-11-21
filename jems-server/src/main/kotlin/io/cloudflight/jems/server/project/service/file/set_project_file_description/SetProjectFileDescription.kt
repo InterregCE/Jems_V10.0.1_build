@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.file.set_project_file_description
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
-import io.cloudflight.jems.server.common.minio.fileDescriptionChanged
+import io.cloudflight.jems.server.common.file.service.fileDescriptionChanged
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.authorization.CanUpdateFileDescriptionInCategory
 import io.cloudflight.jems.server.project.repository.file.ProjectFilePersistenceProvider.Companion.getObjectPath

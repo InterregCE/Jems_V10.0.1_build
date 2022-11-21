@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.project.service.file.uploadProjectFile
 
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
-import io.cloudflight.jems.server.common.minio.projectFileUploadSuccessOld
+import io.cloudflight.jems.server.common.file.service.projectFileUploadSuccessOld
 import io.cloudflight.jems.server.project.authorization.CanUploadFileInCategory
 import io.cloudflight.jems.server.project.repository.file.ProjectFileTypeNotSupported
 import io.cloudflight.jems.server.project.service.ProjectPersistence
@@ -51,9 +51,11 @@ class UploadProjectFile(
                     projectId, fileMetadata.id, securityService.currentUser?.user?.id!!, projectFile
                 )
                 val project = projectPersistence.getProjectSummary(projectId)
-                auditPublisher.publishEvent(projectFileUploadSuccessOld(
+                auditPublisher.publishEvent(
+                    projectFileUploadSuccessOld(
                     this, fileMetadata, location, projectFileCategory, project
-                ))
+                )
+                )
             }
         }.onFailure {
             auditPublisher.publishEvent(

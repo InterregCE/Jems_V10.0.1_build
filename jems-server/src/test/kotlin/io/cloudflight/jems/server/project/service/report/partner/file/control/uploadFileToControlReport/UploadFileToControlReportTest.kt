@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.service.report.partner.file.control.u
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
@@ -39,6 +40,9 @@ class UploadFileToControlReportTest : UnitTest() {
     lateinit var reportFilePersistence: ProjectReportFilePersistence
 
     @MockK
+    lateinit var filePersistence: JemsFilePersistence
+
+    @MockK
     lateinit var reportPersistence: ProjectReportPersistence
 
     @MockK
@@ -52,8 +56,7 @@ class UploadFileToControlReportTest : UnitTest() {
 
     @BeforeEach
     fun reset() {
-        clearMocks(partnerPersistence)
-        clearMocks(reportFilePersistence)
+        clearMocks(partnerPersistence, filePersistence, reportFilePersistence)
         every { partnerPersistence.getProjectIdForPartnerId(PARTNER_ID) } returns PROJECT_ID
         every { securityService.getUserIdOrThrow() } returns USER_ID
     }
@@ -65,7 +68,7 @@ class UploadFileToControlReportTest : UnitTest() {
         val report = mockk<ProjectPartnerReport>()
         every { report.status } returns status
         every { reportPersistence.getPartnerReportById(PARTNER_ID, reportId = reportId) } returns report
-        every { reportFilePersistence
+        every { filePersistence
             .existsFile("Project/000360/Report/Partner/000434/PartnerControlReport/000049/ControlDocument/", "test.xlsx")
         } returns false
 
@@ -135,7 +138,7 @@ class UploadFileToControlReportTest : UnitTest() {
         val report = mockk<ProjectPartnerReport>()
         every { report.status } returns status
         every { reportPersistence.getPartnerReportById(PARTNER_ID, reportId = reportId) } returns report
-        every { reportFilePersistence
+        every { filePersistence
             .existsFile("Project/000360/Report/Partner/000434/PartnerControlReport/000028/ControlDocument/", "duplicate.xlsx")
         } returns true
 
