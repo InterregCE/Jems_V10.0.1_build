@@ -9,8 +9,6 @@ import io.cloudflight.jems.server.project.service.report.ProjectReportPersistenc
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
-import io.cloudflight.jems.server.project.service.report.partner.base.startControlPartnerReport.ReportNotSubmitted
-import io.cloudflight.jems.server.project.service.report.partner.base.startControlPartnerReport.StartControlPartnerReport
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -73,7 +71,6 @@ internal class StartControlPartnerReportTest : UnitTest() {
         val report = report(37L, status)
         every { reportPersistence.getPartnerReportById(PARTNER_ID, 37L) } returns report
         every { partnerPersistence.getProjectIdForPartnerId(PARTNER_ID, "5.6.1") } returns PROJECT_ID
-
         every { reportPersistence.startControlOnReportById(any(), any()) } returns mockedResult
 
         val auditSlot = slot<AuditCandidateEvent>()

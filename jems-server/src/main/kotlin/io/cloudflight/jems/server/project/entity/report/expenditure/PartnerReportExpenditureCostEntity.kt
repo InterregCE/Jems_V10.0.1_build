@@ -62,6 +62,16 @@ class PartnerReportExpenditureCostEntity(
     var currencyConversionRate: BigDecimal?,
     var declaredAmountAfterSubmission: BigDecimal?,
 
+    @field:NotNull
+    var partOfSample: Boolean,
+    @field:NotNull
+    var certifiedAmount: BigDecimal,
+    @field:NotNull
+    var deductedAmount: BigDecimal,
+
+    var typologyOfErrorId: Long?,
+    var verificationComment: String?,
+
     @OneToMany(cascade = [CascadeType.ALL], orphanRemoval = true, mappedBy = "translationId.sourceEntity")
     val translatedValues: MutableSet<PartnerReportExpenditureCostTranslEntity> = mutableSetOf(),
 

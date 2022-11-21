@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional
 class StartControlPartnerReport(
     private val reportPersistence: ProjectReportPersistence,
     private val partnerPersistence: PartnerPersistence,
-    private val auditPublisher: ApplicationEventPublisher,
+    private val auditPublisher: ApplicationEventPublisher
 ) : StartControlPartnerReportInteractor {
 
     @CanEditPartnerControlReport
@@ -43,5 +43,4 @@ class StartControlPartnerReport(
         if (report.status != ReportStatus.Submitted)
             throw ReportNotSubmitted()
     }
-
 }

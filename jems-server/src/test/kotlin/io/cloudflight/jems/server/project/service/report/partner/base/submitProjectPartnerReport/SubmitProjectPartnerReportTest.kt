@@ -22,14 +22,14 @@ import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPa
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.withoutCalculations.ProjectPartnerReportEntityContribution
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerControlReportExpenditureVerification
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerControlReportExpenditureVerificationUpdate
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.costCategory.ReportExpenditureCostCategory
-import io.cloudflight.jems.server.project.service.report.partner.base.submitProjectPartnerReport.CurrencyRatesMissing
-import io.cloudflight.jems.server.project.service.report.partner.base.submitProjectPartnerReport.ReportAlreadyClosed
-import io.cloudflight.jems.server.project.service.report.partner.base.submitProjectPartnerReport.SubmitProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectReportContributionPersistence
+import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectControlReportExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectReportExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureCostCategoryPersistence
@@ -136,6 +136,108 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             attachment = null,
         )
 
+        private val expenditureVerification1 = ProjectPartnerControlReportExpenditureVerification(
+            id = 630,
+            lumpSumId = null,
+            unitCostId = null,
+            costCategory = ReportBudgetCategory.StaffCosts,
+            investmentId = 10L,
+            contractId = 54L,
+            internalReferenceNumber = "internal-1",
+            invoiceNumber = "invoice-1",
+            invoiceDate = LocalDate.of(2022, 1, 1),
+            dateOfPayment = LocalDate.of(2022, 2, 1),
+            numberOfUnits = BigDecimal.ZERO,
+            pricePerUnit = BigDecimal.ZERO,
+            declaredAmount = BigDecimal.valueOf(25448, 2),
+            currencyCode = "CZK",
+            currencyConversionRate = null,
+            declaredAmountAfterSubmission = null,
+            attachment = null,
+            partOfSample = false,
+            certifiedAmount = BigDecimal.valueOf(9.99),
+            deductedAmount = BigDecimal.ZERO,
+            typologyOfErrorId = null,
+            verificationComment = null
+        )
+
+        private val expenditureVerification2 = ProjectPartnerControlReportExpenditureVerification(
+            id = 631,
+            lumpSumId = 22L,
+            unitCostId = null,
+            costCategory = ReportBudgetCategory.Multiple,
+            investmentId = null,
+            contractId = null,
+            internalReferenceNumber = null,
+            invoiceNumber = null,
+            invoiceDate = null,
+            dateOfPayment = null,
+            numberOfUnits = BigDecimal.ONE,
+            pricePerUnit = BigDecimal.valueOf(485, 1),
+            declaredAmount = BigDecimal.valueOf(485, 1),
+            currencyCode = "EUR",
+            currencyConversionRate = null,
+            declaredAmountAfterSubmission = null,
+            attachment = null,
+            partOfSample = false,
+            certifiedAmount = BigDecimal.valueOf(48.50).setScale(2),
+            deductedAmount = BigDecimal.ZERO,
+            typologyOfErrorId = null,
+            verificationComment = null
+        )
+
+        private val expenditureVerification3 = ProjectPartnerControlReportExpenditureVerification(
+            id = 632,
+            lumpSumId = null,
+            unitCostId = 15L,
+            costCategory = ReportBudgetCategory.InfrastructureCosts,
+            investmentId = null,
+            contractId = null,
+            internalReferenceNumber = null,
+            invoiceNumber = null,
+            invoiceDate = null,
+            dateOfPayment = null,
+            numberOfUnits = BigDecimal.ONE,
+            pricePerUnit = BigDecimal.valueOf(165, 1),
+            declaredAmount = BigDecimal.valueOf(165, 1),
+            currencyCode = "EUR",
+            currencyConversionRate = null,
+            declaredAmountAfterSubmission = null,
+            attachment = null,
+            partOfSample = false,
+            certifiedAmount = BigDecimal.valueOf(16.50).setScale(2),
+            deductedAmount = BigDecimal.ZERO,
+            typologyOfErrorId = null,
+            verificationComment = null
+        )
+
+        private val expenditureVerificationUpdate1 = ProjectPartnerControlReportExpenditureVerificationUpdate(
+            id = 630,
+            partOfSample = false,
+            certifiedAmount = BigDecimal.valueOf(9.99),
+            deductedAmount = BigDecimal.ZERO,
+            typologyOfErrorId = null,
+            verificationComment = null
+        )
+
+        private val expenditureVerificationUpdate2 = ProjectPartnerControlReportExpenditureVerificationUpdate(
+            id = 631,
+            partOfSample = false,
+            certifiedAmount = BigDecimal.valueOf(48.50).setScale(2),
+            deductedAmount = BigDecimal.ZERO,
+            typologyOfErrorId = null,
+            verificationComment = null
+        )
+
+        private val expenditureVerificationUpdate3 = ProjectPartnerControlReportExpenditureVerificationUpdate(
+            id = 632,
+            partOfSample = false,
+            certifiedAmount = BigDecimal.valueOf(16.50).setScale(2),
+            deductedAmount = BigDecimal.ZERO,
+            typologyOfErrorId = null,
+            verificationComment = null
+        )
+
         private val options = mockk<ReportExpenditureCostCategory>().also {
             every { it.options } returns ProjectPartnerBudgetOptions(
                 partnerId = PARTNER_ID,
@@ -238,6 +340,10 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
     lateinit var reportInvestmentPersistence: ProjectReportInvestmentPersistence
 
     @MockK
+    lateinit var projectControlReportExpenditurePersistence: ProjectControlReportExpenditurePersistence
+
+
+    @MockK
     lateinit var auditPublisher: ApplicationEventPublisher
 
     @InjectMockKs
@@ -301,6 +407,14 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit
 
+        val slotExpenditureVerification = slot<List<ProjectPartnerControlReportExpenditureVerificationUpdate>>()
+        every { projectControlReportExpenditurePersistence
+            .updatePartnerControlReportExpenditureVerification(
+                PARTNER_ID,
+                35L,
+                capture(slotExpenditureVerification)
+            ) } returns listOf(expenditureVerification1, expenditureVerification2, expenditureVerification3)
+
         submitReport.submit(PARTNER_ID, 35L)
 
         verify(exactly = 1) { reportPersistence.submitReportById(PARTNER_ID, 35L, any()) }
@@ -313,7 +427,11 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
         assertThat(auditSlot.captured.auditCandidate.project?.name).isEqualTo("acronym")
         assertThat(auditSlot.captured.auditCandidate.entityRelatedId).isEqualTo(888L)
         assertThat(auditSlot.captured.auditCandidate.description).isEqualTo("[FG01_654] [PP1] Partner report R.4 submitted")
-
+        assertThat(slotExpenditureVerification.captured).containsExactlyInAnyOrder(
+            expenditureVerificationUpdate1,
+            expenditureVerificationUpdate2,
+            expenditureVerificationUpdate3
+        )
         assertThat(slotExpenditures.captured).containsExactly(
             expenditure1.copy(
                 currencyConversionRate = BigDecimal.valueOf(254855, 4),
