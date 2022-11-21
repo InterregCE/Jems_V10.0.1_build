@@ -98,6 +98,11 @@ class ProjectReportExpenditurePersistenceProviderTest : UnitTest() {
             declaredAmountAfterSubmission = BigDecimal.valueOf(3680),
             translatedValues = mutableSetOf(),
             attachment = dummyAttachment,
+            partOfSample = false,
+            certifiedAmount = BigDecimal.valueOf(3680),
+            deductedAmount = BigDecimal.ZERO,
+            typologyOfErrorId = null,
+            verificationComment = null
         ).apply {
             translatedValues.add(
                 PartnerReportExpenditureCostTranslEntity(

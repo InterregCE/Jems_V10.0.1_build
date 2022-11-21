@@ -129,6 +129,11 @@ class ProjectReportFilePersistenceProviderTest : UnitTest() {
             currencyConversionRate = ONE,
             declaredAmountAfterSubmission = ONE,
             attachment = attachment,
+            partOfSample = false,
+            certifiedAmount = ONE,
+            deductedAmount = ZERO,
+            typologyOfErrorId = null,
+            verificationComment = null
         )
 
         private fun fileCreate(name: String = "new_file.txt", type: JemsFileType) = JemsFileCreate(

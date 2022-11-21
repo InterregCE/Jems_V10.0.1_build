@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.service.report.partner.base.submitPro
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.currency.repository.CurrencyPersistence
 import io.cloudflight.jems.server.project.authorization.CanEditPartnerReport
+import io.cloudflight.jems.server.project.repository.report.expenditure.toVerificationData
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
@@ -11,6 +12,7 @@ import io.cloudflight.jems.server.project.service.report.model.partner.ReportSta
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectReportContributionPersistence
 import io.cloudflight.jems.server.project.service.report.partner.contribution.extractOverview
+import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectControlReportExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectReportExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.fillCurrencyRates
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureCoFinancingPersistence
@@ -44,6 +46,7 @@ class SubmitProjectPartnerReport(
     private val reportLumpSumPersistence: ProjectReportLumpSumPersistence,
     private val reportUnitCostPersistence: ProjectReportUnitCostPersistence,
     private val reportInvestmentPersistence: ProjectReportInvestmentPersistence,
+    private val projectControlReportExpenditurePersistence: ProjectControlReportExpenditurePersistence,
     private val auditPublisher: ApplicationEventPublisher,
 ) : SubmitProjectPartnerReportInteractor {
 
@@ -54,7 +57,7 @@ class SubmitProjectPartnerReport(
         val report = reportPersistence.getPartnerReportById(partnerId = partnerId, reportId = reportId)
         validateReportIsStillDraft(report)
 
-        val expenditures = validateExpendituresAndSaveCurrencyRates(partnerId = partnerId, reportId = reportId)
+        val expenditures = fillInVerificationForExpendituresAndSaveCurrencyRates(partnerId = partnerId, reportId = reportId)
         val costCategories = reportExpenditureCostCategoryPersistence.getCostCategories(partnerId = partnerId, reportId)
         val currentCostCategories = expenditures.calculateCurrent(options = costCategories.options)
 
@@ -88,7 +91,7 @@ class SubmitProjectPartnerReport(
             throw ReportAlreadyClosed()
     }
 
-    private fun validateExpendituresAndSaveCurrencyRates(partnerId: Long, reportId: Long): List<ProjectPartnerReportExpenditureCost> {
+    private fun fillInVerificationForExpendituresAndSaveCurrencyRates(partnerId: Long, reportId: Long): List<ProjectPartnerReportExpenditureCost> {
         val expenditures = reportExpenditurePersistence.getPartnerReportExpenditureCosts(partnerId, reportId = reportId)
         val usedCurrencies = expenditures.mapTo(HashSet()) { it.currencyCode }
 
@@ -101,11 +104,20 @@ class SubmitProjectPartnerReport(
         if (notExistingRates.isNotEmpty())
             throw CurrencyRatesMissing(notExistingRates)
 
-        return reportExpenditurePersistence.updatePartnerReportExpenditureCosts(
+        val updatedExpenditures = reportExpenditurePersistence.updatePartnerReportExpenditureCosts(
             partnerId = partnerId,
             reportId = reportId,
             expenditureCosts = expenditures.fillCurrencyRates(rates),
         )
+
+        projectControlReportExpenditurePersistence
+            .updatePartnerControlReportExpenditureVerification(
+                partnerId,
+                reportId,
+                updatedExpenditures.map {it.toVerificationData()}
+            )
+
+        return updatedExpenditures
     }
 
     private fun saveCurrentCostCategories(currentCostCategories: BudgetCostsCalculationResultFull, partnerId: Long, reportId: Long) {
