@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.service.report.partner.procurement.at
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
@@ -44,6 +45,8 @@ internal class UploadFileToProjectPartnerReportProcurementAttachmentTest : UnitT
     @MockK
     lateinit var reportFilePersistence: ProjectReportFilePersistence
     @MockK
+    lateinit var filePersistence: JemsFilePersistence
+    @MockK
     lateinit var reportProcurementAttachmentPersistence: ProjectReportProcurementAttachmentPersistence
     @MockK
     lateinit var securityService: SecurityService
@@ -74,7 +77,7 @@ internal class UploadFileToProjectPartnerReportProcurementAttachmentTest : UnitT
 
         val file = ProjectFile(stream = stream, name = "filename.docx", size = 5L)
 
-        every { reportFilePersistence.existsFile(exactPath = expectedPath, fileName = "filename.docx") } returns false
+        every { filePersistence.existsFile(exactPath = expectedPath, fileName = "filename.docx") } returns false
         val slotFile = slot<JemsFileCreate>()
         val mockResult = mockk<JemsFileMetadata>()
         every { reportFilePersistence
@@ -115,7 +118,7 @@ internal class UploadFileToProjectPartnerReportProcurementAttachmentTest : UnitT
 
         val file = ProjectFile(stream = stream, name = "filename.wrongext", size = 5L)
 
-        every { reportFilePersistence.existsFile(exactPath = expectedPath, fileName = "filename.docx") } returns false
+        every { filePersistence.existsFile(exactPath = expectedPath, fileName = "filename.docx") } returns false
         assertThrows<FileTypeNotSupported> { interactor.uploadToProcurement(PARTNER_ID, reportId, procurementId, file) }
         verify(exactly = 0) { reportFilePersistence.addPartnerReportProcurementAttachment(any(), any(), any()) }
     }
@@ -131,7 +134,7 @@ internal class UploadFileToProjectPartnerReportProcurementAttachmentTest : UnitT
 
         val file = ProjectFile(stream = stream, name = "existing.pptx", size = 5L)
 
-        every { reportFilePersistence.existsFile(
+        every { filePersistence.existsFile(
             exactPath = "Project/004877/Report/Partner/005920/PartnerReport/000239/Procurement/000449/ProcurementAttachment/",
             fileName = "existing.pptx",
         ) } returns true

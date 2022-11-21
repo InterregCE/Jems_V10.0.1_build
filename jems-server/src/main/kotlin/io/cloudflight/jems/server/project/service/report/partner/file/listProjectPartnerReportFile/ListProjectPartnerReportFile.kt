@@ -1,21 +1,13 @@
 package io.cloudflight.jems.server.project.service.report.partner.file.listProjectPartnerReportFile
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
+import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.project.authorization.CanViewPartnerReport
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
-import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.PartnerReport
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.WorkPlan
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.Activity
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.Deliverable
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.Output
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.Expenditure
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.Procurement
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.Contribution
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.ProcurementAttachment
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFile
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileSearchRequest
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.*
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
@@ -24,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class ListProjectPartnerReportFile(
     private val partnerPersistence: PartnerPersistence,
-    private val reportFilePersistence: ProjectReportFilePersistence,
+    private val filePersistence: JemsFilePersistence
 ) : ListProjectPartnerReportFileInteractor {
 
     companion object {
@@ -56,7 +48,7 @@ class ListProjectPartnerReportFile(
             reportId = searchRequest.reportId,
         )
 
-        return reportFilePersistence.listAttachments(
+        return filePersistence.listAttachments(
             pageable = pageable,
             indexPrefix = filePathPrefix,
             filterSubtypes = searchRequest.filterSubtypes,

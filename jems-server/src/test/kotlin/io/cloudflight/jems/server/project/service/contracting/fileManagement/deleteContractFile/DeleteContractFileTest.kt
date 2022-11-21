@@ -1,9 +1,9 @@
 package io.cloudflight.jems.server.project.service.contracting.fileManagement.deleteContractFile
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.FileNotFound
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.ProjectContractingFilePersistence
-import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.mockk.clearMocks
 import io.mockk.every
@@ -24,7 +24,7 @@ internal class DeleteContractFileTest : UnitTest() {
     lateinit var contractingFilePersistence: ProjectContractingFilePersistence
 
     @MockK
-    lateinit var reportFilePersistence: ProjectReportFilePersistence
+    lateinit var filePersistence: JemsFilePersistence
 
     @InjectMockKs
     lateinit var interactor: DeleteContractFile
@@ -32,12 +32,12 @@ internal class DeleteContractFileTest : UnitTest() {
     @BeforeEach
     fun setup() {
         clearMocks(contractingFilePersistence)
-        clearMocks(reportFilePersistence)
+        clearMocks(filePersistence)
     }
 
     @Test
     fun `delete contract file`() {
-        every { reportFilePersistence.getFileType(18L, PROJECT_ID) } returns JemsFileType.Contract
+        every { filePersistence.getFileType(18L, PROJECT_ID) } returns JemsFileType.Contract
         every { contractingFilePersistence.deleteFile(PROJECT_ID, fileId = 18L) } answers { }
         interactor.delete(PROJECT_ID, fileId = 18L)
         verify(exactly =  1) { contractingFilePersistence.deleteFile(PROJECT_ID, fileId = 18L) }
@@ -45,7 +45,7 @@ internal class DeleteContractFileTest : UnitTest() {
 
     @Test
     fun `delete contract doc file`() {
-        every { reportFilePersistence.getFileType(19L, PROJECT_ID) } returns JemsFileType.ContractDoc
+        every { filePersistence.getFileType(19L, PROJECT_ID) } returns JemsFileType.ContractDoc
         every { contractingFilePersistence.deleteFile(PROJECT_ID, fileId = 19L) } answers { }
         interactor.delete(PROJECT_ID, fileId = 19L)
         verify(exactly =  1) { contractingFilePersistence.deleteFile(PROJECT_ID, fileId = 19L) }
@@ -53,7 +53,7 @@ internal class DeleteContractFileTest : UnitTest() {
 
     @Test
     fun `delete - not found`() {
-        every { reportFilePersistence.getFileType(-1L, PROJECT_ID) } returns null
+        every { filePersistence.getFileType(-1L, PROJECT_ID) } returns null
         assertThrows<FileNotFound> { interactor.delete(PROJECT_ID, fileId = -1L) }
     }
 

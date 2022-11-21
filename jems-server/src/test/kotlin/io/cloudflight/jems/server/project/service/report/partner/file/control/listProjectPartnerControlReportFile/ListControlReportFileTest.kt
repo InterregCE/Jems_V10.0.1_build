@@ -1,10 +1,10 @@
 package io.cloudflight.jems.server.project.service.report.partner.file.control.listProjectPartnerControlReportFile
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
-import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.ControlDocument
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFile
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.ControlDocument
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -27,7 +27,7 @@ class ListControlReportFileTest : UnitTest() {
     lateinit var partnerPersistence: PartnerPersistence
 
     @MockK
-    lateinit var reportFilePersistence: ProjectReportFilePersistence
+    lateinit var filePersistence: JemsFilePersistence
 
     @InjectMockKs
     lateinit var interactor: ListControlReportFile
@@ -35,14 +35,14 @@ class ListControlReportFileTest : UnitTest() {
     @BeforeEach
     fun reset() {
         clearMocks(partnerPersistence)
-        clearMocks(reportFilePersistence)
+        clearMocks(filePersistence)
         every { partnerPersistence.getProjectIdForPartnerId(PARTNER_ID) } returns PROJECT_ID
     }
 
     @Test
     fun list() {
         val reportFile = mockk<JemsFile>()
-        every { reportFilePersistence.listAttachments(
+        every { filePersistence.listAttachments(
             pageable = any(),
             indexPrefix = "Project/000644/Report/Partner/000224/PartnerControlReport/000004/",
             filterSubtypes = setOf(ControlDocument),

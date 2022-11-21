@@ -1,21 +1,11 @@
 package io.cloudflight.jems.server.project.entity.report.expenditure
 
+import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
-import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import java.math.BigDecimal
 import java.time.LocalDate
-import javax.persistence.CascadeType
-import javax.persistence.Entity
-import javax.persistence.EnumType
-import javax.persistence.Enumerated
-import javax.persistence.FetchType
-import javax.persistence.GeneratedValue
-import javax.persistence.GenerationType
-import javax.persistence.Id
-import javax.persistence.JoinColumn
-import javax.persistence.ManyToOne
-import javax.persistence.OneToMany
+import javax.persistence.*
 import javax.validation.constraints.NotNull
 
 @Entity(name = "report_project_partner_expenditure")
@@ -77,5 +67,5 @@ class PartnerReportExpenditureCostEntity(
 
     @ManyToOne
     @JoinColumn(name = "file_id")
-    var attachment: ReportProjectFileEntity?,
+    var attachment: JemsFileMetadataEntity?,
 )

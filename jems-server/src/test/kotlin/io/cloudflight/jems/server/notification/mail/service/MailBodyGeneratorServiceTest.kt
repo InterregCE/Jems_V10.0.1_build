@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.notification.mail.service
 
 import io.cloudflight.jems.server.common.event.JemsMailEvent
-import io.cloudflight.jems.server.common.minio.MinioStorage
+import io.cloudflight.jems.server.common.file.minio.MinioStorage
 import io.cloudflight.jems.server.common.model.Variable
 import io.cloudflight.jems.server.notification.mail.service.mail_body_generator_service.DefaultMailBodyGenerator
 import io.cloudflight.jems.server.notification.mail.service.model.MailNotificationInfo

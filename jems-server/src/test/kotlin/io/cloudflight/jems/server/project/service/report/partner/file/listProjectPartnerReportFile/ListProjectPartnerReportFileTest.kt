@@ -1,11 +1,11 @@
 package io.cloudflight.jems.server.project.service.report.partner.file.listProjectPartnerReportFile
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
-import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFile
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileSearchRequest
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -27,7 +27,7 @@ class ListProjectPartnerReportFileTest : UnitTest() {
     lateinit var partnerPersistence: PartnerPersistence
 
     @MockK
-    lateinit var reportFilePersistence: ProjectReportFilePersistence
+    lateinit var filePersistence: JemsFilePersistence
 
     @InjectMockKs
     lateinit var interactor: ListProjectPartnerReportFile
@@ -123,7 +123,7 @@ class ListProjectPartnerReportFileTest : UnitTest() {
         val indexPrefix = slot<String>()
         val filterSubtypesSlot = slot<Set<JemsFileType>>()
         val filterUsers = slot<Set<Long>>()
-        every { reportFilePersistence.listAttachments(any(), capture(indexPrefix), capture(filterSubtypesSlot), capture(filterUsers)) } returns
+        every { filePersistence.listAttachments(any(), capture(indexPrefix), capture(filterSubtypesSlot), capture(filterUsers)) } returns
             PageImpl(listOf(reportFile))
 
         val searchRequest = JemsFileSearchRequest(

@@ -1,8 +1,8 @@
 package io.cloudflight.jems.server.project.service.report.partner.file.deleteProjectPartnerReportFile
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
-import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -24,7 +24,7 @@ class DeleteProjectPartnerReportFileTest : UnitTest() {
     lateinit var partnerPersistence: PartnerPersistence
 
     @MockK
-    lateinit var reportFilePersistence: ProjectReportFilePersistence
+    lateinit var filePersistence: JemsFilePersistence
 
     @InjectMockKs
     lateinit var interactor: DeleteProjectPartnerReportFile
@@ -32,7 +32,7 @@ class DeleteProjectPartnerReportFileTest : UnitTest() {
 
     fun reset() {
         clearMocks(partnerPersistence)
-        clearMocks(reportFilePersistence)
+        clearMocks(filePersistence)
     }
 
     @Test
@@ -41,11 +41,11 @@ class DeleteProjectPartnerReportFileTest : UnitTest() {
         val fileId = 10L
         every { partnerPersistence.getProjectIdForPartnerId(PARTNER_ID) } returns projectId
         val searchIndexSlot = slot<String>()
-        every { reportFilePersistence.existsFile(PARTNER_ID, capture(searchIndexSlot), fileId) } returns true
-        every { reportFilePersistence.deleteFile(PARTNER_ID, fileId) } answers { }
+        every { filePersistence.existsFile(PARTNER_ID, capture(searchIndexSlot), fileId) } returns true
+        every { filePersistence.deleteFile(PARTNER_ID, fileId) } answers { }
 
         interactor.delete(PARTNER_ID, reportId = 1890L, fileId)
-        verify(exactly = 1) { reportFilePersistence.deleteFile(PARTNER_ID, fileId) }
+        verify(exactly = 1) { filePersistence.deleteFile(PARTNER_ID, fileId) }
         assertThat(searchIndexSlot.captured).isEqualTo("Project/000096/Report/Partner/000420/PartnerReport/001890/")
     }
 
@@ -54,9 +54,9 @@ class DeleteProjectPartnerReportFileTest : UnitTest() {
         val projectId = 94L
         val fileId = -1L
         every { partnerPersistence.getProjectIdForPartnerId(PARTNER_ID) } returns projectId
-        every { reportFilePersistence.existsFile(PARTNER_ID, any(), fileId) } returns false
+        every { filePersistence.existsFile(PARTNER_ID, any(), fileId) } returns false
         assertThrows<FileNotFound> { interactor.delete(PARTNER_ID, 5L, -1L) }
-        verify(exactly = 0) { reportFilePersistence.deleteFile(any<Long>(), any()) }
+        verify(exactly = 0) { filePersistence.deleteFile(any<Long>(), any()) }
     }
 
 }

@@ -3,8 +3,8 @@ package io.cloudflight.jems.server.call.service
 import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.service.AuditBuilder
-import io.cloudflight.jems.server.call.service.model.CallSummary
 import io.cloudflight.jems.server.call.service.model.CallDetail
+import io.cloudflight.jems.server.call.service.model.CallSummary
 import io.cloudflight.jems.server.common.audit.fromOldToNewChanges
 import io.cloudflight.jems.server.common.audit.onlyNewChanges
 

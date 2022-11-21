@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.service.report.partner.file.uploadFil
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
@@ -40,6 +41,9 @@ class UploadFileToProjectPartnerReportTest : UnitTest() {
     lateinit var reportFilePersistence: ProjectReportFilePersistence
 
     @MockK
+    lateinit var filePersistence: JemsFilePersistence
+
+    @MockK
     lateinit var securityService: SecurityService
 
     @InjectMockKs
@@ -49,7 +53,7 @@ class UploadFileToProjectPartnerReportTest : UnitTest() {
     fun uploadToReport() {
         every { reportPersistence.exists(45L, 900L) } returns true
         every { partnerPersistence.getProjectIdForPartnerId(45L) } returns PROJECT_ID
-        every { reportFilePersistence.existsFile(expectedPath, "test.xlsx") } returns false
+        every { filePersistence.existsFile(expectedPath, "test.xlsx") } returns false
         val fileToAdd = slot<JemsFileCreate>()
         val mockResult = mockk<JemsFileMetadata>()
         every { securityService.getUserIdOrThrow() } returns USER_ID
@@ -100,7 +104,7 @@ class UploadFileToProjectPartnerReportTest : UnitTest() {
     fun `uploadToReport - file already exists`() {
         every { reportPersistence.exists(45L, 902L) } returns true
         every { partnerPersistence.getProjectIdForPartnerId(45L) } returns PROJECT_ID
-        every { reportFilePersistence.existsFile(
+        every { filePersistence.existsFile(
             exactPath = "Project/000642/Report/Partner/000045/PartnerReport/000902/",
             fileName = "duplicate-file.docx"
         ) } returns true

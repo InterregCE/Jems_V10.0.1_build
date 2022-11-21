@@ -1,8 +1,8 @@
 package io.cloudflight.jems.server.project.service.report.partner.file.control.setDescriptionToControlReportFile
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
-import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
 import io.cloudflight.jems.server.project.service.report.partner.file.control.ControlReportFileAuthorizationService
 import io.mockk.clearMocks
 import io.mockk.every
@@ -23,14 +23,14 @@ class SetDescriptionToControlReportFileTest : UnitTest() {
     @MockK
     lateinit var authorization: ControlReportFileAuthorizationService
     @MockK
-    lateinit var reportFilePersistence: ProjectReportFilePersistence
+    lateinit var fileService: JemsProjectFileService
 
     @InjectMockKs
     lateinit var interactor: SetDescriptionToControlReportFile
 
     @BeforeEach
     fun setup() {
-        clearMocks(generalValidator, authorization, reportFilePersistence)
+        clearMocks(generalValidator, authorization, fileService)
         every { generalValidator.throwIfAnyIsInvalid(*varargAny { it.isEmpty() }) } returns Unit
         every { generalValidator.maxLength(any<String>(), 250, "description") } returns emptyMap()
         every { authorization.validateChangeToFileAllowed(PARTNER_ID, any(), any()) } answers { }
@@ -38,12 +38,12 @@ class SetDescriptionToControlReportFileTest : UnitTest() {
 
     @Test
     fun setDescription() {
-        every { reportFilePersistence.setDescriptionToFile(261L, "new desc") } answers { }
+        every { fileService.setDescription(261L, "new desc") } answers { }
 
         interactor.setDescription(PARTNER_ID, reportId = 477L, fileId = 261L, "new desc")
 
         verify(exactly = 1) { authorization.validateChangeToFileAllowed(PARTNER_ID, 477L, fileId = 261L) }
-        verify(exactly = 1) { reportFilePersistence.setDescriptionToFile(261L, "new desc") }
+        verify(exactly = 1) { fileService.setDescription(261L, "new desc") }
         verify(exactly = 1) { generalValidator.maxLength("new desc", 250, "description") }
         verify(exactly = 1) { generalValidator.throwIfAnyIsInvalid(*varargAny { it.isEmpty() }) }
     }

@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.payments.repository.regular
 
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.common.minio.JemsProjectFileRepository
+import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.payments.service.regular.PaymentRegularPersistence
 import io.cloudflight.jems.server.payments.entity.PaymentGroupingId
 import io.cloudflight.jems.server.payments.model.regular.PartnerPayment
@@ -23,7 +23,7 @@ import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.lumpsum.ProjectLumpSumRepository
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.repository.partner.toProjectPartnerDetail
-import io.cloudflight.jems.server.project.repository.report.file.ProjectReportFileRepository
+import io.cloudflight.jems.server.common.file.repository.JemsFileMetadataRepository
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.PaymentAttachment
 import io.cloudflight.jems.server.user.entity.UserEntity
@@ -46,8 +46,8 @@ class PaymentRegularPersistenceProvider(
     private val projectPersistence: ProjectPersistence,
     private val userRepository: UserRepository,
     private val fundRepository: ProgrammeFundRepository,
-    private val reportFileRepository: ProjectReportFileRepository,
-    private val fileRepository: JemsProjectFileRepository,
+    private val projectFileMetadataRepository: JemsFileMetadataRepository,
+    private val fileRepository: JemsProjectFileService,
 ) : PaymentRegularPersistence {
 
     @Transactional(readOnly = true)
@@ -178,7 +178,7 @@ class PaymentRegularPersistenceProvider(
     @Transactional
     override fun deletePaymentAttachment(fileId: Long) {
         fileRepository.delete(
-            reportFileRepository.findByTypeAndId(PaymentAttachment, fileId) ?: throw ResourceNotFoundException("file")
+            projectFileMetadataRepository.findByTypeAndId(PaymentAttachment, fileId) ?: throw ResourceNotFoundException("file")
         )
     }
 

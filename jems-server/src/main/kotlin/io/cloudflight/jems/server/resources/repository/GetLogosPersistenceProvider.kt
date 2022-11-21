@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.resources.repository
 
 import io.cloudflight.jems.api.common.dto.LogoDTO
 import io.cloudflight.jems.api.common.dto.LogoType
-import io.cloudflight.jems.server.common.minio.MinioStorage
+import io.cloudflight.jems.server.common.file.minio.MinioStorage
 import org.springframework.stereotype.Repository
 import java.util.Base64
 

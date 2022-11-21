@@ -2,12 +2,12 @@ package io.cloudflight.jems.server.project.service.report.partner.file.control
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
-import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
+import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
-import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -30,9 +30,9 @@ class ControlReportFileAuthorizationServiceTest : UnitTest() {
     @MockK
     lateinit var reportPersistence: ProjectReportPersistence
     @MockK
-    lateinit var partnerPersistence: PartnerPersistence
+    lateinit var filePersistence: JemsFilePersistence
     @MockK
-    lateinit var reportFilePersistence: ProjectReportFilePersistence
+    lateinit var partnerPersistence: PartnerPersistence
     @MockK
     lateinit var securityService: SecurityService
 
@@ -42,7 +42,7 @@ class ControlReportFileAuthorizationServiceTest : UnitTest() {
     @BeforeEach
     fun reset() {
         clearMocks(partnerPersistence)
-        clearMocks(reportFilePersistence)
+        clearMocks(filePersistence)
         every { partnerPersistence.getProjectIdForPartnerId(PARTNER_ID) } returns PROJECT_ID
         every { securityService.getUserIdOrThrow() } returns USER_ID
     }
@@ -57,7 +57,7 @@ class ControlReportFileAuthorizationServiceTest : UnitTest() {
 
         val author = mockk<UserSimple>()
         every { author.id } returns USER_ID
-        every { reportFilePersistence
+        every { filePersistence
             .getFileAuthor(PARTNER_ID, "Project/000350/Report/Partner/000424/PartnerControlReport/000041/", 9558L)
         } returns author
         assertDoesNotThrow { service.validateChangeToFileAllowed(PARTNER_ID, reportId, 9558L) }
@@ -82,7 +82,7 @@ class ControlReportFileAuthorizationServiceTest : UnitTest() {
         every { report.status } returns status
         every { reportPersistence.getPartnerReportById(PARTNER_ID, reportId = reportId) } returns report
 
-        every { reportFilePersistence
+        every { filePersistence
             .getFileAuthor(PARTNER_ID, "Project/000350/Report/Partner/000424/PartnerControlReport/000049/", -1L)
         } returns null
         assertThrows<FileNotFound> { service.validateChangeToFileAllowed(PARTNER_ID, reportId, -1L) }

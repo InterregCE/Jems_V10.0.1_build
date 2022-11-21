@@ -2,11 +2,11 @@ package io.cloudflight.jems.server.payments.service.advance.attachment.uploadPay
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.authentication.service.SecurityService
-import io.cloudflight.jems.server.common.minio.JemsProjectFileRepository
+import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
+import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.payments.model.advance.AdvancePaymentDetail
 import io.cloudflight.jems.server.payments.service.advance.PaymentAdvancePersistence
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
-import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileCreate
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
@@ -31,10 +31,10 @@ class UploadPaymentAdvAttachmentTest : UnitTest() {
     lateinit var paymentPersistence: PaymentAdvancePersistence
 
     @MockK
-    lateinit var reportFilePersistence: ProjectReportFilePersistence
+    lateinit var filePersistence: JemsFilePersistence
 
     @MockK
-    lateinit var fileRepository: JemsProjectFileRepository
+    lateinit var fileRepository: JemsProjectFileService
 
     @MockK
     lateinit var securityService: SecurityService
@@ -45,7 +45,7 @@ class UploadPaymentAdvAttachmentTest : UnitTest() {
     @BeforeEach
     fun reset() {
         clearMocks(paymentPersistence)
-        clearMocks(reportFilePersistence)
+        clearMocks(filePersistence)
         clearMocks(fileRepository)
         every { securityService.getUserIdOrThrow() } returns USER_ID
     }
@@ -57,7 +57,7 @@ class UploadPaymentAdvAttachmentTest : UnitTest() {
         every { payment.id } returns paymentId
         every { payment.projectId } returns 540L
         every { paymentPersistence.getPaymentDetail(paymentId) } returns payment
-        every { reportFilePersistence.existsFile("Payment/Advance/000004/PaymentAdvanceAttachment/", "test.xlsx") } returns false
+        every { filePersistence.existsFile("Payment/Advance/000004/PaymentAdvanceAttachment/", "test.xlsx") } returns false
 
         val fileToAdd = slot<JemsFileCreate>()
         val mockResult = mockk<JemsFileMetadata>()
@@ -86,7 +86,7 @@ class UploadPaymentAdvAttachmentTest : UnitTest() {
         val payment = mockk<AdvancePaymentDetail>()
         every { payment.id } returns paymentId
         every { paymentPersistence.getPaymentDetail(paymentId) } returns payment
-        every { reportFilePersistence.existsFile("Payment/Advance/000011/PaymentAdvanceAttachment/", "test.xlsx") } returns true
+        every { filePersistence.existsFile("Payment/Advance/000011/PaymentAdvanceAttachment/", "test.xlsx") } returns true
 
         val file = ProjectFile(stream = content, name = "test.xlsx", size = 20L)
         assertThrows<FileAlreadyExists> { interactor.upload(paymentId, file) }

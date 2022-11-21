@@ -1,13 +1,13 @@
 package io.cloudflight.jems.server.payments.service.regular.attachment.uploadPaymentAttachment
 
 import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
-import io.cloudflight.jems.server.common.minio.JemsProjectFileRepository
+import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.payments.service.regular.PaymentRegularPersistence
 import io.cloudflight.jems.server.payments.authorization.CanUpdatePayments
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.file.uploadProjectFile.isFileTypeInvalid
-import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import org.springframework.stereotype.Service
@@ -16,8 +16,8 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class UploadPaymentAttachment(
     private val paymentPersistence: PaymentRegularPersistence,
-    private val reportFilePersistence: ProjectReportFilePersistence,
-    private val fileRepository: JemsProjectFileRepository,
+    private val filePersistence: JemsFilePersistence,
+    private val fileRepository: JemsProjectFileService,
     private val securityService: SecurityService,
 ) : UploadPaymentAttachmentInteractor {
 
@@ -33,7 +33,7 @@ class UploadPaymentAttachment(
         with(JemsFileType.PaymentAttachment) {
             val location = generatePath(paymentId)
 
-            if (reportFilePersistence.existsFile(exactPath = location, fileName = file.name))
+            if (filePersistence.existsFile(exactPath = location, fileName = file.name))
                 throw FileAlreadyExists()
 
             val fileToSave = file.getFileMetadata(

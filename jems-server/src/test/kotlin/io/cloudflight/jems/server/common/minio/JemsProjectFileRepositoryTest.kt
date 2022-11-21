@@ -6,9 +6,12 @@ import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.audit.model.AuditProject
 import io.cloudflight.jems.server.audit.service.AuditCandidate
 import io.cloudflight.jems.server.project.entity.ProjectEntity
-import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
+import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
+import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
+import io.cloudflight.jems.server.common.file.minio.MinioStorage
+import io.cloudflight.jems.server.common.file.service.WrongFileTypeException
 import io.cloudflight.jems.server.project.repository.ProjectRepository
-import io.cloudflight.jems.server.project.repository.report.file.ProjectReportFileRepository
+import io.cloudflight.jems.server.common.file.repository.JemsFileMetadataRepository
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.PaymentAdvanceAttachment
@@ -67,7 +70,7 @@ class JemsProjectFileRepositoryTest : UnitTest() {
     }
 
     @MockK
-    lateinit var reportFileRepository: ProjectReportFileRepository
+    lateinit var reportFileRepository: JemsFileMetadataRepository
     @MockK
     lateinit var minioStorage: MinioStorage
     @MockK
@@ -78,7 +81,7 @@ class JemsProjectFileRepositoryTest : UnitTest() {
     lateinit var auditPublisher: ApplicationEventPublisher
 
     @InjectMockKs
-    private lateinit var repository: JemsProjectFileRepository
+    private lateinit var repository: JemsProjectFileService
 
     @BeforeEach
     fun resetMocks() {
@@ -112,7 +115,7 @@ class JemsProjectFileRepositoryTest : UnitTest() {
         val userEntity = mockk<UserEntity>()
         every { userRepository.getById(USER_ID) } returns userEntity
 
-        val slotFileEntity = slot<ReportProjectFileEntity>()
+        val slotFileEntity = slot<JemsFileMetadataEntity>()
         every { reportFileRepository.save(capture(slotFileEntity)) } returnsArgument 0
 
         every { projectRepository.getById(PROJECT_ID) } returns project()
@@ -173,7 +176,7 @@ class JemsProjectFileRepositoryTest : UnitTest() {
 
     @Test
     fun setDescription() {
-        val file = ReportProjectFileEntity(
+        val file = JemsFileMetadataEntity(
             id = 85L,
             projectId = PROJECT_ID,
             partnerId = null,
@@ -204,7 +207,7 @@ class JemsProjectFileRepositoryTest : UnitTest() {
 
     @Test
     fun delete() {
-        val file = ReportProjectFileEntity(
+        val file = JemsFileMetadataEntity(
             id = 96L,
             projectId = PROJECT_ID,
             partnerId = null,

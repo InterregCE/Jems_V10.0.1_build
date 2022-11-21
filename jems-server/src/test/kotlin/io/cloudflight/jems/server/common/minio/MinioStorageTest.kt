@@ -4,6 +4,8 @@ import ch.qos.logback.classic.Logger
 import ch.qos.logback.classic.spi.ILoggingEvent
 import ch.qos.logback.core.read.ListAppender
 import io.cloudflight.jems.server.common.exception.DuplicateFileException
+import io.cloudflight.jems.server.common.file.minio.MinioStorage
+import io.cloudflight.jems.server.common.file.minio.MinioStorageImpl
 import io.minio.BucketExistsArgs
 import io.minio.GetObjectArgs
 import io.minio.GetObjectResponse

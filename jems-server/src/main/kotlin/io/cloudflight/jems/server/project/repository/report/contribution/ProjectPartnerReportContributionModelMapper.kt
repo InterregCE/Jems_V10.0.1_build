@@ -10,7 +10,7 @@ import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerRepor
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportInvestmentTranslEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportLumpSumEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportUnitCostEntity
-import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
+import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
 import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PartnerReportInvestment
 import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PartnerReportLumpSum
 import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PartnerReportUnitCostBase
@@ -24,7 +24,7 @@ fun List<ProjectPartnerReportContributionEntity>.toModel() = map { mapper.map(it
 
 fun CreateProjectPartnerReportContribution.toEntity(
     report: ProjectPartnerReportEntity,
-    attachment: ReportProjectFileEntity?,
+    attachment: JemsFileMetadataEntity?,
 ) = ProjectPartnerReportContributionEntity(
     reportEntity = report,
     sourceOfContribution = sourceOfContribution,

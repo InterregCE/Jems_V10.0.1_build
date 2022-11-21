@@ -1,13 +1,13 @@
 package io.cloudflight.jems.server.project.service.contracting.fileManagement.listContractingFiles
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.project.authorization.ProjectContractInfoAuthorization
 import io.cloudflight.jems.server.project.authorization.ProjectMonitoringAuthorization
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectContractingFileSearchRequest
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
-import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFile
+import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -33,8 +33,7 @@ internal class ListContractingFilesTest : UnitTest() {
     lateinit var partnerPersistence: PartnerPersistence
 
     @MockK
-    lateinit var reportFilePersistence: ProjectReportFilePersistence
-
+    lateinit var filePersistence: JemsFilePersistence
 
     @MockK
     lateinit var contractInfoAuth: ProjectContractInfoAuthorization
@@ -48,7 +47,7 @@ internal class ListContractingFilesTest : UnitTest() {
     @BeforeEach
     fun setup() {
         clearMocks(partnerPersistence)
-        clearMocks(reportFilePersistence)
+        clearMocks(filePersistence)
     }
 
 
@@ -57,7 +56,7 @@ internal class ListContractingFilesTest : UnitTest() {
         val filters = setOf(JemsFileType.Contract, JemsFileType.ContractDoc)
         val indexPrefix = slot<String>()
         val result = mockk<Page<JemsFile>>()
-        every { reportFilePersistence.listAttachments(Pageable.unpaged(), capture(indexPrefix), filters, any()) } returns result
+        every { filePersistence.listAttachments(Pageable.unpaged(), capture(indexPrefix), filters, any()) } returns result
         every { projectMonitoringAuthorization.canViewProjectMonitoring(PROJECT_ID) } returns true
         every { contractInfoAuth.canViewContractInfo(PROJECT_ID) } returns true
 
@@ -75,7 +74,7 @@ internal class ListContractingFilesTest : UnitTest() {
         val filters = slot<Set<JemsFileType>>()
         val indexPrefix = slot<String>()
         val result = mockk<Page<JemsFile>>()
-        every { reportFilePersistence.listAttachments(Pageable.unpaged(), capture(indexPrefix), capture(filters), any()) } returns result
+        every { filePersistence.listAttachments(Pageable.unpaged(), capture(indexPrefix), capture(filters), any()) } returns result
         every { projectMonitoringAuthorization.canViewProjectMonitoring(PROJECT_ID) } returns true
         every { contractInfoAuth.canViewContractInfo(PROJECT_ID) } returns false
         every { contractInfoAuth.canEditContractInfo(PROJECT_ID) } returns false
@@ -95,7 +94,7 @@ internal class ListContractingFilesTest : UnitTest() {
         val filters = setOf(JemsFileType.Contract, JemsFileType.ContractDoc)
         val indexPrefix = slot<String>()
         val result = mockk<Page<JemsFile>>()
-        every { reportFilePersistence.listAttachments(Pageable.unpaged(), capture(indexPrefix), filters, any()) } returns result
+        every { filePersistence.listAttachments(Pageable.unpaged(), capture(indexPrefix), filters, any()) } returns result
         every { projectMonitoringAuthorization.canViewProjectMonitoring(PROJECT_ID) } returns false
         every { contractInfoAuth.canViewContractInfo(PROJECT_ID) } returns true
 
@@ -116,7 +115,7 @@ internal class ListContractingFilesTest : UnitTest() {
         val filters = emptySet<JemsFileType>()
         val indexPrefix = slot<String>()
         val result = mockk<Page<JemsFile>>()
-        every { reportFilePersistence.listAttachments(Pageable.unpaged(), capture(indexPrefix), filters, any()) } returns result
+        every { filePersistence.listAttachments(Pageable.unpaged(), capture(indexPrefix), filters, any()) } returns result
 
         val searchRequest = ProjectContractingFileSearchRequest(
             treeNode = JemsFileType.ContractPartnerDoc,

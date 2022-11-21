@@ -4,8 +4,8 @@ import io.cloudflight.jems.server.call.authorization.CanRetrieveCall
 import io.cloudflight.jems.server.call.authorization.CanRetrieveCalls
 import io.cloudflight.jems.server.call.authorization.CanRetrievePublishedCalls
 import io.cloudflight.jems.server.call.service.CallPersistence
-import io.cloudflight.jems.server.call.service.model.CallSummary
 import io.cloudflight.jems.server.call.service.model.CallDetail
+import io.cloudflight.jems.server.call.service.model.CallSummary
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable

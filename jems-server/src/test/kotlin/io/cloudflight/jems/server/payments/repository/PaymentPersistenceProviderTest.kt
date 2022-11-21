@@ -7,7 +7,7 @@ import io.cloudflight.jems.api.user.dto.OutputUser
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.createTestCallEntity
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
-import io.cloudflight.jems.server.common.minio.JemsProjectFileRepository
+import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.payments.entity.PaymentEntity
 import io.cloudflight.jems.server.payments.entity.PaymentGroupingId
 import io.cloudflight.jems.server.payments.entity.PaymentPartnerEntity
@@ -39,11 +39,11 @@ import io.cloudflight.jems.server.project.entity.lumpsum.ProjectLumpSumId
 import io.cloudflight.jems.server.project.entity.lumpsum.ProjectPartnerLumpSumEntity
 import io.cloudflight.jems.server.project.entity.lumpsum.ProjectPartnerLumpSumId
 import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
-import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
+import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
 import io.cloudflight.jems.server.project.repository.ProjectRepository
 import io.cloudflight.jems.server.project.repository.lumpsum.ProjectLumpSumRepository
 import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
-import io.cloudflight.jems.server.project.repository.report.file.ProjectReportFileRepository
+import io.cloudflight.jems.server.common.file.repository.JemsFileMetadataRepository
 import io.cloudflight.jems.server.project.repository.toModel
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
@@ -94,9 +94,9 @@ class PaymentPersistenceProviderTest: UnitTest() {
     @RelaxedMockK
     lateinit var fundRepository: ProgrammeFundRepository
     @MockK
-    lateinit var reportFileRepository: ProjectReportFileRepository
+    lateinit var reportFileRepository: JemsFileMetadataRepository
     @MockK
-    lateinit var fileRepository: JemsProjectFileRepository
+    lateinit var fileRepository: JemsProjectFileService
 
     @InjectMockKs
     lateinit var paymentPersistenceProvider: PaymentRegularPersistenceProvider
@@ -457,7 +457,7 @@ class PaymentPersistenceProviderTest: UnitTest() {
 
     @Test
     fun deletePaymentAttachment() {
-        val file = mockk<ReportProjectFileEntity>()
+        val file = mockk<JemsFileMetadataEntity>()
         every { fileRepository.delete(file) } answers { }
         every { reportFileRepository.findByTypeAndId(JemsFileType.PaymentAttachment, 14L) } returns file
         paymentPersistenceProvider.deletePaymentAttachment(14L)

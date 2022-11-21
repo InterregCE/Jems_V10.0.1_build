@@ -1,8 +1,8 @@
 package io.cloudflight.jems.server.project.service.contracting.fileManagement.downloadPartnerFile
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.ProjectContractingFilePersistence
-import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.mockk.clearMocks
 import io.mockk.every
@@ -24,7 +24,7 @@ internal class DownloadPartnerFileTest : UnitTest() {
     lateinit var contractingFilePersistence: ProjectContractingFilePersistence
 
     @MockK
-    lateinit var reportFilePersistence: ProjectReportFilePersistence
+    lateinit var filePersistence: JemsFilePersistence
 
 
     @InjectMockKs
@@ -38,7 +38,7 @@ internal class DownloadPartnerFileTest : UnitTest() {
     @Test
     fun `download partner file`() {
         val file = mockk<Pair<String, ByteArray>>()
-        every { reportFilePersistence.getFileTypeByPartnerId(FILE_ID, PARTNER_ID) } returns JemsFileType.ContractPartnerDoc
+        every { filePersistence.getFileTypeByPartnerId(FILE_ID, PARTNER_ID) } returns JemsFileType.ContractPartnerDoc
         every { contractingFilePersistence.downloadFileByPartnerId(PARTNER_ID, FILE_ID) } returns file
         Assertions.assertThat(interactor.downloadPartnerFile(partnerId = PARTNER_ID, fileId = FILE_ID)).isEqualTo(file)
     }

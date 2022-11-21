@@ -1,10 +1,11 @@
 package io.cloudflight.jems.server.project.service.report.partner.file.setDescriptionToFile
 
+import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
+import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.authorization.CanEditPartnerReport
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
-import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.PartnerReport
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -12,7 +13,8 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class SetDescriptionToProjectPartnerReportFile(
     private val partnerPersistence: PartnerPersistence,
-    private val reportFilePersistence: ProjectReportFilePersistence,
+    private val filePersistence: JemsFilePersistence,
+    private val fileService: JemsProjectFileService,
     private val generalValidator: GeneralValidatorService,
 ) : SetDescriptionToProjectPartnerReportFileInteractor {
 
@@ -26,10 +28,10 @@ class SetDescriptionToProjectPartnerReportFile(
         // to make sure fileId corresponds to correct report, we need to verify it through location path
         val reportPrefix = PartnerReport.generatePath(projectId, partnerId, reportId)
 
-        if (!reportFilePersistence.existsFile(partnerId = partnerId, pathPrefix = reportPrefix, fileId = fileId))
+        if (!filePersistence.existsFile(partnerId = partnerId, pathPrefix = reportPrefix, fileId = fileId))
             throw FileNotFound()
 
-        reportFilePersistence.setDescriptionToFile(fileId = fileId, description = description)
+        fileService.setDescription(fileId = fileId, description = description)
     }
 
     private fun validateDescription(text: String) {

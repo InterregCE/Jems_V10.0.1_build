@@ -1,9 +1,9 @@
 package io.cloudflight.jems.server.project.repository.report.contribution
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.common.minio.JemsProjectFileRepository
+import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.project.entity.report.contribution.ProjectPartnerReportContributionEntity
-import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
+import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
 import io.cloudflight.jems.server.project.repository.report.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.create.CreateProjectPartnerReportContribution
@@ -30,7 +30,7 @@ class ProjectReportContributionPersistenceProviderTest : UnitTest() {
         private const val PARTNER_ID = 380L
         private val HISTORY_CONTRIBUTION_UUID = UUID.randomUUID()
 
-        private val dummyAttachment = ReportProjectFileEntity(
+        private val dummyAttachment = JemsFileMetadataEntity(
             id = 870L,
             projectId = 10L,
             partnerId = PARTNER_ID,
@@ -106,7 +106,7 @@ class ProjectReportContributionPersistenceProviderTest : UnitTest() {
     lateinit var reportContributionRepository: ProjectPartnerReportContributionRepository
 
     @MockK
-    lateinit var fileRepository: JemsProjectFileRepository
+    lateinit var fileRepository: JemsProjectFileService
 
     @InjectMockKs
     lateinit var persistence: ProjectReportContributionPersistenceProvider

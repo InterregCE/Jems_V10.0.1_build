@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.common.minio
+package io.cloudflight.jems.server.common.file.service
 
 import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent

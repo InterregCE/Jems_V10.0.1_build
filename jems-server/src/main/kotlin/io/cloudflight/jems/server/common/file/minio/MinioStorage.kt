@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.common.minio
+package io.cloudflight.jems.server.common.file.minio
 
 import java.io.InputStream
 

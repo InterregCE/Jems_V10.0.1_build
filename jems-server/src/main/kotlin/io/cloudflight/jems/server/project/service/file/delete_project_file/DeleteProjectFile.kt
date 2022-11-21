@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.file.delete_project_file
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
-import io.cloudflight.jems.server.common.minio.fileDeleted
+import io.cloudflight.jems.server.common.file.service.fileDeleted
 import io.cloudflight.jems.server.project.authorization.CanDeleteFileInCategory
 import io.cloudflight.jems.server.project.repository.file.ProjectFilePersistenceProvider.Companion.getObjectPath
 import io.cloudflight.jems.server.project.service.ProjectPersistence
@@ -32,8 +32,10 @@ class DeleteProjectFile(
             filePersistence.deleteFile(projectId, fileId, fileMetadata.name)
 
             val location = getObjectPath(projectId, fileId, fileMetadata.name)
-            auditPublisher.publishEvent(fileDeleted(this, fileId = fileMetadata.id,
-                location = location, project = project))
+            auditPublisher.publishEvent(
+                fileDeleted(this, fileId = fileMetadata.id,
+                location = location, project = project)
+            )
         }
     }
 

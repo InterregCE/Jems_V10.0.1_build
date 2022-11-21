@@ -1,9 +1,10 @@
 package io.cloudflight.jems.server.project.service.contracting.fileManagement.setPartnerFileDescription
 
 import io.cloudflight.jems.server.UnitTest
+import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
+import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.common.validator.AppInputValidationException
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
-import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.cloudflight.jems.server.project.service.report.partner.file.setDescriptionToFile.FileNotFound
 import io.mockk.clearMocks
@@ -23,7 +24,10 @@ class SetPartnerFileDescriptionTest: UnitTest() {
     }
 
     @MockK
-    lateinit var reportFilePersistence: ProjectReportFilePersistence
+    lateinit var filePersistence: JemsFilePersistence
+
+    @MockK
+    lateinit var fileService: JemsProjectFileService
 
     @MockK
     lateinit var generalValidator: GeneralValidatorService
@@ -34,7 +38,7 @@ class SetPartnerFileDescriptionTest: UnitTest() {
 
     @BeforeEach
     fun setup() {
-        clearMocks(generalValidator, reportFilePersistence)
+        clearMocks(generalValidator, filePersistence, fileService)
         every { generalValidator.throwIfAnyIsInvalid(*varargAny { it.isEmpty() }) } returns Unit
         every { generalValidator.throwIfAnyIsInvalid(*varargAny { it.isNotEmpty() }) } throws
             AppInputValidationException(emptyMap())
@@ -44,22 +48,22 @@ class SetPartnerFileDescriptionTest: UnitTest() {
     @Test
     fun setDescription() {
         every {
-            reportFilePersistence.existsFileByPartnerIdAndFileIdAndFileTypeIn(
+            filePersistence.existsFileByPartnerIdAndFileIdAndFileTypeIn(
                 PARTNER_ID,
                 FILE_ID,
                 setOf(JemsFileType.ContractPartnerDoc)
             )
         } returns true
-        every { reportFilePersistence.setDescriptionToFile(FILE_ID, "new desc") } answers { }
+        every { fileService.setDescription(FILE_ID, "new desc") } answers { }
 
         setPartnerFileDescription.setPartnerFileDescription(PARTNER_ID, FILE_ID, "new desc")
-        verify(exactly = 1) { reportFilePersistence.setDescriptionToFile(FILE_ID, "new desc") }
+        verify(exactly = 1) { fileService.setDescription(FILE_ID, "new desc") }
     }
 
     @Test
     fun `setDescription - not existing`() {
         every {
-            reportFilePersistence.existsFileByPartnerIdAndFileIdAndFileTypeIn(
+            filePersistence.existsFileByPartnerIdAndFileIdAndFileTypeIn(
                 PARTNER_ID,
                 FILE_ID,
                 setOf(JemsFileType.ContractPartnerDoc)

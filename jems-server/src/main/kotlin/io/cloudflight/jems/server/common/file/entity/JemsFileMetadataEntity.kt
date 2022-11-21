@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.entity.report.file
+package io.cloudflight.jems.server.common.file.entity
 
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.cloudflight.jems.server.user.entity.UserEntity
@@ -16,16 +16,16 @@ import javax.persistence.NamedEntityGraph
 import javax.persistence.NamedEntityGraphs
 import javax.validation.constraints.NotNull
 
-@Entity(name = "report_project_file")
+@Entity(name = "file_metadata")
 @NamedEntityGraphs(
     NamedEntityGraph(
-        name = "ReportProjectFileEntity.user",
+        name = "FileMetadataEntity.user",
         attributeNodes = [
             NamedAttributeNode(value = "user"),
         ],
     )
 )
-class ReportProjectFileEntity(
+class JemsFileMetadataEntity(
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

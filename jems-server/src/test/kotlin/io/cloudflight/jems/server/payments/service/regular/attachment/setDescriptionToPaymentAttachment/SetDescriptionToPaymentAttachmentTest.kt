@@ -1,9 +1,9 @@
 package io.cloudflight.jems.server.payments.service.regular.attachment.setDescriptionToPaymentAttachment
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.common.minio.JemsProjectFileRepository
+import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
+import io.cloudflight.jems.server.common.file.service.JemsProjectFileService
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
-import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType.PaymentAttachment
 import io.mockk.clearMocks
 import io.mockk.every
@@ -17,10 +17,10 @@ import org.junit.jupiter.api.assertThrows
 class SetDescriptionToPaymentAttachmentTest : UnitTest() {
 
     @MockK
-    lateinit var reportFilePersistence: ProjectReportFilePersistence
+    lateinit var filePersistence: JemsFilePersistence
 
     @MockK
-    lateinit var fileRepository: JemsProjectFileRepository
+    lateinit var fileRepository: JemsProjectFileService
 
     @MockK
     lateinit var generalValidator: GeneralValidatorService
@@ -37,7 +37,7 @@ class SetDescriptionToPaymentAttachmentTest : UnitTest() {
 
     @Test
     fun setDescription() {
-        every { reportFilePersistence.existsFile(PaymentAttachment, 261L) } returns true
+        every { filePersistence.existsFile(PaymentAttachment, 261L) } returns true
         every { fileRepository.setDescription(261L, "new desc") } answers { }
 
         interactor.setDescription(fileId = 261L, "new desc")
@@ -49,7 +49,7 @@ class SetDescriptionToPaymentAttachmentTest : UnitTest() {
 
     @Test
     fun `setDescription - not existing`() {
-        every { reportFilePersistence.existsFile(PaymentAttachment, -1L) } returns false
+        every { filePersistence.existsFile(PaymentAttachment, -1L) } returns false
 
         assertThrows<FileNotFound> { interactor.setDescription(fileId = -1L, "new desc") }
 

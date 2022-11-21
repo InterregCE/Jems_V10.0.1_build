@@ -1,6 +1,6 @@
 package io.cloudflight.jems.server.project.entity.report.procurement.file
 
-import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
+import io.cloudflight.jems.server.common.file.entity.JemsFileMetadataEntity
 import io.cloudflight.jems.server.project.entity.report.procurement.ProjectPartnerReportProcurementEntity
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
@@ -25,6 +25,6 @@ class ProjectPartnerReportProcurementFileEntity(
 
     @ManyToOne
     @field:NotNull
-    val file: ReportProjectFileEntity,
+    val file: JemsFileMetadataEntity,
 
-)
+    )

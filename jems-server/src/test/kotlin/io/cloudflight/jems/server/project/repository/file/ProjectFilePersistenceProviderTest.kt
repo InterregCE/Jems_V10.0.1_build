@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.repository.file
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.common.minio.MinioStorage
+import io.cloudflight.jems.server.common.file.minio.MinioStorage
 import io.cloudflight.jems.server.project.entity.file.ProjectFileCategoryEntity
 import io.cloudflight.jems.server.project.entity.file.ProjectFileEntity
 import io.cloudflight.jems.server.project.repository.ProjectRepository

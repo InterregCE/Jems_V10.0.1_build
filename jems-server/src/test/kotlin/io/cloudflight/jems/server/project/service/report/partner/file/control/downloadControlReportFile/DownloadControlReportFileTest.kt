@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.partner.file.control.downloadControlReportFile
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
+import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -17,7 +17,7 @@ class DownloadControlReportFileTest : UnitTest() {
     }
 
     @MockK
-    lateinit var reportFilePersistence: ProjectReportFilePersistence
+    lateinit var filePersistence: JemsFilePersistence
 
     @InjectMockKs
     lateinit var interactor: DownloadControlReportFile
@@ -25,13 +25,13 @@ class DownloadControlReportFileTest : UnitTest() {
     @Test
     fun download() {
         val file = mockk<Pair<String, ByteArray>>()
-        every { reportFilePersistence.downloadFile(PARTNER_ID, 45L) } returns file
+        every { filePersistence.downloadFile(PARTNER_ID, 45L) } returns file
         assertThat(interactor.download(PARTNER_ID, 45L)).isEqualTo(file)
     }
 
     @Test
     fun `download - not existing`() {
-        every { reportFilePersistence.downloadFile(PARTNER_ID, -1L) } returns null
+        every { filePersistence.downloadFile(PARTNER_ID, -1L) } returns null
         assertThrows<FileNotFound> { interactor.download(PARTNER_ID, -1L) }
     }
 
