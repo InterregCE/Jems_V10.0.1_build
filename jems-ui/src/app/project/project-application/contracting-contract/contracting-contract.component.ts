@@ -79,7 +79,7 @@ export class ContractingContractComponent implements OnInit {
 
   canEdit(): Observable<boolean>{
     return combineLatest([
-      this.projectStore.userIsProjectOwnerOrEditCollaborator$,
+      this.projectStore.userIsEditOrManageCollaborator$,
       this.permissionService.hasPermission(PermissionsEnum.ProjectContractsEdit)]).pipe(
       map(([userIsProjectOwnerOrEditCollaborator, hasEditPermission]) =>
           userIsProjectOwnerOrEditCollaborator || hasEditPermission,

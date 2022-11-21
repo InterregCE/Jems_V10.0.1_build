@@ -20,7 +20,6 @@ internal class ProjectContractingManagementAuthorizationTest: UnitTest() {
 
     companion object {
         private const val PROJECT_ID = 9L
-        private const val PROJECT_CREATOR_USER_ID = 3L
 
         private const val PROJECT_COLLABORATOR_VIEW_USER_ID = 4L
         private const val PROJECT_COLLABORATOR_EDIT_USER_ID = 5L
@@ -33,7 +32,7 @@ internal class ProjectContractingManagementAuthorizationTest: UnitTest() {
 
         private val applicantAndStatus = ProjectApplicantAndStatus(
             projectId = PROJECT_ID,
-            applicantId = PROJECT_CREATOR_USER_ID,
+            applicantId = 9876L,
             collaboratorViewIds = setOf(PROJECT_COLLABORATOR_VIEW_USER_ID),
             collaboratorEditIds = setOf(PROJECT_COLLABORATOR_EDIT_USER_ID),
             collaboratorManageIds = setOf(PROJECT_COLLABORATOR_MANAGE_USER_ID),
@@ -67,26 +66,6 @@ internal class ProjectContractingManagementAuthorizationTest: UnitTest() {
         every { securityService.currentUser } returns currentUser
     }
 
-
-    @Test
-    fun `project creator can view and edit`() {
-        every { currentUser.hasPermission(UserRolePermission.ProjectContractingManagementView) } returns false
-        every { currentUser.hasPermission(UserRolePermission.ProjectContractingManagementEdit) } returns false
-        every { securityService.getUserIdOrThrow() } returns PROJECT_CREATOR_USER_ID
-        every { projectPersistence.getApplicantAndStatusById(PROJECT_ID)} returns applicantAndStatus
-        every { authorizationUtilService.userIsPartnerCollaboratorForProject(
-            userId = PROJECT_CREATOR_USER_ID,
-            projectId = PROJECT_ID)
-        } returns false
-        every {
-            authorizationUtilService.userIsProjectOwnerOrProjectCollaborator(userId = PROJECT_CREATOR_USER_ID, applicantAndStatus)
-        } returns true
-        every {
-            authorizationUtilService.userIsProjectCollaboratorWithEditPrivilege(userId = PROJECT_CREATOR_USER_ID, applicantAndStatus)
-        } returns false
-        Assertions.assertThat(projectManagementAuthorization.canViewProjectManagement(PROJECT_ID)).isTrue
-        Assertions.assertThat(projectManagementAuthorization.canEditProjectManagement(PROJECT_ID)).isTrue
-    }
 
     @Test
     fun `partner collaborator can view`() {

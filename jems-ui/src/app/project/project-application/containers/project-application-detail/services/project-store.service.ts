@@ -72,6 +72,7 @@ export class ProjectStore {
   userIsProjectOwner$: Observable<boolean>;
   userIsPartnerCollaborator$: Observable<boolean>;
   userIsProjectOwnerOrEditCollaborator$: Observable<boolean>;
+  userIsEditOrManageCollaborator$: Observable<boolean>;
   allowedBudgetCategories$: Observable<AllowedBudgetCategories>;
   activities$: Observable<WorkPackageActivitySummaryDTO[]>;
   projectPeriods$: Observable<ProjectPeriodDTO[]>;
@@ -133,6 +134,7 @@ export class ProjectStore {
     this.userIsProjectOwner$ = this.userIsProjectOwner();
     this.userIsPartnerCollaborator$ = this.userIsPartnerCollaborator();
     this.userIsProjectOwnerOrEditCollaborator$ = this.userIsProjectOwnerOrEditCollaborator();
+    this.userIsEditOrManageCollaborator$ = this.userIsEditOrManageCollaborator();
     this.allowedBudgetCategories$ = this.allowedBudgetCategories();
     this.activities$ = this.projectActivities();
     this.projectPeriods$ = this.projectForm$.pipe(
@@ -395,6 +397,13 @@ export class ProjectStore {
       .pipe(
         map(([project, currentUser, collaboratorLevel]) => project?.applicant?.id === currentUser?.id || !!collaboratorLevel)
       );
+  }
+
+  private userIsEditOrManageCollaborator(): Observable<boolean> {
+    return this.collaboratorLevel$
+        .pipe(
+            map( collaboratorLevel => collaboratorLevel === ProjectUserCollaboratorDTO.LevelEnum.EDIT || collaboratorLevel === ProjectUserCollaboratorDTO.LevelEnum.MANAGE)
+        );
   }
 
   private userIsProjectOwnerOrEditCollaborator(): Observable<boolean> {
