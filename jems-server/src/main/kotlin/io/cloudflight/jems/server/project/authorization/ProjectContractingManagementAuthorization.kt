@@ -51,7 +51,6 @@ class ProjectContractingManagementAuthorization(
         val currentUserId = securityService.getUserIdOrThrow()
         val applicantAndStatus = projectPersistence.getApplicantAndStatusById(projectId)
         return hasPermissionForProject(UserRolePermission.ProjectContractingManagementEdit, projectId) ||
-            applicantAndStatus.applicantId == currentUserId ||
             authorizationUtilService.userIsProjectCollaboratorWithEditPrivilege(currentUserId, applicantAndStatus)
     }
 

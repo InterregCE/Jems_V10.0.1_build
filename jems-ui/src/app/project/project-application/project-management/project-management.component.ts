@@ -74,7 +74,7 @@ export class ProjectManagementComponent implements OnInit {
       this.initManagerContactForm(this.projectManagersForm.get(manager.managementType) as FormGroup, manager);
     });
 
-    combineLatest([this.projectStore.userIsProjectOwnerOrEditCollaborator$, this.hasEditPermissionForProjectManagement()]).pipe(
+    combineLatest([this.projectStore.userIsEditOrManageCollaborator$, this.hasEditPermissionForProjectManagement()]).pipe(
       tap(([userIsProjectOwnerOrEditCollaborator, hasEditPermission]) =>
         this.formService.setEditable(userIsProjectOwnerOrEditCollaborator || hasEditPermission)),
       untilDestroyed(this)

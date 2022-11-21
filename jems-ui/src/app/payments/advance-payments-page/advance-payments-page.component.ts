@@ -8,7 +8,7 @@ import {filter, map, take, tap} from 'rxjs/operators';
 import {AdvancePaymentsPageStore} from './advance-payments-page.store';
 import {Forms} from '@common/utils/forms';
 import {MatDialog} from '@angular/material/dialog';
-import {UntilDestroy, untilDestroyed} from "@ngneat/until-destroy";
+import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 
 @UntilDestroy()
 @Component({
@@ -133,7 +133,7 @@ export class AdvancePaymentsPageComponent implements OnInit, AfterViewInit {
               columnType: ColumnType.CustomComponent,
               columnWidth: ColumnWidth.SmallColumn,
               customCellTemplate: this.deleteButtonCell
-            })
+            });
           }
         }
       ),

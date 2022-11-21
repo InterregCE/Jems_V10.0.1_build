@@ -119,7 +119,7 @@ export class PaymentsToProjectDetailPageComponent implements OnInit {
     this.userCanEdit$.pipe(
       tap(userCanEdit => this.disableAllFields(userCanEdit)),
       untilDestroyed(this)
-    ).subscribe()
+    ).subscribe();
   }
 
   disableAllFields(userCanEdit: boolean) {
