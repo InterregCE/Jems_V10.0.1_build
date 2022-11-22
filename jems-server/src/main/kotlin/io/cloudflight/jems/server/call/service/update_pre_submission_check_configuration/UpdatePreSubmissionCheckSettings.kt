@@ -1,6 +1,8 @@
 package io.cloudflight.jems.server.call.service.update_pre_submission_check_configuration
 
+import io.cloudflight.jems.plugin.contract.JemsPlugin
 import io.cloudflight.jems.plugin.contract.pre_condition_check.PreConditionCheckPlugin
+import io.cloudflight.jems.plugin.contract.pre_condition_check.ReportPartnerCheckPlugin
 import io.cloudflight.jems.server.call.authorization.CanUpdateCall
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.call.service.model.CallDetail
@@ -9,6 +11,7 @@ import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.plugin.JemsPluginRegistry
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import kotlin.reflect.KClass
 
 @Service
 class UpdatePreSubmissionCheckSettings(
@@ -29,11 +32,14 @@ class UpdatePreSubmissionCheckSettings(
     }
 
     private fun isSelectedPluginKeyValid(hasTwoSteps: Boolean, pluginKeys: PreSubmissionPlugins): Boolean {
-        if (hasTwoSteps) {
-            return jemsPluginRegistry.get(PreConditionCheckPlugin::class, pluginKeys.pluginKey).getKey().isNotEmpty()
-                && jemsPluginRegistry.get(PreConditionCheckPlugin::class, pluginKeys.firstStepPluginKey).getKey().isNotEmpty()
-        }
-        return jemsPluginRegistry.get(PreConditionCheckPlugin::class, pluginKeys.pluginKey).getKey().isNotEmpty()
+        val validStep1Check = !hasTwoSteps || exists(pluginKeys.firstStepPluginKey, PreConditionCheckPlugin::class)
+        val validStep2Check = exists(pluginKeys.pluginKey, PreConditionCheckPlugin::class)
+        val validReportPartnerCheck = exists(pluginKeys.reportPartnerCheckPluginKey, ReportPartnerCheckPlugin::class)
+
+        return validStep1Check && validStep2Check && validReportPartnerCheck
     }
+
+    private fun <T : JemsPlugin> exists(pluginKey: String?, type: KClass<T>) =
+        jemsPluginRegistry.get(type, pluginKey).getKey().isNotEmpty()
 
 }

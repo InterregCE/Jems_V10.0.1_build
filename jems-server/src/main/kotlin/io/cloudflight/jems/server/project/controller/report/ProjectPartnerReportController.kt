@@ -1,10 +1,12 @@
 package io.cloudflight.jems.server.project.controller.report
 
+import io.cloudflight.jems.api.plugin.dto.PreConditionCheckResultDTO
 import io.cloudflight.jems.api.project.dto.report.ProjectPartnerReportSummaryDTO
 import io.cloudflight.jems.api.project.dto.report.ReportStatusDTO
 import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileDTO
 import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileSearchRequestDTO
 import io.cloudflight.jems.api.project.report.ProjectPartnerReportApi
+import io.cloudflight.jems.server.project.controller.toDTO
 import io.cloudflight.jems.server.project.service.report.partner.base.deleteProjectPartnerReport.DeleteProjectPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.control.deleteControlReportFile.DeleteControlReportFileInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.control.downloadControlReportFile.DownloadControlReportFileInteractor
@@ -18,6 +20,7 @@ import io.cloudflight.jems.server.project.service.report.partner.file.listProjec
 import io.cloudflight.jems.server.project.service.report.partner.file.setDescriptionToFile.SetDescriptionToProjectPartnerReportFileInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.uploadFileToProjectPartnerReport.UploadFileToProjectPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.base.getProjectPartnerReport.GetProjectPartnerReportInteractor
+import io.cloudflight.jems.server.project.service.report.partner.base.runPreSubmissionCheck.RunPreSubmissionCheckInteractor
 import io.cloudflight.jems.server.project.service.report.partner.base.startControlPartnerReport.StartControlPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.base.submitProjectPartnerReport.SubmitProjectPartnerReportInteractor
 import org.springframework.core.io.ByteArrayResource
@@ -32,6 +35,7 @@ import org.springframework.web.multipart.MultipartFile
 @RestController
 class ProjectPartnerReportController(
     private val createPartnerReport: CreateProjectPartnerReportInteractor,
+    private val runPreCheckPartnerReport: RunPreSubmissionCheckInteractor,
     private val submitPartnerReport: SubmitProjectPartnerReportInteractor,
     private val startControlReport: StartControlPartnerReportInteractor,
     private val getPartnerReport: GetProjectPartnerReportInteractor,
@@ -59,6 +63,9 @@ class ProjectPartnerReportController(
 
     override fun createProjectPartnerReport(partnerId: Long) =
         createPartnerReport.createReportFor(partnerId = partnerId).toDto()
+
+    override fun runPreCheck(partnerId: Long, reportId: Long): PreConditionCheckResultDTO =
+        runPreCheckPartnerReport.preCheck(partnerId = partnerId, reportId = reportId).toDTO()
 
     override fun submitProjectPartnerReport(partnerId: Long, reportId: Long): ReportStatusDTO =
         submitPartnerReport.submit(partnerId = partnerId, reportId = reportId).toDto()

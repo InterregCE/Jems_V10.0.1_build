@@ -4,7 +4,6 @@ import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEnti
 import io.cloudflight.jems.server.project.entity.report.procurement.ProjectPartnerReportProcurementEntity
 import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectPartnerReportProcurement
 import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectPartnerReportProcurementChange
-import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectPartnerReportProcurementSummary
 import org.springframework.data.domain.Page
 import java.time.ZonedDateTime
 
@@ -24,22 +23,7 @@ fun ProjectPartnerReportProcurementEntity.toModel() = ProjectPartnerReportProcur
     comment = comment,
 )
 
-fun Page<ProjectPartnerReportProcurementEntity>.toModel() = map {
-    ProjectPartnerReportProcurementSummary(
-        id = it.id,
-        reportId = it.reportEntity.id,
-        reportNumber = it.reportEntity.number,
-        lastChanged = it.lastChanged,
-        contractName = it.contractName,
-        referenceNumber = it.referenceNumber,
-        contractDate = it.contractDate,
-        contractType = it.contractType,
-        contractAmount = it.contractAmount,
-        currencyCode = it.currencyCode,
-        supplierName = it.supplierName,
-        vatNumber = it.vatNumber,
-    )
-}
+fun Page<ProjectPartnerReportProcurementEntity>.toModel() = map { it.toModel() }
 
 fun ProjectPartnerReportProcurementChange.toEntity(report: ProjectPartnerReportEntity, lastChanged: ZonedDateTime) =
     ProjectPartnerReportProcurementEntity(

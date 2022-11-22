@@ -1,5 +1,9 @@
 package io.cloudflight.jems.server.project.controller.report
 
+import io.cloudflight.jems.api.common.dto.I18nMessage
+import io.cloudflight.jems.api.plugin.dto.MessageTypeDTO
+import io.cloudflight.jems.api.plugin.dto.PreConditionCheckMessageDTO
+import io.cloudflight.jems.api.plugin.dto.PreConditionCheckResultDTO
 import io.cloudflight.jems.api.programme.dto.fund.ProgrammeFundDTO
 import io.cloudflight.jems.api.programme.dto.fund.ProgrammeFundTypeDTO
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
@@ -20,6 +24,10 @@ import io.cloudflight.jems.api.project.dto.report.file.UserSimpleDTO
 import io.cloudflight.jems.api.project.dto.report.partner.PartnerReportIdentificationCoFinancingDTO
 import io.cloudflight.jems.api.project.dto.report.partner.PartnerReportIdentificationDTO
 import io.cloudflight.jems.api.project.dto.report.partner.identification.ProjectPartnerReportPeriodDTO
+import io.cloudflight.jems.plugin.contract.models.common.I18nMessageData
+import io.cloudflight.jems.plugin.contract.pre_condition_check.models.MessageType
+import io.cloudflight.jems.plugin.contract.pre_condition_check.models.PreConditionCheckMessage
+import io.cloudflight.jems.plugin.contract.pre_condition_check.models.PreConditionCheckResult
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
@@ -52,6 +60,7 @@ import io.cloudflight.jems.server.project.service.report.partner.file.listProjec
 import io.cloudflight.jems.server.project.service.report.partner.file.setDescriptionToFile.SetDescriptionToProjectPartnerReportFileInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.uploadFileToProjectPartnerReport.UploadFileToProjectPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.base.getProjectPartnerReport.GetProjectPartnerReportInteractor
+import io.cloudflight.jems.server.project.service.report.partner.base.runPreSubmissionCheck.RunPreSubmissionCheckInteractor
 import io.cloudflight.jems.server.project.service.report.partner.base.startControlPartnerReport.StartControlPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.base.submitProjectPartnerReport.SubmitProjectPartnerReportInteractor
 import io.mockk.every
@@ -217,6 +226,9 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
     lateinit var submitPartnerReport: SubmitProjectPartnerReportInteractor
 
     @MockK
+    lateinit var runPreCheckPartnerReport: RunPreSubmissionCheckInteractor
+
+    @MockK
     lateinit var startControlReport: StartControlPartnerReportInteractor
 
     @MockK
@@ -299,6 +311,24 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
     fun createProjectPartnerReport() {
         every { createPartnerReport.createReportFor(18) } returns reportSummary
         assertThat(controller.createProjectPartnerReport(18)).isEqualTo(reportSummaryDTO)
+    }
+
+
+    @Test
+    fun runPreCheck() {
+        val preCheck = PreConditionCheckResult(listOf(PreConditionCheckMessage(
+            message = I18nMessageData("key", mapOf("arg1" to "val1")),
+            messageType = MessageType.WARNING,
+            subSectionMessages = listOf(),
+        )), isSubmissionAllowed = true)
+        every { runPreCheckPartnerReport.preCheck(18, 305) } returns preCheck
+        assertThat(controller.runPreCheck(18, 305)).isEqualTo(PreConditionCheckResultDTO(
+            listOf(PreConditionCheckMessageDTO(
+                message = I18nMessage("key", mapOf("arg1" to "val1")),
+                messageType = MessageTypeDTO.WARNING,
+                subSectionMessages = listOf(),
+            )), true
+        ))
     }
 
     @Test

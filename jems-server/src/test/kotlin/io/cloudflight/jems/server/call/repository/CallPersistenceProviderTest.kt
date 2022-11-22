@@ -60,6 +60,8 @@ import io.cloudflight.jems.server.programme.repository.fund.ProgrammeFundReposit
 import io.cloudflight.jems.server.programme.repository.priority.ProgrammeSpecificObjectiveRepository
 import io.cloudflight.jems.server.programme.repository.stateaid.ProgrammeStateAidRepository
 import io.cloudflight.jems.server.programme.service.stateaid.model.ProgrammeStateAid
+import io.cloudflight.jems.server.project.entity.partner.ProjectPartnerEntity
+import io.cloudflight.jems.server.project.repository.partner.ProjectPartnerRepository
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.user.repository.user.UserRepository
 import io.mockk.every
@@ -90,6 +92,7 @@ internal class CallPersistenceProviderTest {
         private const val LUMP_SUM_ID = 4L
         private const val UNIT_COST_ID = 3L
         private const val PLUGIN_KEY = "plugin-key"
+        private const val PLUGIN_KEY_REPORT = "plugin-key-report"
 
         private fun applicationFormFieldConfigurationEntities(callEntity: CallEntity) = mutableSetOf(
             ApplicationFormFieldConfigurationEntity(
@@ -138,6 +141,7 @@ internal class CallPersistenceProviderTest {
             fund = callFundRateEntity(call, FUND_ID)
             call.preSubmissionCheckPluginKey = PLUGIN_KEY
             call.firstStepPreSubmissionCheckPluginKey = PLUGIN_KEY
+            call.reportPartnerCheckPluginKey = PLUGIN_KEY_REPORT
             call.prioritySpecificObjectives.clear()
             call.prioritySpecificObjectives.addAll(specificObjectives)
             call.strategies.clear()
@@ -193,7 +197,8 @@ internal class CallPersistenceProviderTest {
             name = "Test call name",
             funds = sortedSetOf(callFundRate(FUND_ID)),
             preSubmissionCheckPluginKey = PLUGIN_KEY,
-            firstStepPreSubmissionCheckPluginKey = PLUGIN_KEY
+            firstStepPreSubmissionCheckPluginKey = PLUGIN_KEY,
+            reportPartnerCheckPluginKey = PLUGIN_KEY_REPORT,
         )
 
         private val expectedSPFCallDetail = createCallDetailModel(
@@ -318,6 +323,7 @@ internal class CallPersistenceProviderTest {
                 allowedRealCosts = defaultAllowedRealCostsByCallType(CallType.STANDARD),
                 preSubmissionCheckPluginKey = null,
                 firstStepPreSubmissionCheckPluginKey = null,
+                reportPartnerCheckPluginKey = "check-off",
                 projectDefinedUnitCostAllowed = true,
                 projectDefinedLumpSumAllowed = false,
             )
@@ -356,6 +362,9 @@ internal class CallPersistenceProviderTest {
 
     @MockK
     private lateinit var projectPersistence: ProjectPersistence
+
+    @MockK
+    private lateinit var partnerRepository: ProjectPartnerRepository
 
     @InjectMockKs
     private lateinit var persistence: CallPersistenceProvider
@@ -459,7 +468,8 @@ internal class CallPersistenceProviderTest {
         every { applicationFormFieldConfigurationRepository.findAllByCallId(CALL_ID) } returns mutableSetOf(applicationFormConfigEntity)
         assertThat(persistence.updateProjectCallPreSubmissionCheckPlugin(CALL_ID, PreSubmissionPlugins(
             pluginKey = PLUGIN_KEY,
-            firstStepPluginKey = PLUGIN_KEY
+            firstStepPluginKey = PLUGIN_KEY,
+            reportPartnerCheckPluginKey = PLUGIN_KEY_REPORT,
         ))).isEqualTo(expectedStandardCallDetail)
     }
 
@@ -469,7 +479,8 @@ internal class CallPersistenceProviderTest {
         every { callRepo.findById(CALL_ID) } returns Optional.empty()
         assertThrows<CallNotFound> { persistence.updateProjectCallPreSubmissionCheckPlugin(CALL_ID, PreSubmissionPlugins(
             pluginKey = PLUGIN_KEY,
-            firstStepPluginKey = PLUGIN_KEY
+            firstStepPluginKey = PLUGIN_KEY,
+            reportPartnerCheckPluginKey = PLUGIN_KEY_REPORT,
         ))
         }
     }
@@ -511,6 +522,19 @@ internal class CallPersistenceProviderTest {
         )
         every { projectCallStateAidRepository.findAllByIdCallId(CALL_ID) } returns stateAidEntities(callEntity)
         assertThat(persistence.getCallByProjectId(PROJECT_ID)).isEqualTo(expectedStandardCallDetail)
+    }
+
+    @Test
+    fun getCallSimpleByPartnerId() {
+        val callEntity = callEntity(CALL_ID)
+
+        val partner = mockk<ProjectPartnerEntity>()
+        every { partner.project.call } returns callEntity
+        every { partnerRepository.getById(114L) } returns partner
+
+        assertThat(persistence.getCallSimpleByPartnerId(114L)).isEqualTo(
+            expectedStandardCallDetail.copy(applicationFormFieldConfigurations = mutableSetOf(), stateAids = emptyList())
+        )
     }
 
     @Test
@@ -710,6 +734,7 @@ internal class CallPersistenceProviderTest {
             applicationFormFieldConfigurations = mutableSetOf(ApplicationFormFieldConfiguration("af-id", FieldVisibilityStatus.STEP_TWO_ONLY)),
             preSubmissionCheckPluginKey = null,
             firstStepPreSubmissionCheckPluginKey = null,
+            reportPartnerCheckPluginKey = "check-off",
             stateAids = listOf(
                 ProgrammeStateAid(
                     id = 254L,

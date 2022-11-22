@@ -7,25 +7,38 @@
     <div *ngIf="data.userCanEditReport && data.reportStatus === StatusEnum.Submitted">
         {{'project.application.partner.report.submit.description.submitted' | translate}}
     </div>
-    <div *ngIf="!data.userCanEditReport">
-        <p>{{'project.application.partner.report.submit.description.view.mode' | translate}}</p>
-    </div>
-    <jems-alert show="true" [type]="Alert.INFO" [closable]="false">
+    <jems-alert show="true" *ngIf="!data.userCanEditReport" [type]="Alert.INFO" [closable]="false">
+        <span>{{'project.application.partner.report.submit.description.view.mode' | translate}}</span>
+    </jems-alert>
+    <jems-alert show="true" *ngIf="data.userCanEditReport" [type]="Alert.INFO" [closable]="false">
         <span>{{'project.application.partner.report.alert.info' | translate}}</span>
     </jems-alert>
 
-    <div jemsNoWidthLimit>
-        <jems-pending-button *ngIf="data.userCanEditReport && data.reportStatus === StatusEnum.Draft"
+    <div jemsNoWidthLimit *ngIf="data.userCanEditReport && data.reportStatus === StatusEnum.Draft">
+        <jems-pending-button [pending]="preCheckPending" [disabled]="submissionAvailable" class="mr-2 mt-2"
+                             (clicked)="runPreCheckOnReport(data.partnerSummary.id, data.partnerReport.id)">
+            {{ 'project.detail.button.pre.condition.check' | translate }}
+        </jems-pending-button>
+
+        <mat-icon class="mr-2 vertical-middle">trending_flat</mat-icon>
+
+        <jems-pending-button
                 [confirm]="{title: 'project.application.partner.report.submit.dialog.title', message: 'project.application.partner.report.submit.dialog.message'}"
-                [pending]="actionPending"
+                [pending]="submissionPending" [disabled]="!submissionAvailable"
                 (clicked)="submitReport(data.projectId, data.partnerSummary.id, data.partnerReport.id)"
                 class="mr-2 mt-2">
-            {{'project.application.partner.report.button.submit' | translate}}
+            {{ 'project.application.partner.report.button.submit' | translate }}
         </jems-pending-button>
     </div>
+
     <jems-alert *ngIf="error$ | async as error"
                 [show]="!!error.i18nMessage?.i18nKey"
                 [type]="Alert.ERROR">
-        <jems-api-error-content [error]="error"></jems-api-error-content>
+        <jems-api-error-content [error]="error" [showId]="true"></jems-api-error-content>
     </jems-alert>
+
+    <jems-project-application-pre-condition-check-result *ngIf="preConditionCheckResult"
+            [preConditionCheckResult]="preConditionCheckResult" jemsNoWidthLimit>
+    </jems-project-application-pre-condition-check-result>
+
 </mat-card>

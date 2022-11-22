@@ -109,6 +109,7 @@ fun createTestCallEntity(
         allowedRealCosts = allowedRealCosts,
         preSubmissionCheckPluginKey = null,
         firstStepPreSubmissionCheckPluginKey = null,
+        reportPartnerCheckPluginKey = "check-off",
         unitCosts = unitCosts,
         projectDefinedUnitCostAllowed = true,
         projectDefinedLumpSumAllowed = false,
@@ -147,7 +148,8 @@ fun createCallDetailModel(
     applicationFormFieldConfigurations: MutableSet<ApplicationFormFieldConfiguration> =
         applicationFormFieldConfigurationEntities(createTestCallEntity(id,  name = name)).toModel(),
     preSubmissionCheckPluginKey: String? = null,
-    firstStepPreSubmissionCheckPluginKey: String? = null
+    firstStepPreSubmissionCheckPluginKey: String? = null,
+    reportPartnerCheckPluginKey: String? = null,
 ): CallDetail {
     return CallDetail(
         id = id,
@@ -169,6 +171,7 @@ fun createCallDetailModel(
         unitCosts = unitCosts,
         applicationFormFieldConfigurations = applicationFormFieldConfigurations,
         preSubmissionCheckPluginKey = preSubmissionCheckPluginKey,
+        reportPartnerCheckPluginKey = reportPartnerCheckPluginKey,
         firstStepPreSubmissionCheckPluginKey = firstStepPreSubmissionCheckPluginKey,
         projectDefinedUnitCostAllowed = true,
         projectDefinedLumpSumAllowed = false,
@@ -248,7 +251,8 @@ fun callDetail(
     lengthOfPeriod : Int = 12,
     applicationFormFieldConfigurations : MutableSet<ApplicationFormFieldConfiguration> = mutableSetOf(),
     preSubmissionCheckPluginKey: String? = null,
-    firstStepPreSubmissionCheckPluginKey: String? = null
+    firstStepPreSubmissionCheckPluginKey: String? = null,
+    reportPartnerCheckPluginKey: String? = null,
 ) = CallDetail(
     id = id,
     name = name,
@@ -262,6 +266,7 @@ fun callDetail(
     applicationFormFieldConfigurations =  applicationFormFieldConfigurations,
     preSubmissionCheckPluginKey = preSubmissionCheckPluginKey,
     firstStepPreSubmissionCheckPluginKey = firstStepPreSubmissionCheckPluginKey,
+    reportPartnerCheckPluginKey = reportPartnerCheckPluginKey,
     projectDefinedUnitCostAllowed = false,
     projectDefinedLumpSumAllowed = true,
 )

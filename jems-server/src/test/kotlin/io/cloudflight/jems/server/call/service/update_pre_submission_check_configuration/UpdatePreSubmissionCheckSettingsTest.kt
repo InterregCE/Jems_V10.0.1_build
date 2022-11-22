@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.call.service.update_pre_submission_check_configuration
 
 import io.cloudflight.jems.plugin.contract.pre_condition_check.PreConditionCheckPlugin
+import io.cloudflight.jems.plugin.contract.pre_condition_check.ReportPartnerCheckPlugin
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.service.CallPersistence
 import io.cloudflight.jems.server.call.service.model.CallDetail
@@ -8,6 +9,8 @@ import io.cloudflight.jems.server.call.service.model.PreSubmissionPlugins
 import io.cloudflight.jems.server.plugin.JemsPluginRegistry
 import io.cloudflight.jems.server.plugin.PreConditionCheckSamplePlugin
 import io.cloudflight.jems.server.plugin.PreConditionCheckSamplePluginKey
+import io.cloudflight.jems.server.plugin.ReportCheckPluginKey
+import io.cloudflight.jems.server.plugin.ReportPartnerCheckSamplePlugin
 import io.cloudflight.jems.server.plugin.pre_submission_check.PreSubmissionCheckOff
 import io.mockk.clearMocks
 import io.mockk.every
@@ -51,6 +54,7 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
 
         every { jemsPluginRegistry.get(PreConditionCheckPlugin::class, "jems-pre-condition-check-off") } returns PreSubmissionCheckOff()
         every { jemsPluginRegistry.get(PreConditionCheckPlugin::class, PreConditionCheckSamplePluginKey) } returns PreConditionCheckSamplePlugin()
+        every { jemsPluginRegistry.get(ReportPartnerCheckPlugin::class, ReportCheckPluginKey) } returns ReportPartnerCheckSamplePlugin()
 
         every { persistence.updateProjectCallPreSubmissionCheckPlugin(1L, any()) } returns call
 
@@ -59,12 +63,13 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
             pluginKeys = PreSubmissionPlugins(
                 pluginKey = "jems-pre-condition-check-off",
                 firstStepPluginKey = PreConditionCheckSamplePluginKey,
+                reportPartnerCheckPluginKey = ReportCheckPluginKey,
             )
         )).isEqualTo(call)
 
         verify(exactly = 1) { persistence.updateProjectCallPreSubmissionCheckPlugin(
             callId = 1L,
-            pluginKeys = PreSubmissionPlugins("jems-pre-condition-check-off", PreConditionCheckSamplePluginKey),
+            pluginKeys = PreSubmissionPlugins("jems-pre-condition-check-off", PreConditionCheckSamplePluginKey, ReportCheckPluginKey),
         ) }
     }
 
@@ -78,12 +83,14 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
 
         every { jemsPluginRegistry.get(PreConditionCheckPlugin::class, "missing") } returns emptyPlugin
         every { jemsPluginRegistry.get(PreConditionCheckPlugin::class, PreConditionCheckSamplePluginKey) } returns PreConditionCheckSamplePlugin()
+        every { jemsPluginRegistry.get(ReportPartnerCheckPlugin::class, ReportCheckPluginKey) } returns ReportPartnerCheckSamplePlugin()
 
         assertThat(updatePreSubmissionCheckSettings.update(
             callId = 8L,
             pluginKeys = PreSubmissionPlugins(
                 pluginKey = "missing",
                 firstStepPluginKey = PreConditionCheckSamplePluginKey,
+                reportPartnerCheckPluginKey = ReportCheckPluginKey,
             )
         )).isEqualTo(call)
 
@@ -100,12 +107,14 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
 
         every { jemsPluginRegistry.get(PreConditionCheckPlugin::class, "missing") } returns emptyPlugin
         every { jemsPluginRegistry.get(PreConditionCheckPlugin::class, PreConditionCheckSamplePluginKey) } returns PreConditionCheckSamplePlugin()
+        every { jemsPluginRegistry.get(ReportPartnerCheckPlugin::class, ReportCheckPluginKey) } returns ReportPartnerCheckSamplePlugin()
 
         assertThat(updatePreSubmissionCheckSettings.update(
             callId = 15L,
             pluginKeys = PreSubmissionPlugins(
                 pluginKey = PreConditionCheckSamplePluginKey,
                 firstStepPluginKey = "missing",
+                reportPartnerCheckPluginKey = ReportCheckPluginKey,
             )
         )).isEqualTo(call)
 
@@ -119,14 +128,18 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
 
         val emptyPlugin = mockk<PreConditionCheckPlugin>()
         every { emptyPlugin.getKey() } returns ""
+        val emptyReportPlugin = mockk<ReportPartnerCheckPlugin>()
+        every { emptyReportPlugin.getKey() } returns ""
 
         every { jemsPluginRegistry.get(PreConditionCheckPlugin::class, "missing") } returns emptyPlugin
+        every { jemsPluginRegistry.get(ReportPartnerCheckPlugin::class, "missing") } returns emptyReportPlugin
 
         assertThat(updatePreSubmissionCheckSettings.update(
             callId = 20L,
             pluginKeys = PreSubmissionPlugins(
                 pluginKey = "missing",
                 firstStepPluginKey = "missing",
+                reportPartnerCheckPluginKey = "missing",
             )
         )).isEqualTo(call)
 
@@ -139,6 +152,7 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
         every { persistence.getCallById(17L) } returns call
 
         every { jemsPluginRegistry.get(PreConditionCheckPlugin::class, PreConditionCheckSamplePluginKey) } returns PreConditionCheckSamplePlugin()
+        every { jemsPluginRegistry.get(ReportPartnerCheckPlugin::class, ReportCheckPluginKey) } returns ReportPartnerCheckSamplePlugin()
 
         every { persistence.updateProjectCallPreSubmissionCheckPlugin(17L, any()) } returns call
 
@@ -147,10 +161,16 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
             pluginKeys = PreSubmissionPlugins(
                 pluginKey = PreConditionCheckSamplePluginKey,
                 firstStepPluginKey = null,
+                reportPartnerCheckPluginKey = ReportCheckPluginKey,
             )
         )).isEqualTo(call)
 
-        verify(exactly = 1) { persistence.updateProjectCallPreSubmissionCheckPlugin(17L, PreSubmissionPlugins(PreConditionCheckSamplePluginKey, null)) }
+        verify(exactly = 1) {
+            persistence.updateProjectCallPreSubmissionCheckPlugin(
+                17L,
+                PreSubmissionPlugins(PreConditionCheckSamplePluginKey, null, ReportCheckPluginKey)
+            )
+        }
     }
 
     @Test
@@ -161,6 +181,7 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
         val emptyPlugin = mockk<PreConditionCheckPlugin>()
         every { emptyPlugin.getKey() } returns ""
         every { jemsPluginRegistry.get(PreConditionCheckPlugin::class, "missing") } returns emptyPlugin
+        every { jemsPluginRegistry.get(ReportPartnerCheckPlugin::class, ReportCheckPluginKey) } returns ReportPartnerCheckSamplePlugin()
 
         every { persistence.updateProjectCallPreSubmissionCheckPlugin(24L, any()) } returns call
 
@@ -168,6 +189,32 @@ internal class UpdatePreSubmissionCheckSettingsTest : UnitTest() {
             callId = 24L,
             pluginKeys = PreSubmissionPlugins(
                 pluginKey = "missing",
+                reportPartnerCheckPluginKey = ReportCheckPluginKey,
+            )
+        )).isEqualTo(call)
+
+        verify(exactly = 0) { persistence.updateProjectCallPreSubmissionCheckPlugin(any(), any()) }
+    }
+
+    @Test
+    fun `should not update pre-submission check plugin settings when report check plugin not provided`(){
+        val call = call(false)
+        every { persistence.getCallById(25L) } returns call
+
+        val emptyPlugin = mockk<PreConditionCheckPlugin>()
+        every { emptyPlugin.getKey() } returns ""
+        val emptyReportPlugin = mockk<ReportPartnerCheckPlugin>()
+        every { emptyReportPlugin.getKey() } returns ""
+        every { jemsPluginRegistry.get(PreConditionCheckPlugin::class, PreConditionCheckSamplePluginKey) } returns PreConditionCheckSamplePlugin()
+        every { jemsPluginRegistry.get(ReportPartnerCheckPlugin::class, "missing") } returns emptyReportPlugin
+
+        every { persistence.updateProjectCallPreSubmissionCheckPlugin(25L, any()) } returns call
+
+        assertThat(updatePreSubmissionCheckSettings.update(
+            callId = 25L,
+            pluginKeys = PreSubmissionPlugins(
+                pluginKey = PreConditionCheckSamplePluginKey,
+                reportPartnerCheckPluginKey = "missing",
             )
         )).isEqualTo(call)
 

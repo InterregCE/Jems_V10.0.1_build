@@ -24,6 +24,7 @@ import io.cloudflight.jems.server.call.service.model.IdNamePair
 import io.cloudflight.jems.server.call.service.model.ProjectCallFlatRate
 import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.common.entity.extractField
+import io.cloudflight.jems.server.plugin.pre_submission_check.ReportPartnerCheckOff
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.programme.entity.ProgrammeStrategyEntity
 import io.cloudflight.jems.server.programme.entity.stateaid.ProgrammeStateAidEntity
@@ -75,6 +76,7 @@ fun CallEntity.toDetailModel(
     applicationFormFieldConfigurations = applicationFormFieldConfigurationEntities.toModel(),
     preSubmissionCheckPluginKey = preSubmissionCheckPluginKey,
     firstStepPreSubmissionCheckPluginKey = firstStepPreSubmissionCheckPluginKey,
+    reportPartnerCheckPluginKey = reportPartnerCheckPluginKey,
     projectDefinedUnitCostAllowed = projectDefinedUnitCostAllowed,
     projectDefinedLumpSumAllowed = projectDefinedLumpSumAllowed,
 )
@@ -121,6 +123,7 @@ fun Call.toEntity(
     allowedRealCosts = existingEntity?.allowedRealCosts ?: getDefaultAllowedRealCosts(type),
     preSubmissionCheckPluginKey = existingEntity?.preSubmissionCheckPluginKey,
     firstStepPreSubmissionCheckPluginKey = existingEntity?.firstStepPreSubmissionCheckPluginKey,
+    reportPartnerCheckPluginKey = existingEntity?.reportPartnerCheckPluginKey ?: ReportPartnerCheckOff.KEY,
     projectDefinedUnitCostAllowed = existingEntity?.projectDefinedUnitCostAllowed ?: false,
     projectDefinedLumpSumAllowed = existingEntity?.projectDefinedLumpSumAllowed ?: false,
 ).apply {

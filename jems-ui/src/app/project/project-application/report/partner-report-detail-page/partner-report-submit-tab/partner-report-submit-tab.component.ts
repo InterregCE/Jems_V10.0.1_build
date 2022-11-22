@@ -1,4 +1,4 @@
-import {ChangeDetectionStrategy, Component} from '@angular/core';
+import {ChangeDetectionStrategy, ChangeDetectorRef, Component} from '@angular/core';
 import {PartnerReportDetailPageStore} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
 import {ProjectApplicationFormSidenavService} from '@project/project-application/containers/project-application-form-page/services/project-application-form-sidenav.service';
 import {Alert} from '@common/components/forms/alert';
@@ -7,7 +7,13 @@ import {APIError} from '@common/models/APIError';
 import {catchError, finalize, map, tap} from 'rxjs/operators';
 import {Router} from '@angular/router';
 import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
-import {ProjectPartnerReportDTO, ProjectPartnerReportSummaryDTO, ProjectPartnerSummaryDTO, UserRoleDTO} from '@cat/api';
+import {
+  PreConditionCheckResultDTO,
+  ProjectPartnerReportDTO,
+  ProjectPartnerReportSummaryDTO,
+  ProjectPartnerSummaryDTO,
+  UserRoleDTO
+} from '@cat/api';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
 
@@ -20,7 +26,10 @@ import {PartnerReportPageStore} from '@project/project-application/report/partne
 export class PartnerReportSubmitTabComponent {
   PermissionsEnum = PermissionsEnum;
   Alert = Alert;
-  actionPending = false;
+  submissionPending = false;
+  submissionAvailable = false;
+  preConditionCheckResult: PreConditionCheckResultDTO | undefined = undefined;
+  preCheckPending = false;
   StatusEnum = ProjectPartnerReportSummaryDTO.StatusEnum;
 
   error$ = new BehaviorSubject<APIError | null>(null);
@@ -33,11 +42,14 @@ export class PartnerReportSubmitTabComponent {
     userCanEditReport: boolean;
   }>;
 
-  constructor(public pageStore: PartnerReportPageStore,
-              public projectStore: ProjectStore,
-              public detailPageStore: PartnerReportDetailPageStore,
-              private projectSidenavService: ProjectApplicationFormSidenavService,
-              private router: Router) {
+  constructor(
+    public pageStore: PartnerReportPageStore,
+    public projectStore: ProjectStore,
+    public detailPageStore: PartnerReportDetailPageStore,
+    private projectSidenavService: ProjectApplicationFormSidenavService,
+    private router: Router,
+    private cd: ChangeDetectorRef,
+  ) {
     this.data$ = combineLatest([
       projectStore.projectId$,
       pageStore.partnerSummary$,
@@ -55,21 +67,38 @@ export class PartnerReportSubmitTabComponent {
     );
   }
 
+  runPreCheckOnReport(partnerId: number, reportId: number): void {
+    this.preCheckPending = true;
+    this.preConditionCheckResult = undefined;
+    this.detailPageStore.runPreCheck(partnerId, reportId)
+      .pipe(
+        tap(result => this.submissionAvailable = result.submissionAllowed),
+        tap(result => this.preConditionCheckResult = result),
+        catchError((error) => this.showErrorMessage(error.error)),
+        finalize(() => {
+          this.preCheckPending = false;
+          this.cd.detectChanges();
+        }),
+      ).subscribe();
+  }
+
   submitReport(projectId: number, partnerId: number, reportId: number): void {
-    this.actionPending = true;
+    this.submissionPending = true;
     this.detailPageStore.submitReport(partnerId, reportId)
       .pipe(
         tap(() => this.redirectToReportOverview(projectId, partnerId, reportId)),
         catchError((error) => this.showErrorMessage(error.error)),
-        finalize(() => this.actionPending = false)
+        finalize(() => this.submissionPending = false)
       ).subscribe();
   }
 
   private showErrorMessage(error: APIError): Observable<null> {
     this.error$.next(error);
     setTimeout(() => {
-      this.error$.next(null);
-    },         4000);
+      if (this.error$.value?.id === error.id) {
+        this.error$.next(null);
+      }
+    }, 10000);
     return of(null);
   }
 

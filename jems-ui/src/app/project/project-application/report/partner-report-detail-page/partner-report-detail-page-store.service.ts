@@ -1,5 +1,6 @@
 import {Injectable} from '@angular/core';
 import {
+  PreConditionCheckResultDTO,
   ProjectPartnerReportDTO,
   ProjectPartnerReportIdentificationDTO,
   ProjectPartnerReportIdentificationService,
@@ -84,6 +85,13 @@ export class PartnerReportDetailPageStore {
     return merge(initialReport$, this.updatedReport$)
       .pipe(
         shareReplay(1)
+      );
+  }
+
+  runPreCheck(partnerId: number, reportId: number): Observable<PreConditionCheckResultDTO> {
+    return this.projectPartnerReportService.runPreCheck(partnerId, reportId)
+      .pipe(
+        tap(status => Log.info('Called pre-submission check on report', reportId, status))
       );
   }
 

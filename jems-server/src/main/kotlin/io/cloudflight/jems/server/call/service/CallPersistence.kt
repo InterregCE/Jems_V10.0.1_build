@@ -21,6 +21,7 @@ interface CallPersistence {
     fun getPublishedAndOpenCalls(pageable: Pageable): Page<CallSummary>
     fun getCallById(callId: Long): CallDetail
     fun getCallByProjectId(projectId: Long): CallDetail
+    fun getCallSimpleByPartnerId(partnerId: Long): CallDetail
     fun getCallIdForNameIfExists(name: String): Long?
     fun createCall(call: Call, userId: Long): CallDetail
     fun updateCall(call: Call): CallDetail

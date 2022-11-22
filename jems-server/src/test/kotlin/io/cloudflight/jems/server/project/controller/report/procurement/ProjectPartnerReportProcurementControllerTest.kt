@@ -3,12 +3,10 @@ package io.cloudflight.jems.server.project.controller.report.procurement
 import io.cloudflight.jems.api.common.dto.IdNamePairDTO
 import io.cloudflight.jems.api.project.dto.report.partner.procurement.ProjectPartnerReportProcurementChangeDTO
 import io.cloudflight.jems.api.project.dto.report.partner.procurement.ProjectPartnerReportProcurementDTO
-import io.cloudflight.jems.api.project.dto.report.partner.procurement.ProjectPartnerReportProcurementSummaryDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.service.model.IdNamePair
 import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectPartnerReportProcurement
 import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectPartnerReportProcurementChange
-import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectPartnerReportProcurementSummary
 import io.cloudflight.jems.server.project.service.report.partner.procurement.createProjectPartnerReportProcurement.CreateProjectPartnerReportProcurementInteractor
 import io.cloudflight.jems.server.project.service.report.partner.procurement.deleteProjectPartnerReportProcurement.DeleteProjectPartnerReportProcurementInteractor
 import io.cloudflight.jems.server.project.service.report.partner.procurement.getProjectPartnerReportProcurement.GetProjectPartnerReportProcurementInteractor
@@ -33,7 +31,7 @@ class ProjectPartnerReportProcurementControllerTest : UnitTest() {
         private val YESTERDAY = ZonedDateTime.now().minusDays(1)
         private val NEXT_WEEK = LocalDate.now().plusWeeks(1)
 
-        private fun dummyProcurement(reportId: Long) = ProjectPartnerReportProcurementSummary(
+        private fun dummyProcurement(reportId: Long) = ProjectPartnerReportProcurement(
             id = 265,
             reportId = reportId,
             reportNumber = 1,
@@ -47,6 +45,7 @@ class ProjectPartnerReportProcurementControllerTest : UnitTest() {
             currencyCode = "PLN",
             supplierName = "supplierName 265",
             vatNumber = "vat number 265",
+            comment = "comment 265",
         )
 
         private fun dummyProcurementDetailNew(reportId: Long) = ProjectPartnerReportProcurement(
@@ -66,7 +65,7 @@ class ProjectPartnerReportProcurementControllerTest : UnitTest() {
             comment = "comment NEW",
         )
 
-        private fun expectedProcurement(reportId: Long) = ProjectPartnerReportProcurementSummaryDTO(
+        private fun expectedProcurement(reportId: Long) = ProjectPartnerReportProcurementDTO(
             id = 265,
             reportId = reportId,
             reportNumber = 1,
@@ -80,6 +79,7 @@ class ProjectPartnerReportProcurementControllerTest : UnitTest() {
             currencyCode = "PLN",
             supplierName = "supplierName 265",
             vatNumber = "vat number 265",
+            comment = "comment 265",
         )
 
         private fun expectedUpdatedProcurementDto(reportId: Long) = ProjectPartnerReportProcurementDTO(

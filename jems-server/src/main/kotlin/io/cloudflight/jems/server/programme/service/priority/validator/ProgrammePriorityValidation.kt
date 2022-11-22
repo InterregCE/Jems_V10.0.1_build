@@ -16,6 +16,7 @@ const val MAX_CODE_VALUE_ECONOMIC_ACTIVITY = 26
 const val MAX_CODE_VALUE_GENDER_EQUALITY = 3
 const val MAX_CODE_VALUE_REGIONAL_AND_SEA_BASIN_STRATEGY = 11
 const val DIMENSION_CODES_INVALID = "programme.priority.dimension.codes.value.invalid"
+const val PRIORITY_CODE_IN_USE = "programme.priority.code.already.in.use"
 
 fun validateCreateProgrammePriority(
     programmePriority: ProgrammePriority,
@@ -86,7 +87,7 @@ private fun validateCreateHasUniqueCode(
 ) {
     val priorityIdWithSameCode = getPriorityIdByCode.invoke(programmePriority.code)
     if (priorityIdWithSameCode != null)
-        invalid("programme.priority.code.already.in.use")
+        invalid(PRIORITY_CODE_IN_USE)
 }
 
 private fun validateUpdateHasUniqueCode(
@@ -96,7 +97,7 @@ private fun validateUpdateHasUniqueCode(
 ) {
     val priorityIdWithSameCode = getPriorityIdByCode.invoke(programmePriority.code)
     if (priorityIdWithSameCode != null && priorityIdWithSameCode != priorityId)
-        invalid("programme.priority.code.already.in.use")
+        invalid(PRIORITY_CODE_IN_USE)
 }
 
 private fun validateSpecificObjectivePoliciesAreFromCorrectProgrammeObjective(
@@ -186,7 +187,7 @@ private fun validateEveryPolicyCodeIsFreeOrLinkedToThisPriority(
 
     if (priorities.isNotEmpty())
         invalid(
-            message = "programme.priority.code.already.in.use",
+            message = PRIORITY_CODE_IN_USE,
             fieldErrors = mapOf(
                 "specificObjectives" to I18nFieldError(
                     i18nKey = "programme.priority.specificObjective.code.already.in.use.by.other.priority",

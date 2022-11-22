@@ -2,10 +2,8 @@ package io.cloudflight.jems.server.project.controller.report.procurement
 
 import io.cloudflight.jems.api.project.dto.report.partner.procurement.ProjectPartnerReportProcurementChangeDTO
 import io.cloudflight.jems.api.project.dto.report.partner.procurement.ProjectPartnerReportProcurementDTO
-import io.cloudflight.jems.api.project.dto.report.partner.procurement.ProjectPartnerReportProcurementSummaryDTO
 import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectPartnerReportProcurement
 import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectPartnerReportProcurementChange
-import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectPartnerReportProcurementSummary
 import org.mapstruct.Mapper
 import org.mapstruct.factory.Mappers
 import org.springframework.data.domain.Page
@@ -14,7 +12,7 @@ private val mapper = Mappers.getMapper(ProjectPartnerReportProcurementMapper::cl
 
 fun ProjectPartnerReportProcurement.toDto() = mapper.map(this)
 
-fun Page<ProjectPartnerReportProcurementSummary>.toDto() = map { mapper.map(it) }
+fun Page<ProjectPartnerReportProcurement>.toDto() = map { mapper.map(it) }
 
 fun ProjectPartnerReportProcurementChangeDTO.toModel() = ProjectPartnerReportProcurementChange(
     id = id ?: 0L,
@@ -32,5 +30,4 @@ fun ProjectPartnerReportProcurementChangeDTO.toModel() = ProjectPartnerReportPro
 @Mapper
 interface ProjectPartnerReportProcurementMapper {
     fun map(model: ProjectPartnerReportProcurement): ProjectPartnerReportProcurementDTO
-    fun map(model: ProjectPartnerReportProcurementSummary): ProjectPartnerReportProcurementSummaryDTO
 }

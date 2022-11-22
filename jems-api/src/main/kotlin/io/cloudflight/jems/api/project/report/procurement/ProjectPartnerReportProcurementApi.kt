@@ -3,7 +3,6 @@ package io.cloudflight.jems.api.project.report.procurement
 import io.cloudflight.jems.api.common.dto.IdNamePairDTO
 import io.cloudflight.jems.api.project.dto.report.partner.procurement.ProjectPartnerReportProcurementChangeDTO
 import io.cloudflight.jems.api.project.dto.report.partner.procurement.ProjectPartnerReportProcurementDTO
-import io.cloudflight.jems.api.project.dto.report.partner.procurement.ProjectPartnerReportProcurementSummaryDTO
 import io.cloudflight.jems.api.project.report.ProjectPartnerReportApi.Companion.ENDPOINT_API_PROJECT_PARTNER_REPORT
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiImplicitParam
@@ -38,7 +37,7 @@ interface ProjectPartnerReportProcurementApi {
         @PathVariable partnerId: Long,
         @PathVariable reportId: Long,
         pageable: Pageable,
-    ): Page<ProjectPartnerReportProcurementSummaryDTO>
+    ): Page<ProjectPartnerReportProcurementDTO>
 
     @GetMapping("$ENDPOINT_API_PROJECT_PARTNER_REPORT_PROCUREMENT/byProcurementId/{procurementId}")
     fun getProcurementById(

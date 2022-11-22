@@ -71,6 +71,7 @@ class CallControllerTest : UnitTest() {
 
         private const val ID = 1L
         private const val PLUGIN_KEY = "pluginKey"
+        private const val PLUGIN_KEY_REPORT = "pluginKey-report"
 
         private val call = CallSummary(
             id = ID,
@@ -127,6 +128,7 @@ class CallControllerTest : UnitTest() {
             applicationFormFieldConfigurations = mutableSetOf(),
             preSubmissionCheckPluginKey = PLUGIN_KEY,
             firstStepPreSubmissionCheckPluginKey = PLUGIN_KEY,
+            reportPartnerCheckPluginKey = PLUGIN_KEY_REPORT,
             projectDefinedUnitCostAllowed = false,
             projectDefinedLumpSumAllowed = true,
         )
@@ -177,7 +179,8 @@ class CallControllerTest : UnitTest() {
             ),
             applicationFormFieldConfigurations = mutableSetOf(),
             preSubmissionCheckPluginKey = PLUGIN_KEY,
-            firstStepPreSubmissionCheckPluginKey = PLUGIN_KEY
+            firstStepPreSubmissionCheckPluginKey = PLUGIN_KEY,
+            reportPartnerCheckPluginKey = PLUGIN_KEY_REPORT,
         )
 
         private val callUpdateDto = CallUpdateRequestDTO(
@@ -373,6 +376,7 @@ class CallControllerTest : UnitTest() {
                 40L, PreSubmissionPluginsDTO(
                     pluginKey = PLUGIN_KEY,
                     firstStepPluginKey = PLUGIN_KEY,
+                    reportPartnerCheckPluginKey = PLUGIN_KEY_REPORT,
                 )
             )
         ).isEqualTo(callDetailDto)
@@ -381,6 +385,7 @@ class CallControllerTest : UnitTest() {
             PreSubmissionPlugins(
                 pluginKey = PLUGIN_KEY,
                 firstStepPluginKey = PLUGIN_KEY,
+                reportPartnerCheckPluginKey = PLUGIN_KEY_REPORT,
             )
         )
     }

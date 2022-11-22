@@ -4,16 +4,15 @@ import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportStatusAndVersion
 import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectPartnerReportProcurement
 import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectPartnerReportProcurementChange
-import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectPartnerReportProcurementSummary
 import org.springframework.data.domain.Page
 import java.math.BigDecimal
 
 private val MAX_NUMBER = BigDecimal.valueOf(999_999_999_99, 2)
 private val MIN_NUMBER = BigDecimal.ZERO
 
-private const val MAX_AMOUNT_OF_PROCUREMENTS = 50L
+const val MAX_AMOUNT_OF_PROCUREMENTS = 50L
 
-fun Page<ProjectPartnerReportProcurementSummary>.fillThisReportFlag(currentReportId: Long) = map {
+fun Page<ProjectPartnerReportProcurement>.fillThisReportFlag(currentReportId: Long) = map {
     it.apply {
         createdInThisReport = reportId == currentReportId
     }

@@ -33,6 +33,7 @@ data class CallDetail(
     val applicationFormFieldConfigurations: MutableSet<ApplicationFormFieldConfiguration>,
     val preSubmissionCheckPluginKey: String?,
     val firstStepPreSubmissionCheckPluginKey: String?,
+    val reportPartnerCheckPluginKey: String?,
     val projectDefinedUnitCostAllowed: Boolean,
     val projectDefinedLumpSumAllowed: Boolean,
 ) {

@@ -10,6 +10,7 @@ import io.cloudflight.jems.server.project.service.report.ProjectReportPersistenc
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
+import io.cloudflight.jems.server.project.service.report.partner.base.runPreSubmissionCheck.RunPreSubmissionCheckService
 import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectReportContributionPersistence
 import io.cloudflight.jems.server.project.service.report.partner.contribution.extractOverview
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.control.ProjectReportControlExpenditurePersistence
@@ -37,6 +38,7 @@ import java.time.ZonedDateTime
 @Service
 class SubmitProjectPartnerReport(
     private val reportPersistence: ProjectReportPersistence,
+    private val preSubmissionCheck: RunPreSubmissionCheckService,
     private val reportExpenditurePersistence: ProjectReportExpenditurePersistence,
     private val currencyPersistence: CurrencyPersistence,
     private val partnerPersistence: PartnerPersistence,
@@ -56,6 +58,10 @@ class SubmitProjectPartnerReport(
     override fun submit(partnerId: Long, reportId: Long): ReportStatus {
         val report = reportPersistence.getPartnerReportById(partnerId = partnerId, reportId = reportId)
         validateReportIsStillDraft(report)
+
+        if (!preSubmissionCheck.preCheck(partnerId, reportId = reportId).isSubmissionAllowed) {
+            throw SubmissionNotAllowed()
+        }
 
         val expenditures = fillInVerificationForExpendituresAndSaveCurrencyRates(partnerId = partnerId, reportId = reportId)
         val costCategories = reportExpenditureCostCategoryPersistence.getCostCategories(partnerId = partnerId, reportId)

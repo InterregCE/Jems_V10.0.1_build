@@ -57,6 +57,7 @@ class PublishCallTest : UnitTest() {
         objectives = listOf(ProgrammePriority(code = "code", objective = ProgrammeObjective.ISO12)),
         preSubmissionCheckPluginKey = null,
         firstStepPreSubmissionCheckPluginKey = null,
+        reportPartnerCheckPluginKey = null,
         projectDefinedUnitCostAllowed = false,
         projectDefinedLumpSumAllowed = true,
     )

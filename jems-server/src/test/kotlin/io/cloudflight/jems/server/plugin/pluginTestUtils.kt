@@ -5,11 +5,13 @@ import io.cloudflight.jems.plugin.contract.export.ApplicationFormExportPlugin
 import io.cloudflight.jems.plugin.contract.export.ExportResult
 import io.cloudflight.jems.plugin.contract.models.common.SystemLanguageData
 import io.cloudflight.jems.plugin.contract.pre_condition_check.PreConditionCheckPlugin
+import io.cloudflight.jems.plugin.contract.pre_condition_check.ReportPartnerCheckPlugin
 import io.cloudflight.jems.plugin.contract.pre_condition_check.models.PreConditionCheckResult
 import java.time.LocalDateTime
 
 const val PreConditionCheckSamplePluginKey = "key-1"
 const val ApplicationFormExportSamplePluginKey = "key-2"
+const val ReportCheckPluginKey = "key-3"
 
 class PreConditionCheckSamplePlugin : PreConditionCheckPlugin {
     override fun getKey(): String =
@@ -23,6 +25,23 @@ class PreConditionCheckSamplePlugin : PreConditionCheckPlugin {
 
     override fun getName(): String =
         "name-1"
+
+    override fun getVersion(): String =
+        "1.0.0"
+}
+
+class ReportPartnerCheckSamplePlugin : ReportPartnerCheckPlugin {
+    override fun getKey(): String =
+        ReportCheckPluginKey
+
+    override fun check(partnerId: Long, reportId: Long) =
+        PreConditionCheckResult(emptyList(), true)
+
+    override fun getDescription(): String =
+        "description of ReportPartnerCheckSamplePlugin"
+
+    override fun getName(): String =
+        "name-3"
 
     override fun getVersion(): String =
         "1.0.0"
