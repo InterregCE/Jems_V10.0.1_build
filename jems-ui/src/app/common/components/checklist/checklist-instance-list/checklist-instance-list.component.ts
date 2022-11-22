@@ -19,7 +19,6 @@ import {Forms} from '@common/utils/forms';
 import {FormService} from '@common/components/section/form/form.service';
 import {FormArray, FormBuilder, Validators} from '@angular/forms';
 import {TableComponent} from '@common/components/table/table.component';
-import {MatSort} from '@angular/material/sort';
 import {MatCheckboxChange} from '@angular/material/checkbox';
 import {ChecklistSort} from '@common/components/checklist/checklist-instance-list/checklist-instance-list-custom-sort';
 import {ChecklistUtilsComponent} from '@common/components/checklist/checklist-utils/checklist-utils';

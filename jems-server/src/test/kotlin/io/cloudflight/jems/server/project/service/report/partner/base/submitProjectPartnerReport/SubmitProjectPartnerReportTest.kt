@@ -3,6 +3,7 @@ package io.cloudflight.jems.server.project.service.report.partner.base.submitPro
 import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO.MainFund
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO.PartnerContribution
+import io.cloudflight.jems.plugin.contract.pre_condition_check.models.PreConditionCheckResult
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.currency.repository.CurrencyPersistence
@@ -29,6 +30,7 @@ import io.cloudflight.jems.server.project.service.report.model.partner.expenditu
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.costCategory.ReportExpenditureCostCategory
+import io.cloudflight.jems.server.project.service.report.partner.base.runPreSubmissionCheck.RunPreSubmissionCheckService
 import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectReportContributionPersistence
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.control.ProjectReportControlExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectReportExpenditurePersistence
@@ -314,6 +316,9 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
     lateinit var reportPersistence: ProjectReportPersistence
 
     @MockK
+    lateinit var preSubmissionCheck: RunPreSubmissionCheckService
+
+    @MockK
     lateinit var reportExpenditurePersistence: ProjectReportExpenditurePersistence
 
     @MockK
@@ -368,6 +373,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
         )
 
         every { reportPersistence.getPartnerReportById(PARTNER_ID, 35L) } returns report
+        every { preSubmissionCheck.preCheck(PARTNER_ID, reportId = 35L) } returns PreConditionCheckResult(emptyList(), true)
 
         every { reportExpenditurePersistence.getPartnerReportExpenditureCosts(PARTNER_ID, 35L) } returns
             listOf(expenditure1, expenditure2, expenditure3)
@@ -460,11 +466,24 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
     }
 
     @Test
+    fun `submit - pre check failed`() {
+        val report = mockk<ProjectPartnerReport>()
+        every { report.status } returns ReportStatus.Draft
+
+        every { reportPersistence.getPartnerReportById(PARTNER_ID, 44L) } returns report
+        every { preSubmissionCheck.preCheck(PARTNER_ID, reportId = 44L) } returns PreConditionCheckResult(emptyList(), false)
+
+        assertThrows<SubmissionNotAllowed> { submitReport.submit(PARTNER_ID, 44L) }
+        verify(exactly = 0) { reportExpenditurePersistence.updatePartnerReportExpenditureCosts(any(), any(), any()) }
+    }
+
+    @Test
     fun `submit - needed rates not available`() {
         val report = mockk<ProjectPartnerReport>()
         every { report.status } returns ReportStatus.Draft
 
         every { reportPersistence.getPartnerReportById(PARTNER_ID, 40L) } returns report
+        every { preSubmissionCheck.preCheck(PARTNER_ID, reportId = 40L) } returns PreConditionCheckResult(emptyList(), true)
         every { reportExpenditurePersistence.getPartnerReportExpenditureCosts(PARTNER_ID, 40L) } returns
             listOf(expenditure1)
         every { currencyPersistence.findAllByIdYearAndIdMonth(year = YEAR, month = MONTH) } returns emptyList()

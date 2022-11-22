@@ -81,6 +81,7 @@ class UpdateCallTest : UnitTest() {
             ),
             preSubmissionCheckPluginKey = null,
             firstStepPreSubmissionCheckPluginKey = null,
+            reportPartnerCheckPluginKey = null,
             projectDefinedUnitCostAllowed = false,
             projectDefinedLumpSumAllowed = true,
         )

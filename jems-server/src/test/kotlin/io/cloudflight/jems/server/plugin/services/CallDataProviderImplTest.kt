@@ -76,6 +76,7 @@ internal class CallDataProviderImplTest : UnitTest() {
             applicationFormFieldConfigurations = applicationFormFieldConfigurations,
             preSubmissionCheckPluginKey = null,
             firstStepPreSubmissionCheckPluginKey = null,
+            reportPartnerCheckPluginKey = null,
             projectDefinedUnitCostAllowed = false,
             projectDefinedLumpSumAllowed = true,
         )

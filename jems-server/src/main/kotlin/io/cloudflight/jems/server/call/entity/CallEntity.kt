@@ -113,6 +113,9 @@ class CallEntity(
     var firstStepPreSubmissionCheckPluginKey: String?,
 
     @field:NotNull
+    var reportPartnerCheckPluginKey: String,
+
+    @field:NotNull
     var projectDefinedUnitCostAllowed: Boolean,
 
     @field:NotNull

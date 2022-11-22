@@ -16,7 +16,7 @@
     <ID>ComplexMethod:ApplicationStateFactory.kt$ApplicationStateFactory$fun getInstance(projectSummary: ProjectSummary)</ID>
     <ID>ComplexMethod:ApplicationStatus.kt$ApplicationStatus$fun isInStep2()</ID>
     <ID>ComplexMethod:CallDetail.kt$CallDetail$fun getDiff(old: CallDetail? = null): Map&lt;String, Pair&lt;Any?, Any?&gt;&gt;</ID>
-    <ID>ComplexMethod:GetReportExpenditureCoFinancingBreakdownTest.kt$GetReportExpenditureCoFinancingBreakdownTest.Companion$private fun expectedSubmittedResult(zeroTotals: Boolean = false)</ID>
+    <ID>ComplexMethod:GetReportExpenditureCoFinancingBreakdownCalculatorTest.kt$GetReportExpenditureCoFinancingBreakdownCalculatorTest.Companion$private fun expectedSubmittedResult(zeroTotals: Boolean = false)</ID>
     <ID>ComplexMethod:ProjectDataModelMapper.kt$PluginDataMapper$fun map(programmeStrategy: ProgrammeStrategy): ProgrammeStrategyData</ID>
     <ID>ComplexMethod:ProjectPartnerEntityMapper.kt$fun ProjectPartnerEntity.copy( projectPartner: ProjectPartner? = null, legalStatusRef: ProgrammeLegalStatusEntity? = null, newAddresses: Set&lt;ProjectPartnerAddress&gt;? = null, newContacts: Set&lt;ProjectPartnerContact&gt;? = null, newMotivation: ProjectPartnerMotivation? = null, newPartnerContributions: List&lt;ProjectPartnerContribution&gt;? = null, ): ProjectPartnerEntity</ID>
     <ID>FunctionOnlyReturningConstant:MockedMethodSignature.kt$MockedMethodSignature$@ExceptionWrapper(SampleWrapperException::class) fun methodWithAspectWhichReturnsNormally(): String</ID>
@@ -408,6 +408,8 @@
     <ID>PackageNaming:RejectModification.kt$package io.cloudflight.jems.server.project.service.application.reject_modification</ID>
     <ID>PackageNaming:RejectModificationExceptions.kt$package io.cloudflight.jems.server.project.service.application.reject_modification</ID>
     <ID>PackageNaming:RejectModificationInteractor.kt$package io.cloudflight.jems.server.project.service.application.reject_modification</ID>
+    <ID>PackageNaming:ReportPartnerCheckBlocked.kt$package io.cloudflight.jems.server.plugin.pre_submission_check</ID>
+    <ID>PackageNaming:ReportPartnerCheckOff.kt$package io.cloudflight.jems.server.plugin.pre_submission_check</ID>
     <ID>PackageNaming:ResultOverviewCalculator.kt$package io.cloudflight.jems.server.project.service.result.get_project_result_indicators_overview</ID>
     <ID>PackageNaming:ReturnApplicationToApplicant.kt$package io.cloudflight.jems.server.project.service.application.return_application_to_applicant</ID>
     <ID>PackageNaming:ReturnApplicationToApplicantExceptions.kt$package io.cloudflight.jems.server.project.service.application.return_application_to_applicant</ID>

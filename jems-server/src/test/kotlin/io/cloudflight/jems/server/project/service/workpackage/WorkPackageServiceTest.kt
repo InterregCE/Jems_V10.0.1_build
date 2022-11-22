@@ -75,6 +75,7 @@ class WorkPackageServiceTest {
         allowedRealCosts = defaultAllowedRealCostsByCallType(CallType.STANDARD),
         preSubmissionCheckPluginKey = null,
         firstStepPreSubmissionCheckPluginKey = null,
+        reportPartnerCheckPluginKey = "check-off",
         projectDefinedUnitCostAllowed = true,
         projectDefinedLumpSumAllowed = false,
     ).apply { translatedValues.add(CallTranslEntity(TranslationId(this, SystemLanguage.EN), "This is a dummy call")) }

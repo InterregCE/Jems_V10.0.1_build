@@ -137,6 +137,7 @@ class GetBudgetFundsPerPeriodInteractorTest : UnitTest() {
         applicationFormFieldConfigurations = mutableSetOf(),
         preSubmissionCheckPluginKey = null,
         firstStepPreSubmissionCheckPluginKey = null,
+        reportPartnerCheckPluginKey = null,
         projectDefinedUnitCostAllowed = false,
         projectDefinedLumpSumAllowed = true,
     )
@@ -184,6 +185,7 @@ class GetBudgetFundsPerPeriodInteractorTest : UnitTest() {
         applicationFormFieldConfigurations = mutableSetOf(),
         preSubmissionCheckPluginKey = null,
         firstStepPreSubmissionCheckPluginKey = null,
+        reportPartnerCheckPluginKey = null,
         projectDefinedUnitCostAllowed = false,
         projectDefinedLumpSumAllowed = true,
     )

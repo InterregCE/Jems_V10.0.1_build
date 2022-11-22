@@ -4,7 +4,7 @@ import {UntilDestroy} from '@ngneat/until-destroy';
 import {FormService} from '@common/components/section/form/form.service';
 import {combineLatest, Observable} from 'rxjs';
 import {
-  PageProjectPartnerReportProcurementSummaryDTO, ProjectPartnerReportProcurementSummaryDTO
+  PageProjectPartnerReportProcurementDTO, ProjectPartnerReportProcurementDTO
 } from '@cat/api';
 import {
   PartnerReportProcurementsPageStore
@@ -33,10 +33,10 @@ export class PartnerReportProcurementsTabComponent {
   private readonlyColumns = this.allColumns.filter(col => col !== 'delete');
   displayedColumns: string[] = [];
 
-  dataSource: MatTableDataSource<ProjectPartnerReportProcurementSummaryDTO> = new MatTableDataSource([]);
+  dataSource: MatTableDataSource<ProjectPartnerReportProcurementDTO> = new MatTableDataSource([]);
 
   data$: Observable<{
-    procurements: PageProjectPartnerReportProcurementSummaryDTO;
+    procurements: PageProjectPartnerReportProcurementDTO;
     limitReached: boolean;
     isReportEditable: boolean;
   }>;
@@ -68,7 +68,7 @@ export class PartnerReportProcurementsTabComponent {
     });
   }
 
-  deleteProcurement(procurement: ProjectPartnerReportProcurementSummaryDTO): void {
+  deleteProcurement(procurement: ProjectPartnerReportProcurementDTO): void {
     Forms.confirm(
       this.dialog, {
         title: procurement.contractName,

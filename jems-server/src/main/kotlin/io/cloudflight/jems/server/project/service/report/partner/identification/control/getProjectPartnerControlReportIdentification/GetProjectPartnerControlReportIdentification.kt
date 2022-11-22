@@ -11,7 +11,7 @@ import io.cloudflight.jems.server.project.service.report.model.partner.ReportSta
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ProjectPartnerControlReport
 import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectReportIdentificationPersistence
 import io.cloudflight.jems.server.project.service.report.partner.identification.control.toModelObject
-import io.cloudflight.jems.server.project.service.report.partner.identification.getProjectPartnerReportIdentification.GetProjectPartnerReportIdentification.Companion.emptyIdentification
+import io.cloudflight.jems.server.project.service.report.partner.identification.getProjectPartnerReportIdentification.GetProjectPartnerReportIdentificationService.Companion.emptyIdentification
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 

@@ -6,7 +6,6 @@ import io.cloudflight.jems.server.project.entity.report.procurement.ProjectPartn
 import io.cloudflight.jems.server.project.repository.report.ProjectPartnerReportRepository
 import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectPartnerReportProcurement
 import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectPartnerReportProcurementChange
-import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectPartnerReportProcurementSummary
 import io.mockk.*
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -42,7 +41,7 @@ class ProjectReportProcurementPersistenceProviderTest : UnitTest() {
             lastChanged = YESTERDAY,
         )
 
-        private fun expectedProcurement(reportId: Long, reportNumber: Int) = ProjectPartnerReportProcurementSummary(
+        private fun expectedProcurement(reportId: Long, reportNumber: Int) = ProjectPartnerReportProcurement(
             id = 14L,
             reportId = reportId,
             reportNumber = reportNumber,
@@ -56,6 +55,7 @@ class ProjectReportProcurementPersistenceProviderTest : UnitTest() {
             currencyCode = "GBP",
             supplierName = "supplierName",
             vatNumber = "vatNumber",
+            comment = "comment",
         )
 
         private fun expectedProcurementDetail(reportId: Long, reportNumber: Int) = ProjectPartnerReportProcurement(

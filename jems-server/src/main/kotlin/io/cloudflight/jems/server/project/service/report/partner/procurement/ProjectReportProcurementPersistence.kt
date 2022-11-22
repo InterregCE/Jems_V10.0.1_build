@@ -2,7 +2,6 @@ package io.cloudflight.jems.server.project.service.report.partner.procurement
 
 import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectPartnerReportProcurement
 import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectPartnerReportProcurementChange
-import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectPartnerReportProcurementSummary
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 
@@ -10,7 +9,7 @@ interface ProjectReportProcurementPersistence {
 
     fun getById(partnerId: Long, procurementId: Long): ProjectPartnerReportProcurement
 
-    fun getProcurementsForReportIds(reportIds: Set<Long>, pageable: Pageable): Page<ProjectPartnerReportProcurementSummary>
+    fun getProcurementsForReportIds(reportIds: Set<Long>, pageable: Pageable): Page<ProjectPartnerReportProcurement>
 
     fun getProcurementContractNamesForReportIds(reportIds: Set<Long>): Set<Pair<Long, String>>
 

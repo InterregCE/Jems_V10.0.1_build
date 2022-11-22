@@ -14,5 +14,8 @@
             <span *ngIf="detail?.code" class="ml-1">(error code: {{detail?.code}})
             </span>
         </div>
+        <div *ngIf="showId" class="mt-3">
+            <span>({{ error?.id }})</span>
+        </div>
     </div>
 </div>

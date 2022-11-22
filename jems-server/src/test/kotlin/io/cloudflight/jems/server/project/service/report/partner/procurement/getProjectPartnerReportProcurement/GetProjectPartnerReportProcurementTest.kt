@@ -4,7 +4,6 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.call.service.model.IdNamePair
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectPartnerReportProcurement
-import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectPartnerReportProcurementSummary
 import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectReportProcurementPersistence
 import io.mockk.clearMocks
 import io.mockk.every
@@ -30,7 +29,7 @@ internal class GetProjectPartnerReportProcurementTest : UnitTest() {
         private val YESTERDAY = ZonedDateTime.now().minusDays(1)
         private val LAST_WEEK = LocalDate.now().minusWeeks(1)
 
-        private val procurementFrom53 = ProjectPartnerReportProcurementSummary(
+        private val procurementFrom53 = ProjectPartnerReportProcurement(
             id = 100L,
             reportId = 53L,
             reportNumber = 1,
@@ -44,8 +43,9 @@ internal class GetProjectPartnerReportProcurementTest : UnitTest() {
             currencyCode = "GBP",
             supplierName = "supplierName 100",
             vatNumber = "vat number 100",
+            comment = "comment 100",
         )
-        private val procurementFrom54 = ProjectPartnerReportProcurementSummary(
+        private val procurementFrom54 = ProjectPartnerReportProcurement(
             id = 101L,
             reportId = 54L,
             reportNumber = 2,
@@ -59,6 +59,7 @@ internal class GetProjectPartnerReportProcurementTest : UnitTest() {
             currencyCode = "CZK",
             supplierName = "supplierName 101",
             vatNumber = "vat number 101",
+            comment = "comment 101",
         )
 
         private val procurement = ProjectPartnerReportProcurement(
@@ -119,13 +120,21 @@ internal class GetProjectPartnerReportProcurementTest : UnitTest() {
     }
 
     @Test
+    fun `getProcurementById - not existing report`() {
+        every { reportPersistence.exists(PARTNER_ID, reportId = -1L) } returns false
+        assertThrows<PartnerReportNotFoundById> { interactor.getProcurementById(PARTNER_ID, reportId = -1L, procurementId = 90L) }
+    }
+
+    @Test
     fun getProcurementById() {
+        every { reportPersistence.exists(PARTNER_ID, reportId = 1L) } returns true
         every { reportProcurementPersistence.getById(PARTNER_ID, procurementId = 90L) } returns procurement
         assertThat(interactor.getProcurementById(PARTNER_ID, reportId = 1L, procurementId = 90L)).isEqualTo(procurement)
     }
 
     @Test
     fun `getProcurementById - from current report`() {
+        every { reportPersistence.exists(PARTNER_ID, reportId = 55L) } returns true
         every { reportProcurementPersistence.getById(PARTNER_ID, procurementId = 90L) } returns procurement
         assertThat(interactor.getProcurementById(PARTNER_ID, reportId = 55L, procurementId = 90L))
             .isEqualTo(procurement.copy(createdInThisReport = true))

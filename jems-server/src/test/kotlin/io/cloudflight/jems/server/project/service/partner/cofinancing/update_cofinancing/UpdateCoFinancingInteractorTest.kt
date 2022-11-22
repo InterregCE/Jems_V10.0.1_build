@@ -126,6 +126,7 @@ internal class UpdateCoFinancingInteractorTest {
             applicationFormFieldConfigurations = mutableSetOf(),
             preSubmissionCheckPluginKey = null,
             firstStepPreSubmissionCheckPluginKey = null,
+            reportPartnerCheckPluginKey = null,
             projectDefinedUnitCostAllowed = false,
             projectDefinedLumpSumAllowed = true,
         )
@@ -178,6 +179,7 @@ internal class UpdateCoFinancingInteractorTest {
             applicationFormFieldConfigurations = mutableSetOf(),
             preSubmissionCheckPluginKey = null,
             firstStepPreSubmissionCheckPluginKey = null,
+            reportPartnerCheckPluginKey = null,
             projectDefinedUnitCostAllowed = false,
             projectDefinedLumpSumAllowed = true,
         )
@@ -226,6 +228,7 @@ internal class UpdateCoFinancingInteractorTest {
             applicationFormFieldConfigurations = mutableSetOf(),
             preSubmissionCheckPluginKey = null,
             firstStepPreSubmissionCheckPluginKey = null,
+            reportPartnerCheckPluginKey = null,
             projectDefinedUnitCostAllowed = false,
             projectDefinedLumpSumAllowed = true,
         )

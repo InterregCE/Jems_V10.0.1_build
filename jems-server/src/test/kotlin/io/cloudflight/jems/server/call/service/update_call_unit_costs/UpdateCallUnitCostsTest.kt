@@ -40,6 +40,7 @@ class UpdateCallUnitCostsTest {
             applicationFormFieldConfigurations = mutableSetOf(),
             preSubmissionCheckPluginKey = null,
             firstStepPreSubmissionCheckPluginKey = null,
+            reportPartnerCheckPluginKey = null,
             projectDefinedUnitCostAllowed = false,
             projectDefinedLumpSumAllowed = true,
         )

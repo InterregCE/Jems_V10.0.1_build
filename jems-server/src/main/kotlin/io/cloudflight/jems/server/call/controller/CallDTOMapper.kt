@@ -60,7 +60,8 @@ fun CallDetail.toDto() = CallDetailDTO(
     unitCosts = unitCosts.toDto(),
     applicationFormFieldConfigurations = applicationFormFieldConfigurations.toDto(type),
     preSubmissionCheckPluginKey = preSubmissionCheckPluginKey,
-    firstStepPreSubmissionCheckPluginKey = firstStepPreSubmissionCheckPluginKey
+    firstStepPreSubmissionCheckPluginKey = firstStepPreSubmissionCheckPluginKey,
+    reportPartnerCheckPluginKey = reportPartnerCheckPluginKey,
 )
 
 fun CallUpdateRequestDTO.toModel() = Call(
@@ -83,6 +84,7 @@ fun PreSubmissionPluginsDTO.toDTO() = callDTOMapper.map(this)
 fun PreSubmissionPluginsDTO.toModel() = PreSubmissionPlugins(
     pluginKey = pluginKey,
     firstStepPluginKey = firstStepPluginKey,
+    reportPartnerCheckPluginKey = reportPartnerCheckPluginKey,
 )
 
 fun CallCostOptionDTO.toModel() = CallCostOption(

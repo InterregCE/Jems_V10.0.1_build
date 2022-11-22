@@ -18,6 +18,11 @@ class ReportAlreadyClosed : ApplicationUnprocessableException(
     i18nMessage = I18nMessage("$SUBMIT_PROJECT_PARTNER_REPORT_ERROR_KEY_PREFIX.report.already.closed"),
 )
 
+class SubmissionNotAllowed : ApplicationUnprocessableException(
+    code = "$SUBMIT_PROJECT_PARTNER_REPORT_ERROR_CODE_PREFIX-003",
+    i18nMessage = I18nMessage("$SUBMIT_PROJECT_PARTNER_REPORT_ERROR_KEY_PREFIX.pre.submission.check.failed"),
+)
+
 class CurrencyRatesMissing(missingRates: Set<String>) : ApplicationUnprocessableException(
     code = "$SUBMIT_PROJECT_PARTNER_REPORT_ERROR_CODE_PREFIX-002",
     i18nMessage = I18nMessage(
