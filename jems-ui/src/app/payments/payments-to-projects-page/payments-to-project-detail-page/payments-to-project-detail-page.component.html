@@ -67,7 +67,7 @@
                             <div class="column-amount-approved justify-end">{{partnerPayment.amountApproved | asMoney}}</div>
                             <div class="column-payments-remaining justify-end">{{this.getUnauthorisedAmountForIndex(index) | asMoney}}</div>
                             <div class="column-action-buttons justify-end">
-                                <button mat-stroked-button *ngIf="installmentsArray(index).length === 0"
+                                <button mat-stroked-button *ngIf="installmentsArray(index).length === 0 && (userCanEdit$ | async)"
                                         (click)="addInstallmentButtonClicked(null, index);
                                                  togglePaymentRowAtIndex(index);
                                                  $event.stopPropagation();">
