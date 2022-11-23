@@ -457,7 +457,7 @@
                                               maxLines="2">{{'project.application.partner.report.expenditures.tab.number.of.units' | translate}}</span>
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                                <div *ngIf="control.value.costOptions && (expenditureFormIndex !== i && !control.get(constants.FORM_CONTROL_NAMES.numberOfUnits).errors)"
+                                <div *ngIf="control.get(constants.FORM_CONTROL_NAMES.costOptions).value && (expenditureFormIndex !== i && !control.get(constants.FORM_CONTROL_NAMES.numberOfUnits).errors)"
                                      (click)="selectRow(i, 'numberOfUnits')" class="custom-wrapper"
                                      [ngClass]="getAdditionalRowClass(i, constants.FORM_CONTROL_NAMES.numberOfUnits)">
                                     <div class="custom-text-area" >
@@ -465,7 +465,7 @@
                                     </div>
                                 </div>
 
-                                <mat-form-field jemsFormFieldWidth="full" *ngIf="control.value.costOptions && (expenditureFormIndex === i || control.get(constants.FORM_CONTROL_NAMES.numberOfUnits).errors)" (keyup)="onUpdateNumberOfUnits(i)">
+                                <mat-form-field jemsFormFieldWidth="full" *ngIf="control.get(constants.FORM_CONTROL_NAMES.costOptions).value && (expenditureFormIndex === i || control.get(constants.FORM_CONTROL_NAMES.numberOfUnits).errors)" (keyup)="onUpdateNumberOfUnits(i)">
                                     <input [formControlName]="constants.FORM_CONTROL_NAMES.numberOfUnits"
                                            matInput
                                            currencyMask
@@ -481,7 +481,7 @@
                                               maxLines="2">{{'project.application.partner.report.expenditures.tab.price.per.unit' | translate}}</span>
                             </mat-header-cell>
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
-                                <div *ngIf="control.value.costOptions && (expenditureFormIndex !== i && !control.get(constants.FORM_CONTROL_NAMES.pricePerUnit).errors)"
+                                <div *ngIf="control.get(constants.FORM_CONTROL_NAMES.costOptions).value && (expenditureFormIndex !== i && !control.get(constants.FORM_CONTROL_NAMES.pricePerUnit).errors)"
                                      (click)="selectRow(i, 'pricePerUnit')" class="custom-wrapper align-right"
                                      [ngClass]="getAdditionalRowClass(i, constants.FORM_CONTROL_NAMES.pricePerUnit)">
                                     <div class="custom-text-area" >
@@ -489,7 +489,7 @@
                                     </div>
                                 </div>
 
-                                <mat-form-field jemsFormFieldWidth="full" *ngIf="control.value.costOptions && (expenditureFormIndex === i || control.get(constants.FORM_CONTROL_NAMES.pricePerUnit).errors)">
+                                <mat-form-field jemsFormFieldWidth="full" *ngIf="control.get(constants.FORM_CONTROL_NAMES.costOptions).value && (expenditureFormIndex === i || control.get(constants.FORM_CONTROL_NAMES.pricePerUnit).errors)">
                                     <input [formControlName]="constants.FORM_CONTROL_NAMES.pricePerUnit"
                                            [options]="{min: constants.MIN_VALUE, max: constants.MAX_VALUE, align: 'right'}"
                                            currencyMask matInput

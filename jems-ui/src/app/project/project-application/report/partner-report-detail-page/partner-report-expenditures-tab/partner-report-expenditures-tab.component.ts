@@ -195,6 +195,8 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
 
         this.disableCostOptionSelectionRelatedFields(control, 'lumpSum', index);
       } else {
+        control.get('numberOfUnits')?.enable();
+        control.get('currencyCode')?.enable();
         const unitCost = this.availableUnitCosts.filter(uc => uc.id === change.value['id'])[0];
         const currencyCode = this.getUnitCostCurrency(unitCost);
         const currencyConversionRate = this.getConversionRateByCode(currencyCode);
@@ -624,21 +626,19 @@ export class PartnerReportExpendituresTabComponent implements OnInit {
     control.get('dateOfPayment')?.disable();
     control.get('totalValueInvoice')?.disable();
     control.get('vat')?.disable();
-    control.get('numberOfUnits')?.disable();
     control.get('declaredAmount')?.disable();
     control.get('pricePerUnit')?.disable();
-    control.get('currencyCode')?.disable();
     control.get('currencyConversionRate')?.disable();
     control.get('declaredAmountInEur')?.disable();
     control.get('investmentId')?.disable();
-    if (selectionType === 'unitCost') {
-      control.get('numberOfUnits')?.enable();
-      if (this.isUnitCostForeignCurrencyAvailable(index)
-        && !this.hasPartnerCurrencySetToEur()
-        && this.currentReport.status === ProjectPartnerReportDTO.StatusEnum.Draft)
-      {
-        control.get('currencyCode')?.enable();
-      }
+
+    if (selectionType == 'lumpSum') {
+      control.get('numberOfUnits')?.disable();
+      control.get('currencyCode')?.disable();
+    }
+
+    if (selectionType == 'unitCost' && !this.isUnitCostForeignCurrencyAvailable(index)) {
+      control.get('currencyCode')?.disable();
     }
   }
 
