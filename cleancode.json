@@ -41,6 +41,10 @@
     {
       "hash": "07ecb7ae",
       "reason": "No classes should throw generic exceptions, but this one is in mapstruct generated Java class"
+    },
+    {
+      "hash": "faca5b06",
+      "reason": "Auth service not calling transactional, but it is SecurityContextHolder.clearContext() most possibly"
     }
   ]
 }
