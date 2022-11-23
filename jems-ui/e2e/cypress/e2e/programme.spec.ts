@@ -396,33 +396,38 @@ context('Programme management tests', () => {
 
         cy.contains('State Aid').click();
         cy.contains('button', 'Add State Aid').click();
+        cy.contains('button', 'DE').click();
 
-        testData.stateAid.forEach(aid => {
+        testData.stateAid.forEach((aid, index) => {
+          
+          if (index != 0) cy.contains('mat-icon', 'add').click();
+          cy.get('div.jems-table-config > div').last().prev().within(() => {
+            cy.contains('div', 'Measure').find('input').click();
+            cy.root().closest('body').contains('mat-option', aid.measure).click();
 
-          cy.get('div.jems-table-config > div').last().prev().then(el => {
-            cy.wrap(el).contains('mat-form-field', 'Measure').find('input').click();
-            cy.contains('mat-option', aid.measure).click();
+            aid.name.forEach(name => {
+              cy.get('textarea').eq(0).type(name.translation);
+            });
+            
+            aid.abbreviatedName.forEach(abbreviatedName => {
+              cy.get('input').eq(1).type(abbreviatedName.translation);
+            });
+            
+            aid.comments.forEach(comment => {
+              cy.get('textarea').eq(1).type(comment.translation);
+            });
 
-            cy.contains('button', aid.name[0].language).click();
-            cy.wrap(el).find('textarea').eq(0).type(aid.name[0].translation);
-            cy.contains('button', aid.abbreviatedName[0].language).click();
-            cy.wrap(el).find('input').eq(1).type(aid.abbreviatedName[0].translation);
-            aid.comments[0] && cy.wrap(el).find('textarea').eq(1).type(aid.comments[0].translation);
-
-            aid.schemeNumber && cy.wrap(el).find('input[name="schemeNumber"]').type(aid.schemeNumber);
-            aid.maxIntensity && cy.wrap(el).find('input[name="maxIntensity"]').type(aid.maxIntensity);
-            aid.threshold && cy.wrap(el).find('input[name="threshold"]').type(aid.threshold);
-
-            cy.contains('Save changes').click();
-
-            cy.get('jems-alert p').should('contain.text', 'State aid was successfully saved.');
-            cy.get('div.jems-table-config > div').last().find('input[name="measure"]').should('have.value', aid.measure);
-
-            // prepare for another entry
-            cy.contains('button', 'Edit').click();
-            cy.contains('mat-icon', 'add').click();
+            if (aid.schemeNumber)
+              cy.get('input[name="schemeNumber"]').type(aid.schemeNumber);
+            if (aid.maxIntensity)
+              cy.get('input[name="maxIntensity"]').type(aid.maxIntensity);
+            if (aid.threshold)
+              cy.get('input[name="threshold"]').type(aid.threshold);
           });
         });
+
+        cy.contains('Save changes').click();
+        cy.contains('State aid was successfully saved.').should('be.visible');
       });
     });
   });
