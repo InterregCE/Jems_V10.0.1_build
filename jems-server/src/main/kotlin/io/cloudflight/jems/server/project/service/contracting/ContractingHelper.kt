@@ -9,12 +9,13 @@ fun ProjectContractingMonitoring.fillEndDateWithDuration(
     resolveDuration: () -> Int?
 ) = this.also {
     if (this.startDate != null) {
-        this.endDate = getEndDate(this.startDate, duration = resolveDuration.invoke())
+        this.endDate = getEndDate(this.startDate, durationInMonths = resolveDuration.invoke())
     }
 }
 
-fun getEndDate(startDate: LocalDate, duration: Int?) =
-    if (duration != null) startDate.plusMonths(duration.toLong()) else null
+private fun getEndDate(startDate: LocalDate, durationInMonths: Int?) =
+    if (durationInMonths == null) null
+    else startDate.plusMonths(durationInMonths.toLong()).minusDays(1)
 
 fun ProjectContractingMonitoring.fillLumpSumsList(
     resolveLumpSums: () -> List<ProjectLumpSum>?

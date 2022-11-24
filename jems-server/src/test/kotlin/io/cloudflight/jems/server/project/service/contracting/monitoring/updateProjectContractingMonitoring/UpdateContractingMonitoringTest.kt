@@ -229,7 +229,7 @@ class UpdateContractingMonitoringTest : UnitTest() {
                 ProjectContractingMonitoring(
                     projectId = projectId,
                     startDate = ZonedDateTime.parse("2022-07-01T10:00:00+02:00").toLocalDate(),
-                    endDate = ZonedDateTime.parse("2023-06-01T10:00:00+02:00").toLocalDate(),
+                    endDate = ZonedDateTime.parse("2023-05-31T10:00:00+02:00").toLocalDate(),
                     typologyProv94 = ContractingMonitoringExtendedOption.Partly,
                     typologyProv94Comment = "typologyProv94Comment",
                     typologyProv95 = ContractingMonitoringExtendedOption.Yes,
