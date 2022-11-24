@@ -117,7 +117,6 @@ export class ProgrammePriorityDetailPageComponent {
       .filter(control => !!control.get(this.constants.POLICY_SELECTED.name)?.value)
       .map(control => this.transformSpecificObjectiveValues(control));
 
-    this.form.disable();
     if (!this.priorityId) {
       this.pageStore.createPriority(priority)
         .pipe(
