@@ -106,16 +106,16 @@
             <span>&nbsp;{{'project.application.contract.monitoring.project.entry.into.force.add' | translate}}</span>
         </button>
 
-        <h3>{{'project.application.contract.monitoring.project.topology.title' | translate}}</h3>
+        <h3>{{'project.application.contract.monitoring.project.typology.title' | translate}}</h3>
         <div class="mt-3 mb-3" [jemsTableConfig]="[{maxInRem: 23},{minInRem: 10,maxInRem:10},{}]">
             <div class="mat-body-strong">
-                <span>{{'project.application.contract.monitoring.project.topology' | translate }}</span>
+                <span>{{'project.application.contract.monitoring.project.typology' | translate }}</span>
                 <span>{{'project.partner.state.aid.answer' | translate }}</span>
-                <span>{{'project.application.contract.monitoring.project.topology.comment' | translate }}</span>
+                <span>{{'project.application.contract.monitoring.project.typology.comment' | translate }}</span>
             </div>
 
             <div>
-                <span>{{'project.application.contract.monitoring.project.topology.question.typologyProv94' | translate}}</span>
+                <span>{{'project.application.contract.monitoring.project.typology.question.typologyProv94' | translate}}</span>
                 <div>
                     <mat-button-toggle-group formControlName="typologyProv94">
                         <mat-button-toggle [value]="TypologyProv94Enum.Yes">{{'common.yes' | translate}}</mat-button-toggle>
@@ -136,7 +136,7 @@
             </div>
 
             <div>
-                <span>{{'project.application.contract.monitoring.project.topology.question.typologyProv95' | translate}}</span>
+                <span>{{'project.application.contract.monitoring.project.typology.question.typologyProv95' | translate}}</span>
                 <div>
                     <mat-button-toggle-group formControlName="typologyProv95">
                         <mat-button-toggle [value]="TypologyProv95Enum.Yes">{{'common.yes' | translate}}</mat-button-toggle>
@@ -157,7 +157,7 @@
             </div>
 
             <div>
-                <span>{{'project.application.contract.monitoring.project.topology.question.typologyStrategic' | translate}}</span>
+                <span>{{'project.application.contract.monitoring.project.typology.question.typologyStrategic' | translate}}</span>
                 <div>
                     <mat-button-toggle-group formControlName="typologyStrategic">
                         <mat-button-toggle [value]="TypologyStrategicEnum.Yes">{{'common.yes' | translate}}</mat-button-toggle>
@@ -177,7 +177,7 @@
             </div>
 
             <div>
-                <span>{{'project.application.contract.monitoring.project.topology.question.typologyPartnership' | translate}}</span>
+                <span>{{'project.application.contract.monitoring.project.typology.question.typologyPartnership' | translate}}</span>
                 <div>
                     <mat-button-toggle-group formControlName="typologyPartnership">
                         <mat-button-toggle [value]="TypologyPartnershipEnum.Yes">{{'common.yes' | translate}}</mat-button-toggle>
@@ -212,7 +212,7 @@
                         {{'project.application.contract.monitoring.project.ready.for.payment' | translate }}
                         <jems-context-info infoPosition="right" infoText="{{'project.application.contract.monitoring.project.ready.for.payment.info' | translate}}"></jems-context-info>
                     </span>
-                    <span>{{'project.application.contract.monitoring.project.topology.comment' | translate }}</span>
+                    <span>{{'project.application.contract.monitoring.project.typology.comment' | translate }}</span>
                 </div>
                 <div *ngFor="let lumpSum of fastTrackLumpSumsControls; let i=index">
                     <ng-container formArrayName="lumpSums" *ngIf="lumpSum?.value?.fastTrack">
