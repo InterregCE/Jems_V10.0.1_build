@@ -44,7 +44,8 @@ internal class ConsolidateChecklistInstanceTest : UnitTest() {
         relatedToId = 1L,
         finishedDate = null,
         consolidated = true,
-        visible = true
+        visible = true,
+        description = "test"
     )
 
     @Test

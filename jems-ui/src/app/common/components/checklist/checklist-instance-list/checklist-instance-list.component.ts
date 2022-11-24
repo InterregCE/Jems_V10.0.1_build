@@ -9,22 +9,23 @@ import {
   ProgrammeChecklistDetailDTO,
   UserRoleDTO
 } from '@cat/api';
-import {combineLatest, Observable} from 'rxjs';
-import {
-  ChecklistInstanceListStore
-} from '@common/components/checklist/checklist-instance-list/checklist-instance-list-store.service';
-import {filter, map, switchMap, take, tap} from 'rxjs/operators';
+import {BehaviorSubject, combineLatest, Observable, of} from 'rxjs';
+import {ChecklistInstanceListStore} from '@common/components/checklist/checklist-instance-list/checklist-instance-list-store.service';
+import {catchError, filter, finalize, map, switchMap, take, tap} from 'rxjs/operators';
 import {RoutingService} from '@common/services/routing.service';
 import {ActivatedRoute} from '@angular/router';
 import {MatDialog} from '@angular/material/dialog';
 import {Forms} from '@common/utils/forms';
 import {FormService} from '@common/components/section/form/form.service';
-import {FormArray, FormBuilder} from '@angular/forms';
+import {FormArray, FormBuilder, Validators} from '@angular/forms';
 import {TableComponent} from '@common/components/table/table.component';
 import {MatSort} from '@angular/material/sort';
 import {MatCheckboxChange} from '@angular/material/checkbox';
 import {ChecklistSort} from '@common/components/checklist/checklist-instance-list/checklist-instance-list-custom-sort';
 import {ChecklistUtilsComponent} from '@common/components/checklist/checklist-utils/checklist-utils';
+import {Alert} from '@common/components/forms/alert';
+import {AlertMessage} from '@common/components/file-list/file-list-table/alert-message';
+import {v4 as uuid} from 'uuid';
 
 @Component({
   selector: 'jems-checklist-instance-list',
@@ -34,8 +35,10 @@ import {ChecklistUtilsComponent} from '@common/components/checklist/checklist-ut
   providers: [ChecklistInstanceListStore, FormService]
 })
 export class ChecklistInstanceListComponent implements OnInit {
+  Alert = Alert;
   Status = ChecklistInstanceDTO.StatusEnum;
   PermissionEnum = UserRoleDTO.PermissionsEnum;
+  alerts$ = new BehaviorSubject<AlertMessage[]>([]);
 
   @Input()
   relatedType: ProgrammeChecklistDetailDTO.TypeEnum;
@@ -48,8 +51,10 @@ export class ChecklistInstanceListComponent implements OnInit {
 
   private checklistInstances$: Observable<ChecklistInstanceDTO[]>;
   checklistInstancesSorted$: Observable<ChecklistInstanceDTO[]>;
+  private checklistInstances: ChecklistInstanceDTO[];
   checklistTemplates$: Observable<IdNamePairDTO[]>;
   private selectedChecklists$: Observable<ChecklistInstanceSelectionDTO[]>;
+  private selectedChecklists: ChecklistInstanceSelectionDTO[];
   selectedChecklistsSorted$: Observable<ChecklistInstanceSelectionDTO[]>;
 
   instancesTableConfiguration: TableConfiguration;
@@ -57,6 +62,7 @@ export class ChecklistInstanceListComponent implements OnInit {
   selectedTemplate: IdNamePairDTO;
   checklistUtils: ChecklistUtilsComponent;
   checklistPageStore: ChecklistInstanceListStore;
+  editableChecklistId: number | null;
 
   @ViewChild('consolidateCell', {static: true})
   consolidateCell: TemplateRef<any>;
@@ -64,11 +70,19 @@ export class ChecklistInstanceListComponent implements OnInit {
   @ViewChild('visibleCell', {static: true})
   visibleCell: TemplateRef<any>;
 
-  @ViewChild('deleteCell', {static: true})
-  deleteCell: TemplateRef<any>;
+  @ViewChild('actionsCell', {static: true})
+  actionsCell: TemplateRef<any>;
+
+  @ViewChild('descriptionCell', {static: true})
+  descriptionCell: TemplateRef<any>;
 
   @ViewChild('tableInstances') tableInstances: TableComponent;
   @ViewChild('tableSelected') tableSelected: TableComponent;
+
+  descriptionForm = this.formBuilder.group({
+    id: [null, Validators.required],
+    description: ['', Validators.maxLength(150)],
+  });
 
   constructor(public pageStore: ChecklistInstanceListStore,
               private formService: FormService,
@@ -80,22 +94,6 @@ export class ChecklistInstanceListComponent implements OnInit {
     this.checklistUtils = new ChecklistUtilsComponent();
   }
 
-  onSelectedSortChange(sort: Partial<MatSort>) {
-    const field = sort.active || '';
-    const order = sort.direction;
-
-    if (this.tableInstances) {
-      const oldField = this.tableInstances.matSort.active;
-      const oldOrder = this.tableInstances.matSort.direction === 'desc' ? 'desc' : 'asc';
-
-      if (field !== oldField || (field === oldField && order !== oldOrder)) {
-        this.tableInstances.matSort.sort({id: field, start: 'asc', disableClear: true});
-      }
-    }
-
-    this.pageStore.setSelectedSort({...sort, direction: order === 'desc' ? 'desc' : 'asc'});
-  }
-
   ngOnInit(): void {
     this.formService.init(this.form, this.pageStore.userCanChangeSelection$);
     this.checklistInstances$ = this.pageStore.checklistInstances(this.relatedType, this.relatedId);
@@ -104,6 +102,7 @@ export class ChecklistInstanceListComponent implements OnInit {
       this.pageStore.getInstancesSort$,
     ]).pipe(
       map(([checklists, sort]) => [...checklists].sort(ChecklistSort.customSort(sort))),
+      tap(data => this.checklistInstances = data)
     );
     this.checklistTemplates$ = this.pageStore.checklistTemplates(this.relatedType);
     this.selectedChecklists$ = this.pageStore.selectedInstances(this.relatedType, this.relatedId)
@@ -115,6 +114,7 @@ export class ChecklistInstanceListComponent implements OnInit {
       this.pageStore.getSelectedSort$,
     ]).pipe(
       map(([checklists, sort]) => [...checklists].sort(ChecklistSort.customSort(sort))),
+      tap(data => this.selectedChecklists = data)
     );
 
     this.instancesTableConfiguration = this.initializeTableConfiguration(false);
@@ -131,7 +131,19 @@ export class ChecklistInstanceListComponent implements OnInit {
         take(1),
         filter(answer => !!answer),
         switchMap(() => this.pageStore.deleteChecklistInstance(checklist.id)),
+        tap(() => {
+          this.checklistInstances = this.checklistInstances.filter(c => c.id !== checklist.id);
+          this.selectedChecklists = this.selectedChecklists.filter(c => c.id !== checklist.id);
+        })
       ).subscribe();
+  }
+
+  setDescriptionEditable(checklist: ChecklistInstanceDTO): void {
+    this.editableChecklistId = checklist.id;
+    this.descriptionForm.patchValue({
+      id: checklist.id,
+      description: checklist.description,
+    });
   }
 
   private initializeTableConfiguration(selection: boolean): TableConfiguration {
@@ -150,25 +162,27 @@ export class ChecklistInstanceListComponent implements OnInit {
           displayedColumn: 'checklists.instance.consolidated',
           customCellTemplate: this.consolidateCell,
           sortProperty: 'consolidated',
+          columnWidth: ColumnWidth.SmallColumn,
         },
         {
           displayedColumn: 'common.status',
           elementTranslationKey: 'checklists.instance.status',
           elementProperty: 'status',
-          columnWidth: ColumnWidth.DateColumn,
+          columnWidth: ColumnWidth.SmallColumn,
           sortProperty: 'status',
-        },
-        {
-          displayedColumn: 'common.type',
-          elementTranslationKey: 'programme.checklists.type',
-          elementProperty: 'type',
-          columnWidth: ColumnWidth.DateColumn,
         },
         {
           displayedColumn: 'common.name',
           elementProperty: 'name',
-          columnWidth: ColumnWidth.extraWideColumn,
+          columnWidth: ColumnWidth.WideColumn,
           sortProperty: 'name',
+        },
+        {
+          displayedColumn: 'common.description',
+          elementProperty: 'description',
+          columnWidth: ColumnWidth.extraWideColumn,
+          sortProperty: 'description',
+          customCellTemplate: this.descriptionCell,
         },
         ...!selection ? [{
           displayedColumn: 'checklists.instance.assessor',
@@ -191,9 +205,9 @@ export class ChecklistInstanceListComponent implements OnInit {
           clickable: false
         }
         ] : [{
-          displayedColumn: 'common.delete.entry',
-          customCellTemplate: this.deleteCell,
-          columnWidth: ColumnWidth.IdColumn,
+          displayedColumn: 'common.action',
+          customCellTemplate: this.actionsCell,
+          columnWidth: ColumnWidth.SmallColumn,
           clickable: false
         }]
       ]
@@ -251,4 +265,62 @@ export class ChecklistInstanceListComponent implements OnInit {
   isEditable(): boolean {
     return this.formService.isEditable();
   }
+
+  resetDescription() {
+    this.editableChecklistId = null;
+    this.descriptionForm.reset();
+  }
+
+  savingDescriptionId$ = new BehaviorSubject<number | null>(null);
+
+  saveDescription() {
+    this.savingDescriptionId$.next(this.descriptionForm.value.id);
+    this.pageStore.setDescription(this.descriptionForm.value.id, this.descriptionForm.value.description)
+      .pipe(
+        take(1),
+        tap(() => this.showDescriptionUpdateAlert({
+            id: uuid(),
+            type: Alert.SUCCESS,
+            i18nMessage: 'checklists.instances.description.change.message.success',
+          } as AlertMessage)),
+        tap(() => this.updateChecklistInstancesAfterSave(this.descriptionForm.value.id, this.descriptionForm.value.description)),
+        catchError(error => {
+          this.showDescriptionUpdateAlert({
+            id: uuid(),
+            type: Alert.ERROR,
+            i18nMessage: 'checklists.instances.description.change.message.fail',
+          } as AlertMessage);
+          throw error;
+        }),
+        finalize(() => this.savingDescriptionId$.next(null)),
+        tap(() => this.descriptionForm.reset()),
+      ).subscribe();
+  }
+
+  dismissDescriptionUpdateAlert(id: string) {
+    const alerts = this.alerts$.value.filter(that => that.id !== id);
+    this.alerts$.next(alerts);
+  }
+
+  private showDescriptionUpdateAlert(alert: AlertMessage) {
+    this.alerts$.next([...this.alerts$.value, alert]);
+    setTimeout(
+      () => this.dismissDescriptionUpdateAlert(alert.id),
+      alert.type === Alert.SUCCESS ? 5000 : 30000);
+  }
+
+  private updateChecklistInstancesAfterSave(checklistId: number, description: string | undefined) {
+    this.editableChecklistId = null;
+    const checklistInstancesIndex = this.checklistInstances.findIndex(c => c.id === checklistId);
+    if (checklistInstancesIndex >= 0) {
+      this.checklistInstances[checklistInstancesIndex].description = description ?? '';
+      this.checklistInstances$ = of(this.checklistInstances);
+    }
+    const selectedChecklistIndex = this.selectedChecklists.findIndex(c => c.id === checklistId);
+    if (selectedChecklistIndex >= 0) {
+      this.selectedChecklists[selectedChecklistIndex].description = description ?? '';
+      this.selectedChecklists$ = of(this.selectedChecklists);
+    }
+  }
+
 }

@@ -53,6 +53,9 @@ class ChecklistInstanceController(
     override fun updateChecklistInstanceSelection(selection: Map<Long,  Boolean>) =
         updateInteractor.updateSelection(selection)
 
+    override fun updateChecklistDescription(checklistId: Long, description: String?): ChecklistInstanceDTO =
+        updateInteractor.updateDescription(checklistId, description).toDto()
+
     override fun deleteChecklistInstance(checklistId: Long) =
         deleteInteractor.deleteById(checklistId)
 

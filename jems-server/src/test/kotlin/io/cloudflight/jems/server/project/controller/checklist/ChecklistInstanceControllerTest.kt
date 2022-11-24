@@ -150,7 +150,8 @@ class ChecklistInstanceControllerTest : UnitTest() {
         creatorEmail = "test@email.com",
         relatedToId = RELATED_TO_ID,
         programmeChecklistId = PROGRAMME_CHECKLIST_ID,
-        visible = false
+        visible = false,
+        description = "test"
     )
     private val checklistSelected = ChecklistInstance(
         id = 1L,
@@ -161,7 +162,8 @@ class ChecklistInstanceControllerTest : UnitTest() {
         creatorEmail = "test@email.com",
         relatedToId = RELATED_TO_ID,
         programmeChecklistId = PROGRAMME_CHECKLIST_ID,
-        visible = true
+        visible = true,
+        description = "test"
     )
 
     private val checklistDTO = ChecklistInstanceDTO(
@@ -172,7 +174,8 @@ class ChecklistInstanceControllerTest : UnitTest() {
         name = "name",
         creatorEmail = "test@email.com",
         relatedToId = RELATED_TO_ID,
-        programmeChecklistId = PROGRAMME_CHECKLIST_ID
+        programmeChecklistId = PROGRAMME_CHECKLIST_ID,
+        description = "test"
     )
 
 
@@ -266,7 +269,8 @@ class ChecklistInstanceControllerTest : UnitTest() {
                 relatedToId = RELATED_TO_ID,
                 programmeChecklistId = PROGRAMME_CHECKLIST_ID,
                 consolidated = false,
-                visible = false
+                visible = false,
+                description = "test"
             ),
             ChecklistInstanceSelectionDTO(
                 id = 1L,
@@ -277,7 +281,8 @@ class ChecklistInstanceControllerTest : UnitTest() {
                 relatedToId = RELATED_TO_ID,
                 programmeChecklistId = PROGRAMME_CHECKLIST_ID,
                 consolidated = false,
-                visible = true
+                visible = true,
+                description = "test"
             )
         )
     }
@@ -330,5 +335,12 @@ class ChecklistInstanceControllerTest : UnitTest() {
     fun `update checklist selection`() {
         controller.updateChecklistInstanceSelection(mapOf(CHECKLIST_ID to true))
         verify { updateInteractor.updateSelection(mapOf(CHECKLIST_ID to true)) }
+    }
+
+    @Test
+    fun `update checklist description`() {
+        every { updateInteractor.updateDescription(1L, "test") } returns checklist
+        assertThat(controller.updateChecklistDescription(1L, "test"))
+            .isEqualTo(checklistDTO)
     }
 }

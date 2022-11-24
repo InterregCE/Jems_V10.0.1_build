@@ -49,5 +49,7 @@ class ChecklistInstanceEntity(
     var components: MutableSet<ChecklistComponentInstanceEntity>? = mutableSetOf(),
 
     @field:NotNull
-    var consolidated: Boolean = false
+    var consolidated: Boolean = false,
+
+    var description: String? = null
 )

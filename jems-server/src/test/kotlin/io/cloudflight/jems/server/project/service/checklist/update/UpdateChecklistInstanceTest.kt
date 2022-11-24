@@ -19,6 +19,7 @@ import io.cloudflight.jems.server.programme.service.checklist.model.metadata.Opt
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.OptionsToggleMetadata
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.ScoreMetadata
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.TextInputMetadata
+import io.cloudflight.jems.server.project.authorization.ProjectChecklistAuthorization
 import io.cloudflight.jems.server.project.service.checklist.ChecklistInstancePersistence
 import io.cloudflight.jems.server.project.service.checklist.ChecklistInstanceValidator
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
@@ -142,7 +143,8 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
         creatorEmail = creatorEmail,
         finishedDate = null,
         consolidated = false,
-        visible = true
+        visible = true,
+        description = "test"
     )
 
     private val checkLisDetailWithErrorOnScore = ChecklistInstanceDetail(
@@ -193,6 +195,9 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
     @MockK
     lateinit var securityService: SecurityService
 
+    @MockK
+    lateinit var checklistAuthorization: ProjectChecklistAuthorization
+
     lateinit var updateChecklistInstance: UpdateChecklistInstance
 
     lateinit var generalValidator: GeneralValidatorService
@@ -207,7 +212,8 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
         generalValidator = GeneralValidatorDefaultImpl()
         checklistInstanceValidator = mockk()
         checklistInstanceValidator = ChecklistInstanceValidator(generalValidator)
-        updateChecklistInstance = UpdateChecklistInstance(persistence, auditPublisher, checklistInstanceValidator, userAuthorization)
+        updateChecklistInstance = UpdateChecklistInstance(persistence, auditPublisher,
+            checklistInstanceValidator, userAuthorization, checklistAuthorization)
     }
 
     @Test
@@ -331,6 +337,25 @@ internal class UpdateChecklistInstanceTest : UnitTest() {
                     " [" + checklist.name + "]" + " set to visibility false"
             )
         )
+    }
+
+    @Test
+    fun `update description`() {
+        every { persistence.updateDescription(1L, "test") } returns checklistInstance(ChecklistInstanceStatus.FINISHED)
+        every { persistence.getChecklistSummary(1L) } returns checklistInstance(ChecklistInstanceStatus.FINISHED)
+        every { userAuthorization.getUser().email } returns "user@applicant.dev"
+        every { checklistAuthorization.canConsolidate(RELATED_TO_ID) } returns true
+        Assertions.assertThat(updateChecklistInstance.updateDescription(1L, "test"))
+            .isEqualTo(checklistInstance(ChecklistInstanceStatus.FINISHED))
+    }
+
+    @Test
+    fun `update description throws exception`() {
+        every { persistence.updateDescription(1L, "test") } returns checklistInstance(ChecklistInstanceStatus.FINISHED)
+        every { persistence.getChecklistSummary(1L) } returns checklistInstance(ChecklistInstanceStatus.FINISHED)
+        every { userAuthorization.getUser().email } returns "test@test.com"
+        every { checklistAuthorization.canConsolidate(RELATED_TO_ID) } returns false
+        assertThrows<UpdateChecklistInstanceDescriptionNotAllowedException> { updateChecklistInstance.updateDescription(1L, "test") }
     }
 
 }

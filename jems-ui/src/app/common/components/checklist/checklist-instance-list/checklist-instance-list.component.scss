@@ -1,3 +1,23 @@
-:host::ng-deep.mat-column-checklists-instance-visible {
-  justify-content: flex-end;
+:host::ng-deep {
+  .mat-column-checklists-instance-visible {
+    justify-content: flex-end;
+  }
+  .id-column-width {
+    padding-right: 0rem !important;
+  }
 }
+
+.description {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.description-form {
+  width: 20rem !important;
+}
+
+.description-button {
+  float: right;
+}
+

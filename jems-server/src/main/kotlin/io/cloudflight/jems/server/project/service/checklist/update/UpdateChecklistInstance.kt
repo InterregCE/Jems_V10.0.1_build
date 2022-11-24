@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInsta
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
 import io.cloudflight.jems.server.project.authorization.CanUpdateChecklistAssessment
 import io.cloudflight.jems.server.project.authorization.CanUpdateChecklistAssessmentSelection
+import io.cloudflight.jems.server.project.authorization.ProjectChecklistAuthorization
 import io.cloudflight.jems.server.project.service.checklist.ChecklistInstancePersistence
 import io.cloudflight.jems.server.project.service.checklist.ChecklistInstanceValidator
 import io.cloudflight.jems.server.project.service.checklist.checklistSelectionUpdate
@@ -21,7 +22,8 @@ class UpdateChecklistInstance(
     private val persistence: ChecklistInstancePersistence,
     private val auditPublisher: ApplicationEventPublisher,
     private val checklistInstanceValidator: ChecklistInstanceValidator,
-    private val userAuthorization: UserAuthorization
+    private val userAuthorization: UserAuthorization,
+    private val checklistAuthorization: ProjectChecklistAuthorization
 ) : UpdateChecklistInstanceInteractor {
 
     @CanUpdateChecklistAssessment
@@ -79,4 +81,15 @@ class UpdateChecklistInstance(
                 )
             )
         }
+
+    @CanUpdateChecklistAssessment
+    @Transactional
+    @ExceptionWrapper(UpdateChecklistInstanceException::class)
+    override fun updateDescription(checklistId: Long, description: String?): ChecklistInstance {
+        val existing = persistence.getChecklistSummary(checklistId)
+        if (existing.creatorEmail != userAuthorization.getUser().email && !checklistAuthorization.canConsolidate(existing.relatedToId!!))
+            throw UpdateChecklistInstanceDescriptionNotAllowedException()
+
+        return persistence.updateDescription(checklistId, description)
+    }
 }

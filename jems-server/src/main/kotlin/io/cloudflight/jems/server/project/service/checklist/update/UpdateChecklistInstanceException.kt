@@ -21,3 +21,8 @@ class UpdateChecklistInstanceStatusNotFinishedException : ApplicationUnprocessab
     code = "$UPDATE_CHECKLIST_INSTANCE_ERROR_CODE_PREFIX-003",
     i18nMessage = I18nMessage("$UPDATE_CHECKLIST_INSTANCE_ERROR_KEY_PREFIX.status.not.finished")
 )
+
+class UpdateChecklistInstanceDescriptionNotAllowedException : ApplicationUnprocessableException(
+    code = "$UPDATE_CHECKLIST_INSTANCE_ERROR_CODE_PREFIX-004",
+    i18nMessage = I18nMessage("$UPDATE_CHECKLIST_INSTANCE_ERROR_KEY_PREFIX.description.not.allowed")
+)

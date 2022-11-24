@@ -12,5 +12,6 @@ data class ChecklistInstanceSelectionDTO(
     val finishedDate: LocalDate?,
     val relatedToId: Long,
     val programmeChecklistId: Long?,
-    val visible: Boolean
+    val visible: Boolean,
+    val description: String?,
 )

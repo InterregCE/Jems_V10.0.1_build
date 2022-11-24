@@ -51,6 +51,7 @@ internal class GetControlChecklistInstanceDetailTest : UnitTest() {
         finishedDate = null,
         consolidated = false,
         visible = true,
+        description = "test"
     )
 
     private val controlChecklistDetail = ChecklistInstanceDetail(

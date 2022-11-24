@@ -10,4 +10,6 @@ interface UpdateChecklistInstanceInteractor {
     fun changeStatus(checklistId: Long, status: ChecklistInstanceStatus): ChecklistInstance
 
     fun updateSelection(selection: Map<Long, Boolean>)
+
+    fun updateDescription(checklistId: Long, description: String?): ChecklistInstance
 }

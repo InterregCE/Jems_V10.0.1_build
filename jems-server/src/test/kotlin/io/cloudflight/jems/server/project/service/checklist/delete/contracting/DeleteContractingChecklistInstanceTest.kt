@@ -52,6 +52,7 @@ internal class DeleteContractingChecklistInstanceTest : UnitTest() {
         finishedDate = null,
         consolidated = false,
         visible = false,
+        description = "test"
     )
 
     private val contractingChecklistDetail = ChecklistInstanceDetail(

@@ -43,6 +43,7 @@ internal class GetContractingChecklistInstanceDetailTest : UnitTest() {
         finishedDate = null,
         consolidated = false,
         visible = true,
+        description = "test"
     )
 
     private val contractingChecklistDetail = ChecklistInstanceDetail(

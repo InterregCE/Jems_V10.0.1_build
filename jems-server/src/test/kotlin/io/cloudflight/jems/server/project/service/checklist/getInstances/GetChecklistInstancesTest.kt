@@ -39,7 +39,8 @@ internal class GetChecklistInstancesTest : UnitTest() {
         creatorEmail = "test@email.com",
         relatedToId = RELATED_TO_ID,
         programmeChecklistId = PROGRAMME_CHECKLIST_ID,
-        visible = false
+        visible = false,
+        description = "test"
     )
 
     @RelaxedMockK

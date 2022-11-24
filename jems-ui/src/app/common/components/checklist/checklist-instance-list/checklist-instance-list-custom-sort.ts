@@ -99,6 +99,17 @@ export class ChecklistSort {
         }
       }
 
+      if (sort.active === 'description') {
+        const descriptionA = a.description ?? '';
+        const descriptionB = b.description ?? '';
+
+        if (sort.direction === 'asc') {
+          return descriptionA.localeCompare(descriptionB);
+        } else {
+          return descriptionB.localeCompare(descriptionA);
+        }
+      }
+
       return 0;
     };
   }

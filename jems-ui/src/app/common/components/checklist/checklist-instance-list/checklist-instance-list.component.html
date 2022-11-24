@@ -1,4 +1,5 @@
 <mat-tab-group>
+
     <mat-tab *jemsHasPermission="PermissionEnum.ProjectAssessmentChecklistUpdate"
              label="{{'checklists.instance.list.tab' | translate}}">
         <span jemsMultiColumnRow>
@@ -18,6 +19,11 @@
                 {{'checklists.instance.list.new.button' | translate}}
             </button>
         </span>
+
+        <jems-alert *ngFor="let alert of alerts$ | async" [show]="true" [type]="alert.type"
+                    (closed)="dismissDescriptionUpdateAlert(alert.id)" [disableMargins]="true" class="mb-2 block">
+            <p>{{ alert.i18nMessage | translate }}</p>
+        </jems-alert>
 
         <ng-container *ngIf="checklistInstancesSorted$ | async as instances">
             <jems-table #tableInstances *ngIf="instances.length"
@@ -39,7 +45,10 @@
             <form [formGroup]="form">
                 <jems-table #tableSelected *ngIf="selections.length"
                             [configuration]="selectionTableConfiguration"
-                            (sortRows)="onSelectedSortChange($event)"
+                            (sortRows)="checklistUtils.onInstancesSortChange($event,
+                                                                         tableSelected,
+                                                                         checklistPageStore,
+                                                                         null)"
                             [rows]="selections">
                 </jems-table>
                 <p *ngIf="!selections.length">{{'checklists.instance.selected.tab.empty' | translate}}</p>
@@ -48,7 +57,14 @@
     </mat-tab>
 </mat-tab-group>
 
-<ng-template #deleteCell let-checklist>
+<ng-template #actionsCell let-checklist>
+    <jems-pending-button
+            [disabled]="(pageStore.currentUserEmail$ | async) !== checklist.creatorEmail && (pageStore.userCanConsolidate$ | async) === false"
+            mat-icon-button color="accent"
+            (click)="setDescriptionEditable(checklist);$event.stopPropagation();"
+            matTooltip="{{'programme.checklists.edit.comment' | translate}}">
+        {{'common.edit.label' | translate}}
+    </jems-pending-button>
     <button *ngIf="checklist.status === Status.DRAFT && (pageStore.currentUserEmail$ | async) === checklist.creatorEmail"
             mat-icon-button color="accent"
             (click)="delete(checklist);$event.stopPropagation();"
@@ -67,4 +83,35 @@
 
 <ng-template #consolidateCell let-checklist>
     <mat-icon *ngIf="checklist.consolidated">done_all</mat-icon>
+</ng-template>
+
+<ng-template #descriptionCell let-checklist>
+    <span *ngIf="this.editableChecklistId !== checklist.id" class="description" matTooltip="{{checklist.description}}">
+        {{checklist.description}}
+    </span>
+    <div *ngIf="this.editableChecklistId === checklist.id">
+        <div (click)="$event.stopPropagation()">
+            <form [formGroup]="descriptionForm" class="description-form">
+                <jems-expandable-textarea class="w-100"
+                                          label="file.table.column.name.description"
+                                          [control]="descriptionForm.controls.description"
+                                          [errors]="descriptionForm.controls.description.errors"
+                                          characterLimit="150">
+                </jems-expandable-textarea>
+                <div class="mb-2 mt-2 description-button">
+                    <button (click)="$event.stopPropagation(); resetDescription()" mat-stroked-button class="small-stroked-btn"
+                            [disabled]="(savingDescriptionId$ | async) === checklist.id">
+                        <mat-icon class="mr-1">close</mat-icon>{{'project.file.description.button.cancel' | translate}}
+                    </button>
+
+                    <button (click)="saveDescription()" mat-flat-button type="submit"
+                            [disabled]="descriptionForm.invalid || (savingDescriptionId$ | async) === checklist.id" class="ml-2 small-flat-btn" color="primary">
+                        <mat-icon class="mr-1" *ngIf="(savingDescriptionId$ | async) !== checklist.id">check</mat-icon>
+                        <mat-spinner *ngIf="(savingDescriptionId$ | async) === checklist.id" class="mr-4" color="primary" [diameter]="17"></mat-spinner>
+                        {{'project.file.description.button.save' | translate}}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 </ng-template>
