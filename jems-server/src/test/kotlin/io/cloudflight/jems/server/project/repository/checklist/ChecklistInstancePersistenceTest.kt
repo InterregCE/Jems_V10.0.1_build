@@ -173,6 +173,7 @@ class ChecklistInstancePersistenceTest : UnitTest() {
     private fun checkListEntity(status: ChecklistInstanceStatus = ChecklistInstanceStatus.DRAFT) = ChecklistInstanceEntity(
         id = ID,
         status = status,
+        description = "test",
         finishedDate = null,
         relatedToId = RELATED_TO_ID,
         programmeChecklist = programmeChecklist,
@@ -212,6 +213,18 @@ class ChecklistInstancePersistenceTest : UnitTest() {
                 "{\"explanation\":\"Explanation\"}"
             )
         )
+    )
+
+    private val checklist = ChecklistInstance(
+        id = 1L,
+        status = ChecklistInstanceStatus.DRAFT,
+        type = ProgrammeChecklistType.APPLICATION_FORM_ASSESSMENT,
+        name = "name",
+        creatorEmail = "test@email.com",
+        relatedToId = RELATED_TO_ID,
+        programmeChecklistId = PROGRAMME_CHECKLIST_ID,
+        visible = false,
+        description = "test"
     )
 
 
@@ -327,6 +340,13 @@ class ChecklistInstancePersistenceTest : UnitTest() {
         assertThrows<UpdateChecklistInstanceStatusNotFinishedException> {
             persistence.updateSelection(mapOf(ID to true))
         }
+    }
+
+    @Test
+    fun `update description`() {
+        every { repository.findById(ID) } returns Optional.of(checkListEntity())
+        assertThat(persistence.updateDescription(1L, "test"))
+            .isEqualTo(checklist)
     }
 
 }

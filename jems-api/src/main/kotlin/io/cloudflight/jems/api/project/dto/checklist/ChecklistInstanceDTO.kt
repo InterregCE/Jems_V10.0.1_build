@@ -13,5 +13,6 @@ data class ChecklistInstanceDTO(
     val relatedToId: Long,
     val programmeChecklistId: Long?,
     val consolidated: Boolean = false,
-    val visible: Boolean = false
+    val visible: Boolean = false,
+    val description: String?
 )

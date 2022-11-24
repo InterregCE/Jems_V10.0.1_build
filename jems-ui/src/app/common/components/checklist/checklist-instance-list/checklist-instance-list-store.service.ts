@@ -22,8 +22,8 @@ export class ChecklistInstanceListStore {
 
   currentUserEmail$: Observable<string>;
   userCanChangeSelection$: Observable<boolean>;
+  userCanConsolidate$: Observable<boolean>;
 
-  private userCanConsolidate$: Observable<boolean>;
   private listChanged$ = new Subject();
 
   private instancesSort$ = new BehaviorSubject<Partial<MatSort>>(this.defaultSort);
@@ -102,6 +102,14 @@ export class ChecklistInstanceListStore {
       .pipe(
         take(1),
         tap(() => Log.info('Updated the checklist instance selection', this, instances))
+      );
+  }
+
+  setDescription(id: number, description: string): Observable<ChecklistInstanceDTO>{
+    return this.checklistInstanceService.updateChecklistDescription(id, description)
+      .pipe(
+        take(1),
+        tap(() => Log.info('Updated the checklist description'))
       );
   }
 

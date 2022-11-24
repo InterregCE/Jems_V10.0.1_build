@@ -162,7 +162,8 @@ internal class UpdateControlChecklistInstanceTest : UnitTest() {
             creatorEmail = creatorEmail,
             finishedDate = null,
             consolidated = false,
-            visible = true
+            visible = true,
+            description = "test"
         )
 
     private val controlChecklistDetailWithErrorOnScore = ChecklistInstanceDetail(

@@ -13,5 +13,6 @@ data class ChecklistInstance(
     val finishedDate: LocalDate? = null,
     val programmeChecklistId: Long?,
     val consolidated: Boolean = false,
-    val visible: Boolean
+    val visible: Boolean,
+    val description: String?
 )

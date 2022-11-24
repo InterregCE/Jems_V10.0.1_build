@@ -25,6 +25,8 @@ interface ChecklistInstancePersistence {
 
     fun updateSelection(selection: Map<Long, Boolean>): List<ChecklistInstance>
 
+    fun updateDescription(id: Long, description: String?): ChecklistInstance
+
     fun deleteById(id: Long)
 
     fun countAllByChecklistTemplateId(checklistTemplateId: Long): Long

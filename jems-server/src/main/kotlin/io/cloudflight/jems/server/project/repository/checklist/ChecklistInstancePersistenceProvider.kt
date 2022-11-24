@@ -63,7 +63,8 @@ class ChecklistInstancePersistenceProvider(
                 relatedToId = createChecklist.relatedToId,
                 finishedDate = null,
                 programmeChecklist = programmeChecklist,
-                components = programmeChecklist.components?.map { it.toInstanceEntity() }?.toMutableSet()
+                components = programmeChecklist.components?.map { it.toInstanceEntity() }?.toMutableSet(),
+                description = ""
             ).also {
                 it.components?.forEach { component -> component.checklistComponentId.checklist = it }
             }
@@ -87,6 +88,13 @@ class ChecklistInstancePersistenceProvider(
                 it.visible = selection[it.id]!!
             }
         return repository.saveAll(toUpdate).toModel()
+    }
+
+    @Transactional
+    override fun updateDescription(id: Long, description: String?): ChecklistInstance {
+        val checklistInstance = getChecklistOrThrow(id)
+        checklistInstance.description = description
+        return checklistInstance.toModel()
     }
 
     @Transactional

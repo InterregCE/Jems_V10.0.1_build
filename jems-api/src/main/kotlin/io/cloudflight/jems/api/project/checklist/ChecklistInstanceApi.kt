@@ -69,6 +69,10 @@ interface ChecklistInstanceApi {
     @PutMapping("$ENDPOINT_API_CHECKLIST_INSTANCE/selection", consumes = [MediaType.APPLICATION_JSON_VALUE])
     fun updateChecklistInstanceSelection(@RequestBody selection: Map<Long,  Boolean>)
 
+    @ApiOperation("Update description for checklist instance")
+    @PutMapping("$ENDPOINT_API_CHECKLIST_INSTANCE/description/{checklistId}", consumes = [MediaType.TEXT_PLAIN_VALUE])
+    fun updateChecklistDescription(@PathVariable checklistId: Long, @RequestBody description: String?): ChecklistInstanceDTO
+
     @ApiOperation("Delete a checklist instance")
     @DeleteMapping("${ENDPOINT_API_CHECKLIST_INSTANCE}/{checklistId}")
     fun deleteChecklistInstance(@PathVariable checklistId: Long)

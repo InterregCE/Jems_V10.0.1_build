@@ -91,6 +91,7 @@ internal class ProjectChecklistDataProviderImplTest : UnitTest() {
             relatedToId = 18L,
             consolidated = true,
             visible = false,
+            description = "test"
         )
 
         private val expectedSummary = ChecklistSummaryData(
