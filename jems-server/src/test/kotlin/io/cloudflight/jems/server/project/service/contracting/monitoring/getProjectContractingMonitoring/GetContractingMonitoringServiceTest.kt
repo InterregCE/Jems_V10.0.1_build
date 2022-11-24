@@ -152,15 +152,31 @@ internal class GetContractingMonitoringServiceTest : UnitTest() {
             )
     }
 
+    private val validDates = listOf(
+        Triple(LocalDate.of(2022, 7, 1), 11, LocalDate.of(2023, 5, 31)),
+        Triple(LocalDate.of(2022, 1, 31), 13, LocalDate.of(2023, 2, 27)),
+        Triple(LocalDate.of(2024, 1, 31), 1, LocalDate.of(2024, 2, 28)),
+        Triple(LocalDate.of(2022, 1, 30), 1, LocalDate.of(2022, 2, 27)),
+        Triple(LocalDate.of(2022, 1, 29), 1, LocalDate.of(2022, 2, 27)),
+        Triple(LocalDate.of(2022, 1, 28), 1, LocalDate.of(2022, 2, 27)),
+        Triple(LocalDate.of(2022, 1, 27), 1, LocalDate.of(2022, 2, 26)),
+    )
+
     @Test
     fun `get project monitoring for approved application including startDate`() {
+        validDates.forEach {
+            `test get project monitoring startDate calc`(it.first, it.second, it.third)
+        }
+    }
+
+    private fun `test get project monitoring startDate calc`(startDate: LocalDate, duration: Int, expectedEndDate: LocalDate) {
         every { projectPersistence.getProjectSummary(projectId) } returns projectSummary
         every { validator.validateProjectStatusForModification(projectSummary) } returns Unit
         every { versionPersistence.getLatestApprovedOrCurrent(projectId) } returns version
-        every { projectPersistence.getProject(projectId, version) } returns project
+        every { projectPersistence.getProject(projectId, version) } returns project.copy(duration = duration)
         every {
             contractingMonitoringPersistence.getContractingMonitoring(projectId)
-        } returns monitoring.copy(startDate = ZonedDateTime.parse("2022-07-01T10:00:00+02:00").toLocalDate())
+        } returns monitoring.copy(startDate = startDate)
         every { projectLumpSumPersistence.getLumpSums(projectId, version) } returns lumpSums
         every { contractingMonitoringPersistence.existsSavedInstallment(projectId, lumpSumId, orderNr) } returns false
 
@@ -168,8 +184,8 @@ internal class GetContractingMonitoringServiceTest : UnitTest() {
             .isEqualTo(
                 ProjectContractingMonitoring(
                     projectId = projectId,
-                    startDate = ZonedDateTime.parse("2022-07-01T10:00:00+02:00").toLocalDate(),
-                    endDate = ZonedDateTime.parse("2023-06-01T10:00:00+02:00").toLocalDate(),
+                    startDate = startDate,
+                    endDate = expectedEndDate,
                     typologyProv94 = ContractingMonitoringExtendedOption.Partly,
                     typologyProv94Comment = "typologyProv94Comment",
                     typologyProv95 = ContractingMonitoringExtendedOption.Yes,
@@ -213,7 +229,7 @@ internal class GetContractingMonitoringServiceTest : UnitTest() {
         every { contractingMonitoringPersistence.getContractingMonitoring(51L) } returns ProjectContractingMonitoring(
             projectId = projectId,
             startDate = LocalDate.of(2022, 1, 31),
-            endDate = LocalDate.of(2022, 2, 28),
+            endDate = LocalDate.of(2022, 2, 27),
             typologyProv94 = ContractingMonitoringExtendedOption.Partly,
             typologyProv94Comment = "typologyProv94Comment",
             typologyProv95 = ContractingMonitoringExtendedOption.Yes,
@@ -241,7 +257,7 @@ internal class GetContractingMonitoringServiceTest : UnitTest() {
         every { projectPersistence.getProject(51L, "V1").duration } returns 1
 
         assertThat(getContractingMonitoringService.getContractMonitoringDates(51L))
-            .isEqualTo(Pair(LocalDate.of(2022, 1, 31), LocalDate.of(2022, 2, 28)))
+            .isEqualTo(Pair(LocalDate.of(2022, 1, 31), LocalDate.of(2022, 2, 27)))
     }
 
     @Test
