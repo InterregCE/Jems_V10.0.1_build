@@ -117,7 +117,7 @@ export default defineConfig({
 
           await fetch(`https://rtm-api.hexygen.com/api/v2/test-execution/${config.env.executionKey}`, requestDetails);
         }
-      })
+      });
 
       console.log('JIRA executionKey set to: ' + config.env.executionKey);
       return config;
