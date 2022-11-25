@@ -63,7 +63,6 @@ export class PartnerReportComponent {
   deleteCell: TemplateRef<any>;
 
   projectId = this.activatedRoute?.snapshot?.params?.projectId;
-  partnerId = this.activatedRoute?.snapshot?.params?.partnerId;
   tableConfiguration: TableConfiguration;
   actionPending = false;
   controlActionMap = new Map<number, BehaviorSubject<boolean>>();
@@ -98,10 +97,10 @@ export class PartnerReportComponent {
   constructor(
       public pageStore: PartnerReportPageStore,
       public store: PartnerControlReportStore,
+      public partnerReportDetail: PartnerReportDetailPageStore,
       private activatedRoute: ActivatedRoute,
       private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
       private router: RoutingService,
-      private partnerReportDetail: PartnerReportDetailPageStore,
       private translateService: TranslateService,
       private multiLanguageGlobalService: MultiLanguageGlobalService,
       private dialog: MatDialog,
@@ -110,12 +109,11 @@ export class PartnerReportComponent {
     this.data$ = combineLatest([
       this.pageStore.partnerReports$,
       this.pageStore.partnerSummary$,
-      this.multiLanguageGlobalService.activeSystemLanguage$,
       this.pageStore.institutionUserCanViewControlReports$,
       this.pageStore.institutionUserCanEditControlReports$,
       this.pageStore.userCanEditReport$,
     ]).pipe(
-      map(([partnerReports, partner, systemLanguage, canUserViewControlReports, canUserEditControlReports, canEditReport]) => {
+      map(([partnerReports, partner, canUserViewControlReports, canUserEditControlReports, canEditReport]) => {
         return {
             totalElements: partnerReports.totalElements,
             partnerReports: partnerReports.content,
@@ -226,7 +224,7 @@ export class PartnerReportComponent {
       ).subscribe();
   }
 
-  createControlReportForPartnerReport(partnerReport: ProjectPartnerReportSummaryDTO): void {
+  createControlReportForPartnerReport(partnerReport: ProjectPartnerReportSummaryDTO, partnerId: string | number | null): void {
     if (this.isStartControlButtonDisabled) {
       return;
     }
@@ -243,7 +241,7 @@ export class PartnerReportComponent {
       take(1),
       tap((answer) => {
         if (answer) {
-          this.changeStatusOfReport(partnerReport);
+          this.changeStatusOfReport(partnerReport, partnerId);
         } else {
           this.getPendingActionStatus(partnerReport.id).next(false);
         }
@@ -274,8 +272,11 @@ export class PartnerReportComponent {
     }, 4000);
   }
 
-  private changeStatusOfReport(partnerReport: ProjectPartnerReportSummaryDTO): void {
-    this.partnerReportDetail.startControlOnPartnerReport(this.partnerId, partnerReport.id)
+  private changeStatusOfReport(partnerReport: ProjectPartnerReportSummaryDTO, partnerId: string | number | null): void {
+    if (!partnerId)
+      return;
+
+    this.partnerReportDetail.startControlOnPartnerReport(Number(partnerId), partnerReport.id)
       .pipe(
         take(1),
         tap((report) => this.router.navigate([`../${partnerReport.id}/controlReport/identificationTab`], {relativeTo: this.activatedRoute, queryParamsHandling: 'merge'})),
