@@ -31,10 +31,10 @@ import {CustomTranslatePipe} from '@common/pipe/custom-translate-pipe';
 import {TranslateByInputLanguagePipe} from '@common/pipe/translate-by-input-language.pipe';
 import {
   PartnerControlReportExpenditureConstants
-} from "@project/project-application/report/partner-control-report/partner-control-expenditure-verification-tab/partner-control-report-expenditure-verification-tab.constants";
+} from '@project/project-application/report/partner-control-report/partner-control-expenditure-verification-tab/partner-control-report-expenditure-verification-tab.constants';
 import {
   PartnerControlReportFileExpenditureVerificationStore
-} from "@project/project-application/report/partner-control-report/partner-control-expenditure-verification-tab/partner-control-report-file-expenditure-verification-store";
+} from '@project/project-application/report/partner-control-report/partner-control-expenditure-verification-tab/partner-control-report-file-expenditure-verification-store';
 import {Alert} from '@common/components/forms/alert';
 
 
@@ -69,7 +69,7 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
   }>;
 
   lumpSumsAvailable: boolean;
-  unitCostsAvailable: boolean;;
+  unitCostsAvailable: boolean;
   columnsToDisplay: string[];
   columnsWidthsToDisplay: any[];
   collapsedColumns: string[];
@@ -196,12 +196,12 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
   private setColumnsToDisplay(investments: InvestmentSummary[], isCostOptionsAvailable: boolean){
 
     let columnsToDisplay = [];
-    let columnsToDisplayFirstPart = [
+    const columnsToDisplayFirstPart = [
       'costItemID',
       'costCategory',
     ];
 
-    let columnsToDisplayLastPart = [
+    const columnsToDisplayLastPart = [
       'declaredAmount',
       'currencyCode',
       'currencyConversionRate',
@@ -388,7 +388,7 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
   }
 
   getContractName(contractNames: IdNamePairDTO[], contractId: number) {
-    let contractName = contractNames.find(contract => contract.id === contractId)?.name;
+    const contractName = contractNames.find(contract => contract.id === contractId)?.name;
     return contractName ? contractName : 'N/A';
   }
 

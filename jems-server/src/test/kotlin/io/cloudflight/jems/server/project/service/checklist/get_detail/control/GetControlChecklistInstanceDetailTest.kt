@@ -13,6 +13,9 @@ import io.cloudflight.jems.server.programme.service.checklist.model.metadata.Opt
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.TextInputMetadata
 import io.cloudflight.jems.server.project.service.checklist.ChecklistInstancePersistence
 import io.cloudflight.jems.server.project.service.checklist.getDetail.control.GetControlChecklistInstanceDetail
+import io.cloudflight.jems.server.project.service.checklist.getInstances.control.GetControlChecklistInstanceDetailNotFoundException
+import io.cloudflight.jems.server.project.service.checklist.getInstances.control.GetControlChecklistInstancesInteractor
+import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstance
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceStatus
 import io.cloudflight.jems.server.project.service.checklist.model.metadata.TextInputInstanceMetadata
@@ -25,6 +28,7 @@ import io.mockk.impl.annotations.MockK
 import io.mockk.impl.annotations.RelaxedMockK
 import org.assertj.core.api.Assertions
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import java.math.BigDecimal
 
 internal class GetControlChecklistInstanceDetailTest : UnitTest() {
@@ -36,7 +40,20 @@ internal class GetControlChecklistInstanceDetailTest : UnitTest() {
     private val partnerId = 5L
     private val reportId = 6L
 
-    private val controlCheckLisDetail = ChecklistInstanceDetail(
+    private val controlChecklist = ChecklistInstance(
+        id = checklistId,
+        programmeChecklistId = programmeChecklistId,
+        status = ChecklistInstanceStatus.DRAFT,
+        type = ProgrammeChecklistType.CONTROL,
+        name = "name",
+        creatorEmail = "a@a",
+        relatedToId = reportId,
+        finishedDate = null,
+        consolidated = false,
+        visible = true,
+    )
+
+    private val controlChecklistDetail = ChecklistInstanceDetail(
         id = checklistId,
         programmeChecklistId = programmeChecklistId,
         status = ChecklistInstanceStatus.DRAFT,
@@ -76,9 +93,11 @@ internal class GetControlChecklistInstanceDetailTest : UnitTest() {
         )
     )
 
-
     @MockK
     lateinit var persistence: ChecklistInstancePersistence
+
+    @MockK
+    lateinit var getControlChecklistInteractor: GetControlChecklistInstancesInteractor
 
     @MockK
     lateinit var securityService: SecurityService
@@ -99,11 +118,44 @@ internal class GetControlChecklistInstanceDetailTest : UnitTest() {
     lateinit var controllerInstitutionPersistence: ControllerInstitutionPersistence
 
     @Test
-    fun getChecklistDetail() {
-        every { persistence.getChecklistDetail(checklistId) } returns controlCheckLisDetail
-        every { securityService.getUserIdOrThrow()} returns relatedToId
-        Assertions.assertThat(getControlChecklistInstance.getControlChecklistInstanceDetail(partnerId, reportId, checklistId))
+    fun `get control checklist detail`() {
+        every { getControlChecklistInteractor.getControlChecklistInstances(partnerId, reportId) } returns listOf(
+            controlChecklist
+        )
+        every {
+            persistence.getChecklistDetail(
+                checklistId,
+                ProgrammeChecklistType.CONTROL,
+                reportId
+            )
+        } returns controlChecklistDetail
+        every { securityService.getUserIdOrThrow() } returns relatedToId
+        Assertions.assertThat(
+            getControlChecklistInstance.getControlChecklistInstanceDetail(
+                partnerId,
+                reportId,
+                checklistId
+            )
+        )
             .usingRecursiveComparison()
-            .isEqualTo(controlCheckLisDetail)
+            .isEqualTo(controlChecklistDetail)
+    }
+
+    @Test
+    fun `get control checklist detail - checklist does not belong to the report provided`() {
+        every {
+            persistence.getChecklistDetail(
+                101,
+                ProgrammeChecklistType.CONTROL,
+                reportId
+            )
+        } throws GetControlChecklistInstanceDetailNotFoundException()
+        assertThrows<GetControlChecklistInstanceDetailNotFoundException> {
+            getControlChecklistInstance.getControlChecklistInstanceDetail(
+                partnerId,
+                reportId,
+                101
+            )
+        }
     }
 }

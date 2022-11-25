@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.repository.checklist
 
 import io.cloudflight.jems.server.programme.repository.checklist.ProgrammeChecklistRepository
+import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChecklistType
 import io.cloudflight.jems.server.project.entity.checklist.ChecklistInstanceEntity
 import io.cloudflight.jems.server.project.service.checklist.ChecklistInstancePersistence
 import io.cloudflight.jems.server.project.service.checklist.getInstances.GetChecklistInstanceDetailNotFoundException
@@ -32,11 +33,29 @@ class ChecklistInstancePersistenceProvider(
     }
 
     @Transactional(readOnly = true)
+    override fun getChecklistDetail(
+        id: Long,
+        type: ProgrammeChecklistType,
+        relatedToId: Long
+    ): ChecklistInstanceDetail {
+        return repository.findByIdAndProgrammeChecklistTypeAndRelatedToId(id = id, type, relatedToId).toDetailModel()
+    }
+
+    @Transactional(readOnly = true)
     override fun getChecklistSummary(checklistId: Long): ChecklistInstance = getChecklistOrThrow(checklistId).toModel()
+
+    @Transactional(readOnly = true)
+    override fun getChecklistSummary(
+        checklistId: Long,
+        type: ProgrammeChecklistType,
+        relatedToId: Long
+    ): ChecklistInstance {
+        return repository.findByIdAndProgrammeChecklistTypeAndRelatedToId(id = checklistId, type, relatedToId).toModel()
+    }
 
     @Transactional
     override fun create(createChecklist: CreateChecklistInstanceModel, creatorId: Long): ChecklistInstanceDetail {
-        val programmeChecklist = programmeChecklistRepository.getById(createChecklist.programmeChecklistId);
+        val programmeChecklist = programmeChecklistRepository.getById(createChecklist.programmeChecklistId)
         return repository.save(
             ChecklistInstanceEntity(
                 status = ChecklistInstanceStatus.DRAFT,

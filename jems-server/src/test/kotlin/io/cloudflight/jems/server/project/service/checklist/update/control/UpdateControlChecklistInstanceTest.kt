@@ -62,10 +62,12 @@ internal class UpdateControlChecklistInstanceTest : UnitTest() {
     private val partnerId = 5L
     private val reportId = 6L
     private val creatorEmail = "a@a"
+    private val notCreatorEmail = "b@b"
     private val projectId = 7L
     private val partnerName = "PP2"
+    private val path = "$partnerName partner/Partner report R.${reportId}/Control report"
 
-    private val controlCheckLisDetail = controlChecklistInstanceDetail()
+    private val controlChecklistDetail = controlChecklistInstanceDetail()
 
     private fun controlChecklistInstanceDetail(status: ChecklistInstanceStatus = ChecklistInstanceStatus.DRAFT) =
         ChecklistInstanceDetail(
@@ -131,7 +133,7 @@ internal class UpdateControlChecklistInstanceTest : UnitTest() {
         ScoreInstanceMetadata(BigDecimal(5), "A".repeat(5001))
     )
 
-    private val controlCheckLisDetailWithErrorOnTextInput = ChecklistInstanceDetail(
+    private val controlChecklistDetailWithErrorOnTextInput = ChecklistInstanceDetail(
         id = checklistId,
         programmeChecklistId = programmeChecklistId,
         status = ChecklistInstanceStatus.DRAFT,
@@ -149,20 +151,21 @@ internal class UpdateControlChecklistInstanceTest : UnitTest() {
         components = mutableListOf(textInputComponentInstance)
     )
 
-    private fun controlChecklistInstance(status: ChecklistInstanceStatus, creatorEmail: String = "user@applicant.dev") = ChecklistInstance(
-        id = checklistId,
-        programmeChecklistId = programmeChecklistId,
-        status = status,
-        type = ProgrammeChecklistType.CONTROL,
-        name = "name",
-        relatedToId = reportId,
-        creatorEmail = creatorEmail,
-        finishedDate = null,
-        consolidated = false,
-        visible = true
-    )
+    private fun controlChecklistInstance(status: ChecklistInstanceStatus, creatorEmail: String = "user@applicant.dev") =
+        ChecklistInstance(
+            id = checklistId,
+            programmeChecklistId = programmeChecklistId,
+            status = status,
+            type = ProgrammeChecklistType.CONTROL,
+            name = "name",
+            relatedToId = reportId,
+            creatorEmail = creatorEmail,
+            finishedDate = null,
+            consolidated = false,
+            visible = true
+        )
 
-    private val controlCheckLisDetailWithErrorOnScore = ChecklistInstanceDetail(
+    private val controlChecklistDetailWithErrorOnScore = ChecklistInstanceDetail(
         id = checklistId,
         programmeChecklistId = programmeChecklistId,
         status = ChecklistInstanceStatus.FINISHED,
@@ -180,7 +183,7 @@ internal class UpdateControlChecklistInstanceTest : UnitTest() {
         components = mutableListOf(scoreComponentInstance)
     )
 
-    private val controlCheckLisDetailWithErrorOnOptionsToggle = ChecklistInstanceDetail(
+    private val controlChecklistDetailWithErrorOnOptionsToggle = ChecklistInstanceDetail(
         id = checklistId,
         programmeChecklistId = programmeChecklistId,
         status = ChecklistInstanceStatus.FINISHED,
@@ -267,31 +270,79 @@ internal class UpdateControlChecklistInstanceTest : UnitTest() {
         checklistInstanceValidator = mockk()
         checklistInstanceValidator = ChecklistInstanceValidator(generalValidator)
         updateControlChecklistInstance =
-            UpdateControlChecklistInstance(persistence, auditPublisher, checklistInstanceValidator, userAuthorization, partnerPersistence)
+            UpdateControlChecklistInstance(
+                persistence,
+                auditPublisher,
+                checklistInstanceValidator,
+                userAuthorization,
+                partnerPersistence
+            )
     }
 
     @Test
-    fun `update - successfully`() {
+    fun `update - successful`() {
         every { userAuthorization.getUser().email } returns creatorEmail
-        every { persistence.update(controlCheckLisDetail) } returns controlCheckLisDetail
-        every { persistence.getChecklistDetail(controlCheckLisDetail.id) } returns controlChecklistInstanceDetail(
-            ChecklistInstanceStatus.DRAFT)
-        Assertions.assertThat(updateControlChecklistInstance.update(partnerId, reportId, controlCheckLisDetail))
-            .isEqualTo(controlCheckLisDetail)
+        every { persistence.update(controlChecklistDetail) } returns controlChecklistDetail
+        every {
+            persistence.getChecklistDetail(
+                controlChecklistDetail.id,
+                ProgrammeChecklistType.CONTROL,
+                reportId
+            )
+        } returns controlChecklistInstanceDetail(
+            ChecklistInstanceStatus.DRAFT
+        )
+        Assertions.assertThat(updateControlChecklistInstance.update(partnerId, reportId, controlChecklistDetail))
+            .isEqualTo(controlChecklistDetail)
+    }
+
+    @Test
+    fun `update - failed (user is no the owner & the attempt is to set to FINISHED status)`() {
+        every { userAuthorization.getUser().email } returns notCreatorEmail
+        every { persistence.update(controlChecklistDetail) } returns controlChecklistDetail
+        every {
+            persistence.getChecklistDetail(
+                controlChecklistDetail.id,
+                ProgrammeChecklistType.CONTROL,
+                reportId
+            )
+        } returns controlChecklistInstanceDetail(
+            ChecklistInstanceStatus.DRAFT
+        )
+
+        assertThrows<UpdateControlChecklistInstanceStatusNotAllowedException> {
+            updateControlChecklistInstance.update(
+                partnerId,
+                reportId,
+                controlChecklistInstanceDetail(ChecklistInstanceStatus.FINISHED)
+            )
+        }
     }
 
     @Test
     fun `change status (should trigger an audit log)`() {
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } answers {}
-        every { persistence.update(controlCheckLisDetail) } returns controlCheckLisDetail
+        every { persistence.update(controlChecklistDetail) } returns controlChecklistDetail
         every { userAuthorization.getUser() } returns user
         every { securityService.getUserIdOrThrow() } returns user.id
         every { partnerPersistence.getProjectIdForPartnerId(partnerId) } returns projectId
         every { partnerPersistence.getById(partnerId) } returns projectPartner
-        every { persistence.getChecklistSummary(checklistId) } returns controlChecklistInstance(ChecklistInstanceStatus.DRAFT)
-        every { persistence.changeStatus(checklistId, ChecklistInstanceStatus.FINISHED) } returns controlChecklistInstance(
-            ChecklistInstanceStatus.FINISHED)
+        every {
+            persistence.getChecklistSummary(
+                checklistId,
+                ProgrammeChecklistType.CONTROL,
+                reportId
+            )
+        } returns controlChecklistInstance(ChecklistInstanceStatus.DRAFT)
+        every {
+            persistence.changeStatus(
+                checklistId,
+                ChecklistInstanceStatus.FINISHED
+            )
+        } returns controlChecklistInstance(
+            ChecklistInstanceStatus.FINISHED
+        )
 
         updateControlChecklistInstance.changeStatus(partnerId, reportId, checklistId, ChecklistInstanceStatus.FINISHED)
 
@@ -300,41 +351,87 @@ internal class UpdateControlChecklistInstanceTest : UnitTest() {
             AuditCandidate(
                 action = AuditAction.CHECKLIST_STATUS_CHANGE,
                 project = AuditProject(id = projectId.toString()),
-                description = "Checklist '${controlCheckLisDetail.id}' type '${controlCheckLisDetail.type}' name '${controlCheckLisDetail.name}' " +
-                        "for partner '${partnerName}' and partner report 'R.${reportId}' changed status from 'DRAFT' to 'FINISHED'"
+                description = "Checklist '${controlChecklistDetail.id}' type '${controlChecklistDetail.type}' name '${controlChecklistDetail.name}' " +
+                        "in '${path}' changed status from 'DRAFT' to 'FINISHED'"
             )
         )
     }
 
     @Test
     fun `update - controlChecklistDetail is already in FINISHED status`() {
-        every { persistence.getChecklistDetail(checklistId) } returns controlCheckLisDetail
+        every {
+            persistence.getChecklistDetail(
+                checklistId,
+                ProgrammeChecklistType.CONTROL,
+                reportId
+            )
+        } returns controlChecklistDetail
         assertThrows<UpdateControlChecklistInstanceStatusNotAllowedException> {
-            updateControlChecklistInstance.update(partnerId, reportId, controlChecklistInstanceDetail(ChecklistInstanceStatus.FINISHED))
+            updateControlChecklistInstance.update(
+                partnerId,
+                reportId,
+                controlChecklistInstanceDetail(ChecklistInstanceStatus.FINISHED)
+            )
         }
     }
 
     @Test
     fun `update - text input component max length exception`() {
         every { userAuthorization.getUser().email } returns creatorEmail
-        every { persistence.getChecklistDetail(controlCheckLisDetailWithErrorOnTextInput.id) } returns controlCheckLisDetailWithErrorOnTextInput
+        every {
+            persistence.getChecklistDetail(
+                controlChecklistDetailWithErrorOnTextInput.id,
+                ProgrammeChecklistType.CONTROL,
+                reportId
+            )
+        } returns controlChecklistDetailWithErrorOnTextInput
 
-        assertThrows<AppInputValidationException> { updateControlChecklistInstance.update(partnerId, reportId, controlCheckLisDetailWithErrorOnTextInput) }
+        assertThrows<AppInputValidationException> {
+            updateControlChecklistInstance.update(
+                partnerId,
+                reportId,
+                controlChecklistDetailWithErrorOnTextInput
+            )
+        }
     }
 
     @Test
     fun `update - options toggle justification field max length exception`() {
-        every { persistence.getChecklistDetail(controlCheckLisDetailWithErrorOnOptionsToggle.id) } returns controlCheckLisDetailWithErrorOnOptionsToggle
-        every { persistence.update(controlCheckLisDetailWithErrorOnOptionsToggle) } returns controlCheckLisDetailWithErrorOnOptionsToggle
+        every {
+            persistence.getChecklistDetail(
+                controlChecklistDetailWithErrorOnOptionsToggle.id,
+                ProgrammeChecklistType.CONTROL,
+                reportId
+            )
+        } returns controlChecklistDetailWithErrorOnOptionsToggle
+        every { persistence.update(controlChecklistDetailWithErrorOnOptionsToggle) } returns controlChecklistDetailWithErrorOnOptionsToggle
 
-        assertThrows<AppInputValidationException> { updateControlChecklistInstance.update(partnerId, reportId, controlCheckLisDetailWithErrorOnOptionsToggle) }
+        assertThrows<AppInputValidationException> {
+            updateControlChecklistInstance.update(
+                partnerId,
+                reportId,
+                controlChecklistDetailWithErrorOnOptionsToggle
+            )
+        }
     }
 
     @Test
     fun `update - score justification field max length exception`() {
         every { userAuthorization.getUser().email } returns creatorEmail
-        every { persistence.getChecklistDetail(controlCheckLisDetailWithErrorOnScore.id) } returns controlCheckLisDetailWithErrorOnScore
+        every {
+            persistence.getChecklistDetail(
+                controlChecklistDetailWithErrorOnScore.id,
+                ProgrammeChecklistType.CONTROL,
+                reportId
+            )
+        } returns controlChecklistDetailWithErrorOnScore
 
-        assertThrows<AppInputValidationException> { updateControlChecklistInstance.update(partnerId, reportId, controlCheckLisDetailWithErrorOnScore) }
+        assertThrows<AppInputValidationException> {
+            updateControlChecklistInstance.update(
+                partnerId,
+                reportId,
+                controlChecklistDetailWithErrorOnScore
+            )
+        }
     }
 }

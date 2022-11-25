@@ -28,7 +28,6 @@ export class PartnerControlReportControlChecklistPageComponent {
   data$: Observable<{
     checklist: ChecklistInstanceDetailDTO;
     editable: boolean;
-    reportId: number;
   }>;
 
   confirmFinish = {
@@ -58,7 +57,7 @@ export class PartnerControlReportControlChecklistPageComponent {
       this.pageStore.checklistEditable$,
       this.partnerReportDetailPageStore.partnerReport$,
     ]).pipe(
-      map(([checklist, editable, report]) => ({checklist, editable, reportId: report.reportNumber})),
+      map(([checklist, editable]) => ({checklist, editable})),
     );
     this.userCanEditControlChecklists$ = this.userCanEditControlChecklists();
   }
@@ -82,8 +81,8 @@ export class PartnerControlReportControlChecklistPageComponent {
       ).subscribe();
   }
 
-  updateStatus(reportId: number, checklistId: number, status: ChecklistInstanceDetailDTO.StatusEnum) {
-    this.pageStore.changeStatus(this.partnerId, reportId, checklistId, status)
+  updateStatus(checklistId: number, status: ChecklistInstanceDetailDTO.StatusEnum) {
+    this.pageStore.changeStatus(this.partnerId, this.reportId, checklistId, status)
       .pipe(
         tap(() => this.formService.setDirty(false)),
         tap(() => this.routingService.navigate(['../..'], {relativeTo: this.activatedRoute}))

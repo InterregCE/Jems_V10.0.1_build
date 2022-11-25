@@ -10,7 +10,9 @@ import {
   UserRoleDTO
 } from '@cat/api';
 import {combineLatest, Observable} from 'rxjs';
-import {ChecklistInstanceListStore} from '@common/components/checklist/checklist-instance-list/checklist-instance-list-store.service';
+import {
+  ChecklistInstanceListStore
+} from '@common/components/checklist/checklist-instance-list/checklist-instance-list-store.service';
 import {filter, map, switchMap, take, tap} from 'rxjs/operators';
 import {RoutingService} from '@common/services/routing.service';
 import {ActivatedRoute} from '@angular/router';
@@ -22,6 +24,7 @@ import {TableComponent} from '@common/components/table/table.component';
 import {MatSort} from '@angular/material/sort';
 import {MatCheckboxChange} from '@angular/material/checkbox';
 import {ChecklistSort} from '@common/components/checklist/checklist-instance-list/checklist-instance-list-custom-sort';
+import {ChecklistUtilsComponent} from '@common/components/checklist/checklist-utils/checklist-utils';
 
 @Component({
   selector: 'jems-checklist-instance-list',
@@ -52,6 +55,8 @@ export class ChecklistInstanceListComponent implements OnInit {
   instancesTableConfiguration: TableConfiguration;
   selectionTableConfiguration: TableConfiguration;
   selectedTemplate: IdNamePairDTO;
+  checklistUtils: ChecklistUtilsComponent;
+  checklistPageStore: ChecklistInstanceListStore;
 
   @ViewChild('consolidateCell', {static: true})
   consolidateCell: TemplateRef<any>;
@@ -70,22 +75,9 @@ export class ChecklistInstanceListComponent implements OnInit {
               private formBuilder: FormBuilder,
               private routingService: RoutingService,
               private activatedRoute: ActivatedRoute,
-              private dialog: MatDialog) { }
-
-  onInstancesSortChange(sort: Partial<MatSort>) {
-    const field = sort.active || '';
-    const order = sort.direction;
-
-    if (this.tableSelected) {
-      const oldField = this.tableSelected.matSort.active;
-      const oldOrder = this.tableSelected.matSort.direction === 'desc' ? 'desc' : 'asc';
-
-      if (field !== oldField || (field === oldField && order !== oldOrder)) {
-        this.tableSelected.matSort.sort({id: field, start: 'asc', disableClear: true});
-      }
-    }
-
-    this.pageStore.setInstancesSort({...sort, direction: order === 'desc' ? 'desc' : 'asc'});
+              private dialog: MatDialog) {
+    this.checklistPageStore = pageStore;
+    this.checklistUtils = new ChecklistUtilsComponent();
   }
 
   onSelectedSortChange(sort: Partial<MatSort>) {

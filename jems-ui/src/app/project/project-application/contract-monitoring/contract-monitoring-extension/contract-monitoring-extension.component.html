@@ -256,5 +256,13 @@
                 [editable]="data.contractMonitoringEditable"
                 (changed)="tableChanged()">
         </jems-contract-monitoring-codes-of-intervention-table>
-    </jems-form>
 
+        <ng-container *jemsHasPermission="[PermissionsEnum.ProjectSetToContracted,
+                                           PermissionsEnum.ProjectContractingView]">
+            <h3>{{'project.application.contract.monitoring.project.contracting.checklists' | translate}}</h3>
+            <jems-contracting-checklist-instance-list [relatedType]="ChecklistType.CONTRACTING"
+                                          [relatedId]="projectId"
+                                          jemsNoWidthLimit>
+            </jems-contracting-checklist-instance-list>
+        </ng-container>
+    </jems-form>

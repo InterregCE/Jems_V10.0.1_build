@@ -22,7 +22,10 @@
         <ng-container *ngIf="checklistInstancesSorted$ | async as instances">
             <jems-table #tableInstances *ngIf="instances.length"
                         [configuration]="instancesTableConfiguration"
-                        (sortRows)="onInstancesSortChange($event)"
+                        (sortRows)="checklistUtils.onInstancesSortChange($event,
+                                                                         tableSelected,
+                                                                         checklistPageStore,
+                                                                         null)"
                         [rows]="instances">
             </jems-table>
         </ng-container>

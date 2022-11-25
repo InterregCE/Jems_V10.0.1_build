@@ -441,7 +441,10 @@ import {
 } from '@project/project-application/report/partner-report-detail-page/partner-report-financial-overview-tab/partner-breakdown-investment/partner-breakdown-investment.component';
 import {
   PartnerControlReportExpenditureVerificationTabComponent
-} from "@project/project-application/report/partner-control-report/partner-control-expenditure-verification-tab/partner-control-report-expenditure-verification-tab.component";
+} from '@project/project-application/report/partner-control-report/partner-control-expenditure-verification-tab/partner-control-report-expenditure-verification-tab.component';
+import {
+  ContractingChecklistPageComponent
+} from '@project/project-application/contract-monitoring/contract-monitoring-extension/contract-monitoring-extension-checklist-page/contract-monitoring-extension-checklist-page.component';
 
 @NgModule({
   declarations: [
@@ -595,6 +598,7 @@ import {
     ContractPartnerDocumentsLocationComponent,
     ContractMonitoringCodesOfInterventionTableComponent,
     PartnerFilesComponent,
+    ContractingChecklistPageComponent,
   ],
   imports: [
     SharedModule,

@@ -9,12 +9,14 @@ import {
 import {
   ContractingDimensionCodeDTO,
   InputTranslation,
+  ProgrammeChecklistDetailDTO,
   ProgrammeSpecificObjectiveDTO,
   ProjectContractingMonitoringAddDateDTO,
   ProjectContractingMonitoringDTO,
   ProjectPartnerLumpSumDTO,
   ProjectPartnerSummaryDTO,
-  ProjectStatusDTO
+  ProjectStatusDTO,
+  UserRoleDTO
 } from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
 import {ProgrammeLumpSum} from '@project/model/lump-sums/programmeLumpSum';
@@ -45,6 +47,8 @@ export class ContractMonitoringExtensionComponent {
   TypologyPartnershipEnum = ProjectContractingMonitoringDTO.TypologyPartnershipEnum;
   TypologyStrategicEnum = ProjectContractingMonitoringDTO.TypologyStrategicEnum;
   projectId: number;
+  ChecklistType = ProgrammeChecklistDetailDTO.TypeEnum;
+  PermissionsEnum = UserRoleDTO.PermissionsEnum;
 
   decisionForm: FormGroup = this.formBuilder.group({
     startDate: [''],
@@ -222,6 +226,7 @@ export class ContractMonitoringExtensionComponent {
       || status === ProjectStatusDTO.StatusEnum.MODIFICATIONSUBMITTED) {
       this.lumpSumsForm.disable();
     }
+
     this.formService.setError(null);
   }
 
@@ -279,6 +284,7 @@ export class ContractMonitoringExtensionComponent {
         } as ProjectContractingMonitoringAddDateDTO);
       }
     }
+
     return addDatesDTOs;
   }
 
@@ -346,6 +352,7 @@ export class ContractMonitoringExtensionComponent {
         .find(objective => objective.programmeObjectivePolicy === this.projectStore.project.specificObjective.programmeObjectivePolicy)?.dimensionCodes;
       return dimensionCodes ? dimensionCodes : {};
     }
+
     return {};
   }
 
@@ -364,6 +371,7 @@ export class ContractMonitoringExtensionComponent {
         }
       }
     );
+
     return nutsRegions;
   }
 }

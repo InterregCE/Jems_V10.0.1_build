@@ -17,7 +17,7 @@ import io.cloudflight.jems.server.programme.service.checklist.model.metadata.Opt
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.OptionsToggleMetadata
 import io.cloudflight.jems.server.programme.service.checklist.model.metadata.TextInputMetadata
 import io.cloudflight.jems.server.project.service.checklist.ChecklistInstancePersistence
-import io.cloudflight.jems.server.project.service.checklist.getInstances.control.GetControlChecklistDetailNotAllowedException
+import io.cloudflight.jems.server.project.service.checklist.getInstances.GetChecklistInstanceDetailNotFoundException
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceStatus
 import io.cloudflight.jems.server.project.service.checklist.model.metadata.TextInputInstanceMetadata
@@ -53,8 +53,9 @@ internal class DeleteControlChecklistInstanceTest : UnitTest() {
     private val partnerName = "LP1"
     private val reportId = 3L
     private val projectId = 5L
+    private val path = "$partnerName partner/Partner report R.${reportId}/Control report"
 
-    private val controlCheckLisDetail = ChecklistInstanceDetail(
+    private val controlChecklistDetail = ChecklistInstanceDetail(
         id = checklistId,
         programmeChecklistId = 1L,
         status = ChecklistInstanceStatus.DRAFT,
@@ -82,7 +83,7 @@ internal class DeleteControlChecklistInstanceTest : UnitTest() {
                 ProgrammeChecklistComponentType.OPTIONS_TOGGLE,
                 2,
                 OptionsToggleMetadata("What option do you choose", "yes", "no", "maybe", ""),
-                OptionsToggleInstanceMetadata("yes","test")
+                OptionsToggleInstanceMetadata("yes", "test")
             ),
             ChecklistComponentInstance(
                 4L,
@@ -94,7 +95,7 @@ internal class DeleteControlChecklistInstanceTest : UnitTest() {
         )
     )
 
-    private val controlCheckLisDetailWithFinishStatus = ChecklistInstanceDetail(
+    private val controlChecklistDetailWithFinishStatus = ChecklistInstanceDetail(
         id = checklistId,
         programmeChecklistId = 1L,
         status = ChecklistInstanceStatus.FINISHED,
@@ -173,7 +174,13 @@ internal class DeleteControlChecklistInstanceTest : UnitTest() {
     fun `delete control checklist - OK`() {
         every { userAuthorization.getUser() } returns user
         every { securityService.getUserIdOrThrow() } returns user.id
-        every { persistence.getChecklistDetail(checklistId) } returns controlCheckLisDetail
+        every {
+            persistence.getChecklistDetail(
+                checklistId,
+                ProgrammeChecklistType.CONTROL,
+                reportId
+            )
+        } returns controlChecklistDetail
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } answers {}
         every { persistence.deleteById(checklistId) } answers {}
@@ -187,27 +194,45 @@ internal class DeleteControlChecklistInstanceTest : UnitTest() {
             AuditCandidate(
                 action = AuditAction.CHECKLIST_DELETED,
                 project = AuditProject(id = projectId.toString()),
-                description = "Checklist '${controlCheckLisDetail.id}' type '${controlCheckLisDetail.type}' name '${controlCheckLisDetail.name}' " +
-                        "for partner '${partnerName}' and partner report 'R.${reportId}' was deleted"
+                description = "Checklist '${controlChecklistDetail.id}' type '${controlChecklistDetail.type}' name '${controlChecklistDetail.name}' " +
+                        "in '${path}' was deleted"
             )
         )
     }
 
     @Test
     fun `delete control checklist - does not exist`() {
-        every { persistence.getChecklistDetail(-1) } throws GetControlChecklistDetailNotAllowedException()
+        every {
+            persistence.getChecklistDetail(
+                -1,
+                ProgrammeChecklistType.CONTROL,
+                reportId
+            )
+        } throws GetChecklistInstanceDetailNotFoundException()
         every { partnerPersistence.getProjectIdForPartnerId(partnerId) } returns projectId
         every { partnerPersistence.getById(partnerId) } returns projectPartner
-        assertThrows<GetControlChecklistDetailNotAllowedException> {
+        assertThrows<GetChecklistInstanceDetailNotFoundException> {
             deleteControlChecklistInstance.deleteById(partnerId, reportId, -1L)
         }
     }
 
     @Test
     fun `delete control checklist - is already in FINISHED status (cannot be deleted)`() {
-        every { persistence.getChecklistDetail(checklistId) } returns controlCheckLisDetailWithFinishStatus
+        every {
+            persistence.getChecklistDetail(
+                checklistId,
+                ProgrammeChecklistType.CONTROL,
+                reportId
+            )
+        } returns controlChecklistDetailWithFinishStatus
         every { partnerPersistence.getProjectIdForPartnerId(partnerId) } returns projectId
         every { partnerPersistence.getById(partnerId) } returns projectPartner
-        assertThrows<DeleteControlChecklistInstanceStatusNotAllowedException> { deleteControlChecklistInstance.deleteById(partnerId, reportId, checklistId) }
+        assertThrows<DeleteControlChecklistInstanceStatusNotAllowedException> {
+            deleteControlChecklistInstance.deleteById(
+                partnerId,
+                reportId,
+                checklistId
+            )
+        }
     }
 }
