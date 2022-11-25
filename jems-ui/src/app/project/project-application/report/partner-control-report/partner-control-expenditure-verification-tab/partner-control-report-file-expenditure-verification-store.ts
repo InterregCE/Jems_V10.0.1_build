@@ -1,9 +1,10 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, combineLatest, merge, Observable, of, Subject} from 'rxjs';
+import {BehaviorSubject, combineLatest, merge, Observable, Subject} from 'rxjs';
 import {
   CurrencyDTO,
   IdNamePairDTO,
-  InvestmentSummaryDTO, ProgrammeTypologyOfErrorsService,
+  InvestmentSummaryDTO,
+  ProgrammeTypologyOfErrorsService,
   ProjectPartnerBudgetOptionsDto,
   ProjectPartnerControlReportExpenditureVerificationDTO,
   ProjectPartnerControlReportExpenditureVerificationUpdateDTO,
@@ -15,13 +16,19 @@ import {
   TypologyErrorsDTO
 } from '@cat/api';
 
-import {PartnerReportDetailPageStore} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
-import {filter, map, shareReplay, startWith, switchMap, take, tap} from 'rxjs/operators';
-import {ProjectStore} from '@project/project-application/containers/project-application-detail/services/project-store.service';
+import {
+  PartnerReportDetailPageStore
+} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
+import {filter, map, shareReplay, startWith, switchMap, tap} from 'rxjs/operators';
+import {
+  ProjectStore
+} from '@project/project-application/containers/project-application-detail/services/project-store.service';
 import {AllowedBudgetCategories} from '@project/model/allowed-budget-category';
 import {BudgetOptions} from '@project/model/budget/budget-options';
 import {BudgetCostCategoryEnum, BudgetCostCategoryEnumUtils} from '@project/model/lump-sums/BudgetCostCategoryEnum';
-import {InvestmentSummary} from '@project/work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
+import {
+  InvestmentSummary
+} from '@project/work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
 import {ProjectPartnerBudgetStore} from '@project/budget/services/project-partner-budget.store';
 import {
   PartnerReportProcurementsPageStore
@@ -32,7 +39,7 @@ import {PartnerReportPageStore} from '@project/project-application/report/partne
 import {Log} from '@common/utils/log';
 import {
   PartnerControlReportStore
-} from "@project/project-application/report/partner-control-report/partner-control-report-store.service";
+} from '@project/project-application/report/partner-control-report/partner-control-report-store.service';
 
 @Injectable({providedIn: 'root'})
 export class PartnerControlReportFileExpenditureVerificationStore {

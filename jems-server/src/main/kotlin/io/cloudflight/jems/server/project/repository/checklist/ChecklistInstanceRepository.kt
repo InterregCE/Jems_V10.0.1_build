@@ -20,9 +20,13 @@ interface ChecklistInstanceRepository : JpaRepository<ChecklistInstanceEntity, L
         private val instanceEntity = QChecklistInstanceEntity.checklistInstanceEntity
 
         private fun withRelatedToId(id: Long?) = if (id == null) null else instanceEntity.relatedToId.eq(id)
-        private fun withType(type: ProgrammeChecklistType?) = if (type == null) null else instanceEntity.programmeChecklist.type.eq(type)
+        private fun withType(type: ProgrammeChecklistType?) =
+            if (type == null) null else instanceEntity.programmeChecklist.type.eq(type)
+
         private fun withCreatorId(id: Long?) = if (id == null) null else instanceEntity.creator.id.eq(id)
-        private fun withStatus(status: ChecklistInstanceStatus?) = if (status == null) null else instanceEntity.status.eq(status)
+        private fun withStatus(status: ChecklistInstanceStatus?) =
+            if (status == null) null else instanceEntity.status.eq(status)
+
         private fun isVisible(visible: Boolean?) = if (visible == null) null else instanceEntity.visible.eq(visible)
 
         fun buildSearchPredicate(searchRequest: ChecklistInstanceSearchRequest?): Predicate? =
@@ -37,4 +41,10 @@ interface ChecklistInstanceRepository : JpaRepository<ChecklistInstanceEntity, L
 
     @Query("SELECT COUNT(checklist) FROM #{#entityName} checklist where checklist.programmeChecklist.id=:checklistTemplateId")
     fun countByProgrammeChecklistId(checklistTemplateId: Long): Long
+
+    fun findByIdAndProgrammeChecklistTypeAndRelatedToId(
+        id: Long,
+        programmeChecklistType: ProgrammeChecklistType,
+        relatedToId: Long
+    ): ChecklistInstanceEntity
 }

@@ -1,14 +1,15 @@
 import {ChangeDetectionStrategy, Component, Input, OnInit, TemplateRef, ViewChild} from '@angular/core';
 import {TableConfiguration} from '@common/components/table/model/table.configuration';
-import {ColumnWidth} from '@common/components/table/model/column-width';
-import {ColumnType} from '@common/components/table/model/column-type.enum';
 import {
-  ChecklistInstanceDTO, ControllerInstitutionsApiService,
+  ChecklistInstanceDTO,
+  ControllerInstitutionsApiService,
   IdNamePairDTO,
   ProgrammeChecklistDetailDTO,
 } from '@cat/api';
 import {combineLatest, Observable} from 'rxjs';
-import {ControlChecklistInstanceListStore} from '@common/components/checklist/control-checklist-instance-list/control-checklist-instance-list-store.service';
+import {
+  ControlChecklistInstanceListStore
+} from '@common/components/checklist/control-checklist-instance-list/control-checklist-instance-list-store.service';
 import {filter, map, switchMap, take, tap} from 'rxjs/operators';
 import {RoutingService} from '@common/services/routing.service';
 import {ActivatedRoute} from '@angular/router';
@@ -17,10 +18,8 @@ import {Forms} from '@common/utils/forms';
 import {FormService} from '@common/components/section/form/form.service';
 import {TableComponent} from '@common/components/table/table.component';
 import {MatSort} from '@angular/material/sort';
-import {ControlChecklistSort} from '@common/components/checklist/control-checklist-instance-list/control-checklist-instance-list-custom-sort';
-import {
-  PartnerReportDetailPageStore
-} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
+import {ChecklistUtilsComponent} from '@common/components/checklist/checklist-utils/checklist-utils';
+import {ChecklistSort} from '@common/components/checklist/checklist-instance-list/checklist-instance-list-custom-sort';
 
 @Component({
   selector: 'jems-control-checklist-instance-list',
@@ -40,8 +39,6 @@ export class ControlChecklistInstanceListComponent implements OnInit {
   partnerId = Number(this.routingService.getParameter(this.activatedRoute, 'partnerId'));
   reportId = Number(this.routingService.getParameter(this.activatedRoute, 'reportId'));
 
-  data$: Observable<{ reportId: number }>;
-
   private checklistInstances$: Observable<ChecklistInstanceDTO[]>;
   checklistInstancesSorted$: Observable<ChecklistInstanceDTO[]>;
   checklistTemplates$: Observable<IdNamePairDTO[]>;
@@ -49,6 +46,7 @@ export class ControlChecklistInstanceListComponent implements OnInit {
 
   instancesTableConfiguration: TableConfiguration;
   selectedTemplate: IdNamePairDTO;
+  checklistUtils: ChecklistUtilsComponent;
 
   @ViewChild('visibleCell', {static: true})
   visibleCell: TemplateRef<any>;
@@ -63,15 +61,9 @@ export class ControlChecklistInstanceListComponent implements OnInit {
               private routingService: RoutingService,
               private activatedRoute: ActivatedRoute,
               private dialog: MatDialog,
-              private controllerInstitutionService: ControllerInstitutionsApiService,
-              private partnerReportDetailPageStore: PartnerReportDetailPageStore) {
-
+              private controllerInstitutionService: ControllerInstitutionsApiService) {
+    this.checklistUtils = new ChecklistUtilsComponent();
     this.userCanEditControlChecklists$ = this.userCanEditControlChecklists();
-    this.data$ = combineLatest([
-      this.partnerReportDetailPageStore.partnerReport$,
-    ]).pipe(
-        map(([report]) => ({reportId: report.reportNumber})),
-    );
   }
 
   onInstancesSortChange(sort: Partial<MatSort>) {
@@ -96,13 +88,13 @@ export class ControlChecklistInstanceListComponent implements OnInit {
       this.checklistInstances$,
       this.pageStore.getInstancesSort$,
     ]).pipe(
-      map(([checklists, sort]) => [...checklists].sort(ControlChecklistSort.customSort(sort))),
+        map(([checklists, sort]) => [...checklists].sort(ChecklistSort.customSort(sort))),
     );
     this.checklistTemplates$ = this.pageStore.checklistTemplates(this.relatedType);
-    this.instancesTableConfiguration = this.initializeTableConfiguration();
+    this.instancesTableConfiguration = this.checklistUtils.initializeTableConfiguration(this.deleteCell);
   }
 
-  delete(reportId: number, checklist: ChecklistInstanceDTO): void {
+  delete(checklist: ChecklistInstanceDTO): void {
     Forms.confirm(
       this.dialog, {
         title: checklist.name,
@@ -111,56 +103,8 @@ export class ControlChecklistInstanceListComponent implements OnInit {
       .pipe(
         take(1),
         filter(answer => !!answer),
-        switchMap(() => this.pageStore.deleteChecklistInstance(this.partnerId, reportId, checklist.id)),
+        switchMap(() => this.pageStore.deleteChecklistInstance(this.partnerId, this.reportId, checklist.id)),
       ).subscribe();
-  }
-
-  private initializeTableConfiguration(): TableConfiguration {
-    return new TableConfiguration({
-      isTableClickable: true,
-      sortable: false,
-      routerLink: 'checklist',
-      columns: [
-        {
-          displayedColumn: 'common.id',
-          elementProperty: 'id',
-          columnWidth: ColumnWidth.IdColumn,
-          sortProperty: 'id',
-        },
-        {
-          displayedColumn: 'common.status',
-          elementTranslationKey: 'checklists.instance.status',
-          elementProperty: 'status',
-          columnWidth: ColumnWidth.DateColumn,
-          sortProperty: 'status',
-        },
-        {
-          displayedColumn: 'common.name',
-          elementProperty: 'name',
-          columnWidth: ColumnWidth.extraWideColumn,
-          sortProperty: 'name',
-        },
-        {
-          displayedColumn: 'common.user',
-          elementProperty: 'creatorEmail',
-          columnWidth: ColumnWidth.WideColumn,
-          sortProperty: 'creatorEmail',
-        },
-        {
-          displayedColumn: 'checklists.instance.finished.date',
-          elementProperty: 'finishedDate',
-          columnType: ColumnType.DateOnlyColumn,
-          columnWidth: ColumnWidth.DateColumn,
-          sortProperty: 'finishedDate',
-        },
-        {
-          displayedColumn: 'common.delete.entry',
-          customCellTemplate: this.deleteCell,
-          columnWidth: ColumnWidth.IdColumn,
-          clickable: false
-        }
-      ]
-    });
   }
 
   createInstance(): void {

@@ -214,7 +214,10 @@ import {ControlReportGuard} from '../security/controlReport.guard';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import {
   PartnerControlReportExpenditureVerificationTabComponent
-} from "@project/project-application/report/partner-control-report/partner-control-expenditure-verification-tab/partner-control-report-expenditure-verification-tab.component";
+} from '@project/project-application/report/partner-control-report/partner-control-expenditure-verification-tab/partner-control-report-expenditure-verification-tab.component';
+import {
+  ContractingChecklistPageComponent
+} from '@project/project-application/contract-monitoring/contract-monitoring-extension/contract-monitoring-extension-checklist-page/contract-monitoring-extension-checklist-page.component';
 
 export const routes: Routes = [
   {
@@ -345,12 +348,22 @@ export const routes: Routes = [
           },
           {
             path: 'contractMonitoring',
-            component: ContractMonitoringComponent,
             data: {
               breadcrumb: 'project.breadcrumb.applicationForm.contract.monitoring',
               permissionsOnly: [PermissionsEnum.ProjectContractingView, PermissionsEnum.ProjectSetToContracted]
             },
-            canActivate: [PermissionGuard],
+            children: [
+              {
+                path: '',
+                component: ContractMonitoringComponent,
+                canActivate: [PermissionGuard],
+              },
+              {
+                path: 'checklist/:checklistId',
+                component: ContractingChecklistPageComponent,
+                data: {breadcrumb: 'checklists.instance.title'},
+              },
+            ]
           },
           {
             path: 'contract',

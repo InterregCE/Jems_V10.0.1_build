@@ -45,7 +45,7 @@ internal class CreateControlChecklistInstanceTest : UnitTest() {
         programmeChecklistId
     )
 
-    private val createdControlCheckLisDetail = ChecklistInstanceDetail(
+    private val createdControlChecklistDetail = ChecklistInstanceDetail(
         checklistId,
         programmeChecklistId = programmeChecklistId,
         status = ChecklistInstanceStatus.DRAFT,
@@ -116,12 +116,12 @@ internal class CreateControlChecklistInstanceTest : UnitTest() {
             listOf(SimpleGrantedAuthority(UserRolePermission.CallRetrieve.key))
         )
         every { securityService.currentUser } returns currentUser
-        every { persistence.create(createControlChecklist, creatorId, reportId) } returns createdControlCheckLisDetail
+        every { persistence.create(createControlChecklist, creatorId, reportId) } returns createdControlChecklistDetail
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit
 
         Assertions.assertThat(createControlChecklistInstance.create(partnerId, reportId, createControlChecklist))
             .usingRecursiveComparison()
-            .isEqualTo(createdControlCheckLisDetail)
+            .isEqualTo(createdControlChecklistDetail)
     }
 }
