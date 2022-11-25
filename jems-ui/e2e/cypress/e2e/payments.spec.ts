@@ -178,6 +178,6 @@ context('Payments tests', () => {
 function setReadyForPayment(flag, rowIndex) {
   const ready = flag ? 'Yes' : 'No';
   cy.get('div.jems-table-config').eq(1).children().eq(rowIndex).contains(ready).click();
-  cy.contains('Save changes').click();
+  cy.contains('Save changes').should('be.visible').click();
   cy.contains('Contract monitoring form saved successfully.').should('be.visible');
 }
