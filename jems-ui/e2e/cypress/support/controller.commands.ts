@@ -1,22 +1,16 @@
-import {
-  UpdateControllerInstitutionDTO
-} from '../../../build/swagger-code-jems-api/model/updateControllerInstitutionDTO';
-import {
-  ControllerInstitutionAssignmentDTO
-} from '../../../build/swagger-code-jems-api/model/controllerInstitutionAssignmentDTO';
 
 declare global {
 
   namespace Cypress {
     interface Chainable {
-      createInstitution(institution: UpdateControllerInstitutionDTO);
+      createInstitution(institution);
 
-      assignInstitution(assignment: ControllerInstitutionAssignmentDTO);
+      assignInstitution(assignment);
     }
   }
 }
 
-Cypress.Commands.add('createInstitution', (institution: UpdateControllerInstitutionDTO) => {
+Cypress.Commands.add('createInstitution', (institution) => {
   cy.request({
     method: 'POST',
     url: 'api/controller/institution/create',
@@ -26,7 +20,7 @@ Cypress.Commands.add('createInstitution', (institution: UpdateControllerInstitut
   });
 });
 
-Cypress.Commands.add('assignInstitution', (assignment: ControllerInstitutionAssignmentDTO) => {
+Cypress.Commands.add('assignInstitution', (assignment) => {
   cy.request({
     method: 'POST',
     url: 'api/controller/institution/assign',

@@ -1,50 +1,4 @@
-import {ProjectPartnerDTO} from '../../../build/swagger-code-jems-api/model/projectPartnerDTO';
-import {ProjectPartnerAddressDTO} from '../../../build/swagger-code-jems-api/model/projectPartnerAddressDTO';
-import {ProjectContactDTO} from '../../../build/swagger-code-jems-api/model/projectContactDTO';
-import {ProjectPartnerMotivationDTO} from '../../../build/swagger-code-jems-api/model/projectPartnerMotivationDTO';
-import {ProjectPartnerStateAidDTO} from '../../../build/swagger-code-jems-api/model/projectPartnerStateAidDTO';
-import {
-  ProjectPartnerCoFinancingAndContributionInputDTO
-} from '../../../build/swagger-code-jems-api/model/projectPartnerCoFinancingAndContributionInputDTO';
-import {
-  ProjectPartnerBudgetOptionsDto
-} from '../../../build/swagger-code-jems-api/model/projectPartnerBudgetOptionsDto';
-import {BudgetGeneralCostEntryDTO} from '../../../build/swagger-code-jems-api/model/budgetGeneralCostEntryDTO';
-import {BudgetUnitCostEntryDTO} from '../../../build/swagger-code-jems-api/model/budgetUnitCostEntryDTO';
-import {BudgetStaffCostEntryDTO} from '../../../build/swagger-code-jems-api/model/budgetStaffCostEntryDTO';
-import {
-  InputProjectAssociatedOrganization
-} from '../../../build/swagger-code-jems-api/model/inputProjectAssociatedOrganization';
-import {
-  BudgetTravelAndAccommodationCostEntryDTO
-} from '../../../build/swagger-code-jems-api/model/budgetTravelAndAccommodationCostEntryDTO';
-import {
-  BudgetSpfCostEntryDTO
-} from '../../../build/swagger-code-jems-api/model/BudgetSpfCostEntryDTO';
-
 declare global {
-
-  interface ProjectPartner {
-    details: ProjectPartnerDTO,
-    address?: ProjectPartnerAddressDTO[],
-    contact?: ProjectContactDTO[],
-    motivation?: ProjectPartnerMotivationDTO,
-    budget?: PartnerBudget,
-    cofinancing?: ProjectPartnerCoFinancingAndContributionInputDTO,
-    spfCofinancing?: ProjectPartnerCoFinancingAndContributionInputDTO;
-    stateAid?: ProjectPartnerStateAidDTO
-  }
-
-  interface PartnerBudget {
-    options?: ProjectPartnerBudgetOptionsDto,
-    staff?: BudgetStaffCostEntryDTO[],
-    external?: BudgetGeneralCostEntryDTO[],
-    equipment?: BudgetGeneralCostEntryDTO[],
-    infrastructure?: BudgetGeneralCostEntryDTO[],
-    unit?: BudgetUnitCostEntryDTO[],
-    travel?: BudgetTravelAndAccommodationCostEntryDTO[],
-    spf?: BudgetSpfCostEntryDTO[];
-  }
 
   namespace Cypress {
     interface Chainable {
@@ -76,17 +30,15 @@ declare global {
   }
 }
 
-Cypress.Commands.add('createPartner', (applicationId: number, partner: ProjectPartnerDTO) => {
-  createPartner(applicationId, partner).then(response => {
-    cy.wrap(response.body.id).as(partner.abbreviation);
-  });
+Cypress.Commands.add('createPartner', (applicationId: number, partner) => {
+  createPartner(applicationId, partner);
 });
 
-Cypress.Commands.add('createPartners', (applicationId: number, partners: ProjectPartner[]) => {
+Cypress.Commands.add('createPartners', (applicationId: number, partners: []) => {
   createPartners(applicationId, partners);
 });
 
-Cypress.Commands.add('updatePartner', (partnerId: number, partner: ProjectPartnerDTO) => {
+Cypress.Commands.add('updatePartner', (partnerId: number, partner) => {
   partner.id = partnerId;
   cy.request({
     method: 'PUT',
@@ -95,31 +47,31 @@ Cypress.Commands.add('updatePartner', (partnerId: number, partner: ProjectPartne
   });
 });
 
-Cypress.Commands.add('updatePartnerAddress', (partnerId: number, partnerAddress: ProjectPartnerAddressDTO[]) => {
+Cypress.Commands.add('updatePartnerAddress', (partnerId: number, partnerAddress: []) => {
   updateAddress(partnerId, partnerAddress);
 });
 
-Cypress.Commands.add('updatePartnerContact', (partnerId: number, partnerContact: ProjectContactDTO[]) => {
+Cypress.Commands.add('updatePartnerContact', (partnerId: number, partnerContact: []) => {
   updateContact(partnerId, partnerContact);
 });
 
-Cypress.Commands.add('updatePartnerMotivation', (partnerId: number, partnerMotivation: ProjectPartnerMotivationDTO) => {
+Cypress.Commands.add('updatePartnerMotivation', (partnerId: number, partnerMotivation) => {
   updateMotivation(partnerId, partnerMotivation);
 });
 
-Cypress.Commands.add('updatePartnerBudget', (partnerId: number, partnerBudget: PartnerBudget, investmentId: number) => {
+Cypress.Commands.add('updatePartnerBudget', (partnerId: number, partnerBudget, investmentId: number) => {
   updateBudget(partnerId, partnerBudget, investmentId);
 });
 
-Cypress.Commands.add('addPartnerTravelCosts', (partnerId: number, travelCosts: BudgetTravelAndAccommodationCostEntryDTO[]) => {
+Cypress.Commands.add('addPartnerTravelCosts', (partnerId: number, travelCosts: []) => {
   addTravelCosts(partnerId, travelCosts);
 });
 
-Cypress.Commands.add('updatePartnerCofinancing', (partnerId: number, cofinancing: ProjectPartnerCoFinancingAndContributionInputDTO) => {
+Cypress.Commands.add('updatePartnerCofinancing', (partnerId: number, cofinancing) => {
   updateCofinancing(partnerId, cofinancing);
 });
 
-Cypress.Commands.add('updatePartnerStateAid', (partnerId: number, stateAid: ProjectPartnerStateAidDTO, options?) => {
+Cypress.Commands.add('updatePartnerStateAid', (partnerId: number, stateAid, options?) => {
   updateStateAid(partnerId, stateAid, options);
 });
 
@@ -130,35 +82,37 @@ Cypress.Commands.add('deactivatePartner', (partnerId: number) => {
   });
 });
 
-Cypress.Commands.add('createAssociatedOrganization', (applicationId: number, partnerId: number, associatedOrganization: InputProjectAssociatedOrganization) => {
+Cypress.Commands.add('createAssociatedOrganization', (applicationId: number, partnerId: number, associatedOrganization) => {
   createAssociatedOrganization(applicationId, partnerId, associatedOrganization);
 });
 
-export function createPartner(applicationId: number, partner: ProjectPartnerDTO) {
+export function createPartner(applicationId: number, partner) {
   return cy.request({
     method: 'POST',
     url: `api/project/partner/toProjectId/${applicationId}`,
     body: partner
+  }).then(response => {
+    cy.wrap(response.body.id);
   });
 }
 
-export function createPartners(applicationId: number, partners: ProjectPartner[], options?) {
-  partners.forEach(partner => {
-    createPartner(applicationId, partner.details).then(response => {
-      cy.wrap(response.body.id).as(partner.details.abbreviation);
-      updateAddress(response.body.id, partner.address);
-      updateContact(response.body.id, partner.contact);
-      updateMotivation(response.body.id, partner.motivation);
-      updateBudget(response.body.id, partner.budget);
-      updateCofinancing(response.body.id, partner.cofinancing);
+export function createPartners(applicationId: number, partners: [], options?) {
+  partners.forEach((partner: any) => {
+    createPartner(applicationId, partner.details).then(partnerId => {
+      cy.wrap(partnerId).as(partner.details.abbreviation);
+      updateAddress(partnerId, partner.address);
+      updateContact(partnerId, partner.contact);
+      updateMotivation(partnerId, partner.motivation);
+      updateBudget(partnerId, partner.budget);
+      updateCofinancing(partnerId, partner.cofinancing);
       if (partner.spfCofinancing)
-        updateSpfCofinancing(response.body.id, partner.spfCofinancing);
-      updateStateAid(response.body.id, partner.stateAid, options);
+        updateSpfCofinancing(partnerId, partner.spfCofinancing);
+      updateStateAid(partnerId, partner.stateAid, options);
     });
   });
 }
 
-function updateAddress(partnerId: number, address: ProjectPartnerAddressDTO[]) {
+function updateAddress(partnerId, address: []) {
   cy.request({
     method: 'PUT',
     url: `api/project/partner/${partnerId}/address`,
@@ -166,7 +120,7 @@ function updateAddress(partnerId: number, address: ProjectPartnerAddressDTO[]) {
   });
 }
 
-function updateContact(partnerId: number, contact: ProjectContactDTO[]) {
+function updateContact(partnerId, contact: []) {
   cy.request({
     method: 'PUT',
     url: `api/project/partner/${partnerId}/contact`,
@@ -174,7 +128,7 @@ function updateContact(partnerId: number, contact: ProjectContactDTO[]) {
   });
 }
 
-function updateMotivation(partnerId: number, motivation: ProjectPartnerMotivationDTO) {
+function updateMotivation(partnerId, motivation) {
   cy.request({
     method: 'PUT',
     url: `api/project/partner/${partnerId}/motivation`,
@@ -182,7 +136,7 @@ function updateMotivation(partnerId: number, motivation: ProjectPartnerMotivatio
   });
 }
 
-function updateBudget(partnerId: number, budget: PartnerBudget, investmentId?: number) {
+function updateBudget(partnerId, budget, investmentId?: number) {
 
   if (investmentId) {
     budget.external[0].investmentId = investmentId;
@@ -242,7 +196,7 @@ function updateBudget(partnerId: number, budget: PartnerBudget, investmentId?: n
   }
 }
 
-function addTravelCosts(partnerId: number, travelCosts: BudgetTravelAndAccommodationCostEntryDTO[]) {
+function addTravelCosts(partnerId: number, travelCosts: []) {
   cy.request({
     method: 'PUT',
     url: `api/project/partner/${partnerId}/budget/travel`,
@@ -250,7 +204,7 @@ function addTravelCosts(partnerId: number, travelCosts: BudgetTravelAndAccommoda
   });
 }
 
-function updateCofinancing(partnerId: number, cofinancing: ProjectPartnerCoFinancingAndContributionInputDTO) {
+function updateCofinancing(partnerId, cofinancing) {
   cy.request({
     method: 'PUT',
     url: `api/project/partner/${partnerId}/budget/cofinancing`,
@@ -258,7 +212,7 @@ function updateCofinancing(partnerId: number, cofinancing: ProjectPartnerCoFinan
   });
 }
 
-function updateSpfCofinancing(partnerId: number, spfCofinancing: ProjectPartnerCoFinancingAndContributionInputDTO) {
+function updateSpfCofinancing(partnerId, spfCofinancing) {
   cy.request({
     method: 'PUT',
     url: `api/project/partner/${partnerId}/budget/spf/cofinancing`,
@@ -266,7 +220,7 @@ function updateSpfCofinancing(partnerId: number, spfCofinancing: ProjectPartnerC
   });
 }
 
-function updateStateAid(partnerId: number, stateAid: ProjectPartnerStateAidDTO, options?) {
+function updateStateAid(partnerId, stateAid, options?) {
   const stateAidCopy = JSON.parse(JSON.stringify(stateAid));
   if (options?.workPlanId) {
     const activity = {
@@ -283,7 +237,7 @@ function updateStateAid(partnerId: number, stateAid: ProjectPartnerStateAidDTO, 
   });
 }
 
-function createAssociatedOrganization(applicationId: number, partnerId: number, associatedOrganization: InputProjectAssociatedOrganization) {
+function createAssociatedOrganization(applicationId: number, partnerId: number, associatedOrganization) {
   associatedOrganization.partnerId = partnerId
   cy.request({
     method: 'POST',

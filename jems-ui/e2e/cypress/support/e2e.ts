@@ -8,7 +8,7 @@ import './partner-report.commands';
 import './controller.commands';
 
 // update test case execution results in Jira
-Cypress.on('test:after:run', async function(test) {
+Cypress.on('test:after:run', async function (test) {
   if (Cypress.env('executionKey')) {
     const match = /TB-\d+/.exec(test.title);
     if (match) {
@@ -31,7 +31,14 @@ Cypress.on('test:after:run', async function(test) {
         },
         body: JSON.stringify(testCaseExecutionDetails)
       };
-      await fetch(`https://rtm-api.hexygen.com/api/v2/test-case-execution/${Cypress.env('executionKey')}-${testKey}`, requestDetails);
+      const fetchUrl = `https://rtm-api.hexygen.com/api/v2/test-case-execution/${Cypress.env('executionKey')}-${testKey}`;
+      const response = await fetch(fetchUrl, requestDetails);
+      if (response.status !== 200) {
+        const result = await response.json();
+        console.log('Error updating test result to Jira: ', result);
+      } else {
+        console.log(`${testKey} test results reported to Jira successfully.`);
+      }
     }
   }
 });

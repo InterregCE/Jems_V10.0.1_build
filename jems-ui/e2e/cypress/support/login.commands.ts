@@ -1,20 +1,12 @@
 declare global {
 
-  interface User {
-    email: string,
-    name?: string,
-    surname?: string,
-    userRoleId?: number,
-    userStatus?: string
-  }
-
   namespace Cypress {
     interface Chainable {
       loginByRequest(userEmail: string);
 
       logoutByRequest(): void;
 
-      createUser(user: User, creatingUserEmail?: string);
+      createUser(user, creatingUserEmail?: string);
     }
   }
 }
@@ -32,7 +24,7 @@ Cypress.Commands.add('logoutByRequest', () => {
   });
 });
 
-Cypress.Commands.add('createUser', (user: User, creatingUserEmail?: string) => {
+Cypress.Commands.add('createUser', (user, creatingUserEmail?: string) => {
   if (creatingUserEmail)
     loginByRequest(creatingUserEmail);
   cy.request({

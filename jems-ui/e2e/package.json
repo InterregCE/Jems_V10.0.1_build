@@ -7,7 +7,7 @@
     "open": "cypress open --e2e --browser chrome",
     "pretest": "wait-on $CYPRESS_BASE_URL -t 20000",
     "test": "cy2 run -b chrome --parallel --record -k xxx --ci-build-id $CYPRESS_BUILD_ID",
-    "test_firefox": "cy2 run -b firefox ---parallel --record -k xxx --ci-build-id $CYPRESS_BUILD_ID",
+    "test_firefox": "cy2 run -b firefox --parallel --record -k xxx --ci-build-id $CYPRESS_BUILD_ID",
     "test_edge": "cy2 run -b edge --parallel --record -k xxx --ci-build-id $CYPRESS_BUILD_ID"
   },
   "author": "Cloudflight GmbH",
@@ -16,11 +16,11 @@
     "@types/node": "^18.11.9",
     "compare-pdf": "^1.1.8",
     "cy2": "^3.2.0",
-    "cypress": "^11.1.0",
+    "cypress": "^11.2.0",
     "date-and-time": "^2.4.1",
     "node-fetch": "^2.6.7",
     "node-xlsx": "^0.21.0",
-    "typescript": "^4.8.4",
+    "typescript": "^4.9.3",
     "wait-on": "^6.0.1"
   }
 }
