@@ -33,7 +33,7 @@ Cypress.on('test:after:run', async function (test) {
       };
       const fetchUrl = `https://rtm-api.hexygen.com/api/v2/test-case-execution/${Cypress.env('executionKey')}-${testKey}`;
       const response = await fetch(fetchUrl, requestDetails);
-      if (response.status !== 200) {
+      if (response.status !== 200 && response.status !== 204) {
         const result = await response.json();
         console.log('Error updating test result to Jira: ', result);
       } else {
