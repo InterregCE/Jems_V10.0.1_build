@@ -58,13 +58,13 @@
 </mat-tab-group>
 
 <ng-template #actionsCell let-checklist>
-    <jems-pending-button
+    <button
             [disabled]="(pageStore.currentUserEmail$ | async) !== checklist.creatorEmail && (pageStore.userCanConsolidate$ | async) === false"
-            mat-icon-button color="accent"
+            mat-icon-button color="primary"
             (click)="setDescriptionEditable(checklist);$event.stopPropagation();"
             matTooltip="{{'programme.checklists.edit.comment' | translate}}">
-        {{'common.edit.label' | translate}}
-    </jems-pending-button>
+        <mat-icon>edit</mat-icon>
+    </button>
     <button *ngIf="checklist.status === Status.DRAFT && (pageStore.currentUserEmail$ | async) === checklist.creatorEmail"
             mat-icon-button color="accent"
             (click)="delete(checklist);$event.stopPropagation();"
@@ -99,15 +99,19 @@
                                           characterLimit="150">
                 </jems-expandable-textarea>
                 <div class="mb-2 mt-2 description-button">
-                    <button (click)="$event.stopPropagation(); resetDescription()" mat-stroked-button class="small-stroked-btn"
+                    <button (click)="$event.stopPropagation(); resetDescription()" mat-stroked-button
+                            class="small-stroked-btn"
                             [disabled]="(savingDescriptionId$ | async) === checklist.id">
-                        <mat-icon class="mr-1">close</mat-icon>{{'project.file.description.button.cancel' | translate}}
+                        <mat-icon class="mr-1">close</mat-icon>
+                        {{'project.file.description.button.cancel' | translate}}
                     </button>
 
                     <button (click)="saveDescription()" mat-flat-button type="submit"
-                            [disabled]="descriptionForm.invalid || (savingDescriptionId$ | async) === checklist.id" class="ml-2 small-flat-btn" color="primary">
+                            [disabled]="descriptionForm.invalid || (savingDescriptionId$ | async) === checklist.id"
+                            class="ml-2 small-flat-btn" color="primary">
                         <mat-icon class="mr-1" *ngIf="(savingDescriptionId$ | async) !== checklist.id">check</mat-icon>
-                        <mat-spinner *ngIf="(savingDescriptionId$ | async) === checklist.id" class="mr-4" color="primary" [diameter]="17"></mat-spinner>
+                        <mat-spinner *ngIf="(savingDescriptionId$ | async) === checklist.id" class="mr-4"
+                                     color="primary" [diameter]="17"></mat-spinner>
                         {{'project.file.description.button.save' | translate}}
                     </button>
                 </div>
