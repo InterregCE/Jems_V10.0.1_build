@@ -5,6 +5,10 @@
         <h3>{{'project.application.partner.report.tab.expenditure.verification' | translate}}</h3>
         <p>{{'project.application.partner.report.tab.expenditure.verification.info' | translate}}</p>
 
+        <jems-alert *ngIf="data.typologyOfErrors.length <= 0" [show]="true" [type]="Alert.WARNING">
+            <p>{{'project.application.partner.report.tab.expenditure.verification.typology.warning' | translate}}</p>
+        </jems-alert>
+
         <form jemsFormLayout [formGroup]="reportExpendituresForm">
             <div id="table-container" jemsNoWidthLimit *ngIf="tableData.length > 0">
                 <jems-multi-language-container>
@@ -290,7 +294,7 @@
                             <mat-cell *matCellDef="let control;  let i = index" [formGroupName]="i">
                                 <div class="custom-wrapper align-right">
                                     <div class="custom-text-area" >
-                                        {{data.expendituresCosts[i].declaredAmount | number : '1.2-2' : 'de-DE'}}
+                                        {{data.expendituresCosts[i].declaredAmountAfterSubmission | asMoney}}
                                     </div>
                                 </div>
                             </mat-cell>
@@ -328,7 +332,7 @@
                                     <input [formControlName]="constants.FORM_CONTROL_NAMES.certifiedAmount"
                                            [options]="{min: constants.MIN_VALUE, max: constants.MAX_VALUE, align: 'right'}"
                                            (keyup)="updateDeductedAmount(expenditureIndex,
-                                            data.expendituresCosts[expenditureIndex].declaredAmount,
+                                            data.expendituresCosts[expenditureIndex].declaredAmountAfterSubmission,
                                             items.controls[expenditureIndex].get(constants.FORM_CONTROL_NAMES.certifiedAmount)?.value)"
                                            currencyMask matInput
                                            type="decimal">
@@ -372,7 +376,7 @@
                             <mat-cell class="justify-start" *matCellDef="let control;let expenditureIndex=index" [formGroupName]="expenditureIndex" >
                                <mat-form-field>
                                    <input matInput [formControlName]="constants.FORM_CONTROL_NAMES.verificationComment"
-                                                    [matTooltip]="items.controls[expenditureIndex].get(constants.FORM_CONTROL_NAMES.verificationComment)?.value">
+                                                   [matTooltip]="getLimitedTextInputTooltip(items.controls[expenditureIndex].get(constants.FORM_CONTROL_NAMES.verificationComment)?.value, constants.MAX_LENGTH_VERIFY_COMMENT)">
                                    <mat-error>
                                        <jems-form-field-errors condensed="true" [errors]="items.controls[expenditureIndex].get(constants.FORM_CONTROL_NAMES.verificationComment)?.errors"></jems-form-field-errors>
                                    </mat-error>

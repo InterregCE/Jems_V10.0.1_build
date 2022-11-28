@@ -4,6 +4,7 @@ export class PartnerControlReportExpenditureConstants {
   public static MAX_VALUE = 999_999_999.99;
   public static MAX_NUMBER_OF_ITEMS = 150;
   public static MAX_LENGTH = 255;
+  public static MAX_LENGTH_VERIFY_COMMENT = 1000;
   public static MAX_LENGTH_INVOICE = 30;
   public static FOCUS_TIMEOUT = 50;
   public static FORM_CONTROL_NAMES = {

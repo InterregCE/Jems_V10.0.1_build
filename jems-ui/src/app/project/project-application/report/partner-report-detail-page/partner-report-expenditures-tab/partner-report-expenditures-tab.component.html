@@ -413,7 +413,7 @@
                                      (click)="selectRow(i, 'totalValueInvoice')" class="custom-wrapper align-right"
                                      [ngClass]="getAdditionalRowClass(i, constants.FORM_CONTROL_NAMES.totalValueInvoice)">
                                     <div class="custom-text-area">
-                                        {{control.get(constants.FORM_CONTROL_NAMES.totalValueInvoice).value?? 0 | number : '1.2-2' : 'de-DE'}}
+                                        {{(control.get(constants.FORM_CONTROL_NAMES.totalValueInvoice).value || 0) | number : '1.2-2' : 'de-DE'}}
                                     </div>
                                 </div>
 
@@ -437,7 +437,7 @@
                                      (click)="selectRow(i, 'vat')" class="custom-wrapper align-right"
                                      [ngClass]="getAdditionalRowClass(i, constants.FORM_CONTROL_NAMES.vat)">
                                     <div class="custom-text-area">
-                                        {{control.get(constants.FORM_CONTROL_NAMES.vat).value?? 0  | number : '1.2-2' : 'de-DE'}}
+                                        {{(control.get(constants.FORM_CONTROL_NAMES.vat).value || 0)  | number : '1.2-2' : 'de-DE'}}
                                     </div>
                                 </div>
 
