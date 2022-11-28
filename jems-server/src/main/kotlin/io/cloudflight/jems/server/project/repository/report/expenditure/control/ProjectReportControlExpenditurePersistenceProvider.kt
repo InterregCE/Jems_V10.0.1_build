@@ -1,0 +1,47 @@
+package io.cloudflight.jems.server.project.repository.report.expenditure.control
+
+import io.cloudflight.jems.server.project.entity.report.expenditure.PartnerReportExpenditureCostEntity
+import io.cloudflight.jems.server.project.repository.report.expenditure.ProjectPartnerReportExpenditureRepository
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerification
+import io.cloudflight.jems.server.project.service.report.partner.expenditure.control.ProjectReportControlExpenditurePersistence
+import org.springframework.stereotype.Repository
+import org.springframework.transaction.annotation.Transactional
+
+@Repository
+class ProjectReportControlExpenditurePersistenceProvider(
+    private val reportExpenditureRepository: ProjectPartnerReportExpenditureRepository
+) : ProjectReportControlExpenditurePersistence {
+
+    @Transactional(readOnly = true)
+    override fun getPartnerControlReportExpenditureVerification(partnerId: Long, reportId: Long) =
+        reportExpenditureRepository.findTop150ByPartnerReportIdAndPartnerReportPartnerIdOrderById(
+            partnerId = partnerId,
+            reportId = reportId,
+        ).toExtendedModel()
+
+    @Transactional
+    override fun updatePartnerControlReportExpenditureVerification(
+        partnerId: Long,
+        reportId: Long,
+        expenditureVerification: List<ExpenditureVerificationUpdate>,
+    ): List<ProjectPartnerReportExpenditureVerification> {
+        val existingEntities = reportExpenditureRepository
+            .findTop150ByPartnerReportIdAndPartnerReportPartnerIdOrderById(reportId, partnerId)
+            .associateBy { it.id }
+
+        expenditureVerification.forEach {
+            existingEntities.getValue(it.id).updateWith(it)
+        }
+
+        return existingEntities.values.toExtendedModel()
+    }
+
+    private fun PartnerReportExpenditureCostEntity.updateWith(newData: ExpenditureVerificationUpdate) {
+        certifiedAmount = newData.certifiedAmount
+        deductedAmount = newData.deductedAmount
+        partOfSample = newData.partOfSample
+        typologyOfErrorId = newData.typologyOfErrorId
+        verificationComment = newData.verificationComment
+    }
+
+}

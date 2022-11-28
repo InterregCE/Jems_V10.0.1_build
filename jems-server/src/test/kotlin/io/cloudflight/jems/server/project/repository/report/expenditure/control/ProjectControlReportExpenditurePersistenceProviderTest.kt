@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.repository.report.expenditure.verification
+package io.cloudflight.jems.server.project.repository.report.expenditure.control
 
 import io.cloudflight.jems.api.programme.dto.language.SystemLanguage
 import io.cloudflight.jems.api.project.dto.InputTranslation
@@ -7,11 +7,9 @@ import io.cloudflight.jems.server.common.entity.TranslationId
 import io.cloudflight.jems.server.project.entity.report.ProjectPartnerReportEntity
 import io.cloudflight.jems.server.project.entity.report.expenditure.*
 import io.cloudflight.jems.server.project.entity.report.file.ReportProjectFileEntity
-import io.cloudflight.jems.server.project.repository.report.expenditure.ProjectControlReportExpenditurePersistenceProvider
 import io.cloudflight.jems.server.project.repository.report.expenditure.ProjectPartnerReportExpenditureRepository
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
-import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerControlReportExpenditureVerification
-import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerControlReportExpenditureVerificationUpdate
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerification
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import io.mockk.clearMocks
 import io.mockk.every
@@ -28,8 +26,6 @@ import java.time.ZonedDateTime
 class ProjectControlReportExpenditurePersistenceProviderTest : UnitTest() {
     companion object {
         private const val PARTNER_ID = 380L
-        private const val PROCUREMENT_ID = 18L
-        private const val INVESTMENT_ID = 28L
 
         private const val EXPENDITURE_TO_UPDATE = 40L
 
@@ -64,7 +60,7 @@ class ProjectControlReportExpenditurePersistenceProviderTest : UnitTest() {
             reportUnitCost = unitCost,
             costCategory = ReportBudgetCategory.InfrastructureCosts,
             reportInvestment = investment,
-            procurementId = PROCUREMENT_ID,
+            procurementId = 18L,
             internalReferenceNumber = "irn",
             invoiceNumber = "invoice",
             invoiceDate = YESTERDAY,
@@ -80,10 +76,10 @@ class ProjectControlReportExpenditurePersistenceProviderTest : UnitTest() {
             translatedValues = mutableSetOf(),
             attachment = dummyAttachment,
             partOfSample = false,
-            certifiedAmount = BigDecimal.valueOf(3680),
+            certifiedAmount = BigDecimal.ZERO,
             deductedAmount = BigDecimal.ZERO,
-            typologyOfErrorId = null,
-            verificationComment = null
+            typologyOfErrorId = 1L,
+            verificationComment = "dummy comment",
         ).apply {
             translatedValues.add(
                 PartnerReportExpenditureCostTranslEntity(
@@ -95,13 +91,13 @@ class ProjectControlReportExpenditurePersistenceProviderTest : UnitTest() {
         }
 
         private fun dummyExpectedExpenditure(id: Long, lumpSumId: Long?, unitCostId: Long?, investmentId: Long?) =
-            ProjectPartnerControlReportExpenditureVerification(
+            ProjectPartnerReportExpenditureVerification(
             id = id,
             lumpSumId = lumpSumId,
             unitCostId = unitCostId,
             costCategory = ReportBudgetCategory.InfrastructureCosts,
             investmentId = investmentId,
-            contractId = PROCUREMENT_ID + 10,
+            contractId = 18L,
             internalReferenceNumber = "irn",
             invoiceNumber = "invoice",
             invoiceDate = YESTERDAY,
@@ -118,28 +114,27 @@ class ProjectControlReportExpenditurePersistenceProviderTest : UnitTest() {
             declaredAmountAfterSubmission = BigDecimal.valueOf(3680),
             attachment = JemsFileMetadata(dummyAttachment.id, dummyAttachment.name, dummyAttachment.uploaded),
             partOfSample = false,
-            certifiedAmount = BigDecimal.valueOf(3680),
+            certifiedAmount = BigDecimal.ZERO,
             deductedAmount = BigDecimal.ZERO,
-            typologyOfErrorId = null,
-            verificationComment = null
+            typologyOfErrorId = 1L,
+            verificationComment = "dummy comment",
         )
 
-        private fun dummyExpectedExpenditureUpdate(id: Long) =
-            ProjectPartnerControlReportExpenditureVerificationUpdate(
-                id = id,
-                partOfSample = true,
-                certifiedAmount = BigDecimal.valueOf(3670),
-                deductedAmount = BigDecimal.valueOf(10),
-                typologyOfErrorId = 1,
-                verificationComment = "Some text"
-            )
+        private val dummyExpectedExpenditureUpdate = ExpenditureVerificationUpdate(
+            id = EXPENDITURE_TO_UPDATE,
+            partOfSample = true,
+            certifiedAmount = BigDecimal.valueOf(3670),
+            deductedAmount = BigDecimal.valueOf(10),
+            typologyOfErrorId = 55L,
+            verificationComment = "Some new text",
+        )
     }
 
     @MockK
-    lateinit var reportExpenditureRepository: ProjectPartnerReportExpenditureRepository
+    private lateinit var reportExpenditureRepository: ProjectPartnerReportExpenditureRepository
 
     @InjectMockKs
-    lateinit var persistence: ProjectControlReportExpenditurePersistenceProvider
+    private lateinit var persistence: ProjectReportControlExpenditurePersistenceProvider
 
     @BeforeEach
     fun reset() {
@@ -147,43 +142,32 @@ class ProjectControlReportExpenditurePersistenceProviderTest : UnitTest() {
     }
 
     @Test
-    fun getPartnerReportExpenditureCosts() {
-        val LUMP_SUM_ID = 808L
-        val UNIT_COST_ID = 809L
-        val INVESTMENT_ID = 810L
+    fun getPartnerControlReportExpenditureVerification() {
+        val lumpSumId = 808L
+        val unitCostId = 809L
+        val investmentId = 810L
         val report = mockk<ProjectPartnerReportEntity>()
         val lumpSum = mockk<PartnerReportLumpSumEntity>()
         val unitCost = mockk<PartnerReportUnitCostEntity>()
         val investment = mockk<PartnerReportInvestmentEntity>()
-        every { lumpSum.id } returns LUMP_SUM_ID
-        every { unitCost.id } returns UNIT_COST_ID
-        every { investment.id } returns INVESTMENT_ID
-        val expenditure = dummyExpenditure(
-            id = 14L,
-            report,
-            lumpSum,
-            unitCost,
-            investment
-        )
+        every { lumpSum.id } returns lumpSumId
+        every { unitCost.id } returns unitCostId
+        every { investment.id } returns investmentId
+
+        val expenditure = dummyExpenditure(id = 14L, report, lumpSum, unitCost, investment)
         every { reportExpenditureRepository.findTop150ByPartnerReportIdAndPartnerReportPartnerIdOrderById(
             reportId = 44L,
             partnerId = PARTNER_ID,
         ) } returns mutableListOf(expenditure)
 
-        assertThat(
-            persistence.getPartnerControlReportExpenditureVerification(
-                PARTNER_ID,
-                reportId = 44L
-            )
-        )
+        assertThat(persistence.getPartnerControlReportExpenditureVerification(PARTNER_ID, reportId = 44L))
             .containsExactly(
                 dummyExpectedExpenditure(
                     id = 14L,
-                    LUMP_SUM_ID,
-                    UNIT_COST_ID,
-                    INVESTMENT_ID
+                    lumpSumId = lumpSumId,
+                    unitCostId = unitCostId,
+                    investmentId = investmentId,
                 )
-                    .copy(contractId = PROCUREMENT_ID)
             )
     }
 
@@ -200,26 +184,23 @@ class ProjectControlReportExpenditurePersistenceProviderTest : UnitTest() {
         every { unitCost.id } returns UNIT_COST_ID
         every { investment.id } returns INVESTMENT_ID
 
-        val entityToUpdate = dummyExpenditure(
-            EXPENDITURE_TO_UPDATE,
-            report,
-            lumpSum,
-            unitCost,
-            investment
-        )
+        val entityToUpdate = dummyExpenditure(EXPENDITURE_TO_UPDATE, report, lumpSum, unitCost, investment)
 
         every { reportExpenditureRepository
-            .findTop150ByPartnerReportIdAndPartnerReportPartnerIdOrderById(58L, PARTNER_ID) } returns
-            mutableListOf(entityToUpdate)
+            .findTop150ByPartnerReportIdAndPartnerReportPartnerIdOrderById(reportId = 58L, PARTNER_ID)
+        } returns mutableListOf(entityToUpdate)
 
-        val result = persistence.updatePartnerControlReportExpenditureVerification(
-            PARTNER_ID, reportId = 58L, listOf(
-                dummyExpectedExpenditureUpdate(
-                    id = EXPENDITURE_TO_UPDATE
-                )
-            )
-        )
+        val result = persistence
+            .updatePartnerControlReportExpenditureVerification(PARTNER_ID, reportId = 58L, listOf(dummyExpectedExpenditureUpdate))
 
+        assertThat(result.size).isEqualTo(1)
+        assertThat(result.first().partOfSample).isEqualTo(true)
+        assertThat(result.first().certifiedAmount).isEqualByComparingTo(BigDecimal.valueOf(3670))
+        assertThat(result.first().deductedAmount).isEqualByComparingTo(BigDecimal.valueOf(10))
+        assertThat(result.first().typologyOfErrorId).isEqualTo(55L)
+        assertThat(result.first().verificationComment).isEqualTo("Some new text")
+
+        // verify other values were not touched
         assertThat(result.first().lumpSumId).isEqualTo(lumpSum.id)
         assertThat(result.first().unitCostId).isEqualTo(unitCost.id)
         assertThat(result.first().costCategory).isEqualTo(ReportBudgetCategory.InfrastructureCosts)
@@ -238,10 +219,5 @@ class ProjectControlReportExpenditurePersistenceProviderTest : UnitTest() {
         assertThat(result.first().currencyCode).isEqualTo("HUF")
         assertThat(result.first().currencyConversionRate).isEqualByComparingTo(BigDecimal.valueOf(368))
         assertThat(result.first().declaredAmountAfterSubmission).isEqualByComparingTo(BigDecimal.valueOf(3680))
-        assertThat(result.first().partOfSample).isEqualTo(true)
-        assertThat(result.first().certifiedAmount).isEqualByComparingTo(BigDecimal.valueOf(3670))
-        assertThat(result.first().deductedAmount).isEqualByComparingTo(BigDecimal.valueOf(10))
-        assertThat(result.first().typologyOfErrorId).isEqualTo(1)
-        assertThat(result.first().verificationComment).isEqualTo("Some text")
     }
 }

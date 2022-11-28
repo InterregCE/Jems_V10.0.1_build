@@ -1,12 +1,13 @@
-package io.cloudflight.jems.server.project.service.report.model.partner.expenditure
+package io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control
 
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import java.math.BigDecimal
 import java.time.LocalDate
 
-data class ProjectPartnerControlReportExpenditureVerification(
-    val id: Long?,
+data class ProjectPartnerReportExpenditureVerification(
+    val id: Long,
     val lumpSumId: Long?,
     val unitCostId: Long?,
     val costCategory: ReportBudgetCategory,
@@ -28,9 +29,9 @@ data class ProjectPartnerControlReportExpenditureVerification(
     val declaredAmountAfterSubmission: BigDecimal?,
     val attachment: JemsFileMetadata?,
 
-    val partOfSample: Boolean,
-    val certifiedAmount: BigDecimal,
-    val deductedAmount: BigDecimal,
-    val typologyOfErrorId: Long?,
-    val verificationComment: String?
+    var partOfSample: Boolean,
+    var certifiedAmount: BigDecimal,
+    var deductedAmount: BigDecimal,
+    var typologyOfErrorId: Long?,
+    var verificationComment: String?,
 )

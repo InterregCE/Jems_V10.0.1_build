@@ -1,15 +1,15 @@
-package io.cloudflight.jems.server.project.service.report.partner.expenditure.getProjectPartnerControlReportExpenditureVerification
+package io.cloudflight.jems.server.project.service.report.partner.expenditure.control.getProjectPartnerReportExpenditureVerification
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanViewPartnerControlReport
-import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerControlReportExpenditureVerification
-import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectControlReportExpenditurePersistence
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerification
+import io.cloudflight.jems.server.project.service.report.partner.expenditure.control.ProjectReportControlExpenditurePersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 class GetProjectPartnerControlReportExpenditureVerification(
-    private val reportExpenditurePersistence: ProjectControlReportExpenditurePersistence
+    private val reportExpenditurePersistence: ProjectReportControlExpenditurePersistence
 ) : GetProjectPartnerControlReportExpenditureVerificationInteractor {
 
     @CanViewPartnerControlReport
@@ -18,6 +18,6 @@ class GetProjectPartnerControlReportExpenditureVerification(
     override fun getExpenditureVerification(
         partnerId: Long,
         reportId: Long
-    ): List<ProjectPartnerControlReportExpenditureVerification> =
+    ): List<ProjectPartnerReportExpenditureVerification> =
         reportExpenditurePersistence.getPartnerControlReportExpenditureVerification(partnerId, reportId)
 }
