@@ -110,6 +110,7 @@ export class ProgrammePriorityDetailPageComponent {
 
   save(): void {
     this.form.enable();
+    this.specificObjectives.controls.forEach(control => control.get('selected')?.disable());
 
     const priority: ProgrammePriorityDTO = this.form.value;
     priority.objective = this.form.get(this.constants.OBJECTIVE.name)?.value;
@@ -234,7 +235,7 @@ export class ProgrammePriorityDetailPageComponent {
     });
 
     if (this.objectivePoliciesAlreadyInUse.find(used => used === objective.programmeObjectivePolicy) || (this.isProgrammeSetupLocked && selected)) {
-      group.disable();
+      group.controls.selected.disable();
       this.form.get(this.constants.OBJECTIVE.name)?.disable();
     }
     group.addControl(this.constants.DIMENSION_CODES.name,

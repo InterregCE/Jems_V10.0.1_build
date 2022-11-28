@@ -186,6 +186,7 @@ private fun validateEveryPolicyCodeIsFreeOrLinkedToThisPriority(
 
     if (priorities.isNotEmpty())
         invalid(
+            message = "programme.priority.code.already.in.use",
             fieldErrors = mapOf(
                 "specificObjectives" to I18nFieldError(
                     i18nKey = "programme.priority.specificObjective.code.already.in.use.by.other.priority",
