@@ -8,6 +8,7 @@ import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.currency.repository.CurrencyPersistence
 import io.cloudflight.jems.server.currency.service.model.CurrencyConversion
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
+import io.cloudflight.jems.server.project.repository.report.expenditure.control.ExpenditureVerificationUpdate
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
@@ -22,14 +23,14 @@ import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPa
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSubmissionSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.withoutCalculations.ProjectPartnerReportEntityContribution
-import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerControlReportExpenditureVerification
-import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerControlReportExpenditureVerificationUpdate
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerification
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerificationUpdate
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.costCategory.ReportExpenditureCostCategory
 import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectReportContributionPersistence
-import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectControlReportExpenditurePersistence
+import io.cloudflight.jems.server.project.service.report.partner.expenditure.control.ProjectReportControlExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectReportExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureCostCategoryPersistence
@@ -136,7 +137,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             attachment = null,
         )
 
-        private val expenditureVerification1 = ProjectPartnerControlReportExpenditureVerification(
+        private val expenditureVerification1 = ProjectPartnerReportExpenditureVerification(
             id = 630,
             lumpSumId = null,
             unitCostId = null,
@@ -161,7 +162,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             verificationComment = null
         )
 
-        private val expenditureVerification2 = ProjectPartnerControlReportExpenditureVerification(
+        private val expenditureVerification2 = ProjectPartnerReportExpenditureVerification(
             id = 631,
             lumpSumId = 22L,
             unitCostId = null,
@@ -186,7 +187,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             verificationComment = null
         )
 
-        private val expenditureVerification3 = ProjectPartnerControlReportExpenditureVerification(
+        private val expenditureVerification3 = ProjectPartnerReportExpenditureVerification(
             id = 632,
             lumpSumId = null,
             unitCostId = 15L,
@@ -211,28 +212,28 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             verificationComment = null
         )
 
-        private val expenditureVerificationUpdate1 = ProjectPartnerControlReportExpenditureVerificationUpdate(
+        private val expenditureVerificationUpdate1 = ExpenditureVerificationUpdate(
             id = 630,
             partOfSample = false,
-            certifiedAmount = BigDecimal.valueOf(9.99),
+            certifiedAmount = BigDecimal.valueOf(999, 2),
             deductedAmount = BigDecimal.ZERO,
             typologyOfErrorId = null,
             verificationComment = null
         )
 
-        private val expenditureVerificationUpdate2 = ProjectPartnerControlReportExpenditureVerificationUpdate(
+        private val expenditureVerificationUpdate2 = ExpenditureVerificationUpdate(
             id = 631,
             partOfSample = false,
-            certifiedAmount = BigDecimal.valueOf(48.50).setScale(2),
+            certifiedAmount = BigDecimal.valueOf(4850, 2),
             deductedAmount = BigDecimal.ZERO,
             typologyOfErrorId = null,
             verificationComment = null
         )
 
-        private val expenditureVerificationUpdate3 = ProjectPartnerControlReportExpenditureVerificationUpdate(
+        private val expenditureVerificationUpdate3 = ExpenditureVerificationUpdate(
             id = 632,
             partOfSample = false,
-            certifiedAmount = BigDecimal.valueOf(16.50).setScale(2),
+            certifiedAmount = BigDecimal.valueOf(1650, 2),
             deductedAmount = BigDecimal.ZERO,
             typologyOfErrorId = null,
             verificationComment = null
@@ -340,8 +341,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
     lateinit var reportInvestmentPersistence: ProjectReportInvestmentPersistence
 
     @MockK
-    lateinit var projectControlReportExpenditurePersistence: ProjectControlReportExpenditurePersistence
-
+    lateinit var projectControlReportExpenditurePersistence: ProjectReportControlExpenditurePersistence
 
     @MockK
     lateinit var auditPublisher: ApplicationEventPublisher
@@ -407,7 +407,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit
 
-        val slotExpenditureVerification = slot<List<ProjectPartnerControlReportExpenditureVerificationUpdate>>()
+        val slotExpenditureVerification = slot<List<ExpenditureVerificationUpdate>>()
         every { projectControlReportExpenditurePersistence
             .updatePartnerControlReportExpenditureVerification(
                 PARTNER_ID,

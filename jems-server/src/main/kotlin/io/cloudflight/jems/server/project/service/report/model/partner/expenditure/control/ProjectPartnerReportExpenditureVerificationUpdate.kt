@@ -1,12 +1,11 @@
-package io.cloudflight.jems.server.project.service.report.model.partner.expenditure
+package io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control
 
 import java.math.BigDecimal
 
-data class ProjectPartnerControlReportExpenditureVerificationUpdate(
+data class ProjectPartnerReportExpenditureVerificationUpdate(
     val id: Long,
     val partOfSample: Boolean,
     val certifiedAmount: BigDecimal,
-    val deductedAmount: BigDecimal,
     val typologyOfErrorId: Long?,
     val verificationComment: String?
 )

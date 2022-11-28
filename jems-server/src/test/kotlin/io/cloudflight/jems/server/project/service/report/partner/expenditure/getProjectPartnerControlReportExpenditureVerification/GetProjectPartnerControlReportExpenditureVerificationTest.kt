@@ -2,9 +2,10 @@ package io.cloudflight.jems.server.project.service.report.partner.expenditure.ge
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
-import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerControlReportExpenditureVerification
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerification
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
-import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectControlReportExpenditurePersistence
+import io.cloudflight.jems.server.project.service.report.partner.expenditure.control.ProjectReportControlExpenditurePersistence
+import io.cloudflight.jems.server.project.service.report.partner.expenditure.control.getProjectPartnerReportExpenditureVerification.GetProjectPartnerControlReportExpenditureVerification
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -19,7 +20,7 @@ internal class GetProjectPartnerControlReportExpenditureVerificationTest : UnitT
     private val TODAY = LocalDate.now()
     private val MOMENT = ZonedDateTime.now()
 
-    private val expenditure = ProjectPartnerControlReportExpenditureVerification(
+    private val expenditure = ProjectPartnerReportExpenditureVerification(
         id = 1L,
         lumpSumId = 45L,
         unitCostId = 46L,
@@ -45,7 +46,7 @@ internal class GetProjectPartnerControlReportExpenditureVerificationTest : UnitT
     )
 
     @MockK
-    lateinit var reportExpenditurePersistence: ProjectControlReportExpenditurePersistence
+    lateinit var reportExpenditurePersistence: ProjectReportControlExpenditurePersistence
 
     @InjectMockKs
     lateinit var getExpenditure: GetProjectPartnerControlReportExpenditureVerification

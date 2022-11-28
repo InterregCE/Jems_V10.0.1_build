@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.project.service.report.partner.base.submitPro
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.currency.repository.CurrencyPersistence
 import io.cloudflight.jems.server.project.authorization.CanEditPartnerReport
-import io.cloudflight.jems.server.project.repository.report.expenditure.toVerificationData
+import io.cloudflight.jems.server.project.repository.report.expenditure.control.ExpenditureVerificationUpdate
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
@@ -12,7 +12,7 @@ import io.cloudflight.jems.server.project.service.report.model.partner.ReportSta
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectReportContributionPersistence
 import io.cloudflight.jems.server.project.service.report.partner.contribution.extractOverview
-import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectControlReportExpenditurePersistence
+import io.cloudflight.jems.server.project.service.report.partner.expenditure.control.ProjectReportControlExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectReportExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.fillCurrencyRates
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureCoFinancingPersistence
@@ -46,7 +46,7 @@ class SubmitProjectPartnerReport(
     private val reportLumpSumPersistence: ProjectReportLumpSumPersistence,
     private val reportUnitCostPersistence: ProjectReportUnitCostPersistence,
     private val reportInvestmentPersistence: ProjectReportInvestmentPersistence,
-    private val projectControlReportExpenditurePersistence: ProjectControlReportExpenditurePersistence,
+    private val projectControlReportExpenditurePersistence: ProjectReportControlExpenditurePersistence,
     private val auditPublisher: ApplicationEventPublisher,
 ) : SubmitProjectPartnerReportInteractor {
 
@@ -110,12 +110,11 @@ class SubmitProjectPartnerReport(
             expenditureCosts = expenditures.fillCurrencyRates(rates),
         )
 
-        projectControlReportExpenditurePersistence
-            .updatePartnerControlReportExpenditureVerification(
-                partnerId,
-                reportId,
-                updatedExpenditures.map {it.toVerificationData()}
-            )
+        projectControlReportExpenditurePersistence.updatePartnerControlReportExpenditureVerification(
+            partnerId = partnerId,
+            reportId = reportId,
+            expenditureVerification = updatedExpenditures.emptyVerification(),
+        )
 
         return updatedExpenditures
     }
@@ -171,6 +170,17 @@ class SubmitProjectPartnerReport(
             partnerId = partnerId,
             reportId = reportId,
             currentlyReported = currentInvestments,
+        )
+    }
+
+    private fun List<ProjectPartnerReportExpenditureCost>.emptyVerification() = map {
+        ExpenditureVerificationUpdate(
+            id = it.id!!,
+            partOfSample = false,
+            certifiedAmount = it.declaredAmountAfterSubmission ?: BigDecimal.ZERO,
+            deductedAmount = BigDecimal.ZERO,
+            typologyOfErrorId = null,
+            verificationComment = null,
         )
     }
 

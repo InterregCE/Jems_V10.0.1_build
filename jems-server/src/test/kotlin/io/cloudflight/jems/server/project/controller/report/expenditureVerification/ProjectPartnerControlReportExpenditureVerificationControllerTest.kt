@@ -6,16 +6,16 @@ import io.cloudflight.jems.api.project.dto.report.partner.expenditure.verificati
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.verification.ProjectPartnerControlReportExpenditureVerificationUpdateDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
-import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerControlReportExpenditureVerification
-import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerControlReportExpenditureVerificationUpdate
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerification
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerificationUpdate
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
-import io.cloudflight.jems.server.project.service.report.partner.expenditure.getProjectPartnerControlReportExpenditureVerification.GetProjectPartnerControlReportExpenditureVerificationInteractor
-import io.cloudflight.jems.server.project.service.report.partner.expenditure.updateProjectPartnerControlReportExpenditureVerification.UpdateProjectPartnerControlReportExpenditureVerificationInteractor
+import io.cloudflight.jems.server.project.service.report.partner.expenditure.control.getProjectPartnerReportExpenditureVerification.GetProjectPartnerControlReportExpenditureVerificationInteractor
+import io.cloudflight.jems.server.project.service.report.partner.expenditure.control.updateProjectPartnerReportExpenditureVerification.UpdateProjectPartnerControlReportExpenditureVerificationInteractor
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
 import io.mockk.slot
-import org.assertj.core.api.Assertions
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import java.math.BigDecimal
 import java.time.LocalDate
@@ -26,9 +26,9 @@ class ProjectPartnerControlReportExpenditureVerificationControllerTest : UnitTes
     private val CONTRACT_ID = 17L
     private val UPLOADED = ZonedDateTime.now().minusWeeks(1)
 
-    private val reportExpenditureVerification = ProjectPartnerControlReportExpenditureVerification(
+    private val reportExpenditureVerification = ProjectPartnerReportExpenditureVerification(
         id = 754,
-        lumpSumId = null,
+        lumpSumId = 2L,
         unitCostId = null,
         costCategory = ReportBudgetCategory.ExternalCosts,
         investmentId = 10L,
@@ -51,11 +51,11 @@ class ProjectPartnerControlReportExpenditureVerificationControllerTest : UnitTes
         partOfSample = false,
         certifiedAmount = BigDecimal.valueOf(1.3),
         deductedAmount = BigDecimal.ZERO,
-        typologyOfErrorId = null,
-        verificationComment = null
+        typologyOfErrorId = 15L,
+        verificationComment = "comment dummy",
     )
 
-    private val reportExpenditureVerificationUpdated = ProjectPartnerControlReportExpenditureVerification(
+    private val reportExpenditureVerificationUpdated = ProjectPartnerReportExpenditureVerification(
         id = 754,
         lumpSumId = null,
         unitCostId = null,
@@ -86,7 +86,7 @@ class ProjectPartnerControlReportExpenditureVerificationControllerTest : UnitTes
 
     private val reportExpenditureVerificationDto = ProjectPartnerControlReportExpenditureVerificationDTO(
         id = 754,
-        lumpSumId = null,
+        lumpSumId = 2L,
         unitCostId = null,
         costCategory = BudgetCategoryDTO.ExternalCosts,
         investmentId = 10L,
@@ -109,8 +109,8 @@ class ProjectPartnerControlReportExpenditureVerificationControllerTest : UnitTes
         partOfSample = false,
         certifiedAmount = BigDecimal.valueOf(1.3),
         deductedAmount = BigDecimal.ZERO,
-        typologyOfErrorId = null,
-        verificationComment = null
+        typologyOfErrorId = 15L,
+        verificationComment = "comment dummy",
     )
 
     private val reportExpenditureVerificationDtoUpdated = ProjectPartnerControlReportExpenditureVerificationDTO(
@@ -142,51 +142,55 @@ class ProjectPartnerControlReportExpenditureVerificationControllerTest : UnitTes
         verificationComment = "test"
     )
 
-    private val reportExpenditureVerificationUpdate = ProjectPartnerControlReportExpenditureVerificationUpdateDTO(
+    private val toUpdateDto = ProjectPartnerControlReportExpenditureVerificationUpdateDTO(
         id = 754,
         partOfSample = true,
         certifiedAmount = BigDecimal.valueOf(1),
-        deductedAmount = BigDecimal.valueOf(0.3),
+        typologyOfErrorId = 1,
+        verificationComment = "test"
+    )
+
+    private val toUpdate = ProjectPartnerReportExpenditureVerificationUpdate(
+        id = 754,
+        partOfSample = true,
+        certifiedAmount = BigDecimal.valueOf(1),
         typologyOfErrorId = 1,
         verificationComment = "test"
     )
 
     @MockK
-    lateinit var getProjectPartnerControlReportExpenditureVerificationInteractor: GetProjectPartnerControlReportExpenditureVerificationInteractor
+    private lateinit var getReportExpenditureVerification: GetProjectPartnerControlReportExpenditureVerificationInteractor
 
     @MockK
-    lateinit var updateProjectPartnerControlReportExpenditureVerificationInteractor: UpdateProjectPartnerControlReportExpenditureVerificationInteractor
+    private lateinit var updateReportExpenditureVerification: UpdateProjectPartnerControlReportExpenditureVerificationInteractor
 
     @InjectMockKs
     private lateinit var controller: ProjectPartnerControlReportExpenditureVerificationController
 
     @Test
     fun getProjectPartnerReportExpenditureVerification() {
-        every { getProjectPartnerControlReportExpenditureVerificationInteractor.getExpenditureVerification(PARTNER_ID, reportId = 17L) } returns
+        every { getReportExpenditureVerification.getExpenditureVerification(PARTNER_ID, reportId = 17L) } returns
             listOf(reportExpenditureVerification)
-        Assertions.assertThat(controller.getProjectPartnerExpenditureVerification(PARTNER_ID, reportId = 17L))
+        assertThat(controller.getProjectPartnerExpenditureVerification(PARTNER_ID, reportId = 17L))
             .containsExactly(reportExpenditureVerificationDto)
     }
 
     @Test
     fun updatePartnerReportExpenditureVerification() {
-        val slotData = slot<List<ProjectPartnerControlReportExpenditureVerificationUpdate>>()
+        val slotData = slot<List<ProjectPartnerReportExpenditureVerificationUpdate>>()
 
-        every { updateProjectPartnerControlReportExpenditureVerificationInteractor.updatePartnerReportExpenditureVerification(
+        every { updateReportExpenditureVerification.updatePartnerReportExpenditureVerification(
             partnerId = PARTNER_ID,
             reportId = 20L,
             capture(slotData),
         ) } returns listOf(reportExpenditureVerificationUpdated)
 
-        Assertions.assertThat(
-            controller.updatePartnerReportExpendituresVerification(
-                PARTNER_ID,
-                reportId = 20L,
-                listOf(reportExpenditureVerificationUpdate)
-            )
-        )
-            .containsExactly(reportExpenditureVerificationDtoUpdated)
+        assertThat(controller.updatePartnerReportExpendituresVerification(
+            partnerId = PARTNER_ID,
+            reportId = 20L,
+            expenditureVerification = listOf(toUpdateDto),
+        )).containsExactly(reportExpenditureVerificationDtoUpdated)
 
-        Assertions.assertThat(slotData.captured).hasSize(1)
+        assertThat(slotData.captured).containsExactly(toUpdate)
     }
 }
