@@ -37,7 +37,6 @@ import {
 } from '@project/project-application/report/partner-control-report/partner-control-expenditure-verification-tab/partner-control-report-file-expenditure-verification-store';
 import {Alert} from '@common/components/forms/alert';
 
-
 @UntilDestroy()
 @Component({
   selector: 'jems-partner-control-report-expenditure-verification-page',
@@ -119,7 +118,9 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
   getAvailableCurrenciesByType(type: string | null, unitCost?: any) {
     switch(type) {
       case 'lumpSum': return this.currencies.filter((currency) => currency.code === CurrencyCodesEnum.EUR);
-      case 'unitCost': return this.currencies.filter((currency) => currency.code === CurrencyCodesEnum.EUR || currency.code === this.availableUnitCosts.filter(el => (el.id === unitCost?.value?.id || el.id === unitCost?.id) )[0].foreignCurrencyCode);
+      case 'unitCost': return this.currencies.filter((currency) => currency.code === CurrencyCodesEnum.EUR
+        || currency.code === this.availableUnitCosts
+          .filter(el => (el.id === unitCost?.value?.id || el.id === unitCost?.id) )[0].foreignCurrencyCode);
       default: return this.currencies;
     }
   }
@@ -329,11 +330,11 @@ export class PartnerControlReportExpenditureVerificationTabComponent implements 
   }
 
   private getCertifiedAmount(reportExpenditureControl: ProjectPartnerControlReportExpenditureVerificationDTO) {
-    return reportExpenditureControl.certifiedAmount || reportExpenditureControl.declaredAmount;
+    return reportExpenditureControl.certifiedAmount || reportExpenditureControl.declaredAmountAfterSubmission;
   }
 
   private getDeductedAmount(reportExpenditureControl: ProjectPartnerControlReportExpenditureVerificationDTO) {
-    return reportExpenditureControl.deductedAmount || reportExpenditureControl.declaredAmount - this.getCertifiedAmount(reportExpenditureControl);
+    return reportExpenditureControl.deductedAmount || reportExpenditureControl.declaredAmountAfterSubmission - this.getCertifiedAmount(reportExpenditureControl);
   }
   private formToReportExpenditures(): ProjectPartnerControlReportExpenditureVerificationUpdateDTO[] {
     return this.items.controls.map((formGroup: FormGroup) => ({

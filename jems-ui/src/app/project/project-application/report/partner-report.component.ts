@@ -35,13 +35,13 @@ import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import {ColumnWidth} from '@common/components/table/model/column-width';
 import StatusEnum = ProjectPartnerReportSummaryDTO.StatusEnum;
 
+@UntilDestroy()
 @Component({
   selector: 'jems-contract-monitoring',
   templateUrl: './partner-report.component.html',
   styleUrls: ['./partner-report.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-@UntilDestroy()
 export class PartnerReportComponent {
   PermissionsEnum = PermissionsEnum;
   ProjectPartnerReportSummaryDTO = ProjectPartnerReportSummaryDTO;
@@ -95,16 +95,16 @@ export class PartnerReportComponent {
   );
 
   constructor(
-      public pageStore: PartnerReportPageStore,
-      public store: PartnerControlReportStore,
-      public partnerReportDetail: PartnerReportDetailPageStore,
-      private activatedRoute: ActivatedRoute,
-      private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
-      private router: RoutingService,
-      private translateService: TranslateService,
-      private multiLanguageGlobalService: MultiLanguageGlobalService,
-      private dialog: MatDialog,
-      private changeDetectorRef: ChangeDetectorRef
+    public pageStore: PartnerReportPageStore,
+    public store: PartnerControlReportStore,
+    public partnerReportDetail: PartnerReportDetailPageStore,
+    private activatedRoute: ActivatedRoute,
+    private projectApplicationFormSidenavService: ProjectApplicationFormSidenavService,
+    private router: RoutingService,
+    private translateService: TranslateService,
+    private multiLanguageGlobalService: MultiLanguageGlobalService,
+    private dialog: MatDialog,
+    private changeDetectorRef: ChangeDetectorRef
   ) {
     this.data$ = combineLatest([
       this.pageStore.partnerReports$,
@@ -114,7 +114,7 @@ export class PartnerReportComponent {
       this.pageStore.userCanEditReport$,
     ]).pipe(
       map(([partnerReports, partner, canUserViewControlReports, canUserEditControlReports, canEditReport]) => {
-        return {
+          return {
             totalElements: partnerReports.totalElements,
             partnerReports: partnerReports.content,
             partner,
@@ -273,8 +273,9 @@ export class PartnerReportComponent {
   }
 
   private changeStatusOfReport(partnerReport: ProjectPartnerReportSummaryDTO, partnerId: string | number | null): void {
-    if (!partnerId)
+    if (!partnerId) {
       return;
+    }
 
     this.partnerReportDetail.startControlOnPartnerReport(Number(partnerId), partnerReport.id)
       .pipe(
@@ -299,5 +300,4 @@ export class PartnerReportComponent {
         catchError((error) => this.showErrorMessage(error.error)),
       ).subscribe();
   }
-
 }
