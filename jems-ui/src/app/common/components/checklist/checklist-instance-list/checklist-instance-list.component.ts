@@ -176,13 +176,6 @@ export class ChecklistInstanceListComponent implements OnInit {
           columnWidth: ColumnWidth.WideColumn,
           sortProperty: 'name',
         },
-        {
-          displayedColumn: 'common.description',
-          elementProperty: 'description',
-          columnWidth: ColumnWidth.extraWideColumn,
-          sortProperty: 'description',
-          customCellTemplate: this.descriptionCell,
-        },
         ...!selection ? [{
           displayedColumn: 'checklists.instance.assessor',
           elementProperty: 'creatorEmail',
@@ -195,6 +188,13 @@ export class ChecklistInstanceListComponent implements OnInit {
           columnType: ColumnType.DateOnlyColumn,
           columnWidth: ColumnWidth.DateColumn,
           sortProperty: 'finishedDate',
+        },
+        {
+          displayedColumn: 'common.description',
+          elementProperty: 'description',
+          columnWidth: ColumnWidth.extraWideColumn,
+          sortProperty: 'description',
+          customCellTemplate: this.descriptionCell,
         },
         ...selection ? [{
           displayedColumn: 'checklists.instance.visible',

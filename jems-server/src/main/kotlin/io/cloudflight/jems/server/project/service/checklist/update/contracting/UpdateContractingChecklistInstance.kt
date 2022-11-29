@@ -19,7 +19,7 @@ class UpdateContractingChecklistInstance(
     private val persistence: ChecklistInstancePersistence,
     private val auditPublisher: ApplicationEventPublisher,
     private val checklistInstanceValidator: ChecklistInstanceValidator,
-    private val userAuthorization: UserAuthorization
+    private val userAuthorization: UserAuthorization,
 ) : UpdateContractingChecklistInstanceInteractor {
 
     @CanSetProjectToContracted
@@ -64,5 +64,15 @@ class UpdateContractingChecklistInstance(
                 )
             )
         }
+    }
+
+    @CanSetProjectToContracted
+    @Transactional
+    @ExceptionWrapper(UpdateContractingChecklistInstanceException::class)
+    override fun updateContractingChecklistDescription(projectId: Long, checklistId: Long, description: String?): ChecklistInstance {
+        val checklist = persistence.getChecklistSummary(checklistId)
+        if (checklist.relatedToId != projectId || checklist.type != ProgrammeChecklistType.CONTRACTING)
+            throw UpdateContractingChecklistInstanceNotFoundException()
+        return persistence.updateDescription(checklistId, description)
     }
 }

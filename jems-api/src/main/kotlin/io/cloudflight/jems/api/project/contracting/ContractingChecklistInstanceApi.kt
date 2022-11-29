@@ -61,4 +61,12 @@ interface ContractingChecklistInstanceApi {
         @PathVariable projectId: Long,
         @PathVariable checklistId: Long
     )
+
+    @ApiOperation("Update description for checklist instance")
+    @PutMapping("$ENDPOINT_API_CONTRACTING_CHECKLIST_INSTANCE/description/{checklistId}", consumes = [MediaType.TEXT_PLAIN_VALUE])
+    fun updateContractingChecklistDescription(
+        @PathVariable projectId: Long,
+        @PathVariable checklistId: Long,
+        @RequestBody description: String?
+    ): ChecklistInstanceDTO
 }

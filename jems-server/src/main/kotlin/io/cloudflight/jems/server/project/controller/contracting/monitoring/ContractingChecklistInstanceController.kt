@@ -15,6 +15,8 @@ import io.cloudflight.jems.server.project.service.checklist.getDetail.contractin
 import io.cloudflight.jems.server.project.service.checklist.getInstances.contracting.GetContractingChecklistInstancesInteractor
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceStatus
 import io.cloudflight.jems.server.project.service.checklist.update.contracting.UpdateContractingChecklistInstanceInteractor
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RestController
 
 @RestController
@@ -54,4 +56,12 @@ class ContractingChecklistInstanceController(
 
     override fun deleteContractingChecklistInstance(projectId: Long, checklistId: Long) =
         deleteInteractor.deleteById(projectId, checklistId)
+
+    override fun updateContractingChecklistDescription(
+        @PathVariable projectId: Long,
+        @PathVariable checklistId: Long,
+        @RequestBody description: String?,
+    ): ChecklistInstanceDTO {
+        return updateInteractor.updateContractingChecklistDescription(projectId, checklistId, description).toDto()
+    }
 }

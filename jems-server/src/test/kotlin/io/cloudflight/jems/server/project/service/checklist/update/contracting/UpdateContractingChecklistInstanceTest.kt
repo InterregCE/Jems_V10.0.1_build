@@ -349,6 +349,7 @@ internal class UpdateContractingChecklistInstanceTest : UnitTest() {
             )
         } returns contractingChecklistDetailWithErrorOnOptionsToggle
         every { persistence.update(contractingChecklistDetailWithErrorOnOptionsToggle) } returns contractingChecklistDetailWithErrorOnOptionsToggle
+        every { userAuthorization.getUser().email } returns creatorEmail
 
         assertThrows<AppInputValidationException> {
             updateContractingChecklistInstance.update(
@@ -376,4 +377,26 @@ internal class UpdateContractingChecklistInstanceTest : UnitTest() {
             )
         }
     }
+
+    @Test
+    fun `update description`() {
+        every { persistence.updateDescription(checklistId, "test") } returns
+            contractingChecklistInstance(ChecklistInstanceStatus.FINISHED)
+        every { persistence.getChecklistSummary(checklistId) } returns contractingChecklistInstance(ChecklistInstanceStatus.DRAFT)
+        Assertions.assertThat(updateContractingChecklistInstance.updateContractingChecklistDescription(projectId, checklistId, "test"))
+            .isEqualTo(contractingChecklistInstance(ChecklistInstanceStatus.FINISHED))
+    }
+
+    @Test
+    fun `update description - invalid case`() {
+        every { persistence.getChecklistSummary(checklistId) } returns contractingChecklistInstance(ChecklistInstanceStatus.DRAFT)
+        assertThrows<UpdateContractingChecklistInstanceNotFoundException> {
+            updateContractingChecklistInstance.updateContractingChecklistDescription(
+                99L,
+                checklistId,
+                "test-update"
+            )
+        }
+    }
+
 }

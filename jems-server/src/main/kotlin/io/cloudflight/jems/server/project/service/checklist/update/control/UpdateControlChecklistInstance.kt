@@ -74,4 +74,19 @@ class UpdateControlChecklistInstance(
             )
         }
     }
+
+    @CanEditPartnerControlReport
+    @Transactional
+    @ExceptionWrapper(UpdateControlChecklistInstanceException::class)
+    override fun updateDescription(
+        partnerId: Long,
+        reportId: Long,
+        checklistId: Long,
+        description: String?
+    ): ChecklistInstance {
+        val checklist = persistence.getChecklistSummary(checklistId)
+        if (checklist.relatedToId != reportId || checklist.type != ProgrammeChecklistType.CONTROL)
+            throw UpdateControlChecklistInstanceNotFoundException()
+        return persistence.updateDescription(checklistId, description)
+    }
 }

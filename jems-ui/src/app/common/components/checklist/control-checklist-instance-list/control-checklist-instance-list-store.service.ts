@@ -79,4 +79,13 @@ export class ControlChecklistInstanceListStore {
         map(user => user?.name || '')
       );
   }
+
+  updateInstanceDescription(checklistId: number, partnerId: number, reportId: number, description: string): Observable<number> {
+    return this.controlChecklistInstanceService.updateControlChecklistDescription(checklistId, partnerId, reportId, description)
+      .pipe(
+        take(1),
+        tap(checklistInstance => Log.info('Updated control checklist instance description', this, checklistInstance)),
+        map(checklistInstance => checklistInstance.id)
+      );
+  }
 }

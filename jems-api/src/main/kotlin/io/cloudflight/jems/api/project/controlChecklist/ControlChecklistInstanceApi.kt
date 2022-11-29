@@ -69,4 +69,13 @@ interface ControlChecklistInstanceApi {
         @PathVariable reportId: Long,
         @PathVariable checklistId: Long
     )
+
+    @ApiOperation("Update description for checklist instance")
+    @PutMapping("$ENDPOINT_API_CONTROL_CHECKLIST_INSTANCE/description/{checklistId}", consumes = [MediaType.TEXT_PLAIN_VALUE])
+    fun updateControlChecklistDescription(
+        @PathVariable partnerId: Long,
+        @PathVariable reportId: Long,
+        @PathVariable checklistId: Long,
+        @RequestBody description: String?
+    ): ChecklistInstanceDTO
 }

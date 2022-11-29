@@ -43,4 +43,13 @@ class ControlChecklistInstanceController(
 
     override fun deleteControlChecklistInstance(partnerId: Long, reportId: Long, checklistId: Long) =
         deleteInteractor.deleteById(partnerId, reportId, checklistId)
+
+    override fun updateControlChecklistDescription(
+        partnerId: Long,
+        reportId: Long,
+        checklistId: Long,
+        description: String?
+    ): ChecklistInstanceDTO {
+        return updateInteractor.updateDescription(partnerId, reportId, checklistId, description).toDto()
+    }
 }
