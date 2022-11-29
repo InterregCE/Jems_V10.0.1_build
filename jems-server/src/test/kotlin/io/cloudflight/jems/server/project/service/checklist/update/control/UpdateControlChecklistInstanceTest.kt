@@ -435,4 +435,26 @@ internal class UpdateControlChecklistInstanceTest : UnitTest() {
             )
         }
     }
+
+    @Test
+    fun `update description`() {
+        every { persistence.updateDescription(checklistId, "test") } returns
+            controlChecklistInstance(ChecklistInstanceStatus.FINISHED)
+        every { persistence.getChecklistSummary(checklistId) } returns controlChecklistInstance(ChecklistInstanceStatus.DRAFT)
+        Assertions.assertThat(updateControlChecklistInstance.updateDescription(partnerId, reportId, checklistId, "test"))
+            .isEqualTo(controlChecklistInstance(ChecklistInstanceStatus.FINISHED))
+    }
+
+    @Test
+    fun `update description - invalid case`() {
+        every { persistence.getChecklistSummary(checklistId) } returns controlChecklistInstance(ChecklistInstanceStatus.DRAFT)
+        assertThrows<UpdateControlChecklistInstanceNotFoundException> {
+            updateControlChecklistInstance.updateDescription(
+                partnerId,
+                99L,
+                checklistId,
+                "test-update"
+            )
+        }
+    }
 }

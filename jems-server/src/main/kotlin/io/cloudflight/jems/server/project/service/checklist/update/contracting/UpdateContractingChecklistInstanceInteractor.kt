@@ -9,4 +9,6 @@ interface UpdateContractingChecklistInstanceInteractor {
     fun update(projectId: Long, checklist: ChecklistInstanceDetail): ChecklistInstanceDetail
 
     fun changeStatus(projectId: Long, checklistId: Long, status: ChecklistInstanceStatus): ChecklistInstance
+
+    fun updateContractingChecklistDescription(projectId: Long, checklistId: Long, description: String?): ChecklistInstance
 }

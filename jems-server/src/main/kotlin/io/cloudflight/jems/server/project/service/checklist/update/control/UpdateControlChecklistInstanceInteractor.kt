@@ -9,4 +9,6 @@ interface UpdateControlChecklistInstanceInteractor {
     fun update(partnerId: Long, reportId: Long, checklist: ChecklistInstanceDetail): ChecklistInstanceDetail
 
     fun changeStatus(partnerId: Long, reportId: Long, checklistId: Long, status: ChecklistInstanceStatus): ChecklistInstance
+
+    fun updateDescription(partnerId: Long, reportId: Long, checklistId: Long, description: String?): ChecklistInstance
 }
