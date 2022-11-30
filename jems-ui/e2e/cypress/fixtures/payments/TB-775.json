@@ -109,6 +109,7 @@
     {
       "programmeLumpSumId": 2,
       "period": 0,
+      "fastTrack": false,
       "lumpSumContributions": [
         {
           "partnerAbbreviation": "Lead Partner",
@@ -118,6 +119,7 @@
     }, {
       "programmeLumpSumId": null,
       "period": 2,
+      "fastTrack": true,
       "lumpSumContributions": [
         {
           "partnerAbbreviation": "Lead Partner",
@@ -127,6 +129,7 @@
     }, {
       "programmeLumpSumId": null,
       "period": 255,
+      "fastTrack": true,
       "lumpSumContributions": [
         {
           "partnerAbbreviation": "Lead Partner",
@@ -139,6 +142,7 @@
     }, {
       "programmeLumpSumId": null,
       "period": 7,
+      "fastTrack": true,
       "lumpSumContributions": [
         {
           "partnerAbbreviation": "Project Partner",

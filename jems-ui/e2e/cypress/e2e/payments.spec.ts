@@ -1,6 +1,7 @@
 import user from '../fixtures/users.json';
 import partner from '../fixtures/api/application/partner/partner.json';
 import approvalInfo from '../fixtures/api/application/modification/approval.info.json';
+import fastTrackLumpSum from '../fixtures/api/programme/fastTrackLumpSum.json';
 import {faker} from '@faker-js/faker';
 import date from 'date-and-time';
 import programmeEditorRole from "../fixtures/api/roles/programmeEditorRole.json";
@@ -21,7 +22,6 @@ context('Payments tests', () => {
     cy.fixture('payments/TB-775.json').then(testData => {
       cy.fixture('api/call/1.step.call.json').then(call => {
         cy.fixture('api/application/application.json').then(application => {
-          cy.fixture('api/programme/lumpSum.json').then(lumpSum => {
 
 
             // create a user with contracting and payments access 
@@ -36,9 +36,10 @@ context('Payments tests', () => {
             cy.loginByRequest(programmeEditorUser.email);
             cy.addProgrammeFund(testData.programmeFund).then(fundId => {
               // create two FTLS, first one to be used twice
-              cy.createLumpSum(lumpSum).then(lumpSumId1 => {
-                lumpSum.cost = 649.99;
-                cy.createLumpSum(lumpSum).then(lumpSumId2 => {
+              cy.createLumpSum(fastTrackLumpSum).then(lumpSumId1 => {
+                const fastTrackLumpSum2 = {...fastTrackLumpSum};
+                fastTrackLumpSum2.cost = 649.99;
+                cy.createLumpSum(fastTrackLumpSum2).then(lumpSumId2 => {
 
                   // customize the call
                   call.generalCallSettings.additionalFundAllowed = true;
@@ -63,15 +64,17 @@ context('Payments tests', () => {
                     application.lumpSums = testData.projectLumpSums;
                     cy.loginByRequest(user.applicantUser.email);
                     cy.createContractedApplication(application, user.programmeUser.email).then(function (applicationId) {
+                      cy.log(testData.projectLumpSums);
 
                       cy.loginByRequest(testData.paymentsUser.email);
                       cy.visit(`app/project/detail/${applicationId}/contractMonitoring`, {failOnStatusCode: false});
 
+                      
                       setReadyForPayment(true, 1);
 
                       cy.contains('Payments').click();
                       cy.get('table mat-row').then(row => {
-                        expect(row).has.lengthOf(1);
+                        expect(row).has.length.of.at.least(1);
                         expect(row.get(0).childNodes[1]).to.contain('FTLS');
                         expect(row.get(0).childNodes[2]).to.contain(applicationId);
                         expect(row.get(0).childNodes[3]).to.contain(application.identification.acronym);
@@ -90,7 +93,7 @@ context('Payments tests', () => {
 
                       cy.contains('Payments').click();
                       cy.get('table mat-row').then(row => {
-                        expect(row).has.lengthOf(2);
+                        expect(row).has.length.of.at.least(2);
                         expect(row.get(0).childNodes[2]).to.contain(applicationId);
 
                         expect(row.get(0).childNodes[8]).to.contain('NEIGHBOURHOOD_CBC');
@@ -108,7 +111,7 @@ context('Payments tests', () => {
 
                       cy.contains('Payments').click();
                       cy.get('table mat-row').then(row => {
-                        expect(row).has.lengthOf(2);
+                        expect(row).has.length.of.at.least(2);
                         expect(row.get(0).childNodes[2]).to.contain(applicationId);
 
                         expect(row.get(0).childNodes[8]).to.contain('NEIGHBOURHOOD_CBC');
@@ -134,7 +137,7 @@ context('Payments tests', () => {
                       cy.visit('app/payments', {failOnStatusCode: false});
 
                       cy.get('table mat-row').then(row => {
-                        expect(row).has.lengthOf(2);
+                        expect(row).has.length.of.at.least(2);
                         expect(row.get(0).childNodes[2]).to.contain(applicationId);
 
                         expect(row.get(0).childNodes[8]).to.contain('NEIGHBOURHOOD_CBC');
@@ -152,7 +155,7 @@ context('Payments tests', () => {
 
                       cy.contains('Payments').click();
                       cy.get('table mat-row').then(row => {
-                        expect(row).has.lengthOf(3);
+                        expect(row).has.length.of.at.least(3);
                         expect(row.get(0).childNodes[2]).to.contain(applicationId);
                         expect(row.get(0).childNodes[7]).to.contain('1.999,00');
                         expect(row.get(0).childNodes[8]).to.contain('OTHER');
@@ -176,12 +179,12 @@ context('Payments tests', () => {
         });
       });
     });
-  });
 });
 
 function setReadyForPayment(flag, rowIndex) {
   const ready = flag ? 'Yes' : 'No';
   cy.get('div.jems-table-config').eq(1).children().eq(rowIndex).contains(ready).click();
+  cy.wait(1000);
   cy.contains('Save changes').should('be.visible').click();
   cy.contains('Contract monitoring form saved successfully.').should('be.visible');
 }

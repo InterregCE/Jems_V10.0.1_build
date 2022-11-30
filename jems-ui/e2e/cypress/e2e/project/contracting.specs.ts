@@ -2,6 +2,7 @@ import user from '../../fixtures/users.json';
 import application from '../../fixtures/api/application/application.json';
 import approvalInfo from '../../fixtures/api/application/modification/approval.info.json';
 import call from '../../fixtures/api/call/1.step.call.json';
+import rejectionInfo from '../../fixtures/api/application/modification/rejection.info.json';
 import {faker} from '@faker-js/faker';
 
 context('Application contracting tests', () => {
@@ -108,10 +109,6 @@ context('Application contracting tests', () => {
       cy.createUser(testData.applicationUser);
       testData.anotherUser.email = faker.internet.email();
       cy.createUser(testData.anotherUser);
-      cy.createCall(call).then(callId => {
-        application.details.projectCallId = callId;
-        cy.publishCall(callId);
-      })
       cy.loginByRequest(testData.applicationUser.email);
       cy.createApprovedApplication(application, user.admin.email).then(applicationId => {
         cy.loginByRequest(testData.applicationUser.email);
@@ -136,6 +133,50 @@ context('Application contracting tests', () => {
         cy.loginByRequest(user.programmeUser.email);
         cy.visit(`/app/project/detail/${applicationId}`, {failOnStatusCode: false});
         cy.contains('mat-expansion-panel', 'Contracting').contains('Project Monitoring').should('not.exist');
+      });
+    });
+  });
+
+  it('TB-873 Fast Track Lump Sum can be set as Ready for payment', () => {
+    cy.fixture('project/contracting/TB-750.json').then(testData => {
+      cy.loginByRequest(user.applicantUser.email);
+      cy.createApprovedApplication(application, user.programmeUser.email).then(applicationId => {
+        cy.loginByRequest(user.programmeUser.email);
+        cy.visit(`/app/project/detail/${applicationId}`, {failOnStatusCode: false});
+        cy.contains('Contract monitoring').click();
+
+        cy.get('.jems-table-config > div').last().within(() => {
+          cy.contains(testData.fastTrackLumpSum.name).scrollIntoView().should('be.visible');
+          cy.contains(testData.fastTrackLumpSum.amount).should('be.visible');
+          cy.contains(testData.fastTrackLumpSum.period).should('be.visible');
+          cy.get('textarea').type(testData.fastTrackLumpSum.comment);
+          cy.contains('Yes').click();
+        });
+        cy.contains('Save changes').should('be.visible').click();
+        cy.contains('Contract monitoring form saved successfully.').should('be.visible');
+        
+        cy.startModification(applicationId);
+        cy.reload();
+        cy.get('.jems-table-config > div').last().find('button').should('be.disabled');
+        cy.get('.jems-table-config > div').last().find('textarea').should('be.disabled');
+        cy.loginByRequest(user.applicantUser.email);
+        cy.visit(`/app/project/detail/${applicationId}/applicationFormLumpSums`, {failOnStatusCode: false});
+        cy.contains('button', 'add').should('be.enabled');
+        cy.contains('mat-select', testData.fastTrackLumpSum.name).should('have.class', 'mat-select-disabled');
+        cy.submitProjectApplication(applicationId);
+
+        cy.loginByRequest(user.programmeUser.email);
+        cy.rejectModification(applicationId, rejectionInfo);
+        cy.visit(`/app/project/detail/${applicationId}/contractMonitoring`, {failOnStatusCode: false});
+        cy.get('.jems-table-config > div').last().find('button').should('be.enabled');
+        cy.get('.jems-table-config > div').last().contains('No').click();
+        cy.contains('Save changes').should('be.visible').click();
+        cy.contains('Contract monitoring form saved successfully.').should('be.visible');
+        cy.startModification(applicationId);
+        
+        cy.loginByRequest(user.applicantUser.email);
+        cy.visit(`/app/project/detail/${applicationId}/applicationFormLumpSums`, {failOnStatusCode: false});
+        cy.contains('mat-select', testData.fastTrackLumpSum.name).should('not.have.class', 'mat-select-disabled');
       });
     });
   });
