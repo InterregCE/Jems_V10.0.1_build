@@ -1,0 +1,8 @@
+{
+  "fastTrackLumpSum": {
+    "name": "Preparation Lump sum",
+    "amount": "55.555,56",
+    "period": "Preparation",
+    "comment": "Some comment for the FTLS"
+  }
+}
