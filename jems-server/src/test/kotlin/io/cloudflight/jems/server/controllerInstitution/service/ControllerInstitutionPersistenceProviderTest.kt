@@ -384,23 +384,6 @@ class ControllerInstitutionPersistenceProviderTest : UnitTest() {
     }
 
     @Test
-    fun getInstitutionPartnerAssignmentsByInstitutionId() {
-        val institution = mockk<ControllerInstitutionEntity>()
-        every { institution.id } returns 500L
-
-        val controllerInstitution = ControllerInstitutionPartnerEntity(
-            partnerId = 520L, institution = institution, partnerProjectId = 20L,
-        )
-        val expectedAssignment = InstitutionPartnerAssignment(
-            partnerId = 520L, institutionId = 500L, partnerProjectId = 20L,
-        )
-
-        every { institutionPartnerRepository.findAllByPartnerIdIn(setOf(520L)) } returns listOf(controllerInstitution)
-        assertThat(controllerInstitutionPersistenceProvider.getInstitutionPartnerAssignmentsByPartnerIdsIn(setOf(520L)))
-            .containsExactly(expectedAssignment)
-    }
-
-    @Test
     fun getInstitutionPartnerAssignmentsByPartnerIdsIn() {
         val institution = mockk<ControllerInstitutionEntity>()
         every { institution.id } returns 400L

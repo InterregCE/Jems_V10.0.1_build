@@ -29,6 +29,7 @@ import io.cloudflight.jems.server.call.repository.ProjectCallStateAidRepository
 import io.cloudflight.jems.server.call.repository.toModel
 import io.cloudflight.jems.server.call.service.model.CallCostOption
 import io.cloudflight.jems.server.call.service.model.FieldVisibilityStatus
+import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.programme.entity.ProgrammePriorityEntity
 import io.cloudflight.jems.server.programme.entity.ProgrammeSpecificObjectiveEntity
 import io.cloudflight.jems.server.programme.entity.costoption.ProgrammeLumpSumBudgetCategoryEntity
@@ -52,11 +53,15 @@ import io.cloudflight.jems.server.project.entity.ProjectStatusHistoryEntity
 import io.cloudflight.jems.server.project.entity.assessment.ProjectAssessmentEligibilityEntity
 import io.cloudflight.jems.server.project.entity.assessment.ProjectAssessmentId
 import io.cloudflight.jems.server.project.entity.assessment.ProjectAssessmentQualityEntity
+import io.cloudflight.jems.server.project.entity.partneruser.UserPartnerCollaboratorEntity
+import io.cloudflight.jems.server.project.entity.projectuser.ProjectCollaboratorLevel
+import io.cloudflight.jems.server.project.entity.projectuser.UserProjectCollaboratorEntity
 import io.cloudflight.jems.server.project.repository.assessment.ProjectAssessmentEligibilityRepository
 import io.cloudflight.jems.server.project.repository.assessment.ProjectAssessmentQualityRepository
 import io.cloudflight.jems.server.project.repository.partneruser.UserPartnerCollaboratorRepository
 import io.cloudflight.jems.server.project.repository.projectuser.UserProjectCollaboratorRepository
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
+import io.cloudflight.jems.server.project.service.model.ProjectApplicantAndStatus
 import io.cloudflight.jems.server.project.service.model.ProjectAssessment
 import io.cloudflight.jems.server.project.service.model.ProjectCallSettings
 import io.cloudflight.jems.server.project.service.model.ProjectFull
@@ -268,6 +273,9 @@ internal class ProjectPersistenceProviderTest : UnitTest() {
     @MockK
     lateinit var programmePriorityRepository: ProgrammePriorityRepository
 
+    @MockK
+    lateinit var controllerInstitutionPersistence: ControllerInstitutionPersistence
+
     private lateinit var persistence: ProjectPersistenceProvider
 
     @BeforeEach
@@ -286,7 +294,45 @@ internal class ProjectPersistenceProviderTest : UnitTest() {
             callRepository,
             stateAidRepository,
             applicationFormFieldConfigurationRepository,
-            programmePriorityRepository
+            programmePriorityRepository,
+            controllerInstitutionPersistence,
+        )
+    }
+
+    @Test
+    fun getApplicantAndStatusById() {
+        val partnerCollab_17 = mockk<UserPartnerCollaboratorEntity>()
+        every { partnerCollab_17.id.userId } returns 17L
+        val projectCollab_19_view = mockk<UserProjectCollaboratorEntity>()
+        every { projectCollab_19_view.id.userId } returns 19L
+        every { projectCollab_19_view.level } returns ProjectCollaboratorLevel.VIEW
+        val projectCollab_20_edit = mockk<UserProjectCollaboratorEntity>()
+        every { projectCollab_20_edit.id.userId } returns 20L
+        every { projectCollab_20_edit.level } returns ProjectCollaboratorLevel.EDIT
+        val projectCollab_21_manage = mockk<UserProjectCollaboratorEntity>()
+        every { projectCollab_21_manage.id.userId } returns 21L
+        every { projectCollab_21_manage.level } returns ProjectCollaboratorLevel.MANAGE
+
+        every { partnerCollaboratorRepository.findAllByProjectId(977L) } returns listOf(partnerCollab_17)
+        every { controllerInstitutionPersistence.getRelatedUserIdsForProject(977L) } returns setOf(18L)
+        every { projectCollaboratorRepository.findAllByIdProjectId(977L) } returns
+            listOf(projectCollab_19_view, projectCollab_20_edit, projectCollab_21_manage)
+
+        val project = mockk<ProjectEntity>()
+        every { project.id } returns 977L
+        every { project.applicant.id } returns 16L
+        every { project.currentStatus.status } returns ApplicationStatus.ELIGIBLE
+        every { projectRepository.getById(977L) } returns project
+
+        assertThat(persistence.getApplicantAndStatusById(977L)).isEqualTo(
+            ProjectApplicantAndStatus(
+                projectId = 977L,
+                applicantId = 16L,
+                collaboratorViewIds = setOf(19L, 18L, 17L),
+                collaboratorEditIds = setOf(20L),
+                collaboratorManageIds = setOf(21L),
+                projectStatus = ApplicationStatus.ELIGIBLE,
+            )
         )
     }
 
@@ -740,5 +786,5 @@ internal class ProjectPersistenceProviderTest : UnitTest() {
                 "&& projectEntity.call.id = 12 " +
                 "&& any(projectEntity.assignedUsers).id.userId = 99")
     }
-    
+
 }

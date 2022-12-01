@@ -4,6 +4,7 @@ import io.cloudflight.jems.server.call.repository.ApplicationFormFieldConfigurat
 import io.cloudflight.jems.server.call.repository.CallRepository
 import io.cloudflight.jems.server.call.repository.ProjectCallStateAidRepository
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
+import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.programme.entity.ProgrammePriorityEntity
 import io.cloudflight.jems.server.programme.repository.priority.ProgrammePriorityRepository
 import io.cloudflight.jems.server.project.entity.ProjectEntity
@@ -47,7 +48,8 @@ class ProjectPersistenceProvider(
     private val callRepository: CallRepository,
     private val stateAidRepository: ProjectCallStateAidRepository,
     private val applicationFormFieldConfigurationRepository: ApplicationFormFieldConfigurationRepository,
-    private val programmePriorityRepository: ProgrammePriorityRepository
+    private val programmePriorityRepository: ProgrammePriorityRepository,
+    private val controllerInstitutionPersistence: ControllerInstitutionPersistence,
 ) : ProjectPersistence {
 
     @Transactional(readOnly = true)
@@ -95,12 +97,13 @@ class ProjectPersistenceProvider(
 
     @Transactional(readOnly = true)
     override fun getApplicantAndStatusById(id: Long): ProjectApplicantAndStatus {
-        val partnerCollaborators = partnerCollaboratorRepository.findAllByProjectId(id).map { it.id.userId }
+        val partnerCollaborators = partnerCollaboratorRepository.findAllByProjectId(id).mapTo(HashSet()) { it.id.userId }
+        val partnerControllers = controllerInstitutionPersistence.getRelatedUserIdsForProject(projectId = id)
         val collaboratorsByLevel = projectCollaboratorRepository.findAllByIdProjectId(id)
             .groupBy { it.level }
             .mapValues { it.value.map { collaborator -> collaborator.id.userId }.toSet() }
         return projectRepository.getById(id).toApplicantAndStatus(
-            collaboratorViewIds = (collaboratorsByLevel[VIEW] ?: emptySet()) union partnerCollaborators,
+            collaboratorViewIds = (collaboratorsByLevel[VIEW] ?: emptySet()) union partnerCollaborators union partnerControllers,
             collaboratorEditIds = collaboratorsByLevel[EDIT] ?: emptySet(),
             collaboratorManageIds = collaboratorsByLevel[MANAGE] ?: emptySet(),
         )

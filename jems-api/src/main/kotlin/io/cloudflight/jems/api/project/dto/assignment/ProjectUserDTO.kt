@@ -1,6 +1,7 @@
 package io.cloudflight.jems.api.project.dto.assignment
 
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
+import io.cloudflight.jems.api.user.dto.UserSummaryDTO
 
 data class ProjectUserDTO(
     val id: String?,
@@ -8,5 +9,5 @@ data class ProjectUserDTO(
     val acronym: String,
     val projectStatus: ApplicationStatusDTO,
     val relatedCall: String,
-    val users: Set<Long>,
+    val users: Set<UserSummaryDTO>,
 )

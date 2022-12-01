@@ -5,7 +5,6 @@ import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.audit.model.AuditCandidateEvent
 import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerAssignment
-import io.cloudflight.jems.server.controllerInstitution.service.updateInstitutionUsersProjectAssignment.UpdateInstitutionUsersProjectAssignmentInteractor
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -45,9 +44,6 @@ class CheckInstitutionPartnerAssignmentsTest: UnitTest() {
     lateinit var controllerInstitutionPersistence: ControllerInstitutionPersistence
 
     @RelaxedMockK
-    lateinit var updateInstitutionUsersProjectAssignment: UpdateInstitutionUsersProjectAssignmentInteractor
-
-    @RelaxedMockK
     lateinit var auditPublisher: ApplicationEventPublisher
 
     @InjectMockKs
@@ -57,7 +53,6 @@ class CheckInstitutionPartnerAssignmentsTest: UnitTest() {
     @BeforeEach
     fun resetMocks() {
         clearMocks(controllerInstitutionPersistence)
-        clearMocks(updateInstitutionUsersProjectAssignment)
         clearMocks(auditPublisher)
     }
 
@@ -77,11 +72,6 @@ class CheckInstitutionPartnerAssignmentsTest: UnitTest() {
         verify(exactly = 1) {  controllerInstitutionPersistence.assignInstitutionToPartner(
             partnerIdsToRemove = setOf(1L, 2L, 3L),
             assignmentsToSave = emptyList()
-        )}
-        verify(exactly = 1) { updateInstitutionUsersProjectAssignment.updateInstitutionUsersProjectAssignment(
-            removedAssignments = institutionPartnerAssignments,
-            savedOrUpdatedAssignments = emptyList(),
-            existingAssignmentsBeforeUpdate = institutionPartnerAssignments
         )}
         val slotAudit = slot<AuditCandidateEvent>()
         verify(exactly = 1) { auditPublisher.publishEvent(capture(slotAudit)) }
@@ -113,11 +103,6 @@ class CheckInstitutionPartnerAssignmentsTest: UnitTest() {
         verify(exactly = 1) {  controllerInstitutionPersistence.assignInstitutionToPartner(
             partnerIdsToRemove = setOf(1L, 2L, 3L),
             assignmentsToSave = emptyList()
-        )}
-        verify(exactly = 1) { updateInstitutionUsersProjectAssignment.updateInstitutionUsersProjectAssignment(
-            removedAssignments = institutionPartnerAssignments,
-            savedOrUpdatedAssignments = emptyList(),
-            existingAssignmentsBeforeUpdate = institutionPartnerAssignments
         )}
         val slotAudit = slot<AuditCandidateEvent>()
         verify(exactly = 1) { auditPublisher.publishEvent(capture(slotAudit)) }

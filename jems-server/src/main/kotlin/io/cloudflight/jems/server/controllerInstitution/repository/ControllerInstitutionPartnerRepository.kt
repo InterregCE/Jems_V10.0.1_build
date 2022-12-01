@@ -82,6 +82,16 @@ interface ControllerInstitutionPartnerRepository: JpaRepository<ControllerInstit
     )
     fun getInstitutionPartnerAssignmentsWithUsersByPartnerProjectIdsIn(partnerProjectIds: Set<Long>): List<InstitutionPartnerAssignmentWithUsers>
 
+    @Query("""
+        SELECT ciu.id.user.id
+        FROM #{#entityName} AS cip
+            INNER JOIN project_partner AS pp
+                ON cip.partnerId = pp.id AND pp.project.id = :projectId
+            LEFT JOIN controller_institution_user AS ciu
+                ON ciu.id.controllerInstitutionId = cip.institution.id
+    """)
+    fun getRelatedUserIdsForProject(projectId: Long): Set<Long>
+
     @Query(
         """
         SELECT ciu.accessLevel
@@ -92,6 +102,17 @@ interface ControllerInstitutionPartnerRepository: JpaRepository<ControllerInstit
         """
     )
     fun getControllerUserAccessLevelForPartner(userId: Long, partnerId: Long): UserInstitutionAccessLevel?
+
+    @Query("""
+        SELECT new kotlin.Pair(pp.project.id, pp.id)
+        FROM controller_institution_user AS ciu
+            LEFT JOIN #{#entityName} AS cip
+                ON ciu.id.controllerInstitutionId = cip.institution.id
+            LEFT JOIN project_partner pp
+                ON cip.partnerId = pp.id
+        WHERE ciu.id.user.id = :userId
+    """)
+    fun getRelatedProjectIdsForUser(userId: Long): List<Pair<Long, Long>>
 
 
     // Returns institution-partner assignments to delete if project partners nuts do not match the institution nuts

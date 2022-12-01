@@ -4,6 +4,7 @@ import io.cloudflight.jems.api.call.dto.CallType
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.authentication.model.LocalCurrentUser
 import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.project.authorization.AuthorizationUtil.Companion.userApplicant
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
@@ -70,6 +71,9 @@ internal class GetProjectTest : UnitTest() {
     lateinit var partnerCollaboratorPersistence: UserPartnerCollaboratorPersistence
 
     @MockK
+    lateinit var controllerInstitutionPersistence: ControllerInstitutionPersistence
+
+    @MockK
     lateinit var securityService: SecurityService
 
     @InjectMockKs
@@ -91,9 +95,11 @@ internal class GetProjectTest : UnitTest() {
         every { securityService.getUserIdOrThrow() } returns user.user.id
         every { projectCollaboratorPersistence.getProjectIdsForUser(44L) } returns setOf(11L, 12L)
         every { partnerCollaboratorPersistence.getProjectIdsForUser(44L) } returns setOf(13L, 14L)
+        every { controllerInstitutionPersistence.getRelatedProjectAndPartnerIdsForUser(44L) } returns
+            mapOf(15L to setOf(49786L), 16L to setOf(14425L))
 
         assertThat(getProject.getMyProjects(Pageable.unpaged()).content).containsExactly(dummyProject)
-        assertThat(extraProjectIds.captured).containsExactlyInAnyOrder(10L, 11L, 12L, 13L, 14L)
+        assertThat(extraProjectIds.captured).containsExactlyInAnyOrder(10L, 11L, 12L, 13L, 14L, 15L, 16L)
     }
 
 }

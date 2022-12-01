@@ -6,7 +6,6 @@ import io.cloudflight.jems.server.controllerInstitution.authorization.CanAssignI
 import io.cloudflight.jems.server.controllerInstitution.service.institutionPartnerAssignmentsChanged
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionAssignment
 import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerAssignment
-import io.cloudflight.jems.server.controllerInstitution.service.updateInstitutionUsersProjectAssignment.UpdateInstitutionUsersProjectAssignment
 import io.cloudflight.jems.server.project.repository.partner.PartnerPersistenceProvider
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import org.springframework.context.ApplicationEventPublisher
@@ -18,7 +17,6 @@ class AssignInstitutionToPartner(
     private val controllerInstitutionPersistence: ControllerInstitutionPersistence,
     private val partnerPersistence: PartnerPersistenceProvider,
     private val auditPublisher: ApplicationEventPublisher,
-    private val updateInstitutionUsersProjectAssignment: UpdateInstitutionUsersProjectAssignment
 ) : AssignInstitutionToPartnerInteractor {
 
     @CanAssignInstitutionToPartner
@@ -30,7 +28,6 @@ class AssignInstitutionToPartner(
         val assignmentsToSaveOrUpdate = institutionPartnerAssignments.assignmentsToAdd
 
         val assignmentsPartnerIds = assignmentsToSaveOrUpdate.map { it.partnerId }.union(assignmentsToRemove.map { it.partnerId })
-        val existingAssignmentsBeforeUpdate = controllerInstitutionPersistence.getInstitutionPartnerAssignmentsByPartnerIdsIn(assignmentsPartnerIds)
 
         val partnerToProjectIdMap = partnerPersistence.getPartnerProjectIdByPartnerIdAndProjectStatusIn(
             assignmentsPartnerIds, setOf(
@@ -54,11 +51,6 @@ class AssignInstitutionToPartner(
             partnerIdsToRemove = assignmentsToRemove.mapTo(HashSet()) { it.partnerId },
             assignmentsToSave = assignmentsToSaveOrUpdate
         ).also {
-            updateInstitutionUsersProjectAssignment.updateInstitutionUsersProjectAssignment(
-                assignmentsToSaveOrUpdate,
-                assignmentsToRemove,
-                existingAssignmentsBeforeUpdate,
-            )
             auditPublisher.publishEvent(
                 institutionPartnerAssignmentsChanged(
                     context = this,

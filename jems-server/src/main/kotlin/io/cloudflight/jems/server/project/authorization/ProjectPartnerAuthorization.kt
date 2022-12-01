@@ -30,7 +30,7 @@ annotation class CanRetrieveProjectPartnerSummaries
 
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectPartnerAuthorization.canRetrievePartnerReports(#projectId)")
+@PreAuthorize("@projectAuthorization.hasPermission('ProjectReportingView', #projectId) || @projectPartnerAuthorization.canRetrievePartnerReports(#projectId)")
 annotation class CanRetrieveProjectPartnerReports
 
 
@@ -64,9 +64,10 @@ class ProjectPartnerAuthorization(
         throw ResourceNotFoundException("partner")
     }
 
-    fun canRetrievePartnerReports(projectId: Long) =
-        hasViewOrEditReportingPermission(projectId) || findAllPartnerCollaboratorsOfCurrentUser(projectId).isNotEmpty()
-
+    fun canRetrievePartnerReports(projectId: Long): Boolean {
+        val project = projectPersistence.getApplicantAndStatusById(projectId)
+        return isActiveUserIdEqualToOneOf(project.getUserIdsWithViewLevel())
+    }
 
     private fun getProjectFromPartnerId(partnerId: Long, version: String? = null): ProjectApplicantAndStatus {
         return projectPersistence.getApplicantAndStatusById(
@@ -74,14 +75,4 @@ class ProjectPartnerAuthorization(
         )
     }
 
-    private fun hasViewOrEditReportingPermission(projectId: Long): Boolean {
-        return hasPermissionForProject(UserRolePermission.ProjectReportingView, projectId) ||
-            hasPermissionForProject(UserRolePermission.ProjectReportingEdit, projectId)
-    }
-
-    private fun findAllPartnerCollaboratorsOfCurrentUser(projectId: Long): Set<PartnerCollaborator> {
-        return partnerCollaboratorPersistence.findPartnersByUserAndProject(
-            securityService.getUserIdOrThrow(), projectId
-        )
-    }
 }

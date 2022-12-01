@@ -32,7 +32,7 @@ class GetUsersAssignedToProjects(
                 acronym = it.acronym,
                 projectStatus = it.status,
                 relatedCall = it.callName,
-                users = userProjectPersistence.getUserIdsForProject(it.id)
+                users = userProjectPersistence.getUsersForProject(it.id),
             )
         }
     }

@@ -5,11 +5,13 @@ import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.project.authorization.AuthorizationUtilService
 import io.cloudflight.jems.server.project.authorization.ProjectAuthorization
 import io.cloudflight.jems.server.project.authorization.ProjectContractingPartnerAuthorization
+import io.cloudflight.jems.server.project.authorization.ProjectReportAuthorization
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.contracting.partner.bankingDetails.ContractingPartnerBankingDetails
 import io.cloudflight.jems.server.project.service.contracting.partner.bankingDetails.ContractingPartnerBankingDetailsPersistence
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.UserPartnerCollaboratorPersistence
+import io.cloudflight.jems.server.project.service.projectuser.UserProjectCollaboratorPersistence
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -71,6 +73,12 @@ internal class UpdateContractingPartnerBankingDetailsTest : UnitTest() {
 
     @MockK
     lateinit var partnerCollaboratorPersistence: UserPartnerCollaboratorPersistence
+
+    @MockK
+    lateinit var projectCollaboratorPersistence: UserProjectCollaboratorPersistence
+
+    @MockK
+    lateinit var projectReportAuthorization: ProjectReportAuthorization
 
     @MockK
     lateinit var bankingDetailsPersistence: ContractingPartnerBankingDetailsPersistence
