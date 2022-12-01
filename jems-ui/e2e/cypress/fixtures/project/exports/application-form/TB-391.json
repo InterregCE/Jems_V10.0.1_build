@@ -66,6 +66,7 @@
     },
     "preSubmissionCheckSettings": {
       "pluginKey": "jems-pre-condition-check-off",
+      "reportPartnerCheckPluginKey": "report-example-check",
       "callHasTwoSteps": false
     }
   },

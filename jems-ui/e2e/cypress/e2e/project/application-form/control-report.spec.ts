@@ -3,6 +3,8 @@ import call from '../../../fixtures/api/call/1.step.call.json';
 import application from '../../../fixtures/api/application/application.json';
 import partner from '../../../fixtures/api/application/partner/partner.json';
 import approvalInfo from '../../../fixtures/api/application/modification/approval.info.json';
+import partnerReportIdentification from '../../../fixtures/api/partnerReport/partnerReportIdentification.json';
+import partnerReportExpenditures from '../../../fixtures/api/partnerReport/partnerReportExpenditures.json';
 import {faker} from "@faker-js/faker";
 
 context('Control report tests', () => {
@@ -50,10 +52,16 @@ context('Control report tests', () => {
             cy.addPartnerReport(partnerId1);
             cy.addPartnerReport(partnerId1).then(reportId => {
               cy.wrap(reportId).as('reportId');
+              cy.updatePartnerReportIdentification(partnerId1, reportId, partnerReportIdentification);
+              cy.updatePartnerReportExpenditures(partnerId1, reportId, partnerReportExpenditures);
+              cy.runPreSubmissionPartnerReportCheck(partnerId1, reportId);
               cy.submitPartnerReport(partnerId1, reportId);
             });
             cy.addPartnerReport(partnerId2);
             cy.addPartnerReport(partnerId2).then(reportId => {
+              cy.updatePartnerReportIdentification(partnerId2, reportId, partnerReportIdentification);
+              cy.updatePartnerReportExpenditures(partnerId2, reportId, partnerReportExpenditures);
+              cy.runPreSubmissionPartnerReportCheck(partnerId2, reportId);
               cy.submitPartnerReport(partnerId2, reportId);
             });
 
@@ -102,6 +110,9 @@ context('Control report tests', () => {
 
             cy.loginByRequest(user.applicantUser.email);
             cy.addPartnerReport(partnerId1).then(reportId => {
+              cy.updatePartnerReportIdentification(partnerId1, reportId, partnerReportIdentification);
+              cy.updatePartnerReportExpenditures(partnerId1, reportId, partnerReportExpenditures);
+              cy.runPreSubmissionPartnerReportCheck(partnerId1, reportId);
               cy.submitPartnerReport(partnerId1, reportId);
               cy.loginByRequest(testData.controllerUser.email);
               cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId1}/reports`, {failOnStatusCode: false});
