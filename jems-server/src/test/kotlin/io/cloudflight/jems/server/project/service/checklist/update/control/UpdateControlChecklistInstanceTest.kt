@@ -37,6 +37,7 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDe
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerMotivation
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVatRecovery
+import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
 import io.cloudflight.jems.server.user.service.authorization.UserAuthorization
 import io.cloudflight.jems.server.utils.user
 import io.mockk.MockKAnnotations
@@ -64,9 +65,7 @@ internal class UpdateControlChecklistInstanceTest : UnitTest() {
     private val creatorEmail = "a@a"
     private val notCreatorEmail = "b@b"
     private val projectId = 7L
-    private val partnerName = "PP2"
-    private val path = "$partnerName partner/Partner report R.${reportId}/Control report"
-
+    private val controlReportId = 2
     private val controlChecklistDetail = controlChecklistInstanceDetail()
 
     private fun controlChecklistInstanceDetail(status: ChecklistInstanceStatus = ChecklistInstanceStatus.DRAFT) =
@@ -254,6 +253,9 @@ internal class UpdateControlChecklistInstanceTest : UnitTest() {
     lateinit var securityService: SecurityService
 
     @MockK
+    lateinit var reportPersistence: ProjectReportPersistence
+
+    @MockK
     lateinit var partnerPersistence: PartnerPersistence
 
     lateinit var updateControlChecklistInstance: UpdateControlChecklistInstance
@@ -276,7 +278,8 @@ internal class UpdateControlChecklistInstanceTest : UnitTest() {
                 auditPublisher,
                 checklistInstanceValidator,
                 userAuthorization,
-                partnerPersistence
+                partnerPersistence,
+                reportPersistence
             )
     }
 
@@ -329,6 +332,7 @@ internal class UpdateControlChecklistInstanceTest : UnitTest() {
         every { securityService.getUserIdOrThrow() } returns user.id
         every { partnerPersistence.getProjectIdForPartnerId(partnerId) } returns projectId
         every { partnerPersistence.getById(partnerId) } returns projectPartner
+        every { reportPersistence.getPartnerReportById(partnerId, reportId).reportNumber } returns controlReportId
         every {
             persistence.getChecklistSummary(
                 checklistId,
@@ -352,8 +356,8 @@ internal class UpdateControlChecklistInstanceTest : UnitTest() {
             AuditCandidate(
                 action = AuditAction.CHECKLIST_STATUS_CHANGE,
                 project = AuditProject(id = projectId.toString()),
-                description = "Checklist '${controlChecklistDetail.id}' type '${controlChecklistDetail.type}' name '${controlChecklistDetail.name}' " +
-                        "in '${path}' changed status from 'DRAFT' to 'FINISHED'"
+                description = "Checklist ${controlChecklistDetail.id} type ${controlChecklistDetail.type} name ${controlChecklistDetail.name} " +
+                        "for partner PP2 and partner report R.$controlReportId changed status from 'DRAFT' to 'FINISHED'"
             )
         )
     }

@@ -40,9 +40,9 @@
         <jems-pending-button
                 *ngIf="data.checklist.status === Status.FINISHED && (userCanEditControlChecklists$ | async)"
                 class="mr-2" type="secondary"
-                [confirm]="confirmUnfinish"
+                [confirm]="confirmReturnToInitiator"
                 (clicked)="updateStatus(data.checklist.id, Status.DRAFT)">
-            {{'checklists.instance.unfinish' | translate : {name: data.checklist.creatorEmail} }}
+            {{'checklists.instance.return.to.initiator.button' | translate : {name: data.checklist.creatorEmail} }}
         </jems-pending-button>
 
     </jems-checklist-answers>

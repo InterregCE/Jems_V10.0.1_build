@@ -5,7 +5,7 @@ import io.cloudflight.jems.server.programme.service.checklist.model.ProgrammeChe
 import io.cloudflight.jems.server.project.authorization.CanSetProjectToContracted
 import io.cloudflight.jems.server.project.service.checklist.ChecklistInstancePersistence
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceStatus
-import io.cloudflight.jems.server.project.service.checklist.projectChecklistDeleted
+import io.cloudflight.jems.server.project.service.checklist.projectContractingChecklistDeleted
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -28,12 +28,10 @@ class DeleteContractingChecklistInstance(
 
         persistence.deleteById(checklistId).also {
             auditPublisher.publishEvent(
-                projectChecklistDeleted(
+                projectContractingChecklistDeleted(
                     context = this,
                     checklist = checklistToBeDeleted,
-                    projectId = projectId,
-                    partner = null,
-                    reportId = null
+                    projectId = projectId
                 )
             )
         }

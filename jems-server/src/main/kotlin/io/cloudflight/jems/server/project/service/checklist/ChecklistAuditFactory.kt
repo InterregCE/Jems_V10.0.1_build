@@ -24,22 +24,36 @@ fun checklistStatusChanged(
         )
     )
 
-fun projectChecklistStatusChanged(
+fun projectContractingChecklistStatusChanged(
     context: Any,
     checklist: ChecklistInstance,
     oldStatus: ChecklistInstanceStatus,
-    projectId: Long,
-    partner: ProjectPartnerDetail?,
-    reportId: Long?
 ): AuditCandidateEvent {
-    val path = if (reportId != null) getReportPath(getPartnerName(partner), reportId) else "Contract monitoring"
     return AuditCandidateEvent(
         context = context,
         auditCandidate = AuditCandidate(
             action = AuditAction.CHECKLIST_STATUS_CHANGE,
-            project = AuditProject(id = projectId.toString()),
-            description = "Checklist '${checklist.id}' type '${checklist.type}' name '${checklist.name}' " +
-                    "in '${path}' changed status from '$oldStatus' to '${checklist.status}'"
+            project = AuditProject(id = checklist.relatedToId.toString()),
+            description = "Checklist ${checklist.id} type ${checklist.type} name ${checklist.name} " +
+                    "for contract monitoring changed status from '$oldStatus' to '${checklist.status}'"
+        )
+    )
+}
+
+fun projectControlReportChecklistStatusChanged(
+    context: Any,
+    checklist: ChecklistInstance,
+    oldStatus: ChecklistInstanceStatus,
+    partner: ProjectPartnerDetail,
+    reportId: Long
+): AuditCandidateEvent {
+    return AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditCandidate(
+            action = AuditAction.CHECKLIST_STATUS_CHANGE,
+            project = AuditProject(id = partner.projectId.toString()),
+            description = "Checklist ${checklist.id} type ${checklist.type} name ${checklist.name} for partner " +
+                "${getPartnerName(partner)} and partner report R.${reportId} changed status from '$oldStatus' to '${checklist.status}'"
         )
     )
 }
@@ -57,20 +71,35 @@ fun checklistDeleted(
         )
     )
 
-fun projectChecklistDeleted(
+fun projectContractingChecklistDeleted(
     context: Any,
     checklist: ChecklistInstanceDetail,
     projectId: Long,
-    partner: ProjectPartnerDetail?,
-    reportId: Long?
 ): AuditCandidateEvent {
-    val path = if (reportId != null) getReportPath(getPartnerName(partner), reportId) else "Contract monitoring"
     return AuditCandidateEvent(
         context = context,
         auditCandidate = AuditCandidate(
             action = AuditAction.CHECKLIST_DELETED,
             project = AuditProject(id = projectId.toString()),
-            description = "Checklist '${checklist.id}' type '${checklist.type}' name '${checklist.name}' in '${path}' was deleted"
+            description = "Checklist ${checklist.id} type ${checklist.type} name ${checklist.name} for contract monitoring was deleted"
+        )
+    )
+}
+
+fun projectControlReportChecklistDeleted(
+    context: Any,
+    checklist: ChecklistInstanceDetail,
+    projectId: Long,
+    partner: ProjectPartnerDetail,
+    reportId: Long
+): AuditCandidateEvent {
+    return AuditCandidateEvent(
+        context = context,
+        auditCandidate = AuditCandidate(
+            action = AuditAction.CHECKLIST_DELETED,
+            project = AuditProject(id = projectId.toString()),
+            description = "Checklist ${checklist.id} type ${checklist.type} name ${checklist.name} for partner " +
+                "${getPartnerName(partner)} and partner report R.${reportId} was deleted"
         )
     )
 }
@@ -103,11 +132,7 @@ fun checklistSelectionUpdate(
         )
     )
 
-private fun getReportPath(partnerName: String, reportId: Long): String {
-    return "$partnerName/Partner report R.${reportId}/Control report"
-}
-
 private fun getPartnerName(partner: ProjectPartnerDetail?): String =
     partner?.role?.isLead.let {
-        if (it == true) "LP${partner?.sortNumber} ${partner?.abbreviation}" else "PP${partner?.sortNumber} ${partner?.abbreviation}"
+        if (it == true) "LP${partner?.sortNumber}" else "PP${partner?.sortNumber}"
     }

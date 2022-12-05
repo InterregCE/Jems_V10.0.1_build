@@ -35,9 +35,9 @@ export class PartnerControlReportControlChecklistPageComponent {
     message: 'checklists.instance.confirm.finish.message'
   };
 
-  confirmUnfinish = {
-    title: 'checklists.instance.confirm.unfinish.title',
-    message: 'checklists.instance.confirm.unfinish.message'
+  confirmReturnToInitiator = {
+    title: 'checklists.instance.confirm.return.to.initiator.title',
+    message: 'checklists.instance.confirm.return.to.initiator'
   };
 
   userCanEditControlChecklists$: Observable<boolean>;

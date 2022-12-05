@@ -38,8 +38,8 @@ export class AssessmentAndDecisionChecklistPageComponent {
   };
 
   confirmDraft = {
-    title: 'checklists.instance.confirm.return.to.user.title',
-    message: 'checklists.instance.confirm.return.to.user'
+    title: 'checklists.instance.confirm.return.to.initiator.title',
+    message: 'checklists.instance.confirm.return.to.initiator'
   };
 
   constructor(private projectSidenavService: ProjectApplicationFormSidenavService,

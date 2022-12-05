@@ -121,7 +121,7 @@ export class ControlChecklistInstanceListComponent implements OnInit {
     this.instancesTableConfiguration = this.checklistUtils.initializeTableConfiguration(this.actionsCell, this.descriptionCell);
   }
 
-  delete(reportId: number, checklist: ChecklistInstanceDTO): void {
+  delete(checklist: ChecklistInstanceDTO): void {
     Forms.confirm(
       this.dialog, {
         title: checklist.name,
@@ -130,7 +130,7 @@ export class ControlChecklistInstanceListComponent implements OnInit {
       .pipe(
         take(1),
         filter(answer => !!answer),
-        switchMap(() => this.pageStore.deleteChecklistInstance(this.partnerId, reportId, checklist.id)),
+        switchMap(() => this.pageStore.deleteChecklistInstance(this.partnerId, this.relatedId, checklist.id)),
       ).subscribe();
   }
 

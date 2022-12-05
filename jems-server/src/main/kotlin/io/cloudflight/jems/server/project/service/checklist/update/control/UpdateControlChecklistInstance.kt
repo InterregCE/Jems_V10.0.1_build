@@ -8,8 +8,9 @@ import io.cloudflight.jems.server.project.service.checklist.ChecklistInstanceVal
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstance
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceStatus
-import io.cloudflight.jems.server.project.service.checklist.projectChecklistStatusChanged
+import io.cloudflight.jems.server.project.service.checklist.projectControlReportChecklistStatusChanged
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
+import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
 import io.cloudflight.jems.server.user.service.authorization.UserAuthorization
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
@@ -21,7 +22,8 @@ class UpdateControlChecklistInstance(
     private val auditPublisher: ApplicationEventPublisher,
     private val checklistInstanceValidator: ChecklistInstanceValidator,
     private val userAuthorization: UserAuthorization,
-    private val partnerPersistence: PartnerPersistence
+    private val partnerPersistence: PartnerPersistence,
+    private val reportPersistence: ProjectReportPersistence
 ) : UpdateControlChecklistInstanceInteractor {
 
     @CanEditPartnerControlReport
@@ -63,13 +65,12 @@ class UpdateControlChecklistInstance(
 
         return persistence.changeStatus(checklistId, status).also {
             auditPublisher.publishEvent(
-                projectChecklistStatusChanged(
+                projectControlReportChecklistStatusChanged(
                     context = this,
                     checklist = it,
                     oldStatus = existing.status,
-                    projectId = partner.projectId,
                     partner = partner,
-                    reportId = reportId
+                    reportId = reportPersistence.getPartnerReportById(partnerId, reportId).reportNumber.toLong()
                 )
             )
         }

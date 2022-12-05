@@ -8,7 +8,7 @@ import io.cloudflight.jems.server.project.service.checklist.ChecklistInstanceVal
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstance
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceDetail
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceStatus
-import io.cloudflight.jems.server.project.service.checklist.projectChecklistStatusChanged
+import io.cloudflight.jems.server.project.service.checklist.projectContractingChecklistStatusChanged
 import io.cloudflight.jems.server.user.service.authorization.UserAuthorization
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
@@ -54,13 +54,10 @@ class UpdateContractingChecklistInstance(
 
         return persistence.changeStatus(checklistId, status).also {
             auditPublisher.publishEvent(
-                projectChecklistStatusChanged(
+                projectContractingChecklistStatusChanged(
                     context = this,
                     checklist = it,
-                    oldStatus = existing.status,
-                    projectId = projectId,
-                    partner = null,
-                    reportId = null
+                    oldStatus = existing.status
                 )
             )
         }

@@ -37,9 +37,9 @@ export class ContractingChecklistPageComponent {
         message: 'checklists.instance.confirm.finish.message'
     };
 
-    confirmUnfinish = {
-        title: 'checklists.instance.confirm.unfinish.title',
-        message: 'checklists.instance.confirm.unfinish.message'
+    confirmReturnToInitiator = {
+      title: 'checklists.instance.confirm.return.to.initiator.title',
+      message: 'checklists.instance.confirm.return.to.initiator'
     };
 
     constructor(private projectSidenavService: ProjectApplicationFormSidenavService,
@@ -52,7 +52,11 @@ export class ContractingChecklistPageComponent {
             this.pageStore.checklist$,
             this.pageStore.checklistEditable$
         ]).pipe(
-            map(([checklist, editable]) => ({checklist, editable, projectId: this.activatedRoute.snapshot.params.projectId})),
+          map(([checklist, editable]) => ({
+            checklist,
+            editable,
+            projectId: this.pageStore.projectId
+          })),
         );
         this.userCanEditContractingChecklists$ = this.permissionService.hasPermission(PermissionsEnum.ProjectSetToContracted);
     }
