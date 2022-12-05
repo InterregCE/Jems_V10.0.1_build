@@ -156,10 +156,10 @@ internal class DeleteContractingChecklistInstanceTest : UnitTest() {
             AuditCandidate(
                 action = AuditAction.CHECKLIST_DELETED,
                 project = AuditProject(id = projectId.toString()),
-                description = "Checklist '${contractingChecklistDetail.id}' " +
-                        "type '${contractingChecklistDetail.type}' " +
-                        "name '${contractingChecklistDetail.name}' " +
-                        "in 'Contract monitoring' was deleted"
+                description = "Checklist ${contractingChecklistDetail.id} " +
+                        "type ${contractingChecklistDetail.type} " +
+                        "name ${contractingChecklistDetail.name} " +
+                        "for contract monitoring was deleted"
             )
         )
     }

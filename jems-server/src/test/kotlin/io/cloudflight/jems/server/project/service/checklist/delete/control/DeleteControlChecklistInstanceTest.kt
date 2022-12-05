@@ -31,6 +31,7 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDe
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerMotivation
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVatRecovery
+import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
 import io.cloudflight.jems.server.user.service.authorization.UserAuthorization
 import io.cloudflight.jems.server.utils.user
 import io.mockk.every
@@ -53,7 +54,7 @@ internal class DeleteControlChecklistInstanceTest : UnitTest() {
     private val partnerName = "LP1"
     private val reportId = 3L
     private val projectId = 5L
-    private val path = "$partnerName partner/Partner report R.${reportId}/Control report"
+    private val controlReportId = 2
 
     private val controlChecklistDetail = ChecklistInstanceDetail(
         id = checklistId,
@@ -167,6 +168,9 @@ internal class DeleteControlChecklistInstanceTest : UnitTest() {
     @MockK
     lateinit var partnerPersistence: PartnerPersistence
 
+    @MockK
+    lateinit var reportPersistence: ProjectReportPersistence
+
     @InjectMockKs
     lateinit var deleteControlChecklistInstance: DeleteControlChecklistInstance
 
@@ -186,6 +190,7 @@ internal class DeleteControlChecklistInstanceTest : UnitTest() {
         every { persistence.deleteById(checklistId) } answers {}
         every { partnerPersistence.getProjectIdForPartnerId(partnerId) } returns projectId
         every { partnerPersistence.getById(partnerId) } returns projectPartner
+        every { reportPersistence.getPartnerReportById(partnerId, reportId).reportNumber } returns controlReportId
         deleteControlChecklistInstance.deleteById(partnerId, reportId, checklistId)
         verify { persistence.deleteById(checklistId) }
 
@@ -194,8 +199,8 @@ internal class DeleteControlChecklistInstanceTest : UnitTest() {
             AuditCandidate(
                 action = AuditAction.CHECKLIST_DELETED,
                 project = AuditProject(id = projectId.toString()),
-                description = "Checklist '${controlChecklistDetail.id}' type '${controlChecklistDetail.type}' name '${controlChecklistDetail.name}' " +
-                        "in '${path}' was deleted"
+                description = "Checklist ${controlChecklistDetail.id} type ${controlChecklistDetail.type} name ${controlChecklistDetail.name} " +
+                        "for partner $partnerName and partner report R.$controlReportId was deleted"
             )
         )
     }

@@ -294,10 +294,10 @@ internal class UpdateContractingChecklistInstanceTest : UnitTest() {
             AuditCandidate(
                 action = AuditAction.CHECKLIST_STATUS_CHANGE,
                 project = AuditProject(id = projectId.toString()),
-                description = "Checklist '${contractingChecklistDetail.id}' " +
-                        "type '${contractingChecklistDetail.type}' " +
-                        "name '${contractingChecklistDetail.name}' " +
-                        "in 'Contract monitoring' changed status from 'DRAFT' to 'FINISHED'"
+                description = "Checklist ${contractingChecklistDetail.id} " +
+                        "type ${contractingChecklistDetail.type} " +
+                        "name ${contractingChecklistDetail.name} " +
+                        "for contract monitoring changed status from 'DRAFT' to 'FINISHED'"
             )
         )
     }

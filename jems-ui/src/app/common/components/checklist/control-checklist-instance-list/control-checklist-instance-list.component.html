@@ -76,11 +76,11 @@
 
     <ng-container>
         <button
-                (click)="delete(projectId, checklist);$event.stopPropagation();"
+                (click)="delete(checklist);$event.stopPropagation();"
                 [disabled]="checklist.status !== Status.DRAFT || (userCanEditControlChecklists$ | async) === false"
                 color="accent"
                 mat-icon-button
-                matTooltip="{{'checklist.table.action.delete.tooltip' | translate}}">
+                matTooltip="{{'common.delete.entry.tooltip' | translate}}">
             <mat-icon>delete</mat-icon>
         </button>
     </ng-container>
