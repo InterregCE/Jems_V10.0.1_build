@@ -1,10 +1,10 @@
 {
 	"info": {
-		"_postman_id": "76d4452b-ed37-49ec-8e6d-0d173990d14a",
+		"_postman_id": "801248c7-fab7-41e2-94d7-1f97bb51c6be",
 		"name": "ems-rest-test",
 		"description": "Check JEMS application for common use-cases",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "24164102"
+		"_exporter_id": "1630872"
 	},
 	"item": [
 		{
@@ -197,6 +197,63 @@
 									"path": [
 										"api",
 										"user"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update default programme ROLE (with Call Edit)",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"var uuid = require('uuid');\r",
+											"const randomIdentifier = uuid.v4().substring(24, 32);\r",
+											"pm.variables.set('programme_user_email', randomIdentifier + \"@Programme-user.eu\");\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test('programme user ROLE updated/reset', function() {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test('programme user ROLE also has CallUpdate', function() {\r",
+											"    pm.expect(pm.response.json().permissions).to.include('CallUpdate');\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"id\": 2,\r\n    \"name\": \"Programme user\",\r\n    \"defaultForRegisteredUser\": false,\r\n    \"permissions\": [\r\n        \"ProjectReportingView\",\r\n        \"ProjectContractingPartnerView\",\r\n        \"ProjectContractingView\",\r\n        \"ProjectSetToContracted\",\r\n        \"ProjectContractingManagementView\",\r\n        \"ProjectContractingReportingView\",\r\n        \"ProjectContractsView\",\r\n        \"ProjectFormRetrieve\",\r\n        \"ProjectFileApplicationRetrieve\",\r\n        \"ProjectCheckApplicationForm\",\r\n        \"ProjectAssessmentView\",\r\n        \"ProjectAssessmentQualityEnter\",\r\n        \"ProjectAssessmentEligibilityEnter\",\r\n        \"ProjectStatusDecideEligible\",\r\n        \"ProjectStatusDecideIneligible\",\r\n        \"ProjectStatusDecideApproved\",\r\n        \"ProjectStatusDecideApprovedWithConditions\",\r\n        \"ProjectStatusDecideNotApproved\",\r\n        \"ProjectStatusReturnToApplicant\",\r\n        \"ProjectStartStepTwo\",\r\n        \"ProjectFileAssessmentRetrieve\",\r\n        \"ProjectFileAssessmentUpdate\",\r\n        \"ProjectAssessmentChecklistUpdate\",\r\n        \"ProjectAssessmentChecklistSelectedRetrieve\",\r\n        \"ProjectModificationView\",\r\n        \"ProjectStatusDecideModificationApproved\",\r\n        \"ProjectStatusDecideModificationNotApproved\",\r\n        \"ProjectOpenModification\",\r\n        \"ProjectModificationFileAssessmentRetrieve\",\r\n        \"ProjectModificationFileAssessmentUpdate\",\r\n        \"ProjectMonitorCollaboratorsRetrieve\",\r\n        \"ProjectMonitorCollaboratorsUpdate\",\r\n        \"ProjectsWithOwnershipRetrieve\",\r\n        \"CallPublishedRetrieve\",\r\n        \"ProjectRetrieve\",\r\n        \"CallRetrieve\",\r\n        \"CallUpdate\",\r\n        \"ProgrammeSetupRetrieve\",\r\n        \"InstitutionsRetrieve\",\r\n        \"InstitutionsAssignmentRetrieve\",\r\n        \"PaymentsRetrieve\",\r\n        \"AdvancePaymentsRetrieve\",\r\n        \"ProgrammeDataExportRetrieve\",\r\n        \"AuditRetrieve\"\r\n    ]\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{url}}/api/role",
+									"host": [
+										"{{url}}"
+									],
+									"path": [
+										"api",
+										"role"
 									]
 								}
 							},
@@ -1588,7 +1645,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"pluginKey\": \"jems-pre-condition-check-off\"\r\n}\r\n",
+							"raw": "{\r\n    \"pluginKey\": \"jems-pre-condition-check-off\",\r\n    \"reportPartnerCheckPluginKey\": \"report-partner-check-off\"\r\n}\r\n",
 							"options": {
 								"raw": {
 									"language": "json"
