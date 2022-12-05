@@ -85,9 +85,6 @@ internal class GetUserTest : UnitTest() {
     @MockK
     lateinit var userRolePersistence: UserRolePersistence
 
-    @MockK
-    lateinit var institutionPersistence: ControllerInstitutionPersistence
-
     @InjectMockKs
     lateinit var getUser: GetUser
 
@@ -138,7 +135,6 @@ internal class GetUserTest : UnitTest() {
         val roleIdsSlot = slot<Set<Long>>()
         every { persistence.findAllWithRoleIdIn(capture(roleIdsSlot)) } returns listOf(userSummary)
 
-        every { institutionPersistence.getAllControllerInstitutionUsersIds() } returns emptySet()
         // TEST
         assertThat(getUser.getMonitorUsers()).containsExactly(userSummary)
 
@@ -158,7 +154,6 @@ internal class GetUserTest : UnitTest() {
         val toHaveSlot = slot<Set<UserRolePermission>>()
         val toNotHaveSlot = slot<Set<UserRolePermission>>()
         val institutionUserId = 12L
-        val institutionUserIds = setOf(institutionUserId)
         val controllerRole = UserRole(
             id = 23L,
             name = "controller",
@@ -181,11 +176,8 @@ internal class GetUserTest : UnitTest() {
         val roleIdsSlot = slot<Set<Long>>()
         every { persistence.findAllWithRoleIdIn(capture(roleIdsSlot)) } returns listOf(userSummary, institutionUserSummary)
 
-        every { institutionPersistence.getAllControllerInstitutionUsersIds() } returns institutionUserIds
-
         // TEST
-        assertThat(getUser.getMonitorUsers()).containsExactly(userSummary)
-        assertThat(getUser.getMonitorUsers()).doesNotContain(institutionUserSummary)
+        assertThat(getUser.getMonitorUsers()).containsExactly(userSummary, institutionUserSummary)
 
         assertThat(toHaveSlot.captured).containsExactlyInAnyOrder(
             ProjectFormRetrieve, ProjectFileApplicationRetrieve, ProjectCheckApplicationForm, ProjectAssessmentView,

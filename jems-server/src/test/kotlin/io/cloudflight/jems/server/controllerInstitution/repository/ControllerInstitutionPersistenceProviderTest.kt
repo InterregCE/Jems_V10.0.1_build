@@ -120,6 +120,22 @@ class ControllerInstitutionPersistenceProviderTest: UnitTest() {
         verify(exactly = 1) { institutionPartnerRepository.deleteAllByIdInBatch(setOf(3L)) }
     }
 
+    @Test
+    fun getRelatedUserIdsForProject() {
+        every { institutionPartnerRepository.getRelatedUserIdsForProject(projectId = 188L) } returns setOf(1L, 2L, 3L)
+        assertThat(controllerInstitutionPersistenceProvider.getRelatedUserIdsForProject(188L))
+            .containsExactly(1L, 2L, 3L)
+    }
+
+    @Test
+    fun getRelatedProjectAndPartnerIdsForUser() {
+        every { institutionPartnerRepository.getRelatedProjectIdsForUser(userId = 444L) } returns listOf(
+            Pair(1L, 10L), Pair(1L, 11L),
+            Pair(2L, 20L), Pair(2L, 21L),
+        )
+        assertThat(controllerInstitutionPersistenceProvider.getRelatedProjectAndPartnerIdsForUser(444L))
+            .containsExactlyEntriesOf(mapOf(1L to setOf(10L, 11L), 2L to setOf(20L, 21L)))
+    }
 
     @Test
     fun getInstitutionPartnerAssignmentsToDeleteByProjectId() {

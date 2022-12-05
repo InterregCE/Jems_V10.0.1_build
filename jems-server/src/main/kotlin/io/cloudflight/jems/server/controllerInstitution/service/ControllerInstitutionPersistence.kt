@@ -32,8 +32,6 @@ interface ControllerInstitutionPersistence {
 
     fun updateControllerInstitution(controllerInstitution: UpdateControllerInstitution): ControllerInstitution
 
-    fun getAllControllerInstitutionUsersIds(): Set<Long>
-
     fun updateControllerInstitutionUsers(
         institutionId: Long,
         usersToUpdate: Set<ControllerInstitutionUser>,
@@ -51,13 +49,15 @@ interface ControllerInstitutionPersistence {
         assignmentsToSave: List<InstitutionPartnerAssignment>
     ): List<InstitutionPartnerAssignment>
 
-    fun getInstitutionPartnerAssignmentsByPartnerIdsIn(partnerIds: Set<Long>): List<InstitutionPartnerAssignment>
-
     fun getInstitutionPartnerAssignmentsByInstitutionId(institutionId: Long): List<InstitutionPartnerAssignment>
 
     fun getInstitutionPartnerAssignmentsWithUsersByPartnerProjectIdsIn(partnerProjectIds: Set<Long>): List<InstitutionPartnerAssignmentWithUsers>
 
+    fun getRelatedUserIdsForProject(projectId: Long): Set<Long>
+
     fun getControllerUserAccessLevelForPartner(userId: Long, partnerId: Long): UserInstitutionAccessLevel?
+
+    fun getRelatedProjectAndPartnerIdsForUser(userId: Long): Map<Long, Set<Long>>
 
     fun getInstitutionPartnerAssignmentsToDeleteByProjectId(projectId: Long): List<InstitutionPartnerAssignment>
     fun getInstitutionPartnerAssignmentsToDeleteByInstitutionId(institutionId: Long): List<InstitutionPartnerAssignment>

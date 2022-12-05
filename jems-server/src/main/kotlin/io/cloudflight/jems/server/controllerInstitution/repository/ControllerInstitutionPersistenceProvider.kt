@@ -76,12 +76,6 @@ class ControllerInstitutionPersistenceProvider(
         return controllerInstitutionInstance.toModel()
     }
 
-
-    @Transactional(readOnly = true)
-    override fun getAllControllerInstitutionUsersIds(): Set<Long>  =
-        institutionUserRepository.getAllInstitutionUsersIds()
-
-
     @Transactional
     override fun updateControllerInstitutionUsers(
         institutionId: Long,
@@ -137,10 +131,6 @@ class ControllerInstitutionPersistenceProvider(
     }
 
     @Transactional
-    override fun getInstitutionPartnerAssignmentsByPartnerIdsIn(partnerIds: Set<Long>): List<InstitutionPartnerAssignment> =
-        institutionPartnerRepository.findAllByPartnerIdIn(partnerIds).toModels()
-
-    @Transactional
     override fun getInstitutionPartnerAssignmentsByInstitutionId(institutionId: Long): List<InstitutionPartnerAssignment> =
         institutionPartnerRepository.findAllByInstitutionId(institutionId).toModels()
 
@@ -150,8 +140,17 @@ class ControllerInstitutionPersistenceProvider(
         institutionPartnerRepository.getInstitutionPartnerAssignmentsWithUsersByPartnerProjectIdsIn(partnerProjectIds)
 
     @Transactional(readOnly = true)
+    override fun getRelatedUserIdsForProject(projectId: Long) =
+        institutionPartnerRepository.getRelatedUserIdsForProject(projectId = projectId)
+
+    @Transactional(readOnly = true)
     override fun getControllerUserAccessLevelForPartner(userId: Long, partnerId: Long): UserInstitutionAccessLevel? =
          institutionPartnerRepository.getControllerUserAccessLevelForPartner(userId, partnerId)
+
+    @Transactional(readOnly = true)
+    override fun getRelatedProjectAndPartnerIdsForUser(userId: Long) =
+        institutionPartnerRepository.getRelatedProjectIdsForUser(userId = userId)
+            .groupBy({ it.first }, { it.second }).mapValues { it.value.toSet() }
 
     private fun getControllerInstitutionOrThrow(id: Long): ControllerInstitutionEntity =
         institutionRepository.findById(id).orElseThrow { GetControllerInstitutionException() }

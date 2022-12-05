@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.get_project
 
 import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.project.authorization.CanRetrieveProject
 import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectForm
 import io.cloudflight.jems.server.project.authorization.CanRetrieveProjects
@@ -25,6 +26,7 @@ class GetProject(
     private val persistence: ProjectPersistence,
     private val projectCollaboratorPersistence: UserProjectCollaboratorPersistence,
     private val partnerCollaboratorPersistence: UserPartnerCollaboratorPersistence,
+    private val controllerInstitutionPersistence: ControllerInstitutionPersistence,
     private val securityService: SecurityService,
 ) : GetProjectInteractor {
 
@@ -62,6 +64,7 @@ class GetProject(
             extraProjectIds = getAssignedProjectIdsForMonitorUsers()
                 union getProjectIdsForProjectCollaborators()
                 union getProjectIdsForPartnerCollaborators()
+                union getProjectIdsForPartnerInstitutionControllers()
         )
 
     private fun getAssignedProjectIdsForMonitorUsers() = securityService.currentUser?.user?.assignedProjects ?: emptySet()
@@ -71,5 +74,8 @@ class GetProject(
 
     private fun getProjectIdsForPartnerCollaborators() = partnerCollaboratorPersistence
         .getProjectIdsForUser(userId = securityService.getUserIdOrThrow())
+
+    private fun getProjectIdsForPartnerInstitutionControllers() = controllerInstitutionPersistence
+        .getRelatedProjectAndPartnerIdsForUser(userId = securityService.getUserIdOrThrow()).keys
 
 }

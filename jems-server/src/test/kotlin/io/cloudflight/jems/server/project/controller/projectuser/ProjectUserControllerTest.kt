@@ -3,10 +3,16 @@ package io.cloudflight.jems.server.project.controller.projectuser
 import io.cloudflight.jems.api.project.dto.assignment.ProjectUserDTO
 import io.cloudflight.jems.api.project.dto.assignment.UpdateProjectUserDTO
 import io.cloudflight.jems.api.project.dto.status.ApplicationStatusDTO
+import io.cloudflight.jems.api.user.dto.UserRoleSummaryDTO
+import io.cloudflight.jems.api.user.dto.UserStatusDTO
+import io.cloudflight.jems.api.user.dto.UserSummaryDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.projectuser.assign_user_to_project.AssignUserToProjectInteractor
 import io.cloudflight.jems.server.project.service.projectuser.get_users_assigned_to_projects.GetUsersAssignedToProjectsInteractor
+import io.cloudflight.jems.server.user.service.model.UserRoleSummary
+import io.cloudflight.jems.server.user.service.model.UserStatus
+import io.cloudflight.jems.server.user.service.model.UserSummary
 import io.cloudflight.jems.server.user.service.model.assignment.ProjectWithUsers
 import io.cloudflight.jems.server.user.service.model.assignment.UpdateProjectUser
 import io.mockk.clearMocks
@@ -26,13 +32,38 @@ class ProjectUserControllerTest : UnitTest() {
         private const val PROJECT_ID = "1489"
         private val PAGE = Pageable.unpaged()
 
+        private fun dummyUser(id: Long) = UserSummary(
+            id = id,
+            email = "$id-email",
+            name = "$id-name",
+            surname = "$id-surname",
+            userRole = UserRoleSummary(
+                id = 5411L,
+                name = "role name",
+            ),
+            userStatus = UserStatus.ACTIVE,
+        )
+
+        private fun dummyUserDto(id: Long) = UserSummaryDTO(
+            id = id,
+            email = "$id-email",
+            name = "$id-name",
+            surname = "$id-surname",
+            userRole = UserRoleSummaryDTO(
+                id = 5411L,
+                name = "role name",
+                defaultForRegisteredUser = false,
+            ),
+            userStatus = UserStatusDTO.ACTIVE,
+        )
+
         private val dummyProjectUserDto = ProjectUserDTO(
             id = PROJECT_ID,
             customIdentifier = "FGR45_001",
             acronym = "P1 G4",
             projectStatus = ApplicationStatusDTO.DRAFT,
             relatedCall = "1",
-            users = setOf(998L, 999L),
+            users = setOf(dummyUserDto(998L), dummyUserDto(999L)),
         )
 
         private val dummyProjectUser = ProjectWithUsers(
@@ -41,7 +72,7 @@ class ProjectUserControllerTest : UnitTest() {
             acronym = "P1 G4",
             projectStatus = ApplicationStatus.DRAFT,
             relatedCall = "1",
-            users = setOf(998L, 999L),
+            users = setOf(dummyUser(998L), dummyUser(999L)),
         )
     }
 

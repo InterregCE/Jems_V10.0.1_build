@@ -6,7 +6,6 @@ import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.exception.ResourceNotFoundException
 import io.cloudflight.jems.server.project.authorization.AuthorizationUtil.Companion.applicantUser
 import io.cloudflight.jems.server.project.authorization.AuthorizationUtil.Companion.programmeUser
-import io.cloudflight.jems.server.project.entity.partneruser.PartnerCollaboratorLevel
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.application.ApplicationStatus
 import io.cloudflight.jems.server.project.service.model.ProjectApplicantAndStatus
@@ -15,9 +14,6 @@ import io.cloudflight.jems.server.project.service.partner.UserPartnerCollaborato
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectRetrieve
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectFormRetrieve
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectFormUpdate
-import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectReportingEdit
-import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectReportingView
-import io.cloudflight.jems.server.user.service.model.assignment.PartnerCollaborator
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -294,59 +290,35 @@ internal class ProjectPartnerAuthorizationTest : UnitTest() {
     }
 
     // Can Retrieve partner reports:
-    @Test
-    fun `can retrieve partner for reports- no permissions and no partner collaborators`() {
-        val user = programmeUser
-        every { securityService.getUserIdOrThrow() } returns user.user.id
-        every { securityService.currentUser } returns user
-        every { partnerCollaboratorPersistence.findPartnersByUserAndProject(user.user.id, PROJECT_ID) } returns
-            emptySet()
-
-        assertThat(user.authorities).doesNotContain(SimpleGrantedAuthority(ProjectReportingEdit.name))
-        assertThat(user.authorities).doesNotContain(SimpleGrantedAuthority(ProjectReportingView.name))
-
-        assertThat(projectPartnerAuthorization.canRetrievePartnerReports(PROJECT_ID)).isFalse
-    }
-
-    @Test
-    fun `can retrieve partner for reports- with view permission and partner collaborators`() {
-        val user = LocalCurrentUser(
-            AuthorizationUtil.userProgramme, "hash_pass", listOf(
-                SimpleGrantedAuthority("ROLE_" + AuthorizationUtil.userProgramme.userRole.name),
-                SimpleGrantedAuthority(ProjectReportingView.key),
-                SimpleGrantedAuthority(ProjectRetrieve.key)
-            )
+    @ParameterizedTest(name = "canRetrievePartnerReports (userId {0})")
+    @ValueSource(longs = [26L, 27L, 28L])
+    fun canRetrievePartnerReports(validId: Long) {
+        every { securityService.getUserIdOrThrow() } returns validId
+        every { projectPersistence.getApplicantAndStatusById(14L) } returns ProjectApplicantAndStatus(
+            projectId = 14L,
+            applicantId = 25L,
+            collaboratorViewIds = setOf(26L),
+            collaboratorEditIds = setOf(27L),
+            collaboratorManageIds = setOf(28L),
+            projectStatus = ApplicationStatus.APPROVED,
         )
-        every { securityService.getUserIdOrThrow() } returns user.user.id
-        every { securityService.currentUser } returns user
-        every { partnerCollaboratorPersistence.findPartnersByUserAndProject(user.user.id, PROJECT_ID) } returns
-            emptySet()
 
-        assertThat(user.authorities).contains(SimpleGrantedAuthority(ProjectReportingView.name))
-        assertThat(user.authorities).doesNotContain(SimpleGrantedAuthority(ProjectReportingEdit.name))
-
-        assertThat(projectPartnerAuthorization.canRetrievePartnerReports(PROJECT_ID)).isTrue
+        assertThat(projectPartnerAuthorization.canRetrievePartnerReports(14L)).isTrue()
     }
 
     @Test
-    fun `can retrieve partner for reports- with no permissions and partner collaborators`() {
-        val user = programmeUser
-        every { securityService.getUserIdOrThrow() } returns user.user.id
-        every { securityService.currentUser } returns user
-        every { partnerCollaboratorPersistence.findPartnersByUserAndProject(user.user.id, PROJECT_ID) } returns
-            setOf(
-                PartnerCollaborator(
-                    user.user.id,
-                    PARTNER_ID,
-                    "test",
-                    PartnerCollaboratorLevel.VIEW
-                )
-            )
+    fun `canRetrievePartnerReports - no applicant`() {
+        every { securityService.getUserIdOrThrow() } returns 25L
+        every { projectPersistence.getApplicantAndStatusById(15L) } returns ProjectApplicantAndStatus(
+            projectId = 15L,
+            applicantId = 25L,
+            collaboratorViewIds = emptySet(),
+            collaboratorEditIds = emptySet(),
+            collaboratorManageIds = emptySet(),
+            projectStatus = ApplicationStatus.APPROVED,
+        )
 
-        assertThat(user.authorities).doesNotContain(SimpleGrantedAuthority(ProjectReportingView.name))
-        assertThat(user.authorities).doesNotContain(SimpleGrantedAuthority(ProjectReportingEdit.name))
-
-        assertThat(projectPartnerAuthorization.canRetrievePartnerReports(PROJECT_ID)).isTrue
+        assertThat(projectPartnerAuthorization.canRetrievePartnerReports(15L)).isFalse()
     }
 
 }

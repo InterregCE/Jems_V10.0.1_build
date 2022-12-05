@@ -14,6 +14,7 @@ import io.cloudflight.jems.server.project.service.partner.UserPartnerCollaborato
 import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Component
+import java.util.Optional
 
 @Retention(AnnotationRetention.RUNTIME)
 @PreAuthorize("@projectReportAuthorization.canEditPartnerReport(#partnerId, #reportId)")
@@ -28,7 +29,7 @@ annotation class CanEditPartnerReportNotSpecific
 annotation class CanViewPartnerReport
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectReportAuthorization.canEditPartnerControlReport(#partnerId)")
+@PreAuthorize("@projectReportAuthorization.canEditPartnerControlReport(#partnerId, #reportId)")
 annotation class CanEditPartnerControlReport
 
 @Retention(AnnotationRetention.RUNTIME)
@@ -41,7 +42,7 @@ annotation class CanViewPartnerControlReport
 annotation class CanViewPartnerControlReportFile
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectReportAuthorization.canEditPartnerControlReport(#partnerId) || " +
+@PreAuthorize("@projectReportAuthorization.canEditPartnerControlReport(#partnerId, #reportId) || " +
     "@projectReportAuthorization.canUpdatePartner(#partnerId)")
 annotation class CanEditPartnerControlReportFile
 
@@ -74,26 +75,36 @@ class ProjectReportAuthorization(
         if (hasPermissionForProject(levelNeeded.correspondingRolePermission, projectId))
             return true
 
-        // creators
-        val level = getLevelForUserCreatorAndPartner(userId = securityService.getUserIdOrThrow(), partnerId = partnerId)
+        // partner collaborators and controller institutions
+        val levelForCollaborator = getLevelForUserCollaborator(partnerId = partnerId)
+        val levelForController = getLevelForUserController(partnerId = partnerId)
 
-        return if (levelNeeded == VIEW)
-            level.isPresent
-        else
-            level.isPresent && level.get() == EDIT
+        return when(levelNeeded) {
+            VIEW -> levelForCollaborator.isPresent || levelForController.isPresent
+            EDIT -> levelForCollaborator.isPresent && levelForCollaborator.get() == EDIT
+        }
     }
 
-    private fun getLevelForUserCreatorAndPartner(userId: Long, partnerId: Long) =
+    fun getLevelForUserCollaborator(partnerId: Long) =
         partnerCollaboratorPersistence.findByUserIdAndPartnerId(
-            userId = userId,
+            userId = securityService.getUserIdOrThrow(),
             partnerId = partnerId,
         )
 
-    fun canEditPartnerControlReport(partnerId: Long): Boolean =
-        controllerInstitutionPersistence.getControllerUserAccessLevelForPartner(
-            userId = securityService.getUserIdOrThrow(),
-            partnerId = partnerId,
-        ) == UserInstitutionAccessLevel.Edit
+    fun getLevelForUserController(partnerId: Long): Optional<UserInstitutionAccessLevel> =
+        Optional.ofNullable(
+            controllerInstitutionPersistence.getControllerUserAccessLevelForPartner(
+                userId = securityService.getUserIdOrThrow(),
+                partnerId = partnerId,
+            )
+        )
+
+    fun canEditPartnerControlReport(partnerId: Long, reportId: Long): Boolean =
+        reportPersistence.exists(partnerId, reportId = reportId) &&
+            controllerInstitutionPersistence.getControllerUserAccessLevelForPartner(
+                userId = securityService.getUserIdOrThrow(),
+                partnerId = partnerId,
+            ) == UserInstitutionAccessLevel.Edit
 
     fun canViewPartnerControlReport(partnerId: Long): Boolean =
         controllerInstitutionPersistence.getControllerUserAccessLevelForPartner(

@@ -34,7 +34,7 @@ class DraftProjectSectionCDataGeneratorTest(@LocalServerPort private val port: I
 
 
     @Test
-    @ExpectSelect(12)
+    @ExpectSelect(13)
     @ExpectInsert(5)
     @ExpectUpdate(0)
     @ExpectDelete(1)
@@ -48,7 +48,7 @@ class DraftProjectSectionCDataGeneratorTest(@LocalServerPort private val port: I
     }
 
     @Test
-    @ExpectSelect(12)
+    @ExpectSelect(13)
     @ExpectInsert(5)
     @ExpectUpdate(0)
     @ExpectDelete(1)
@@ -59,7 +59,7 @@ class DraftProjectSectionCDataGeneratorTest(@LocalServerPort private val port: I
     }
 
     @Test
-    @ExpectSelect(12)
+    @ExpectSelect(13)
     @ExpectInsert(5)
     @ExpectUpdate(0)
     @ExpectDelete(1)
@@ -73,7 +73,7 @@ class DraftProjectSectionCDataGeneratorTest(@LocalServerPort private val port: I
     }
 
     @Test
-    @ExpectSelect(17)
+    @ExpectSelect(18)
     @ExpectInsert(5)
     @ExpectUpdate(0)
     @ExpectDelete(1)
@@ -84,7 +84,7 @@ class DraftProjectSectionCDataGeneratorTest(@LocalServerPort private val port: I
     }
 
     @Test
-    @ExpectSelect(12)
+    @ExpectSelect(13)
     @ExpectInsert(5)
     @ExpectUpdate(0)
     @ExpectDelete(1)
@@ -95,7 +95,7 @@ class DraftProjectSectionCDataGeneratorTest(@LocalServerPort private val port: I
     }
 
     @Test
-    @ExpectSelect(12)
+    @ExpectSelect(13)
     @ExpectInsert(5)
     @ExpectUpdate(0)
     @ExpectDelete(1)

@@ -4,7 +4,6 @@ import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.controllerInstitution.service.institutionPartnerAssignmentRemoved
 import io.cloudflight.jems.server.controllerInstitution.service.model.InstitutionPartnerAssignment
-import io.cloudflight.jems.server.controllerInstitution.service.updateInstitutionUsersProjectAssignment.UpdateInstitutionUsersProjectAssignmentInteractor
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -12,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional
 @Service
 class CheckInstitutionPartnerAssignments(
     private val controllerInstitutionPersistence: ControllerInstitutionPersistence,
-    private val updateInstitutionUsersProjectAssignment: UpdateInstitutionUsersProjectAssignmentInteractor,
     private val auditPublisher: ApplicationEventPublisher,
 ) : CheckInstitutionPartnerAssignmentsInteractor {
 
@@ -22,7 +20,6 @@ class CheckInstitutionPartnerAssignments(
         controllerInstitutionPersistence.getInstitutionPartnerAssignmentsToDeleteByProjectId(projectId)
             .takeIf { it.isNotEmpty() }?.let { assignmentsToDelete ->
                 deleteInstitutionPartnerAssignments(assignmentsToDelete)
-                updateInstitutionUsersProjectAssignment(assignmentsToDelete)
             }
     }
 
@@ -31,8 +28,6 @@ class CheckInstitutionPartnerAssignments(
         controllerInstitutionPersistence.getInstitutionPartnerAssignmentsToDeleteByInstitutionId(institutionId)
             .takeIf { it.isNotEmpty() }?.let { assignmentsToDelete ->
                 deleteInstitutionPartnerAssignments(assignmentsToDelete)
-                updateInstitutionUsersProjectAssignment(assignmentsToDelete)
-
             }
     }
 
@@ -50,14 +45,5 @@ class CheckInstitutionPartnerAssignments(
         )
 
     }
-
-    private fun updateInstitutionUsersProjectAssignment(assignmentsToDelete: List<InstitutionPartnerAssignment>) {
-        updateInstitutionUsersProjectAssignment.updateInstitutionUsersProjectAssignment(
-            removedAssignments = assignmentsToDelete,
-            savedOrUpdatedAssignments = emptyList(),
-            existingAssignmentsBeforeUpdate = assignmentsToDelete
-        )
-    }
-
 
 }

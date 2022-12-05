@@ -114,11 +114,10 @@ export class ProjectApplicationListUserAssignmentsComponent implements OnInit {
       this.userService.getUsersWithProjectRetrievePermissions(),
     ]).pipe(
       map(([page, availableUsers, defaultUsers]) => {
-        const availableUsersIds = availableUsers.map(user => user.id);
         return {
           rows: page.content.map((project, index) => ({
             ...project,
-            assignedUserIds: project.users.filter(id => availableUsersIds.includes(id)),
+            assignedUserIds: project.users.map(it => it.id),
             index,
             defaultUsers,
             availableUsers
@@ -197,7 +196,7 @@ export class ProjectApplicationListUserAssignmentsComponent implements OnInit {
     projects.forEach(project => {
       this.form.push(this.formBuilder.group({
         projectId: this.formBuilder.control(project.id),
-        userIds: this.formBuilder.array(project.users),
+        userIds: this.formBuilder.array(project.users.map(it => it.id)),
         userIdsToAdd: this.formBuilder.array([]),
         userIdsToRemove: this.formBuilder.array([]),
       }));

@@ -33,7 +33,7 @@ class ContractedProjectSectionCDataGeneratorTest(@LocalServerPort private val po
 
 
     @Test
-    @ExpectSelect(12)
+    @ExpectSelect(13)
     @ExpectInsert(5)
     @ExpectUpdate(0)
     @ExpectDelete(1)
@@ -47,7 +47,7 @@ class ContractedProjectSectionCDataGeneratorTest(@LocalServerPort private val po
     }
 
     @Test
-    @ExpectSelect(12)
+    @ExpectSelect(13)
     @ExpectInsert(5)
     @ExpectUpdate(0)
     @ExpectDelete(1)
@@ -58,7 +58,7 @@ class ContractedProjectSectionCDataGeneratorTest(@LocalServerPort private val po
     }
 
     @Test
-    @ExpectSelect(12)
+    @ExpectSelect(13)
     @ExpectInsert(5)
     @ExpectUpdate(0)
     @ExpectDelete(1)
@@ -71,7 +71,7 @@ class ContractedProjectSectionCDataGeneratorTest(@LocalServerPort private val po
     }
 
     @Test
-    @ExpectSelect(17)
+    @ExpectSelect(18)
     @ExpectInsert(5)
     @ExpectUpdate(0)
     @ExpectDelete(1)
@@ -82,7 +82,7 @@ class ContractedProjectSectionCDataGeneratorTest(@LocalServerPort private val po
     }
 
     @Test
-    @ExpectSelect(12)
+    @ExpectSelect(13)
     @ExpectInsert(5)
     @ExpectUpdate(0)
     @ExpectDelete(1)
@@ -93,7 +93,7 @@ class ContractedProjectSectionCDataGeneratorTest(@LocalServerPort private val po
     }
 
     @Test
-    @ExpectSelect(12)
+    @ExpectSelect(13)
     @ExpectInsert(5)
     @ExpectUpdate(0)
     @ExpectDelete(1)
