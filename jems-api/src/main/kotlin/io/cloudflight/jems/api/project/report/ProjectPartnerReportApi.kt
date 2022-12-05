@@ -30,7 +30,7 @@ interface ProjectPartnerReportApi {
 
     companion object {
         const val ENDPOINT_API_PROJECT_PARTNER_REPORT = "/api/project/report/partner"
-        const val ENDPOINT_API_PROJECT_PARTNER_CONTROL_REPORT = "/api/project/report/partner/control"
+        const val ENDPOINT_API_PROJECT_PARTNER_CONTROL_REPORT = "$ENDPOINT_API_PROJECT_PARTNER_REPORT/control"
     }
 
     @ApiOperation("Returns all project partner report summaries by partner id and version")

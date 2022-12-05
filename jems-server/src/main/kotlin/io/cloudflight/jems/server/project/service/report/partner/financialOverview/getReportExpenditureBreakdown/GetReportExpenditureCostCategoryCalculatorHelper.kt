@@ -13,6 +13,7 @@ import io.cloudflight.jems.server.project.service.budget.calculator.BudgetCostCa
 import io.cloudflight.jems.server.project.service.budget.calculator.calculateBudget
 import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.costCategory.ExpenditureCostCategoryBreakdown
@@ -113,10 +114,13 @@ fun ExpenditureCostCategoryBreakdown.fillInOverviewFields() = apply {
 
 private fun ExpenditureCostCategoryBreakdownLine.fillInOverviewFields() = apply {
     totalReportedSoFar = previouslyReported.plus(currentReport)
-    totalReportedSoFarPercentage = if (totalEligibleBudget.compareTo(BigDecimal.ZERO) == 0) BigDecimal.ZERO else
-        totalReportedSoFar.multiply(BigDecimal.valueOf(100)).divide(totalEligibleBudget, 2, RoundingMode.HALF_UP)
+    totalReportedSoFarPercentage = totalReportedSoFar.percentageOf(totalEligibleBudget)
     remainingBudget = totalEligibleBudget.minus(totalReportedSoFar)
 }
+
+fun BigDecimal.percentageOf(total: BigDecimal): BigDecimal =
+    if (total.compareTo(BigDecimal.ZERO) == 0) BigDecimal.ZERO
+    else this.multiply(BigDecimal.valueOf(100)).divide(total, 2, RoundingMode.HALF_UP)
 
 private fun ReportBudgetCategory.translateCostCategory(): BudgetCostCategory {
     return when (this) {
@@ -130,13 +134,13 @@ private fun ReportBudgetCategory.translateCostCategory(): BudgetCostCategory {
     }
 }
 
-private fun ProjectPartnerReportExpenditureCost.getCategory(): BudgetCostCategory =
+private fun ExpenditureCost.getCategory(): BudgetCostCategory =
     when {
         lumpSumId != null -> LumpSum
         else -> costCategory.translateCostCategory()
     }
 
-fun Collection<ProjectPartnerReportExpenditureCost>.calculateCurrent(options: ProjectPartnerBudgetOptions): BudgetCostsCalculationResultFull {
+fun Collection<ExpenditureCost>.calculateCurrent(options: ProjectPartnerBudgetOptions): BudgetCostsCalculationResultFull {
     val sums = groupBy { it.getCategory() }
         .mapValues { it.value.sumOf { it.declaredAmountAfterSubmission ?: BigDecimal.ZERO } }
     return calculateBudget(options, sums)

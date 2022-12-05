@@ -2,6 +2,7 @@ package io.cloudflight.jems.server.project.service.report.partner.financialOverv
 
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancing
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn
+import java.math.BigDecimal
 
 interface ProjectReportExpenditureCoFinancingPersistence {
 
@@ -10,5 +11,7 @@ interface ProjectReportExpenditureCoFinancingPersistence {
     fun getCoFinancingCumulative(reportIds: Set<Long>): ReportExpenditureCoFinancingColumn
 
     fun updateCurrentlyReportedValues(partnerId: Long, reportId: Long, currentlyReported: ReportExpenditureCoFinancingColumn)
+
+    fun getPartnerTotal(partnerId: Long, reportId: Long): BigDecimal
 
 }

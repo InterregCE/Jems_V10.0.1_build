@@ -1,7 +1,8 @@
-package io.cloudflight.jems.api.project.report
+package io.cloudflight.jems.api.project.report.control
 
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.verification.ProjectPartnerControlReportExpenditureVerificationDTO
 import io.cloudflight.jems.api.project.dto.report.partner.expenditure.verification.ProjectPartnerControlReportExpenditureVerificationUpdateDTO
+import io.cloudflight.jems.api.project.report.ProjectPartnerReportApi.Companion.ENDPOINT_API_PROJECT_PARTNER_CONTROL_REPORT
 import io.swagger.annotations.Api
 import io.swagger.annotations.ApiOperation
 import org.springframework.http.MediaType
@@ -15,7 +16,7 @@ interface ProjectPartnerControlReportExpenditureVerificationApi {
 
     companion object {
         const val ENDPOINT_API_PARTNER_REPORT_EXPENDITURE_VERIFICATION =
-            "${ProjectPartnerReportApi.ENDPOINT_API_PROJECT_PARTNER_CONTROL_REPORT}/expenditure/byPartnerId/{partnerId}/byReportId/{reportId}"
+            "$ENDPOINT_API_PROJECT_PARTNER_CONTROL_REPORT/expenditure/byPartnerId/{partnerId}/byReportId/{reportId}"
     }
 
     @ApiOperation("Returns all expenditure verification by partner id and report id")
