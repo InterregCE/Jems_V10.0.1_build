@@ -145,23 +145,23 @@ class ProjectReportExpenditureCoFinancingPersistenceProviderTest : UnitTest() {
     }
 
     @MockK
-    lateinit var repository: ReportProjectPartnerExpenditureCoFinancingRepository
+    private lateinit var expenditureCoFinancingRepository: ReportProjectPartnerExpenditureCoFinancingRepository
 
     @MockK
-    lateinit var partnerReportCoFinancingRepository: ProjectPartnerReportCoFinancingRepository
+    private lateinit var partnerReportCoFinancingRepository: ProjectPartnerReportCoFinancingRepository
 
     @InjectMockKs
-    lateinit var persistence: ProjectReportExpenditureCoFinancingPersistenceProvider
+    private lateinit var persistence: ProjectReportExpenditureCoFinancingPersistenceProvider
 
     @BeforeEach
     fun reset() {
-        clearMocks(repository)
+        clearMocks(expenditureCoFinancingRepository)
         clearMocks(partnerReportCoFinancingRepository)
     }
 
     @Test
     fun getCoFinancing() {
-        every { repository.findFirstByReportEntityPartnerIdAndReportEntityId(PARTNER_ID, reportId = 8L) } returns coFinEntity()
+        every { expenditureCoFinancingRepository.findFirstByReportEntityPartnerIdAndReportEntityId(PARTNER_ID, reportId = 8L) } returns coFinEntity()
         every { partnerReportCoFinancingRepository.findAllByIdReportIdOrderByIdFundSortNumber(reportId = 8L) } returns
             listOf(fund(), partnerContribution())
         assertThat(persistence.getCoFinancing(PARTNER_ID, reportId = 8L)).isEqualTo(coFin)
@@ -169,7 +169,7 @@ class ProjectReportExpenditureCoFinancingPersistenceProviderTest : UnitTest() {
 
     @Test
     fun getCoFinancingCumulative() {
-        every { repository.findCumulativeForReportIds(reportIds = setOf(9L)) } returns reportsCumulative
+        every { expenditureCoFinancingRepository.findCumulativeForReportIds(reportIds = setOf(9L)) } returns reportsCumulative
         every { partnerReportCoFinancingRepository.findCumulativeForReportIds(reportIds = setOf(9L)) } returns
             listOf(cumulativeFund, cumulativePartnerContrib)
         assertThat(persistence.getCoFinancingCumulative(reportIds = setOf(9L))).isEqualTo(coFinCumulative)
@@ -183,7 +183,7 @@ class ProjectReportExpenditureCoFinancingPersistenceProviderTest : UnitTest() {
 
         every { partnerReportCoFinancingRepository.findAllByIdReportIdOrderByIdFundSortNumber(reportId = 15L) } returns
             listOf(fund, partnerContrib)
-        every { repository.findFirstByReportEntityPartnerIdAndReportEntityId(PARTNER_ID, reportId = 15L) } returns coFinEntity
+        every { expenditureCoFinancingRepository.findFirstByReportEntityPartnerIdAndReportEntityId(PARTNER_ID, reportId = 15L) } returns coFinEntity
 
         persistence.updateCurrentlyReportedValues(PARTNER_ID, reportId = 15L, currentlyReported = coFinNewValues)
 
@@ -194,6 +194,17 @@ class ProjectReportExpenditureCoFinancingPersistenceProviderTest : UnitTest() {
         assertThat(coFinEntity.automaticPublicContributionCurrent).isEqualByComparingTo(BigDecimal.valueOf(30L))
         assertThat(coFinEntity.privateContributionCurrent).isEqualByComparingTo(BigDecimal.valueOf(60L))
         assertThat(coFinEntity.sumCurrent).isEqualByComparingTo(BigDecimal.valueOf(100L))
+    }
+
+    @Test
+    fun getPartnerTotal() {
+        val coFin = mockk<ReportProjectPartnerExpenditureCoFinancingEntity>()
+        every { coFin.sumTotal } returns BigDecimal.valueOf(64789, 2)
+
+        every { expenditureCoFinancingRepository
+            .findFirstByReportEntityPartnerIdAndReportEntityId(PARTNER_ID, reportId = 15L)
+        } returns coFin
+        assertThat(persistence.getPartnerTotal(PARTNER_ID, reportId = 15L)).isEqualTo(BigDecimal.valueOf(64789, 2))
     }
 
 }

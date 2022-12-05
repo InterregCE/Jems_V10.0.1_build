@@ -7,10 +7,10 @@ import java.math.RoundingMode
 import java.time.LocalDate
 
 data class ProjectPartnerReportExpenditureCost(
-    val id: Long?,
-    var lumpSumId: Long?,
+    override val id: Long?,
+    override var lumpSumId: Long?,
     var unitCostId: Long?,
-    var costCategory: ReportBudgetCategory,
+    override var costCategory: ReportBudgetCategory,
     var investmentId: Long?,
     var contractId: Long?,
     var internalReferenceNumber: String?,
@@ -26,9 +26,9 @@ data class ProjectPartnerReportExpenditureCost(
     var declaredAmount: BigDecimal,
     var currencyCode: String,
     var currencyConversionRate: BigDecimal?,
-    var declaredAmountAfterSubmission: BigDecimal?,
+    override var declaredAmountAfterSubmission: BigDecimal?,
     val attachment: JemsFileMetadata?,
-) {
+): ExpenditureCost {
     fun clearConversions() {
         currencyConversionRate = null
         declaredAmountAfterSubmission = null
