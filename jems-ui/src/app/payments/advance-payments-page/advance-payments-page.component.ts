@@ -82,7 +82,7 @@ export class AdvancePaymentsPageComponent implements OnInit, AfterViewInit {
           columnWidth: ColumnWidth.ChipColumn,
         },
         {
-          displayedColumn: 'payments.advance.payment.table.header.partner.role',
+          displayedColumn: 'payments.advance.payment.table.header.partner.number',
           columnType: ColumnType.CustomComponent,
           columnWidth: ColumnWidth.SmallColumn,
           customCellTemplate: this.partnerRoleCell
@@ -101,15 +101,15 @@ export class AdvancePaymentsPageComponent implements OnInit, AfterViewInit {
         {
           displayedColumn: 'payments.advance.payment.table.header.advance.amount',
           columnWidth: ColumnWidth.MediumColumn,
-          elementProperty: 'amountAdvance',
-          sortProperty: 'amountAdvance',
+          elementProperty: 'amountPaid',
+          sortProperty: 'amountPaid',
         },
         {
           displayedColumn: 'payments.advance.payment.table.header.date.advance.payment',
           columnType: ColumnType.DateOnlyColumn,
           columnWidth: ColumnWidth.DateColumn,
-          elementProperty: 'dateOfPayment',
-          sortProperty: 'dateOfPayment'
+          elementProperty: 'paymentDate',
+          sortProperty: 'paymentDate'
         },
         {
           displayedColumn: 'payments.advance.payment.table.header.amount.settled',

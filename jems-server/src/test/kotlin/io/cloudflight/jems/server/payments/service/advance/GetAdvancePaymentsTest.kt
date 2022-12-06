@@ -32,8 +32,8 @@ class GetAdvancePaymentsTest: UnitTest() {
             partnerNumber =  2,
             partnerAbbreviation = "partner",
             programmeFund = fund,
-            amountAdvance = BigDecimal.TEN,
-            dateOfPayment = currentDate.minusDays(3),
+            amountPaid = BigDecimal.TEN,
+            paymentDate = currentDate.minusDays(3),
             amountSettled = BigDecimal(100)
         )
     }

@@ -47,8 +47,8 @@ class PaymentAdvanceControllerTest : UnitTest() {
             partnerNumber = null,
             partnerAbbreviation = "abbr.",
             programmeFund = fundDTO,
-            amountAdvance = BigDecimal.TEN,
-            dateOfPayment = currentDate,
+            amountPaid = BigDecimal.TEN,
+            paymentDate = currentDate,
             amountSettled = BigDecimal.ONE
         )
         private val advancePayment = AdvancePayment(
@@ -59,8 +59,8 @@ class PaymentAdvanceControllerTest : UnitTest() {
             partnerNumber = null,
             partnerAbbreviation = "abbr.",
             programmeFund = fund,
-            amountAdvance = BigDecimal.TEN,
-            dateOfPayment = currentDate,
+            amountPaid = BigDecimal.TEN,
+            paymentDate = currentDate,
             amountSettled = BigDecimal.ONE
         )
         private val advancePaymentDetail = AdvancePaymentDetail(
@@ -73,8 +73,8 @@ class PaymentAdvanceControllerTest : UnitTest() {
             partnerNumber = null,
             partnerAbbreviation = "abbr.",
             programmeFund = fund,
-            amountAdvance = BigDecimal.TEN,
-            dateOfPayment = currentDate,
+            amountPaid = BigDecimal.TEN,
+            paymentDate = currentDate,
             comment = "random comment",
             paymentAuthorized = true,
             paymentAuthorizedUser = OutputUser(userId, "random@mail", "name", "surname"),
@@ -88,8 +88,8 @@ class PaymentAdvanceControllerTest : UnitTest() {
             projectId = projectId,
             partnerId = partnerId,
             programmeFundId = fund.id,
-            amountAdvance = BigDecimal.TEN,
-            dateOfPayment = currentDate,
+            amountPaid = BigDecimal.TEN,
+            paymentDate = currentDate,
             comment = "random comment",
             paymentAuthorized = true,
             paymentConfirmed = true,
@@ -104,8 +104,8 @@ class PaymentAdvanceControllerTest : UnitTest() {
             partnerNumber = null,
             partnerAbbreviation = "abbr.",
             programmeFund = fundDTO,
-            amountAdvance = BigDecimal.TEN,
-            dateOfPayment = currentDate,
+            amountPaid = BigDecimal.TEN,
+            paymentDate = currentDate,
             comment = "random comment",
             paymentAuthorized = true,
             paymentAuthorizedUser = OutputUser(userId, "random@mail", "name", "surname"),
@@ -159,8 +159,8 @@ class PaymentAdvanceControllerTest : UnitTest() {
             projectId = projectId,
             partnerId = partnerId,
             programmeFundId = fund.id,
-            amountAdvance = BigDecimal.TEN,
-            dateOfPayment = currentDate,
+            amountPaid = BigDecimal.TEN,
+            paymentDate = currentDate,
             comment = "random comment",
             paymentAuthorized = true,
             paymentConfirmed = true
