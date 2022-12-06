@@ -1,9 +1,6 @@
 package io.cloudflight.jems.server.authentication.authorization
 
 import io.cloudflight.jems.server.authentication.service.SecurityService
-import io.cloudflight.jems.server.project.service.ProjectPersistence
-import io.cloudflight.jems.server.project.service.model.ProjectApplicantAndStatus
-import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.user.service.model.User
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectRetrieve
@@ -37,7 +34,7 @@ class Authorization(
     /**
      * will ignore project-user assignment rules
      */
-    private fun hasNonProjectAuthority(permission: UserRolePermission): Boolean =
+    fun hasNonProjectAuthority(permission: UserRolePermission): Boolean =
         securityService.currentUser?.hasPermission(permission)!!
 
     protected fun isActiveUserIdEqualToOneOf(userIds: Set<Long>): Boolean =

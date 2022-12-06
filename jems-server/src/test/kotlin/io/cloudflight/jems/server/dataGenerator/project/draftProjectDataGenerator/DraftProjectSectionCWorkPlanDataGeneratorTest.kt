@@ -179,7 +179,7 @@ class DraftProjectSectionCWorkPlanDataGeneratorTest(@LocalServerPort private val
 
     @Test
     @Order(Ordered.LOWEST_PRECEDENCE)
-    @ExpectSelect(10)
+    @ExpectSelect(11)
     @ExpectInsert(0)
     @ExpectUpdate(0)
     @ExpectDelete(1)

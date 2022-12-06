@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.contracting.fileManagement.deleteContractFile
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
-import io.cloudflight.jems.server.project.authorization.CanEditContractInfo
+import io.cloudflight.jems.server.project.authorization.CanEditContractsAndAgreements
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.ProjectContractingFilePersistence
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.validateContractFile
 import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
@@ -14,7 +14,7 @@ class DeleteContractFile(
     private val reportFilePersistence: ProjectReportFilePersistence,
 ) : DeleteContractFileInteractor {
 
-    @CanEditContractInfo
+    @CanEditContractsAndAgreements
     @Transactional
     @ExceptionWrapper(DeleteContractFileException::class)
     override fun delete(projectId: Long, fileId: Long) {

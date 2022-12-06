@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.contracting.management.getProjectContractingManagement
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
-import io.cloudflight.jems.server.project.authorization.CanViewProjectManagement
+import io.cloudflight.jems.server.project.authorization.CanViewProjectManagers
 import io.cloudflight.jems.server.project.repository.ProjectPersistenceProvider
 import io.cloudflight.jems.server.project.service.contracting.management.ContractingManagementPersistence
 import io.cloudflight.jems.server.project.service.contracting.ContractingValidator
@@ -16,7 +16,7 @@ class GetContractingManagement(
     private val validator: ContractingValidator,
     ): GetContractingManagementInteractor {
 
-    @CanViewProjectManagement
+    @CanViewProjectManagers
     @Transactional(readOnly = true)
     @ExceptionWrapper(GetContractingManagementException::class)
     override fun getContractingManagement(projectId: Long): List<ProjectContractingManagement> {

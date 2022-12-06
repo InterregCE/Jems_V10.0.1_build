@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.project.service.contracting.fileManagement.se
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
-import io.cloudflight.jems.server.project.authorization.CanEditContractInfo
+import io.cloudflight.jems.server.project.authorization.CanEditContractsAndAgreements
 import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.cloudflight.jems.server.project.service.report.partner.file.setDescriptionToFile.FileNotFound
@@ -15,7 +15,7 @@ class SetContractFileDescription(
     private val generalValidator: GeneralValidatorService
 ): SetContractFileDescriptionInteractor {
 
-    @CanEditContractInfo
+    @CanEditContractsAndAgreements
     @Transactional
     @ExceptionWrapper(SetDescriptionToContractFileException::class)
     override fun setContractFileDescription(projectId: Long, fileId: Long, description: String) {

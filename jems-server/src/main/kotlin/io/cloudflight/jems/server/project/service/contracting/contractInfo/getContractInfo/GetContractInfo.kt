@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.contracting.contractInfo.getContractInfo
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
-import io.cloudflight.jems.server.project.authorization.CanViewContractInfo
+import io.cloudflight.jems.server.project.authorization.CanViewContractsAndAgreements
 import io.cloudflight.jems.server.project.repository.ProjectPersistenceProvider
 import io.cloudflight.jems.server.project.service.contracting.ContractingValidator
 import io.cloudflight.jems.server.project.service.contracting.contractInfo.ProjectContractInfoPersistence
@@ -18,7 +18,7 @@ class GetContractInfo(
     private val validator: ContractingValidator
 ): GetContractInfoInteractor {
 
-    @CanViewContractInfo
+    @CanViewContractsAndAgreements
     @Transactional(readOnly = true)
     @ExceptionWrapper(GetContractInfoException::class)
     override fun getContractInfo(projectId: Long): ProjectContractInfo {

@@ -55,20 +55,22 @@ class ProjectWorkPackageAuthorization(
     }
 
     fun canRetrieveProjectWorkPackage(projectId: Long, workPackageId: Long, version: String? = null): Boolean {
-        val project = getProject(projectId, workPackageId, version)
-        return hasPermissionForProject(UserRolePermission.ProjectFormRetrieve, projectId = project.projectId)
+        // to make sure workPackage relates to specified projectId (considering version, as in current it might not exist anymore)
+        workPackagePersistence.getWorkPackageById(projectId = projectId, workPackageId = workPackageId, version = version)
+        val project = projectPersistence.getApplicantAndStatusById(projectId)
+
+        return hasPermission(UserRolePermission.ProjectFormRetrieve, projectId)
             || isActiveUserIdEqualToOneOf(project.getUserIdsWithViewLevel())
     }
 
     fun canRetrieveProjectWorkPackageInvestment(projectId: Long, investmentId: Long, version: String? = null): Boolean {
-        val project = workPackagePersistence.getProjectFromWorkPackageInvestment(investmentId)
-        return hasPermissionForProject(UserRolePermission.ProjectFormRetrieve, projectId = project.projectId)
+        // to make sure investment relates to specified projectId (considering version, as in current it might not exist anymore)
+        workPackagePersistence.getWorkPackageInvestment(investmentId, projectId = projectId, version = version)
+        val project = projectPersistence.getApplicantAndStatusById(projectId)
+
+        return hasPermission(UserRolePermission.ProjectFormRetrieve, projectId = projectId)
             || isActiveUserIdEqualToOneOf(project.getUserIdsWithViewLevel())
     }
-
-    private fun getProject(projectId: Long, workPackageId: Long, version: String?): ProjectApplicantAndStatus =
-        // TODO this is still security vulnerability, because work package might be from different project
-        if (!version.isNullOrBlank()) projectPersistence.getApplicantAndStatusById(projectId) else getProjectFromWorkPackageId(workPackageId)
 
     private fun getProjectFromWorkPackageId(workPackageId: Long): ProjectApplicantAndStatus =
         workPackageService.getProjectForWorkPackageId(workPackageId)
