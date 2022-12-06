@@ -4,13 +4,11 @@ import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.controllerInstitution.authorization.CanUpdateControllerInstitution
 import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionValidator
-import io.cloudflight.jems.server.controllerInstitution.service.checkInstitutionPartnerAssignment.CheckInstitutionPartnerAssignments
 import io.cloudflight.jems.server.controllerInstitution.service.controllerInstitutionChanged
 import io.cloudflight.jems.server.controllerInstitution.service.createControllerInstitution.UpdateControllerInstitutionException
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitution
 import io.cloudflight.jems.server.controllerInstitution.service.model.ControllerInstitutionUser
 import io.cloudflight.jems.server.controllerInstitution.service.model.UpdateControllerInstitution
-import io.cloudflight.jems.server.project.service.projectuser.UserProjectPersistence
 import io.cloudflight.jems.server.user.service.UserPersistence
 import io.cloudflight.jems.server.user.service.UserRolePersistence
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
@@ -24,10 +22,8 @@ class UpdateController(
     private val persistence: ControllerInstitutionPersistence,
     private val userPersistence: UserPersistence,
     private val userRolePersistence: UserRolePersistence,
-    private val userProjectPersistence: UserProjectPersistence,
     private val auditPublisher: ApplicationEventPublisher,
     private val controllerInstitutionValidator: ControllerInstitutionValidator,
-    private val checkInstitutionPartnerAssignments: CheckInstitutionPartnerAssignments
 ): UpdateControllerInteractor {
 
     @CanUpdateControllerInstitution
@@ -49,7 +45,6 @@ class UpdateController(
         val institutionUsersToUpdate = controllerInstitution.institutionUsers
         val existingInstitutionUsers = persistence.getInstitutionUsersByInstitutionId(institutionId)
         val userIdsToDelete = institutionUsersToUpdate.getUserIdsToDelete(existingInstitutionUsers)
-        val userIdsToAdd = institutionUsersToUpdate.getUserIdsToAdd(existingInstitutionUsers, userSummaries)
 
         val updatedUsers = persistence.updateControllerInstitutionUsers(
             institutionId,
@@ -57,17 +52,8 @@ class UpdateController(
             usersIdsToDelete = userIdsToDelete
         )
 
-        updateInstitutionUsersProjectAssignment(
-            institutionId = institutionId,
-            userIdsToAdd = userIdsToAdd,
-            userIdsToRemove = userIdsToDelete,
-        )
-
         return persistence.updateControllerInstitution(controllerInstitution).also {
             it.institutionUsers.addAll(updatedUsers)
-            checkInstitutionPartnerAssignments.checkInstitutionAssignmentsToRemoveForUpdatedInstitution(
-                controllerInstitution.id
-            )
             auditPublisher.publishEvent(
                 controllerInstitutionChanged(
                     context = this,
@@ -78,42 +64,8 @@ class UpdateController(
         }
     }
 
-    private fun updateInstitutionUsersProjectAssignment(
-        institutionId: Long,
-        userIdsToAdd: Set<Long>,
-        userIdsToRemove: Set<Long>
-    ) {
-        if (userIdsToAdd.isNotEmpty() || userIdsToRemove.isNotEmpty()) {
-            val assignmentsPartnerProjectIds = persistence.getInstitutionPartnerAssignmentsByInstitutionId(institutionId)
-                .takeIf { it.isNotEmpty() }?.let { institutionAssignments ->
-                    institutionAssignments.map { it.partnerProjectId }
-                }
-
-            val partnerProjectIdToAssignedInstitutionUsers =
-                persistence.getInstitutionPartnerAssignmentsWithUsersByPartnerProjectIdsIn(assignmentsPartnerProjectIds?.toSet() ?: emptySet())
-                    .filter { it.institutionId != institutionId }
-                    .groupBy(keySelector = { it.partnerProjectId }, valueTransform = { it.userId })
-
-            assignmentsPartnerProjectIds?.forEach { projectId ->
-                userProjectPersistence.changeUsersAssignedToProject(
-                    projectId,
-                    userIdsToAssign = userIdsToAdd.minus((partnerProjectIdToAssignedInstitutionUsers[projectId] ?: emptySet()).toSet()),
-                    userIdsToRemove = userIdsToRemove.minus((partnerProjectIdToAssignedInstitutionUsers[projectId] ?: emptySet()).toSet())
-                )
-            }
-        }
-    }
-
     private fun List<ControllerInstitutionUser>.getUserIdsToDelete(existingInstitutionUsers: List<ControllerInstitutionUser>) =
         existingInstitutionUsers.map { it.userId }.toSet().minus(this.map { it.userId }.toSet())
-
-    private fun List<ControllerInstitutionUser>.getUserIdsToAdd(
-        existingInstitutionUsers: List<ControllerInstitutionUser>,
-        userSummaries: List<UserSummary>
-    ): Set<Long>  {
-        val newInstitutionUserEmails = this.map { it.userEmail }.minus(existingInstitutionUsers.map { it.userEmail }.toSet())
-        return userSummaries.filter { it.email in newInstitutionUserEmails }.map { it.id }.toSet()
-    }
 
     private fun getEmailsOfUsersThatCanBePersisted(userSummaries: List<UserSummary>): List<String> {
         val monitorRoleIds = userRolePersistence.findRoleIdsHavingAndNotHavingPermissions(
