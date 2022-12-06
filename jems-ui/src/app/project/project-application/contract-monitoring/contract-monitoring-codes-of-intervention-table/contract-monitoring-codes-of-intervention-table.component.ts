@@ -61,7 +61,6 @@ export class ContractMonitoringCodesOfInterventionTableComponent implements OnCh
     }
   }
 
-
   get dimensionCodesFormItems(): FormArray {
     return this.formGroup.get('dimensionCodesItems') as FormArray;
   }
@@ -102,13 +101,15 @@ export class ContractMonitoringCodesOfInterventionTableComponent implements OnCh
       default:
         return this.dimensionCodes ? this.dimensionCodes[dimension] : [];
     }
-
   }
 
   removeItem(controlIndex: number): void {
     this.dimensionCodesFormItems.removeAt(controlIndex);
     this.dimensionCodesTableData = [... this.dimensionCodesFormItems.controls];
     this.changed.emit();
+    const projectBudgetAmountShareControl = this.dimensionCodesFormItems.at(controlIndex).get('projectBudgetAmountShare');
+    projectBudgetAmountShareControl?.setValidators([Validators.required, this.dimensionCodeAmountValidator()]);
+    projectBudgetAmountShareControl?.updateValueAndValidity();
   }
 
   resetDimensionControl(event: any, controlIndex: number): void {
@@ -138,7 +139,7 @@ export class ContractMonitoringCodesOfInterventionTableComponent implements OnCh
   }
 
   private calculateDimensionCodePercentShare(dimensionCodeAmountShare: number): number {
-    return NumberService.truncateNumber(
+    return NumberService.roundNumber(
       NumberService.divide(NumberService.product([dimensionCodeAmountShare, 100]), this.projectBudget), 2);
   }
 
@@ -165,7 +166,6 @@ export class ContractMonitoringCodesOfInterventionTableComponent implements OnCh
       return !dimensionCodeAmountValid ? {dimensionCodeAmountError: true} : null;
     };
   }
-
 
   private dimensionCodeAlreadySelected(): ValidatorFn {
     return (control: AbstractControl): ValidationErrors | null => {
