@@ -41,7 +41,7 @@
     <ID>MaxLineLength:CreateOutputIndicatorTest.kt$CreateOutputIndicatorTest$fun</ID>
     <ID>MaxLineLength:ExceptionWrapperAspectTest.kt$ExceptionWrapperAspectTest$fun</ID>
     <ID>MaxLineLength:FileHelper.kt$private val ALLOWED_EXTENSIONS = arrayOf("ddoc", "asice", "asics", "adoc", "bdoc", "edoc", "sce", "scs", "csv","dat","db","dbf","log","mdb","xml","email","eml","emlx","msg","oft","ost","pst","vcf","bmp","gif","jpeg","jpg","png","psd","svg","tif","tiff","htm","html","key","odp","pps","ppt","pptx","ods","xls","xlsm","xlsx","doc","docx","odt","pdf","rtf","tex","txt","wpd","mov","avi","mp4","zip","rar","ace","7z","url","p7m")</ID>
-    <ID>MaxLineLength:GetBudgetTotalCostTest.kt$GetBudgetTotalCostTest$fun</ID>
+    <ID>MaxLineLength:GetBudgetTotalCostCalculatorTest.kt$GetBudgetTotalCostCalculatorTest$fun</ID>
     <ID>MaxLineLength:InModificationApplicationStateTest.kt$InModificationApplicationStateTest$every { projectPersistence.getProjectCallSettings(InModificationApplicationStateTest.PROJECT_ID) } returns InModificationApplicationStateTest.projectCallSettings</ID>
     <ID>MaxLineLength:MinioStorageTest.kt$MinioStorageTest$fun</ID>
     <ID>MaxLineLength:NotApprovedApplicationState.kt$NotApprovedApplicationState$ApplicationStatus.APPROVED_WITH_CONDITIONS</ID>
@@ -244,6 +244,7 @@
     <ID>PackageNaming:GetBudgetOptionsInteractor.kt$package io.cloudflight.jems.server.project.service.partner.budget.get_budget_options</ID>
     <ID>PackageNaming:GetBudgetTotalCost.kt$package io.cloudflight.jems.server.project.service.partner.budget.get_budget_total_cost</ID>
     <ID>PackageNaming:GetBudgetTotalCostInteractor.kt$package io.cloudflight.jems.server.project.service.partner.budget.get_budget_total_cost</ID>
+    <ID>PackageNaming:GetBudgetTotalCostCalculator.kt$package io.cloudflight.jems.server.project.service.partner.budget.get_budget_total_cost</ID>
     <ID>PackageNaming:GetCall.kt$package io.cloudflight.jems.server.call.service.get_call</ID>
     <ID>PackageNaming:GetCallExceptions.kt$package io.cloudflight.jems.server.call.service.get_call</ID>
     <ID>PackageNaming:GetCallInteractor.kt$package io.cloudflight.jems.server.call.service.get_call</ID>
@@ -291,7 +292,7 @@
     <ID>PackageNaming:GetProjectBudget.kt$package io.cloudflight.jems.server.project.service.budget.get_project_budget</ID>
     <ID>PackageNaming:GetProjectBudgetCoFinancing.kt$package io.cloudflight.jems.server.project.service.cofinancing.get_project_cofinancing</ID>
     <ID>PackageNaming:GetProjectBudgetCoFinancingInteractor.kt$package io.cloudflight.jems.server.project.service.cofinancing.get_project_cofinancing</ID>
-    <ID>PackageNaming:GetProjectBudgetInteractor.kt$package io.cloudflight.jems.server.project.service.budget.get_project_budget</ID>
+    <ID>PackageNaming:GetProjectBudgetInteractor.kt$package io.cloudflight.jems.server.project.service.budget.get_project_budget</ID><ID>PackageNaming:GetProjectCoFinancingOverviewCalculatorService.kt$package io.cloudflight.jems.server.project.service.cofinancing.get_project_cofinancing_overview</ID>
     <ID>PackageNaming:GetProjectCoFinancingOverview.kt$package io.cloudflight.jems.server.project.service.cofinancing.get_project_cofinancing_overview</ID>
     <ID>PackageNaming:GetProjectCoFinancingOverviewInteractor.kt$package io.cloudflight.jems.server.project.service.cofinancing.get_project_cofinancing_overview</ID>
     <ID>PackageNaming:GetProjectDescription.kt$package io.cloudflight.jems.server.project.service.get_project_description</ID>

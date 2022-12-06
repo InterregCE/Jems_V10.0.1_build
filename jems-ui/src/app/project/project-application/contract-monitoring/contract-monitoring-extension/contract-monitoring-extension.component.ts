@@ -15,13 +15,13 @@ import {
   ProjectContractingMonitoringDTO,
   ProjectPartnerLumpSumDTO,
   ProjectPartnerSummaryDTO,
+   ProjectPeriodForMonitoringDTO,
   ProjectStatusDTO,
   UserRoleDTO
 } from '@cat/api';
 import {ActivatedRoute} from '@angular/router';
 import {ProgrammeLumpSum} from '@project/model/lump-sums/programmeLumpSum';
 import {ProjectLumpSumsStore} from '@project/lump-sums/project-lump-sums-page/project-lump-sums-store.service';
-import {ProjectPeriod} from '@project/model/ProjectPeriod';
 import {TranslateService} from '@ngx-translate/core';
 import {
   ProjectStore
@@ -32,6 +32,7 @@ import {
 import {
   ProjectPartnerStore
 } from '@project/project-application/containers/project-application-form-page/services/project-partner-store.service';
+import {ContractReportingStore} from '@project/project-application/contract-reporting/contract-reporting.store';
 
 @Component({
   selector: 'jems-contract-monitoring-extension',
@@ -78,7 +79,7 @@ export class ContractMonitoringExtensionComponent {
     contractMonitoringViewable: boolean;
     contractMonitoringEditable: boolean;
     projectCallLumpSums: ProgrammeLumpSum[];
-    periods: ProjectPeriod[];
+    periods: ProjectPeriodForMonitoringDTO[];
     status: ProjectStatusDTO;
     dimensionCodes:  {[p: string]: string[]};
     projectBudget: number;
@@ -96,7 +97,8 @@ export class ContractMonitoringExtensionComponent {
               private projectLumpSumsStore: ProjectLumpSumsStore,
               private projectStore: ProjectStore,
               private translateService: TranslateService,
-              private partnerStore: ProjectPartnerStore) {
+              private partnerStore: ProjectPartnerStore,
+              private contractReportingStore: ContractReportingStore) {
 
     const permissions$ = combineLatest(([
       this.contractMonitoringExtensionStore.contractMonitoringViewable$,
@@ -108,14 +110,14 @@ export class ContractMonitoringExtensionComponent {
 
     const lumpSumData$ = combineLatest(([
       this.projectLumpSumsStore.projectCallLumpSums$,
-      this.projectLumpSumsStore.projectPeriods$,
+      this.contractReportingStore.availablePeriods$
     ])).pipe(
       map(([lumpSums, projectPeriods]) => ({lumpSums, projectPeriods}))
     );
 
     const codesOfInterventionData$ = combineLatest(([
       this.projectStore.projectCallObjectives$,
-      this.projectStore.projectBudget$,
+      this.contractMonitoringExtensionStore.projectContractingMonitoringBudget$,
       this.partnerStore.partnerSummariesOfLastApprovedProjectVersion$
     ])).pipe(
       map(([projectCallObjectives, projectBudget, partnerSummaries]) => ({
@@ -313,8 +315,8 @@ export class ContractMonitoringExtensionComponent {
     return lumpSum ? lumpSum.name : null;
   }
 
-  getPeriodLabel(periodId: number, periods: ProjectPeriod[]): string {
-    const period = periods.find(it => it.periodNumber === periodId);
+  getPeriodLabel(periodId: number, periods: ProjectPeriodForMonitoringDTO[]): string {
+    const period = periods.find(it => it.number === periodId);
     if (!period && periodId !== 0 && periodId !== 255) {
       return '';
     }

@@ -11,31 +11,12 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class GetProjectCoFinancingOverview(
-    private val projectBudgetPersistence: ProjectBudgetPersistence,
-    private val projectPartnerCoFinancingPersistence: ProjectPartnerCoFinancingPersistence,
-    private val getBudgetTotalCost: GetBudgetTotalCost
+    private val getProjectCoFinancingOverviewCalculatorService: GetProjectCoFinancingOverviewCalculatorService
 ) : GetProjectCoFinancingOverviewInteractor {
 
     @Transactional(readOnly = true)
     @CanRetrieveProjectForm
     override fun getProjectCoFinancingOverview(projectId: Long, version: String?): ProjectCoFinancingOverview {
-        val partnerIds = projectBudgetPersistence.getPartnersForProjectId(projectId = projectId, version).mapTo(HashSet()) { it.id!! }
-        val funds = projectPartnerCoFinancingPersistence.getAvailableFunds(partnerIds.first())
-
-        val managementCoFinancingOverview = calculateCoFinancingOverview(
-            partnerIds = partnerIds,
-            getBudgetTotalCost = { getBudgetTotalCost.getBudgetTotalCost(it, version) },
-            getCoFinancingAndContributions = { projectPartnerCoFinancingPersistence.getCoFinancingAndContributions(it, version) },
-            funds = funds,
-        )
-
-        val spfCoFinancingOverview = calculateCoFinancingOverview(
-            partnerIds = partnerIds,
-            getBudgetTotalCost = { getBudgetTotalCost.getBudgetTotalSpfCost(it, version) },
-            getCoFinancingAndContributions = { projectPartnerCoFinancingPersistence.getSpfCoFinancingAndContributions(it, version) },
-            funds = funds,
-        )
-
-        return ProjectCoFinancingOverview(managementCoFinancingOverview, spfCoFinancingOverview)
+        return getProjectCoFinancingOverviewCalculatorService.getProjectCoFinancingOverview(projectId, version)
     }
 }

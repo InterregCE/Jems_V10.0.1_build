@@ -2,12 +2,17 @@ import {Injectable} from '@angular/core';
 import {
   ProjectStore
 } from '@project/project-application/containers/project-application-detail/services/project-store.service';
-import {ProjectContractingMonitoringDTO, ProjectContractingMonitoringService, UserRoleCreateDTO} from '@cat/api';
-import {switchMap, tap} from 'rxjs/operators';
+import {
+  ProjectContractingMonitoringDTO,
+  ProjectContractingMonitoringService,
+  UserRoleCreateDTO
+} from '@cat/api';
+import {map, switchMap, tap} from 'rxjs/operators';
 import {Log} from '@common/utils/log';
-import {Observable, Subject, merge} from 'rxjs';
+import {Observable, Subject, merge, combineLatest} from 'rxjs';
 import {PermissionService} from '../../../../security/permissions/permission.service';
 import PermissionsEnum = UserRoleCreateDTO.PermissionsEnum;
+import {ProjectVersionStore} from '@project/common/services/project-version-store.service';
 
 @Injectable({
   providedIn: 'root'
@@ -16,6 +21,7 @@ export class ContractMonitoringExtensionStore {
 
   projectId$: Observable<number>;
   projectContractingMonitoring$: Observable<ProjectContractingMonitoringDTO>;
+  projectContractingMonitoringBudget$: Observable<number>;
   contractMonitoringViewable$: Observable<boolean>;
   contractMonitoringEditable$: Observable<boolean>;
 
@@ -23,9 +29,12 @@ export class ContractMonitoringExtensionStore {
 
   constructor(private projectStore: ProjectStore,
               private projectContractingMonitoringService: ProjectContractingMonitoringService,
-              private permissionService: PermissionService) {
+              private permissionService: PermissionService,
+              private projectVersionStore: ProjectVersionStore) {
+
     this.projectId$ = this.projectStore.projectId$;
     this.projectContractingMonitoring$ = this.projectContractingMonitoring();
+    this.projectContractingMonitoringBudget$ = this.getProjectBudget();
     this.contractMonitoringViewable$ = this.permissionService.hasPermission(PermissionsEnum.ProjectContractingView);
     this.contractMonitoringEditable$ = this.permissionService.hasPermission(PermissionsEnum.ProjectSetToContracted);
   }
@@ -45,4 +54,17 @@ export class ContractMonitoringExtensionStore {
       );
     return merge(initialProjectContractMonitoring$, this.savedProjectContractingMonitoring$);
   }
+
+  private getProjectBudget(): Observable<number> {
+    return combineLatest([
+      this.projectId$,
+      this.projectVersionStore.lastApprovedOrContractedVersion$,
+    ]).pipe(
+      switchMap(([projectId, version]) =>
+        this.projectContractingMonitoringService.getContractingMonitoringProjectBudget(projectId, version?.version)
+      ),
+      map(data => data ),
+    );
+  }
+
 }

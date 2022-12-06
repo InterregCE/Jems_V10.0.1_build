@@ -26,6 +26,7 @@ export class ContractReportingStore {
   contractReportingDeadlines$: Observable<ProjectContractingReportingScheduleDTO[]>;
   userCanViewDeadlines$: Observable<boolean>;
   userCanEditDeadlines$: Observable<boolean>;
+  userCanViewApplicationForm$: Observable<boolean>;
   savedData$ = new Subject<ProjectContractingReportingScheduleDTO[]>();
   availablePeriods$: Observable<ProjectPeriodForMonitoringDTO[]>;
   contractingMonitoringStartDate$: Observable<string>;
@@ -38,6 +39,7 @@ export class ContractReportingStore {
     this.contractReportingDeadlines$ = this.contractReportingDeadlines();
     this.userCanViewDeadlines$ = this.userCanViewDeadlines();
     this.userCanEditDeadlines$ = this.userCanEditDeadlines();
+    this.userCanViewApplicationForm$ = this.permissionService.hasPermission(PermissionsEnum.ProjectFormRetrieve);
     this.availablePeriods$ = this.contractReportingAvailablePeriods();
     this.contractingMonitoringStartDate$ = this.contractingMonitoringStartDate();
   }
