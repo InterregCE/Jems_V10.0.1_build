@@ -28,7 +28,7 @@ import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.EnumSource
 import org.junit.jupiter.params.provider.ValueSource
-import java.util.*
+import java.util.Optional
 
 internal class ProjectReportAuthorizationTest : UnitTest() {
 
@@ -73,8 +73,7 @@ internal class ProjectReportAuthorizationTest : UnitTest() {
         every { securityService.currentUser } returns currentUser
     }
 
-    // TODO
-/*    @Test
+    @Test
     fun `assigned monitor user with permission can edit not specific`() {
         every { currentUser.hasPermission(ProjectReportingEdit) } returns true
         every { currentUser.user.assignedProjects } returns setOf(PROJECT_ID)
@@ -89,7 +88,7 @@ internal class ProjectReportAuthorizationTest : UnitTest() {
         every { partnerCollaboratorPersistence.findByUserIdAndPartnerId(userId = 4590L, PARTNER_ID) } returns Optional.of(EDIT)
         every { controllerInstitutionPersistence.getControllerUserAccessLevelForPartner(userId = 4590L, PARTNER_ID) } returns null
 
-        assertThat(reportAuthorization.canEditPartnerReportNotSpecific(PARTNER_ID)).isTrue()
+        assertThat(reportAuthorization.canEditPartnerReportNotSpecific(PARTNER_ID)).isTrue
     }
 
     @Test
@@ -100,7 +99,7 @@ internal class ProjectReportAuthorizationTest : UnitTest() {
         every { partnerCollaboratorPersistence.findByUserIdAndPartnerId(userId = 4590L, PARTNER_ID) } returns Optional.empty()
         every { controllerInstitutionPersistence.getControllerUserAccessLevelForPartner(userId = 4590L, PARTNER_ID) } returns UserInstitutionAccessLevel.Edit
 
-        assertThat(reportAuthorization.canEditPartnerReportNotSpecific(PARTNER_ID)).isFalse()
+        assertThat(reportAuthorization.canEditPartnerReportNotSpecific(PARTNER_ID)).isFalse
     }
 
     @Test
@@ -111,7 +110,7 @@ internal class ProjectReportAuthorizationTest : UnitTest() {
         every { partnerCollaboratorPersistence.findByUserIdAndPartnerId(userId = 3205L, PARTNER_ID) } returns Optional.empty()
         every { controllerInstitutionPersistence.getControllerUserAccessLevelForPartner(userId = 3205L, PARTNER_ID) } returns null
 
-        assertThat(reportAuthorization.canEditPartnerReportNotSpecific(PARTNER_ID)).isFalse()
+        assertThat(reportAuthorization.canEditPartnerReportNotSpecific(PARTNER_ID)).isFalse
     }
 
     @ParameterizedTest(name = "assigned monitor user with permission can edit (isOpen {0})")
@@ -147,7 +146,7 @@ internal class ProjectReportAuthorizationTest : UnitTest() {
         every { securityService.getUserIdOrThrow() } returns 4591L
         every { partnerCollaboratorPersistence.findByUserIdAndPartnerId(userId = 4591L, PARTNER_ID) } returns Optional.empty()
         every { controllerInstitutionPersistence.getControllerUserAccessLevelForPartner(userId = 4591L, PARTNER_ID) } returns UserInstitutionAccessLevel.View
-        assertThat(reportAuthorization.canViewPartnerReport(PARTNER_ID)).isTrue()
+        assertThat(reportAuthorization.canViewPartnerReport(PARTNER_ID)).isTrue
     }
 
     @Test
@@ -164,7 +163,7 @@ internal class ProjectReportAuthorizationTest : UnitTest() {
         val userId = 10L + accessLevel.ordinal
         every { securityService.getUserIdOrThrow() } returns userId
         every { controllerInstitutionPersistence.getControllerUserAccessLevelForPartner(userId, partnerId = 50L) } returns accessLevel
-        assertThat(reportAuthorization.canViewPartnerControlReport(50L)).isTrue()
+        assertThat(reportAuthorization.canViewPartnerControlReport(50L)).isTrue
     }
 
     @Test
@@ -172,33 +171,46 @@ internal class ProjectReportAuthorizationTest : UnitTest() {
         val userId = 18L
         every { securityService.getUserIdOrThrow() } returns userId
         every { controllerInstitutionPersistence.getControllerUserAccessLevelForPartner(userId, partnerId = -1L) } returns null
-        assertThat(reportAuthorization.canViewPartnerControlReport(-1L)).isFalse()
+        assertThat(reportAuthorization.canViewPartnerControlReport(-1L)).isFalse
     }
 
     @Test
     fun `control report - user can edit`() {
         val userId = 26L
+        every { reportPersistence.exists(28L, 5L) } returns true
         every { securityService.getUserIdOrThrow() } returns userId
         every { controllerInstitutionPersistence.getControllerUserAccessLevelForPartner(userId, partnerId = 28L) } returns
             UserInstitutionAccessLevel.Edit
-        assertThat(reportAuthorization.canEditPartnerControlReport(28L)).isTrue()
+        assertThat(reportAuthorization.canEditPartnerControlReport(28L, 5L)).isTrue
+    }
+
+    @Test
+    fun `control report - report not exists`() {
+        val userId = 26L
+        every { reportPersistence.exists(28L, 5L) } returns false
+        every { securityService.getUserIdOrThrow() } returns userId
+        every { controllerInstitutionPersistence.getControllerUserAccessLevelForPartner(userId, partnerId = 28L) } returns
+            UserInstitutionAccessLevel.Edit
+        assertThat(reportAuthorization.canEditPartnerControlReport(28L, 5L)).isFalse
     }
 
     @Test
     fun `control report - user can not edit - only view`() {
         val userId = 28L
+        every { reportPersistence.exists(150L, 5L) } returns true
         every { securityService.getUserIdOrThrow() } returns userId
         every { controllerInstitutionPersistence.getControllerUserAccessLevelForPartner(userId, partnerId = 150L) } returns
             UserInstitutionAccessLevel.View
-        assertThat(reportAuthorization.canEditPartnerControlReport(150L)).isFalse()
+        assertThat(reportAuthorization.canEditPartnerControlReport(150L, 5L)).isFalse
     }
 
     @Test
     fun `control report - user can not edit - not assigned`() {
         val userId = 30L
+        every { reportPersistence.exists(152L, 5L) } returns true
         every { securityService.getUserIdOrThrow() } returns userId
         every { controllerInstitutionPersistence.getControllerUserAccessLevelForPartner(userId, partnerId = 152L) } returns null
-        assertThat(reportAuthorization.canEditPartnerControlReport(152L)).isFalse()
+        assertThat(reportAuthorization.canEditPartnerControlReport(152L, 5L)).isFalse
     }
 
     @Test
@@ -209,7 +221,7 @@ internal class ProjectReportAuthorizationTest : UnitTest() {
         every { securityService.getUserIdOrThrow() } returns userId
         every { partnerCollaboratorPersistence.findByUserIdAndPartnerId(userId = userId, partnerId = partnerId) } returns Optional.of(EDIT)
 
-        assertThat(reportAuthorization.canUpdatePartner(partnerId)).isTrue()
+        assertThat(reportAuthorization.canUpdatePartner(partnerId)).isTrue
     }
 
     @Test
@@ -220,7 +232,7 @@ internal class ProjectReportAuthorizationTest : UnitTest() {
         every { securityService.getUserIdOrThrow() } returns userId
         every { partnerCollaboratorPersistence.findByUserIdAndPartnerId(userId = userId, partnerId = partnerId) } returns Optional.of(VIEW)
 
-        assertThat(reportAuthorization.canUpdatePartner(partnerId)).isFalse()
+        assertThat(reportAuthorization.canUpdatePartner(partnerId)).isFalse
     }
 
     @Test
@@ -231,7 +243,7 @@ internal class ProjectReportAuthorizationTest : UnitTest() {
         every { securityService.getUserIdOrThrow() } returns userId
         every { partnerCollaboratorPersistence.findByUserIdAndPartnerId(userId = userId, partnerId = partnerId) } returns Optional.empty()
 
-        assertThat(reportAuthorization.canUpdatePartner(partnerId)).isFalse()
+        assertThat(reportAuthorization.canUpdatePartner(partnerId)).isFalse
     }
 
     @ParameterizedTest(name = "canRetrievePartner - is Partner collaborator (level {0})")
@@ -249,7 +261,7 @@ internal class ProjectReportAuthorizationTest : UnitTest() {
         every { securityService.getUserIdOrThrow() } returns userId
         every { partnerCollaboratorPersistence.findByUserIdAndPartnerId(userId, partnerId = partnerId) } returns Optional.of(level)
 
-        assertThat(reportAuthorization.canRetrievePartner(partnerId)).isTrue()
+        assertThat(reportAuthorization.canRetrievePartner(partnerId)).isTrue
     }
 
     @Test
@@ -266,7 +278,7 @@ internal class ProjectReportAuthorizationTest : UnitTest() {
         every { securityService.getUserIdOrThrow() } returns userId
         every { partnerCollaboratorPersistence.findByUserIdAndPartnerId(userId, partnerId = partnerId) } returns Optional.empty()
 
-        assertThat(reportAuthorization.canRetrievePartner(partnerId)).isTrue()
+        assertThat(reportAuthorization.canRetrievePartner(partnerId)).isTrue
     }
 
     @Test
@@ -283,7 +295,7 @@ internal class ProjectReportAuthorizationTest : UnitTest() {
         every { securityService.getUserIdOrThrow() } returns userId
         every { partnerCollaboratorPersistence.findByUserIdAndPartnerId(userId, partnerId = partnerId) } returns Optional.empty()
 
-        assertThat(reportAuthorization.canRetrievePartner(partnerId)).isFalse()
+        assertThat(reportAuthorization.canRetrievePartner(partnerId)).isFalse
     }
-*/
+
 }
