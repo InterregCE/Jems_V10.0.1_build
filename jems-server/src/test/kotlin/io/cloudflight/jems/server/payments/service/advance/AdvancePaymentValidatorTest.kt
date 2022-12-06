@@ -45,8 +45,8 @@ class AdvancePaymentValidatorTest : UnitTest() {
             partnerNumber = null,
             partnerAbbreviation = "abbr.",
             programmeFund = fund,
-            amountAdvance = BigDecimal.TEN,
-            dateOfPayment = currentDate,
+            amountPaid = BigDecimal.TEN,
+            paymentDate = currentDate,
             comment = "random comment",
             paymentAuthorized = true,
             paymentAuthorizedUser = OutputUser(userId, "random@mail", "name", "surname"),
@@ -59,8 +59,8 @@ class AdvancePaymentValidatorTest : UnitTest() {
             id = paymentId,
             projectId = projectId,
             partnerId = partnerId,
-            amountAdvance = BigDecimal.TEN,
-            dateOfPayment = currentDate,
+            amountPaid = BigDecimal.TEN,
+            paymentDate = currentDate,
             comment = "random comment",
             paymentAuthorized = true,
             paymentAuthorizedUserId = userId,
@@ -123,7 +123,7 @@ class AdvancePaymentValidatorTest : UnitTest() {
                 advancePaymentUpdate.copy(
                     programmeFundId = 1L,
                     paymentConfirmed = false,
-                    dateOfPayment = null
+                    paymentDate = null
                 ), null
             )
         }
@@ -136,7 +136,7 @@ class AdvancePaymentValidatorTest : UnitTest() {
                 advancePaymentUpdate.copy(
                     projectId = 0,
                     paymentConfirmed = true,
-                    dateOfPayment = null
+                    paymentDate = null
                 ), null
             )
         }
@@ -149,7 +149,7 @@ class AdvancePaymentValidatorTest : UnitTest() {
             validator.validateDetail(
                 advancePaymentUpdate.copy(
                     paymentConfirmed = false,
-                    dateOfPayment = null
+                    paymentDate = null
                 ), null
             )
         }
@@ -162,7 +162,7 @@ class AdvancePaymentValidatorTest : UnitTest() {
             validator.validateDetail(
                 advancePaymentUpdate.copy(
                     paymentConfirmed = true,
-                    dateOfPayment = null
+                    paymentDate = null
                 ), null
             )
         }

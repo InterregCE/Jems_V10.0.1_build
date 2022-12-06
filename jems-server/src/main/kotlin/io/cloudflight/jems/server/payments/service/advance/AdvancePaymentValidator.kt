@@ -33,7 +33,7 @@ class AdvancePaymentValidator(private val validator: GeneralValidatorService) {
         feedback.add(validator.notNull(update.projectId, "projectId"))
         feedback.add(validator.notNull(update.partnerId, "partnerId"))
         if (update.paymentConfirmed == true) {
-            feedback.add(validator.notNull(update.dateOfPayment, "dateOfPayment"))
+            feedback.add(validator.notNull(update.paymentDate, "paymentDate"))
         }
         feedback.add(validator.maxLength(update.comment, 500, "comment"))
         return feedback
