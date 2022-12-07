@@ -123,7 +123,8 @@ context('Application contracting tests', () => {
         cy.loginByRequest(user.admin.email);
         cy.visit(`/app/project/detail/${applicationId}/privileges`, {failOnStatusCode: false});
 
-        cy.get('mat-expansion-panel#partner-collaborators-panel').find('input.mat-input-element').type(testData.anotherUser.email);
+        cy.contains('jems-partner-team-privileges-expansion-panel', 'LP1 Lead Partner')
+          .find('input.mat-input-element').type(testData.anotherUser.email);
         cy.contains('button', 'Save changes').click();
 
         cy.loginByRequest(testData.anotherUser.email);

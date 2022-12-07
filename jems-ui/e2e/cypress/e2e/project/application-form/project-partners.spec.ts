@@ -198,27 +198,27 @@ context('Project partners tests', () => {
 
       cy.contains('h4', 'Travel and accommodation').next().within(() => {
         cy.contains('Add').click();
-        setTranslatedField(testData.budget.travelCosts[0].description, 0);
-        setTranslatedField(testData.budget.travelCosts[0].comments, 1);
-        setTranslatedField(testData.budget.travelCosts[0].unitType, 2);
-        setAmountField(testData.budget.travelCosts[0].numberOfUnits, 3);
-        setAmountField(testData.budget.travelCosts[0].pricePerUnit, 4);
+        setTranslatedField(testData.budget.travelCosts[0].description, 1);
+        setTranslatedField(testData.budget.travelCosts[0].comments, 2);
+        setTranslatedField(testData.budget.travelCosts[0].unitType, 3);
+        setAmountField(testData.budget.travelCosts[0].numberOfUnits, 4);
+        setAmountField(testData.budget.travelCosts[0].pricePerUnit, 5);
         testData.budget.travelCosts[0].budgetPeriods.forEach(budgetPeriods => {
-          setAmountField(budgetPeriods.amount, budgetPeriods.number + 4);
+          setAmountField(budgetPeriods.amount, budgetPeriods.number + 6);
         });
       });
 
       cy.contains('h4', 'External expertise and services').next().within(() => {
         cy.contains('Add').click();
-        setTranslatedField(testData.budget.externalCosts[0].description, 0);
-        setTranslatedField(testData.budget.externalCosts[0].comments, 1);
-        setTranslatedField(testData.budget.externalCosts[0].awardProcedures, 2);
-        setTranslatedField(testData.budget.externalCosts[0].unitType, 4);
-        setAmountField(testData.budget.externalCosts[0].numberOfUnits, 5);
-        setAmountField(testData.budget.externalCosts[0].pricePerUnit, 6);
+        setTranslatedField(testData.budget.externalCosts[0].description, 1);
+        setTranslatedField(testData.budget.externalCosts[0].comments, 2);
+        setTranslatedField(testData.budget.externalCosts[0].awardProcedures, 3);
+        setTranslatedField(testData.budget.externalCosts[0].unitType, 5);
+        setAmountField(testData.budget.externalCosts[0].numberOfUnits, 6);
+        setAmountField(testData.budget.externalCosts[0].pricePerUnit, 7);
 
         testData.budget.externalCosts[0].budgetPeriods.forEach(budgetPeriods => {
-          setAmountField(budgetPeriods.amount, budgetPeriods.number + 7);
+          setAmountField(budgetPeriods.amount, budgetPeriods.number + 8);
         });
       });
 
@@ -231,21 +231,21 @@ context('Project partners tests', () => {
         setAmountField(testData.budget.equipmentCosts[0].numberOfUnits, 6);
 
         testData.budget.equipmentCosts[0].budgetPeriods.forEach(budgetPeriods => {
-          setAmountField(budgetPeriods.amount, budgetPeriods.number + 7);
+          setAmountField(budgetPeriods.amount, budgetPeriods.number + 8);
         });
       });
 
       cy.contains('h4', 'Infrastructure and works').next().within(() => {
         cy.contains('Add').click();
-        setTranslatedField(testData.budget.infrastructureCosts[0].description, 0);
-        setTranslatedField(testData.budget.infrastructureCosts[0].comments, 1);
-        setTranslatedField(testData.budget.infrastructureCosts[0].awardProcedures, 2);
-        setTranslatedField(testData.budget.infrastructureCosts[0].unitType, 4);
-        setAmountField(testData.budget.infrastructureCosts[0].numberOfUnits, 5);
-        setAmountField(testData.budget.infrastructureCosts[0].pricePerUnit, 6);
+        setTranslatedField(testData.budget.infrastructureCosts[0].description, 1);
+        setTranslatedField(testData.budget.infrastructureCosts[0].comments, 2);
+        setTranslatedField(testData.budget.infrastructureCosts[0].awardProcedures, 3);
+        setTranslatedField(testData.budget.infrastructureCosts[0].unitType, 5);
+        setAmountField(testData.budget.infrastructureCosts[0].numberOfUnits, 6);
+        setAmountField(testData.budget.infrastructureCosts[0].pricePerUnit, 7);
 
         testData.budget.infrastructureCosts[0].budgetPeriods.forEach(budgetPeriods => {
-          setAmountField(budgetPeriods.amount, budgetPeriods.number + 7);
+          setAmountField(budgetPeriods.amount, budgetPeriods.number + 8);
         });
       });
 

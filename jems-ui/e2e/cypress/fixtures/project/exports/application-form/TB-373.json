@@ -1062,20 +1062,10 @@
           },
           "staff": [
             {
-              "unitType": [
-                {
-                  "language": "DE",
-                  "translation": "SC type 2 DE"
-                },
-                {
-                  "language": "EN",
-                  "translation": "SC type 2 EN"
-                }
-              ],
-              "unitCostId": 2,
+              "unitCostId": 1,
               "numberOfUnits": 1,
-              "pricePerUnit": 555.56,
-              "rowSum": 555.56
+              "pricePerUnit": 55.56,
+              "rowSum": 55.56
             }
           ]
         },
@@ -1094,7 +1084,7 @@
           "partnerContributions": [
             {
               "status": "Public",
-              "amount": 255.56,
+              "amount": 25.56,
               "partner": true
             }
           ]

@@ -2,7 +2,6 @@ import {faker} from '@faker-js/faker';
 import user from '../fixtures/users.json';
 import call from '../fixtures/api/call/1.step.call.json';
 import spfCall from '../fixtures/api/call/spf.1.step.call.json';
-import partner from '../fixtures/api/application/partner/partner.json';
 import programmeEditorRole from '../fixtures/api/roles/programmeEditorRole.json';
 import programmeEditorUser from '../fixtures/api/users/programmeEditorUser.json';
 
@@ -97,18 +96,24 @@ context('Programme management tests', () => {
 
         cy.contains('Funds').click();
         cy.contains('button', 'Edit').click();
-        cy.contains('button', 'DE').click();
 
         testData.funds.forEach(fund => {
-          cy.contains(fund.type).parent().then(el => {
-            cy.wrap(el).find('input[name="multipleFundsAllowed"]').check({force: true});
+
+          if (fund.type === 'OTHER') {
+            cy.contains('button', 'add').click();
+          }
+
+          cy.contains(fund.type).parent().within(() => {
+            cy.get('input').eq(0).check({force: true});
 
             fund.abbreviation.forEach(abbreviation => {
-              cy.wrap(el).find('input:not([type="checkbox"])').eq(0).type(abbreviation.translation);
+              cy.root().closest('body').contains('button', abbreviation.language).click();
+              cy.get('input').eq(1).type(abbreviation.translation);
             });
 
             fund.description.forEach(description => {
-              cy.wrap(el).find('input:not([type="checkbox"])').eq(1).type(description.translation);
+              cy.root().closest('body').contains('button', description.language).click();
+              cy.get('input').eq(2).type(description.translation);
             });
           });
         });
@@ -215,8 +220,6 @@ context('Programme management tests', () => {
               cy.wrap(el).find('textarea').type(comment.translation);
             });
           });
-
-          // cy.contains('div', 'Comments').find('textarea').type(indicator.comment);
 
           cy.contains('Save').click();
           cy.contains('Confirm').should('be.visible').click();
@@ -373,6 +376,12 @@ context('Programme management tests', () => {
 
           cy.contains('button', unitCost.categoryType).click();
 
+          if (unitCost.foreignCurrencyCode) {
+            cy.contains('div', 'Currency selector').click();
+            cy.contains('mat-option', unitCost.foreignCurrencyCode).click();
+            cy.contains('div', 'Cost per unit (other currency)').find('input').type(unitCost.costPerUnitForeignCurrency);
+          }
+
           if (unitCost.categoryType === 'Multiple cost categories') {
             unitCost.categories.forEach(category => {
               cy.contains('mat-checkbox', category).find('input').check({force: true});
@@ -502,117 +511,113 @@ context('Programme management tests', () => {
     it('TB-747 Data export in programme setup shall take the correct data version', () => {
       cy.fixture('programme/TB-747.json').then(testData => {
         cy.fixture('api/application/application.json').then(application => {
+          cy.fixture('api/application/spf.application.json').then(spfApplication => {
 
 
-          cy.loginByRequest(user.programmeUser.email);
+            cy.loginByRequest(user.programmeUser.email);
 
-          call.generalCallSettings.name = '';
-          cy.createCall(call).then(callId => {
-            cy.publishCall(callId);
+            cy.createCall(call).then(callId => {
+              cy.publishCall(callId);
 
-            cy.createCall(spfCall).then(spfCallId => {
-              cy.publishCall(spfCallId);
+              cy.createCall(spfCall).then(spfCallId => {
+                cy.publishCall(spfCallId);
 
-              application.details.projectCallId = callId;
-              const spfApplication = JSON.parse(JSON.stringify(application));
-              spfApplication.partners[0].budget.infrastructure = null; // SPF projects don't allow infrastructure costs
-              spfApplication.partners[0].budget.spf = testData.spfCostItem;
-              spfApplication.partners[0].cofinancing.partnerContributions[0].amount = testData.cofinancingAmount;
-              spfApplication.partners[0].spfCofinancing = testData.spfCofinancing;
-              spfApplication.description.relevanceAndContext.projectSpfRecipients = testData.projectSpfRecipients;
-              spfApplication.details.projectCallId = spfCallId;
+                application.details.projectCallId = callId;
+                spfApplication.details.projectCallId = spfCallId;
 
-              cy.loginByRequest(user.applicantUser.email);
-              application.partners.push(partner);
+                cy.loginByRequest(user.applicantUser.email);
 
-              for (let i = 0; i < 3; i++) {
-                cy.createApplication(application).then(applicationId => {
-                  cy.updateProjectIdentification(applicationId, application.identification);
-                  cy.createPartners(applicationId, application.partners);
-                });
-                cy.createApplication(spfApplication).then(spfApplicationId => {
-                  cy.updateProjectIdentification(spfApplicationId, spfApplication.identification);
-                  cy.createPartners(spfApplicationId, spfApplication.partners);
-                });
-                cy.createApprovedApplication(application, user.programmeUser.email);
-                cy.createApprovedApplication(spfApplication, user.programmeUser.email);
-              }
+                for (let i = 0; i < 3; i++) {
+                  cy.createApplication(application).then(applicationId => {
+                    cy.updateProjectIdentification(applicationId, application.identification);
+                    cy.createProjectProposedUnitCosts(applicationId, application.projectProposedUnitCosts);
+                    cy.createPartners(applicationId, application.partners);
+                  });
+                  cy.createApplication(spfApplication).then(spfApplicationId => {
+                    cy.updateProjectIdentification(spfApplicationId, spfApplication.identification);
+                    cy.createProjectProposedUnitCosts(spfApplicationId, application.projectProposedUnitCosts);
+                    cy.createPartners(spfApplicationId, spfApplication.partners);
+                  });
+                  cy.createApprovedApplication(application, user.programmeUser.email);
+                  cy.createApprovedApplication(spfApplication, user.programmeUser.email);
+                }
+              });
             });
-          });
 
-          cy.wait(15000); // give some time to the system to make sure all created projects/partners are in the exports
+            cy.wait(15000); // give some time to the system to make sure all created projects/partners are in the exports
 
-          cy.loginByRequest(user.admin.email);
-          testData.dataExportUser.email = faker.internet.email();
-          cy.createRole(testData.dataExportRole).then(roleId => {
-            testData.dataExportUser.userRoleId = roleId;
-            cy.createUser(testData.dataExportUser);
-          });
-          cy.loginByRequest(testData.dataExportUser.email);
-          cy.visit('app/programme', {failOnStatusCode: false});
-          cy.contains('Data export').click();
-
-          cy.contains('div', 'Programme data export plugin').find('mat-select').click();
-          cy.contains('mat-option', 'Standard programme partner data export').click();
-          cy.contains('button', 'Generate export file').click();
-          cy.get('mat-spinner').should('exist');
-          cy.get('mat-spinner').should('not.exist');
-
-          let requestToIntercept = '/api/programme/export/download?pluginKey=standard-programme-partner-data-export-plugin';
-          cy.contains('div', 'Standard programme partner data export').find('button').clickToDownload(requestToIntercept, 'xlsx').then(exportFile => {
-            cy.fixture('programme/TB-747-partner-export-en-en.xlsx', null).parseXLSX().then(testDataFile => {
-              preparePartnerExportData(exportFile);
-              const assertionMessage = 'Verify downloaded partner EN xlsx file';
-              expect(exportFile.content[0].data, assertionMessage).to.deep.equal(testDataFile[0].data);
+            cy.loginByRequest(user.admin.email);
+            testData.dataExportUser.email = faker.internet.email();
+            cy.createRole(testData.dataExportRole).then(roleId => {
+              testData.dataExportUser.userRoleId = roleId;
+              cy.createUser(testData.dataExportUser);
             });
-          });
+            cy.loginByRequest(testData.dataExportUser.email);
+            cy.visit('app/programme', {failOnStatusCode: false});
+            cy.contains('Data export').click();
 
-          cy.contains('form div', 'Export language').find('mat-select').click();
-          cy.contains('mat-option', 'Deutsch').click();
-          cy.contains('form div', 'Input language').find('mat-select').click();
-          cy.contains('mat-option', 'Deutsch').click();
-          cy.contains('button', 'Generate export file').click();
-          cy.get('mat-spinner').should('exist');
-          cy.get('mat-spinner').should('not.exist');
+            cy.contains('div', 'Programme data export plugin').find('mat-select').click();
+            cy.contains('mat-option', 'Standard programme partner data export').click();
+            cy.contains('button', 'Generate export file').click();
+            cy.get('mat-spinner').should('exist');
+            cy.get('mat-spinner').should('not.exist');
 
-          requestToIntercept = '/api/programme/export/download?pluginKey=standard-programme-partner-data-export-plugin';
-          cy.contains('div', 'Standard programme partner data export').find('button').clickToDownload(requestToIntercept, 'xlsx').then(exportFile => {
-            cy.fixture('programme/TB-747-partner-export-de-de.xlsx', null).parseXLSX().then(testDataFile => {
-              preparePartnerExportData(exportFile);
-              const assertionMessage = 'Verify downloaded partner DE xlsx file';
-              expect(exportFile.content[0].data, assertionMessage).to.deep.equal(testDataFile[0].data);
+            let requestToIntercept = '/api/programme/export/download?pluginKey=standard-programme-partner-data-export-plugin';
+            cy.contains('div', 'Standard programme partner data export').find('button').clickToDownload(requestToIntercept, 'xlsx').then(exportFile => {
+              cy.fixture('programme/TB-747-partner-export-en-en.xlsx', null).parseXLSX().then(testDataFile => {
+                preparePartnerExportData(exportFile);
+                const assertionMessage = 'Verify downloaded partner EN xlsx file';
+                expect(exportFile.content[0].data, assertionMessage).to.deep.equal(testDataFile[0].data);
+              });
             });
-          });
 
-          cy.contains('div', 'Programme data export plugin').find('mat-select').click();
-          cy.contains('mat-option', 'Standard programme project data export').click();
-          cy.contains('button', 'Generate export file').click();
-          cy.get('mat-spinner').should('exist');
-          cy.get('mat-spinner').should('not.exist');
+            cy.contains('form div', 'Export language').find('mat-select').click();
+            cy.contains('mat-option', 'Deutsch').click();
+            cy.contains('form div', 'Input language').find('mat-select').click();
+            cy.contains('mat-option', 'Deutsch').click();
+            cy.contains('button', 'Generate export file').click();
+            cy.get('mat-spinner').should('exist');
+            cy.get('mat-spinner').should('not.exist');
 
-          requestToIntercept = '/api/programme/export/download?pluginKey=standard-programme-project-data-export-plugin';
-          cy.contains('div', 'Standard programme project data export').find('button').clickToDownload(requestToIntercept, 'xlsx').then(exportFile => {
-            cy.fixture('programme/TB-747-project-export-de-de.xlsx', null).parseXLSX().then(testDataFile => {
-              prepareProjectExportData(exportFile);
-              const assertionMessage = 'Verify downloaded project DE xlsx file';
-              expect(exportFile.content[0].data, assertionMessage).to.deep.equal(testDataFile[0].data);
+            requestToIntercept = '/api/programme/export/download?pluginKey=standard-programme-partner-data-export-plugin';
+            cy.contains('div', 'Standard programme partner data export').find('button').clickToDownload(requestToIntercept, 'xlsx').then(exportFile => {
+              cy.fixture('programme/TB-747-partner-export-de-de.xlsx', null).parseXLSX().then(testDataFile => {
+                preparePartnerExportData(exportFile);
+                const assertionMessage = 'Verify downloaded partner DE xlsx file';
+                expect(exportFile.content[0].data, assertionMessage).to.deep.equal(testDataFile[0].data);
+              });
             });
-          });
 
-          cy.contains('form div', 'Export language').find('mat-select').click();
-          cy.contains('mat-option', 'English').click();
-          cy.contains('form div', 'Input language').find('mat-select').click();
-          cy.contains('mat-option', 'English').click();
-          cy.contains('button', 'Generate export file').click();
-          cy.get('mat-spinner').should('exist');
-          cy.get('mat-spinner').should('not.exist');
+            cy.contains('div', 'Programme data export plugin').find('mat-select').click();
+            cy.contains('mat-option', 'Standard programme project data export').click();
+            cy.contains('button', 'Generate export file').click();
+            cy.get('mat-spinner').should('exist');
+            cy.get('mat-spinner').should('not.exist');
 
-          requestToIntercept = '/api/programme/export/download?pluginKey=standard-programme-project-data-export-plugin';
-          cy.contains('div', 'Standard programme project data export').find('button').clickToDownload(requestToIntercept, 'xlsx').then(exportFile => {
-            cy.fixture('programme/TB-747-project-export-en-en.xlsx', null).parseXLSX().then(testDataFile => {
-              prepareProjectExportData(exportFile);
-              const assertionMessage = 'Verify downloaded project EN xlsx file';
-              expect(exportFile.content[0].data, assertionMessage).to.deep.equal(testDataFile[0].data);
+            requestToIntercept = '/api/programme/export/download?pluginKey=standard-programme-project-data-export-plugin';
+            cy.contains('div', 'Standard programme project data export').find('button').clickToDownload(requestToIntercept, 'xlsx').then(exportFile => {
+              cy.fixture('programme/TB-747-project-export-de-de.xlsx', null).parseXLSX().then(testDataFile => {
+                prepareProjectExportData(exportFile);
+                const assertionMessage = 'Verify downloaded project DE xlsx file';
+                expect(exportFile.content[0].data, assertionMessage).to.deep.equal(testDataFile[0].data);
+              });
+            });
+
+            cy.contains('form div', 'Export language').find('mat-select').click();
+            cy.contains('mat-option', 'English').click();
+            cy.contains('form div', 'Input language').find('mat-select').click();
+            cy.contains('mat-option', 'English').click();
+            cy.contains('button', 'Generate export file').click();
+            cy.get('mat-spinner').should('exist');
+            cy.get('mat-spinner').should('not.exist');
+
+            requestToIntercept = '/api/programme/export/download?pluginKey=standard-programme-project-data-export-plugin';
+            cy.contains('div', 'Standard programme project data export').find('button').clickToDownload(requestToIntercept, 'xlsx').then(exportFile => {
+              cy.fixture('programme/TB-747-project-export-en-en.xlsx', null).parseXLSX().then(testDataFile => {
+                prepareProjectExportData(exportFile);
+                const assertionMessage = 'Verify downloaded project EN xlsx file';
+                expect(exportFile.content[0].data, assertionMessage).to.deep.equal(testDataFile[0].data);
+              });
             });
           });
         });
@@ -674,6 +679,7 @@ function createChecklist(checklist) {
 }
 
 function preparePartnerExportData(exportFile) {
+  const header = exportFile.content[0].data[1];
   exportFile.content[0].data = exportFile.content[0].data.slice(-9); // limit data to only relevant rows
   exportFile.content[0].data.forEach(data => {
     data[0] = null; // remove call id
@@ -681,9 +687,11 @@ function preparePartnerExportData(exportFile) {
     data[2] = null; // remove project id
     data[3] = null; // remove project acronym
   });
+  exportFile.content[0].data.unshift(header);
 }
 
 function prepareProjectExportData(exportFile) {
+  const header = exportFile.content[0].data[1];
   exportFile.content[0].data = exportFile.content[0].data.slice(-6); // limit data to only relevant rows
   exportFile.content[0].data.forEach(data => {
     data[0] = null; // remove call id
@@ -693,6 +701,7 @@ function prepareProjectExportData(exportFile) {
     data[4] = null; // remove call end date
     data[6] = null; // remove call project id
     data[7] = null; // remove project acronym
-    data[79] = null; // remove first submission date
+    data[82] = null; // remove first submission date
   });
+  exportFile.content[0].data.unshift(header);
 }

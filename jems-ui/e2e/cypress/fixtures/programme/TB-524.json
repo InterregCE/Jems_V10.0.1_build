@@ -29,6 +29,27 @@
           "language": "DE"
         }
       ]
+    },
+    {
+      "type": "OTHER",
+      "abbreviation": [
+        {
+          "translation": "Other fund DE",
+          "language": "DE"
+        }, {
+          "translation": "Other fund EN",
+          "language": "EN"
+        }
+      ],
+      "description": [
+        {
+          "translation": "Other fund description DE",
+          "language": "DE"
+        }, {
+          "translation": "Other fund description EN",
+          "language": "EN"
+        }
+      ]
     }
   ]
 }

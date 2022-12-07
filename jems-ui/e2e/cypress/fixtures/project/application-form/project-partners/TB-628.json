@@ -70,7 +70,7 @@
         ]
       },
       {
-        "unitCost": "Unit cost SC1",
+        "unitCost": "Unit cost single - Staff",
         "comments": [
           {
             "translation": "Staff cost item 2 comments DE",
@@ -190,7 +190,7 @@
     ],
     "equipmentCosts": [
       {
-        "unitCost": "Unit cost EQ1",
+        "unitCost": "Unit cost single - Equipment",
         "description": [
           {
             "translation": "Equipment cost item comments DE",
@@ -224,7 +224,7 @@
         "numberOfUnits": 10,
         "budgetPeriods": [
           {
-            "amount": 5555.60,
+            "amount": 12345.60,
             "number": 5
           }
         ]
@@ -312,11 +312,11 @@
     ],
     "unitCosts": [
       {
-        "unitCost": "Unit cost MCC1",
+        "unitCost": "Unit cost multi - all",
         "numberOfUnits": 10.5,
         "budgetPeriods": [
           {
-            "amount": 583.38,
+            "amount": 1629.81,
             "number": 2
           }
         ]
@@ -324,5 +324,5 @@
     ]
   },
   "staffCostsFlatRate": 15,
-  "staffCostsFlatRateAmount": 5168.39
+  "staffCostsFlatRateAmount": 6186.89
 }

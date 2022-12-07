@@ -53,9 +53,8 @@ context('Payments tests', () => {
                     cy.publishCall(callId);
 
                     application.details.projectCallId = callId;
-                    application.partners[0].cofinancing.partnerContributions[0].amount = 26571.92;
-                    partner.cofinancing = testData.partnerCofinancing;
-                    application.partners.push(partner);
+                    application.partners[0].cofinancing.partnerContributions[0].amount = 6853.10;
+                    application.partners[1].cofinancing.partnerContributions[2].amount = 4964.02;
 
                     testData.projectLumpSums[1].programmeLumpSumId = lumpSumId1;
                     testData.projectLumpSums[2].programmeLumpSumId = lumpSumId1;
@@ -74,17 +73,25 @@ context('Payments tests', () => {
 
                       cy.contains('Payments').click();
                       cy.get('table mat-row').then(row => {
-                        expect(row).has.length.of.at.least(1);
+                        expect(row).has.length.of.at.least(2);
                         expect(row.get(0).childNodes[1]).to.contain('FTLS');
                         expect(row.get(0).childNodes[2]).to.contain(applicationId);
                         expect(row.get(0).childNodes[3]).to.contain(application.identification.acronym);
                         expect(row.get(0).childNodes[5]).to.contain(date.format(new Date, 'MM/DD/YYYY'));
                         expect(row.get(0).childNodes[6]).to.contain(date.format(new Date, 'MM/DD/YYYY'));
                         expect(row.get(0).childNodes[7]).to.contain('1.999,00');
-                        expect(row.get(0).childNodes[8]).to.contain('ERDF');
-                        expect(row.get(0).childNodes[9]).to.contain('1.199,40');
+                        expect(row.get(0).childNodes[8]).to.contain('OTHER');
+                        expect(row.get(0).childNodes[9]).to.contain('293,05');
                         expect(row.get(0).childNodes[10]).to.contain('0,00');
-                        expect(row.get(0).childNodes[12]).to.contain('1.199,40');
+                        expect(row.get(0).childNodes[12]).to.contain('293,05');
+                        
+                        expect(row.get(1).childNodes[2]).to.contain(applicationId);
+                        expect(row.get(1).childNodes[3]).to.contain(application.identification.acronym);
+                        expect(row.get(1).childNodes[7]).to.contain('1.999,00');
+                        expect(row.get(1).childNodes[8]).to.contain('ERDF');
+                        expect(row.get(1).childNodes[9]).to.contain('1.199,40');
+                        expect(row.get(1).childNodes[10]).to.contain('0,00');
+                        expect(row.get(1).childNodes[12]).to.contain('1.199,40');
                       });
 
                       cy.visit(`app/project/detail/${applicationId}/contractMonitoring`, {failOnStatusCode: false});
@@ -93,16 +100,20 @@ context('Payments tests', () => {
 
                       cy.contains('Payments').click();
                       cy.get('table mat-row').then(row => {
-                        expect(row).has.length.of.at.least(2);
+                        expect(row).has.length.of.at.least(3);
                         expect(row.get(0).childNodes[2]).to.contain(applicationId);
 
-                        expect(row.get(0).childNodes[8]).to.contain('NEIGHBOURHOOD_CBC');
-                        expect(row.get(0).childNodes[9]).to.contain('299,70');
-                        expect(row.get(0).childNodes[12]).to.contain('299,70');
+                        expect(row.get(0).childNodes[8]).to.contain('OTHER');
+                        expect(row.get(0).childNodes[9]).to.contain('296,45');
+                        expect(row.get(0).childNodes[12]).to.contain('296,45');
 
-                        expect(row.get(1).childNodes[8]).to.contain('ERDF');
-                        expect(row.get(1).childNodes[9]).to.contain('749,85');
-                        expect(row.get(1).childNodes[12]).to.contain('749,85');
+                        expect(row.get(1).childNodes[8]).to.contain('NEIGHBOURHOOD_CBC');
+                        expect(row.get(1).childNodes[9]).to.contain('249,75');
+                        expect(row.get(1).childNodes[12]).to.contain('249,75');
+
+                        expect(row.get(2).childNodes[8]).to.contain('ERDF');
+                        expect(row.get(2).childNodes[9]).to.contain('600,00');
+                        expect(row.get(2).childNodes[12]).to.contain('600,00');
                       });
 
                       cy.visit(`app/project/detail/${applicationId}/contractMonitoring`, {failOnStatusCode: false});
@@ -114,19 +125,18 @@ context('Payments tests', () => {
                         expect(row).has.length.of.at.least(2);
                         expect(row.get(0).childNodes[2]).to.contain(applicationId);
 
-                        expect(row.get(0).childNodes[8]).to.contain('NEIGHBOURHOOD_CBC');
-                        expect(row.get(0).childNodes[9]).to.contain('194,99');
-                        expect(row.get(0).childNodes[12]).to.contain('194,99');
+                        expect(row.get(0).childNodes[8]).to.contain('OTHER');
+                        expect(row.get(0).childNodes[9]).to.contain('97,49');
+                        expect(row.get(0).childNodes[12]).to.contain('97,49');
 
-                        expect(row.get(1).childNodes[8]).to.contain('ERDF');
-                        expect(row.get(1).childNodes[9]).to.contain('97,49');
-                        expect(row.get(1).childNodes[12]).to.contain('97,49');
+                        expect(row.get(1).childNodes[8]).to.contain('NEIGHBOURHOOD_CBC');
+                        expect(row.get(1).childNodes[9]).to.contain('162,49');
+                        expect(row.get(1).childNodes[12]).to.contain('162,49');
                       });
 
                       cy.startModification(applicationId, user.programmeUser.email);
                       partner.cofinancing = testData.partnerCofinancingAfterModification;
                       testData.partnerCofinancingAfterModification.finances[2].fundId = fundId;
-                      console.log(this[partner.details.abbreviation]);
                       cy.loginByRequest(user.applicantUser.email);
                       cy.updatePartnerCofinancing(this[partner.details.abbreviation], partner.cofinancing);
                       cy.runPreSubmissionCheck(applicationId);
@@ -140,13 +150,13 @@ context('Payments tests', () => {
                         expect(row).has.length.of.at.least(2);
                         expect(row.get(0).childNodes[2]).to.contain(applicationId);
 
-                        expect(row.get(0).childNodes[8]).to.contain('NEIGHBOURHOOD_CBC');
-                        expect(row.get(0).childNodes[9]).to.contain('194,99');
-                        expect(row.get(0).childNodes[12]).to.contain('194,99');
+                        expect(row.get(0).childNodes[8]).to.contain('OTHER');
+                        expect(row.get(0).childNodes[9]).to.contain('97,49');
+                        expect(row.get(0).childNodes[12]).to.contain('97,49');
 
-                        expect(row.get(1).childNodes[8]).to.contain('ERDF');
-                        expect(row.get(1).childNodes[9]).to.contain('97,49');
-                        expect(row.get(1).childNodes[12]).to.contain('97,49');
+                        expect(row.get(1).childNodes[8]).to.contain('NEIGHBOURHOOD_CBC');
+                        expect(row.get(1).childNodes[9]).to.contain('162,49');
+                        expect(row.get(1).childNodes[12]).to.contain('162,49');
                       });
 
                       cy.visit(`app/project/detail/${applicationId}/contractMonitoring`, {failOnStatusCode: false});
@@ -161,14 +171,19 @@ context('Payments tests', () => {
                         expect(row.get(0).childNodes[8]).to.contain('OTHER');
                         expect(row.get(0).childNodes[9]).to.contain('49,95');
                         expect(row.get(0).childNodes[12]).to.contain('49,95');
+                        
+                        expect(row.get(1).childNodes[7]).to.contain('1.999,00');
+                        expect(row.get(1).childNodes[8]).to.contain('OTHER');
+                        expect(row.get(1).childNodes[9]).to.contain('146,60');
+                        expect(row.get(1).childNodes[12]).to.contain('146,60');
 
-                        expect(row.get(1).childNodes[8]).to.contain('NEIGHBOURHOOD_CBC');
-                        expect(row.get(1).childNodes[9]).to.contain('299,70');
-                        expect(row.get(1).childNodes[12]).to.contain('299,70');
+                        expect(row.get(2).childNodes[8]).to.contain('NEIGHBOURHOOD_CBC');
+                        expect(row.get(2).childNodes[9]).to.contain('299,70');
+                        expect(row.get(2).childNodes[12]).to.contain('299,70');
 
-                        expect(row.get(2).childNodes[8]).to.contain('ERDF');
-                        expect(row.get(2).childNodes[9]).to.contain('749,85');
-                        expect(row.get(2).childNodes[12]).to.contain('749,85');
+                        expect(row.get(3).childNodes[8]).to.contain('ERDF');
+                        expect(row.get(3).childNodes[9]).to.contain('749,85');
+                        expect(row.get(3).childNodes[12]).to.contain('749,85');
                       });
                     });
                   });

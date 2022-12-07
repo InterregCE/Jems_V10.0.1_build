@@ -43,35 +43,6 @@
     "rate": 80,
     "adjustable": true
   },
-  "partnerCofinancing": {
-    "finances": [
-      {
-        "fundId": 1,
-        "fundType": "MainFund",
-        "percentage": 15
-      }, {
-        "fundId": 3,
-        "fundType": "MainFund",
-        "percentage": 30
-      }, {
-        "percentage": 55,
-        "fundType": "PartnerContribution"
-      }
-    ],
-    "partnerContributions": [
-      {
-        "name": "Project Partner",
-        "status": "Private",
-        "amount": 700,
-        "partner": true
-      }, {
-        "name": "Additional source",
-        "status": "Public",
-        "amount": 763.11,
-        "partner": false
-      }
-    ]
-  },
   "partnerCofinancingAfterModification": {
     "finances": [
       {
@@ -100,7 +71,7 @@
       }, {
         "name": "Additional source",
         "status": "Public",
-        "amount": 630.11,
+        "amount": 5021.40,
         "partner": false
       }
     ]
@@ -113,7 +84,7 @@
       "lumpSumContributions": [
         {
           "partnerAbbreviation": "Lead Partner",
-          "amount": 55555.56
+          "amount": 5555.56
         }
       ]
     }, {
