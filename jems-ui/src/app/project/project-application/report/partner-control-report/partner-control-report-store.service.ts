@@ -28,9 +28,11 @@ export class PartnerControlReportStore {
   partnerControlReport$: Observable<ProjectPartnerControlReportDTO>;
   controlReportEditable$: Observable<boolean>;
   partner$: Observable<ProjectPartnerDetailDTO>;
+
+  partnerId$: Observable<number>;
+  reportId$: Observable<number>;
+
   private updatedControlReport$ = new Subject<ProjectPartnerControlReportDTO>();
-  private partnerId: number;
-  private projectId: number;
 
   readonly fullControlReportView$ = combineLatest([
     this.partnerReportDetailPageStore.partnerReportPageStore.userCanViewReport$,
@@ -76,6 +78,8 @@ export class PartnerControlReportStore {
     this.partnerControlReport$ = this.partnerControlReport();
     this.controlReportEditable$ = this.controlReportEditable();
     this.partner$ = this.partner();
+    this.partnerId$ = this.partnerId();
+    this.reportId$ = this.reportId();
   }
 
   private controlReportEditable(): Observable<boolean> {
@@ -149,10 +153,6 @@ export class PartnerControlReportStore {
       this.projectStore.projectId$,
       this.partnerControlReport$
     ]).pipe(
-      tap(([partnerId, projectId, controlReport]) => {
-        this.partnerId = Number(partnerId);
-        this.projectId = projectId;
-      }),
       switchMap(([partnerId, projectId, controlReport]) => partnerId && projectId
         ? this.partnerService.getProjectPartnerById(Number(partnerId), controlReport.linkedFormVersion)
           .pipe(
@@ -166,5 +166,15 @@ export class PartnerControlReportStore {
       tap(partner => Log.info('Fetched the programme partner:', this, partner)),
       shareReplay(1)
     );
+  }
+
+  private partnerId(): Observable<number> {
+    return this.routingService.routeParameterChanges(PartnerReportPageStore.PARTNER_REPORT_DETAIL_PATH, 'partnerId')
+        .pipe(map(id => Number(id)));
+  }
+
+  private reportId(): Observable<number> {
+    return this.routingService.routeParameterChanges(PartnerReportDetailPageStore.REPORT_DETAIL_PATH, 'reportId')
+        .pipe(map(id => Number(id)));
   }
 }
