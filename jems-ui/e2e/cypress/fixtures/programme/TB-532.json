@@ -4,34 +4,36 @@
       "name": [
         {
           "language": "EN",
-          "translation": "Unit cost SC1 EN"
+          "translation": "Unit cost single - Staff EN"
         },
         {
           "language": "DE",
-          "translation": "Unit cost SC1 DE"
+          "translation": "Unit cost single - Staff DE"
         }
       ],
       "description": [
         {
           "language": "EN",
-          "translation": "Unit cost SC1 EN"
+          "translation": "Unit cost single - Staff EN"
         },
         {
           "language": "DE",
-          "translation": "Unit cost SC1 DE"
+          "translation": "Unit cost single - Staff DE"
         }
       ],
       "type": [
         {
           "language": "EN",
-          "translation": "SC type 1 EN"
+          "translation": "SCO type 1 EN"
         },
         {
           "language": "DE",
-          "translation": "SC type 1 DE"
+          "translation": "SCO type 1 DE"
         }
       ],
       "costPerUnit": "55,56",
+      "foreignCurrencyCode": "RSD",
+      "costPerUnitForeignCurrency": "321,17",
       "categoryType": "One cost category",
       "categories": [
         "Staff Costs"
@@ -41,71 +43,110 @@
       "name": [
         {
           "language": "EN",
-          "translation": "Unit cost SC2 EN"
+          "translation": "Unit cost single - Travel EN"
         },
         {
           "language": "DE",
-          "translation": "Unit cost SC2 DE"
+          "translation": "Unit cost single - Travel DE"
         }
       ],
       "description": [
         {
           "language": "EN",
-          "translation": "Unit cost SC2 EN"
+          "translation": "Unit cost single - Travel EN"
         },
         {
           "language": "DE",
-          "translation": "Unit cost SC2 DE"
+          "translation": "Unit cost single - Travel DE"
         }
       ],
       "type": [
         {
           "language": "EN",
-          "translation": "SC type 2 EN"
+          "translation": "SCO type 2 EN"
         },
         {
           "language": "DE",
-          "translation": "SC type 2 DE"
+          "translation": "SCO type 2 DE"
         }
       ],
       "costPerUnit": "555,56",
       "categoryType": "One cost category",
       "categories": [
-        "Staff Costs"
+        "Travel and accommodation"
       ]
     },
     {
       "name": [
         {
           "language": "EN",
-          "translation": "Unit cost EQ1 EN"
+          "translation": "Unit cost single - External EN"
         },
         {
           "language": "DE",
-          "translation": "Unit cost EQ1 DE"
+          "translation": "Unit cost single - External DE"
         }
       ],
       "description": [
         {
           "language": "EN",
-          "translation": "Unit cost EQ1 EN"
+          "translation": "Unit cost single - External EN"
         },
         {
           "language": "DE",
-          "translation": "Unit cost EQ1 DE"
+          "translation": "Unit cost single - External DE"
         }
       ],
       "type": [
         {
           "language": "EN",
-          "translation": "SC type 1 EN"
+          "translation": "SCO type 3 EN"
         },
         {
           "language": "DE",
-          "translation": "SC type 1 DE"
+          "translation": "SCO type 3 DE"
         }
       ],
-      "costPerUnit": "555,56",
+      "costPerUnit": "899,99",
+      "foreignCurrencyCode": "SOS",
+      "costPerUnitForeignCurrency": "332,99",
+      "categoryType": "One cost category",
+      "categories": [
+        "External expertise and services"
+      ]
+    },
+    {
+      "name": [
+        {
+          "language": "EN",
+          "translation": "Unit cost single - Equipment EN"
+        },
+        {
+          "language": "DE",
+          "translation": "Unit cost single - Equipment DE"
+        }
+      ],
+      "description": [
+        {
+          "language": "EN",
+          "translation": "Unit cost single - Equipment EN"
+        },
+        {
+          "language": "DE",
+          "translation": "Unit cost single - Equipment DE"
+        }
+      ],
+      "type": [
+        {
+          "language": "EN",
+          "translation": "SCO type 4 EN"
+        },
+        {
+          "language": "DE",
+          "translation": "SC type 4 DE"
+        }
+      ],
+      "costPerUnit": "1234,56",
       "categoryType": "One cost category",
       "categories": [
         "Equipment"
@@ -115,34 +156,73 @@
       "name": [
         {
           "language": "EN",
-          "translation": "Unit cost MCC1 EN"
+          "translation": "Unit cost single - Infrastructure EN"
         },
         {
           "language": "DE",
-          "translation": "Unit cost MCC1 DE"
+          "translation": "Unit cost single - Infrastructure DE"
         }
       ],
       "description": [
         {
           "language": "EN",
-          "translation": "Unit cost MCC1 EN"
+          "translation": "Unit cost single - Infrastructure EN"
         },
         {
           "language": "DE",
-          "translation": "Unit cost MCC1 DE"
+          "translation": "Unit cost single - Infrastructure DE"
         }
       ],
       "type": [
         {
           "language": "EN",
-          "translation": "MCC type EN"
+          "translation": "SCO type 5 EN"
         },
         {
           "language": "DE",
-          "translation": "MCC type DE"
+          "translation": "SC type 5 DE"
         }
       ],
-      "costPerUnit": "55,56",
+      "costPerUnit": "2519,77",
+      "categoryType": "One cost category",
+      "categories": [
+        "Infrastructure and works"
+      ]
+    },
+    {
+      "name": [
+        {
+          "language": "EN",
+          "translation": "Unit cost multi - all EN"
+        },
+        {
+          "language": "DE",
+          "translation": "Unit cost multi - all DE"
+        }
+      ],
+      "description": [
+        {
+          "language": "EN",
+          "translation": "Unit cost multi - all EN"
+        },
+        {
+          "language": "DE",
+          "translation": "Unit cost multi - all DE"
+        }
+      ],
+      "type": [
+        {
+          "language": "EN",
+          "translation": "SCO type multi 1 EN"
+        },
+        {
+          "language": "DE",
+          "translation": "SCO type multi 1 DE"
+        }
+      ],
+      "costPerUnit": "155,22",
+      "foreignCurrencyCode": "MOP",
+      "costPerUnitForeignCurrency": "200,01",
       "categoryType": "Multiple cost categories",
       "categories": [
         "Staff Costs",
@@ -151,6 +231,44 @@
         "External expertise and services",
         "Equipment",
         "Infrastructure and works"
+      ]
+    },
+    {
+      "name": [
+        {
+          "language": "EN",
+          "translation": "Unit cost multi - partial EN"
+        },
+        {
+          "language": "DE",
+          "translation": "Unit cost multi - partial DE"
+        }
+      ],
+      "description": [
+        {
+          "language": "EN",
+          "translation": "Unit cost multi - partial EN"
+        },
+        {
+          "language": "DE",
+          "translation": "Unit cost multi - partial DE"
+        }
+      ],
+      "type": [
+        {
+          "language": "EN",
+          "translation": "SCO type multi 2 EN"
+        },
+        {
+          "language": "DE",
+          "translation": "SCO type multi 2 DE"
+        }
+      ],
+      "costPerUnit": "1999,99",
+      "categoryType": "Multiple cost categories",
+      "categories": [
+        "Staff Costs",
+        "Equipment"
       ]
     }
   ]

@@ -137,7 +137,6 @@ function updateMotivation(partnerId, motivation) {
 }
 
 function updateBudget(partnerId, budget, investmentId?: number) {
-
   if (investmentId) {
     budget.external[0].investmentId = investmentId;
     budget.equipment[0].investmentId = investmentId;
@@ -150,6 +149,7 @@ function updateBudget(partnerId, budget, investmentId?: number) {
   });
 
   if (budget.staff) {
+    matchProjectProposedUnitCostReferences(budget.staff);
     cy.request({
       method: 'PUT',
       url: `api/project/partner/${partnerId}/budget/staffcosts`,
@@ -157,6 +157,7 @@ function updateBudget(partnerId, budget, investmentId?: number) {
     });
   }
   if (budget.external) {
+    matchProjectProposedUnitCostReferences(budget.external);
     cy.request({
       method: 'PUT',
       url: `api/project/partner/${partnerId}/budget/external`,
@@ -164,6 +165,7 @@ function updateBudget(partnerId, budget, investmentId?: number) {
     });
   }
   if (budget.equipment) {
+    matchProjectProposedUnitCostReferences(budget.equipment);
     cy.request({
       method: 'PUT',
       url: `api/project/partner/${partnerId}/budget/equipment`,
@@ -171,6 +173,7 @@ function updateBudget(partnerId, budget, investmentId?: number) {
     });
   }
   if (budget.infrastructure) {
+    matchProjectProposedUnitCostReferences(budget.infrastructure);
     cy.request({
       method: 'PUT',
       url: `api/project/partner/${partnerId}/budget/infrastructure`,
@@ -178,6 +181,7 @@ function updateBudget(partnerId, budget, investmentId?: number) {
     });
   }
   if (budget.unit) {
+    matchProjectProposedUnitCostReferences(budget.unit);
     cy.request({
       method: 'PUT',
       url: `api/project/partner/${partnerId}/budget/unitcosts`,
@@ -185,6 +189,7 @@ function updateBudget(partnerId, budget, investmentId?: number) {
     });
   }
   if (budget.travel) {
+    matchProjectProposedUnitCostReferences(budget.travel);
     addTravelCosts(partnerId, budget.travel);
   }
   if (budget.spf) {
@@ -243,6 +248,17 @@ function createAssociatedOrganization(applicationId: number, partnerId: number, 
     method: 'POST',
     url: `api/project/${applicationId}/organization`,
     body: associatedOrganization
+  });
+}
+
+function matchProjectProposedUnitCostReferences(costOptions) {
+  // match any project proposed unit cost reference to its id
+  costOptions.forEach(unitCost => {
+    if (unitCost.cypressReference) {
+      cy.get(`@${unitCost.cypressReference}`).then(projectProposedUnitCostId => {
+        unitCost.unitCostId = projectProposedUnitCostId;
+      });
+    }
   });
 }
 
