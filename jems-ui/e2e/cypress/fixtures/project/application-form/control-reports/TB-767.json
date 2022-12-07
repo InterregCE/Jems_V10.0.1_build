@@ -9,7 +9,14 @@
     "name": "controllerRole",
     "permissions": ["ProjectReportingView", "ProjectFormRetrieve", "ProjectsWithOwnershipRetrieve"]
   },
-  "controllerUser": {
+  "controllerUserEdit": {
+    "email": "randomize",
+    "name": "Report Control",
+    "surname": "User",
+    "userRoleId": null,
+    "userStatus": "ACTIVE"
+  },
+  "controllerUserView": {
     "email": "randomize",
     "name": "Report Control",
     "surname": "User",
@@ -24,6 +31,10 @@
       {
         "userEmail": "randomize",
         "accessLevel": "Edit"
+      },
+      {
+        "userEmail": "randomize",
+        "accessLevel": "View"
       }
     ]
   },

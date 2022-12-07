@@ -30,12 +30,16 @@ context('Control report tests', () => {
             // create controller role/user + assignment
             cy.loginByRequest(user.admin.email);
             testData.controllerRole.name = `controllerRole_${faker.random.alphaNumeric(5)}`;
-            testData.controllerUser.email = faker.internet.email();
+            testData.controllerUserEdit.email = faker.internet.email();
+            testData.controllerUserView.email = faker.internet.email();
             cy.createRole(testData.controllerRole).then(roleId => {
-              testData.controllerUser.userRoleId = roleId;
-              cy.createUser(testData.controllerUser);
+              testData.controllerUserEdit.userRoleId = roleId;
+              testData.controllerUserView.userRoleId = roleId;
+              cy.createUser(testData.controllerUserEdit);
+              cy.createUser(testData.controllerUserView);
               testData.controllerInstitution.name = `${faker.word.adjective()} ${faker.word.noun()}`;
-              testData.controllerInstitution.institutionUsers[0].userEmail = testData.controllerUser.email;
+              testData.controllerInstitution.institutionUsers[0].userEmail = testData.controllerUserEdit.email;
+              testData.controllerInstitution.institutionUsers[1].userEmail = testData.controllerUserView.email;
               cy.createInstitution(testData.controllerInstitution).then(institutionId => {
                 testData.controllerAssignment.assignmentsToAdd[0].partnerId = partnerId1;
                 testData.controllerAssignment.assignmentsToAdd[0].institutionId = institutionId;
@@ -63,11 +67,22 @@ context('Control report tests', () => {
               cy.submitPartnerReport(partnerId2, reportId);
             });
 
-            cy.loginByRequest(testData.controllerUser.email);
-            cy.visit('/');
-            cy.contains(applicationId).click();
+            cy.loginByRequest(testData.controllerUserView.email);
+            cy.visit(`/app/project/detail/${applicationId}`, {failOnStatusCode: false});
+            cy.contains('mat-expansion-panel', 'Partner reports').within(() => {
+              cy.contains(application.partners[0].details.abbreviation).click();
+              cy.contains(application.partners[1].details.abbreviation).should('not.exist');
+            });
+            cy.contains('mat-row', 'Draft').should('not.contain', 'Start control');
+            cy.contains('mat-row', 'Submitted').contains('button', 'Start control').should('be.disabled');
 
-            cy.contains(application.partners[0].details.abbreviation).click();
+            cy.loginByRequest(testData.controllerUserEdit.email);
+            cy.visit(`/app/project/detail/${applicationId}`, {failOnStatusCode: false});
+            cy.contains('mat-expansion-panel', 'Partner reports').within(() => {
+              cy.contains(application.partners[0].details.abbreviation).click();
+              cy.contains(application.partners[1].details.abbreviation).should('not.exist');
+            });
+
             cy.contains('h3', application.partners[0].details.abbreviation).should('be.visible');
             cy.contains('mat-row', 'Draft').should('not.contain', 'Start control');
             cy.contains('mat-cell', 'Submitted').next().should('contain', '1.0');
@@ -80,11 +95,6 @@ context('Control report tests', () => {
             cy.contains('Partner number').next().should('contain', '1');
             cy.contains('Partner role in the project').next().should('contain', 'Lead partner');
 
-
-            cy.contains(application.partners[1].details.abbreviation).click();
-            cy.contains('mat-row', 'Draft').should('not.contain', 'Start control');
-            cy.contains('mat-row', 'Submitted').contains('button', 'Start control').should('be.disabled');
-
             cy.startModification(applicationId, user.programmeUser.email);
             cy.loginByRequest(user.applicantUser.email);
             application.partners[0].details.nameInEnglish = 'Updated name in english';
@@ -95,7 +105,7 @@ context('Control report tests', () => {
             cy.approveModification(applicationId, approvalInfo, user.programmeUser.email);
 
             cy.then(function () {
-              cy.loginByRequest(testData.controllerUser.email);
+              cy.loginByRequest(testData.controllerUserEdit.email);
               cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId1}/reports/${this.reportId}/controlReport/identificationTab`, {failOnStatusCode: false});
             });
 
@@ -112,7 +122,8 @@ context('Control report tests', () => {
               cy.updatePartnerReportExpenditures(partnerId1, reportId, partnerReportExpenditures);
               cy.runPreSubmissionPartnerReportCheck(partnerId1, reportId);
               cy.submitPartnerReport(partnerId1, reportId);
-              cy.loginByRequest(testData.controllerUser.email);
+
+              cy.loginByRequest(testData.controllerUserEdit.email);
               cy.visit(`app/project/detail/${applicationId}/reporting/${partnerId1}/reports`, {failOnStatusCode: false});
               cy.contains('mat-cell', 'Submitted').next().should('contain', '2.0');
               cy.contains('Start control').should('be.enabled').click();
