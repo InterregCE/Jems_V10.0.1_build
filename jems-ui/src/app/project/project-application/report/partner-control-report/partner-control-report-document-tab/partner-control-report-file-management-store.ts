@@ -15,11 +15,13 @@ import {
 import {FileManagementStore} from '@project/common/components/file-management/file-management-store';
 import {RoutingService} from '@common/services/routing.service';
 import {Log} from '@common/utils/log';
-import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
 import {MatSort} from '@angular/material/sort';
 import {FileListTableConstants} from '@common/components/file-list/file-list-table/file-list-table-constants';
 import {APIError} from '@common/models/APIError';
 import {v4 as uuid} from 'uuid';
+import {
+  PartnerControlReportStore
+} from '@project/project-application/report/partner-control-report/partner-control-report-store.service';
 
 @Injectable({ providedIn: 'root' })
 export class PartnerControlReportFileManagementStore {
@@ -39,10 +41,11 @@ export class PartnerControlReportFileManagementStore {
     private partnerReportDetailPageStore: PartnerReportDetailPageStore,
     private projectPartnerReportService: ProjectPartnerReportService,
     private fileManagementStore: FileManagementStore,
-    private routingService: RoutingService
+    private routingService: RoutingService,
+    public controlReportFileStore: PartnerControlReportStore
   ) {
-    this.partnerId$ = this.partnerId();
-    this.reportId$ = this.reportId();
+    this.partnerId$ = controlReportFileStore.partnerId$;
+    this.reportId$ = controlReportFileStore.reportId$;
     this.fileList$ = this.fileList();
     this.report$ = this.partnerReportDetailPageStore.partnerReport$;
   }
@@ -69,16 +72,6 @@ export class PartnerControlReportFileManagementStore {
       map(pageData => pageData.content),
       tap(data => Log.info('Fetched project procurement attachments by id', this, data))
     );
-  }
-
-  private partnerId(): Observable<number> {
-    return this.routingService.routeParameterChanges(PartnerReportPageStore.PARTNER_REPORT_DETAIL_PATH, 'partnerId')
-      .pipe(map(id => Number(id)));
-  }
-
-  private reportId(): Observable<number> {
-    return this.routingService.routeParameterChanges(PartnerReportDetailPageStore.REPORT_DETAIL_PATH, 'reportId')
-      .pipe(map(id => Number(id)));
   }
 
   uploadFile(file: File): Observable<ProjectReportFileMetadataDTO> {
