@@ -23,7 +23,6 @@ import {
   InvestmentSummary
 } from '@project/work-package/project-work-package-page/work-package-detail-page/workPackageInvestment';
 import {PermissionService} from '../../../../security/permissions/permission.service';
-import {ProjectUtil} from '@project/common/project-util';
 import {I18nMessage} from '@common/models/I18nMessage';
 import {
   ProjectPartnerStore
@@ -33,6 +32,7 @@ import {APPLICATION_FORM} from '@project/common/application-form-model';
 import {DownloadService} from '@common/services/download.service';
 import {RoutingService} from '@common/services/routing.service';
 import {v4 as uuid} from 'uuid';
+import {ProjectUtil} from '@project/common/project-util';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import CallTypeEnum = ProjectCallSettingsDTO.CallTypeEnum;
 
@@ -50,6 +50,7 @@ export class FileManagementStore {
   userIsProjectOwnerOrEditCollaborator$: Observable<boolean>;
 
   canUpload$: Observable<boolean>;
+  isModifiable$: Observable<boolean>;
   canChangeAssessmentFile$: Observable<boolean>;
   canChangeApplicationFile$: Observable<boolean>;
   canChangeModificationFile$: Observable<boolean>;
@@ -84,6 +85,7 @@ export class FileManagementStore {
     this.canReadAssessmentFile$ = this.permissionService.hasPermission(PermissionsEnum.ProjectFileAssessmentRetrieve);
     this.canReadModificationFile$ = this.permissionService.hasPermission(PermissionsEnum.ProjectModificationFileAssessmentRetrieve);
     this.canUpload$ = this.canUpload();
+    this.isModifiable$ = this.isModifiable();
     this.canReadFiles$ = this.canReadFiles();
     this.selectedCategoryPath$ = this.selectedCategoryPath();
     this.fileList$ = this.fileList();
@@ -133,21 +135,17 @@ export class FileManagementStore {
   private canUpload(): Observable<boolean> {
     return combineLatest([
       this.selectedCategory$,
-      this.projectStatus$,
       this.canChangeAssessmentFile$,
       this.canChangeApplicationFile$,
       this.canChangeModificationFile$,
       this.userIsProjectOwnerOrEditCollaborator$,
     ]).pipe(
-      map(([selectedCategory, projectStatus, canUploadAssessmentFile, canUploadApplicationFile, canUploadModificationFile, userIsProjectOwnerOrEditCollaborator]) => {
+      map(([selectedCategory, canUploadAssessmentFile, canUploadApplicationFile, canUploadModificationFile, userIsProjectOwnerOrEditCollaborator]) => {
         if (selectedCategory?.type === FileCategoryTypeEnum.ASSESSMENT) {
           return canUploadAssessmentFile;
         }
         if (selectedCategory?.type === FileCategoryTypeEnum.MODIFICATION) {
           return canUploadModificationFile;
-        }
-        if (!ProjectUtil.isOpenForModifications(projectStatus)) {
-          return false;
         }
         if (selectedCategory?.type === FileCategoryTypeEnum.APPLICATION || selectedCategory?.id) {
           return canUploadApplicationFile || userIsProjectOwnerOrEditCollaborator;
@@ -155,6 +153,18 @@ export class FileManagementStore {
         return false;
       })
     );
+  }
+
+  private isModifiable(): Observable<boolean> {
+    return this.projectStore.projectStatus$.pipe(
+        map((status: ProjectStatusDTO) => this.isInModifiableStatus(status))
+    )
+  }
+
+  private isInModifiableStatus(status: ProjectStatusDTO): boolean {
+    return ProjectUtil.isOpenForModifications(status) ||
+        ProjectUtil.isInModifiableStatusBeforeApproved(status) ||
+        ProjectUtil.isInModifiableStatusAfterApproved(status);
   }
 
   private canReadFiles(): Observable<boolean> {

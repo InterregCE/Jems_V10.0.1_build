@@ -12,7 +12,6 @@ import {AcceptedFileTypesConstants} from '@project/common/components/file-manage
 import {FileListItem} from '@common/components/file-list/file-list-item';
 import {FileCategoryTypeEnum} from '@project/common/components/file-management/file-category-type';
 import {FileDescriptionChange} from '@common/components/file-list/file-list-table/file-description-change';
-import {ProjectUtil} from '@project/common/project-util';
 import {
   ProjectStore
 } from '@project/project-application/containers/project-application-detail/services/project-store.service';
@@ -53,10 +52,11 @@ export class ProjectApplicationFilesTableComponent {
       this.fileManagementStore.canChangeAssessmentFile$,
       this.fileManagementStore.canChangeModificationFile$,
       this.fileManagementStore.userIsProjectOwnerOrEditCollaborator$,
+      this.fileManagementStore.isModifiable$
     ])
       .pipe(
         map(([files, projectStatus, selectedCategory,
-               canChangeApplicationFile, canChangeAssessmentFile, canChangeModificationFile, isOwner]: any) => ({
+               canChangeApplicationFile, canChangeAssessmentFile, canChangeModificationFile, isOwner, isModifiable]: any) => ({
           files,
           fileList: files.content.map((file: ProjectFileMetadataDTO) => ({
             id: file.id,
@@ -68,11 +68,11 @@ export class ProjectApplicationFilesTableComponent {
             description: file.description,
             editable: ProjectApplicationFilesTableComponent.isFileEditable(
               selectedCategory?.type,
-              projectStatus,
               canChangeApplicationFile,
               canChangeAssessmentFile,
               canChangeModificationFile,
               isOwner,
+              isModifiable
             ),
             deletable: ProjectApplicationFilesTableComponent.isFileDeletable(
               selectedCategory?.type,
@@ -82,6 +82,7 @@ export class ProjectApplicationFilesTableComponent {
               canChangeModificationFile,
               file.uploadedAt,
               isOwner,
+              isModifiable
             ),
             tooltipIfNotDeletable: '',
             iconIfNotDeletable: '',
@@ -95,11 +96,11 @@ export class ProjectApplicationFilesTableComponent {
 
   private static isFileEditable(
     type: any,
-    status: ProjectStatusDTO,
     canChangeApplicationFile: boolean,
     canChangeAssessmentFile: boolean,
     canChangeModificationFile: boolean,
     isOwner: boolean,
+    isModifiable: boolean
   ): boolean {
     switch (type) {
       case FileCategoryTypeEnum.MODIFICATION:
@@ -109,7 +110,7 @@ export class ProjectApplicationFilesTableComponent {
       case FileCategoryTypeEnum.APPLICATION:
       case FileCategoryTypeEnum.PARTNER:
       case FileCategoryTypeEnum.INVESTMENT:
-        return canChangeApplicationFile || (isOwner && ProjectUtil.isOpenForModifications(status));
+        return (canChangeApplicationFile || isOwner) && isModifiable;
       default:
         return false;
     }
@@ -123,6 +124,7 @@ export class ProjectApplicationFilesTableComponent {
     canChangeModificationFile: boolean,
     uploadedAt: Date,
     isOwner: boolean,
+    isModifiable: boolean,
   ): boolean {
     switch (type) {
       case FileCategoryTypeEnum.MODIFICATION:
@@ -132,19 +134,24 @@ export class ProjectApplicationFilesTableComponent {
       case FileCategoryTypeEnum.APPLICATION:
       case FileCategoryTypeEnum.PARTNER:
       case FileCategoryTypeEnum.INVESTMENT:
-        return ProjectApplicationFilesTableComponent.isApplicationFileDeletable(status, uploadedAt, isOwner, canChangeApplicationFile);
+        return ProjectApplicationFilesTableComponent.isApplicationFileDeletable(status, uploadedAt, isOwner, canChangeApplicationFile, isModifiable);
       default:
         return false;
     }
   }
 
-  private static isApplicationFileDeletable(status: ProjectStatusDTO, uploadedAt: Date, isOwner: boolean, isAllowedToChange: boolean): boolean {
+  private static isApplicationFileDeletable(
+    status: ProjectStatusDTO,
+    uploadedAt: Date,
+    isOwner: boolean,
+    isAllowedToChange: boolean,
+    isModifiable: boolean
+  ): boolean {
     // the user can only delete files that are added after a last status change
     const lastStatusChange = status?.updated;
     const fileIsNotLocked = uploadedAt > lastStatusChange;
 
-    const userIsAbleToDelete = isAllowedToChange
-      || (isOwner && ProjectUtil.isOpenForModifications(status));
+    const userIsAbleToDelete = (isAllowedToChange || isOwner) && isModifiable;
     return fileIsNotLocked && userIsAbleToDelete;
   }
 
