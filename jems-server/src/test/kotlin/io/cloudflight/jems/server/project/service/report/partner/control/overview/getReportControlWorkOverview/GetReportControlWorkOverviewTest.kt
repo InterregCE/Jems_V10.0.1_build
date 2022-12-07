@@ -40,13 +40,16 @@ internal class GetReportControlWorkOverviewTest : UnitTest() {
 
         private fun expenditure(
             id: Long,
-            partOfSample: Boolean = false,
-            declaredAmount: BigDecimal = BigDecimal.ZERO,
+            partOfSample: Boolean,
+            declaredAmount: BigDecimal?,
+            certified: BigDecimal,
         ): ProjectPartnerReportExpenditureVerification {
             val expenditure = mockk<ProjectPartnerReportExpenditureVerification>()
             every { expenditure.id } returns id
             every { expenditure.partOfSample } returns partOfSample
-            every { expenditure.declaredAmountAfterSubmission } returns declaredAmount
+            every { expenditure.declaredAmountAfterSubmission } returns
+                (declaredAmount ?: BigDecimal.valueOf(99999) /* should be ignored */)
+            every { expenditure.certifiedAmount } returns certified
             every { expenditure.lumpSumId } returns null
             every { expenditure.costCategory } returns ReportBudgetCategory.StaffCosts
             return expenditure
@@ -73,19 +76,22 @@ internal class GetReportControlWorkOverviewTest : UnitTest() {
     fun get() {
         every { reportControlExpenditurePersistence
             .getPartnerControlReportExpenditureVerification(PARTNER_ID, reportId = 22L)
-        } returns listOf(expenditure(554L, partOfSample = true, BigDecimal.ONE), expenditure(555L))
+        } returns listOf(
+            expenditure(554L, partOfSample = true, BigDecimal.ONE, certified = BigDecimal.valueOf(9, 1)),
+            expenditure(555L, partOfSample = false, null, certified = BigDecimal.valueOf(5, 1)),
+        )
 
         every { reportExpenditureCostCategoryPersistence.getCostCategories(PARTNER_ID, reportId = 22L) } returns costOptions
-        every { reportCoFinancingPersistence.getPartnerTotal(PARTNER_ID, reportId = 22L) } returns BigDecimal.TEN
+        every { reportCoFinancingPersistence.getReportCurrentSum(PARTNER_ID, reportId = 22L) } returns BigDecimal.TEN
 
         assertThat(interactor.get(PARTNER_ID, reportId = 22L)).isEqualTo(
             ControlWorkOverview(
                 declaredByPartner = BigDecimal.TEN,
                 inControlSample = BigDecimal.ONE,
                 parked = BigDecimal.ZERO,
-                deductedByControl = BigDecimal.valueOf(885L, 2),
-                eligibleAfterControl = BigDecimal.valueOf(115L, 2),
-                eligibleAfterControlPercentage = BigDecimal.valueOf(1150L, 2),
+                deductedByControl = BigDecimal.valueOf(839L, 2),
+                eligibleAfterControl = BigDecimal.valueOf(161L, 2),
+                eligibleAfterControlPercentage = BigDecimal.valueOf(1610L, 2),
             )
         )
     }

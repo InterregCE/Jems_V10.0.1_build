@@ -134,7 +134,7 @@ private fun ReportBudgetCategory.translateCostCategory(): BudgetCostCategory {
     }
 }
 
-private fun ExpenditureCost.getCategory(): BudgetCostCategory =
+fun ExpenditureCost.getCategory(): BudgetCostCategory =
     when {
         lumpSumId != null -> LumpSum
         else -> costCategory.translateCostCategory()

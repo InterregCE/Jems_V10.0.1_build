@@ -197,14 +197,14 @@ class ProjectReportExpenditureCoFinancingPersistenceProviderTest : UnitTest() {
     }
 
     @Test
-    fun getPartnerTotal() {
+    fun getReportCurrentSum() {
         val coFin = mockk<ReportProjectPartnerExpenditureCoFinancingEntity>()
-        every { coFin.sumTotal } returns BigDecimal.valueOf(64789, 2)
+        every { coFin.sumCurrent } returns BigDecimal.valueOf(64789, 2)
 
         every { expenditureCoFinancingRepository
             .findFirstByReportEntityPartnerIdAndReportEntityId(PARTNER_ID, reportId = 15L)
         } returns coFin
-        assertThat(persistence.getPartnerTotal(PARTNER_ID, reportId = 15L)).isEqualTo(BigDecimal.valueOf(64789, 2))
+        assertThat(persistence.getReportCurrentSum(PARTNER_ID, reportId = 15L)).isEqualTo(BigDecimal.valueOf(64789, 2))
     }
 
 }
