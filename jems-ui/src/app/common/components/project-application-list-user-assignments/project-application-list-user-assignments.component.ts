@@ -215,8 +215,12 @@ export class ProjectApplicationListUserAssignmentsComponent implements OnInit {
     });
   }
 
-  getUserByIdFromAvailable(userId: number, availableUsers: UserSummaryDTO[]): UserSummaryDTO | undefined {
-    return availableUsers.find(x => x.id === userId);
+  getUserByIdFromAvailable(
+    userId: number,
+    availableUsers: UserSummaryDTO[],
+    extraProjectUsers: UserSummaryDTO[]
+  ): UserSummaryDTO | undefined {
+    return [...availableUsers, ...extraProjectUsers].find(x => x.id === userId);
   }
 
   projectAtIndex(projectIndex: number): FormGroup {

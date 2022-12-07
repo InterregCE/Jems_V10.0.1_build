@@ -67,7 +67,7 @@
             </mat-chip>
 
             <ng-container *ngFor="let userId of users(project.index).value;let userIndex = index">
-                <ng-container *ngIf="getUserByIdFromAvailable(userId, project.users) as user">
+                <ng-container *ngIf="getUserByIdFromAvailable(userId, project.availableUsers, project.users) as user">
                     <mat-chip
                             color="primary" selected class="mat-chip-selected-user"
                             [selectable]="false"
