@@ -32,13 +32,13 @@ context('Application form exports', () => {
 
   it('TB-366 Export application form using two sets of input and export language', () => {
     const currentMask = comparePdfMask;
-    currentMask.push({pageIndex: 18, coordinates: {x0: 425, x1: 760, y0: 235, y1: 255}});
-    currentMask.push({pageIndex: 15, coordinates: {x0: 425, x1: 760, y0: 681, y1: 705}});
-    currentMask.push({pageIndex: 15, coordinates: {x0: 400, x1: 760, y0: 701, y1: 725}});
-    currentMask.push({pageIndex: 15, coordinates: {x0: 425, x1: 760, y0: 955, y1: 980}});
-    currentMask.push({pageIndex: 15, coordinates: {x0: 400, x1: 760, y0: 978, y1: 1000}});
-    currentMask.push({pageIndex: 19, coordinates: {x0: 94, x1: 135, y0: 270, y1: 282}});
-    currentMask.push({pageIndex: 19, coordinates: {x0: 94, x1: 135, y0: 322, y1: 333}});
+    currentMask.push({pageIndex: 20, coordinates: {x0: 425, x1: 760, y0: 235, y1: 255}});
+    currentMask.push({pageIndex: 17, coordinates: {x0: 425, x1: 760, y0: 681, y1: 705}});
+    currentMask.push({pageIndex: 17, coordinates: {x0: 400, x1: 760, y0: 701, y1: 725}});
+    currentMask.push({pageIndex: 17, coordinates: {x0: 425, x1: 760, y0: 955, y1: 980}});
+    currentMask.push({pageIndex: 17, coordinates: {x0: 400, x1: 760, y0: 978, y1: 1000}});
+    currentMask.push({pageIndex: 21, coordinates: {x0: 94, x1: 135, y0: 270, y1: 282}});
+    currentMask.push({pageIndex: 21, coordinates: {x0: 94, x1: 135, y0: 322, y1: 333}});
 
     cy.createCall(call, user.programmeUser.email).then(callId => {
       application.details.projectCallId = callId;

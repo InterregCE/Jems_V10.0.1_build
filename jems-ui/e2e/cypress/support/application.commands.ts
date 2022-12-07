@@ -61,6 +61,8 @@ declare global {
       returnToApplicant(applicationId: number, userEmail?: string);
 
       createProjectProposedUnitCost(applicationId: number, unitCost);
+
+      createProjectProposedUnitCosts(applicationId: number, unitCosts: any[]);
     }
   }
 }
@@ -269,12 +271,12 @@ Cypress.Commands.add('returnToApplicant', (applicationId: number, userEmail?: st
 });
 
 Cypress.Commands.add('createProjectProposedUnitCost', (applicationId: number, unitCost) => {
-  cy.request({
-    method: 'POST',
-    url: `api/project/${applicationId}/costOption/unitCost`,
-    body: unitCost
-  }).then(response => {
-    return response.body.id;
+  createProjectProposedUnitCost(applicationId, unitCost);
+});
+
+Cypress.Commands.add('createProjectProposedUnitCosts', (applicationId: number, unitCosts: []) => {
+  unitCosts.forEach(unitCost => {
+    createProjectProposedUnitCost(applicationId, unitCost);
   });
 });
 
@@ -291,9 +293,10 @@ function createApplication(applicationDetails) {
 
 function submitApplication(applicationId, application) {
 
+  // A
   updateIdentification(applicationId, application.identification);
 
-  // C - project description
+  // C
   updateOverallObjective(applicationId, application.description.overallObjective);
   updateRelevanceAndContext(applicationId, application.description.relevanceAndContext);
   updatePartnership(applicationId, application.description.partnership);
@@ -301,19 +304,15 @@ function submitApplication(applicationId, application) {
   createResults(applicationId, application.description.results);
   updateManagement(applicationId, application.description.management);
   updateLongTermPlans(applicationId, application.description.longTermPlans);
+  
+  // E
+  createProjectProposedUnitCosts(applicationId, application.projectProposedUnitCosts);
 
-  // B - project partners
+  // B
   createPartners(applicationId, application.partners, options);
 
-  // E - project lump sums
-  cy.then(function () {
-    application.lumpSums.forEach(lumpSum => {
-      lumpSum.lumpSumContributions.forEach(contributions => {
-        contributions.partnerId = this[contributions.partnerAbbreviation];
-      });
-    });
-    updateLumpSums(applicationId, application.lumpSums);
-  });
+  // E
+  updateLumpSums(applicationId, application.lumpSums);
 
   runPreSubmissionCheck(applicationId);
   submitProjectApplication(applicationId);
@@ -414,10 +413,18 @@ function updateLongTermPlans(applicationId: number, longTermPlans) {
 }
 
 function updateLumpSums(applicationId: number, lumpSums: []) {
-  cy.request({
-    method: 'PUT',
-    url: `api/project/${applicationId}/lumpSum`,
-    body: lumpSums
+  // set partnerId in the lump sum based on partner abbreviation
+  cy.then(function () {
+    lumpSums?.forEach((lumpSum: any) => {
+      lumpSum.lumpSumContributions.forEach(contributions => {
+        contributions.partnerId = this[contributions.partnerAbbreviation];
+      });
+    });
+    cy.request({
+      method: 'PUT',
+      url: `api/project/${applicationId}/lumpSum`,
+      body: lumpSums
+    });
   });
 }
 
@@ -479,6 +486,22 @@ function approveApplication(applicationId: number, assessments, approvingUserEma
       loginByRequest(currentUser.name);
     });
   }
+}
+
+function createProjectProposedUnitCost(applicationId, projectProposedUnitCost) {
+  cy.request({
+    method: 'POST',
+    url: `api/project/${applicationId}/costOption/unitCost`,
+    body: projectProposedUnitCost
+  }).then(response => {
+    cy.wrap(response.body.id).as(projectProposedUnitCost.cypressReference);
+  });
+}
+
+function createProjectProposedUnitCosts(applicationId: number, projectProposedUnitCosts: any[]) {
+  projectProposedUnitCosts.forEach((projectProposedUnitCost: any) => {
+    createProjectProposedUnitCost(applicationId, projectProposedUnitCost);
+  });
 }
 
 export {}

@@ -100,6 +100,42 @@ export default defineConfig({
         });
       }
 
+      on('task', {
+        async sendTestResults(test) {
+          const match = /TB-\d+/.exec(test.title);
+          if (match) {
+            const testKey = match[0];
+            const testCaseExecutionDetails = {
+              "result": {
+                "statusName": "Blocked"
+              }
+            }
+            if (test.state === 'failed')
+              testCaseExecutionDetails.result.statusName = "Fail";
+            else if (test.state === 'passed')
+              testCaseExecutionDetails.result.statusName = "Pass";
+
+            const requestDetails = {
+              method: 'PUT',
+              headers: {
+                'Authorization': `Bearer ${config.env.jiraApiToken}`,
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify(testCaseExecutionDetails)
+            };
+            const fetchUrl = `https://rtm-api.hexygen.com/api/v2/test-case-execution/${config.env.executionKey}-${testKey}`;
+            const response = await fetch(fetchUrl, requestDetails);
+            if (response.status !== 200 && response.status !== 204) {
+              const result = await response.json();
+              console.log('Error updating test result to Jira: ', result);
+            }
+          } else {
+            console.log(`Test case title couldn't be matched for project: ${config.env.project}.`);
+          }
+          return null;
+        }
+      });
+
       on('after:run', async (results: CypressRunResult) => {
         if (config.env.jiraApiToken) {
           const executionDetails = {

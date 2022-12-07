@@ -21,8 +21,8 @@
     "legalStatus": "Internal EN",
     "typeOfPartner": "National public authority",
     "vatRecovery": "Partly",
-    "coFinancingSourceAndRate1": "ERDF 60,00%",
-    "coFinancingSourceAndRate2": "Neighbourhood CBC 30,00%",
+    "coFinancingSourceAndRate1": "Other fund EN 15,00%",
+    "coFinancingSourceAndRate2": "Neighbourhood CBC 25,00%",
     "country": "France (FR)",
     "localCurrency": "EUR"
   },
@@ -111,7 +111,7 @@
       {
         "name": "Additional source",
         "status": "Private",
-        "amount": 10.44,
+        "amount": 672.35,
         "partner": false
       }
     ]

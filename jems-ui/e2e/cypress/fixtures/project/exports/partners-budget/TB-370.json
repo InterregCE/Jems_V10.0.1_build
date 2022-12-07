@@ -30,17 +30,18 @@
     "partnerAbbreviation": "PP v3",
     "modifiedUnitCosts": [
       {
-        "unitCostId": 4,
+        "unitCostId": 7,
         "numberOfUnits": 1,
-        "rowSum": 55.56,
+        "rowSum": 1999.99,
         "budgetPeriods": [
           {
-            "amount": 55.56,
+            "amount": 1999.99,
             "number": 1
           }
         ]
       }, {
-        "unitCostId": 999,
+        "cypressReference": "projectProposedMulti",
+        "unitCostId": null,
         "numberOfUnits": 13,
         "rowSum": 1611.87,
         "budgetPeriods": [
@@ -81,7 +82,8 @@
           "number": 1
         }
       ],
-      "unitCostId": 999
+      "cypressReference": "projectProposedTravel",
+      "unitCostId": null
     },
     "modifiedCofinancing": {
       "finances": [
@@ -99,7 +101,7 @@
         {
           "name": "Lead Partner",
           "status": "Public",
-          "amount": 2281.82,
+          "amount": 3059.59,
           "partner": true
         }
       ]

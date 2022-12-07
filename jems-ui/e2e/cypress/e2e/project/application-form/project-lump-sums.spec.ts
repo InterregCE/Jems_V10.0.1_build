@@ -20,8 +20,14 @@ context('Project lump sums tests', () => {
 
         cy.contains('E.1 - Project lump sums').click();
         cy.contains('button', 'Add').click();
-        cy.contains('div.mat-form-field-flex', 'Lump sum').click();
+        cy.contains('mat-select', 'Lump sum').click();
         cy.contains(testData.firstLumpSum.name).click();
+        
+        cy.contains('Please update the lump sum table: A period must be selected for each lump sum.').should('be.visible');
+        cy.contains('mat-select', 'Period').click();
+        cy.contains('Preparation').click();
+
+
         cy.get('input[type="decimal"]').first().clear().type(testData.firstLumpSum.firstPartnerSplitAmount);
         cy.get('input[type="decimal"]').last().clear().type(testData.firstLumpSum.secondPartnerAmount);
         cy.contains('Total lump sum costs must be allocated to one partner').should('be.visible');
@@ -34,10 +40,15 @@ context('Project lump sums tests', () => {
         cy.contains('button', 'add').click();
         cy.get('mat-row').last().contains('span.mat-select-placeholder', 'Lump sum').click();
         cy.contains(testData.secondLumpSum.name).click();
+        cy.contains('mat-select', 'Period').click();
+        cy.contains('Period 2').click();
         cy.get('mat-row').last().find('input[type="decimal"]').first().clear().type(testData.secondLumpSum.firstPartnerAmount);
         cy.get('mat-row').last().find('input[type="decimal"]').last().clear().type(testData.secondLumpSum.secondPartnerAmount);
         cy.contains('button', 'Save changes').click();
         cy.contains("Project's LumpSums saved successfully").should('be.visible');
+
+        cy.contains('Please update the lump sum table: The sum of the amounts per partner must match the total lump sum costs.').should('not.exist');
+        cy.contains('Please update the lump sum table: A period must be selected for each lump sum.').should('not.exist');
       });
     })
   })

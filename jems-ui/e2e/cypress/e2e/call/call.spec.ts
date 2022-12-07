@@ -91,10 +91,11 @@ context('Call management tests', () => {
       cy.contains('div', lumpSum).find('mat-checkbox input').check({force: true});
       cy.contains('button', 'Save changes').click();
       cy.contains('Lump sums updated successfully').should('be.visible');
+      cy.contains('Lump sums updated successfully').should('not.exist');
 
       // Unit Costs
-      const unitCost = 'Unit cost MCC1 DE';
-      cy.contains('div', unitCost).find('mat-checkbox input').check({force: true});
+      const unitCost = 'Unit cost single - Staff DE';
+      cy.contains(unitCost).parent().find('mat-checkbox input').check({force: true});
       cy.contains('button', 'Save changes').click();
       cy.contains('Unit costs updated successfully').should('be.visible');
       cy.contains('Unit costs updated successfully').should('not.exist');

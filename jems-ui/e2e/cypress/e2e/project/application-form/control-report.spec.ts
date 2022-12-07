@@ -1,7 +1,6 @@
 import user from '../../../fixtures/users.json';
 import call from '../../../fixtures/api/call/1.step.call.json';
 import application from '../../../fixtures/api/application/application.json';
-import partner from '../../../fixtures/api/application/partner/partner.json';
 import approvalInfo from '../../../fixtures/api/application/modification/approval.info.json';
 import partnerReportIdentification from '../../../fixtures/api/partnerReport/partnerReportIdentification.json';
 import partnerReportExpenditures from '../../../fixtures/api/partnerReport/partnerReportExpenditures.json';
@@ -16,7 +15,6 @@ context('Control report tests', () => {
       call.preSubmissionCheckSettings.pluginKey = 'jems-pre-condition-check-off';
       cy.createCall(call).then(callId => {
         application.details.projectCallId = callId;
-        application.partners.push(partner);
         application.partners[0].details.nameInOriginalLanguage = '';
         application.partners[0].details.nameInEnglish = '';
         application.partners[1].details.nameInOriginalLanguage = '';

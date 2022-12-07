@@ -11,6 +11,7 @@ context('Project description tests', () => {
       cy.publishCall(callId, user.programmeUser.email);
       cy.createApplication(application).then(applicationId => {
         cy.updateProjectIdentification(applicationId, application.identification);
+        cy.createProjectProposedUnitCosts(applicationId, application.projectProposedUnitCosts);
         cy.createPartners(applicationId, application.partners);
       });
     });
@@ -280,7 +281,8 @@ context('Project description tests', () => {
       });
 
       cy.visit(`/app/project/detail/${this.applicationId}/applicationFormPartner/${this[this.partnerAbbreviation]}/budget`, {failOnStatusCode: false});
-      cy.contains('mat-select', 'N/A').scrollIntoView().click();
+      cy.contains('h4', 'External expertise and services').next().find('mat-row').last()
+        .contains('mat-select', 'N/A').scrollIntoView().click();
       cy.contains('mat-option', 'I1.1').should('be.visible');
     });
   });

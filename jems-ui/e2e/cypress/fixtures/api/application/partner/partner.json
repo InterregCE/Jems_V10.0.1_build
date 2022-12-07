@@ -117,18 +117,6 @@
     },
     "staff": [
       {
-        "id": null,
-        "description": [],
-        "unitType": [
-          {
-            "language": "EN",
-            "translation": "SC type 1 EN"
-          },
-          {
-            "language": "DE",
-            "translation": "SC type 1 DE"
-          }
-        ],
         "unitCostId": 1,
         "comments": [
           {

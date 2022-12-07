@@ -19,6 +19,7 @@ context('Project budget tests', () => {
 
       cy.loginByRequest(user.programmeUser.email);
       call.budgetSettings.flatRates = testData.call.flatRates;
+      call.generalCallSettings.additionalFundAllowed = false;
       cy.createCall(call).then(callId => {
         application.details.projectCallId = callId;
         cy.publishCall(callId);
@@ -36,11 +37,10 @@ context('Project budget tests', () => {
         application.partners.push(tempPartner);
       });
       
-      application.lumpSums[0].lumpSumContributions[0].partnerAbbreviation = testData.partners[0].abbreviation;
+      application.lumpSums = [];
 
       cy.createApprovedApplication(application, user.programmeUser.email).then(applicationId => {
         cy.visit(`app/project/detail/${applicationId}/applicationFormOverviewTables`, {failOnStatusCode: false});
-        cy.loginByRequest(user.applicantUser.email);
 
         // A.3
         cy.contains('tr', 'ERDF').should('contain', testData.fundingAmounts.totalERDF);
@@ -93,9 +93,8 @@ context('Project budget tests', () => {
               if (![0,1].includes(index))
                 expect(partnerBudget.text()).to.be.equal(partner.budgetOverview[index - 2]);
             });
-
-            cy.get('.mat-tab-header-pagination-after').click();
-            cy.contains('a', 'Co-financing').should('be.visible').click();
+            
+            cy.visit(`app/project/detail/${applicationId}/applicationFormPartner/${partnerId}/coFinancing`, {failOnStatusCode: false});
 
             cy.contains('div.jems-table-config', 'Source').children().eq(1).find('div').should('contain', partner.cofinancingAmount);
             cy.contains('div.jems-table-config', 'Source').children().eq(3).find('div').eq(1).should('contain', partner.budgetOverview[9]);
@@ -144,7 +143,6 @@ context('Project budget tests', () => {
 
             // verify A.3 section
             cy.visit(`app/project/detail/${applicationId}/applicationFormOverviewTables`, {failOnStatusCode: false});
-            cy.get('jems-alert').should('be.visible');
 
             cy.contains('tr', 'Neighbourhood CBC').then(budgetBreakdown => {
               cy.wrap(budgetBreakdown).children().eq(1).should('contain', testData.roundedDownAmount);
@@ -166,8 +164,8 @@ context('Project budget tests', () => {
             cy.get('div.jems-table-config').children().eq(1).then(partnerBreakdown => {
               cy.wrap(partnerBreakdown).children().eq(5).should('contain', testData.roundedDownAmount);
               cy.wrap(partnerBreakdown).children().eq(6).should('contain', testData.fundPercentage);
-              cy.wrap(partnerBreakdown).children().eq(9).should('contain', testData.roundedUpAmount);
-              cy.wrap(partnerBreakdown).children().eq(11).should('contain', testData.partnerTotalEligibleBudget);
+              cy.wrap(partnerBreakdown).children().eq(11).should('contain', testData.roundedUpAmount);
+              cy.wrap(partnerBreakdown).children().eq(13).should('contain', testData.partnerTotalEligibleBudget);
             });
 
             // verify PDF export
