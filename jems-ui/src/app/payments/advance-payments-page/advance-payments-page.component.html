@@ -34,7 +34,7 @@
 </ng-template>
 
 <ng-template #remainingToBeSettledCell let-payment>
-    {{(payment.amountAdvance - payment.amountSettled) | asMoney}}
+    {{(payment.amountPaid - payment.amountSettled) | asMoney}}
 </ng-template>
 
 <ng-template #deleteButtonCell let-payment>
