@@ -1201,6 +1201,50 @@
       }
     }
   ],
+  "associatedOrganisations": [
+    {
+      "cypressReference": "Lead Partner",
+      "partnerId": null,
+      "nameInOriginalLanguage": "Organisation name in original language",
+      "nameInEnglish": "Organisation name in english",
+      "address": {
+        "country": "Lesotho (LS)",
+        "countryCode": "LS",
+        "nutsRegion2": "Lesotho (LS00)",
+        "nutsRegion2Code": "LS00",
+        "nutsRegion3": "Lesotho (LS000)",
+        "nutsRegion3Code": "LS000",
+        "street": "Organisation street",
+        "houseNumber": "1",
+        "postalCode": "1010",
+        "city": "Vienna"
+      },
+      "contacts": [
+        {
+          "type": "LegalRepresentative",
+          "title": "Mr",
+          "firstName": "Legal",
+          "lastName": "Representative"
+        }, {
+          "type": "ContactPerson",
+          "title": "Ms",
+          "firstName": "Contact",
+          "lastName": "Person",
+          "email": "contact@person.com",
+          "telephone": "+123/556-777"
+        }
+      ],
+      "roleDescription": [
+        {
+          "translation": "Associated organisation description DE",
+          "language": "DE"
+        }, {
+          "translation": "Associated organisation description EN",
+          "language": "EN"
+        }
+      ]
+    }
+  ],
   "description": {
     "overallObjective": [
       {
