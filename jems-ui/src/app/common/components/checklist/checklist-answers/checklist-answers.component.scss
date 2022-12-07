@@ -21,3 +21,26 @@
   border-top: 1px solid var(--table-border-color);
   padding-top: 1rem;
 }
+
+mat-button-toggle-group.checklist-toggle {
+  max-width: 100%;
+  width: auto;
+  display: flex;
+  align-items: stretch;
+
+  mat-button-toggle {
+    align-self: stretch;
+    white-space: normal;
+
+    span {
+      display: inline-block;
+      line-height: 1.5em !important;
+    }
+    ::ng-deep.mat-button-toggle-label-content {
+      height: auto;
+    }
+    ::ng-deep.mat-button-toggle-button {
+      height: 100%;
+    }
+  }
+}
