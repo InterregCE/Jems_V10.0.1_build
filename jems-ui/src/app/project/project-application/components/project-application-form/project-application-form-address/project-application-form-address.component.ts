@@ -1,7 +1,7 @@
 import {ChangeDetectionStrategy, Component, Input, OnChanges, OnInit, SimpleChanges} from '@angular/core';
 import {FormGroup} from '@angular/forms';
 import {OutputNuts} from '@cat/api';
-import {map, startWith} from 'rxjs/operators';
+import {map, startWith, tap} from 'rxjs/operators';
 import {Observable} from 'rxjs';
 
 @Component({
@@ -111,7 +111,7 @@ export class ProjectApplicationFormAddressComponent implements OnInit, OnChanges
     this.filteredCountry = this.addressForm.controls.country.valueChanges
       .pipe(
         startWith(''),
-        map(value => this.filter(value, this.nuts))
+        map(value => this.filter(value, this.nuts)),
       );
 
     this.filteredRegion2 = this.addressForm.controls.region2.valueChanges

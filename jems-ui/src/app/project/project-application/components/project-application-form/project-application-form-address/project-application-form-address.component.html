@@ -4,7 +4,7 @@
             <mat-label>{{'project.partner.main-address.country' | translate}}</mat-label>
             <input name="country" formControlName="country" matInput
                    [matAutocomplete]="country"
-                   (focusout)="countryUnfocused($event)">
+                   >
             <mat-autocomplete #country="matAutocomplete"
                               (optionSelected)="countryChanged($event.option?.value)">
                 <mat-option *ngFor="let region of filteredCountry | async" [value]="region" class="nuts-text-size">

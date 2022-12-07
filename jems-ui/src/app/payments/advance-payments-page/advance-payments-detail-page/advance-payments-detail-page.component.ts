@@ -24,7 +24,6 @@ import {AdvancePaymentsDetailPageConstants} from './advance-payments-detail-page
 import {RoutingService} from '@common/services/routing.service';
 import {APIError} from '@common/models/APIError';
 import {TranslateService} from '@ngx-translate/core';
-import {formatNumber} from '@angular/common';
 
 @UntilDestroy()
 @Component({

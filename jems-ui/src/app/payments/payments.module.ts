@@ -36,7 +36,6 @@ import {
     imports: [
         SharedModule,
         RouterModule.forChild(paymentsRoutes),
-        NgxMatSelectSearchModule
     ],
     providers: [
         PaymentsToProjectDetailBreadcrumbResolver

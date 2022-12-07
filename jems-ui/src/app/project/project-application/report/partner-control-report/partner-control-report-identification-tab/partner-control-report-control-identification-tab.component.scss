@@ -42,3 +42,37 @@
     }
   }
 }
+
+::ng-deep {
+  .control-institution-container {
+    display: flex;
+    align-items: center;
+  }
+
+  .small-toggle-group {
+    overflow: visible;
+
+    span.mat-button-toggle-label-content {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 1.25rem;
+    }
+
+    mat-icon {
+      vertical-align: middle;
+      font-size: 1.375em;
+      height: 1.25rem;
+    }
+  }
+}
+
+.date-wrapper{
+  :first-child {
+    margin-right: 1rem;
+  }
+}
+.location-checkboxes {
+  flex-direction: column;
+  align-items: start;
+}

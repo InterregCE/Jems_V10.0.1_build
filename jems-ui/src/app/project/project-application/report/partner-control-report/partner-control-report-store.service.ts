@@ -1,6 +1,8 @@
 import {Injectable} from '@angular/core';
 import {combineLatest, merge, Observable, of, Subject} from 'rxjs';
 import {
+  ControllerInstitutionsApiService,
+  UserSimpleDTO,
   PartnerUserCollaboratorDTO,
   ProjectPartnerControlReportChangeDTO,
   ProjectPartnerControlReportDTO,
@@ -28,6 +30,7 @@ export class PartnerControlReportStore {
   partnerControlReport$: Observable<ProjectPartnerControlReportDTO>;
   controlReportEditable$: Observable<boolean>;
   partner$: Observable<ProjectPartnerDetailDTO>;
+  controlInstitutionUsers$: Observable<UserSimpleDTO[]>;
 
   partnerId$: Observable<number>;
   reportId$: Observable<number>;
@@ -74,12 +77,14 @@ export class PartnerControlReportStore {
     private reportIdentificationService: ProjectPartnerReportIdentificationService,
     private partnerService: ProjectPartnerService,
     private partnerUserCollaboratorService: ProjectPartnerUserCollaboratorService,
+    private controllerInstitutionsService: ControllerInstitutionsApiService
   ) {
     this.partnerControlReport$ = this.partnerControlReport();
     this.controlReportEditable$ = this.controlReportEditable();
     this.partner$ = this.partner();
     this.partnerId$ = this.partnerId();
     this.reportId$ = this.reportId();
+    this.controlInstitutionUsers$ = this.controlInstitutionUsers();
   }
 
   private controlReportEditable(): Observable<boolean> {
@@ -133,6 +138,26 @@ export class PartnerControlReportStore {
       .pipe(
         shareReplay(1)
       );
+  }
+
+  private controlInstitutionUsers(): Observable<UserSimpleDTO[]> {
+    return combineLatest([
+      this.partnerReportDetailPageStore.partnerId$,
+      this.partnerControlReport(),
+      this.projectStore.projectId$,
+    ]).pipe(
+      switchMap(([partnerId, control, projectId]) => !!partnerId && !!control.designatedController?.controlInstitutionId && !!projectId
+        ? this.controllerInstitutionsService.getUsersByControllerInstitutionId(Number(control.designatedController?.controlInstitutionId), Number(partnerId))
+          .pipe(
+            catchError(() => {
+              this.routingService.navigate([ProjectPaths.PROJECT_DETAIL_PATH, projectId, 'reporting']);
+              return of([{}] as UserSimpleDTO[]);
+            })
+          )
+        : of([{}] as UserSimpleDTO[])
+      ),
+      tap(controlUsers => Log.info('Fetched the control institution users:', this, controlUsers)),
+    );
   }
 
   public saveIdentification(identification: ProjectPartnerControlReportChangeDTO): Observable<ProjectPartnerControlReportDTO> {
