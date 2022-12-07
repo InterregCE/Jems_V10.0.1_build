@@ -28,6 +28,12 @@
                         {{ 'project.application.partner.report.control.tab.document' | translate }}
                     </span>
                 </a>
+                <a [active]="activeTab('overviewAndFinalizeTab')" mat-tab-link
+                   (click)="routeTo('overviewAndFinalizeTab')">
+                    <span jemsText maxWidth="230">
+                        {{ 'project.application.partner.report.control.tab.overviewAndFinalize' | translate }}
+                    </span>
+                </a>
             </nav>
 
             <nav *ngIf="store.limitedControlReportView$ | async" mat-tab-nav-bar>

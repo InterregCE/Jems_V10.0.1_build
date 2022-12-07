@@ -218,6 +218,9 @@ import {
 import {
   ContractingChecklistPageComponent
 } from '@project/project-application/contract-monitoring/contract-monitoring-extension/contract-monitoring-extension-checklist-page/contract-monitoring-extension-checklist-page.component';
+import {
+  PartnerControlReportOverviewAndFinalizeTabComponent
+} from '@project/project-application/report/partner-control-report/partner-control-report-overview-and-finalize-tab/partner-control-report-overview-and-finalize-tab.component';
 
 export const routes: Routes = [
   {
@@ -337,6 +340,10 @@ export const routes: Routes = [
                           {
                             path: 'document',
                             component: PartnerControlReportDocumentTabComponent,
+                          },
+                          {
+                            path: 'overviewAndFinalizeTab',
+                            component: PartnerControlReportOverviewAndFinalizeTabComponent,
                           },
                         ],
                       }
