@@ -6,6 +6,7 @@ import io.cloudflight.jems.server.project.authorization.CanSetProjectToContracte
 import io.cloudflight.jems.server.project.service.checklist.ChecklistInstancePersistence
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceStatus
 import io.cloudflight.jems.server.project.service.checklist.projectContractingChecklistDeleted
+import io.cloudflight.jems.server.user.service.authorization.UserAuthorization
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -14,23 +15,23 @@ import org.springframework.transaction.annotation.Transactional
 class DeleteContractingChecklistInstance(
     private val persistence: ChecklistInstancePersistence,
     private val auditPublisher: ApplicationEventPublisher,
+    private val userAuthorization: UserAuthorization
 ) : DeleteContractingChecklistInstanceInteractor {
 
     @CanSetProjectToContracted
     @Transactional
     @ExceptionWrapper(DeleteContractingChecklistInstanceException::class)
     override fun deleteById(projectId: Long, checklistId: Long) {
-        val checklistToBeDeleted =
-            persistence.getChecklistDetail(checklistId, ProgrammeChecklistType.CONTRACTING, projectId)
+        val checklist = persistence.getChecklistDetail(checklistId, ProgrammeChecklistType.CONTRACTING, projectId)
 
-        if (checklistToBeDeleted.status == ChecklistInstanceStatus.FINISHED)
-            throw DeleteContractingChecklistInstanceStatusNotAllowedException()
+        if (checklist.status == ChecklistInstanceStatus.FINISHED || checklist.creatorEmail != userAuthorization.getUser().email)
+            throw DeleteContractingChecklistInstanceNotAllowedException()
 
         persistence.deleteById(checklistId).also {
             auditPublisher.publishEvent(
                 projectContractingChecklistDeleted(
                     context = this,
-                    checklist = checklistToBeDeleted,
+                    checklist = checklist,
                     projectId = projectId
                 )
             )

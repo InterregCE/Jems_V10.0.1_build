@@ -47,7 +47,7 @@ internal class DeleteContractingChecklistInstanceTest : UnitTest() {
         status = ChecklistInstanceStatus.DRAFT,
         type = ProgrammeChecklistType.CONTRACTING,
         name = "name",
-        creatorEmail = "a@a",
+        creatorEmail = "user@applicant.dev",
         relatedToId = projectId,
         finishedDate = null,
         consolidated = false,
@@ -61,7 +61,7 @@ internal class DeleteContractingChecklistInstanceTest : UnitTest() {
         status = ChecklistInstanceStatus.DRAFT,
         type = ProgrammeChecklistType.CONTRACTING,
         name = "name",
-        creatorEmail = "a@a",
+        creatorEmail = "user@applicant.dev",
         creatorId = creatorId,
         relatedToId = projectId,
         finishedDate = null,
@@ -101,7 +101,7 @@ internal class DeleteContractingChecklistInstanceTest : UnitTest() {
         status = ChecklistInstanceStatus.FINISHED,
         type = ProgrammeChecklistType.CONTRACTING,
         name = "name",
-        creatorEmail = "a@a",
+        creatorEmail = "user@applicant.dev",
         creatorId = creatorId,
         relatedToId = projectId,
         finishedDate = null,
@@ -190,7 +190,25 @@ internal class DeleteContractingChecklistInstanceTest : UnitTest() {
                 projectId
             )
         } returns contractingChecklistDetailWithFinishStatus
-        assertThrows<DeleteContractingChecklistInstanceStatusNotAllowedException> {
+        assertThrows<DeleteContractingChecklistInstanceNotAllowedException> {
+            deleteContractingChecklistInstance.deleteById(
+                projectId,
+                checklistId
+            )
+        }
+    }
+
+    @Test
+    fun `delete contracting checklist - is in DRAFT status but instantiated by other (cannot be deleted)`() {
+        every { userAuthorization.getUser().email } returns "test@test.eu"
+        every {
+            persistence.getChecklistDetail(
+                checklistId,
+                ProgrammeChecklistType.CONTRACTING,
+                projectId
+            )
+        } returns contractingChecklistDetail
+        assertThrows<DeleteContractingChecklistInstanceNotAllowedException> {
             deleteContractingChecklistInstance.deleteById(
                 projectId,
                 checklistId

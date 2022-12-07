@@ -12,7 +12,7 @@ class DeleteContractingChecklistInstanceException(cause: Throwable) : Applicatio
     i18nMessage = I18nMessage("$DELETE_CONTRACTING_CHECKLIST_INSTANCE_ERROR_KEY_PREFIX.failed"), cause = cause
 )
 
-class DeleteContractingChecklistInstanceStatusNotAllowedException : ApplicationUnprocessableException(
+class DeleteContractingChecklistInstanceNotAllowedException : ApplicationUnprocessableException(
     code = "$DELETE_CONTRACTING_CHECKLIST_INSTANCE_ERROR_CODE_PREFIX-001",
-    i18nMessage = I18nMessage("$DELETE_CONTRACTING_CHECKLIST_INSTANCE_ERROR_KEY_PREFIX.status.not.allowed")
+    i18nMessage = I18nMessage("$DELETE_CONTRACTING_CHECKLIST_INSTANCE_ERROR_KEY_PREFIX.not.allowed")
 )
