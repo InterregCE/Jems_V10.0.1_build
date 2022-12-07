@@ -38,7 +38,7 @@
                         </div>
 
                         <div class="column-partner-role justify-start" jemsNoWidthLimit jemsMultiColumnRow>
-                            {{ 'payments.advance.payment.table.header.partner.role' | translate }}
+                            {{ 'payments.advance.payment.table.header.partner.number' | translate }}
                         </div>
 
                         <div class="column-advance-source justify-start" jemsNoWidthLimit jemsMultiColumnRow>
@@ -161,22 +161,22 @@
                                     <span [ngClass]="{'marked-as-required' : !isPaymentValueValid(inputAdvanceAmount.value)}">
                                         <input #inputAdvanceAmount matInput type="decimal" currencyMask required
                                                [options]="{max: constants.MAX_VALUE, align:'right'}"
-                                               [formControlName]="constants.FORM_CONTROL_NAMES.amountAdvance">
+                                               [formControlName]="constants.FORM_CONTROL_NAMES.amountPaid">
                                     </span>
                                     <mat-error>
-                                        <jems-form-field-errors [errors]="advancePayment.get(constants.FORM_CONTROL_NAMES.amountAdvance)?.errors" [messages]="constants.inputErrorMessages"></jems-form-field-errors>
+                                        <jems-form-field-errors [errors]="advancePayment.get(constants.FORM_CONTROL_NAMES.amountPaid)?.errors" [messages]="constants.inputErrorMessages"></jems-form-field-errors>
                                     </mat-error>
                                 </mat-form-field>
                             </div>
 
                             <div class="column-date">
                                 <mat-form-field class="w-100">
-                                    <input name="dateOfPayment"
+                                    <input name="paymentDate"
                                            class="placeholder-required"
-                                           [formControlName]="constants.FORM_CONTROL_NAMES.dateOfPayment" matInput
+                                           [formControlName]="constants.FORM_CONTROL_NAMES.paymentDate" matInput
                                            [matDatepicker]="paymentDatePicker">
                                     <mat-error>
-                                        <jems-form-field-errors [errors]="advancePayment.get(constants.FORM_CONTROL_NAMES.dateOfPayment)?.errors"
+                                        <jems-form-field-errors [errors]="advancePayment.get(constants.FORM_CONTROL_NAMES.paymentDate)?.errors"
                                         [messages]="constants.inputErrorMessages"
                                         [args] = "{}"></jems-form-field-errors>
                                     </mat-error>

@@ -20,7 +20,7 @@ data class AdvancePaymentDTO(
     val partnerContributionSpf: IdNamePairDTO? = null,
 
     val paymentAuthorized: Boolean? = null,
-    val amountAdvance: BigDecimal?,
-    val dateOfPayment: LocalDate? = null,
+    val amountPaid: BigDecimal?,
+    val paymentDate: LocalDate? = null,
     val amountSettled: BigDecimal?
 )
