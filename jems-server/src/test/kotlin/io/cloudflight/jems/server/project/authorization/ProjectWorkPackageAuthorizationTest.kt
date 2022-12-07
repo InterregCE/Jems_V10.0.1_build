@@ -17,6 +17,7 @@ import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
+import io.mockk.mockk
 import io.mockk.verify
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
@@ -54,7 +55,7 @@ internal class ProjectWorkPackageAuthorizationTest : UnitTest() {
 
     @BeforeEach
     fun resetMocks() {
-        clearMocks(securityService)
+        clearMocks(securityService, workPackagePersistence)
     }
 
     @ParameterizedTest(name = "owner, without special permissions for this project, can update workPackage, isOpen {0}")
@@ -129,9 +130,10 @@ internal class ProjectWorkPackageAuthorizationTest : UnitTest() {
 
     @Test
     fun `project LATEST version, user HAS permissions, can retrieve workPackage`() {
+        every { workPackagePersistence.getWorkPackageById(WORK_PACKAGE_ID, projectId = 12L, null) } returns mockk()
         val user = LocalCurrentUser(userApplicant.copy(assignedProjects = setOf(12L)), "hash_pass", applicantUser.authorities union setOf(SimpleGrantedAuthority(ProjectFormRetrieve.name)))
 
-        every { workPackageService.getProjectForWorkPackageId(WORK_PACKAGE_ID) } returns ProjectApplicantAndStatus(12L,
+        every { projectPersistence.getApplicantAndStatusById(12L) } returns ProjectApplicantAndStatus(12L,
             applicantId = 3210L,
             projectStatus = mockStatus,
             collaboratorManageIds = emptySet(),
@@ -151,6 +153,7 @@ internal class ProjectWorkPackageAuthorizationTest : UnitTest() {
 
     @Test
     fun `project HISTORIC version, user HAS NOT permissions, he is OWNER, can retrieve workPackage`() {
+        every { workPackagePersistence.getWorkPackageById(WORK_PACKAGE_ID, projectId = 13L, "1.0") } returns mockk()
         val user = applicantUser
 
         every { projectPersistence.getApplicantAndStatusById(13L) } returns ProjectApplicantAndStatus(13L,
@@ -172,6 +175,7 @@ internal class ProjectWorkPackageAuthorizationTest : UnitTest() {
 
     @Test
     fun `project HISTORIC version, user HAS NOT permissions, and he is NOT an OWNER, CANNOT retrieve workPackage`() {
+        every { workPackagePersistence.getWorkPackageById(WORK_PACKAGE_ID, projectId = 13L, "1.0") } returns mockk()
         val user = applicantUser
 
         every { projectPersistence.getApplicantAndStatusById(13L) } returns ProjectApplicantAndStatus(13L,

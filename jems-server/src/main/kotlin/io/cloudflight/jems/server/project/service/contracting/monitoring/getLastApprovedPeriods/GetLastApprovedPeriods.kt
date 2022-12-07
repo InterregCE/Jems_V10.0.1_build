@@ -1,7 +1,7 @@
 package io.cloudflight.jems.server.project.service.contracting.monitoring.getLastApprovedPeriods
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
-import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectContractingReporting
+import io.cloudflight.jems.server.project.authorization.CanRetrieveProjectReportingSchedule
 import io.cloudflight.jems.server.project.repository.ProjectPersistenceProvider
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.contracting.model.ProjectPeriodForMonitoring
@@ -19,7 +19,7 @@ class GetLastApprovedPeriods(
     private val versionPersistence: ProjectVersionPersistence,
 ): GetLastApprovedPeriodsInteractor {
 
-    @CanRetrieveProjectContractingReporting
+    @CanRetrieveProjectReportingSchedule
     @Transactional(readOnly = true)
     @ExceptionWrapper(GetLatestApprovedException::class)
     override fun getPeriods(projectId: Long): List<ProjectPeriodForMonitoring> {

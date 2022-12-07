@@ -6,6 +6,7 @@ import io.cloudflight.jems.server.project.entity.partneruser.PartnerCollaborator
 import io.cloudflight.jems.server.project.service.partner.UserPartnerCollaboratorPersistence
 import io.cloudflight.jems.server.project.service.partner.get_partner_user_collaborator.GetPartnerUserCollaborators
 import io.cloudflight.jems.server.user.service.authorization.UserAuthorization
+import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import io.cloudflight.jems.server.user.service.model.assignment.PartnerCollaborator
 import io.mockk.clearMocks
 import io.mockk.every
@@ -65,6 +66,7 @@ internal class GetPartnerUserCollaboratorsTest : UnitTest() {
     @Test
     fun `get collaborators for users that only see their own teams`() {
         every { userAuthorization.hasManageProjectPrivilegesPermission(PROJECT_ID) } returns false
+        every { userAuthorization.hasNonProjectAuthority(UserRolePermission.ProjectMonitorCollaboratorsRetrieve) } returns false
         every { securityService.getUserIdOrThrow() } returns USER_ID
         every { collaboratorPersistence.findPartnersByUserAndProject(USER_ID, PROJECT_ID) } returns setOf(partnerCollaborator)
         every { collaboratorPersistence.findByProjectAndPartners(PROJECT_ID, setOf(PARTNER_ID)) } returns setOf(partnerCollaborator)
@@ -80,4 +82,18 @@ internal class GetPartnerUserCollaboratorsTest : UnitTest() {
         }
     }
 
+    @Test
+    fun `get collaborators for monitoring users`() {
+        every { userAuthorization.hasManageProjectPrivilegesPermission(PROJECT_ID) } returns false
+        every { userAuthorization.hasNonProjectAuthority(UserRolePermission.ProjectMonitorCollaboratorsRetrieve) } returns true
+        every { collaboratorPersistence.findPartnerCollaboratorsByProjectId(PROJECT_ID) } returns setOf(partnerCollaborator)
+
+        assertThat(getCollaborators.getPartnerCollaborators(PROJECT_ID))
+            .containsExactly(partnerCollaborator)
+
+        verify(exactly = 1) {
+            userAuthorization.hasManageProjectPrivilegesPermission(PROJECT_ID)
+            collaboratorPersistence.findPartnerCollaboratorsByProjectId(PROJECT_ID)
+        }
+    }
 }

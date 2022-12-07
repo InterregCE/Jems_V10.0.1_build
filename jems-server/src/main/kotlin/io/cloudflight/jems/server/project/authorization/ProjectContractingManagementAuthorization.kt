@@ -2,71 +2,117 @@ package io.cloudflight.jems.server.project.authorization
 
 import io.cloudflight.jems.server.authentication.authorization.Authorization
 import io.cloudflight.jems.server.authentication.service.SecurityService
+import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
+import io.cloudflight.jems.server.project.repository.partneruser.UserPartnerCollaboratorRepository
+import io.cloudflight.jems.server.project.repository.projectuser.UserProjectCollaboratorRepository
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.user.service.model.UserRolePermission
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectContractingManagementEdit
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectContractingReportingEdit
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectContractingReportingView
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectContractingManagementView
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectContractsEdit
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectContractsView
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectCreatorContractingReportingEdit
+import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectCreatorContractingReportingView
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Component
 
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("@projectContractingManagementAuthorization.canViewContractsAndAgreements(#projectId)")
+annotation class CanViewContractsAndAgreements
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectContractingManagementAuthorization.canViewProjectManagement(#projectId)")
-annotation class CanViewProjectManagement
+@PreAuthorize("@projectContractingManagementAuthorization.canEditContractsAndAgreements(#projectId)")
+annotation class CanEditContractsAndAgreements
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectContractingManagementAuthorization.canEditProjectManagement(#projectId)")
-annotation class CanEditProjectManagement
+@PreAuthorize("@projectContractingManagementAuthorization.canViewProjectManagers(#projectId)")
+annotation class CanViewProjectManagers
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectAuthorization.hasPermission('ProjectContractingReportingView', #projectId) " +
-    "|| @projectContractingManagementAuthorization.canViewReportingAndIsCollaborator(#projectId)")
-annotation class CanRetrieveProjectContractingReporting
+@PreAuthorize("@projectContractingManagementAuthorization.canEditProjectManagers(#projectId)")
+annotation class CanEditProjectManagers
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectAuthorization.hasPermission('ProjectContractingReportingEdit', #projectId) " +
-    "|| @projectContractingManagementAuthorization.canEditReportingAndIsCollaborator(#projectId)")
-annotation class CanUpdateProjectContractingReporting
+@PreAuthorize("@projectContractingManagementAuthorization.canViewReportingSchedule(#projectId)")
+annotation class CanRetrieveProjectReportingSchedule
+
+@Retention(AnnotationRetention.RUNTIME)
+@PreAuthorize("@projectContractingManagementAuthorization.canEditReportingSchedule(#projectId)")
+annotation class CanEditProjectReportingSchedule
 
 @Component
 class ProjectContractingManagementAuthorization(
     override val securityService: SecurityService,
     val partnerPersistence: PartnerPersistence,
     val projectPersistence: ProjectPersistence,
-    val authorizationUtilService: AuthorizationUtilService
+    private val partnerCollaboratorRepository: UserPartnerCollaboratorRepository,
+    private val projectCollaboratorRepository: UserProjectCollaboratorRepository,
+    private val controllerInstitutionPersistence: ControllerInstitutionPersistence,
 ): Authorization(securityService) {
 
-    fun canViewProjectManagement(projectId: Long): Boolean {
-        val currentUserId = securityService.getUserIdOrThrow()
-        val applicantAndStatus = projectPersistence.getApplicantAndStatusById(projectId)
+    fun canViewContractsAndAgreements(projectId: Long) = canView(ContractingPermission.ViewContractsAgreements, projectId)
+    fun canEditContractsAndAgreements(projectId: Long) = canEdit(ContractingPermission.EditContractsAgreements, projectId)
 
-        return hasPermissionForProject(UserRolePermission.ProjectContractingManagementView, projectId) ||
-            hasPermissionForProject(UserRolePermission.ProjectContractingManagementEdit, projectId) ||
-            authorizationUtilService.userIsProjectOwnerOrProjectCollaborator(currentUserId, applicantAndStatus) ||
-            authorizationUtilService.userIsPartnerCollaboratorForProject(
-                userId = securityService.getUserIdOrThrow(),
-                projectId = projectId)
+    fun canViewProjectManagers(projectId: Long) = canView(ContractingPermission.ViewManagers, projectId)
+    fun canEditProjectManagers(projectId: Long) = canEdit(ContractingPermission.EditManagers, projectId)
+
+    fun canViewReportingSchedule(projectId: Long) = canView(ContractingPermission.ViewSchedule, projectId)
+    fun canEditReportingSchedule(projectId: Long) = canEdit(ContractingPermission.EditSchedule, projectId)
+
+    private fun canView(needed: ContractingPermission, projectId: Long): Boolean {
+        // monitor users
+        if (hasPermission(needed.monitorPermission, projectId))
+            return true
+
+        // partner collaborators and project collaborators
+        val partnerCollaborators = partnerCollaboratorRepository.findAllByProjectId(projectId).mapTo(HashSet()) { it.id.userId }
+        val projectCollaborators = projectCollaboratorRepository.findAllByIdProjectId(projectId).mapTo(HashSet()) { it.id.userId }
+        val collaborators = partnerCollaborators union projectCollaborators
+        if (isActiveUserIdEqualToOneOf(collaborators) && hasPermissionIfPresent(needed.creatorPermission))
+            return true
+
+        // controllers
+        val partnerControllers = controllerInstitutionPersistence.getRelatedUserIdsForProject(projectId)
+        if (isActiveUserIdEqualToOneOf(partnerControllers) && hasNonProjectAuthority(needed.monitorPermission))
+            return true
+
+        return false
     }
 
-    fun canEditProjectManagement(projectId: Long): Boolean {
-        val currentUserId = securityService.getUserIdOrThrow()
-        val applicantAndStatus = projectPersistence.getApplicantAndStatusById(projectId)
-        return hasPermissionForProject(UserRolePermission.ProjectContractingManagementEdit, projectId) ||
-            authorizationUtilService.userIsProjectCollaboratorWithEditPrivilege(currentUserId, applicantAndStatus)
+    private fun canEdit(needed: ContractingPermission, projectId: Long): Boolean {
+        // monitor users
+        if (hasPermission(needed.monitorPermission, projectId))
+            return true
+
+        // partner collaborators and project collaborators
+        val project = projectPersistence.getApplicantAndStatusById(projectId)
+        if (isActiveUserIdEqualToOneOf(project.getUserIdsWithEditLevel()) && hasPermissionIfPresent(needed.creatorPermission))
+            return true
+
+        // controllers
+        val partnerControllers = controllerInstitutionPersistence.getRelatedUserIdsForProject(projectId)
+        if (isActiveUserIdEqualToOneOf(partnerControllers) && hasNonProjectAuthority(needed.monitorPermission))
+            return true
+
+        return false
     }
 
-    fun canEditReportingAndIsCollaborator(projectId: Long): Boolean {
-        val applicantAndStatus = projectPersistence.getApplicantAndStatusById(projectId)
-        val isProjectOwnerOrProjectCollaborator = authorizationUtilService.userIsProjectOwnerOrProjectCollaborator(securityService.getUserIdOrThrow(),
-            applicantAndStatus)
-        return hasPermission(UserRolePermission.ProjectCreatorContractingReportingEdit) && isProjectOwnerOrProjectCollaborator
-    }
+    private fun hasPermissionIfPresent(permission: UserRolePermission?) =
+        if (permission == null)
+            true
+        else
+            hasPermission(permission)
 
-
-    fun canViewReportingAndIsCollaborator(projectId: Long): Boolean {
-        val applicantAndStatus = projectPersistence.getApplicantAndStatusById(projectId)
-        val isProjectOwnerOrProjectCollaborator = authorizationUtilService.userIsProjectOwnerOrProjectCollaborator(securityService.getUserIdOrThrow(),
-            applicantAndStatus)
-        return hasPermission(UserRolePermission.ProjectCreatorContractingReportingView) && isProjectOwnerOrProjectCollaborator
+    enum class ContractingPermission(val monitorPermission: UserRolePermission, val creatorPermission: UserRolePermission?) {
+        ViewContractsAgreements(ProjectContractsView, null),
+        EditContractsAgreements(ProjectContractsEdit, null),
+        ViewManagers(ProjectContractingManagementView, null),
+        EditManagers(ProjectContractingManagementEdit, null),
+        ViewSchedule(ProjectContractingReportingView, ProjectCreatorContractingReportingView),
+        EditSchedule(ProjectContractingReportingEdit, ProjectCreatorContractingReportingEdit),
     }
 
 }

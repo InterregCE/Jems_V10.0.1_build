@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.project.service.contracting.reporting.updateC
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
-import io.cloudflight.jems.server.project.authorization.CanUpdateProjectContractingReporting
+import io.cloudflight.jems.server.project.authorization.CanEditProjectReportingSchedule
 import io.cloudflight.jems.server.project.repository.ProjectPersistenceProvider
 import io.cloudflight.jems.server.project.service.ProjectVersionPersistence
 import io.cloudflight.jems.server.project.service.contracting.model.reporting.ProjectContractingReportingSchedule
@@ -28,7 +28,7 @@ class UpdateContractingReporting(
         private const val MAX_DEADLINES_AMOUNT = 50
     }
 
-    @CanUpdateProjectContractingReporting
+    @CanEditProjectReportingSchedule
     @Transactional
     @ExceptionWrapper(UpdateContractingReportingException::class)
     override fun updateReportingSchedule(

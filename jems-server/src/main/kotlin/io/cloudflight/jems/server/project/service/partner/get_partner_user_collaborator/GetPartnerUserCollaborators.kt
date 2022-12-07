@@ -5,6 +5,7 @@ import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.service.partner.UserPartnerCollaboratorPersistence
 import io.cloudflight.jems.server.user.service.authorization.CanRetrieveCollaborators
 import io.cloudflight.jems.server.user.service.authorization.UserAuthorization
+import io.cloudflight.jems.server.user.service.model.UserRolePermission
 import io.cloudflight.jems.server.user.service.model.assignment.PartnerCollaborator
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -20,7 +21,9 @@ class GetPartnerUserCollaborators(
     @Transactional
     @ExceptionWrapper(GetPartnerUserCollaboratorsException::class)
     override fun getPartnerCollaborators(projectId: Long): Set<PartnerCollaborator> {
-        if (userAuthorization.hasManageProjectPrivilegesPermission(projectId)) {
+        // hasManageProjectPrivilegesPermission should not be used anymore
+        if (userAuthorization.hasManageProjectPrivilegesPermission(projectId)
+            || userAuthorization.hasNonProjectAuthority(UserRolePermission.ProjectMonitorCollaboratorsRetrieve)) {
             return partnerCollaboratorPersistence.findPartnerCollaboratorsByProjectId(projectId)
         }
         // find available partners for this user first, then all collaborators to it

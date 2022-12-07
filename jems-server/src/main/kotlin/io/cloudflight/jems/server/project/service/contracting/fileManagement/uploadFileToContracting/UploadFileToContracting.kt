@@ -3,7 +3,7 @@ package io.cloudflight.jems.server.project.service.contracting.fileManagement.up
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.minio.JemsProjectFileRepository
-import io.cloudflight.jems.server.project.authorization.CanEditContractInfo
+import io.cloudflight.jems.server.project.authorization.CanEditContractsAndAgreements
 import io.cloudflight.jems.server.project.authorization.CanEditProjectMonitoring
 import io.cloudflight.jems.server.project.authorization.CanUpdateProjectContractingPartner
 import io.cloudflight.jems.server.project.service.ProjectPersistence
@@ -27,13 +27,13 @@ class UploadFileToContracting(
     private val fileRepository: JemsProjectFileRepository,
 ): UploadFileToContractingInteractor {
 
-    @CanEditContractInfo
+    @CanEditContractsAndAgreements
     @Transactional
     @ExceptionWrapper(UploadFileToContractingException::class)
     override fun uploadContract(projectId: Long, file: ProjectFile) =
         uploadFileGeneric(projectId, null, file, Contract)
 
-    @CanEditContractInfo
+    @CanEditContractsAndAgreements
     @Transactional
     @ExceptionWrapper(UploadFileToContractingException::class)
     override fun uploadContractDocument(projectId: Long, file: ProjectFile) =
