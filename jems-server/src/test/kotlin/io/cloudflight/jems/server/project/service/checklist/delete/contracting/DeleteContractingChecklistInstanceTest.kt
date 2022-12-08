@@ -123,9 +123,6 @@ internal class DeleteContractingChecklistInstanceTest : UnitTest() {
     lateinit var auditPublisher: ApplicationEventPublisher
 
     @MockK
-    lateinit var userAuthorization: UserAuthorization
-
-    @MockK
     lateinit var securityService: SecurityService
 
     @MockK
@@ -136,8 +133,7 @@ internal class DeleteContractingChecklistInstanceTest : UnitTest() {
 
     @Test
     fun `delete contracting checklist - OK`() {
-        every { userAuthorization.getUser() } returns user
-        every { securityService.getUserIdOrThrow() } returns user.id
+        every { securityService.getUserIdOrThrow() } returns creatorId
         every {
             persistence.getChecklistDetail(
                 checklistId,
@@ -200,7 +196,7 @@ internal class DeleteContractingChecklistInstanceTest : UnitTest() {
 
     @Test
     fun `delete contracting checklist - is in DRAFT status but instantiated by other (cannot be deleted)`() {
-        every { userAuthorization.getUser().email } returns "test@test.eu"
+        every { securityService.getUserIdOrThrow() } returns 20L
         every {
             persistence.getChecklistDetail(
                 checklistId,
