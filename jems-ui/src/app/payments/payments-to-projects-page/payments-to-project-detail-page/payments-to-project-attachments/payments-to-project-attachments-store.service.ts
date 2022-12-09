@@ -24,8 +24,8 @@ export class PaymentAttachmentsStore {
   error$ = new Subject<APIError | null>();
   paymentEditable$: Observable<boolean>;
 
-  newPageSize$ = new Subject<number>();
-  newPageIndex$ = new Subject<number>();
+  newPageSize$ = new BehaviorSubject<number>(Tables.DEFAULT_INITIAL_PAGE_SIZE);
+  newPageIndex$ = new BehaviorSubject<number>(0);
   newSort$ = new BehaviorSubject<Partial<MatSort>>(FileListTableConstants.DEFAULT_SORT);
 
   constructor(
@@ -42,8 +42,8 @@ export class PaymentAttachmentsStore {
     return combineLatest([
       this.routingService.routeParameterChanges(PaymentAttachmentsStore.PAYMENT_DETAIL_PATH, 'paymentId')
         .pipe(map(id => Number(id))),
-      this.newPageIndex$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
-      this.newPageSize$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_SIZE)),
+      this.newPageIndex$,
+      this.newPageSize$,
       this.newSort$.pipe(
         map(sort => sort?.direction ? sort : FileListTableConstants.DEFAULT_SORT),
         map(sort => `${sort.active},${sort.direction}`),

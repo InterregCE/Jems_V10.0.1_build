@@ -1,7 +1,7 @@
 <div *ngIf="canReadFiles$ | async" jemsNoWidthLimit id="project-files" class="overflow-auto">
     <jems-category-tree
             [categories]="fileManagementStore.fileCategories$ | async"
-            (categorySelected)="fileManagementStore.selectedCategory$.next($event)"
+            (categorySelected)="fileManagementStore.changeFilter($event)"
             [selectedCategory]="fileManagementStore.selectedCategory$ | async"
             class="mr-3" id="project-files-tree">
     </jems-category-tree>

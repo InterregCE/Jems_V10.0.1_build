@@ -12,8 +12,8 @@
     <jems-paginator *ngIf="fileList?.content?.length"
             (pageIndexChanged)="onPageIndexChange.emit($event)"
             (pageSizeChanged)="onPageSizeChange.emit($event)"
-            [currentPageIndex]="Tables.DEFAULT_INITIAL_PAGE_INDEX"
-            [currentPageSize]="Tables.DEFAULT_INITIAL_PAGE_SIZE"
+            [currentPageIndex]="fileList?.number"
+            [currentPageSize]="fileList?.size"
             [length]="fileList.totalElements">
     </jems-paginator>
 </div>

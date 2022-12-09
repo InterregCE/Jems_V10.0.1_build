@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {combineLatest, Observable, of, ReplaySubject, Subject} from 'rxjs';
+import {BehaviorSubject, combineLatest, Observable, of, ReplaySubject, Subject} from 'rxjs';
 import {
   PageProjectFileMetadataDTO,
   ProjectCallSettingsDTO,
@@ -62,8 +62,8 @@ export class FileManagementStore {
   deleteSuccess$ = new Subject<boolean>();
   error$ = new Subject<APIError | null>();
 
-  newPageSize$ = new Subject<number>();
-  newPageIndex$ = new Subject<number>();
+  newPageSize$ = new BehaviorSubject<number>(Tables.DEFAULT_INITIAL_PAGE_SIZE);
+  newPageIndex$ = new BehaviorSubject<number>(0);
   newSort$ = new Subject<Partial<MatSort>>();
   filesChanged$ = new Subject<void>();
 
@@ -181,8 +181,8 @@ export class FileManagementStore {
     return combineLatest([
       this.selectedCategory$,
       this.projectStore.projectId$,
-      this.newPageIndex$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
-      this.newPageSize$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_SIZE)),
+      this.newPageIndex$,
+      this.newPageSize$,
       this.newSort$.pipe(
         startWith(Tables.DEFAULT_INITIAL_SORT),
         map(sort => sort?.direction ? sort : Tables.DEFAULT_INITIAL_SORT),
@@ -351,5 +351,10 @@ export class FileManagementStore {
 
   getMaximumAllowedFileSize(): Observable<number> {
     return this.settingsService.getMaximumAllowedFileSize();
+  }
+
+  changeFilter(section: CategoryInfo): void {
+    this.selectedCategory$.next(section);
+    this.newPageIndex$.next(0);
   }
 }

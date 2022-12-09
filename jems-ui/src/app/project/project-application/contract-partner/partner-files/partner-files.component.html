@@ -18,7 +18,7 @@
         <div jemsNoWidthLimit id="partner-files">
             <jems-category-tree
                     [categories]="contractingFilesStoreService.fileCategories$ | async"
-                    (categorySelected)="contractingFilesStoreService.selectedCategory$.next($event)"
+                    (categorySelected)="contractingFilesStoreService.changeFilter($event)"
                     [selectedCategory]="contractingFilesStoreService.selectedCategory$ | async">
             </jems-category-tree>
 
