@@ -51,12 +51,23 @@ class UpdatePriorityInteractorTest {
             title = setOf(InputTranslation(SystemLanguage.EN, "PO-02 title")),
             objective = ProgrammeObjective.PO2,
             specificObjectives = listOf(
-                ProgrammeSpecificObjective(programmeObjectivePolicy = GreenInfrastructure, code = "GU"),
-                ProgrammeSpecificObjective(programmeObjectivePolicy = CircularEconomy, code = "CE"),
-                ProgrammeSpecificObjective(programmeObjectivePolicy = WaterManagement, code = "WM"),
-            ),
+                ProgrammeSpecificObjective(
+                    programmeObjectivePolicy = GreenInfrastructure,
+                    code = "GU",
+                    dimensionCodes = mapOf(Pair(ProgrammeObjectiveDimension.TypesOfIntervention, listOf("004")))
+                ),
+                ProgrammeSpecificObjective(
+                    programmeObjectivePolicy = CircularEconomy,
+                    code = "CE",
+                    dimensionCodes = mapOf(Pair(ProgrammeObjectiveDimension.EconomicActivity, listOf("002")))
+                ),
+                ProgrammeSpecificObjective(
+                    programmeObjectivePolicy = WaterManagement,
+                    code = "WM",
+                    dimensionCodes = mapOf(Pair(ProgrammeObjectiveDimension.FormOfSupport, listOf("005", "006")))
+                )
+            )
         )
-
     }
 
     @RelaxedMockK
@@ -114,7 +125,10 @@ class UpdatePriorityInteractorTest {
             description = "Programme priority data changed for '_old_' '[EN=_oldTitle_]':\n" +
                 "code changed from _old_ to PO-02,\n" +
                 "title changed from [EN=_oldTitle_] to [EN=PO-02 title],\n" +
-                "specificObjectives changed from [RenewableEnergy, GreenInfrastructure] to [WaterManagement, CircularEconomy, GreenInfrastructure]",
+                "specificObjectives changed from [RenewableEnergy, GreenInfrastructure] to [WaterManagement, CircularEconomy, GreenInfrastructure],\n" +
+                "programmeObjectivePolicyCodes changed from [GU, RE] to [GU, CE, WM],\n" +
+                "dimensions changed from [{EconomicActivity=[001, 002]}, {FormOfSupport=[003, 004]}] to " +
+                "[{TypesOfIntervention=[004]}, {EconomicActivity=[002]}, {FormOfSupport=[005, 006]}]"
         ))
     }
 

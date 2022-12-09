@@ -158,7 +158,7 @@ export class FileManagementStore {
   private isModifiable(): Observable<boolean> {
     return this.projectStore.projectStatus$.pipe(
         map((status: ProjectStatusDTO) => this.isInModifiableStatus(status))
-    )
+    );
   }
 
   private isInModifiableStatus(status: ProjectStatusDTO): boolean {
