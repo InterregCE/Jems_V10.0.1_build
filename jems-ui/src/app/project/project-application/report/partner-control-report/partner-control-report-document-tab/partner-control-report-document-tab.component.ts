@@ -21,13 +21,15 @@ import {TranslateService} from '@ngx-translate/core';
 import {
   PartnerControlReportStore
 } from '@project/project-application/report/partner-control-report/partner-control-report-store.service';
+import {FormService} from "@common/components/section/form/form.service";
 
 @UntilDestroy()
 @Component({
   selector: 'jems-partner-control-report-document-tab',
   templateUrl: './partner-control-report-document-tab.component.html',
   styleUrls: ['./partner-control-report-document-tab.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [FormService],
 })
 export class PartnerControlReportDocumentTabComponent {
   Alert = Alert;

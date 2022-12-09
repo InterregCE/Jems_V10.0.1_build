@@ -6,11 +6,13 @@ import {map} from 'rxjs/operators';
 import {
   PartnerControlReportOverviewAndFinalizeStore
 } from '@project/project-application/report/partner-control-report/partner-control-report-overview-and-finalize-tab/partner-control-report-overview-and-finalize.store';
+import {FormService} from '@common/components/section/form/form.service';
 
 @Component({
   selector: 'jems-partner-control-report-overview-and-finalize-tab',
   templateUrl: './partner-control-report-overview-and-finalize-tab.component.html',
-  styleUrls: ['./partner-control-report-overview-and-finalize-tab.component.scss']
+  styleUrls: ['./partner-control-report-overview-and-finalize-tab.component.scss'],
+  providers: [FormService],
 })
 export class PartnerControlReportOverviewAndFinalizeTabComponent {
 

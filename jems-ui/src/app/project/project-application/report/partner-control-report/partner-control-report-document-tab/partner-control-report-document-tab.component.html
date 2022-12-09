@@ -1,8 +1,8 @@
-<mat-card>
+<jems-form *ngIf="data$ | async as data">
     <h3>{{ 'project.application.partner.report.control.tab.document' | translate }}</h3>
     <p class="respect-line-break">{{ 'project.application.partner.report.control.tab.document.subtitle' | translate }}</p>
 
-    <div *ngIf="data$ | async as data" jemsNoWidthLimit id="report-control-files" class="overflow-auto">
+    <div jemsNoWidthLimit id="report-control-files" class="overflow-auto">
 
         <jems-category-tree class="mr-3" id="report-control-files-tree"
                 [categories]="data.categories"
@@ -42,4 +42,4 @@
 
     </div>
 
-</mat-card>
+</jems-form>

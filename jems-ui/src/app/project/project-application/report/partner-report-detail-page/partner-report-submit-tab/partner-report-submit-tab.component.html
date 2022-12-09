@@ -1,4 +1,4 @@
-<mat-card *ngIf="data$ | async as data" jemsFormLayout>
+<jems-form *ngIf="data$ | async as data">
     <h3>{{'project.application.partner.report.submit.title' | translate }}</h3>
     <div *ngIf="data.userCanEditReport && data.reportStatus === StatusEnum.Draft">
         <p>{{'project.application.partner.report.submit.description.one' | translate}} : {{'common.label.project.partner.role.shortcut.' + data.partnerReport?.identification?.partnerRole | adaptTranslationKeyByCallType | async | translate : {partner: data.partnerReport?.identification?.partnerNumber + ' ' + data.partnerSummary.abbreviation} }} - {{'project.application.partner.reports.title.number' | translate : {reportNumber: data.partnerReport?.reportNumber} }}</p>
@@ -41,4 +41,4 @@
             [preConditionCheckResult]="preConditionCheckResult" jemsNoWidthLimit>
     </jems-project-application-pre-condition-check-result>
 
-</mat-card>
+</jems-form>

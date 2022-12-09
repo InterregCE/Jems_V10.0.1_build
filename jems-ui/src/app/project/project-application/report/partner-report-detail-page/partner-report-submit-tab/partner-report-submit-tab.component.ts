@@ -16,12 +16,14 @@ import {
 } from '@cat/api';
 import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
+import {FormService} from '@common/components/section/form/form.service';
 
 @Component({
   selector: 'jems-partner-report-submit-tab',
   templateUrl: './partner-report-submit-tab.component.html',
   styleUrls: ['./partner-report-submit-tab.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [FormService],
 })
 export class PartnerReportSubmitTabComponent {
   PermissionsEnum = PermissionsEnum;
