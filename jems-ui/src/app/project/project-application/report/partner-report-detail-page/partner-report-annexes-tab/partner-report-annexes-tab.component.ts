@@ -19,6 +19,6 @@ export class PartnerReportAnnexesTabComponent implements OnInit{
   }
 
   ngOnInit(): void {
-    this.reportFileManagementStore.setSection({type: ReportFileCategoryTypeEnum.REPORT} as CategoryInfo);
+    this.reportFileManagementStore.setSectionInit({type: ReportFileCategoryTypeEnum.REPORT} as CategoryInfo);
   }
 }

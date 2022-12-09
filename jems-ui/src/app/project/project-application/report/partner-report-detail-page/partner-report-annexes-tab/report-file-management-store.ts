@@ -25,7 +25,6 @@ import {MatSort} from '@angular/material/sort';
 import {Tables} from '@common/utils/tables';
 import {CategoryInfo, CategoryNode} from '@project/common/components/category-tree/categoryModels';
 import {APIError} from '@common/models/APIError';
-import {I18nMessage} from '@common/models/I18nMessage';
 import {DownloadService} from '@common/services/download.service';
 import {
   PartnerReportDetailPageStore
@@ -46,7 +45,6 @@ export class ReportFileManagementStore {
   reportFileList$: Observable<PageProjectReportFileDTO>;
   fileCategories$: Observable<CategoryNode>;
   selectedCategory$ = new ReplaySubject<CategoryInfo | undefined>(1);
-  selectedCategoryPath$: Observable<I18nMessage[]>;
 
   reportStatus$: Observable<ProjectPartnerReportSummaryDTO.StatusEnum>;
 
@@ -56,8 +54,8 @@ export class ReportFileManagementStore {
   deleteSuccess$ = new Subject<boolean>();
   error$ = new Subject<APIError | null>();
 
-  newPageSize$ = new Subject<number>();
-  newPageIndex$ = new Subject<number>();
+  newPageSize$ = new BehaviorSubject<number>(Tables.DEFAULT_INITIAL_PAGE_SIZE);
+  newPageIndex$ = new BehaviorSubject<number>(0);
   newSort$ = new BehaviorSubject<Partial<MatSort>>(FileListTableConstants.DEFAULT_SORT);
   reportFilesChanged$ = new Subject<void>();
 
@@ -71,13 +69,17 @@ export class ReportFileManagementStore {
   ) {
     this.reportStatus$ = this.partnerReportDetailPageStore.reportStatus$;
     this.canUpload$ = this.canUpload();
-    this.selectedCategoryPath$ = this.selectedCategoryPath();
     this.reportFileList$ = this.reportFileList();
   }
 
-  setSection(section: CategoryInfo): void {
+  setSectionInit(section: CategoryInfo): void {
     this.selectedCategory$.next(section);
     this.fileCategories$ = this.fileCategories(section);
+  }
+
+  changeFilter(section: CategoryInfo): void {
+    this.selectedCategory$.next(section);
+    this.newPageIndex$.next(0);
   }
 
   uploadFile(file: File): Observable<ProjectReportFileMetadataDTO> {
@@ -155,8 +157,8 @@ export class ReportFileManagementStore {
       this.selectedCategory$,
       this.partnerReportDetailPageStore.partnerId$,
       this.partnerReportDetailPageStore.partnerReportId$,
-      this.newPageIndex$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_INDEX)),
-      this.newPageSize$.pipe(startWith(Tables.DEFAULT_INITIAL_PAGE_SIZE)),
+      this.newPageIndex$,
+      this.newPageSize$,
       this.newSort$.pipe(
         map(sort => sort?.direction ? sort : FileListTableConstants.DEFAULT_SORT),
         map(sort => `${sort.active},${sort.direction}`),
@@ -228,15 +230,6 @@ export class ReportFileManagementStore {
     );
 
     return this.fileManagementStore.findRootForSection(reportFiles, section) || {};
-  }
-
-  private selectedCategoryPath(): Observable<I18nMessage[]> {
-    return combineLatest([this.selectedCategory$, this.fileCategories$])
-      .pipe(
-        map(([selectedCategory, fileCategories]) =>
-          ([{i18nKey: 'file.tree.type.all'}, ...this.fileManagementStore.getPath(selectedCategory as any, fileCategories)])
-        )
-      );
   }
 
   getMaximumAllowedFileSize(): Observable<number> {

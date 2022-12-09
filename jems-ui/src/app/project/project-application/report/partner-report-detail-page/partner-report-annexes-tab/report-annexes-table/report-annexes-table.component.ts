@@ -12,7 +12,6 @@ import {CategoryInfo} from '@project/common/components/category-tree/categoryMod
 import {map, switchMap, take} from 'rxjs/operators';
 import {UntilDestroy, untilDestroyed} from '@ngneat/until-destroy';
 import {Alert} from '@common/components/forms/alert';
-import {Tables} from '@common/utils/tables';
 import {
   ReportFileManagementStore
 } from '@project/project-application/report/partner-report-detail-page/partner-report-annexes-tab/report-file-management-store';
@@ -35,7 +34,6 @@ import PermissionsEnum = UserRoleDTO.PermissionsEnum;
 export class ReportAnnexesTableComponent {
 
   Alert = Alert;
-  Tables = Tables;
   PermissionsEnum = PermissionsEnum;
 
   acceptedFilesTypes = AcceptedFileTypesConstants.acceptedFilesTypes;

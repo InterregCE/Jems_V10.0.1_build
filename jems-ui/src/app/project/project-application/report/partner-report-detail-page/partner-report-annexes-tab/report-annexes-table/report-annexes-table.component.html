@@ -13,8 +13,8 @@
     <jems-paginator (pageIndexChanged)="fileManagementStore.newPageIndex$.next($event)"
                     (pageSizeChanged)="fileManagementStore.newPageSize$.next($event)"
                     *ngIf="data.files.content?.length"
-                    [currentPageIndex]="Tables.DEFAULT_INITIAL_PAGE_INDEX"
-                    [currentPageSize]="Tables.DEFAULT_INITIAL_PAGE_SIZE"
+                    [currentPageIndex]="fileManagementStore.newPageIndex$ | async"
+                    [currentPageSize]="fileManagementStore.newPageSize$ | async"
                     [length]="data.files.totalElements">
     </jems-paginator>
 

@@ -3,7 +3,7 @@
     <div jemsNoWidthLimit id="report-files" class="overflow-auto">
         <jems-category-tree
                 [categories]="reportFileManagementStore.fileCategories$ | async"
-                (categorySelected)="reportFileManagementStore.selectedCategory$.next($event)"
+                (categorySelected)="reportFileManagementStore.changeFilter($event)"
                 [selectedCategory]="reportFileManagementStore.selectedCategory$ | async"
                 class="mr-3" id="report-files-tree">
         </jems-category-tree>
