@@ -22,7 +22,7 @@ import io.cloudflight.jems.server.project.service.partner.model.BaseBudgetEntry
 import io.cloudflight.jems.server.project.service.partner.model.BudgetGeneralCostEntry
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
-import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PartnerReportBudget
 import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PartnerReportInvestment
 import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PartnerReportLumpSum
@@ -35,12 +35,12 @@ import io.cloudflight.jems.server.project.service.report.model.partner.expenditu
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ReportExpenditureCoFinancingColumn
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.costCategory.ReportExpenditureCostCategory
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportPeriod
-import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectReportContributionPersistence
-import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureCoFinancingPersistence
-import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureCostCategoryPersistence
-import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportInvestmentPersistence
-import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportLumpSumPersistence
-import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportUnitCostPersistence
+import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectPartnerReportContributionPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCoFinancingPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCostCategoryPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportInvestmentPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportLumpSumPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportUnitCostPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.applyPercentage
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.generateCoFinCalculationInputData
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.getCurrentFrom
@@ -53,19 +53,19 @@ import java.util.UUID
 
 @Service
 class CreateProjectPartnerReportBudget(
-    private val reportPersistence: ProjectReportPersistence,
-    private val reportContributionPersistence: ProjectReportContributionPersistence,
+    private val reportPersistence: ProjectPartnerReportPersistence,
+    private val reportContributionPersistence: ProjectPartnerReportContributionPersistence,
     private val lumpSumPersistence: ProjectLumpSumPersistence,
     private val partnerBudgetCostsPersistence: ProjectPartnerBudgetCostsPersistence,
     private val getPartnerBudgetPerPeriod: GetPartnerBudgetPerPeriodInteractor,
     private val projectPartnerBudgetOptionsPersistence: ProjectPartnerBudgetOptionsPersistence,
     private val getProjectBudget: GetProjectBudget,
-    private val reportExpenditureCostCategoryPersistence: ProjectReportExpenditureCostCategoryPersistence,
-    private val reportExpenditureCoFinancingPersistence: ProjectReportExpenditureCoFinancingPersistence,
+    private val reportExpenditureCostCategoryPersistence: ProjectPartnerReportExpenditureCostCategoryPersistence,
+    private val reportExpenditureCoFinancingPersistence: ProjectPartnerReportExpenditureCoFinancingPersistence,
     private val paymentPersistence: PaymentRegularPersistence,
-    private val reportLumpSumPersistence: ProjectReportLumpSumPersistence,
-    private val reportUnitCostPersistence: ProjectReportUnitCostPersistence,
-    private val reportInvestmentPersistence: ProjectReportInvestmentPersistence,
+    private val reportLumpSumPersistence: ProjectPartnerReportLumpSumPersistence,
+    private val reportUnitCostPersistence: ProjectPartnerReportUnitCostPersistence,
+    private val reportInvestmentPersistence: ProjectPartnerReportInvestmentPersistence,
 ) {
 
     @Transactional

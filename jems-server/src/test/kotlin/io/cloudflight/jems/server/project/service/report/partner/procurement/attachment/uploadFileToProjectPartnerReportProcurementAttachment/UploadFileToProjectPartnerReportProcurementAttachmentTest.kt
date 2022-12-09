@@ -5,14 +5,14 @@ import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
-import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
-import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
+import io.cloudflight.jems.server.project.service.report.partner.file.ProjectPartnerReportFilePersistence
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileCreate
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectPartnerReportProcurement
-import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectReportProcurementPersistence
-import io.cloudflight.jems.server.project.service.report.partner.procurement.attachment.ProjectReportProcurementAttachmentPersistence
+import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectPartnerReportProcurementPersistence
+import io.cloudflight.jems.server.project.service.report.partner.procurement.attachment.ProjectPartnerReportProcurementAttachmentPersistence
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -37,17 +37,17 @@ internal class UploadFileToProjectPartnerReportProcurementAttachmentTest : UnitT
     }
 
     @MockK
-    lateinit var reportPersistence: ProjectReportPersistence
+    lateinit var reportPersistence: ProjectPartnerReportPersistence
     @MockK
-    lateinit var reportProcurementPersistence: ProjectReportProcurementPersistence
+    lateinit var reportProcurementPersistence: ProjectPartnerReportProcurementPersistence
     @MockK
     lateinit var partnerPersistence: PartnerPersistence
     @MockK
-    lateinit var reportFilePersistence: ProjectReportFilePersistence
+    lateinit var reportFilePersistence: ProjectPartnerReportFilePersistence
     @MockK
     lateinit var filePersistence: JemsFilePersistence
     @MockK
-    lateinit var reportProcurementAttachmentPersistence: ProjectReportProcurementAttachmentPersistence
+    lateinit var reportProcurementAttachmentPersistence: ProjectPartnerReportProcurementAttachmentPersistence
     @MockK
     lateinit var securityService: SecurityService
 

@@ -12,8 +12,8 @@ import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.cofinancing.ProjectPartnerCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerAddressType
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDetail
-import io.cloudflight.jems.server.project.service.report.ProjectReportCreatePersistence
-import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportCreatePersistence
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportSummary
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PartnerReportBaseData
@@ -24,7 +24,7 @@ import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.
 import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.create.CreateProjectPartnerReportWorkPackageActivity
 import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.create.CreateProjectPartnerReportWorkPackageActivityDeliverable
 import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.create.CreateProjectPartnerReportWorkPackageOutput
-import io.cloudflight.jems.server.project.service.report.partnerReportCreated
+import io.cloudflight.jems.server.project.service.report.partner.partnerReportCreated
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import io.cloudflight.jems.server.project.service.workpackage.model.ProjectWorkPackageFull
 import org.springframework.context.ApplicationEventPublisher
@@ -39,8 +39,8 @@ class CreateProjectPartnerReport(
     private val partnerCoFinancingPersistence: ProjectPartnerCoFinancingPersistence,
     private val projectWorkPackagePersistence: WorkPackagePersistence,
     private val projectDescriptionPersistence: ProjectDescriptionPersistence,
-    private val reportPersistence: ProjectReportPersistence,
-    private val reportCreatePersistence: ProjectReportCreatePersistence,
+    private val reportPersistence: ProjectPartnerReportPersistence,
+    private val reportCreatePersistence: ProjectPartnerReportCreatePersistence,
     private val currencyPersistence: CurrencyPersistence,
     private val createProjectPartnerReportBudget: CreateProjectPartnerReportBudget,
     private val auditPublisher: ApplicationEventPublisher,

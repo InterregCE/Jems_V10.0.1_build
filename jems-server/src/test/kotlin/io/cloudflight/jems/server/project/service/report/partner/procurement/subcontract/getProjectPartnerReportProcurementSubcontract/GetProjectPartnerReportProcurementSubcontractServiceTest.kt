@@ -1,12 +1,12 @@
 package io.cloudflight.jems.server.project.service.report.partner.procurement.subcontract.getProjectPartnerReportProcurementSubcontract
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectPartnerReportProcurement
 import io.cloudflight.jems.server.project.service.report.model.partner.procurement.subcontract.ProjectPartnerReportProcurementSubcontract
-import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectReportProcurementPersistence
-import io.cloudflight.jems.server.project.service.report.partner.procurement.subcontract.ProjectReportProcurementSubcontractPersistence
+import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectPartnerReportProcurementPersistence
+import io.cloudflight.jems.server.project.service.report.partner.procurement.subcontract.ProjectPartnerReportProcurementSubcontractPersistence
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -52,13 +52,13 @@ internal class GetProjectPartnerReportProcurementSubcontractServiceTest : UnitTe
     }
 
     @MockK
-    lateinit var reportPersistence: ProjectReportPersistence
+    lateinit var reportPersistence: ProjectPartnerReportPersistence
 
     @MockK
-    lateinit var reportProcurementPersistence: ProjectReportProcurementPersistence
+    lateinit var reportProcurementPersistence: ProjectPartnerReportProcurementPersistence
 
     @MockK
-    lateinit var reportProcurementSubcontractPersistence: ProjectReportProcurementSubcontractPersistence
+    lateinit var reportProcurementSubcontractPersistence: ProjectPartnerReportProcurementSubcontractPersistence
 
     @InjectMockKs
     lateinit var service: GetProjectPartnerReportProcurementSubcontractService

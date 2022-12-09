@@ -1,10 +1,10 @@
 package io.cloudflight.jems.server.project.service.report.partner.procurement.deleteProjectPartnerReportProcurement
 
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReportStatusAndVersion
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
-import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectReportProcurementPersistence
+import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectPartnerReportProcurementPersistence
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -22,10 +22,10 @@ internal class DeleteProjectPartnerReportProcurementTest : UnitTest() {
     }
 
     @MockK
-    lateinit var reportPersistence: ProjectReportPersistence
+    lateinit var reportPersistence: ProjectPartnerReportPersistence
 
     @MockK
-    lateinit var reportProcurementPersistence: ProjectReportProcurementPersistence
+    lateinit var reportProcurementPersistence: ProjectPartnerReportProcurementPersistence
 
     @InjectMockKs
     lateinit var interactor: DeleteProjectPartnerReportProcurement

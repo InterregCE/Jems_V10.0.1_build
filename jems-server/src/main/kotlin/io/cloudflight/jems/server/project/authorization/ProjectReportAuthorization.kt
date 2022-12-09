@@ -11,7 +11,7 @@ import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.model.ProjectApplicantAndStatus
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.UserPartnerCollaboratorPersistence
-import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import org.springframework.security.access.prepost.PreAuthorize
 import org.springframework.stereotype.Component
 import java.util.Optional
@@ -49,7 +49,7 @@ annotation class CanEditPartnerControlReportFile
 @Component
 class ProjectReportAuthorization(
     override val securityService: SecurityService,
-    private val reportPersistence: ProjectReportPersistence,
+    private val reportPersistence: ProjectPartnerReportPersistence,
     private val projectPersistence: ProjectPersistence,
     private val partnerPersistence: PartnerPersistence,
     private val partnerCollaboratorPersistence: UserPartnerCollaboratorPersistence,

@@ -3,21 +3,21 @@ package io.cloudflight.jems.server.project.service.report.partner.procurement.be
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.authorization.CanEditPartnerReport
-import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.procurement.beneficial.ProjectPartnerReportProcurementBeneficialChange
 import io.cloudflight.jems.server.project.service.report.model.partner.procurement.beneficial.ProjectPartnerReportProcurementBeneficialOwner
-import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectReportProcurementPersistence
+import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectPartnerReportProcurementPersistence
 import io.cloudflight.jems.server.project.service.report.partner.procurement.beneficial.MAX_AMOUNT_OF_BENEFICIAL
-import io.cloudflight.jems.server.project.service.report.partner.procurement.beneficial.ProjectReportProcurementBeneficialPersistence
+import io.cloudflight.jems.server.project.service.report.partner.procurement.beneficial.ProjectPartnerReportProcurementBeneficialPersistence
 import io.cloudflight.jems.server.project.service.report.partner.procurement.beneficial.fillThisReportFlag
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 class UpdateProjectPartnerReportProcurementBeneficial(
-    private val reportPersistence: ProjectReportPersistence,
-    private val reportProcurementPersistence: ProjectReportProcurementPersistence,
-    private val reportProcurementBeneficialPersistence: ProjectReportProcurementBeneficialPersistence,
+    private val reportPersistence: ProjectPartnerReportPersistence,
+    private val reportProcurementPersistence: ProjectPartnerReportProcurementPersistence,
+    private val reportProcurementBeneficialPersistence: ProjectPartnerReportProcurementBeneficialPersistence,
     private val generalValidator: GeneralValidatorService,
 ) : UpdateProjectPartnerReportProcurementBeneficialInteractor {
 

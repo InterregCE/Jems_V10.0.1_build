@@ -3,8 +3,8 @@ package io.cloudflight.jems.server.plugin.services.report
 import io.cloudflight.jems.plugin.contract.models.report.partner.procurement.ProjectPartnerReportProcurementData
 import io.cloudflight.jems.plugin.contract.models.report.partner.workPlan.ProjectPartnerReportWorkPackageData
 import io.cloudflight.jems.plugin.contract.services.report.ReportPartnerDataProvider
-import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
-import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectReportContributionPersistence
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
+import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectPartnerReportContributionPersistence
 import io.cloudflight.jems.server.project.service.report.partner.contribution.toModelData
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.getProjectPartnerReportExpenditure.GetProjectPartnerReportExpenditureCalculator
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.GetReportExpenditureCoFinancingBreakdownCalculator
@@ -14,12 +14,12 @@ import io.cloudflight.jems.server.project.service.report.partner.financialOvervi
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureUnitCostBreakdown.GetReportExpenditureUnitCostBreakdownCalculator
 import io.cloudflight.jems.server.project.service.report.partner.identification.getProjectPartnerReportIdentification.GetProjectPartnerReportIdentificationService
 import io.cloudflight.jems.server.project.service.report.partner.procurement.MAX_AMOUNT_OF_PROCUREMENTS
-import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectReportProcurementPersistence
+import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectPartnerReportProcurementPersistence
 import io.cloudflight.jems.server.project.service.report.partner.procurement.attachment.getProjectPartnerReportProcurementAttachment.GetProjectPartnerReportProcurementAttachmentService
 import io.cloudflight.jems.server.project.service.report.partner.procurement.beneficial.getProjectPartnerReportProcurementBeneficial.GetProjectPartnerReportProcurementBeneficialService
 import io.cloudflight.jems.server.project.service.report.partner.procurement.fillThisReportFlag
 import io.cloudflight.jems.server.project.service.report.partner.procurement.subcontract.getProjectPartnerReportProcurementSubcontract.GetProjectPartnerReportProcurementSubcontractService
-import io.cloudflight.jems.server.project.service.report.partner.workPlan.ProjectReportWorkPlanPersistence
+import io.cloudflight.jems.server.project.service.report.partner.workPlan.ProjectPartnerReportWorkPlanPersistence
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
@@ -27,20 +27,20 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class ReportPartnerDataProviderImpl(
-    private val reportPersistence: ProjectReportPersistence,
+    private val reportPersistence: ProjectPartnerReportPersistence,
     private val serviceIdentification: GetProjectPartnerReportIdentificationService,
-    private val reportContributionPersistence: ProjectReportContributionPersistence,
+    private val reportContributionPersistence: ProjectPartnerReportContributionPersistence,
     private val calculatorExpenditure: GetProjectPartnerReportExpenditureCalculator,
     private val calculatorCoFinancing: GetReportExpenditureCoFinancingBreakdownCalculator,
     private val calculatorCostCategory: GetReportExpenditureCostCategoryCalculatorService,
     private val calculatorInvestment: GetReportExpenditureInvestmentsBreakdownCalculator,
     private val calculatorLumpSum: GetReportExpenditureLumpSumBreakdownCalculator,
     private val calculatorUnitCost: GetReportExpenditureUnitCostBreakdownCalculator,
-    private val reportProcurementPersistence: ProjectReportProcurementPersistence,
+    private val reportProcurementPersistence: ProjectPartnerReportProcurementPersistence,
     private val serviceProcurementAttachment: GetProjectPartnerReportProcurementAttachmentService,
     private val serviceProcurementBeneficial: GetProjectPartnerReportProcurementBeneficialService,
     private val serviceProcurementSubcontract: GetProjectPartnerReportProcurementSubcontractService,
-    private val reportWorkPlanPersistence: ProjectReportWorkPlanPersistence,
+    private val reportWorkPlanPersistence: ProjectPartnerReportWorkPlanPersistence,
 ) : ReportPartnerDataProvider {
 
     @Transactional(readOnly = true)

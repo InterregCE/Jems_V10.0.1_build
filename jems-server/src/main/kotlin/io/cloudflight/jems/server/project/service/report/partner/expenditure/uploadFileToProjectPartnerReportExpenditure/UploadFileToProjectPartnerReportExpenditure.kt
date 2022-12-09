@@ -6,17 +6,17 @@ import io.cloudflight.jems.server.project.authorization.CanEditPartnerReport
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.file.uploadProjectFile.isFileTypeInvalid
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
-import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
+import io.cloudflight.jems.server.project.service.report.partner.file.ProjectPartnerReportFilePersistence
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
-import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectReportExpenditurePersistence
+import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectPartnerReportExpenditurePersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 class UploadFileToProjectPartnerReportExpenditure(
-    private val reportFilePersistence: ProjectReportFilePersistence,
-    private val reportExpenditurePersistence: ProjectReportExpenditurePersistence,
+    private val reportFilePersistence: ProjectPartnerReportFilePersistence,
+    private val reportExpenditurePersistence: ProjectPartnerReportExpenditurePersistence,
     private val partnerPersistence: PartnerPersistence,
     private val securityService: SecurityService,
 ): UploadFileToProjectPartnerReportExpenditureInteractor {

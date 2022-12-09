@@ -3,10 +3,10 @@ package io.cloudflight.jems.server.project.service.report.partner.procurement.ge
 import io.cloudflight.jems.server.call.service.model.IdNamePair
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanViewPartnerReport
-import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectPartnerReportProcurement
 import io.cloudflight.jems.server.project.service.report.partner.procurement.MAX_AMOUNT_OF_PROCUREMENTS
-import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectReportProcurementPersistence
+import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectPartnerReportProcurementPersistence
 import io.cloudflight.jems.server.project.service.report.partner.procurement.fillThisReportFlag
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
@@ -17,8 +17,8 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class GetProjectPartnerReportProcurement(
-    private val reportPersistence: ProjectReportPersistence,
-    private val reportProcurementPersistence: ProjectReportProcurementPersistence,
+    private val reportPersistence: ProjectPartnerReportPersistence,
+    private val reportProcurementPersistence: ProjectPartnerReportProcurementPersistence,
 ) : GetProjectPartnerReportProcurementInteractor {
 
     companion object {

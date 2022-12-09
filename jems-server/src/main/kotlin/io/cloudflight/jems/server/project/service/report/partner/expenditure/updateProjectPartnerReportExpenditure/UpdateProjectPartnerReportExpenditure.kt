@@ -3,27 +3,27 @@ package io.cloudflight.jems.server.project.service.report.partner.expenditure.up
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.common.validator.GeneralValidatorService
 import io.cloudflight.jems.server.project.authorization.CanEditPartnerReport
-import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportLumpSum
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportUnitCost
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
-import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectReportExpenditurePersistence
+import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectPartnerReportExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.clearConversions
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.fillInLumpSum
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.fillInUnitCost
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.filterInvalidCurrencies
-import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectReportProcurementPersistence
+import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectPartnerReportProcurementPersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import java.math.BigDecimal
 
 @Service
 class UpdateProjectPartnerReportExpenditure(
-    private val reportPersistence: ProjectReportPersistence,
-    private val reportExpenditurePersistence: ProjectReportExpenditurePersistence,
-    private val reportProcurementPersistence: ProjectReportProcurementPersistence,
+    private val reportPersistence: ProjectPartnerReportPersistence,
+    private val reportExpenditurePersistence: ProjectPartnerReportExpenditurePersistence,
+    private val reportProcurementPersistence: ProjectPartnerReportProcurementPersistence,
     private val generalValidator: GeneralValidatorService
 ) : UpdateProjectPartnerReportExpenditureInteractor {
 

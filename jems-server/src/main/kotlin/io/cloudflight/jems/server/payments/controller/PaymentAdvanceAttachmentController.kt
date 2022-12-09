@@ -8,8 +8,8 @@ import io.cloudflight.jems.server.payments.service.advance.attachment.downloadPa
 import io.cloudflight.jems.server.payments.service.advance.attachment.getPaymentAdvanceAttachment.GetPaymentAdvAttachmentInteractor
 import io.cloudflight.jems.server.payments.service.advance.attachment.setDescriptionToPaymentAdvAttachment.SetDescriptionToPaymentAdvAttachmentInteractor
 import io.cloudflight.jems.server.payments.service.advance.attachment.uploadPaymentAdvanceAttachment.UploadPaymentAdvAttachmentInteractor
-import io.cloudflight.jems.server.project.controller.report.toDto
-import io.cloudflight.jems.server.project.controller.report.toProjectFile
+import io.cloudflight.jems.server.project.controller.report.partner.toDto
+import io.cloudflight.jems.server.project.controller.report.partner.toProjectFile
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable

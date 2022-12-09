@@ -7,24 +7,24 @@ import io.cloudflight.jems.server.project.authorization.CanEditPartnerReport
 import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.file.uploadProjectFile.isFileTypeInvalid
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
-import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
-import io.cloudflight.jems.server.project.service.report.ProjectReportFilePersistence
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
+import io.cloudflight.jems.server.project.service.report.partner.file.ProjectPartnerReportFilePersistence
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
-import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectReportProcurementPersistence
+import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectPartnerReportProcurementPersistence
 import io.cloudflight.jems.server.project.service.report.partner.procurement.attachment.MAX_AMOUNT_OF_ATTACHMENT
-import io.cloudflight.jems.server.project.service.report.partner.procurement.attachment.ProjectReportProcurementAttachmentPersistence
+import io.cloudflight.jems.server.project.service.report.partner.procurement.attachment.ProjectPartnerReportProcurementAttachmentPersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 class UploadFileToProjectPartnerReportProcurementAttachment(
-    private val reportPersistence: ProjectReportPersistence,
-    private val reportProcurementPersistence: ProjectReportProcurementPersistence,
+    private val reportPersistence: ProjectPartnerReportPersistence,
+    private val reportProcurementPersistence: ProjectPartnerReportProcurementPersistence,
     private val partnerPersistence: PartnerPersistence,
-    private val reportFilePersistence: ProjectReportFilePersistence,
+    private val reportFilePersistence: ProjectPartnerReportFilePersistence,
     private val filePersistence: JemsFilePersistence,
-    private val reportProcurementAttachmentPersistence: ProjectReportProcurementAttachmentPersistence,
+    private val reportProcurementAttachmentPersistence: ProjectPartnerReportProcurementAttachmentPersistence,
     private val securityService: SecurityService,
 ) : UploadFileToProjectPartnerReportProcurementAttachmentInteractor {
 

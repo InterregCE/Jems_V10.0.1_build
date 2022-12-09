@@ -1,18 +1,18 @@
 package io.cloudflight.jems.server.project.service.report.partner.procurement.attachment.getProjectPartnerReportProcurementAttachment
 
-import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.procurement.ProjectReportProcurementFile
-import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectReportProcurementPersistence
-import io.cloudflight.jems.server.project.service.report.partner.procurement.attachment.ProjectReportProcurementAttachmentPersistence
+import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectPartnerReportProcurementPersistence
+import io.cloudflight.jems.server.project.service.report.partner.procurement.attachment.ProjectPartnerReportProcurementAttachmentPersistence
 import io.cloudflight.jems.server.project.service.report.partner.procurement.attachment.fillThisReportFlag
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 class GetProjectPartnerReportProcurementAttachmentService(
-    private val reportPersistence: ProjectReportPersistence,
-    private val reportProcurementPersistence: ProjectReportProcurementPersistence,
-    private val reportProcurementAttachmentPersistence: ProjectReportProcurementAttachmentPersistence,
+    private val reportPersistence: ProjectPartnerReportPersistence,
+    private val reportProcurementPersistence: ProjectPartnerReportProcurementPersistence,
+    private val reportProcurementAttachmentPersistence: ProjectPartnerReportProcurementAttachmentPersistence,
 ) {
 
     @Transactional(readOnly = true)

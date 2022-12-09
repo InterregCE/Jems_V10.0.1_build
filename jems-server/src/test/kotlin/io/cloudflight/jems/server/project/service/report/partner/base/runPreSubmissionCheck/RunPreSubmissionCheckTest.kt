@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.project.service.report.partner.base.runPreSub
 
 import io.cloudflight.jems.plugin.contract.pre_condition_check.models.PreConditionCheckResult
 import io.cloudflight.jems.server.UnitTest
-import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -17,7 +17,7 @@ import org.junit.jupiter.api.assertThrows
 internal class RunPreSubmissionCheckTest : UnitTest() {
 
     @MockK
-    private lateinit var reportPersistence: ProjectReportPersistence
+    private lateinit var reportPersistence: ProjectPartnerReportPersistence
     @MockK
     private lateinit var service: RunPreSubmissionCheckService
 

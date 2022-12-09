@@ -9,7 +9,7 @@ import io.cloudflight.jems.server.project.service.report.model.partner.contribut
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.update.UpdateProjectPartnerReportContributionExisting
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.update.UpdateProjectPartnerReportContributionWrapper
 import io.cloudflight.jems.server.project.service.report.model.partner.contribution.withoutCalculations.ProjectPartnerReportEntityContribution
-import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectReportContributionPersistence
+import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectPartnerReportContributionPersistence
 import io.cloudflight.jems.server.project.service.report.partner.contribution.toModelData
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -19,7 +19,7 @@ import kotlin.collections.HashSet
 
 @Service
 class UpdateProjectPartnerReportContribution(
-    private val reportContributionPersistence: ProjectReportContributionPersistence,
+    private val reportContributionPersistence: ProjectPartnerReportContributionPersistence,
     private val generalValidator: GeneralValidatorService,
 ) : UpdateProjectPartnerReportContributionInteractor {
 

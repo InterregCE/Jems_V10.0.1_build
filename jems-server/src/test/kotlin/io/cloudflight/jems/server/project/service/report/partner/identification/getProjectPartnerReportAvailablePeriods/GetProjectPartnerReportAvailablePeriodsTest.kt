@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.project.service.report.partner.identification
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.ProjectPartnerReportPeriod
-import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectReportIdentificationPersistence
+import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectPartnerReportIdentificationPersistence
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -17,7 +17,7 @@ internal class GetProjectPartnerReportAvailablePeriodsTest : UnitTest() {
     }
 
     @MockK
-    lateinit var reportIdentificationPersistence: ProjectReportIdentificationPersistence
+    lateinit var reportIdentificationPersistence: ProjectPartnerReportIdentificationPersistence
 
     @InjectMockKs
     lateinit var interactor: GetProjectPartnerReportAvailablePeriods

@@ -2,7 +2,7 @@ package io.cloudflight.jems.server.project.service.report.partner.workPlan.getPr
 
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.ProjectPartnerReportWorkPackage
-import io.cloudflight.jems.server.project.service.report.partner.workPlan.ProjectReportWorkPlanPersistence
+import io.cloudflight.jems.server.project.service.report.partner.workPlan.ProjectPartnerReportWorkPlanPersistence
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -17,7 +17,7 @@ internal class GetProjectPartnerReportWorkPlanTest : UnitTest() {
     }
 
     @MockK
-    lateinit var reportWpPersistence: ProjectReportWorkPlanPersistence
+    lateinit var reportWpPersistence: ProjectPartnerReportWorkPlanPersistence
 
     @InjectMockKs
     lateinit var getReportWorkPlan: GetProjectPartnerReportWorkPlan

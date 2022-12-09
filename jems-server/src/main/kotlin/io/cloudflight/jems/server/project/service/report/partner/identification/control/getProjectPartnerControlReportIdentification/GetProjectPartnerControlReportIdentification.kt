@@ -6,10 +6,10 @@ import io.cloudflight.jems.server.project.authorization.CanViewPartnerControlRep
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.contracting.monitoring.getProjectContractingMonitoring.GetContractingMonitoringService
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
-import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ProjectPartnerControlReport
-import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectReportIdentificationPersistence
+import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectPartnerReportIdentificationPersistence
 import io.cloudflight.jems.server.project.service.report.partner.identification.control.toModelObject
 import io.cloudflight.jems.server.project.service.report.partner.identification.getProjectPartnerReportIdentification.GetProjectPartnerReportIdentificationService.Companion.emptyIdentification
 import org.springframework.stereotype.Service
@@ -17,8 +17,8 @@ import org.springframework.transaction.annotation.Transactional
 
 @Service
 class GetProjectPartnerControlReportIdentification(
-    private val reportPersistence: ProjectReportPersistence,
-    private val reportIdentificationPersistence: ProjectReportIdentificationPersistence,
+    private val reportPersistence: ProjectPartnerReportPersistence,
+    private val reportIdentificationPersistence: ProjectPartnerReportIdentificationPersistence,
     private val partnerPersistence: PartnerPersistence,
     private val projectPersistence: ProjectPersistence,
     private val programmeDataRepository: ProgrammeDataRepository,

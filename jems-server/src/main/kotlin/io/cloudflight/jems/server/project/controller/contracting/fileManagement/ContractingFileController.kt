@@ -2,8 +2,8 @@ package io.cloudflight.jems.server.project.controller.contracting.fileManagement
 
 import io.cloudflight.jems.api.project.contracting.ContractingFileApi
 import io.cloudflight.jems.api.project.dto.contracting.file.ProjectContractingFileSearchRequestDTO
-import io.cloudflight.jems.server.project.controller.report.toDto
-import io.cloudflight.jems.server.project.controller.report.toProjectFile
+import io.cloudflight.jems.server.project.controller.report.partner.toDto
+import io.cloudflight.jems.server.project.controller.report.partner.toProjectFile
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.deleteContractFile.DeleteContractFileInteractor
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.deleteInternalFile.DeleteInternalFileInteractor
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.deletePartnerFile.DeletePartnerFileInteractor

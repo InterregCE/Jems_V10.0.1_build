@@ -10,7 +10,7 @@ import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInsta
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceStatus
 import io.cloudflight.jems.server.project.service.checklist.projectControlReportChecklistStatusChanged
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
-import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.user.service.authorization.UserAuthorization
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
@@ -23,7 +23,7 @@ class UpdateControlChecklistInstance(
     private val checklistInstanceValidator: ChecklistInstanceValidator,
     private val userAuthorization: UserAuthorization,
     private val partnerPersistence: PartnerPersistence,
-    private val reportPersistence: ProjectReportPersistence
+    private val reportPersistence: ProjectPartnerReportPersistence
 ) : UpdateControlChecklistInstanceInteractor {
 
     @CanEditPartnerControlReport

@@ -1,20 +1,20 @@
 package io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown
 
-import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.coFinancing.ExpenditureCoFinancingBreakdown
-import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectReportContributionPersistence
+import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectPartnerReportContributionPersistence
 import io.cloudflight.jems.server.project.service.report.partner.contribution.extractOverview
-import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureCoFinancingPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown.GetReportExpenditureCostCategoryCalculatorService
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 class GetReportExpenditureCoFinancingBreakdownCalculator(
-    private val reportPersistence: ProjectReportPersistence,
-    private val reportExpenditureCoFinancingPersistence: ProjectReportExpenditureCoFinancingPersistence,
+    private val reportPersistence: ProjectPartnerReportPersistence,
+    private val reportExpenditureCoFinancingPersistence: ProjectPartnerReportExpenditureCoFinancingPersistence,
     private val reportExpenditureCostCategoryCalculatorService: GetReportExpenditureCostCategoryCalculatorService,
-    private val reportContributionPersistence: ProjectReportContributionPersistence,
+    private val reportContributionPersistence: ProjectPartnerReportContributionPersistence,
 ) {
 
     @Transactional(readOnly = true)

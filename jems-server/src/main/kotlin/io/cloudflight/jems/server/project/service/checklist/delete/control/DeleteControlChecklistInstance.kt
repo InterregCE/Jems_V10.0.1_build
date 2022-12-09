@@ -7,7 +7,7 @@ import io.cloudflight.jems.server.project.service.checklist.ChecklistInstancePer
 import io.cloudflight.jems.server.project.service.checklist.model.ChecklistInstanceStatus
 import io.cloudflight.jems.server.project.service.checklist.projectControlReportChecklistDeleted
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
-import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -17,7 +17,7 @@ class DeleteControlChecklistInstance(
     private val persistence: ChecklistInstancePersistence,
     private val auditPublisher: ApplicationEventPublisher,
     private val partnerPersistence: PartnerPersistence,
-    private val reportPersistence: ProjectReportPersistence
+    private val reportPersistence: ProjectPartnerReportPersistence,
 ) : DeleteControlChecklistInstanceInteractor {
 
     @CanEditPartnerControlReport

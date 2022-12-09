@@ -30,8 +30,8 @@ import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerDe
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVatRecovery
-import io.cloudflight.jems.server.project.service.report.ProjectReportCreatePersistence
-import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportCreatePersistence
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
 import io.cloudflight.jems.server.project.service.report.model.partner.base.create.PartnerReportIdentificationCreate
 import io.cloudflight.jems.server.project.service.report.model.partner.base.create.ProjectPartnerReportCreate
@@ -44,10 +44,6 @@ import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.
 import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.create.CreateProjectPartnerReportWorkPackageActivity
 import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.create.CreateProjectPartnerReportWorkPackageActivityDeliverable
 import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.create.CreateProjectPartnerReportWorkPackageOutput
-import io.cloudflight.jems.server.project.service.report.partner.base.createProjectPartnerReport.CreateProjectPartnerReport
-import io.cloudflight.jems.server.project.service.report.partner.base.createProjectPartnerReport.CreateProjectPartnerReportBudget
-import io.cloudflight.jems.server.project.service.report.partner.base.createProjectPartnerReport.MaxAmountOfReportsReachedException
-import io.cloudflight.jems.server.project.service.report.partner.base.createProjectPartnerReport.ReportCanBeCreatedOnlyWhenContractedException
 import io.cloudflight.jems.server.project.service.workpackage.WorkPackagePersistence
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivity
 import io.cloudflight.jems.server.project.service.workpackage.activity.model.WorkPackageActivityDeliverable
@@ -307,9 +303,9 @@ internal class CreateProjectPartnerReportTest : UnitTest() {
     @MockK
     lateinit var projectDescriptionPersistence: ProjectDescriptionPersistence
     @MockK
-    lateinit var reportPersistence: ProjectReportPersistence
+    lateinit var reportPersistence: ProjectPartnerReportPersistence
     @MockK
-    lateinit var reportCreatePersistence: ProjectReportCreatePersistence
+    lateinit var reportCreatePersistence: ProjectPartnerReportCreatePersistence
     @MockK
     lateinit var currencyPersistence: CurrencyPersistence
     @MockK

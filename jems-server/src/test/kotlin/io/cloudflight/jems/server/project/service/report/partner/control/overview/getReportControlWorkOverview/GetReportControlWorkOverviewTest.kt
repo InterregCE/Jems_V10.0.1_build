@@ -6,9 +6,9 @@ import io.cloudflight.jems.server.project.service.report.model.partner.control.o
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ReportBudgetCategory
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerification
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.costCategory.ReportExpenditureCostCategory
-import io.cloudflight.jems.server.project.service.report.partner.expenditure.control.ProjectReportControlExpenditurePersistence
-import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureCoFinancingPersistence
-import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportExpenditureCostCategoryPersistence
+import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.ProjectPartnerReportExpenditureVerificationPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCoFinancingPersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCostCategoryPersistence
 import io.mockk.clearMocks
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
@@ -58,11 +58,11 @@ internal class GetReportControlWorkOverviewTest : UnitTest() {
     }
 
     @MockK
-    private lateinit var reportCoFinancingPersistence: ProjectReportExpenditureCoFinancingPersistence
+    private lateinit var reportCoFinancingPersistence: ProjectPartnerReportExpenditureCoFinancingPersistence
     @MockK
-    private lateinit var reportControlExpenditurePersistence: ProjectReportControlExpenditurePersistence
+    private lateinit var reportControlExpenditurePersistence: ProjectPartnerReportExpenditureVerificationPersistence
     @MockK
-    private lateinit var reportExpenditureCostCategoryPersistence: ProjectReportExpenditureCostCategoryPersistence
+    private lateinit var reportExpenditureCostCategoryPersistence: ProjectPartnerReportExpenditureCostCategoryPersistence
 
     @InjectMockKs
     private lateinit var interactor: GetReportControlWorkOverview

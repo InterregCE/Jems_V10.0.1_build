@@ -13,7 +13,7 @@ import io.cloudflight.jems.server.project.service.report.model.partner.identific
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportFileFormat
 import io.cloudflight.jems.server.project.service.report.model.partner.identification.control.ReportType
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown.GetReportExpenditureCostCategoryCalculatorService
-import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectReportIdentificationPersistence
+import io.cloudflight.jems.server.project.service.report.partner.identification.ProjectPartnerReportIdentificationPersistence
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -70,7 +70,7 @@ internal class GetProjectPartnerReportIdentificationServiceTest : UnitTest() {
     }
 
     @MockK
-    private lateinit var identificationPersistence: ProjectReportIdentificationPersistence
+    private lateinit var identificationPersistence: ProjectPartnerReportIdentificationPersistence
     @MockK
     private lateinit var reportExpenditureCostCategoryCalculatorService: GetReportExpenditureCostCategoryCalculatorService
 

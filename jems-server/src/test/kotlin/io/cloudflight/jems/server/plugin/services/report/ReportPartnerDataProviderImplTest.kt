@@ -53,13 +53,12 @@ import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFund
 import io.cloudflight.jems.server.programme.service.fund.model.ProgrammeFundType
 import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatus
 import io.cloudflight.jems.server.programme.service.legalstatus.model.ProgrammeLegalStatusType
-import io.cloudflight.jems.server.project.controller.report.workPlan.ProjectPartnerReportWorkPlanControllerTest
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerContributionStatus
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVatRecovery
-import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.cloudflight.jems.server.project.service.report.model.file.UserSimple
@@ -93,7 +92,7 @@ import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.
 import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.ProjectPartnerReportWorkPackageActivity
 import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.ProjectPartnerReportWorkPackageActivityDeliverable
 import io.cloudflight.jems.server.project.service.report.model.partner.workPlan.ProjectPartnerReportWorkPackageOutput
-import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectReportContributionPersistence
+import io.cloudflight.jems.server.project.service.report.partner.contribution.ProjectPartnerReportContributionPersistence
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.getProjectPartnerReportExpenditure.GetProjectPartnerReportExpenditureCalculator
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportCoFinancingBreakdown.GetReportExpenditureCoFinancingBreakdownCalculator
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown.GetReportExpenditureCostCategoryCalculatorService
@@ -101,11 +100,11 @@ import io.cloudflight.jems.server.project.service.report.partner.financialOvervi
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureLumpSumBreakdown.GetReportExpenditureLumpSumBreakdownCalculator
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureUnitCostBreakdown.GetReportExpenditureUnitCostBreakdownCalculator
 import io.cloudflight.jems.server.project.service.report.partner.identification.getProjectPartnerReportIdentification.GetProjectPartnerReportIdentificationService
-import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectReportProcurementPersistence
+import io.cloudflight.jems.server.project.service.report.partner.procurement.ProjectPartnerReportProcurementPersistence
 import io.cloudflight.jems.server.project.service.report.partner.procurement.attachment.getProjectPartnerReportProcurementAttachment.GetProjectPartnerReportProcurementAttachmentService
 import io.cloudflight.jems.server.project.service.report.partner.procurement.beneficial.getProjectPartnerReportProcurementBeneficial.GetProjectPartnerReportProcurementBeneficialService
 import io.cloudflight.jems.server.project.service.report.partner.procurement.subcontract.getProjectPartnerReportProcurementSubcontract.GetProjectPartnerReportProcurementSubcontractService
-import io.cloudflight.jems.server.project.service.report.partner.workPlan.ProjectReportWorkPlanPersistence
+import io.cloudflight.jems.server.project.service.report.partner.workPlan.ProjectPartnerReportWorkPlanPersistence
 import io.mockk.every
 import io.mockk.impl.annotations.InjectMockKs
 import io.mockk.impl.annotations.MockK
@@ -749,11 +748,11 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
     }
 
     @MockK
-    private lateinit var reportPersistence: ProjectReportPersistence
+    private lateinit var reportPersistence: ProjectPartnerReportPersistence
     @MockK
     private lateinit var serviceIdentification: GetProjectPartnerReportIdentificationService
     @MockK
-    private lateinit var reportContributionPersistence: ProjectReportContributionPersistence
+    private lateinit var reportContributionPersistence: ProjectPartnerReportContributionPersistence
     @MockK
     private lateinit var calculatorExpenditure: GetProjectPartnerReportExpenditureCalculator
     @MockK
@@ -767,7 +766,7 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
     @MockK
     private lateinit var calculatorUnitCost: GetReportExpenditureUnitCostBreakdownCalculator
     @MockK
-    private lateinit var reportProcurementPersistence: ProjectReportProcurementPersistence
+    private lateinit var reportProcurementPersistence: ProjectPartnerReportProcurementPersistence
     @MockK
     private lateinit var serviceProcurementAttachment: GetProjectPartnerReportProcurementAttachmentService
     @MockK
@@ -775,7 +774,7 @@ internal class ReportPartnerDataProviderImplTest : UnitTest() {
     @MockK
     private lateinit var serviceProcurementSubcontract: GetProjectPartnerReportProcurementSubcontractService
     @MockK
-    private lateinit var reportWorkPlanPersistence: ProjectReportWorkPlanPersistence
+    private lateinit var reportWorkPlanPersistence: ProjectPartnerReportWorkPlanPersistence
 
     @InjectMockKs
     private lateinit var dataProvider: ReportPartnerDataProviderImpl

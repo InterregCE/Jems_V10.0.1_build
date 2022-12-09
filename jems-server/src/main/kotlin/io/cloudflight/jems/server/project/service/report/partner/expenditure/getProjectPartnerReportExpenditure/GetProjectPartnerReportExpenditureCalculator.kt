@@ -1,9 +1,9 @@
 package io.cloudflight.jems.server.project.service.report.partner.expenditure.getProjectPartnerReportExpenditure
 
 import io.cloudflight.jems.server.currency.repository.CurrencyPersistence
-import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
-import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectReportExpenditurePersistence
+import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectPartnerReportExpenditurePersistence
 import io.cloudflight.jems.server.project.service.report.partner.expenditure.fillCurrencyRates
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -11,8 +11,8 @@ import java.time.LocalDate
 
 @Service
 class GetProjectPartnerReportExpenditureCalculator(
-    private val reportPersistence: ProjectReportPersistence,
-    private val reportExpenditurePersistence: ProjectReportExpenditurePersistence,
+    private val reportPersistence: ProjectPartnerReportPersistence,
+    private val reportExpenditurePersistence: ProjectPartnerReportExpenditurePersistence,
     private val currencyPersistence: CurrencyPersistence,
 ) {
 

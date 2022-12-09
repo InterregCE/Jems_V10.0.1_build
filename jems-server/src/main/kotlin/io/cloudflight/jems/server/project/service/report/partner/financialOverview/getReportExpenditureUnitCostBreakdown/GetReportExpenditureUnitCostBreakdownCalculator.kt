@@ -1,10 +1,10 @@
 package io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureUnitCostBreakdown
 
 import io.cloudflight.jems.server.currency.repository.CurrencyPersistence
-import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.unitCost.ExpenditureUnitCostBreakdown
-import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectReportExpenditurePersistence
-import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportUnitCostPersistence
+import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectPartnerReportExpenditurePersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportUnitCostPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown.fillActualCurrencyRates
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -12,9 +12,9 @@ import java.time.LocalDate
 
 @Service
 class GetReportExpenditureUnitCostBreakdownCalculator(
-    private val reportPersistence: ProjectReportPersistence,
-    private val reportUnitCostPersistence: ProjectReportUnitCostPersistence,
-    private val reportExpenditurePersistence: ProjectReportExpenditurePersistence,
+    private val reportPersistence: ProjectPartnerReportPersistence,
+    private val reportUnitCostPersistence: ProjectPartnerReportUnitCostPersistence,
+    private val reportExpenditurePersistence: ProjectPartnerReportExpenditurePersistence,
     private val currencyPersistence: CurrencyPersistence,
 ) {
 

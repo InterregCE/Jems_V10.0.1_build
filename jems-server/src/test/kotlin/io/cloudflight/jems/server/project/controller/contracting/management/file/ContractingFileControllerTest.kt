@@ -6,10 +6,10 @@ import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileDTO
 import io.cloudflight.jems.api.project.dto.report.file.UserSimpleDTO
 import io.cloudflight.jems.server.UnitTest
 import io.cloudflight.jems.server.project.controller.contracting.fileManagement.ContractingFileController
-import io.cloudflight.jems.server.project.controller.report.dummyFile
-import io.cloudflight.jems.server.project.controller.report.dummyFileDto
-import io.cloudflight.jems.server.project.controller.report.dummyFileExpected
-import io.cloudflight.jems.server.project.controller.report.dummyMultipartFile
+import io.cloudflight.jems.server.project.controller.report.partner.dummyFile
+import io.cloudflight.jems.server.project.controller.report.partner.dummyFileDto
+import io.cloudflight.jems.server.project.controller.report.partner.dummyFileExpected
+import io.cloudflight.jems.server.project.controller.report.partner.dummyMultipartFile
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.FileNotFound
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.deleteContractFile.DeleteContractFileException
 import io.cloudflight.jems.server.project.service.contracting.fileManagement.deleteContractFile.DeleteContractFileInteractor

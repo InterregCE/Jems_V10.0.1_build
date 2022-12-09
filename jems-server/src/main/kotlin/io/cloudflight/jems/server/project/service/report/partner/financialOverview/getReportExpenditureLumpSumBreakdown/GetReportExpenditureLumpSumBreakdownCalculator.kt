@@ -1,17 +1,17 @@
 package io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureLumpSumBreakdown
 
-import io.cloudflight.jems.server.project.service.report.ProjectReportPersistence
+import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.lumpSum.ExpenditureLumpSumBreakdown
-import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectReportExpenditurePersistence
-import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectReportLumpSumPersistence
+import io.cloudflight.jems.server.project.service.report.partner.expenditure.ProjectPartnerReportExpenditurePersistence
+import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportLumpSumPersistence
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 class GetReportExpenditureLumpSumBreakdownCalculator(
-    private val reportPersistence: ProjectReportPersistence,
-    private val reportLumpSumPersistence: ProjectReportLumpSumPersistence,
-    private val reportExpenditurePersistence: ProjectReportExpenditurePersistence,
+    private val reportPersistence: ProjectPartnerReportPersistence,
+    private val reportLumpSumPersistence: ProjectPartnerReportLumpSumPersistence,
+    private val reportExpenditurePersistence: ProjectPartnerReportExpenditurePersistence,
 ) {
 
     @Transactional(readOnly = true)
