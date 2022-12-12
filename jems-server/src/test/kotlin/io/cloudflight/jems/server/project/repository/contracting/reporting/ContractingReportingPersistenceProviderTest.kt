@@ -79,6 +79,12 @@ internal class ContractingReportingPersistenceProviderTest: UnitTest() {
     }
 
     @Test
+    fun getContractingReportingDeadline() {
+        every { projectContractingReportingRepository.findByProjectIdAndId(PROJECT_ID, 10L) } returns entity(10L)
+        assertThat(persistence.getContractingReportingDeadline(PROJECT_ID, 10L)).isEqualTo(model10)
+    }
+
+    @Test
     fun updateContractingReporting() {
         every { projectContractingReportingRepository.findTop50ByProjectIdOrderByDeadline(PROJECT_ID) } returnsMany listOf(
             // before update

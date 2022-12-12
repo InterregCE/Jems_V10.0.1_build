@@ -20,6 +20,10 @@ class ContractingReportingPersistenceProvider(
     override fun getContractingReporting(projectId: Long): List<ProjectContractingReportingSchedule> =
         projectContractingReportingRepository.findTop50ByProjectIdOrderByDeadline(projectId).toModel()
 
+    @Transactional(readOnly = true)
+    override fun getContractingReportingDeadline(projectId: Long, deadlineId: Long) =
+        projectContractingReportingRepository.findByProjectIdAndId(projectId, id = deadlineId).toModel()
+
     @Transactional
     override fun updateContractingReporting(
         projectId: Long,

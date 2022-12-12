@@ -11,6 +11,8 @@ interface ProjectContractingReportingRepository: JpaRepository<ProjectContractin
 
     fun findTop50ByProjectIdOrderByDeadline(projectId: Long): MutableList<ProjectContractingReportingEntity>
 
+    fun findByProjectIdAndId(projectId: Long, id: Long): ProjectContractingReportingEntity
+
     fun findAllByProjectIdAndPeriodNumberGreaterThan(projectId: Long, maxAvailablePeriod: Int):
         MutableList<ProjectContractingReportingEntity>
 

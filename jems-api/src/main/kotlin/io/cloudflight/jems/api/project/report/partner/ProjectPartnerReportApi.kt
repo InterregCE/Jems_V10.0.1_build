@@ -1,9 +1,10 @@
 package io.cloudflight.jems.api.project.report.partner
 
 import io.cloudflight.jems.api.plugin.dto.PreConditionCheckResultDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerSummaryDTO
 import io.cloudflight.jems.api.project.dto.report.partner.ProjectPartnerReportDTO
 import io.cloudflight.jems.api.project.dto.report.partner.ProjectPartnerReportSummaryDTO
-import io.cloudflight.jems.api.project.dto.report.ReportStatusDTO
+import io.cloudflight.jems.api.project.dto.report.partner.ReportStatusDTO
 import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileDTO
 import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileMetadataDTO
 import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileSearchRequestDTO
@@ -14,6 +15,7 @@ import io.swagger.annotations.ApiOperation
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.multipart.MultipartFile
 
@@ -32,6 +35,17 @@ interface ProjectPartnerReportApi {
         const val ENDPOINT_API_PROJECT_PARTNER_REPORT = "/api/project/report/partner"
         const val ENDPOINT_API_PROJECT_PARTNER_CONTROL_REPORT = "$ENDPOINT_API_PROJECT_PARTNER_REPORT/control"
     }
+
+    @ApiOperation("Returns all project partners for reporting")
+    @ApiImplicitParams(
+        ApiImplicitParam(paramType = "query", name = "sort", dataType = "string", allowMultiple = true)
+    )
+    @GetMapping("$ENDPOINT_API_PROJECT_PARTNER_REPORT/listPartners/byProjectId/{projectId}")
+    fun getProjectPartnersForReporting(
+        @PathVariable projectId: Long,
+        sort: Sort,
+        @RequestParam(required = false) version: String? = null
+    ): List<ProjectPartnerSummaryDTO>
 
     @ApiOperation("Returns all project partner report summaries by partner id and version")
     @ApiImplicitParams(

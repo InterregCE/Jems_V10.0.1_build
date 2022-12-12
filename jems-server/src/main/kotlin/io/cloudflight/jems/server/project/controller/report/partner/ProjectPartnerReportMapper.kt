@@ -5,7 +5,7 @@ import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerVatRecoveryDTO
 import io.cloudflight.jems.api.project.dto.report.partner.ProjectPartnerReportDTO
 import io.cloudflight.jems.api.project.dto.report.partner.ProjectPartnerReportSummaryDTO
-import io.cloudflight.jems.api.project.dto.report.ReportStatusDTO
+import io.cloudflight.jems.api.project.dto.report.partner.ReportStatusDTO
 import io.cloudflight.jems.api.project.dto.report.file.*
 import io.cloudflight.jems.api.project.dto.report.partner.PartnerReportIdentificationCoFinancingDTO
 import io.cloudflight.jems.api.project.dto.report.partner.PartnerReportIdentificationDTO

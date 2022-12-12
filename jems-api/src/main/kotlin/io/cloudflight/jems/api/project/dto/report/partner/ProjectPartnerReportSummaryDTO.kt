@@ -1,6 +1,5 @@
 package io.cloudflight.jems.api.project.dto.report.partner
 
-import io.cloudflight.jems.api.project.dto.report.ReportStatusDTO
 import io.cloudflight.jems.api.project.dto.report.partner.identification.ProjectPartnerReportPeriodDTO
 import java.math.BigDecimal
 import java.time.LocalDate

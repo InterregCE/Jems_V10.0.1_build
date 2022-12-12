@@ -2,10 +2,11 @@ package io.cloudflight.jems.server.project.controller.report.partner
 
 import io.cloudflight.jems.api.plugin.dto.PreConditionCheckResultDTO
 import io.cloudflight.jems.api.project.dto.report.partner.ProjectPartnerReportSummaryDTO
-import io.cloudflight.jems.api.project.dto.report.ReportStatusDTO
+import io.cloudflight.jems.api.project.dto.report.partner.ReportStatusDTO
 import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileDTO
 import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileSearchRequestDTO
 import io.cloudflight.jems.api.project.report.partner.ProjectPartnerReportApi
+import io.cloudflight.jems.server.project.controller.partner.toDto
 import io.cloudflight.jems.server.project.controller.toDTO
 import io.cloudflight.jems.server.project.service.report.partner.base.deleteProjectPartnerReport.DeleteProjectPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.control.deleteControlReportFile.DeleteControlReportFileInteractor
@@ -21,12 +22,14 @@ import io.cloudflight.jems.server.project.service.report.partner.file.listProjec
 import io.cloudflight.jems.server.project.service.report.partner.file.setDescriptionToFile.SetDescriptionToProjectPartnerReportFileInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.uploadFileToProjectPartnerReport.UploadFileToProjectPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.base.getProjectPartnerReport.GetProjectPartnerReportInteractor
+import io.cloudflight.jems.server.project.service.report.partner.base.getProjectReportPartnerList.GetProjectReportPartnerListInteractor
 import io.cloudflight.jems.server.project.service.report.partner.base.runPreSubmissionCheck.RunPreSubmissionCheckInteractor
 import io.cloudflight.jems.server.project.service.report.partner.base.startControlPartnerReport.StartControlPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.base.submitProjectPartnerReport.SubmitProjectPartnerReportInteractor
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -35,6 +38,7 @@ import org.springframework.web.multipart.MultipartFile
 
 @RestController
 class ProjectPartnerReportController(
+    private val getPartnerList: GetProjectReportPartnerListInteractor,
     private val createPartnerReport: CreateProjectPartnerReportInteractor,
     private val runPreCheckPartnerReport: RunPreSubmissionCheckInteractor,
     private val submitPartnerReport: SubmitProjectPartnerReportInteractor,
@@ -53,6 +57,9 @@ class ProjectPartnerReportController(
     private val uploadPartnerControlReportFile: UploadFileToControlReportInteractor,
     private val deleteProjectPartnerReport: DeleteProjectPartnerReportInteractor
 ) : ProjectPartnerReportApi {
+
+    override fun getProjectPartnersForReporting(projectId: Long, sort: Sort, version: String?) =
+        getPartnerList.findAllByProjectId(projectId, sort, version).toDto()
 
     override fun getProjectPartnerReports(
         partnerId: Long,

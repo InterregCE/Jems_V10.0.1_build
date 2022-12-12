@@ -5,7 +5,7 @@ import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.project.authorization.AuthorizationUtilService
 import io.cloudflight.jems.server.project.authorization.ProjectAuthorization
 import io.cloudflight.jems.server.project.authorization.ProjectContractingPartnerAuthorization
-import io.cloudflight.jems.server.project.authorization.ProjectReportAuthorization
+import io.cloudflight.jems.server.project.authorization.ProjectPartnerReportAuthorization
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.contracting.partner.bankingDetails.ContractingPartnerBankingDetails
 import io.cloudflight.jems.server.project.service.contracting.partner.bankingDetails.ContractingPartnerBankingDetailsPersistence
@@ -78,7 +78,7 @@ internal class UpdateContractingPartnerBankingDetailsTest : UnitTest() {
     lateinit var projectCollaboratorPersistence: UserProjectCollaboratorPersistence
 
     @MockK
-    lateinit var projectReportAuthorization: ProjectReportAuthorization
+    lateinit var projectPartnerReportAuthorization: ProjectPartnerReportAuthorization
 
     @MockK
     lateinit var bankingDetailsPersistence: ContractingPartnerBankingDetailsPersistence

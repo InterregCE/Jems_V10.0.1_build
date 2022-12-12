@@ -1,0 +1,63 @@
+package io.cloudflight.jems.server.project.entity.report.project
+
+import io.cloudflight.jems.server.project.entity.contracting.reporting.ProjectContractingReportingEntity
+import io.cloudflight.jems.server.project.service.contracting.model.reporting.ContractingDeadlineType
+import io.cloudflight.jems.server.project.service.report.model.project.ProjectReportStatus
+import java.time.LocalDate
+import java.time.ZonedDateTime
+import javax.persistence.Entity
+import javax.persistence.EnumType
+import javax.persistence.Enumerated
+import javax.persistence.GeneratedValue
+import javax.persistence.GenerationType
+import javax.persistence.Id
+import javax.persistence.ManyToOne
+import javax.validation.constraints.NotNull
+
+@Entity(name = "report_project")
+class ProjectReportEntity(
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    val id: Long = 0,
+
+    @field:NotNull
+    val projectId: Long,
+
+    @field:NotNull
+    val number: Int,
+
+    @Enumerated(EnumType.STRING)
+    @field:NotNull
+    var status: ProjectReportStatus,
+
+    @field:NotNull
+    val applicationFormVersion: String,
+
+    var startDate: LocalDate?,
+    var endDate: LocalDate?,
+
+    @ManyToOne
+    var deadline: ProjectContractingReportingEntity?,
+    @Enumerated(EnumType.STRING)
+    var type: ContractingDeadlineType?,
+    var periodNumber: Int?,
+    var reportingDate: LocalDate?,
+
+    @field:NotNull
+    val projectIdentifier: String,
+    @field:NotNull
+    val projectAcronym: String,
+    @field:NotNull
+    val leadPartnerNameInOriginalLanguage: String,
+    @field:NotNull
+    val leadPartnerNameInEnglish: String,
+
+    @field:NotNull
+    val createdAt: ZonedDateTime = ZonedDateTime.now(),
+
+    var firstSubmission: ZonedDateTime?,
+
+    var verificationDate: ZonedDateTime?,
+
+)

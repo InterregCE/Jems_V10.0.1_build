@@ -15,6 +15,8 @@ enum class UserRolePermission(val key: String, val projectRelated: Boolean = fal
     // region Monitor
     ProjectReportingView("ProjectReportingView", true),
     ProjectReportingEdit("ProjectReportingEdit", true),
+    ProjectReportingProjectView("ProjectReportingProjectView", true),
+    ProjectReportingProjectEdit("ProjectReportingProjectEdit", true),
 
     ProjectContractingPartnerView("ProjectContractingPartnerView", true),
     ProjectContractingPartnerEdit("ProjectContractingPartnerEdit", true),

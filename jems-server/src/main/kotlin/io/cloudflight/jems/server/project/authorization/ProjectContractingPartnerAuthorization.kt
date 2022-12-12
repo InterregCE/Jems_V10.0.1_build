@@ -4,8 +4,6 @@ import io.cloudflight.jems.server.authentication.authorization.Authorization
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.controllerInstitution.service.ControllerInstitutionPersistence
 import io.cloudflight.jems.server.project.entity.partneruser.PartnerCollaboratorLevel
-import io.cloudflight.jems.server.project.repository.partneruser.UserPartnerCollaboratorRepository
-import io.cloudflight.jems.server.project.repository.projectuser.UserProjectCollaboratorRepository
 import io.cloudflight.jems.server.project.service.ProjectPersistence
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.UserPartnerCollaboratorPersistence
@@ -34,7 +32,7 @@ class ProjectContractingPartnerAuthorization(
     val projectPersistence: ProjectPersistence,
     val partnerCollaboratorPersistence: UserPartnerCollaboratorPersistence,
     private val projectCollaboratorPersistence: UserProjectCollaboratorPersistence,
-    private val projectReportAuthorization: ProjectReportAuthorization,
+    private val projectPartnerReportAuthorization: ProjectPartnerReportAuthorization,
     private val institutionPersistence: ControllerInstitutionPersistence,
     val projectAuthorization: ProjectAuthorization,
 ): Authorization(securityService) {
@@ -65,8 +63,8 @@ class ProjectContractingPartnerAuthorization(
             return true
 
         // partner collaborators and controller institutions
-        val levelForCollaborator = projectReportAuthorization.getLevelForUserCollaborator(partnerId = partnerId)
-        val levelForController = projectReportAuthorization.getLevelForUserController(partnerId = partnerId)
+        val levelForCollaborator = projectPartnerReportAuthorization.getLevelForUserCollaborator(partnerId = partnerId)
+        val levelForController = projectPartnerReportAuthorization.getLevelForUserController(partnerId = partnerId)
         // extra check global project collaborators
         val levelForCollaboratorProject = getLevelForUserCollaboratorProject(projectId = projectId)
 

@@ -48,7 +48,15 @@ export class Permission {
       name: 'project.application.reporting.title',
       children: [
         {
-          name: 'project.application.reporting.title',
+          name: 'project.application.project.report.title',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [],
+          editPermissions: [],
+          disabled: true,
+          state: PermissionState.EDIT,
+        },
+        {
+          name: 'project.application.partner.reports.title',
           mode: PermissionMode.HIDDEN_VIEW_EDIT,
           viewPermissions: [],
           editPermissions: [],
@@ -170,12 +178,18 @@ export class Permission {
       name: 'project.application.reporting.title',
       children: [
         {
-          name: 'project.application.reporting.title',
+          name: 'project.application.project.report.title',
+          mode: PermissionMode.HIDDEN_VIEW_EDIT,
+          viewPermissions: [PermissionsEnum.ProjectReportingProjectView],
+          editPermissions: [PermissionsEnum.ProjectReportingProjectEdit],
+        },
+        {
+          name: 'project.application.partner.reports.title',
           mode: PermissionMode.HIDDEN_VIEW_EDIT,
           viewPermissions: [PermissionsEnum.ProjectReportingView],
           editPermissions: [PermissionsEnum.ProjectReportingEdit],
           editTooltip: 'permission.inspect.reporting'
-        }
+        },
       ]
     },
     {

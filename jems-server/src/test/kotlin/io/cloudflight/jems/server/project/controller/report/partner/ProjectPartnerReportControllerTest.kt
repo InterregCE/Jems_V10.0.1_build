@@ -12,11 +12,12 @@ import io.cloudflight.jems.api.programme.dto.legalstatus.ProgrammeLegalStatusTyp
 import io.cloudflight.jems.api.project.dto.InputTranslation
 import io.cloudflight.jems.api.project.dto.description.ProjectTargetGroupDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerRoleDTO
+import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerSummaryDTO
 import io.cloudflight.jems.api.project.dto.partner.ProjectPartnerVatRecoveryDTO
 import io.cloudflight.jems.api.project.dto.partner.cofinancing.ProjectPartnerCoFinancingFundTypeDTO
 import io.cloudflight.jems.api.project.dto.report.partner.ProjectPartnerReportDTO
 import io.cloudflight.jems.api.project.dto.report.partner.ProjectPartnerReportSummaryDTO
-import io.cloudflight.jems.api.project.dto.report.ReportStatusDTO
+import io.cloudflight.jems.api.project.dto.report.partner.ReportStatusDTO
 import io.cloudflight.jems.api.project.dto.report.file.ProjectPartnerReportFileTypeDTO
 import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileDTO
 import io.cloudflight.jems.api.project.dto.report.file.ProjectReportFileSearchRequestDTO
@@ -37,6 +38,7 @@ import io.cloudflight.jems.server.project.service.file.model.ProjectFile
 import io.cloudflight.jems.server.project.service.model.ProjectTargetGroup
 import io.cloudflight.jems.server.project.service.partner.cofinancing.model.ProjectPartnerCoFinancing
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerRole
+import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerSummary
 import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerVatRecovery
 import io.cloudflight.jems.server.project.service.report.model.partner.PartnerReportIdentification
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
@@ -61,6 +63,7 @@ import io.cloudflight.jems.server.project.service.report.partner.file.listProjec
 import io.cloudflight.jems.server.project.service.report.partner.file.setDescriptionToFile.SetDescriptionToProjectPartnerReportFileInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.uploadFileToProjectPartnerReport.UploadFileToProjectPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.base.getProjectPartnerReport.GetProjectPartnerReportInteractor
+import io.cloudflight.jems.server.project.service.report.partner.base.getProjectReportPartnerList.GetProjectReportPartnerListInteractor
 import io.cloudflight.jems.server.project.service.report.partner.base.runPreSubmissionCheck.RunPreSubmissionCheckInteractor
 import io.cloudflight.jems.server.project.service.report.partner.base.startControlPartnerReport.StartControlPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.base.submitProjectPartnerReport.SubmitProjectPartnerReportInteractor
@@ -74,6 +77,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.core.io.ByteArrayResource
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 import org.springframework.http.HttpHeaders
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -222,7 +226,34 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
             sizeString = "46.8\u0020kB",
             description = "desc",
         )
+
+        private val partnerSummary = ProjectPartnerSummary(
+            id = 1,
+            abbreviation = "abbr",
+            institutionName = "inst-name",
+            active = true,
+            role = ProjectPartnerRole.PARTNER,
+            sortNumber = 3,
+            country = "CNTR",
+            region = "rgn",
+            currencyCode = "CZK",
+        )
+
+        private val expectedPartnerSummary = ProjectPartnerSummaryDTO(
+            id = 1,
+            abbreviation = "abbr",
+            institutionName = "inst-name",
+            active = true,
+            role = ProjectPartnerRoleDTO.PARTNER,
+            sortNumber = 3,
+            country = "CNTR",
+            region = "rgn",
+            currencyCode = "CZK",
+        )
     }
+
+    @MockK
+    lateinit var getPartnerList: GetProjectReportPartnerListInteractor
 
     @MockK
     lateinit var createPartnerReport: CreateProjectPartnerReportInteractor
@@ -277,6 +308,13 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
 
     @InjectMockKs
     private lateinit var controller: ProjectPartnerReportController
+
+    @Test
+    fun `should return list of project partners used in reporting`() {
+        every { getPartnerList.findAllByProjectId(8L, any()) } returns listOf(partnerSummary)
+        assertThat(controller.getProjectPartnersForReporting(8L, Sort.unsorted()))
+            .containsExactly(expectedPartnerSummary)
+    }
 
     @Test
     fun getProjectPartnerReports() {
