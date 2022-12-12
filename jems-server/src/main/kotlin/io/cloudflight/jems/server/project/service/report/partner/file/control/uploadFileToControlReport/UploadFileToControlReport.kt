@@ -9,7 +9,6 @@ import io.cloudflight.jems.server.project.service.file.uploadProjectFile.isFileT
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.partner.file.ProjectPartnerReportFilePersistence
-import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileMetadata
 import org.springframework.stereotype.Service
@@ -30,7 +29,7 @@ class UploadFileToControlReport(
     override fun uploadToControlReport(partnerId: Long, reportId: Long, file: ProjectFile): JemsFileMetadata {
         val report = reportPersistence.getPartnerReportById(partnerId, reportId = reportId)
 
-        if (report.status != ReportStatus.InControl)
+        if (report.status.controlNotOpenAnymore())
             throw ReportNotInControl()
 
         if (isFileTypeInvalid(file))

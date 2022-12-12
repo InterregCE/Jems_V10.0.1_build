@@ -54,6 +54,7 @@ import io.cloudflight.jems.server.project.service.report.partner.file.control.li
 import io.cloudflight.jems.server.project.service.report.partner.file.control.setDescriptionToControlReportFile.SetDescriptionToControlReportFileInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.control.uploadFileToControlReport.UploadFileToControlReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.base.createProjectPartnerReport.CreateProjectPartnerReportInteractor
+import io.cloudflight.jems.server.project.service.report.partner.base.finalizeControlPartnerReport.FinalizeControlPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.deleteProjectPartnerReportFile.DeleteProjectPartnerReportFileInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.downloadProjectPartnerReportFile.DownloadProjectPartnerReportFileInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.listProjectPartnerReportFile.ListProjectPartnerReportFileInteractor
@@ -93,6 +94,7 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
             status = ReportStatus.Draft,
             version = "6.1",
             firstSubmission = null,
+            controlEnd = null,
             createdAt = YESTERDAY,
             startDate = LAST_WEEK,
             endDate = NEXT_WEEK,
@@ -112,6 +114,7 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
             status = ReportStatusDTO.Draft,
             linkedFormVersion = reportSummary.version,
             firstSubmission = null,
+            controlEnd = null,
             createdAt = reportSummary.createdAt,
             startDate = reportSummary.startDate,
             endDate = reportSummary.endDate,
@@ -232,6 +235,9 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
     lateinit var startControlReport: StartControlPartnerReportInteractor
 
     @MockK
+    private lateinit var finalizeControlReport: FinalizeControlPartnerReportInteractor
+
+    @MockK
     lateinit var getPartnerReport: GetProjectPartnerReportInteractor
 
     @MockK
@@ -268,7 +274,7 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
     lateinit var deleteProjectPartnerReportInteractor: DeleteProjectPartnerReportInteractor
 
     @InjectMockKs
-    private lateinit var controller: io.cloudflight.jems.server.project.controller.report.partner.ProjectPartnerReportController
+    private lateinit var controller: ProjectPartnerReportController
 
     @Test
     fun getProjectPartnerReports() {
@@ -341,6 +347,12 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
     fun startControlOnPartnerReport() {
         every { startControlReport.startControl(19, 320) } returns ReportStatus.InControl
         assertThat(controller.startControlOnPartnerReport(19, 320)).isEqualTo(ReportStatusDTO.InControl)
+    }
+
+    @Test
+    fun finalizeControlOnPartnerReport() {
+        every { finalizeControlReport.finalizeControl(19, 330) } returns ReportStatus.Certified
+        assertThat(controller.finalizeControlOnPartnerReport(19, 330)).isEqualTo(ReportStatusDTO.Certified)
     }
 
     @Test

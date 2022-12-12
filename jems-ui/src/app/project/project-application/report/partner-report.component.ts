@@ -132,7 +132,9 @@ export class PartnerReportComponent {
           }
           const someDraft = data.partnerReports
             .find((x) => x.status === ProjectPartnerReportSummaryDTO.StatusEnum.Draft);
-          this.refreshColumns(data.canEditReport, !!someDraft);
+          const someCertified = data.partnerReports
+            .find((x) => x.status === ProjectPartnerReportSummaryDTO.StatusEnum.Certified);
+          this.refreshColumns(data.canEditReport, !!someDraft, !!someCertified);
         });
       })
     );
@@ -151,7 +153,7 @@ export class PartnerReportComponent {
     ).subscribe();
   }
 
-  private refreshColumns(canEditReport: boolean, thereIsDraft: boolean) {
+  private refreshColumns(canEditReport: boolean, thereIsDraft: boolean, thereIsCertified: boolean) {
     this.tableConfiguration = new TableConfiguration({
       isTableClickable: true,
       sortable: true,
@@ -185,18 +187,23 @@ export class PartnerReportComponent {
           elementProperty: 'firstSubmission',
           columnType: ColumnType.DateColumn
         },
+        ...(thereIsCertified) ? [{
+          displayedColumn: 'project.application.partner.reports.table.control.end',
+          elementProperty: 'controlEnd',
+          columnType: ColumnType.DateColumn,
+        }] : [],
         {
           displayedColumn: 'project.application.partner.reports.table.control',
           columnType: ColumnType.CustomComponent,
           customCellTemplate: this.actionCell,
           clickable: false
         },
-        ...((canEditReport && thereIsDraft) ? [{
+        ...(canEditReport && thereIsDraft) ? [{
           displayedColumn: 'common.delete.entry',
           customCellTemplate: this.deleteCell,
           columnWidth: ColumnWidth.IdColumn,
           clickable: false
-        }] : []),
+        }] : [],
       ]
     });
 

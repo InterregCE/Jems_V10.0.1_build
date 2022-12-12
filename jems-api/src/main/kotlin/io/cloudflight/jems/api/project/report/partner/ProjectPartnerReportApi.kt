@@ -80,6 +80,13 @@ interface ProjectPartnerReportApi {
         @PathVariable reportId: Long,
     ): ReportStatusDTO
 
+    @ApiOperation("Finalize control on partner report in control")
+    @PostMapping("$ENDPOINT_API_PROJECT_PARTNER_REPORT/finalizeControl/{partnerId}/{reportId}")
+    fun finalizeControlOnPartnerReport(
+        @PathVariable partnerId: Long,
+        @PathVariable reportId: Long,
+    ): ReportStatusDTO
+
     @ApiOperation("Download file from partner report")
     @GetMapping(
         "$ENDPOINT_API_PROJECT_PARTNER_REPORT/byPartnerId/{partnerId}/{fileId}",

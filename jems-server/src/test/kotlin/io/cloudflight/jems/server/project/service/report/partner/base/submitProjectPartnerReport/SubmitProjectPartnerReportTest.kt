@@ -71,6 +71,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             version = "5.6.0",
             // not important
             firstSubmission = ZonedDateTime.now(),
+            controlEnd = null,
             createdAt = ZonedDateTime.now(),
             projectIdentifier = "FG01_654",
             projectAcronym = "acronym",

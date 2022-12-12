@@ -33,6 +33,8 @@ class ProjectPartnerReportEntity(
 
     var firstSubmission: ZonedDateTime?,
 
+    var controlEnd: ZonedDateTime?,
+
     @Embedded
     val identification: PartnerReportIdentificationEntity,
 

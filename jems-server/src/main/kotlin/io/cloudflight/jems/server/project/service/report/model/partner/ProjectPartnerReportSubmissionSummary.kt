@@ -9,6 +9,7 @@ data class ProjectPartnerReportSubmissionSummary(
     val status: ReportStatus,
     val version: String,
     val firstSubmission: ZonedDateTime?,
+    val controlEnd: ZonedDateTime?,
     val createdAt: ZonedDateTime,
 
     val projectIdentifier: String,

@@ -14,6 +14,8 @@ interface ProjectPartnerReportPersistence {
 
     fun startControlOnReportById(partnerId: Long, reportId: Long): ProjectPartnerReportSubmissionSummary
 
+    fun finalizeControlOnReportById(partnerId: Long, reportId: Long, controlEnd: ZonedDateTime): ProjectPartnerReportSubmissionSummary
+
     fun getPartnerReportStatusAndVersion(partnerId: Long, reportId: Long): ProjectPartnerReportStatusAndVersion
 
     fun getPartnerReportById(partnerId: Long, reportId: Long): ProjectPartnerReport

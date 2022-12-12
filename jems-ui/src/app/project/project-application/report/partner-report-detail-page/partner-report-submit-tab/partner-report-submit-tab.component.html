@@ -25,6 +25,7 @@
         <jems-pending-button
                 [confirm]="{title: 'project.application.partner.report.submit.dialog.title', message: 'project.application.partner.report.submit.dialog.message'}"
                 [pending]="submissionPending" [disabled]="!submissionAvailable"
+                [icon]="'send'"
                 (clicked)="submitReport(data.projectId, data.partnerSummary.id, data.partnerReport.id)"
                 class="mr-2 mt-2">
             {{ 'project.application.partner.report.button.submit' | translate }}

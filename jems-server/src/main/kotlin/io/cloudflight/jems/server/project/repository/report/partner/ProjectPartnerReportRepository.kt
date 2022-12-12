@@ -20,6 +20,7 @@ interface ProjectPartnerReportRepository : JpaRepository<ProjectPartnerReportEnt
             report.status,
             report.applicationFormVersion,
             report.firstSubmission,
+            report.controlEnd,
             report.createdAt,
             report_identification.periodNumber,
             report_identification.startDate,

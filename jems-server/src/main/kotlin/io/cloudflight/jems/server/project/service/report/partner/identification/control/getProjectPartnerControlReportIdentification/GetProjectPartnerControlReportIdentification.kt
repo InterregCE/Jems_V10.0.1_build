@@ -30,7 +30,7 @@ class GetProjectPartnerControlReportIdentification(
     @ExceptionWrapper(GetProjectPartnerControlReportIdentificationException::class)
     override fun getControlIdentification(partnerId: Long, reportId: Long): ProjectPartnerControlReport {
         val report = reportPersistence.getPartnerReportById(partnerId, reportId = reportId)
-        validateReportInControl(status = report.status)
+        validateReportAfterInControl(status = report.status)
 
         val identification = reportIdentificationPersistence
             .getPartnerReportIdentification(partnerId = partnerId, reportId = reportId)
@@ -53,8 +53,8 @@ class GetProjectPartnerControlReportIdentification(
         )
     }
 
-    private fun validateReportInControl(status: ReportStatus) {
-        if (status != ReportStatus.InControl)
+    private fun validateReportAfterInControl(status: ReportStatus) {
+        if (status.controlNotStartedYet())
             throw ReportNotInControl()
     }
 

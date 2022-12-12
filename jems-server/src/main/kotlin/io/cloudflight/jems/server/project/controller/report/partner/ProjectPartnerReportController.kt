@@ -14,6 +14,7 @@ import io.cloudflight.jems.server.project.service.report.partner.file.control.li
 import io.cloudflight.jems.server.project.service.report.partner.file.control.setDescriptionToControlReportFile.SetDescriptionToControlReportFileInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.control.uploadFileToControlReport.UploadFileToControlReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.base.createProjectPartnerReport.CreateProjectPartnerReportInteractor
+import io.cloudflight.jems.server.project.service.report.partner.base.finalizeControlPartnerReport.FinalizeControlPartnerReportInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.deleteProjectPartnerReportFile.DeleteProjectPartnerReportFileInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.downloadProjectPartnerReportFile.DownloadProjectPartnerReportFileInteractor
 import io.cloudflight.jems.server.project.service.report.partner.file.listProjectPartnerReportFile.ListProjectPartnerReportFileInteractor
@@ -38,6 +39,7 @@ class ProjectPartnerReportController(
     private val runPreCheckPartnerReport: RunPreSubmissionCheckInteractor,
     private val submitPartnerReport: SubmitProjectPartnerReportInteractor,
     private val startControlReport: StartControlPartnerReportInteractor,
+    private val finalizeControlReport: FinalizeControlPartnerReportInteractor,
     private val getPartnerReport: GetProjectPartnerReportInteractor,
     private val downloadReportFile: DownloadProjectPartnerReportFileInteractor,
     private val deleteReportFile: DeleteProjectPartnerReportFileInteractor,
@@ -72,6 +74,9 @@ class ProjectPartnerReportController(
 
     override fun startControlOnPartnerReport(partnerId: Long, reportId: Long) =
         startControlReport.startControl(partnerId = partnerId, reportId = reportId).toDto()
+
+    override fun finalizeControlOnPartnerReport(partnerId: Long, reportId: Long) =
+        finalizeControlReport.finalizeControl(partnerId = partnerId, reportId = reportId).toDto()
 
     override fun downloadReportFile(
         partnerId: Long,

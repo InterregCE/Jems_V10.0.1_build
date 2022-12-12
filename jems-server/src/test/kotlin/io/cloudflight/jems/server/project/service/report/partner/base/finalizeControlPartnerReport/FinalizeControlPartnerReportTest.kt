@@ -1,4 +1,4 @@
-package io.cloudflight.jems.server.project.service.report.partner.base.startControlPartnerReport
+package io.cloudflight.jems.server.project.service.report.partner.base.finalizeControlPartnerReport
 
 import io.cloudflight.jems.api.audit.dto.AuditAction
 import io.cloudflight.jems.server.UnitTest
@@ -24,20 +24,20 @@ import org.junit.jupiter.params.provider.EnumSource
 import org.springframework.context.ApplicationEventPublisher
 import java.time.ZonedDateTime
 
-internal class StartControlPartnerReportTest : UnitTest() {
+internal class FinalizeControlPartnerReportTest : UnitTest() {
 
     companion object {
         private const val PROJECT_ID = 256L
         private const val PARTNER_ID = 581L
 
         private val mockedResult = ProjectPartnerReportSubmissionSummary(
-            id = 37L,
-            reportNumber = 4,
-            status = ReportStatus.InControl,
+            id = 42L,
+            reportNumber = 7,
+            status = ReportStatus.Certified,
             version = "5.6.1",
             // not important
             firstSubmission = ZonedDateTime.now(),
-            controlEnd = null,
+            controlEnd = ZonedDateTime.now(),
             createdAt = ZonedDateTime.now(),
             projectIdentifier = "FG01_654",
             projectAcronym = "acronym",
@@ -48,16 +48,16 @@ internal class StartControlPartnerReportTest : UnitTest() {
     }
 
     @MockK
-    lateinit var reportPersistence: ProjectPartnerReportPersistence
+    private lateinit var reportPersistence: ProjectPartnerReportPersistence
 
     @MockK
-    lateinit var partnerPersistence: PartnerPersistence
+    private lateinit var partnerPersistence: PartnerPersistence
 
     @MockK
-    lateinit var auditPublisher: ApplicationEventPublisher
+    private lateinit var auditPublisher: ApplicationEventPublisher
 
     @InjectMockKs
-    lateinit var interactor: StartControlPartnerReport
+    private lateinit var interactor: FinalizeControlPartnerReport
 
     @BeforeEach
     fun reset() {
@@ -66,38 +66,38 @@ internal class StartControlPartnerReportTest : UnitTest() {
         clearMocks(auditPublisher)
     }
 
-    @ParameterizedTest(name = "startControl (status {0})")
-    @EnumSource(value = ReportStatus::class, names = ["Submitted"])
-    fun startControl(status: ReportStatus) {
-        val report = report(37L, status)
-        every { reportPersistence.getPartnerReportById(PARTNER_ID, 37L) } returns report
+    @ParameterizedTest(name = "finalizeControl (status {0})")
+    @EnumSource(value = ReportStatus::class, names = ["InControl"])
+    fun finalizeControl(status: ReportStatus) {
+        val report = report(42L, status)
+        every { reportPersistence.getPartnerReportById(PARTNER_ID, 42L) } returns report
         every { partnerPersistence.getProjectIdForPartnerId(PARTNER_ID, "5.6.1") } returns PROJECT_ID
-        every { reportPersistence.startControlOnReportById(any(), any()) } returns mockedResult
+        every { reportPersistence.finalizeControlOnReportById(any(), any(), any()) } returns mockedResult
 
         val auditSlot = slot<AuditCandidateEvent>()
         every { auditPublisher.publishEvent(capture(auditSlot)) } returns Unit
 
-        interactor.startControl(PARTNER_ID, 37L)
+        interactor.finalizeControl(PARTNER_ID, 42L)
 
-        verify(exactly = 1) { reportPersistence.startControlOnReportById(PARTNER_ID, 37L) }
+        verify(exactly = 1) { reportPersistence.finalizeControlOnReportById(PARTNER_ID, 42L, any()) }
 
-        assertThat(auditSlot.captured.auditCandidate.action).isEqualTo(AuditAction.CONTROL_ONGOING)
+        assertThat(auditSlot.captured.auditCandidate.action).isEqualTo(AuditAction.PARTNER_REPORT_CONTROL_FINALIZED)
         assertThat(auditSlot.captured.auditCandidate.project?.id).isEqualTo(PROJECT_ID.toString())
         assertThat(auditSlot.captured.auditCandidate.project?.customIdentifier).isEqualTo("FG01_654")
         assertThat(auditSlot.captured.auditCandidate.project?.name).isEqualTo("acronym")
-        assertThat(auditSlot.captured.auditCandidate.entityRelatedId).isEqualTo(37L)
-        assertThat(auditSlot.captured.auditCandidate.description).isEqualTo("[FG01_654] [LP1] Partner report R.4 control ongoing")
+        assertThat(auditSlot.captured.auditCandidate.entityRelatedId).isEqualTo(42L)
+        assertThat(auditSlot.captured.auditCandidate.description).isEqualTo("[FG01_654] [LP1] Partner report R.7 control work finalized")
     }
 
-    @ParameterizedTest(name = "startControl - wrong status (status {0})")
-    @EnumSource(value = ReportStatus::class, names = ["Submitted"], mode = EnumSource.Mode.EXCLUDE)
-    fun `startControl - wrong status`(status: ReportStatus) {
-        val report = report(39L, status)
-        every { reportPersistence.getPartnerReportById(PARTNER_ID, 39L) } returns report
+    @ParameterizedTest(name = "finalizeControl - wrong status (status {0})")
+    @EnumSource(value = ReportStatus::class, names = ["InControl"], mode = EnumSource.Mode.EXCLUDE)
+    fun `finalizeControl - wrong status`(status: ReportStatus) {
+        val report = report(44L, status)
+        every { reportPersistence.getPartnerReportById(PARTNER_ID, 44L) } returns report
 
-        assertThrows<ReportNotSubmitted> { interactor.startControl(PARTNER_ID, 39L) }
+        assertThrows<ReportNotInControl> { interactor.finalizeControl(PARTNER_ID, 44L) }
 
-        verify(exactly = 0) { reportPersistence.startControlOnReportById(any(), any()) }
+        verify(exactly = 0) { reportPersistence.finalizeControlOnReportById(any(), any(), any()) }
         verify(exactly = 0) { auditPublisher.publishEvent(any()) }
     }
 

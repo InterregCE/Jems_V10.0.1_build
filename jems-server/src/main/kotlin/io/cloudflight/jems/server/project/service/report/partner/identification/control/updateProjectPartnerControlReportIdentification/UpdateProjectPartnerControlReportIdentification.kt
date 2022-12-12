@@ -54,7 +54,7 @@ class UpdateProjectPartnerControlReportIdentification(
     }
 
     private fun validateReportInControl(status: ReportStatus) {
-        if (status != ReportStatus.InControl)
+        if (status.controlNotOpenAnymore())
             throw ReportNotInControl()
     }
 

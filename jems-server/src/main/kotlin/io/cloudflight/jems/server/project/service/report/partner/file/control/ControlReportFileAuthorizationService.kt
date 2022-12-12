@@ -3,7 +3,6 @@ package io.cloudflight.jems.server.project.service.report.partner.file.control
 import io.cloudflight.jems.server.authentication.service.SecurityService
 import io.cloudflight.jems.server.common.file.service.JemsFilePersistence
 import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
-import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.project.service.report.model.file.JemsFileType
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import org.springframework.stereotype.Service
@@ -20,7 +19,7 @@ class ControlReportFileAuthorizationService(
     fun validateChangeToFileAllowed(partnerId: Long, reportId: Long, fileId: Long) {
         val report = reportPersistence.getPartnerReportById(partnerId, reportId = reportId)
 
-        if (report.status != ReportStatus.InControl)
+        if (report.status.controlNotOpenAnymore())
             throw ReportNotInControl()
 
         val projectId = partnerPersistence.getProjectIdForPartnerId(partnerId)

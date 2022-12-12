@@ -47,6 +47,7 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
         private fun reportEntity(
             id: Long,
             createdAt: ZonedDateTime = ZonedDateTime.now(),
+            controlEnd: ZonedDateTime? = null,
             status: ReportStatus = ReportStatus.Draft,
         ) = ProjectPartnerReportEntity(
             id = id,
@@ -55,6 +56,7 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
             status = status,
             applicationFormVersion = "3.0",
             firstSubmission = LAST_YEAR,
+            controlEnd = controlEnd,
             identification = PartnerReportIdentificationEntity(
                 projectIdentifier = "projectIdentifier",
                 projectAcronym = "projectAcronym",
@@ -82,6 +84,7 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
             status = status,
             version = "3.0",
             firstSubmission = null,
+            controlEnd = null,
             createdAt = createdAt,
             periodNumber = 2,
             startDate = LAST_WEEK,
@@ -98,6 +101,7 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
             status = ReportStatus.Draft,
             version = "3.0",
             firstSubmission = LAST_YEAR,
+            controlEnd = null,
             createdAt = createdAt,
             projectIdentifier = "projectIdentifier",
             projectAcronym = "projectAcronym",
@@ -157,6 +161,7 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
             version = "3.0",
             firstSubmission = null,
             createdAt = createdAt,
+            controlEnd = null,
             startDate = LAST_WEEK,
             endDate = NEXT_WEEK,
             periodDetail = ProjectPartnerReportPeriod(
@@ -236,12 +241,27 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
     fun startControlOnReportById() {
         val YESTERDAY = ZonedDateTime.now().minusDays(1)
 
-        val report = reportEntity(id = 47L, YESTERDAY, ReportStatus.Submitted)
+        val report = reportEntity(id = 47L, YESTERDAY, null, ReportStatus.Submitted)
         every { partnerReportRepository.findByIdAndPartnerId(47L, 15L) } returns report
 
         assertThat(persistence.startControlOnReportById(15L, 47L)).isEqualTo(
             draftReportSubmissionEntity(id = 47L, YESTERDAY).copy(
                 status = ReportStatus.InControl,
+            )
+        )
+    }
+
+    @Test
+    fun finalizeControlOnReportById() {
+        val YESTERDAY = ZonedDateTime.now().minusDays(1)
+
+        val report = reportEntity(id = 48L, LAST_YEAR, null, ReportStatus.InControl)
+        every { partnerReportRepository.findByIdAndPartnerId(48L, 16L) } returns report
+
+        assertThat(persistence.finalizeControlOnReportById(16L, 48L, YESTERDAY)).isEqualTo(
+            draftReportSubmissionEntity(id = 48L, LAST_YEAR).copy(
+                status = ReportStatus.Certified,
+                controlEnd = YESTERDAY,
             )
         )
     }

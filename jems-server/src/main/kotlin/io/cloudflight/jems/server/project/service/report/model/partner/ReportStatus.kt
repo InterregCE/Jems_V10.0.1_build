@@ -10,8 +10,12 @@ enum class ReportStatus {
 
     fun isOpen() = !isClosed()
 
+    fun controlNotOpenAnymore() = this != InControl
+    fun controlNotStartedYet() = this !in CONTROL_STATUSES
+
     companion object {
         val SUBMITTED_STATUSES = setOf(Submitted, InControl, Certified)
+        val CONTROL_STATUSES = setOf(InControl, Certified)
     }
 
 }

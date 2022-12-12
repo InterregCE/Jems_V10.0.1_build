@@ -12,6 +12,7 @@ data class ReportSummary(
     val status: ReportStatus,
     val version: String,
     val firstSubmission: ZonedDateTime?,
+    val controlEnd: ZonedDateTime?,
     val createdAt: ZonedDateTime,
     val periodNumber: Int?,
     val startDate: LocalDate?,

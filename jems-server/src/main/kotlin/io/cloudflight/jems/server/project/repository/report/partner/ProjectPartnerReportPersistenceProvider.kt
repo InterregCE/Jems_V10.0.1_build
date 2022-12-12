@@ -37,6 +37,17 @@ class ProjectPartnerReportPersistenceProvider(
                 status = ReportStatus.InControl
             }.toSubmissionSummary()
 
+    @Transactional
+    override fun finalizeControlOnReportById(
+        partnerId: Long,
+        reportId: Long,
+        controlEnd: ZonedDateTime,
+    ) = partnerReportRepository.findByIdAndPartnerId(id = reportId, partnerId = partnerId)
+        .apply {
+            status = ReportStatus.Certified
+            this.controlEnd = controlEnd
+        }.toSubmissionSummary()
+
     @Transactional(readOnly = true)
     override fun getPartnerReportStatusAndVersion(
         partnerId: Long,

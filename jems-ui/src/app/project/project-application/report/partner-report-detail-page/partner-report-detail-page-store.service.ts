@@ -113,6 +113,15 @@ export class PartnerReportDetailPageStore {
       );
   }
 
+  finalizeReport(partnerId: number, reportId: number): Observable<ProjectPartnerReportSummaryDTO.StatusEnum> {
+    return this.projectPartnerReportService.finalizeControlOnPartnerReport(partnerId, reportId)
+      .pipe(
+        map(status => status as ProjectPartnerReportSummaryDTO.StatusEnum),
+        tap(status => this.updatedReportStatus$.next(status)),
+        tap(status => Log.info('Changed status for report', reportId, status))
+      );
+  }
+
   reportIdentification(): Observable<ProjectPartnerReportIdentificationDTO> {
     const initialIdentification$ = combineLatest([
       this.partnerId$,

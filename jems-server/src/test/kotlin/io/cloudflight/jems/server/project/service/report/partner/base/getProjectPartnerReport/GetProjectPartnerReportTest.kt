@@ -24,6 +24,7 @@ internal class GetProjectPartnerReportTest : UnitTest() {
     companion object {
         private const val PARTNER_ID = 588L
         private val YESTERDAY = ZonedDateTime.now().minusDays(1)
+        private val HOUR_AGO = ZonedDateTime.now().minusHours(1)
         private val DAYS_AGO_2 = YESTERDAY.minusDays(1)
 
         private fun report(id: Long, status: ReportStatus) = ProjectPartnerReportSummary(
@@ -32,6 +33,7 @@ internal class GetProjectPartnerReportTest : UnitTest() {
             status = status,
             version = "V4.4",
             firstSubmission = YESTERDAY,
+            controlEnd = HOUR_AGO,
             createdAt = DAYS_AGO_2,
             startDate = null,
             endDate = null,
