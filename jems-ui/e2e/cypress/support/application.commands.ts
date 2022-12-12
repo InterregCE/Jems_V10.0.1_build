@@ -521,9 +521,11 @@ function createProjectProposedUnitCosts(applicationId: number, projectProposedUn
 }
 
 function createAssociatedOrganisations(applicationId, associatedOrganisations) {
-  associatedOrganisations.forEach(associatedOrganisation => {
-    createAssociatedOrganisation(applicationId, associatedOrganisation);
-  });
+  if (associatedOrganisations) {
+    associatedOrganisations.forEach(associatedOrganisation => {
+      createAssociatedOrganisation(applicationId, associatedOrganisation);
+    });
+  }
 }
 
 function createAssociatedOrganisation(applicationId, associatedOrganisation) {

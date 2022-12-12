@@ -36,6 +36,7 @@ context('Project budget tests', () => {
         tempPartner.cofinancing = partnerData.cofinancing;
         application.partners.push(tempPartner);
       });
+      application.associatedOrganisations[0].cypressReference = application.partners[0].details.abbreviation;
       
       application.lumpSums = [];
 
