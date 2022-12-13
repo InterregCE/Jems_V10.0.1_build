@@ -21,7 +21,7 @@ import {TranslateService} from '@ngx-translate/core';
 import {
   PartnerControlReportStore
 } from '@project/project-application/report/partner-control-report/partner-control-report-store.service';
-import {FormService} from "@common/components/section/form/form.service";
+import {FormService} from '@common/components/section/form/form.service';
 
 @UntilDestroy()
 @Component({

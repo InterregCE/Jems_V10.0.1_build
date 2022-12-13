@@ -52,7 +52,8 @@
                                                     [formControlName]="constants.FORM_CONTROL_NAMES.lumpSum"
                                                     class="placeholder-required"
                                                     placeholder="{{'project.application.form.section.part.e.lump.sums.label' | translate}}">
-                                                <mat-option *ngFor="let lumpSum of data.lumpSums" [value]="lumpSum">
+                                                <mat-option *ngFor="let lumpSum of data.lumpSums" [value]="lumpSum"
+                                                            [matTooltip]="(lumpSum.name | translateByInputLanguage | async)">
                                                     {{ lumpSum.name | translateByInputLanguage | async }}
                                                 </mat-option>
                                             </mat-select>
