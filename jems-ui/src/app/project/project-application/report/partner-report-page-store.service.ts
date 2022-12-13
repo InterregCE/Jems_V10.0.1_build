@@ -128,7 +128,7 @@ export class PartnerReportPageStore {
   private institutionUserCanViewControlReports(): Observable<boolean> {
     return this.institutionUserControlReportLevel()
       .pipe(
-        map((level) => level === 'View')
+        map((level) => level === 'View' || level === 'Edit')
       );
   }
 
@@ -156,7 +156,7 @@ export class PartnerReportPageStore {
       this.permissionService.hasPermission(PermissionsEnum.ProjectReportingView)
     ])
       .pipe(
-        map(([level, canEdit, canView]) => level === 'VIEW' || canEdit || canView)
+        map(([level, canEdit, canView]) => level === 'VIEW' || level === 'EDIT' || canEdit || canView)
       );
   }
 

@@ -97,15 +97,17 @@ export class PartnerControlReportFileManagementStore {
   }
 
   downloadFile(fileId: number): Observable<any> {
-    return this.partnerId$
-      .pipe(
-        take(1),
-        filter(partnerId => !!partnerId),
-        switchMap(partnerId => {
-          this.downloadService.download(`/api/project/report/partner/control/byPartnerId/${partnerId}/${fileId}`, 'partner-control-report');
-          return of(null);
-        })
-      );
+    return combineLatest([
+      this.partnerId$.pipe(map(id => Number(id))),
+      this.routingService.routeParameterChanges(PartnerReportDetailPageStore.REPORT_DETAIL_PATH, 'reportId')
+        .pipe(map(id => Number(id))),
+    ]).pipe(
+      take(1),
+      switchMap(([partnerId, reportId]) => {
+        this.downloadService.download(`/api/project/report/partner/control/byPartnerId/${partnerId}/byReportId/${reportId}/byFileId/${fileId}`, 'partner-control-report');
+        return of(null);
+      }),
+    );
   }
 
 }

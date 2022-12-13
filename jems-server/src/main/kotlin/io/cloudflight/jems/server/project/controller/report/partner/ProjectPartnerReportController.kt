@@ -114,9 +114,10 @@ class ProjectPartnerReportController(
 
     override fun downloadControlReportFile(
         partnerId: Long,
+        reportId: Long,
         fileId: Long
     ): ResponseEntity<ByteArrayResource> =
-        with(downloadControlReportFile.download(partnerId, fileId = fileId)) {
+        with(downloadControlReportFile.download(partnerId, reportId = reportId, fileId = fileId)) {
             ResponseEntity.ok()
                 .contentLength(this.second.size.toLong())
                 .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_OCTET_STREAM_VALUE)

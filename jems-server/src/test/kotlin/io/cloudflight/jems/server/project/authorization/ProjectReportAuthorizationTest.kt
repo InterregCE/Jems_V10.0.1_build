@@ -14,6 +14,7 @@ import io.cloudflight.jems.server.project.service.partner.PartnerPersistence
 import io.cloudflight.jems.server.project.service.partner.UserPartnerCollaboratorPersistence
 import io.cloudflight.jems.server.project.service.report.partner.ProjectPartnerReportPersistence
 import io.cloudflight.jems.server.project.service.report.model.partner.ProjectPartnerReport
+import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectReportingEdit
 import io.cloudflight.jems.server.user.service.model.UserRolePermission.ProjectReportingView
 import io.mockk.clearMocks
@@ -157,21 +158,44 @@ internal class ProjectReportAuthorizationTest : UnitTest() {
         assertThat(reportAuthorization.canViewPartnerReport(PARTNER_ID)).isFalse
     }
 
-    @ParameterizedTest(name = "control report - user can view (status {0})")
+    @ParameterizedTest(name = "control report - user can view - because is controller with {0}")
     @EnumSource(value = UserInstitutionAccessLevel::class)
-    fun `control report - user can view`(accessLevel: UserInstitutionAccessLevel) {
+    fun `control report - user can view - because is controller`(accessLevel: UserInstitutionAccessLevel) {
         val userId = 10L + accessLevel.ordinal
         every { securityService.getUserIdOrThrow() } returns userId
         every { controllerInstitutionPersistence.getControllerUserAccessLevelForPartner(userId, partnerId = 50L) } returns accessLevel
-        assertThat(reportAuthorization.canViewPartnerControlReport(50L)).isTrue
+        assertThat(reportAuthorization.canViewPartnerControlReport(50L, 0L)).isTrue
     }
 
-    @Test
-    fun `control report - user can not view`() {
+    @ParameterizedTest(name = "control report - user can view - because can see all reports (status {0})")
+    @EnumSource(value = ReportStatus::class, names = ["Certified"])
+    fun `control report - user can view - because can see all reports`(reportStatus: ReportStatus) {
+        val userId = 13L + reportStatus.ordinal
+        every { securityService.getUserIdOrThrow() } returns userId
+        every { controllerInstitutionPersistence.getControllerUserAccessLevelForPartner(userId, partnerId = 51L) } returns null
+
+        val report = mockk<ProjectPartnerReport>()
+        every { report.status } returns reportStatus
+        every { reportPersistence.getPartnerReportById(51L, reportId = 1L) } returns report
+        every { partnerPersistence.getProjectIdForPartnerId(51L) } returns PROJECT_ID
+        every { currentUser.hasPermission(ProjectReportingView) } returns true
+        every { currentUser.user.assignedProjects } returns setOf(PROJECT_ID)
+
+        assertThat(reportAuthorization.canViewPartnerControlReport(51L, 1L)).isTrue
+    }
+
+    @ParameterizedTest(name = "control report - user can not view (status {0})")
+    @EnumSource(value = ReportStatus::class, names = ["Certified"], mode = EnumSource.Mode.EXCLUDE)
+    fun `control report - user can not view`(status: ReportStatus) {
         val userId = 18L
         every { securityService.getUserIdOrThrow() } returns userId
-        every { controllerInstitutionPersistence.getControllerUserAccessLevelForPartner(userId, partnerId = -1L) } returns null
-        assertThat(reportAuthorization.canViewPartnerControlReport(-1L)).isFalse
+        every { controllerInstitutionPersistence.getControllerUserAccessLevelForPartner(userId, partnerId = 52L) } returns null
+
+        val report = mockk<ProjectPartnerReport>()
+        every { report.status } returns status
+        every { reportPersistence.getPartnerReportById(52L, reportId = 1L) } returns report
+
+        assertThat(reportAuthorization.canViewPartnerControlReport(52L, reportId = 1L)).isFalse
     }
 
     @Test

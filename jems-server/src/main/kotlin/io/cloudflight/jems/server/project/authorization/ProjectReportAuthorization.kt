@@ -33,11 +33,11 @@ annotation class CanViewPartnerReport
 annotation class CanEditPartnerControlReport
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectReportAuthorization.canViewPartnerControlReport(#partnerId)")
+@PreAuthorize("@projectReportAuthorization.canViewPartnerControlReport(#partnerId, #reportId)")
 annotation class CanViewPartnerControlReport
 
 @Retention(AnnotationRetention.RUNTIME)
-@PreAuthorize("@projectReportAuthorization.canViewPartnerControlReport(#partnerId) || " +
+@PreAuthorize("@projectReportAuthorization.canViewPartnerControlReport(#partnerId, #reportId) || " +
     "@projectReportAuthorization.canRetrievePartner(#partnerId)")
 annotation class CanViewPartnerControlReportFile
 
@@ -106,11 +106,18 @@ class ProjectReportAuthorization(
                 partnerId = partnerId,
             ) == UserInstitutionAccessLevel.Edit
 
-    fun canViewPartnerControlReport(partnerId: Long): Boolean =
-        controllerInstitutionPersistence.getControllerUserAccessLevelForPartner(
+    fun canViewPartnerControlReport(partnerId: Long, reportId: Long): Boolean {
+        val controllerPermission = controllerInstitutionPersistence.getControllerUserAccessLevelForPartner(
             userId = securityService.getUserIdOrThrow(),
             partnerId = partnerId,
-        ) != null
+        )
+        // controller institutions
+        if (controllerPermission != null)
+            return true
+
+        val report = reportPersistence.getPartnerReportById(partnerId, reportId = reportId)
+        return report.status.isFinalized() && hasPermissionForPartner(partnerId = partnerId, VIEW)
+    }
 
     fun canUpdatePartner(partnerId: Long): Boolean {
         val perm = partnerCollaboratorPersistence

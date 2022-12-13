@@ -139,10 +139,14 @@ interface ProjectPartnerReportApi {
 
     @ApiOperation("Download file from partner control report")
     @GetMapping(
-        "$ENDPOINT_API_PROJECT_PARTNER_CONTROL_REPORT/byPartnerId/{partnerId}/{fileId}",
+        "$ENDPOINT_API_PROJECT_PARTNER_CONTROL_REPORT/byPartnerId/{partnerId}/byReportId/{reportId}/byFileId/{fileId}",
         produces = [MediaType.APPLICATION_OCTET_STREAM_VALUE]
     )
-    fun downloadControlReportFile(@PathVariable partnerId: Long, @PathVariable fileId: Long): ResponseEntity<ByteArrayResource>
+    fun downloadControlReportFile(
+        @PathVariable partnerId: Long,
+        @PathVariable reportId: Long,
+        @PathVariable fileId: Long,
+    ): ResponseEntity<ByteArrayResource>
 
     @ApiOperation("Delete file from partner control report")
     @DeleteMapping("$ENDPOINT_API_PROJECT_PARTNER_CONTROL_REPORT/byPartnerId/{partnerId}/byReportId/{reportId}/{fileId}")

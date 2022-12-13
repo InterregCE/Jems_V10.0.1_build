@@ -75,8 +75,6 @@ export class PartnerReportComponent {
     totalElements: number;
     partnerReports: ProjectPartnerReportSummaryDTO[];
     partner: ProjectPartnerSummaryDTO;
-    canUserViewControlReports: boolean;
-    canUserEditControlReports: boolean;
     canEditReport: boolean;
   }>;
 
@@ -109,17 +107,13 @@ export class PartnerReportComponent {
     this.data$ = combineLatest([
       this.pageStore.partnerReports$,
       this.pageStore.partnerSummary$,
-      this.pageStore.institutionUserCanViewControlReports$,
-      this.pageStore.institutionUserCanEditControlReports$,
       this.pageStore.userCanEditReport$,
     ]).pipe(
-      map(([partnerReports, partner, canUserViewControlReports, canUserEditControlReports, canEditReport]) => {
+      map(([partnerReports, partner, canEditReport]) => {
           return {
             totalElements: partnerReports.totalElements,
             partnerReports: partnerReports.content,
             partner,
-            canUserViewControlReports,
-            canUserEditControlReports,
             canEditReport,
           };
         }

@@ -13,6 +13,10 @@ import {
 import {
   PartnerReportDetailPageStore
 } from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
+import {combineLatest, Observable} from 'rxjs';
+import {ProjectPartnerReportDTO, ProjectPartnerSummaryDTO} from '@cat/api';
+import {map} from 'rxjs/operators';
+import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
 
 @Component({
   selector: 'jems-partner-control-report',
@@ -22,12 +26,38 @@ import {
 })
 export class PartnerControlReportComponent {
 
-  constructor(private activatedRoute: ActivatedRoute,
-              private router: RoutingService,
-              public store: PartnerControlReportStore,
-              public pageStore: PartnerReportDetailPageStore,
-              public projectStore: ProjectStore,
-              private projectSidenavService: ProjectApplicationFormSidenavService) {
+  data$: Observable<{
+    partner: ProjectPartnerSummaryDTO;
+    report: ProjectPartnerReportDTO;
+    allTabsVisible: boolean;
+    partnerName: string;
+    projectAcronym: string;
+  }>;
+
+  constructor(
+    private activatedRoute: ActivatedRoute,
+    private router: RoutingService,
+    private store: PartnerControlReportStore,
+    private pageStore: PartnerReportDetailPageStore,
+    private projectStore: ProjectStore,
+    private partnerReportPageStore: PartnerReportPageStore,
+    private projectSidenavService: ProjectApplicationFormSidenavService,
+  ) {
+    this.data$ = combineLatest([
+      pageStore.partnerSummary$,
+      pageStore.partnerReport$,
+      projectStore.project$,
+      partnerReportPageStore.institutionUserCanViewControlReports$,
+      partnerReportPageStore.userCanViewReport$,
+    ]).pipe(
+      map(([partner, report, project, controllerCanView, collaboratorCanView]) => ({
+        partner,
+        report,
+        allTabsVisible: controllerCanView || (collaboratorCanView && report.status === ProjectPartnerReportDTO.StatusEnum.Certified),
+        partnerName: `${report.identification?.partnerNumber} ${partner.abbreviation}`,
+        projectAcronym: project.acronym,
+      })),
+    );
   }
 
   activeTab(route: string): boolean {
@@ -37,4 +67,5 @@ export class PartnerControlReportComponent {
   routeTo(route: string): void {
     this.router.navigate([route], {relativeTo: this.activatedRoute, queryParamsHandling: 'merge'});
   }
+
 }

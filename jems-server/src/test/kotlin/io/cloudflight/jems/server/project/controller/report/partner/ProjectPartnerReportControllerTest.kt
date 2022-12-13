@@ -418,9 +418,9 @@ internal class ProjectPartnerReportControllerTest : UnitTest() {
     @Test
     fun downloadControlReportFile() {
         val fileContentArray = ByteArray(5)
-        every { downloadControlReportFile.download(partnerId = 30L, fileId = 450L) } returns Pair("fileName.txt", fileContentArray)
+        every { downloadControlReportFile.download(partnerId = 30L, reportId = 2L, fileId = 450L) } returns Pair("fileName.txt", fileContentArray)
 
-        assertThat(controller.downloadControlReportFile(partnerId = 30L, fileId = 450L))
+        assertThat(controller.downloadControlReportFile(partnerId = 30L, reportId = 2L, fileId = 450L))
             .isEqualTo(
                 ResponseEntity.ok()
                     .contentLength(5)
