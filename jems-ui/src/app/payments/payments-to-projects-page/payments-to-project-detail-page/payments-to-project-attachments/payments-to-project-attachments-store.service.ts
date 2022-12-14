@@ -54,6 +54,11 @@ export class PaymentAttachmentsStore {
       switchMap(([paymentId, pageIndex, pageSize, sort]) =>
         this.paymentAttachmentService.listPaymentAttachments(paymentId, pageIndex, pageSize, sort)
       ),
+      tap(page => {
+        if (page.number >= page.totalPages) {
+          this.newPageIndex$.next(page.totalPages - 1);
+        }
+      }),
       tap(data => Log.info('Fetched payment attachments by id', this, data)),
       catchError(error => {
         this.error$.next(error.error);

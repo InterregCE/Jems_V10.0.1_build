@@ -225,7 +225,12 @@ export class ContractingFilesStoreService {
             pageSize,
             sort
           )
-        )
+        ),
+        tap(page => {
+          if (page.number >= page.totalPages) {
+            this.newPageIndex$.next(page.totalPages - 1);
+          }
+        }),
       );
   }
 

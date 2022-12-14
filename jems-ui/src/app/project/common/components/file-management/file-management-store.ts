@@ -194,6 +194,11 @@ export class FileManagementStore {
         switchMap(([category, projectId, pageIndex, pageSize, sort]) =>
           this.projectFileService.listProjectFiles(projectId, (category as any)?.id, pageIndex, pageSize, sort, (category as any)?.type)
         ),
+        tap(page => {
+          if (page.number >= page.totalPages) {
+            this.newPageIndex$.next(page.totalPages - 1);
+          }
+        }),
         catchError(error => {
           this.error$.next(error.error);
           return of({} as PageProjectFileMetadataDTO);

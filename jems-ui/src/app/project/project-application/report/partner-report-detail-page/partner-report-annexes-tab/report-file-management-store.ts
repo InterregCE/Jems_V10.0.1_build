@@ -181,6 +181,11 @@ export class ReportFileManagementStore {
             sort
           )
         ),
+        tap(page => {
+          if (page.number >= page.totalPages) {
+            this.newPageIndex$.next(page.totalPages - 1);
+          }
+        }),
         catchError(error => {
           this.error$.next(error.error);
           return of({} as PageProjectReportFileDTO);
