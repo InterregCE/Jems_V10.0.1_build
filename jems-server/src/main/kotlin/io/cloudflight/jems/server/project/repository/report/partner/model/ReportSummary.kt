@@ -14,6 +14,7 @@ data class ReportSummary(
     val firstSubmission: ZonedDateTime?,
     val controlEnd: ZonedDateTime?,
     val createdAt: ZonedDateTime,
+    val totalEligibleAfterControl: BigDecimal?,
     val periodNumber: Int?,
     val startDate: LocalDate?,
     val endDate: LocalDate?,

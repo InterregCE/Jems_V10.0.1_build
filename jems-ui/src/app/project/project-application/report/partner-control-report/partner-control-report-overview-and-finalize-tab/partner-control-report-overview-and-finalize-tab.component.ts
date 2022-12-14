@@ -57,7 +57,7 @@ export class PartnerControlReportOverviewAndFinalizeTabComponent {
     this.finalizationLoading = true;
     this.reportPageStore.finalizeReport(partnerId, reportId)
       .pipe(
-        tap(() => this.redirectToReportOverview()),
+        tap(() => this.redirectToReportList()),
         catchError((error) => this.showErrorMessage(error.error)),
         finalize(() => this.finalizationLoading = false)
       ).subscribe();
@@ -73,8 +73,8 @@ export class PartnerControlReportOverviewAndFinalizeTabComponent {
     return of(null);
   }
 
-  private redirectToReportOverview(): void {
-    this.router.navigate(['..', 'identificationTab'], { relativeTo: this.route });
+  private redirectToReportList(): void {
+    this.router.navigate(['../../..'], { relativeTo: this.route });
   }
 
 }

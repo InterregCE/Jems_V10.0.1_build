@@ -344,6 +344,7 @@ export const routes: Routes = [
                           {
                             path: 'overviewAndFinalizeTab',
                             component: PartnerControlReportOverviewAndFinalizeTabComponent,
+                            canActivate: [ControlReportGuard],
                           },
                         ],
                       }

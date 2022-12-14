@@ -17,7 +17,7 @@ class DeleteControlReportFile(
     @Transactional
     @ExceptionWrapper(DeleteControlReportFileException::class)
     override fun delete(partnerId: Long, reportId: Long, fileId: Long) {
-        authorization.validateChangeToFileAllowed(partnerId = partnerId, reportId = reportId, fileId)
+        authorization.validateChangeToFileAllowed(partnerId = partnerId, reportId = reportId, fileId, true)
         filePersistence.deleteFile(partnerId = partnerId, fileId = fileId)
     }
 

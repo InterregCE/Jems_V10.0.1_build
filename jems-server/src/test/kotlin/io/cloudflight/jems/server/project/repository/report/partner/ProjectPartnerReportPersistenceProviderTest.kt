@@ -32,6 +32,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable
+import java.math.BigDecimal
 import java.math.BigDecimal.*
 import java.time.LocalDate
 import java.time.ZonedDateTime
@@ -49,6 +50,7 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
             createdAt: ZonedDateTime = ZonedDateTime.now(),
             controlEnd: ZonedDateTime? = null,
             status: ReportStatus = ReportStatus.Draft,
+            total: BigDecimal? = TEN,
         ) = ProjectPartnerReportEntity(
             id = id,
             partnerId = PARTNER_ID,
@@ -72,6 +74,7 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
                 currency = "EUR",
             ),
             createdAt = createdAt,
+            totalEligibleAfterControl = total,
         )
 
         private fun reportSummary(
@@ -86,6 +89,7 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
             firstSubmission = null,
             controlEnd = null,
             createdAt = createdAt,
+            totalEligibleAfterControl = TEN,
             periodNumber = 2,
             startDate = LAST_WEEK,
             endDate = NEXT_WEEK,
@@ -171,6 +175,7 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
                 start = 4,
                 end = 6,
             ),
+            totalEligibleAfterControl = TEN,
             deletable = false,
         )
 
@@ -255,15 +260,17 @@ class ProjectPartnerReportPersistenceProviderTest : UnitTest() {
     fun finalizeControlOnReportById() {
         val YESTERDAY = ZonedDateTime.now().minusDays(1)
 
-        val report = reportEntity(id = 48L, LAST_YEAR, null, ReportStatus.InControl)
+        val report = reportEntity(id = 48L, LAST_YEAR, null, ReportStatus.InControl, null)
         every { partnerReportRepository.findByIdAndPartnerId(48L, 16L) } returns report
 
-        assertThat(persistence.finalizeControlOnReportById(16L, 48L, YESTERDAY)).isEqualTo(
+        assertThat(report.totalEligibleAfterControl).isNull()
+        assertThat(persistence.finalizeControlOnReportById(16L, 48L, YESTERDAY, TEN)).isEqualTo(
             draftReportSubmissionEntity(id = 48L, LAST_YEAR).copy(
                 status = ReportStatus.Certified,
                 controlEnd = YESTERDAY,
             )
         )
+        assertThat(report.totalEligibleAfterControl).isEqualTo(TEN)
     }
 
     @Test

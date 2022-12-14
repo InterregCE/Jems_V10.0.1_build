@@ -105,14 +105,18 @@ export class PartnerReportComponent {
     private changeDetectorRef: ChangeDetectorRef
   ) {
     this.data$ = combineLatest([
-      this.pageStore.partnerReports$,
-      this.pageStore.partnerSummary$,
-      this.pageStore.userCanEditReport$,
+      pageStore.partnerReports$,
+      pageStore.partnerSummary$,
+      pageStore.userCanEditReport$,
+      pageStore.institutionUserCanViewControlReports$,
     ]).pipe(
-      map(([partnerReports, partner, canEditReport]) => {
+      map(([partnerReports, partner, canEditReport, isController]) => {
           return {
             totalElements: partnerReports.totalElements,
-            partnerReports: partnerReports.content,
+            partnerReports: partnerReports.content.map(report => ({
+              ...report,
+              routeToControl: `${report.id}/controlReport/${(report.status === StatusEnum.Certified || isController) ? 'identificationTab' : 'document'}`,
+            })),
             partner,
             canEditReport,
           };
@@ -185,6 +189,10 @@ export class PartnerReportComponent {
           displayedColumn: 'project.application.partner.reports.table.control.end',
           elementProperty: 'controlEnd',
           columnType: ColumnType.DateColumn,
+        }, {
+          displayedColumn: 'project.application.partner.report.control.tab.overviewAndFinalize.total.eligible.after.control',
+          elementProperty: 'totalEligibleAfterControl',
+          columnType: ColumnType.Decimal,
         }] : [],
         {
           displayedColumn: 'project.application.partner.reports.table.control',

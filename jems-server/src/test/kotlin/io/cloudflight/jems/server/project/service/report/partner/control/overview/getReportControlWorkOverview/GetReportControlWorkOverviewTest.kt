@@ -38,7 +38,7 @@ internal class GetReportControlWorkOverviewTest : UnitTest() {
             previouslyReported = mockk(),
         )
 
-        private fun expenditure(
+        fun expenditure(
             id: Long,
             partOfSample: Boolean,
             declaredAmount: BigDecimal?,

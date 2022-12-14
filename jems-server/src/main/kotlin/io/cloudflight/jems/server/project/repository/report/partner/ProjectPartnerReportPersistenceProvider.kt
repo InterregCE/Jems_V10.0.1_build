@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
+import java.math.BigDecimal
 import java.time.ZonedDateTime
 
 @Repository
@@ -42,10 +43,12 @@ class ProjectPartnerReportPersistenceProvider(
         partnerId: Long,
         reportId: Long,
         controlEnd: ZonedDateTime,
+        totalEligibleAfterControl: BigDecimal,
     ) = partnerReportRepository.findByIdAndPartnerId(id = reportId, partnerId = partnerId)
         .apply {
-            status = ReportStatus.Certified
+            this.status = ReportStatus.Certified
             this.controlEnd = controlEnd
+            this.totalEligibleAfterControl = totalEligibleAfterControl
         }.toSubmissionSummary()
 
     @Transactional(readOnly = true)

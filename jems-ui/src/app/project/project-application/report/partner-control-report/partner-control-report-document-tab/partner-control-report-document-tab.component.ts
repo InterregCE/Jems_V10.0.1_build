@@ -69,7 +69,7 @@ export class PartnerControlReportDocumentTabComponent {
           sizeString: file.sizeString,
           description: file.description,
           editable: PartnerControlReportDocumentTabComponent.isEditable(report) && canEdit && file.author.id === currentUserId,
-          deletable: PartnerControlReportDocumentTabComponent.isEditable(report) && canEdit && file.author.id === currentUserId,
+          deletable: PartnerControlReportDocumentTabComponent.isDeletable(report) && canEdit && file.author.id === currentUserId,
           tooltipIfNotDeletable: '',
           iconIfNotDeletable: '',
         })),
@@ -93,6 +93,10 @@ export class PartnerControlReportDocumentTabComponent {
   }
 
   private static isEditable(report: ProjectPartnerReportDTO): boolean {
+    return report.status === ProjectPartnerReportSummaryDTO.StatusEnum.InControl || report.status === ProjectPartnerReportSummaryDTO.StatusEnum.Certified;
+  }
+
+  private static isDeletable(report: ProjectPartnerReportDTO): boolean {
     return report.status === ProjectPartnerReportSummaryDTO.StatusEnum.InControl;
   }
 

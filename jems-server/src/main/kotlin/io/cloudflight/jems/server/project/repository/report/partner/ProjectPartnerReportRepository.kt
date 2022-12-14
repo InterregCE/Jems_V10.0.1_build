@@ -22,6 +22,7 @@ interface ProjectPartnerReportRepository : JpaRepository<ProjectPartnerReportEnt
             report.firstSubmission,
             report.controlEnd,
             report.createdAt,
+            report.totalEligibleAfterControl,
             report_identification.periodNumber,
             report_identification.startDate,
             report_identification.endDate,

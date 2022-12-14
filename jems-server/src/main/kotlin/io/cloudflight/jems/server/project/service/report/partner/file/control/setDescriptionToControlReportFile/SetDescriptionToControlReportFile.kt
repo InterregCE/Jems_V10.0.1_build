@@ -20,7 +20,7 @@ class SetDescriptionToControlReportFile(
     @ExceptionWrapper(SetDescriptionToControlReportFileException::class)
     override fun setDescription(partnerId: Long, reportId: Long, fileId: Long, description: String) {
         validateDescription(text = description)
-        authorization.validateChangeToFileAllowed(partnerId = partnerId, reportId = reportId, fileId)
+        authorization.validateChangeToFileAllowed(partnerId = partnerId, reportId = reportId, fileId, false)
         fileService.setDescription(fileId = fileId, description = description)
     }
 

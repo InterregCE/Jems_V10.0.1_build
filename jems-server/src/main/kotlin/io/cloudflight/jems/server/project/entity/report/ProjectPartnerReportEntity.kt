@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.entity.report
 
 import io.cloudflight.jems.server.project.service.report.model.partner.ReportStatus
+import java.math.BigDecimal
 import java.time.ZonedDateTime
 import javax.persistence.Embedded
 import javax.persistence.Entity
@@ -40,5 +41,7 @@ class ProjectPartnerReportEntity(
 
     @field:NotNull
     val createdAt: ZonedDateTime = ZonedDateTime.now(),
+
+    var totalEligibleAfterControl: BigDecimal?,
 
 )

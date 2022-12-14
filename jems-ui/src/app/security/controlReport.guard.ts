@@ -1,47 +1,47 @@
 import {Injectable} from '@angular/core';
-import {OutputCurrentUser} from '@cat/api';
+import {ProjectPartnerReportDTO, ProjectPartnerReportService} from '@cat/api';
 import {ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot} from '@angular/router';
-import {combineLatest, Observable} from 'rxjs';
-import {filter, map, take, tap} from 'rxjs/operators';
-import {SecurityService} from './security.service';
-import {Log} from '../common/utils/log';
+import {combineLatest, Observable, of} from 'rxjs';
+import {map, switchMap, tap} from 'rxjs/operators';
+import {Log} from '@common/utils/log';
 import {
-  PartnerControlReportStore
-} from '@project/project-application/report/partner-control-report/partner-control-report-store.service';
+  PartnerReportDetailPageStore
+} from '@project/project-application/report/partner-report-detail-page/partner-report-detail-page-store.service';
+import {PartnerReportPageStore} from '@project/project-application/report/partner-report-page-store.service';
 
 @Injectable({providedIn: 'root'})
 export class ControlReportGuard implements CanActivate {
 
-  constructor(private router: Router,
-              private securityService: SecurityService,
-              private partnerControlReportStore: PartnerControlReportStore) {
-  }
-
-  private checkUser(user: OutputCurrentUser | null, childRoute: ActivatedRouteSnapshot): boolean {
-    let allowed = true;
-    combineLatest([
-      this.partnerControlReportStore.controlReportEditable$,
-      this.partnerControlReportStore.fullControlReportView$
-    ])
-      .pipe(
-        take(1),
-        map(([canEdit, canFullView]) => allowed = canEdit || canFullView),
-        tap(() => {
-          if (!allowed) {
-            Log.info(`Current user role cannot access this route. Route:`, this, user?.role);
-            this.router.navigate(['app']);
-          }
-        })
-      )
-      .subscribe();
-    return allowed;
-  }
+  constructor(
+    private router: Router,
+    private pageStore: PartnerReportDetailPageStore,
+    private partnerReportPageStore: PartnerReportPageStore,
+    private projectPartnerReportService: ProjectPartnerReportService,
+  ) { }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
-    return this.securityService.currentUser
-      .pipe(
-        filter(user => !!user),
-        map(user => this.checkUser(user, route))
-      );
+    const partnerId = Number(route.parent?.params?.partnerId || 0);
+    const reportId = Number(route.parent?.params?.reportId || 0);
+    const tab = state.url.split('/').pop();
+
+    return combineLatest([
+      this.pageStore.partnerReport$.pipe(
+        // take report from store or load it if it is not available in store
+        switchMap(report => report.id ? of(report) : this.projectPartnerReportService.getProjectPartnerReport(partnerId, reportId)),
+      ),
+      this.partnerReportPageStore.institutionUserCanViewControlReports$,
+      this.partnerReportPageStore.userCanViewReport$,
+    ]).pipe(
+      map(([report, controllerCanView, collaboratorOrProgrammeUserCanView]) =>
+        controllerCanView
+        || (collaboratorOrProgrammeUserCanView && report.status === ProjectPartnerReportDTO.StatusEnum.Certified)
+      ),
+      tap(allowed => {
+        if (!allowed) {
+          Log.info(`Current user role cannot access this control report tab. Tab: ${tab}`, this);
+          this.router.navigate(['app']);
+        }
+      }),
+    );
   }
 }

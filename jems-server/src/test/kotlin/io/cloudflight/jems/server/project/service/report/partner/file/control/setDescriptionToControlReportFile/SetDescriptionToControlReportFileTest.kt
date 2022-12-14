@@ -33,7 +33,7 @@ class SetDescriptionToControlReportFileTest : UnitTest() {
         clearMocks(generalValidator, authorization, fileService)
         every { generalValidator.throwIfAnyIsInvalid(*varargAny { it.isEmpty() }) } returns Unit
         every { generalValidator.maxLength(any<String>(), 250, "description") } returns emptyMap()
-        every { authorization.validateChangeToFileAllowed(PARTNER_ID, any(), any()) } answers { }
+        every { authorization.validateChangeToFileAllowed(PARTNER_ID, any(), any(), any()) } answers { }
     }
 
     @Test
@@ -42,7 +42,7 @@ class SetDescriptionToControlReportFileTest : UnitTest() {
 
         interactor.setDescription(PARTNER_ID, reportId = 477L, fileId = 261L, "new desc")
 
-        verify(exactly = 1) { authorization.validateChangeToFileAllowed(PARTNER_ID, 477L, fileId = 261L) }
+        verify(exactly = 1) { authorization.validateChangeToFileAllowed(PARTNER_ID, 477L, fileId = 261L, false) }
         verify(exactly = 1) { fileService.setDescription(261L, "new desc") }
         verify(exactly = 1) { generalValidator.maxLength("new desc", 250, "description") }
         verify(exactly = 1) { generalValidator.throwIfAnyIsInvalid(*varargAny { it.isEmpty() }) }

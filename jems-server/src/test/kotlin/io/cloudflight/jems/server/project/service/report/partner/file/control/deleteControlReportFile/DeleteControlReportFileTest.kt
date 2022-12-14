@@ -37,11 +37,11 @@ class DeleteControlReportFileTest : UnitTest() {
         val reportId = 92L
         val fileId = 15L
 
-        every { authorization.validateChangeToFileAllowed(PARTNER_ID, reportId, fileId) } answers { }
+        every { authorization.validateChangeToFileAllowed(PARTNER_ID, reportId, fileId, any()) } answers { }
         every { filePersistence.deleteFile(PARTNER_ID, fileId) } answers { }
 
         interactor.delete(PARTNER_ID, reportId = reportId, fileId)
-        verify(exactly = 1) { authorization.validateChangeToFileAllowed(PARTNER_ID, reportId, fileId) }
+        verify(exactly = 1) { authorization.validateChangeToFileAllowed(PARTNER_ID, reportId, fileId, true) }
         verify(exactly = 1) { filePersistence.deleteFile(PARTNER_ID, fileId) }
     }
 

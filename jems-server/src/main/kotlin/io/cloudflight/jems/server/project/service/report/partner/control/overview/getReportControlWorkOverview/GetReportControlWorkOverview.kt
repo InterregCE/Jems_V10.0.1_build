@@ -2,15 +2,11 @@ package io.cloudflight.jems.server.project.service.report.partner.control.overvi
 
 import io.cloudflight.jems.server.common.exception.ExceptionWrapper
 import io.cloudflight.jems.server.project.authorization.CanViewPartnerControlReport
-import io.cloudflight.jems.server.project.service.budget.calculator.calculateBudget
-import io.cloudflight.jems.server.project.service.budget.model.BudgetCostsCalculationResultFull
-import io.cloudflight.jems.server.project.service.partner.model.ProjectPartnerBudgetOptions
 import io.cloudflight.jems.server.project.service.report.model.partner.control.overview.ControlWorkOverview
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerification
 import io.cloudflight.jems.server.project.service.report.partner.control.expenditure.ProjectPartnerReportExpenditureVerificationPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCoFinancingPersistence
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.ProjectPartnerReportExpenditureCostCategoryPersistence
-import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown.getCategory
 import io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureBreakdown.percentageOf
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -51,13 +47,5 @@ class GetReportControlWorkOverview(
 
     private fun Collection<ProjectPartnerReportExpenditureVerification>.onlySamplingOnes() =
         filter { it.partOfSample }.map { it.declaredAmountAfterSubmission }
-
-    private fun Collection<ProjectPartnerReportExpenditureVerification>.calculateCertified(
-        options: ProjectPartnerBudgetOptions
-    ): BudgetCostsCalculationResultFull {
-        val sums = groupBy { it.getCategory() }
-            .mapValues { it.value.sumOf { it.certifiedAmount } }
-        return calculateBudget(options, sums)
-    }
 
 }

@@ -50,6 +50,7 @@
                         [class.chip-column-width]="column.columnWidth === ColumnWidth.ChipColumn"
                         [class.medium-column-width]="column.columnWidth === ColumnWidth.MediumColumn"
                         [class.small-column-width]="column.columnWidth === ColumnWidth.SmallColumn"
+                        [class.justify-end]="column.columnType === ColumnType.Decimal"
                         *matHeaderCellDef class="cell">
                     <span jemsText maxLines="2">{{column.displayedColumn | translate}}</span>
                     <jems-context-info *ngIf="column.infoMessage"

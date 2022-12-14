@@ -60,7 +60,7 @@ class ControlReportFileAuthorizationServiceTest : UnitTest() {
         every { filePersistence
             .getFileAuthor(PARTNER_ID, "Project/000350/Report/Partner/000424/PartnerControlReport/000041/", 9558L)
         } returns author
-        assertDoesNotThrow { service.validateChangeToFileAllowed(PARTNER_ID, reportId, 9558L) }
+        assertDoesNotThrow { service.validateChangeToFileAllowed(PARTNER_ID, reportId, 9558L, true) }
     }
 
     @ParameterizedTest(name = "validateChangeToFileAllowed - wrong status (status {0})")
@@ -71,12 +71,12 @@ class ControlReportFileAuthorizationServiceTest : UnitTest() {
         every { report.status } returns status
         every { reportPersistence.getPartnerReportById(PARTNER_ID, reportId = reportId) } returns report
 
-        assertThrows<ReportNotInControl> { service.validateChangeToFileAllowed(PARTNER_ID, reportId, 0L) }
+        assertThrows<ReportControlNotOpen> { service.validateChangeToFileAllowed(PARTNER_ID, reportId, 0L, true) }
     }
 
-    @ParameterizedTest(name = "validateChangeToFileAllowed - file not found (status {0})")
+    @ParameterizedTest(name = "validateChangeToFileAllowed - open enough - file not found (status {0})")
     @EnumSource(value = ReportStatus::class, names = ["InControl"])
-    fun `validateChangeToFileAllowed - file not found`(status: ReportStatus) {
+    fun `validateChangeToFileAllowed - open enough - file not found`(status: ReportStatus) {
         val reportId = 49L
         val report = mockk<ProjectPartnerReport>()
         every { report.status } returns status
@@ -85,7 +85,48 @@ class ControlReportFileAuthorizationServiceTest : UnitTest() {
         every { filePersistence
             .getFileAuthor(PARTNER_ID, "Project/000350/Report/Partner/000424/PartnerControlReport/000049/", -1L)
         } returns null
-        assertThrows<FileNotFound> { service.validateChangeToFileAllowed(PARTNER_ID, reportId, -1L) }
+        assertThrows<FileNotFound> { service.validateChangeToFileAllowed(PARTNER_ID, reportId, -1L, true) }
+    }
+
+    @ParameterizedTest(name = "validateChangeToFileAllowed - open enough (status {0})")
+    @EnumSource(value = ReportStatus::class, names = ["InControl", "Certified"])
+    fun `validateChangeToFileAllowed - open enough`(status: ReportStatus) {
+        val reportId = 51L
+        val report = mockk<ProjectPartnerReport>()
+        every { report.status } returns status
+        every { reportPersistence.getPartnerReportById(PARTNER_ID, reportId = reportId) } returns report
+
+        val author = mockk<UserSimple>()
+        every { author.id } returns USER_ID
+        every { filePersistence
+            .getFileAuthor(PARTNER_ID, "Project/000350/Report/Partner/000424/PartnerControlReport/000051/", 9558L)
+        } returns author
+        assertDoesNotThrow { service.validateChangeToFileAllowed(PARTNER_ID, reportId, 9558L, false) }
+    }
+
+    @ParameterizedTest(name = "validateChangeToFileAllowed - open enough - wrong status (status {0})")
+    @EnumSource(value = ReportStatus::class, names = ["InControl", "Certified"], mode = EnumSource.Mode.EXCLUDE)
+    fun `validateChangeToFileAllowed - open enough - wrong status`(status: ReportStatus) {
+        val reportId = 55L
+        val report = mockk<ProjectPartnerReport>()
+        every { report.status } returns status
+        every { reportPersistence.getPartnerReportById(PARTNER_ID, reportId = reportId) } returns report
+
+        assertThrows<ReportControlNotStartedYet> { service.validateChangeToFileAllowed(PARTNER_ID, reportId, 0L, false) }
+    }
+
+    @ParameterizedTest(name = "validateChangeToFileAllowed - file not found (status {0})")
+    @EnumSource(value = ReportStatus::class, names = ["InControl", "Certified"])
+    fun `validateChangeToFileAllowed - file not found`(status: ReportStatus) {
+        val reportId = 59L
+        val report = mockk<ProjectPartnerReport>()
+        every { report.status } returns status
+        every { reportPersistence.getPartnerReportById(PARTNER_ID, reportId = reportId) } returns report
+
+        every { filePersistence
+            .getFileAuthor(PARTNER_ID, "Project/000350/Report/Partner/000424/PartnerControlReport/000059/", -1L)
+        } returns null
+        assertThrows<FileNotFound> { service.validateChangeToFileAllowed(PARTNER_ID, reportId, -1L, false) }
     }
 
 }
