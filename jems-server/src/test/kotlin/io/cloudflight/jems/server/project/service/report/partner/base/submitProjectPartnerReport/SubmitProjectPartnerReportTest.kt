@@ -241,7 +241,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             verificationComment = null
         )
 
-        private val options = mockk<ReportExpenditureCostCategory>().also {
+        val options = mockk<ReportExpenditureCostCategory>().also {
             every { it.options } returns ProjectPartnerBudgetOptions(
                 partnerId = PARTNER_ID,
                 officeAndAdministrationOnStaffCostsFlatRate = null,
@@ -266,7 +266,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             sum = BigDecimal.valueOf(7927, 2),
         )
 
-        private fun fund(id: Long): ProgrammeFund {
+        fun fund(id: Long): ProgrammeFund {
             val fundMock = mockk<ProgrammeFund>()
             every { fundMock.id } returns id
             return fundMock
@@ -291,7 +291,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             sourceOfContribution = null,
         )
 
-        private val partnerContribution = listOf(
+        fun partnerContribution() = listOf(
             contrib(Public, amount = BigDecimal.valueOf(30), prev = BigDecimal.valueOf(3), current = BigDecimal.valueOf(9)),
             contrib(AutomaticPublic, amount = BigDecimal.valueOf(40), prev = BigDecimal.valueOf(4), current = BigDecimal.valueOf(13)),
             contrib(Private, amount = BigDecimal.valueOf(50), prev = BigDecimal.valueOf(5), current = BigDecimal.valueOf(20)),
@@ -393,7 +393,7 @@ internal class SubmitProjectPartnerReportTest : UnitTest() {
             .updateCurrentlyReportedValues(PARTNER_ID, reportId = 35L, capture(expenditureCcSlot))
         } answers { }
 
-        every { reportContributionPersistence.getPartnerReportContribution(PARTNER_ID, reportId = 35L) } returns partnerContribution
+        every { reportContributionPersistence.getPartnerReportContribution(PARTNER_ID, reportId = 35L) } returns partnerContribution()
         val coFinSlot = slot<ReportExpenditureCoFinancingColumn>()
         every { reportExpenditureCoFinancingPersistence.updateCurrentlyReportedValues(PARTNER_ID, reportId = 35L, capture(coFinSlot)) } answers { }
 

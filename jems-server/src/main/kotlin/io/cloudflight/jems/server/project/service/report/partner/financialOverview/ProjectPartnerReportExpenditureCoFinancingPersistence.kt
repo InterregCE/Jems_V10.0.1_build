@@ -12,6 +12,8 @@ interface ProjectPartnerReportExpenditureCoFinancingPersistence {
 
     fun updateCurrentlyReportedValues(partnerId: Long, reportId: Long, currentlyReported: ReportExpenditureCoFinancingColumn)
 
+    fun updateAfterControlValues(partnerId: Long, reportId: Long, afterControl: ReportExpenditureCoFinancingColumn)
+
     fun getReportCurrentSum(partnerId: Long, reportId: Long): BigDecimal
 
 }

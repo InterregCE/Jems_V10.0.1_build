@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureUnitCostBreakdown
 
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerification
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.unitCost.ExpenditureUnitCostBreakdownLine
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -22,6 +23,7 @@ private fun emptyLine() = ExpenditureUnitCostBreakdownLine(
     totalEligibleBudget = BigDecimal.ZERO,
     previouslyReported = BigDecimal.ZERO,
     currentReport = BigDecimal.ZERO,
+    totalEligibleAfterControl = BigDecimal.ZERO,
 )
 
 fun List<ExpenditureUnitCostBreakdownLine>.sumUp() =
@@ -29,6 +31,7 @@ fun List<ExpenditureUnitCostBreakdownLine>.sumUp() =
         resultingTotalLine.totalEligibleBudget += unitCost.totalEligibleBudget
         resultingTotalLine.previouslyReported += unitCost.previouslyReported
         resultingTotalLine.currentReport += unitCost.currentReport
+        resultingTotalLine.totalEligibleAfterControl += unitCost.totalEligibleAfterControl
         return@fold resultingTotalLine
     }.fillInOverviewFields()
 
@@ -43,3 +46,8 @@ fun Collection<ProjectPartnerReportExpenditureCost>.getCurrentForUnitCosts() =
     filter { it.unitCostId != null }
         .groupBy { it.unitCostId!! }
         .mapValues { it.value.sumOf { it.declaredAmountAfterSubmission!! } }
+
+fun Collection<ProjectPartnerReportExpenditureVerification>.getAfterControlForUnitCosts() =
+    filter { it.unitCostId != null }
+        .groupBy { it.unitCostId!! }
+        .mapValues { it.value.sumOf { it.certifiedAmount } }

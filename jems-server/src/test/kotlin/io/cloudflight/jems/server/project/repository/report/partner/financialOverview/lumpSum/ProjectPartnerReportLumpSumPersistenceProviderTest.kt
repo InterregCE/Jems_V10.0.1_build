@@ -49,6 +49,7 @@ class ProjectPartnerReportLumpSumPersistenceProviderTest : UnitTest() {
 
             total = BigDecimal.valueOf(10),
             current = BigDecimal.valueOf(20),
+            totalEligibleAfterControl = BigDecimal.valueOf(50),
             previouslyReported = BigDecimal.valueOf(30),
             previouslyPaid = BigDecimal.valueOf(40),
         )
@@ -64,6 +65,7 @@ class ProjectPartnerReportLumpSumPersistenceProviderTest : UnitTest() {
             previouslyReported = BigDecimal.valueOf(30),
             previouslyPaid = BigDecimal.valueOf(40),
             currentReport = BigDecimal.valueOf(20),
+            totalEligibleAfterControl = BigDecimal.valueOf(50),
             totalReportedSoFar = BigDecimal.ZERO,
             totalReportedSoFarPercentage = BigDecimal.ZERO,
             remainingBudget = BigDecimal.ZERO,
@@ -109,6 +111,20 @@ class ProjectPartnerReportLumpSumPersistenceProviderTest : UnitTest() {
         assertThat(lumpSum_89.current).isEqualByComparingTo(BigDecimal.valueOf(20))
         assertThat(lumpSum_90.current).isEqualByComparingTo(BigDecimal.TEN)
         assertThat(lumpSum_91.current).isEqualByComparingTo(BigDecimal.valueOf(20))
+    }
+
+    @Test
+    fun updateAfterControlValues() {
+        val lumpSum_89 = lumpSumEntity(89L)
+        val lumpSum_90 = lumpSumEntity(90L)
+        val lumpSum_91 = lumpSumEntity(91L)
+        every { repository.findByReportEntityPartnerIdAndReportEntityIdOrderByOrderNrAscIdAsc(PARTNER_ID, reportId = 5L) } returns
+            mutableListOf(lumpSum_89, lumpSum_90, lumpSum_91)
+        persistence.updateAfterControlValues(PARTNER_ID, reportId = 5L, newValues)
+
+        assertThat(lumpSum_89.totalEligibleAfterControl).isEqualByComparingTo(BigDecimal.valueOf(50))
+        assertThat(lumpSum_90.totalEligibleAfterControl).isEqualByComparingTo(BigDecimal.TEN)
+        assertThat(lumpSum_91.totalEligibleAfterControl).isEqualByComparingTo(BigDecimal.valueOf(50))
     }
 
 }

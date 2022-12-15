@@ -28,6 +28,7 @@ class ProjectPartnerReportLumpSumPersistenceProvider(
                 previouslyReported = it.previouslyReported,
                 previouslyPaid = it.previouslyPaid,
                 currentReport = it.current,
+                totalEligibleAfterControl = it.totalEligibleAfterControl,
             ) }
 
     @Transactional(readOnly = true)
@@ -45,6 +46,17 @@ class ProjectPartnerReportLumpSumPersistenceProvider(
             .forEach {
                 if (currentlyReported.containsKey(it.id)) {
                     it.current = currentlyReported.get(it.id)!!
+                }
+            }
+    }
+
+    @Transactional
+    override fun updateAfterControlValues(partnerId: Long, reportId: Long, afterControl: Map<Long, BigDecimal>) {
+        reportLumpSumRepository
+            .findByReportEntityPartnerIdAndReportEntityIdOrderByOrderNrAscIdAsc(partnerId = partnerId, reportId = reportId)
+            .forEach {
+                if (afterControl.containsKey(it.id)) {
+                    it.totalEligibleAfterControl = afterControl.get(it.id)!!
                 }
             }
     }

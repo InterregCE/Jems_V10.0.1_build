@@ -19,12 +19,16 @@ import CategoryEnum = ProjectPartnerReportUnitCostDTO.CategoryEnum;
 })
 export class PartnerBreakdownCostCategoryComponent implements OnChanges {
 
-  displayedColumns = ['type', 'flatRate', 'totalEligibleBudget', 'previouslyReported', 'currentReport', 'totalReportedSoFar', 'totalReportedSoFarPercentage', 'remainingBudget'];
+  certifiedColumns = ['totalEligibleAfterControl'];
+  columnsAvailable = ['type', 'flatRate', 'totalEligibleBudget', 'previouslyReported', 'currentReport', 'totalEligibleAfterControl', 'totalReportedSoFar', 'totalReportedSoFarPercentage', 'remainingBudget'];
+  displayedColumns = this.columnsAvailable;
 
   @Input()
   breakdown: ExpenditureCostCategoryBreakdownDTO;
   @Input()
   allowedCostCategories: Map<CategoryEnum | 'LumpSum' | 'UnitCost', boolean>;
+  @Input()
+  isCertified = false;
 
   dataSource: MatTableDataSource<ExpenditureLine> = new MatTableDataSource([]);
 
@@ -49,6 +53,8 @@ export class PartnerBreakdownCostCategoryComponent implements OnChanges {
       ...(this.allowedCostCategories.get('UnitCost') ?
         [{ ...this.breakdown.unitCost, translation: 'project.partner.budget.unitCosts'}] : []),
     ];
+    this.displayedColumns = [...this.columnsAvailable]
+      .filter(column => this.isCertified || !this.certifiedColumns.includes(column));
   }
 
 }

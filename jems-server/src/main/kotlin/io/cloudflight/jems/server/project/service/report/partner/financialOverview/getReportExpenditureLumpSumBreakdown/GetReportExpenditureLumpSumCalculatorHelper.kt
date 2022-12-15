@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureLumpSumBreakdown
 
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerification
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.lumpSum.ExpenditureLumpSumBreakdownLine
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -24,6 +25,7 @@ private fun emptyLine() = ExpenditureLumpSumBreakdownLine(
     previouslyReported = BigDecimal.ZERO,
     previouslyPaid = BigDecimal.ZERO,
     currentReport = BigDecimal.ZERO,
+    totalEligibleAfterControl = BigDecimal.ZERO,
 )
 
 fun List<ExpenditureLumpSumBreakdownLine>.sumUp() =
@@ -32,6 +34,7 @@ fun List<ExpenditureLumpSumBreakdownLine>.sumUp() =
         resultingTotalLine.previouslyReported += lumpSum.previouslyReported
         resultingTotalLine.previouslyPaid += lumpSum.previouslyPaid
         resultingTotalLine.currentReport += lumpSum.currentReport
+        resultingTotalLine.totalEligibleAfterControl += lumpSum.totalEligibleAfterControl
         return@fold resultingTotalLine
     }.fillInOverviewFields()
 
@@ -47,3 +50,8 @@ fun Collection<ProjectPartnerReportExpenditureCost>.getCurrentForLumpSums() =
         .groupBy { it.lumpSumId!! }
         // we can use pricePerUnit instead of declaredAmountAfterSubmission because for lumpSum currency rate is always 1
         .mapValues { it.value.sumOf { it.pricePerUnit } }
+
+fun Collection<ProjectPartnerReportExpenditureVerification>.getAfterControlForLumpSums() =
+    filter { it.lumpSumId != null }
+        .groupBy { it.lumpSumId!! }
+        .mapValues { it.value.sumOf { it.certifiedAmount } }

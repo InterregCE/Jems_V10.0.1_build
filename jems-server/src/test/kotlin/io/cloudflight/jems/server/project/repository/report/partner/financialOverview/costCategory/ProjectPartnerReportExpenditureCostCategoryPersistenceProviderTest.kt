@@ -57,6 +57,17 @@ class ProjectPartnerReportExpenditureCostCategoryPersistenceProviderTest : UnitT
             unitCostCurrent = BigDecimal.valueOf(28),
             sumCurrent = BigDecimal.valueOf(29),
 
+            staffTotalEligibleAfterControl = BigDecimal.valueOf(40),
+            officeTotalEligibleAfterControl = BigDecimal.valueOf(41),
+            travelTotalEligibleAfterControl = BigDecimal.valueOf(42),
+            externalTotalEligibleAfterControl = BigDecimal.valueOf(43),
+            equipmentTotalEligibleAfterControl = BigDecimal.valueOf(44),
+            infrastructureTotalEligibleAfterControl = BigDecimal.valueOf(45),
+            otherTotalEligibleAfterControl = BigDecimal.valueOf(46),
+            lumpSumTotalEligibleAfterControl = BigDecimal.valueOf(47),
+            unitCostTotalEligibleAfterControl = BigDecimal.valueOf(48),
+            sumTotalEligibleAfterControl = BigDecimal.valueOf(49),
+
             staffPreviouslyReported = BigDecimal.valueOf(30),
             officePreviouslyReported = BigDecimal.valueOf(31),
             travelPreviouslyReported = BigDecimal.valueOf(32),
@@ -102,6 +113,18 @@ class ProjectPartnerReportExpenditureCostCategoryPersistenceProviderTest : UnitT
                 unitCost = BigDecimal.valueOf(28),
                 sum = BigDecimal.valueOf(29),
             ),
+            totalEligibleAfterControl = BudgetCostsCalculationResultFull(
+                staff = BigDecimal.valueOf(40),
+                office = BigDecimal.valueOf(41),
+                travel = BigDecimal.valueOf(42),
+                external = BigDecimal.valueOf(43),
+                equipment = BigDecimal.valueOf(44),
+                infrastructure = BigDecimal.valueOf(45),
+                other = BigDecimal.valueOf(46),
+                lumpSum = BigDecimal.valueOf(47),
+                unitCost = BigDecimal.valueOf(48),
+                sum = BigDecimal.valueOf(49),
+            ),
             previouslyReported = BudgetCostsCalculationResultFull(
                 staff = BigDecimal.valueOf(30),
                 office = BigDecimal.valueOf(31),
@@ -127,6 +150,19 @@ class ProjectPartnerReportExpenditureCostCategoryPersistenceProviderTest : UnitT
             lumpSum = BigDecimal.valueOf(107),
             unitCost = BigDecimal.valueOf(108),
             sum = BigDecimal.valueOf(109),
+        )
+
+        private val afterControl = BudgetCostsCalculationResultFull(
+            staff = BigDecimal.valueOf(200),
+            office = BigDecimal.valueOf(201),
+            travel = BigDecimal.valueOf(202),
+            external = BigDecimal.valueOf(203),
+            equipment = BigDecimal.valueOf(204),
+            infrastructure = BigDecimal.valueOf(205),
+            other = BigDecimal.valueOf(206),
+            lumpSum = BigDecimal.valueOf(207),
+            unitCost = BigDecimal.valueOf(208),
+            sum = BigDecimal.valueOf(209),
         )
     }
 
@@ -169,6 +205,24 @@ class ProjectPartnerReportExpenditureCostCategoryPersistenceProviderTest : UnitT
         assertThat(entity.lumpSumCurrent).isEqualTo(newValues.lumpSum)
         assertThat(entity.unitCostCurrent).isEqualTo(newValues.unitCost)
         assertThat(entity.sumCurrent).isEqualTo(newValues.sum)
+    }
+
+    @Test
+    fun updateAfterControlValues() {
+        val entity = expenditureEntity()
+        every { repository.findFirstByReportEntityPartnerIdAndReportEntityId(PARTNER_ID, reportId = 4L) } returns entity
+        persistence.updateAfterControlValues(PARTNER_ID, reportId = 4L, afterControl)
+
+        assertThat(entity.staffTotalEligibleAfterControl).isEqualTo(afterControl.staff)
+        assertThat(entity.officeTotalEligibleAfterControl).isEqualTo(afterControl.office)
+        assertThat(entity.travelTotalEligibleAfterControl).isEqualTo(afterControl.travel)
+        assertThat(entity.externalTotalEligibleAfterControl).isEqualTo(afterControl.external)
+        assertThat(entity.equipmentTotalEligibleAfterControl).isEqualTo(afterControl.equipment)
+        assertThat(entity.infrastructureTotalEligibleAfterControl).isEqualTo(afterControl.infrastructure)
+        assertThat(entity.otherTotalEligibleAfterControl).isEqualTo(afterControl.other)
+        assertThat(entity.lumpSumTotalEligibleAfterControl).isEqualTo(afterControl.lumpSum)
+        assertThat(entity.unitCostTotalEligibleAfterControl).isEqualTo(afterControl.unitCost)
+        assertThat(entity.sumTotalEligibleAfterControl).isEqualTo(afterControl.sum)
     }
 
 }

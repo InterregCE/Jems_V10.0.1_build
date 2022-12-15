@@ -57,6 +57,27 @@ class ProjectPartnerReportExpenditureCoFinancingPersistenceProvider(
             }
     }
 
+    @Transactional
+    override fun updateAfterControlValues(
+        partnerId: Long,
+        reportId: Long,
+        afterControl: ReportExpenditureCoFinancingColumn
+    ) {
+        partnerReportCoFinancingRepository.findAllByIdReportIdOrderByIdFundSortNumber(reportId)
+            .forEachIndexed { index, coFin ->
+                coFin.totalEligibleAfterControl = afterControl.funds.getOrDefault(coFin.programmeFund?.id, BigDecimal.ZERO)
+            }
+
+        expenditureCoFinancingRepository
+            .findFirstByReportEntityPartnerIdAndReportEntityId(partnerId = partnerId, reportId = reportId).apply {
+                partnerContributionTotalEligibleAfterControl = afterControl.partnerContribution
+                publicContributionTotalEligibleAfterControl = afterControl.publicContribution
+                automaticPublicContributionTotalEligibleAfterControl = afterControl.automaticPublicContribution
+                privateContributionTotalEligibleAfterControl = afterControl.privateContribution
+                sumTotalEligibleAfterControl = afterControl.sum
+            }
+    }
+
     @Transactional(readOnly = true)
     override fun getReportCurrentSum(partnerId: Long, reportId: Long) =
         expenditureCoFinancingRepository

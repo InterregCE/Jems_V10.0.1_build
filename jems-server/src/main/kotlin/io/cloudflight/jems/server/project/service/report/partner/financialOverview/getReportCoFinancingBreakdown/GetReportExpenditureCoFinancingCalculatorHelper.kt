@@ -19,6 +19,7 @@ fun ReportExpenditureCoFinancing.toLinesModel() = ExpenditureCoFinancingBreakdow
             previouslyReported = previouslyReported.funds.getOrDefault(it.key, BigDecimal.ZERO),
             previouslyPaid = previouslyPaid.funds.getOrDefault(it.key, BigDecimal.ZERO),
             currentReport = currentlyReported.funds.getOrDefault(it.key, BigDecimal.ZERO),
+            totalEligibleAfterControl = totalEligibleAfterControl.funds.getOrDefault(it.key, BigDecimal.ZERO),
         )
     },
     partnerContribution = ExpenditureCoFinancingBreakdownLine(
@@ -26,30 +27,35 @@ fun ReportExpenditureCoFinancing.toLinesModel() = ExpenditureCoFinancingBreakdow
         previouslyReported = previouslyReported.partnerContribution,
         previouslyPaid = previouslyPaid.partnerContribution,
         currentReport = currentlyReported.partnerContribution,
+        totalEligibleAfterControl = totalEligibleAfterControl.partnerContribution,
     ),
     publicContribution = ExpenditureCoFinancingBreakdownLine(
         totalEligibleBudget = totalsFromAF.publicContribution,
         previouslyReported = previouslyReported.publicContribution,
         previouslyPaid = previouslyPaid.publicContribution,
         currentReport = currentlyReported.publicContribution,
+        totalEligibleAfterControl = totalEligibleAfterControl.publicContribution,
     ),
     automaticPublicContribution = ExpenditureCoFinancingBreakdownLine(
         totalEligibleBudget = totalsFromAF.automaticPublicContribution,
         previouslyReported = previouslyReported.automaticPublicContribution,
         previouslyPaid = previouslyPaid.automaticPublicContribution,
         currentReport = currentlyReported.automaticPublicContribution,
+        totalEligibleAfterControl = totalEligibleAfterControl.automaticPublicContribution,
     ),
     privateContribution = ExpenditureCoFinancingBreakdownLine(
         totalEligibleBudget = totalsFromAF.privateContribution,
         previouslyReported = previouslyReported.privateContribution,
         previouslyPaid = previouslyPaid.privateContribution,
         currentReport = currentlyReported.privateContribution,
+        totalEligibleAfterControl = totalEligibleAfterControl.privateContribution,
     ),
     total = ExpenditureCoFinancingBreakdownLine(
         totalEligibleBudget = totalsFromAF.sum,
         previouslyReported = previouslyReported.sum,
         previouslyPaid = previouslyPaid.sum,
         currentReport = currentlyReported.sum,
+        totalEligibleAfterControl = totalEligibleAfterControl.sum,
     ),
 )
 

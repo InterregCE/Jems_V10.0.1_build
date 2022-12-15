@@ -27,6 +27,8 @@ class ProjectPartnerReportCoFinancingEntity(
     @field:NotNull
     var current: BigDecimal,
     @field:NotNull
+    var totalEligibleAfterControl: BigDecimal,
+    @field:NotNull
     val previouslyReported: BigDecimal,
     @field:NotNull
     val previouslyPaid: BigDecimal,

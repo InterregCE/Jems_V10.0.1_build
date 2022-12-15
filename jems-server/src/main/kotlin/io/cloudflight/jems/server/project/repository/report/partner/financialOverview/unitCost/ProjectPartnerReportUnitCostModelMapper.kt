@@ -13,4 +13,5 @@ fun PartnerReportUnitCostEntity.toModel() = ExpenditureUnitCostBreakdownLine(
     totalEligibleBudget = total,
     previouslyReported = previouslyReported,
     currentReport = current,
+    totalEligibleAfterControl = totalEligibleAfterControl,
 )

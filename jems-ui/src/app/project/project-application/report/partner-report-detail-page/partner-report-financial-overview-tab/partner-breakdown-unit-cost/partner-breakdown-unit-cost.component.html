@@ -37,6 +37,14 @@
         <mat-footer-cell *matFooterCellDef class="text-right">{{ breakdown.total.currentReport | asMoney }}</mat-footer-cell>
     </ng-container>
 
+    <ng-container matColumnDef="totalEligibleAfterControl">
+        <mat-header-cell *matHeaderCellDef class="text-right">
+            <span jemsText maxLines="2">{{ 'project.application.partner.report.control.tab.overviewAndFinalize.total.eligible.after.control' | translate }}</span>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let line" class="text-right">{{ line.totalEligibleAfterControl | asMoney }}</mat-cell>
+        <mat-footer-cell *matFooterCellDef class="text-right">{{ breakdown.total.totalEligibleAfterControl | asMoney }}</mat-footer-cell>
+    </ng-container>
+
     <ng-container matColumnDef="totalReportedSoFar">
         <mat-header-cell *matHeaderCellDef class="text-right">
             <span jemsText maxLines="2">{{ 'project.application.partner.report.financial.total.reported.so.far' | translate }}</span>

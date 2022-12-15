@@ -36,4 +36,15 @@ class ProjectPartnerReportUnitCostPersistenceProvider(
             }
     }
 
+    @Transactional
+    override fun updateAfterControlValues(partnerId: Long, reportId: Long, afterControl: Map<Long, BigDecimal>) {
+        reportUnitCostRepository
+            .findByReportEntityPartnerIdAndReportEntityIdOrderByIdAsc(partnerId = partnerId, reportId = reportId)
+            .forEach {
+                if (afterControl.containsKey(it.id)) {
+                    it.totalEligibleAfterControl = afterControl.get(it.id)!!
+                }
+            }
+    }
+
 }

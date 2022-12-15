@@ -48,6 +48,7 @@ class ProjectPartnerReportUnitCostPersistenceProviderTest : UnitTest() {
 
             total = BigDecimal.valueOf(10),
             current = BigDecimal.valueOf(20),
+            totalEligibleAfterControl = BigDecimal.valueOf(40),
             previouslyReported = BigDecimal.valueOf(30),
         )
 
@@ -60,6 +61,7 @@ class ProjectPartnerReportUnitCostPersistenceProviderTest : UnitTest() {
             totalEligibleBudget = BigDecimal.valueOf(10),
             previouslyReported = BigDecimal.valueOf(30),
             currentReport = BigDecimal.valueOf(20),
+            totalEligibleAfterControl = BigDecimal.valueOf(40),
             totalReportedSoFar = BigDecimal.ZERO,
             totalReportedSoFarPercentage = BigDecimal.ZERO,
             remainingBudget = BigDecimal.ZERO,
@@ -105,6 +107,20 @@ class ProjectPartnerReportUnitCostPersistenceProviderTest : UnitTest() {
         assertThat(unitCost_79.current).isEqualByComparingTo(BigDecimal.valueOf(20))
         assertThat(unitCost_80.current).isEqualByComparingTo(BigDecimal.TEN)
         assertThat(unitCost_81.current).isEqualByComparingTo(BigDecimal.valueOf(20))
+    }
+
+    @Test
+    fun updateAfterControlValues() {
+        val unitCost_79 = unitCostEntity(79L)
+        val unitCost_80 = unitCostEntity(80L)
+        val unitCost_81 = unitCostEntity(81L)
+        every { repository.findByReportEntityPartnerIdAndReportEntityIdOrderByIdAsc(PARTNER_ID, reportId = 922L) } returns
+            mutableListOf(unitCost_79, unitCost_80, unitCost_81)
+        persistence.updateAfterControlValues(PARTNER_ID, reportId = 922L, newValues)
+
+        assertThat(unitCost_79.totalEligibleAfterControl).isEqualByComparingTo(BigDecimal.valueOf(40))
+        assertThat(unitCost_80.totalEligibleAfterControl).isEqualByComparingTo(BigDecimal.TEN)
+        assertThat(unitCost_81.totalEligibleAfterControl).isEqualByComparingTo(BigDecimal.valueOf(40))
     }
 
 }

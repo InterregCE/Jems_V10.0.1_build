@@ -19,40 +19,30 @@ class ReportProjectPartnerExpenditureCoFinancingEntity(
     @OneToOne
     @JoinColumn(name = "report_id")
     @MapsId
-    @field:NotNull
-    val reportEntity: ProjectPartnerReportEntity,
+    @field:NotNull val reportEntity: ProjectPartnerReportEntity,
 
-    @field:NotNull
-    val partnerContributionTotal: BigDecimal,
-    @field:NotNull
-    val publicContributionTotal: BigDecimal,
-    @field:NotNull
-    val automaticPublicContributionTotal: BigDecimal,
-    @field:NotNull
-    val privateContributionTotal: BigDecimal,
-    @field:NotNull
-    val sumTotal: BigDecimal,
+    @field:NotNull val partnerContributionTotal: BigDecimal,
+    @field:NotNull val publicContributionTotal: BigDecimal,
+    @field:NotNull val automaticPublicContributionTotal: BigDecimal,
+    @field:NotNull val privateContributionTotal: BigDecimal,
+    @field:NotNull val sumTotal: BigDecimal,
 
-    @field:NotNull
-    var partnerContributionCurrent: BigDecimal,
-    @field:NotNull
-    var publicContributionCurrent: BigDecimal,
-    @field:NotNull
-    var automaticPublicContributionCurrent: BigDecimal,
-    @field:NotNull
-    var privateContributionCurrent: BigDecimal,
-    @field:NotNull
-    var sumCurrent: BigDecimal,
+    @field:NotNull var partnerContributionCurrent: BigDecimal,
+    @field:NotNull var publicContributionCurrent: BigDecimal,
+    @field:NotNull var automaticPublicContributionCurrent: BigDecimal,
+    @field:NotNull var privateContributionCurrent: BigDecimal,
+    @field:NotNull var sumCurrent: BigDecimal,
 
-    @field:NotNull
-    val partnerContributionPreviouslyReported: BigDecimal,
-    @field:NotNull
-    val publicContributionPreviouslyReported: BigDecimal,
-    @field:NotNull
-    val automaticPublicContributionPreviouslyReported: BigDecimal,
-    @field:NotNull
-    val privateContributionPreviouslyReported: BigDecimal,
-    @field:NotNull
-    val sumPreviouslyReported: BigDecimal,
+    @field:NotNull var partnerContributionTotalEligibleAfterControl: BigDecimal,
+    @field:NotNull var publicContributionTotalEligibleAfterControl: BigDecimal,
+    @field:NotNull var automaticPublicContributionTotalEligibleAfterControl: BigDecimal,
+    @field:NotNull var privateContributionTotalEligibleAfterControl: BigDecimal,
+    @field:NotNull var sumTotalEligibleAfterControl: BigDecimal,
+
+    @field:NotNull val partnerContributionPreviouslyReported: BigDecimal,
+    @field:NotNull val publicContributionPreviouslyReported: BigDecimal,
+    @field:NotNull val automaticPublicContributionPreviouslyReported: BigDecimal,
+    @field:NotNull val privateContributionPreviouslyReported: BigDecimal,
+    @field:NotNull val sumPreviouslyReported: BigDecimal,
 
 ) : Serializable

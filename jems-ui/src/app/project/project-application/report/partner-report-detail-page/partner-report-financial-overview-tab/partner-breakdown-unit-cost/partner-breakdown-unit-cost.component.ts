@@ -16,7 +16,9 @@ import {Alert} from '@common/components/forms/alert';
 export class PartnerBreakdownUnitCostComponent implements OnChanges {
   Alert = Alert;
 
-  displayedColumns = ['name', 'totalEligibleBudget', 'previouslyReported', 'currentReport', 'totalReportedSoFar', 'totalReportedSoFarPercentage', 'remainingBudget'];
+  certifiedColumns = ['totalEligibleAfterControl'];
+  columnsAvailable = ['name', 'totalEligibleBudget', 'previouslyReported', 'currentReport', 'totalEligibleAfterControl', 'totalReportedSoFar', 'totalReportedSoFarPercentage', 'remainingBudget'];
+  displayedColumns = this.columnsAvailable;
 
   readonly PERIOD_PREPARATION: number = 0;
   readonly PERIOD_CLOSURE: number = 255;
@@ -24,10 +26,15 @@ export class PartnerBreakdownUnitCostComponent implements OnChanges {
   @Input()
   breakdown: ExpenditureUnitCostBreakdownDTO;
 
+  @Input()
+  isCertified = false;
+
   dataSource: MatTableDataSource<ExpenditureUnitCostBreakdownLineDTO> = new MatTableDataSource([]);
 
   ngOnChanges(changes: SimpleChanges): void {
     this.dataSource.data = this.breakdown.unitCosts;
+    this.displayedColumns = [...this.columnsAvailable]
+      .filter(column => this.isCertified || !this.certifiedColumns.includes(column));
   }
 
 }

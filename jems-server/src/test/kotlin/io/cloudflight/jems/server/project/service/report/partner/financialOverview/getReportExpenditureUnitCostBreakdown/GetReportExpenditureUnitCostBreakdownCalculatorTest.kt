@@ -52,6 +52,7 @@ internal class GetReportExpenditureUnitCostBreakdownCalculatorTest : UnitTest() 
             totalEligibleBudget = BigDecimal.valueOf(52),
             previouslyReported = BigDecimal.valueOf(23),
             currentReport = BigDecimal.valueOf(39, 1),
+            totalEligibleAfterControl = BigDecimal.ZERO,
         )
 
         private val unitCost_2 = ExpenditureUnitCostBreakdownLine(
@@ -61,6 +62,7 @@ internal class GetReportExpenditureUnitCostBreakdownCalculatorTest : UnitTest() 
             totalEligibleBudget = BigDecimal.valueOf(18),
             previouslyReported = BigDecimal.valueOf(7),
             currentReport = BigDecimal.valueOf(11, 1),
+            totalEligibleAfterControl = BigDecimal.ZERO,
         )
 
         private val expenditureWithUnitCost = ProjectPartnerReportExpenditureCost(
@@ -94,6 +96,7 @@ internal class GetReportExpenditureUnitCostBreakdownCalculatorTest : UnitTest() 
                     totalEligibleBudget = BigDecimal.valueOf(52),
                     previouslyReported = BigDecimal.valueOf(23),
                     currentReport = BigDecimal.valueOf(1264, 2),
+                    totalEligibleAfterControl = BigDecimal.ZERO,
                     totalReportedSoFar = BigDecimal.valueOf(3564, 2),
                     totalReportedSoFarPercentage = BigDecimal.valueOf(6854, 2),
                     remainingBudget = BigDecimal.valueOf(1636, 2),
@@ -105,6 +108,7 @@ internal class GetReportExpenditureUnitCostBreakdownCalculatorTest : UnitTest() 
                     totalEligibleBudget = BigDecimal.valueOf(18),
                     previouslyReported = BigDecimal.valueOf(7),
                     currentReport = BigDecimal.ZERO,
+                    totalEligibleAfterControl = BigDecimal.ZERO,
                     totalReportedSoFar = BigDecimal.valueOf(7),
                     totalReportedSoFarPercentage = BigDecimal.valueOf(3889, 2),
                     remainingBudget = BigDecimal.valueOf(11),
@@ -117,6 +121,7 @@ internal class GetReportExpenditureUnitCostBreakdownCalculatorTest : UnitTest() 
                 totalEligibleBudget = BigDecimal.valueOf(70),
                 previouslyReported = BigDecimal.valueOf(30),
                 currentReport = BigDecimal.valueOf(1264, 2),
+                totalEligibleAfterControl = BigDecimal.ZERO,
                 totalReportedSoFar = BigDecimal.valueOf(4264, 2),
                 totalReportedSoFarPercentage = BigDecimal.valueOf(6091, 2),
                 remainingBudget = BigDecimal.valueOf(2736, 2),
@@ -132,6 +137,7 @@ internal class GetReportExpenditureUnitCostBreakdownCalculatorTest : UnitTest() 
                     totalEligibleBudget = BigDecimal.valueOf(52),
                     previouslyReported = BigDecimal.valueOf(23),
                     currentReport = BigDecimal.valueOf(39, 1),
+                    totalEligibleAfterControl = BigDecimal.valueOf(38, 1),
                     totalReportedSoFar = BigDecimal.valueOf(269, 1),
                     totalReportedSoFarPercentage = BigDecimal.valueOf(5173, 2),
                     remainingBudget = BigDecimal.valueOf(251, 1),
@@ -143,6 +149,7 @@ internal class GetReportExpenditureUnitCostBreakdownCalculatorTest : UnitTest() 
                     totalEligibleBudget = BigDecimal.valueOf(18),
                     previouslyReported = BigDecimal.valueOf(7),
                     currentReport = BigDecimal.valueOf(11, 1),
+                    totalEligibleAfterControl = BigDecimal.valueOf(10, 1),
                     totalReportedSoFar = BigDecimal.valueOf(81, 1),
                     totalReportedSoFarPercentage = BigDecimal.valueOf(4500, 2),
                     remainingBudget = BigDecimal.valueOf(99, 1),
@@ -155,6 +162,7 @@ internal class GetReportExpenditureUnitCostBreakdownCalculatorTest : UnitTest() 
                 totalEligibleBudget = BigDecimal.valueOf(70),
                 previouslyReported = BigDecimal.valueOf(30),
                 currentReport = BigDecimal.valueOf(50, 1),
+                totalEligibleAfterControl = BigDecimal.valueOf(48, 1),
                 totalReportedSoFar = BigDecimal.valueOf(350, 1),
                 totalReportedSoFarPercentage = BigDecimal.valueOf(5000, 2),
                 remainingBudget = BigDecimal.valueOf(350, 1),
@@ -205,7 +213,10 @@ internal class GetReportExpenditureUnitCostBreakdownCalculatorTest : UnitTest() 
         every { reportPersistence.getPartnerReportById(partnerId = PARTNER_ID, reportId) } returns
             report(reportId, status)
         every { reportUnitCostPersistence.getUnitCost(partnerId = PARTNER_ID, reportId = reportId) } returns
-            listOf(unitCost_1, unitCost_2)
+            listOf(
+                unitCost_1.copy(totalEligibleAfterControl = BigDecimal.valueOf(38, 1)),
+                unitCost_2.copy(totalEligibleAfterControl = BigDecimal.valueOf(10, 1)),
+            )
         assertThat(calculator.get(PARTNER_ID, reportId = reportId)).isEqualTo(expectedNonDraftBreakdown.copy())
     }
 

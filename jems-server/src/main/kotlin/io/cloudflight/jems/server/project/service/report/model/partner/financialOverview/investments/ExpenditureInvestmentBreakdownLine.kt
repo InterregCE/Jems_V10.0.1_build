@@ -12,6 +12,7 @@ data class ExpenditureInvestmentBreakdownLine(
     var totalEligibleBudget: BigDecimal,
     var previouslyReported: BigDecimal,
     var currentReport: BigDecimal,
+    var totalEligibleAfterControl: BigDecimal,
     var totalReportedSoFar: BigDecimal = BigDecimal.ZERO,
     var totalReportedSoFarPercentage: BigDecimal = BigDecimal.ZERO,
     var remainingBudget: BigDecimal = BigDecimal.ZERO,

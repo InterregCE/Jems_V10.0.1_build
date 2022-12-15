@@ -28,67 +28,48 @@ class ReportProjectPartnerExpenditureCostCategoryEntity(
     val staffCostsFlatRate: Int?,
     val otherCostsOnStaffCostsFlatRate: Int?,
 
-    @field:NotNull
-    val staffTotal: BigDecimal,
-    @field:NotNull
-    val officeTotal: BigDecimal,
-    @field:NotNull
-    val travelTotal: BigDecimal,
-    @field:NotNull
-    val externalTotal: BigDecimal,
-    @field:NotNull
-    val equipmentTotal: BigDecimal,
-    @field:NotNull
-    val infrastructureTotal: BigDecimal,
-    @field:NotNull
-    val otherTotal: BigDecimal,
-    @field:NotNull
-    val lumpSumTotal: BigDecimal,
-    @field:NotNull
-    val unitCostTotal: BigDecimal,
-    @field:NotNull
-    val sumTotal: BigDecimal,
+    @field:NotNull val staffTotal: BigDecimal,
+    @field:NotNull val officeTotal: BigDecimal,
+    @field:NotNull val travelTotal: BigDecimal,
+    @field:NotNull val externalTotal: BigDecimal,
+    @field:NotNull val equipmentTotal: BigDecimal,
+    @field:NotNull val infrastructureTotal: BigDecimal,
+    @field:NotNull val otherTotal: BigDecimal,
+    @field:NotNull val lumpSumTotal: BigDecimal,
+    @field:NotNull val unitCostTotal: BigDecimal,
+    @field:NotNull val sumTotal: BigDecimal,
 
-    @field:NotNull
-    var staffCurrent: BigDecimal,
-    @field:NotNull
-    var officeCurrent: BigDecimal,
-    @field:NotNull
-    var travelCurrent: BigDecimal,
-    @field:NotNull
-    var externalCurrent: BigDecimal,
-    @field:NotNull
-    var equipmentCurrent: BigDecimal,
-    @field:NotNull
-    var infrastructureCurrent: BigDecimal,
-    @field:NotNull
-    var otherCurrent: BigDecimal,
-    @field:NotNull
-    var lumpSumCurrent: BigDecimal,
-    @field:NotNull
-    var unitCostCurrent: BigDecimal,
-    @field:NotNull
-    var sumCurrent: BigDecimal,
+    @field:NotNull var staffCurrent: BigDecimal,
+    @field:NotNull var officeCurrent: BigDecimal,
+    @field:NotNull var travelCurrent: BigDecimal,
+    @field:NotNull var externalCurrent: BigDecimal,
+    @field:NotNull var equipmentCurrent: BigDecimal,
+    @field:NotNull var infrastructureCurrent: BigDecimal,
+    @field:NotNull var otherCurrent: BigDecimal,
+    @field:NotNull var lumpSumCurrent: BigDecimal,
+    @field:NotNull var unitCostCurrent: BigDecimal,
+    @field:NotNull var sumCurrent: BigDecimal,
 
-    @field:NotNull
-    val staffPreviouslyReported: BigDecimal,
-    @field:NotNull
-    val officePreviouslyReported: BigDecimal,
-    @field:NotNull
-    val travelPreviouslyReported: BigDecimal,
-    @field:NotNull
-    val externalPreviouslyReported: BigDecimal,
-    @field:NotNull
-    val equipmentPreviouslyReported: BigDecimal,
-    @field:NotNull
-    val infrastructurePreviouslyReported: BigDecimal,
-    @field:NotNull
-    val otherPreviouslyReported: BigDecimal,
-    @field:NotNull
-    val lumpSumPreviouslyReported: BigDecimal,
-    @field:NotNull
-    val unitCostPreviouslyReported: BigDecimal,
-    @field:NotNull
-    val sumPreviouslyReported: BigDecimal,
+    @field:NotNull var staffTotalEligibleAfterControl: BigDecimal,
+    @field:NotNull var officeTotalEligibleAfterControl: BigDecimal,
+    @field:NotNull var travelTotalEligibleAfterControl: BigDecimal,
+    @field:NotNull var externalTotalEligibleAfterControl: BigDecimal,
+    @field:NotNull var equipmentTotalEligibleAfterControl: BigDecimal,
+    @field:NotNull var infrastructureTotalEligibleAfterControl: BigDecimal,
+    @field:NotNull var otherTotalEligibleAfterControl: BigDecimal,
+    @field:NotNull var lumpSumTotalEligibleAfterControl: BigDecimal,
+    @field:NotNull var unitCostTotalEligibleAfterControl: BigDecimal,
+    @field:NotNull var sumTotalEligibleAfterControl: BigDecimal,
+
+    @field:NotNull val staffPreviouslyReported: BigDecimal,
+    @field:NotNull val officePreviouslyReported: BigDecimal,
+    @field:NotNull val travelPreviouslyReported: BigDecimal,
+    @field:NotNull val externalPreviouslyReported: BigDecimal,
+    @field:NotNull val equipmentPreviouslyReported: BigDecimal,
+    @field:NotNull val infrastructurePreviouslyReported: BigDecimal,
+    @field:NotNull val otherPreviouslyReported: BigDecimal,
+    @field:NotNull val lumpSumPreviouslyReported: BigDecimal,
+    @field:NotNull val unitCostPreviouslyReported: BigDecimal,
+    @field:NotNull val sumPreviouslyReported: BigDecimal,
 
 ) : Serializable

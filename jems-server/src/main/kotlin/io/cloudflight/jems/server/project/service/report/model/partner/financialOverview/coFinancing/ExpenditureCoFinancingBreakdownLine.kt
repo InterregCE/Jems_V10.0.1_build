@@ -8,6 +8,7 @@ data class ExpenditureCoFinancingBreakdownLine(
     val previouslyReported: BigDecimal,
     val previouslyPaid: BigDecimal,
     var currentReport: BigDecimal,
+    val totalEligibleAfterControl: BigDecimal,
     var totalReportedSoFar: BigDecimal = BigDecimal.ZERO,
     var totalReportedSoFarPercentage: BigDecimal = BigDecimal.ZERO,
     var remainingBudget: BigDecimal = BigDecimal.ZERO,

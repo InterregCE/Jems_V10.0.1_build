@@ -11,4 +11,6 @@ interface ProjectPartnerReportLumpSumPersistence {
 
     fun updateCurrentlyReportedValues(partnerId: Long, reportId: Long, currentlyReported: Map<Long, BigDecimal>)
 
+    fun updateAfterControlValues(partnerId: Long, reportId: Long, afterControl: Map<Long, BigDecimal>)
+
 }

@@ -7,5 +7,6 @@ data class ReportExpenditureCostCategory(
     val options: ProjectPartnerBudgetOptions,
     val totalsFromAF: BudgetCostsCalculationResultFull,
     val currentlyReported: BudgetCostsCalculationResultFull,
+    val totalEligibleAfterControl: BudgetCostsCalculationResultFull,
     val previouslyReported: BudgetCostsCalculationResultFull,
 )

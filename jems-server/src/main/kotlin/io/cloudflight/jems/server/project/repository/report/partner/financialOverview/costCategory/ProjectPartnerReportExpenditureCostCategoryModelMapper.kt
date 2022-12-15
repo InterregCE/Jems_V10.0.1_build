@@ -38,6 +38,18 @@ fun ReportProjectPartnerExpenditureCostCategoryEntity.toModel() = ReportExpendit
         unitCost = unitCostCurrent,
         sum = sumCurrent,
     ),
+    totalEligibleAfterControl = BudgetCostsCalculationResultFull(
+        staff = staffTotalEligibleAfterControl,
+        office = officeTotalEligibleAfterControl,
+        travel = travelTotalEligibleAfterControl,
+        external = externalTotalEligibleAfterControl,
+        equipment = equipmentTotalEligibleAfterControl,
+        infrastructure = infrastructureTotalEligibleAfterControl,
+        other = otherTotalEligibleAfterControl,
+        lumpSum = lumpSumTotalEligibleAfterControl,
+        unitCost = unitCostTotalEligibleAfterControl,
+        sum = sumTotalEligibleAfterControl,
+    ),
     previouslyReported = BudgetCostsCalculationResultFull(
         staff = staffPreviouslyReported,
         office = officePreviouslyReported,

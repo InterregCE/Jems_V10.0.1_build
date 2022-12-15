@@ -24,7 +24,7 @@ internal class GetReportControlWorkOverviewTest : UnitTest() {
     companion object {
         private const val PARTNER_ID = 592L
 
-        val costOptions = ReportExpenditureCostCategory(
+        private val costOptions = ReportExpenditureCostCategory(
             options = ProjectPartnerBudgetOptions(
                 partnerId = PARTNER_ID,
                 officeAndAdministrationOnStaffCostsFlatRate = null,
@@ -35,6 +35,7 @@ internal class GetReportControlWorkOverviewTest : UnitTest() {
             ),
             totalsFromAF = mockk(),
             currentlyReported = mockk(),
+            totalEligibleAfterControl = mockk(),
             previouslyReported = mockk(),
         )
 

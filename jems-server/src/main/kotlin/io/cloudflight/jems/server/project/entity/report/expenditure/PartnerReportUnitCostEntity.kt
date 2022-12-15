@@ -35,6 +35,8 @@ class PartnerReportUnitCostEntity (
     @field:NotNull
     var current: BigDecimal,
     @field:NotNull
+    var totalEligibleAfterControl: BigDecimal,
+    @field:NotNull
     val previouslyReported: BigDecimal,
 
 )

@@ -48,6 +48,7 @@ fun PartnerReportLumpSum.toEntity(
     period = period,
     total = total,
     current = BigDecimal.ZERO,
+    totalEligibleAfterControl = BigDecimal.ZERO,
     previouslyReported = previouslyReported,
     previouslyPaid = previouslyPaid,
 )
@@ -61,6 +62,7 @@ fun PartnerReportUnitCostBase.toEntity(
     numberOfUnits = numberOfUnits,
     total = totalCost,
     current = BigDecimal.ZERO,
+    totalEligibleAfterControl = BigDecimal.ZERO,
     previouslyReported = previouslyReported,
 )
 
@@ -74,6 +76,7 @@ fun PartnerReportInvestment.toEntity(
     translatedValues = mutableSetOf(),
     total = total,
     current = BigDecimal.ZERO,
+    totalEligibleAfterControl = BigDecimal.ZERO,
     previouslyReported = previouslyReported,
 ).apply {
     translatedValues.addAll(

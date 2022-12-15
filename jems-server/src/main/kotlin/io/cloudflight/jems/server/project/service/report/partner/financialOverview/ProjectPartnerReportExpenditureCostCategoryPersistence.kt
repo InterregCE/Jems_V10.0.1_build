@@ -11,4 +11,6 @@ interface ProjectPartnerReportExpenditureCostCategoryPersistence {
 
     fun updateCurrentlyReportedValues(partnerId: Long, reportId: Long, currentlyReported: BudgetCostsCalculationResultFull)
 
+    fun updateAfterControlValues(partnerId: Long, reportId: Long, afterControl: BudgetCostsCalculationResultFull)
+
 }

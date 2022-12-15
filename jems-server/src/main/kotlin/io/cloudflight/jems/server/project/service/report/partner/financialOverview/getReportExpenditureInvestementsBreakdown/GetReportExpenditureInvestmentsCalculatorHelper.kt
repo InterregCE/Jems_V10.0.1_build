@@ -1,6 +1,7 @@
 package io.cloudflight.jems.server.project.service.report.partner.financialOverview.getReportExpenditureInvestementsBreakdown
 
 import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.ProjectPartnerReportExpenditureCost
+import io.cloudflight.jems.server.project.service.report.model.partner.expenditure.control.ProjectPartnerReportExpenditureVerification
 import io.cloudflight.jems.server.project.service.report.model.partner.financialOverview.investments.ExpenditureInvestmentBreakdownLine
 import java.math.BigDecimal
 import java.math.RoundingMode
@@ -25,6 +26,7 @@ private fun emptyLine() = ExpenditureInvestmentBreakdownLine(
     totalEligibleBudget = BigDecimal.ZERO,
     previouslyReported = BigDecimal.ZERO,
     currentReport = BigDecimal.ZERO,
+    totalEligibleAfterControl = BigDecimal.ZERO,
     totalReportedSoFar = BigDecimal.ZERO,
     totalReportedSoFarPercentage = BigDecimal.ZERO,
     remainingBudget = BigDecimal.ZERO
@@ -35,6 +37,7 @@ fun List<ExpenditureInvestmentBreakdownLine>.sumUp() =
         resultingTotalLine.totalEligibleBudget += investment.totalEligibleBudget
         resultingTotalLine.previouslyReported += investment.previouslyReported
         resultingTotalLine.currentReport += investment.currentReport
+        resultingTotalLine.totalEligibleAfterControl += investment.totalEligibleAfterControl
         return@fold resultingTotalLine
     }.fillInOverviewFields()
 
@@ -48,7 +51,9 @@ private fun ExpenditureInvestmentBreakdownLine.fillInOverviewFields() = apply {
 fun Collection<ProjectPartnerReportExpenditureCost>.getCurrentForInvestments() =
     filter { it.investmentId != null }
         .groupBy { it.investmentId!! }
-        .mapValues { it.value
-            .filter{ it.declaredAmountAfterSubmission != null }
-            .sumOf { it.declaredAmountAfterSubmission!! }
-        }
+        .mapValues { it.value.sumOf { it.declaredAmountAfterSubmission ?: BigDecimal.ZERO } }
+
+fun Collection<ProjectPartnerReportExpenditureVerification>.getAfterControlForInvestments() =
+    filter { it.investmentId != null }
+        .groupBy { it.investmentId!! }
+        .mapValues { it.value.sumOf { it.certifiedAmount } }

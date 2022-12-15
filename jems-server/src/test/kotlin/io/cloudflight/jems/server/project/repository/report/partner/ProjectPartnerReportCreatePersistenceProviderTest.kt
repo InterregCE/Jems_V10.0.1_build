@@ -239,6 +239,18 @@ class ProjectPartnerReportCreatePersistenceProviderTest : UnitTest() {
                         unitCost = BigDecimal.valueOf(28),
                         sum = BigDecimal.valueOf(29),
                     ),
+                    totalEligibleAfterControl = BudgetCostsCalculationResultFull(
+                        staff = BigDecimal.valueOf(40),
+                        office = BigDecimal.valueOf(41),
+                        travel = BigDecimal.valueOf(42),
+                        external = BigDecimal.valueOf(43),
+                        equipment = BigDecimal.valueOf(44),
+                        infrastructure = BigDecimal.valueOf(45),
+                        other = BigDecimal.valueOf(46),
+                        lumpSum = BigDecimal.valueOf(47),
+                        unitCost = BigDecimal.valueOf(48),
+                        sum = BigDecimal.valueOf(49),
+                    ),
                     previouslyReported = BudgetCostsCalculationResultFull(
                         staff = BigDecimal.valueOf(30),
                         office = BigDecimal.valueOf(31),

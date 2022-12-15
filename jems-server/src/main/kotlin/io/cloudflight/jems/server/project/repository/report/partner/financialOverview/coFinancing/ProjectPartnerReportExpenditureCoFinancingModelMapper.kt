@@ -25,6 +25,14 @@ fun ReportProjectPartnerExpenditureCoFinancingEntity.toModel(
         privateContribution = privateContributionCurrent,
         sum = sumCurrent,
     ),
+    totalEligibleAfterControl = ReportExpenditureCoFinancingColumn(
+        funds = coFinancing.associateBy({ it.programmeFund?.id }, { it.totalEligibleAfterControl }),
+        partnerContribution = partnerContributionTotalEligibleAfterControl,
+        publicContribution = publicContributionTotalEligibleAfterControl,
+        automaticPublicContribution = automaticPublicContributionTotalEligibleAfterControl,
+        privateContribution = privateContributionTotalEligibleAfterControl,
+        sum = sumTotalEligibleAfterControl,
+    ),
     previouslyReported = ReportExpenditureCoFinancingColumn(
         funds = coFinancing.associateBy({ it.programmeFund?.id }, { it.previouslyReported }),
         partnerContribution = partnerContributionPreviouslyReported,

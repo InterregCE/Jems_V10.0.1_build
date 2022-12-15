@@ -41,4 +41,25 @@ class ProjectPartnerReportExpenditureCostCategoryPersistenceProvider(
                 sumCurrent = currentlyReported.sum
             }
     }
+
+    @Transactional
+    override fun updateAfterControlValues(
+        partnerId: Long,
+        reportId: Long,
+        afterControl: BudgetCostsCalculationResultFull
+    ) {
+        expenditureCostCategoryRepository
+            .findFirstByReportEntityPartnerIdAndReportEntityId(partnerId = partnerId, reportId = reportId).apply {
+                staffTotalEligibleAfterControl = afterControl.staff
+                officeTotalEligibleAfterControl = afterControl.office
+                travelTotalEligibleAfterControl = afterControl.travel
+                externalTotalEligibleAfterControl = afterControl.external
+                equipmentTotalEligibleAfterControl = afterControl.equipment
+                infrastructureTotalEligibleAfterControl = afterControl.infrastructure
+                otherTotalEligibleAfterControl = afterControl.other
+                lumpSumTotalEligibleAfterControl = afterControl.lumpSum
+                unitCostTotalEligibleAfterControl = afterControl.unitCost
+                sumTotalEligibleAfterControl = afterControl.sum
+            }
+    }
 }

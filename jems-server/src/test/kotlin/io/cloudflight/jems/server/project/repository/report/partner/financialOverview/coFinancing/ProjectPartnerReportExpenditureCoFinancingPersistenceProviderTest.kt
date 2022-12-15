@@ -45,6 +45,12 @@ class ProjectPartnerReportExpenditureCoFinancingPersistenceProviderTest : UnitTe
             privateContributionCurrent = BigDecimal.valueOf(200),
             sumCurrent = BigDecimal.valueOf(250),
 
+            partnerContributionTotalEligibleAfterControl = BigDecimal.valueOf(51),
+            publicContributionTotalEligibleAfterControl = BigDecimal.valueOf(101),
+            automaticPublicContributionTotalEligibleAfterControl = BigDecimal.valueOf(151),
+            privateContributionTotalEligibleAfterControl = BigDecimal.valueOf(201),
+            sumTotalEligibleAfterControl = BigDecimal.valueOf(251),
+
             partnerContributionPreviouslyReported = BigDecimal.valueOf(2),
             publicContributionPreviouslyReported = BigDecimal.valueOf(3),
             automaticPublicContributionPreviouslyReported = BigDecimal.valueOf(4),
@@ -68,6 +74,14 @@ class ProjectPartnerReportExpenditureCoFinancingPersistenceProviderTest : UnitTe
                 automaticPublicContribution = BigDecimal.valueOf(150),
                 privateContribution = BigDecimal.valueOf(200),
                 sum = BigDecimal.valueOf(250),
+            ),
+            totalEligibleAfterControl = ReportExpenditureCoFinancingColumn(
+                funds = mapOf(20L to BigDecimal.valueOf(126L), null to BigDecimal.valueOf(376L)),
+                partnerContribution = BigDecimal.valueOf(51),
+                publicContribution = BigDecimal.valueOf(101),
+                automaticPublicContribution = BigDecimal.valueOf(151),
+                privateContribution = BigDecimal.valueOf(201),
+                sum = BigDecimal.valueOf(251),
             ),
             previouslyReported = ReportExpenditureCoFinancingColumn(
                 funds = mapOf(20L to BigDecimal.valueOf(50L), null to BigDecimal.valueOf(150L)),
@@ -93,6 +107,7 @@ class ProjectPartnerReportExpenditureCoFinancingPersistenceProviderTest : UnitTe
             percentage = BigDecimal.valueOf(25L),
             total = BigDecimal.valueOf(250L),
             current = BigDecimal.valueOf(125L),
+            totalEligibleAfterControl = BigDecimal.valueOf(126L),
             previouslyReported = BigDecimal.valueOf(50L),
             previouslyPaid = BigDecimal.valueOf(81L),
         )
@@ -103,6 +118,7 @@ class ProjectPartnerReportExpenditureCoFinancingPersistenceProviderTest : UnitTe
             percentage = BigDecimal.valueOf(75L),
             total = BigDecimal.valueOf(750L),
             current = BigDecimal.valueOf(375L),
+            totalEligibleAfterControl = BigDecimal.valueOf(376L),
             previouslyReported = BigDecimal.valueOf(150L),
             previouslyPaid = BigDecimal.valueOf(123L),
         )
@@ -140,6 +156,15 @@ class ProjectPartnerReportExpenditureCoFinancingPersistenceProviderTest : UnitTe
             publicContribution = BigDecimal.valueOf(40),
             automaticPublicContribution = BigDecimal.valueOf(30),
             privateContribution = BigDecimal.valueOf(60),
+            sum = BigDecimal.valueOf(100),
+        )
+
+        private val coFinAfterControl = ReportExpenditureCoFinancingColumn(
+            funds = mapOf(20L to BigDecimal.valueOf(22L), null to BigDecimal.valueOf(28L)),
+            partnerContribution = BigDecimal.valueOf(50),
+            publicContribution = BigDecimal.valueOf(10),
+            automaticPublicContribution = BigDecimal.valueOf(15),
+            privateContribution = BigDecimal.valueOf(25),
             sum = BigDecimal.valueOf(100),
         )
     }
@@ -194,6 +219,27 @@ class ProjectPartnerReportExpenditureCoFinancingPersistenceProviderTest : UnitTe
         assertThat(coFinEntity.automaticPublicContributionCurrent).isEqualByComparingTo(BigDecimal.valueOf(30L))
         assertThat(coFinEntity.privateContributionCurrent).isEqualByComparingTo(BigDecimal.valueOf(60L))
         assertThat(coFinEntity.sumCurrent).isEqualByComparingTo(BigDecimal.valueOf(100L))
+    }
+
+    @Test
+    fun updateAfterControlValues() {
+        val fund = fund()
+        val partnerContrib = partnerContribution()
+        val coFinEntity = coFinEntity()
+
+        every { partnerReportCoFinancingRepository.findAllByIdReportIdOrderByIdFundSortNumber(reportId = 15L) } returns
+            listOf(fund, partnerContrib)
+        every { expenditureCoFinancingRepository.findFirstByReportEntityPartnerIdAndReportEntityId(PARTNER_ID, reportId = 15L) } returns coFinEntity
+
+        persistence.updateAfterControlValues(PARTNER_ID, reportId = 15L, afterControl = coFinAfterControl)
+
+        assertThat(fund.totalEligibleAfterControl).isEqualByComparingTo(BigDecimal.valueOf(22L))
+        assertThat(partnerContrib.totalEligibleAfterControl).isEqualByComparingTo(BigDecimal.valueOf(28L))
+        assertThat(coFinEntity.partnerContributionTotalEligibleAfterControl).isEqualByComparingTo(BigDecimal.valueOf(50L))
+        assertThat(coFinEntity.publicContributionTotalEligibleAfterControl).isEqualByComparingTo(BigDecimal.valueOf(10L))
+        assertThat(coFinEntity.automaticPublicContributionTotalEligibleAfterControl).isEqualByComparingTo(BigDecimal.valueOf(15L))
+        assertThat(coFinEntity.privateContributionTotalEligibleAfterControl).isEqualByComparingTo(BigDecimal.valueOf(25L))
+        assertThat(coFinEntity.sumTotalEligibleAfterControl).isEqualByComparingTo(BigDecimal.valueOf(100L))
     }
 
     @Test

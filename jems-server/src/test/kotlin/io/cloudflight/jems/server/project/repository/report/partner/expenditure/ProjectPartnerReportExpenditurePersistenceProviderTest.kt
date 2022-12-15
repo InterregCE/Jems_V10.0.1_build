@@ -177,6 +177,7 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
             period = 2,
             total = BigDecimal.ONE,
             current = BigDecimal.ZERO,
+            totalEligibleAfterControl = BigDecimal.TEN,
             previouslyReported = BigDecimal.ZERO,
             previouslyPaid = BigDecimal.valueOf(1111, 1),
         )
@@ -207,6 +208,7 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
             numberOfUnits = BigDecimal.ONE,
             total = BigDecimal.ONE,
             current = BigDecimal.ZERO,
+            totalEligibleAfterControl = BigDecimal.TEN,
             previouslyReported = BigDecimal.ZERO,
         )
 
@@ -219,6 +221,7 @@ class ProjectPartnerReportExpenditurePersistenceProviderTest : UnitTest() {
             translatedValues = mutableSetOf(),
             total = BigDecimal.ONE,
             current = BigDecimal.ONE,
+            totalEligibleAfterControl = BigDecimal.TEN,
             previouslyReported = BigDecimal.ZERO,
         ).apply {
             translatedValues.add(

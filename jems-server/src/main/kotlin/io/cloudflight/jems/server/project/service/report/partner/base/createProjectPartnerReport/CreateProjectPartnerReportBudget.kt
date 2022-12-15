@@ -293,6 +293,7 @@ class CreateProjectPartnerReportBudget(
             sum = budget.totalCosts,
         ),
         currentlyReported = fillZeros(),
+        totalEligibleAfterControl = fillZeros(),
         previouslyReported = previouslyReported,
     )
 

@@ -11,6 +11,7 @@ data class ExpenditureUnitCostBreakdownLineDTO(
     val totalEligibleBudget: BigDecimal,
     val previouslyReported: BigDecimal,
     val currentReport: BigDecimal,
+    val totalEligibleAfterControl: BigDecimal,
     val totalReportedSoFar: BigDecimal,
     val totalReportedSoFarPercentage: BigDecimal,
     val remainingBudget: BigDecimal,

@@ -170,6 +170,7 @@ fun List<PreviouslyReportedFund>.toEntity(
             percentage = fund.percentage,
             total = fund.total,
             current = ZERO,
+            totalEligibleAfterControl = ZERO,
             previouslyReported = fund.previouslyReported,
             previouslyPaid = fund.previouslyPaid,
         )
@@ -193,6 +194,12 @@ fun PreviouslyReportedCoFinancing.toEntity(
         automaticPublicContributionCurrent = ZERO,
         privateContributionCurrent = ZERO,
         sumCurrent = ZERO,
+
+        partnerContributionTotalEligibleAfterControl = ZERO,
+        publicContributionTotalEligibleAfterControl = ZERO,
+        automaticPublicContributionTotalEligibleAfterControl = ZERO,
+        privateContributionTotalEligibleAfterControl = ZERO,
+        sumTotalEligibleAfterControl = ZERO,
 
         partnerContributionPreviouslyReported = previouslyReportedPartner,
         publicContributionPreviouslyReported = previouslyReportedPublic,
@@ -287,6 +294,17 @@ fun ReportExpenditureCostCategory.toCreateEntity(report: ProjectPartnerReportEnt
         lumpSumCurrent = ZERO,
         unitCostCurrent = ZERO,
         sumCurrent = ZERO,
+
+        staffTotalEligibleAfterControl = ZERO,
+        officeTotalEligibleAfterControl = ZERO,
+        travelTotalEligibleAfterControl = ZERO,
+        externalTotalEligibleAfterControl = ZERO,
+        equipmentTotalEligibleAfterControl = ZERO,
+        infrastructureTotalEligibleAfterControl = ZERO,
+        otherTotalEligibleAfterControl = ZERO,
+        lumpSumTotalEligibleAfterControl = ZERO,
+        unitCostTotalEligibleAfterControl = ZERO,
+        sumTotalEligibleAfterControl = ZERO,
 
         staffPreviouslyReported = previouslyReported.staff,
         officePreviouslyReported = previouslyReported.office,
